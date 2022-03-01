@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.prefeditor;
+package org.chromium.components.autofill.prefeditor;
 
 import android.content.Context;
 import android.text.Editable;
@@ -29,7 +29,7 @@ import androidx.core.view.ViewCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.chromium.chrome.R;
+import org.chromium.components.autofill.R;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 import java.util.ArrayList;
@@ -38,6 +38,10 @@ import java.util.List;
 /** Handles validation and display of one field from the {@link EditorFieldModel}. */
 @VisibleForTesting
 public class EditorTextField extends FrameLayout implements EditorFieldView, View.OnClickListener {
+    // TODO(crbug.com/1300201): Replace with EditorDialog field once migrated.
+    /** The indicator for input fields that are required. */
+    public static final String REQUIRED_FIELD_INDICATOR = "*";
+
     @Nullable
     private static EditorObserverForTest sObserverForTest;
 
@@ -64,7 +68,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
 
         // Build up the label.  Required fields are indicated by appending a '*'.
         CharSequence label = fieldModel.getLabel();
-        if (fieldModel.isRequired()) label = label + EditorDialog.REQUIRED_FIELD_INDICATOR;
+        if (fieldModel.isRequired()) label = label + REQUIRED_FIELD_INDICATOR;
         mInputLayout.setHint(label);
 
         mInput = (AutoCompleteTextView) mInputLayout.findViewById(R.id.text_view);

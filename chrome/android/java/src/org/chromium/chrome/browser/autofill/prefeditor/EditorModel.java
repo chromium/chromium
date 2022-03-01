@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill.prefeditor;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.components.autofill.prefeditor.EditorFieldModel;
+
 import java.util.ArrayList;
 import java.util.List;
 

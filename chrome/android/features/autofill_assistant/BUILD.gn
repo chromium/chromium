@@ -25,6 +25,7 @@ android_library("java") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//components/autofill/android:autofill_java",
+    "//components/autofill/android:prefeditor_autofill_java",
     "//components/autofill_assistant/android:autofill_assistant_public_java",
     "//components/autofill_assistant/android:java",
     "//components/autofill_assistant/android:java_resources",

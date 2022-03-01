@@ -113,6 +113,27 @@ android_library("main_autofill_java") {
   resources_package = "org.chromium.components.autofill"
 }
 
+android_library("prefeditor_autofill_java") {
+  deps = [
+    ":autofill_java_resources",
+    "//base:base_java",
+    "//components/browser_ui/widget/android:java",
+    "//components/payments/content/android:java_resources",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+  sources = [
+    "java/src/org/chromium/components/autofill/prefeditor/EditorFieldModel.java",
+    "java/src/org/chromium/components/autofill/prefeditor/EditorFieldView.java",
+    "java/src/org/chromium/components/autofill/prefeditor/EditorObserverForTest.java",
+    "java/src/org/chromium/components/autofill/prefeditor/EditorTextField.java",
+  ]
+
+  resources_package = "org.chromium.components.autofill"
+}
+
 # A minimal library used to expose autofill features to webview.
 android_library("autofill_features_java") {
   srcjar_deps = [ ":java_features_srcjar" ]

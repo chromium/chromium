@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.prefeditor;
+package org.chromium.components.autofill.prefeditor;
 
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Pair;
@@ -11,8 +12,8 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.DropdownKeyValue;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.StrictModeContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +58,30 @@ public class EditorFieldModel {
          * @return The resouce Id of the value icon, 0 indicates no icon.
          */
         int getIconResourceId(@Nullable CharSequence value);
+    }
+
+    /**
+     * A convenience class for displaying keyed values in a dropdown.
+     */
+    public static class DropdownKeyValue extends Pair<String, CharSequence> {
+        public DropdownKeyValue(String key, CharSequence value) {
+            super(key, value);
+        }
+
+        /** @return The key identifier. */
+        public String getKey() {
+            return super.first;
+        }
+
+        /** @return The human-readable localized display value. */
+        public CharSequence getValue() {
+            return super.second;
+        }
+
+        @Override
+        public String toString() {
+            return super.second.toString();
+        }
     }
 
     private static final int INPUT_TYPE_HINT_MIN_INCLUSIVE = 0;
@@ -397,13 +422,17 @@ public class EditorFieldModel {
     /** @return Whether the checkbox is checked. */
     public boolean isChecked() {
         assert mInputTypeHint == INPUT_TYPE_HINT_CHECKBOX;
-        return SharedPreferencesManager.getInstance().readBoolean(mValue.toString(), true);
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            return ContextUtils.getAppSharedPreferences().getBoolean(mValue.toString(), true);
+        }
     }
 
     /** Sets the checkbox state. */
     public void setIsChecked(boolean isChecked) {
         assert mInputTypeHint == INPUT_TYPE_HINT_CHECKBOX;
-        SharedPreferencesManager.getInstance().writeBoolean(mValue.toString(), isChecked);
+        SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
+        editor.putBoolean(mValue.toString(), isChecked);
+        editor.apply();
     }
 
     /** @return The list of icons resource identifiers to display. */
