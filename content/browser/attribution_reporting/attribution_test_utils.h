@@ -20,6 +20,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -46,11 +47,8 @@
 
 namespace content {
 
-class AggregatableHistogramContribution;
 class AttributionObserver;
 class AttributionTrigger;
-
-struct AggregatableAttribution;
 
 enum class RateLimitResult : int;
 
@@ -137,6 +135,8 @@ class MockDataHostManager : public AttributionDataHostManager {
 };
 
 base::GUID DefaultExternalReportID();
+
+std::vector<base::GUID> DefaultExternalReportIDs(size_t size);
 
 class ConfigurableStorageDelegate : public AttributionStorageDelegate {
  public:
@@ -530,6 +530,9 @@ bool operator==(const StoredSource& a, const StoredSource& b);
 bool operator==(const AggregatableHistogramContribution& a,
                 const AggregatableHistogramContribution& b);
 
+bool operator==(const AggregatableAttribution::ContributionAndExternalId& a,
+                const AggregatableAttribution::ContributionAndExternalId& b);
+
 bool operator==(const AggregatableAttribution& a, AggregatableAttribution& b);
 
 bool operator==(const AttributionReport::EventLevelData& a,
@@ -570,6 +573,11 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source);
 
 std::ostream& operator<<(std::ostream& out,
                          const AggregatableHistogramContribution& contribution);
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AggregatableAttribution::ContributionAndExternalId&
+        contribution_and_id);
 
 std::ostream& operator<<(
     std::ostream& out,

@@ -773,7 +773,7 @@ void AttributionManagerImpl::NotifySourceDeactivated(
 
 void AttributionManagerImpl::AddAggregatableAttributionForTesting(
     AggregatableAttribution aggregatable_attribution) {
-  base::Time report_time = aggregatable_attribution.report_time;
+  base::Time report_time = aggregatable_attribution.report_time();
 
   attribution_storage_
       .AsyncCall(&AttributionStorage::AddAggregatableAttributionForTesting)

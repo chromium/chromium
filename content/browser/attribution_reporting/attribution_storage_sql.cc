@@ -2221,7 +2221,7 @@ bool AttributionStorageSql::AddAggregatableAttributionForTesting(
     return false;
 
   StoredSource::Id source_id =
-      aggregatable_attribution.attribution_info.source.source_id();
+      aggregatable_attribution.attribution_info().source.source_id();
 
   absl::optional<StoredSourceData> source_to_attribute =
       ReadSourceToAttribute(db_.get(), source_id);
@@ -2251,9 +2251,9 @@ bool AttributionStorageSql::AddAggregatableAttributionForTesting(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertMetadataSql));
   insert_metadata_statement.BindInt64(0, *source_id);
   insert_metadata_statement.BindTime(
-      1, aggregatable_attribution.attribution_info.time);
+      1, aggregatable_attribution.attribution_info().time);
   BindUint64OrNull(insert_metadata_statement, 2,
-                   aggregatable_attribution.attribution_info.debug_key);
+                   aggregatable_attribution.attribution_info().debug_key);
   if (!insert_metadata_statement.Run())
     return false;
 
@@ -2268,20 +2268,22 @@ bool AttributionStorageSql::AddAggregatableAttributionForTesting(
   sql::Statement insert_contributions_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertContributionsSql));
 
-  for (const AggregatableHistogramContribution& contribution :
-       aggregatable_attribution.contributions) {
+  for (const auto& contribution_and_id :
+       aggregatable_attribution.contributions_and_ids()) {
     insert_contributions_statement.Reset(/*clear_bound_vars=*/true);
     insert_contributions_statement.BindInt64(0, *aggregation_id);
     insert_contributions_statement.BindTime(
-        1, aggregatable_attribution.report_time);
+        1, aggregatable_attribution.report_time());
     insert_contributions_statement.BindInt64(
-        2, SerializeUint64(absl::Uint128High64(contribution.key())));
+        2, SerializeUint64(
+               absl::Uint128High64(contribution_and_id.contribution.key())));
     insert_contributions_statement.BindInt64(
-        3, SerializeUint64(absl::Uint128Low64(contribution.key())));
+        3, SerializeUint64(
+               absl::Uint128Low64(contribution_and_id.contribution.key())));
     insert_contributions_statement.BindInt64(
-        4, static_cast<int64_t>(contribution.value()));
+        4, static_cast<int64_t>(contribution_and_id.contribution.value()));
     insert_contributions_statement.BindString(
-        5, delegate_->NewReportID().AsLowercaseString());
+        5, contribution_and_id.external_report_id.AsLowercaseString());
     if (!insert_contributions_statement.Run())
       return false;
   }

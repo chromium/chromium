@@ -20,11 +20,11 @@ class Origin;
 
 namespace content {
 
+class AggregatableAttribution;
 class AttributionTrigger;
 class CreateReportResult;
 class StoredSource;
 
-struct AggregatableAttribution;
 struct DeactivatedSource;
 
 // This class provides an interface for persisting attribution data to

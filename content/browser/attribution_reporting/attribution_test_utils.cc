@@ -83,6 +83,10 @@ base::GUID DefaultExternalReportID() {
   return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
 }
 
+std::vector<base::GUID> DefaultExternalReportIDs(size_t size) {
+  return std::vector<base::GUID>(size, DefaultExternalReportID());
+}
+
 ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
 
 ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
@@ -692,11 +696,21 @@ bool operator==(const AggregatableHistogramContribution& a,
   return tie(a) == tie(b);
 }
 
+bool operator==(const AggregatableAttribution::ContributionAndExternalId& a,
+                const AggregatableAttribution::ContributionAndExternalId& b) {
+  const auto tie = [](const AggregatableAttribution::ContributionAndExternalId&
+                          contribution_and_id) {
+    return std::make_tuple(contribution_and_id.contribution,
+                           contribution_and_id.external_report_id);
+  };
+  return tie(a) == tie(b);
+}
+
 bool operator==(const AggregatableAttribution& a, AggregatableAttribution& b) {
   const auto tie = [](const AggregatableAttribution& aggregatable_attribution) {
-    return std::make_tuple(aggregatable_attribution.attribution_info,
-                           aggregatable_attribution.report_time,
-                           aggregatable_attribution.contributions);
+    return std::make_tuple(aggregatable_attribution.attribution_info(),
+                           aggregatable_attribution.report_time(),
+                           aggregatable_attribution.contributions_and_ids());
   };
   return tie(a) == tie(b);
 }
@@ -916,15 +930,24 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(
     std::ostream& out,
+    const AggregatableAttribution::ContributionAndExternalId&
+        contribution_and_id) {
+  return out << "{contribution=" << contribution_and_id.contribution
+             << ",external_report_id=" << contribution_and_id.external_report_id
+             << "}";
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
     const AggregatableAttribution& aggregatable_attribution) {
-  out << "{attribution_info=" << aggregatable_attribution.attribution_info
-      << ",report_time=" << aggregatable_attribution.report_time
-      << ",contributions=[";
+  out << "{attribution_info=" << aggregatable_attribution.attribution_info()
+      << ",report_time=" << aggregatable_attribution.report_time()
+      << ",contributions_and_ids=[";
 
   const char* separator = "";
-  for (const AggregatableHistogramContribution& contribution :
-       aggregatable_attribution.contributions) {
-    out << separator << contribution;
+  for (const auto& contribution_and_id :
+       aggregatable_attribution.contributions_and_ids()) {
+    out << separator << contribution_and_id;
     separator = ", ";
   }
 

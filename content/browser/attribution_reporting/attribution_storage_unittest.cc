@@ -1624,14 +1624,15 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
 
   const base::Time original_report_time = base::Time::Now() + kReportDelay;
 
-  AggregatableAttribution aggregatable_attribution(
+  auto aggregatable_attribution = AggregatableAttribution::CreateForTesting(
       AttributionInfo(
           SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored(),
           /*time=*/base::Time::Now(),
           /*debug_key=*/absl::nullopt),
       /*report_time=*/original_report_time,
       /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
+      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution));
 
@@ -1672,13 +1673,14 @@ TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
 
   const base::Time original_report_time = base::Time::Now() + kReportDelay;
 
-  AggregatableAttribution aggregatable_attribution(
+  auto aggregatable_attribution = AggregatableAttribution::CreateForTesting(
       AttributionInfo(
           SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored(),
           /*time=*/base::Time::Now(), /*debug_key=*/absl::nullopt),
       /*report_time=*/original_report_time,
       /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
+      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution));
 
@@ -1873,13 +1875,14 @@ TEST_F(AttributionStorageTest, StoreAggregatableAttribution) {
           .SetDebugKey(33)
           .Build();
 
-  AggregatableAttribution aggregatable_attribution(
+  auto aggregatable_attribution = AggregatableAttribution::CreateForTesting(
       attribution_info,
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
        AggregatableHistogramContribution(
-           /*key=*/absl::MakeUint128(/*high=*/1, /*low=*/2), /*value=*/4)});
+           /*key=*/absl::MakeUint128(/*high=*/1, /*low=*/2), /*value=*/4)},
+      DefaultExternalReportIDs(2));
 
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution));
@@ -1890,16 +1893,20 @@ TEST_F(AttributionStorageTest, StoreAggregatableAttribution) {
       storage()->GetAttributionReports(base::Time::Max()),
       ElementsAre(
           AttributionReport(
-              attribution_info, aggregatable_attribution.report_time,
-              DefaultExternalReportID(),
+              attribution_info, aggregatable_attribution.report_time(),
+              aggregatable_attribution.contributions_and_ids()[0]
+                  .external_report_id,
               AttributionReport::AggregatableContributionData(
-                  aggregatable_attribution.contributions[0],
+                  aggregatable_attribution.contributions_and_ids()[0]
+                      .contribution,
                   AttributionReport::AggregatableContributionData::Id(1))),
           AttributionReport(
-              attribution_info, aggregatable_attribution.report_time,
-              DefaultExternalReportID(),
+              attribution_info, aggregatable_attribution.report_time(),
+              aggregatable_attribution.contributions_and_ids()[1]
+                  .external_report_id,
               AttributionReport::AggregatableContributionData(
-                  aggregatable_attribution.contributions[1],
+                  aggregatable_attribution.contributions_and_ids()[1]
+                      .contribution,
                   AttributionReport::AggregatableContributionData::Id(2)))));
 }
 
@@ -1916,51 +1923,57 @@ TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
           .Build();
 
   // A single contribution exceeds the budget.
-  EXPECT_FALSE(
-      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+  EXPECT_FALSE(storage()->AddAggregatableAttributionForTesting(
+      AggregatableAttribution::CreateForTesting(
           attribution_info,
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {AggregatableHistogramContribution(/*key=*/1, /*value=*/17)})));
+          {AggregatableHistogramContribution(/*key=*/1, /*value=*/17)},
+          DefaultExternalReportIDs(1))));
 
-  EXPECT_TRUE(
-      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+  EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
+      AggregatableAttribution::CreateForTesting(
           attribution_info,
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
           {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
-           AggregatableHistogramContribution(/*key=*/2, /*value=*/5)})));
+           AggregatableHistogramContribution(/*key=*/2, /*value=*/5)},
+          DefaultExternalReportIDs(2))));
 
-  EXPECT_FALSE(
-      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+  EXPECT_FALSE(storage()->AddAggregatableAttributionForTesting(
+      AggregatableAttribution::CreateForTesting(
           attribution_info,
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {AggregatableHistogramContribution(/*key=*/1, /*value=*/10)})));
+          {AggregatableHistogramContribution(/*key=*/1, /*value=*/10)},
+          DefaultExternalReportIDs(1))));
 
-  EXPECT_TRUE(
-      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+  EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
+      AggregatableAttribution::CreateForTesting(
           attribution_info,
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {AggregatableHistogramContribution(/*key=*/1, /*value=*/9)})));
+          {AggregatableHistogramContribution(/*key=*/1, /*value=*/9)},
+          DefaultExternalReportIDs(1))));
 
-  EXPECT_FALSE(
-      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+  EXPECT_FALSE(storage()->AddAggregatableAttributionForTesting(
+      AggregatableAttribution::CreateForTesting(
           attribution_info,
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {AggregatableHistogramContribution(/*key=*/1, /*value=*/1)})));
+          {AggregatableHistogramContribution(/*key=*/1, /*value=*/1)},
+          DefaultExternalReportIDs(1))));
 
   // A different source should have capacity.
-  EXPECT_TRUE(
-      storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
+  EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
+      AggregatableAttribution::CreateForTesting(
           AttributionInfoBuilder(
               SourceBuilder().SetSourceId(StoredSource::Id(2)).BuildStored())
               .Build(),
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {AggregatableHistogramContribution(/*key=*/1, /*value=*/9)})));
+          {AggregatableHistogramContribution(/*key=*/1, /*value=*/9)},
+          DefaultExternalReportIDs(1))));
 }
 
 TEST_F(AttributionStorageTest,
@@ -2006,13 +2019,14 @@ TEST_F(AttributionStorageTest,
   SourceBuilder builder(now);
   storage()->StoreSource(builder.Build());
 
-  AggregatableAttribution aggregatable_attribution(
+  auto aggregatable_attribution = AggregatableAttribution::CreateForTesting(
       AttributionInfo(builder.SetSourceId(StoredSource::Id(1)).BuildStored(),
                       /*time=*/now,
                       /*debug_key=*/absl::nullopt),
       /*report_time=*/now + base::Hours(2),
       /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
+      DefaultExternalReportIDs(1));
 
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution));
@@ -2039,10 +2053,11 @@ TEST_F(AttributionStorageTest, GetNextAggregatableContributionReportTime) {
       /*time=*/now, /*debug_key=*/absl::nullopt);
 
   const base::Time report_time_a = now + base::Minutes(5);
-  AggregatableAttribution aggregatable_attribution_a(
+  auto aggregatable_attribution_a = AggregatableAttribution::CreateForTesting(
       attribution_info, /*report_time=*/report_time_a,
       /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
+      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_a));
 
@@ -2050,10 +2065,11 @@ TEST_F(AttributionStorageTest, GetNextAggregatableContributionReportTime) {
   EXPECT_EQ(storage()->GetNextReportTime(report_time_a), absl::nullopt);
 
   const base::Time report_time_b = base::Time::Now() + base::Minutes(10);
-  AggregatableAttribution aggregatable_attribution_b(
+  auto aggregatable_attribution_b = AggregatableAttribution::CreateForTesting(
       attribution_info, /*report_time=*/report_time_b,
       /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/3, /*value=*/4)});
+      {AggregatableHistogramContribution(/*key=*/3, /*value=*/4)},
+      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_b));
 
@@ -2081,20 +2097,22 @@ TEST_F(AttributionStorageTest, GetNextReportTime) {
   const base::Time report_time_a = now + kReportDelay;
 
   const base::Time report_time_b = report_time_a + base::Milliseconds(1);
-  AggregatableAttribution aggregatable_attribution_a(
+  auto aggregatable_attribution_a = AggregatableAttribution::CreateForTesting(
       attribution_info, /*report_time=*/report_time_b,
       /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
+      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
+      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_a));
 
   EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_a);
 
   const base::Time report_time_c = report_time_a - base::Milliseconds(1);
-  AggregatableAttribution aggregatable_attribution_b(
+  auto aggregatable_attribution_b = AggregatableAttribution::CreateForTesting(
       attribution_info, /*report_time=*/report_time_c,
       /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/3, /*value=*/4)});
+      {AggregatableHistogramContribution(/*key=*/3, /*value=*/4)},
+      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution_b));
 
