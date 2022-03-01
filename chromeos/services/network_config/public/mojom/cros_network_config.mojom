@@ -68,6 +68,7 @@ enum SecurityType {
 // The configuration type for virtual networks.
 enum VpnType {
   // Internal VPN types.
+  kIKEv2,
   kL2TPIPsec,
   kOpenVPN,
   kWireGuard,
@@ -504,8 +505,10 @@ struct ManagedIPSecProperties {
   ManagedEAPProperties? eap;
   ManagedString? group;
   ManagedInt32? ike_version;
+  ManagedString? local_identity;
   // Note: |psk| contains a placeholder if set to avoid leaking secrets.
   ManagedString? psk;
+  ManagedString? remote_identity;
   ManagedBoolean? save_credentials;
   ManagedStringList? server_ca_pems;
   ManagedStringList? server_ca_refs;
@@ -812,9 +815,12 @@ struct IPSecConfigProperties {
   string authentication_type;
   string? client_cert_pkcs11_id;
   string? client_cert_type;
+  EAPConfigProperties? eap;
   string? group;
   int32 ike_version = 1;
+  string? local_identity;
   string? psk;
+  string? remote_identity;
   bool save_credentials = false;
   array<string>? server_ca_pems;
   array<string>? server_ca_refs;

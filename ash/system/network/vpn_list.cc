@@ -61,6 +61,7 @@ void VpnList::OnGetVpnProviders(std::vector<VpnProviderPtr> providers) {
   // Add Third Party (Extension and Arc) providers.
   for (auto& provider : providers) {
     switch (provider->type) {
+      case VpnType::kIKEv2:
       case VpnType::kL2TPIPsec:
       case VpnType::kOpenVPN:
       case VpnType::kWireGuard:

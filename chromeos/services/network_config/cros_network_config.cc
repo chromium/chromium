@@ -208,6 +208,8 @@ std::string MojoSecurityTypeToOnc(mojom::SecurityType security_type) {
 }
 
 mojom::VpnType OncVpnTypeToMojo(const std::string& onc_vpn_type) {
+  if (onc_vpn_type == ::onc::vpn::kIPsec)
+    return mojom::VpnType::kIKEv2;
   if (onc_vpn_type == ::onc::vpn::kTypeL2TP_IPsec)
     return mojom::VpnType::kL2TPIPsec;
   if (onc_vpn_type == ::onc::vpn::kOpenVPN)
@@ -224,6 +226,8 @@ mojom::VpnType OncVpnTypeToMojo(const std::string& onc_vpn_type) {
 
 std::string MojoVpnTypeToOnc(mojom::VpnType mojo_vpn_type) {
   switch (mojo_vpn_type) {
+    case mojom::VpnType::kIKEv2:
+      return ::onc::vpn::kIPsec;
     case mojom::VpnType::kL2TPIPsec:
       return ::onc::vpn::kTypeL2TP_IPsec;
     case mojom::VpnType::kOpenVPN:
@@ -1297,6 +1301,10 @@ mojom::ManagedIPSecPropertiesPtr GetManagedIPSecProperties(
       GetManagedStringList(ipsec_dict, ::onc::ipsec::kServerCAPEMs);
   ipsec->server_ca_refs =
       GetManagedStringList(ipsec_dict, ::onc::ipsec::kServerCARefs);
+  ipsec->local_identity =
+      GetManagedString(ipsec_dict, ::onc::ipsec::kLocalIdentity);
+  ipsec->remote_identity =
+      GetManagedString(ipsec_dict, ::onc::ipsec::kRemoteIdentity);
   return ipsec;
 }
 
@@ -1685,6 +1693,9 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       vpn->host = GetManagedString(vpn_dict, ::onc::vpn::kHost);
 
       switch (vpn->type) {
+        case mojom::VpnType::kIKEv2:
+          vpn->ip_sec = GetManagedIPSecProperties(vpn_dict, ::onc::vpn::kIPsec);
+          break;
         case mojom::VpnType::kL2TPIPsec:
           vpn->ip_sec = GetManagedIPSecProperties(vpn_dict, ::onc::vpn::kIPsec);
           vpn->l2tp = GetManagedL2TPProperties(vpn_dict, ::onc::vpn::kL2TP);
@@ -1929,6 +1940,14 @@ std::unique_ptr<base::DictionaryValue> GetOncFromConfigProperties(
                     &ip_sec_dict);
       SetStringList(::onc::ipsec::kServerCARefs, ip_sec.server_ca_refs,
                     &ip_sec_dict);
+      SetString(::onc::ipsec::kLocalIdentity, ip_sec.local_identity,
+                &ip_sec_dict);
+      SetString(::onc::ipsec::kRemoteIdentity, ip_sec.remote_identity,
+                &ip_sec_dict);
+      if (ip_sec.eap) {
+        ip_sec_dict.SetKey(::onc::ipsec::kEAP,
+                           GetEAPProperties(*ip_sec.eap.get()));
+      }
       type_dict.SetKey(::onc::vpn::kIPsec, std::move(ip_sec_dict));
     }
     if (vpn.l2tp) {

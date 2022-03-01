@@ -296,7 +296,7 @@ class CrosNetworkConfigTest : public testing::Test {
         kCellularTestIccid,
         NetworkProfileHandler::GetSharedProfilePath().c_str()));
     vpn_path_ = helper()->ConfigureService(
-        R"({"GUID": "vpn_guid", "Type": "vpn", "State": "association",
+        R"({"GUID": "vpn_l2tp_guid", "Type": "vpn", "State": "association",
             "Provider": {"Type": "l2tpipsec"}})");
     helper()->ConfigureService(base::StringPrintf(
         R"({"GUID":"openvpn_guid", "Type": "vpn", "Name": "openvpn",
@@ -305,6 +305,8 @@ class CrosNetworkConfigTest : public testing::Test {
           "OpenVPN.Compress": "lzo", "OpenVPN.KeyDirection": "1",
           "OpenVPN.TLSAuthContents": "%s"})",
         kOpenVPNTLSAuthContents));
+    helper()->ConfigureService(R"({"GUID": "vpn_ikev2_guid", "Type": "vpn",
+            "State": "idle", "Provider": {"Type": "ikev2"}})");
 
     // Add a non visible configured wifi service.
     std::string wifi3_path = helper()->ConfigureService(
@@ -841,14 +843,25 @@ TEST_F(CrosNetworkConfigTest, GetNetworkState) {
   EXPECT_EQ(mojom::OncSource::kDevice, network->source);
   EXPECT_TRUE(cellular->sim_locked);
 
-  network = GetNetworkState("vpn_guid");
+  network = GetNetworkState("vpn_l2tp_guid");
   ASSERT_TRUE(network);
-  EXPECT_EQ("vpn_guid", network->guid);
+  EXPECT_EQ("vpn_l2tp_guid", network->guid);
   EXPECT_EQ(mojom::NetworkType::kVPN, network->type);
   EXPECT_EQ(mojom::ConnectionStateType::kConnecting, network->connection_state);
   ASSERT_TRUE(network->type_state);
   ASSERT_TRUE(network->type_state->is_vpn());
   EXPECT_EQ(mojom::VpnType::kL2TPIPsec, network->type_state->get_vpn()->type);
+  EXPECT_EQ(mojom::OncSource::kNone, network->source);
+
+  network = GetNetworkState("vpn_ikev2_guid");
+  ASSERT_TRUE(network);
+  EXPECT_EQ("vpn_ikev2_guid", network->guid);
+  EXPECT_EQ(mojom::NetworkType::kVPN, network->type);
+  EXPECT_EQ(mojom::ConnectionStateType::kNotConnected,
+            network->connection_state);
+  ASSERT_TRUE(network->type_state);
+  ASSERT_TRUE(network->type_state->is_vpn());
+  EXPECT_EQ(mojom::VpnType::kIKEv2, network->type_state->get_vpn()->type);
   EXPECT_EQ(mojom::OncSource::kNone, network->source);
 
   // TODO(919691): Test ProxyMode once UIProxyConfigService logic is improved.
@@ -865,7 +878,7 @@ TEST_F(CrosNetworkConfigTest, GetNetworkStateList) {
   ASSERT_EQ(3u, networks.size());
   EXPECT_EQ("eth_guid", networks[0]->guid);
   EXPECT_EQ("wifi1_guid", networks[1]->guid);
-  EXPECT_EQ("vpn_guid", networks[2]->guid);
+  EXPECT_EQ("vpn_l2tp_guid", networks[2]->guid);
 
   // First active network
   filter->limit = 1;
@@ -1196,9 +1209,9 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_TRUE(cellular->sim_locked);
   EXPECT_EQ(mojom::ActivationStateType::kActivated, cellular->activation_state);
 
-  properties = GetManagedProperties("vpn_guid");
+  properties = GetManagedProperties("vpn_l2tp_guid");
   ASSERT_TRUE(properties);
-  EXPECT_EQ("vpn_guid", properties->guid);
+  EXPECT_EQ("vpn_l2tp_guid", properties->guid);
   EXPECT_EQ(mojom::NetworkType::kVPN, properties->type);
   EXPECT_EQ(mojom::ConnectionStateType::kConnecting,
             properties->connection_state);
@@ -2101,7 +2114,7 @@ TEST_F(CrosNetworkConfigTest, GetAlwaysOnVpn) {
                                base::Value(vpn_path()));
   properties = GetAlwaysOnVpn();
   EXPECT_EQ(mojom::AlwaysOnVpnMode::kOff, properties->mode);
-  EXPECT_EQ("vpn_guid", properties->service_guid);
+  EXPECT_EQ("vpn_l2tp_guid", properties->service_guid);
 
   helper()->SetProfileProperty(helper()->ProfilePathUser(),
                                shill::kAlwaysOnVpnModeProperty,
@@ -2119,7 +2132,7 @@ TEST_F(CrosNetworkConfigTest, GetAlwaysOnVpn) {
 TEST_F(CrosNetworkConfigTest, SetAlwaysOnVpn) {
   mojom::AlwaysOnVpnPropertiesPtr properties =
       mojom::AlwaysOnVpnProperties::New(mojom::AlwaysOnVpnMode::kBestEffort,
-                                        "vpn_guid");
+                                        "vpn_l2tp_guid");
   SetAlwaysOnVpn(std::move(properties));
 
   EXPECT_EQ("best-effort",
