@@ -617,7 +617,8 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
 }
 
 BackForwardCacheCanStoreDocumentResultWithTree
-BackForwardCacheImpl::CanStorePageNow(RenderFrameHostImpl* rfh) {
+BackForwardCacheImpl::CanStorePageNow(RenderFrameHostImpl* rfh,
+                                      bool include_ccns) {
   BackForwardCacheCanStoreDocumentResult flattened_result;
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree =
       PopulateReasonsForPage(rfh, flattened_result,
@@ -626,16 +627,10 @@ BackForwardCacheImpl::CanStorePageNow(RenderFrameHostImpl* rfh) {
 
   // TODO(https://crbug.com/1280150): Call
   // UpdateCanStoreToIncludeCacheControlNoStore() for tree structure.
-
-  // With the flag on, |result| does not contain CacheControlNoStore, so it may
-  // need to be updated.
-  if (AllowStoringPagesWithCacheControlNoStore()) {
-    if (!flattened_result.CanStore()) {
-      // If there are no reasons apart from CacheControlNoStore then allow the
-      // page to be stored. (Do not only report CacheControlNoStore as the
-      // page should enter bfcache in that case.)
-      UpdateCanStoreToIncludeCacheControlNoStore(flattened_result, rfh);
-    }
+  // Include cache-control:no-store related reasons only when requested.
+  if (include_ccns) {
+    DCHECK(AllowStoringPagesWithCacheControlNoStore());
+    UpdateCanStoreToIncludeCacheControlNoStore(flattened_result, rfh);
   }
   DVLOG(1) << "CanStorePageNow: " << rfh->GetLastCommittedURL() << " : "
            << flattened_result.ToString();
@@ -1238,10 +1233,11 @@ BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
           .Has(WebSchedulerTrackedFeature::
                    kMainResourceHasCacheControlNoStore)) {
     auto* render_frame_host = (*matching_entry)->render_frame_host();
+    // If we are in the experiments to allow pages with cache-control:no-store
+    // in back/forward cache and the page has cache-control:no-store, we should
+    // record them as reasons.
     BackForwardCacheCanStoreDocumentResultWithTree can_store =
-        CanStorePageNow(render_frame_host);
-    UpdateCanStoreToIncludeCacheControlNoStore(can_store.flattened_reasons,
-                                               render_frame_host);
+        CanStorePageNow(render_frame_host, /* include_ccns = */ true);
     if (!can_store) {
       (*matching_entry)
           ->render_frame_host()
@@ -1291,6 +1287,10 @@ void BackForwardCacheImpl::DestroyEvictedFrames() {
 
   base::EraseIf(entries_, [this](std::unique_ptr<Entry>& entry) {
     if (entry->render_frame_host()->is_evicted_from_back_forward_cache()) {
+      // We need to update the not restored reasons to include cache-control:
+      // no-store related reasons before evicting. Because at this point, we
+      // have not recorded cache-control:no-store related reasons so that the
+      // page can temporarily enter bfcache.
       BackForwardCacheCanStoreDocumentResult can_store;
       UpdateCanStoreToIncludeCacheControlNoStore(can_store,
                                                  entry->render_frame_host());

@@ -198,8 +198,16 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // |render_frame_host|, which means nothing about the page can change (usage
   // of blocklisted features, pending navigations, load state, etc.) anymore.
   // Note that criteria for storing and restoring can be different.
+  // |include_ccns| indicates whether or not we should consider cache-control:
+  // no-store related reasons. We don't include those reasons in the default
+  // case to allow pages with cache-control:no-store in back/forward cache
+  // temporarily for metrics collection, but those pages should never be
+  // restored. When trying to restore a page, |include_ccns| is set to true to
+  // include cache-control:no-store reasons, so that the pages containing them
+  // will not be restored.
   BackForwardCacheCanStoreDocumentResultWithTree CanStorePageNow(
-      RenderFrameHostImpl* render_frame_host);
+      RenderFrameHostImpl* render_frame_host,
+      bool include_ccns = false);
 
   // Whether a RenderFrameHost could be stored into the BackForwardCache at some
   // point in the future. Different than CanStorePageNow() above, we won't check

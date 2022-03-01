@@ -405,6 +405,37 @@ IN_PROC_BROWSER_TEST_F(
       {}, FROM_HERE);
 }
 
+// Test that a page with cache-control:no-store records eviction reasons along
+// with kCacheControlNoStore when the entry is evicted for other reasons.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestAllowCacheControlNoStore,
+    PagesWithCacheControlNoStoreRecordOtherReasonsForEviction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Load the document and specify no-store for the main resource.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
+
+  // 2) Navigate away. |rfh_a| should enter bfcache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Evict |rfh_a| by JavaScriptExecution.
+  EvictByJavaScript(rfh_a.get());
+  delete_observer_rfh_a.WaitUntilDeleted();
+  // 4) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  ExpectNotRestored({NotRestoredReason::kJavaScriptExecution,
+                     NotRestoredReason::kCacheControlNoStore},
+                    {}, {}, {}, {}, FROM_HERE);
+}
+
 namespace {
 const char kResponseWithNoCacheWithCookie[] =
     "HTTP/1.1 200 OK\r\n"
