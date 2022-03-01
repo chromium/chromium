@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -97,6 +98,7 @@ public class PreviewTabTest {
     @Test
     @MediumTest
     @Feature({"PreviewTab"})
+    @DisabledTest(message = "crbug.com/1182234")
     public void testOpenAndClose() throws Throwable {
         Assert.assertFalse("Test should have started without any Preview Tab",
                 mEphemeralTabCoordinator.isOpened());
