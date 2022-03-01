@@ -68,6 +68,12 @@ constexpr CGFloat preferredCornerRadius = 20;
   self.viewController.presentationController.delegate = self;
   self.viewController.actionHandler = self;
 
+  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+  [defaultCenter addObserver:self
+                    selector:@selector(applicationDidEnterBackground:)
+                        name:UIApplicationDidEnterBackgroundNotification
+                      object:nil];
+
   if (@available(iOS 15, *)) {
     self.viewController.modalPresentationStyle = UIModalPresentationPageSheet;
     UISheetPresentationController* presentationController =
@@ -112,6 +118,12 @@ constexpr CGFloat preferredCornerRadius = 20;
     (UIPresentationController*)presentationController {
   [self handleDecision:NO];
   [self.delegate closePasswordSuggestion];
+}
+
+#pragma mark - Notification callback
+
+- (void)applicationDidEnterBackground {
+  [self confirmationAlertSecondaryAction];
 }
 
 #pragma mark - Private methods
