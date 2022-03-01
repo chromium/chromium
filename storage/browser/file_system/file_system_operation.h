@@ -77,9 +77,11 @@ class FileSystemOperation {
       base::OnceCallback<void(base::File::Error result,
                               const base::File::Info& file_info)>;
 
-  // Used for OpenFile(). |on_close_callback| will be called after the file is
-  // closed in the child process. It can be null, if no operation is needed on
-  // closing a file.
+  // Used for OpenFile(). File system implementations can specify an
+  // `on_close_callback` if an operation is needed after closing a file. If
+  // non-null, OpenFile() callers must run the callback (on the IO thread)
+  // after the file closes. If the file is duped, the callback should not be run
+  // until all dups of the file have been closed.
   using OpenFileCallback =
       base::OnceCallback<void(base::File file,
                               base::OnceClosure on_close_callback)>;

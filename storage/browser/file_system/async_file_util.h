@@ -49,9 +49,11 @@ class AsyncFileUtil {
  public:
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
 
-  // |on_close_callback| will be called after the |file| is closed in the
-  // child process. |on_close_callback|.is_null() can be true, if no operation
-  // is needed on closing the file.
+  // Used for CreateOrOpen(). File util implementations can specify an
+  // `on_close_callback` if an operation is needed after closing a file. If
+  // non-null, CreateOrOpen() callers must run the callback (on the IO thread)
+  // after the file closes. If the file is duped, the callback should not be run
+  // until all dups of the file have been closed.
   using CreateOrOpenCallback =
       base::OnceCallback<void(base::File file,
                               base::OnceClosure on_close_callback)>;
