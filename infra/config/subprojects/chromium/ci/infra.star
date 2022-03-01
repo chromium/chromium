@@ -48,7 +48,6 @@ ci.builder(
     name = "linux-bootstrap-tests",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
-        parent = "ci/linux-bootstrap",
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
@@ -63,6 +62,7 @@ ci.builder(
         category = "bootstrap|linux",
         short_name = "tst",
     ),
+    triggered_by = ["ci/linux-bootstrap"],
 )
 
 ci.builder(
