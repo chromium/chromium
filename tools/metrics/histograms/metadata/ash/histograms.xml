@@ -2317,6 +2317,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.NotificationView.ExpandButton.ClickAction"
+    enum="ExpandButtonClickAction" expires_after="2023-02-28">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    The count of actions that is performed after an expand button is clicked.
+    The actions are expanding or collapsing individual or group notification.
+    Emitted when an expand button is clicked.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.NotificationView.ImageContainerView.ScaleDown.AnimationSmoothness"
     units="%" expires_after="2023-02-17">

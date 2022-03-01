@@ -29341,6 +29341,13 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Older audible web contents"/>
 </enum>
 
+<enum name="ExpandButtonClickAction">
+  <int value="0" label="Expand Individual"/>
+  <int value="1" label="Collapse Individual"/>
+  <int value="2" label="Expand Group"/>
+  <int value="3" label="Collapse Group"/>
+</enum>
+
 <enum name="ExpectCTHeaderResult">
   <int value="0" label="EXPECT_CT_HEADER_BAD_VALUE"/>
   <int value="1" label="EXPECT_CT_HEADER_BUILD_NOT_TIMELY"/>

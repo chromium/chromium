@@ -12,6 +12,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/message_center_style.h"
+#include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/message_center/unified_message_list_view.h"
@@ -888,6 +889,37 @@ TEST_F(AshNotificationViewTest,
       histograms, GetMainRightView(notification_view),
       "Ash.NotificationView.MainRightView.FadeIn.AnimationSmoothness",
       /*data_point_count=*/2);
+}
+
+TEST_F(AshNotificationViewTest, RecordExpandButtonClickAction) {
+  base::HistogramTester histograms;
+  auto notification = CreateTestNotification();
+  notification_view()->UpdateWithNotification(*notification);
+
+  notification_view()->SetExpanded(false);
+  notification_view()->ToggleExpand();
+  histograms.ExpectBucketCount(
+      "Ash.NotificationView.ExpandButton.ClickAction",
+      metrics_utils::ExpandButtonClickAction::EXPAND_INDIVIDUAL, 1);
+
+  notification_view()->ToggleExpand();
+  histograms.ExpectBucketCount(
+      "Ash.NotificationView.ExpandButton.ClickAction",
+      metrics_utils::ExpandButtonClickAction::COLLAPSE_INDIVIDUAL, 1);
+
+  notification->SetGroupParent();
+  notification_view()->UpdateWithNotification(*notification);
+
+  notification_view()->SetExpanded(false);
+  notification_view()->ToggleExpand();
+  histograms.ExpectBucketCount(
+      "Ash.NotificationView.ExpandButton.ClickAction",
+      metrics_utils::ExpandButtonClickAction::EXPAND_GROUP, 1);
+
+  notification_view()->ToggleExpand();
+  histograms.ExpectBucketCount(
+      "Ash.NotificationView.ExpandButton.ClickAction",
+      metrics_utils::ExpandButtonClickAction::COLLAPSE_GROUP, 1);
 }
 
 }  // namespace ash

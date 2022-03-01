@@ -501,5 +501,10 @@ void LogCountOfNotificationsInOneGroup(int notification_count) {
                               notification_count);
 }
 
+void LogExpandButtonClickAction(ExpandButtonClickAction action) {
+  base::UmaHistogramEnumeration("Ash.NotificationView.ExpandButton.ClickAction",
+                                action);
+}
+
 }  // namespace metrics_utils
 }  // namespace ash

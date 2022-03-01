@@ -24,6 +24,7 @@
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_center_utils.h"
+#include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
@@ -571,6 +572,21 @@ void AshNotificationView::ToggleExpand() {
   SetExpanded(!IsExpanded());
 
   PerformExpandCollapseAnimation();
+
+  // Log expand button click action.
+  if (IsExpanded()) {
+    is_grouped_parent_view_
+        ? metrics_utils::LogExpandButtonClickAction(
+              metrics_utils::ExpandButtonClickAction::EXPAND_GROUP)
+        : metrics_utils::LogExpandButtonClickAction(
+              metrics_utils::ExpandButtonClickAction::EXPAND_INDIVIDUAL);
+  } else {
+    is_grouped_parent_view_
+        ? metrics_utils::LogExpandButtonClickAction(
+              metrics_utils::ExpandButtonClickAction::COLLAPSE_GROUP)
+        : metrics_utils::LogExpandButtonClickAction(
+              metrics_utils::ExpandButtonClickAction::COLLAPSE_INDIVIDUAL);
+  }
 }
 
 void AshNotificationView::GroupedNotificationsPreferredSizeChanged() {

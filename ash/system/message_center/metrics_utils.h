@@ -83,6 +83,18 @@ enum class NotificationViewType {
   kMaxValue = GROUPED_HAS_IMAGE_AND_INLINE_REPLY,
 };
 
+// The actions that was performed after an expand button is clicked. These are
+// used in histograms, do not remove/renumber entries. If you're adding to this
+// enum with the intention that it will be logged, update the
+// ExpandButtonClickAction token variant in enums.xml.
+enum class ExpandButtonClickAction {
+  EXPAND_INDIVIDUAL = 0,
+  COLLAPSE_INDIVIDUAL = 1,
+  EXPAND_GROUP = 2,
+  COLLAPSE_GROUP = 3,
+  kMaxValue = COLLAPSE_GROUP,
+};
+
 // Returns the detailed notification type enum for a notification.
 NotificationTypeDetailed GetNotificationType(
     const message_center::Notification& notification);
@@ -136,6 +148,9 @@ void LogNotificationsShownInFirstMinute(int notifications_count);
 
 // Logs the number of notifications contained in a group.
 void LogCountOfNotificationsInOneGroup(int notification_count);
+
+// Logs the action that was performed after an expand button is clicked,
+void LogExpandButtonClickAction(ExpandButtonClickAction action);
 
 }  // namespace metrics_utils
 
