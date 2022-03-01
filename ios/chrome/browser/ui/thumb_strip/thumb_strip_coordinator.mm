@@ -200,7 +200,8 @@ enum class ThumbstripCloseByAction {
             ThumbstripOpenByAction::WEB_PAGE_SCROLL_DOWN);
         break;
       default:
-        // This is reached at startup, but doesn't require logging.
+        // This is reached at startup, but doesn't require logging. It can also
+        // happens when app is backgrounded.
         break;
     }
     // Opening.
@@ -226,7 +227,7 @@ enum class ThumbstripCloseByAction {
             ThumbstripOpenByAction::WEB_PAGE_SCROLL_DOWN);
         break;
       default:
-        NOTREACHED();
+        // Ignore this, it can happen when app is backgrounded.
         break;
     }
     // Closing.
@@ -277,7 +278,7 @@ enum class ThumbstripCloseByAction {
             ThumbstripCloseByAction::BACKGROUND_SWIPE);
         break;
       default:
-        NOTREACHED();
+        // Ignore this, it can happen when app is backgrounded.
         break;
     }
   }
