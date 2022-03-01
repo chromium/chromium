@@ -515,12 +515,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.FetchEvents.NoCalendarClient" units="instances"
+    expires_after="2022-11-10">
+  <owner>rtinkoff@google.com</owner>
+  <owner>jiamingc@google.com</owner>
+  <summary>
+    Recorded whenever calendar events are requested, and we can't perform any
+    fetch because a valid CalendarClient doesn't exist.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.FetchEvents.PreFetched" units="fetches"
     expires_after="2022-11-10">
   <owner>rtinkoff@google.com</owner>
   <owner>jiamingc@google.com</owner>
   <summary>
-    Recorded whenever calendar events requested, and are no fetch is required
+    Recorded whenever calendar events are requested, and no fetch is required
     because the fetch has already returned.
   </summary>
 </histogram>

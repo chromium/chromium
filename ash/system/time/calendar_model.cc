@@ -34,6 +34,8 @@ constexpr int kAdditionalNumberOfMonthsCached = 4;
 constexpr int kMaxNumberOfMonthsCached =
     kMinNumberOfMonthsCached + kAdditionalNumberOfMonthsCached;
 
+constexpr base::TimeDelta kTimeoutMs = base::Milliseconds(1000);
+
 // Methods for debugging and gathering of metrics.
 
 [[maybe_unused]] int GetEventMapSize(
@@ -62,20 +64,44 @@ class CalendarEventFetch {
                               google_apis::ApiErrorCode error,
                               const google_apis::calendar::EventList* events)>;
 
+  // A callback invoked when a fetch of calendar events did not complete, due to
+  // an internal error.
+  using FetchInternalErrorCallback =
+      base::OnceCallback<void(base::Time start_of_month,
+                              FetchInternalErrorCode error)>;
+
   // Fetch begins immediately on construction.
   CalendarEventFetch(base::Time start_of_month,
-                     FetchCompleteCallback complete_callback)
+                     FetchCompleteCallback complete_callback,
+                     FetchInternalErrorCallback internal_error_callback)
       : start_of_month_(start_of_month),
         complete_callback_(std::move(complete_callback)),
-        fetch_start_time_(base::Time::Now()) {
+        internal_error_callback_(std::move(internal_error_callback)),
+        fetch_start_time_(base::Time::Now()),
+        timeout_(FROM_HERE,
+                 kTimeoutMs,
+                 base::BindRepeating(&CalendarEventFetch::OnTimeout,
+                                     base::Unretained(this))) {
     CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
-    DCHECK(client);
+    if (!client) {
+      base::UmaHistogramCounts100("Ash.Calendar.FetchEvents.NoCalendarClient",
+                                  1);
+
+      // IMPORTANT: 'this' is NOT safe to use after `internal_error_callback_`
+      // has been executed, as the last thing it does is destroy its
+      // std::unique_ptr<CalendarEventFetch> to this object.
+      std::move(internal_error_callback_)
+          .Run(start_of_month_, FetchInternalErrorCode::RESOURCE_UNAVAILABLE);
+      return;
+    }
 
     const base::Time start_of_next_month =
         calendar_utils::GetStartOfNextMonthUTC(start_of_month);
     client->GetEventList(base::BindOnce(&CalendarEventFetch::OnResultReceived,
                                         weak_factory_.GetWeakPtr()),
                          start_of_month, start_of_next_month);
+
+    timeout_.Reset();
   }
   CalendarEventFetch(const CalendarEventFetch& other) = delete;
   CalendarEventFetch& operator=(const CalendarEventFetch& other) = delete;
@@ -86,12 +112,24 @@ class CalendarEventFetch {
   void OnResultReceived(
       google_apis::ApiErrorCode error,
       std::unique_ptr<google_apis::calendar::EventList> events) {
+    // Cancel timeout timer.
+    timeout_.Stop();
+
     base::UmaHistogramTimes("Ash.Calendar.FetchEvents.FetchDuration",
                             base::Time::Now() - fetch_start_time_);
 
     // IMPORTANT: 'this' is NOT safe to use after `complete_callback_` has been
-    // executed, as the last thing it does is destroy `this`.
+    // executed, as the last thing it does is destroy its
+    // std::unique_ptr<CalendarEventFetch> to this object.
     std::move(complete_callback_).Run(start_of_month_, error, events.get());
+  }
+
+  void OnTimeout() {
+    // IMPORTANT: 'this' is NOT safe to use after `internal_error_callback_` has
+    // been executed, as the last thing it does is destroy its
+    // std::unique_ptr<CalendarEventFetch> to this object.
+    std::move(internal_error_callback_)
+        .Run(start_of_month_, FetchInternalErrorCode::TIMEOUT);
   }
 
   // Start of the month whose events we're fetching.
@@ -100,7 +138,14 @@ class CalendarEventFetch {
   // Callback invoked when the fetch is complete.
   FetchCompleteCallback complete_callback_;
 
+  // Callback invoked when the fetch failed with an internal error.
+  FetchInternalErrorCallback internal_error_callback_;
+
   const base::Time fetch_start_time_;
+
+  // Timer we run at the start of a fetch, to ensure that we terminate if we go
+  // too long without a response.
+  base::RetainingOneShotTimer timeout_;
 
   base::WeakPtrFactory<CalendarEventFetch> weak_factory_{this};
 };
@@ -156,8 +201,11 @@ void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
   pending_fetches_.emplace(
       start_of_month,
       std::make_unique<CalendarEventFetch>(
-          start_of_month, base::BindRepeating(&CalendarModel::OnEventsFetched,
-                                              base::Unretained(this))));
+          start_of_month,
+          base::BindRepeating(&CalendarModel::OnEventsFetched,
+                              base::Unretained(this)),
+          base::BindRepeating(&CalendarModel::OnEventFetchFailedInternalError,
+                              base::Unretained(this))));
 }
 
 void CalendarModel::MarkMonthAsFetched(base::Time start_of_month) {
@@ -220,6 +268,8 @@ void CalendarModel::OnEventsFetched(
   if (error != google_apis::HTTP_SUCCESS) {
     LOG(ERROR) << __FUNCTION__ << " Event fetch received error: " << error;
     // Request is no longer outstanding, so it can be destroyed.
+    // TODO: https://crbug.com/1298187 We need to respond further based on the
+    // specific error code, retry in some cases, etc.
     pending_fetches_.erase(start_of_month);
     return;
   }
@@ -238,6 +288,18 @@ void CalendarModel::OnEventsFetched(
   MarkMonthAsFetched(start_of_month);
 
   // Request is no longer outstanding, so it can be destroyed.
+  pending_fetches_.erase(start_of_month);
+}
+
+void CalendarModel::OnEventFetchFailedInternalError(
+    base::Time start_of_month,
+    FetchInternalErrorCode error) {
+  LOG(ERROR) << __FUNCTION__
+             << " Event fetch received internal error: " << (int)error;
+
+  // Request is no longer outstanding, so it can be destroyed.
+  // TODO: https://crbug.com/1298187 We need to respond further based on the
+  // specific error code, retry in some cases, etc.
   pending_fetches_.erase(start_of_month);
 }
 

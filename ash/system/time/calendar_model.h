@@ -27,6 +27,18 @@ class CalendarEventFetch;
 // which represents the return value of a query from the GoogleCalendar API.
 using SingleDayEventList = std::list<google_apis::calendar::CalendarEvent>;
 
+// Errors that indicate an event-fetch failure that did not come from Google
+// Calendar API.
+enum class FetchInternalErrorCode {
+  // Went too long without a response.
+  TIMEOUT = 0,
+
+  // A resource we need is not present.
+  RESOURCE_UNAVAILABLE = 1,
+
+  kMaxValue = RESOURCE_UNAVAILABLE,
+};
+
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarModel {
  public:
@@ -136,6 +148,10 @@ class ASH_EXPORT CalendarModel {
   void OnEventsFetched(base::Time start_of_month,
                        google_apis::ApiErrorCode error,
                        const google_apis::calendar::EventList* events);
+
+  // Callback invoked when an event fetch failed with an internal error.
+  void OnEventFetchFailedInternalError(base::Time start_of_month,
+                                       FetchInternalErrorCode error);
 
   // Internal storage for fetched events, with each fetched month having a map
   // of days to events.
