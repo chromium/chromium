@@ -1216,8 +1216,15 @@ TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
+#if defined(THREAD_SANITIZER)
+#define MAYBE_OnlineConnectionTypeChanges_ReportTimesNotAdjusted \
+  DISABLED_OnlineConnectionTypeChanges_ReportTimesNotAdjusted
+#else
+#define MAYBE_OnlineConnectionTypeChanges_ReportTimesNotAdjusted \
+  OnlineConnectionTypeChanges_ReportTimesNotAdjusted
+#endif
 TEST_F(AttributionManagerImplTest,
-       OnlineConnectionTypeChanges_ReportTimesNotAdjusted) {
+       MAYBE_OnlineConnectionTypeChanges_ReportTimesNotAdjusted) {
   storage_delegate_->set_offline_report_delay_config(
       AttributionStorageDelegate::OfflineReportDelayConfig{
           .min = base::Minutes(1),
