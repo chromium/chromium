@@ -233,7 +233,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_show_in_management_, u.ShowInManagement());
     EXPECT_EQ(expect_show_in_management_changed_, u.ShowInManagementChanged());
 
-    EXPECT_EQ(expect_handles_intents_, u.GetHandlesIntents());
+    EXPECT_EQ(expect_handles_intents_, u.HandlesIntents());
     EXPECT_EQ(expect_handles_intents_changed_, u.HandlesIntentsChanged());
 
     EXPECT_EQ(expect_allow_uninstall_, u.AllowUninstall());

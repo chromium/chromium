@@ -966,7 +966,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHandlesFileOpenIntentsTest,
   GetAppServiceProxy(browser()->profile())
       ->AppRegistryCache()
       .ForOneApp(app_id, [](const apps::AppUpdate& update) {
-        EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.HandlesIntents());
+        EXPECT_TRUE(update.HandlesIntents().value_or(false));
       });
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

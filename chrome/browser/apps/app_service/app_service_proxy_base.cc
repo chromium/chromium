@@ -512,7 +512,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
         // loads to be blocked.
         return;
       }
-      if (update.HandlesIntents() != apps::mojom::OptionalBool::kTrue) {
+      if (!update.HandlesIntents().value_or(false)) {
         return;
       }
       if (exclude_browser_tab_apps &&
