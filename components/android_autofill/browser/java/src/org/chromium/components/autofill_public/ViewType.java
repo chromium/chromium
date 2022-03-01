@@ -11,8 +11,6 @@ import android.view.autofill.AutofillId;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.VerifiesOnO;
-
 /**
  * This class is used to send the server and computed view type to the autofill service.
  * The valid types are listed in the two FieldTypeToStringPiece() functions in
@@ -20,7 +18,6 @@ import org.chromium.base.annotations.VerifiesOnO;
  * can and will change in the future.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-@VerifiesOnO
 public class ViewType implements Parcelable {
     /**
      * The AutofillId of the view that types are for.

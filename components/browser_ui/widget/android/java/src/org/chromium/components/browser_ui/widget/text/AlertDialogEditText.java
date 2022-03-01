@@ -13,7 +13,6 @@ import android.widget.EditText;
 import androidx.appcompat.widget.AppCompatEditText;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.annotations.VerifiesOnO;
 import org.chromium.url.GURL;
 
 /**
@@ -24,7 +23,6 @@ import org.chromium.url.GURL;
  * calling {@link ApiCompatibilityUtils#setPasswordEditTextContentDescription(EditText)} after
  * the change.
  */
-@VerifiesOnO
 public class AlertDialogEditText extends AppCompatEditText {
     private GURL mUrl;
 

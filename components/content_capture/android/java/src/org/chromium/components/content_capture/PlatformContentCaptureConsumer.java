@@ -11,7 +11,6 @@ import android.view.ViewStructure;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.VerifiesOnQ;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.content_public.browser.WebContents;
 
@@ -19,7 +18,6 @@ import org.chromium.content_public.browser.WebContents;
  * This class receive captured content and send it to framework in non-UI
  * thread.
  */
-@VerifiesOnQ
 @RequiresApi(Build.VERSION_CODES.Q)
 public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
     private PlatformSession mPlatformSession;

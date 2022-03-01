@@ -11,7 +11,6 @@ import android.webkit.WebViewRenderProcessClient;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwRenderProcess;
-import org.chromium.base.annotations.VerifiesOnQ;
 
 import java.util.concurrent.Executor;
 
@@ -22,7 +21,6 @@ import java.util.concurrent.Executor;
  * in base/, for reasons such as using system APIs or instantiating an adapter class that is
  * specific to glue layer.
  */
-@VerifiesOnQ
 @RequiresApi(Build.VERSION_CODES.Q)
 public final class GlueApiHelperForQ {
     private GlueApiHelperForQ() {}

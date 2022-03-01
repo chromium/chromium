@@ -14,12 +14,9 @@ import android.view.contentcapture.ContentCaptureSession;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.VerifiesOnQ;
-
 /**
  * The implementation of PlatformAPIWrapper.
  */
-@VerifiesOnQ
 @RequiresApi(Build.VERSION_CODES.Q)
 public class PlatformAPIWrapperImpl extends PlatformAPIWrapper {
     @Override

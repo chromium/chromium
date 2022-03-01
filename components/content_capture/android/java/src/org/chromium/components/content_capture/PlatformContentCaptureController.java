@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.VerifiesOnQ;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,7 +27,6 @@ import java.util.regex.Pattern;
  * The class talks to the COntentCaptureManager to verify ContentCaptureService is Aiai and provide
  * the methods to check if the given urls shall be captured and delete the ContentCapture history.
  */
-@VerifiesOnQ
 @RequiresApi(Build.VERSION_CODES.Q)
 public class PlatformContentCaptureController {
     private static final String TAG = "ContentCapture";

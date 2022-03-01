@@ -9,8 +9,6 @@ import android.webkit.PacProcessor;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.VerifiesOnR;
-
 /**
  * Utility class to use new APIs that were added in R (API level 30). These need to exist in a
  * separate class so that Android framework can successfully verify glue layer classes without
@@ -18,7 +16,6 @@ import org.chromium.base.annotations.VerifiesOnR;
  * in base/, for reasons such as using system APIs or instantiating an adapter class that is
  * specific to glue layer.
  */
-@VerifiesOnR
 @RequiresApi(Build.VERSION_CODES.R)
 public final class GlueApiHelperForR {
     private GlueApiHelperForR() {}

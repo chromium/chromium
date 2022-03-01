@@ -29,14 +29,11 @@ import android.webkit.WebViewClient;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.VerifiesOnM;
-
 /**
  * Utility class to use new APIs that were added in M (API level 23). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@VerifiesOnM
 @RequiresApi(Build.VERSION_CODES.M)
 public final class ApiHelperForM {
     private ApiHelperForM() {}

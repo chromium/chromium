@@ -55,8 +55,6 @@ import org.chromium.base.PackageUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.VerifiesOnN;
-import org.chromium.base.annotations.VerifiesOnP;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.build.BuildConfig;
@@ -123,7 +121,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
      * verification does not occur until it is actually used for N and above.
      */
     @RequiresApi(Build.VERSION_CODES.N)
-    @VerifiesOnN
     private static class ObjectHolderForN {
         public ServiceWorkerController mServiceWorkerController;
     }
@@ -133,7 +130,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
      * verification does not occur until it is actually used for P and above.
      */
     @RequiresApi(Build.VERSION_CODES.P)
-    @VerifiesOnP
     private static class ObjectHolderForP {
         public TracingController mTracingController;
     }

@@ -9,14 +9,11 @@ import android.os.PowerManager;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.VerifiesOnQ;
-
 /**
  * Utility class to use new APIs that were added in Q (API level 29). These need to exist in a
  * separate class so that Android framework can successfully verify the PowerMonitor class without
  * encountering the new APIs.
  */
-@VerifiesOnQ
 @RequiresApi(Build.VERSION_CODES.Q)
 public final class PowerMonitorForQ {
     private PowerMonitorForQ() {}

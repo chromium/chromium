@@ -10,7 +10,6 @@ import android.view.View;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.VerifiesOnM;
 import org.chromium.content.browser.selection.FloatingActionModeCallback;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 
@@ -20,7 +19,6 @@ import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
  * encountering the new APIs.
  */
 
-@VerifiesOnM
 @RequiresApi(Build.VERSION_CODES.M)
 public final class ContentApiHelperForM {
     private ContentApiHelperForM() {}

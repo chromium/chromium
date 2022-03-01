@@ -13,8 +13,7 @@ import java.lang.annotation.Target;
  * The annotated method or class should never be inlined.
  *
  * The annotated method (or methods on the annotated class) are guaranteed not to be inlined by
- * Proguard. Other optimizations may still apply. Do not use this annotation to fix class
- * verification errors - use the @VerifiesOnX annotations instead.
+ * Proguard. Other optimizations may still apply.
  */
 @Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.CLASS)

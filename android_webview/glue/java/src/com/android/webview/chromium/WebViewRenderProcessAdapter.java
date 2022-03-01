@@ -11,12 +11,10 @@ import android.webkit.WebViewRenderProcess;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwRenderProcess;
-import org.chromium.base.annotations.VerifiesOnQ;
 
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
-@VerifiesOnQ
 @RequiresApi(Build.VERSION_CODES.Q)
 class WebViewRenderProcessAdapter extends WebViewRenderProcess {
     private static WeakHashMap<AwRenderProcess, WebViewRenderProcessAdapter> sInstances =

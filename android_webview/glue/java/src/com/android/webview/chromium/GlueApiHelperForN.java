@@ -15,8 +15,6 @@ import android.webkit.WebViewDelegate;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.VerifiesOnN;
-
 /**
  * Utility class to use new APIs that were added in N (API level 24). These need to exist in a
  * separate class so that Android framework can successfully verify glue layer classes without
@@ -24,7 +22,6 @@ import org.chromium.base.annotations.VerifiesOnN;
  * in base/, for reasons such as using system APIs or instantiating an adapter class that is
  * specific to glue layer.
  */
-@VerifiesOnN
 @RequiresApi(Build.VERSION_CODES.N)
 public final class GlueApiHelperForN {
     private GlueApiHelperForN() {}

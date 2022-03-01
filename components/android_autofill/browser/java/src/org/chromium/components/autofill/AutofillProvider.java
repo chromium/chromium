@@ -26,7 +26,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.VerifiesOnO;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.autofill_public.ViewType;
 import org.chromium.components.version_info.VersionConstants;
@@ -54,9 +53,7 @@ import java.util.ArrayList;
  * AutofillProviderAndroid is owned by the embedder-specific C++ WebContents
  * wrapper (e.g., native AwContents in //android_webview).
  *
- * VerifiesOnO since it causes class verification errors, see crbug.com/991851.
  */
-@VerifiesOnO
 @RequiresApi(Build.VERSION_CODES.O)
 @JNINamespace("autofill")
 public class AutofillProvider {

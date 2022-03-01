@@ -13,14 +13,11 @@ import android.widget.Checkable;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.VerifiesOnQ;
-
 import java.util.HashMap;
 
 /**
  * The class to manage the platform session.
  */
-@VerifiesOnQ
 @RequiresApi(Build.VERSION_CODES.Q)
 class PlatformSession {
     /**

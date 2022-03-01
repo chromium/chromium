@@ -9,14 +9,11 @@ import android.view.Window;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.VerifiesOnOMR1;
-
 /**
  * Utility class to use new APIs that were added in O_MR1 (API level 27). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@VerifiesOnOMR1
 @RequiresApi(Build.VERSION_CODES.O_MR1)
 public final class ApiHelperForOMR1 {
     private ApiHelperForOMR1() {}

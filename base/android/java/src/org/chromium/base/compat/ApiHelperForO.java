@@ -28,14 +28,12 @@ import android.view.autofill.AutofillManager;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.annotations.VerifiesOnO;
 
 /**
  * Utility class to use new APIs that were added in O (API level 26). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@VerifiesOnO
 @RequiresApi(Build.VERSION_CODES.O)
 public final class ApiHelperForO {
     private ApiHelperForO() {}

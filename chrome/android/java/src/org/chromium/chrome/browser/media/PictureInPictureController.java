@@ -20,7 +20,6 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
-import org.chromium.base.annotations.VerifiesOnO;
 import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -44,7 +43,6 @@ import java.util.List;
  *
  * Do not inline to prevent class verification errors on pre-O runtimes.
  */
-@VerifiesOnO
 @RequiresApi(Build.VERSION_CODES.O)
 public class PictureInPictureController {
     private static final String TAG = "VideoPersist";
