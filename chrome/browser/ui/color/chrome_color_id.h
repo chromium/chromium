@@ -34,6 +34,9 @@
   E(kColorBookmarkButtonIcon, ThemeProperties::COLOR_BOOKMARK_BUTTON_ICON) \
   E(kColorBookmarkFavicon, ThemeProperties::COLOR_BOOKMARK_FAVICON) \
   E_CPONLY(kColorBookmarkFolderIcon) \
+  /* Window caption colors. */ \
+  E(kColorCaptionButtonBackground, \
+    ThemeProperties::COLOR_CONTROL_BUTTON_BACKGROUND) \
   /* Download shelf colors. */ \
   E(kColorDownloadShelf, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
   E(kColorDownloadShelfButtonBackground, \
