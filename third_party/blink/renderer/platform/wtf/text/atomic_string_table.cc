@@ -243,23 +243,27 @@ struct LowercaseLookupTranslator {
 }  // namespace
 
 AtomicStringTable::AtomicStringTable() {
-  base::AutoLock auto_lock(lock_);
   for (StringImpl* string : StringImpl::AllStaticStrings().Values()) {
     DCHECK(string->length());
     AddNoLock(string);
   }
 }
 
+AtomicStringTable::~AtomicStringTable() {
+  for (StringImpl* string : table_) {
+    if (!string->IsStatic()) {
+      DCHECK(string->IsAtomic());
+      string->UnsetIsAtomic();
+    }
+  }
+}
+
 void AtomicStringTable::ReserveCapacity(unsigned size) {
-  base::AutoLock auto_lock(lock_);
   table_.ReserveCapacityForSize(size);
 }
 
 template <typename T, typename HashTranslator>
 scoped_refptr<StringImpl> AtomicStringTable::AddToStringTable(const T& value) {
-  // Lock not only protects access to the table, it also guarantees
-  // mutual exclusion with the refcount decrement on removal.
-  base::AutoLock auto_lock(lock_);
   HashSet<StringImpl*>::AddResult add_result =
       table_.AddWithTranslator<HashTranslator>(value);
 
@@ -326,9 +330,6 @@ scoped_refptr<StringImpl> AtomicStringTable::Add(StringImpl* string) {
   if (!string->length())
     return StringImpl::empty_;
 
-  // Lock not only protects access to the table, it also guarantess
-  // mutual exclusion with the refcount decrement on removal.
-  base::AutoLock auto_lock(lock_);
   return base::WrapRefCounted(AddNoLock(string));
 }
 
@@ -337,9 +338,6 @@ scoped_refptr<StringImpl> AtomicStringTable::Add(
   if (!string->length())
     return StringImpl::empty_;
 
-  // Lock not only protects access to the table, it also guarantess
-  // mutual exclusion with the refcount decrement on removal.
-  base::AutoLock auto_lock(lock_);
   StringImpl* entry = AddNoLock(string.get());
   if (entry == string.get())
     return std::move(string);
@@ -362,7 +360,6 @@ scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
 AtomicStringTable::WeakResult AtomicStringTable::WeakFindSlowForTesting(
     const StringView& string) {
   DCHECK(string.length());
-  base::AutoLock auto_lock(lock_);
   const auto& it = table_.Find<StringViewLookupTranslator>(string);
   if (it == table_.end())
     return WeakResult();
@@ -375,7 +372,6 @@ AtomicStringTable::WeakResult AtomicStringTable::WeakFindLowercase(
   DCHECK(!string.IsLowerASCII());
   DCHECK(string.length());
   HashTranslatorLowercaseBuffer buffer(string.Impl());
-  base::AutoLock auto_lock(lock_);
   const auto& it = table_.Find<LowercaseLookupTranslator>(buffer);
   if (it == table_.end())
     return WeakResult();
@@ -386,10 +382,11 @@ AtomicStringTable::WeakResult AtomicStringTable::WeakFindLowercase(
 
 bool AtomicStringTable::ReleaseAndRemoveIfNeeded(StringImpl* string) {
   DCHECK(string->IsAtomic());
-  base::AutoLock auto_lock(lock_);
-  // Double check that the refcount is still 1. Because Add() could
-  // have added a new reference after the load in StringImpl::Release.
-  if (string->ref_count_.fetch_sub(1, std::memory_order_acq_rel) != 1)
+  // Double check that the refcount is still 0. Because Add() could
+  // have added a new reference after the fetch_sub in
+  // StringImpl::Release. This can be a relaxed load, since both
+  // AtomicStringTable::Add() and this logic will be under a lock.
+  if (!string->HasZeroRefRelaxed())
     return false;
 
   auto iterator = table_.find(string);

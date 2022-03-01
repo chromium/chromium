@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
@@ -24,12 +23,11 @@ class WTF_EXPORT AtomicStringTable final {
   AtomicStringTable();
   AtomicStringTable(const AtomicStringTable&) = delete;
   AtomicStringTable& operator=(const AtomicStringTable&) = delete;
-  ~AtomicStringTable() = delete;
+  ~AtomicStringTable();
 
-  // Gets the shared table.
+  // Gets the shared table for the current thread.
   static AtomicStringTable& Instance() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicStringTable, table, ());
-    return table;
+    return WtfThreading().GetAtomicStringTable();
   }
 
   // Used by system initialization to preallocate enough storage for all of
@@ -107,14 +105,11 @@ class WTF_EXPORT AtomicStringTable final {
   template <typename T, typename HashTranslator>
   inline scoped_refptr<StringImpl> AddToStringTable(const T& value);
 
-  // AddNoLock does not take the lock itself but expects every caller to
-  // do it before calling it.
-  StringImpl* AddNoLock(StringImpl*) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  StringImpl* AddNoLock(StringImpl*);
 
   WeakResult WeakFindSlowForTesting(const StringView&);
 
-  base::Lock lock_;
-  HashSet<StringImpl*> table_ GUARDED_BY(lock_);
+  HashSet<StringImpl*> table_;
 };
 
 inline bool operator==(const AtomicStringTable::WeakResult& lhs,
