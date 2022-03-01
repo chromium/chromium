@@ -8,7 +8,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/json/json_reader.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move_mouse.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_tap_mouse.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -30,51 +29,55 @@ namespace {
 
 constexpr const char kValidJsonActionTapKey[] =
     R"json({
-      "tap": {
-        "keyboard": [
-          {
-            "name": "Fight",
-            "key": "KeyA",
-            "location": [
-              {
-                "type": "position",
-                "anchor": [
-                  0,
-                  0
-                ],
-                "anchor_to_target": [
-                  0.5,
-                  0.5
-                ]
-              },
-              {
-                "type": "position",
-                "anchor": [
-                  0,
-                  0
-                ],
-                "anchor_to_target": [
-                  0.3,
-                  0.3
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Run",
-            "key": "KeyB",
-            "location": [
-              {
-                "type": "position",
-                "anchor_to_target": [
-                  0.8,
-                  0.8
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      "tap": [
+        {
+          "input_sources": [
+            "keyboard"
+          ],
+          "name": "Fight",
+          "key": "KeyA",
+          "location": [
+            {
+              "type": "position",
+              "anchor": [
+                0,
+                0
+              ],
+              "anchor_to_target": [
+                0.5,
+                0.5
+              ]
+            },
+            {
+              "type": "position",
+              "anchor": [
+                0,
+                0
+              ],
+              "anchor_to_target": [
+                0.3,
+                0.3
+              ]
+            }
+          ]
+        },
+        {
+          "input_sources": [
+            "keyboard"
+          ],
+          "name": "Run",
+          "key": "KeyB",
+          "location": [
+            {
+              "type": "position",
+              "anchor_to_target": [
+                0.8,
+                0.8
+              ]
+            }
+          ]
+        }
+      ]
     })json";
 
 constexpr const char kValidJsonActionTapMouse[] =
@@ -82,36 +85,40 @@ constexpr const char kValidJsonActionTapMouse[] =
       "mouse_lock": {
         "key": "KeyA"
       },
-      "tap": {
-        "mouse": [
-          {
-            "name": "any name",
-            "mouse_action": "primary_click",
-            "location": [
-              {
-                "type": "position",
-                "anchor_to_target": [
-                  0.5,
-                  0.5
-                ]
-              }
-            ]
-          },
-          {
-            "name": "any name",
-            "mouse_action": "secondary_click",
-            "location": [
-              {
-                "type": "position",
-                "anchor_to_target": [
-                  0.8,
-                  0.8
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      "tap": [
+        {
+          "input_sources": [
+            "mouse"
+          ],
+          "name": "any name",
+          "mouse_action": "primary_click",
+          "location": [
+            {
+              "type": "position",
+              "anchor_to_target": [
+                0.5,
+                0.5
+              ]
+            }
+          ]
+        },
+        {
+          "input_sources": [
+            "mouse"
+          ],
+          "name": "any name",
+          "mouse_action": "secondary_click",
+          "location": [
+            {
+              "type": "position",
+              "anchor_to_target": [
+                0.8,
+                0.8
+              ]
+            }
+          ]
+        }
+      ]
     })json";
 
 constexpr const char kValidJsonActionMoveKey[] =
@@ -119,6 +126,9 @@ constexpr const char kValidJsonActionMoveKey[] =
       "move": {
         "keyboard": [
           {
+            "input_sources": [
+              "keyboard"
+            ],
             "name": "Virtual Joystick",
             "keys": [
               "KeyW",
@@ -153,6 +163,9 @@ constexpr const char kValidJsonActionMoveMouse[] =
       "move": {
         "mouse": [
           {
+            "input_sources": [
+              "mouse"
+            ],
             "name": "camera move",
             "mouse_action": "hover_move",
             "target_area": {
@@ -428,18 +441,18 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   EXPECT_EQ(2u, injector_->actions().size());
   injector_->RegisterEventRewriter();
 
-  auto* primary_action = static_cast<input_overlay::ActionTapMouse*>(
-      injector_->actions()[0].get());
-  EXPECT_EQ(primary_action->target_mouse_action(), "primary_click");
-  EXPECT_TRUE(primary_action->target_types().contains(ui::ET_MOUSE_PRESSED));
-  EXPECT_TRUE(primary_action->target_types().contains(ui::ET_MOUSE_RELEASED));
-  EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, primary_action->target_flags());
-  auto* secondary_action = static_cast<input_overlay::ActionTapMouse*>(
-      injector_->actions()[1].get());
-  EXPECT_EQ(secondary_action->target_mouse_action(), "secondary_click");
-  EXPECT_TRUE(secondary_action->target_types().contains(ui::ET_MOUSE_PRESSED));
-  EXPECT_TRUE(secondary_action->target_types().contains(ui::ET_MOUSE_RELEASED));
-  EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, secondary_action->target_flags());
+  auto* primary_action = injector_->actions()[0].get();
+  auto* primary_binding = primary_action->current_binding();
+  EXPECT_EQ(primary_binding->mouse_action(), "primary_click");
+  EXPECT_TRUE(primary_binding->mouse_types().contains(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(primary_binding->mouse_types().contains(ui::ET_MOUSE_RELEASED));
+  EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, primary_binding->mouse_flags());
+  auto* secondary_action = injector_->actions()[1].get();
+  auto* secondary_binding = secondary_action->current_binding();
+  EXPECT_EQ(secondary_binding->mouse_action(), "secondary_click");
+  EXPECT_TRUE(secondary_binding->mouse_types().contains(ui::ET_MOUSE_PRESSED));
+  EXPECT_TRUE(secondary_binding->mouse_types().contains(ui::ET_MOUSE_RELEASED));
+  EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, secondary_binding->mouse_flags());
 
   event_generator_->MoveMouseTo(gfx::Point(300, 200));
   EXPECT_EQ(2u, event_capturer_.mouse_events().size());

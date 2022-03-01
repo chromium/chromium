@@ -16,6 +16,7 @@ namespace input_overlay {
 namespace {
 // Json strings.
 constexpr char kName[] = "name";
+constexpr char kInputSources[] = "input_sources";
 constexpr char kLocation[] = "location";
 constexpr char kType[] = "type";
 constexpr char kPosition[] = "position";
@@ -139,9 +140,32 @@ Action::~Action() = default;
 bool Action::ParseFromJson(const base::Value& value) {
   // Name can be empty.
   auto* name = value.FindStringKey(kName);
-  if (name) {
+  if (name)
     name_ = *name;
+
+  // Parse action device source.
+  auto* sources = value.FindListKey(kInputSources);
+  if (!sources || !sources->is_list()) {
+    LOG(ERROR) << "Must have input source(s) for each action.";
+    return false;
   }
+  for (auto& source : sources->GetListDeprecated()) {
+    if (!source.is_string()) {
+      LOG(ERROR) << "Must have input source(s) in string.";
+      return false;
+    }
+
+    if (source.GetString() == kMouse) {
+      parsed_input_sources_ |= InputSource::IS_MOUSE;
+    } else if (source.GetString() == kKeyboard) {
+      parsed_input_sources_ |= InputSource::IS_KEYBOARD;
+    } else {
+      LOG(ERROR) << "Input source {" << source.GetString()
+                 << "} is not supported.";
+      return false;
+    }
+  }
+
   // Location can be empty for mouse related actions.
   const base::Value* position = value.FindListKey(kLocation);
   if (position) {
@@ -152,7 +176,7 @@ bool Action::ParseFromJson(const base::Value& value) {
       on_left_or_middle_side_ = (locations_.front()->anchor().x() <= kHalf);
     }
   }
-
+  // Parse action radius.
   if (!ParsePositiveFraction(value, kRadius, &radius_))
     return false;
 
@@ -254,6 +278,22 @@ void Action::OnTouchCancelled() {
   if (locations_.empty())
     return;
   current_position_index_ = 0;
+}
+
+bool Action::IsNoneBound() {
+  return !IsKeyboardBound() && !IsMouseBound();
+}
+
+bool Action::IsKeyboardBound() {
+  if (!current_binding_)
+    return false;
+  return (current_binding_->input_sources() & InputSource::IS_KEYBOARD) != 0;
+}
+
+bool Action::IsMouseBound() {
+  if (!current_binding_)
+    return false;
+  return (current_binding_->input_sources() & InputSource::IS_MOUSE) != 0;
 }
 
 }  // namespace input_overlay

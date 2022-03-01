@@ -11,8 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move_key.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move_mouse.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_tap_key.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_tap_mouse.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
@@ -26,9 +25,7 @@ namespace input_overlay {
 namespace {
 // Strings for parsing actions.
 constexpr char kTapAction[] = "tap";
-constexpr char kKeyboard[] = "keyboard";
 constexpr char kMoveAction[] = "move";
-constexpr char kMouse[] = "mouse";
 constexpr char kMouseLock[] = "mouse_lock";
 // Mask for interesting modifiers.
 const int kInterestingFlagsMask =
@@ -41,25 +38,13 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   std::vector<std::unique_ptr<Action>> actions;
 
   // Parse tap actions if they exist.
-  const base::Value* tap_act_val = root.FindKey(kTapAction);
-  if (tap_act_val) {
-    const base::Value* keyboard_act_list = tap_act_val->FindListKey(kKeyboard);
-    if (keyboard_act_list && keyboard_act_list->is_list()) {
-      for (const base::Value& val : keyboard_act_list->GetListDeprecated()) {
-        std::unique_ptr<Action> action = std::make_unique<ActionTapKey>(window);
-        bool succeed = action->ParseFromJson(val);
-        if (succeed)
-          actions.emplace_back(std::move(action));
-      }
-    }
-    const auto* mouse_act_list = tap_act_val->FindListKey(kMouse);
-    if (mouse_act_list && mouse_act_list->is_list()) {
-      for (const auto& val : mouse_act_list->GetListDeprecated()) {
-        auto action = std::make_unique<input_overlay::ActionTapMouse>(window);
-        bool succeed = action->ParseFromJson(val);
-        if (succeed)
-          actions.emplace_back(std::move(action));
-      }
+  const base::Value* tap_act_list = root.FindListKey(kTapAction);
+  if (tap_act_list && tap_act_list->is_list()) {
+    for (const auto& val : tap_act_list->GetListDeprecated()) {
+      std::unique_ptr<Action> action = std::make_unique<ActionTap>(window);
+      bool succeed = action->ParseFromJson(val);
+      if (succeed)
+        actions.emplace_back(std::move(action));
     }
   }
 

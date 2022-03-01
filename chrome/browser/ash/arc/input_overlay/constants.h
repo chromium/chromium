@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_MODE_H_
-#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_MODE_H_
+#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_
+#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_
 
 namespace arc {
 namespace input_overlay {
@@ -28,7 +28,17 @@ enum class DisplayMode {
   kMenu,
 };
 
+// Input device source for each action. Each type of the actions can be bound
+// to different types of input device sources. Some actions may be bound to
+// different types of device sources.
+enum InputSource {
+  IS_NONE = 0,
+  IS_KEYBOARD = 1 << 0,
+  IS_MOUSE = 1 << 1,
+  // TODO(cuicuiruan): Add Gamepad support.
+};
+
 }  // namespace input_overlay
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_MODE_H_
+#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_

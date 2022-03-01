@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_circle.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_label.h"
-#include "chrome/browser/ash/arc/input_overlay/display_mode.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/view.h"

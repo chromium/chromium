@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/ash/arc/input_overlay/display_mode.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/views/controls/label.h"
 
 namespace arc {

@@ -3,148 +3,164 @@
 // found in the LICENSE file.
 
 {
-  "tap": {
-    "keyboard": [
-      {
-        "name": "left",
-        "key": "KeyA",
-        "location": [
-          {
-            "type": "dependent_position",
-            "anchor": [
-              0,
-              1
-            ],
-            "anchor_to_target": [
-              0.09375,
-              -0.1481481481
-            ],
-            "x_on_y": 1.125
-          }
-        ],
-        "radius": 0.095
-      },
-      {
-        "name": "right",
-        "key": "KeyD",
-        "location": [
-          {
-            "type": "dependent_position",
-            "anchor": [
-              0,
-              1
-            ],
-            "anchor_to_target": [
-              0.2317708333,
-              -0.1481481481
-            ],
-            "x_on_y": 2.7812
-          }
-        ],
-        "radius": 0.095
-      },
-      {
-        "name": "jump",
-        "key": "Space",
-        "location": [
-          {
-            "type": "dependent_position",
-            "anchor": [
-              1,
-              1
-            ],
-            "anchor_to_target": [
-              -0.08802083333,
-              -0.1759259259
-            ],
-            "x_on_y": 0.8894736842
-          }
-        ],
-        "radius":0.1
-      },
-      {
-        "name": "upper",
-        "key": "KeyO",
-        "location": [
-          {
-            "type": "dependent_position",
-            "anchor": [
-              1,
-              1
-            ],
-            "anchor_to_target": [
-              -0.059375,
-              -0.4055555556
-            ],
-            "x_on_y": 0.2602739726
-          }
-        ],
-        "radius":0.06574
-      },
-      {
-        "name": "middle",
-        "key": "KeyI",
-        "location": [
-          {
-            "type": "dependent_position",
-            "anchor": [
-              1,
-              1
-            ],
-            "anchor_to_target": [
-              -0.1848958333,
-              -0.3481481481
-            ],
-            "x_on_y": 0.9441489362
-          }
-        ],
-        "radius": 0.05833
-      },
-      {
-        "name": "lower",
-        "key": "KeyU",
-        "location": [
-          {
-            "type": "dependent_position",
-            "anchor": [
-              1,
-              1
-            ],
-            "anchor_to_target": [
-              -0.2234375,
-              -0.1425925926
-            ],
-            "x_on_y": 2.785714286
-          }
-        ],
-        "radius": 0.07
-      },
-      {
-        "name": "Setting",
-        "key": "Escape",
-        "location": [
-          {
-            "type": "dependent_position",
-            "anchor": [
-              1,
-              0
-            ],
-            "anchor_to_target": [
-              -0.05208333333,
-              0.06481481481
-            ],
-            "x_on_y": 1.428571429
-          },
-          {
-            "type": "position",
-            "anchor_to_target": [
-              0.5,
-              0.2462962963
-            ]
-          }
-        ],
-        "radius": 0.04398
-      }
-    ]
-  }
+  "tap": [
+    {
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "left",
+      "key": "KeyA",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.09375,
+            -0.1481481481
+          ],
+          "x_on_y": 1.125
+        }
+      ],
+      "radius": 0.095
+    },
+    {
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "right",
+      "key": "KeyD",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.2317708333,
+            -0.1481481481
+          ],
+          "x_on_y": 2.7812
+        }
+      ],
+      "radius": 0.095
+    },
+    {
+      "name": "jump",
+      "key": "Space",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.08802083333,
+            -0.1759259259
+          ],
+          "x_on_y": 0.8894736842
+        }
+      ],
+      "radius": 0.1
+    },
+    {
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "upper",
+      "key": "KeyO",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.059375,
+            -0.4055555556
+          ],
+          "x_on_y": 0.2602739726
+        }
+      ],
+      "radius": 0.06574
+    },
+    {
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "middle",
+      "key": "KeyI",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.1848958333,
+            -0.3481481481
+          ],
+          "x_on_y": 0.9441489362
+        }
+      ],
+      "radius": 0.05833
+    },
+    {
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "lower",
+      "key": "KeyU",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.2234375,
+            -0.1425925926
+          ],
+          "x_on_y": 2.785714286
+        }
+      ],
+      "radius": 0.07
+    },
+    {
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "Setting",
+      "key": "Escape",
+      "location": [
+        {
+          "type": "dependent_position",
+          "anchor": [
+            1,
+            0
+          ],
+          "anchor_to_target": [
+            -0.05208333333,
+            0.06481481481
+          ],
+          "x_on_y": 1.428571429
+        },
+        {
+          "type": "position",
+          "anchor_to_target": [
+            0.5,
+            0.2462962963
+          ]
+        }
+      ],
+      "radius": 0.04398
+    }
+  ]
 }

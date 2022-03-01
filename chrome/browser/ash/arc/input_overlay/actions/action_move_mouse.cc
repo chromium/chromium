@@ -14,7 +14,6 @@ namespace arc {
 namespace input_overlay {
 namespace {
 // About Json strings.
-constexpr char kMouseAction[] = "mouse_action";
 constexpr char kHoverMove[] = "hover_move";
 constexpr char kPrimaryDragMove[] = "primary_drag_move";
 constexpr char kSecondaryDragMove[] = "secondary_drag_move";

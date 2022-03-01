@@ -3,40 +3,44 @@
 // found in the LICENSE file.
 
 {
-  "tap": {
-    "keyboard": [
-      {
-        "name": "TestA",
-        "key": "KeyA",
-        "location": [
-          {
-            "type": "position",
-            "anchor_to_target": [
-              0.5,
-              0.5
-            ]
-          }
-        ],
-        "radius": 0.1
-      },
-      {
-        "name": "TestB",
-        "key": "KeyB",
-        "location": [
-          {
-            "type": "position",
-            "anchor": [
-              1,
-              1
-            ],
-            "anchor_to_target": [
-              -0.1,
-              -0.1
-            ]
-          }
-        ],
-        "radius": 0.1
-      }
-    ]
-  }
+  "tap": [
+    {
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "TestA",
+      "key": "KeyA",
+      "location": [
+        {
+          "type": "position",
+          "anchor_to_target": [
+            0.5,
+            0.5
+          ]
+        }
+      ],
+      "radius": 0.1
+    },
+    {
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "TestB",
+      "key": "KeyB",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            1,
+            1
+          ],
+          "anchor_to_target": [
+            -0.1,
+            -0.1
+          ]
+        }
+      ],
+      "radius": 0.1
+    }
+  ]
 }

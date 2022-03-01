@@ -6,6 +6,9 @@
   "move": {
     "keyboard": [
       {
+        "input_sources": [
+          "keyboard"
+        ],
         "name": "Virtual Joystick",
         "keys": [
           "KeyW",

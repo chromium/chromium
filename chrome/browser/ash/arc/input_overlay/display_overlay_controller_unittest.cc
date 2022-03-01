@@ -17,23 +17,24 @@ namespace {
 
 constexpr const char kValidJson[] =
     R"json({
-      "tap": {
-        "keyboard": [
-          {
-            "name": "Run",
-            "key": "KeyB",
-            "location": [
-              {
-                "type": "position",
-                "anchor_to_target": [
-                  0.8,
-                  0.8
-                ]
-              }
-            ]
-          }
-        ]
-      }
+      "tap": [
+        {
+          "input_sources": [
+            "keyboard"
+          ],
+          "name": "Run",
+          "key": "KeyB",
+          "location": [
+            {
+              "type": "position",
+              "anchor_to_target": [
+                0.8,
+                0.8
+              ]
+            }
+          ]
+        }
+      ]
     })json";
 }  // namespace
 

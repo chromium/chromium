@@ -21,6 +21,9 @@ class ActionMoveKeyTest : public testing::Test {
 constexpr const char kValidJson[] =
     R"json({
       "name": "Virtual Joystick",
+      "input_sources": [
+        "keyboard"
+      ],
       "keys": [
         "KeyW",
         "KeyA",
@@ -45,6 +48,9 @@ constexpr const char kValidJson[] =
 constexpr const char kInValidJsonWrongAmountKeys[] =
     R"json({
       "name": "Virtual Joystick",
+      "input_sources": [
+        "keyboard"
+      ],
       "keys": [
         "KeyW",
         "KeyA",
@@ -68,6 +74,9 @@ constexpr const char kInValidJsonWrongAmountKeys[] =
 constexpr const char kInValidJsonDuplicatedKeys[] =
     R"json({
       "name": "Virtual Joystick",
+      "input_sources": [
+        "keyboard"
+      ],
       "keys": [
         "KeyW",
         "KeyW",
