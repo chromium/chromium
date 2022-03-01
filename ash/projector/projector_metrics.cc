@@ -5,7 +5,9 @@
 #include "ash/projector/projector_metrics.h"
 
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 
 namespace ash {
 
@@ -18,6 +20,9 @@ constexpr char kProjectorMarkerColorHistogramName[] =
 
 constexpr char kProjectorCreationFlowHistogramName[] =
     "Ash.Projector.CreationFlow";
+
+constexpr char kProjectorCreationFlowErrorHistogramName[] =
+    "Ash.Projector.CreationFlowError";
 
 constexpr char kProjectorTranscriptsCountHistogramName[] =
     "Ash.Projector.TranscriptsCount";
@@ -52,6 +57,23 @@ void RecordTranscriptsCount(size_t count) {
   // limit is exceeded, then the metric would fall into an overflow bucket.
   base::UmaHistogramCounts10000(
       GetHistogramName(kProjectorTranscriptsCountHistogramName), count);
+}
+
+void RecordCreationFlowError(int message_id) {
+  ProjectorCreationFlowError error = ProjectorCreationFlowError::kMaxValue;
+  switch (message_id) {
+    case IDS_ASH_PROJECTOR_SAVE_FAILURE_TEXT:
+      error = ProjectorCreationFlowError::kSaveError;
+      break;
+    case IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION:
+      error = ProjectorCreationFlowError::kTranscriptionError;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      GetHistogramName(kProjectorCreationFlowErrorHistogramName), error);
 }
 
 }  // namespace ash

@@ -2731,6 +2731,17 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.Projector.CreationFlowError.{TabletOrClamshell}"
+    enum="ProjectorCreationFlowError" expires_after="2022-12-01">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Tracks the most common errors during the screencast recording creation
+    process in {TabletOrClamshell}, recorded each time an error occurs.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Ash.Projector.MarkerColor.{TabletOrClamshell}"
     enum="ProjectorMarkerColor" expires_after="2022-12-01">
   <owner>tobyhuang@chromium.org</owner>

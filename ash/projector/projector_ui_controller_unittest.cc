@@ -30,6 +30,13 @@
 
 namespace ash {
 
+namespace {
+
+constexpr char kProjectorCreationFlowErrorHistogramName[] =
+    "Ash.Projector.CreationFlowError.ClamshellMode";
+
+}  // namespace
+
 class MockMessageCenterObserver : public message_center::MessageCenterObserver {
  public:
   MockMessageCenterObserver() = default;
@@ -103,6 +110,8 @@ TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
 }
 
 TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {
+  base::HistogramTester histogram_tester;
+
   MockMessageCenterObserver mock_message_center_observer;
   message_center::MessageCenter::Get()->AddObserver(
       &mock_message_center_observer);
@@ -134,9 +143,21 @@ TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {
   EXPECT_EQ((*notifications.begin())->message(),
             l10n_util::GetStringUTF16(
                 IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION));
+
+  histogram_tester.ExpectBucketCount(kProjectorCreationFlowErrorHistogramName,
+                                     ProjectorCreationFlowError::kSaveError,
+                                     /*count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kProjectorCreationFlowErrorHistogramName,
+      ProjectorCreationFlowError::kTranscriptionError,
+      /*count=*/1);
+  histogram_tester.ExpectTotalCount(kProjectorCreationFlowErrorHistogramName,
+                                    /*count=*/2);
 }
 
 TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
+  base::HistogramTester histogram_tester;
+
   MockMessageCenterObserver mock_message_center_observer;
   message_center::MessageCenter::Get()->AddObserver(
       &mock_message_center_observer);
@@ -166,6 +187,10 @@ TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
             "projector_save_error_notification");
   EXPECT_EQ((*notifications.begin())->message(),
             l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_SAVE_FAILURE_TEXT));
+
+  histogram_tester.ExpectUniqueSample(kProjectorCreationFlowErrorHistogramName,
+                                      ProjectorCreationFlowError::kSaveError,
+                                      /*count=*/2);
 }
 
 }  // namespace ash

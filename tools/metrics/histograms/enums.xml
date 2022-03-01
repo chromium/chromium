@@ -74552,6 +74552,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Stopped new screencast session"/>
 </enum>
 
+<enum name="ProjectorCreationFlowError">
+  <int value="0" label="Can't save recording"/>
+  <int value="1" label="Can't generate transcription"/>
+</enum>
+
 <enum name="ProjectorMarkerColor">
   <int value="0" label="Black"/>
   <int value="1" label="White"/>

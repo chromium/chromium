@@ -677,7 +677,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAllUserEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorManagedUserEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorFeaturePodEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAnnotatorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAppDebugMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickDimEnabled();

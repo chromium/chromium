@@ -96,7 +96,7 @@ void ShowNotification(
 
 // static
 void ProjectorUiController::ShowFailureNotification(int message_id) {
-  // TODO(b/219101553): Record error metric.
+  RecordCreationFlowError(message_id);
   ShowNotification(
       kProjectorErrorNotificationId, IDS_ASH_PROJECTOR_FAILURE_TITLE,
       message_id,
@@ -105,7 +105,7 @@ void ProjectorUiController::ShowFailureNotification(int message_id) {
 
 // static
 void ProjectorUiController::ShowSaveFailureNotification() {
-  // TODO(b/219101553): Record error metric.
+  RecordCreationFlowError(IDS_ASH_PROJECTOR_SAVE_FAILURE_TEXT);
   ShowNotification(
       kProjectorSaveErrorNotificationId, IDS_ASH_PROJECTOR_SAVE_FAILURE_TITLE,
       IDS_ASH_PROJECTOR_SAVE_FAILURE_TEXT,
