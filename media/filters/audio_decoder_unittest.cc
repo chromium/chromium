@@ -40,10 +40,6 @@
 #include "media/filters/android/media_codec_audio_decoder.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "media/filters/mac/audio_toolbox_audio_decoder.h"
-#endif
-
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/formats/mpeg/adts_stream_parser.h"
 #endif
@@ -59,6 +55,13 @@ namespace {
 
 // The number of packets to read and then decode from each file.
 const size_t kDecodeRuns = 3;
+
+enum TestAudioDecoderType {
+  FFMPEG,
+#if BUILDFLAG(IS_ANDROID)
+  MEDIA_CODEC,
+#endif
+};
 
 struct DecodedBufferExpectations {
   int64_t timestamp;
@@ -114,7 +117,7 @@ void SetDiscardPadding(AVPacket* packet,
 }  // namespace
 
 class AudioDecoderTest
-    : public TestWithParam<std::tuple<AudioDecoderType, TestParams>> {
+    : public TestWithParam<std::tuple<TestAudioDecoderType, TestParams>> {
  public:
   AudioDecoderTest()
       : decoder_type_(std::get<0>(GetParam())),
@@ -123,23 +126,16 @@ class AudioDecoderTest
         pending_reset_(false),
         last_decode_status_(DecoderStatus::Codes::kFailed) {
     switch (decoder_type_) {
-      case AudioDecoderType::kFFmpeg:
+      case FFMPEG:
         decoder_ = std::make_unique<FFmpegAudioDecoder>(
             task_environment_.GetMainThreadTaskRunner(), &media_log_);
         break;
 #if BUILDFLAG(IS_ANDROID)
-      case AudioDecoderType::kMediaCodec:
+      case MEDIA_CODEC:
         decoder_ = std::make_unique<MediaCodecAudioDecoder>(
             task_environment_.GetMainThreadTaskRunner());
         break;
-#elif BUILDFLAG(IS_MAC)
-      case AudioDecoderType::kAudioToolbox:
-        decoder_ = std::make_unique<AudioToolboxAudioDecoder>();
-        break;
 #endif
-      default:
-        EXPECT_TRUE(false) << "Decoder is not supported by this test.";
-        break;
     }
   }
 
@@ -151,23 +147,7 @@ class AudioDecoderTest
     EXPECT_FALSE(pending_reset_);
   }
 
-  void SetUp() override {
-    if (!IsSupported())
-      GTEST_SKIP() << "Unsupported platform.";
-  }
-
  protected:
-  bool IsSupported() const {
-#if BUILDFLAG(IS_MAC)
-    if (decoder_type_ == AudioDecoderType::kAudioToolbox) {
-      if (__builtin_available(macOS 10.15, *))
-        return true;  // Annoyingly !__builtin_available() doesn't work.
-      return false;
-    }
-#endif  // BUILDFLAG(IS_MAC)
-    return true;
-  }
-
   void DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
     ASSERT_FALSE(pending_decode_);
     pending_decode_ = true;
@@ -187,8 +167,6 @@ class AudioDecoderTest
   // Set the TestParams explicitly. Can be use to reinitialize the decoder with
   // different TestParams.
   void set_params(const TestParams& params) { params_ = params; }
-
-  void SetReinitializeParams();
 
   void Initialize() {
     // Load the test data file.
@@ -214,10 +192,10 @@ class AudioDecoderTest
         &config));
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-    // MediaCodec type requires config->extra_data() for AAC codec. For ADTS
+    // MEDIA_CODEC type requires config->extra_data() for AAC codec. For ADTS
     // streams we need to extract it with a separate procedure.
-    if (decoder_type_ == AudioDecoderType::kMediaCodec &&
-        params_.codec == AudioCodec::kAAC && config.extra_data().empty()) {
+    if (decoder_type_ == MEDIA_CODEC && params_.codec == AudioCodec::kAAC &&
+        config.extra_data().empty()) {
       int sample_rate;
       ChannelLayout channel_layout;
       std::vector<uint8_t> extra_data;
@@ -274,10 +252,8 @@ class AudioDecoderTest
 
     // Don't set discard padding for Opus, it already has discard behavior set
     // based on the codec delay in the AudioDecoderConfig.
-    if (decoder_type_ == AudioDecoderType::kFFmpeg &&
-        params_.codec != AudioCodec::kOpus) {
+    if (decoder_type_ == FFMPEG && params_.codec != AudioCodec::kOpus)
       SetDiscardPadding(&packet, buffer.get(), params_.samples_per_second);
-    }
 
     // DecodeBuffer() shouldn't need the original packet since it uses the copy.
     av_packet_unref(&packet);
@@ -346,6 +322,7 @@ class AudioDecoderTest
     const scoped_refptr<AudioBuffer>& buffer = decoded_audio_[i];
 
     const DecodedBufferExpectations& sample_info = params_.expectations[i];
+
     EXPECT_EQ(sample_info.timestamp, buffer->timestamp().InMicroseconds());
     EXPECT_EQ(sample_info.duration, buffer->duration().InMicroseconds());
     EXPECT_FALSE(buffer->end_of_stream());
@@ -381,7 +358,7 @@ class AudioDecoderTest
   }
 
  private:
-  const AudioDecoderType decoder_type_;
+  const TestAudioDecoderType decoder_type_;
 
   // Current TestParams used to initialize the test and decoder. The initial
   // valie is std::get<1>(GetParam()). Could be overridden by set_param() so
@@ -443,26 +420,6 @@ const TestParams kMediaCodecTestParams[] = {
 };
 
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-const DecodedBufferExpectations kNoiseXheAAcExpectations[] = {
-    {0, 42666, "3.80,1.69,-2.85,3.30,4.61,0.53"},
-    {42666, 42666, "-4.17,0.63,2.73,2.21,3.76,-0.56,"},
-    {85333, 42666, "5.08,-0.10,-2.08,1.42,-2.99,-1.32,"},
-};
-const DecodedBufferExpectations kNoiseMonoXheAAcExpectations[] = {
-    {0, 34829, "-1.85,-1.56,-0.29,1.02,1.43,-0.18,"},
-    {34829, 34829, "-1.24,-0.95,0.31,1.60,2.02,0.41,"},
-    {69659, 34829, "-0.64,-0.36,0.89,2.16,2.58,0.99,"},
-};
-
-const TestParams kAudioToolboxTestParams[] = {
-    {AudioCodec::kAAC, "noise-xhe-aac.mp4", kNoiseXheAAcExpectations, 0, 48000,
-     CHANNEL_LAYOUT_STEREO},
-    {AudioCodec::kAAC, "noise-xhe-aac-mono.mp4", kNoiseMonoXheAAcExpectations,
-     0, 29400, CHANNEL_LAYOUT_MONO},
-};
-#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 const DecodedBufferExpectations kSfxMp3Expectations[] = {
     {0, 1065, "2.81,3.99,4.53,4.10,3.08,2.46,"},
@@ -549,29 +506,16 @@ const TestParams kFFmpegTestParams[] = {
      CHANNEL_LAYOUT_STEREO},
 };
 
-void AudioDecoderTest::SetReinitializeParams() {
-#if BUILDFLAG(IS_MAC)
-  // AudioToolbox only supports xHE-AAC, so we can't use the Opus params. We can
-  // instead just swap between the two test parameter sets.
-  if (decoder_type_ == AudioDecoderType::kAudioToolbox) {
-    set_params(params_.channel_layout ==
-                       kAudioToolboxTestParams[0].channel_layout
-                   ? kAudioToolboxTestParams[1]
-                   : kAudioToolboxTestParams[0]);
-    return;
-  }
-#endif
-
-  set_params(kReinitializeTestParams);
-}
-
 TEST_P(AudioDecoderTest, Initialize) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
 }
 
 TEST_P(AudioDecoderTest, Reinitialize_AfterInitialize) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
-  SetReinitializeParams();
+
+  // Use a different TestParams to reinitialize the decoder.
+  set_params(kReinitializeTestParams);
+
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
@@ -579,7 +523,10 @@ TEST_P(AudioDecoderTest, Reinitialize_AfterInitialize) {
 TEST_P(AudioDecoderTest, Reinitialize_AfterDecode) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
-  SetReinitializeParams();
+
+  // Use a different TestParams to reinitialize the decoder.
+  set_params(kReinitializeTestParams);
+
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
@@ -588,7 +535,10 @@ TEST_P(AudioDecoderTest, Reinitialize_AfterReset) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
   Reset();
-  SetReinitializeParams();
+
+  // Use a different TestParams to reinitialize the decoder.
+  set_params(kReinitializeTestParams);
+
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
@@ -655,21 +605,13 @@ TEST_P(AudioDecoderTest, NoTimestamp) {
 
 INSTANTIATE_TEST_SUITE_P(FFmpeg,
                          AudioDecoderTest,
-                         Combine(Values(AudioDecoderType::kFFmpeg),
-                                 ValuesIn(kFFmpegTestParams)));
+                         Combine(Values(FFMPEG), ValuesIn(kFFmpegTestParams)));
 
 #if BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(MediaCodec,
                          AudioDecoderTest,
-                         Combine(Values(AudioDecoderType::kMediaCodec),
+                         Combine(Values(MEDIA_CODEC),
                                  ValuesIn(kMediaCodecTestParams)));
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-INSTANTIATE_TEST_SUITE_P(AudioToolbox,
-                         AudioDecoderTest,
-                         Combine(Values(AudioDecoderType::kAudioToolbox),
-                                 ValuesIn(kAudioToolboxTestParams)));
-#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 }  // namespace media

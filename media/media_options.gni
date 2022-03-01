@@ -208,14 +208,9 @@ if (is_chromecast) {
     "video_decoder",
   ]
   _default_mojo_media_host = "gpu"
-} else if (is_mac) {
-  _default_mojo_media_services = [
-    "audio_decoder",
-    "video_decoder",
-  ]
-  _default_mojo_media_host = "gpu"
-} else if (is_chromeos_ash || is_win || ((is_linux || is_chromeos_lacros) &&
-                                         (use_vaapi || use_v4l2_codec))) {
+} else if (is_chromeos_ash || is_mac || is_win ||
+           ((is_linux || is_chromeos_lacros) &&
+            (use_vaapi || use_v4l2_codec))) {
   _default_mojo_media_services = [ "video_decoder" ]
   _default_mojo_media_host = "gpu"
 }
