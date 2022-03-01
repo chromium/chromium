@@ -78,7 +78,8 @@
       'Android ASAN (dbg)': 'android_clang_asan_debug_bot_reclient',
       'Android arm Builder (dbg)': 'android_webview_google_debug_static_bot_reclient',
       'Android arm64 Builder (dbg)': 'android_webview_google_debug_static_bot_arm64_reclient',
-      'Android x64 Builder (dbg)': 'android_debug_static_bot_x64_reclient',
+      # Trigger testers on Android Q+
+      'Android x64 Builder (dbg)': 'android_debug_static_bot_x64_reclient_webview_trichrome_webview_shell',
       'Android x86 Builder (dbg)': 'android_debug_static_bot_x86_reclient',
       'Cast Android (dbg)': 'android_cast_debug_static_bot_reclient',
       'Deterministic Android': 'android_without_codecs_release_bot_minimal_symbols',
@@ -1424,8 +1425,9 @@
       'android', 'debug_static_bot', 'arm64',
     ],
 
-    'android_debug_static_bot_x64_reclient': [
+    'android_debug_static_bot_x64_reclient_webview_trichrome_webview_shell': [
       'android', 'debug_static_bot_reclient', 'x64',
+      'webview_trichrome', 'webview_shell',
     ],
 
     'android_debug_static_bot_x86_reclient': [
@@ -4225,8 +4227,10 @@
       'gn_args': 'system_webview_package_name="com.google.android.webview.debug"',
     },
 
+    # Mainly used by builders that use android emulator.
+    # See https://bit.ly/3B1cyyt for more details.
     'webview_shell': {
-      'gn_args': 'system_webview_shell_package_name = "com.google.android.webview_shell"',
+      'gn_args': 'system_webview_shell_package_name = "org.chromium.my_webview_shell"',
     },
 
     'win_cross': {
