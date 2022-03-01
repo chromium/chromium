@@ -15,13 +15,11 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/resources/grit/webui_generated_resources.h"
 #include "url/gurl.h"
 
 namespace {
 
 // Multi-iframe version, used by third party remote NTPs.
-const char kAssertJsPath[] = "/assert.js";
 const char kTitleHTMLPath[] = "/title.html";
 const char kTitleCSSPath[] = "/title.css";
 const char kTitleJSPath[] = "/title.js";
@@ -52,8 +50,6 @@ void MostVisitedIframeSource::StartDataRequest(
   } else if (path == kTitleJSPath) {
     SendJSWithOrigin(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_JS, wc_getter,
                      std::move(callback));
-  } else if (path == kAssertJsPath) {
-    SendResource(IDR_WEBUI_JS_ASSERT_JS, std::move(callback));
   } else {
     std::move(callback).Run(nullptr);
   }
@@ -69,6 +65,10 @@ std::string MostVisitedIframeSource::GetMimeType(
   if (base::EndsWith(path, ".html", base::CompareCase::INSENSITIVE_ASCII))
     return "text/html";
   return std::string();
+}
+
+bool MostVisitedIframeSource::ShouldServeMimeTypeAsContentTypeHeader() {
+  return true;
 }
 
 bool MostVisitedIframeSource::AllowCaching() {
@@ -91,7 +91,7 @@ bool MostVisitedIframeSource::ShouldDenyXFrameOptions() {
 
 bool MostVisitedIframeSource::ServesPath(const std::string& path) const {
   return path == kTitleHTMLPath || path == kTitleCSSPath ||
-         path == kTitleJSPath || path == kAssertJsPath;
+         path == kTitleJSPath;
 }
 
 void MostVisitedIframeSource::SendResource(
