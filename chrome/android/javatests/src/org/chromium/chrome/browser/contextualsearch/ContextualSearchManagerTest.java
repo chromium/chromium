@@ -16,7 +16,6 @@ import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -41,7 +40,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -247,6 +245,7 @@ public class ContextualSearchManagerTest {
     @Before
     public void setUp() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            FirstRunStatus.setFirstRunFlowComplete(true);
             LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
                 @Override
                 public boolean needToCheckForSearchEnginePromo() {
@@ -269,7 +268,6 @@ public class ContextualSearchManagerTest {
         mPolicy = mManager.getContextualSearchPolicy();
         mPolicy.overrideDecidedStateForTesting(true);
         mSelectionController.setPolicy(mPolicy);
-        resetCounters();
 
         mFakeServer = new ContextualSearchFakeServer(mPolicy, mTestHost, mManager,
                 mManager.getOverlayContentDelegate(), new OverlayContentProgressObserver(),
@@ -309,6 +307,7 @@ public class ContextualSearchManagerTest {
     @After
     public void tearDown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            FirstRunStatus.setFirstRunFlowComplete(false);
             mManager.dismissContextualSearchBar();
             mPanel.closePanel(StateChangeReason.UNKNOWN, false);
         });
@@ -1230,21 +1229,6 @@ public class ContextualSearchManagerTest {
     }
 
     /**
-     * Resets all the counters used, by resetting all shared preferences.
-     */
-    private void resetCounters() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-            boolean freStatus =
-                    prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
-            prefs.edit()
-                    .clear()
-                    .putBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, freStatus)
-                    .apply();
-        });
-    }
-
-    /**
      * Force the Panel to handle a click on open-in-a-new-tab icon.
      */
     private void forceOpenTabIconClick() {
@@ -2009,7 +1993,6 @@ public class ContextualSearchManagerTest {
     public void testTapCount() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
-        resetCounters();
         Assert.assertEquals(0, mPolicy.getTapCount());
 
         // A simple Tap should change the counter.

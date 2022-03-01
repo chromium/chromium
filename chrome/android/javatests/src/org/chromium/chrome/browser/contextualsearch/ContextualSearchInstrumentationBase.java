@@ -14,7 +14,6 @@ import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
@@ -34,7 +33,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.mockito.Mock;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -56,10 +54,10 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.ContextualSearchTestHost;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeResolveSearch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeSlowResolveSearch;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -388,6 +386,8 @@ public class ContextualSearchInstrumentationBase {
     public void setUp() throws Exception {
         final ChromeActivity activity = sActivityTestRule.getActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            FirstRunStatus.setFirstRunFlowComplete(true);
+
             mPanelManager = new OverlayPanelManagerWrapper();
             mPanelManager.setContainerView(new LinearLayout(activity));
             mContextualSearchManager = new ContextualSearchManagerWrapper(activity);
@@ -416,7 +416,6 @@ public class ContextualSearchInstrumentationBase {
         mPolicy = mManager.getContextualSearchPolicy();
         mPolicy.overrideDecidedStateForTesting(true);
         mSelectionController.setPolicy(mPolicy);
-        resetCounters();
 
         mFakeServer = new ContextualSearchFakeServer(mPolicy, mTestHost, mManager,
                 mManager.getOverlayContentDelegate(), new OverlayContentProgressObserver(),
@@ -473,6 +472,8 @@ public class ContextualSearchInstrumentationBase {
     @After
     public void tearDown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            FirstRunStatus.setFirstRunFlowComplete(false);
+
             if (mManager != null) mManager.dismissContextualSearchBar();
             if (mPanel != null) mPanel.closePanel(StateChangeReason.UNKNOWN, false);
         });
@@ -1317,22 +1318,6 @@ public class ContextualSearchInstrumentationBase {
             clickPanelBar();
             waitForPanelToExpand();
         }, false);
-    }
-
-    /**
-     * Resets all the counters used, by resetting all shared preferences.
-     */
-    private void resetCounters() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // TODO(donnd): Use SharedPreferencesManager instead to access SharedPreferences.
-            SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-            boolean freStatus =
-                    prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
-            prefs.edit()
-                    .clear()
-                    .putBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, freStatus)
-                    .apply();
-        });
     }
 
     /**
