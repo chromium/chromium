@@ -16,7 +16,6 @@ generate_grd("build_grd") {
   grd_prefix = "support_tool"
   out_grd = resources_grd_file
   input_files = [
-    "support_tool.css",
     "support_tool_container.html",
     "support_tool.html",
   ]

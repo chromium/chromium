@@ -2,23 +2,39 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<link rel="stylesheet" href="support_tool.css">
+<style>
+  .entry-view {
+    margin-inline-start: 40px;
+  }
 
-<div id="entry-view">
-    <h2>Support Tool</h2>
-    <div id="data-module-selection">
-        <div class="container-label">
-            Select the platform you want to collect debug data from.
-        </div>
-        <div class="data-module-checkbox">
-            <cr-checkbox checked="{{collectBrowserLogs_}}">
-                Browser
-            </cr-checkbox>
-        </div>
-        <div class="data-module-checkbox" hidden="[[hideChromeOS_]]">
-            <cr-checkbox checked="{{collectChromeOSLogs_}}">
-                Chrome OS
-            </cr-checkbox>
-        </div>
-    </div>
+  h2 {
+    color: var(--cr-text-color-primary);
+    font-size: 20px;
+    font-weight: normal;
+    margin-bottom: 18px;
+    margin-top: 72px;
+  }
+
+  .support-tool-title {
+    color: var(--cr-title-text-color);
+    font-size: 14px;
+    margin-bottom: 9px;
+    margin-top: 9px;
+  }
+
+  cr-input {
+    --cr-input-width: 75%;
+    height: 32px;
+    width: 248px;
+  }
+</style>
+
+<div class="entry-view">
+  <h2>Collect diagnostics data for support</h2>
+  <div class="support-tool-title">
+      Support Case ID
+  </div>
+  <cr-input id="support-case-id" value="{{caseId_}}"
+    spellcheck="false" maxlength="20">
+  </cr-input>
 </div>

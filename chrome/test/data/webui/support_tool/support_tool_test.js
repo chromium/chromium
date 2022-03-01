@@ -7,23 +7,28 @@
  * by support_tool_browsertest.js.
  */
 
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {SupportToolElement} from 'chrome://support-tool/support_tool.js';
-import {assertEquals, assertTrue} from '../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('SupportToolTest', function() {
   var supportTool;
 
+  const strings = {
+    caseId: 'testcaseid',
+  };
+
   setup(function() {
+    loadTimeData.overrideValues(strings);
     document.body.innerHTML = '';
     supportTool = /** @type {!SupportToolElement} */ (
         document.createElement('support-tool'));
     document.body.appendChild(supportTool);
   });
 
-  test('initialize checkboxes', () => {
-    assertTrue(supportTool.collectBrowserLogs_);
-    assertEquals(supportTool.collectChromeOSLogs_, isChromeOS);
-    assertEquals(supportTool.hideChromeOS_, !isChromeOS);
+  test('initialize fields', () => {
+    assertEquals(
+        supportTool.shadowRoot.getElementById('support-case-id').value,
+        'testcaseid');
   });
 });
