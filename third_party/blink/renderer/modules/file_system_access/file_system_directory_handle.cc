@@ -95,8 +95,7 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver->GetScriptState()->GetIsolate(),
-        DOMExceptionCode::kInvalidStateError, ""));
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError, ""));
     return result;
   }
 
@@ -134,8 +133,7 @@ ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver->GetScriptState()->GetIsolate(),
-        DOMExceptionCode::kInvalidStateError, ""));
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError, ""));
     return result;
   }
 
@@ -173,8 +171,7 @@ ScriptPromise FileSystemDirectoryHandle::removeEntry(
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver->GetScriptState()->GetIsolate(),
-        DOMExceptionCode::kInvalidStateError, ""));
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError, ""));
     return result;
   }
 
@@ -201,8 +198,7 @@ ScriptPromise FileSystemDirectoryHandle::resolve(
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver->GetScriptState()->GetIsolate(),
-        DOMExceptionCode::kInvalidStateError, ""));
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError, ""));
     return result;
   }
 
