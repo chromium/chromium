@@ -29,7 +29,7 @@ directory of the UI code you wish to test.
 
     * You’ll have to include:
     ```
-    #import "ios/chrome/test/earl_grey/chrome_test_case.h
+    #import "ios/chrome/test/earl_grey/chrome_test_case.h"
     ```
     * You’ll most likely find util functions in these files helpful.
     ```
