@@ -374,7 +374,7 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
       // single-threaded, or crash if it does not after a number of retries.
       ThreadHelpers::AssertSingleThreaded();
     } else {
-      LOG(ERROR) << error_message;
+      LOG(WARNING) << error_message;
       return false;
     }
   }
