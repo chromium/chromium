@@ -117,6 +117,13 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mp4aVariants) {
                                           // has_xhe_aac_support=true
     return;
   }
+#elif BUILDFLAG(IS_MAC)
+  if (__builtin_available(macOS 10.15, *)) {
+    ExecuteTest(
+        "testMp4aVariants(true, true)");  // has_proprietary_codecs=true,
+                                          // has_xhe_aac_support=true
+    return;
+  }
 #endif
   ExecuteTest("testMp4aVariants(true, false)");  // has_proprietary_codecs=true,
                                                  // has_xhe_aac_support=false

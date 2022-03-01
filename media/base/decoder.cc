@@ -54,9 +54,6 @@ std::string GetDecoderName(VideoDecoderType type) {
       return "V4L2VideoDecoder";
     case VideoDecoderType::kTesting:
       return "Testing or Mock Video decoder";
-    default:
-      NOTREACHED();
-      return "VideoDecoderType created through invalid static_cast";
   }
 }
 
@@ -76,9 +73,8 @@ std::string GetDecoderName(AudioDecoderType type) {
       return "AudioDecoderBroker";
     case AudioDecoderType::kTesting:
       return "Testing or Mock Audio decoder";
-    default:
-      NOTREACHED();
-      return "VideoDecoderType created through invalid static_cast";
+    case AudioDecoderType::kAudioToolbox:
+      return "AudioToolbox";
   }
 }
 

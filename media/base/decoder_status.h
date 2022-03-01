@@ -31,6 +31,7 @@ struct DecoderStatusTraits {
     kDecoderStreamReinitFailed = 109,
     kDecoderStreamDemuxerError = 110,
     kKeyFrameRequired = 111,
+    kMissingTimestamp = 112,
 
     // Reasons for failing to initialize
     kUnsupportedProfile = 200,
