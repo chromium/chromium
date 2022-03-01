@@ -21,14 +21,6 @@
 #include "net/http/http_util.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/result_codes.h"
-#include "ppapi/c/trusted/ppb_url_loader_trusted.h"
-#include "ppapi/cpp/completion_callback.h"
-#include "ppapi/cpp/instance_handle.h"
-#include "ppapi/cpp/module.h"
-#include "ppapi/cpp/url_loader.h"
-#include "ppapi/cpp/url_request_info.h"
-#include "ppapi/cpp/url_response_info.h"
-#include "ppapi/cpp/var.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
@@ -325,78 +317,6 @@ void BlinkUrlLoader::SetLoadComplete(int32_t result) {
   state_ = LoadingState::kLoadComplete;
   complete_result_ = result;
   blink_loader_.reset();
-}
-
-PepperUrlLoader::PepperUrlLoader(pp::InstanceHandle plugin_instance)
-    : plugin_instance_(plugin_instance), pepper_loader_(plugin_instance) {}
-
-PepperUrlLoader::~PepperUrlLoader() = default;
-
-void PepperUrlLoader::GrantUniversalAccess() {
-  const PPB_URLLoaderTrusted* trusted_interface =
-      static_cast<const PPB_URLLoaderTrusted*>(
-          pp::Module::Get()->GetBrowserInterface(
-              PPB_URLLOADERTRUSTED_INTERFACE));
-  if (trusted_interface)
-    trusted_interface->GrantUniversalAccess(pepper_loader_.pp_resource());
-}
-
-void PepperUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
-  pp::URLRequestInfo pp_request(plugin_instance_);
-  pp_request.SetURL(request.url);
-  pp_request.SetMethod(request.method);
-  pp_request.SetCustomReferrerURL(request.url);
-
-  if (request.ignore_redirects)
-    pp_request.SetFollowRedirects(false);
-
-  if (!request.custom_referrer_url.empty())
-    pp_request.SetCustomReferrerURL(request.custom_referrer_url);
-
-  if (!request.headers.empty())
-    pp_request.SetHeaders(request.headers);
-
-  if (!request.body.empty())
-    pp_request.AppendDataToBody(request.body.data(), request.body.size());
-
-  pp::CompletionCallback pp_callback = PPCompletionCallbackFromResultCallback(
-      base::BindOnce(&PepperUrlLoader::DidOpen, weak_factory_.GetWeakPtr(),
-                     std::move(callback)));
-  int32_t result = pepper_loader_.Open(pp_request, pp_callback);
-  if (result != PP_OK_COMPLETIONPENDING)
-    pp_callback.Run(result);
-}
-
-void PepperUrlLoader::ReadResponseBody(base::span<char> buffer,
-                                       ResultCallback callback) {
-  pp::CompletionCallback pp_callback =
-      PPCompletionCallbackFromResultCallback(std::move(callback));
-  int32_t result = pepper_loader_.ReadResponseBody(buffer.data(), buffer.size(),
-                                                   pp_callback);
-  if (result != PP_OK_COMPLETIONPENDING)
-    pp_callback.Run(result);
-}
-
-void PepperUrlLoader::Close() {
-  pepper_loader_.Close();
-}
-
-void PepperUrlLoader::DidOpen(ResultCallback callback, int32_t result) {
-  pp::URLResponseInfo pp_response = pepper_loader_.GetResponseInfo();
-  if (pp_response.is_null()) {
-    DCHECK_NE(result, kSuccess);
-  } else {
-    mutable_response().status_code = pp_response.GetStatusCode();
-
-    pp::Var headers_var = pp_response.GetHeaders();
-    if (headers_var.is_string()) {
-      mutable_response().headers = headers_var.AsString();
-    } else {
-      mutable_response().headers.clear();
-    }
-  }
-
-  std::move(callback).Run(result);
 }
 
 }  // namespace chrome_pdf

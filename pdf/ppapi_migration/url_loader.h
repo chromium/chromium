@@ -16,8 +16,6 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/ppapi_migration/callback.h"
-#include "ppapi/cpp/instance_handle.h"
-#include "ppapi/cpp/url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 
 namespace blink {
@@ -224,30 +222,6 @@ class BlinkUrlLoader final : public UrlLoader,
 
   ResultCallback read_callback_;
   base::span<char> client_buffer_;
-};
-
-// A Pepper URL loader.
-class PepperUrlLoader final : public UrlLoader {
- public:
-  explicit PepperUrlLoader(pp::InstanceHandle plugin_instance);
-  PepperUrlLoader(const PepperUrlLoader&) = delete;
-  PepperUrlLoader& operator=(const PepperUrlLoader&) = delete;
-  ~PepperUrlLoader() override;
-
-  // UrlLoader:
-  void GrantUniversalAccess() override;
-  void Open(const UrlRequest& request, ResultCallback callback) override;
-  void ReadResponseBody(base::span<char> buffer,
-                        ResultCallback callback) override;
-  void Close() override;
-
- private:
-  void DidOpen(ResultCallback callback, int32_t result);
-
-  pp::InstanceHandle plugin_instance_;
-  pp::URLLoader pepper_loader_;
-
-  base::WeakPtrFactory<PepperUrlLoader> weak_factory_{this};
 };
 
 }  // namespace chrome_pdf

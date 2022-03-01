@@ -208,17 +208,13 @@ if (enable_pdf) {
 
     testonly = true
 
-    sources = [
-      "pdfium/pdfium_assert_matching_enums.cc",
-      "ppapi_migration/ppapi_assert_matching_enums.cc",
-    ]
+    sources = [ "pdfium/pdfium_assert_matching_enums.cc" ]
 
     deps = [
       ":accessibility",
       ":internal",
       ":pdf",
       ":ppapi_migration",
-      "//ppapi/c",
       "//third_party/blink/public/common:headers",
       "//third_party/pdfium",
       "//ui/base",
@@ -256,33 +252,20 @@ if (enable_pdf) {
     sources = [
       "ppapi_migration/bitmap.cc",
       "ppapi_migration/bitmap.h",
-      "ppapi_migration/callback.cc",
       "ppapi_migration/callback.h",
-      "ppapi_migration/geometry_conversions.cc",
-      "ppapi_migration/geometry_conversions.h",
       "ppapi_migration/graphics.cc",
       "ppapi_migration/graphics.h",
       "ppapi_migration/image.cc",
       "ppapi_migration/image.h",
-      "ppapi_migration/input_event_conversions.cc",
-      "ppapi_migration/input_event_conversions.h",
-      "ppapi_migration/printing_conversions.cc",
-      "ppapi_migration/printing_conversions.h",
       "ppapi_migration/result_codes.h",
       "ppapi_migration/url_loader.cc",
       "ppapi_migration/url_loader.h",
-      "ppapi_migration/value_conversions.cc",
-      "ppapi_migration/value_conversions.h",
     ]
 
     configs += [ ":strict" ]
 
-    public_deps = [ "//third_party/abseil-cpp:absl" ]
-
     deps = [
       "//base",
-      "//ppapi/cpp:objects",
-      "//ppapi/cpp/private:internal_module",
       "//printing/mojom",
       "//skia",
       "//third_party/blink/public:blink",
@@ -403,9 +386,7 @@ if (enable_pdf) {
       "pdfium/pdfium_print_unittest.cc",
       "pdfium/pdfium_test_base.cc",
       "pdfium/pdfium_test_base.h",
-      "ppapi_migration/geometry_conversions_unittest.cc",
       "ppapi_migration/graphics_unittest.cc",
-      "ppapi_migration/printing_conversions_unittest.cc",
       "ppapi_migration/url_loader_unittest.cc",
       "range_set_unittest.cc",
       "test/run_all_unittests.cc",
@@ -433,8 +414,6 @@ if (enable_pdf) {
       "//mojo/core/embedder",
       "//mojo/public/cpp/bindings",
       "//pdf:buildflags",
-      "//ppapi/c",
-      "//ppapi/cpp:objects",
       "//printing",
       "//skia",
       "//testing/gmock",
@@ -463,6 +442,11 @@ if (enable_pdf) {
     data_deps = [
       ":pdf_unittests_pak",
       "//ui/resources:ui_test_pak_data",
+    ]
+
+    assert_no_deps = [
+      "//ppapi/c/*",
+      "//ppapi/cpp/*",
     ]
   }
 

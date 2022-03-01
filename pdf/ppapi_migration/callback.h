@@ -9,26 +9,11 @@
 
 #include "base/callback_forward.h"
 
-namespace pp {
-class CompletionCallback;
-}  // namespace pp
-
 namespace chrome_pdf {
 
 // A `base::OnceCallback` compatible with `pp::CompletionCallback`. Accepts an
 // `int32_t` result.
 using ResultCallback = base::OnceCallback<void(int32_t)>;
-
-// Adapts a `ResultCallback` to be invoked as a `pp::CompletionCallback`.
-//
-// Note that the `ResultCallback` will be deleted only when the
-// `pp::CompletionCallback` runs. This implies that the `pp::CompletionCallback`
-// must always be run exactly once.
-//
-// Also note that there is no replacement for `pp::CompletionCallbackFactory`;
-// use a `base::WeakPtrFactory` on the receiver object instead.
-pp::CompletionCallback PPCompletionCallbackFromResultCallback(
-    ResultCallback callback);
 
 }  // namespace chrome_pdf
 

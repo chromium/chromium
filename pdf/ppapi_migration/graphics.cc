@@ -16,13 +16,8 @@
 #include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "pdf/ppapi_migration/callback.h"
-#include "pdf/ppapi_migration/geometry_conversions.h"
 #include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/result_codes.h"
-#include "ppapi/cpp/completion_callback.h"
-#include "ppapi/cpp/instance_handle.h"
-#include "ppapi/cpp/point.h"
-#include "ppapi/cpp/rect.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/blit.h"
 #include "ui/gfx/geometry/point.h"
@@ -35,56 +30,6 @@
 namespace chrome_pdf {
 
 Graphics::Graphics(const gfx::Size& size) : size_(size) {}
-
-PepperGraphics::PepperGraphics(const pp::InstanceHandle& instance,
-                               const gfx::Size& size)
-    : Graphics(size),
-      pepper_graphics_(instance,
-                       PPSizeFromSize(size),
-                       /*is_always_opaque=*/true) {}
-
-PepperGraphics::~PepperGraphics() = default;
-
-bool PepperGraphics::Flush(ResultCallback callback) {
-  pp::CompletionCallback pp_callback =
-      PPCompletionCallbackFromResultCallback(std::move(callback));
-  int32_t result = pepper_graphics_.Flush(pp_callback);
-  if (result == PP_OK_COMPLETIONPENDING) {
-    return true;
-  }
-
-  // Should only happen if pp::Graphics2D::Flush() is called while a callback is
-  // still pending, which should never happen if PaintManager is managing all
-  // flushes.
-  DCHECK_EQ(Result::kSuccess, result);
-  pp_callback.Run(result);
-  return false;
-}
-
-void PepperGraphics::PaintImage(const Image& image, const gfx::Rect& src_rect) {
-  pepper_graphics_.PaintImageData(image.pepper_image(), pp::Point(),
-                                  PPRectFromRect(src_rect));
-}
-
-void PepperGraphics::Scroll(const gfx::Rect& clip,
-                            const gfx::Vector2d& amount) {
-  pepper_graphics_.Scroll(PPRectFromRect(clip),
-                          pp::Point(amount.x(), amount.y()));
-}
-
-void PepperGraphics::SetScale(float scale) {
-  bool result = pepper_graphics_.SetScale(scale);
-  DCHECK(result);
-}
-
-void PepperGraphics::SetLayerTransform(float scale,
-                                       const gfx::Point& origin,
-                                       const gfx::Vector2d& translate) {
-  bool result = pepper_graphics_.SetLayerTransform(
-      scale, pp::Point(origin.x(), origin.y()),
-      pp::Point(translate.x(), translate.y()));
-  DCHECK(result);
-}
 
 // static
 std::unique_ptr<SkiaGraphics> SkiaGraphics::Create(Client* client,
