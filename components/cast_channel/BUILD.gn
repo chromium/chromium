@@ -51,6 +51,7 @@ static_library("cast_channel") {
     "//crypto",
     "//net",
     "//services/data_decoder/public/cpp",
+    "//third_party/openscreen/src/cast/common:certificate_boringssl",
     "//third_party/openscreen/src/cast/common:channel",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
     "//third_party/openscreen/src/cast/sender:channel",
@@ -243,6 +244,7 @@ fuzzer_test("openscreen_cast_auth_util_fuzzer") {
     "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
     "//third_party/boringssl",
     "//third_party/libprotobuf-mutator",
+    "//third_party/openscreen/src/cast/common:certificate_boringssl",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
     "//third_party/openscreen/src/cast/sender:channel",
   ]
