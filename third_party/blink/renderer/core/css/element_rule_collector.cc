@@ -65,6 +65,17 @@ unsigned AdjustLinkMatchType(EInsideLink inside_link,
   return link_match_type;
 }
 
+unsigned LinkMatchTypeFromInsideLink(EInsideLink inside_link) {
+  switch (inside_link) {
+    case EInsideLink::kNotInsideLink:
+      return CSSSelector::kMatchAll;
+    case EInsideLink::kInsideVisitedLink:
+      return CSSSelector::kMatchVisited;
+    case EInsideLink::kInsideUnvisitedLink:
+      return CSSSelector::kMatchLink;
+  }
+}
+
 ContainerQueryEvaluator* FindContainerQueryEvaluator(
     const ContainerSelector& selector,
     const StyleRecalcContext& style_recalc_context) {
@@ -563,6 +574,15 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
   // Agent. In this case, it is safe to create CSSOM wrappers without
   // parentStyleSheets as they will be used only by inspector which will not try
   // to edit them.
+
+  // For :visited/:link rules, the question of whether or not a selector
+  // matches is delayed until cascade-time (see CascadeExpansion), hence such
+  // rules may appear to match from ElementRuleCollector's output. This behavior
+  // is not correct for Inspector purposes, hence we explicitly filter out
+  // rules that don't match the current link state here.
+  if (!(rule_data->LinkMatchType() & LinkMatchTypeFromInsideLink(inside_link_)))
+    return;
+
   CSSRule* css_rule = nullptr;
   StyleRule* rule = rule_data->Rule();
   if (parent_style_sheet)

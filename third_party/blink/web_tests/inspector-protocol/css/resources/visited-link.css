@@ -1,0 +1,20 @@
+#inspected {
+    color: rgb(0, 0, 1);
+}
+
+#inspected:visited {
+    color: rgb(0, 0, 2);
+}
+
+#inspected:not(:link) {
+    color: rgb(0, 0, 3);
+}
+
+#inspected:is(:visited, :link) {
+    color: rgb(0, 0, 4);
+}
+
+/* Should not match: */
+#inspected:link {
+    color: red;
+}

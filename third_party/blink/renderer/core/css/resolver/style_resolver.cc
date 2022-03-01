@@ -1383,7 +1383,7 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
       StyleRecalcContext::FromAncestors(*element);
   ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
                                  selector_filter_, match_result, state.Style(),
-                                 EInsideLink::kNotInsideLink);
+                                 state.ElementLinkState());
   collector.SetMode(SelectorChecker::kCollectingCSSRules);
   // TODO(obrufau): support collecting rules for nested ::marker
   if (!element->IsPseudoElement()) {
