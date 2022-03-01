@@ -191,12 +191,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_additional_search_terms_changed_,
               u.AdditionalSearchTermsChanged());
 
-    if (expect_icon_key_.has_value()) {
-      ASSERT_TRUE(u.GetIconKey().has_value());
-      EXPECT_EQ(expect_icon_key_.value(), u.GetIconKey().value());
-    } else {
-      ASSERT_FALSE(u.GetIconKey().has_value());
-    }
+    EXPECT_EQ(expect_icon_key_, u.IconKey());
     EXPECT_EQ(expect_icon_key_changed_, u.IconKeyChanged());
 
     EXPECT_EQ(expect_last_launch_time_, u.LastLaunchTime());

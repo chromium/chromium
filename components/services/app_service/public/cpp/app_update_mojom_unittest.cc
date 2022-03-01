@@ -48,7 +48,7 @@ class AppUpdateMojomTest : public testing::Test {
   std::vector<std::string> expect_additional_search_terms_;
   bool expect_additional_search_terms_changed_;
 
-  apps::mojom::IconKeyPtr expect_icon_key_;
+  absl::optional<apps::IconKey> expect_icon_key_;
   bool expect_icon_key_changed_;
 
   base::Time expect_last_launch_time_;
@@ -266,7 +266,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_description_ = "";
     expect_version_ = "";
     expect_additional_search_terms_.clear();
-    expect_icon_key_ = nullptr;
+    expect_icon_key_ = absl::nullopt;
     expect_last_launch_time_ = base::Time();
     expect_install_time_ = base::Time();
     expect_permissions_.clear();
@@ -457,7 +457,7 @@ class AppUpdateMojomTest : public testing::Test {
     if (state) {
       auto x = apps::mojom::IconKey::New(100, 0, 0);
       state->icon_key = x.Clone();
-      expect_icon_key_ = x.Clone();
+      expect_icon_key_ = std::move(*apps::ConvertMojomIconKeyToIconKey(x));
       expect_icon_key_changed_ = false;
       CheckExpects(u);
     }
@@ -465,7 +465,7 @@ class AppUpdateMojomTest : public testing::Test {
     if (delta) {
       auto x = apps::mojom::IconKey::New(200, 0, 0);
       delta->icon_key = x.Clone();
-      expect_icon_key_ = x.Clone();
+      expect_icon_key_ = std::move(*apps::ConvertMojomIconKeyToIconKey(x));
       expect_icon_key_changed_ = true;
       CheckExpects(u);
     }

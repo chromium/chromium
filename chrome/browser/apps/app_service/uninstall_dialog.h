@@ -96,8 +96,7 @@ class UninstallDialog {
 
   // Loads the app icon to show the icon in the uninstall dialog before creating
   // the dialog view.
-  void PrepareToShow(apps::mojom::IconKeyPtr mojom_icon_key,
-                     apps::IconLoader* icon_loader);
+  void PrepareToShow(IconKey icon_key, apps::IconLoader* icon_loader);
 
   views::Widget* GetWidget();
 

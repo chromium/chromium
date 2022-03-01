@@ -1414,8 +1414,8 @@ class SystemWebAppManagerAppSuspensionBrowserTest
     return readiness;
   }
 
-  apps::mojom::IconKeyPtr GetAppIconKey(const AppId& app_id) {
-    apps::mojom::IconKeyPtr icon_key;
+  absl::optional<apps::IconKey> GetAppIconKey(const AppId& app_id) {
+    absl::optional<apps::IconKey> icon_key;
     bool app_found =
         GetAppServiceProxy(browser()->profile())
             ->AppRegistryCache()

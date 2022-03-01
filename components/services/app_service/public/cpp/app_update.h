@@ -106,8 +106,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   std::vector<std::string> AdditionalSearchTerms() const;
   bool AdditionalSearchTermsChanged() const;
 
-  apps::mojom::IconKeyPtr IconKey() const;
-  absl::optional<apps::IconKey> GetIconKey() const;
+  absl::optional<apps::IconKey> IconKey() const;
   bool IconKeyChanged() const;
 
   base::Time LastLaunchTime() const;

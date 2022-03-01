@@ -454,22 +454,27 @@ bool AppUpdate::AdditionalSearchTermsChanged() const {
                             mojom_state_->additional_search_terms));
 }
 
-apps::mojom::IconKeyPtr AppUpdate::IconKey() const {
+absl::optional<apps::IconKey> AppUpdate::IconKey() const {
+  apps::IconKey icon_key;
+  if (ShouldUseNonMojom()) {
+    if (delta_ && delta_->icon_key.has_value()) {
+      icon_key = std::move(*delta_->icon_key->Clone());
+      return icon_key;
+    }
+    if (state_ && state_->icon_key.has_value()) {
+      icon_key = std::move(*state_->icon_key->Clone());
+      return icon_key;
+    }
+    return absl::nullopt;
+  }
+
   if (mojom_delta_ && !mojom_delta_->icon_key.is_null()) {
-    return mojom_delta_->icon_key.Clone();
+    icon_key = std::move(*ConvertMojomIconKeyToIconKey(mojom_delta_->icon_key));
+    return icon_key;
   }
   if (mojom_state_ && !mojom_state_->icon_key.is_null()) {
-    return mojom_state_->icon_key.Clone();
-  }
-  return apps::mojom::IconKeyPtr();
-}
-
-absl::optional<apps::IconKey> AppUpdate::GetIconKey() const {
-  if (delta_ && delta_->icon_key.has_value()) {
-    return absl::optional<apps::IconKey>(std::move(*delta_->icon_key->Clone()));
-  }
-  if (state_ && state_->icon_key.has_value()) {
-    return absl::optional<apps::IconKey>(std::move(*state_->icon_key->Clone()));
+    icon_key = std::move(*ConvertMojomIconKeyToIconKey(mojom_state_->icon_key));
+    return icon_key;
   }
   return absl::nullopt;
 }

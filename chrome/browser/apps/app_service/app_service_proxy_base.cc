@@ -69,7 +69,7 @@ absl::optional<IconKey> AppServiceProxyBase::InnerIconLoader::GetIconKey(
   absl::optional<IconKey> icon_key;
   host_->app_registry_cache_.ForApp(
       app_id,
-      [&icon_key](const AppUpdate& update) { icon_key = update.GetIconKey(); });
+      [&icon_key](const AppUpdate& update) { icon_key = update.IconKey(); });
   return icon_key;
 }
 

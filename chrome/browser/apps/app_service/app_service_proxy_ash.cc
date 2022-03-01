@@ -294,7 +294,8 @@ void AppServiceProxyAsh::UninstallImpl(
   app_registry_cache_.ForOneApp(app_id, [this, uninstall_source, parent_window,
                                          &callback](
                                             const apps::AppUpdate& update) {
-    apps::mojom::IconKeyPtr icon_key = update.IconKey();
+    auto icon_key = update.IconKey();
+    DCHECK(icon_key.has_value());
     auto uninstall_dialog_ptr = std::make_unique<UninstallDialog>(
         profile_, update.AppType(), update.AppId(), update.Name(),
         parent_window,
@@ -305,7 +306,7 @@ void AppServiceProxyAsh::UninstallImpl(
     uninstall_dialog_ptr->SetDialogCreatedCallbackForTesting(
         std::move(callback));
     uninstall_dialogs_.emplace(update.AppId(), std::move(uninstall_dialog_ptr));
-    uninstall_dialog->PrepareToShow(std::move(icon_key), this);
+    uninstall_dialog->PrepareToShow(std::move(icon_key.value()), this);
   });
 }
 
@@ -376,7 +377,7 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
 
 void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
                                            apps::LoadIconCallback callback) {
-  apps::mojom::IconKeyPtr mojom_icon_key = update.IconKey();
+  auto icon_key = update.IconKey();
   constexpr bool kAllowPlaceholderIcon = false;
   constexpr int32_t kIconSize = 48;
   auto app_type = update.AppType();
@@ -390,18 +391,22 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
   if (!dialog_created_callback_.is_null() || !profile_->IsChild()) {
     if (base::FeatureList::IsEnabled(
             features::kAppServiceLoadIconWithoutMojom)) {
-      if (!mojom_icon_key) {
+      if (!icon_key.has_value()) {
         std::move(callback).Run(std::make_unique<IconValue>());
         return;
       }
-      std::unique_ptr<IconKey> icon_key =
-          ConvertMojomIconKeyToIconKey(mojom_icon_key);
       LoadIconFromIconKey(ConvertMojomAppTypToAppType(app_type), update.AppId(),
-                          *icon_key, icon_type, kIconSize,
+                          icon_key.value(), icon_type, kIconSize,
                           kAllowPlaceholderIcon, std::move(callback));
     } else {
+      if (!icon_key.has_value()) {
+        MojomIconValueToIconValueCallback(std::move(callback))
+            .Run(apps::mojom::IconValue::New());
+        return;
+      }
       LoadIconFromIconKey(
-          app_type, update.AppId(), std::move(mojom_icon_key),
+          app_type, update.AppId(),
+          ConvertIconKeyToMojomIconKey(icon_key.value()),
           apps::mojom::IconType::kStandard, kIconSize, kAllowPlaceholderIcon,
           MojomIconValueToIconValueCallback(std::move(callback)));
     }

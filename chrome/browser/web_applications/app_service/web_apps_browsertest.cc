@@ -136,10 +136,10 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchAppIconKeyUnchanged) {
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
   proxy->FlushMojoCallsForTesting();
 
-  apps::mojom::IconKeyPtr original_key;
+  absl::optional<apps::IconKey> original_key;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&original_key](const apps::AppUpdate& update) {
-        original_key = update.IconKey().Clone();
+        original_key = update.IconKey();
       });
 
   const int32_t event_flags =
