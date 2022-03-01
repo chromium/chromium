@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_VIEW_H_
-#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_VIEW_H_
+#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_VIEW_H_
+#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_VIEW_H_
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_circle.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_label.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_circle.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/view.h"
@@ -46,4 +46,4 @@ class ActionView : public views::View {
 }  // namespace input_overlay
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_VIEW_H_
+#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_VIEW_H_

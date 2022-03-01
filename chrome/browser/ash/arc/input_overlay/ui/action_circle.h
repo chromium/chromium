@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_CIRCLE_H_
-#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_CIRCLE_H_
+#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_CIRCLE_H_
+#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_CIRCLE_H_
 
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/views/view.h"
@@ -29,4 +29,4 @@ class ActionCircle : public views::View {
 }  // namespace input_overlay
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_CIRCLE_H_
+#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_CIRCLE_H_

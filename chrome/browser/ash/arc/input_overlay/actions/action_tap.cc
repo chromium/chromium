@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_label.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"

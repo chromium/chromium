@@ -12,11 +12,11 @@
 
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_label.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/point_f.h"

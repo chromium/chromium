@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_MOVE_H_
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "ui/aura/window.h"
 
 namespace arc {
