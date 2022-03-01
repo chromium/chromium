@@ -1122,13 +1122,6 @@ void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
       internal::kHistogramWorstUserInteractionLatencyTotalEventDuration,
       total_event_durations.worst_latency, base::Milliseconds(1),
       base::Seconds(60), 50);
-
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSendAllUserInteractionLatencies))
-    return;
-
-  // When the flag is disabled, we don't know the type of user interactions
-  // and can't calculate the worst over budget.
   UmaHistogramCustomTimes(
       internal::kHistogramWorstUserInteractionLatencyOverBudgetMaxEventDuration,
       max_event_durations.worst_latency_over_budget, base::Milliseconds(1),

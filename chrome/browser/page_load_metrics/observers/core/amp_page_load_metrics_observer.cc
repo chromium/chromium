@@ -629,10 +629,6 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
       total_event_durations.worst_latency, base::Milliseconds(1),
       base::Seconds(60), 50);
 
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSendAllUserInteractionLatencies))
-    return;
-
   base::TimeDelta high_percentile2_max_event_duration = page_load_metrics::
       ResponsivenessMetricsNormalization::ApproximateHighPercentile(
           normalized_responsiveness_metrics.num_user_interactions,

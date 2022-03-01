@@ -342,20 +342,10 @@ void PageTimingMetricsSender::DidObserveInputDelay(
 }
 
 void PageTimingMetricsSender::InitiateUserInteractionTiming() {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSendAllUserInteractionLatencies)) {
-    input_timing_delta_->max_event_durations =
-        mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
-    input_timing_delta_->total_event_durations =
-        mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
-  } else {
-    input_timing_delta_->max_event_durations =
-        mojom::UserInteractionLatencies::NewWorstInteractionLatency(
-            base::TimeDelta());
-    input_timing_delta_->total_event_durations =
-        mojom::UserInteractionLatencies::NewWorstInteractionLatency(
-            base::TimeDelta());
-  }
+  input_timing_delta_->max_event_durations =
+      mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
+  input_timing_delta_->total_event_durations =
+      mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
 }
 
 void PageTimingMetricsSender::DidObserveUserInteraction(
@@ -363,26 +353,12 @@ void PageTimingMetricsSender::DidObserveUserInteraction(
     base::TimeDelta total_event_duration,
     blink::UserInteractionType interaction_type) {
   input_timing_delta_->num_interactions++;
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSendAllUserInteractionLatencies)) {
-    input_timing_delta_->max_event_durations->get_user_interaction_latencies()
-        .emplace_back(mojom::UserInteractionLatency::New(
-            max_event_duration, UserInteractionTypeForMojom(interaction_type)));
-    input_timing_delta_->total_event_durations->get_user_interaction_latencies()
-        .emplace_back(mojom::UserInteractionLatency::New(
-            total_event_duration,
-            UserInteractionTypeForMojom(interaction_type)));
-  } else {
-    input_timing_delta_->max_event_durations->set_worst_interaction_latency(
-        std::max(input_timing_delta_->max_event_durations
-                     ->get_worst_interaction_latency(),
-                 max_event_duration));
-    input_timing_delta_->total_event_durations->set_worst_interaction_latency(
-        std::max(input_timing_delta_->total_event_durations
-                     ->get_worst_interaction_latency(),
-                 total_event_duration));
-  }
-
+  input_timing_delta_->max_event_durations->get_user_interaction_latencies()
+      .emplace_back(mojom::UserInteractionLatency::New(
+          max_event_duration, UserInteractionTypeForMojom(interaction_type)));
+  input_timing_delta_->total_event_durations->get_user_interaction_latencies()
+      .emplace_back(mojom::UserInteractionLatency::New(
+          total_event_duration, UserInteractionTypeForMojom(interaction_type)));
   EnsureSendTimer();
 }
 

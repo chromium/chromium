@@ -390,12 +390,6 @@ void BackForwardCachePageLoadMetricsObserver::
       total_event_durations.worst_latency, base::Milliseconds(1),
       base::Seconds(60), 50);
 
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSendAllUserInteractionLatencies)) {
-    builder.Record(ukm::UkmRecorder::Get());
-    return;
-  }
-
   builder
       .SetWorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventduration(
           max_event_durations.worst_latency_over_budget.InMilliseconds());

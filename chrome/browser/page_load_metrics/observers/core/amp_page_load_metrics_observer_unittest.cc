@@ -502,10 +502,6 @@ TEST_F(AMPPageLoadMetricsObserverTest,
 
 TEST_F(AMPPageLoadMetricsObserverTest,
        SubFrameResponsivenessMetricsNormalization) {
-  // Flip the flag to send all user interaction latencies to the browser.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kSendAllUserInteractionLatencies);
   GURL amp_url("https://ampviewer.com/page");
   NavigationSimulator::CreateRendererInitiated(GURL("https://ampviewer.com/"),
                                                main_rfh())
@@ -650,10 +646,6 @@ TEST_F(AMPPageLoadMetricsObserverTest,
 
 TEST_F(AMPPageLoadMetricsObserverTest,
        SubFrameResponsivenessMetricsNormalizations) {
-  // Flip the flag to send all user interaction latencies to the browser.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kSendAllUserInteractionLatencies);
   GURL amp_url("https://ampviewer.com/page");
 
   NavigationSimulator::CreateRendererInitiated(amp_url, main_rfh())->Commit();

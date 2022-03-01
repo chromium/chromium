@@ -37,11 +37,6 @@ class ResponsivenessMetricsNormalizationTest : public testing::Test {
 };
 
 TEST_F(ResponsivenessMetricsNormalizationTest, SendAllInteractions) {
-  // Flip the flag to send all user interaction latencies to browser.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kSendAllUserInteractionLatencies);
-
   UserInteractionLatenciesPtr max_event_durations =
       UserInteractionLatencies::NewUserInteractionLatencies({});
   auto& user_interaction_latencies1 =

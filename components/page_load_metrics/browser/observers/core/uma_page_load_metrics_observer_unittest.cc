@@ -1161,10 +1161,6 @@ TEST_F(UmaPageLoadMetricsObserverTest,
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
-  // Flip the flag.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kSendAllUserInteractionLatencies);
   page_load_metrics::mojom::InputTiming input_timing;
   input_timing.num_interactions = 3;
   input_timing.max_event_durations =

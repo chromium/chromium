@@ -47,9 +47,7 @@ base::TimeDelta ResponsivenessMetricsNormalization::ApproximateHighPercentile(
     std::priority_queue<base::TimeDelta,
                         std::vector<base::TimeDelta>,
                         std::greater<>> worst_ten_latencies_over_budget) {
-  DCHECK(num_interactions &&
-         base::FeatureList::IsEnabled(
-             blink::features::kSendAllUserInteractionLatencies));
+  DCHECK(num_interactions);
   int index = std::max(
       0,
       static_cast<int>(worst_ten_latencies_over_budget.size()) - 1 -
@@ -93,14 +91,6 @@ void ResponsivenessMetricsNormalization::NormalizeUserInteractionLatencies(
     NormalizedInteractionLatencies& normalized_event_durations,
     uint64_t last_num_user_interactions,
     uint64_t current_num_user_interactions) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSendAllUserInteractionLatencies)) {
-    DCHECK(user_interaction_latencies.is_worst_interaction_latency());
-    normalized_event_durations.worst_latency =
-        std::max(normalized_event_durations.worst_latency,
-                 user_interaction_latencies.get_worst_interaction_latency());
-    return;
-  }
   DCHECK(user_interaction_latencies.is_user_interaction_latencies());
   for (const mojom::UserInteractionLatencyPtr& user_interaction :
        user_interaction_latencies.get_user_interaction_latencies()) {

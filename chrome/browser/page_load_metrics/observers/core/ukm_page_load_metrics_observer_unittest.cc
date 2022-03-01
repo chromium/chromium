@@ -1045,10 +1045,6 @@ TEST_F(UkmPageLoadMetricsObserverTest,
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
-  // Flip the flag.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kSendAllUserInteractionLatencies);
   NavigateAndCommit(GURL(kTestUrl1));
 
   page_load_metrics::mojom::InputTiming input_timing;

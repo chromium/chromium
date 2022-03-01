@@ -38,9 +38,7 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
         {{features::kBackForwardCache,
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
            {"ignore_outstanding_network_request_for_testing", "true"}}},
-         {internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics, {{}}},
-         // Send all user interaction latencies to the browser process.
-         {blink::features::kSendAllUserInteractionLatencies, {{}}}},
+         {internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics, {{}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
         {features::kBackForwardCacheMemoryControls});
 
