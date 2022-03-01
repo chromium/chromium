@@ -94,7 +94,7 @@ function setMetricsEnabled(id: string, enabled: boolean): void {
   (window as unknown as Record<string, boolean>)[`ga-disable-${id}`] = !enabled;
 }
 
-export interface GAHelperInterface {
+export interface GAHelper {
   initGA: typeof initGA;
   sendGAEvent: typeof sendGAEvent;
   setMetricsEnabled: typeof setMetricsEnabled;

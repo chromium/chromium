@@ -9,7 +9,7 @@ import {
   Resolution,
 } from '../type.js';
 import {
-  VideoProcessorHelperInterface,
+  VideoProcessorHelper,
 } from '../untrusted_video_processor_helper.js';
 import * as util from '../util.js';
 
@@ -30,7 +30,7 @@ import {FileAccessEntry} from './file_system_access_entry.js';
 const FFMpegVideoProcessor = (async () => {
   const workerChannel = new MessageChannel();
   const videoProcessorHelper =
-      await util.createUntrustedJSModule<VideoProcessorHelperInterface>(
+      await util.createUntrustedJSModule<VideoProcessorHelper>(
           '/js/untrusted_video_processor_helper.js');
   await videoProcessorHelper.connectToWorker(
       Comlink.transfer(workerChannel.port2, [workerChannel.port2]));

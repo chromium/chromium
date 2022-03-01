@@ -7,7 +7,7 @@ import * as Comlink from '../lib/comlink.js';
 /**
  * A barcode worker to detect barcode from images.
  */
-class BarcodeWorker {
+class BarcodeWorkerImpl {
   private readonly detector = new BarcodeDetector({formats: ['qr_code']});
 
   async detect(bitmap: ImageBitmap): Promise<string|null> {
@@ -37,6 +37,6 @@ class BarcodeWorker {
 
 // Only export types to ensure that the file is not imported by other files at
 // runtime.
-export type BarcodeWorkerInterface = BarcodeWorker;
+export type BarcodeWorker = BarcodeWorkerImpl;
 
-Comlink.expose(new BarcodeWorker());
+Comlink.expose(new BarcodeWorkerImpl());

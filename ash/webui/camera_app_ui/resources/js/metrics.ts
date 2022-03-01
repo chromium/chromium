@@ -17,7 +17,7 @@ import {
   PerfInformation,
   Resolution,
 } from './type.js';
-import {GAHelperInterface} from './untrusted_ga_helper.js';
+import {GAHelper} from './untrusted_ga_helper.js';
 import * as util from './util.js';
 import {WaitableEvent} from './waitable_event.js';
 
@@ -30,8 +30,8 @@ let baseDimen: Map<number, number|string>|null = null;
 
 const ready = new WaitableEvent();
 
-const gaHelper = util.createUntrustedJSModule<GAHelperInterface>(
-    '/js/untrusted_ga_helper.js');
+const gaHelper =
+    util.createUntrustedJSModule<GAHelper>('/js/untrusted_ga_helper.js');
 
 /**
  * Send the event to GA backend.

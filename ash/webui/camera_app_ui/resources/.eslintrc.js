@@ -528,6 +528,12 @@ module.exports = {
         message: 'for (... in ...) is not allowed. ' +
             '(go/tsstyle#iterating-objects)',
       },
+      // Disallow 'Interface' as identifier suffix. (go/tsstyle#naming-style)
+      {
+        selector: 'Identifier[name=/.*Interface/]',
+        message: 'Don\'t use "Interface" as identifier suffix. ' +
+            '(go/tsstyle#naming-style)',
+      },
     ],
 
     '@typescript-eslint/naming-convention': [
