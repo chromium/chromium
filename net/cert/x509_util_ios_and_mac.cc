@@ -18,6 +18,25 @@ namespace net {
 
 namespace x509_util {
 
+base::ScopedCFTypeRef<SecCertificateRef> CreateSecCertificateFromBytes(
+    const uint8_t* data,
+    size_t length) {
+  base::ScopedCFTypeRef<CFDataRef> cert_data(
+      CFDataCreate(kCFAllocatorDefault, reinterpret_cast<const UInt8*>(data),
+                   base::checked_cast<CFIndex>(length)));
+  if (!cert_data)
+    return base::ScopedCFTypeRef<SecCertificateRef>();
+
+  return base::ScopedCFTypeRef<SecCertificateRef>(
+      SecCertificateCreateWithData(nullptr, cert_data));
+}
+
+base::ScopedCFTypeRef<SecCertificateRef>
+CreateSecCertificateFromX509Certificate(const X509Certificate* cert) {
+  return CreateSecCertificateFromBytes(CRYPTO_BUFFER_data(cert->cert_buffer()),
+                                       CRYPTO_BUFFER_len(cert->cert_buffer()));
+}
+
 base::ScopedCFTypeRef<CFMutableArrayRef>
 CreateSecCertificateArrayForX509Certificate(X509Certificate* cert) {
   return CreateSecCertificateArrayForX509Certificate(

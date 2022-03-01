@@ -17,6 +17,15 @@ class X509Certificate;
 
 namespace x509_util {
 
+// Creates a SecCertificate handle from the DER-encoded representation.
+// Returns NULL on failure.
+NET_EXPORT base::ScopedCFTypeRef<SecCertificateRef>
+CreateSecCertificateFromBytes(const uint8_t* data, size_t length);
+
+// Returns a SecCertificate representing |cert|, or NULL on failure.
+NET_EXPORT base::ScopedCFTypeRef<SecCertificateRef>
+CreateSecCertificateFromX509Certificate(const X509Certificate* cert);
+
 // Returns a new CFMutableArrayRef containing this certificate and its
 // intermediate certificates in the form expected by Security.framework
 // and Keychain Services, or NULL on failure.

@@ -10,12 +10,7 @@
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-
-#if BUILDFLAG(IS_IOS)
-#include "net/cert/x509_util_ios.h"
-#else
-#include "net/cert/x509_util_mac.h"
-#endif
+#include "net/cert/x509_util_ios_and_mac.h"
 
 namespace net {
 

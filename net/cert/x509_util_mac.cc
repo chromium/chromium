@@ -54,28 +54,6 @@ OSStatus CreatePolicy(const CSSM_OID* policy_oid,
 
 }  // namespace
 
-base::ScopedCFTypeRef<SecCertificateRef> CreateSecCertificateFromBytes(
-    const uint8_t* data,
-    size_t length) {
-  CSSM_DATA cert_data;
-  cert_data.Data = const_cast<uint8_t*>(data);
-  cert_data.Length = length;
-
-  base::ScopedCFTypeRef<SecCertificateRef> cert_handle;
-  OSStatus status = SecCertificateCreateFromData(&cert_data, CSSM_CERT_X_509v3,
-                                                 CSSM_CERT_ENCODING_DER,
-                                                 cert_handle.InitializeInto());
-  if (status != noErr)
-    return base::ScopedCFTypeRef<SecCertificateRef>();
-  return cert_handle;
-}
-
-base::ScopedCFTypeRef<SecCertificateRef>
-CreateSecCertificateFromX509Certificate(const X509Certificate* cert) {
-  return CreateSecCertificateFromBytes(CRYPTO_BUFFER_data(cert->cert_buffer()),
-                                       CRYPTO_BUFFER_len(cert->cert_buffer()));
-}
-
 scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
     base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
     const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain) {
