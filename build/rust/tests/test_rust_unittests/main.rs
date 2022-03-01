@@ -6,10 +6,10 @@
 extern crate test;
 
 use test::Bencher;
-use test_mixed_source_set_rs::add_two_ints_using_cpp;
+use test_mixed_static_library_rs::add_two_ints_using_cpp;
 
 #[test]
-fn test_call_into_mixed_source_set() {
+fn test_call_into_mixed_static_library() {
     assert_eq!(add_two_ints_using_cpp(5, 7), 12)
 }
 

@@ -4,24 +4,18 @@
 
 import("//build/config/rust.gni")
 import("//build/rust/rust_cxx.gni")
-import("//build/rust/rust_source_set.gni")
+import("//build/rust/rust_static_library.gni")
 import("//build/rust/rust_target.gni")
 
-# Defines a target containing both Rust and C++ code, with
-# bidirectional calls. It's rare to use this target
-# directly - instead please use mixed_source_set or,
-# less commonly, mixed_component.
+# Defines a target containing both Rust and C++ code, with bidirectional calls.
+# It's rare to use this target directly - instead please use
+# mixed_static_library or, less commonly, mixed_component.
 #
-# This intent of this template is to make it  as easy as
-# possible to replace an existing C++ target in situ,
-# to add some Rust code. It intentionally hides a lot
-# of complexity, and in unusually nuanced situations you may
-# need to work directly with //build/rust/rust_source_set.gni
-# instead.
+# This intent of this template is to make it as easy as possible to add Rust
+# code into an existing C++ target.
 #
-# Important: downstream Rust targets should NOT depend upon this
-# type of target. Instead they should append the suffix "_rs"
-# when adding this to their deps:
+# Important: downstream Rust targets should NOT depend upon this type of target.
+# Instead they should append the suffix "_rs" when adding this to their deps:
 #
 #   deps += [ "//example:foo_bar_rs" ]
 #
@@ -35,7 +29,7 @@ import("//build/rust/rust_target.gni")
 #   etc. etc. etc.
 #     Parameters for C++ target. All parameters not starting with
 #     'rs_' are passed directly to the underlying C++ target
-#     (source_set, component etc.)
+#     (static_library, component etc.)
 #
 #   rs_sources
 #   rs_epoch
@@ -49,9 +43,9 @@ import("//build/rust/rust_target.gni")
 #   rs_crate_root
 #   rs_features
 #   rs_cxx_bindings
-#     Rust parameters. Same meaning as in 'rust_source_set' without the
+#     Rust parameters. Same meaning as in 'rust_static_library' without the
 #     'rs_' prefix, e.g. rs_configs here means the same as 'configs' in
-#     rust_source_set.
+#     rust_static_library.
 #   rs_visibility
 #     A special note on visibility. By default, the Rust parts of this
 #     mixed target are _only_ visible to the C++ parts. That's different
@@ -66,7 +60,7 @@ import("//build/rust/rust_target.gni")
 # code.
 #
 # Implementation note: this target generally leans heavily on the
-# rust_source_set.gni template to build its Rust code (which in turn is
+# rust_static_library.gni template to build its Rust code (which in turn is
 # just a rust_target.gni in slightly fancy clothes). However, the exception
 # is for the C++ side of any cxx bindings. These are built and managed directly
 # by this template instead of deferring to the facilities in rust_target.gni,
@@ -105,7 +99,7 @@ template("mixed_target") {
   }
 
   if (_rs_enable) {
-    rust_source_set("${_target_name}_rs") {
+    rust_static_library("${_target_name}_rs") {
       # Normally we forward both testonly and visibility from the invoker. But
       # here we exclude "visibility" since the Rust parts are only visible to
       # the C++ parts of the same mixed target by default.
@@ -145,6 +139,9 @@ template("mixed_target") {
       }
       if (defined(invoker.rs_unit_test_target)) {
         unit_test_target = invoker.rs_unit_test_target
+      }
+      if (defined(invoker.testonly) && invoker.testonly) {
+        testonly = true
       }
       visibility = [ ":${_target_name}" ]
       if (defined(invoker.rs_visibility)) {
@@ -217,12 +214,17 @@ template("mixed_target") {
 
   if (_rs_enable && defined(invoker.rs_cxx_bindings)) {
     rust_cxx("${_target_name}_rs_cxx") {
+      if (is_component_build) {
+        # In a component_build the cxx bindings may be linked into a shared
+        # library at any point up the dependency tree, so always export.
+        export_symbols = true
+      } else if (invoker.target_type == "shared_library") {
+        export_symbols = true
+      } else {
+        export_symbols = false
+      }
       inputs = invoker.rs_cxx_bindings
       generate_source_set = false
     }
   }
-}
-
-set_defaults("mixed_source_set") {
-  configs = default_compiler_configs
 }

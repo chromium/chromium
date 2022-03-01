@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/mixed_source_set.gni")
+import("//build/rust/mixed_static_library.gni")
 
-mixed_source_set("test_mixed_source_set") {
+mixed_static_library("test_mixed_static_library") {
   sources = [
-    "test_mixed_source_set.cc",
-    "test_mixed_source_set.h",
+    "test_mixed_static_library.cc",
+    "test_mixed_static_library.h",
   ]
   rs_sources = [ "src/lib.rs" ]
   rs_cxx_bindings = [ "src/lib.rs" ]
@@ -30,5 +30,5 @@ source_set("some_headers") {
   # This line tests that existing targets with visibility rules
   # do not have to adjust those rules when Rust is added to an
   # existing source_set.
-  visibility = [ ":test_mixed_source_set" ]
+  visibility = [ ":test_mixed_static_library" ]
 }

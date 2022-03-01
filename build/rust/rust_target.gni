@@ -12,11 +12,11 @@ import("//build/rust/rust_unit_test.gni")
 #
 # Normally, you should not use this directly. Use either
 #   cargo_crate.gni - for 3p crates only
-#   rust_source_set.gni - for 1p Rust code
+#   rust_static_library.gni - for 1p Rust code
 # You might, rarely, want to use this for a Rust executable.
 #
-# Because the common use of this is rust_source_set, all the documentation
-# for the supported options is given in rust_source_set.gni. Please refer
+# Because the common use of this is rust_static_library, all the documentation
+# for the supported options is given in rust_static_library.gni. Please refer
 # over there.
 #
 # If you're using rust_chrome_target directly, you will also need to specify:
@@ -26,10 +26,10 @@ import("//build/rust/rust_unit_test.gni")
 #   create_cpp_groups (bool)
 #     Whether both C++ and Rust may link against this. If so, groups
 #     are created for downstream targets to link against in both languages
-#     (again, see rust_source_set for docs). Only works for rust_library
+#     (again, see rust_static_library for docs). Only works for rust_library
 #     types.
 #
-# There is one area where this differs from `rust_source_set`: configs.
+# There is one area where this differs from `rust_static_library`: configs.
 # Here, you must specify `executable_configs` or `library_configs`
 # depending on the type of thing you're generating. This is so that
 # different defaults can be provided.
@@ -98,13 +98,6 @@ template("rust_target") {
     _deps += invoker.deps
   }
 
-  # Always consume `invoker.test_deps`, even if `_test_deps` might end up not
-  # being used below.  It must be used somewhere along all code branches or GN
-  # produces an error that it's unused.
-  _test_deps = []
-  if (defined(invoker.test_deps)) {
-    _test_deps += invoker.test_deps
-  }
   _build_unit_tests = build_rust_unit_tests
   if (defined(invoker.skip_unit_tests) && invoker.skip_unit_tests == true) {
     _build_unit_tests = false
@@ -142,7 +135,8 @@ template("rust_target") {
   # differences in what they need to link against.
   main_target_suffix = ""
   if (_create_cpp_groups) {
-    assert(invoker.target_type == "rust_library")
+    assert(invoker.target_type == "rust_library" ||
+           invoker.target_type == "shared_library")
     main_target_suffix = "__rlib"
 
     # Downstream Rust targets should include this in their deps.
@@ -154,13 +148,16 @@ template("rust_target") {
 
     # Downstream C++ targets should include this in their deps.
     group("${_target_name}_cpp_bindings") {
-      deps = [
-        ":${_target_name}${main_target_suffix}",
-        "//build/rust/std",  # explanation: any C++ code depending on this
-                             # target should also depend on the Rust standard
-                             # library to ensure it's linked into the final
-                             # binary by the C++ linker.
-      ]
+      deps = [ ":${_target_name}${main_target_suffix}" ]
+      if (invoker.target_type == "rust_library") {
+        deps += [
+          # For a rust_library, any C++ code depending on this target should
+          # also depend on the Rust standard library to ensure it's linked into
+          # the final binary by the C++ linker. This isn't needed for a
+          # shared_library, as rustc will link the stdlib into it already.
+          "//build/rust/std",
+        ]
+      }
       if (defined(invoker.mutually_dependent_target)) {
         forward_variables_from(invoker,
                                TESTONLY_AND_VISIBILITY,
@@ -251,6 +248,15 @@ template("rust_target") {
       rust_cxx("${_target_name}_cxx") {
         inputs = _cxx_bindings
         native_header_deps = _deps
+        if (is_component_build) {
+          # In a component_build the cxx bindings may be linked into a shared
+          # library at any point up the dependency tree, so always export.
+          export_symbols = true
+        } else if (invoker.target_type == "shared_library") {
+          export_symbols = true
+        } else {
+          export_symbols = false
+        }
       }
     }
   } else {
@@ -271,7 +277,10 @@ template("rust_target") {
       forward_variables_from(invoker, [ "sources" ])
       crate_root = _crate_root
       rustflags = _rustflags
-      deps = _deps + _test_deps
+      deps = _deps
+      if (defined(invoker.test_deps)) {
+        deps += invoker.test_deps
+      }
       if (defined(invoker.executable_configs)) {
         configs = []
         configs = invoker.executable_configs
@@ -283,6 +292,7 @@ template("rust_target") {
                  "_test_deps",
                  "_build_unit_tests",
                ])
+    not_needed(invoker, [ "test_deps" ])
   }
 }
 

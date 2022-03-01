@@ -20,7 +20,8 @@ template("mixed_component") {
     forward_variables_from(invoker,
                            "*",
                            TESTONLY_AND_VISIBILITY + [ "rs_visibility" ])
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker,
+                           TESTONLY_AND_VISIBILITY + [ "rs_visibility" ])
   }
 }
 

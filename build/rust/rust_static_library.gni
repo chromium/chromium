@@ -8,9 +8,10 @@ import("//build/rust/rust_target.gni")
 # targets. This is a single Rust compilation unit consisting of potentially
 # multiple .rs files.
 #
-# We term this 'rust_source_set' because it is used most analogously
-# to a C++ 'source_set' in Chromium. The fact that it actually produces
-# a static library (specifically an rlib) is an implementation detail.
+# We term this 'rust_static_library' because it is used most analogously
+# to a C++ 'static_library' in Chromium. Like the C++ one, it can be compiled
+# independently into an intermediate linking target. The output contains the
+# object file(s) of the GN target's sources, and not its dependencies.
 #
 # Important: downstream C++ targets should NOT depend upon this
 # type of target. Instead they should append the suffix "_cpp_bindings"
@@ -22,7 +23,7 @@ import("//build/rust/rust_target.gni")
 # are supplied with the required extra bits to include Rust code; for
 # instance, the Rust standard library.
 #
-# Downstream Rust targets should depend on this rust_source_set directly.
+# Downstream Rust targets should depend on this rust_static_library directly.
 #
 # Parameters
 #
@@ -75,13 +76,13 @@ import("//build/rust/rust_target.gni")
 #     But this is common for a 'component' which has both Rust and C++
 #     code. You should structure things such that the C++ code depends
 #     on the Rust code in the normal way:
-#        source_set("cpp_stuff") {
+#        static_library("cpp_stuff") {
 #          deps = [ "rust_stuff_cpp_bindings" ]
 #          # ..
 #        }
 #     but that the Rust target also notes the C++ target using this
 #     'mutually_dependent_target' parameter.
-#        rust_source_set("rust_stuff") {
+#        rust_static_library("rust_stuff") {
 #          mutually_dependent_target = "cpp_stuff"
 #          # ..
 #        }
@@ -136,7 +137,7 @@ import("//build/rust/rust_target.gni")
 #
 # Example of usage:
 #
-#   rust_source_set("foo_bar") {
+#   rust_static_library("foo_bar") {
 #     deps = [
 #       "//boo/public/rust/bar",
 #       "//third_party/rust/crates:argh",
@@ -148,7 +149,7 @@ import("//build/rust/rust_target.gni")
 #
 # This template is intended to serve the same purpose as 'rustc_library'
 # in Fuchsia.
-template("rust_source_set") {
+template("rust_static_library") {
   exclude_forwards = TESTONLY_AND_VISIBILITY + [ "configs" ]
   rust_target(target_name) {
     forward_variables_from(invoker, "*", exclude_forwards)
@@ -162,6 +163,6 @@ template("rust_source_set") {
   }
 }
 
-set_defaults("rust_source_set") {
+set_defaults("rust_static_library") {
   configs = default_compiler_configs
 }

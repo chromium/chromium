@@ -5,7 +5,7 @@
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
-        include!("build/rust/tests/test_mixed_source_set/test_mixed_source_set.h");
+        include!("build/rust/tests/test_mixed_static_library/test_mixed_static_library.h");
         fn cpp_addition(a: u32, b: u32) -> u32;
     }
 

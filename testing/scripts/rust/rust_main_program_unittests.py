@@ -55,7 +55,7 @@ failures:
 ---- test_foobar stdout ----
 thread 'test_foobar' panicked at 'assertion failed: `(left == right)`
   left: `7`,
- right: `124`', ../../build/rust/tests/test_rust_source_set/src/lib.rs:29:5
+ right: `124`', ../../build/rust/tests/test_rust_static_library/src/lib.rs:29:5
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 

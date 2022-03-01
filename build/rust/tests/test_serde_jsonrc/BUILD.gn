@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rust_source_set.gni")
+import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 
-rust_source_set("test_serde_jsonrc_rs") {
+rust_static_library("test_serde_jsonrc_rs") {
   crate_root = "lib.rs"
   sources = [ "lib.rs" ]
   cxx_bindings = [ "lib.rs" ]

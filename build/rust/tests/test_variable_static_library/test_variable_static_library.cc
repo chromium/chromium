@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "test_variable_source_set.h"
+#include "test_variable_static_library.h"
 #include <iostream>
 
 #if defined(RUST_ENABLED)
-#include "build/rust/tests/test_variable_source_set/src/lib.rs.h"
+#include "build/rust/tests/test_variable_static_library/src/lib.rs.h"
 #endif
 
 #if !defined(RUST_ENABLED)
