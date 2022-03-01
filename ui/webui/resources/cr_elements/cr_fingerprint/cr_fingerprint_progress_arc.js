@@ -10,6 +10,35 @@
 /* #export */ const FINGERPRINT_TICK_LIGHT_URL =
     'chrome://theme/IDR_FINGERPRINT_COMPLETE_TICK';
 
+
+/**
+ * The dark-mode color of the progress circle background: Google Grey 700.
+ * @type {string}
+ */
+/* #export */ const PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK =
+    'rgba(95, 99, 104, 1.0)';
+
+/**
+ * The light-mode color of the progress circle background: Google Grey 300.
+ * @type {string}
+ */
+/* #export */ const PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT =
+    'rgba(218, 220, 224, 1.0)';
+
+/**
+ * The dark-mode color of the setup progress arc: Google Blue 400.
+ * @type {string}
+ */
+/* #export */ const PROGRESS_CIRCLE_FILL_COLOR_DARK =
+    'rgba(102, 157, 246, 1.0)';
+
+/**
+ * The light-mode color of the setup progress arc: Google Blue 500.
+ * @type {string}
+ */
+/* #export */ const PROGRESS_CIRCLE_FILL_COLOR_LIGHT =
+    'rgba(66, 133, 244, 1.0)';
+
 (function() {
 
 /**
@@ -29,24 +58,24 @@ const ANIMATE_DURATION_MS = 200;
  * The radius of the add fingerprint progress circle.
  * @type {number}
  */
-const DEFAULT_CANVAS_CIRCLE_RADIUS = 114;
+const DEFAULT_PROGRESS_CIRCLE_RADIUS = 114;
 
 /**
- * The default height of the icon located in the center of fingerprint progress
- * circle.
+ * The default height of the icon located in the center of the fingerprint
+ * progress circle.
  * @type {number}
  */
 const ICON_HEIGHT = 118;
 
 /**
- * The default width of the icon located in the center of fingerprint progress
- * circle.
+ * The default width of the icon located in the center of the fingerprint
+ * progress circle.
  * @type {number}
  */
 const ICON_WIDTH = 106;
 
 /**
- * The default size of the checkmark located in the left bottom corner of
+ * The default size of the checkmark located in the left bottom corner of the
  * fingerprint progress circle.
  * @type {number}
  */
@@ -59,34 +88,22 @@ const CHECK_MARK_SIZE = 53;
 const FINGERPRINT_SCAN_SUCCESS_MS = 500;
 
 /**
- * The thickness of the add fingerprint progress circle.
+ * The thickness of the fingerprint progress circle.
  * @type {number}
  */
-const CANVAS_CIRCLE_STROKE_WIDTH = 4;
-
-/**
- * The color of the canvas circle background.
- * @type {string}
- */
-const CANVAS_CIRCLE_BACKGROUND_COLOR = 'rgba(218, 220, 224, 1.0)';
-
-/**
- * The color of the arc/circle which indicates setup progress.
- * @type {string}
- */
-const CANVAS_CIRCLE_PROGRESS_COLOR = 'rgba(66, 133, 224, 1.0)';
+const PROGRESS_CIRCLE_STROKE_WIDTH = 4;
 
 Polymer({
   is: 'cr-fingerprint-progress-arc',
 
   properties: {
     /**
-     * Radius of the add fingerprint progress circle being displayed.
+     * Radius of the fingerprint progress circle being displayed.
      * @type {number}
      */
     circleRadius: {
       type: Number,
-      value: DEFAULT_CANVAS_CIRCLE_RADIUS,
+      value: DEFAULT_PROGRESS_CIRCLE_RADIUS,
     },
 
     /**
@@ -100,7 +117,7 @@ Polymer({
 
     /**
      * Scale factor based the configured radius (circleRadius) vs the default
-     * radius (DEFAULT_CANVAS_CIRCLE_RADIUS).
+     * radius (DEFAULT_PROGRESS_CIRCLE_RADIUS).
      * This will affect the size of icons and checkmark.
      * @type {number}
      * @private
@@ -129,24 +146,19 @@ Polymer({
     },
   },
 
-  // Also put these values as member values so they can be overridden by tests
-  // and the tests do not need to be changed every time the UI is.
-
-  /** @type {number} */
-  canvasCircleStrokeWidth: CANVAS_CIRCLE_STROKE_WIDTH,
-
-  /** @type {string} */
-  canvasCircleBackgroundColor: CANVAS_CIRCLE_BACKGROUND_COLOR,
-
-  /** @type {string} */
-  canvasCircleProgressColor: CANVAS_CIRCLE_PROGRESS_COLOR,
-
   /**
-   * Animation ID for fingerprint scan progress bar.
+   * Animation ID for the fingerprint progress circle.
    * @type {number|undefined}
    * @private
    */
   progressAnimationIntervalId_: undefined,
+
+  /**
+   * Percentage of the enrollment process completed as of the last update.
+   * @type {number}
+   * @private
+   */
+  progressPercentDrawn_: 0,
 
   /**
    * Timer ID for fingerprint scan success update.
@@ -160,12 +172,14 @@ Polymer({
    * @private
    */
   onDarkModeChanged_() {
+    this.clearCanvas_();
+    this.drawProgressCircle_(this.progressPercentDrawn_);
     this.updateAnimationAsset_();
   },
 
   /** @override */
   attached() {
-    this.scale_ = this.circleRadius / DEFAULT_CANVAS_CIRCLE_RADIUS;
+    this.scale_ = this.circleRadius / DEFAULT_PROGRESS_CIRCLE_RADIUS;
     this.updateImages_();
   },
 
@@ -276,7 +290,7 @@ Polymer({
 
     ctx.beginPath();
     ctx.arc(c.width / 2, c.height / 2, this.circleRadius, startAngle, endAngle);
-    ctx.lineWidth = this.canvasCircleStrokeWidth;
+    ctx.lineWidth = PROGRESS_CIRCLE_STROKE_WIDTH;
     ctx.strokeStyle = color;
     ctx.stroke();
   },
@@ -284,8 +298,8 @@ Polymer({
   /**
    * Draws a circle on the canvas element around the center with radius
    * |circleRadius|. The first |currentPercent| of the circle, starting at the
-   * top, is painted with |CANVAS_CIRCLE_PROGRESS_COLOR|; the remainder of the
-   * circle is painted |CANVAS_CIRCLE_BACKGROUND_COLOR|.
+   * top, is drawn with |PROGRESS_CIRCLE_FILL_COLOR|; the remainder of the
+   * circle is drawn |PROGRESS_CIRCLE_BACKGROUND_COLOR|.
    * @param {number} currentPercent A value from [0-100] indicating the
    *     percentage of progress to display.
    * @private
@@ -302,10 +316,15 @@ Polymer({
     // first). If |currentAngle| is 0, draw from 3pi/2 to 7pi/2 explicitly;
     // otherwise, the regular draw from |start| + |currentAngle| to |start|
     // will do nothing.
-    this.drawArc_(start, start + currentAngle, this.canvasCircleProgressColor);
+    this.drawArc_(
+        start, start + currentAngle,
+        this.isDarkModeActive_ ? PROGRESS_CIRCLE_FILL_COLOR_DARK :
+                                 PROGRESS_CIRCLE_FILL_COLOR_LIGHT);
     this.drawArc_(
         start + currentAngle, currentAngle <= 0 ? 7 * Math.PI / 2 : start,
-        this.canvasCircleBackgroundColor);
+        this.isDarkModeActive_ ? PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK :
+                                 PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT);
+    this.progressPercentDrawn_ = currentPercent;
   },
 
   /**
@@ -331,6 +350,7 @@ Polymer({
    * @private
    */
   cancelAnimations_() {
+    this.progressPercentDrawn_ = 0;
     if (this.progressAnimationIntervalId_) {
       clearInterval(this.progressAnimationIntervalId_);
       this.progressAnimationIntervalId_ = undefined;
@@ -352,7 +372,6 @@ Polymer({
     scanningAnimation.classList.remove('translucent');
     this.updateAnimationAsset_();
     this.resizeCheckMark_(scanningAnimation);
-
     this.$.enrollmentDone.hidden = false;
   },
 

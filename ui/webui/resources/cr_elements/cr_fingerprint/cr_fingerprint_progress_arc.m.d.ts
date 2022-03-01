@@ -7,13 +7,14 @@ import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/le
 
 export const FINGERPRINT_TICK_DARK_URL: string;
 export const FINGERPRINT_TICK_LIGHT_URL: string;
+export const PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK: string;
+export const PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT: string;
+export const PROGRESS_CIRCLE_FILL_COLOR_DARK: string;
+export const PROGRESS_CIRCLE_FILL_COLOR_LIGHT: string;
 
 interface CrFingerprintProgressArcElement extends LegacyElementMixin,
                                                   HTMLElement {
   circleRadius: number;
-  canvasCircleStrokeWidth: number;
-  canvasCircleBackgroundColor: string;
-  canvasCircleProgressColor: string;
 
   reset(): void;
   setProgress(

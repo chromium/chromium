@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
 
-import {CrFingerprintProgressArcElement, FINGERPRINT_TICK_DARK_URL, FINGERPRINT_TICK_LIGHT_URL} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
+import {CrFingerprintProgressArcElement, FINGERPRINT_TICK_DARK_URL, FINGERPRINT_TICK_LIGHT_URL, PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK, PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT, PROGRESS_CIRCLE_FILL_COLOR_DARK, PROGRESS_CIRCLE_FILL_COLOR_LIGHT} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-// clang-format on
 
 class FakeMediaQueryList extends EventTarget implements MediaQueryList {
   private listener_: ((e: MediaQueryListEvent) => any)|null = null;
@@ -65,31 +62,16 @@ suite('cr_fingerprint_progress_arc_test', function() {
     y: number,
   };
 
-  /**
-   * An object descrbing a color with r, g and b values.
-   */
-  type Color = {
-    r: number,
-    g: number,
-    b: number,
-  }
+  const canvasColor: string = 'rgba(255, 255, 255, 1.0)';
 
   let progressArc: CrFingerprintProgressArcElement;
   let canvas: HTMLCanvasElement;
-
-  const canvasColor: Color = {r: 0, g: 0, b: 255};
-  const canvasColorStr: string = 'rgba(0,0,255,1.0)';
-  const circleBackgroundColor: Color = {r: 0, g: 255, b: 0};
-  const circleBackgroundColorStr: string = 'rgba(0,255,0,1.0)';
-  const circleProgressColor: Color = {r: 255, g: 0, b: 0};
-  const circleProgressColorStr: string = 'rgba(255,0,0,1.0)';
-
   let mockController: MockController;
   let fakeMediaQueryList: FakeMediaQueryList;
 
   function clearCanvas(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d')!;
-    ctx.fillStyle = canvasColorStr;
+    ctx.fillStyle = canvasColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
@@ -110,9 +92,6 @@ suite('cr_fingerprint_progress_arc_test', function() {
     canvas.width = 300;
     canvas.height = 150;
     progressArc.circleRadius = 50;
-    progressArc.canvasCircleStrokeWidth = 3;
-    progressArc.canvasCircleBackgroundColor = circleBackgroundColorStr;
-    progressArc.canvasCircleProgressColor = circleProgressColorStr;
     clearCanvas(progressArc.$.canvas);
     flush();
   });
@@ -122,121 +101,150 @@ suite('cr_fingerprint_progress_arc_test', function() {
   });
 
   /**
-   * Helper function which gets the rgb values at |point| on the canvas.
+   * Helper function which gets the (r, g, b, a)-formatted color at |point| on
+   * the canvas.
    */
-  function getRGBData(point: Point): Color {
+  function getColor(point: Point): string {
     const ctx = canvas.getContext('2d')!;
     const pixel = ctx.getImageData(point.x, point.y, 1, 1).data;
-    return {r: pixel[0]!, g: pixel[1]!, b: pixel[2]!};
+    return `rgba(${pixel[0]!}, ${pixel[1]!}, ${pixel[2]!}, ${
+        (pixel[3]! / 255).toFixed(1)})`;
   }
 
   /**
-   * Helper function which checks if the given color is matches the expected
-   * color.
-   */
-  function assertColorEquals(expectedColor: Color, actualColor: Color) {
-    assertEquals(expectedColor.r, actualColor.r);
-    assertEquals(expectedColor.g, actualColor.g);
-    assertEquals(expectedColor.b, actualColor.b);
-  }
-
-  /**
-   * Helper function which checks that a list of points match the color the are
-   * expected to have on the canvas.
+   * Helper function which checks that |expectedColor| matches the canvas's
+   * color at each point in |listOfPoints|.
    */
   function assertListOfColorsEqual(
-      expectedColor: Color, listOfPoints: Point[]) {
+      expectedColor: string, listOfPoints: Point[]) {
     for (const point of listOfPoints) {
-      assertColorEquals(expectedColor, getRGBData(point));
+      assertEquals(expectedColor, getColor(point));
     }
   }
 
-  test('TestSetProgress', async () => {
+  /**
+   * Helper class that, given a set of arguments for a |setProgress()| function
+   * call, can be used to perform that function call and verify that the
+   * resulting progress circle is drawn correctly.
+   */
+  class SetProgressTestCase {
     // Angles on HTML canvases start at 0 radians on the positive x-axis and
     // increase in the clockwise direction. Progress is drawn starting from the
-    // top of the circle (3pi/2 rad). We will check the colors drawn at angles
-    // 7pi/4, pi/4, 3pi/4, and 5pi/4 rad (respectively 12.5%, 37.5%, 62.5%, and
-    // 87.5% progress completed).
-    const checkPoints = [
-      {x: 185, y: 40} /* 7pi/4 rad */, {x: 185, y: 110} /* pi/4 rad */,
-      {x: 115, y: 110} /* 3pi/4 rad */, {x: 115, y: 40} /* 5pi/4 rad */
+    // top of the circle (3pi/2 rad). In the verification step, a test case
+    // checks the colors drawn at angles 7pi/4, pi/4, 3pi/4, and 5pi/4 rad
+    // (respectively 12.5%, 37.5%, 62.5%, and 87.5% progress completed).
+    static progressCheckPoints: [Point, number][] = [
+      [{x: 185, y: 40} /**  7pi/4 rad */, 12.5],
+      [{x: 185, y: 110} /**  pi/4 rad */, 37.5],
+      [{x: 115, y: 110} /** 3pi/4 rad */, 62.5],
+      [{x: 115, y: 40} /**  5pi/4 rad */, 87.5]
     ];
 
-    const testCases = [
-      // Verify that no progress is drawn when no progress has been made.
-      {
-        'setProgressArgs': {
-          'prevPercentComplete': 0,
-          'currPercentComplete': 0,
-          'isComplete': false
-        },
-        'progressArcPoints': [],
-        'backgroundArcPoints': checkPoints
-      },
-      // Verify that progress is drawn starting from the top of the circle
-      // (3pi/2 rad) and moving clockwise.
-      {
-        'setProgressArgs': {
-          'prevPercentComplete': 0,
-          'currPercentComplete': 40,
-          'isComplete': false
-        },
-        'progressArcPoints': [
-          {x: 185, y: 40} /* 7pi/4 rad */, {x: 185, y: 110} /* pi/4 rad */
-        ],
-        'backgroundArcPoints': [
-          {x: 115, y: 110} /* 3pi/4 rad */, {x: 115, y: 40} /* 5pi/4 rad */
-        ]
-      },
-      // Verify that the progress drawn includes progress made previously.
-      {
-        'setProgressArgs': {
-          'prevPercentComplete': 40,
-          'currPercentComplete': 80,
-          'isComplete': false
-        },
-        'progressArcPoints': [
-          {x: 185, y: 40} /* 7pi/4 rad */, {x: 185, y: 110} /* pi/4 rad */,
-          {x: 115, y: 110} /* 3pi/4 rad */
-        ],
-        'backgroundArcPoints': [
-          {x: 115, y: 40} /* 5pi/4 rad */
-        ]
-      },
-      // Verify that progress past 100% gets capped rather than wrapping around.
-      {
-        'setProgressArgs': {
-          'prevPercentComplete': 80,
-          'currPercentComplete': 160,
-          'isComplete': false
-        },
-        'progressArcPoints': checkPoints,
-        'backgroundArcPoints': []
-      },
-      // Verify that if the enrollment is complete, maximum progress is drawn.
-      {
-        'setProgressArgs': {
-          'prevPercentComplete': 80,
-          'currPercentComplete': 80,
-          'isComplete': true
-        },
-        'progressArcPoints': checkPoints,
-        'backgroundArcPoints': []
+    // |setProgress()| arguments.
+    private prevPercentComplete_: number;
+    private currPercentComplete_: number;
+    private isComplete_: boolean;
+
+    // Points expected to be part of the circle's progress arc.
+    private progressPoints_: Point[] = [];
+
+    // Points expected to be part of the circle's background arc.
+    private backgroundPoints_: Point[] = [];
+
+    constructor(
+        prevPercentComplete: number, currPercentComplete: number,
+        isComplete: boolean) {
+      this.prevPercentComplete_ = prevPercentComplete;
+      this.currPercentComplete_ = currPercentComplete;
+      this.isComplete_ = isComplete;
+
+      const endPercent = isComplete ? 100 : Math.min(100, currPercentComplete);
+      for (const [point, percent] of SetProgressTestCase.progressCheckPoints) {
+        if (percent <= endPercent) {
+          this.progressPoints_.push(point);
+        } else {
+          this.backgroundPoints_.push(point);
+        }
       }
-    ];
+    }
 
-    for (const {setProgressArgs, progressArcPoints, backgroundArcPoints} of
-             testCases) {
+    // Draws a progress circle on a fresh canvas using the test case's
+    // |setProgress()| arguments and verifies that the circle's colors match the
+    // expected colors.
+    async run() {
       clearCanvas(canvas);
-      assertListOfColorsEqual(canvasColor, checkPoints);
+      assertListOfColorsEqual(
+          canvasColor, this.progressPoints_.concat(this.backgroundPoints_));
 
       progressArc.setProgress(
-          setProgressArgs.prevPercentComplete,
-          setProgressArgs.currPercentComplete, setProgressArgs.isComplete);
+          this.prevPercentComplete_, this.currPercentComplete_,
+          this.isComplete_);
       await eventToPromise('cr-fingerprint-progress-arc-drawn', progressArc);
 
-      assertListOfColorsEqual(circleProgressColor, progressArcPoints);
-      assertListOfColorsEqual(circleBackgroundColor, backgroundArcPoints);
+      this.verifyProgressCircleColors();
+    }
+
+    // Helper function used to compare the current progress circle colors
+    // against the test case's expected colors. Assumes that drawing has
+    // already been done.
+    verifyProgressCircleColors() {
+      const isDarkMode = fakeMediaQueryList.matches;
+      assertListOfColorsEqual(
+          isDarkMode ? PROGRESS_CIRCLE_FILL_COLOR_DARK :
+                       PROGRESS_CIRCLE_FILL_COLOR_LIGHT,
+          this.progressPoints_);
+      assertListOfColorsEqual(
+          isDarkMode ? PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK :
+                       PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT,
+          this.backgroundPoints_);
+    }
+  }
+
+  /**
+   * Test setting progress while in light mode, switching to dark mode,
+   * continuing to set progress, switching back to light mode, and setting
+   * progress again.
+   */
+  test('TestSetProgress', async () => {
+    const lightModeTestCases1 = [
+      // Verify that no progress is drawn when no progress has been made.
+      new SetProgressTestCase(0, 0, false),
+      // Verify that progress is drawn starting from the top of the circle
+      // (3pi/2 rad) and moving clockwise.
+      new SetProgressTestCase(0, 40, false)
+    ];
+
+    const darkModeTestCases = [
+      // Verify that the progress drawn includes progress made previously.
+      new SetProgressTestCase(40, 80, false),
+      // Verify that progress past 100% gets capped rather than wrapping around.
+      new SetProgressTestCase(80, 160, false)
+    ];
+
+    // Verify that if the enrollment is complete, maximum progress is drawn.
+    const lightModeTestCases2 = [new SetProgressTestCase(80, 80, true)];
+
+    // Make some progress in light mode.
+    for (const testCase of lightModeTestCases1) {
+      await testCase.run();
+    }
+
+    // Switch to dark mode and verify that the progress circle is redrawn.
+    fakeMediaQueryList.matches = true;
+    lightModeTestCases1.slice(-1)[0]!.verifyProgressCircleColors();
+
+    // Make some progress in dark mode.
+    for (const testCase of darkModeTestCases) {
+      await testCase.run();
+    }
+
+    // Switch back to light mode and verify that the progress circle is redrawn.
+    fakeMediaQueryList.matches = false;
+    darkModeTestCases.slice(-1)[0]!.verifyProgressCircleColors();
+
+    // Finish making progress in light mode.
+    for (const testCase of lightModeTestCases2) {
+      await testCase.run();
     }
   });
 
