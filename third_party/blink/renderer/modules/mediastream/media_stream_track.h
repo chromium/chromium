@@ -128,6 +128,8 @@ class MODULES_EXPORT MediaStreamTrack
 
   ImageCapture* GetImageCapture() { return image_capture_; }
 
+  absl::optional<base::UnguessableToken> serializable_session_id() const;
+
 #if !BUILDFLAG(IS_ANDROID)
   // Only relevant for focusable streams (FocusableMediaStreamTrack).
   // When called on one of these, it signals that Conditional Focus

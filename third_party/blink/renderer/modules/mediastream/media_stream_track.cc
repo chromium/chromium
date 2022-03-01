@@ -881,6 +881,16 @@ std::unique_ptr<AudioSourceProvider> MediaStreamTrack::CreateWebAudioSource(
                                                context_sample_rate));
 }
 
+absl::optional<base::UnguessableToken>
+MediaStreamTrack::serializable_session_id() const {
+  if (!component_->Source()->GetPlatformSource())
+    return absl::nullopt;
+  return component_->Source()
+      ->GetPlatformSource()
+      ->device()
+      .serializable_session_id();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void MediaStreamTrack::CloseFocusWindowOfOpportunity() {}
 #endif
