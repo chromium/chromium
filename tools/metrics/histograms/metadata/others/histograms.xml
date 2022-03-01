@@ -6317,9 +6317,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.AcquireKerberosTgtTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Time in milliseconds to acquire a Kerberos ticket. The value is recorded no
     matter if the operation was successful or not.
@@ -6327,9 +6327,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.DailyActiveUsers" enum="KerberosUserType"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Type of the Chrome OS login user (primary user) who requests Kerberos
     tickets. Reported at most once a day by the Kerberos daemon when a Kebreros
@@ -6339,9 +6339,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.EncryptionTypesAcquireKerberosTgt"
-    enum="KerberosEncryptionTypes" expires_after="2022-04-10">
+    enum="KerberosEncryptionTypes" expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     The Kerberos encryption types used while succesfully creating or refreshing
     a Kerberos TGT. This value is derived from the Kerberos configuration
@@ -6350,9 +6350,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Managed" units="units"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Number of managed Kerberos accounts owned by the current Chrome OS user. A
     managed account is an account that got added via the KerberosAccounts
@@ -6361,9 +6361,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.RememberedPassword" units="units"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Number of Kerberos accounts owned by the current Chrome OS user that use the
     'Remember password' feature, i.e. the account password is stored by the
@@ -6373,9 +6373,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Total" units="units"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Total number of Kerberos accounts owned by the current Chrome OS user.
     Reported at most once a day similar to Kerberos.DailyActiveUsers.
@@ -6383,9 +6383,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Unmanaged" units="units"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Number of unmanaged Kerberos accounts owned by the current Chrome OS user.
     An unmanaged account is an account that was added manually by the user.
@@ -6394,9 +6394,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.UseLoginPassword" units="units"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Number of Kerberos accounts owned by the current Chrome OS user that use the
     login password for authentication. These accounts were added via the
@@ -6406,9 +6406,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.AcquireKerberosTgt" enum="KerberosErrorType"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Result from an attempt to acquire a Kerberos ticket. This happens whenever a
     new ticket is added or an existing ticket is reauthenticated.
@@ -6416,9 +6416,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.AddAccount" enum="KerberosErrorType"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Result from an attempt to add a new Kerberos account, either through the
     Kerberos Tickets settings page or via the KerberosAccounts policy.
@@ -6426,9 +6426,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.ClearAccounts" enum="KerberosErrorType"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Result from an attempt to clear Kerberos accounts, usually through toggling
     Kerberos related policies. For instance, disabling the KerberosEnabled
@@ -6437,9 +6437,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.GetKerberosFiles" enum="KerberosErrorType"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Result from an attempt to retrieve a Kerberos ticket from the Kerberos
     daemon. Systems using Kerberos (Chrome, SMB file shares) perform this action
@@ -6448,9 +6448,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.ListAccounts" enum="KerberosErrorType"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Result from an attempt to list Kerberos accounts, usually through opening
     the Kerberos Tickets settings page or making changes to accounts.
@@ -6458,9 +6458,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.RemoveAccount" enum="KerberosErrorType"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Result from an attempt to remove a new Kerberos account through the Kerberos
     Tickets settings page.
@@ -6468,9 +6468,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.SetConfig" enum="KerberosErrorType"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Result from an attempt to set Kerberos configuration. This happens right
     before acquiring a Kerberos ticket.
@@ -6478,9 +6478,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.ValidateConfig" enum="KerberosErrorType"
-    expires_after="2022-04-10">
+    expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Result from an attempt to validate Kerberos configuration. This happens when
     the user tries to set configuration in the Advanced section of the dialog to
@@ -6489,9 +6489,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.ValidateConfigErrorCode"
-    enum="KerberosConfigErrorCode" expires_after="2022-04-10">
+    enum="KerberosConfigErrorCode" expires_after="M108">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
     Error code from an attempt validate Kerberos configuration. Contains more
     specific information than KerberosErrorType about the result of the
