@@ -17,6 +17,7 @@ android_library("java") {
     "//chrome/android/modules/cablev2_authenticator/public:java",
     "//chrome/browser/notifications:java",
     "//components/browser_ui/notifications/android:java",
+    "//content/public/android:content_main_dex_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
