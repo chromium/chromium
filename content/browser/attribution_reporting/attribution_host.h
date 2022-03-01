@@ -5,11 +5,11 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_H_
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/gtest_prod_util.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
@@ -20,6 +20,8 @@
 
 namespace content {
 
+class AttributionManager;
+class AttributionManagerProvider;
 class AttributionPageMetrics;
 class WebContents;
 
@@ -72,9 +74,9 @@ class CONTENT_EXPORT AttributionHost
     blink::Impression impression;
   };
 
-  AttributionHost(WebContents* web_contents,
-                  std::unique_ptr<AttributionManager::Provider>
-                      attribution_manager_provider);
+  AttributionHost(
+      WebContents* web_contents,
+      std::unique_ptr<AttributionManagerProvider> attribution_manager_provider);
 
   // blink::mojom::ConversionHost:
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override;
@@ -116,7 +118,7 @@ class CONTENT_EXPORT AttributionHost
 
   // Gives access to a AttributionManager implementation to forward impressions
   // and conversion registrations to.
-  std::unique_ptr<AttributionManager::Provider> attribution_manager_provider_;
+  std::unique_ptr<AttributionManagerProvider> attribution_manager_provider_;
 
   // Logs metrics per top-level page load. Created for every top level
   // navigation that commits, as long as there is a AttributionManager.

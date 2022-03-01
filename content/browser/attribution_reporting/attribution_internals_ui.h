@@ -8,15 +8,14 @@
 #include <memory>
 
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
 class AttributionInternalsHandlerImpl;
+class AttributionManagerProvider;
 
 // WebUI which handles serving the chrome://attribution-internals page.
 class CONTENT_EXPORT AttributionInternalsUI : public WebUIController {
@@ -36,7 +35,7 @@ class CONTENT_EXPORT AttributionInternalsUI : public WebUIController {
       mojo::PendingReceiver<mojom::AttributionInternalsHandler> receiver);
 
   void SetAttributionManagerProviderForTesting(
-      std::unique_ptr<AttributionManager::Provider> manager_provider);
+      std::unique_ptr<AttributionManagerProvider> manager_provider);
 
  private:
   std::unique_ptr<AttributionInternalsHandlerImpl> ui_handler_;

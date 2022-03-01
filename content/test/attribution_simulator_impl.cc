@@ -36,6 +36,7 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/attribution_simulator_input_parser.h"
+#include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 

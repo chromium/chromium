@@ -18,13 +18,10 @@
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
-#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_scheduler.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
-#include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -32,6 +29,10 @@ namespace base {
 class FilePath;
 class TimeDelta;
 }  // namespace base
+
+namespace storage {
+class SpecialStoragePolicy;
+}  // namespace storage
 
 namespace url {
 class Origin;
@@ -41,7 +42,9 @@ namespace content {
 
 class AggregatableReport;
 class AttributionCookieChecker;
+class AttributionDataHostManager;
 class AttributionReportSender;
+class AttributionStorage;
 class AttributionStorageDelegate;
 class BrowserContext;
 class CreateReportResult;
@@ -49,24 +52,6 @@ class StoragePartitionImpl;
 
 struct DeactivatedSource;
 struct SendResult;
-
-// Provides access to the manager owned by the default StoragePartition.
-class AttributionManagerProviderImpl : public AttributionManager::Provider {
- public:
-  AttributionManagerProviderImpl() = default;
-  AttributionManagerProviderImpl(const AttributionManagerProviderImpl& other) =
-      delete;
-  AttributionManagerProviderImpl& operator=(
-      const AttributionManagerProviderImpl& other) = delete;
-  AttributionManagerProviderImpl(AttributionManagerProviderImpl&& other) =
-      delete;
-  AttributionManagerProviderImpl& operator=(
-      AttributionManagerProviderImpl&& other) = delete;
-  ~AttributionManagerProviderImpl() override = default;
-
-  // AttributionManagerProvider:
-  AttributionManager* GetManager(WebContents* web_contents) const override;
-};
 
 // UI thread class that manages the lifetime of the underlying attribution
 // storage and coordinates sending attribution reports. Owned by the storage

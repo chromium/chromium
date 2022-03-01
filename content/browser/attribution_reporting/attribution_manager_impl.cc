@@ -14,9 +14,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/observer_list.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
-#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -29,6 +27,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
+#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
@@ -42,10 +41,9 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "storage/browser/quota/special_storage_policy.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -169,13 +167,6 @@ absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
     return absl::nullopt;
 
   return kInitialReportDelay * std::pow(kDelayFactor, failed_send_attempts - 1);
-}
-
-AttributionManager* AttributionManagerProviderImpl::GetManager(
-    WebContents* web_contents) const {
-  return static_cast<StoragePartitionImpl*>(
-             web_contents->GetBrowserContext()->GetDefaultStoragePartition())
-      ->GetAttributionManager();
 }
 
 // static

@@ -13,7 +13,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
-#include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -113,7 +113,7 @@ AttributionInternalsHandlerImpl::AttributionInternalsHandlerImpl(
     WebUI* web_ui,
     mojo::PendingReceiver<mojom::AttributionInternalsHandler> receiver)
     : web_ui_(web_ui),
-      manager_provider_(std::make_unique<AttributionManagerProviderImpl>()),
+      manager_provider_(AttributionManagerProvider::Default()),
       receiver_(this, std::move(receiver)) {}
 
 AttributionInternalsHandlerImpl::~AttributionInternalsHandlerImpl() = default;
@@ -337,7 +337,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
 }
 
 void AttributionInternalsHandlerImpl::SetAttributionManagerProviderForTesting(
-    std::unique_ptr<AttributionManager::Provider> manager_provider) {
+    std::unique_ptr<AttributionManagerProvider> manager_provider) {
   DCHECK(manager_provider);
 
   manager_observation_.Reset();

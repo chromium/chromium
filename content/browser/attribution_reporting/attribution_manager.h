@@ -20,31 +20,16 @@ class Origin;
 
 namespace content {
 
-class AttributionTrigger;
 class AttributionDataHostManager;
 class AttributionObserver;
+class AttributionTrigger;
 class StorableSource;
 class StoredSource;
-class WebContents;
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
 class AttributionManager {
  public:
-  // Provides access to a AttributionManager implementation. This layer of
-  // abstraction is to allow tests to mock out the AttributionManager without
-  // injecting a manager explicitly.
-  class Provider {
-   public:
-    virtual ~Provider() = default;
-
-    // Gets the AttributionManager that should be used for handling attributions
-    // that occur in the given |web_contents|. Returns nullptr if attribution
-    // reporting is not enabled in the given |web_contents|, e.g. when the
-    // browser context is off the record.
-    virtual AttributionManager* GetManager(WebContents* web_contents) const = 0;
-  };
-
   virtual ~AttributionManager() = default;
 
   virtual void AddObserver(AttributionObserver* observer) = 0;

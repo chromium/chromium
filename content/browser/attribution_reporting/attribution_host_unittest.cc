@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/storage_partition_impl.h"
@@ -38,7 +39,7 @@ class AttributionHostTestPeer {
  public:
   static std::unique_ptr<AttributionHost> CreateAttributionHost(
       WebContents* web_contents,
-      std::unique_ptr<AttributionManager::Provider>
+      std::unique_ptr<AttributionManagerProvider>
           attribution_manager_provider) {
     return base::WrapUnique(new AttributionHost(
         web_contents, std::move(attribution_manager_provider)));

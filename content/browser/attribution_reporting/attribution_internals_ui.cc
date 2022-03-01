@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 
 #include "content/browser/attribution_reporting/attribution_internals_handler_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/grit/dev_ui_content_resources.h"
 #include "content/public/browser/render_frame_host.h"
@@ -55,7 +56,7 @@ void AttributionInternalsUI::BindInterface(
 }
 
 void AttributionInternalsUI::SetAttributionManagerProviderForTesting(
-    std::unique_ptr<AttributionManager::Provider> manager_provider) {
+    std::unique_ptr<AttributionManagerProvider> manager_provider) {
   ui_handler_->SetAttributionManagerProviderForTesting(
       std::move(manager_provider));
 }

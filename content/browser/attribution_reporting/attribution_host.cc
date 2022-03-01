@@ -6,32 +6,28 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_page_metrics.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/common/url_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -78,12 +74,11 @@ void RecordRegisterImpressionAllowed(bool allowed) {
 }  // namespace
 
 AttributionHost::AttributionHost(WebContents* web_contents)
-    : AttributionHost(web_contents,
-                      std::make_unique<AttributionManagerProviderImpl>()) {}
+    : AttributionHost(web_contents, AttributionManagerProvider::Default()) {}
 
 AttributionHost::AttributionHost(
     WebContents* web_contents,
-    std::unique_ptr<AttributionManager::Provider> attribution_manager_provider)
+    std::unique_ptr<AttributionManagerProvider> attribution_manager_provider)
     : WebContentsObserver(web_contents),
       WebContentsUserData<AttributionHost>(*web_contents),
       attribution_manager_provider_(std::move(attribution_manager_provider)),

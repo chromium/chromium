@@ -17,6 +17,7 @@
 
 namespace content {
 
+class AttributionManagerProvider;
 class WebUI;
 
 // Implements the mojo endpoint for the attribution internals WebUI which
@@ -62,7 +63,7 @@ class AttributionInternalsHandlerImpl
       override;
 
   void SetAttributionManagerProviderForTesting(
-      std::unique_ptr<AttributionManager::Provider> manager_provider);
+      std::unique_ptr<AttributionManagerProvider> manager_provider);
 
  private:
   // AttributionObserver:
@@ -77,7 +78,7 @@ class AttributionInternalsHandlerImpl
   void OnTriggerHandled(const CreateReportResult& result) override;
 
   raw_ptr<WebUI> web_ui_;
-  std::unique_ptr<AttributionManager::Provider> manager_provider_;
+  std::unique_ptr<AttributionManagerProvider> manager_provider_;
 
   mojo::Receiver<mojom::AttributionInternalsHandler> receiver_;
 

@@ -22,10 +22,11 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
@@ -47,6 +48,7 @@
 
 namespace content {
 
+class AttributionManagerImpl;
 class AttributionObserver;
 class AttributionTrigger;
 
@@ -238,8 +240,9 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-// Test manager provider which can be used to inject a fake AttributionManager.
-class TestManagerProvider : public AttributionManager::Provider {
+// Test manager provider which can be used to inject a fake
+// `AttributionManager`.
+class TestManagerProvider : public AttributionManagerProvider {
  public:
   explicit TestManagerProvider(AttributionManager* manager)
       : manager_(manager) {}
