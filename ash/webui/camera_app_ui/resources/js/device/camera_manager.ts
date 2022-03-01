@@ -80,12 +80,6 @@ export class CameraManager implements EventListener {
 
   private screenOffAuto = false;
 
-  /**
-   * The last time of all screen state turning from OFF to ON during the app
-   * execution. Sets to -Infinity for no such time since app is opened.
-   */
-  private lastScreenOnTime = -Infinity;
-
   private cameraAvailable = false;
 
   /**
@@ -110,7 +104,7 @@ export class CameraManager implements EventListener {
       defaultFacing: Facing,
       modeConstraints: ModeConstraints,
   ) {
-    this.preview = new Preview(() => this.lastScreenOnTime, async () => {
+    this.preview = new Preview(async () => {
       await this.reconfigure();
     });
 
@@ -249,8 +243,6 @@ export class CameraManager implements EventListener {
     const handleScreenStateChange = () => {
       if (this.screenOff) {
         this.reconfigure();
-      } else {
-        this.lastScreenOnTime = performance.now();
       }
     };
 

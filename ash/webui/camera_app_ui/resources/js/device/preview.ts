@@ -7,7 +7,6 @@ import * as dom from '../dom.js';
 import {reportError} from '../error.js';
 import {FaceOverlay} from '../face.js';
 import {Point} from '../geometry.js';
-import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator, parseMetadata} from '../mojo/device_operator.js';
 import {
   AndroidControlAeAntibandingMode,
@@ -99,12 +98,9 @@ export class Preview {
   private onPreviewExpired: WaitableEvent|null = null;
 
   /**
-   * @param getLastScreenOnTime Callback to get last time screen is on.
    * @param onNewStreamNeeded Callback to request new stream.
    */
-  constructor(
-      private readonly getLastScreenOnTime: () => number,
-      private readonly onNewStreamNeeded: () => Promise<void>) {
+  constructor(private readonly onNewStreamNeeded: () => Promise<void>) {
     window.addEventListener('resize', () => this.onWindowStatusChanged());
 
     windowController.addListener(() => this.onWindowStatusChanged());
@@ -316,18 +312,6 @@ export class Preview {
    * @return Promise resolved to opened preview stream.
    */
   async open(constraints: StreamConstraints): Promise<MediaStream> {
-    // Sets 2500 ms delay between screen resumed and open camera
-    // preview.
-    // TODO(b/173679752): Removes this workaround after fix delay on
-    // kernel side.
-    if (loadTimeData.getBoard() === 'zork') {
-      const screenOnTime = performance.now() - this.getLastScreenOnTime();
-      const delay = 2500 - screenOnTime;
-      if (delay > 0) {
-        await util.sleep(delay);
-      }
-    }
-
     this.constraints = constraints;
     this.streamInternal = await navigator.mediaDevices.getUserMedia(
         toMediaStreamConstraints(constraints));
@@ -447,27 +431,27 @@ export class Preview {
     };
 
     const buildInverseLookupFunction =
-        (obj: Record<string, number>,
-         prefix: string): (key: number) => string => {
-          const map = new Map<number, string>();
-          for (const [key, val] of Object.entries(obj)) {
-            if (!key.startsWith(prefix)) {
-              continue;
-            }
-            if (map.has(val)) {
-              reportError(
-                  ErrorType.METADATA_MAPPING_FAILURE, ErrorLevel.ERROR,
-                  new Error(`Duplicated value: ${val}`));
-              continue;
-            }
-            map.set(val, key.slice(prefix.length));
-          }
-          return (key: number) => {
-            const val = map.get(key);
-            assert(val !== undefined);
-            return val;
-          };
-        };
+        (obj: Record<string, number>, prefix: string): (key: number) =>
+            string => {
+              const map = new Map<number, string>();
+              for (const [key, val] of Object.entries(obj)) {
+                if (!key.startsWith(prefix)) {
+                  continue;
+                }
+                if (map.has(val)) {
+                  reportError(
+                      ErrorType.METADATA_MAPPING_FAILURE, ErrorLevel.ERROR,
+                      new Error(`Duplicated value: ${val}`));
+                  continue;
+                }
+                map.set(val, key.slice(prefix.length));
+              }
+              return (key: number) => {
+                const val = map.get(key);
+                assert(val !== undefined);
+                return val;
+              };
+            };
 
     const afStateNameLookup = buildInverseLookupFunction(
         AndroidControlAfState, 'ANDROID_CONTROL_AF_STATE_');
