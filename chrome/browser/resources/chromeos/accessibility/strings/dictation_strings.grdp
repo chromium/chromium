@@ -43,6 +43,6 @@
     new line
   </message>
   <message name="DICTATION_COMMAND_INPUT_TEXT_VIEW" desc="A spoken text-editing command to type another command's keyword. For example, 'type delete' is a command to type the word 'delete'." is_accessibility_with_no_ui="true">
-    type <ph name="text">$1<ex>delete</ex></ph>
+    type
   </message>
 </grit-part>

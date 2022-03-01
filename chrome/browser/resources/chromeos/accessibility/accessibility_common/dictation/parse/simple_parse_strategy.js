@@ -78,26 +78,6 @@ class SimpleMacroFactory {
     return text.trim().toLowerCase() === this.commandString_;
   }
 
-  // TODO(crbug.com/1216111): Create a factory for InputTextViewMacro and remove
-  // this method.
-  /**
-   * Checks whether a string matches a request to type a command, i.e. for the
-   * command 'delete', it would match 'type delete', ignoring case and
-   * whitespace.
-   * @param {string} text
-   * @return {boolean}
-   */
-  matchesInputTextViewMacro(text) {
-    const expected = chrome.i18n.getMessage(
-        'dictation_command_input_text_view', this.commandString_);
-    return text.trim().toLowerCase() === expected;
-  }
-
-  /** @return {string} */
-  getCommandString() {
-    return this.commandString_;
-  }
-
   /**
    * @return {Object<MacroName, MacroData>}
    * @private
@@ -200,13 +180,18 @@ export class SimpleParseStrategy extends ParseStrategy {
     for (const [name, factory] of this.macroFactoryMap_) {
       if (factory.matchesMacro(text)) {
         return factory.createMacro();
-      } else if (factory.matchesInputTextViewMacro(text)) {
-        text = factory.getCommandString();
-        break;
       }
     }
 
     // The command is simply to input the given text.
+    // If `text` starts with `type`, then automatically remove it e.g. convert
+    // 'Type testing 123' to 'testing 123'.
+    const typePrefix =
+        chrome.i18n.getMessage('dictation_command_input_text_view');
+    if (text.trim().toLowerCase().startsWith(typePrefix)) {
+      text = text.toLowerCase().replace(typePrefix, '').trimStart();
+    }
+
     return new InputTextViewMacro(text, this.getInputController());
   }
 }

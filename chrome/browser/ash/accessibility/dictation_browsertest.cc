@@ -1165,6 +1165,12 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, TypesCommands) {
   }
 }
 
+IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, TypesNonCommands) {
+  // The phrase should be entered without the word "type".
+  SendFinalResultAndWaitForTextAreaValue("Type this is a test",
+                                         "this is a test");
+}
+
 IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, DeleteCharacter) {
   SendFinalResultAndWaitForTextAreaValue("Vega", "Vega");
   // Capitalization and whitespace shouldn't matter.

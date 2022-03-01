@@ -383,3 +383,15 @@ SYNC_TEST_F(
         this.mockInputIme.clearLastParameters();
       }
     });
+
+SYNC_TEST_F(
+    'DictationE2ETest', 'TypePrefixWorksForNonCommands', async function() {
+      const contextId = 0;
+      await this.waitForDictationWithCommands();
+      await this.toggleDictationAndStartListening(contextId);
+      // Try to type a phrase.
+      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
+          'type this is a test', true);
+      // The phrase should be entered without the word "type".
+      await this.assertImeCommitParameters('this is a test', contextId);
+    });
