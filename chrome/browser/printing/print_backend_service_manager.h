@@ -34,6 +34,15 @@ class PrintedPage;
 
 class PrintBackendServiceManager {
  public:
+  using ClientsSet = base::flat_set<uint32_t>;
+  using PrintClientsMap = base::flat_map<std::string, ClientsSet>;
+
+  // Amount of idle time to wait before resetting the connection to the service.
+  static constexpr base::TimeDelta kNoClientsRegisteredResetOnIdleTimeout =
+      base::Seconds(10);
+  static constexpr base::TimeDelta kClientsRegisteredResetOnIdleTimeout =
+      base::Seconds(120);
+
   PrintBackendServiceManager(const PrintBackendServiceManager&) = delete;
   PrintBackendServiceManager& operator=(const PrintBackendServiceManager&) =
       delete;
@@ -125,6 +134,10 @@ class PrintBackendServiceManager {
 
  private:
   friend base::NoDestructor<PrintBackendServiceManager>;
+  FRIEND_TEST_ALL_PREFIXES(PrintBackendServiceManagerTest,
+                           IsIdleTimeoutUpdateNeededForRegisteredClient);
+  FRIEND_TEST_ALL_PREFIXES(PrintBackendServiceManagerTest,
+                           IsIdleTimeoutUpdateNeededForUnregisteredClient);
 
   enum class ClientType {
     // Print Preview scenario, where printer might not be known.  Only performs
@@ -230,20 +243,42 @@ class PrintBackendServiceManager {
   // if the service was launched within a sandbox.
   const mojo::Remote<mojom::PrintBackendService>& GetService(
       const std::string& printer_name,
+      ClientType client_type,
       bool* is_sandboxed);
 
   // Helper to `GetService` for a particular remotes bundle type.
   template <class T>
   mojo::Remote<mojom::PrintBackendService>& GetServiceFromBundle(
       const std::string& remote_id,
+      ClientType client_type,
       bool sandboxed,
       RemotesBundleMap<T>& bundle_map);
 
-  // Help function to reset idle timeout duration to a short value.
-  void UpdateServiceToShortIdleTimeout(
-      mojo::Remote<mojom::PrintBackendService>& service,
+  // Get the idle timeout value to user for a particular client type.
+  static constexpr base::TimeDelta GetClientTypeIdleTimeout(
+      ClientType client_type);
+
+  // Determine if idle timeout should be modified based upon there having been
+  // a new client registered for `registered_client_type`.
+  absl::optional<base::TimeDelta> DetermineIdleTimeoutUpdateOnRegisteredClient(
+      ClientType registered_client_type,
+      const std::string& remote_id) const;
+
+  // Determine if idle timeout should be modified after a client of type
+  // `unregistered_client_type` has been unregistered.
+  absl::optional<base::TimeDelta>
+  DetermineIdleTimeoutUpdateOnUnregisteredClient(
+      ClientType unregistered_client_type,
+      const std::string& remote_id) const;
+
+  // Helper functions to adjust service idle timeout duration.
+  void SetServiceIdleHandler(
+      mojo::Remote<printing::mojom::PrintBackendService>& service,
       bool sandboxed,
-      const std::string& remote_id);
+      const std::string& remote_id,
+      const base::TimeDelta& timeout);
+  void UpdateServiceIdleTimeoutByRemoteId(const std::string& remote_id,
+                                          const base::TimeDelta& timeout);
 
   // Callback when predetermined idle timeout occurs indicating no in-flight
   // messages for a short period of time.  `sandboxed` is used to distinguish
@@ -281,6 +316,7 @@ class PrintBackendServiceManager {
   // `printer_name`.
   const mojo::Remote<mojom::PrintBackendService>& GetServiceAndCallbackContext(
       const std::string& printer_name,
+      ClientType client_type,
       CallbackContext& context);
 
   // Helper function to save outstanding callbacks.
@@ -334,6 +370,12 @@ class PrintBackendServiceManager {
                                const std::string& remote_id,
                                T result);
 
+  // Test support for client ID management.
+  static void SetClientsForTesting(
+      const ClientsSet& query_clients,
+      const ClientsSet& query_with_ui_clients,
+      const PrintClientsMap& print_document_clients);
+
   // Bundles of remotes for the Print Backend Service and their corresponding
   // wrapping hosts, to manage these sets until they disconnect.  The sandboxed
   // and unsandboxed services are kept separate.
@@ -345,16 +387,16 @@ class PrintBackendServiceManager {
 
   // Set of IDs for clients actively engaged in printing queries.  This could
   // include any tab which has triggered Print Preview.
-  base::flat_set<uint32_t> query_clients_;
+  ClientsSet query_clients_;
 
   // Set of IDs for clients actively engaged in a printing query which requires
   // the use of a UI.  Such a UI corresponds to a modal system dialog.  For
   // Linux there can be multiple of these, but for other platforms there can be
   // at most one such client.
-  base::flat_set<uint32_t> query_with_ui_clients_;
+  ClientsSet query_with_ui_clients_;
 
   // Map of remote ID to the set of clients printing documents to it.
-  base::flat_map<std::string, base::flat_set<uint32_t>> print_document_clients_;
+  PrintClientsMap print_document_clients_;
 
   uint32_t last_client_id_ = 0;
 

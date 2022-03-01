@@ -7898,6 +7898,11 @@ test("unit_tests") {
     } else {
       sources += [ "../browser/printing/print_view_manager_basic_unittest.cc" ]
     }
+
+    if (enable_oop_printing) {
+      sources +=
+          [ "../browser/printing/print_backend_service_manager_unittest.cc" ]
+    }
   }
 
   if (enable_session_service) {
