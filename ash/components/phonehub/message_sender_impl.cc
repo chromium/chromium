@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 
 #include "ash/components/phonehub/util/histogram_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -51,6 +52,13 @@ void MessageSenderImpl::SendCrosState(bool notification_setting_enabled,
   proto::CrosState request;
   request.set_notification_setting(is_notification_enabled);
   request.set_camera_roll_setting(is_camera_roll_enabled);
+  if (features::IsPhoneHubMonochromeNotificationIconsEnabled()) {
+    // Updated Chromebooks should always use the new flag, but a flag is still
+    // necessary to identify end-of-support Chromebooks so the phone can know
+    // to send backwards-compatible messages.
+    request.set_notification_icon_styling(
+        proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON);
+  }
 
   SendMessage(proto::MessageType::PROVIDE_CROS_STATE, &request);
 }

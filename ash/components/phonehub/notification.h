@@ -16,6 +16,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
+// Serves the same purpose as a forward declare to avoid an extra include.
+typedef uint32_t SkColor;
+
 namespace ash {
 namespace phonehub {
 
@@ -29,6 +32,8 @@ class Notification {
     AppMetadata(const std::u16string& visible_app_name,
                 const std::string& package_name,
                 const gfx::Image& icon,
+                const absl::optional<SkColor> icon_color,
+                bool icon_is_monochrome,
                 int64_t user_id);
     AppMetadata(const AppMetadata& other);
     AppMetadata& operator=(const AppMetadata& other);
@@ -42,6 +47,10 @@ class Notification {
     std::u16string visible_app_name;
     std::string package_name;
     gfx::Image icon;
+    // Color for a monochrome icon. Leave empty to use the system theme default.
+    absl::optional<SkColor> icon_color;
+    // Whether the icon image is just a mask used to generate a monochrome icon.
+    bool icon_is_monochrome;
     int64_t user_id;
   };
 

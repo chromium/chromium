@@ -54,8 +54,10 @@ class RecentAppButtonsViewTest : public AshTestBase {
 
   void NotifyRecentAppAddedOrUpdated() {
     fake_recent_apps_interaction_handler_.NotifyRecentAppAddedOrUpdated(
-        phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                            /*icon=*/gfx::Image(), kUserId),
+        phonehub::Notification::AppMetadata(
+            kAppName, kPackageName,
+            /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
+            /*icon_is_monochrome =*/true, kUserId),
         base::Time::Now());
   }
 

@@ -188,6 +188,10 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // Controls whether a snooze button should appear on the notification.
   bool should_show_snooze_button = false;
 
+  // If true, instead of using an app-themed accent color for views containing
+  // text, use the style's default. This affects the action buttons and title.
+  bool ignore_accent_color_for_text = false;
+
   FullscreenVisibility fullscreen_visibility = FullscreenVisibility::NONE;
 };
 

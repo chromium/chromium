@@ -85,8 +85,9 @@ phonehub::Notification::AppMetadata DictToAppMetadata(
 
   int user_id = app_metadata_dict->FindIntKey("userId").value_or(0);
 
-  return phonehub::Notification::AppMetadata(visible_app_name, *package_name,
-                                             icon, user_id);
+  return phonehub::Notification::AppMetadata(
+      visible_app_name, *package_name, icon, /*icon_color=*/absl::nullopt,
+      /*icon_is_monochrome=*/false, user_id);
 }
 
 void TryAddingMetadata(

@@ -796,11 +796,26 @@ PhoneHubNotificationController::CreateNotification(
 
   message_center::RichNotificationData optional_fields;
   optional_fields.small_image = app_metadata.icon;
-  optional_fields.ignore_accent_color_for_small_image = true;
   optional_fields.timestamp = notification->timestamp();
   optional_fields.accessible_name = l10n_util::GetStringFUTF16(
       IDS_ASH_PHONE_HUB_NOTIFICATION_ACCESSIBLE_NAME, display_source, title,
       message, PhoneHubNotificationController::GetPhoneName());
+  if (app_metadata.icon_is_monochrome) {
+    optional_fields.accent_color = app_metadata.icon_color;
+    if (features::IsNotificationsRefreshEnabled()) {
+      optional_fields.ignore_accent_color_for_small_image = true;
+      optional_fields.ignore_accent_color_for_text = false;
+      optional_fields.small_image_needs_additional_masking = true;
+    } else {
+      optional_fields.ignore_accent_color_for_small_image = false;
+      optional_fields.ignore_accent_color_for_text = true;
+      optional_fields.small_image_needs_additional_masking = false;
+    }
+  } else {
+    optional_fields.ignore_accent_color_for_small_image = true;
+    optional_fields.ignore_accent_color_for_text = false;
+    optional_fields.small_image_needs_additional_masking = false;
+  }
 
   auto shared_image = notification->shared_image();
   if (shared_image.has_value())

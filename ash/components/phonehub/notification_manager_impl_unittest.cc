@@ -34,7 +34,9 @@ Notification CreateNotification(int64_t id) {
   return phonehub::Notification(
       id,
       phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                          /*icon=*/gfx::Image(), kUserId),
+                                          /*icon=*/gfx::Image(),
+                                          /*icon_color=*/absl::nullopt,
+                                          /*icon_is_monochrome=*/true, kUserId),
       base::Time::Now(), Notification::Importance::kDefault,
       Notification::Category::kConversation,
       {{Notification::ActionType::kInlineReply, /*action_id=*/0}},

@@ -33,6 +33,7 @@
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_transform.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -111,9 +112,8 @@ constexpr int kMessageLabelSize = 13;
 // title/message view and expand button).
 constexpr int kIconViewSize = 48;
 
-// Lightness value that is used to calculate themed color used for app icon.
-constexpr double kAppIconLightnessInDarkMode = 0.85;
-constexpr double kAppIconLightnessInLightMode = 0.4;
+// Target contrast ratio to reach when adjusting colors in dark mode.
+constexpr float kDarkModeMinContrastRatio = 6.0;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -303,6 +303,18 @@ void AshNotificationView::NotificationTitleRow::
         gfx::Tween::ACCEL_20_DECEL_100,
         "Ash.NotificationView.TimestampInTitle.FadeIn.AnimationSmoothness");
   }
+}
+
+void AshNotificationView::NotificationTitleRow::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  title_view_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+  SkColor secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
+  title_row_divider_->SetEnabledColor(secondary_text_color);
+  timestamp_in_collapsed_view_->SetEnabledColor(secondary_text_color);
 }
 
 // static
@@ -777,7 +789,7 @@ void AshNotificationView::UpdateWithNotification(
   NotificationViewBase::UpdateWithNotification(notification);
 
   CreateOrUpdateSnoozeButton(notification);
-  UpdateIconAndButtonsColor();
+  UpdateIconAndButtonsColor(&notification);
 }
 
 void AshNotificationView::CreateOrUpdateHeaderView(
@@ -832,7 +844,7 @@ void AshNotificationView::CreateOrUpdateSmallIconView(
     return;
   }
 
-  UpdateAppIconView();
+  UpdateAppIconView(&notification);
 }
 
 void AshNotificationView::CreateOrUpdateInlineSettingsViews(
@@ -930,14 +942,28 @@ void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateBackground(top_radius_, bottom_radius_);
 
-  header_row()->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  SkColor secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
+  header_row()->SetColor(secondary_text_color);
+  message_label()->SetEnabledColor(secondary_text_color);
+
+  if (control_buttons_view_) {
+    control_buttons_view_->SetButtonIconColors(
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary));
+  }
+
+  if (message_label_in_expanded_state_) {
+    message_label_in_expanded_state_->SetEnabledColor(secondary_text_color);
+  }
 
   views::FocusRing::Get(this)->SetColor(
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kFocusRingColor));
 
-  UpdateIconAndButtonsColor();
+  UpdateIconAndButtonsColor(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id()));
 }
 
 std::unique_ptr<message_center::NotificationInputContainer>
@@ -1142,20 +1168,17 @@ void AshNotificationView::DisableNotification() {
   message_center::MessageCenter::Get()->DisableNotification(notification_id());
 }
 
-void AshNotificationView::UpdateAppIconView() {
-  auto* notification =
-      message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          notification_id());
-
+void AshNotificationView::UpdateAppIconView(
+    const message_center::Notification* notification) {
   // Grouped child notification use notification's icon for the app icon view,
   // so we don't need further update here.
   if (!notification ||
       (is_grouped_child_view_ && !notification->icon().IsEmpty()))
     return;
 
-  SkColor icon_color = AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  SkColor icon_background_color = CalculateIconAndButtonsColor();
+  SkColor icon_color = AshColorProvider::Get()->GetInvertedContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonLabelColor);
+  SkColor icon_background_color = CalculateIconAndButtonsColor(notification);
 
   // TODO(crbug.com/768748): figure out if this has a performance impact and
   // cache images if so.
@@ -1173,34 +1196,45 @@ void AshNotificationView::UpdateAppIconView() {
           kAppIconViewSize / 2, icon_background_color, app_icon));
 }
 
-SkColor AshNotificationView::CalculateIconAndButtonsColor() {
-  auto* notification =
-      message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          notification_id());
-
+SkColor AshNotificationView::CalculateIconAndButtonsColor(
+    const message_center::Notification* notification) {
   SkColor default_color = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
 
   if (!notification)
     return default_color;
 
-  SkColor accent_color = notification->accent_color().value_or(default_color);
+  absl::optional<SkColor> accent_color = notification->accent_color();
+  if (!accent_color.has_value())
+    return default_color;
 
-  // To ensure the icon and buttons look distinct enough in the notification
-  // background, we change the lightness of the accent color to generate the
-  // desired color.
-  color_utils::HSL hsl;
-  color_utils::SkColorToHSL(accent_color, &hsl);
-  hsl.l = AshColorProvider::Get()->IsDarkModeEnabled()
-              ? kAppIconLightnessInDarkMode
-              : kAppIconLightnessInLightMode;
-  return color_utils::HSLToSkColor(hsl, SkColorGetA(accent_color));
+  // TODO(crbug/1294459): re-evaluate contrast, maybe increase or use fixed HSL
+  float minContrastRatio = AshColorProvider::Get()->IsDarkModeEnabled()
+                               ? minContrastRatio = kDarkModeMinContrastRatio
+                               : color_utils::kMinimumReadableContrastRatio;
+
+  // Actual color is kTransparent80, but BlendForMinContrast requires opaque.
+  SkColor bg_color = AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kOpaque);
+  return color_utils::BlendForMinContrast(
+             *accent_color, bg_color,
+             /*high_contrast_foreground=*/absl::nullopt, minContrastRatio)
+      .color;
 }
 
-void AshNotificationView::UpdateIconAndButtonsColor() {
-  UpdateAppIconView();
+void AshNotificationView::UpdateIconAndButtonsColor(
+    const message_center::Notification* notification) {
+  UpdateAppIconView(notification);
 
-  SkColor button_color = CalculateIconAndButtonsColor();
+  SkColor icon_color = CalculateIconAndButtonsColor(notification);
+  SkColor button_color = icon_color;
+  bool use_default_button_color =
+      !notification ||
+      notification->rich_notification_data().ignore_accent_color_for_text;
+  if (use_default_button_color) {
+    button_color = AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
+  }
 
   for (auto* action_button : action_buttons()) {
     static_cast<PillButton*>(action_button)->SetButtonTextColor(button_color);

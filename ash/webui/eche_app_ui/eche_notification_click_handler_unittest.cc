@@ -177,7 +177,9 @@ TEST_F(EcheNotificationClickHandlerTest, HandleNotificationClick) {
   const int64_t user_id = 0;
   phonehub::Notification::AppMetadata app_meta_data =
       phonehub::Notification::AppMetadata(app_name, package_name,
-                                          /*icon=*/gfx::Image(), user_id);
+                                          /*icon=*/gfx::Image(),
+                                          /*icon_color=*/absl::nullopt,
+                                          /*icon_is_monochrome=*/true, user_id);
   HandleNotificationClick(notification_id, app_meta_data);
   EXPECT_EQ(num_app_launch(), 1u);
   EXPECT_EQ(num_notifications_shown(), 0u);

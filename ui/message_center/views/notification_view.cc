@@ -318,7 +318,9 @@ NotificationView::~NotificationView() {
 
 void NotificationView::CreateOrUpdateHeaderView(
     const Notification& notification) {
-  header_row()->SetColor(notification.accent_color());
+  if (!notification.rich_notification_data().ignore_accent_color_for_text) {
+    header_row()->SetColor(notification.accent_color());
+  }
   header_row()->SetSummaryText(std::u16string());
   NotificationViewBase::CreateOrUpdateHeaderView(notification);
 }

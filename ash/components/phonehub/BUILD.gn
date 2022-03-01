@@ -134,6 +134,7 @@ static_library("phonehub") {
     "//device/bluetooth",
     "//net",
     "//services/data_decoder/public/cpp",
+    "//skia",
     "//ui/gfx",
     "//url",
   ]
@@ -211,6 +212,7 @@ static_library("test_support") {
     "//ash/components/phonehub/proto",
     "//ash/services/secure_channel/public/mojom",
     "//base",
+    "//skia",
   ]
 }
 
@@ -271,6 +273,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/session_manager/core",
     "//device/bluetooth:mocks",
+    "//skia",
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:test_support",

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+#include "ash/constants/ash_features.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -60,11 +61,15 @@ class MessageSenderImplTest : public testing::Test {
   std::unique_ptr<MessageSenderImpl> message_sender_;
 };
 
-TEST_F(MessageSenderImplTest, SendCrossState) {
+TEST_F(MessageSenderImplTest, SendCrosState) {
   proto::CrosState request;
   request.set_notification_setting(
       proto::NotificationSetting::NOTIFICATIONS_ON);
   request.set_camera_roll_setting(proto::CameraRollSetting::CAMERA_ROLL_OFF);
+  if (features::IsPhoneHubMonochromeNotificationIconsEnabled()) {
+    request.set_notification_icon_styling(
+        proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON);
+  }
 
   message_sender_->SendCrosState(/*notification_enabled=*/true,
                                  /*camera_roll_enabled=*/false);

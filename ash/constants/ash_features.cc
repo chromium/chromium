@@ -1064,6 +1064,9 @@ const base::Feature kPhoneHubCameraRoll{"PhoneHubCameraRoll",
 const base::Feature kPhoneHubCallNotification{
     "PhoneHubCallNotification", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPhoneHubMonochromeNotificationIcons{
+    "PhoneHubMonochromeNotificationIcons", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables the Recent Apps feature in Phone Hub, which allows users to relaunch
 // the streamed app.
 const base::Feature kPhoneHubRecentApps{"PhoneHubRecentApps",
@@ -1878,6 +1881,10 @@ bool IsPerDeskShelfEnabled() {
 
 bool IsPhoneHubCameraRollEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubCameraRoll);
+}
+
+bool IsPhoneHubMonochromeNotificationIconsEnabled() {
+  return base::FeatureList::IsEnabled(kPhoneHubMonochromeNotificationIcons);
 }
 
 bool IsPerformantSplitViewResizingEnabled() {

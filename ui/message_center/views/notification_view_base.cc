@@ -791,7 +791,10 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
           button_info.placeholder;
     }
 
-    if (!for_ash_notification_) {
+    bool use_accent_color =
+        !for_ash_notification_ &&
+        !notification.rich_notification_data().ignore_accent_color_for_text;
+    if (use_accent_color) {
       // Change action button color to the accent color.
       action_buttons_[i]->SetEnabledTextColors(notification.accent_color());
     }

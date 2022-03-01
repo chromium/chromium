@@ -142,12 +142,16 @@ class NotificationViewTest : public views::ViewObserver,
   std::unique_ptr<Notification> CreateSimpleNotification() const {
     RichNotificationData data;
     data.settings_button_handler = SettingsButtonHandler::INLINE;
+    return CreateSimpleNotificationWithRichData(data);
+  }
 
+  std::unique_ptr<Notification> CreateSimpleNotificationWithRichData(
+      const RichNotificationData& optional_fields) const {
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
         NOTIFICATION_TYPE_BASE_FORMAT, std::string(kDefaultNotificationId),
         u"title", u"message", CreateTestImage(80, 80), u"display source",
-        GURL(), NotifierId(NotifierType::APPLICATION, "extension_id"), data,
-        delegate_);
+        GURL(), NotifierId(NotifierType::APPLICATION, "extension_id"),
+        optional_fields, delegate_);
     notification->set_small_image(CreateTestImage(16, 16));
     notification->set_image(CreateTestImage(320, 240));
 
@@ -515,6 +519,30 @@ TEST_F(NotificationViewTest, TestAccentColor) {
   EXPECT_EQ(expected_color_actions,
             notification_view()->action_buttons_[1]->GetCurrentTextColor());
   EXPECT_TRUE(app_icon_color_matches(expected_color_title));
+}
+
+// Tests that the header row ignores the notification's accent color when the
+// flag is present. This includes the notification setting and dismiss buttons
+// in the top right.
+TEST_F(NotificationViewTest, TestAccentColorTextFlagAffectsHeaderRow) {
+  RichNotificationData data;
+  data.settings_button_handler = SettingsButtonHandler::INLINE;
+  data.accent_color = SK_ColorGREEN;
+  std::unique_ptr<Notification> notification;
+
+  data.ignore_accent_color_for_text = true;
+  notification = CreateSimpleNotificationWithRichData(data);
+  notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
+  UpdateNotificationViews(*notification);
+  EXPECT_FALSE(
+      notification_view()->header_row_->color_for_testing().has_value());
+
+  data.ignore_accent_color_for_text = false;
+  notification = CreateSimpleNotificationWithRichData(data);
+  notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
+  UpdateNotificationViews(*notification);
+  EXPECT_EQ(*notification_view()->header_row_->color_for_testing(),
+            data.accent_color);
 }
 
 TEST_F(NotificationViewTest, InkDropClipRect) {

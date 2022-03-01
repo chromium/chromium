@@ -153,7 +153,8 @@ TEST_F(EcheRecentAppClickHandlerTest, LaunchEcheAppFunction) {
   const char16_t app_visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
   auto fake_app_metadata = phonehub::Notification::AppMetadata(
-      app_visible_name, package_name, gfx::Image(), user_id);
+      app_visible_name, package_name, gfx::Image(),
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
 
   RecentAppClicked(fake_app_metadata);
 
@@ -168,7 +169,8 @@ TEST_F(EcheRecentAppClickHandlerTest, HandleNotificationClick) {
   const char16_t app_visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
   auto fake_app_metadata = phonehub::Notification::AppMetadata(
-      app_visible_name, package_name, gfx::Image(), user_id);
+      app_visible_name, package_name, gfx::Image(),
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
 
   HandleNotificationClick(notification_id, fake_app_metadata);
   std::vector<phonehub::Notification::AppMetadata> app_metadata =

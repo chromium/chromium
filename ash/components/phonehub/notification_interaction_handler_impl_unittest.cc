@@ -95,6 +95,7 @@ TEST_F(NotificationInteractionHandlerImplTest,
   const int64_t expected_user_id = 1;
   auto expected_app_metadata = Notification::AppMetadata(
       expected_app_visible_name, expected_package_name, gfx::Image(),
+      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true,
       expected_user_id);
 
   handler().HandleNotificationClicked(expected_id, expected_app_metadata);

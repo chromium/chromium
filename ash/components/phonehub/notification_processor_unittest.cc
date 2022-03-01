@@ -40,6 +40,9 @@ const char kSharedImageB[] = "shared_image_b";
 const char kContactImageA[] = "contact_image_a";
 const char kContactImageB[] = "contact_image_b";
 
+// Garbage color for the purpose of verification in these tests.
+const SkColor kIconColor = SkColorSetRGB(0x12, 0x34, 0x56);
+
 SkBitmap TestBitmap() {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(1, 1);
@@ -95,6 +98,11 @@ class NotificationProcessorTest : public testing::Test {
     void RunAllCallbacks() {
       while (!decode_image_callbacks_.empty())
         RunNextCallback(TestBitmap());
+    }
+
+    void RunAllCallbacksWithEmpty() {
+      while (!decode_image_callbacks_.empty())
+        RunNextCallback(SkBitmap());
     }
 
     std::queue<DecodeImageCallback> decode_image_callbacks_;
@@ -166,6 +174,26 @@ class NotificationProcessorTest : public testing::Test {
       proto::Action* open_action = notification.mutable_actions(1);
       open_action->set_id(kOpenableActionId);
       open_action->set_type(proto::Action_InputType::Action_InputType_OPEN);
+    }
+    return notification;
+  }
+
+  proto::Notification CreateNewInlineReplyableMonochromeIconNotification(
+      int64_t notification_id,
+      int64_t inline_reply_id,
+      absl::optional<SkColor> icon_color = absl::nullopt,
+      std::string icon = std::string()) {
+    proto::Notification notification = CreateNewInlineReplyableNotification(
+        notification_id, inline_reply_id, icon);
+    proto::App* origin_app = notification.mutable_origin_app();
+    origin_app->set_icon_styling(
+        proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON);
+    if (icon_color != absl::nullopt) {
+      auto color_rgb = std::make_unique<proto::ColorRgb>();
+      color_rgb->set_red(SkColorGetR(*icon_color));
+      color_rgb->set_green(SkColorGetG(*icon_color));
+      color_rgb->set_blue(SkColorGetB(*icon_color));
+      origin_app->set_allocated_icon_color(color_rgb.release());
     }
     return notification;
   }
@@ -278,6 +306,66 @@ TEST_F(NotificationProcessorTest, ShouldSkipDecodeImageIfNotAvailable) {
   image_decoder_delegate()->RunAllCallbacks();
 
   EXPECT_EQ(0u, fake_notification_manager()->num_notifications());
+}
+
+TEST_F(NotificationProcessorTest, MonochromeIconFieldsPopulatedCorrectly) {
+  std::vector<proto::Notification> first_set_of_notifications;
+
+  // Legacy notifications don't supply color and should not be filled in.
+  first_set_of_notifications.emplace_back(CreateNewInlineReplyableNotification(
+      kNotificationIdA, kInlineReplyIdA, kIconDataA));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  const Notification* notification =
+      fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_FALSE(notification->app_metadata().icon_is_monochrome);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(notification->app_metadata().icon,
+                                        TestImage()));
+  EXPECT_FALSE(notification->app_metadata().icon_color.has_value());
+
+  // Monochrome notifications without a color should not have icon_color filled.
+  first_set_of_notifications.clear();
+  first_set_of_notifications.emplace_back(
+      CreateNewInlineReplyableMonochromeIconNotification(
+          kNotificationIdA, kInlineReplyIdA, absl::nullopt, kIconDataA));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  notification = fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_TRUE(notification->app_metadata().icon_is_monochrome);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(notification->app_metadata().icon,
+                                        TestImage()));
+  EXPECT_FALSE(notification->app_metadata().icon_color.has_value());
+
+  // Monochrome notifications with a color should have icon_color filled.
+  first_set_of_notifications.clear();
+  first_set_of_notifications.emplace_back(
+      CreateNewInlineReplyableMonochromeIconNotification(
+          kNotificationIdA, kInlineReplyIdA, kIconColor, kIconDataA));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  notification = fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_TRUE(notification->app_metadata().icon_is_monochrome);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(notification->app_metadata().icon,
+                                        TestImage()));
+  EXPECT_TRUE(notification->app_metadata().icon_color.has_value());
+  EXPECT_TRUE(*notification->app_metadata().icon_color == kIconColor);
+
+  // Monochrome notifications without an icon should not fill in color.
+  first_set_of_notifications.clear();
+  first_set_of_notifications.emplace_back(
+      CreateNewInlineReplyableMonochromeIconNotification(
+          kNotificationIdA, kInlineReplyIdA, kIconColor,
+          /*icon=*/std::string()));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacksWithEmpty();
+
+  notification = fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_TRUE(notification->app_metadata().icon_is_monochrome);
+  EXPECT_TRUE(notification->app_metadata().icon.IsEmpty());
+  EXPECT_FALSE(notification->app_metadata().icon_color.has_value());
 }
 
 TEST_F(NotificationProcessorTest, ImageFieldPopulatedCorrectly) {

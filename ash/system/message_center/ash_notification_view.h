@@ -154,6 +154,9 @@ class ASH_EXPORT AshNotificationView
     // Perform expand/collapse animation in children views.
     void PerformExpandCollapseAnimation();
 
+    // views::View:
+    void OnThemeChanged() override;
+
    private:
     friend class AshNotificationViewTest;
 
@@ -197,13 +200,15 @@ class ASH_EXPORT AshNotificationView
   void DisableNotification();
 
   // Update the color and icon for `app_icon_view_`.
-  void UpdateAppIconView();
+  void UpdateAppIconView(const message_center::Notification* notification);
 
   // Calculate the color used for the app icon and action buttons.
-  SkColor CalculateIconAndButtonsColor();
+  SkColor CalculateIconAndButtonsColor(
+      const message_center::Notification* notification);
 
   // Update the color of icon and buttons.
-  void UpdateIconAndButtonsColor();
+  void UpdateIconAndButtonsColor(
+      const message_center::Notification* notification);
 
   // AshNotificationView will animate its expand/collapse in the parent's
   // ChildPreferredSizeChange(). Child views are animated here.
@@ -236,7 +241,8 @@ class ASH_EXPORT AshNotificationView
   views::ScrollView* grouped_notifications_scroll_view_ = nullptr;
   views::View* grouped_notifications_container_ = nullptr;
   views::View* collapsed_summary_view_ = nullptr;
-  views::View* control_buttons_view_ = nullptr;
+  message_center::NotificationControlButtonsView* control_buttons_view_ =
+      nullptr;
   views::LabelButton* turn_off_notifications_button_ = nullptr;
   views::LabelButton* inline_settings_cancel_button_ = nullptr;
   views::View* snooze_button_spacer_ = nullptr;
