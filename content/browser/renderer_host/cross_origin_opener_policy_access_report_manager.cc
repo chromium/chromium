@@ -19,15 +19,16 @@ namespace content {
 
 namespace {
 
-absl::optional<blink::FrameToken> GetFrameToken(FrameTreeNode* frame,
-                                                SiteInstance* site_instance) {
+absl::optional<blink::FrameToken> GetFrameToken(
+    FrameTreeNode* frame,
+    SiteInstanceGroup* site_instance_group) {
   RenderFrameHostImpl* rfh = frame->current_frame_host();
-  if (rfh->GetSiteInstance() == site_instance)
+  if (rfh->GetSiteInstance()->group() == site_instance_group)
     return rfh->GetFrameToken();
 
   RenderFrameProxyHost* proxy =
       rfh->browsing_context_state()->GetRenderFrameProxyHost(
-          static_cast<SiteInstanceImpl*>(site_instance)->group());
+          site_instance_group);
   if (proxy)
     return proxy->GetFrameToken();
 
@@ -115,11 +116,11 @@ void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
   // It means all the accessed from the first window are made from documents
   // inside the same SiteInstance. Only one SiteInstance has to be updated.
 
-  SiteInstance* site_instance =
-      accessing_node->current_frame_host()->GetSiteInstance();
+  SiteInstanceGroup* site_instance_group =
+      accessing_node->current_frame_host()->GetSiteInstance()->group();
 
   absl::optional<blink::FrameToken> accessed_window_token =
-      GetFrameToken(accessed_node, site_instance);
+      GetFrameToken(accessed_node, site_instance_group);
   if (!accessed_window_token)
     return;
 
