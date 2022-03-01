@@ -19,7 +19,8 @@ class BreadcrumbsStatus {
  public:
   // Returns true if breadcrumbs logging is enabled. This is only the case if
   // both the feature is enabled and the user has consented to metrics
-  // recording.
+  // recording. If metrics consent is disabled, breadcrumbs will not be
+  // re-enabled until consent is given _and_ the browser restarts.
   static bool IsEnabled();
 
  private:
