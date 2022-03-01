@@ -115,6 +115,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Sets the autocomplete text if autocomplete conditions are met.
   void ProcessAutocomplete(SearchResultBaseView* first_result_view);
 
+  // Removes all autocomplete text.
+  void ClearAutocompleteText();
+
   // Updates the search box with |new_query| and starts a new search.
   void UpdateQuery(const std::u16string& new_query);
 
@@ -156,9 +159,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Returns true if there is currently an autocomplete suggestion in
   // search_box().
   bool HasAutocompleteText();
-
-  // Removes all autocomplete text.
-  void ClearAutocompleteText();
 
   // After verifying autocomplete text is valid, sets the current searchbox
   // text to the autocomplete text and sets the text highlight.

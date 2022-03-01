@@ -582,6 +582,22 @@ void SearchBoxView::ProcessAutocomplete(
   ClearAutocompleteText();
 }
 
+void SearchBoxView::ClearAutocompleteText() {
+  if (!ShouldProcessAutocomplete())
+    return;
+
+  // Avoid triggering subsequent query by temporarily setting controller to
+  // nullptr.
+  search_box()->set_controller(nullptr);
+  // search_box()->ClearCompositionText() does not work here because
+  // SetAutocompleteText() calls SelectRange(), which comfirms the active
+  // composition text (so there is nothing to clear here). Set empty composition
+  // text to clear the selected range.
+  search_box()->SetCompositionText(ui::CompositionText());
+  search_box()->set_controller(this);
+  ResetHighlightRange();
+}
+
 void SearchBoxView::OnResultContainerVisibilityChanged(bool visible) {
   if (search_result_page_visible_ == visible)
     return;
@@ -630,22 +646,6 @@ bool SearchBoxView::HasAutocompleteText() {
   return search_box()->GetSelectedRange().EqualsIgnoringDirection(
              highlight_range_) &&
          highlight_range_.length() > 0;
-}
-
-void SearchBoxView::ClearAutocompleteText() {
-  if (!ShouldProcessAutocomplete())
-    return;
-
-  // Avoid triggering subsequent query by temporarily setting controller to
-  // nullptr.
-  search_box()->set_controller(nullptr);
-  // search_box()->ClearCompositionText() does not work here because
-  // SetAutocompleteText() calls SelectRange(), which comfirms the active
-  // composition text (so there is nothing to clear here). Set empty composition
-  // text to clear the selected range.
-  search_box()->SetCompositionText(ui::CompositionText());
-  search_box()->set_controller(this);
-  ResetHighlightRange();
 }
 
 void SearchBoxView::OnBeforeUserAction(views::Textfield* sender) {
