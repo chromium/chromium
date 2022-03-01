@@ -16,6 +16,7 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
@@ -43,6 +44,9 @@ namespace {
 // result page changes are delayed.
 constexpr base::TimeDelta kNotifyA11yDelay = base::Milliseconds(1500);
 
+// Insets for the vertical scroll bar.
+constexpr gfx::Insets kVerticalScrollInsets(1, 0, 1, 1);
+
 }  // namespace
 
 ProductivityLauncherSearchView::ProductivityLauncherSearchView(
@@ -60,10 +64,17 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
       views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
-  scroll_view_->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
+
   // Don't paint a background. The bubble already has one.
   scroll_view_->SetBackgroundColor(absl::nullopt);
+
+  // Set up scroll bars.
+  scroll_view_->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  auto vertical_scroll =
+      std::make_unique<RoundedScrollBar>(/*horizontal=*/false);
+  vertical_scroll->SetInsets(kVerticalScrollInsets);
+  scroll_view_->SetVerticalScrollBar(std::move(vertical_scroll));
 
   auto scroll_contents = std::make_unique<views::View>();
   scroll_contents->SetLayoutManager(
