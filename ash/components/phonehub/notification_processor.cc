@@ -28,20 +28,19 @@ const SkColor kMessagesOverrideColor = gfx::kGoogleBlue600;
 
 absl::optional<SkColor> getMonochromeIconColor(const proto::Notification& proto,
                                                const gfx::Image& icon) {
-  if (!icon.IsEmpty() && proto.origin_app().has_icon_color()) {
-    if (proto.origin_app().package_name() == kMessagesPackageName) {
-      // The notification color supplied by the Messages app (Bugle) is based
-      // on light/dark mode of the phone, not the Chromebook, with no way to
-      // query for both at runtime. These constants are used to override with
-      // a fixed color. See conversation at b/207089786 for more details.
-      return kMessagesOverrideColor;
-    } else {
-      return SkColorSetRGB(proto.origin_app().icon_color().red(),
-                           proto.origin_app().icon_color().green(),
-                           proto.origin_app().icon_color().blue());
-    }
+  if (icon.IsEmpty() || !proto.origin_app().has_icon_color()) {
+    return absl::nullopt;
   }
-  return absl::nullopt;
+  if (proto.origin_app().package_name() == kMessagesPackageName) {
+    // The notification color supplied by the Messages app (Bugle) is based
+    // on light/dark mode of the phone, not the Chromebook, with no way to
+    // query for both at runtime. These constants are used to override with
+    // a fixed color. See conversation at b/207089786 for more details.
+    return kMessagesOverrideColor;
+  }
+  return SkColorSetRGB(proto.origin_app().icon_color().red(),
+                       proto.origin_app().icon_color().green(),
+                       proto.origin_app().icon_color().blue());
 }
 
 Notification::Importance GetNotificationImportanceFromProto(

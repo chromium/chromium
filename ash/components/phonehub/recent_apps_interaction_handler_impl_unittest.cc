@@ -24,6 +24,10 @@ using HostStatus = ::chromeos::multidevice_setup::mojom::HostStatus;
 
 // Garbage color for the purpose of verification in these tests.
 const SkColor kIconColor = SkColorSetRGB(0x12, 0x34, 0x56);
+const char kIconColorR[] = "icon_color_r";
+const char kIconColorG[] = "icon_color_g";
+const char kIconColorB[] = "icon_color_b";
+const char kIconIsMonochrome[] = "icon_is_monochrome";
 
 class FakeClickHandler : public RecentAppClickObserver {
  public:
@@ -87,6 +91,30 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     std::vector<base::Value> app_metadata_value_list;
     app_metadata_value_list.push_back(app_metadata1.ToValue());
     app_metadata_value_list.push_back(app_metadata2.ToValue());
+
+    pref_service_.Set(prefs::kRecentAppsHistory,
+                      base::Value(std::move(app_metadata_value_list)));
+  }
+
+  void SaveLegacyRecentAppToPref() {
+    const char16_t app_visible_name1[] = u"Fake App";
+    const char package_name1[] = "com.fakeapp";
+    const int64_t expected_user_id1 = 1;
+    base::Value app_metadata_value =
+        Notification::AppMetadata(
+            app_visible_name1, package_name1, gfx::Image(),
+            /*icon_color=*/kIconColor, /*icon_is_monochrome=*/false,
+            expected_user_id1)
+            .ToValue();
+
+    // Simulate an un-migrated preference without new fields.
+    EXPECT_TRUE(app_metadata_value.GetDict().Remove(kIconIsMonochrome));
+    EXPECT_TRUE(app_metadata_value.GetDict().Remove(kIconColorR));
+    EXPECT_TRUE(app_metadata_value.GetDict().Remove(kIconColorG));
+    EXPECT_TRUE(app_metadata_value.GetDict().Remove(kIconColorB));
+
+    std::vector<base::Value> app_metadata_value_list;
+    app_metadata_value_list.push_back(std::move(app_metadata_value));
 
     pref_service_.Set(prefs::kRecentAppsHistory,
                       base::Value(std::move(app_metadata_value_list)));
@@ -360,7 +388,23 @@ TEST_F(RecentAppsInteractionHandlerTest,
   EXPECT_TRUE(recent_apps_metadata_result[0].icon_is_monochrome);
   EXPECT_FALSE(recent_apps_metadata_result[1].icon_color.has_value());
   EXPECT_FALSE(recent_apps_metadata_result[1].icon_is_monochrome);
-  ;
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
+       FetchRecentAppMetadataListFromPreferenceBackwardsCompat) {
+  SaveLegacyRecentAppToPref();
+
+  std::vector<RecentAppsInteractionHandler::UserState> user_states =
+      GetDefaultUserStates();
+  handler().set_user_states(user_states);
+
+  std::vector<Notification::AppMetadata> recent_apps_metadata_result =
+      handler().FetchRecentAppMetadataList();
+  EXPECT_EQ(1u, recent_apps_metadata_result.size());
+
+  // Check that new fields are appropriately filled in with safe defaults.
+  EXPECT_FALSE(recent_apps_metadata_result[0].icon_color.has_value());
+  EXPECT_FALSE(recent_apps_metadata_result[0].icon_is_monochrome);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest,

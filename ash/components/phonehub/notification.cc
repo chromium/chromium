@@ -86,6 +86,8 @@ Notification::AppMetadata Notification::AppMetadata::FromValue(
   if (value.FindKey(kIconIsMonochrome)) {
     DCHECK(value.FindKey(kIconIsMonochrome)->is_bool());
   }
+  bool icon_is_monochrome =
+      value.FindBoolPath(kIconIsMonochrome).value_or(false);
 
   absl::optional<SkColor> icon_color = absl::nullopt;
   if (value.FindKey(kIconColorR)) {
@@ -111,10 +113,10 @@ Notification::AppMetadata Notification::AppMetadata::FromValue(
   gfx::Image decode_icon = gfx::Image::CreateFrom1xPNGBytes(
       base::RefCountedString::TakeString(&icon_str));
 
-  return Notification::AppMetadata(
-      visible_app_name_string_value, *(value.FindStringPath(kPackageName)),
-      decode_icon, icon_color, *(value.FindBoolPath(kIconIsMonochrome)),
-      *(value.FindDoublePath(kUserId)));
+  return Notification::AppMetadata(visible_app_name_string_value,
+                                   *(value.FindStringPath(kPackageName)),
+                                   decode_icon, icon_color, icon_is_monochrome,
+                                   *(value.FindDoublePath(kUserId)));
 }
 
 Notification::Notification(
