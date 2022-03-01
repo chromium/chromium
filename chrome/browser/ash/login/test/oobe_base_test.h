@@ -74,10 +74,6 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
   // is set before SetUpCommandLine is invoked.
   bool needs_background_networking_ = false;
 
-  // Whether to use network screeen skip check or not. Note this is only
-  // effective when it is set before SetUpCommandLine is invoked.
-  bool needs_network_screen_skip_check_ = false;
-
   std::string gaia_frame_parent_ = "signin-frame";
   std::string authenticator_id_ = "$('gaia-signin').authenticator_";
   EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,

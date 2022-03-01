@@ -551,7 +551,7 @@ const base::Feature kEnableOobePolymer3{"EnableOobePolymer3",
 
 // Enables skipping of network screen.
 const base::Feature kEnableOobeNetworkScreenSkip{
-    "EnableOobeNetworkScreenSkip", base::FEATURE_ENABLED_BY_DEFAULT};
+    "EnableOobeNetworkScreenSkip", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables showing notification after the password change for SAML users.
 const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess{
