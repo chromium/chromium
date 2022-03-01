@@ -97,6 +97,9 @@ PasswordForm CreatePasswordForm() {
   return _savedForms;
 }
 
+- (void)updateOnDeviceEncryptionSessionAndUpdateTableView {
+}
+
 @end
 
 // Tests for Passwords mediator.
@@ -120,10 +123,14 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
     mediator_ = [[PasswordsMediator alloc]
         initWithPasswordCheckManager:password_check_
-                         syncService:syncService()
+                    syncSetupService:syncService()
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForBrowserState(
-                                             browser_state_.get())];
+                                             browser_state_.get())
+                     identityManager:IdentityManagerFactory::GetForBrowserState(
+                                         browser_state_.get())
+                         syncService:SyncServiceFactory::GetForBrowserState(
+                                         browser_state_.get())];
     mediator_.consumer = consumer_;
   }
 

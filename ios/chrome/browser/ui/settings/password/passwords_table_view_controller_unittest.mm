@@ -102,14 +102,17 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
 
     CreateController();
 
+    ChromeBrowserState* browserState = browser_->GetBrowserState();
     mediator_ = [[PasswordsMediator alloc]
         initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
-                                         GetForBrowserState(
-                                             browser_->GetBrowserState())
-                         syncService:nil
+                                         GetForBrowserState(browserState)
+                    syncSetupService:nil
                        faviconLoader:IOSChromeFaviconLoaderFactory::
-                                         GetForBrowserState(
-                                             browser_->GetBrowserState())];
+                                         GetForBrowserState(browserState)
+                     identityManager:IdentityManagerFactory::GetForBrowserState(
+                                         browserState)
+                         syncService:SyncServiceFactory::GetForBrowserState(
+                                         browserState)];
 
     // Inject some fake passwords to pass the loading state.
     PasswordsTableViewController* passwords_controller =

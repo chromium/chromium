@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
+#include "ios/chrome/browser/signin/identity_manager_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -112,9 +114,13 @@
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
   self.mediator = [[PasswordsMediator alloc]
       initWithPasswordCheckManager:[self passwordCheckManager]
-                       syncService:SyncSetupServiceFactory::GetForBrowserState(
+                  syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
                                        browserState)
-                     faviconLoader:faviconLoader];
+                     faviconLoader:faviconLoader
+                   identityManager:IdentityManagerFactory::GetForBrowserState(
+                                       browserState)
+                       syncService:SyncServiceFactory::GetForBrowserState(
+                                       browserState)];
   self.reauthModule = [[ReauthenticationModule alloc]
       initWithSuccessfulReauthTimeAccessor:self.mediator];
 
@@ -150,6 +156,8 @@
     self.passwordsInOtherAppsCoordinator.delegate = nil;
     self.passwordsInOtherAppsCoordinator = nil;
   }
+
+  [self.mediator disconnect];
 }
 
 #pragma mark - PasswordsSettingsCommands

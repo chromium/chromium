@@ -345,6 +345,10 @@ bool IsFaviconEnabled() {
 // YES, if the user has tapped on the "Check Now" button.
 @property(nonatomic, assign) BOOL shouldFocusAccessibilityOnPasswordCheckStatus;
 
+// On-device encryption state according to the sync service.
+@property(nonatomic, assign)
+    OnDeviceEncryptionState onDeviceEncryptionStateInModel;
+
 @end
 
 @implementation PasswordsTableViewController
@@ -361,7 +365,7 @@ bool IsFaviconEnabled() {
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, ChromeAccountManagerServiceFactory::GetForBrowserState(
-                      _browser->GetBrowserState()));
+                      _browserState));
     _sharedPasswordAutoFillStatusManager =
         [PasswordAutoFillStatusManager sharedManager];
 
@@ -388,6 +392,9 @@ bool IsFaviconEnabled() {
     [self updateUIForEditState];
     [self updateExportPasswordsButton];
   }
+  // This value represents the state in the UI. It is set to
+  // `OnDeviceEncryptionStateNotShown` because nothing is currently shown.
+  _onDeviceEncryptionStateInModel = OnDeviceEncryptionStateNotShown;
   return self;
 }
 
@@ -600,40 +607,7 @@ bool IsFaviconEnabled() {
                                    update:NO];
 
   // On-device encryption.
-  // TODO(crbug.com/1202088): Listen to state change to update the settings.
-  switch ([self onDeviceEncryptionState]) {
-    case OnDeviceEncryptionStateOfferOptIn:
-      [model addSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
-      if (!_onDeviceEncryptionOptInDescriptionItem) {
-        _onDeviceEncryptionOptInDescriptionItem =
-            [self onDeviceEncryptionOptInDescriptionItem];
-      }
-      [model addItem:_onDeviceEncryptionOptInDescriptionItem
-          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
-      if (!_setUpOnDeviceEncryptionItem) {
-        _setUpOnDeviceEncryptionItem = [self setUpOnDeviceEncryptionItem];
-      }
-      [model addItem:_setUpOnDeviceEncryptionItem
-          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
-      break;
-    case OnDeviceEncryptionStateOptedIn:
-      [model addSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
-      if (!_onDeviceEncryptionOptedInDescription) {
-        _onDeviceEncryptionOptedInDescription =
-            [self onDeviceEncryptionOptedInDescription];
-      }
-      if (!_onDeviceEncryptionOptedInLearnMore) {
-        _onDeviceEncryptionOptedInLearnMore =
-            [self onDeviceEncryptionOptedInLearnMore];
-      }
-      [model addItem:_onDeviceEncryptionOptedInDescription
-          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
-      [model addItem:_onDeviceEncryptionOptedInLearnMore
-          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
-      break;
-    case OnDeviceEncryptionStateNotShown:
-      break;
-  }
+  [self updateOnDeviceEncryptionSessionWithUpdateTableView:NO];
 
   // Saved passwords.
   if (!_savedForms.empty()) {
@@ -674,6 +648,83 @@ bool IsFaviconEnabled() {
 - (void)reloadData {
   [super reloadData];
   [self updateExportPasswordsButton];
+}
+
+// Updates "on-device encryption" related UI.
+// |updateTableView| whether the Table View should be updated.
+- (void)updateOnDeviceEncryptionSessionWithUpdateTableView:
+    (BOOL)updateTableView {
+  OnDeviceEncryptionState oldState = self.onDeviceEncryptionStateInModel;
+  OnDeviceEncryptionState newState = [self onDeviceEncryptionState];
+  if (newState == oldState) {
+    return;
+  }
+  self.onDeviceEncryptionStateInModel = newState;
+  TableViewModel* model = self.tableViewModel;
+
+  NSInteger passwordCheckSectionIndex =
+      [model sectionForSectionIdentifier:SectionIdentifierPasswordCheck];
+
+  if (newState == OnDeviceEncryptionStateNotShown) {
+    // Previous state was not `OnDeviceEncryptionStateNotShown`, wich mean the
+    // section `SectionIdentifierOnDeviceEncryption` exists and must be removed.
+    [self clearSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
+                    withRowAnimation:UITableViewRowAnimationFade];
+    return;
+  }
+
+  if (oldState == OnDeviceEncryptionStateNotShown) {
+    [model insertSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
+                               atIndex:(passwordCheckSectionIndex + 1)];
+  }
+
+  [model deleteAllItemsFromSectionWithIdentifier:
+             SectionIdentifierOnDeviceEncryption];
+
+  // Add the missing items.
+  if (newState == OnDeviceEncryptionStateOptedIn) {
+    if (!_onDeviceEncryptionOptedInDescription) {
+      _onDeviceEncryptionOptedInDescription =
+          [self onDeviceEncryptionOptedInDescription];
+    }
+    [model addItem:_onDeviceEncryptionOptedInDescription
+        toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+    if (!_onDeviceEncryptionOptedInLearnMore) {
+      _onDeviceEncryptionOptedInLearnMore =
+          [self onDeviceEncryptionOptedInLearnMore];
+    }
+    [model addItem:_onDeviceEncryptionOptedInLearnMore
+        toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+  } else {
+    // newState is OnDeviceEncryptionStateOfferOptIn:
+    if (!_onDeviceEncryptionOptInDescriptionItem) {
+      _onDeviceEncryptionOptInDescriptionItem =
+          [self onDeviceEncryptionOptInDescriptionItem];
+    }
+    [model addItem:_onDeviceEncryptionOptInDescriptionItem
+        toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+    if (!_setUpOnDeviceEncryptionItem) {
+      _setUpOnDeviceEncryptionItem = [self setUpOnDeviceEncryptionItem];
+    }
+    [model addItem:_setUpOnDeviceEncryptionItem
+        toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+  }
+
+  if (updateTableView) {
+    if (oldState == OnDeviceEncryptionStateNotShown) {
+      [self.tableView
+            insertSections:[NSIndexSet
+                               indexSetWithIndex:(passwordCheckSectionIndex +
+                                                  1)]
+          withRowAnimation:UITableViewRowAnimationAutomatic];
+    } else {
+      [self.tableView
+            reloadSections:[NSIndexSet
+                               indexSetWithIndex:(passwordCheckSectionIndex +
+                                                  1)]
+          withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+  }
 }
 
 - (BOOL)shouldShowEditButton {
@@ -1125,7 +1176,7 @@ bool IsFaviconEnabled() {
     NSMutableIndexSet* sectionsToUpdate = [NSMutableIndexSet indexSet];
 
     // Hold in reverse order of section indexes (bottom up of section
-    // displayed). if we don't we'll cause a crash.
+    // displayed). If we don't we'll cause a crash.
     SectionIdentifier sections[2] = {SectionIdentifierBlocked,
                                      SectionIdentifierSavedPasswords};
     for (int i = 0; i < 2; i++) {
@@ -1176,6 +1227,10 @@ bool IsFaviconEnabled() {
             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
     [self reconfigureCellsForItems:@[ _passwordsInOtherAppsItem ]];
   }
+}
+
+- (void)updateOnDeviceEncryptionSessionAndUpdateTableView {
+  [self updateOnDeviceEncryptionSessionWithUpdateTableView:YES];
 }
 
 #pragma mark - UITableViewDelegate
