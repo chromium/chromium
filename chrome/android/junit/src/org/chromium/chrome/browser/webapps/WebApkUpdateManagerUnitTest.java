@@ -416,8 +416,9 @@ public class WebApkUpdateManagerUnitTest {
         manifestData.shareTargetMethod = SHARE_TARGET_METHOD_GET;
         manifestData.shareTargetEncType = SHARE_TARGET_ENC_TYPE_MULTIPART;
         manifestData.shareTargetFileNames = SHARE_TARGET_FILE_NAMES.clone();
-        manifestData.shareTargetFileAccepts =
-                Arrays.stream(SHARE_TARGET_ACCEPTS).map(String[] ::clone).toArray(String[][] ::new);
+        manifestData.shareTargetFileAccepts = Arrays.stream(SHARE_TARGET_ACCEPTS)
+                                                      .map(strings -> strings.clone())
+                                                      .toArray(i -> new String[i][]);
         manifestData.shortcuts = new ArrayList<>();
         return manifestData;
     }
