@@ -7,6 +7,7 @@ module shared_storage_worklet.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -37,19 +38,19 @@ interface SharedStorageWorkletServiceClient {
  // Handle sharedStorage.set(): set `key`’s entry to `value`. If
   // `ignoreIfPresent` is true, the entry is not updated if `key` already
   // exists.
-  SharedStorageSet(mojo_base.mojom.String16 key,
-                   mojo_base.mojom.String16 value,
+  SharedStorageSet(blink.mojom.SharedStorageKeyArgument key,
+                   blink.mojom.SharedStorageValueArgument value,
                    bool ignore_if_present)
     => (bool success, string error_message);
 
   // Handle sharedStorage.append(): append `value` to the entry for `key`.
   // Equivalent to "set" if the `key` is not present.
-  SharedStorageAppend(mojo_base.mojom.String16 key,
-                      mojo_base.mojom.String16 value)
+  SharedStorageAppend(blink.mojom.SharedStorageKeyArgument key,
+                      blink.mojom.SharedStorageValueArgument value)
     => (bool success, string error_message);
 
   // Handle sharedStorage.delete(): delete the entry at the given `key`.
-  SharedStorageDelete(mojo_base.mojom.String16 key)
+  SharedStorageDelete(blink.mojom.SharedStorageKeyArgument key)
     => (bool success, string error_message);
 
   // Handle sharedStorage.clear(): delete all entries.
@@ -58,7 +59,7 @@ interface SharedStorageWorkletServiceClient {
 
   // Handle sharedStorage.get(): get the entry at `key`, or an empty string if
   // `key` is not present.
-  SharedStorageGet(mojo_base.mojom.String16 key)
+  SharedStorageGet(blink.mojom.SharedStorageKeyArgument key)
     => (bool success, string error_message, mojo_base.mojom.String16 value);
 
   // Returns (potentially in batches) the keys of the shared storage.

@@ -27,6 +27,40 @@ promise_test(async t => {
 }, 'sharedStorage.set with invalid options');
 
 promise_test(() => {
+  return sharedStorage.set('a'.repeat(1024), 'b'.repeat(1024));
+}, 'sharedStorage.set with max allowed key and value length');
+
+promise_test(async t => {
+  try {
+      await sharedStorage.set('', 'b');
+  } catch (e) {
+    assert_equals(e.name, 'DataError');
+    return;
+  }
+  assert_unreached("did not reject");
+}, 'sharedStorage.set with empty key');
+
+promise_test(async t => {
+  try {
+      await sharedStorage.set('a'.repeat(1025), 'b');
+  } catch (e) {
+    assert_equals(e.name, 'DataError');
+    return;
+  }
+  assert_unreached("did not reject");
+}, 'sharedStorage.set with key length too big');
+
+promise_test(async t => {
+  try {
+      await sharedStorage.set('a', 'b'.repeat(1025));
+  } catch (e) {
+    assert_equals(e.name, 'DataError');
+    return;
+  }
+  assert_unreached("did not reject");
+}, 'sharedStorage.set with value length too big');
+
+promise_test(() => {
   return sharedStorage.append("a", "b");
 }, 'sharedStorage.append');
 

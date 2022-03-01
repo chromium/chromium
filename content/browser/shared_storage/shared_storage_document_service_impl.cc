@@ -8,6 +8,7 @@
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace content {
 
@@ -62,14 +63,11 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
     RunURLSelectionOperationOnWorkletCallback callback) {
-  if (urls.size() >
-      static_cast<size_t>(
-          blink::features::kSharedStorageURLSelectionOperationInputURLSizeLimit
-              .Get())) {
+  if (!blink::IsValidSharedStorageURLsArrayLength(urls.size())) {
     // This could indicate a compromised renderer, so let's terminate it.
     receiver_.ReportBadMessage(
-        "Attempted to execute RunURLSelectionOperationOnWorklet with URLs "
-        "array length exceeding the size limit.");
+        "Attempted to execute RunURLSelectionOperationOnWorklet with invalid "
+        "URLs array length.");
     return;
   }
 

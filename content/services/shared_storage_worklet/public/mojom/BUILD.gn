@@ -10,6 +10,9 @@ mojom("mojom") {
   deps = [
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform",
     "//url/mojom:url_mojom_gurl",
   ]
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  component_deps = [ "//third_party/blink/public/common" ]
 }

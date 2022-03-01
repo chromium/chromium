@@ -12,5 +12,29 @@ promise_test(async t => {
       "test-url-selection-operation", ["resources/frame0.html"]));
 }, 'runURLSelectionOperation without addModule');
 
+promise_test(async t => {
+  try {
+      await sharedStorage.runURLSelectionOperation(
+        "test-url-selection-operation", ["1", "2", "3", "4", "5", "6"]);
+  } catch (e) {
+    assert_equals(e.name, 'DataError');
+    assert_equals(e.message, 'Length of the \"urls\" parameter is not valid.');
+    return;
+  }
+  assert_unreached("did not reject");
+}, 'runURLSelectionOperation with urls array length too big');
+
+promise_test(async t => {
+  try {
+      await sharedStorage.runURLSelectionOperation(
+        "test-url-selection-operation", []);
+  } catch (e) {
+    assert_equals(e.name, 'DataError');
+    assert_equals(e.message, 'Length of the \"urls\" parameter is not valid.');
+    return;
+  }
+  assert_unreached("did not reject");
+}, 'runURLSelectionOperation with empty urls array');
+
 </script>
 </body>

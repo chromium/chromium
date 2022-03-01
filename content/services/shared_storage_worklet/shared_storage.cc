@@ -10,6 +10,7 @@
 #include "gin/arguments.h"
 #include "gin/dictionary.h"
 #include "gin/handle.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace shared_storage_worklet {
 
@@ -47,7 +48,8 @@ v8::Local<v8::Promise> SharedStorage::Set(gin::Arguments* args) {
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
   std::u16string arg0_key;
-  if (!args->GetNext(&arg0_key)) {
+  if (!args->GetNext(&arg0_key) ||
+      !blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     resolver
         ->Reject(
             args->GetHolderCreationContext(),
@@ -59,7 +61,8 @@ v8::Local<v8::Promise> SharedStorage::Set(gin::Arguments* args) {
   }
 
   std::u16string arg1_value;
-  if (!args->GetNext(&arg1_value)) {
+  if (!args->GetNext(&arg1_value) ||
+      !blink::IsValidSharedStorageValueStringLength(arg1_value.size())) {
     resolver
         ->Reject(
             args->GetHolderCreationContext(),
@@ -107,7 +110,8 @@ v8::Local<v8::Promise> SharedStorage::Append(gin::Arguments* args) {
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
   std::u16string arg0_key;
-  if (!args->GetNext(&arg0_key)) {
+  if (!args->GetNext(&arg0_key) ||
+      !blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     resolver
         ->Reject(args->GetHolderCreationContext(),
                  gin::StringToV8(isolate,
@@ -118,7 +122,8 @@ v8::Local<v8::Promise> SharedStorage::Append(gin::Arguments* args) {
   }
 
   std::u16string arg1_value;
-  if (!args->GetNext(&arg1_value)) {
+  if (!args->GetNext(&arg1_value) ||
+      !blink::IsValidSharedStorageValueStringLength(arg1_value.size())) {
     resolver
         ->Reject(args->GetHolderCreationContext(),
                  gin::StringToV8(isolate,
@@ -147,7 +152,8 @@ v8::Local<v8::Promise> SharedStorage::Delete(gin::Arguments* args) {
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
   std::u16string arg0_key;
-  if (!args->GetNext(&arg0_key)) {
+  if (!args->GetNext(&arg0_key) ||
+      !blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     resolver
         ->Reject(args->GetHolderCreationContext(),
                  gin::StringToV8(isolate,
@@ -192,7 +198,8 @@ v8::Local<v8::Promise> SharedStorage::Get(gin::Arguments* args) {
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
   std::u16string arg0_key;
-  if (!args->GetNext(&arg0_key)) {
+  if (!args->GetNext(&arg0_key) ||
+      !blink::IsValidSharedStorageKeyStringLength(arg0_key.size())) {
     resolver
         ->Reject(
             args->GetHolderCreationContext(),

@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -107,6 +108,20 @@ ScriptPromise SharedStorage::set(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  if (!IsValidSharedStorageKeyStringLength(key.length())) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kDataError,
+        "Length of the \"key\" parameter is not valid."));
+    return promise;
+  }
+
+  if (!IsValidSharedStorageValueStringLength(value.length())) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kDataError,
+        "Length of the \"value\" parameter is not valid."));
+    return promise;
+  }
+
   // TODO: handle the operation
   resolver->Resolve();
   return promise;
@@ -123,6 +138,20 @@ ScriptPromise SharedStorage::append(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  if (!IsValidSharedStorageKeyStringLength(key.length())) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kDataError,
+        "Length of the \"key\" parameter is not valid."));
+    return promise;
+  }
+
+  if (!IsValidSharedStorageValueStringLength(value.length())) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kDataError,
+        "Length of the \"value\" parameter is not valid."));
+    return promise;
+  }
+
   // TODO: handle the operation
   resolver->Resolve();
   return promise;
@@ -137,6 +166,13 @@ ScriptPromise SharedStorage::Delete(ScriptState* script_state,
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+
+  if (!IsValidSharedStorageKeyStringLength(key.length())) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kDataError,
+        "Length of the \"key\" parameter is not valid."));
+    return promise;
+  }
 
   // TODO: handle the operation
   resolver->Resolve();
@@ -180,13 +216,10 @@ ScriptPromise SharedStorage::runURLSelectionOperation(
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  if (urls.size() >
-      static_cast<unsigned int>(
-          features::kSharedStorageURLSelectionOperationInputURLSizeLimit
-              .Get())) {
+  if (!IsValidSharedStorageURLsArrayLength(urls.size())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
-        "Length of the \"urls\" parameter exceeds the size limit."));
+        "Length of the \"urls\" parameter is not valid."));
     return promise;
   }
 

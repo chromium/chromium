@@ -960,6 +960,51 @@ TEST_F(SharedStorageObjectMethodTest, SetOperation_MissingKey) {
   EXPECT_TRUE(test_client()->observed_set_params().empty());
 }
 
+TEST_F(SharedStorageObjectMethodTest, SetOperation_InvalidKey_Empty) {
+  ExecuteScript("sharedStorage.set('', 'value')");
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
+              "Missing or invalid \"key\" argument in sharedStorage.set()");
+  }
+
+  EXPECT_TRUE(test_client()->observed_set_params().empty());
+}
+
+TEST_F(SharedStorageObjectMethodTest, SetOperation_InvalidKey_NotAString) {
+  ExecuteScript("sharedStorage.set(123, 'value')");
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
+              "Missing or invalid \"key\" argument in sharedStorage.set()");
+  }
+
+  EXPECT_TRUE(test_client()->observed_set_params().empty());
+}
+
+TEST_F(SharedStorageObjectMethodTest, SetOperation_InvalidKey_LengthTooBig) {
+  ExecuteScript("sharedStorage.set('a'.repeat(1025), 'value')");
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
+              "Missing or invalid \"key\" argument in sharedStorage.set()");
+  }
+
+  EXPECT_TRUE(test_client()->observed_set_params().empty());
+}
+
 TEST_F(SharedStorageObjectMethodTest, SetOperation_MissingValue) {
   ExecuteScript("sharedStorage.set('key')");
   EXPECT_TRUE(finished());
@@ -975,8 +1020,23 @@ TEST_F(SharedStorageObjectMethodTest, SetOperation_MissingValue) {
   EXPECT_TRUE(test_client()->observed_set_params().empty());
 }
 
-TEST_F(SharedStorageObjectMethodTest, SetOperation_InvalidValue) {
+TEST_F(SharedStorageObjectMethodTest, SetOperation_InvalidValue_NotAString) {
   ExecuteScript("sharedStorage.set('key', 123)");
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
+              "Missing or invalid \"value\" argument in sharedStorage.set()");
+  }
+
+  EXPECT_TRUE(test_client()->observed_set_params().empty());
+}
+
+TEST_F(SharedStorageObjectMethodTest, SetOperation_InvalidValue_LengthTooBig) {
+  ExecuteScript("sharedStorage.set('key', 'a'.repeat(1025))");
   EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
@@ -1044,10 +1104,51 @@ TEST_F(SharedStorageObjectMethodTest, AppendOperation_MissingKey) {
   EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
-  WorkletV8Helper::HandleScope scope(Isolate());
-  EXPECT_TRUE(v8_resolved_value()->IsString());
-  EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
-            "Missing or invalid \"key\" argument in sharedStorage.append()");
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
+              "Missing or invalid \"key\" argument in sharedStorage.append()");
+  }
+}
+
+TEST_F(SharedStorageObjectMethodTest, AppendOperation_InvalidKey_Empty) {
+  ExecuteScript("sharedStorage.append('', 'value')");
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
+              "Missing or invalid \"key\" argument in sharedStorage.append()");
+  }
+}
+
+TEST_F(SharedStorageObjectMethodTest, AppendOperation_InvalidKey_NotAString) {
+  ExecuteScript("sharedStorage.append(123, 'value')");
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
+              "Missing or invalid \"key\" argument in sharedStorage.append()");
+  }
+}
+
+TEST_F(SharedStorageObjectMethodTest, AppendOperation_InvalidKey_LengthTooBig) {
+  ExecuteScript("sharedStorage.append('a'.repeat(1025), 'value')");
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
+              "Missing or invalid \"key\" argument in sharedStorage.append()");
+  }
 }
 
 TEST_F(SharedStorageObjectMethodTest, AppendOperation_MissingValue) {
@@ -1055,10 +1156,42 @@ TEST_F(SharedStorageObjectMethodTest, AppendOperation_MissingValue) {
   EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
-  WorkletV8Helper::HandleScope scope(Isolate());
-  EXPECT_TRUE(v8_resolved_value()->IsString());
-  EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
-            "Missing or invalid \"value\" argument in sharedStorage.append()");
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(
+        gin::V8ToString(Isolate(), v8_resolved_value()),
+        "Missing or invalid \"value\" argument in sharedStorage.append()");
+  }
+}
+
+TEST_F(SharedStorageObjectMethodTest, AppendOperation_InvalidValue_NotAString) {
+  ExecuteScript("sharedStorage.append('key', 123)");
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(
+        gin::V8ToString(Isolate(), v8_resolved_value()),
+        "Missing or invalid \"value\" argument in sharedStorage.append()");
+  }
+}
+
+TEST_F(SharedStorageObjectMethodTest,
+       AppendOperation_InvalidValue_LengthTooBig) {
+  ExecuteScript("sharedStorage.append('key', 'a'.repeat(1025))");
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+
+  {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    EXPECT_TRUE(v8_resolved_value()->IsString());
+    EXPECT_EQ(
+        gin::V8ToString(Isolate(), v8_resolved_value()),
+        "Missing or invalid \"value\" argument in sharedStorage.append()");
+  }
 }
 
 TEST_F(SharedStorageObjectMethodTest, AppendOperation_RejectedAsynchronously) {

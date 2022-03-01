@@ -4,7 +4,22 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
+
+// The input argument of the shared storage key. The data will be checked at
+// mojom boundary to ensure it meets the length requirement. Avoid using this
+// type if you don't intend to check the key's length.
+struct SharedStorageKeyArgument {
+  mojo_base.mojom.String16 data;
+};
+
+// The input argument of the shared storage value. The data will be checked at
+// mojom boundary to ensure it meets the length requirement. Avoid using this
+// type if you don't intend to check the value's length.
+struct SharedStorageValueArgument {
+  mojo_base.mojom.String16 data;
+};
 
 // SharedStorage is an origin-keyed storage mechanism where the output is
 // carefully guarded to mitigate the risk of cross-site correlation.
