@@ -39,12 +39,6 @@
         GPUImageDataLayout dataLayout,
         GPUExtent3D size);
 
-    // Deprecated
-    [RaisesException] void copyImageBitmapToTexture(
-        GPUImageCopyImageBitmap source,
-        GPUImageCopyTexture destination,
-        GPUExtent3D copySize);
-
     [RaisesException] void copyExternalImageToTexture(
         GPUImageCopyExternalImage source,
         GPUImageCopyTextureTagged destination,

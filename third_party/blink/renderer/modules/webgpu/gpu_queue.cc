@@ -98,25 +98,6 @@ bool IsValidExternalImageDestinationFormat(
   }
 }
 
-// TODO(crbug.com/1197369)This duplicate code is for supporting deprecated API
-// copyImageBitmapToTexture and should be remove in future.
-bool IsValidCopyIB2TDestinationFormat(WGPUTextureFormat dawn_texture_format) {
-  switch (dawn_texture_format) {
-    case WGPUTextureFormat_RGBA8Unorm:
-    case WGPUTextureFormat_RGBA8UnormSrgb:
-    case WGPUTextureFormat_BGRA8Unorm:
-    case WGPUTextureFormat_BGRA8UnormSrgb:
-    case WGPUTextureFormat_RGB10A2Unorm:
-    case WGPUTextureFormat_RGBA16Float:
-    case WGPUTextureFormat_RGBA32Float:
-    case WGPUTextureFormat_RG8Unorm:
-    case WGPUTextureFormat_RG16Float:
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool IsValidCopyTextureForBrowserFormats(SkColorType src_color_type,
                                          WGPUTextureFormat dst_texture_format) {
   // CopyTextureForBrowser only supports RGBA8Unorm and BGRA8Unorm src texture.
@@ -537,88 +518,6 @@ void GPUQueue::copyExternalImageToTexture(
           destination->premultipliedAlpha(), copyImage->flipY())) {
     exception_state.ThrowTypeError(
         "Failed to copy content from external image.");
-    return;
-  }
-}
-
-// TODO(crbug.com/1197369): This API contains duplicated code is to stop
-// breaking current workable codes. Will be removed when it is deprecated.
-void GPUQueue::copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
-                                        GPUImageCopyTexture* destination,
-                                        const V8GPUExtent3D* copy_size,
-                                        ExceptionState& exception_state) {
-  device_->AddConsoleWarning(
-      "The copyImageBitmapToTexture() has been deprecated in favor of the "
-      "copyExternalImageToTexture() "
-      "and will soon be removed.");
-
-  if (!source->imageBitmap()) {
-    exception_state.ThrowTypeError("No valid imageBitmap");
-    return;
-  }
-
-  // ImageBitmap shouldn't in closed state.
-  if (source->imageBitmap()->IsNeutered()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "ImageBitmap is closed.");
-    return;
-  }
-
-  scoped_refptr<StaticBitmapImage> image = source->imageBitmap()->BitmapImage();
-
-  // TODO(shaobo.yan@intel.com) : Check that the destination GPUTexture has an
-  // appropriate format. Now only support texture format exactly the same. The
-  // compatible formats need to be defined in WebGPU spec.
-
-  WGPUExtent3D dawn_copy_size = AsDawnType(copy_size);
-
-  // Extract imageBitmap attributes
-  WGPUOrigin3D origin_in_image_bitmap =
-      GPUOrigin2DToWGPUOrigin3D(source->origin());
-
-  // Validate copy depth
-  if (dawn_copy_size.depthOrArrayLayers > 1) {
-    GetProcs().deviceInjectError(device_->GetHandle(), WGPUErrorType_Validation,
-                                 "Copy depth is out of bounds of imageBitmap.");
-    return;
-  }
-
-  // Validate origin value
-  if (static_cast<uint32_t>(image->width()) < origin_in_image_bitmap.x ||
-      static_cast<uint32_t>(image->height()) < origin_in_image_bitmap.y) {
-    GetProcs().deviceInjectError(
-        device_->GetHandle(), WGPUErrorType_Validation,
-        "Copy origin is out of bounds of imageBitmap.");
-    return;
-  }
-
-  // Validate the copy rect is inside the imageBitmap
-  if (image->width() - origin_in_image_bitmap.x < dawn_copy_size.width ||
-      image->height() - origin_in_image_bitmap.y < dawn_copy_size.height) {
-    GetProcs().deviceInjectError(device_->GetHandle(), WGPUErrorType_Validation,
-                                 "Copy rect is out of bounds of imageBitmap.");
-    return;
-  }
-
-  WGPUImageCopyTexture dawn_destination = AsDawnType(destination, device_);
-
-  if (!IsValidCopyIB2TDestinationFormat(destination->texture()->Format())) {
-    return exception_state.ThrowTypeError("Invalid gpu texture format.");
-  }
-
-  bool isNoopCopy = dawn_copy_size.width == 0 || dawn_copy_size.height == 0 ||
-                    dawn_copy_size.depthOrArrayLayers == 0;
-
-  if (image->IsTextureBacked() && !isNoopCopy) {  // Try GPU uploading path.
-    // Fallback to CPU path, GPU uploading requests RENDER_ATTACHMENT usage for
-    // dst texture.
-    image = image->MakeUnaccelerated();
-  }
-  // CPU path is the fallback path and should always work.
-  if (!CopyContentFromCPU(image.get(), origin_in_image_bitmap, dawn_copy_size,
-                          dawn_destination, destination->texture()->Format(),
-                          image->IsPremultiplied())) {
-    exception_state.ThrowTypeError("Failed to copy content from imageBitmap.");
     return;
   }
 }

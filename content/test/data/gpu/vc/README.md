@@ -30,7 +30,7 @@ Chromium command line switch to enable WEBGPU: `--enable-unsafe-webgpu`
 The image of each video frame is uploaded and rendered by WebGPU. The UI is also
 rendered by WebGPU. The demo uses importExternalTexture API to copy the video
 textures into GPU. The copy method can be changed to createImageBitmap() then
-device.queue.copyImageBitmapToTexture() with a flag.
+device.queue.copyExternalImageToTexture() with a flag.
 
 ## Usage
 
