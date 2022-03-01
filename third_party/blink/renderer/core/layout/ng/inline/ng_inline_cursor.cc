@@ -1027,6 +1027,8 @@ void NGInlineCursor::MoveToFirstLogicalLeaf() {
 
 void NGInlineCursor::MoveToFirstNonPseudoLeaf() {
   for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
+    if (cursor.Current().IsLineBox())
+      continue;
     if (cursor.Current()->IsBlockInInline()) {
       if (cursor.Current()->BlockInInline().NonPseudoNode()) {
         *this = cursor;
@@ -1104,6 +1106,8 @@ void NGInlineCursor::MoveToLastNonPseudoLeaf() {
   NGInlineCursor last_leaf;
   bool in_hidden_for_paint = false;
   for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
+    if (cursor.Current().IsLineBox())
+      continue;
     if (cursor.Current()->IsBlockInInline()) {
       if (cursor.Current()->BlockInInline().NonPseudoNode())
         last_leaf = cursor;

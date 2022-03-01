@@ -91,7 +91,7 @@ class AbstractLineBox {
     do {
       previous_line.MoveToPreviousIncludingFragmentainer();
     } while (previous_line && !previous_line.Current().IsLineBox());
-    if (!previous_line || IsBlockInInline(previous_line))
+    if (!previous_line || previous_line.Current()->IsBlockInInline())
       return AbstractLineBox();
     return AbstractLineBox(previous_line);
   }
@@ -106,7 +106,7 @@ class AbstractLineBox {
     do {
       next_line.MoveToNextIncludingFragmentainer();
     } while (next_line && !next_line.Current().IsLineBox());
-    if (!next_line || IsBlockInInline(next_line))
+    if (!next_line || next_line.Current()->IsBlockInInline())
       return AbstractLineBox();
     return AbstractLineBox(next_line);
   }
@@ -188,13 +188,6 @@ class AbstractLineBox {
   const RootInlineBox& GetRootInlineBox() const {
     DCHECK(IsOldLayout());
     return *root_inline_box_;
-  }
-
-  static bool IsBlockInInline(const NGInlineCursor& line) {
-    DCHECK(line.Current().IsLineBox());
-    NGInlineCursor cursor = line;
-    cursor.MoveToNext();
-    return cursor && cursor.Current()->IsBlockInInline();
   }
 
   static bool IsEditable(const NGInlineCursor& cursor) {

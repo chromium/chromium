@@ -48,12 +48,8 @@ TEST_F(SelectionModifierTest, MoveForwardByWordNone) {
   EXPECT_EQ(SelectionInDOMTree(), modifier.Selection().AsSelection());
 }
 
+// http://crbug.com/1300781
 TEST_F(SelectionModifierTest, MoveByLineBlockInInline) {
-  // TODO(crbug.com/1300781): This test does not work as expected when `<b>` is
-  // not culled.
-  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled())
-    return;
-
   LoadAhem();
   InsertStyleElement(
       "div {"

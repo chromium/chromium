@@ -307,11 +307,18 @@ bool NGFragmentItem::IsAtomicInline() const {
 }
 
 bool NGFragmentItem::IsBlockInInline() const {
-  if (Type() != kBox)
-    return false;
-  if (const NGPhysicalBoxFragment* box = BoxFragment())
-    return box->IsBlockInInline();
-  return false;
+  switch (Type()) {
+    case kBox:
+      if (auto* box = BoxFragment())
+        return box->IsBlockInInline();
+      return false;
+    case kLine:
+      if (auto* line_box = LineBoxFragment())
+        return line_box->IsBlockInInline();
+      return false;
+    default:
+      return false;
+  }
 }
 
 bool NGFragmentItem::IsFloating() const {
