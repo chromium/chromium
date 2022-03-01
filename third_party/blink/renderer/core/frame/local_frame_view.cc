@@ -315,6 +315,7 @@ LocalFrameView::~LocalFrameView() {
 void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(part_update_set_);
   visitor->Trace(frame_);
+  visitor->Trace(deferred_to_be_locked_);
   visitor->Trace(update_plugins_timer_);
   visitor->Trace(layout_subtree_root_list_);
   visitor->Trace(orthogonal_writing_mode_root_list_);
@@ -1907,6 +1908,16 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   ScheduleUpdatePluginsIfNecessary();
   if (visual_viewport_size_changed && !document->Printing())
     frame_->GetDocument()->EnqueueVisualViewportResizeEvent();
+
+  if (deferred_to_be_locked_.size() > 0) {
+    DCHECK(RuntimeEnabledFeatures::DeferredShapingEnabled());
+    for (auto& element : deferred_to_be_locked_) {
+      auto& context = element->EnsureDisplayLockContext();
+      context.SetRequestedState(EContentVisibility::kAuto);
+      context.NotifyChildLayoutWasBlocked();
+    }
+    deferred_to_be_locked_.resize(0);
+  }
 }
 
 float LocalFrameView::InputEventsScaleFactor() const {
@@ -4925,6 +4936,10 @@ DarkModeFilter& LocalFrameView::EnsureDarkModeFilter() {
         std::make_unique<DarkModeFilter>(GetCurrentDarkModeSettings());
   }
   return *dark_mode_filter_;
+}
+
+void LocalFrameView::RequestToLockDeferred(Element& element) {
+  deferred_to_be_locked_.push_back(element);
 }
 
 }  // namespace blink

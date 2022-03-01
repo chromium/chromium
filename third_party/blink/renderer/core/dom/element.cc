@@ -2922,8 +2922,19 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
                style->ContentVisibility() != EContentVisibility::kVisible)) {
     if (!context)
       context = &EnsureDisplayLockContext();
-    context->SetRequestedState(style->ContentVisibility());
-    context->AdjustElementStyle(style.get());
+    const auto* block_flow = DynamicTo<LayoutBlockFlow>(GetLayoutObject());
+    bool is_shaping_deferred = block_flow && block_flow->IsShapingDeferred();
+    // If shaping is deferred and |content-visibility| is |visible|, do nothing
+    // in order to keep the "deferred" state.
+    if (!is_shaping_deferred ||
+        style->ContentVisibility() != EContentVisibility::kVisible) {
+      // If shaping is deferred and |content-visibility| is not |visible|,
+      // leave the "deferred" state.
+      if (is_shaping_deferred)
+        block_flow->StopDeferringShaping();
+      context->SetRequestedState(style->ContentVisibility());
+      context->AdjustElementStyle(style.get());
+    }
   }
 
   return style;

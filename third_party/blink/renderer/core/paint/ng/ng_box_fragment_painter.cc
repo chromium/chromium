@@ -697,6 +697,9 @@ void NGBoxFragmentPainter::PaintBlockFlowContents(
   if (UNLIKELY(fragment.IsMathMLOperator()))
     return;
 
+  if (To<LayoutBlockFlow>(layout_object)->IsShapingDeferred())
+    return;
+
   // Trying to rule out a null GraphicsContext, see: https://crbug.com/1040298
   CHECK(&paint_info.context);
 

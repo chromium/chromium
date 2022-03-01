@@ -790,6 +790,7 @@ if (is_fuchsia) {
 blink_core_tests_layout = [
   "api/selection_state_test.cc",
   "collapsed_border_value_test.cc",
+  "deferred_shaping_test.cc",
   "force_legacy_layout_test.cc",
   "geometry/axis_test.cc",
   "geometry/logical_rect_test.cc",

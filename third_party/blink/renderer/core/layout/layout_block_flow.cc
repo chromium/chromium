@@ -4940,4 +4940,13 @@ void LayoutBlockFlow::SetOffsetMapping(NGOffsetMapping* offset_mapping) {
   EnsureRareData().offset_mapping_ = offset_mapping;
 }
 
+bool LayoutBlockFlow::IsShapingDeferred() const {
+  return HasNGInlineNodeData() && GetNGInlineNodeData()->IsShapingDeferred();
+}
+
+void LayoutBlockFlow::StopDeferringShaping() const {
+  if (HasNGInlineNodeData())
+    GetNGInlineNodeData()->StopDeferringShaping();
+}
+
 }  // namespace blink
