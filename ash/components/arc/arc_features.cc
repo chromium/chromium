@@ -63,6 +63,10 @@ const base::Feature kEnableUnmanagedToManagedTransitionFeature{
 const base::Feature kEnableUsap{"ArcEnableUsap",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether ARCVM uses virtio-blk for /data in Android storage.
+const base::Feature kEnableVirtioBlkForData{"ArcEnableVirtioBlkForData",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls experimental file picker feature for ARC.
 const base::Feature kFilePickerExperimentFeature{
     "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};

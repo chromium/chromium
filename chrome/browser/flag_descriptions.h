@@ -2403,6 +2403,9 @@ extern const char kArcVmBalloonPolicyDesc[];
 extern const char kArcEnableUsapName[];
 extern const char kArcEnableUsapDesc[];
 
+extern const char kArcEnableVirtioBlkForDataName[];
+extern const char kArcEnableVirtioBlkForDataDesc[];
+
 extern const char kAshEnablePipRoundedCornersName[];
 extern const char kAshEnablePipRoundedCornersDescription[];
 

@@ -53682,6 +53682,7 @@ from previous Chrome versions.
   <int value="-557742250" label="ContentSuggestionsCategories:disabled"/>
   <int value="-556662059" label="AuraWindowSubtreeCapture:enabled"/>
   <int value="-556218705" label="SlowDCTimerInterruptsWin:enabled"/>
+  <int value="-556021689" label="ArcEnableVirtioBlkForData:disabled"/>
   <int value="-555341956" label="AutofillSaveAndFillVPA:enabled"/>
   <int value="-552407626" label="ContextualSearchNewSettings:disabled"/>
   <int value="-551434067"
@@ -53813,6 +53814,7 @@ from previous Chrome versions.
       label="OminboxUIExperimentUseGenericSearchEngineIcon:enabled"/>
   <int value="-462404204" label="CryptAuthV2DeviceSync:disabled"/>
   <int value="-462205750" label="enable-service-worker-sync"/>
+  <int value="-461713516" label="ArcEnableVirtioBlkForData:enabled"/>
   <int value="-461568027" label="EcheSWADebugMode:disabled"/>
   <int value="-461292699" label="ContentSuggestionsCategoryOrder:enabled"/>
   <int value="-460702745" label="ExportTaggedPDF:disabled"/>

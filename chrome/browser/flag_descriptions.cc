@@ -4181,6 +4181,11 @@ const char kArcEnableUsapDesc[] =
     "Enable ARC Unspecialized Application Processes when applicable for "
     "high-memory devices.";
 
+const char kArcEnableVirtioBlkForDataName[] =
+    "Enable virtio-blk for ARCVM /data";
+const char kArcEnableVirtioBlkForDataDesc[] =
+    "If enabled, ARCVM uses virtio-blk for /data in Android storage.";
+
 const char kAshEnablePipRoundedCornersName[] =
     "Enable Picture-in-Picture rounded corners.";
 const char kAshEnablePipRoundedCornersDescription[] =

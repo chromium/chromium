@@ -23,6 +23,7 @@ extern const base::Feature kEnableThrottlingNotification;
 extern const base::Feature kEnableUnifiedAudioFocusFeature;
 extern const base::Feature kEnableUnmanagedToManagedTransitionFeature;
 extern const base::Feature kEnableUsap;
+extern const base::Feature kEnableVirtioBlkForData;
 extern const base::Feature kFilePickerExperimentFeature;
 extern const base::Feature kGmsCoreLowMemoryKillerProtection;
 extern const base::Feature kGuestZram;
