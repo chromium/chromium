@@ -129,13 +129,15 @@ class FileTasksNotifierTest : public testing::Test {
   FileTasksNotifierTest() = default;
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
+    // crbug.com/1301822 Revoke external file systems before use.
+    auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
+    mount_points->RevokeAllFileSystems();
 
+    profile_ = std::make_unique<TestingProfile>();
     notifier_ = std::make_unique<FileTasksNotifierForTest>(
         profile_.get(), drivefs_receiver_.BindNewPipeAndPassRemote());
     observation_ = std::make_unique<MockFileTasksObserver>(notifier_.get());
 
-    auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
     my_files_ = util::GetMyFilesFolderForProfile(profile_.get());
     ASSERT_TRUE(base::CreateDirectory(my_files_));
     base::WriteFile(my_files_.Append("file"), "data", 4);
