@@ -96,7 +96,7 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase {
   }
 
   private onResetProfileDialogClose_() {
-    Router.getInstance().navigateToPreviousRoute();
+    Router.getInstance().navigateTo(routes.RESET_DIALOG.parent!);
     focusWithoutInk(assert(this.$.resetProfile));
   }
 

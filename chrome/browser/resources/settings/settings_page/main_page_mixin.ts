@@ -308,8 +308,12 @@ export const MainPageMixin = dedupingMixin(
               // Case when navigating from '/?search=foo' to '/' (clearing
               // search results).
               this.switchToSections_(TOP_LEVEL_EQUIVALENT_ROUTE);
+            } else if (newState === RouteState.DIALOG) {
+              // Case when user clicks "Reset all settings" from within the
+              // settings-reset-profile-banner to navigate to
+              // /resetProfileSettings.
+              this.switchToSections_(newRoute);
             }
-            // Nothing to do here for the case of RouteState.DIALOG.
             return;
           }
 
