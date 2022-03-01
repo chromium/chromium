@@ -1014,20 +1014,6 @@ _DEPRECATED_MOJO_TYPES = (
         'Use mojo::PendingAssociatedRemote<Interface> instead.',
       ),
     ),
-    (
-      r'/\bmojo::InterfacePtr\b',
-      (
-        'mojo::InterfacePtr<Interface> is deprecated.',
-        'Use mojo::Remote<Interface> instead.',
-      ),
-    ),
-    (
-      r'/\bmojo::InterfacePtrInfo\b',
-      (
-        'mojo::InterfacePtrInfo<Interface> is deprecated.',
-        'Use mojo::PendingRemote<Interface> instead.',
-      ),
-    ),
 )
 
 _IPC_ENUM_TRAITS_DEPRECATED = (
