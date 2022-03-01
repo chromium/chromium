@@ -407,6 +407,44 @@ void ContinueTaskContainerView::DisableFocusForShowingActiveFolder(
     child->SetEnabled(!disabled);
 }
 
+void ContinueTaskContainerView::AnimateSlideInSuggestions(
+    int available_space,
+    base::TimeDelta duration,
+    gfx::Tween::Type tween) {
+  DCHECK(!tablet_mode_);
+  DCHECK(columns_);
+
+  SetVisible(true);
+
+  const int rows =
+      std::ceil(static_cast<double>(suggestion_tasks_views_.size()) / columns_);
+  double space_per_row = static_cast<double>(available_space) / rows;
+
+  for (size_t i = 0; i < suggestion_tasks_views_.size(); i++) {
+    views::View* view = suggestion_tasks_views_[i];
+    gfx::Transform translation;
+
+    int row_number = (i / columns_) + 1;
+    // Distribute the space between the elements so that the space between the
+    // previous element in the parent view and the first row is the same as the
+    // space between rows. The items in the first row will just be translated by
+    // `space_per_row`. The items from the second row need to carry over
+    // the space translated by the first row and translate again
+    // `space_per_row` to have even space between elements.
+    translation.Translate(0, space_per_row * row_number);
+
+    view->layer()->SetTransform(translation);
+  }
+  views::AnimationBuilder animation_builder;
+  views::AnimationSequenceBlock sequence = animation_builder.Once();
+  sequence.SetDuration(duration);
+
+  for (auto* view : suggestion_tasks_views_) {
+    sequence.SetTransform(view, gfx::Transform(), tween)
+        .SetOpacity(view, 1.0f, tween);
+  }
+}
+
 void ContinueTaskContainerView::RemoveViewFromLayout(ContinueTaskView* view) {
   view->SetEnabled(false);
   if (table_layout_) {

@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/base/models/list_model_observer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -67,6 +68,14 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
 
   // See AppsGridView::DisableFocusForShowingActiveFolder().
   void DisableFocusForShowingActiveFolder(bool disabled);
+
+  // Start the animation for showing the suggestions in the continue section.
+  // Suggestion views will slide in from an evenly distributed amount of
+  // `available_space` into their final positions.
+  // This animation must only be used in clamshell mode.
+  void AnimateSlideInSuggestions(int available_space,
+                                 base::TimeDelta duration,
+                                 gfx::Tween::Type tween);
 
   base::OneShotTimer* animations_timer_for_test() { return &animations_timer_; }
 

@@ -16,6 +16,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_view.h"
+#include "ash/app_list/views/app_list_view_util.h"
 #include "ash/app_list/views/continue_task_view.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_pref_names.h"
@@ -32,6 +33,8 @@
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -46,7 +49,7 @@ namespace {
 bool g_nudge_accepted_for_test = false;
 
 // Header paddings in dips.
-constexpr int kHeaderHorizontalPadding = 12;
+constexpr gfx::Insets kHeaderPadding(0, 12, 4, 12);
 
 // Suggested tasks layout constants.
 constexpr size_t kMinFilesForContinueSectionClamshellMode = 3;
@@ -61,6 +64,16 @@ constexpr gfx::Insets kPrivacyToastInteriorMargin(12, 12, 12, 16);
 
 // Delay before marking the privacy notice as swhon.
 const base::TimeDelta kPrivacyNoticeShownDelay = base::Seconds(6);
+
+// Animation constants.
+constexpr base::TimeDelta kDismissToastAnimationDuration =
+    base::Milliseconds(200);
+constexpr base::TimeDelta kShowSuggestionsAnimationDuration =
+    base::Milliseconds(300);
+
+// The vertical inside padding between this view and its parent. Taken from
+// AppListBubbleAppsPage.
+constexpr int kVerticalPaddingFromParent = 16;
 
 // Privacy notice dictionary pref keys.
 const char kPrivacyNoticeAcceptedKey[] = "accepted";
@@ -82,6 +95,10 @@ PrefService* GetActiveUserPrefService() {
       Shell::Get()->session_controller()->GetActivePrefService();
   DCHECK(pref_service);
   return pref_service;
+}
+
+void CleanupLayer(views::View* view) {
+  view->DestroyLayer();
 }
 
 }  // namespace
@@ -110,8 +127,7 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
     continue_label_ = AddChildView(CreateContinueLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL)));
     continue_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    continue_label_->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets(0, kHeaderHorizontalPadding)));
+    continue_label_->SetBorder(views::CreateEmptyBorder(kHeaderPadding));
   }
 
   suggestions_container_ =
@@ -211,18 +227,115 @@ void ContinueSectionView::SetNudgeController(
   nudge_controller_ = nudge_controller;
 }
 
+void ContinueSectionView::OnPrivacyToastAcknowledged() {
+  MarkPrivacyNoticeAccepted();
+
+  // Keep the privacy notice view for the dismiss animation in clamshell mode.
+  if (tablet_mode_)
+    RemovePrivacyNotice();
+  else
+    AnimateDismissToast();
+}
+
+void ContinueSectionView::AnimateDismissToast() {
+  DCHECK(!tablet_mode_);
+
+  PrepareForLayerAnimation(privacy_toast_);
+
+  views::AnimationBuilder animation_builder;
+  animation_builder.OnEnded(
+      base::BindOnce(&ContinueSectionView::AnimateShowContinueSection,
+                     weak_ptr_factory_.GetWeakPtr()));
+  animation_builder.OnAborted(
+      base::BindOnce(&ContinueSectionView::AnimateShowContinueSection,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetOpacity(privacy_toast_, 0, gfx::Tween::LINEAR)
+      .SetDuration(kDismissToastAnimationDuration);
+}
+
+void ContinueSectionView::AnimateShowContinueSection() {
+  DCHECK(!tablet_mode_);
+
+  const int height_difference =
+      privacy_toast_->GetPreferredSize().height() -
+      (suggestions_container_->GetPreferredSize().height() +
+       continue_label_->GetPreferredSize().height());
+  const gfx::Tween::Type animation_tween = gfx::Tween::ACCEL_40_DECEL_100_3;
+
+  // The initial position for the launcher continue section should be right
+  // below the search divider.
+  gfx::Transform initial_transform;
+  initial_transform.Translate(0, -kVerticalPaddingFromParent);
+
+  PrepareForLayerAnimation(continue_label_);
+  continue_label_->SetVisible(true);
+  continue_label_->layer()->SetOpacity(0);
+  continue_label_->layer()->SetTransform(initial_transform);
+
+  PrepareForLayerAnimation(suggestions_container_);
+  suggestions_container_->layer()->SetTransform(initial_transform);
+
+  privacy_toast_->DestroyLayer();
+  privacy_toast_->SetVisible(false);
+
+  suggestions_container_->AnimateSlideInSuggestions(
+      height_difference + kVerticalPaddingFromParent,
+      kShowSuggestionsAnimationDuration, animation_tween);
+
+  // The siblings views from this should slide down the total of the height
+  // difference to make room for the continue section suggestions and title.
+  for (views::View* view : parent()->children()) {
+    if (view == this)
+      continue;
+    const bool create_layer = PrepareForLayerAnimation(view);
+    auto cleanup = create_layer ? base::BindRepeating(&CleanupLayer, view)
+                                : base::DoNothing();
+    StartSlideInAnimation(view, height_difference,
+                          kShowSuggestionsAnimationDuration, animation_tween,
+                          cleanup);
+  }
+
+  views::AnimationBuilder animation_builder;
+  animation_builder.OnEnded(
+      base::BindOnce(&ContinueSectionView::RemovePrivacyNotice,
+                     weak_ptr_factory_.GetWeakPtr()));
+  animation_builder.OnAborted(
+      base::BindOnce(&ContinueSectionView::RemovePrivacyNotice,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetOpacity(continue_label_, 1.0, animation_tween)
+      .SetTransform(continue_label_, gfx::Transform(), animation_tween)
+      .SetTransform(suggestions_container_, gfx::Transform(), animation_tween)
+      .SetDuration(kShowSuggestionsAnimationDuration);
+}
+
 void ContinueSectionView::MarkPrivacyNoticeAccepted() {
   {
     DictionaryPrefUpdate privacy_pref_update(
         GetActiveUserPrefService(), prefs::kLauncherFilesPrivacyNotice);
     privacy_pref_update->SetBoolKey(kPrivacyNoticeAcceptedKey, true);
   }
+  nudge_controller_->SetPrivacyNoticeShown(false);
+}
+
+void ContinueSectionView::RemovePrivacyNotice() {
   if (privacy_toast_) {
     RemoveChildViewT(privacy_toast_);
     privacy_toast_ = nullptr;
   }
-  nudge_controller_->SetPrivacyNoticeShown(false);
   UpdateElementsVisibility();
+
+  if (continue_label_)
+    continue_label_->DestroyLayer();
 }
 
 void ContinueSectionView::MarkPrivacyNoticeShown() {
@@ -257,13 +370,14 @@ void ContinueSectionView::MaybeCreatePrivacyNotice() {
   const int privacy_toast_text_id =
       tablet_mode_ ? IDS_ASH_LAUNCHER_CONTINUE_SECTION_PRIVACY_TEXT_TABLET
                    : IDS_ASH_LAUNCHER_CONTINUE_SECTION_PRIVACY_TEXT;
+
   privacy_toast_ = AddChildView(
       AppListToastView::Builder(
           l10n_util::GetStringUTF16(privacy_toast_text_id))
           .SetButton(l10n_util::GetStringUTF16(
                          IDS_ASH_LAUNCHER_CONTINUE_SECTION_PRIVACY_BUTTON),
                      base::BindRepeating(
-                         &ContinueSectionView::MarkPrivacyNoticeAccepted,
+                         &ContinueSectionView::OnPrivacyToastAcknowledged,
                          base::Unretained(this)))
           .SetStyleForTabletMode(tablet_mode_)
           .SetThemingIcons(&kContinueFilesDarkIcon, &kContinueFilesLightIcon)

@@ -99,8 +99,11 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // notice, the continue label and the continue section itself.
   void UpdateElementsVisibility();
 
-  // Invoked when the privacy notice has been accepted.
+  // Sets the privacy notice as accepted by the user.
   void MarkPrivacyNoticeAccepted();
+
+  // Removes the privacy notice from the view.
+  void RemovePrivacyNotice();
 
   // Invoked when the privacy notice has been shown for enough time.
   void MarkPrivacyNoticeShown();
@@ -114,6 +117,15 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // Whether the user has already seen the privacy notice.
   bool IsPrivacyNoticeShown() const;
 
+  // Invoked when the privacy notice has been acknowledged.
+  void OnPrivacyToastAcknowledged();
+
+  // Starts the animation to dismiss the privacy notice toast.
+  void AnimateDismissToast();
+
+  // Starts the animation to show the continue section in the app list bubble.
+  void AnimateShowContinueSection();
+
   bool tablet_mode_ = false;
 
   // Timer for marking the privacy notice as shown.
@@ -125,6 +137,8 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   views::Label* continue_label_ = nullptr;
   AppListToastView* privacy_toast_ = nullptr;
   ContinueTaskContainerView* suggestions_container_ = nullptr;
+
+  base::WeakPtrFactory<ContinueSectionView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
