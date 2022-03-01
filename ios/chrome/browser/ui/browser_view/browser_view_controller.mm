@@ -4224,6 +4224,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   if (tabURL == kChromeUINewTabURL && !_isOffTheRecord &&
       ![self canShowTabStrip]) {
+    if (IsSingleNtpEnabled()) {
+      // Update NTPCoordinator's WebState here since |self.currentWebState| has
+      // not been update to |webState| yet.
+      self.ntpCoordinator.webState = webState;
+    }
     // Add a snapshot of the primary toolbar to the background as the
     // animation runs.
     UIViewController* toolbarViewController =
@@ -4602,6 +4607,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)newTabPageHelperDidChangeVisibility:(NewTabPageTabHelper*)NTPHelper
                                 forWebState:(web::WebState*)webState {
   if (IsSingleNtpEnabled()) {
+    if (webState != self.currentWebState) {
+      // In the instance that a pageload starts while the WebState is not the
+      // active WebState anymore, do nothing.
+      return;
+    }
     if (NTPHelper->IsActive()) {
       self.ntpCoordinator.webState = webState;
     } else {
