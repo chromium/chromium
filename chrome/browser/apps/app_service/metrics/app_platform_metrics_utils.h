@@ -77,20 +77,21 @@ extern const base::TimeDelta kMaxUsageDuration;
 extern const int kDurationBuckets;
 extern const int kUsageTimeBuckets;
 
-extern const char kArcHistogramName[];
-extern const char kBuiltInHistogramName[];
-extern const char kCrostiniHistogramName[];
-extern const char kChromeAppHistogramName[];
-extern const char kWebAppHistogramName[];
-extern const char kMacOsHistogramName[];
-extern const char kPluginVmHistogramName[];
-extern const char kStandaloneBrowserHistogramName[];
-extern const char kRemoteHistogramName[];
-extern const char kBorealisHistogramName[];
-extern const char kSystemWebAppHistogramName[];
-extern const char kChromeBrowserHistogramName[];
-extern const char kStandaloneBrowserChromeAppHistogramName[];
-extern const char kExtensionHistogramName[];
+constexpr char kArcHistogramName[] = "Arc";
+constexpr char kBuiltInHistogramName[] = "BuiltIn";
+constexpr char kCrostiniHistogramName[] = "Crostini";
+constexpr char kChromeAppHistogramName[] = "ChromeApp";
+constexpr char kWebAppHistogramName[] = "WebApp";
+constexpr char kMacOsHistogramName[] = "MacOs";
+constexpr char kPluginVmHistogramName[] = "PluginVm";
+constexpr char kStandaloneBrowserHistogramName[] = "StandaloneBrowser";
+constexpr char kRemoteHistogramName[] = "RemoteApp";
+constexpr char kBorealisHistogramName[] = "Borealis";
+constexpr char kSystemWebAppHistogramName[] = "SystemWebApp";
+constexpr char kChromeBrowserHistogramName[] = "ChromeBrowser";
+constexpr char kStandaloneBrowserChromeAppHistogramName[] =
+    "StandaloneBrowserChromeApp";
+constexpr char kExtensionHistogramName[] = "Extension";
 
 // Determines what app type a web app should be logged as based on its launch
 // container and app id. In particular, web apps in tabs are logged as part of

@@ -4,8 +4,9 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
@@ -34,11 +35,8 @@
 
 namespace {
 
-base::flat_map<std::string, apps::AppTypeName>& GetAppTypeNameMap() {
-  static base::NoDestructor<base::flat_map<std::string, apps::AppTypeName>>
-      app_type_name_map;
-  if (app_type_name_map->empty()) {
-    *app_type_name_map = {
+constexpr auto kAppTypeNameMap =
+    base::MakeFixedFlatMap<base::StringPiece, apps::AppTypeName>({
         {apps::kArcHistogramName, apps::AppTypeName::kArc},
         {apps::kBuiltInHistogramName, apps::AppTypeName::kBuiltIn},
         {apps::kCrostiniHistogramName, apps::AppTypeName::kCrostini},
@@ -55,10 +53,7 @@ base::flat_map<std::string, apps::AppTypeName>& GetAppTypeNameMap() {
         {apps::kStandaloneBrowserChromeAppHistogramName,
          apps::AppTypeName::kStandaloneBrowserChromeApp},
         {apps::kExtensionHistogramName, apps::AppTypeName::kExtension},
-    };
-  }
-  return *app_type_name_map;
-}
+    });
 
 // Determines what app type a Chrome App should be logged as based on its launch
 // container and app id. In particular, Chrome apps in tabs are logged as part
@@ -113,22 +108,6 @@ constexpr base::TimeDelta kMinDuration = base::Seconds(1);
 constexpr base::TimeDelta kMaxUsageDuration = base::Minutes(5);
 constexpr int kDurationBuckets = 100;
 constexpr int kUsageTimeBuckets = 50;
-
-constexpr char kArcHistogramName[] = "Arc";
-constexpr char kBuiltInHistogramName[] = "BuiltIn";
-constexpr char kCrostiniHistogramName[] = "Crostini";
-constexpr char kChromeAppHistogramName[] = "ChromeApp";
-constexpr char kWebAppHistogramName[] = "WebApp";
-constexpr char kMacOsHistogramName[] = "MacOs";
-constexpr char kPluginVmHistogramName[] = "PluginVm";
-constexpr char kStandaloneBrowserHistogramName[] = "StandaloneBrowser";
-constexpr char kRemoteHistogramName[] = "RemoteApp";
-constexpr char kBorealisHistogramName[] = "Borealis";
-constexpr char kSystemWebAppHistogramName[] = "SystemWebApp";
-constexpr char kChromeBrowserHistogramName[] = "ChromeBrowser";
-constexpr char kStandaloneBrowserChromeAppHistogramName[] =
-    "StandaloneBrowserChromeApp";
-constexpr char kExtensionHistogramName[] = "Extension";
 
 AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     const std::string& app_id,
@@ -297,9 +276,8 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
 }
 
 AppTypeName GetAppTypeNameFromString(const std::string& app_type_name) {
-  const auto& app_type_map = GetAppTypeNameMap();
-  auto it = app_type_map.find(app_type_name);
-  return (it != app_type_map.end()) ? it->second : apps::AppTypeName::kUnknown;
+  auto* it = kAppTypeNameMap.find(app_type_name);
+  return it != kAppTypeNameMap.end() ? it->second : apps::AppTypeName::kUnknown;
 }
 
 bool ShouldRecordUkm(Profile* profile) {
