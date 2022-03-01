@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Children of fragmented inline-size container should match inline-size of first fragment assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+Harness: the test ran to completion.
+
