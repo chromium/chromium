@@ -5,8 +5,8 @@
 #include "ios/chrome/common/x_callback_url.h"
 
 #include "base/check.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "net/base/escape.h"
 #include "net/base/url_util.h"
 
@@ -51,8 +51,7 @@ GURL CreateXCallbackURLWithParameters(
     const GURL& cancel_url,
     const std::map<std::string, std::string>& parameters) {
   DCHECK(!scheme.empty());
-  GURL url(base::StringPrintf("%s://%s/%s", scheme.data(), kXCallbackURLHost,
-                              !action.empty() ? action.data() : ""));
+  GURL url(base::StrCat({scheme, "://", kXCallbackURLHost, "/", action}));
 
   if (success_url.is_valid()) {
     url = net::AppendQueryParameter(url, kSuccessURLParameterName,
