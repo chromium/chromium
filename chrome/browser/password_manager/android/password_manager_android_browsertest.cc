@@ -12,6 +12,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -35,7 +36,9 @@ autofill::PasswordFormFillData GetTestFillData() {
 
 }  // namespace
 
-class PasswordManagerAndroidBrowserTest : public AndroidBrowserTest {
+class PasswordManagerAndroidBrowserTest
+    : public AndroidBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   PasswordManagerAndroidBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
@@ -68,8 +71,11 @@ class PasswordManagerAndroidBrowserTest : public AndroidBrowserTest {
   net::EmbeddedTestServer https_server_;
 };
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerAndroidBrowserTest, TriggerSubmission) {
-  NavigateToFile("/password/simple_password.html");
+IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
+                       TriggerFormSubmission) {
+  bool has_form_tag = GetParam();
+  NavigateToFile(has_form_tag ? "/password/simple_password.html"
+                              : "/password/no_form_element.html");
 
   password_manager::ContentPasswordManagerDriverFactory* driver_factory =
       password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
@@ -100,3 +106,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerAndroidBrowserTest, TriggerSubmission) {
 
   observer.Wait();
 }
+
+INSTANTIATE_TEST_SUITE_P(VariateFormElementPresence,
+                         PasswordManagerAndroidBrowserTest,
+                         testing::Bool());

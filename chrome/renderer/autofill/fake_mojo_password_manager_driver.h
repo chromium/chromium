@@ -84,6 +84,9 @@ class FakeMojoPasswordManagerDriver
     form_data_parsed_ = absl::nullopt;
     called_password_forms_rendered_ = false;
     form_data_rendered_ = absl::nullopt;
+    called_password_form_submitted_ = false;
+    form_data_submitted_ = absl::nullopt;
+    called_inform_about_user_input_count_ = false;
   }
 
   bool called_record_save_progress() const {

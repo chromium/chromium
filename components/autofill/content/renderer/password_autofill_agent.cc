@@ -1475,17 +1475,14 @@ void PasswordAutofillAgent::TriggerFormSubmission() {
     return;
   }
 
-  // TODO(crbug.com/1283004): Support submission for <form>less forms too.
-  if (!form_control.Form().IsNull()) {
-    // |form_control| can only be |WebInputElement|, not |WebSelectElement|.
-    WebInputElement input = form_control.To<WebInputElement>();
+  // |form_control| can only be |WebInputElement|, not |WebSelectElement|.
+  WebInputElement input = form_control.To<WebInputElement>();
 
-    // TODO(crbug.com/1283004): Support filling single username fields too.
-    DCHECK(input.IsPasswordFieldForAutofill())
-        << "Form submission attempt for a non-password element";
-    if (input.IsLastInputElementInForm())
-      input.DispatchSimulatedEnter();
-  }
+  // TODO(crbug.com/1283004): Support filling single username fields too.
+  DCHECK(input.IsPasswordFieldForAutofill())
+      << "Form submission attempt for a non-password element";
+  if (input.IsLastInputElementInForm())
+    input.DispatchSimulatedEnter();
 }
 #endif
 

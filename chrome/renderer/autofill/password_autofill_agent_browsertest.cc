@@ -39,6 +39,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -251,8 +252,16 @@ const char kCreditCardFormHTML[] =
     "</FORM>";
 
 const char kNoFormHTML[] =
-    "  <INPUT type='text' id='username'/>"
-    "  <INPUT type='password' id='password'/>";
+    "<script>"
+    "  function on_keypress(event) {"
+    "    if (event.which === 13) {"
+    "      var field = document.getElementById('password');"
+    "      field.parentElement.removeChild(field);"
+    "    }"
+    "  }"
+    "</script>"
+    "<INPUT type='text' id='username'/>"
+    "<INPUT type='password' id='password' onkeypress='on_keypress(event)'/>";
 
 const char kTwoNoUsernameFormsHTML[] =
     "<FORM name='form1' action='http://www.bidule.com'>"
@@ -4056,7 +4065,17 @@ TEST_F(PasswordAutofillAgentTest, NoXhrSubmissionAfterFillingOnPageload) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordAutofillAgentTest, TriggerSubmission) {
+class PasswordAutofillAgentFormPresenceVariationTest
+    : public PasswordAutofillAgentTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(PasswordAutofillAgentFormPresenceVariationTest, TriggerFormSubmission) {
+  bool has_form_tag = GetParam();
+
+  LoadHTML(has_form_tag ? kFormHTML : kNoFormHTML);
+  base::RunLoop().RunUntilIdle();
+  UpdateUsernameAndPasswordElements();
+
   // Simulate the browser sending the login info, but set |wait_for_username|
   // to prevent the form from being immediately filled because the test
   // simulates filling with |FillSuggestion|, the function that TouchToFill
@@ -4068,8 +4087,8 @@ TEST_F(PasswordAutofillAgentTest, TriggerSubmission) {
   EXPECT_TRUE(password_autofill_agent_->FillSuggestion(
       username_element_, kAliceUsername16, kAlicePassword16));
   base::RunLoop().RunUntilIdle();
-  // Check that two input fields are modified as |TriggerSubmission| expects the
-  // last intereacted input to be set.
+  // Check that two input fields are modified as |TriggerSubmission| expects
+  // the last intereacted input to be set.
   EXPECT_EQ(1, fake_driver_.called_inform_about_user_input_count());
 
   // Trigger a form submission.
@@ -4077,8 +4096,18 @@ TEST_F(PasswordAutofillAgentTest, TriggerSubmission) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that the driver actually has seen a submission.
-  EXPECT_TRUE(fake_driver_.called_password_form_submitted());
+  if (has_form_tag)
+    EXPECT_TRUE(fake_driver_.called_password_form_submitted());
+  else
+    EXPECT_TRUE(fake_driver_.called_dynamic_form_submission());
+
+  fake_driver_.reset_password_forms_calls();
 }
+
+INSTANTIATE_TEST_SUITE_P(FormPresenceVariation,
+                         PasswordAutofillAgentFormPresenceVariationTest,
+                         testing::Bool());
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
