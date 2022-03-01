@@ -222,3 +222,36 @@ ci.builder(
     ),
     triggered_by = ["Android x64 Builder (dbg)"],
 )
+
+# TODO(crbug.com/1293115): [Cronet] Move to non-FYI once the tester works fine.
+ci.builder(
+    name = "android-cronet-x86-dbg-kitkat-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|test",
+        short_name = "k",
+    ),
+    notifies = ["cronet"],
+    triggered_by = ["ci/android-cronet-x86-dbg"],
+)
+
+# TODO(crbug.com/1293115): [Cronet] Move to non-FYI once the tester works fine.
+ci.builder(
+    name = "android-cronet-x86-dbg-lollipop-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|test",
+        short_name = "l",
+    ),
+    notifies = ["cronet"],
+    triggered_by = ["ci/android-cronet-x86-dbg"],
+)
+
+# TODO(crbug.com/1293115): [Cronet] Move to non-FYI once the tester works fine.
+ci.builder(
+    name = "android-cronet-x86-dbg-marshmallow-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|test",
+        short_name = "m",
+    ),
+    notifies = ["cronet"],
+    triggered_by = ["ci/android-cronet-x86-dbg"],
+)

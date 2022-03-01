@@ -528,6 +528,29 @@
       },
     },
   },
+  'kitkat-x86-emulator': {
+    '$mixin_append': {
+      'args': [
+        '--avd-config=../../tools/android/avd/proto/generic_android19.textpb',
+      ],
+    },
+    'swarming': {
+      # soft affinity so that bots with caches will be picked first
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'generic_android19',
+          }
+        ],
+      },
+      'named_caches': [
+        {
+          'name': 'generic_android19',
+          'path': '.android_emulator/generic_android19',
+        },
+      ]
+    },
+  },
   'limited_capacity_bot': {
     # Some FYI bot configurations have a limited number of bots in the swarming
     # pool. Increase the default expiration time from 1 hour to 6 hours to
@@ -638,6 +661,29 @@
       'dimensions': {
         'device_os': 'LMY48M',
       },
+    },
+  },
+  'lollipop-x86-emulator': {
+    '$mixin_append': {
+      'args': [
+        '--avd-config=../../tools/android/avd/proto/generic_android22.textpb',
+      ],
+    },
+    'swarming': {
+      # soft affinity so that bots with caches will be picked first
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'generic_android22',
+          }
+        ],
+      },
+      'named_caches': [
+        {
+          'name': 'generic_android22',
+          'path': '.android_emulator/generic_android22',
+        },
+      ]
     },
   },
   'mac-archive-rel-args': {
