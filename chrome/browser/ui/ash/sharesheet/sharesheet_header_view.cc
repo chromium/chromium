@@ -469,9 +469,10 @@ void SharesheetHeaderView::ResolveImage(size_t index) {
       HoldingSpaceImage::CreateDefaultPlaceholderImageSkiaResolver(
           /*use_light_mode_as_default=*/true));
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
-  image_preview_->GetImageViewAt(index)->SetImage(image->GetImageSkia(size));
-
   ScopedLightModeAsDefault scoped_light_mode_as_default;
+  image_preview_->GetImageViewAt(index)->SetImage(
+      image->GetImageSkia(size, AshColorProvider::Get()->IsDarkModeEnabled()));
+
   const auto icon_color = chromeos::GetIconColorForPath(
       file_path, AshColorProvider::Get()->IsDarkModeEnabled());
   image_preview_->SetBackgroundColorForIndex(index, icon_color);
@@ -494,8 +495,9 @@ void SharesheetHeaderView::LoadImage(
 
 void SharesheetHeaderView::OnImageLoaded(const gfx::Size& size, size_t index) {
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
-  image_preview_->GetImageViewAt(index)->SetImage(
-      images_[index]->GetImageSkia(size));
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  image_preview_->GetImageViewAt(index)->SetImage(images_[index]->GetImageSkia(
+      size, AshColorProvider::Get()->IsDarkModeEnabled()));
   // TODO(crbug.com/1293668): Investigate why this SchedulePaint is needed.
   image_preview_->GetImageViewAt(index)->SchedulePaint();
 }
