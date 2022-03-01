@@ -122,7 +122,7 @@
   {
     "name": "allow-scroll-settings",
     "owners": [ "khorimoto", "zentaro" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "allow-touchpad-haptic-click-settings",
@@ -1327,8 +1327,8 @@
   },
   {
     "name": "display-alignment-assistance",
-    "owners": [ "baileyberro", "cros-peripherals@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "cros-peripherals@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "dns-httpssvc",
@@ -3661,7 +3661,7 @@
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "impulse-scroll-animations",
