@@ -249,7 +249,10 @@ class AutofillCapturedSitesInteractiveTest
                               features::kAutofillDisplaceRemovedForms,
                               features::kAutofillShowTypePredictions,
                               features::kAutofillUseUnassociatedListedElements},
-        /*disabled_features=*/{});
+        // Disable AutofillAddressProfileSavePrompt to prevent popup from
+        // interfering with autofill select dialog.
+        // TODO(crbug.com/1300919) -Add save prompt verification and re-enable.
+        /*disabled_features=*/{features::kAutofillAddressProfileSavePrompt});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
     AutofillUiTest::SetUpCommandLine(command_line);
