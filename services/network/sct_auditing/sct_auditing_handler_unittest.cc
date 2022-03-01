@@ -95,12 +95,14 @@ class SCTAuditingHandlerTest : public testing::Test {
 
     // Set up SCT auditing configuration.
     auto* cache = network_service_->sct_auditing_cache();
-    cache->set_sampling_rate(1.0);
-    cache->set_report_uri(GURL("https://example.test"));
-    cache->set_traffic_annotation(
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
-    cache->set_hashdance_traffic_annotation(
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+    mojom::SCTAuditingConfigurationPtr configuration(base::in_place);
+    configuration->sampling_rate = 1.0;
+    configuration->report_uri = GURL("https://example.test");
+    configuration->traffic_annotation =
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+    configuration->hashdance_traffic_annotation =
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+    cache->Configure(std::move(configuration));
 
     chain_ =
         net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
@@ -201,6 +203,21 @@ void MakeTestSCTAndStatus(
   sct->signature.signature_data = signature_data;
   sct->origin = origin;
   sct_list->push_back(net::SignedCertificateTimestampAndStatus(sct, status));
+}
+
+// Tests that if reporting is disabled, reports are not created.
+TEST_F(SCTAuditingHandlerTest, DisableReporting) {
+  // Create a report which would normally trigger a send.
+  const net::HostPortPair host_port_pair("example.com", 443);
+  net::SignedCertificateTimestampAndStatusList sct_list;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions", "signature", base::Time::Now(),
+                       net::ct::SCT_STATUS_OK, &sct_list);
+  handler_->SetMode(mojom::SCTAuditingMode::kDisabled);
+  handler_->MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
+
+  // Check that there are no pendin reports.
+  EXPECT_EQ(0u, handler_->GetPendingReportersForTesting()->size());
 }
 
 // Tests that when a new report is sampled, it will be sent to the server.

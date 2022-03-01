@@ -48,12 +48,12 @@ class SCTAuditingCacheTest : public testing::Test {
 
  protected:
   // Initializes the configuration for the SCTAuditingCache to defaults.
-  // Individual tests can directly call the set_* methods to tweak the
-  // configuration.
-  void InitSCTAuditing(SCTAuditingCache* cache) {
-    cache->set_sampling_rate(1.0);
-    cache->set_traffic_annotation(
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  void InitSCTAuditing(SCTAuditingCache* cache, double sampling_rate = 1.0) {
+    mojom::SCTAuditingConfigurationPtr configuration(base::in_place);
+    configuration->sampling_rate = sampling_rate;
+    configuration->traffic_annotation =
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+    cache->Configure(std::move(configuration));
   }
 
   // Use MOCK_TIME so tests (particularly those involving retry and backoff) can
@@ -249,8 +249,7 @@ TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
 
 TEST_F(SCTAuditingCacheTest, ReportsCachedButNotSentWhenSamplingIsZero) {
   SCTAuditingCache cache(2);
-  InitSCTAuditing(&cache);
-  cache.set_sampling_rate(0);
+  InitSCTAuditing(&cache, /*sampling_rate=*/0);
 
   // Generate a report.
   const net::HostPortPair host_port_pair("example.com", 443);
@@ -340,8 +339,7 @@ TEST_F(SCTAuditingCacheTest, ReportSampleDroppedMetrics) {
   base::HistogramTester histograms;
 
   SCTAuditingCache cache(10);
-  InitSCTAuditing(&cache);
-  cache.set_sampling_rate(0);
+  InitSCTAuditing(&cache, /*sampling_rate=*/0);
 
   const net::HostPortPair host_port_pair("example.com", 443);
   net::SignedCertificateTimestampAndStatusList sct_list;

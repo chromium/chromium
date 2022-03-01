@@ -13,6 +13,7 @@
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -69,6 +70,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   SCTAuditingCache(const SCTAuditingCache&) = delete;
   SCTAuditingCache& operator=(const SCTAuditingCache&) = delete;
 
+  // Configures the cache. Must be called before |MaybeGenerateReportEntry| and
+  // |GetConfiguration|.
+  void Configure(mojom::SCTAuditingConfigurationPtr configuration);
+
+  // Returns a copy of the SCT configuration.
+  mojom::SCTAuditingConfigurationPtr GetConfiguration() const;
+
   // Creates a report containing the details about the connection context and
   // SCTs and adds it to the cache if the SCTs are not already in the
   // cache. If the SCTs were not already in the cache, a random sample is drawn
@@ -87,44 +95,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
 
   void ClearCache();
 
-  void set_sampling_rate(double rate) { sampling_rate_ = rate; }
-  base::TimeDelta log_expected_ingestion_delay() {
-    return log_expected_ingestion_delay_;
-  }
-  void set_log_expected_ingestion_delay(
-      base::TimeDelta log_expected_ingestion_delay) {
-    log_expected_ingestion_delay_ = log_expected_ingestion_delay;
-  }
-  base::TimeDelta log_max_ingestion_random_delay() {
-    return log_max_ingestion_random_delay_;
-  }
-  void set_log_max_ingestion_random_delay(
-      base::TimeDelta log_max_ingestion_random_delay) {
-    log_max_ingestion_random_delay_ = log_max_ingestion_random_delay;
-  }
-  void set_report_uri(const GURL& report_uri) { report_uri_ = report_uri; }
-  void set_hashdance_lookup_uri(const GURL& hashdance_lookup_uri) {
-    hashdance_lookup_uri_ = hashdance_lookup_uri;
-  }
   void set_popular_scts(std::vector<std::vector<uint8_t>> popular_scts) {
-    popular_scts_ = std::move(popular_scts);
+    popular_scts_ = popular_scts;
   }
-  void set_traffic_annotation(
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-    traffic_annotation_ = traffic_annotation;
-  }
-  net::MutableNetworkTrafficAnnotationTag traffic_annotation() {
-    return traffic_annotation_;
-  }
-  void set_hashdance_traffic_annotation(
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-    hashdance_traffic_annotation_ = traffic_annotation;
-  }
-  net::MutableNetworkTrafficAnnotationTag hashdance_traffic_annotation() {
-    return hashdance_traffic_annotation_;
-  }
-  GURL report_uri() { return report_uri_; }
-  GURL hashdance_lookup_uri() { return hashdance_lookup_uri_; }
 
   base::LRUCache<net::HashValue, bool>* GetCacheForTesting() {
     return &dedupe_cache_;
@@ -144,13 +117,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   // as an optimization for hashdance clients.
   std::vector<std::vector<uint8_t>> popular_scts_;
 
-  double sampling_rate_ = 0;
-  base::TimeDelta log_expected_ingestion_delay_;
-  base::TimeDelta log_max_ingestion_random_delay_;
-  GURL report_uri_;
-  GURL hashdance_lookup_uri_;
-  net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
-  net::MutableNetworkTrafficAnnotationTag hashdance_traffic_annotation_;
+  mojom::SCTAuditingConfigurationPtr configuration_;
 
   base::RepeatingTimer histogram_timer_;
 };

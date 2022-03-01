@@ -17,6 +17,7 @@
 #include "net/base/hash_value.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/network_service.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -137,14 +138,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
       std::unique_ptr<sct_auditing::SCTClientReport> report,
       bool is_hashdance,
       absl::optional<SCTHashdanceMetadata> hashdance_metadata,
+      mojom::SCTAuditingConfigurationPtr configuration,
       mojom::URLLoaderFactory* url_loader_factory,
-      base::TimeDelta log_expected_ingestion_delay,
-      base::TimeDelta log_max_ingestion_random_delay,
-      const GURL& report_uri,
-      const GURL& hashdance_lookup_uri,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      const net::MutableNetworkTrafficAnnotationTag&
-          hashdance_traffic_annotation,
       ReporterUpdatedCallback update_callback,
       ReporterDoneCallback done_callback,
       std::unique_ptr<net::BackoffEntry> backoff_entry = nullptr);
@@ -190,12 +185,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   absl::optional<SCTHashdanceMetadata> sct_hashdance_metadata_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_remote_;
   std::unique_ptr<SimpleURLLoader> url_loader_;
-  net::NetworkTrafficAnnotationTag traffic_annotation_;
-  net::NetworkTrafficAnnotationTag hashdance_traffic_annotation_;
-  base::TimeDelta log_expected_ingestion_delay_;
-  base::TimeDelta log_max_ingestion_random_delay_;
-  GURL report_uri_;
-  GURL hashdance_lookup_uri_;
+  mojom::SCTAuditingConfigurationPtr configuration_;
   ReporterUpdatedCallback update_callback_;
   ReporterDoneCallback done_callback_;
 

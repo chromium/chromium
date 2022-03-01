@@ -70,12 +70,24 @@ SCTAuditingCache::SCTAuditingCache(size_t cache_size)
 
 SCTAuditingCache::~SCTAuditingCache() = default;
 
+void SCTAuditingCache::Configure(
+    mojom::SCTAuditingConfigurationPtr configuration) {
+  configuration_ = std::move(configuration);
+}
+
+mojom::SCTAuditingConfigurationPtr SCTAuditingCache::GetConfiguration() const {
+  return configuration_.Clone();
+}
+
 absl::optional<SCTAuditingCache::ReportEntry>
 SCTAuditingCache::MaybeGenerateReportEntry(
     const net::HostPortPair& host_port_pair,
     const net::X509Certificate* validated_certificate_chain,
     const net::SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps) {
+  if (!configuration_) {
+    return absl::nullopt;
+  }
   if (!histogram_timer_.IsRunning()) {
     // High-water-mark metrics get logged hourly (rather than once-per-session
     // at shutdown, as Network Service shutdown is not consistent and
@@ -127,7 +139,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   // Add `cache_key` to the dedupe cache. The cache value is not used.
   dedupe_cache_.Put(cache_key, true);
 
-  if (base::RandDouble() > sampling_rate_) {
+  if (base::RandDouble() > configuration_->sampling_rate) {
     RecordSCTAuditingReportSampledMetrics(false);
     return absl::nullopt;
   }

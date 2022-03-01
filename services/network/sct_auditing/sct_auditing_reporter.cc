@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
@@ -209,13 +210,8 @@ SCTAuditingReporter::SCTAuditingReporter(
     std::unique_ptr<sct_auditing::SCTClientReport> report,
     bool is_hashdance,
     absl::optional<SCTHashdanceMetadata> sct_hashdance_metadata,
+    mojom::SCTAuditingConfigurationPtr configuration,
     mojom::URLLoaderFactory* url_loader_factory,
-    base::TimeDelta log_expected_ingestion_delay,
-    base::TimeDelta log_max_ingestion_random_delay,
-    const GURL& report_uri,
-    const GURL& hashdance_lookup_uri,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    const net::MutableNetworkTrafficAnnotationTag& hashdance_traffic_annotation,
     ReporterUpdatedCallback update_callback,
     ReporterDoneCallback done_callback,
     std::unique_ptr<net::BackoffEntry> persisted_backoff_entry)
@@ -224,12 +220,7 @@ SCTAuditingReporter::SCTAuditingReporter(
       report_(std::move(report)),
       is_hashdance_(is_hashdance),
       sct_hashdance_metadata_(std::move(sct_hashdance_metadata)),
-      traffic_annotation_(traffic_annotation),
-      hashdance_traffic_annotation_(hashdance_traffic_annotation),
-      log_expected_ingestion_delay_(log_expected_ingestion_delay),
-      log_max_ingestion_random_delay_(log_max_ingestion_random_delay),
-      report_uri_(std::move(report_uri)),
-      hashdance_lookup_uri_(std::move(hashdance_lookup_uri)),
+      configuration_(std::move(configuration)),
       update_callback_(std::move(update_callback)),
       done_callback_(std::move(done_callback)),
       max_retries_(kMaxRetries) {
@@ -298,11 +289,12 @@ void SCTAuditingReporter::OnCheckReportAllowedStatusComplete(bool allowed) {
 
   // Calculate an estimated minimum delay after which the log is expected to
   // have been ingested by the server.
-  base::TimeDelta random_delay = base::Seconds(
-      base::RandInt(0, log_max_ingestion_random_delay_.InSeconds()));
-  base::TimeDelta delay =
-      sct_hashdance_metadata_->issued + sct_hashdance_metadata_->log_mmd +
-      log_expected_ingestion_delay_ + random_delay - base::Time::Now();
+  base::TimeDelta random_delay = base::Seconds(base::RandInt(
+      0, configuration_->log_max_ingestion_random_delay.InSeconds()));
+  base::TimeDelta delay = sct_hashdance_metadata_->issued +
+                          sct_hashdance_metadata_->log_mmd +
+                          configuration_->log_expected_ingestion_delay +
+                          random_delay - base::Time::Now();
   ScheduleRequestWithBackoff(
       base::BindOnce(&SCTAuditingReporter::SendLookupQuery,
                      weak_factory_.GetWeakPtr()),
@@ -334,7 +326,7 @@ void SCTAuditingReporter::SendLookupQuery() {
   std::string hash_prefix = TruncatePrefix(sct_hashdance_metadata_->leaf_hash,
                                            kHashdanceHashPrefixLength);
   report_request->url = GURL(base::ReplaceStringPlaceholders(
-      hashdance_lookup_uri_.spec(),
+      configuration_->hashdance_lookup_uri.spec(),
       {
           base::NumberToString(kHashdanceHashPrefixLength),
           base::HexEncode(base::as_bytes(base::make_span(hash_prefix))),
@@ -345,8 +337,9 @@ void SCTAuditingReporter::SendLookupQuery() {
   report_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   url_loader_ = SimpleURLLoader::Create(
-      std::move(report_request), static_cast<net::NetworkTrafficAnnotationTag>(
-                                     hashdance_traffic_annotation_));
+      std::move(report_request),
+      static_cast<net::NetworkTrafficAnnotationTag>(
+          configuration_->hashdance_traffic_annotation));
   url_loader_->SetTimeoutDuration(base::Seconds(kSendSCTReportTimeoutSeconds));
   // Retry is handled by SCTAuditingReporter.
   url_loader_->SetRetryOptions(0, SimpleURLLoader::RETRY_NEVER);
@@ -506,14 +499,14 @@ void SCTAuditingReporter::SendReport() {
 
   // Create a SimpleURLLoader for the request.
   auto report_request = std::make_unique<ResourceRequest>();
-  report_request->url = report_uri_;
+  report_request->url = configuration_->report_uri;
   report_request->method = "POST";
   report_request->load_flags = net::LOAD_DISABLE_CACHE;
   report_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   url_loader_ = SimpleURLLoader::Create(
-      std::move(report_request),
-      static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation_));
+      std::move(report_request), static_cast<net::NetworkTrafficAnnotationTag>(
+                                     configuration_->traffic_annotation));
   url_loader_->SetTimeoutDuration(base::Seconds(kSendSCTReportTimeoutSeconds));
   // Retry is handled by SCTAuditingReporter.
   url_loader_->SetRetryOptions(0, SimpleURLLoader::RETRY_NEVER);

@@ -19,6 +19,7 @@
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_network_context_client.h"
@@ -113,14 +114,20 @@ class SCTAuditingReporterTest : public testing::Test {
     SCTAuditingReporter::SCTHashdanceMetadata metadata =
         *SCTAuditingReporter::SCTHashdanceMetadata::FromValue(
             reporter_metadata_.ToValue());
+    mojom::SCTAuditingConfigurationPtr configuration(base::in_place);
+    configuration->log_expected_ingestion_delay = kExpectedIngestionDelay;
+    configuration->log_max_ingestion_random_delay = kMaxIngestionRandomDelay;
+    configuration->report_uri = GURL(kTestReportURL);
+    configuration->hashdance_lookup_uri = GURL(kTestLookupURL);
+    configuration->hashdance_traffic_annotation =
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+    configuration->traffic_annotation =
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     return SCTAuditingReporter(
         network_context_.get(), net::HashValue(), std::move(report),
-        /*is_hashdance=*/true, std::move(metadata), &url_loader_factory_,
-        kExpectedIngestionDelay, kMaxIngestionRandomDelay, GURL(kTestReportURL),
-        GURL(kTestLookupURL),
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        base::DoNothing(), base::DoNothing(), /*backoff_entry=*/nullptr);
+        /*is_hashdance=*/true, std::move(metadata), std::move(configuration),
+        &url_loader_factory_, base::DoNothing(), base::DoNothing(),
+        /*backoff_entry=*/nullptr);
   }
 
   // Simulates a response for a pending request with the values from the

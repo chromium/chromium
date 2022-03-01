@@ -121,14 +121,20 @@ GURL& SCTReportingService::GetHashdanceLookupQueryURLInstance() {
 
 // static
 void SCTReportingService::ReconfigureAfterNetworkRestart() {
-  content::GetNetworkService()->ConfigureSCTAuditing(
-      features::kSCTAuditingSamplingRate.Get(),
-      features::kSCTLogExpectedIngestionDelay.Get(),
-      features::kSCTLogMaxIngestionRandomDelay.Get(),
-      SCTReportingService::GetReportURLInstance(),
-      SCTReportingService::GetHashdanceLookupQueryURLInstance(),
-      net::MutableNetworkTrafficAnnotationTag(kSCTAuditReportTrafficAnnotation),
-      net::MutableNetworkTrafficAnnotationTag(kSCTHashdanceTrafficAnnotation));
+  network::mojom::SCTAuditingConfigurationPtr configuration(base::in_place);
+  configuration->sampling_rate = features::kSCTAuditingSamplingRate.Get();
+  configuration->log_expected_ingestion_delay =
+      features::kSCTLogExpectedIngestionDelay.Get();
+  configuration->log_max_ingestion_random_delay =
+      features::kSCTLogMaxIngestionRandomDelay.Get();
+  configuration->report_uri = SCTReportingService::GetReportURLInstance();
+  configuration->hashdance_lookup_uri =
+      SCTReportingService::GetHashdanceLookupQueryURLInstance();
+  configuration->traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(kSCTAuditReportTrafficAnnotation);
+  configuration->hashdance_traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(kSCTHashdanceTrafficAnnotation);
+  content::GetNetworkService()->ConfigureSCTAuditing(std::move(configuration));
 }
 
 // static

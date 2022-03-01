@@ -193,14 +193,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void ClearSCTAuditingCache() override;
   void ConfigureSCTAuditing(
-      double sampling_rate,
-      base::TimeDelta log_expected_ingestion_delay,
-      base::TimeDelta log_max_ingestion_random_delay,
-      const GURL& reporting_uri,
-      const GURL& hashdance_lookup_uri,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      const net::MutableNetworkTrafficAnnotationTag&
-          hashdance_traffic_annotation) override;
+      mojom::SCTAuditingConfigurationPtr configuration) override;
   void UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
                        base::Time update_time) override;
   void UpdateCtKnownPopularSCTs(

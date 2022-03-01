@@ -301,26 +301,13 @@ void SCTAuditingHandler::AddReporter(
     return;
   }
 
-  // Get the URLs, traffic annotations, and timing parameters as configured on
-  // the SCTAuditingCache.
-  auto* sct_auditing_cache =
-      owner_network_context_->network_service()->sct_auditing_cache();
-  auto log_expected_ingestion_delay =
-      sct_auditing_cache->log_expected_ingestion_delay();
-  auto log_max_ingestion_random_delay =
-      sct_auditing_cache->log_max_ingestion_random_delay();
-  auto report_uri = sct_auditing_cache->report_uri();
-  auto hashdance_lookup_uri = sct_auditing_cache->hashdance_lookup_uri();
-  auto traffic_annotation = sct_auditing_cache->traffic_annotation();
-  auto hashdance_traffic_annotation =
-      sct_auditing_cache->hashdance_traffic_annotation();
-
   auto reporter = std::make_unique<SCTAuditingReporter>(
       owner_network_context_, reporter_key, std::move(report),
       mode_ == mojom::SCTAuditingMode::kHashdance, std::move(sct_metadata),
-      GetURLLoaderFactory(), log_expected_ingestion_delay,
-      log_max_ingestion_random_delay, report_uri, hashdance_lookup_uri,
-      traffic_annotation, hashdance_traffic_annotation,
+      owner_network_context_->network_service()
+          ->sct_auditing_cache()
+          ->GetConfiguration(),
+      GetURLLoaderFactory(),
       base::BindRepeating(&SCTAuditingHandler::OnReporterStateUpdated,
                           GetWeakPtr()),
       base::BindOnce(&SCTAuditingHandler::OnReporterFinished, GetWeakPtr()),

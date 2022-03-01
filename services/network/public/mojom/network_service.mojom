@@ -134,6 +134,34 @@ struct LoggingSettings {
   handle<platform> log_file_descriptor;
 };
 
+// Configuration settings for SCT Auditing.
+[EnableIf=is_ct_supported]
+struct SCTAuditingConfiguration {
+  // The sampling rate for SCT auditing reports.
+  double sampling_rate;
+
+  // How long Chrome will wait before assuming a new SCT has been ingested by
+  // the log.
+  mojo_base.mojom.TimeDelta log_expected_ingestion_delay;
+
+  // The maximum random delay that may be added to
+  // |log_expected_ingestion_delay|.
+  mojo_base.mojom.TimeDelta log_max_ingestion_random_delay;
+
+  // The URL where reports should be sent.
+  url.mojom.Url report_uri;
+
+  // An annotated URL template for hashdance lookup queries. $1 should be in
+  // place of the "length" parameter, and $2 in place of the "prefix" parameter.
+  url.mojom.Url hashdance_lookup_uri;
+
+  // Traffic annotation for the report request.
+  MutableNetworkTrafficAnnotationTag traffic_annotation;
+
+  // Traffic annotation for the hashdance lookup query.
+  MutableNetworkTrafficAnnotationTag hashdance_traffic_annotation;
+};
+
 // Implemented by the network service. The browser process sends messages to
 // the network service over this interface.
 //
@@ -313,19 +341,8 @@ interface NetworkService {
   ClearSCTAuditingCache();
 
   // Configures SCT auditing.
-  // This allows the embedder to specify what sampling rate to use on SCT
-  // auditing reports, how long to wait before assuming an SCT is ingested,
-  // where reports and lookup queries should be sent, and the traffic annotation
-  // to use.
   [EnableIf=is_ct_supported]
-  ConfigureSCTAuditing(
-      double sampling_rate,
-      mojo_base.mojom.TimeDelta log_expected_ingestion_delay,
-      mojo_base.mojom.TimeDelta log_max_ingestion_random_delay,
-      url.mojom.Url report_uri,
-      url.mojom.Url hashdance_lookup_uri,
-      MutableNetworkTrafficAnnotationTag traffic_annotation,
-      MutableNetworkTrafficAnnotationTag hashdance_traffic_annotation);
+  ConfigureSCTAuditing(SCTAuditingConfiguration configuration);
 
   // Updates the log list used for CT verification. `update_time` should
   // contain the timestamp that the log list was considered fresh/current, in
