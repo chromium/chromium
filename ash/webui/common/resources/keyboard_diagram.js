@@ -5,6 +5,7 @@
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {KeyboardKeyState} from './keyboard_key.js';
+import {getKeyboardLayoutForRegionCode} from './keyboard_layouts.js';
 
 /**
  * @fileoverview
@@ -92,6 +93,16 @@ export class KeyboardDiagramElement extends PolymerElement {
        */
       physicalLayout: String,
 
+      /**
+       * For internal keyboards, the region code of the device, used to
+       * determine the key labels.
+       * @type {?string}
+       */
+      regionCode: {
+        type: String,
+        observer: 'regionCodeChanged_',
+      },
+
       /** Whether to show the Assistant key (between Ctrl and Alt). */
       showAssistantKey: Boolean,
 
@@ -156,6 +167,42 @@ export class KeyboardDiagramElement extends PolymerElement {
    */
   isEqual_(lhs, rhs) {
     return lhs === rhs;
+  }
+
+  /**
+   * @param {?string} newValue
+   * @param {?string} oldValue
+   * @private
+   */
+  regionCodeChanged_(newValue, oldValue) {
+    const layout = getKeyboardLayoutForRegionCode(newValue);
+    if (!layout) {
+      return;
+    }
+
+    for (const [evdevCode, glyphs] of layout) {
+      // Exclude the lower part of the enter key, which has the data-code
+      // attribute for an enter key but shouldn't be labelled.
+      const keys = this.root.querySelectorAll(
+          `:not(#enterKeyLowerPart)[data-code="${evdevCode}"]`);
+      for (const key of keys) {
+        if (typeof glyphs === 'string') {
+          key.topLeftGlyph = null;
+          key.topRightGlyph = null;
+          key.bottomLeftGlyph = null;
+          key.bottomRightGlyph = null;
+          key.icon = null;
+          key.mainGlyph = glyphs;
+        } else {
+          key.topLeftGlyph = glyphs.topLeft;
+          key.topRightGlyph = glyphs.topRight;
+          key.bottomLeftGlyph = glyphs.bottomLeft;
+          key.bottomRightGlyph = glyphs.bottomRight;
+          key.icon = glyphs.icon;
+          key.mainGlyph = glyphs.main;
+        }
+      }
+    }
   }
 
   /** @private */

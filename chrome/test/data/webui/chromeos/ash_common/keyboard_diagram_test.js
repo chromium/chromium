@@ -234,4 +234,32 @@ export function keyboardDiagramTestSuite() {
         `keyboard-key[state="${KeyboardKeyState.kPressed}"]`);
     assertEquals(0, pressedKeys.length);
   });
+
+  test('visualLayout_mainGlyph', async () => {
+    diagramElement.regionCode = 'fr';
+
+    const escKey = diagramElement.root.querySelector('[data-code="1"]');
+    assertEquals('échap', escKey.mainGlyph);
+  });
+
+  test('visualLayout_enterKeyLowerPartDoesntGetGlyph', async () => {
+    diagramElement.regionCode = 'us';
+
+    const enterKeyLowerPart = diagramElement.$.enterKeyLowerPart;
+    assertEquals(undefined, enterKeyLowerPart.mainGlyph);
+  });
+
+  test('visualLayout_iconAndCornerGlyphs', async () => {
+    diagramElement.regionCode = 'jp';
+
+    const letterSwitchKey =
+        diagramElement.root.querySelector('[data-code="41"]');
+    assertEquals('keyboard:jis-letter-switch', letterSwitchKey.icon);
+
+    const slashKey = diagramElement.root.querySelector('[data-code="53"]');
+    assertEquals('/', slashKey.bottomLeftGlyph);
+    assertEquals('?', slashKey.topLeftGlyph);
+    assertEquals('•', slashKey.topRightGlyph);
+    assertEquals('め', slashKey.bottomRightGlyph);
+  });
 }
