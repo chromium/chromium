@@ -11,13 +11,17 @@
 #import "base/test/ios/wait_util.h"
 #include "base/values.h"
 #import "components/translate/ios/browser/language_detection_controller.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/chrome/common/string_util.h"
 #import "ios/web/public/test/js_test_util.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,21 +43,28 @@ NSString* GetLongString(NSUInteger length) {
 }  // namespace
 
 // Test fixture to test language detection.
-class JsLanguageDetectionManagerTest : public ChromeWebTest {
+class JsLanguageDetectionManagerTest : public PlatformTest {
  protected:
   JsLanguageDetectionManagerTest()
-      : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+      : web_client_(std::make_unique<ChromeWebClient>()) {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+  }
   ~JsLanguageDetectionManagerTest() override {}
 
   // Injects JS, waits for the completion handler and verifies if the result
   // was what was expected.
   void InjectJsAndVerify(NSString* js, id expected_result) {
-    EXPECT_NSEQ(expected_result, ExecuteJavaScript(js));
+    EXPECT_NSEQ(expected_result, web::test::ExecuteJavaScript(js, web_state()));
   }
 
   // Injects JS, and spins the run loop until |condition| block returns true
   void InjectJSAndWaitUntilCondition(NSString* js, ConditionBlock condition) {
-    ExecuteJavaScript(js);
+    web::test::ExecuteJavaScript(js, web_state());
     base::test::ios::WaitUntilCondition(^bool() {
       return condition();
     });
@@ -89,21 +100,30 @@ class JsLanguageDetectionManagerTest : public ChromeWebTest {
             translate::kMaxIndexChars];
     InjectJsAndVerify(script, expected_text_content);
   }
+
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
 };
 
 // Tests |__gCrWeb.languageDetection.hasNoTranslate| JS call.
 TEST_F(JsLanguageDetectionManagerTest, PageHasNoTranslate) {
-  LoadHtml(@"<html></html>");
+  web::test::LoadHtml(@"<html></html>", web_state());
   ExpectHasNoTranslate(NO);
 
-  LoadHtml(@"<html><head>"
-            "<meta name='google' content='notranslate'>"
-            "</head></html>");
+  web::test::LoadHtml(@"<html><head>"
+                       "<meta name='google' content='notranslate'>"
+                       "</head></html>",
+                      web_state());
   ExpectHasNoTranslate(YES);
 
-  LoadHtml(@"<html><head>"
-            "<meta name='google' value='notranslate'>"
-            "</head></html>");
+  web::test::LoadHtml(@"<html><head>"
+                       "<meta name='google' value='notranslate'>"
+                       "</head></html>",
+                      web_state());
   ExpectHasNoTranslate(YES);
 }
 
@@ -113,24 +133,24 @@ TEST_F(JsLanguageDetectionManagerTest, HtmlLang) {
   // Non-empty attribute.
   html = [[NSString alloc]
       initWithFormat:@"<html lang='%s'></html>", kExpectedLanguage];
-  LoadHtml(html);
+  web::test::LoadHtml(html, web_state());
   ExpectHtmlLang(@(kExpectedLanguage));
 
   // Empty attribute.
-  LoadHtml(@"<html></html>");
+  web::test::LoadHtml(@"<html></html>", web_state());
   ExpectHtmlLang(@"");
 
   // Test with mixed case.
   html = [[NSString alloc]
       initWithFormat:@"<html lAnG='%s'></html>", kExpectedLanguage];
-  LoadHtml(html);
+  web::test::LoadHtml(html, web_state());
   ExpectHtmlLang(@(kExpectedLanguage));
 }
 
 // Tests |__gCrWeb.languageDetection.getMetaContentByHttpEquiv| JS call.
 TEST_F(JsLanguageDetectionManagerTest, HttpContentLanguage) {
   // No content language.
-  LoadHtml(@"<html></html>");
+  web::test::LoadHtml(@"<html></html>", web_state());
   ExpectHttpContentLanguage(@"");
   NSString* html;
 
@@ -140,7 +160,7 @@ TEST_F(JsLanguageDetectionManagerTest, HttpContentLanguage) {
                       "<meta http-equiv='content-language' content='%s'>"
                       "</head></html>",
                      kExpectedLanguage]);
-  LoadHtml(html);
+  web::test::LoadHtml(html, web_state());
   ExpectHttpContentLanguage(@(kExpectedLanguage));
 
   // Test with mixed case.
@@ -149,18 +169,20 @@ TEST_F(JsLanguageDetectionManagerTest, HttpContentLanguage) {
                       "<meta http-equiv='cOnTenT-lAngUAge' content='%s'>"
                       "</head></html>",
                      kExpectedLanguage]);
-  LoadHtml(html);
+  web::test::LoadHtml(html, web_state());
   ExpectHttpContentLanguage(@(kExpectedLanguage));
 }
 
 // Tests |__gCrWeb.languageDetection.getTextContent| JS call.
 TEST_F(JsLanguageDetectionManagerTest, ExtractTextContent) {
-  LoadHtml(@"<html><body>"
-            "<script>var text = 'No scripts!'</script>"
-            "<p style='display: none;'>Not displayed!</p>"
-            "<p style='visibility: hidden;'>Hidden!</p>"
-            "<div>Some <span>text here <b>and</b></span> there.</div>"
-            "</body></html>");
+  web::test::LoadHtml(
+      @"<html><body>"
+       "<script>var text = 'No scripts!'</script>"
+       "<p style='display: none;'>Not displayed!</p>"
+       "<p style='visibility: hidden;'>Hidden!</p>"
+       "<div>Some <span>text here <b>and</b></span> there.</div>"
+       "</body></html>",
+      web_state());
 
   ExpectTextContent(@"\nSome text here and there.");
 }
@@ -168,12 +190,14 @@ TEST_F(JsLanguageDetectionManagerTest, ExtractTextContent) {
 // Tests that |__gCrWeb.languageDetection.getTextContent| correctly truncates
 // text.
 TEST_F(JsLanguageDetectionManagerTest, Truncation) {
-  LoadHtml(@"<html><body>"
-            "<script>var text = 'No scripts!'</script>"
-            "<p style='display: none;'>Not displayed!</p>"
-            "<p style='visibility: hidden;'>Hidden!</p>"
-            "<div>Some <span>text here <b>and</b></span> there.</div>"
-            "</body></html>");
+  web::test::LoadHtml(
+      @"<html><body>"
+       "<script>var text = 'No scripts!'</script>"
+       "<p style='display: none;'>Not displayed!</p>"
+       "<p style='visibility: hidden;'>Hidden!</p>"
+       "<div>Some <span>text here <b>and</b></span> there.</div>"
+       "</body></html>",
+      web_state());
   NSString* const kTextContentJS =
       @"__gCrWeb.languageDetection.getTextContent(document.body, 13)";
   InjectJsAndVerify(kTextContentJS, @"\nSome text he");
@@ -183,16 +207,19 @@ TEST_F(JsLanguageDetectionManagerTest, Truncation) {
 TEST_F(JsLanguageDetectionManagerTest, ExtractWhitespace) {
   // |b| and |span| do not break lines.
   // |br| and |div| do.
-  LoadHtml(@"<html><body>"
-            "O<b>n</b>e<br>Two\tT<span>hr</span>ee<div>Four</div>"
-            "</body></html>");
+  web::test::LoadHtml(@"<html><body>"
+                       "O<b>n</b>e<br>Two\tT<span>hr</span>ee<div>Four</div>"
+                       "</body></html>",
+                      web_state());
   ExpectTextContent(@"One\nTwo\tThree\nFour");
 
   // |a| does not break lines.
   // |li|, |p| and |ul| do.
-  LoadHtml(@"<html><body>"
-            "<ul><li>One</li><li>T<a href='foo'>wo</a></li></ul><p>Three</p>"
-            "</body></html>");
+  web::test::LoadHtml(
+      @"<html><body>"
+       "<ul><li>One</li><li>T<a href='foo'>wo</a></li></ul><p>Three</p>"
+       "</body></html>",
+      web_state());
   ExpectTextContent(@"\n\nOne\nTwo\nThree");
 }
 
@@ -207,23 +234,25 @@ TEST_F(JsLanguageDetectionManagerTest, LongTextContent) {
   // The string should be cut at the last whitespace, after the 'b' character.
   NSString* html = [[NSString alloc]
       initWithFormat:@"<html><body>%@</html></body>", long_string];
-  LoadHtml(html);
+  web::test::LoadHtml(html, web_state());
 
   NSString* script = [[NSString alloc]
       initWithFormat:
           @"__gCrWeb.languageDetection.getTextContent(document.body, %lu);",
           translate::kMaxIndexChars];
-  NSString* result = ExecuteJavaScript(script);
+  NSString* result = web::test::ExecuteJavaScript(script, web_state());
   EXPECT_EQ(translate::kMaxIndexChars, [result length]);
 }
 
 // Tests if |__gCrWeb.languageDetection.retrieveBufferedTextContent| correctly
 // retrieves the cache and then purges it.
 TEST_F(JsLanguageDetectionManagerTest, RetrieveBufferedTextContent) {
-  LoadHtml(@"<html></html>");
+  web::test::LoadHtml(@"<html></html>", web_state());
   // Set some cached text content.
-  ExecuteJavaScript(@"__gCrWeb.languageDetection.bufferedTextContent = 'foo'");
-  ExecuteJavaScript(@"__gCrWeb.languageDetection.activeRequests = 1");
+  web::test::ExecuteJavaScript(
+      @"__gCrWeb.languageDetection.bufferedTextContent = 'foo'", web_state());
+  web::test::ExecuteJavaScript(@"__gCrWeb.languageDetection.activeRequests = 1",
+                               web_state());
   NSString* const kRetrieveBufferedTextContentJS =
       @"__gCrWeb.languageDetection.retrieveBufferedTextContent()";
   InjectJsAndVerify(kRetrieveBufferedTextContentJS, @"foo");
@@ -270,8 +299,9 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
                    @"<meta http-equiv='content-language' content='en'>"
                    @"<meta name='google' content='notranslate'>"
                    @"</head></html>";
-  LoadHtml(html);
-  ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()");
+  web::test::LoadHtml(html, web_state());
+  web::test::ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()",
+                               web_state());
   // Wait until the original injection has received a command.
   base::test::ios::WaitUntilCondition(^bool() {
     return !commands_received_.empty();
@@ -280,7 +310,8 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
 
   commands_received_.clear();
 
-  ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()");
+  web::test::ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()",
+                               web_state());
   base::test::ios::WaitUntilCondition(^bool() {
     return !commands_received_.empty();
   });
@@ -302,8 +333,9 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
   NSString* html = @"<html><head>"
                    @"<meta http-equiv='content-language' content='en'>"
                    @"</head></html>";
-  LoadHtml(html);
-  ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()");
+  web::test::LoadHtml(html, web_state());
+  web::test::ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()",
+                               web_state());
   // Wait until the original injection has received a command.
   base::test::ios::WaitUntilCondition(^bool() {
     return !commands_received_.empty();
@@ -312,7 +344,8 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
 
   commands_received_.clear();
 
-  ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()");
+  web::test::ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()",
+                               web_state());
   base::test::ios::WaitUntilCondition(^bool() {
     return !commands_received_.empty();
   });
