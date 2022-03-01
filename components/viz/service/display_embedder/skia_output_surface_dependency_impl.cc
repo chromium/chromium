@@ -54,7 +54,7 @@ SkiaOutputSurfaceDependencyImpl::GetGpuDriverBugWorkarounds() {
 scoped_refptr<gpu::SharedContextState>
 SkiaOutputSurfaceDependencyImpl::GetSharedContextState() {
   if (gpu_service_impl_->compositor_gpu_thread()) {
-    return gpu_service_impl_->compositor_gpu_thread()->shared_context_state();
+    return gpu_service_impl_->compositor_gpu_thread()->GetSharedContextState();
   }
   return gpu_service_impl_->GetContextState();
 }
