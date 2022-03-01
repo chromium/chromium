@@ -56,7 +56,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
           optimization_guide::proto::OptimizationTarget,
           const SegmentationModelHandler::ModelUpdatedCallback&)>;
 
-  explicit ModelExecutionManagerImpl(
+  ModelExecutionManagerImpl(
       const base::flat_set<OptimizationTarget>& segment_ids,
       ModelHandlerCreator model_handler_creator,
       base::Clock* clock,

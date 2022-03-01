@@ -24,6 +24,10 @@ class ModelExecutionManager {
  public:
   virtual ~ModelExecutionManager() = default;
 
+  // Disallow copy/assign.
+  ModelExecutionManager(const ModelExecutionManager&) = delete;
+  ModelExecutionManager& operator=(const ModelExecutionManager&) = delete;
+
   // The float value is only valid when ModelExecutionStatus == kSuccess.
   using ModelExecutionCallback =
       base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&)>;
@@ -38,6 +42,9 @@ class ModelExecutionManager {
   virtual void ExecuteModel(
       optimization_guide::proto::OptimizationTarget segment_id,
       ModelExecutionCallback callback) = 0;
+
+ protected:
+  ModelExecutionManager() = default;
 };
 
 }  // namespace segmentation_platform
