@@ -1315,7 +1315,6 @@ static_library("extensions") {
     deps += [
       "//components/pdf/browser",
       "//pdf:buildflags",
-      "//pdf:features",
     ]
   }
 

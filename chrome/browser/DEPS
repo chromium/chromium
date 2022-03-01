@@ -573,6 +573,7 @@ specific_include_rules = {
   ],
   "about_flags\.cc" : [
     "+mojo/core/embedder/features.h",
+    "+pdf/pdf_features.h",
   ],
   "app_controller_mac_browsertest\.mm" : [
     "+chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h",

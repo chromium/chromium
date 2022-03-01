@@ -584,7 +584,6 @@ source_set("browser_sources") {
     "//google_apis",
     "//net",
     "//pdf:buildflags",
-    "//pdf:features",
     "//ppapi/buildflags",
     "//services/data_decoder/public/cpp:cpp",
     "//services/device/public/cpp/hid",

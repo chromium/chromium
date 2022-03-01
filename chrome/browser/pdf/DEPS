@@ -1,3 +1,7 @@
+include_rules = [
+  "+pdf/pdf_features.h",
+]
+
 specific_include_rules = {
   "pdf_extension_test\.cc": [
     "+cc/input/scroll_utils.h",
