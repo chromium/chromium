@@ -276,12 +276,14 @@ locale.  The strings in this file are specific to iOS.
         </message>
       <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION" desc="Text to explain how the user can help to improve Chrome by accepting the metrics reporting consent. Bullet points lines should start with 2 spaces, followed by • and with a space right after. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
         When on:
-<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Help make Chromium better for people who use it the way you do<ph name="END_INDENT">END_INDENT</ph>
+<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Help make Chromium better for people who use it the way you do.<ph name="END_INDENT">END_INDENT</ph>
 
 Things to consider:
-<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Info is sent to Google about your Chromium usage, but it isn't tied you
-  • If Chromium crashes, details about the crash may include some personal info
-  • If you turn on sync, metrics may also include info about URLs you visit<ph name="END_INDENT">END_INDENT</ph>
+<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Info is sent to Google about your Chromium usage, but it isn't tied you.
+
+  • If Chromium crashes, details about the crash may include some personal info.
+
+  • If you turn on sync, metrics may also include info about URLs you visit.<ph name="END_INDENT">END_INDENT</ph>
       </message>
       <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE" desc="Title to explain how the user can help to improve Chrome by accepting the metrics reporting consent. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX and IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION. [iOS only]">
         Make Chromium Better
