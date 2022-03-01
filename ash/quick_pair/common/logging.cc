@@ -10,12 +10,29 @@
 namespace ash {
 namespace quick_pair {
 
+namespace {
+
+bool g_logging_enabled = true;
+
+}  // namespace
+
+ScopedDisableLoggingForTesting::ScopedDisableLoggingForTesting() {
+  g_logging_enabled = false;
+}
+
+ScopedDisableLoggingForTesting::~ScopedDisableLoggingForTesting() {
+  g_logging_enabled = true;
+}
+
 ScopedLogMessage::ScopedLogMessage(const char* file,
                                    int line,
                                    logging::LogSeverity severity)
     : file_(file), line_(line), severity_(severity) {}
 
 ScopedLogMessage::~ScopedLogMessage() {
+  if (!g_logging_enabled)
+    return;
+
   const std::string string_from_stream = stream_.str();
   LogBuffer::GetInstance()->AddLogMessage(LogBuffer::LogMessage(
       string_from_stream, base::Time::Now(), file_, line_, severity_));
