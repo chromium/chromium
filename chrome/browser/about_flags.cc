@@ -6375,6 +6375,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kBackForwardCache,
                                     kBackForwardCacheVariations,
                                     "BackForwardCache")},
+    {"enable-back-forward-cache-for-screen-reader",
+     flag_descriptions::kEnableBackForwardCacheForScreenReaderName,
+     flag_descriptions::kEnableBackForwardCacheForScreenReaderDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kEnableBackForwardCacheForScreenReader)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"closed-tab-cache", flag_descriptions::kClosedTabCacheName,

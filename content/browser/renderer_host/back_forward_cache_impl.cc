@@ -1414,7 +1414,8 @@ bool BackForwardCacheImpl::IsMediaSessionServiceAllowed() {
 }
 
 bool BackForwardCacheImpl::IsScreenReaderAllowed() {
-  return base::FeatureList::IsEnabled(kEnableBackForwardCacheForScreenReader);
+  return base::FeatureList::IsEnabled(
+      features::kEnableBackForwardCacheForScreenReader);
 }
 
 bool BackForwardCache::DisabledReason::operator<(

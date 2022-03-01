@@ -1593,6 +1593,11 @@
     "expiry_milestone": 101
   },
   {
+    "name": "enable-back-forward-cache-for-screen-reader",
+    "owners": [ "bfcache-dev@chromium.org", "yuzus" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "enable-background-blur",
     "owners": [ "newcomer" ],
     "expiry_milestone": 86

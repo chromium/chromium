@@ -51489,6 +51489,8 @@ from previous Chrome versions.
   <int value="-2044939529" label="CrostiniResetLxdDb:disabled"/>
   <int value="-2044252895"
       label="QuickActionSearchWidgetAndroidDinoVariant:disabled"/>
+  <int value="-2043440755"
+      label="EnableBackForwardCacheForScreenReader:enabled"/>
   <int value="-2043331707" label="PasswordScriptsFetching:disabled"/>
   <int value="-2043128632" label="enable-tab-switcher-in-document-mode"/>
   <int value="-2042278511" label="SmartSuggestionForLargeDownloads:disabled"/>
@@ -53389,6 +53391,8 @@ from previous Chrome versions.
   <int value="-763759697" label="enable-audio-support-for-desktop-share"/>
   <int value="-763730918" label="CCTTargetTranslateLanguage:disabled"/>
   <int value="-763640405" label="WebXRARModule:enabled"/>
+  <int value="-762785269"
+      label="EnableBackForwardCacheForScreenReader:disabled"/>
   <int value="-762738927" label="LogJsConsoleMessages:enabled"/>
   <int value="-762687134" label="ExperimentalCrostiniUI:enabled"/>
   <int value="-762541013" label="enable-bluetooth-spp-in-serial-api"/>

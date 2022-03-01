@@ -253,6 +253,9 @@ extern const char kAutoScreenBrightnessDescription[];
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 
+extern const char kEnableBackForwardCacheForScreenReaderName[];
+extern const char kEnableBackForwardCacheForScreenReaderDescription[];
+
 extern const char kBentoBarName[];
 extern const char kBentoBarDescription[];
 
