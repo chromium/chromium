@@ -164,6 +164,11 @@ void AddResourcesForCartDiscountConsentV2(content::WebUIDataSource* source) {
     source->AddLocalizedString(
         "modulesCartConsentStepOneButton",
         IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_CONTINUE);
+
+    source->AddBoolean(
+        "modulesCartDiscountInlineCardShowCloseButton",
+        ntp_features::kNtpChromeCartModuleDiscountConsentInlineShowCloseButton
+            .Get());
   }
 }
 

@@ -12,8 +12,10 @@ import {assertStyle} from '../../test_support.js';
 
 suite('NewTabPageDiscountConsentCartTest', () => {
   suiteSetup(() => {
-    loadTimeData.overrideValues(
-        {modulesCartConsentStepTwoDifferentColor: false});
+    loadTimeData.overrideValues({
+      modulesCartConsentStepTwoDifferentColor: false,
+      modulesCartDiscountInlineCardShowCloseButton: false
+    });
   });
 
   let discountConsentCard: DiscountConsentCard;
@@ -79,8 +81,10 @@ suite('NewTabPageDiscountConsentCartTest', () => {
       });
 
   test(
-      'Verify "No thanks" button emits discount-consent-rejected event', () => {
+      'Verify "No thanks" button emits discount-consent-rejected event',
+      async () => {
         discountConsentCard.currentStep = 1;
+        await flushTasks();
 
         var capturedEvent = false;
         discountConsentCard.addEventListener(
@@ -149,10 +153,94 @@ suite('NewTabPageDiscountConsentCartTest', () => {
         favicons[2]!.querySelector('.favicon-image')!.getAttribute('src'));
   });
 
-  suite('Step two background has different color', () => {
+  test('Verify close button is hidden', async () => {
+    discountConsentCard.currentStep = 1;
+    await flushTasks();
+
+    const closeButton = discountConsentCard.shadowRoot!.querySelector('#close');
+    assertTrue(closeButton === null, 'closeButton should not exist in the dom');
+  });
+
+  test(
+      'Verify step 2 has two buttons when close button is hidden', async () => {
+        discountConsentCard.currentStep = 1;
+        await flushTasks();
+
+        const contentSelectedPage =
+            discountConsentCard.shadowRoot!.querySelectorAll(
+                '#contentSteps .iron-selected');
+        const buttons = contentSelectedPage[0]!.querySelectorAll(
+            '.button-container cr-button');
+        assertEquals(2, buttons.length, 'This step should have two buttons');
+      });
+
+  suite('Show Close button', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues(
-          {modulesCartConsentStepTwoDifferentColor: true});
+          {modulesCartDiscountInlineCardShowCloseButton: true});
+    });
+
+    test('Verify close button is shown', async () => {
+      await flushTasks();
+
+      const closeButton =
+          discountConsentCard.shadowRoot!.querySelector('#close');
+      assertTrue(closeButton !== null, 'closeButton should exist in the DOM');
+    });
+
+    test('Verify step 2 has one button', async () => {
+      discountConsentCard.currentStep = 1;
+      await flushTasks();
+
+      const contentSelectedPage =
+          discountConsentCard.shadowRoot!.querySelectorAll(
+              '#contentSteps .iron-selected');
+      const buttons = contentSelectedPage[0]!.querySelectorAll(
+          '.button-container cr-button');
+      assertEquals(1, buttons.length, 'This step should have one button');
+      assertTrue(true);
+    });
+
+    test(
+        'Verify clicking close button in step 1 emits dismissed event',
+        async () => {
+          discountConsentCard.currentStep = 0;
+          await flushTasks();
+
+          var capturedEvent = false;
+          discountConsentCard.addEventListener(
+              'discount-consent-dismissed', () => capturedEvent = true);
+
+          discountConsentCard.shadowRoot!.querySelector<HTMLElement>(
+                                             '#close')!.click();
+          assertTrue(
+              capturedEvent,
+              '\'discount-consent-dismissed\' should be emitted');
+        });
+
+    test(
+        'Verify clicking close button in step 2 emits rejected event',
+        async () => {
+          discountConsentCard.currentStep = 1;
+          await flushTasks();
+
+          var capturedEvent = false;
+          discountConsentCard.addEventListener(
+              'discount-consent-rejected', () => capturedEvent = true);
+
+          discountConsentCard.shadowRoot!.querySelector<HTMLElement>(
+                                             '#close')!.click();
+          assertTrue(
+              capturedEvent, '\'discount-consent-rejected\' should be emitted');
+        });
+  });
+
+  suite('Step two background has different color', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        modulesCartConsentStepTwoDifferentColor: true,
+        modulesCartDiscountInlineCardShowCloseButton: false
+      });
     });
 
     test('Verfiy step 2 has background color', () => {
