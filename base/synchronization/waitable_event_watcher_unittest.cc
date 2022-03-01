@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -204,38 +205,45 @@ TEST_P(WaitableEventWatcherTest, StartWatchingInCallback) {
   RunLoop().Run();
 }
 
-// Disabled due to flakes; see https://crbug.com/1188547.
-TEST_P(WaitableEventWatcherTest, DISABLED_MultipleWatchersManual) {
+TEST_P(WaitableEventWatcherTest, MultipleWatchersManual) {
   test::TaskEnvironment task_environment(GetParam());
 
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::NOT_SIGNALED);
 
-  int counter1 = 0;
-  int counter2 = 0;
+  int watcher1_counter = 0;
+  int watcher2_counter = 0;
 
-  auto callback = [](RunLoop* run_loop, int* counter, WaitableEvent* event) {
-    ++(*counter);
-    run_loop->QuitWhenIdle();
-  };
+  int total_counter = 0;
 
   RunLoop run_loop;
 
+  auto callback = [&run_loop, &total_counter](int* watcher_counter,
+                                              WaitableEvent*) {
+    ++(*watcher_counter);
+    if (++total_counter == 2) {
+      run_loop.Quit();
+    }
+  };
+
   WaitableEventWatcher watcher1;
   watcher1.StartWatching(
-      &event, BindOnce(callback, Unretained(&run_loop), Unretained(&counter1)),
+      &event,
+      BindOnce(BindLambdaForTesting(callback), Unretained(&watcher1_counter)),
       SequencedTaskRunnerHandle::Get());
 
   WaitableEventWatcher watcher2;
   watcher2.StartWatching(
-      &event, BindOnce(callback, Unretained(&run_loop), Unretained(&counter2)),
+      &event,
+      BindOnce(BindLambdaForTesting(callback), Unretained(&watcher2_counter)),
       SequencedTaskRunnerHandle::Get());
 
   event.Signal();
   run_loop.Run();
 
-  EXPECT_EQ(1, counter1);
-  EXPECT_EQ(1, counter2);
+  EXPECT_EQ(1, watcher1_counter);
+  EXPECT_EQ(1, watcher2_counter);
+  EXPECT_EQ(2, total_counter);
   EXPECT_TRUE(event.IsSignaled());
 }
 
