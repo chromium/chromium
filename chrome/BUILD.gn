@@ -481,6 +481,7 @@ if (is_win) {
       ":chrome_resources",
       ":chrome_versioned_bundle_data",
       "//base/allocator:early_zone_registration_mac",
+      "//build:branding_buildflags",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
     ]
@@ -721,6 +722,7 @@ if (is_win) {
 
       deps = [
         "//base/allocator:early_zone_registration_mac",
+        "//build:branding_buildflags",
         "//chrome/common:version_header",
         "//sandbox/mac:seatbelt",
       ]
