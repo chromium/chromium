@@ -165,6 +165,8 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_VAAPI)
   // TODO(crbug.com/1186051): remove once enabled by default.
   combined_enabled_features.push_back(media::kVaapiVp9kSVCHWEncoding);
+  // TODO(b/202926617): remove once enabled by default.
+  combined_enabled_features.push_back(media::kVaapiVp8TemporalLayerHWEncoding);
 #endif
 
   const uint32_t bitrate = encode_bitrate.value_or(
