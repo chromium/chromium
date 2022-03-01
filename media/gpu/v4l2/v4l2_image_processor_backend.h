@@ -75,11 +75,13 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   // Returns a vector of supported output formats in fourcc.
   static std::vector<uint32_t> GetSupportedOutputFormats();
 
-  // Gets output allocated size and number of planes required by the device
-  // for conversion from |input_pixelformat| with |input_size| to
-  // |output_pixelformat| with expected |output_size|.
-  // On success, returns true with adjusted |output_size| and |num_planes|.
-  // On failure, returns false without touching |output_size| and |num_planes|.
+  // Gets |output_size| and |num_planes|] required by the device for conversion
+  // from |input_pixelformat| with |input_size| to |output_pixelformat| with
+  // expected |output_size|. On success, returns true with adjusted
+  // |output_size| and |num_planes|. On failure, returns false without touching
+  // |output_size| and |num_planes|.
+  // TODO(b/191450183): Remove |output_size| and assert
+  // DCHECK_EQ(input_size, output_size) inside the body.
   static bool TryOutputFormat(uint32_t input_pixelformat,
                               uint32_t output_pixelformat,
                               const gfx::Size& input_size,
@@ -143,12 +145,8 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   bool EnqueueOutputRecord(JobRecord* job_record, V4L2WritableBufferRef buffer);
   bool CreateInputBuffers();
   bool CreateOutputBuffers();
-  // Specify |visible_rect| to v4l2 |type| queue.
-  bool ApplyCrop(const gfx::Rect& visible_rect, enum v4l2_buf_type type);
-  // Reconfigure |size| and |visible_rect| to v4l2 |type| queue.
-  bool ReconfigureV4L2Format(const gfx::Size& size,
-                             const gfx::Rect& visible_rect,
-                             enum v4l2_buf_type type);
+  // Reconfigure the |type| queue for |size|.
+  bool ReconfigureV4L2Format(const gfx::Size& size, enum v4l2_buf_type type);
 
   // Callback of VideoFrame destruction. Since VideoFrame destruction
   // callback might be executed on any sequence, we use a thunk to post the

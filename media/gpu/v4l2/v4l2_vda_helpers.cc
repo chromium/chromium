@@ -71,24 +71,25 @@ std::unique_ptr<ImageProcessor> CreateImageProcessor(
     const Fourcc ip_output_format,
     const gfx::Size& vda_output_coded_size,
     const gfx::Size& ip_output_coded_size,
-    const gfx::Size& visible_size,
+    const gfx::Rect& visible_rect,
     VideoFrame::StorageType output_storage_type,
     size_t nb_buffers,
     scoped_refptr<V4L2Device> image_processor_device,
     ImageProcessor::OutputMode image_processor_output_mode,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     ImageProcessor::ErrorCB error_cb) {
+  DCHECK_EQ(vda_output_coded_size, ip_output_coded_size);
+  DCHECK(gfx::Rect(ip_output_coded_size).Contains(visible_rect));
+
   // TODO(crbug.com/917798): Use ImageProcessorFactory::Create() once we remove
   //     |image_processor_device_| from V4L2VideoDecodeAccelerator.
   auto image_processor = ImageProcessor::Create(
       base::BindRepeating(&V4L2ImageProcessorBackend::Create,
                           image_processor_device, nb_buffers),
       ImageProcessor::PortConfig(vda_output_format, vda_output_coded_size, {},
-                                 gfx::Rect(visible_size),
-                                 {VideoFrame::STORAGE_DMABUFS}),
+                                 visible_rect, {VideoFrame::STORAGE_DMABUFS}),
       ImageProcessor::PortConfig(ip_output_format, ip_output_coded_size, {},
-                                 gfx::Rect(visible_size),
-                                 {output_storage_type}),
+                                 visible_rect, {output_storage_type}),
       image_processor_output_mode, VIDEO_ROTATION_0, std::move(error_cb),
       std::move(client_task_runner));
   if (!image_processor)
