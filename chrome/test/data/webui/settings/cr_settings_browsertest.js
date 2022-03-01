@@ -451,6 +451,10 @@ TEST_F('CrSettingsPrivacyPageTest', 'PrivacyPageTests', function() {
   runMochaSuite('PrivacyPage');
 });
 
+TEST_F('CrSettingsPrivacyPageTest', 'PrivacySandboxEnabled', function() {
+  runMochaSuite('PrivacySandboxEnabled');
+});
+
 TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuideEnabled', function() {
   runMochaSuite('PrivacyGuideEnabled');
 });

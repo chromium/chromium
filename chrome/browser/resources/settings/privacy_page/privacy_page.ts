@@ -57,7 +57,6 @@ export interface SettingsPrivacyPageElement {
     cookiesLinkRow: CrLinkRowElement,
     iphBubble: IPHBubbleElement,
     permissionsLinkRow: CrLinkRowElement,
-    privacySandboxLinkRow: CrLinkRowElement,
     securityLinkRow: CrLinkRowElement,
   };
 }
@@ -161,6 +160,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('privacyGuideEnabled'),
       },
 
+      isPrivacySandboxRestricted_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
+      },
+
       enableIphDemo_: {
         reflectToAttribute: true,
         type: Boolean,
@@ -238,6 +242,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableQuietNotificationPromptsSetting_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private enablePrivacyGuide_: boolean;
+  private isPrivacySandboxRestricted_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
   private siteDataFilter_: string;
