@@ -3334,6 +3334,7 @@ crbug.com/626703 external/wpt/html/syntax/speculative-charset/speculative-script
 crbug.com/626703 [ Linux ] external/wpt/url/a-element-xhtml.xhtml [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/failure.html [ Failure ]
 crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/workers.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/css/css-animations/KeyframeEffect-getKeyframes.tentative.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac11 ] external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Timeout ]
