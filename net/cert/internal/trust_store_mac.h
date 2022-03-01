@@ -140,8 +140,9 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   FRIEND_TEST_ALL_PREFIXES(TrustStoreMacImplTest, MultiRootNotTrusted);
 
   // Finds certificates in the OS keychains whose Subject matches |name_data|.
-  // The result is an array of SecCertificateRef.
-  static base::ScopedCFTypeRef<CFArrayRef>
+  // The result is an array of CRYPTO_BUFFERs containing the DER certificate
+  // data.
+  static std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
   FindMatchingCertificatesForMacNormalizedSubject(CFDataRef name_data);
 
   // Returns the OS-normalized issuer of |cert|.

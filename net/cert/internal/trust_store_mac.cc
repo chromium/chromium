@@ -891,31 +891,16 @@ void TrustStoreMac::SyncGetIssuersOf(const ParsedCertificate* cert,
   if (!name_data)
     return;
 
-  base::ScopedCFTypeRef<CFArrayRef> matching_items =
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> matching_cert_buffers =
       FindMatchingCertificatesForMacNormalizedSubject(name_data);
-  if (!matching_items)
-    return;
 
   // Convert to ParsedCertificate.
-  for (CFIndex i = 0, item_count = CFArrayGetCount(matching_items);
-       i < item_count; ++i) {
-    SecCertificateRef match_cert_handle = reinterpret_cast<SecCertificateRef>(
-        const_cast<void*>(CFArrayGetValueAtIndex(matching_items, i)));
-
-    base::ScopedCFTypeRef<CFDataRef> der_data(
-        SecCertificateCopyData(match_cert_handle));
-    if (!der_data) {
-      LOG(ERROR) << "SecCertificateCopyData error";
-      continue;
-    }
-
+  for (auto& buffer : matching_cert_buffers) {
     CertErrors errors;
     ParseCertificateOptions options;
     options.allow_invalid_serial_numbers = true;
-    scoped_refptr<ParsedCertificate> anchor_cert = ParsedCertificate::Create(
-        x509_util::CreateCryptoBuffer(base::make_span(
-            CFDataGetBytePtr(der_data.get()), CFDataGetLength(der_data.get()))),
-        options, &errors);
+    scoped_refptr<ParsedCertificate> anchor_cert =
+        ParsedCertificate::Create(std::move(buffer), options, &errors);
     if (!anchor_cert) {
       // TODO(crbug.com/634443): return errors better.
       LOG(ERROR) << "Error parsing issuer certificate:\n"
@@ -949,10 +934,10 @@ CertificateTrust TrustStoreMac::GetTrust(
 }
 
 // static
-base::ScopedCFTypeRef<CFArrayRef>
+std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
 TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
     CFDataRef name_data) {
-  base::ScopedCFTypeRef<CFArrayRef> matching_items;
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> matching_cert_buffers;
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query(
       CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
@@ -969,7 +954,7 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
     if (status) {
       OSSTATUS_LOG(ERROR, status)
           << "TestKeychainSearchList::CopySearchList error";
-      return matching_items;
+      return matching_cert_buffers;
     }
   }
 
@@ -984,7 +969,7 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
         scoped_alternate_keychain_search_list.InitializeInto());
     if (status) {
       OSSTATUS_LOG(ERROR, status) << "SecKeychainCopySearchList error";
-      return matching_items;
+      return matching_cert_buffers;
     }
   }
 
@@ -994,7 +979,7 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
       scoped_alternate_keychain_search_list.get());
   if (!mutable_keychain_search_list) {
     LOG(ERROR) << "CFArrayCreateMutableCopy";
-    return matching_items;
+    return matching_cert_buffers;
   }
   scoped_alternate_keychain_search_list.reset(mutable_keychain_search_list);
 
@@ -1006,24 +991,41 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
       roots_keychain.InitializeInto());
   if (status) {
     OSSTATUS_LOG(ERROR, status) << "SecKeychainOpen error";
-    return matching_items;
+    return matching_cert_buffers;
   }
   CFArrayAppendValue(mutable_keychain_search_list, roots_keychain);
 
   CFDictionarySetValue(query, kSecMatchSearchList,
                        scoped_alternate_keychain_search_list.get());
 
+  base::ScopedCFTypeRef<CFArrayRef> matching_items;
   OSStatus err = SecItemCopyMatching(
       query, reinterpret_cast<CFTypeRef*>(matching_items.InitializeInto()));
   if (err == errSecItemNotFound) {
     // No matches found.
-    return matching_items;
+    return matching_cert_buffers;
   }
   if (err) {
     OSSTATUS_LOG(ERROR, err) << "SecItemCopyMatching error";
-    return matching_items;
+    return matching_cert_buffers;
   }
-  return matching_items;
+
+  for (CFIndex i = 0, item_count = CFArrayGetCount(matching_items);
+       i < item_count; ++i) {
+    SecCertificateRef match_cert_handle = reinterpret_cast<SecCertificateRef>(
+        const_cast<void*>(CFArrayGetValueAtIndex(matching_items, i)));
+
+    base::ScopedCFTypeRef<CFDataRef> der_data(
+        SecCertificateCopyData(match_cert_handle));
+    if (!der_data) {
+      LOG(ERROR) << "SecCertificateCopyData error";
+      continue;
+    }
+    matching_cert_buffers.push_back(x509_util::CreateCryptoBuffer(
+        base::make_span(CFDataGetBytePtr(der_data.get()),
+                        CFDataGetLength(der_data.get()))));
+  }
+  return matching_cert_buffers;
 }
 
 // static
