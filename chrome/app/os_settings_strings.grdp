@@ -2686,6 +2686,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MENU_FORGET" desc="Settings > Internet > Known networks > Dropdown menu item to forget a known network.">
     Forget
   </message>
+  <message name="IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MENU_BUTTON_TITLE" desc="Settings > Internet > Known networks > Item > Title for button that opens dropdown menu for the network.">
+    More actions for <ph name="NETWORK_NAME">$1<ex>Google-A</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING" desc="Settings > Internet > Network details: Toggle label to allow mobile data roaming.">
     Allow mobile data roaming
   </message>

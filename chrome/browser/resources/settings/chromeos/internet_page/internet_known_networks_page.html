@@ -35,7 +35,7 @@
       </cr-link-row>
       <div class="separator"></div>
       <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
-          on-click="onMenuButtonTap_" title="$i18n{moreActions}">
+          on-click="onMenuButtonTap_" title="[[getMenuButtonTitle_(item)]]">
       </cr-icon-button>
     </div>
   </template>
@@ -63,7 +63,7 @@
       </cr-link-row>
       <div class="separator"></div>
       <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
-          on-click="onMenuButtonTap_" title="$i18n{moreActions}">
+          on-click="onMenuButtonTap_" title="[[getMenuButtonTitle_(item)]]">
       </cr-icon-button>
     </div>
   </template>

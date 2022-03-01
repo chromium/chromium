@@ -108,7 +108,7 @@ suite('InternetKnownNetworksPage', function() {
           'Preferred list elem should be focused for settingId=7.');
     });
 
-    test('Known networks policy icon a11y label', async () => {
+    test('Known networks policy icon and menu button a11y', async () => {
       const mojom = chromeos.networkConfig.mojom;
       internetKnownNetworksPage.networkType = mojom.NetworkType.kWiFi;
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, true);
@@ -144,6 +144,14 @@ suite('InternetKnownNetworksPage', function() {
           internetKnownNetworksPage.i18n(
               'networkA11yManagedByAdministrator', 'wifi2'));
 
+      const preferredMenuButton =
+          preferredList.querySelector('.icon-more-vert');
+      assertTrue(!!preferredMenuButton);
+      assertEquals(
+          preferredMenuButton.title,
+          internetKnownNetworksPage.i18n(
+              'knownNetworksMenuButtonTitle', 'wifi2'));
+
       const notPreferredList =
           internetKnownNetworksPage.$$('#notPreferredNetworkList');
       assertTrue(!!notPreferredList);
@@ -155,6 +163,14 @@ suite('InternetKnownNetworksPage', function() {
           notPreferredPolicyIcon.iconAriaLabel,
           internetKnownNetworksPage.i18n(
               'networkA11yManagedByAdministrator', 'wifi1'));
+
+      const notPreferredMenuButton =
+          notPreferredList.querySelector('.icon-more-vert');
+      assertTrue(!!notPreferredMenuButton);
+      assertEquals(
+          notPreferredMenuButton.title,
+          internetKnownNetworksPage.i18n(
+              'knownNetworksMenuButtonTitle', 'wifi1'));
     });
   });
 });

@@ -265,6 +265,17 @@ Polymer({
   },
 
   /**
+   * @param {!OncMojo.NetworkStateProperties} networkState
+   * @return {string}
+   * @protected
+   */
+  getMenuButtonTitle_(networkState) {
+    return this.i18n(
+        'knownNetworksMenuButtonTitle',
+        this.getNetworkDisplayName_(networkState));
+  },
+
+  /**
    * @param {!chromeos.networkConfig.mojom.ConfigProperties} config
    * @private
    */
