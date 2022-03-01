@@ -85,7 +85,7 @@
             android:layout_weight="2"
             android:layout_gravity="center"
             android:importantForAccessibility="no"
-            app:srcCompat="@drawable/price_tracking_disabled" />
+            app:srcCompat="@drawable/ic_price_alert_blue" />
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
