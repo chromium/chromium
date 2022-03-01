@@ -45,6 +45,12 @@ class PersonalDataManagerCleaner {
   // A wrapper around |ApplyDedupingRoutine()| used for testing purposes.
   bool ApplyDedupingRoutineForTesting() { return ApplyDedupingRoutine(); }
 
+  // A wrapper around |RemoveInaccessibleProfileValues()| used for testing
+  // purposes.
+  void RemoveInaccessibleProfileValuesForTesting() {
+    RemoveInaccessibleProfileValues();
+  }
+
   // A wrapper around |DedupeProfiles()| used for testing purposes.
   void DedupeProfilesForTesting(
       std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
@@ -91,6 +97,10 @@ class PersonalDataManagerCleaner {
   // Runs the routine that removes the orphan rows in the autofill tables if
   // it's never been done.
   void RemoveOrphanAutofillTableRows();
+
+  // Removes settings-inaccessible profiles values from all profiles stored in
+  // the |personal_data_manager_|.
+  void RemoveInaccessibleProfileValues();
 
   // Applies the deduping routine once per major version if the feature is
   // enabled. Calls DedupeProfiles with the content of

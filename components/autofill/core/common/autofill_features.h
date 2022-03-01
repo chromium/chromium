@@ -135,6 +135,8 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillProfileImportFromUnfocusableFields;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillRetrieveOverallPredictionsFromCache;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillRemoveInaccessibleProfileValues;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillSaveAndFillVPA;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillSectionUponRedundantNameInfo;

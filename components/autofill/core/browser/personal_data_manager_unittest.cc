@@ -4981,6 +4981,35 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_OncePerVersion) {
   EXPECT_EQ(2U, personal_data_->GetProfiles().size());
 }
 
+// Tests that settings-inaccessible profile values are removed from every stored
+// profile.
+TEST_F(PersonalDataManagerTest, RemoveInaccessibleProfileValues) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillRemoveInaccessibleProfileValues);
+
+  // Add a German and a US profile.
+  AutofillProfile profile0(base::GenerateGUID(), test::kEmptyOrigin);
+  test::SetProfileInfo(&profile0, "Marion", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
+                       "Hollywood", "CA", "91601", "DE", "12345678910");
+  AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
+  test::SetProfileInfo(&profile1, "Josephine", "Alicia", "Saenz",
+                       "joewayne@me.xyz", "Fox", "903 Apple Ct.", nullptr,
+                       "Orlando", "FL", "32801", "US", "19482937549");
+  AddProfileToPersonalDataManager(profile0);
+  AddProfileToPersonalDataManager(profile1);
+
+  personal_data_->personal_data_manager_cleaner_for_testing()
+      ->RemoveInaccessibleProfileValuesForTesting();
+  WaitForOnPersonalDataChanged();
+
+  // profile0 should have it's state removed, while the US profile should remain
+  // unchanged.
+  profile0.SetRawInfo(ADDRESS_HOME_STATE, u"");
+  ExpectSameElements({&profile0, &profile1}, personal_data_->GetProfiles());
+}
+
 // Tests that DeleteDisusedAddresses only deletes the addresses that are
 // supposed to be deleted.
 TEST_F(PersonalDataManagerTest,

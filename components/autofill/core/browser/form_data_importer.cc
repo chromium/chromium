@@ -729,6 +729,12 @@ bool FormDataImporter::ImportAddressProfileForSection(
     }
   }
 
+  // Filter unexpected values that are not shown in the settings.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillRemoveInaccessibleProfileValues)) {
+    candidate_profile.RemoveInaccessibleProfileValues(predicted_country_code);
+  }
+
   // Reject the profile if minimum address and validation requirements are not
   // met.
   bool is_invalid_learnable_profile =

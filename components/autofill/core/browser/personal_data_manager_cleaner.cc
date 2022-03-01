@@ -120,6 +120,9 @@ void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
 
   // Ran everytime it is called.
   ClearProfileNonSettingsOrigins();
+
+  // Once per user profile startup.
+  RemoveInaccessibleProfileValues();
 }
 
 void PersonalDataManagerCleaner::ApplyCardFixesAndCleanups() {
@@ -150,6 +153,28 @@ void PersonalDataManagerCleaner::RemoveOrphanAutofillTableRows() {
 
   // Set the pref so that this fix is never run again.
   pref_service_->SetBoolean(prefs::kAutofillOrphanRowsRemoved, true);
+}
+
+void PersonalDataManagerCleaner::RemoveInaccessibleProfileValues() {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillRemoveInaccessibleProfileValues)) {
+    return;
+  }
+
+  for (AutofillProfile* profile : personal_data_manager_->GetProfiles()) {
+    const std::string stored_country_code =
+        base::UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_COUNTRY));
+    const std::string country_code =
+        stored_country_code.empty() ? "US" : stored_country_code;
+    if (profile->HasInaccessibleProfileValues(country_code)) {
+      // We need to create a copy, because otherwise the internally stored
+      // profile in |personal_data_manager_| is modified, which should only
+      // happen via UpdateProfile().
+      AutofillProfile updated_profile = *profile;
+      updated_profile.RemoveInaccessibleProfileValues(country_code);
+      personal_data_manager_->UpdateProfile(updated_profile);
+    }
+  }
 }
 
 bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {

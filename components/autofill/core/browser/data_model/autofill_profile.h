@@ -249,7 +249,27 @@ class AutofillProfile : public AutofillDataModel {
     disallow_settings_visible_updates_ = disallow;
   }
 
+  // Returns true if the profile contains any setting-inaccessible values for
+  // |country_code|.
+  bool HasInaccessibleProfileValues(const std::string& country_code) {
+    return FindInaccessibleProfileValues(country_code, /*remove=*/false);
+  }
+
+  // Removes all setting-inaccessible values for |country_code| and returns
+  // true, if at least one was found.
+  bool RemoveInaccessibleProfileValues(const std::string& country_code) {
+    return FindInaccessibleProfileValues(country_code, /*remove=*/true);
+  }
+
  private:
+  // Checks for setting-inaccessible fields and if |remove| is true, clears
+  // their values in the process.
+  // Returns true, if at least one non empty inaccessible field was found.
+  // TODO(crbug.com/1297032): Remove |country_code| parameter and rely on the
+  // profile's country once every profile is complemented with a country.
+  bool FindInaccessibleProfileValues(const std::string& country_code,
+                                     bool remove);
+
   // FormGroup:
   std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;

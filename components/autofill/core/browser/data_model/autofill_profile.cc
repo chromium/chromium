@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
@@ -1157,4 +1158,29 @@ bool AutofillProfile::HasStructuredData() {
     return !this->GetRawInfo(type).empty();
   });
 }
+
+bool AutofillProfile::FindInaccessibleProfileValues(
+    const std::string& country_code,
+    bool remove) {
+  bool found_inaccessible_value = false;
+  // Consider only AddressFields which are invisible in the settings for some
+  // countries.
+  for (const AddressField& field_type :
+       {AddressField::ADMIN_AREA, AddressField::LOCALITY,
+        AddressField::DEPENDENT_LOCALITY, AddressField::POSTAL_CODE,
+        AddressField::SORTING_CODE}) {
+    ServerFieldType server_field_type =
+        AddressFieldToServerFieldType(field_type);
+    if (!GetRawInfo(server_field_type).empty() &&
+        !::i18n::addressinput::IsFieldUsed(field_type, country_code)) {
+      if (remove) {
+        SetRawInfoWithVerificationStatus(server_field_type, u"",
+                                         VerificationStatus::kNoStatus);
+      }
+      found_inaccessible_value = true;
+    }
+  }
+  return found_inaccessible_value;
+}
+
 }  // namespace autofill

@@ -363,6 +363,13 @@ const base::Feature kAutofillProfileImportFromUnfocusableFields{
     "AutofillProfileImportFromUnfocusableFields",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Clear fields which are not visible in the settings for a profile's country,
+// both during profile import and on startup.
+// TODO(crbug.com/1299435): Cleanup when launched.
+const base::Feature kAutofillRemoveInaccessibleProfileValues{
+    "AutofillRemoveInaccessibleProfileValues",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether or not overall prediction are retrieved from the cache.
 const base::Feature kAutofillRetrieveOverallPredictionsFromCache{
     "AutofillRetrieveOverallPredictionsFromCache",
