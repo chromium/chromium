@@ -66,7 +66,10 @@ public abstract class BookmarkRow
     public BookmarkRow(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (BookmarkFeatures.isBookmarksVisualRefreshEnabled()) {
-            enableVisualRefresh();
+            enableVisualRefresh(getResources().getDimensionPixelSize(
+                    BookmarkFeatures.isCompactBookmarksVisualRefreshEnabled()
+                            ? R.dimen.list_item_v2_start_icon_width_compact
+                            : R.dimen.list_item_v2_start_icon_width));
         }
     }
 
