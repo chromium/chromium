@@ -128,6 +128,10 @@ struct ShortcutInfo {
   // Updates the source of the shortcut.
   void UpdateSource(const Source source);
 
+  // Returns a set of icons including |best_primary_icon_url|,
+  // |splash_image_url| and |best_shortcut_icon_urls| if they are not empty
+  std::set<GURL> GetWebApkIcons();
+
   GURL manifest_url;
   GURL url;
   GURL scope;

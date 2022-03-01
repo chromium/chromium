@@ -64,6 +64,22 @@ std::unique_ptr<ShortcutInfo> ShortcutInfo::CreateShortcutInfo(
   return shortcut_info;
 }
 
+std::set<GURL> ShortcutInfo::GetWebApkIcons() {
+  std::set<GURL> icons{best_primary_icon_url};
+
+  if (!splash_image_url.is_empty() &&
+      splash_image_url != best_primary_icon_url) {
+    icons.insert(splash_image_url);
+  }
+
+  for (const auto& shortcut_icon : best_shortcut_icon_urls) {
+    if (shortcut_icon.is_valid())
+      icons.insert(shortcut_icon);
+  }
+
+  return icons;
+}
+
 void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
   std::u16string s_name = manifest.short_name.value_or(std::u16string());
   std::u16string f_name = manifest.name.value_or(std::u16string());

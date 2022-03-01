@@ -475,18 +475,7 @@ void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
   // We redownload the icon in order to take the Murmur2 hash. The redownload
   // should be fast because the icon should be in the HTTP cache.
 
-  std::set<GURL> icons{install_shortcut_info_->best_primary_icon_url};
-  if (!install_shortcut_info_->splash_image_url.is_empty() &&
-      install_shortcut_info_->splash_image_url !=
-          install_shortcut_info_->best_primary_icon_url) {
-    icons.insert(install_shortcut_info_->splash_image_url);
-  }
-
-  for (const auto& shortcut_icon :
-       install_shortcut_info_->best_shortcut_icon_urls) {
-    if (shortcut_icon.is_valid())
-      icons.insert(shortcut_icon);
-  }
+  std::set<GURL> icons = install_shortcut_info_->GetWebApkIcons();
 
   webapps::WebApkIconHasher::DownloadAndComputeMurmur2Hash(
       GetURLLoaderFactory(browser_context_), web_contents_,
