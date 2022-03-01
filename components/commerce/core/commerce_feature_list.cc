@@ -55,11 +55,6 @@ const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 const base::Feature kDiscountConsentV2{"DiscountConsentV2",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-const char kDiscountConsentNtpVariationParam[] =
-    "discount-consent-ntp-variation";
-const base::FeatureParam<int> kDiscountConsentNtpVariation{
-    &kDiscountConsentV2, kDiscountConsentNtpVariationParam, 0};
-
 bool IsCouponDiscountPartnerMerchant(const GURL& url) {
   const std::string& url_string = url.spec();
   return RE2::PartialMatch(

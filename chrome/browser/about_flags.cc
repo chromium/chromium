@@ -1450,6 +1450,22 @@ const FeatureEntry::FeatureVariation kNtpChromeCartModuleVariations[] = {
      base::size(kNtpChromeCartModuleRBDAndCouponDiscount), nullptr},
 };
 
+// The following are consent v2 variations in the Chrome Cart module.
+const flags_ui::FeatureEntry::FeatureParam kDiscountConsentNtpStringChange[] = {
+    {ntp_features::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "1"}};
+const flags_ui::FeatureEntry::FeatureParam kDiscountConsentNtpInline[] = {
+    {ntp_features::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "2"}};
+const flags_ui::FeatureEntry::FeatureParam kDiscountConsentNtpDialog[] = {
+    {ntp_features::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "3"}};
+const FeatureEntry::FeatureVariation kDiscountConsentV2Variations[] = {
+    {"Changing string", kDiscountConsentNtpStringChange,
+     base::size(kDiscountConsentNtpStringChange), nullptr},
+    {"Inline Consent", kDiscountConsentNtpInline,
+     base::size(kDiscountConsentNtpInline), nullptr},
+    {"Dialog Consent", kDiscountConsentNtpDialog,
+     base::size(kDiscountConsentNtpDialog), nullptr},
+};
+
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {
     {ntp_features::kNtpRecipeTasksModuleDataParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpRecipeTasksModuleVariations[] = {
@@ -8100,7 +8116,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-discount-consent-v2", flag_descriptions::kDiscountConsentV2Name,
      flag_descriptions::kDiscountConsentV2Description, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kDiscountConsentV2,
-                                    commerce::kDiscountConsentV2Variations,
+                                    kDiscountConsentV2Variations,
                                     "DiscountConsentV2")},
 #endif
 

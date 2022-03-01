@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace base {
 class TimeDelta;
@@ -108,6 +109,75 @@ extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
 // Parameter determining the variations of searchbox theme matching.
 extern const char kRealboxMatchSearchboxThemeParam[];
+
+// The following are Feature params for Discount user consent v2.
+// This indicates the Discount Consent v2 variation on the NTP Cart module.
+enum class DiscountConsentNtpVariation {
+  kDefault = 0,
+  kStringChange = 1,
+  kInline = 2,
+  kDialog = 3,
+};
+
+// Param indicates the ConsentV2 variation. See DiscountConsentNtpVariation
+// enum.
+extern const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[];
+extern const base::FeatureParam<int>
+    kNtpChromeCartModuleDiscountConsentNtpVariation;
+
+// String change variation params. This string is replacing the content string
+// of the v1 consent.
+extern const char kNtpChromeCartModuleDiscountConsentStringChangeContentParam[];
+extern const base::FeatureParam<std::string>
+    kNtpChromeCartModuleDiscountConsentStringChangeContent;
+
+// The following are discount consent step 1 params.
+// This indicates whether the content in step 1 is a static string that does not
+// contain any merchant names.
+extern const char
+    kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContentParam[];
+extern const base::FeatureParam<bool>
+    kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent;
+// This the content string use in step 1 if
+// kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent.Get() is true.
+extern const char
+    kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContentParam[];
+extern const base::FeatureParam<std::string>
+    kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContent;
+// This is a string template that takes in one merchant name, and it's used when
+// there is only 1 Chrome Cart.
+extern const char
+    kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCartParam[];
+extern const base::FeatureParam<std::string>
+    kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCart;
+// This is a string template that takes in two merchant names, and it's used
+// when there are only 2 Chrome Carts.
+extern const char
+    kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCartsParam[];
+extern const base::FeatureParam<std::string>
+    kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCarts;
+// This is a string template that takes in two merchant names, and it's used
+// when there are 3 or more Chrome Carts.
+extern const char
+    kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCartsParam[];
+extern const base::FeatureParam<std::string>
+    kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCarts;
+
+// The following are discount consent step 2 params.
+// This is the content string used in step 2. This is the actual consent string.
+extern const char kNtpChromeCartModuleDiscountConsentNtpStepTwoContentParam[];
+extern const base::FeatureParam<std::string>
+    kNtpChromeCartModuleDiscountConsentNtpStepTwoContent;
+// This is used to indicate whether the backgound-color of step 2 should change.
+extern const char
+    kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColorParam[];
+extern const base::FeatureParam<bool>
+    kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColor;
+// This is the content title use in the dialog consent.
+extern const char
+    kNtpChromeCartModuleDiscountConsentNtpDialogContentTitleParam[];
+extern const base::FeatureParam<std::string>
+    kNtpChromeCartModuleDiscountConsentNtpDialogContentTitle;
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
