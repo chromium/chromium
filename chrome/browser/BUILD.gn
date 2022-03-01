@@ -1304,8 +1304,6 @@ static_library("browser") {
     "prefetch/search_prefetch/field_trial_settings.h",
     "prefetch/search_prefetch/prefetched_response_container.cc",
     "prefetch/search_prefetch/prefetched_response_container.h",
-    "prefetch/search_prefetch/search_prefetch_from_string_url_loader.cc",
-    "prefetch/search_prefetch/search_prefetch_from_string_url_loader.h",
     "prefetch/search_prefetch/search_prefetch_service.cc",
     "prefetch/search_prefetch/search_prefetch_service.h",
     "prefetch/search_prefetch/search_prefetch_service_factory.cc",
