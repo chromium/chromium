@@ -479,6 +479,58 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      &Memory_Experimental::SetWebCache_OtherResources},
 };
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// Metrics specific to PartitionAlloc's address space stats (cf.
+// kAllocatorDumpNamesForMetrics above). All of these metrics come in
+// three variants: bare, after 1 hour, and after 24 hours. These metrics
+// are only recorded in UMA.
+const Metric kPartitionAllocAddressSpaceMetrics[] = {
+    Metric{
+        .uma_name = "PartitionAlloc.AddressSpace.BlocklistSize",
+        .metric_size = MetricSize::kTiny,
+        .metric = "blocklist_size",
+    },
+    Metric{
+        .uma_name = "PartitionAlloc.AddressSpace.BlocklistHitCount",
+        .metric_size = MetricSize::kTiny,
+        .metric = "blocklist_hit_count",
+    },
+    Metric{
+        .uma_name = "PartitionAlloc.AddressSpace."
+                    "RegularPoolLargestAvailableReservation",
+        .metric_size = MetricSize::kLarge,
+        .metric = "regular_pool_largest_reservation",
+    },
+    Metric{
+        .uma_name = "PartitionAlloc.AddressSpace.RegularPoolUsage",
+        .metric_size = MetricSize::kLarge,
+        .metric = "regular_pool_usage",
+    },
+    Metric{
+        .uma_name =
+            "PartitionAlloc.AddressSpace.BRPPoolLargestAvailableReservation",
+        .metric_size = MetricSize::kLarge,
+        .metric = "brp_pool_largest_reservation",
+    },
+    Metric{
+        .uma_name = "PartitionAlloc.AddressSpace.BRPPoolUsage",
+        .metric_size = MetricSize::kLarge,
+        .metric = "brp_pool_usage",
+    },
+    Metric{
+        .uma_name = "PartitionAlloc.AddressSpace."
+                    "ConfigurablePoolLargestAvailableReservation",
+        .metric_size = MetricSize::kLarge,
+        .metric = "configurable_pool_largest_reservation",
+    },
+    Metric{
+        .uma_name = "PartitionAlloc.AddressSpace.ConfigurablePoolUsage",
+        .metric_size = MetricSize::kLarge,
+        .metric = "configurable_pool_usage",
+    },
+};
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 #define EXPERIMENTAL_UMA_PREFIX "Memory.Experimental."
 #define VERSION_SUFFIX_PERCENT "2."
 #define VERSION_SUFFIX_NORMAL "2."
@@ -624,6 +676,53 @@ void EmitMallocStats(const GlobalMemoryDump::ProcessDump& pmd,
   }
 }
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+void EmitPartitionAllocAddressSpaceStatVariants(
+    const Metric& metric,
+    const uint64_t metric_value,
+    HistogramProcessType process_type,
+    const absl::optional<base::TimeDelta>& uptime) {
+  // Emit the bare metric.
+  EmitProcessUma(process_type, metric, metric_value);
+
+  // These address space stats also come in variants for "after 1H"
+  // and "after 24H." If the time is right, we emit those too.
+  if (!uptime.has_value()) {
+    return;
+  }
+  static constexpr int kRecordHours[] = {1, 24};
+  for (int hours : kRecordHours) {
+    if (uptime.value() <= base::Hours(hours)) {
+      continue;
+    }
+    const std::string uma_name_with_time =
+        base::StringPrintf("%s.After%dH", metric.uma_name, hours);
+    EmitProcessUma(process_type,
+                   // Lazily populated only with applicable members.
+                   Metric{
+                       .uma_name = uma_name_with_time.c_str(),
+                       .metric_size = metric.metric_size,
+                   },
+                   metric_value);
+  }
+}
+
+void EmitPartitionAllocAddressSpaceStats(
+    const GlobalMemoryDump::ProcessDump& pmd,
+    HistogramProcessType process_type,
+    const absl::optional<base::TimeDelta>& uptime) {
+  for (const auto& metric : kPartitionAllocAddressSpaceMetrics) {
+    absl::optional<uint64_t> metric_value =
+        pmd.GetMetric("partition_alloc/address_space", metric.metric);
+    if (!metric_value.has_value()) {
+      continue;
+    }
+    EmitPartitionAllocAddressSpaceStatVariants(metric, metric_value.value(),
+                                               process_type, uptime);
+  }
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
                           HistogramProcessType process_type,
                           const absl::optional<base::TimeDelta>& uptime,
@@ -704,8 +803,12 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
                               pmd.os_dump().private_footprint_swap_kb / kKiB);
 #endif
 
-  if (record_uma)
+  if (record_uma) {
     EmitMallocStats(pmd, process_type, uptime);
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    EmitPartitionAllocAddressSpaceStats(pmd, process_type, uptime);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  }
 }
 
 void EmitSummedGpuMemory(const GlobalMemoryDump::ProcessDump& pmd,
@@ -841,6 +944,9 @@ void ProcessMemoryMetricsEmitter::FetchAndEmitProcessMemoryMetrics() {
     std::vector<std::string> mad_list;
     for (const auto& metric : kAllocatorDumpNamesForMetrics)
       mad_list.push_back(metric.dump_name);
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    mad_list.push_back("partition_alloc/address_space");
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     if (pid_scope_ != base::kNullProcessId) {
       instrumentation->RequestGlobalDumpForPid(pid_scope_, mad_list,
                                                std::move(callback));

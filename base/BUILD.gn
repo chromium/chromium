@@ -2522,6 +2522,13 @@ mixed_component("base") {
         "trace_event/trace_event_android.cc",
       ]
     }
+
+    if (use_allocator == "partition") {
+      sources += [
+        "trace_event/address_space_dump_provider.cc",
+        "trace_event/address_space_dump_provider.h",
+      ]
+    }
   } else {
     sources += [
       "trace_event/trace_event_stub.cc",

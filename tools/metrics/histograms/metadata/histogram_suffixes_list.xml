@@ -7962,6 +7962,64 @@ chromium-metrics-reviews@google.com.
       label="Only counting memory used by the password manager fallbacks."/>
   <suffix name="PartitionAlloc"
       label="Only counting memory used by Partition allocator."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.BRPPoolLargestAvailableReservation"
+      label="Longest free chunk in the BRP pool. Only recorded for 64-bit."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.BRPPoolLargestAvailableReservation.After1H"
+      label="Longest free chunk in the BRP pool. Only recorded for 64-bit
+             with process uptime [1,24)H."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.BRPPoolLargestAvailableReservation.After24H"
+      label="Longest free chunk in the BRP pool. Only recorded for 64-bit
+             with process uptime 24H+."/>
+  <suffix name="PartitionAlloc.AddressSpace.BRPPoolUsage"
+      label="Used super pages in the BRP pool."/>
+  <suffix name="PartitionAlloc.AddressSpace.BRPPoolUsage.After1H"
+      label="Used super pages in the BRP pool with process uptime [1,24)H."/>
+  <suffix name="PartitionAlloc.AddressSpace.BRPPoolUsage.After24H"
+      label="Used super pages in the BRP pool with process uptime 24H+."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.ConfigurablePoolLargestAvailableReservation"
+      label="Longest free chunk in the configurable pool. Only recorded for
+             64-bit."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.ConfigurablePoolLargestAvailableReservation.After1H"
+      label="Longest free chunk in the configurable pool. Only recorded for
+             64-bit with process uptime [1,24)H."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.ConfigurablePoolLargestAvailableReservation.After24H"
+      label="Longest free chunk in the configurable pool. Only recorded for
+             64-bit with process uptime 24H+."/>
+  <suffix name="PartitionAlloc.AddressSpace.ConfigurablePoolUsage"
+      label="Used super pages in the configurable pool. Only recorded for
+             64-bit."/>
+  <suffix name="PartitionAlloc.AddressSpace.ConfigurablePoolUsage.After1H"
+      label="Used super pages in the configurable pool. Only recorded for
+             64-bit with process uptime [1,24)H."/>
+  <suffix name="PartitionAlloc.AddressSpace.ConfigurablePoolUsage.After24H"
+      label="Used super pages in the configurable pool. Only recorded for
+             64-bit with process uptime 24H+."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.RegularPoolLargestAvailableReservation"
+      label="Longest free chunk in the regular pool. Only recorded for
+             64-bit."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.RegularPoolLargestAvailableReservation.After1H"
+      label="Longest free chunk in the regular pool. Only recorded for 64-bit
+             with process uptime [1,24)H."/>
+  <suffix
+      name="PartitionAlloc.AddressSpace.RegularPoolLargestAvailableReservation.After24H"
+      label="Longest free chunk in the regular pool. Only recorded for 64-bit
+             with process uptime 24H+."/>
+  <suffix name="PartitionAlloc.AddressSpace.RegularPoolUsage"
+      label="Used super pages in the regular pool."/>
+  <suffix name="PartitionAlloc.AddressSpace.RegularPoolUsage.After1H"
+      label="Used super pages in the regular pool. Only recorded when process
+             uptime is [1,24)H."/>
+  <suffix name="PartitionAlloc.AddressSpace.RegularPoolUsage.After24H"
+      label="Used super pages in the regular pool. Only recorded when process
+             uptime is 24H+."/>
   <suffix name="PartitionAlloc.AllocatedObjects"
       label="Only counting objects allocated using Partition allocator."/>
   <suffix name="PartitionAlloc.Fragmentation.ArrayBuffer"
@@ -8252,6 +8310,26 @@ chromium-metrics-reviews@google.com.
   <suffix name="NumberOfUACSSResource" label=""/>
   <suffix name="NumberOfV8PerContextData" label=""/>
   <suffix name="NumberOfWorkerGlobalScope" label=""/>
+  <suffix name="PartitionAlloc.AddressSpace.BlocklistHitCount"
+      label="Monotonically increasing count of failures in finding a
+             non-blocklisted address. Only recorded for 32-bit."/>
+  <suffix name="PartitionAlloc.AddressSpace.BlocklistHitCount.After1H"
+      label="Monotonically increasing count of failures in finding a
+             non-blocklisted address. Only recorded for 32-bit with process
+             uptime [1,24)H."/>
+  <suffix name="PartitionAlloc.AddressSpace.BlocklistHitCount.After24H"
+      label="Monotonically increasing count of failures in finding a
+             non-blocklisted address. Only recorded for 32-bit with process
+             uptime 24H+."/>
+  <suffix name="PartitionAlloc.AddressSpace.BlocklistSize"
+      label="Monotonically increasing count of blocked addresses. Only
+             recorded for 32-bit."/>
+  <suffix name="PartitionAlloc.AddressSpace.BlocklistSize.After1H"
+      label="Monotonically increasing count of blocked addresses. Only
+             recorded for 32-bit with process uptime [1,24)H."/>
+  <suffix name="PartitionAlloc.AddressSpace.BlocklistSize.After24H"
+      label="Monotonically increasing count of blocked addresses. Only
+             recorded for 32-bit with process uptime 24H+."/>
   <affected-histogram name="Memory.Experimental.Browser2.Tiny"/>
   <affected-histogram name="Memory.Experimental.Extension2.Tiny"/>
   <affected-histogram name="Memory.Experimental.Gpu2.Tiny"/>
