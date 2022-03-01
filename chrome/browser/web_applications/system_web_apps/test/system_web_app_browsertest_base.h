@@ -109,6 +109,10 @@ class SystemWebAppManagerBrowserTest
     : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
   explicit SystemWebAppManagerBrowserTest(bool install_mock = true);
+  SystemWebAppManagerBrowserTest(const SystemWebAppManagerBrowserTest&) =
+      delete;
+  SystemWebAppManagerBrowserTest& operator=(
+      const SystemWebAppManagerBrowserTest&) = delete;
   ~SystemWebAppManagerBrowserTest() override = default;
 };
 

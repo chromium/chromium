@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_SHARESHEET_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_SHARESHEET_ASH_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"

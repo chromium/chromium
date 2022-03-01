@@ -22,6 +22,9 @@ class SystemWebAppIntegrationTest
     : public web_app::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppIntegrationTest();
+  SystemWebAppIntegrationTest(const SystemWebAppIntegrationTest&) = delete;
+  SystemWebAppIntegrationTest& operator=(const SystemWebAppIntegrationTest&) =
+      delete;
   ~SystemWebAppIntegrationTest() override;
 
   // Runs basic tests on a System Web App. E.g. ensures it exists, and

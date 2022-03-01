@@ -3240,6 +3240,10 @@ if (!is_android) {
         "../browser/ash/crosapi/network_settings_service_ash_browsertest.cc",
         "../browser/ash/crosapi/screen_manager_ash_browsertest.cc",
       ]
+
+      if (!is_official_build) {
+        sources += [ "../browser/ash/crosapi/sharesheet_ash_browsertest.cc" ]
+      }
     }
 
     # TODO(https://crbug.com/1218633): Fix the mixin and enable tests on LaCrOS.
