@@ -58,13 +58,6 @@ class NotificationGroupingController
   // current message view associated with the parent notification.
   void SetupParentNotification(std::string* parent_id);
 
-  // Clears all group data for `group_parent_id` and converts
-  // the existing message view for `group_parent_id` to a single
-  // ungrouped notification view representing `new_single_notification_id`.
-  void SetupSingleNotificationFromGroupedNotification(
-      const std::string& group_parent_id,
-      const std::string& new_single_notification_id);
-
   // Creates a copy notification that will act as a parent notification
   // for its group.
   std::unique_ptr<message_center::Notification> CreateCopyForParentNotification(

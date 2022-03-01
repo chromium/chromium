@@ -332,13 +332,6 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordCountOfNotificationsInOneGroup) {
   message_center::MessageCenter::Get()->RemoveNotification(id1,
                                                            /*by_user=*/true);
   histograms.ExpectBucketCount(kCountInOneGroupHistogramName, 2, 2);
-
-  // Turn back to single notification when group has only 1 notification. The
-  // count should not be recorded in this case.
-  message_center::MessageCenter::Get()->RemoveNotification(id2,
-                                                           /*by_user=*/true);
-  histograms.ExpectBucketCount(kCountInOneGroupHistogramName, 1, 0);
-  histograms.ExpectBucketCount(kCountInOneGroupHistogramName, 0, 0);
 }
 
 }  // namespace ash

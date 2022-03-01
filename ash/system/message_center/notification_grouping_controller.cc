@@ -221,37 +221,6 @@ void NotificationGroupingController::SetupParentNotification(
   }
 }
 
-void NotificationGroupingController::
-    SetupSingleNotificationFromGroupedNotification(
-        const std::string& group_parent_id,
-        const std::string& new_single_notification_id) {
-  auto* message_center = MessageCenter::Get();
-  MessageView* parent_view =
-      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
-          group_parent_id);
-  auto* new_single_notification =
-      message_center->FindNotificationById(new_single_notification_id);
-
-  // These could already have been removed in case of a clear all action.
-  // Therefore, do not do anything if either of them has already been removed.
-  if (!parent_view || !new_single_notification)
-    return;
-
-  message_center->FindNotificationById(group_parent_id)->ClearGroupParent();
-  new_single_notification->ClearGroupChild();
-  grouped_notification_list_->ClearGroupedNotification(group_parent_id);
-
-  parent_view->RemoveGroupNotification(new_single_notification_id);
-  parent_view->UpdateWithNotification(*new_single_notification);
-
-  GetActiveNotificationViewController()
-      ->ConvertGroupedNotificationViewToNotificationView(
-          /*grouped_notification_id=*/group_parent_id,
-          /*new_single_notification_id=*/new_single_notification_id);
-
-  message_center->RemoveNotification(group_parent_id, /*by_user=*/false);
-}
-
 std::unique_ptr<Notification>
 NotificationGroupingController::CreateCopyForParentNotification(
     const Notification& parent_notification) {
@@ -294,19 +263,18 @@ void NotificationGroupingController::RemoveGroupedChild(
   if (parent_view)
     parent_view->RemoveGroupNotification(notification_id);
 
-  grouped_notification_list_->RemoveGroupedChildNotification(notification_id);
-
-  // Convert back to a single notification if there is only one
-  // group child left in the group notification.
+  // Remove parent notification if we are removing the last child notification
+  // in a grouped notification.
   auto grouped_notifications =
       grouped_notification_list_->GetGroupedNotificationsForParent(parent_id);
   if (GetActiveNotificationViewController()->GetMessageViewForNotificationId(
           parent_id) &&
       grouped_notifications.size() == 1) {
-    SetupSingleNotificationFromGroupedNotification(
-        /*group_parent_id=*/parent_id,
-        /*new_single_notification_id=*/*grouped_notifications.begin());
+    MessageCenter::Get()->RemoveNotification(parent_id, true);
+    return;
   }
+
+  grouped_notification_list_->RemoveGroupedChildNotification(notification_id);
 }
 
 message_center::NotificationViewController*

@@ -169,39 +169,7 @@ TEST_F(NotificationGroupingControllerTest,
 }
 
 TEST_F(NotificationGroupingControllerTest,
-       ConvertingGroupedNotificationToSingleNotificationAndBack) {
-  auto* message_center = MessageCenter::Get();
-  std::string id0, id1, id2;
-  const GURL url(u"http://test-url.com");
-  id0 = AddNotificationWithOriginUrl(url);
-  id1 = AddNotificationWithOriginUrl(url);
-  id2 = AddNotificationWithOriginUrl(url);
-
-  std::string parent_id = id0 + kIdSuffixForGroupContainerNotification;
-  EXPECT_TRUE(
-      MessageCenter::Get()->FindNotificationById(parent_id)->group_parent());
-
-  // Removing all but 1 notification should convert it back to a single
-  // notification and result in the removal of the parent notification.
-  message_center->RemoveNotification(id0, true);
-  message_center->RemoveNotification(id1, true);
-
-  auto* single_notification = message_center->FindNotificationById(id2);
-  EXPECT_FALSE(single_notification->group_child() ||
-               single_notification->group_parent());
-  EXPECT_FALSE(message_center->FindNotificationById(parent_id));
-
-  // Adding further notifications should create a new group with the parent id
-  // being derived from `id2`.
-  id0 = AddNotificationWithOriginUrl(url);
-  id1 = AddNotificationWithOriginUrl(url);
-
-  parent_id = id2 + kIdSuffixForGroupContainerNotification;
-  EXPECT_TRUE(message_center->FindNotificationById(parent_id));
-}
-
-TEST_F(NotificationGroupingControllerTest,
-       ConvertingRepopulatedParentToSingleNotification) {
+       RepopulatedParentNotificationRemoval) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2, id3, id4;
   const GURL url(u"http://test-url.com");
@@ -225,10 +193,11 @@ TEST_F(NotificationGroupingControllerTest,
   message_center->RemoveNotification(id2, true);
   message_center->RemoveNotification(id3, true);
 
-  auto* single_notification = MessageCenter::Get()->FindNotificationById(id4);
-  EXPECT_FALSE(single_notification->group_child() ||
-               single_notification->group_parent());
-  EXPECT_FALSE(MessageCenter::Get()->FindNotificationById(parent_id));
+  auto* last_child = MessageCenter::Get()->FindNotificationById(id4);
+  auto* parent = MessageCenter::Get()->FindNotificationById(parent_id);
+
+  EXPECT_TRUE(last_child->group_child());
+  EXPECT_TRUE(parent->group_parent());
 }
 
 TEST_F(NotificationGroupingControllerTest,
