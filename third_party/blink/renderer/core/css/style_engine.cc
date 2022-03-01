@@ -599,6 +599,13 @@ void StyleEngine::SetRuleUsageTracker(StyleRuleUsageTracker* tracker) {
     resolver_->SetRuleUsageTracker(tracker_);
 }
 
+void StyleEngine::ComputeFont(Element& element,
+                              ComputedStyle* font_style,
+                              const CSSPropertyValueSet& font_properties) {
+  UpdateActiveStyle();
+  GetStyleResolver().ComputeFont(element, font_style, font_properties);
+}
+
 RuleSet* StyleEngine::RuleSetForSheet(CSSStyleSheet& sheet) {
   if (!sheet.MatchesMediaQueries(EnsureMediaQueryEvaluator()))
     return nullptr;
@@ -1604,6 +1611,17 @@ void StyleEngine::SetHttpDefaultStyle(const String& content) {
     SetPreferredStylesheetSetNameIfNotSet(content);
 }
 
+void StyleEngine::CollectFeaturesTo(RuleFeatureSet& features) {
+  CollectUserStyleFeaturesTo(features);
+  CollectScopedStyleFeaturesTo(features);
+  for (CSSStyleSheet* sheet : custom_element_default_style_sheets_) {
+    if (!sheet)
+      continue;
+    if (RuleSet* rule_set = RuleSetForSheet(*sheet))
+      features.Add(rule_set->Features());
+  }
+}
+
 void StyleEngine::EnsureUAStyleForXrOverlay() {
   DCHECK(global_rule_set_);
   if (CSSDefaultStyleSheets::Instance().EnsureDefaultStyleSheetForXrOverlay()) {
@@ -2241,6 +2259,10 @@ void StyleEngine::CollectMatchingUserRules(
         MatchRequest(active_user_style_sheets_[i].second, nullptr,
                      active_user_style_sheets_[i].first, i));
   }
+}
+
+void StyleEngine::ClearKeyframeRules() {
+  keyframes_rule_map_.clear();
 }
 
 void StyleEngine::ClearPropertyRules() {

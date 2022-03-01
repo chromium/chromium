@@ -281,10 +281,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void ComputeFont(Element& element,
                    ComputedStyle* font_style,
-                   const CSSPropertyValueSet& font_properties) {
-    UpdateActiveStyle();
-    GetStyleResolver().ComputeFont(element, font_style, font_properties);
-  }
+                   const CSSPropertyValueSet& font_properties);
 
   PendingInvalidations& GetPendingNodeInvalidations() {
     return pending_invalidations_;
@@ -342,16 +339,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                              TextPosition start_position,
                              StyleEngineContext&);
 
-  void CollectFeaturesTo(RuleFeatureSet& features) {
-    CollectUserStyleFeaturesTo(features);
-    CollectScopedStyleFeaturesTo(features);
-    for (CSSStyleSheet* sheet : custom_element_default_style_sheets_) {
-      if (!sheet)
-        continue;
-      if (RuleSet* rule_set = RuleSetForSheet(*sheet))
-        features.Add(rule_set->Features());
-    }
-  }
+  void CollectFeaturesTo(RuleFeatureSet& features);
 
   void EnsureUAStyleForFullscreen();
   void EnsureUAStyleForXrOverlay();
@@ -648,7 +636,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool ClearFontFaceCacheAndAddUserFonts(
       const ActiveStyleSheetVector& user_sheets);
 
-  void ClearKeyframeRules() { keyframes_rule_map_.clear(); }
+  void ClearKeyframeRules();
   void ClearPropertyRules();
   void ClearScrollTimelineRules();
 
