@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "url/gurl.h"
@@ -92,10 +94,22 @@ network::mojom::URLLoaderFactory* URLLoaderFactoryBundle::GetFactory(
       return it2->second.get();
   }
 
-  // Hitting the DCHECK below means that a subresource load has unexpectedly
-  // happened in a speculative frame (or in a test frame created via
-  // RenderViewTest).  This most likely indicates a bug somewhere else.
-  DCHECK(default_factory_.is_bound());
+  if (!default_factory_.is_bound()) {
+    // Hitting the NOTREACHED below means that a subresource load has
+    // unexpectedly happened in a speculative frame (or in a test frame created
+    // via RenderViewTest).  This most likely indicates a bug somewhere else.
+    NOTREACHED();
+
+    // TODO(https://crbug.com/1300973): Once known issues are fixed, remove the
+    // NotImplementedURLLoaderFactory (i.e. trust the NOTREACHED above, replace
+    // it with an equivalent DCHECK, and accept crashing if a nullptr is
+    // returned from this method).
+    static const base::NoDestructor<
+        mojo::Remote<network::mojom::URLLoaderFactory>>
+        s_fallback_factory(network::NotImplementedURLLoaderFactory::Create());
+    return s_fallback_factory->get();
+  }
+
   return default_factory_.get();
 }
 
