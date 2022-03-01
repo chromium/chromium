@@ -66,11 +66,10 @@ class TouchInjector : public ui::EventRewriter {
   //     {},
   //     ...
   //   ],
-  //   "move": {
-  //     "keyboard": [],
-  //     "mouse": []
-  //   },
-  //   ...
+  //   "move": [
+  //     {},
+  //     ...
+  //   ]
   // }
   void ParseActions(const base::Value& root);
   // Notify the EventRewriter whether the text input is focused or not.

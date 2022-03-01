@@ -9,8 +9,7 @@
 
 #include "base/bind.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_move_key.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action_move_mouse.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/aura/window.h"
@@ -49,26 +48,13 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   }
 
   // Parse move actions if they exist.
-  const base::Value* move_act_val = root.FindKey(kMoveAction);
-  if (move_act_val) {
-    const base::Value* keyboard_act_list = move_act_val->FindListKey(kKeyboard);
-    if (keyboard_act_list && keyboard_act_list->is_list()) {
-      for (const base::Value& val : keyboard_act_list->GetListDeprecated()) {
-        std::unique_ptr<Action> action =
-            std::make_unique<ActionMoveKey>(window);
-        bool succeed = action->ParseFromJson(val);
-        if (succeed)
-          actions.emplace_back(std::move(action));
-      }
-    }
-    const auto* mouse_act_list = move_act_val->FindListKey(kMouse);
-    if (mouse_act_list && mouse_act_list->is_list()) {
-      for (const auto& val : mouse_act_list->GetListDeprecated()) {
-        auto action = std::make_unique<ActionMoveMouse>(window);
-        bool succeed = action->ParseFromJson(val);
-        if (succeed)
-          actions.emplace_back(std::move(action));
-      }
+  const base::Value* move_act_list = root.FindListKey(kMoveAction);
+  if (move_act_list && move_act_list->is_list()) {
+    for (const base::Value& val : move_act_list->GetListDeprecated()) {
+      std::unique_ptr<Action> action = std::make_unique<ActionMove>(window);
+      bool succeed = action->ParseFromJson(val);
+      if (succeed)
+        actions.emplace_back(std::move(action));
     }
   }
 

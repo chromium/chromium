@@ -6,74 +6,70 @@
   "mouse_lock": {
     "key": "Escape"
   },
-  "move": {
-    "mouse": [
-      {
-        "input_sources": [
-          "mouse"
-        ],
-        "name": "camera move",
-        "hide_cursor": 1,
-        "mouse_action": "hover_move",
-        "location": [
-          {
-            "type": "position",
-            "anchor_to_target": [
-              0.5,
-              0.5
-            ]
-          }
-        ],
-        "target_area": {
-          "top_left": {
-            "type": "position",
-            "anchor_to_target": [
-              0.5,
-              0
-            ]
-          },
-          "bottom_right": {
-            "type": "position",
-            "anchor_to_target": [
-              0.9999,
-              0.9999
-            ]
-          }
+  "move": [
+    {
+      "input_sources": [
+        "mouse"
+      ],
+      "name": "camera move",
+      "hide_cursor": 1,
+      "mouse_action": "hover_move",
+      "location": [
+        {
+          "type": "position",
+          "anchor_to_target": [
+            0.5,
+            0.5
+          ]
+        }
+      ],
+      "target_area": {
+        "top_left": {
+          "type": "position",
+          "anchor_to_target": [
+            0.5,
+            0
+          ]
+        },
+        "bottom_right": {
+          "type": "position",
+          "anchor_to_target": [
+            0.9999,
+            0.9999
+          ]
         }
       }
-    ],
-    "keyboard": [
-      {
-        "input_sources": [
-          "keyboard"
-        ],
-        "name": "Virtual Joystick",
-        "keys": [
-          "KeyW",
-          "KeyA",
-          "KeyS",
-          "KeyD"
-        ],
-        "location": [
-          {
-            "type": "dependent_position",
-            "aspect_ratio": 1.78,
-            "anchor": [
-              0,
-              1
-            ],
-            "anchor_to_target": [
-              0.16875,
-              -0.2472222222
-            ],
-            "x_on_y": 1.213483146,
-            "y_on_x": 0.8240740741
-          }
-        ],
-        "radius": 0.1171296296
-      }
-    ]
-  },
+    },
+    {
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "Virtual Joystick",
+      "keys": [
+        "KeyW",
+        "KeyA",
+        "KeyS",
+        "KeyD"
+      ],
+      "location": [
+        {
+          "type": "dependent_position",
+          "aspect_ratio": 1.78,
+          "anchor": [
+            0,
+            1
+          ],
+          "anchor_to_target": [
+            0.16875,
+            -0.2472222222
+          ],
+          "x_on_y": 1.213483146,
+          "y_on_x": 0.8240740741
+        }
+      ],
+      "radius": 0.1171296296
+    }
+  ],
   "tap": [
     {
       "input_sources": [

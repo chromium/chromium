@@ -66,6 +66,44 @@ std::unique_ptr<InputElement> InputElement::CreateActionTapMouseElement(
   return element;
 }
 
+// static
+std::unique_ptr<InputElement> InputElement::CreateActionMoveKeyElement(
+    const std::vector<ui::DomCode>& keys) {
+  auto element = std::make_unique<InputElement>();
+  element->input_sources_ = InputSource::IS_KEYBOARD;
+  std::copy(keys.begin(), keys.end(), std::back_inserter(element->keys_));
+  // There are four and only four keys representing move up, left, down and
+  // right.
+  DCHECK(element->keys_.size() == kActionMoveKeysSize);
+  return element;
+}
+
+// static
+std::unique_ptr<InputElement> InputElement::CreateActionMoveMouseElement(
+    const std::string& mouse_action) {
+  auto element = std::make_unique<InputElement>();
+  element->input_sources_ = InputSource::IS_MOUSE;
+  element->mouse_lock_required_ = true;
+  element->mouse_action_ = mouse_action;
+  if (mouse_action == kHoverMove) {
+    element->mouse_types_.emplace(ui::ET_MOUSE_ENTERED);
+    element->mouse_types_.emplace(ui::ET_MOUSE_MOVED);
+    element->mouse_types_.emplace(ui::ET_MOUSE_EXITED);
+  } else {
+    DCHECK(mouse_action == kPrimaryDragMove ||
+           mouse_action == kSecondaryDragMove);
+    element->mouse_types_.emplace(ui::ET_MOUSE_PRESSED);
+    element->mouse_types_.emplace(ui::ET_MOUSE_DRAGGED);
+    element->mouse_types_.emplace(ui::ET_MOUSE_RELEASED);
+    if (mouse_action == kPrimaryDragMove) {
+      element->mouse_flags_ = ui::EF_LEFT_MOUSE_BUTTON;
+    } else {
+      element->mouse_flags_ = ui::EF_RIGHT_MOUSE_BUTTON;
+    }
+  }
+  return element;
+}
+
 bool InputElement::operator==(const InputElement& other) const {
   if (this->input_sources_ != other.input_sources())
     return false;

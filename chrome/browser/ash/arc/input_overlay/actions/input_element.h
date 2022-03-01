@@ -20,14 +20,20 @@ namespace input_overlay {
 constexpr char kMouseAction[] = "mouse_action";
 constexpr char kPrimaryClick[] = "primary_click";
 constexpr char kSecondaryClick[] = "secondary_click";
+constexpr char kHoverMove[] = "hover_move";
+constexpr char kPrimaryDragMove[] = "primary_drag_move";
+constexpr char kSecondaryDragMove[] = "secondary_drag_move";
+
+// Total key size for ActionMoveKey.
+constexpr int kActionMoveKeysSize = 4;
 // Gets the event flags for the modifier domcode. Return ui::DomCode::NONE if
 // |code| is not modifier DomCode.
 int ModifierDomCodeToEventFlag(ui::DomCode code);
 bool IsSameDomCode(ui::DomCode a, ui::DomCode b);
 
 // InputElement creates input elements bound for each action.
-// TODO(cuicuiruan): It only supports ActionTap now. Supports more actions as
-// needed.
+// TODO(cuicuiruan): It only supports ActionTap and ActionMove now. Supports
+// more actions as needed.
 class InputElement {
  public:
   InputElement();
@@ -47,6 +53,12 @@ class InputElement {
       ui::DomCode key);
   // Create mouse binding for tap action.
   static std::unique_ptr<InputElement> CreateActionTapMouseElement(
+      const std::string& mouse_action);
+  // Create key binding for move action.
+  static std::unique_ptr<InputElement> CreateActionMoveKeyElement(
+      const std::vector<ui::DomCode>& keys);
+  // Create mouse binding for move action.
+  static std::unique_ptr<InputElement> CreateActionMoveMouseElement(
       const std::string& mouse_action);
 
   bool operator==(const InputElement& other) const;
