@@ -966,6 +966,7 @@
 <translation id="7076293881109082629">تسجيل الدخول</translation>
 <translation id="7086931198345821656">‏يتطلَّب إتمام التحديث إجراء عملية Powerwash لجهاز <ph name="DEVICE_TYPE" />. سيتم حذف جميع البيانات. تعرّف على المزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">الوصول عبر مفتاح تبديل</translation>
+<translation id="7098053464892629930">‏يمكنك تنزيل التطبيق لـ <ph name="NAME" /> من Google Play للاطّلاع على جميع الميزات المتاحة.</translation>
 <translation id="7098389117866926363">‏جهاز USB-C (المنفذ الأيسر في الخلف)</translation>
 <translation id="7106330611027933926">إظهار شريط سطح المكتب</translation>
 <translation id="7118268675952955085">لقطة شاشة</translation>
@@ -1210,6 +1211,7 @@
 <translation id="8660331759611631213">الجذر التربيعي للعدد 71</translation>
 <translation id="8663756353922886599">حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">عرض قائمة الشبكات. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">افتَح <ph name="NAME" /> لإعداد الجهاز</translation>
 <translation id="8676770494376880701">تمّ توصيل شاحن منخفض الطاقة</translation>
 <translation id="8683506306463609433">تتبّع الأداء نشط</translation>
 <translation id="8685326675965865247">يمكنك البحث في جهازك والتطبيقات والإعدادات والويب. ويمكنك استخادم مفاتيح الأسهم للتنقُّل بين تطبيقاتك.</translation>

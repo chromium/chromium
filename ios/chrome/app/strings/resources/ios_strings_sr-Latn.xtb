@@ -405,6 +405,7 @@ Pratite korake u nastavku:</translation>
 Podaci se šifruju pomoću pristupne fraze za sinhronizaciju. Unesite je da biste započeli sinhronizaciju.</translation>
 <translation id="4682686630151240767">1. Otvorite podešavanja iPhone-a</translation>
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
+<translation id="4697071790493980729">Nije pronađen nijedan rezultat</translation>
 <translation id="470966556546083668">Ne uključuj sinhronizaciju</translation>
 <translation id="4731472194328757163">Pristup kameri i mikrofonu je dozvoljen</translation>
 <translation id="4737560986434232178">Pretražite nedavne kartice</translation>
@@ -489,6 +490,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5490005495580364134">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="5513681519188741830">pre <ph name="TIME" /> s</translation>
 <translation id="5525269841082836315">Pravljenje pristupne fraze</translation>
+<translation id="5542540507657872337">Pronađeno je <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff vam omogućava da započnete pregledanje veb-sajta na ovom uređaju, pa da jednostavno nastavite na Mac-u. Veb-sajt koji je trenutno otvoren prikazaće se na doku na Mac-u.
 
 Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Podešavanja), a uređaji moraju da koriste isti iCloud nalog.</translation>

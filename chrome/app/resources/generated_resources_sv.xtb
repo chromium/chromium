@@ -1252,6 +1252,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2203088913459920044">Namnet kan innehålla bokstäver, siffror och specialtecken</translation>
 <translation id="220321590587754225">Det gick inte att ansluta. Försök igen.</translation>
 <translation id="2204034823255629767">Läsa och ändra allt som du skriver</translation>
+<translation id="2207115382329026341">Aktivera inställningarna för appstreaming på telefonen.</translation>
 <translation id="220858061631308971">Ange den här pinkoden på <ph name="DEVICE_NAME" />:</translation>
 <translation id="2210462644007531147">Det gick inte att slutföra installationen</translation>
 <translation id="2212565012507486665">Tillåt cookies</translation>
@@ -1445,6 +1446,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2367972762794486313">Visa appar</translation>
 <translation id="236939127352773362">När enheter i närheten delar filer</translation>
 <translation id="2371076942591664043">Öppna när nedladdning är &amp;klar</translation>
+<translation id="237307274687369010">Det gick inte att öppna <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Anpassa till papperets storlek</translation>
 <translation id="2375406435414127095">Anslut till mobilen</translation>
 <translation id="2377588536920405462">Du kan inaktivera plats genom att inaktivera huvudinställningen på enheten. Du kan även inaktivera användningen av wifi, mobilnätverk och sensorer för plats i platsinställningarna.</translation>

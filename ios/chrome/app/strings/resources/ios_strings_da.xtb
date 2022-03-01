@@ -405,6 +405,7 @@ Følg vejledningen nedenfor:</translation>
 Dine data er krypteret med din adgangssætning til synkronisering. Angiv den for at starte synkroniseringen.</translation>
 <translation id="4682686630151240767">1. Åbn iPhone-indstillingerne</translation>
 <translation id="4689564913179979534">Administrer betalingsmetoder…</translation>
+<translation id="4697071790493980729">Der blev ikke fundet nogen resultater</translation>
 <translation id="470966556546083668">Aktivér ikke synkronisering</translation>
 <translation id="4731472194328757163">Der er givet adgang til kameraet og mikrofonen</translation>
 <translation id="4737560986434232178">Søg på fanen Seneste</translation>
@@ -489,6 +490,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5490005495580364134">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="5513681519188741830">For <ph name="TIME" /> t. siden</translation>
 <translation id="5525269841082836315">Opret adgangssætning</translation>
+<translation id="5542540507657872337"><ph name="COUNT" /> blev fundet</translation>
 <translation id="5548760955356983418">Med Handoff kan du begynde at se på et website på denne enhed og derefter nemt fortsætte på din Mac. Det website, du har åbent, vises i docken på din Mac.
 
 Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enheder skal benytte den samme iCloud-konto.</translation>

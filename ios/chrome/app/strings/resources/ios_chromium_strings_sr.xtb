@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Chromium страница</translation>
 <translation id="5862307444128926510">Добро дошли у Chromium</translation>
 <translation id="5945387852661427312">Пријављујете се помоћу налога којим управља <ph name="DOMAIN" /> и дајете његовом администратору контролу над својим Chromium подацима. Подаци ће постати трајно повезани са тим налогом. Одјављивањем из Chromium-а ћете избрисати податке са овог уређаја, али ће они остати сачувани на Google налогу.</translation>
+<translation id="5983312940147103417">Побољшајте Chromium</translation>
 <translation id="602807004951640891">Коришћењем Chromium-а прихватате <ph name="BEGIN_LINK_TOS" />Услове коришћења услуге<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Да бисте поставили Chromium за подразумевани прегледач:
 1. Отворите подешавања
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">Закључајте картице без архивирања после затварања Chromium-а</translation>
 <translation id="7980860476903281594">Chromium дели локацију са сајтовима које дозволите.</translation>
 <translation id="8013573822802650211">Да бисте видели картице на било којем уређају на ком користите Chromium, пријавите се на свим уређајима</translation>
+<translation id="80599830191519229">Када је ово укључено:
+<ph name="BEGIN_INDENT" />  • Помозите да побољшамо Chromium за људе који га користе као ви<ph name="END_INDENT" />
+
+Шта треба да имате на уму:
+<ph name="BEGIN_INDENT" />  • Информације о вашем коришћењу Chromium-а се шаљу Google-у, али нису повезане са вама
+  • Ако Chromium откаже, детаљи о отказивању могу да садрже неке личне податке
+  • Ако укључите синхронизацију, показатељи могу да обухватају информације о URL-овима које посећујете<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Желите ли да обришете Chromium податке са овог уређаја?</translation>
 <translation id="8175055321229419309">Савет: <ph name="BEGIN_LINK" />Преместите Chromium на док<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium не може да тражи ажурирања. Пробајте поново касније.</translation>

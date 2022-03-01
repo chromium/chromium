@@ -2946,6 +2946,11 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
       Bu özellik, bu yeni kısıtlamadan etkilenen dahili web sitelerini güncellemek için daha fazla zamana ihtiyaç duyan yöneticiler tarafından kullanılabilir. Bu Kurumsal politika geçici olup <ph name="PRODUCT_NAME" /> 104 sürümünden sonra kaldırılması planlanmaktadır.
       </translation>
 <translation id="4268586991084547853">Microsoft IE/Edge kurumsal mod site listeleriyle daha uyumlu.</translation>
+<translation id="4269798992490176617">Etkin olarak ayarlanırsa <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> uzak bir ana makinedeki tarayıcı oturumundan gelen WebAuthn API isteklerini yürütebilir.
+
+      Politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa varsayılan davranış uygulanır.
+
+      Bu özelliğin yalnızca Google'ın dahili ağ ortamında desteklendiğini unutmayın.</translation>
 <translation id="4269859918103560644">Kullanıcının karar vermesine izin ver</translation>
 <translation id="4274691295133617461">Politika 3 değerine ayarlanırsa web siteleri, File System API üzerinden ana makine işletim sisteminin dosya sistemindeki dosya ve dizinlere okuma erişimi isteyebilir. Politikayı 2 değerine ayarlamak erişimi engeller.
 
@@ -5347,6 +5352,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7063895219334505671">Bu sitelerde pop-up'lara izin ver</translation>
 <translation id="7066292150801784098">Uzaktan destek oturumlarında yükseltilmiş pencerelerle uzaktan kullanıcı etkileşimini devre dışı bırak</translation>
 <translation id="706669471845501145">Sitelerin masaüstü bildirimi göstermesine izin ver</translation>
+<translation id="70681795425744184">CRD'nin uzak bir ana makineden proxy kullanılarak gelen WebAuthn API isteklerini yürütmesine izin verme.</translation>
 <translation id="7070525176564511548">Her hafta (168 saatte bir) şifre girilmesi gerekiyor</translation>
 <translation id="7072208053150563108">Makine şifresi değişim hızı</translation>
 <translation id="7072567600438630966">Telefon Merkezi'nin etkinleştirilmesine izin ver.</translation>
@@ -5637,6 +5643,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7407441173422042771">Bu politika, <ph name="PRODUCT_NAME" /> içinde ağ tahminini kontrol eder. DNS'nin önceden getirilmesini, TCP ve SSL ön bağlantısını ve web sayfalarının önceden oluşturulmasını kontrol eder.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Bu politika ayarlanmadan bırakılırsa ağ tahmini etkinleştirilir, ancak kullanıcı bunu değiştirebilir.</translation>
+<translation id="7410074797376205571"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> ürününün uzak bir ana makineden proxy kullanılarak gelen WebAuthn API isteklerini yürütmesine izin ver.</translation>
 <translation id="7412456346709338637">Thunderbolt/USB4 çevre birimi veri erişimini etkinleştirir</translation>
 <translation id="7417438464912687020">Bu makineye uzaktan erişim bağlantılarına izin ver</translation>
 <translation id="7417972229667085380">Sunum modundayken boşta gecikme süresini ölçekleme yüzdesi (kullanımdan kaldırıldı)</translation>
@@ -6574,6 +6581,7 @@ Windows'da politika yapılandırmak için önerilen yol GPO kullanmaktır. Ancak
        Politika devre dışı olarak ayarlanırsa farklı kaynaklı alt çerçevelerden tetiklenen JavaScript iletişim kutuları engellenmez.
 
        Bu politika, <ph name="PRODUCT_NAME" /> 95 sürümünde kaldırılacaktır.</translation>
+<translation id="8427466947904008809">CRD'nin uzak bir ana makineden proxy kullanılarak gelen WebAuthn API isteklerini yürütmesine izin ver.</translation>
 <translation id="8433186206711564395">Ağ ayarları</translation>
 <translation id="8433769814000220721">Önerilen İçeriği Etkinleştir</translation>
 <translation id="843609873781525167">Politikayı True (Doğru) değerine ayarlamak, <ph name="PRODUCT_NAME" /> ürününün her zaman başlangıçta varsayılan tarayıcı olup olmadığını denetlemesini ve mümkünse kendini otomatik olarak kaydetmesini sağlar. Politikayı False (Yanlış) değerine ayarlamak, <ph name="PRODUCT_NAME" /> ürününün varsayılan olup olmadığını kontrol etmesini durdurup bu seçenek için kullanıcı denetimlerini kapatır.

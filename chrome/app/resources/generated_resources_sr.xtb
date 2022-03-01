@@ -907,6 +907,7 @@
 <translation id="1869433484041798909">Дугме обележивача</translation>
 <translation id="1871098866036088250">Отвори у прегледачу Chrome</translation>
 <translation id="187145082678092583">Мање апликација</translation>
+<translation id="1871463148436682760">Браво!</translation>
 <translation id="1871534214638631766">Прикажите повезане информације када кликнете десним тастером на садржај или га дуго притиснете</translation>
 <translation id="1871569928317311284">Искључите тамну тему</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> је ажуриран</translation>
@@ -2334,6 +2335,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> попуста</translation>
 <translation id="3305389145870741612">Процес форматирања може да потраје неколико секунди. Сачекајте.</translation>
 <translation id="3305661444342691068">Отвори PDF у прегледу</translation>
+<translation id="3306992216458434072">Дајте назив групи и одаберите боју</translation>
 <translation id="3307176291962384345">Остварите попусте за <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Овој страници је забрањено да поставља колачиће.</translation>
 <translation id="3308134619352333507">Сакриј дугме</translation>
@@ -3747,6 +3749,7 @@
 <translation id="4708794300267213770">Прикажи закључани екран при покретању из режима спавања</translation>
 <translation id="4708849949179781599">Затвори <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Врати подешавања</translation>
+<translation id="47158868804223727">Кликните на назив групе да бисте је проширили или скупили</translation>
 <translation id="4716483597559580346">Powerwash ради веће безбедности</translation>
 <translation id="471880041731876836">Немате дозволу да посетите овај сајт</translation>
 <translation id="4722735765955348426">Лозинка за <ph name="USERNAME" /></translation>
@@ -3810,6 +3813,7 @@
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />Администратор<ph name="END_LINK" /> управља ажурирањима</translation>
 <translation id="479536056609751218">Веб-страница, само HTML</translation>
 <translation id="4796142525425001238">Увек враћај</translation>
+<translation id="4797314204379834752">Пробајте да користите групе картица да бисте организовали задатке за онлајн куповину и друго</translation>
 <translation id="4798236378408895261">Приложите <ph name="BEGIN_LINK" />Евиденције Bluetooth-а<ph name="END_LINK" /> (Google интерно)</translation>
 <translation id="479863874072008121">Управљајте уређајима</translation>
 <translation id="4800839971935185386">Прегледајте ажурирања имена и икона</translation>
@@ -4050,6 +4054,7 @@
 <translation id="5039696241953571917">Прегледајте сачуване лозинке и управљајте њима на Google налогу</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5040823038948176460">Додатна подешавања садржаја</translation>
+<translation id="5041509233170835229">Chrome апликација</translation>
 <translation id="5043440033854483429">Назив може да садржи слова, бројеве и цртице (-) и мора да има између 1 и 15 знакова.</translation>
 <translation id="5043913660911154449">Или наведите PPD штампача <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Неисправна лозинка</translation>
@@ -5376,6 +5381,7 @@
 <translation id="6393156038355142111">Предложи јаку лозинку</translation>
 <translation id="6393550101331051049">Дозвољено им је приказивање небезбедног садржаја</translation>
 <translation id="6395423953133416962">Шаљи <ph name="BEGIN_LINK1" />информације<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />показатеље<ph name="END_LINK2" /> о систему</translation>
+<translation id="6396175271241405634">Системска апликација</translation>
 <translation id="6396988158856674517">Не дозволи да сајтови користе сензоре за покрет</translation>
 <translation id="6398715114293939307">Уклоните Google Play продавницу</translation>
 <translation id="6398765197997659313">Изађи из режима целог екрана</translation>
@@ -5445,6 +5451,7 @@
 <translation id="6460566145397380451">Дозвољено им је да се повезују са MIDI уређајима</translation>
 <translation id="6460601847208524483">Пронађи следеће</translation>
 <translation id="6461170143930046705">Траже се мреже...</translation>
+<translation id="6462204616987156669">Кликните десним тастером на картицу и изаберите Додај картицу у нову групу</translation>
 <translation id="6463795194797719782">&amp;Измени</translation>
 <translation id="6464825623202322042">Овај уређај</translation>
 <translation id="6465841119675156448">Без интернета</translation>
@@ -5862,6 +5869,7 @@
 <translation id="6885771755599377173">Преглед информација о систему</translation>
 <translation id="6886871292305414135">Отвори линк на новој &amp;картици</translation>
 <translation id="6889957081990109136">Прекидач још није додељен</translation>
+<translation id="689007770043972343">Пробајте да превучете друге отворене картице у групу</translation>
 <translation id="6892812721183419409">Отвори линк као <ph name="USER" /></translation>
 <translation id="6895032998810961280">Шаљи Google-у извештаје о штетном софтверу, подешавањима система и процесима који су пронађени на рачунару током овог чишћења</translation>
 <translation id="6895902329218596456">Имејл адресом <ph name="USER_EMAIL" /> управља <ph name="MANAGER" />, ваш а администратор је блокирао пријављивање као секундарног налога</translation>
@@ -6439,6 +6447,7 @@
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 колачић}one{{NUM_COOKIES} колачић}few{{NUM_COOKIES} колачића}other{{NUM_COOKIES} колачића}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> ће прикупљати сав текст који унесете, укључујући личне податке, попут лозинки и бројева кредитних картица. Да ли желите да користите овај додатак?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android апликација</translation>
 <translation id="7495778526395737099">Заборавили сте стару лозинку?</translation>
 <translation id="7497981768003291373">Нисте недавно снимили ниједну WebRTC евиденцију текста.</translation>
 <translation id="7501957181231305652">или</translation>
@@ -6518,6 +6527,7 @@
 <translation id="7573172247376861652">Напуњеност батерије</translation>
 <translation id="7573594921350120855">Сајтови обично користе видео камеру за потребе функција комуникације попут видео ћаскања</translation>
 <translation id="7574650250151586813">Да бисте куцали текст, ажурирајте апликацију Daydream тастатура</translation>
+<translation id="7574676002608048667">Пошаљи лозинку</translation>
 <translation id="7576690715254076113">Упари</translation>
 <translation id="7576976045740938453">Дошло је до проблема са налогом за режим демонстрације.</translation>
 <translation id="7578137152457315135">Подешавања отиска прста</translation>

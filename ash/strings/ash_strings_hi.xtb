@@ -966,6 +966,7 @@
 <translation id="7076293881109082629">साइन इन किया जा रहा है</translation>
 <translation id="7086931198345821656">इस अपडेट के लिए, आपके <ph name="DEVICE_TYPE" /> को पावरवॉश करने की ज़रूरत है. ऐसा करने पर, डिवाइस का सारा डेटा मिट जाएगा. <ph name="SYSTEM_APP_NAME" /> के नए अपडेट के बारे में ज़्यादा जानें.</translation>
 <translation id="7088960765736518739">ऐक्सेस करने का तरीका बदलने की सुविधा</translation>
+<translation id="7098053464892629930">सभी मौजूदा सुविधाएं देखने के लिए, Google Play से <ph name="NAME" /> का ऐप्लिकेशन डाउनलोड करें</translation>
 <translation id="7098389117866926363">USB-C डिवाइस (पीछे बायां पोर्ट)</translation>
 <translation id="7106330611027933926">डेस्कबार दिखाएं</translation>
 <translation id="7118268675952955085">स्क्रीनशॉट</translation>
@@ -1210,6 +1211,7 @@
 <translation id="8660331759611631213">71 का वर्गमूल बताओ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">नेटवर्क सूची दिखाएं. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">अपना डिवाइस सेट अप करने के लिए <ph name="NAME" /> खोलें</translation>
 <translation id="8676770494376880701">कम-शक्ति वाला चार्जर</translation>
 <translation id="8683506306463609433">'परफ़ॉर्मेंस ट्रेसिंग' चालू है</translation>
 <translation id="8685326675965865247">अपने डिवाइस, ऐप्लिकेशन, सेटिंग के साथ-साथ वेब पर भी खोजें. अपने ऐप्लिकेशन नेविगेट करने के लिए, तीर के निशान वाले बटन का इस्तेमाल करें.</translation>

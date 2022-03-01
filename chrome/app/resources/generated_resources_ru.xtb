@@ -910,6 +910,7 @@
 <translation id="1869433484041798909">Кнопка добавления в закладки</translation>
 <translation id="1871098866036088250">Открывать в браузере Chrome</translation>
 <translation id="187145082678092583">Меньше приложений</translation>
+<translation id="1871463148436682760">Готово!</translation>
 <translation id="1871534214638631766">Показывать информацию о контенте, когда вы выбираете его с помощью правого клика или долгого нажатия</translation>
 <translation id="1871569928317311284">Выключить тёмную тему</translation>
 <translation id="1871615898038944731">На вашем устройстве <ph name="DEVICE_TYPE" /> установлены все необходимые обновления</translation>
@@ -2336,6 +2337,7 @@
 <translation id="3304212451103136496">Скидка <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Форматирование займет несколько секунд. Подождите.</translation>
 <translation id="3305661444342691068">Открыть PDF для просмотра</translation>
+<translation id="3306992216458434072">Введите название группы и выберите цвет.</translation>
 <translation id="3307176291962384345">Получайте скидки в магазине "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="3308116878371095290">Попытка сохранить файл cookie заблокирована.</translation>
 <translation id="3308134619352333507">Скрыть кнопку</translation>
@@ -3749,6 +3751,7 @@
 <translation id="4708794300267213770">Показывать заблокированный экран при выходе из спящего режима</translation>
 <translation id="4708849949179781599">Выйти из <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Восстановить исходные настройки</translation>
+<translation id="47158868804223727">Нажмите на название группы, чтобы развернуть или свернуть ее.</translation>
 <translation id="4716483597559580346">Обновите систему безопасности с помощью Powerwash</translation>
 <translation id="471880041731876836">Доступ запрещен</translation>
 <translation id="4722735765955348426">Пароль аккаунта пользователя <ph name="USERNAME" /></translation>
@@ -3812,6 +3815,7 @@
 <translation id="4794810983896241342">Обновлениями управляет <ph name="BEGIN_LINK" />администратор<ph name="END_LINK" />.</translation>
 <translation id="479536056609751218">Веб-страница, только HTML</translation>
 <translation id="4796142525425001238">Всегда</translation>
+<translation id="4797314204379834752">Используйте группы вкладок, чтобы упорядочивать задачи, совершать покупки и не только.</translation>
 <translation id="4798236378408895261">Прикрепить <ph name="BEGIN_LINK" />журналы Bluetooth<ph name="END_LINK" /> (доступно только сотрудникам Google)</translation>
 <translation id="479863874072008121">Управление устройствами</translation>
 <translation id="4800839971935185386">Проверьте новое название и значок</translation>
@@ -4052,6 +4056,7 @@
 <translation id="5039696241953571917">Находите сохраненные пароли и управляйте ими в аккаунте Google.</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5040823038948176460">Дополнительные настройки контента</translation>
+<translation id="5041509233170835229">Приложение Chrome</translation>
 <translation id="5043440033854483429">В названии можно использовать буквы, цифры и дефисы. Допустимая длина – от 1 до 15 символов.</translation>
 <translation id="5043913660911154449">Или укажите PPD-файл для принтера. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
@@ -5378,6 +5383,7 @@
 <translation id="6393156038355142111">Сгенерировать надежный пароль</translation>
 <translation id="6393550101331051049">Разрешить сайтам показывать небезопасный контент</translation>
 <translation id="6395423953133416962">Отправлять <ph name="BEGIN_LINK1" />сведения о системе<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />значения показателей<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">Системное приложение</translation>
 <translation id="6396988158856674517">Запретить сайтам использовать датчики движения</translation>
 <translation id="6398715114293939307">Удалить Google Play Маркет</translation>
 <translation id="6398765197997659313">Обычный режим</translation>
@@ -5447,6 +5453,7 @@
 <translation id="6460566145397380451">Разрешить сайтам подключаться к MIDI-устройствам</translation>
 <translation id="6460601847208524483">Найти след.</translation>
 <translation id="6461170143930046705">Поиск сетей…</translation>
+<translation id="6462204616987156669">Нажмите правой кнопкой мыши на вкладку и выберите "Добавить вкладку в новую группу".</translation>
 <translation id="6463795194797719782">&amp;Изменить</translation>
 <translation id="6464825623202322042">На этом устройстве</translation>
 <translation id="6465841119675156448">Без подключения к Интернету</translation>
@@ -5864,6 +5871,7 @@
 <translation id="6885771755599377173">Cведения о системе</translation>
 <translation id="6886871292305414135">Открыть ссылку в новой &amp;вкладке</translation>
 <translation id="6889957081990109136">Переключатель ещё не назначен</translation>
+<translation id="689007770043972343">Перетащите в группу другие открытые вкладки.</translation>
 <translation id="6892812721183419409">Открыть ссылку как <ph name="USER" /></translation>
 <translation id="6895032998810961280">Сообщать Google о вредоносном ПО, системных настройках и процессах, обнаруженных на компьютере при очистке</translation>
 <translation id="6895902329218596456">Аккаунтом <ph name="USER_EMAIL" /> управляет <ph name="MANAGER" />. В этот аккаунт разрешено входить только как в основной.</translation>
@@ -6441,6 +6449,7 @@
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 файл cookie}one{{NUM_COOKIES} файл cookie}few{{NUM_COOKIES} файла cookie}many{{NUM_COOKIES} файлов cookie}other{{NUM_COOKIES} файла cookie}}</translation>
 <translation id="7493386493263658176">Расширение "<ph name="EXTENSION_NAME" />" может сохранять любой текст, который вы вводите, в том числе пароли и данные банковских карт. Начать работу?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Приложение Android</translation>
 <translation id="7495778526395737099">Забыли пароль?</translation>
 <translation id="7497981768003291373">Не обнаружено недавно сохраненных текстовых журналов WebRTC.</translation>
 <translation id="7501957181231305652">или</translation>
@@ -6520,6 +6529,7 @@
 <translation id="7573172247376861652">Заряд батареи</translation>
 <translation id="7573594921350120855">Обычно сайты используют видеокамеру для функций общения, например видеочата.</translation>
 <translation id="7574650250151586813">Чтобы набирать текст, обновите Клавиатуру Daydream.</translation>
+<translation id="7574676002608048667">Отправить пароль</translation>
 <translation id="7576690715254076113">Разобрать по копиям</translation>
 <translation id="7576976045740938453">Возникла проблема с демонстрационным режимом аккаунта.</translation>
 <translation id="7578137152457315135">Настройки аутентификации с помощью отпечатков пальцев</translation>

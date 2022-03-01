@@ -5657,6 +5657,7 @@
       このポリシーを False に設定するか未設定のままにした場合、レポートはオフになります。
       DataLeakPreventionRulesList で ALLOW レベルの制限とともに定義されたルールについては、どちらの場合でもイベントはレポートされません。</translation>
 <translation id="7648907905084499629">すべてのサイトの Cookie に <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 動作を使用する</translation>
+<translation id="765347139142030086">このポリシーを有効にした場合、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> ポリシーと競合した場合に、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> アカウントに関連付けられたポリシーが優先されます。なお、優先されるのはセキュア ユーザーのポリシーのみです。セキュア ユーザーとは、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> を使用してブラウザを管理している組織に所属するユーザーです。他のユーザーレベルのポリシーはすべて、デフォルトの優先順位になります。このポリシーは <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> と組み合わせることができます。両方のポリシーが有効な場合、ユーザーのクラウド ポリシーも、競合するプラットフォーム ポリシーより優先されます。ポリシーを未設定のままにするか無効に設定した場合、ユーザーレベルのクラウド ポリシーがデフォルトの優先順位になります。</translation>
 <translation id="7657261947024629645">パフォーマンスを重視します。</translation>
 <translation id="7666228839913571182">サードパーティ Cookie を許可する</translation>
 <translation id="7668830462800981702">このポリシーを有効に設定した場合、ユーザーがアドレスバーに URL 以外のテキストを入力したときにデフォルトの検索が実行されます。デフォルトの検索プロバイダを指定するには、デフォルトの検索に関する他のポリシーを設定します。これらのポリシーを空白のままにした場合、ユーザーはデフォルトのプロバイダを選択できます。このポリシーを無効に設定した場合、ユーザーがアドレスバーに URL 以外のテキストを入力したときに検索は実行されません。

@@ -405,6 +405,7 @@ Postupujte podľa krokov nižšie:</translation>
 Údaje sú šifrované pomocou vlastnej prístupovej frázy synchronizácie. Keď ju zadáte, synchronizácia sa spustí.</translation>
 <translation id="4682686630151240767">1. Otvorte nastavenia iPhonu</translation>
 <translation id="4689564913179979534">Spravovať spôsoby platby…</translation>
+<translation id="4697071790493980729">Neboli nájdené žiadne výsledky</translation>
 <translation id="470966556546083668">Nezapínať synchronizáciu</translation>
 <translation id="4731472194328757163">Prístup ku kamere a mikrofónu je povolený</translation>
 <translation id="4737560986434232178">Hľadať v nedávnych kartách</translation>
@@ -489,6 +490,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5490005495580364134">Blokovať všetky súbory cookie (neodporúča sa)</translation>
 <translation id="5513681519188741830">Pred <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Vytv. prístup. frázu</translation>
+<translation id="5542540507657872337">Nájdené karty: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Funkcia Handoff umožňuje začať prehliadanie webových stránok na tomto zariadení a potom jednoducho pokračovať na počítači Mac. Aktuálne otvorené stránky sa zobrazia v doku na počítači Mac.
 
 Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zariadenia musia používať rovnaký účet iCloud.</translation>

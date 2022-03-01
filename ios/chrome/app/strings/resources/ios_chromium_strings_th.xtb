@@ -44,6 +44,7 @@
 <translation id="3344973607274501920">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="3472200483164753384">ไม่รองรับใน Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
+<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ได้ใช้ Chromium และเก็บบุ๊กมาร์ก รหัสผ่าน รวมถึงการตั้งค่าอื่นๆ ไว้ในอุปกรณ์นี้</translation>
 <translation id="3805899903892079518">Chromium ไม่มีสิทธิ์เข้าถึงรูปภาพหรือวิดีโอของคุณ เปิดใช้การเข้าถึงได้ในการตั้งค่า iOS &gt; ความเป็นส่วนตัว &gt; รูปภาพ</translation>
 <translation id="4043291146360695975">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="4099085513035183040">ไม่รองรับใน Chromium เบต้า</translation>
@@ -65,6 +66,7 @@
 <translation id="5777187867430702742">หน้า Chromium</translation>
 <translation id="5862307444128926510">ยินดีต้อนรับสู่ Chromium</translation>
 <translation id="5945387852661427312">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการโดย <ph name="DOMAIN" /> และทำให้ผู้ดูแลระบบของโดเมนควบคุมข้อมูล Chromium ของคุณได้ ข้อมูลของคุณจะโยงกับบัญชีนี้อย่างถาวร การออกจากระบบ Chromium จะลบข้อมูลของคุณจากอุปกรณ์เครื่องนี้ แต่ข้อมูลจะยังจัดเก็บอยู่ในบัญชี Google</translation>
+<translation id="5983312940147103417">ปรับปรุง Chromium ให้ดีขึ้น</translation>
 <translation id="602807004951640891">การใช้ Chromium หมายความว่าคุณยอมรับ<ph name="BEGIN_LINK_TOS" />ข้อกำหนดในการให้บริการ<ph name="END_LINK_TOS" /></translation>
 <translation id="6119647025869519954">วิธีกำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้น
 1. เปิดการตั้งค่า
@@ -103,6 +105,13 @@
 <translation id="7931842119211730154">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chromium</translation>
 <translation id="7980860476903281594">Chromium แชร์ตำแหน่งกับเว็บไซต์ที่คุณอนุญาต</translation>
 <translation id="8013573822802650211">ลงชื่อเข้าใช้ในอุปกรณ์ทุกเครื่องเพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chromium</translation>
+<translation id="80599830191519229">เมื่อเปิดไว้ จะมีประโยชน์ดังนี้
+<ph name="BEGIN_INDENT" />  • ช่วยปรับปรุง Chromium ให้ดีขึ้นสำหรับคนที่ใช้งานแบบคุณ<ph name="END_INDENT" />
+
+ข้อควรพิจารณามีดังนี้
+<ph name="BEGIN_INDENT" />  • ระบบจะส่งข้อมูลเกี่ยวกับการใช้งาน Chromium ของคุณไปยัง Google แต่จะไม่มีการเชื่อมโยงกับคุณ
+  • หาก Chromium ขัดข้อง รายละเอียดเกี่ยวกับการขัดข้องอาจมีข้อมูลส่วนบุคคลบางอย่างรวมอยู่ด้วย
+  • หากคุณเปิดการซิงค์ เมตริกต่างๆ อาจมีข้อมูลเกี่ยวกับ URL ที่คุณเข้าชมด้วย<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">ล้างข้อมูล Chromium ของคุณออกจากอุปกรณ์นี้ไหม</translation>
 <translation id="8175055321229419309">เคล็ดลับ: <ph name="BEGIN_LINK" />ย้าย Chromium ไปไว้ที่ Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>

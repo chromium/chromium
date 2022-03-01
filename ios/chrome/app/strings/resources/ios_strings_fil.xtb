@@ -405,6 +405,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync. Ilagay ito upang simulan ang pag-sync.</translation>
 <translation id="4682686630151240767">1. Buksan ang Mga Setting ng iPhone</translation>
 <translation id="4689564913179979534">I-manage ang Payment Method...</translation>
+<translation id="4697071790493980729">Walang Nakitang Resulta</translation>
 <translation id="470966556546083668">Huwag I-on ang Pag-sync</translation>
 <translation id="4731472194328757163">Pinapayagan ang access sa Camera at Mikopono</translation>
 <translation id="4737560986434232178">Maghanap sa Mga Kamakailang Tab</translation>
@@ -489,6 +490,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5490005495580364134">I-block ang Lahat ng Cookies (Hindi Inirerekomenda)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> (na) oras na ang nakalipas</translation>
 <translation id="5525269841082836315">Lumikha ng Passphrase</translation>
+<translation id="5542540507657872337">Nakita ang <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Nagbibigay-daan sa iyo ang handoff na magsimula sa pagba-browse sa isang website sa device na ito at pagkatapos ay magpatuloy kaagad sa iyong Mac. Lalabas ang kasalukuyang nakabukas na website sa Dock ng iyong Mac.
 
 Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at ang iyong mga device ay dapat gumagamit ng parehong iCloud account.</translation>

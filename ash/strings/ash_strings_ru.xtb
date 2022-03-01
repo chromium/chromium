@@ -965,6 +965,7 @@
 <translation id="7076293881109082629">Вход</translation>
 <translation id="7086931198345821656">Чтобы установить это обновление, на устройстве <ph name="DEVICE_TYPE" /> необходимо воспользоваться функцией Powerwash. Все данные будут удалены. Узнайте больше о последнем обновлении <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Функция Switch Access</translation>
+<translation id="7098053464892629930">Скачайте приложение "<ph name="NAME" />" в Google Play, чтобы использовать все доступные функции</translation>
 <translation id="7098389117866926363">Устройство USB-C (порт слева на задней панели)</translation>
 <translation id="7106330611027933926">Показать панель</translation>
 <translation id="7118268675952955085">скриншот</translation>
@@ -1209,6 +1210,7 @@
 <translation id="8660331759611631213">Квадратный корень из 71</translation>
 <translation id="8663756353922886599">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Показать список сетей. <ph name="STATE_TEXT" />.</translation>
+<translation id="8666856788528804727">Откройте "<ph name="NAME" />", чтобы настроить устройство</translation>
 <translation id="8676770494376880701">Подключено маломощное зарядное устройство</translation>
 <translation id="8683506306463609433">Отслеживание эффективности</translation>
 <translation id="8685326675965865247">Поиск на устройстве, в приложениях, настройках и Интернете. Чтобы переходить от одного приложения к другому, используйте клавиши со стрелками.</translation>

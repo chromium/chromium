@@ -21,6 +21,13 @@
 <translation id="2347208864470321755">Kapag naka-on ang tampok na ito, mag-aalok ang Chrome na magsalin ng mga pahina na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">May mga feature ang Chrome na nakakatulong sa iyong pamahalaan ang data mo sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="245827422401250729">Kapag naka-on:
+<ph name="BEGIN_INDENT" />  • Tumulong na pahusayin ang Chrome para sa mga taong gumagamit nito gaya ng paggamit mo<ph name="END_INDENT" />
+
+Mga bagay na dapat isaalang-alang:
+<ph name="BEGIN_INDENT" />  • Ipapadala ang impormasyon sa Google tungkol sa iyong paggamit ng Chrome, pero hindi ito nauugnay sa iyo
+  • Kung magka-crash ang Chrome, posibleng kasama sa mga detalye tungkol sa pag-crash ang ilang personal na impormasyon
+  • Kung io-on mo ang pag-sync, posible ring kasama sa mga sukatan ang impormasyon tungkol sa mga URL na binibisita mo<ph name="END_INDENT" /></translation>
 <translation id="2561231791489583059">Gamitin ang Chrome bilang iyong default na browser para manatiling protektado laban sa mga mapanganib na site at mapanatiling ligtas ang mga password mo</translation>
 <translation id="2574249610672786438">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chrome, mag-sign in sa lahat ng device mo</translation>
 <translation id="2576431527583832481">Naging mas mahusay na ang Chrome! Available na ang bagong bersyon.</translation>
@@ -58,6 +65,7 @@
 <translation id="4698415050768537821">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Hindi sinusuportahan sa Chrome Beta</translation>
 <translation id="5030102366287574140">Makakatulong ang Chrome na panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa.</translation>
+<translation id="5108659628347594808">Pahusayin ang Chrome</translation>
 <translation id="5119391094379141756">Piliin ang Chrome</translation>
 <translation id="5162467219239570114">Luma na ang Chrome. Kung walang available na update sa <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, posibleng hindi na sinusuportahan ng iyong device ang mga bagong bersyon ng Chrome.</translation>
 <translation id="5389212809648216794">Hindi magamit ng Google Chrome ang iyong camera ngayon dahil ginagamit ito sa isa pang application</translation>

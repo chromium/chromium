@@ -905,6 +905,7 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1869433484041798909">Lesezeichen-Schaltfläche</translation>
 <translation id="1871098866036088250">In Chrome-Browser öffnen</translation>
 <translation id="187145082678092583">Weniger Apps</translation>
+<translation id="1871463148436682760">Sehr schön!</translation>
 <translation id="1871534214638631766">Zugehörige Informationen durch Rechtsklick mit der Maus oder langes Drücken einblenden</translation>
 <translation id="1871569928317311284">Dunkles Design ausschalten</translation>
 <translation id="1871615898038944731">Ihr <ph name="DEVICE_TYPE" /> ist auf dem neuesten Stand</translation>
@@ -2332,6 +2333,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> Rabatt</translation>
 <translation id="3305389145870741612">Die Formatierung kann einige Sekunden dauern. Bitte warten...</translation>
 <translation id="3305661444342691068">PDF-Vorschau</translation>
+<translation id="3306992216458434072">Geben Sie der Gruppe einen Namen und wählen Sie eine Farbe aus</translation>
 <translation id="3307176291962384345">Rabatte für <ph name="MERCHANT_NAME" /> erhalten</translation>
 <translation id="3308116878371095290">Diese Seite konnte keine Cookies setzen.</translation>
 <translation id="3308134619352333507">Schaltfläche ausblenden</translation>
@@ -3745,6 +3747,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4708794300267213770">Sperrbildschirm anzeigen, wenn der Ruhemodus beendet wird</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> beenden</translation>
 <translation id="4711638718396952945">Einstellungen wiederherstellen</translation>
+<translation id="47158868804223727">Klicken Sie auf den Namen der Gruppe, um sie zu maximieren oder zu minimieren</translation>
 <translation id="4716483597559580346">Powerwash für mehr Sicherheit</translation>
 <translation id="471880041731876836">Sie sind nicht berechtigt, auf diese Website zuzugreifen</translation>
 <translation id="4722735765955348426">Passwort für <ph name="USERNAME" /></translation>
@@ -3808,6 +3811,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4794810983896241342">Updates werden von <ph name="BEGIN_LINK" />Ihrem Administrator<ph name="END_LINK" /> verwaltet</translation>
 <translation id="479536056609751218">Webseite, nur HTML</translation>
 <translation id="4796142525425001238">Immer wiederherstellen</translation>
+<translation id="4797314204379834752">Sie können Tabgruppen verwenden, um Aufgaben zu organisieren, z. B. für das Online-Shopping</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth-Protokolle<ph name="END_LINK" /> anhängen (Google-intern)</translation>
 <translation id="479863874072008121">Geräte verwalten</translation>
 <translation id="4800839971935185386">Aktualisierungen für Name und Symbol prüfen</translation>
@@ -4046,6 +4050,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5039696241953571917">Sie können gespeicherte Passwörter in Ihrem Google-Konto ansehen und verwalten</translation>
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5040823038948176460">Zusätzliche Inhaltseinstellungen</translation>
+<translation id="5041509233170835229">Chrome-App</translation>
 <translation id="5043440033854483429">Der Name darf aus Buchstaben, Ziffern und Bindestrichen (-) bestehen und muss zwischen 1 und 15 Zeichen (insgesamt) umfassen.</translation>
 <translation id="5043913660911154449">Oder wählen Sie die PPD für den Drucker <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
@@ -5372,6 +5377,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6393156038355142111">Starkes Passwort vorschlagen</translation>
 <translation id="6393550101331051049">Unsichere Inhalte dürfen angezeigt werden</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Systeminformationen<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />Messwerte<ph name="END_LINK2" /> senden</translation>
+<translation id="6396175271241405634">System-App</translation>
 <translation id="6396988158856674517">Verwendung von Bewegungssensoren für Websites blockieren</translation>
 <translation id="6398715114293939307">Google Play Store entfernen</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
@@ -5441,6 +5447,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6460566145397380451">Dürfen eine Verbindung mit MIDI-Geräten herstellen</translation>
 <translation id="6460601847208524483">Weitersuchen (vorwärts)</translation>
 <translation id="6461170143930046705">Netzwerke werden gesucht…</translation>
+<translation id="6462204616987156669">Klicken Sie mit der rechten Maustaste auf einen Tab und wählen Sie „Tab neuer Gruppe hinzufügen“ aus</translation>
 <translation id="6463795194797719782">B&amp;earbeiten</translation>
 <translation id="6464825623202322042">Dieses Gerät</translation>
 <translation id="6465841119675156448">Ohne Internet</translation>
@@ -5858,6 +5865,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6885771755599377173">Vorschau der Systeminformationen</translation>
 <translation id="6886871292305414135">Link in neuem &amp;Tab öffnen</translation>
 <translation id="6889957081990109136">Es wurde noch kein Schalter zugewiesen</translation>
+<translation id="689007770043972343">Versuchen Sie, andere geöffnete Tabs in die Gruppe zu ziehen</translation>
 <translation id="6892812721183419409">Link als <ph name="USER" /> öffnen</translation>
 <translation id="6895032998810961280">Der Bericht enthält Informationen zu schädlicher Software, Systemeinstellungen und Prozessen, die während der Bereinigung auf Ihrem Computer gefunden wurden</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" /> wird von <ph name="MANAGER" /> verwaltet und Ihr Administrator hat die Anmeldung als sekundäres Konto blockiert</translation>
@@ -6435,6 +6443,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 Cookie}other{{NUM_COOKIES} Cookies}}</translation>
 <translation id="7493386493263658176">Die Erweiterung <ph name="EXTENSION_NAME" /> erfasst unter Umständen alle von Ihnen eingegebenen Textinhalte, einschließlich personenbezogener Daten wie Passwörter und Kreditkartennummern. Möchten Sie diese Erweiterung verwenden?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android-App</translation>
 <translation id="7495778526395737099">Haben Sie Ihr altes Passwort vergessen?</translation>
 <translation id="7497981768003291373">Es sind keine kürzlich erfassten WebRTC-Textprotokolle vorhanden.</translation>
 <translation id="7501957181231305652">oder</translation>

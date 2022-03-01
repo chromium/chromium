@@ -965,6 +965,7 @@
 <translation id="7076293881109082629">Մուտք</translation>
 <translation id="7086931198345821656">Այս թարմացումը տեղադրելու համար ձեր <ph name="DEVICE_TYPE" /> սարքում անհրաժեշտ է օգտագործել Powerwash գործառույթը։ Բոլոր տվյալները կջնջվեն։ Իմացեք ավելին <ph name="SYSTEM_APP_NAME" /> հավելվածի վերջին թարմացման մասին։</translation>
 <translation id="7088960765736518739">Switch Access</translation>
+<translation id="7098053464892629930">Google Play-ում ներբեռնեք <ph name="NAME" />-ի համար հավելվածը՝ բոլոր հասանելի գործառույթները տեսնելու համար</translation>
 <translation id="7098389117866926363">USB-C սարք (հետևի ձախ միացք)</translation>
 <translation id="7106330611027933926">Ցուցադրել աշխատասեղանների տողը</translation>
 <translation id="7118268675952955085">սքրինշոթ</translation>
@@ -1209,6 +1210,7 @@
 <translation id="8660331759611631213">71 թվից քառակուսի արմատ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Ցուցադրել ցանցերի ցանկը: <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Բացեք <ph name="NAME" /> հավելվածը՝ ձեր սարքը կարգավորելու համար</translation>
 <translation id="8676770494376880701">Կապակցվել է թույլ լիցքով լիցքավորիչ</translation>
 <translation id="8683506306463609433">Արդյունավետության հետագծումն ակտիվ է</translation>
 <translation id="8685326675965865247">Որոնեք սարքում, հավելվածներում, կարգավորումներում և համացանցում։ Մեկ հավելվածից մյուսին անցնելու համար օգտագործեք սլաքներով ստեղները։</translation>

@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Stránka prehliadača Chromium</translation>
 <translation id="5862307444128926510">Vitajte v prehliadači Chromium</translation>
 <translation id="5945387852661427312">Prihlasujete sa pomocou účtu spravovaného doménou <ph name="DOMAIN" /> a jej správcovi tým dávate kontrolu nad vašimi údajmi prehliadača Chromium. Vaše údaje budú natrvalo prepojené s týmto účtom. Odhlásením z prehliadača Chromium odstránite údaje z príslušného zariadenia, avšak naďalej zostanú uložené vo vašom účte Google.</translation>
+<translation id="5983312940147103417">Zlepšujte Chromium</translation>
 <translation id="602807004951640891">Používaním prehliadača Chromium vyjadrujete súhlas so <ph name="BEGIN_LINK_TOS" />zmluvnými podmienkami<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Ak chcete Chromium nastaviť ako predvolený prehliadač:
 1. Otvorte nastavenia.
@@ -104,6 +105,14 @@
 <translation id="7931842119211730154">Uzamknúť karty inkognito pri zavretí prehliadača Chromium</translation>
 <translation id="7980860476903281594">Chromium zdieľa vašu s webmi, pre ktoré to povolíte.</translation>
 <translation id="8013573822802650211">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chromium, prihláste sa do nich</translation>
+<translation id="80599830191519229">Keď zapnete túto možnosť:
+<ph name="BEGIN_INDENT" />  • Pomáhajte zlepšovať Chromium pre ľudí, ktorí ho používajú rovnako ako vy<ph name="END_INDENT" />
+
+
+Čo je potrebné vziať do úvahy:
+<ph name="BEGIN_INDENT" />  • Informácie o vašom používaní prehliadača Chromium sa odosielajú Googlu, ale nie sú s vami spojené.
+  • V prípade pádu prehliadača Chromium môžu podrobnosti o páde zahŕňať niektoré osobné údaje.
+  • Ak zapnete synchronizáciu, metriky môžu zahŕňať aj informácie o webových adresách, ktoré navštívite.<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Chcete vymazať údaje prehliadača Chromium z tohto zariadenia?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Presuňte Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>

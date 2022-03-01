@@ -1094,6 +1094,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2060375639911876205">Profiel voor e-simkaart verwijderen</translation>
 <translation id="2062354623176996748">Gebruik een incognitovenster om te internetten zonder dat je browsegeschiedenis wordt opgeslagen</translation>
 <translation id="2065405795449409761">Chrome wordt beheerd door geautomatiseerde testsoftware.</translation>
+<translation id="2069869989954932144">App voorstellen als bestanden worden geopend op je computer</translation>
 <translation id="2071393345806050157">Geen lokaal logbestand.</translation>
 <translation id="2071692954027939183">Meldingen zijn automatisch geblokkeerd omdat je deze doorgaans niet toestaat</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Klik om de extensie te installeren}other{Klik om deze extensies te installeren}}</translation>
@@ -1331,6 +1332,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2292848386125228270">Start <ph name="PRODUCT_NAME" /> als een normale gebruiker. Als je voor ontwikkelingsdoeleinden moet uitvoeren als root, voer je opnieuw uit met de markering '--no-sandbox'.</translation>
 <translation id="2294081976975808113">Schermprivacy</translation>
 <translation id="2294358108254308676">Wil je <ph name="PRODUCT_NAME" /> installeren?</translation>
+<translation id="229477815107578534">Bekijk je instellingen</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultaten</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> vereist dat het apparaat online is als er wordt ingelogd op <ph name="EMAIL" /></translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{Chrome heeft geen schadelijke software gevonden op je computer • 1 uur geleden gecheckt}other{Chrome heeft geen schadelijke software gevonden op je computer • {NUM_HOURS} uur geleden gecheckt}}</translation>
@@ -6056,6 +6058,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7077829361966535409">De inlogpagina kan niet worden geladen met de huidige proxyinstellingen. <ph name="GAIA_RELOAD_LINK_START" />Probeer opnieuw in te loggen<ph name="GAIA_RELOAD_LINK_END" /> of gebruik andere <ph name="PROXY_SETTINGS_LINK_START" />proxyinstellingen<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alle netwerken</translation>
 <translation id="708060913198414444">Adres van audio k&amp;opiëren</translation>
+<translation id="7082568314107259011"><ph name="NETWORK_NAME" /> wordt beheerd door je beheerder</translation>
 <translation id="7085389578340536476">Toestaan dat Chrome audio opneemt?</translation>
 <translation id="7086672505018440886">Chrome-logbestanden opnemen in het archief.</translation>
 <translation id="7088434364990739311">Het starten van de updatecontrole is mislukt (foutcode <ph name="ERROR" />).</translation>
@@ -7294,6 +7297,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8325413836429495820">Geen toestemming om je klembord te bekijken</translation>
 <translation id="8326478304147373412">PKCS nr. 7, certificaatketen</translation>
 <translation id="8327676037044516220">Rechten en contentinstellingen</translation>
+<translation id="8330689128072902965">Contacten dichtbij kunnen met je delen. Klik om te wijzigen.</translation>
 <translation id="833256022891467078">Gedeelde mappen voor Crostini</translation>
 <translation id="8335587457941836791">Losmaken van plank</translation>
 <translation id="8336407002559723354">Updates eindigen in <ph name="MONTH_AND_YEAR" /></translation>

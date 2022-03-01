@@ -905,6 +905,7 @@
 <translation id="1869433484041798909">બુકમાર્કનું બટન</translation>
 <translation id="1871098866036088250">Chrome બ્રાઉઝરમાં ખોલો</translation>
 <translation id="187145082678092583">ઓછી ઍપ</translation>
+<translation id="1871463148436682760">સરસ રીતે પૂર્ણ કર્યું!</translation>
 <translation id="1871534214638631766">તમે જ્યારે રાઇટ ક્લિક કરો અથવા કન્ટેન્ટને થોડીવાર દબાવી રાખો, ત્યારે સંબંધિત માહિતી બતાવો</translation>
 <translation id="1871569928317311284">ઘેરી થીમ બંધ કરો</translation>
 <translation id="1871615898038944731">તમારું <ph name="DEVICE_TYPE" /> અપ ટૂ ડેટ છે</translation>
@@ -2333,6 +2334,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" />ની છૂટ</translation>
 <translation id="3305389145870741612">ફોર્મેટ કરવાની પ્રક્રિયામાં થોડો સમય લાગી શકે છે. કૃપા કરીને રાહ જુઓ.</translation>
 <translation id="3305661444342691068">PDFને પ્રીવ્યૂમાં ખોલો</translation>
+<translation id="3306992216458434072">તમારા ગ્રૂપને નામ આપો અને કોઈ રંગ પસંદ કરો</translation>
 <translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> માટે છૂટ મેળવો</translation>
 <translation id="3308116878371095290">આ પેજને કુકી સેટ કરવાથી અટકાવવામાં આવ્યું હતું.</translation>
 <translation id="3308134619352333507">બટન છુપાવો</translation>
@@ -3746,6 +3748,7 @@
 <translation id="4708794300267213770">નિષ્ક્રિયતામાંથી બહાર આવવા પર લૉક સ્ક્રીન બતાવો</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> છોડો</translation>
 <translation id="4711638718396952945">સેટિંગ રિસ્ટોર કરો</translation>
+<translation id="47158868804223727">ગ્રૂપને મોટું કે નાનું કરવા માટે, તેના નામ પર ક્લિક કરો</translation>
 <translation id="4716483597559580346">વધારાની સુરક્ષા માટે પાવરવૉશ</translation>
 <translation id="471880041731876836">તમારી પાસે આ સાઇટની મુલાકાત લેવાની પરવાનગી નથી</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> માટેનો પાસવર્ડ</translation>
@@ -3809,6 +3812,7 @@
 <translation id="4794810983896241342">અપડેટ <ph name="BEGIN_LINK" />તમારા વ્યવસ્થાપક<ph name="END_LINK" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="479536056609751218">વેબપેજ, ફક્ત HTML</translation>
 <translation id="4796142525425001238">હંમેશાં રિસ્ટોર કરો</translation>
+<translation id="4797314204379834752">ઑનલાઇન શૉપિંગ અને બીજી ઘણી બધી બાબતો માટે કાર્યો ગોઠવવા, ટૅબના ગ્રૂપનો ઉપયોગ કરવાનો પ્રયાસ કરો</translation>
 <translation id="4798236378408895261">જોડો <ph name="BEGIN_LINK" />બ્લૂટૂથ લૉગ<ph name="END_LINK" /> (Google આંતરિક)</translation>
 <translation id="479863874072008121">ડિવાઇસ મેનેજ કરો</translation>
 <translation id="4800839971935185386">નામ અને આઇકનની અપડેટનો રિવ્યૂ કરો</translation>
@@ -4049,6 +4053,7 @@
 <translation id="5039696241953571917">સાચવેલા પાસવર્ડને તમારા Google એકાઉન્ટમાં જુઓ અને મેનેજ કરો</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5040823038948176460">કન્ટેન્ટના વધારાના સેટિંગ</translation>
+<translation id="5041509233170835229">Chrome ઍપ</translation>
 <translation id="5043440033854483429">નામ માટે અક્ષરો, સંખ્યાઓ અને હાયફન (-)નો ઉપયોગ કરી શકાય છે અને તે 1થી 15 અક્ષરની વચ્ચે હોવું આવશ્યક છે.</translation>
 <translation id="5043913660911154449">તમારા પ્રિન્ટરની PPD ફાઇલનો ઉલ્લેખ કરો <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
@@ -5377,6 +5382,7 @@ USB ડિવાઇસ</translation>
 <translation id="6393156038355142111">સશક્ત પાસવર્ડ સૂચવો</translation>
 <translation id="6393550101331051049">અસુરક્ષિત કન્ટેન્ટ બતાવવાની મંજૂરી છે</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />સિસ્ટમ માહિતી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />મેટ્રિક્સ<ph name="END_LINK2" /> મોકલો</translation>
+<translation id="6396175271241405634">સિસ્ટમ ઍપ</translation>
 <translation id="6396988158856674517">સાઇટને મોશન સેન્સરનો ઉપયોગ કરવાથી બ્લૉક કરો</translation>
 <translation id="6398715114293939307">Google Play Store દૂર કરો</translation>
 <translation id="6398765197997659313">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
@@ -5446,6 +5452,7 @@ USB ડિવાઇસ</translation>
 <translation id="6460566145397380451">MIDI ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી છે</translation>
 <translation id="6460601847208524483">આગલું શોધો</translation>
 <translation id="6461170143930046705">નેટવર્ક શોધી રહ્યાં છીએ...</translation>
+<translation id="6462204616987156669">ટૅબ પર રાઇટ ક્લિક કરો અને "નવા ગ્રૂપમાં ટૅબ ઉમેરો" પસંદ કરો</translation>
 <translation id="6463795194797719782">&amp;સંપાદિત કરો</translation>
 <translation id="6464825623202322042">આ ઉપકરણ</translation>
 <translation id="6465841119675156448">ઇન્ટરનેટ વિના</translation>
@@ -5863,6 +5870,7 @@ USB ડિવાઇસ</translation>
 <translation id="6885771755599377173">સિસ્ટમ માહિતી પ્રીવ્યૂ</translation>
 <translation id="6886871292305414135">લિંક નવા &amp;ટૅબમાં ખોલો</translation>
 <translation id="6889957081990109136">હજી પણ કોઈ સ્વિચની સોંપણી કરવામાં આવી નથી</translation>
+<translation id="689007770043972343">ખુલેલી અન્ય ટૅબને તમારા ગ્રૂપમાં ખેંચવાનો પ્રયાસ કરો</translation>
 <translation id="6892812721183419409"><ph name="USER" /> તરીકે લિંક ખોલો</translation>
 <translation id="6895032998810961280">નુકસાનકારક સૉફ્ટવેર, સિસ્ટમ સેટિંગ અને આ ક્લિનઅપ દરમ્યાન તમારા કમ્પ્યુટર પર મળી આવી હતી તે પ્રક્રિયાઓ વિશેની વિગતોની જાણ Googleને કરો.</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" /> <ph name="MANAGER" /> દ્વારા સંચાલિત છે અને તમારા ઍડમિને ગૌણ એકાઉન્ટ તરીકે સાઇન ઇન કરવાને બ્લૉક કર્યું છે</translation>
@@ -6440,6 +6448,7 @@ USB ડિવાઇસ</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 કુકી}one{{NUM_COOKIES} કુકી}other{{NUM_COOKIES} કુકી}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> એક્સટેન્શન પાસવર્ડ અને ક્રેડિટ કાર્ડ નંબર સહિત, તમે ટાઇપ કરો તે બધી ટેક્સ્ટને એકત્રિત કરી શકે છે. શું તમે આ એક્સટેન્શનનો ઉપયોગ કરવા માંગો છો?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android ઍપ</translation>
 <translation id="7495778526395737099">તમારો જૂનો પાસવર્ડ ભૂલી ગયા છો?</translation>
 <translation id="7497981768003291373">તમારી પાસે તાજેતરમાં કૅપ્ચર કરેલ કોઈ WebRTC ટેક્સ્ટ લૉગ નથી.</translation>
 <translation id="7501957181231305652">અથવા</translation>

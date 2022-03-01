@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Stranica Chromiuma</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5945387852661427312">Prijavljujete se s računom kojim upravlja domena <ph name="DOMAIN" /> i dajete njenom administratoru kontrolu nad svojim podacima iz Chromiuma. Vaši podaci će se trajno povezati s ovim računom. Odjavom iz Chromiuma će se izbrisati vaši podaci s ovog uređaja, ali će ostati pohranjeni na vašem Google računu.</translation>
+<translation id="5983312940147103417">Poboljšavanje Chromiuma</translation>
 <translation id="602807004951640891">Korištenjem Chromiuma prihvatate <ph name="BEGIN_LINK_TOS" />Uslove korištenja usluge<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Da postavite Chromium kao zadani preglednik:
 1. Otvorite Postavke
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">Zaključaj anonimne kartice prilikom zatvaranja Chromiuma</translation>
 <translation id="7980860476903281594">Chromium dijeli vašu lokaciju s web lokacijama koje vi odobrite.</translation>
 <translation id="8013573822802650211">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chromium, prijavite se na svim uređajima</translation>
+<translation id="80599830191519229">Kada je uključeno:
+<ph name="BEGIN_INDENT" />  • Pomozite poboljšati Chromium za korisnike koji ga upotrebljavaju na isti način kao vi.<ph name="END_INDENT" />
+
+Važne napomene:
+<ph name="BEGIN_INDENT" />  • Podaci o upotrebi Chromiuma šalju se Googleu, no nisu povezani s vama.
+  • Ako se Chromium sruši, pojedinosti o rušenju mogu uključivati neke osobne podatke.
+  • Ako uključite sinkronizaciju, mjerni podaci mogu uključivati i podatke o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Izbrisati Chromium podatke s ovog uređaja?</translation>
 <translation id="8175055321229419309">Savjet: <ph name="BEGIN_LINK" />Pomjerite Chromium na priključnu stranicu<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium nije mogao provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>

@@ -42,6 +42,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1265739287306757398">További információ</translation>
 <translation id="1272079795634619415">Leállítás</translation>
 <translation id="1275718070701477396">Kijelölt</translation>
+<translation id="1281818060020671000">Adatok kezelése</translation>
 <translation id="1282311502488501110">Bejelentkezés leállítása</translation>
 <translation id="1283524564873030414">Az elmúlt 24 órából</translation>
 <translation id="1285320974508926690">Ezt a webhelyet soha ne fordítsa le</translation>
@@ -404,8 +405,10 @@ Hajtsa végre az alábbi lépéseket:</translation>
 Adatai az összetett szinkronizálási jelszavával vannak titkosítva. Írja be a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="4682686630151240767">1. Nyissa meg az iPhone Beállítások menüjét.</translation>
 <translation id="4689564913179979534">Fizetési módok kezelése...</translation>
+<translation id="4697071790493980729">Nincs találat</translation>
 <translation id="470966556546083668">Ne legyen bekapcsolva a szinkronizálás</translation>
 <translation id="4731472194328757163">Kamera- és mikrofon-hozzáférés engedélyezve</translation>
+<translation id="4737560986434232178">Keresés a legutóbb megnyitott lapokon</translation>
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="4747097190499141774">Az összetett jelszavas titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket. Titkosított adatait csak az olvashatja el, aki rendelkezik az Ön összetett jelszavával. Az összetett jelszót a Google nem kapja meg, és nem is tárolja. Ha elfelejtette összetett jelszavát, vagy módosítaná ezt a beállítást, alaphelyzetbe kell állítania a szinkronizálást. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4751645464639803239">Új inkognitó lap</translation>

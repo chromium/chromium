@@ -406,6 +406,7 @@
 تم ترميز بياناتك باستخدام عبارة مرور المزامنة. أدخلها لبدء المزامنة.</translation>
 <translation id="4682686630151240767">‏1- فتح iPhone Settings (إعدادات iPhone)</translation>
 <translation id="4689564913179979534">جارٍ إدارة طُرق الدفع...</translation>
+<translation id="4697071790493980729">لم يتم العثور على نتائج.</translation>
 <translation id="470966556546083668">عدم تفعيل المزامنة</translation>
 <translation id="4731472194328757163">الوصول إلى الكاميرا والميكروفون مسموح به.</translation>
 <translation id="4737560986434232178">البحث في علامات التبويب الأخيرة</translation>
@@ -490,6 +491,7 @@
 <translation id="5490005495580364134">حظر كل ملفات تعريف الارتباط (غير مُستحسَن)</translation>
 <translation id="5513681519188741830">قبل <ph name="TIME" /> ساعة</translation>
 <translation id="5525269841082836315">إنشاء عبارة مرور</translation>
+<translation id="5542540507657872337">تم العثور على <ph name="COUNT" /> علامة تبويب مفتوحة.</translation>
 <translation id="5548760955356983418">‏يتيح لك Handoff بدء تصفح موقع على هذا الجهاز ثم متابعة التصفح بسهولة على جهاز Mac. سيظهر الموقع المفتوح حاليًا على Dock بـ Mac.
 
 لابد من تفعيل Handoff كذلك في القسم العام من الإعدادات، ولابد من استخدام أجهزتك لنفس حساب iCloud.</translation>

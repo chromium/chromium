@@ -921,6 +921,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1869433484041798909">Botão de favorito</translation>
 <translation id="1871098866036088250">Abrir no navegador Chrome</translation>
 <translation id="187145082678092583">Menos apps</translation>
+<translation id="1871463148436682760">Bom trabalho!</translation>
 <translation id="1871534214638631766">Mostrar informações relacionadas ao clicar com o botão direito no conteúdo ou tocar nele e mantê-lo pressionado</translation>
 <translation id="1871569928317311284">Desativar o tema escuro</translation>
 <translation id="1871615898038944731">Seu <ph name="DEVICE_TYPE" /> está atualizado</translation>
@@ -2351,6 +2352,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de desconto</translation>
 <translation id="3305389145870741612">O processo de formatação pode levar alguns segundos. Aguarde.</translation>
 <translation id="3305661444342691068">Abrir visualização do PDF</translation>
+<translation id="3306992216458434072">Nomeie o grupo e escolha uma cor</translation>
 <translation id="3307176291962384345">Receba descontos para este comerciante: <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Esta página foi impedida de configurar cookies.</translation>
 <translation id="3308134619352333507">Ocultar botão</translation>
@@ -3766,6 +3768,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4708794300267213770">Mostrar tela de bloqueio ao sair do modo de suspensão</translation>
 <translation id="4708849949179781599">Encerrar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configurações</translation>
+<translation id="47158868804223727">Clique no nome do grupo para abrir ou fechar</translation>
 <translation id="4716483597559580346">Executar Powerwash para maior segurança</translation>
 <translation id="471880041731876836">Você não tem permissão para visitar este site</translation>
 <translation id="4722735765955348426">Senha para <ph name="USERNAME" /></translation>
@@ -3829,6 +3832,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4794810983896241342">As atualizações são gerenciadas pelo <ph name="BEGIN_LINK" />seu administrador<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Página da web, somente HTML</translation>
 <translation id="4796142525425001238">Sempre restaurar</translation>
+<translation id="4797314204379834752">Tente usar grupo de guias para organizar tarefas, fazer compras on-line e muito mais</translation>
 <translation id="4798236378408895261">Anexar <ph name="BEGIN_LINK" />registros de Bluetooth<ph name="END_LINK" /> (interno do Google)</translation>
 <translation id="479863874072008121">Gerenciar dispositivos</translation>
 <translation id="4800839971935185386">Revisar atualizações de nome e ícone</translation>
@@ -4069,6 +4073,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5039696241953571917">Ver e gerenciar as senhas salvas na sua Conta do Google</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040823038948176460">Mais configurações de conteúdo</translation>
+<translation id="5041509233170835229">App Chrome</translation>
 <translation id="5043440033854483429">O nome pode conter letras, números e hifens (-) e precisa ter de 1 a 15 caracteres.</translation>
 <translation id="5043913660911154449">Ou especifique a impressora PPD <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
@@ -5396,6 +5401,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6393156038355142111">Sugerir senha forte</translation>
 <translation id="6393550101331051049">Permitir a exibição de conteúdo não seguro</translation>
 <translation id="6395423953133416962">Enviar <ph name="BEGIN_LINK1" />informações<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />métricas do sistema<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">App do sistema</translation>
 <translation id="6396988158856674517">Impedir que sites usem sensores de movimento</translation>
 <translation id="6398715114293939307">Remover Google Play Store</translation>
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
@@ -5465,6 +5471,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6460566145397380451">Permitir a conexão a dispositivos MIDI</translation>
 <translation id="6460601847208524483">Localizar próximo</translation>
 <translation id="6461170143930046705">Procurando redes…</translation>
+<translation id="6462204616987156669">Clique com o botão direito do mouse em uma guia e selecione a opção "Adicionar guia ao novo grupo"</translation>
 <translation id="6463795194797719782">&amp;Editar</translation>
 <translation id="6464825623202322042">Este dispositivo</translation>
 <translation id="6465841119675156448">Sem Internet</translation>
@@ -5882,6 +5889,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6885771755599377173">Visualização de informações do sistema</translation>
 <translation id="6886871292305414135">Abrir link em uma nova &amp;guia</translation>
 <translation id="6889957081990109136">O interruptor ainda não foi atribuído</translation>
+<translation id="689007770043972343">Tente arrastar outras guias abertas para o grupo</translation>
 <translation id="6892812721183419409">Abrir link como <ph name="USER" /></translation>
 <translation id="6895032998810961280">Enviar ao Google detalhes sobre softwares nocivos, configurações do sistema e processos encontrados no seu computador durante a limpeza</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" /> é gerenciado por <ph name="MANAGER" /> e seu administrador bloqueou o processo de login com uma conta secundária</translation>
@@ -6459,6 +6467,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}one{{NUM_COOKIES} cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="7493386493263658176">A extensão <ph name="EXTENSION_NAME" /> pode coletar todo o texto que você digita, incluindo dados pessoais, como senhas e números de cartão de crédito. Quer usar essa extensão?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">App Android</translation>
 <translation id="7495778526395737099">Esqueceu sua senha antiga?</translation>
 <translation id="7497981768003291373">Você não tem nenhum registro de texto WebRTC capturado recentemente.</translation>
 <translation id="7501957181231305652">ou</translation>
@@ -6538,6 +6547,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7573172247376861652">Carga da bateria</translation>
 <translation id="7573594921350120855">Os sites geralmente usam a câmera de vídeo para recursos de comunicação, como chat por vídeo</translation>
 <translation id="7574650250151586813">Para digitar o texto, atualize o app Teclado do Daydream</translation>
+<translation id="7574676002608048667">Enviar senha</translation>
 <translation id="7576690715254076113">Agrupar</translation>
 <translation id="7576976045740938453">Ocorreu um problema com a conta do modo de demonstração.</translation>
 <translation id="7578137152457315135">Configurações de impressão digital</translation>

@@ -965,6 +965,7 @@ Kaka-install lang</translation>
 <translation id="7076293881109082629">Nagsa-sign in</translation>
 <translation id="7086931198345821656">Kailangan sa update na ito na i-powerwash ang iyong <ph name="DEVICE_TYPE" />. Ide-delete ang lahat ng data. Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
+<translation id="7098053464892629930">I-download ang app para sa <ph name="NAME" /> sa Google Play para makita ang lahat ng available na feature</translation>
 <translation id="7098389117866926363">USB-C device (kaliwang port sa likod)</translation>
 <translation id="7106330611027933926">Ipakita ang deskbar</translation>
 <translation id="7118268675952955085">screenshot</translation>
@@ -1209,6 +1210,7 @@ Kaka-install lang</translation>
 <translation id="8660331759611631213">Square root ng 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Ipakita ang listahan ng network. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Buksan ang <ph name="NAME" /> para i-set up ang iyong device</translation>
 <translation id="8676770494376880701">Nakakabit ang low-power charger</translation>
 <translation id="8683506306463609433">Aktibo ang pag-trace ng performance</translation>
 <translation id="8685326675965865247">Maghanap sa iyong device, mga app, mga setting, at web. Gamitin ang mga arrow key para i-navigate ang iyong mga app.</translation>

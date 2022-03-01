@@ -21,6 +21,13 @@
 <translation id="2347208864470321755">Kada je ova funkcija uključena, Chrome će nuditi da prevede stranice napisane na drugim jezicima pomoću Google prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome ima funkcije koje vam pomažu da upravljate internet podacima i brzinom učitavanja veb-stranica.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="245827422401250729">Kada je ovo uključeno:
+<ph name="BEGIN_INDENT" />  • Pomozite da poboljšamo Chrome za ljude koji ga koriste kao vi<ph name="END_INDENT" />
+
+Šta treba da imate na umu:
+<ph name="BEGIN_INDENT" />  • Informacije o vašem korišćenju Chrome-a se šalju Google-u, ali nisu povezane sa vama
+  • Ako Chrome otkaže, detalji o otkazivanju mogu da sadrže neke lične podatke
+  • Ako uključite sinhronizaciju, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete<ph name="END_INDENT" /></translation>
 <translation id="2561231791489583059">Koristite Chrome kao podrazumevani pregledač da biste se odbranili od opasnih sajtova i zaštitili lozinke</translation>
 <translation id="2574249610672786438">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, prijavite se na svim uređajima</translation>
 <translation id="2576431527583832481">Chrome je upravo postao bolji! Dostupna je nova verzija.</translation>
@@ -58,6 +65,7 @@
 <translation id="4698415050768537821">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo sutra ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu.<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nije podržano u verziji Chrome beta</translation>
 <translation id="5030102366287574140">Chrome može da vas štiti od upada u podatke, nebezbednih veb-sajtova i drugih stvari.</translation>
+<translation id="5108659628347594808">Poboljšajte Chrome</translation>
 <translation id="5119391094379141756">Izaberite Chrome</translation>
 <translation id="5162467219239570114">Chrome je zastareo. Ako ažuriranje nije dostupno u <ph name="BEGIN_LINK" />App Store-u<ph name="END_LINK" />, uređaj možda ne podržava nove verzije Chrome-a.</translation>
 <translation id="5389212809648216794">Google Chrome ne može da koristi kameru zato što je već koristi druga aplikacija</translation>

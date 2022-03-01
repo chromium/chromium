@@ -2969,6 +2969,11 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Es útil para los administradores que necesitan más tiempo para actualizar sus sitios web internos afectados por esta nueva restricción. Esta política empresarial es temporal; se planea quitarla después de la versión 104 de <ph name="PRODUCT_NAME" />.
       </translation>
 <translation id="4268586991084547853">Mayor compatibilidad con listas de sitios en modo de empresa de Microsoft IE/Edge</translation>
+<translation id="4269798992490176617">Si habilitas la política, es posible que <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> realice solicitudes a la API de WebAuthn que se originan a partir de una sesión de navegación en un host remoto.
+
+      Si inhabilitas la política o no la estableces, se aplicará el comportamiento predeterminado.
+
+      Ten en cuenta que esta función solo se admite dentro del entorno de red interna de Google.</translation>
 <translation id="4269859918103560644">Permitir que el usuario decida</translation>
 <translation id="4274691295133617461">Si estableces la política en 3, los sitios web podrán solicitar acceso de lectura a archivos y directorios en el sistema de archivos del sistema operativo del host a través de la API de File System. Si la estableces en 2, se rechazará el acceso.
 
@@ -5381,6 +5386,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7063895219334505671">Permitir ventanas emergentes en estos sitios</translation>
 <translation id="7066292150801784098">Impedir que los usuarios remotos interactúen con las ventanas con permisos elevados en sesiones de asistencia remota</translation>
 <translation id="706669471845501145">Permitir que los sitios muestren notificaciones de escritorio.</translation>
+<translation id="70681795425744184">No permitir que CRD realice solicitudes a la API de WebAuthn que se envíen al proxy a través de un host remoto</translation>
 <translation id="7070525176564511548">Se requiere el ingreso de la contraseña cada semana (168 horas)</translation>
 <translation id="7072208053150563108">Frecuencia de cambio de la contraseña del dispositivo</translation>
 <translation id="7072567600438630966">Permite habilitar Phone Hub</translation>
@@ -5668,6 +5674,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7407441173422042771">Esta política controla la predicción de red en <ph name="PRODUCT_NAME" />. Controla la precarga de DNS, la preconexión a TCP y SSL, y la representación previa de páginas web.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, se activará la predicción de red, pero el usuario podrá cambiarla.</translation>
+<translation id="7410074797376205571">Permitir que <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> realice solicitudes a la API de WebAuthn que se envíen al proxy a través de un host remoto</translation>
 <translation id="7412456346709338637">Habilita el acceso de datos para dispositivos periféricos Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Permite las conexiones de acceso remoto a esta máquina</translation>
 <translation id="7417972229667085380">Indica el porcentaje en el que debe ajustarse la demora de inactividad en el modo de presentación (en desuso).</translation>
@@ -6612,6 +6619,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
        Si inhabilitas la política, no se bloquearán los diálogos de JavaScript activados desde un submarco de origen diferente.
 
        En la versión 95 de <ph name="PRODUCT_NAME" />, se quitará esta política.</translation>
+<translation id="8427466947904008809">Permitir que CRD realice solicitudes a la API de WebAuthn que se envíen al proxy a través de un host remoto</translation>
 <translation id="8433186206711564395">Opciones de red</translation>
 <translation id="8433769814000220721">Habilita el contenido sugerido</translation>
 <translation id="843609873781525167">Si estableces la política como verdadera, <ph name="PRODUCT_NAME" /> revisará siempre al iniciarse si es el navegador predeterminado, y se registrará automáticamente en caso de ser posible. Si la estableces como falsa, <ph name="PRODUCT_NAME" /> dejará de revisar si es el navegador predeterminado, y se desactivarán los controles del usuario para esta opción.

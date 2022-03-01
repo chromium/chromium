@@ -909,6 +909,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1869433484041798909">Pulsante Preferito</translation>
 <translation id="1871098866036088250">Apri nel browser Chrome</translation>
 <translation id="187145082678092583">Meno app</translation>
+<translation id="1871463148436682760">Ottimo lavoro</translation>
 <translation id="1871534214638631766">Mostra le informazioni correlate quando fai clic con il tasto destro del mouse o eserciti una pressione prolungata su un contenuto</translation>
 <translation id="1871569928317311284">Disattiva il tema scuro</translation>
 <translation id="1871615898038944731">Il dispositivo <ph name="DEVICE_TYPE" /> è aggiornato</translation>
@@ -2336,6 +2337,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> di sconto</translation>
 <translation id="3305389145870741612">La procedura di formattazione può richiedere alcuni secondi. Attendi.</translation>
 <translation id="3305661444342691068">Apri PDF in anteprima</translation>
+<translation id="3306992216458434072">Assegna un nome al gruppo e scegli un colore</translation>
 <translation id="3307176291962384345">Ricevi sconti per <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Impostazione dei cookie vietata per questa pagina.</translation>
 <translation id="3308134619352333507">Nascondi pulsante</translation>
@@ -3749,6 +3751,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4708794300267213770">Mostra la schermata di blocco quando il dispositivo viene riattivato dopo la sospensione</translation>
 <translation id="4708849949179781599">Esci da <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Ripristina impostazioni</translation>
+<translation id="47158868804223727">Fai clic sul nome del gruppo per espanderlo o comprimerlo</translation>
 <translation id="4716483597559580346">Powerwash per maggiore sicurezza</translation>
 <translation id="471880041731876836">Non sei autorizzato a visitare questo sito</translation>
 <translation id="4722735765955348426">Password di <ph name="USERNAME" /></translation>
@@ -3812,6 +3815,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4794810983896241342">Gli aggiornamenti sono gestiti dall'<ph name="BEGIN_LINK" />amministratore<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Pagina web, solo HTML</translation>
 <translation id="4796142525425001238">Ripristina sempre</translation>
+<translation id="4797314204379834752">Prova a utilizzare i gruppi di schede per organizzare le attività, fare acquisti online e altro ancora</translation>
 <translation id="4798236378408895261">Allega <ph name="BEGIN_LINK" />log Bluetooth<ph name="END_LINK" /> (interno di Google)</translation>
 <translation id="479863874072008121">Gestisci dispositivi</translation>
 <translation id="4800839971935185386">Controlla gli aggiornamenti del nome e dell'icona</translation>
@@ -4052,6 +4056,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5039696241953571917">Visualizza e gestisci le password salvate nel tuo Account Google</translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5040823038948176460">Altre impostazioni contenuti</translation>
+<translation id="5041509233170835229">App di Chrome</translation>
 <translation id="5043440033854483429">Il nome può contenere lettere, numeri e trattini (-) e deve avere una lunghezza compresa tra 1 e 15 caratteri (inclusi).</translation>
 <translation id="5043913660911154449">In alternativa, specifica il file PPD della stampante. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Password non corretta</translation>
@@ -5378,6 +5383,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6393156038355142111">Suggerisci password efficace</translation>
 <translation id="6393550101331051049">Possono mostrare contenuti non sicuri</translation>
 <translation id="6395423953133416962">Invia <ph name="BEGIN_LINK1" />informazioni di sistema<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />metriche<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">App di sistema</translation>
 <translation id="6396988158856674517">Impedisci ai siti di usare i sensori di movimento</translation>
 <translation id="6398715114293939307">Rimuovi il Google Play Store</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
@@ -5447,6 +5453,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6460566145397380451">Possono connettersi ai dispositivi MIDI</translation>
 <translation id="6460601847208524483">Trova successivo</translation>
 <translation id="6461170143930046705">Ricerca di reti...</translation>
+<translation id="6462204616987156669">Fai clic con il tasto destro del mouse su una scheda e seleziona "Aggiungi scheda a nuovo gruppo"</translation>
 <translation id="6463795194797719782">&amp;Modifica</translation>
 <translation id="6464825623202322042">Questo dispositivo</translation>
 <translation id="6465841119675156448">Senza Internet</translation>
@@ -5864,6 +5871,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6885771755599377173">Anteprima informazioni di sistema</translation>
 <translation id="6886871292305414135">Apri link in un'altra &amp;scheda</translation>
 <translation id="6889957081990109136">Il sensore non è stato ancora assegnato</translation>
+<translation id="689007770043972343">Prova a trascinare altre schede aperte nel gruppo</translation>
 <translation id="6892812721183419409">Apri link come <ph name="USER" /></translation>
 <translation id="6895032998810961280">Segnala a Google i dettagli relativi a software dannoso, impostazioni di sistema e processi trovati sul tuo computer durante questa pulizia</translation>
 <translation id="6895902329218596456">L'account <ph name="USER_EMAIL" /> è gestito da <ph name="MANAGER" /> e il tuo amministratore ha bloccato l'accesso con un account secondario</translation>
@@ -6441,6 +6449,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}one{{NUM_COOKIES} cookie}other{{NUM_COOKIES} cookie}}</translation>
 <translation id="7493386493263658176">L'estensione <ph name="EXTENSION_NAME" /> potrebbe memorizzare tutto il testo digitato, inclusi dati personali quali password e numeri di carte di credito. Vuoi utilizzare l'estensione?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">App per Android</translation>
 <translation id="7495778526395737099">Hai dimenticato la vecchia password?</translation>
 <translation id="7497981768003291373">Nessun log di testo WebRTC acquisito di recente.</translation>
 <translation id="7501957181231305652">oppure</translation>
@@ -6520,6 +6529,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7573172247376861652">Carica della batteria</translation>
 <translation id="7573594921350120855">In genere, i siti usano la videocamera per funzionalità di comunicazione come la chat video</translation>
 <translation id="7574650250151586813">Per digitare il testo, aggiorna l'app Tastiera Daydream</translation>
+<translation id="7574676002608048667">Invia password</translation>
 <translation id="7576690715254076113">Fascicola</translation>
 <translation id="7576976045740938453">Si è verificato un problema con l'account della modalità demo.</translation>
 <translation id="7578137152457315135">Impostazioni impronta</translation>

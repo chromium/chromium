@@ -356,7 +356,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3252573918265662711">Configurer</translation>
 <translation id="3255483164551725916">Que sais-tu faire ?</translation>
 <translation id="3269597722229482060">Clic droit</translation>
-<translation id="3289544412142055976">Les applis Linux ne sont pas compatibles actuellement</translation>
+<translation id="3289544412142055976">Les applis Linux ne sont pas prises en charge actuellement</translation>
 <translation id="3289674678944039601">En charge via un adaptateur</translation>
 <translation id="3290356915286466215">Non sécurisé</translation>
 <translation id="3294437725009624529">Invité</translation>
@@ -708,7 +708,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5400461572260843123">Réglages rapides, appuyez sur la touche de recherche et la flèche de gauche pour accéder au centre de notifications.</translation>
 <translation id="5426063383988017631">Menu "Paramètres" fermé</translation>
 <translation id="5428899915242071344">Commencer la sélection</translation>
-<translation id="5429993543155113935">Les fenêtres de navigation privée ne sont pas compatibles actuellement</translation>
+<translation id="5429993543155113935">Les fenêtres de navigation privée ne sont pas prises en charge actuellement</translation>
 <translation id="5430931332414098647">Partage de connexion instantané</translation>
 <translation id="5431318178759467895">Couleur</translation>
 <translation id="5433020815079095860">Entrée audio</translation>
@@ -851,7 +851,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6431865393913628856">Enregistrer l'écran</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> événement</translation>
-<translation id="6449483711453944360">Les applis Linux et les fenêtres de navigation privée ne sont pas compatibles actuellement</translation>
+<translation id="6449483711453944360">Les applis Linux et les fenêtres de navigation privée ne sont pas prises en charge actuellement</translation>
 <translation id="6452181791372256707">Refuser</translation>
 <translation id="6453179446719226835">La langue a été modifiée</translation>
 <translation id="6459472438155181876">Extension de l'écran pour <ph name="DISPLAY_NAME" /></translation>

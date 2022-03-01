@@ -1758,6 +1758,11 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2905984450136807296">Ciclo de vida do cache de dados de autenticação</translation>
 <translation id="2906874737073861391">Lista de extensões AppPack</translation>
 <translation id="2908277604670530363">Número máximo de conexões simultâneas ao servidor proxy</translation>
+<translation id="2909068176249499360">A definição desta política força a ativação ou desativação do Pareamento rápido,
+      que é um novo fluxo de pareamento por Bluetooth que vincula periféricos pareados com uma conta do GAIA.
+      Isso permite que outros dispositivos Chrome OS (e Android) conectados à mesma conta do GAIA sejam pareados automaticamente.
+      Se a política for deixada sem definição, o valor padrão será desativado para usuários corporativos e ativado para
+      contas não gerenciadas.</translation>
 <translation id="2912366658685903301">Configurar a cor do tema do navegador</translation>
 <translation id="291853569864365550">Não mostrar sugestões de conteúdo na página "Nova guia"</translation>
 <translation id="2920795918401557243">Esta configuração permite coletar o rastreamento de desempenho do sistema usando o serviço de rastreamento do sistema.
@@ -5916,6 +5921,13 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se ela for definida como falsa ou for deixada sem definição, os relatórios serão desativados.
       Em ambos os casos, as regras definidas com o nível de restrições ALLOW na DataLeakPreventionRulesList não criarão relatórios de eventos.</translation>
 <translation id="7648907905084499629">Use o comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para cookies em todos os sites</translation>
+<translation id="765347139142030086">Se a política for ativada, políticas associadas a uma conta do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> poderão ter precedência se entrarem em conflito com políticas do <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Apenas políticas originárias de usuários seguros podem ter precedência. Um usuário seguro é afiliado à organização que gerencia o navegador com o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Todas as outras políticas do usuário terão precedência por padrão.
+
+      A política pode ser combinada com a <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Se as duas forem ativadas, as políticas de nuvem do usuário também poderão ter precedência sobre as políticas em conflito da plataforma.
+
+      Se a política for desativada ou deixada sem definição, as políticas de nuvem do usuário terão prioridade por padrão.</translation>
 <translation id="7657261947024629645">Otimiza o desempenho.</translation>
 <translation id="7666228839913571182">Permitir cookies de terceiros</translation>
 <translation id="7668830462800981702">Se a política for definida como "Ativada", uma pesquisa padrão será realizada quando o usuário digitar um texto na barra de endereço que não seja um URL. Para especificar o provedor de pesquisa padrão, configure o restante das políticas de pesquisa padrão. Se essas políticas forem deixadas em branco, o usuário poderá escolher o provedor padrão. Se a política for definida como "Desativada", nenhuma pesquisa será realizada quando o usuário digitar um texto na barra de endereço que não seja um URL.

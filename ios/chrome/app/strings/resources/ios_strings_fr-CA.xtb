@@ -42,6 +42,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1265739287306757398">Découvrir comment</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1275718070701477396">Sélectionné</translation>
+<translation id="1281818060020671000">Gérer les données</translation>
 <translation id="1282311502488501110">Ne pas se connecter</translation>
 <translation id="1283524564873030414">24 dernières heures</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
@@ -404,8 +405,10 @@ Suivez les étapes ci-dessous :</translation>
 Vos données sont chiffrées avec votre phrase de passe. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="4682686630151240767">1. Ouvrez Réglages de l'iPhone</translation>
 <translation id="4689564913179979534">Gérer vos modes de paiement…</translation>
+<translation id="4697071790493980729">Aucun résultat</translation>
 <translation id="470966556546083668">Ne pas activer la synchronisation</translation>
 <translation id="4731472194328757163">Accès à l'appareil photo et au microphone autorisé</translation>
+<translation id="4737560986434232178">Rechercher dans les onglets récents</translation>
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4747097190499141774">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay. Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit ni ne stocke la phrase de passe. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>

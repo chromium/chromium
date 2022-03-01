@@ -965,6 +965,7 @@
 <translation id="7076293881109082629">Кирүү</translation>
 <translation id="7086931198345821656">Бул жаңыртуу <ph name="DEVICE_TYPE" /> түзмөгүңүздү жууп салууну талап кылууда. Бардык маалымат өчүрүлөт. <ph name="SYSTEM_APP_NAME" /> колдонмосунун акыркы жаңыртуусу жөнүндө кененирээк маалымат.</translation>
 <translation id="7088960765736518739">Switch Access функциясы</translation>
+<translation id="7098053464892629930">Түзмөктүн жеткиликтүү функцияларынын баарын пайдалануу үчүн Google Play'ден <ph name="NAME" /> колдонмосун жүктөп алыңыз</translation>
 <translation id="7098389117866926363">USB-C түзмөгү (аркасындагы сол жактагы оюкча)</translation>
 <translation id="7106330611027933926">Издөө панелин көрсөтүү</translation>
 <translation id="7118268675952955085">скриншот</translation>
@@ -1209,6 +1210,7 @@
 <translation id="8660331759611631213">71 квадраттык тамыры</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Тармактардын тизмесин көрсөтүү. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Түзмөгүңүздү жөндөө үчүн <ph name="NAME" /> колдонмосун ачыңыз</translation>
 <translation id="8676770494376880701">Кубаты төмөн кубаттагыч туташтырылды</translation>
 <translation id="8683506306463609433">Майнаптуулукка көз салуу жигердүү</translation>
 <translation id="8685326675965865247">Түзмөктөн, колдонмолордон, жөндөөлөрдөн жана Интернеттен издеңиз. Колдонмолоруңузда чабыттоо үчүн жебе баскычтарын пайдаланыңыз.</translation>

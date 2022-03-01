@@ -921,6 +921,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1869433484041798909">Knappen Bogmærke</translation>
 <translation id="1871098866036088250">Åbn i Chrome-browseren</translation>
 <translation id="187145082678092583">Færre apps</translation>
+<translation id="1871463148436682760">Sådan!</translation>
 <translation id="1871534214638631766">Vis relaterede oplysninger, når du højreklikker eller trykker længe på indholdet</translation>
 <translation id="1871569928317311284">Deaktiver Mørkt tema</translation>
 <translation id="1871615898038944731">Din <ph name="DEVICE_TYPE" /> er opdateret</translation>
@@ -1288,7 +1289,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2232876851878324699">Filen indeholdt ét certifikat, der ikke blev importeret:</translation>
 <translation id="2233502537820838181">&amp;Flere oplysninger</translation>
 <translation id="223356358902285214">Web- og appaktivitet</translation>
-<translation id="2234827758954819389">Guide til privatlivsindstillinger</translation>
+<translation id="2234827758954819389">Privatlivsguide</translation>
 <translation id="2234876718134438132">Synkronisering og Google-tjenester</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
 <translation id="2238379619048995541">Data for frekvenstilstand</translation>
@@ -2351,6 +2352,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> i rabat</translation>
 <translation id="3305389145870741612">Formateringen kan tage et par sekunder. Vent et øjeblik.</translation>
 <translation id="3305661444342691068">Åbn PDF i fremviseren</translation>
+<translation id="3306992216458434072">Navngiv din gruppe, og vælg en farve.</translation>
 <translation id="3307176291962384345">Få rabatter til <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Denne side blev forhindret i at konfigurere cookies.</translation>
 <translation id="3308134619352333507">Skjul knap</translation>
@@ -3765,6 +3767,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4708794300267213770">Vis låseskærmen, når enheden vågner fra dvale</translation>
 <translation id="4708849949179781599">Afslut <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Gendan indstillinger</translation>
+<translation id="47158868804223727">Klik på gruppenavnet for at udvide eller skjule det</translation>
 <translation id="4716483597559580346">Udfør powerwash som et ekstra sikkerhedsniveau</translation>
 <translation id="471880041731876836">Du har ikke tilladelse til at besøge dette website</translation>
 <translation id="4722735765955348426">Adgangskode til <ph name="USERNAME" /></translation>
@@ -3828,6 +3831,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4794810983896241342">Opdateringer administreres af din <ph name="BEGIN_LINK" />administrator<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Webside, kun HTML</translation>
 <translation id="4796142525425001238">Gendan altid</translation>
+<translation id="4797314204379834752">Prøv at bruge fanegrupper til at organisere opgaver, shoppe og meget mere</translation>
 <translation id="4798236378408895261">Vedhæft <ph name="BEGIN_LINK" />Bluetooth-logfiler<ph name="END_LINK" /> (internt hos Google)</translation>
 <translation id="479863874072008121">Administrer enheder</translation>
 <translation id="4800839971935185386">Gennemgå navne- og ikonopdateringer</translation>
@@ -4068,6 +4072,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5039696241953571917">Se og administrer gemte adgangskoder på din Google-konto</translation>
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5040823038948176460">Yderligere indstillinger for indhold</translation>
+<translation id="5041509233170835229">Chrome-app</translation>
 <translation id="5043440033854483429">Navne må indeholde bogstaver, tal og bindestreger (-), og de skal være på 1-15 tegn.</translation>
 <translation id="5043913660911154449">Du kan også angive PPD-filen for printeren <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Ugyldig adgangskode</translation>
@@ -5394,6 +5399,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6393156038355142111">Foreslå en stærk adgangskode</translation>
 <translation id="6393550101331051049">Har tilladelse til at vise usikkert indhold</translation>
 <translation id="6395423953133416962">Send <ph name="BEGIN_LINK1" />systemoplysninger<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">Systemapp</translation>
 <translation id="6396988158856674517">Bloker brug af bevægelsessensorer på websites</translation>
 <translation id="6398715114293939307">Fjern Google Play Butik</translation>
 <translation id="6398765197997659313">Afslut fuld skærm</translation>
@@ -5463,6 +5469,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6460566145397380451">Har tilladelse til at oprette forbindelse til MIDI-enheder</translation>
 <translation id="6460601847208524483">Find næste</translation>
 <translation id="6461170143930046705">Søger efter netværk...</translation>
+<translation id="6462204616987156669">Højreklik på en fane, og vælg "Føj fane til ny gruppe"</translation>
 <translation id="6463795194797719782">&amp;Rediger</translation>
 <translation id="6464825623202322042">Denne enhed</translation>
 <translation id="6465841119675156448">Uden internet</translation>
@@ -5880,6 +5887,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6885771755599377173">Forhåndsvisning af systemoplysninger</translation>
 <translation id="6886871292305414135">Åbn link i ny &amp;fane</translation>
 <translation id="6889957081990109136">Handlingen er endnu ikke tildelt nogen kontakter</translation>
+<translation id="689007770043972343">Prøv at trække andre åbne faner til din gruppe</translation>
 <translation id="6892812721183419409">Åbn linket som <ph name="USER" /></translation>
 <translation id="6895032998810961280">Rapportér oplysninger til Google om skadelig software, skadelige systemindstillinger og skadelige processer, der blev fundet på din computer i forbindelse med denne oprydning</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" /> administreres af <ph name="MANAGER" />, og din administrator har blokeret login med en sekundær konto</translation>
@@ -6457,6 +6465,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}one{{NUM_COOKIES} cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="7493386493263658176">Udvidelsen <ph name="EXTENSION_NAME" /> indsamler muligvis al den tekst, du indtaster, herunder personlige oplysninger såsom adgangskoder og kreditkortnumre. Vil du bruge denne udvidelse?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android-app</translation>
 <translation id="7495778526395737099">Har du glemt din gamle adgangskode?</translation>
 <translation id="7497981768003291373">Du har ingen nyligt registrerede WebRTC-tekstlogfiler.</translation>
 <translation id="7501957181231305652">eller</translation>
@@ -6536,6 +6545,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7573172247376861652">Batteriopladning</translation>
 <translation id="7573594921350120855">Websites bruger normalt dit videokamera til kommunikationsformål såsom videochat</translation>
 <translation id="7574650250151586813">Hvis du vil indtaste tekst, skal du opdatere appen Daydream-tastatur</translation>
+<translation id="7574676002608048667">Send adgangskode</translation>
 <translation id="7576690715254076113">Saml</translation>
 <translation id="7576976045740938453">Der opstod et problem med kontoen i demotilstand.</translation>
 <translation id="7578137152457315135">Indstillinger for fingeraftryk</translation>
@@ -6624,7 +6634,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7659154729610375585">Vil du afslutte inkognitotilstand alligevel?</translation>
 <translation id="7659297516559011665">Kun adgangskoder på denne enhed</translation>
-<translation id="7659336857671800422">Kig nærmere på guiden til privatlivsindstillinger</translation>
+<translation id="7659336857671800422">Kig nærmere på Privatlivsguide</translation>
 <translation id="7659584679870740384">Du har ikke tilladelse til at bruge denne enhed. Kontakt administratoren for at få tilladelse til at logge ind.</translation>
 <translation id="7661259717474717992">Tillad, at websites gemmer og læser cookiedata</translation>
 <translation id="7661451191293163002">Det var ikke muligt at hente et registreringscertifikat.</translation>

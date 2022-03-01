@@ -21,6 +21,13 @@
 <translation id="2347208864470321755">Pokud je tato funkce zapnutá, bude Chrome nabízet překlad stránek v jiných jazycích pomocí Překladače Google. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome obsahuje funkce, které pomáhají spravovat přenosy dat z internetu a umožňují zrychlit načítání webových stránek.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="245827422401250729">Když je tato funkce zapnutá:
+<ph name="BEGIN_INDENT" />  • Pomáháte s vylepšováním Chromu pro lidi, kteří jej používají stejně jako vy.<ph name="END_INDENT" />
+
+Co je třeba zvážit:
+<ph name="BEGIN_INDENT" />  • Informace o vašem používání prohlížeče Chrome se odesílají do Googlu, ale nejsou spojeny s vámi.
+  • Pokud Chrome spadne, podrobnosti o selhání mohou zahrnovat některé osobní údaje.
+  • Pokud zapnete synchronizaci, mohou metriky zahrnovat také informace o navštívených adresách URL.<ph name="END_INDENT" /></translation>
 <translation id="2561231791489583059">Používejte Chrome jako výchozí prohlížeč – ochrání vás před nebezpečnými weby a vaše hesla budou v bezpečí</translation>
 <translation id="2574249610672786438">Chcete-li mít své karty k dispozici všude, kde používáte Chrome, na všech zařízeních se přihlaste</translation>
 <translation id="2576431527583832481">Chrome je opět o něco lepší. K dispozici je nová verze.</translation>
@@ -50,6 +57,7 @@
 <translation id="4099578267706723511">Pomozte Chrome zlepšovat – posílejte Googlu statistiky o využívání a zprávy o selhání.</translation>
 <translation id="417201473131094001">V Chrome Canary není podporováno</translation>
 <translation id="4214277427269650960">Přihlaste se na tento webu a do Chromu. Synchronizaci můžete zapnout později.</translation>
+<translation id="4233521129555661685">Uživatel <ph name="USER_EMAIL1" /> používal Chrome a ponechal v tomto zařízení záložky, hesla a další nastavení.</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
 <translation id="4249068189593983585">Tip pro Chrome. Další možnosti karet zobrazíte přidržením tlačítka Zobrazit karty, které najdete v dolní nebo horní části obrazovky.</translation>
 <translation id="4523886039239821078">Některé doplňky způsobují selhání prohlížeče Chrome. Prosím odinstalujte:</translation>
@@ -57,6 +65,7 @@
 <translation id="4698415050768537821">Chromu se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">V beta verzi prohlížeče Chrome není podporováno</translation>
 <translation id="5030102366287574140">Chrome vás pomáhá chránit před porušeními zabezpečení údajů, nebezpečnými weby a dalšími hrozbami.</translation>
+<translation id="5108659628347594808">Pomozte s vylepšováním prohlížeče Chrome</translation>
 <translation id="5119391094379141756">Vyberte Chrome.</translation>
 <translation id="5162467219239570114">Chrome je zastaralý. Pokud v obchodě <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> není k dispozici žádná aktualizace, je možné, že vaše zařízení již nové verze Chromu nepodporuje.</translation>
 <translation id="5389212809648216794">Google Chrome nemůže použít fotoaparát, protože jej právě používá jiná aplikace</translation>

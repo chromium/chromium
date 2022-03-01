@@ -281,7 +281,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2645657967708199252">Din <ph name="CONNECTION_TYPE" />-forbindelse kan gøre downloadprocessen langsommere</translation>
 <translation id="2647434099613338025">Tilføj sprog</translation>
 <translation id="2649068648233607930">Din browser administreres af <ph name="DOMAIN" /></translation>
-<translation id="2650348088770008516">Beskrivelsen af guiden til privatlivsindstillinger er lukket</translation>
+<translation id="2650348088770008516">Beskrivelsen af Privatlivsguide er lukket</translation>
 <translation id="2650751991977523696">Vil du downloade filen igen?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# lydfil}one{# lydfil}other{# lydfiler}}</translation>
 <translation id="265156376773362237">Standardforudindlæsning</translation>
@@ -310,7 +310,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2818669890320396765">Log ind, og aktivér synkronisering for at få vist dine bogmærker på alle dine enheder</translation>
 <translation id="2827278682606527653">Feedkortmenu i halv højde</translation>
 <translation id="2830783625999891985">Indholdet i udklipsholderen er skjult</translation>
-<translation id="2838367486340230368">Beskrivelsen af guiden til privatlivsindstillinger er åbnet i halv højde</translation>
+<translation id="2838367486340230368">Beskrivelsen af Privatlivsguide er åbnet i halv højde</translation>
 <translation id="2839327205551510876">Følger ikke længere <ph name="SITE_NAME" /></translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitofane lukkes}one{<ph name="TAB_COUNT_MANY" /> inkognitofane lukkes}other{<ph name="TAB_COUNT_MANY" /> inkognitofaner lukkes}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tjekket for 1 dag siden}one{Tjekket for # dag siden}other{Tjekket for # dage siden}}</translation>
@@ -1069,7 +1069,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7187993566681480880">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind.</translation>
 <translation id="718926126787620637">Listen over bogmærkemapper er åbnet i fuld højde</translation>
 <translation id="7191430249889272776">Fanen blev åbnet i baggrunden.</translation>
-<translation id="7196215469483532480">Beskrivelsen af guiden til privatlivsindstillinger er åbnet i fuld højde</translation>
+<translation id="7196215469483532480">Beskrivelsen af Privatlivsguide er åbnet i fuld højde</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download afventer}one{# download afventer}other{# downloads afventer}}</translation>
 <translation id="7237045078887540010">Når du bruger Chrome, accepterer du <ph name="BEGIN_TOS_LINK" />Googles servicevilkår<ph name="END_TOS_LINK" /> og de <ph name="BEGIN_ATOS_LINK" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Privatlivspolitikken<ph name="END_PRIVACY_LINK" /> er også gældende.</translation>
 <translation id="7242755609445462077">Stiliseret note <ph name="CURRENT_DATE" /></translation>
@@ -1310,7 +1310,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Åbn siden med historik</translation>
 <translation id="8493948351860045254">Frigør plads</translation>
-<translation id="8497480609928300907">Beskrivelse af guiden til privatlivsindstillinger</translation>
+<translation id="8497480609928300907">Beskrivelse af Privatlivsguide</translation>
 <translation id="8497726226069778601">Her er ikke noget at se… endnu</translation>
 <translation id="8503559462189395349">Chrome-adgangskoder</translation>
 <translation id="8503813439785031346">Brugernavn</translation>

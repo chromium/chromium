@@ -914,6 +914,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1869433484041798909">Bokmerkeknapp</translation>
 <translation id="1871098866036088250">Åpne i Chrome-nettleseren</translation>
 <translation id="187145082678092583">Færre apper</translation>
+<translation id="1871463148436682760">Bra jobbet.</translation>
 <translation id="1871534214638631766">Vis relatert informasjon når du høyreklikker eller utfører lange trykk på innhold</translation>
 <translation id="1871569928317311284">Slå av mørkt tema</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" />-enheten er oppdatert</translation>
@@ -2344,6 +2345,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> rabatt</translation>
 <translation id="3305389145870741612">Formateringsprosessen kan ta et par sekunder. Vent litt.</translation>
 <translation id="3305661444342691068">Åpne forhåndsvisning av PDF-en</translation>
+<translation id="3306992216458434072">Sett navn på gruppen, og velg en farge</translation>
 <translation id="3307176291962384345">Få rabatter hos <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Informasjonskapsler fra denne siden ble blokkert.</translation>
 <translation id="3308134619352333507">Skjul knappen</translation>
@@ -3755,6 +3757,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4708794300267213770">Vis låseskjermen ved oppvåkning etter hvilemodus</translation>
 <translation id="4708849949179781599">Avslutt <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Gjenopprett innstillingene</translation>
+<translation id="47158868804223727">Klikk på gruppenavnet for å vise eller skjule det</translation>
 <translation id="4716483597559580346">Powerwash for økt sikkerhet</translation>
 <translation id="471880041731876836">Du har ikke tillatelse til å besøke dette nettstedet</translation>
 <translation id="4722735765955348426">Passord for <ph name="USERNAME" /></translation>
@@ -3818,6 +3821,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4794810983896241342">Oppdateringer administreres av <ph name="BEGIN_LINK" />administratoren din<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Nettside – bare HTML</translation>
 <translation id="4796142525425001238">Alltid gjenopprett</translation>
+<translation id="4797314204379834752">Prøv å bruke fanegrupper for å organisere gjøremål, til netthandel med mer.</translation>
 <translation id="4798236378408895261">Legg ved <ph name="BEGIN_LINK" />Bluetooth-logger<ph name="END_LINK" /> (Google-internt)</translation>
 <translation id="479863874072008121">Administrer enheter</translation>
 <translation id="4800839971935185386">Gjennomgå navne- og ikonoppdateringer</translation>
@@ -4058,6 +4062,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5039696241953571917">Se og administrer lagrede passord i Google-kontoen din</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5040823038948176460">Flere innholdsinnstillinger</translation>
+<translation id="5041509233170835229">Chrome-app</translation>
 <translation id="5043440033854483429">Navnet kan inneholde bokstaver, tall og bindestreker (-) og må være 1–15 tegn langt.</translation>
 <translation id="5043913660911154449">Eller angi PPD-fil for skriveren <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Feil passord</translation>
@@ -5383,6 +5388,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6393156038355142111">Foreslå et sterkt passord</translation>
 <translation id="6393550101331051049">Nettsteder som har lov til å vise usikkert innhold</translation>
 <translation id="6395423953133416962">Send <ph name="BEGIN_LINK1" />systeminformasjon<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />-målinger<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">Systemapp</translation>
 <translation id="6396988158856674517">Blokkér nettsteder fra å bruke bevegelsessensorer</translation>
 <translation id="6398715114293939307">Fjern Google Play-butikken</translation>
 <translation id="6398765197997659313">Avslutt fullskjerm</translation>
@@ -5452,6 +5458,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6460566145397380451">Nettsteder som har lov til å koble til MIDI-enheter</translation>
 <translation id="6460601847208524483">Finn neste</translation>
 <translation id="6461170143930046705">Søker etter nettverk …</translation>
+<translation id="6462204616987156669">Høyreklikk på en fane, og velg «Legg fanen til i en ny gruppe»</translation>
 <translation id="6463795194797719782">R&amp;ediger</translation>
 <translation id="6464825623202322042">Denne enheten</translation>
 <translation id="6465841119675156448">Uten internett</translation>
@@ -5869,6 +5876,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6885771755599377173">Forhåndsvisning av systeminformasjon</translation>
 <translation id="6886871292305414135">Åpne linken i en ny &amp;fane</translation>
 <translation id="6889957081990109136">Bryteren er ikke tilordnet ennå</translation>
+<translation id="689007770043972343">Prøv å dra andre åpne faner til gruppen</translation>
 <translation id="6892812721183419409">Åpne linken som <ph name="USER" /></translation>
 <translation id="6895032998810961280">Rapportér detaljer til Google om skadelige programmer, systeminnstillinger og prosesser som ble funnet på datamaskinen din i denne opprydningen.</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" /> administreres av <ph name="MANAGER" />, og administratoren din har blokkert pålogging med sekundærkontoer</translation>
@@ -6446,6 +6454,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 informasjonskapsel}other{{NUM_COOKIES} informasjonskapsler}}</translation>
 <translation id="7493386493263658176">Det kan hende at utvidelsen <ph name="EXTENSION_NAME" /> registrerer all tekst du skriver inn, deriblant personlige data som passord og kredittkortnumre. Vil du bruke denne utvidelsen?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android-app</translation>
 <translation id="7495778526395737099">Har du glemt det gamle passordet?</translation>
 <translation id="7497981768003291373">Du har ingen nylig lagrede WebRTC-tekstlogger.</translation>
 <translation id="7501957181231305652">eller</translation>

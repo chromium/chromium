@@ -965,6 +965,7 @@
 <translation id="7076293881109082629">Вхід</translation>
 <translation id="7086931198345821656">Для оновлення потрібно виконати Powerwash на пристрої <ph name="DEVICE_TYPE" />. Усі дані буде видалено. Докладніше про останнє оновлення <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Кнопковий доступ</translation>
+<translation id="7098053464892629930">Завантажте додаток для <ph name="NAME" /> із Google Play, щоб мати доступ до всіх функцій</translation>
 <translation id="7098389117866926363">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
 <translation id="7106330611027933926">Показати панель</translation>
 <translation id="7118268675952955085">знімок</translation>
@@ -1209,6 +1210,7 @@
 <translation id="8660331759611631213">Квадратний корінь із 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Показати список мереж. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Відкрийте <ph name="NAME" />, щоб налаштувати пристрій</translation>
 <translation id="8676770494376880701">Зарядний пристрій низької потужності підключено</translation>
 <translation id="8683506306463609433">Відстеження ефективності активне</translation>
 <translation id="8685326675965865247">Шукайте на пристрої, у додатках, налаштуваннях та Інтернеті. Натискайте клавіші зі стрілками, щоб переходити між додатками.</translation>

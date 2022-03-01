@@ -1756,6 +1756,11 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2905984450136807296">Durata dei dati di autenticazione nella cache</translation>
 <translation id="2906874737073861391">Elenco di estensioni AppPack</translation>
 <translation id="2908277604670530363">Numero massimo di connessioni simultanee al server proxy</translation>
+<translation id="2909068176249499360">Se questo criterio viene configurato, viene forzata l'attivazione o la disattivazione della funzionalità Accoppiamento rapido.
+      Accoppiamento rapido è un nuovo flusso di accoppiamento tramite Bluetooth che consente di collegare periferiche accoppiate a un account GAIA.
+      In questo modo possono essere accoppiati automaticamente altri dispositivi Chrome OS (e Android) su cui è stato eseguito l'accesso con lo stesso account GAIA.
+      Se non viene configurato, il valore predefinito è Disattivato per gli utenti aziendali e Attivato per gli account
+      non gestiti.</translation>
 <translation id="2912366658685903301">Configura il colore del tema del browser</translation>
 <translation id="291853569864365550">Non mostrare suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="2920795918401557243">Questa impostazione consente di raccogliere dati di rilevamento del rendimento a livello di sistema usando il servizio di tracciamento del sistema.
@@ -5897,6 +5902,13 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se viene impostato su Falso o se non viene configurato, la generazione di rapporti viene disattivata.
       Le regole definite con limitazioni a livello ALLOW nel criterio DataLeakPreventionRulesList non genereranno rapporti sugli eventi in nessun caso.</translation>
 <translation id="7648907905084499629">Usa il comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> per i cookie su tutti i siti</translation>
+<translation id="765347139142030086">Se il criterio viene impostato su Attivato, i criteri associati a un account <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> hanno la precedenza in caso di conflitto con i criteri <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Soltanto i criteri derivanti da utenti sicuri possono ottenere la precedenza. Un utente sicuro è affiliato all'organizzazione che gestisce il suo browser usando <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Tutti gli altri criteri a livello di utente hanno la precedenza per impostazione predefinita.
+
+      Il criterio può essere combinato con <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Se entrambi i criteri vengono attivati, anche quelli relativi al cloud degli utenti hanno la precedenza sui criteri relativi alla piattaforma in conflitto.
+
+      Se il criterio non viene configurato o se viene impostato su Disattivato, i criteri relativi al cloud degli utenti hanno la priorità per impostazione predefinita.</translation>
 <translation id="7657261947024629645">Ottimizza per ottenere il massimo rendimento.</translation>
 <translation id="7666228839913571182">Consenti cookie di terze parti</translation>
 <translation id="7668830462800981702">Se il criterio viene impostato su Attivato, viene eseguita una ricerca predefinita quando un utente inserisce nella barra degli indirizzi un testo che non è un URL. Per specificare il provider di ricerca predefinito, imposta gli altri criteri relativi alla ricerca predefinita. Se non configuri questi criteri, l'utente può scegliere il provider predefinito. Se il criterio viene impostato su Disattivato, non viene eseguita alcuna ricerca quando l'utente inserisce nella barra degli indirizzi un testo che non è un URL.

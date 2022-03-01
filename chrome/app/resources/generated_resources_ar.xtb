@@ -910,6 +910,7 @@
 <translation id="1869433484041798909">زر وضع إشارة مرجعية</translation>
 <translation id="1871098866036088250">‏فتح في متصفّح Chrome</translation>
 <translation id="187145082678092583">عرض تطبيقات أقل</translation>
+<translation id="1871463148436682760">رائع</translation>
 <translation id="1871534214638631766">يمكنك عرض معلومات ذات صلة عند النقر بزر الماوس الأيمن أو الضغط مع الاستمرار على المحتوى.</translation>
 <translation id="1871569928317311284">إيقاف تشغيل المظهر الداكن</translation>
 <translation id="1871615898038944731">جهاز <ph name="DEVICE_TYPE" /> مُحدّث</translation>
@@ -2339,6 +2340,7 @@
 <translation id="3304212451103136496">خصم <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">يمكن أن تستغرق عملية التنسيق ثانيتين. يُرجى الانتظار.</translation>
 <translation id="3305661444342691068">‏فتح ملف PDF في تطبيق المعاينة</translation>
+<translation id="3306992216458434072">يمكنك تسمية المجموعة واختيار لون.</translation>
 <translation id="3307176291962384345">الحصول على خصومات عند الشراء من <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">تم منع هذه الصفحة من تخزين ملفات تعريف الارتباط.</translation>
 <translation id="3308134619352333507">الزر "إخفاء"</translation>
@@ -3749,6 +3751,7 @@
 <translation id="4708794300267213770">عرض شاشة القفل عند التنبيه من وضع السكون</translation>
 <translation id="4708849949179781599">إنهاء <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">استعادة الإعدادات</translation>
+<translation id="47158868804223727">انقر على اسم المجموعة لتوسيعها أو تصغيرها.</translation>
 <translation id="4716483597559580346">‏Powerwash لمزيد من الأمان</translation>
 <translation id="471880041731876836">ليس لديك إذن لزيارة هذا الموقع</translation>
 <translation id="4722735765955348426">كلمة مرور <ph name="USERNAME" /></translation>
@@ -3812,6 +3815,7 @@
 <translation id="4794810983896241342">يتولى <ph name="BEGIN_LINK" />مشرفك<ph name="END_LINK" /> إدارة التحديثات.</translation>
 <translation id="479536056609751218">‏صفحة الويب، HTML فقط</translation>
 <translation id="4796142525425001238">الاستعادة دائمًا</translation>
+<translation id="4797314204379834752">جرّب استخدام مجموعات علامات التبويب لتنظيم المهام والتسوّق على الإنترنت وغير ذلك.</translation>
 <translation id="4798236378408895261">‏إرفاق <ph name="BEGIN_LINK" />سجلّات بلوتوث<ph name="END_LINK" /> (Google الداخلي)</translation>
 <translation id="479863874072008121">إدارة الأجهزة</translation>
 <translation id="4800839971935185386">مراجعة التعديلات التي تم إجراؤها على الأسماء والرموز</translation>
@@ -4052,6 +4056,7 @@
 <translation id="5039696241953571917">‏يمكنك الاطّلاع على كلمات المرور المحفوظة وإدارتها في حسابك على Google.</translation>
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5040823038948176460">إعدادات المحتوى الإضافية</translation>
+<translation id="5041509233170835229">‏تطبيق Chrome</translation>
 <translation id="5043440033854483429">يمكن أن يحتوي الاسم على الأحرف والأرقام والواصلات (-)، ويجب أن يتراوح عدد أحرف الاسم بين 1 و15 حرفًا كحدّ أقصى.</translation>
 <translation id="5043913660911154449">‏أو حدِّد ملف PPD للطابعة <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">كلمة مرور غير صحيحة</translation>
@@ -5378,6 +5383,7 @@
 <translation id="6393156038355142111">اقتراح كلمة مرور قوية</translation>
 <translation id="6393550101331051049">المواقع الإلكترونية التي يُسمح لها بعرض المحتوى غير الآمن</translation>
 <translation id="6395423953133416962">إرسال <ph name="BEGIN_LINK1" />معلومات النظام<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />المقاييس<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">تطبيق النظام</translation>
 <translation id="6396988158856674517">حظر المواقع الإلكترونية من استخدام مستشعرات الحركة</translation>
 <translation id="6398715114293939307">‏إزالة متجر Google Play</translation>
 <translation id="6398765197997659313">إنهاء وضع ملء الشاشة</translation>
@@ -5447,6 +5453,7 @@
 <translation id="6460566145397380451">‏المواقع الإلكترونية التي يُسمح لها بالاتصال بأجهزة MIDI</translation>
 <translation id="6460601847208524483">البحث عن التالي</translation>
 <translation id="6461170143930046705">جارٍ البحث عن شبكات...</translation>
+<translation id="6462204616987156669">انقر بزر الماوس الأيمن على علامة تبويب واختَر "إضافة علامة التبويب إلى مجموعة جديدة".</translation>
 <translation id="6463795194797719782">ت&amp;عديل</translation>
 <translation id="6464825623202322042">هذا الجهاز</translation>
 <translation id="6465841119675156448">بدون إنترنت</translation>
@@ -5864,6 +5871,7 @@
 <translation id="6885771755599377173">معاينة معلومات النظام</translation>
 <translation id="6886871292305414135">فتح الرابط في &amp;علامة تبويب جديدة</translation>
 <translation id="6889957081990109136">لم يتم تخصيص مفتاح تحكّم حتى الآن.</translation>
+<translation id="689007770043972343">جرّب سحب علامات التبويب الأخرى المفتوحة إلى مجموعتك.</translation>
 <translation id="6892812721183419409">فتح الرابط كـ <ph name="USER" /></translation>
 <translation id="6895032998810961280">‏إبلاغ Google بالتفاصيل حول البرامج الضارّة وإعدادات النظام والعمليات التي تم العثور عليها على جهاز الكمبيوتر أثناء إزالة البرامج غير المرغوب فيها.</translation>
 <translation id="6895902329218596456">يدير <ph name="MANAGER" /> البريد الإلكتروني <ph name="USER_EMAIL" /> ويحظر المشرف تسجيل الدخول باستخدام حساب ثانوي.</translation>
@@ -6442,6 +6450,7 @@
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{ملف تعريف ارتباط واحد}zero{{NUM_COOKIES} ملفّ تعريف ارتباط}two{ملفّا تعريف ارتباط ({NUM_COOKIES})}few{{NUM_COOKIES} ملفّات تعريف ارتباط}many{{NUM_COOKIES} ملف تعريف الارتباط}other{{NUM_COOKIES} ملف تعريف الارتباط}}</translation>
 <translation id="7493386493263658176">يمكن أن تجمع إضافة <ph name="EXTENSION_NAME" /> كل النصوص التي تكتبها، بما في ذلك المعلومات الشخصية مثل كلمات المرور وأرقام بطاقات الائتمان. هل تريد استخدام هذه الإضافة؟</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">‏تطبيق Android</translation>
 <translation id="7495778526395737099">هل نسيت كلمة المرور القديمة؟</translation>
 <translation id="7497981768003291373">‏ليست لديك أي سجلَّات نصية WebRTC تم التقاطها مؤخرًا.</translation>
 <translation id="7501957181231305652">أو</translation>

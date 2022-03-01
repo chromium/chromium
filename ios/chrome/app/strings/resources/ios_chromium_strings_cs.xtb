@@ -43,6 +43,7 @@
 <translation id="3344973607274501920">Chromiu se nepodařilo zkontrolovat hesla. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="3472200483164753384">V Chromium Canary není podporováno</translation>
 <translation id="3639997914391704523">Když se přihlásíte pomocí účtu Google, může vám Chromium kontrolovat hesla.</translation>
+<translation id="3650632991272923014">Uživatel <ph name="USER_EMAIL1" /> používal Chromium a ponechal v tomto zařízení záložky, hesla a další nastavení.</translation>
 <translation id="3805899903892079518">Chromium nemá přístup k vašim fotkám nebo videím. Povolte přístup v systému iOS v Nastavení &gt; Soukromí &gt; Fotky.</translation>
 <translation id="4043291146360695975">Hesla se ukládají pouze do Správce hesel na tomto zařízení.</translation>
 <translation id="4099085513035183040">V beta verzi prohlížeče Chromium není podporováno</translation>
@@ -64,6 +65,7 @@
 <translation id="5777187867430702742">Stránka prohlížeče Chromium</translation>
 <translation id="5862307444128926510">Vítejte v prohlížeči Chromium</translation>
 <translation id="5945387852661427312">Přihlašujete se pomocí účtu spravovaného doménou <ph name="DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chromium. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z prohlížeče Chromium svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
+<translation id="5983312940147103417">Pomozte s vylepšováním prohlížeče Chromium</translation>
 <translation id="602807004951640891">Používáním prohlížeče Chromium vyjadřujete souhlas se <ph name="BEGIN_LINK_TOS" />smluvními podmínkami<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Postup nastavení Chromia jako výchozího prohlížeče:
 1. Otevřete nastavení.
@@ -102,6 +104,13 @@
 <translation id="7931842119211730154">Při zavření Chromia zamknout anonymní karty</translation>
 <translation id="7980860476903281594">Chromium sdílí vaši polohu s weby, u kterých to povolíte.</translation>
 <translation id="8013573822802650211">Chcete-li mít své karty k dispozici všude, kde používáte Chromium, na všech zařízeních se přihlaste</translation>
+<translation id="80599830191519229">Když je tato funkce zapnutá:
+<ph name="BEGIN_INDENT" />  • Pomáháte s vylepšováním prohlížeče Chromium pro lidi, kteří jej používají stejně jako vy<ph name="END_INDENT" />
+
+Co je třeba zvážit:
+<ph name="BEGIN_INDENT" />  • Informace o vašem používání prohlížeče Chromium se odesílají do Googlu, ale nejsou spojeny s vámi.
+  • Pokud Chromium spadne, podrobnosti o selhání mohou zahrnovat některé osobní údaje.
+  • Pokud zapnete synchronizaci, mohou metriky zahrnovat také informace o navštívených adresách URL.<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Vymazat z tohoto zařízení data prohlížeče Chromium?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Přesuňte si prohlížeč Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>

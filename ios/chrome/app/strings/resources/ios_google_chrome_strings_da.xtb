@@ -21,6 +21,13 @@
 <translation id="2347208864470321755">Når denne funktion er aktiveret, vil Chrome tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Google Chrome har funktioner, der hjælper dig med at administrere internetdata og hastigheden, som websider indlæses med.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="245827422401250729">Ved aktivering:
+<ph name="BEGIN_INDENT" />  • Hjælp med at gøre Chrome bedre for andre, der bruger Chrome på samme måde som dig<ph name="END_INDENT" />
+
+Ting, du skal overveje:
+<ph name="BEGIN_INDENT" />  • Der sendes oplysninger til Google om din brug af Chrome, men oplysningerne er ikke tilknyttet dig
+  • Hvis Chrome oplever nedbrud, kan oplysningerne om nedbruddet omfatte visse personlige oplysninger
+  • Hvis du aktiverer synkronisering, vil metrics også omfatte oplysninger om de webadresser, du besøger<ph name="END_INDENT" /></translation>
 <translation id="2561231791489583059">Brug Chrome som din standardbrowser for at blive beskyttet mod skadelige websites og holde dine adgangskoder private</translation>
 <translation id="2574249610672786438">Log ind på alle de enheder, hvor du bruger Chrome, for at se dine faner på dem</translation>
 <translation id="2576431527583832481">Chrome er lige blevet bedre! Der er en ny tilgængelig version.</translation>
@@ -58,6 +65,7 @@
 <translation id="4698415050768537821">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Understøttes ikke i Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
+<translation id="5108659628347594808">Gør Chrome bedre</translation>
 <translation id="5119391094379141756">Vælg Chrome</translation>
 <translation id="5162467219239570114">Chrome er forældet. Hvis der ikke er en tilgængelig opdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det skyldes, at din enhed ikke længere understøtter nye Chrome-versioner.</translation>
 <translation id="5389212809648216794">Google Chrome kan ikke bruge dit kamera, da det bruges af en anden app</translation>

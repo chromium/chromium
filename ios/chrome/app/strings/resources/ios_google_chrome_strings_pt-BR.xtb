@@ -21,6 +21,13 @@
 <translation id="2347208864470321755">Quando este recurso está ativado, o Google Chrome disponibiliza a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">O Chrome tem recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="245827422401250729">Quando ativada, esta configuração faz o seguinte:
+<ph name="BEGIN_INDENT" />  • Ajuda a melhorar o Chrome para as pessoas que o usam da mesma forma que você.<ph name="END_INDENT" />
+
+Considerações:
+<ph name="BEGIN_INDENT" />  • São enviadas ao Google informações sobre seu uso do Chrome, mas elas não são vinculadas a você.
+  • Se o Chrome falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.
+  • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
 <translation id="2561231791489583059">Use o Chrome como navegador padrão para se proteger contra sites perigosos e garantir a segurança das suas senhas</translation>
 <translation id="2574249610672786438">Para ver suas guias em qualquer lugar onde você usar o Chrome, faça login em todos os seus dispositivos</translation>
 <translation id="2576431527583832481">O Google Chrome ficou ainda melhor! Uma nova versão está disponível.</translation>
@@ -58,6 +65,7 @@
 <translation id="4698415050768537821">Não foi possível verificar todas as senhas com o Chrome. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Indisponível no Chrome Beta</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
+<translation id="5108659628347594808">Melhorar o Chrome</translation>
 <translation id="5119391094379141756">Selecione o Chrome</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja mais compatível com novas versões do Chrome.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode usar a câmera porque ela está sendo usada por outro app</translation>

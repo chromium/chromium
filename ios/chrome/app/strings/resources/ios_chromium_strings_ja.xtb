@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Chromium ページ</translation>
 <translation id="5862307444128926510">Chromium へようこそ</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> で管理されているアカウントでログインして、Chromium データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chromium からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>
+<translation id="5983312940147103417">Chromium の品質を向上</translation>
 <translation id="602807004951640891">Chromium を使用すると、<ph name="BEGIN_LINK_TOS" />利用規約<ph name="END_LINK_TOS" />に同意したことになります。</translation>
 <translation id="6119647025869519954">Chromium を既定のブラウザにするには:
 1. [設定] を開きます。
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">Chromium を終了するときにシークレット タブをロックする</translation>
 <translation id="7980860476903281594">Chromium で、許可したサイトと現在地が共有されます。</translation>
 <translation id="8013573822802650211">どのデバイスからでも Chromium で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
+<translation id="80599830191519229">オンにした場合:
+<ph name="BEGIN_INDENT" />  • 同じように Chromium を使用する他のユーザーの利便性向上に役立てられます<ph name="END_INDENT" />
+
+留意事項:
+<ph name="BEGIN_INDENT" />  • Chromium の使用状況に関する情報が Google に送信されますが、ユーザーとは関連付けられません
+  • Chromium がクラッシュした場合、クラッシュに関する情報として、一部の個人情報が送信される場合があります
+  • 同期をオンにした場合、アクセスした URL に関する情報も送信される場合があります<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Chromium データをこのデバイスから削除しますか？</translation>
 <translation id="8175055321229419309">ヒント: <ph name="BEGIN_LINK" />Chromium を Dock に移動<ph name="END_LINK" />するとアクセスしやすくなります</translation>
 <translation id="8240981428553046115">Chromium でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>

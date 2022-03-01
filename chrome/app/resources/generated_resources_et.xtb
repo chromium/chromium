@@ -1243,6 +1243,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2203088913459920044">Nimes võib kasutada tähti, numbreid ja erimärke</translation>
 <translation id="220321590587754225">Ühenduse loomine ebaõnnestus. Proovige uuesti.</translation>
 <translation id="2204034823255629767">Sisestatava teksti lugemine ja muutmine</translation>
+<translation id="2207115382329026341">Lubage rakenduste voogesitamise seaded oma telefonist.</translation>
 <translation id="220858061631308971">Sisestage seadmes „<ph name="DEVICE_NAME" />” see PIN-kood:</translation>
 <translation id="2210462644007531147">Installimise lõpetamine ei õnnestunud</translation>
 <translation id="2212565012507486665">Luba küpsisefailid</translation>
@@ -1436,6 +1437,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2367972762794486313">Rakenduste kuvamine</translation>
 <translation id="236939127352773362">Kui seadmed läheduses jagavad</translation>
 <translation id="2371076942591664043">Ava, kui on &amp;valmis</translation>
+<translation id="237307274687369010">Ei saanud rakendust <ph name="APP_NAME" /> käivitada</translation>
 <translation id="2373666622366160481">Sobita paberilehele</translation>
 <translation id="2375406435414127095">Looge ühendus telefoniga</translation>
 <translation id="2377588536920405462">Võite funktsiooni Asukoht välja lülitada, lülitades oma seadmes välja peamise asukohaseade. Peale selle saab asukohaseadetes välja lülitada ka WiFi, mobiilsidevõrkude ja andurite kasutamise asukoha tuvastamiseks.</translation>

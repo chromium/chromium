@@ -1095,6 +1095,7 @@
 <translation id="2060375639911876205">นำโปรไฟล์ eSIM ออก</translation>
 <translation id="2062354623176996748">ใช้เว็บโดยไม่บันทึกประวัติการท่องเว็บด้วยหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="2065405795449409761">ซอฟต์แวร์ทดสอบอัตโนมัติกำลังควบคุม Chrome อยู่</translation>
+<translation id="2069869989954932144">แนะนำแอปเมื่อเปิดไฟล์บนคอมพิวเตอร์ของคุณ</translation>
 <translation id="2071393345806050157">ไม่มีไฟล์บันทึกในเครื่อง</translation>
 <translation id="2071692954027939183">การแจ้งเตือนถูกบล็อกโดยอัตโนมัติเนื่องจากคุณมักไม่อนุญาตให้แสดง</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{คลิกเพื่อติดตั้งส่วนขยาย}other{คลิกเพื่อติดตั้งส่วนขยายเหล่านี้}}</translation>
@@ -1240,6 +1241,7 @@
 <translation id="2203088913459920044">ชื่อมีตัวอักษร ตัวเลข และสัญลักษณ์พิเศษได้</translation>
 <translation id="220321590587754225">เชื่อมต่อไม่ได้ ลองอีกครั้ง</translation>
 <translation id="2204034823255629767">อ่านและเปลี่ยนแปลงสิ่งที่คุณพิมพ์</translation>
+<translation id="2207115382329026341">เปิดใช้การตั้งค่าการสตรีมแอปจากโทรศัพท์</translation>
 <translation id="220858061631308971">โปรดป้อนรหัส PIN นี้บน "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">ติดตั้งไม่สำเร็จ</translation>
 <translation id="2212565012507486665">อนุญาตคุกกี้</translation>
@@ -1330,6 +1332,7 @@
 <translation id="2292848386125228270">โปรดเริ่มต้น <ph name="PRODUCT_NAME" /> ในฐานะผู้ใช้ทั่วไป หากต้องการเรียกใช้ในฐานะผู้ใช้ระดับรากเพื่อการพัฒนา ให้เรียกใช้อีกครั้งโดยตั้งค่าสถานะเป็น no-sandbox</translation>
 <translation id="2294081976975808113">ความเป็นส่วนตัวของหน้าจอ</translation>
 <translation id="2294358108254308676">คุณต้องการติดตั้ง <ph name="PRODUCT_NAME" /> หรือไม่</translation>
+<translation id="229477815107578534">ตรวจสอบการตั้งค่า</translation>
 <translation id="2295864384543949385">ผลการค้นหา <ph name="NUM_RESULTS" /> รายการ</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> กำหนดให้อุปกรณ์ออนไลน์เมื่อลงชื่อเข้าใช้ <ph name="EMAIL" /></translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ • ตรวจสอบเมื่อ 1 ชั่วโมงที่ผ่านมา}other{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ • ตรวจสอบเมื่อ {NUM_HOURS} ชั่วโมงที่ผ่านมา}}</translation>
@@ -1430,6 +1433,7 @@
 <translation id="2367972762794486313">แสดงแอป</translation>
 <translation id="236939127352773362">เมื่อมีอุปกรณ์กำลังแชร์อยู่ใกล้เคียง</translation>
 <translation id="2371076942591664043">เปิดเมื่อเ&amp;สร็จ</translation>
+<translation id="237307274687369010">เปิด <ph name="APP_NAME" /> ไม่สำเร็จ</translation>
 <translation id="2373666622366160481">พอดีกับหน้ากระดาษ</translation>
 <translation id="2375406435414127095">เชื่อมต่อโทรศัพท์ของคุณ</translation>
 <translation id="2377588536920405462">คุณปิดตำแหน่งได้โดยปิดการตั้งค่าตำแหน่งหลักในอุปกรณ์ และยังปิดการใช้ Wi‑Fi, เครือข่ายมือถือ และเซ็นเซอร์สำหรับการบอกตำแหน่งในการตั้งค่าตำแหน่งได้ด้วย</translation>
@@ -6063,6 +6067,7 @@
 <translation id="7077829361966535409">หน้าลงชื่อเข้าใช้ไม่สามารถโหลดโดยใช้การตั้งค่าพร็อกซีในปัจจุบัน โปรด <ph name="GAIA_RELOAD_LINK_START" />ลองลงชื่อเข้าใช้อีกครั้ง<ph name="GAIA_RELOAD_LINK_END" /> หรือใช้<ph name="PROXY_SETTINGS_LINK_START" />การตั้งค่าพร็อกซี<ph name="PROXY_SETTINGS_LINK_END" />อื่นๆ</translation>
 <translation id="7078120482318506217">ทุกเครือข่าย</translation>
 <translation id="708060913198414444">คัด&amp;ลอกที่อยู่ของเสียง</translation>
+<translation id="7082568314107259011"><ph name="NETWORK_NAME" /> จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7085389578340536476">อนุญาตให้ Chrome บันทึกเสียงไหม</translation>
 <translation id="7086672505018440886">รวมไฟล์บันทึกของ Chrome ในที่เก็บถาวร</translation>
 <translation id="7088434364990739311">การเริ่มต้นการตรวจสอบการอัปเดตล้มเหลว (รหัสข้อผิดพลาด <ph name="ERROR" />)</translation>
@@ -6523,6 +6528,7 @@
 <translation id="7573172247376861652">ชาร์จแบตเตอรี่</translation>
 <translation id="7573594921350120855">โดยปกติแล้วเว็บไซต์จะใช้กล้องวิดีโอของคุณเพื่อดำเนินการตามฟีเจอร์ในการสื่อสาร เช่น วิดีโอแชท</translation>
 <translation id="7574650250151586813">อัปเดตแอปแป้นพิมพ์ Daydream เพื่อพิมพ์ข้อความ</translation>
+<translation id="7574676002608048667">ส่งรหัสผ่าน</translation>
 <translation id="7576690715254076113">เรียง</translation>
 <translation id="7576976045740938453">เกิดปัญหาเกี่ยวกับบัญชีโหมดสาธิต</translation>
 <translation id="7578137152457315135">การตั้งค่าลายนิ้วมือ</translation>
@@ -7302,6 +7308,7 @@
 <translation id="8325413836429495820">ไม่ได้รับอนุญาตให้ดูคลิปบอร์ด</translation>
 <translation id="8326478304147373412">PKCS #7, กลุ่มใบรับรอง (Certificate Chain)</translation>
 <translation id="8327676037044516220">การตั้งค่าสิทธิ์และเนื้อหา</translation>
+<translation id="8330689128072902965">ผู้ติดต่อใกล้เคียงจะแชร์กับคุณได้ คลิกเพื่อเปลี่ยน</translation>
 <translation id="833256022891467078">โฟลเดอร์ที่แชร์ใน Crostini</translation>
 <translation id="8335587457941836791">เลิกตรึงในชั้นวาง</translation>
 <translation id="8336407002559723354">การอัปเดตจะสิ้นสุดใน<ph name="MONTH_AND_YEAR" /></translation>

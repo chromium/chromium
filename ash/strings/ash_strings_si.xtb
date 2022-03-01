@@ -965,6 +965,7 @@
 <translation id="7076293881109082629">පිවිසෙමින්</translation>
 <translation id="7086931198345821656">මෙම යාවත්කාලීනයට ඔබගේ <ph name="DEVICE_TYPE" /> බලසේදීමට අවශ්‍යයි. සියලු දත්ත මකනු ඇත. නවතම <ph name="SYSTEM_APP_NAME" /> යාවත්කාලීනය ගැන තව දැන ගන්න.</translation>
 <translation id="7088960765736518739">ප්‍රවේශය මාරු කරන්න</translation>
+<translation id="7098053464892629930">සියලු ලබා ගත හැකි විශේෂාංග බැලීමට Google Play හි <ph name="NAME" /> සඳහා යෙදුම බාගන්න</translation>
 <translation id="7098389117866926363">USB-C උපාංගය (පිටුපස වම් තොට)</translation>
 <translation id="7106330611027933926">ඩෙස්ක් තීරුව පෙන්වන්න</translation>
 <translation id="7118268675952955085">තිර රුව</translation>
@@ -1209,6 +1210,7 @@
 <translation id="8660331759611631213">71හි වර්ගමූලය</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">ජාල ලැයිස්තුව පෙන්වන්න. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">ඔබගේ උපාංගය පිහිටුවීමට <ph name="NAME" /> විවෘත කරන්න</translation>
 <translation id="8676770494376880701">අඩු-බල ආරෝපකය සමබන්ධ කර ඇත</translation>
 <translation id="8683506306463609433">කාර්ය සාධන අනුරේඛනය සක්‍රියයි</translation>
 <translation id="8685326675965865247">ඔබගේ උපාංගය, යෙදුම්, සැකසීම් සහ වෙබය තුළ සොයන්න. ඔබගේ යෙදුම් සංචලන කිරීමට ඊතල යතුරු භාවිත කරන්න.</translation>

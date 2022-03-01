@@ -1103,6 +1103,7 @@
 <translation id="2060375639911876205">eSIM-н профайлыг хасах</translation>
 <translation id="2062354623176996748">Нууцлалтай цонхоор вебийг хөтчийн түүхээ хадгалалгүйгээр ашиглана уу</translation>
 <translation id="2065405795449409761">Chrome-г туршилтын автомат программ хангамжаар удирдаж байна.</translation>
+<translation id="2069869989954932144">Компьютер дээр файлууд нээх үедээ апп зөвлөөрэй</translation>
 <translation id="2071393345806050157">Суурин бүртгэлийн файл алга байна.</translation>
 <translation id="2071692954027939183">Та мэдэгдлийг ихэвчлэн зөвшөөрдөггүй тул тэдгээрийг автоматаар блоклосон</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг суулгахын тулд товшино уу}other{Эдгээр өргөтгөлийг суулгахын тулд товшино уу}}</translation>
@@ -1343,6 +1344,7 @@
 <translation id="2292848386125228270"><ph name="PRODUCT_NAME" />-г энгийн хэрэглэгчээр эхлүүлнэ үү. Үндэслэгчийн хувиар хөгжүүлэн ажиллуулах бол sandbox дарцаггүйгээр дахин ажиллуулна уу.</translation>
 <translation id="2294081976975808113">Дэлгэцийн нууцлал</translation>
 <translation id="2294358108254308676">Та <ph name="PRODUCT_NAME" />-ыг суулгахыг хүсч байна уу?</translation>
+<translation id="229477815107578534">Тохиргоогоо шалгана уу</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> илэрц</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" />-д нэвтрэх үед <ph name="DOMAIN_NAME" /> төхөөрөмжийг онлайн байхыг шаардана</translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{Chrome таны компьютероос хортой программ хангамж олсонгүй • 1 цагийн өмнө шалгасан}other{Chrome таны компьютероос хортой программ хангамж олсонгүй • {NUM_HOURS} цагийн өмнө шалгасан}}</translation>
@@ -6078,6 +6080,7 @@
 <translation id="7077829361966535409">Прокси тохируулгыг ашигласан энэ үед нэвтрэх хуудас ачаалагдсангүй. <ph name="GAIA_RELOAD_LINK_START" />дахин нэвтрэх оролдлого<ph name="GAIA_RELOAD_LINK_END" /> хийнэ үү. Эсвэл өөр <ph name="PROXY_SETTINGS_LINK_START" />прокси тохируулга<ph name="PROXY_SETTINGS_LINK_END" /> ашиглана уу.</translation>
 <translation id="7078120482318506217">Бүх сүлжээ</translation>
 <translation id="708060913198414444">Аудио хаягийг хуулах</translation>
+<translation id="7082568314107259011"><ph name="NETWORK_NAME" />-г таны администратор удирддаг</translation>
 <translation id="7085389578340536476">Chrome-д аудио бичихийг зөвшөөрөх үү?</translation>
 <translation id="7086672505018440886">Архивт Chrome лог файлуудыг багтаана.</translation>
 <translation id="7088434364990739311">Шинэчлэлтийг шалгах ажиллагааг эхлүүлж чадсангүй (алдааны код <ph name="ERROR" /> ).</translation>
@@ -7317,6 +7320,7 @@
 <translation id="8325413836429495820">Таны түр санах ойг харахыг зөвшөөрөөгүй</translation>
 <translation id="8326478304147373412">PKCS # 7, сертификат хэлхээ</translation>
 <translation id="8327676037044516220">Зөвшөөрөл болон контентын тохиргоо</translation>
+<translation id="8330689128072902965">Ойролцоох харилцагчид тантай хуваалцах боломжтой. Өөрчлөхийн тулд товшино уу.</translation>
 <translation id="833256022891467078">Crostini-н хуваалцсан фолдерууд</translation>
 <translation id="8335587457941836791">Програмын жагсаалтын эхэнд байрлуулахыг болих</translation>
 <translation id="8336407002559723354">Шинэчлэлт нь <ph name="MONTH_AND_YEAR" /> дуусна</translation>

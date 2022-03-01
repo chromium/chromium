@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Página do Chromium</translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5945387852661427312">Você está fazendo login com uma conta gerenciada por <ph name="DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chromium, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chromium, seus dados serão excluídos deste dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
+<translation id="5983312940147103417">Melhorar o Chromium</translation>
 <translation id="602807004951640891">Ao usar o Chromium, você concorda com os <ph name="BEGIN_LINK_TOS" />Termos de Serviço<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Para tornar o Chromium seu navegador padrão:
 1. Abra as Configurações.
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">Bloquear guias anônimas ao fechar o Chromium</translation>
 <translation id="7980860476903281594">O Chromium compartilha sua localização com os sites aos quais você concede permissão.</translation>
 <translation id="8013573822802650211">Para ver suas guias em qualquer lugar onde você usar o Chromium, faça login em todos os seus dispositivos</translation>
+<translation id="80599830191519229">Quando ativada, esta configuração faz o seguinte:
+<ph name="BEGIN_INDENT" />  • Ajuda a melhorar o Chromium para as pessoas que o usam da mesma forma que você.<ph name="END_INDENT" />
+
+Considerações:
+<ph name="BEGIN_INDENT" />  • São enviadas ao Google informações sobre seu uso do Chromium, mas elas não são vinculadas a você.
+  • Se o Chromium falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.
+  • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Limpar seus dados do Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Dica: <ph name="BEGIN_LINK" />mova o Chromium para a base<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>

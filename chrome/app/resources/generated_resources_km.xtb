@@ -1106,6 +1106,7 @@
 <translation id="2060375639911876205">ដកកម្រងព័ត៌មាន eSIM ចេញ</translation>
 <translation id="2062354623176996748">ប្រើបណ្ដាញ​ដោយមិនរក្សាទុក​ប្រវត្តិរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក តាមរយៈ​ផ្ទាំងឯកជន</translation>
 <translation id="2065405795449409761">Chrome កំពុង​ត្រូវបាន​គ្រប់គ្រង​ដោយ​កម្មវិធី​សាកល្បង​ដោយស្វ័យប្រវត្តិ។</translation>
+<translation id="2069869989954932144">ណែនាំ​កម្មវិធី នៅពេលបើក​ឯកសារ​នៅលើកុំព្យូទ័រ​របស់អ្នក</translation>
 <translation id="2071393345806050157">គ្មានឯកសារកំណត់ត្រាមូលដ្ឋានទេ។</translation>
 <translation id="2071692954027939183">ការជូនដំណឹងត្រូវបានទប់ស្កាត់ដោយស្វ័យប្រវត្តិ ដោយសារជាធម្មតា អ្នកមិនអនុញ្ញាតការជូនដំណឹងទេ</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ចុចដើម្បីដំឡើង​កម្មវិធីបន្ថែម}other{ចុចដើម្បីដំឡើង​កម្មវិធីបន្ថែម​ទាំងនេះ}}</translation>
@@ -1346,6 +1347,7 @@
 <translation id="2292848386125228270">សូម​ចាប់ផ្តើម <ph name="PRODUCT_NAME" /> ជា​អ្នក​ប្រើប្រាស់​ធម្មតា។ ប្រសិនបើ​អ្នក​ចង់​ដំណើរការ​ជា​លក្ខណៈរូត​សម្រាប់ការ​អភិវឌ្ឍន៍ សូម​ដំណើរ​ការ​ទង់គ្មាន​ប្រអប់​សុវត្ថិភាព​ឡើង​វិញ។</translation>
 <translation id="2294081976975808113">ឯកជនភាព​អេក្រង់</translation>
 <translation id="2294358108254308676">តើអ្នកចង់តំឡើង <ph name="PRODUCT_NAME" />ទេ?</translation>
+<translation id="229477815107578534">ពិនិត្យមើលការកំណត់របស់អ្នក</translation>
 <translation id="2295864384543949385">លទ្ធផល <ph name="NUM_RESULTS" /></translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> តម្រូវឱ្យឧបករណ៍មានអ៊ីនធឺណិត នៅពេលចូល <ph name="EMAIL" /></translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{Chrome រកមិនឃើញ​កម្មវិធី​បង្កគ្រោះថ្នាក់​នៅលើ​កុំព្យូទ័រ​របស់អ្នក​ទេ • បានពិនិត្យមើល 1 ម៉ោងមុន}other{Chrome រកមិនឃើញ​កម្មវិធី​បង្កគ្រោះថ្នាក់​នៅលើ​កុំព្យូទ័រ​របស់អ្នក​ទេ • បានពិនិត្យមើល {NUM_HOURS} ម៉ោងមុន}}</translation>
@@ -6076,6 +6078,7 @@
 <translation id="7077829361966535409">ទំព័រចូលបានបរាជ័យក្នុងការដំណើរការ ដោយប្រើការកំណត់ប្រូកស៊ីបច្ចុប្បន្ន។ សូម <ph name="GAIA_RELOAD_LINK_START" />ព្យាយាមចូលម្តងទៀត<ph name="GAIA_RELOAD_LINK_END" /> ឬប្រើ <ph name="PROXY_SETTINGS_LINK_START" />ការកំណត់ប្រូកស៊ី<ph name="PROXY_SETTINGS_LINK_END" /> ដទៃ។</translation>
 <translation id="7078120482318506217">បណ្តាញទាំងអស់</translation>
 <translation id="708060913198414444">ថតចម្លងអាសយដ្ឋានសំឡេង</translation>
+<translation id="7082568314107259011"><ph name="NETWORK_NAME" /> ត្រូវបាន​គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="7085389578340536476">អនុញ្ញាតឱ្យ Chrome ថត​សំឡេង?</translation>
 <translation id="7086672505018440886">រួមបញ្ចូល​ឯកសារ​កំណត់​ហេតុ Chrome នៅក្នុង​បណ្ណសារ។</translation>
 <translation id="7088434364990739311">ការពិនិត្យការធ្វើបច្ចុប្បន្នភាពបានបរាជ័យក្នុងការចាប់ផ្តើម (កំហុសឆ្គងលេខកូដ <ph name="ERROR" />)។</translation>
@@ -7315,6 +7318,7 @@
 <translation id="8325413836429495820">មិនអនុញ្ញាតឱ្យមើលឃ្លីបបតរបស់អ្នកទេ</translation>
 <translation id="8326478304147373412">PKCS #7, ខ្សែវិញ្ញាបនប័ត្រ</translation>
 <translation id="8327676037044516220">ការកំណត់​ខ្លឹមសារ និង​ការអនុញ្ញាត</translation>
+<translation id="8330689128072902965">ទំនាក់ទំនងនៅជិតអាចចែករំលែកជាមួយអ្នកបាន។ ចុចដើម្បីផ្លាស់ប្ដូរ។</translation>
 <translation id="833256022891467078">ថតដែល Crostini បានចែករំលែក</translation>
 <translation id="8335587457941836791">ដកការដៅចេញពីធ្នើ</translation>
 <translation id="8336407002559723354">ការផ្ដល់កំណែថ្មីបញ្ចប់នៅខែ <ph name="MONTH_AND_YEAR" /></translation>

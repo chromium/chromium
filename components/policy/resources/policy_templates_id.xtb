@@ -2977,6 +2977,11 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Kebijakan ini dapat digunakan oleh administrator yang memerlukan waktu tambahan untuk memperbarui situs internalnya yang terpengaruh oleh pembatasan baru ini. Kebijakan Perusahaan ini bersifat sementara dan akan dihapus setelah <ph name="PRODUCT_NAME" /> versi 104.
       </translation>
 <translation id="4268586991084547853">Lebih kompatibel dengan Enterprise Mode Site List Microsoft IE/Edge.</translation>
+<translation id="4269798992490176617">Jika kebijakan disetel ke Aktif, <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> dapat mengeksekusi permintaan WebAuthn API yang berasal dari sesi penjelajahan pada host jarak jauh.
+
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, perilaku default akan diterapkan.
+
+      Perhatikan bahwa fitur ini hanya didukung di dalam lingkungan jaringan internal Google.</translation>
 <translation id="4269859918103560644">Izinkan pengguna untuk memutuskan</translation>
 <translation id="4274691295133617461">Jika kebijakan disetel ke 3, situs web akan diizinkan meminta akses baca ke file, dan direktori, di sistem file pada sistem operasi host melalui File System API. Jika kebijakan disetel ke 2, akses akan ditolak.
 
@@ -5396,6 +5401,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="7063895219334505671">Izinkan pop-up di situs ini</translation>
 <translation id="7066292150801784098">Cegah interaksi pengguna jarak jauh dengan jendela administrator di sesi bantuan jarak jauh</translation>
 <translation id="706669471845501145">Izinkan situs menampilkan pemberitahuan desktop</translation>
+<translation id="70681795425744184">Jangan izinkan CRD mengeksekusi permintaan WebAuthn API yang di-proxy dari host jarak jauh.</translation>
 <translation id="7070525176564511548">Sandi harus dimasukkan setiap minggu (168 jam)</translation>
 <translation id="7072208053150563108">Tingkat perubahan sandi mesin</translation>
 <translation id="7072567600438630966">Izinkan pengaktifan Phone Hub.</translation>
@@ -5683,6 +5689,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7407441173422042771">Kebijakan ini mengontrol prediksi jaringan di <ph name="PRODUCT_NAME" />. Kebijakan ini mengontrol pengambilan data DNS, prakoneksi TCP dan SSL, serta pra-rendering halaman.
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, prediksi jaringan akan diaktifkan, tetapi pengguna dapat mengubahnya.</translation>
+<translation id="7410074797376205571">Izinkan <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> mengeksekusi permintaan WebAuthn API yang di-proxy dari host jarak jauh.</translation>
 <translation id="7412456346709338637">Mengaktifkan akses data periferal Thunderbolt/USB4</translation>
 <translation id="7417438464912687020">Izinkan koneksi akses jarak jauh ke perangkat ini</translation>
 <translation id="7417972229667085380">Persentase yang digunakan untuk menskalakan penundaan status menganggur dalam mode presentasi (tidak digunakan lagi)</translation>
@@ -6617,6 +6624,7 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
        Jika kebijakan disetel ke nonaktif, dialog JavaScript yang dipicu dari subframe asal yang berbeda tidak akan diblokir.
 
        Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> versi 95.</translation>
+<translation id="8427466947904008809">Izinkan CRD mengeksekusi permintaan WebAuthn API yang di-proxy dari host jarak jauh.</translation>
 <translation id="8433186206711564395">Setelan jaringan</translation>
 <translation id="8433769814000220721">Mengaktifkan Konten yang Disarankan</translation>
 <translation id="843609873781525167">Jika kebijakan ditetapkan ke Benar (True), <ph name="PRODUCT_NAME" /> akan selalu memeriksa apakah browser merupakan default saat memulai dan, jika mungkin, mendaftarkan sendiri secara otomatis. Jika kebijakan ditetapkan ke Salah (False), <ph name="PRODUCT_NAME" /> akan berhenti memeriksa apakah browser tersebut merupakan default dan menonaktifkan kontrol pengguna untuk opsi ini.

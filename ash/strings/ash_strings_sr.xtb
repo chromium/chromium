@@ -965,6 +965,7 @@
 <translation id="7076293881109082629">Пријављивање</translation>
 <translation id="7086931198345821656">Ово ажурирање захтева да обавите Powerwash на: <ph name="DEVICE_TYPE" />. Сви подаци ће се избрисати. Сазнајте више о најновијем ажурирању за: <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Приступ помоћу прекидача</translation>
+<translation id="7098053464892629930">Преузмите апликацију за <ph name="NAME" /> на Google Play-у да бисте видели све доступне функције</translation>
 <translation id="7098389117866926363">Уређај са USB прикључком типа C (леви задњи порт)</translation>
 <translation id="7106330611027933926">Прикажи траку за радне површине</translation>
 <translation id="7118268675952955085">снимак екрана</translation>
@@ -1209,6 +1210,7 @@
 <translation id="8660331759611631213">Квадратни корен броја 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Прегледајте листу мрежа. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Отворите <ph name="NAME" /> да бисте подесили уређај</translation>
 <translation id="8676770494376880701">Повезан је пуњач мале снаге</translation>
 <translation id="8683506306463609433">Праћење учинка је активно</translation>
 <translation id="8685326675965865247">Претражујте уређај, апликације, подешавања и веб. Користите тастере са стрелицама да бисте се кретали кроз апликације.</translation>

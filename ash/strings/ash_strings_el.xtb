@@ -965,6 +965,7 @@
 <translation id="7076293881109082629">Σύνδεση</translation>
 <translation id="7086931198345821656">Αυτή η ενημέρωση απαιτεί Powerwash της συσκευής <ph name="DEVICE_TYPE" />. Όλα τα δεδομένα θα διαγραφούν. Μάθετε περισσότερα σχετικά με την πιο πρόσφατη ενημέρωση της εφαρμογής <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Πρόσβαση με διακόπτη</translation>
+<translation id="7098053464892629930">Κατεβάστε την εφαρμογή για το <ph name="NAME" /> στο Google Play για να δείτε όλες τις διαθέσιμες λειτουργίες</translation>
 <translation id="7098389117866926363">Συσκευή USB-C (πίσω αριστερή θύρα)</translation>
 <translation id="7106330611027933926">Εμφάνιση γραμμής γραφείων</translation>
 <translation id="7118268675952955085">στιγμιότυπο οθόνης</translation>
@@ -1209,6 +1210,7 @@
 <translation id="8660331759611631213">Τετραγωνική ρίζα του 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Εμφάνιση λίστας δικτύων. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Ανοίξτε το <ph name="NAME" /> για να ρυθμίσετε τη συσκευή σας</translation>
 <translation id="8676770494376880701">Ο συνδεδεμένος φορτιστής παρέχει χαμηλή ισχύ</translation>
 <translation id="8683506306463609433">Ενεργή παρακολούθηση απόδοσης</translation>
 <translation id="8685326675965865247">Κάντε αναζήτηση στη συσκευή, στις εφαρμογές, στις ρυθμίσεις και στον ιστό. Χρησιμοποιήστε τα πλήκτρα βέλους για πλοήγηση στις εφαρμογές σας.</translation>

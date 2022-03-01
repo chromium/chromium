@@ -965,6 +965,7 @@ Installeret for nylig</translation>
 <translation id="7076293881109082629">Login</translation>
 <translation id="7086931198345821656">Denne opdatering kræver, at du powerwasher din <ph name="DEVICE_TYPE" />. Alle data vil blive slettet. Få flere oplysninger om den nyeste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>
 <translation id="7088960765736518739">Kontaktadgang</translation>
+<translation id="7098053464892629930">Download appen for <ph name="NAME" /> i Google Play for at se alle tilgængelige funktioner</translation>
 <translation id="7098389117866926363">USB-C-enhed (porten bagpå i venstre side)</translation>
 <translation id="7106330611027933926">Vis diskbjælke</translation>
 <translation id="7118268675952955085">screenshot</translation>
@@ -1209,6 +1210,7 @@ Installeret for nylig</translation>
 <translation id="8660331759611631213">Kvadratroden af 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Vis netværksliste. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Åbn <ph name="NAME" /> for at konfigurere din enhed</translation>
 <translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>
 <translation id="8683506306463609433">Sporing af effektivitet er aktiv</translation>
 <translation id="8685326675965865247">Søg på din enhed, i dine apps, i indstillingerne og på nettet. Brug piletasterne til at navigere i dine apps.</translation>

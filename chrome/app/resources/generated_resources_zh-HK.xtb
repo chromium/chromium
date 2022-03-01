@@ -1105,6 +1105,7 @@
 <translation id="2060375639911876205">移除 eSIM 卡設定檔</translation>
 <translation id="2062354623176996748">如果您使用無痕式視窗瀏覽網頁，系統便不會保留您的瀏覽記錄</translation>
 <translation id="2065405795449409761">Chrome 目前由自動化測試軟件控制。</translation>
+<translation id="2069869989954932144">在電腦上開啟檔案時，建議要使用的應用程式</translation>
 <translation id="2071393345806050157">沒有本機記錄檔案。</translation>
 <translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{按一下即可安裝擴充程式}other{按一下即可安裝這些擴充程式}}</translation>
@@ -1345,6 +1346,7 @@
 <translation id="2292848386125228270">請以一般使用者身分啟動 <ph name="PRODUCT_NAME" />。如要以 root 身份作開發用途，請使用「--no-sandbox」標籤重新執行 Chrome。</translation>
 <translation id="2294081976975808113">螢幕私隱設定</translation>
 <translation id="2294358108254308676">您要安裝「<ph name="PRODUCT_NAME" />」嗎？</translation>
+<translation id="229477815107578534">查看您的設定</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> 項結果</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> 要求裝置在登入 <ph name="EMAIL" /> 時必須在線</translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{Chrome 在您的電腦上找不到有害軟件 • 上次檢查時間：1 小時前}other{Chrome 在您的電腦上找不到有害軟件 • 上次檢查時間：{NUM_HOURS} 小時前}}</translation>
@@ -6075,6 +6077,7 @@
 <translation id="7077829361966535409">無法使用目前的 Proxy 設定載入登入頁面。請<ph name="GAIA_RELOAD_LINK_START" />重新登入<ph name="GAIA_RELOAD_LINK_END" />或使用其他<ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="7078120482318506217">所有網絡</translation>
 <translation id="708060913198414444">複製音效檔案位址(&amp;O)</translation>
+<translation id="7082568314107259011"><ph name="NETWORK_NAME" /> 由管理員管理</translation>
 <translation id="7085389578340536476">允許 Chrome 錄音嗎？</translation>
 <translation id="7086672505018440886">在封存中包含 Chrome 記錄檔案。</translation>
 <translation id="7088434364990739311">無法啟動更新檢查 (錯誤代碼 <ph name="ERROR" />)。</translation>
@@ -7315,6 +7318,7 @@
 <translation id="8325413836429495820">不允許查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
 <translation id="8327676037044516220">權限和內容設定</translation>
+<translation id="8330689128072902965">附近的聯絡人可以與您分享資料。按一下以變更。</translation>
 <translation id="833256022891467078">Crostini 共用資料夾</translation>
 <translation id="8335587457941836791">從捷徑列中取消固定</translation>
 <translation id="8336407002559723354">此裝置將於 <ph name="MONTH_AND_YEAR" />停止更新</translation>

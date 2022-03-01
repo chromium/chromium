@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Pagina di Chromium</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
 <translation id="5945387852661427312">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chromium. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chromium, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
+<translation id="5983312940147103417">Migliora Chromium</translation>
 <translation id="602807004951640891">Se utilizzi Chromium, accetti i <ph name="BEGIN_LINK_TOS" />Termini di servizio<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Per impostare Chromium come browser predefinito:
 1. Apri le Impostazioni.
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">Blocca le schede di navigazione in incognito quando chiudi Chromium</translation>
 <translation id="7980860476903281594">Chromium condivide la tua posizione con i siti autorizzati da te.</translation>
 <translation id="8013573822802650211">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chromium per visualizzare le tue schede</translation>
+<translation id="80599830191519229">Quando l'opzione è attiva:
+<ph name="BEGIN_INDENT" />  • Contribuisci a migliorare Chromium per le persone che lo usano come fai tu<ph name="END_INDENT" />
+
+Aspetti da considerare:
+<ph name="BEGIN_INDENT" />  • Google riceve delle informazioni relative al tuo utilizzo di Chromium, ma che non sono riconducibili a te
+  • Se Chromium si arresta in modo anomalo, i dettagli relativi a questo evento potrebbero includere alcune informazioni personali
+  • Se attivi la sincronizzazione, le metriche potrebbero includere anche informazioni relative agli URL che visiti<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Eliminare i dati di Chromium dal dispositivo?</translation>
 <translation id="8175055321229419309">Suggerimento. <ph name="BEGIN_LINK" />Sposta Chromium nel dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>

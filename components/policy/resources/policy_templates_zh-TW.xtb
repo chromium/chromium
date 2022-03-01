@@ -2914,6 +2914,11 @@
       如果管理員需要更多時間更新受此新限制影響的內部網站，就可以採用這項設定。這項 Enterprise 政策僅是暫時性措施，預計將於 <ph name="PRODUCT_NAME" /> 第 104 版之後移除。
       </translation>
 <translation id="4268586991084547853">與 Microsoft IE/Edge 企業模式網站清單的相容性更高。</translation>
+<translation id="4269798992490176617">如果設為啟用，<ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />可能會執行遠端主機上瀏覽工作階段傳送的 WebAuthn API 要求。
+
+      如果將這項政策設為停用或不予設定，則系統會套用預設行為。
+
+      請注意，這項功能目前只適用於 Google 內部網路環境。</translation>
 <translation id="4269859918103560644">允許使用者決定</translation>
 <translation id="4274691295133617461">如果將這項政策設為 3，網站即可要求透過 File System API 讀取主機作業系統中檔案系統的檔案和目錄。如果將這項政策設為 2，系統會拒絕網站存取。
 
@@ -5278,6 +5283,7 @@
 <translation id="7063895219334505671">允許這些網站的彈出式視窗</translation>
 <translation id="7066292150801784098">禁止遠端使用者在遠端協助工作階段中操控權限較高的視窗</translation>
 <translation id="706669471845501145">允許網站顯示桌面通知</translation>
+<translation id="70681795425744184">不允許 CRD 執行遠端主機透過 Proxy 傳送的 WebAuthn API 要求。</translation>
 <translation id="7070525176564511548">每週 (168 小時) 需輸入一次密碼</translation>
 <translation id="7072208053150563108">裝置密碼變更頻率</translation>
 <translation id="7072567600438630966">允許啟用 Phone Hub 功能。</translation>
@@ -5565,6 +5571,7 @@
 <translation id="7407441173422042771">這項政策可控管 <ph name="PRODUCT_NAME" /> 中的網路預測功能。這項設定會控管 DNS 預先擷取功能、TCP、SSL 預先連線和網頁預先轉譯機制。
 
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，系統會關閉網路預測功能，但使用者可以變更這項設定。</translation>
+<translation id="7410074797376205571">允許 <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />執行遠端主機透過 Proxy 傳送的 WebAuthn API 要求。</translation>
 <translation id="7412456346709338637">啟用 Thunderbolt/USB4 周邊裝置資料存取權</translation>
 <translation id="7417438464912687020">允許與這部裝置建立遠端存取連線</translation>
 <translation id="7417972229667085380">簡報模式中的閒置延遲時間延長百分比 (已不適用)</translation>
@@ -6482,6 +6489,7 @@
        如果將這項政策設為停用，系統就不會封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。
 
        這項政策將在 <ph name="PRODUCT_NAME" /> 第 95 版中移除。</translation>
+<translation id="8427466947904008809">允許 CRD 執行遠端主機透過 Proxy 傳送的 WebAuthn API 要求。</translation>
 <translation id="8433186206711564395">網路設定</translation>
 <translation id="8433769814000220721">啟用推薦內容</translation>
 <translation id="843609873781525167">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 一律會在啟動時檢查其是否為預設瀏覽器，並在情況允許時自動登錄。如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 一律不會檢查其是否為預設瀏覽器，且會停用設定這個選項的使用者控制項。

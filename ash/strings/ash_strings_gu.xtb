@@ -965,6 +965,7 @@
 <translation id="7076293881109082629">સાઇન ઇન કરી રહ્યું છે</translation>
 <translation id="7086931198345821656">આ અપડેટ માટે તમારા <ph name="DEVICE_TYPE" />ને પાવરવોશ કરવું જરૂરી છે. બધો ડેટા ડિલીટ કરવામાં આવશે. નવીનતમ <ph name="SYSTEM_APP_NAME" /> અપડેટ વિશે વધુ જાણો.</translation>
 <translation id="7088960765736518739">સ્વિચ ઍક્સેસ</translation>
+<translation id="7098053464892629930">બધી ઉપલબ્ધ સુવિધાઓ જોવા માટે, Google Play પરથી <ph name="NAME" />ની ઍપ ડાઉનલોડ કરો</translation>
 <translation id="7098389117866926363">USB-C ડિવાઇસ (પાછળની બાજુએ ડાબું પોર્ટ)</translation>
 <translation id="7106330611027933926">ડેસ્કબાર બતાવો</translation>
 <translation id="7118268675952955085">સ્ક્રીનશૉટ</translation>
@@ -1209,6 +1210,7 @@
 <translation id="8660331759611631213">71નું વર્ગમૂળ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">નેટવર્ક સૂચિ બતાવો. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">તમારા ડિવાઇસનું સેટઅપ કરવા માટે <ph name="NAME" /> ખોલો</translation>
 <translation id="8676770494376880701">નિમ્ન-પાવર ચાર્જર કનેક્ટ કર્યું છે</translation>
 <translation id="8683506306463609433">કાર્યપ્રદર્શનની નોંધ રાખવાનું સક્રિય છે</translation>
 <translation id="8685326675965865247">તમારા ડિવાઇસ, ઍપ, સેટિંગ અને વેબ પર શોધો. તમારી ઍપ પર નૅવિગેટ કરવા માટે ઍરો કીનો ઉપયોગ કરો.</translation>

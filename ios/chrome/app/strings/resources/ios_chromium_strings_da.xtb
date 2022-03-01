@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Chromium-side</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5945387852661427312">Du er ved at logge ind med en konto, der administreres af <ph name="DOMAIN" />, hvilket giver administratoren kontrol over dine Chromium-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chromium, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
+<translation id="5983312940147103417">Gør Chromium bedre</translation>
 <translation id="602807004951640891">Når du bruger Chromium, accepterer du <ph name="BEGIN_LINK_TOS" />servicevilkårene<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Sådan gør du Chromium til din standardbrowser:
 1. Åbn Indstillinger
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">Lås inkognitofaner, når du lukker Chromium</translation>
 <translation id="7980860476903281594">Chromium deler din lokation med godkendte websites.</translation>
 <translation id="8013573822802650211">Log ind på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
+<translation id="80599830191519229">Ved aktivering:
+<ph name="BEGIN_INDENT" />  • Hjælp med at gøre Chromium bedre for andre, der bruger Chromium på samme måde som dig<ph name="END_INDENT" />
+
+Ting, du skal overveje:
+<ph name="BEGIN_INDENT" />  • Der sendes oplysninger til Google om din brug af Chromium, men oplysningerne er ikke tilknyttet dig
+  • Hvis Chromium oplever nedbrud, kan oplysningerne om nedbruddet omfatte visse personlige oplysninger
+  • Hvis du aktiverer synkronisering, vil metrics også omfatte oplysninger om de webadresser, du besøger<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Vil du rydde dine Chromium-data på denne enhed?</translation>
 <translation id="8175055321229419309">Tip! <ph name="BEGIN_LINK" />Flyt Chromium til din dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium kunne ikke søge efter opdateringer. Prøv igen senere.</translation>

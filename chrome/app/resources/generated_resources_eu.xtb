@@ -908,6 +908,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1869433484041798909">Laster-marka egiteko botoia</translation>
 <translation id="1871098866036088250">Ireki Chrome arakatzailean</translation>
 <translation id="187145082678092583">Aplikazio gutxiago</translation>
+<translation id="1871463148436682760">Oso ongi!</translation>
 <translation id="1871534214638631766">Erakutsi erlazionatutako informazioa edukia eskuineko botoiarekin edo luze sakatzean</translation>
 <translation id="1871569928317311284">Desaktibatu gai iluna</translation>
 <translation id="1871615898038944731">Eguneratuta dago <ph name="DEVICE_TYPE" /> gailua</translation>
@@ -2334,6 +2335,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3304212451103136496">Deskontua: <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Formateatzeko prozesuak pare bat segundo har ditzake. Mesedez, itxaron.</translation>
 <translation id="3305661444342691068">Ireki PDF aurrebistan</translation>
+<translation id="3306992216458434072">Ezarri izen bat taldeari eta hautatu haren kolorea</translation>
 <translation id="3307176291962384345">Lortu <ph name="MERCHANT_NAME" /> saltzailearen deskontuak</translation>
 <translation id="3308116878371095290">Orriari cookieak ezartzeko aukera ukatu zaio.</translation>
 <translation id="3308134619352333507">Ezkutatu botoia</translation>
@@ -3747,6 +3749,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4708794300267213770">Inaktibo egoeratik irtetean, erakutsi pantaila blokeatua</translation>
 <translation id="4708849949179781599">Irten <ph name="PRODUCT_NAME" />-tik</translation>
 <translation id="4711638718396952945">Berrezarri ezarpenak</translation>
+<translation id="47158868804223727">Taldea zabaltzeko edo tolesteko, sakatu haren izena</translation>
 <translation id="4716483597559580346">Segurtasun handiagoa izateko, berrezarri fabrikako ezarpenak Powerwash bidez</translation>
 <translation id="471880041731876836">Ez daukazu webgunean sartzeko baimenik</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> kontuaren pasahitza</translation>
@@ -3810,6 +3813,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />Administratzaileak<ph name="END_LINK" /> kudeatzen ditu eguneratzeak</translation>
 <translation id="479536056609751218">Web-orria, HTML soilik</translation>
 <translation id="4796142525425001238">Leheneratu beti</translation>
+<translation id="4797314204379834752">Fitxak taldetan antola ditzakezu; esate baterako, zereginekin zerikusia dutenak batetik, erosketei buruzkoak bestetik, etab.</translation>
 <translation id="4798236378408895261">Erantsi <ph name="BEGIN_LINK" />Bluetooth konexioari buruzko erregistroak<ph name="END_LINK" /> (Google barnekoa)</translation>
 <translation id="479863874072008121">Kudeatu gailuak</translation>
 <translation id="4800839971935185386">Berrikusi izenaren eta ikonoaren berritasunak</translation>
@@ -4050,6 +4054,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="5039696241953571917">Ikusi eta kudeatu Google-ko kontuan gordetako pasahitzak</translation>
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5040823038948176460">Edukiaren ezarpen gehigarriak</translation>
+<translation id="5041509233170835229">Chrome aplikazioa</translation>
 <translation id="5043440033854483429">Izenak hizkiak, zenbakiak eta marratxoak eduki ditzake, eta 1 eta 15 karaktere artean (biak barne) izan behar ditu</translation>
 <translation id="5043913660911154449">Edo zehaztu inprimagailuaren PPD fitxategia <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Pasahitz okerra</translation>
@@ -5376,6 +5381,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6393156038355142111">Iradoki pasahitz seguru bat</translation>
 <translation id="6393550101331051049">Segurua ez den edukia erakuts dezakete</translation>
 <translation id="6395423953133416962">Bidali <ph name="BEGIN_LINK1" />sistemari buruzko informazioa<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />estatistikak<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">Sistema-aplikazioa</translation>
 <translation id="6396988158856674517">Ez utzi webguneei mugimendu-sentsoreak erabiltzen</translation>
 <translation id="6398715114293939307">Kendu Google Play Store</translation>
 <translation id="6398765197997659313">Irten pantaila osoko modutik</translation>
@@ -5445,6 +5451,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6460566145397380451">MIDI gailuetara konekta daitezke</translation>
 <translation id="6460601847208524483">Bilatu hurrengoa</translation>
 <translation id="6461170143930046705">Sareak bilatzen…</translation>
+<translation id="6462204616987156669">Horretarako, egin klik eskuineko botoiarekin fitxa batean eta hautatu "Gehitu fitxa talde berrian"</translation>
 <translation id="6463795194797719782">&amp;Editatu</translation>
 <translation id="6464825623202322042">Gailu hau</translation>
 <translation id="6465841119675156448">Internetera konektatu gabe</translation>
@@ -5862,6 +5869,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6885771755599377173">Sistemaren informazioaren aurrebista</translation>
 <translation id="6886871292305414135">Ireki esteka &amp;fitxa berri batean</translation>
 <translation id="6889957081990109136">Ez zaio esleitu erabilerraztasun-etengailurik oraindik</translation>
+<translation id="689007770043972343">Arrastatu irekita dauzkazun fitxak taldera</translation>
 <translation id="6892812721183419409">Ireki esteka <ph name="USER" /> gisa</translation>
 <translation id="6895032998810961280">Eman Google-ri software kaltegarriaren, sistemaren ezarpenen eta garbiketa honen bitartez ordenagailuan aurkitutako prozesuen berri.</translation>
 <translation id="6895902329218596456"><ph name="MANAGER" /> bidez kudeatzen da <ph name="USER_EMAIL" />, eta administratzaileak blokeatu egin du bigarren mailako kontu gisa saioa hasteko aukera</translation>
@@ -6439,6 +6447,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookie}}</translation>
 <translation id="7493386493263658176">Baliteke <ph name="EXTENSION_NAME" /> luzapenak idazten duzun guztia bildu ahal izatea; besteak beste, datu pertsonalak (pasahitzak, kreditu-txartelak, etab.). Luzapen hori erabili nahi duzu?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android-erako aplikazioa</translation>
 <translation id="7495778526395737099">Pasahitza ahaztu zaizu?</translation>
 <translation id="7497981768003291373">Ez duzu duela gutxi hartutako WebRTC testu-erregistrorik.</translation>
 <translation id="7501957181231305652">edo</translation>

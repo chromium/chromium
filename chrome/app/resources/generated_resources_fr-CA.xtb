@@ -1241,6 +1241,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2203088913459920044">Le nom peut comprendre des lettres, des chiffres et des caractères spéciaux</translation>
 <translation id="220321590587754225">Impossible de se connecter. Réessayez.</translation>
 <translation id="2204034823255629767">Lire et modifier tout ce que vous tapez</translation>
+<translation id="2207115382329026341">Activez les paramètres de diffusion d'application à partir de votre téléphone.</translation>
 <translation id="220858061631308971">Veuillez entrer ce NIP sur l'appareil « <ph name="DEVICE_NAME" /> » :</translation>
 <translation id="2210462644007531147">Impossible de terminer l'installation</translation>
 <translation id="2212565012507486665">Autoriser les témoins</translation>
@@ -1431,6 +1432,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2367972762794486313">Afficher les applications</translation>
 <translation id="236939127352773362">Lorsque des appareils partagent des fichiers à proximité</translation>
 <translation id="2371076942591664043">Ouvrir une fois le téléchargement &amp;terminé</translation>
+<translation id="237307274687369010">Impossible de lancer <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Ajuster à la taille du papier</translation>
 <translation id="2375406435414127095">Connectez-vous à votre téléphone</translation>
 <translation id="2377588536920405462">Vous pouvez désactiver la localisation en désactivant le paramètre de localisation principal de votre appareil. Vous pouvez également désactiver l'utilisation des réseaux Wi‑Fi, des réseaux cellulaires et des capteurs pour la localisation dans les paramètres de localisation.</translation>
@@ -2305,6 +2307,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3277691515294482687">Sauvegarder mes applications et mes fichiers dans le dossier Mes fichiers avant d'effectuer la mise à niveau de Linux.</translation>
 <translation id="3278001907972365362">Un ou plusieurs de vos comptes Google nécessitent votre attention</translation>
 <translation id="3278800075417428224">Gérer les langues dans les paramètres de CloudReady 2.0</translation>
+<translation id="3278928434075969895">Ce profil utilise les paramètres du mandataire de Chrome OS.</translation>
 <translation id="3279092821516760512">Certains contacts peuvent partager du contenu avec vous lorsqu'ils sont à proximité. Les transferts ne démarreront pas tant que vous ne les autoriserez pas.</translation>
 <translation id="3279230909244266691">Ce processus peut prendre quelques minutes. Démarrage de la machine virtuelle en cours…</translation>
 <translation id="3280237271814976245">Enreg&amp;istrer sous...</translation>
@@ -4876,6 +4879,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5909379458939060601">Supprimer ce profil et les données de navigation?</translation>
 <translation id="5910363049092958439">En&amp;registrer l'image sous...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> est hors ligne</translation>
+<translation id="5911505723657992440">Utiliser les paramètres du mandataire de Chrome OS pour ce profil.</translation>
 <translation id="5911533659001334206">Visualiseur de raccourcis</translation>
 <translation id="5914724413750400082">Module (<ph name="MODULUS_NUM_BITS" /> bits) :
   <ph name="MODULUS_HEX_DUMP" />

@@ -965,6 +965,7 @@ Novo instaliranje</translation>
 <translation id="7076293881109082629">Prijava</translation>
 <translation id="7086931198345821656">Za ovo je ažuriranje potrebno izvršiti powerwash vašeg uređaja <ph name="DEVICE_TYPE" />. Izbrisat će se svi podaci. Saznajte više o najnovijem ažuriranju za <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Prekidač za pristup</translation>
+<translation id="7098053464892629930">Preuzmite aplikaciju za <ph name="NAME" /> na Google Playu za pregled svih dostupnih značajki</translation>
 <translation id="7098389117866926363">USB-C uređaj (lijevi priključak sa stražnje strane)</translation>
 <translation id="7106330611027933926">Prikazivanje deskbara</translation>
 <translation id="7118268675952955085">snimka zaslona</translation>
@@ -1209,6 +1210,7 @@ Novo instaliranje</translation>
 <translation id="8660331759611631213">Kvadratni korijen od 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Prikaz popisa mreža. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Otvorite <ph name="NAME" /> da biste postavili uređaj</translation>
 <translation id="8676770494376880701">Priključen je punjač male snage</translation>
 <translation id="8683506306463609433">Aktivno je praćenje izvedbe</translation>
 <translation id="8685326675965865247">Pretražite uređaj, aplikacije, postavke i web. Za kretanje po aplikacijama koristite tipke sa strelicama.</translation>

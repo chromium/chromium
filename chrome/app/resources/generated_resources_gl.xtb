@@ -1239,6 +1239,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2203088913459920044">O nome pode conter letras, números e caracteres especiais</translation>
 <translation id="220321590587754225">Non se puido conectar. Téntao de novo.</translation>
 <translation id="2204034823255629767">Ler e modificar todo o que escribas</translation>
+<translation id="2207115382329026341">Activa a configuración da emisión de aplicacións desde o teu teléfono.</translation>
 <translation id="220858061631308971">Introduce este código PIN en "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Non puido completarse a instalación</translation>
 <translation id="2212565012507486665">Permitir uso de cookies</translation>
@@ -1429,6 +1430,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2367972762794486313">Mostrar aplicacións</translation>
 <translation id="236939127352773362">Cando haxa dispositivos preto que compartan contido</translation>
 <translation id="2371076942591664043">Abrir ao fi&amp;nalizar</translation>
+<translation id="237307274687369010">Non se puido iniciar a aplicación <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Axustar ao papel</translation>
 <translation id="2375406435414127095">Conectarse ao teléfono</translation>
 <translation id="2377588536920405462">Para desactivar a localización, desactiva a opción principal de localización do dispositivo. Tamén podes desactivar o uso de sensores e redes wifi ou de telefonía móbil para determinar a localización na configuración da localización.</translation>
@@ -2301,6 +2303,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3277691515294482687">Antes de actualizar Linux, facer unha copia de seguranza das miñas aplicacións e ficheiros no cartafol Os meus ficheiros.</translation>
 <translation id="3278001907972365362">A/s túa/s Conta/s de Google precisan atención</translation>
 <translation id="3278800075417428224">Xestionar idiomas na configuración de CloudReady 2.0</translation>
+<translation id="3278928434075969895">Este perfil usa a configuración do proxy de Chrome OS.</translation>
 <translation id="3279092821516760512">Os contactos seleccionados poden compartir ficheiros contigo cando estean preto. As transferencias non comezarán ata que as aceptes.</translation>
 <translation id="3279230909244266691">Este proceso pode tardar uns minutos. Iniciando a máquina virtual.</translation>
 <translation id="3280237271814976245">Gard&amp;ar como...</translation>
@@ -4872,6 +4875,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5909379458939060601">Queres eliminar este perfil e os datos de navegación?</translation>
 <translation id="5910363049092958439">Gar&amp;dar imaxe como...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> está sen conexión</translation>
+<translation id="5911505723657992440">Usar configuración do proxy de Chrome OS para este perfil.</translation>
 <translation id="5911533659001334206">Visor de atallos</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
   <ph name="MODULUS_HEX_DUMP" />

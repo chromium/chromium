@@ -2314,6 +2314,7 @@
 <translation id="3277691515294482687">Linuxን ከማላቅዎ በፊት መተግበሪያዎቼን እና ፋይሎቼን ወደ እኔ ፋይሎች አቃፊ ምትኬ አስቀምጥ።</translation>
 <translation id="3278001907972365362">የእርስዎ Google መለያ(ዎች) ትኩረት ይፈልጋል(ሉ)</translation>
 <translation id="3278800075417428224">በCloudReady 2.0 ቅንብሮች ውስጥ ቋንቋዎችን ያቀናብሩ</translation>
+<translation id="3278928434075969895">ይህ መገለጫ የChrome OS ተኪ ቅንብሮችን ይጠቀማል።</translation>
 <translation id="3279092821516760512">በአቅራቢያ ሲሆኑ የተመረጡ እውቂያዎች ከእርስዎ ጋር ሊጋሩ ይችላሉ። እስኪቀበሉ ድረስ ዝውውሮች አይጀምሩም።</translation>
 <translation id="3279230909244266691">ይህ ሂደት ጥቂት ደቂቃዎች ሊወስድ ይችላል። ምናባዊ ማሽኑን በመጀመር ላይ።</translation>
 <translation id="3280237271814976245">አስቀምጥ &amp;እንደ…</translation>
@@ -4883,6 +4884,7 @@
 <translation id="5909379458939060601">ይህ መገለጫ እና የአሰሳ ውሂብ ይሰረዝ?</translation>
 <translation id="5910363049092958439">ምስል አስ&amp;ቀምጥ እንደ…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ከመስመር ውጭ ነው</translation>
+<translation id="5911505723657992440">ለዚህ መገለጫ የChrome OS ተኪ ቅንብሮችን ይጠቀሙ</translation>
 <translation id="5911533659001334206">የአቋራጭ ተመልካች</translation>
 <translation id="5914724413750400082">ሞዱለስ (<ph name="MODULUS_NUM_BITS" /> ቢት)፦
   <ph name="MODULUS_HEX_DUMP" />

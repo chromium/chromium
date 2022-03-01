@@ -921,6 +921,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1869433484041798909">Button ng bookmark</translation>
 <translation id="1871098866036088250">Buksan sa Chrome browser</translation>
 <translation id="187145082678092583">Mas kaunting app</translation>
+<translation id="1871463148436682760">Mahusay!</translation>
 <translation id="1871534214638631766">Ipakita ang kaugnay na impormasyon kapag nag-right click ka sa o matagal mong pinindot ang content</translation>
 <translation id="1871569928317311284">I-off ang madilim na tema</translation>
 <translation id="1871615898038944731">Napapanahon ang iyong <ph name="DEVICE_TYPE" /></translation>
@@ -2351,6 +2352,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> diskwento</translation>
 <translation id="3305389145870741612">Maaaring tumagal nang ilang segundo ang proseso ng pag-format. Mangyaring maghintay.</translation>
 <translation id="3305661444342691068">Buksan ang PDF sa Preview</translation>
+<translation id="3306992216458434072">Pangalanan ang iyong grupo at pumili ng kulay</translation>
 <translation id="3307176291962384345">Makakuha ng mga diskwento para sa <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Naharangan ang pahinang ito mula sa pagtatakda ng cookies.</translation>
 <translation id="3308134619352333507">Itago ang Button</translation>
@@ -3765,6 +3767,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4708794300267213770">Ipakita ang lock screen kapag pinagana mula sa pag-sleep</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Ipanumbalik ang mga setting</translation>
+<translation id="47158868804223727">I-click ang pangalan ng grupo para i-expand o i-collapse ito</translation>
 <translation id="4716483597559580346">Powerwash para sa pinaigting na seguridad</translation>
 <translation id="471880041731876836">Wala kang pahintulot na bisitahin ang site na ito</translation>
 <translation id="4722735765955348426">Password ni <ph name="USERNAME" /></translation>
@@ -3828,6 +3831,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4794810983896241342">Pinapamahalaan ng <ph name="BEGIN_LINK" />iyong administrator<ph name="END_LINK" /> ang mga update</translation>
 <translation id="479536056609751218">Webpage, HTML Lamang</translation>
 <translation id="4796142525425001238">Palaging i-restore</translation>
+<translation id="4797314204379834752">Subukang gumamit ng mga grupo ng tab para isaayos ang mga gawain, para sa online na pamimili, at higit pa</translation>
 <translation id="4798236378408895261">Mag-attach ng <ph name="BEGIN_LINK" />Mga Log ng Bluetooth<ph name="END_LINK" /> (Google internal)</translation>
 <translation id="479863874072008121">Pamahalaan ang mga device</translation>
 <translation id="4800839971935185386">Suriin ang mga update sa pangalan at icon</translation>
@@ -4068,6 +4072,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5039696241953571917">Tingnan at pamahalaan ang mga naka-save na password sa iyong Google Account</translation>
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5040823038948176460">Mga karagdagang setting ng content</translation>
+<translation id="5041509233170835229">Chrome App</translation>
 <translation id="5043440033854483429">Puwedeng gumamit ang pangalan ng mga titik, numero, at hyphen (-), at dapat nasa pagitan ito ng 1 hanggang 15 character.</translation>
 <translation id="5043913660911154449">O tukuyin ang PPD ng iyong printer <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Hindi wastong password</translation>
@@ -5394,6 +5399,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6393156038355142111">Magmungkahi ng malakas na password</translation>
 <translation id="6393550101331051049">Pinapayagang magpakita ng hindi secure na content</translation>
 <translation id="6395423953133416962">Ipadala ang <ph name="BEGIN_LINK1" />impormasyon ng system<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />mga sukatan<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">App ng System</translation>
 <translation id="6396988158856674517">I-block ang mga site sa paggamit ng mga sensor ng paggalaw</translation>
 <translation id="6398715114293939307">Alisin ang Google Play Store</translation>
 <translation id="6398765197997659313">Lumabas sa buong screen</translation>
@@ -5463,6 +5469,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6460566145397380451">Pinapayagang kumonekta sa mga MIDI device</translation>
 <translation id="6460601847208524483">Find Next</translation>
 <translation id="6461170143930046705">Naghahanap ng mga network...</translation>
+<translation id="6462204616987156669">Mag-right-Click sa Tab at piliin ang "Idagdag ang Tab sa Bagong Grupo"</translation>
 <translation id="6463795194797719782">&amp;Mag-edit</translation>
 <translation id="6464825623202322042">Ang device na ito</translation>
 <translation id="6465841119675156448">Nang walang internet</translation>
@@ -5880,6 +5887,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6885771755599377173">Preview ng Impormasyon ng System</translation>
 <translation id="6886871292305414135">Buksan ang link sa bagong &amp;tab</translation>
 <translation id="6889957081990109136">Hindi pa naitatalaga ang switch</translation>
+<translation id="689007770043972343">Subukang mag-drag ng iba pang bukas na tab sa iyong grupo</translation>
 <translation id="6892812721183419409">Buksan ang Link bilang <ph name="USER" /></translation>
 <translation id="6895032998810961280">Mag-ulat ng mga detalye sa Google tungkol sa mapaminsalang software, setting ng system, at prosesong nahanap sa iyong computer sa panahon ng paglilinis na ito</translation>
 <translation id="6895902329218596456">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="USER_EMAIL" /> at na-block ng iyong admin ang pag-sign in bilang pangalawang account</translation>
@@ -6457,6 +6465,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}one{{NUM_COOKIES} cookies}other{{NUM_COOKIES} na cookies}}</translation>
 <translation id="7493386493263658176">Maaaring kolektahin ng extension ng <ph name="EXTENSION_NAME" /> ang lahat ng text na ita-type mo, kabilang ang personal na data tulad ng mga password at numero ng credit card. Gusto mo bang gamitin ang extension na ito?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android App</translation>
 <translation id="7495778526395737099">Nakalimutan mo ba ang iyong dating password?</translation>
 <translation id="7497981768003291373">Wala kang kamakailang nakuhang log ng text ng WebRTC.</translation>
 <translation id="7501957181231305652">o</translation>
@@ -6536,6 +6545,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7573172247376861652">Charge ng Baterya</translation>
 <translation id="7573594921350120855">Karaniwang ginagamit ng mga site ang iyong video camera para sa mga feature sa pakikipag-ugnayan gaya ng pakikipag-video chat</translation>
 <translation id="7574650250151586813">Para makapag-type ng text, i-update ang Daydream Keyboard app</translation>
+<translation id="7574676002608048667">Ipadala ang password</translation>
 <translation id="7576690715254076113">Tipunin</translation>
 <translation id="7576976045740938453">Nagkaproblema sa account ng demo mode.</translation>
 <translation id="7578137152457315135">Mga setting ng fingerprint</translation>

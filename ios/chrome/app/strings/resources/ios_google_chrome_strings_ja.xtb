@@ -21,6 +21,13 @@
 <translation id="2347208864470321755">この機能を有効にすると、外国語のページで翻訳ツールが表示されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome には、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="245827422401250729">オンにした場合:
+<ph name="BEGIN_INDENT" />  • 同じように Chrome を使用する他のユーザーの利便性向上に役立てられます<ph name="END_INDENT" />
+
+留意事項:
+<ph name="BEGIN_INDENT" />  • Chrome の使用状況に関する情報が Google に送信されますが、ユーザーとは関連付けられません
+  • Chrome がクラッシュした場合、クラッシュに関する情報として、一部の個人情報が送信される場合があります
+  • 同期をオンにした場合、アクセスした URL に関する情報も送信される場合があります<ph name="END_INDENT" /></translation>
 <translation id="2561231791489583059">Chrome を既定のブラウザとして使用すると、危険なサイトから保護され、パスワードを安全に保つことができます</translation>
 <translation id="2574249610672786438">どのデバイスからでも Chrome で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
 <translation id="2576431527583832481">Chrome のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
@@ -58,6 +65,7 @@
 <translation id="4698415050768537821">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="484033449593719797">Chrome ベータ版ではサポートされていません</translation>
 <translation id="5030102366287574140">Chrome でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します。</translation>
+<translation id="5108659628347594808">Chrome の品質を向上</translation>
 <translation id="5119391094379141756">[Chrome] を選択する</translation>
 <translation id="5162467219239570114">Chrome は古いバージョンです。<ph name="BEGIN_LINK" />アプリストア<ph name="END_LINK" />に利用可能なアップデートがない場合は、デバイスで新しいバージョンの Chrome がサポートされなくなった可能性があります。</translation>
 <translation id="5389212809648216794">カメラは別のアプリが使用中のため、Google Chrome では使用できません</translation>

@@ -2322,6 +2322,7 @@
 <translation id="3277691515294482687">Направи бекап на моите апликации и датотеки во папката „Мои датотеки“ пред да се надгради Linux.</translation>
 <translation id="3278001907972365362">Потребно им е внимание на вашите сметки на Google</translation>
 <translation id="3278800075417428224">Управувајте со јазиците во поставките за CloudReady 2.0</translation>
+<translation id="3278928434075969895">Профилов користи поставки за прокси за Chrome OS.</translation>
 <translation id="3279092821516760512">Избраните контакти може да споделуваат со вас кога се во близина. Преносите нема да започнат додека не прифатите.</translation>
 <translation id="3279230909244266691">Овој процес можеби ќе потрае неколку минути. Се стартува виртуелната машина.</translation>
 <translation id="3280237271814976245">Зачувај &amp;како…</translation>
@@ -4898,6 +4899,7 @@
 <translation id="5909379458939060601">Да се избрише профилов и податоците од прелистувањето?</translation>
 <translation id="5910363049092958439">Сни&amp;ми слика како…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> е офлајн</translation>
+<translation id="5911505723657992440">Користете ги поставките за прокси за Chrome OS за профилов.</translation>
 <translation id="5911533659001334206">Прикажувач на кратенки</translation>
 <translation id="5914724413750400082">Модул (бита: <ph name="MODULUS_NUM_BITS" />):
   <ph name="MODULUS_HEX_DUMP" />

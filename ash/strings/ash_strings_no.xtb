@@ -965,6 +965,7 @@ Nylig installert</translation>
 <translation id="7076293881109082629">Pålogging</translation>
 <translation id="7086931198345821656">Denne oppdateringen krever en powerwash på <ph name="DEVICE_TYPE" />. Alle data blir slettet. Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen.</translation>
 <translation id="7088960765736518739">Brytertilgang</translation>
+<translation id="7098053464892629930">Last ned appen for <ph name="NAME" /> på Google Play for å se alle tilgjengelige funksjoner</translation>
 <translation id="7098389117866926363">USB-C-enhet (venstre port på baksiden)</translation>
 <translation id="7106330611027933926">Vis skrivebordslinje</translation>
 <translation id="7118268675952955085">skjermdump</translation>
@@ -1209,6 +1210,7 @@ Nylig installert</translation>
 <translation id="8660331759611631213">Kvadratroten av 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Vis nettverksliste. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Åpne <ph name="NAME" /> for å konfigurere enheten din</translation>
 <translation id="8676770494376880701">Laveffektslader er tilkoblet</translation>
 <translation id="8683506306463609433">Ytelsessporing er aktiv</translation>
 <translation id="8685326675965865247">Søk på enheten, i apper, i innstillinger og på nettet. Bruk piltastene til å navigere i appene.</translation>

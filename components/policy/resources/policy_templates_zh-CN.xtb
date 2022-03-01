@@ -2912,6 +2912,11 @@
       如果管理员需要更多时间来更新受这项新限制影响的内部网站，则可以使用此政策。这项企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 104 版之后移除。
       </translation>
 <translation id="4268586991084547853">更好地兼容 Microsoft IE/Edge 企业模式 sitelist。</translation>
+<translation id="4269798992490176617">如果此政策已启用，<ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> 会执行来自远程主机浏览会话的 WebAuthn API 请求。
+
+      如果此政策已停用或未设置，系统将会应用默认行为。
+
+      请注意，此功能目前只适用于 Google 内部网络环境。</translation>
 <translation id="4269859918103560644">允许用户决定</translation>
 <translation id="4274691295133617461">如果此政策设为 3，系统会允许网站通过 File System API 请求对主机操作系统的文件系统中的文件和目录的读取权限。如果此政策设为 2，系统会禁止网站请求访问。
 
@@ -5297,6 +5302,7 @@
 <translation id="7063895219334505671">在这些网站上允许弹出式窗口</translation>
 <translation id="7066292150801784098">禁止远程用户在远程协助会话中操控提权后的窗口</translation>
 <translation id="706669471845501145">允许网站显示桌面通知</translation>
+<translation id="70681795425744184">不允许 CRD 执行远程主机通过代理发送的 WebAuthn API 请求。</translation>
 <translation id="7070525176564511548">每周（168 小时）必须输入一次密码</translation>
 <translation id="7072208053150563108">设备密码更改率</translation>
 <translation id="7072567600438630966">允许启用 Phone Hub。</translation>
@@ -5584,6 +5590,7 @@
 <translation id="7407441173422042771">此政策旨在控制 <ph name="PRODUCT_NAME" /> 中的网络预测功能。它控制着 DNS 预提取、TCP 和 SSL 预连接以及网页预呈现。
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，系统会开启网络预测功能，但用户可以更改设置。</translation>
+<translation id="7410074797376205571">允许 <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> 执行远程主机通过代理发送的 WebAuthn API 请求。</translation>
 <translation id="7412456346709338637">启用 Thunderbolt/USB4 外围设备数据访问</translation>
 <translation id="7417438464912687020">允许与这台计算机建立远程访问连接</translation>
 <translation id="7417972229667085380">演示模式下待机延迟时间的调整幅度（百分比）（已弃用）</translation>
@@ -5834,6 +5841,13 @@
       如果此政策设为 False 或未设置，系统将会关闭这种报告。
       在这两种情况下，使用 DataLeakPreventionRulesList 中的 ALLOW 级限制定义的规则将不会报告事件。</translation>
 <translation id="7648907905084499629">让所有网站上的 Cookie 都采用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行为</translation>
+<translation id="765347139142030086">如果此政策已启用，当与 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帐号关联的政策和 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />政策冲突时，系统会以前者为准。
+
+      系统仅以源自安全用户的政策为准。安全用户是指与会使用 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />来管理用户浏览器的组织关联的用户。其他所有的用户级政策都将具有默认优先级。
+
+      此政策可与 <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> 结合使用。如果这两项政策均已启用，当用户级云政策与平台政策冲突时，系统也会以前者为准。
+
+      如果此政策未设置或已停用，用户级云政策将具有默认优先级。</translation>
 <translation id="7657261947024629645">针对性能进行优化。</translation>
 <translation id="7666228839913571182">允许使用第三方 Cookie</translation>
 <translation id="7668830462800981702">如果此政策已启用，当用户在地址栏中输入非网址的文字时，系统将会执行默认搜索。若要指定默认搜索服务提供商，请设置其余的默认搜索政策。如果您将这些政策留空，用户可自行选择默认提供商。如果此政策已停用，当用户在地址栏中输入非网址的文字时，系统将不会执行任何搜索。
@@ -6508,6 +6522,7 @@
        如果此政策已停用，系统将不会屏蔽从其他来源的子框架触发的 JavaScript 对话框。
 
        在 <ph name="PRODUCT_NAME" /> 95 版中，此政策将被移除。</translation>
+<translation id="8427466947904008809">允许 CRD 执行远程主机通过代理发送的 WebAuthn API 请求。</translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8433769814000220721">启用建议的内容</translation>
 <translation id="843609873781525167">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 在启动时始终会检查自己是否是默认浏览器，并会尽可能自动注册。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 一律不会检查自己是否是默认浏览器，并会禁止用户设置此选项。

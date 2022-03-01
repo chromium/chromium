@@ -405,6 +405,7 @@ Jarraitu beheko urratsei:</translation>
 Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sinkronizatzen hasteko.</translation>
 <translation id="4682686630151240767">1. Ireki iPhone-aren Settings (ezarpenak) atala.</translation>
 <translation id="4689564913179979534">Kudeatu ordainketa-metodoak…</translation>
+<translation id="4697071790493980729">Ez da aurkitu emaitzarik</translation>
 <translation id="470966556546083668">Ez aktibatu sinkronizazioa</translation>
 <translation id="4731472194328757163">Kamerarako eta mikrofonorako sarbideak gaituta daude</translation>
 <translation id="4737560986434232178">Bilatu erabilitako azken fitxetan</translation>
@@ -489,6 +490,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5490005495580364134">Blokeatu cookie guztiak (ez da gomendatzen)</translation>
 <translation id="5513681519188741830">Duela <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Sortu pasaesaldia</translation>
+<translation id="5542540507657872337"><ph name="COUNT" /> aurkitu dira</translation>
 <translation id="5548760955356983418">Handoff eginbidea erabiltzen baduzu, gailu honetan has zaitezke webguneak ikusten eta Mac-ean jarrai dezakezu haiek arakatzen.
 
 "Settings" (Ezarpenak) aplikazioaren "General" (Orokorra) atalean ere gaitu behar da Handoff, eta gailuek iCloud kontu bera erabili behar dute.</translation>

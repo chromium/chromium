@@ -405,6 +405,7 @@ Siga estas etapas:</translation>
 Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="4682686630151240767">1. Abra o app Ajustes do iPhone</translation>
 <translation id="4689564913179979534">Gerenciar formas de pagamento…</translation>
+<translation id="4697071790493980729">Nenhum resultado encontrado</translation>
 <translation id="470966556546083668">Não ative a sincronização</translation>
 <translation id="4731472194328757163">Acesso permitido à câmera e ao microfone</translation>
 <translation id="4737560986434232178">Pesquisar guias recentes</translation>
@@ -489,6 +490,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5490005495580364134">Bloquear todos os cookies (não recomendado)</translation>
 <translation id="5513681519188741830"><ph name="TIME" />h atrás</translation>
 <translation id="5525269841082836315">Criar senha</translation>
+<translation id="5542540507657872337">Encontradas: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">A "Transição" permite que você comece a navegar por um website neste dispositivo e, em seguida, continue facilmente no seu Mac. O website aberto aparecerá no Dock do Mac.
 
 A "Transição" também deve ser ativada na seção "Geral" das configurações. Seus dispositivos devem usar a mesma conta do iCloud.</translation>

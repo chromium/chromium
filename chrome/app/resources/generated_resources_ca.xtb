@@ -1239,6 +1239,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2203088913459920044">El nom pot incloure lletres, números i caràcters especials</translation>
 <translation id="220321590587754225">No s'ha pogut connectar. Torna-ho a provar.</translation>
 <translation id="2204034823255629767">Llegir i canviar tot el que s'escrigui</translation>
+<translation id="2207115382329026341">Activa l'opció de configuració Reproducció en continu d'aplicacions al telèfon.</translation>
 <translation id="220858061631308971">Introduïu aquest codi PIN a "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">No s'ha pogut completar la instal·lació</translation>
 <translation id="2212565012507486665">Permet les galetes</translation>
@@ -1429,6 +1430,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2367972762794486313">Mostra les aplicacions</translation>
 <translation id="236939127352773362">Quan algun dispositiu estigui compartint contingut a prop</translation>
 <translation id="2371076942591664043">Obre quan &amp;acabi</translation>
+<translation id="237307274687369010">No s'ha pogut iniciar <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Ajusta al paper</translation>
 <translation id="2375406435414127095">Connecta't al telèfon</translation>
 <translation id="2377588536920405462">Pots desactivar la ubicació desactivant la configuració d'ubicació principal del dispositiu. A la configuració d'ubicació també pots desactivar l'ús de sensors, xarxes mòbils i Wi-Fi per calcular la ubicació.</translation>
@@ -2302,6 +2304,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3277691515294482687">Abans d'actualitzar Linux, crea una còpia de seguretat de les meves aplicacions i dels meus fitxers a la carpeta Els meus fitxers.</translation>
 <translation id="3278001907972365362">Els teus Comptes de Google requereixen atenció</translation>
 <translation id="3278800075417428224">Gestiona els idiomes a la configuració de CloudReady 2.0</translation>
+<translation id="3278928434075969895">Aquest perfil utilitza la configuració del servidor intermediari de Chrome OS.</translation>
 <translation id="3279092821516760512">Els contactes seleccionats poden compartir contingut amb tu quan siguis a prop. Les transferències no començaran fins que no les acceptis.</translation>
 <translation id="3279230909244266691">Aquest procés pot tardar uns quants minuts. S'està iniciant la màquina virtual.</translation>
 <translation id="3280237271814976245">Desa &amp;com a...</translation>
@@ -4874,6 +4877,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5909379458939060601">Vols suprimir aquest perfil i les dades de navegació?</translation>
 <translation id="5910363049092958439">De&amp;sa la imatge com a...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> no té connexió</translation>
+<translation id="5911505723657992440">Utilitza la configuració del servidor intermediari de Chrome OS per a aquest perfil.</translation>
 <translation id="5911533659001334206">Visualitzador de dreceres</translation>
 <translation id="5914724413750400082">Mòdul (<ph name="MODULUS_NUM_BITS" /> bits):
   <ph name="MODULUS_HEX_DUMP" />

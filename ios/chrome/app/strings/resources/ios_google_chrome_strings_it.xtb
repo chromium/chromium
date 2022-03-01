@@ -21,6 +21,13 @@
 <translation id="2347208864470321755">Quando questa funzione è attiva, Chrome si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome offre funzionalità che ti consentono di gestire i tuoi dati Internet e la velocità di caricamento delle pagine web.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="245827422401250729">Quando l'opzione è attiva:
+<ph name="BEGIN_INDENT" />  • Contribuisci a migliorare Chrome per le persone che lo usano come fai tu<ph name="END_INDENT" />
+
+Aspetti da considerare:
+<ph name="BEGIN_INDENT" />  • Google riceve delle informazioni relative al tuo utilizzo di Chrome, ma che non sono riconducibili a te
+  • Se Chrome si arresta in modo anomalo, i dettagli relativi a questo evento potrebbero includere alcune informazioni personali
+  • Se attivi la sincronizzazione, le metriche potrebbero includere anche informazioni relative agli URL che visiti<ph name="END_INDENT" /></translation>
 <translation id="2561231791489583059">Usa Chrome come browser predefinito per proteggerti da siti pericolosi e tenere al sicuro le tue password</translation>
 <translation id="2574249610672786438">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chrome per visualizzare le tue schede</translation>
 <translation id="2576431527583832481">Chrome è stato migliorato. È disponibile una nuova versione.</translation>
@@ -58,6 +65,7 @@
 <translation id="4698415050768537821">Chrome non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Non supportata su Chrome beta</translation>
 <translation id="5030102366287574140">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo.</translation>
+<translation id="5108659628347594808">Migliora Chrome</translation>
 <translation id="5119391094379141756">Seleziona Chrome</translation>
 <translation id="5162467219239570114">Chrome non è aggiornato. Se non sono disponibili aggiornamenti nell'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, è possibile che il dispositivo non supporti più le nuove versioni di Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome non può utilizzare la videocamera perché è attualmente utilizzata da un'altra applicazione</translation>

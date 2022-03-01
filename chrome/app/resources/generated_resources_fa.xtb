@@ -917,6 +917,7 @@
 <translation id="1869433484041798909">دکمه نشانک‌گذاری</translation>
 <translation id="1871098866036088250">‏باز کردن در مرورگر Chrome</translation>
 <translation id="187145082678092583">برنامه‌های کمتر</translation>
+<translation id="1871463148436682760">کارتان عالی بود!</translation>
 <translation id="1871534214638631766">با فشار طولانی یا کلیک راست روی محتوا، اطلاعات مرتبط را نمایش می‌دهد</translation>
 <translation id="1871569928317311284">خاموش کردن طرح زمینه تیره</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> شما به‌ روز است</translation>
@@ -1249,6 +1250,7 @@
 <translation id="2203088913459920044">برای نام می‌توانید از حروف، اعداد، و نویسه‌های خاص استفاده کنید</translation>
 <translation id="220321590587754225">متصل نشد. دوباره امتحان کنید.</translation>
 <translation id="2204034823255629767">خواندن و تغییر هر موردی که تایپ می‌کنید</translation>
+<translation id="2207115382329026341">تنظیمات جاری‌سازی برنامه را در تلفن فعال کنید.</translation>
 <translation id="220858061631308971">لطفاً این کد پین را در "<ph name="DEVICE_NAME" />" وارد کنید:</translation>
 <translation id="2210462644007531147">نصب کامل نشد</translation>
 <translation id="2212565012507486665">مجاز کردن کوکی ها</translation>
@@ -1442,6 +1444,7 @@
 <translation id="2367972762794486313">نمایش برنامه‌ها</translation>
 <translation id="236939127352773362">وقتی دستگاه‌ها در حال هم‌رسانی با اطراف باشند</translation>
 <translation id="2371076942591664043">پس از &amp;تکمیل باز شود</translation>
+<translation id="237307274687369010"><ph name="APP_NAME" /> راه‌اندازی نشد</translation>
 <translation id="2373666622366160481">متناسب با اندازه کاغذ</translation>
 <translation id="2375406435414127095">اتصال به تلفن</translation>
 <translation id="2377588536920405462">‏می‌توانید با خاموش کردن تنظیم اصلی «مکان» در دستگاهتان، «مکان» را خاموش کنید. می‌توانید در تنظیمات مکان، استفاده از Wi-Fi، شبکه تلفن همراه، و حسگر را هم برای مکان خاموش کنید.</translation>
@@ -2345,6 +2348,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> تخفیف</translation>
 <translation id="3305389145870741612">مراحل قالب‌بندی چند ثانیه طول می‌کشد. لطفاً منتظر بمانید.</translation>
 <translation id="3305661444342691068">‏باز کردن PDF در پیش‌نمایش</translation>
+<translation id="3306992216458434072">گروه را نام‌گذاری کنید و رنگی برای آن انتخاب کنید</translation>
 <translation id="3307176291962384345">گرفتن تخفیف از <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">این صفحه نمی‌تواند کوکی‌ها را تنظیم کند.</translation>
 <translation id="3308134619352333507">دکمه پنهان کردن</translation>
@@ -3760,6 +3764,7 @@
 <translation id="4708794300267213770">نمایش صفحه قفل هنگام بیدار شدن از حالت خواب</translation>
 <translation id="4708849949179781599">خروج از <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">بازیابی تنظیمات</translation>
+<translation id="47158868804223727">روی نام گروه کلیک کنید تا گسترده یا جمع شود</translation>
 <translation id="4716483597559580346">‏Powerwash برای امنیت بیشتر</translation>
 <translation id="471880041731876836">برای بازدید کردن از این سایت، مجوز لازم ندارید</translation>
 <translation id="4722735765955348426">گذرواژه <ph name="USERNAME" /></translation>
@@ -3823,6 +3828,7 @@
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />سرپرستتان<ph name="END_LINK" /> به‌روزرسانی‌ها را مدیریت می‌کند</translation>
 <translation id="479536056609751218">‏صفحهٔ وب، فقط HTML</translation>
 <translation id="4796142525425001238">همیشه بازیابی شود</translation>
+<translation id="4797314204379834752">برای سازمان‌دهی کارها، خرید آنلاین، و کارهای دیگر، از گروه‌های برگه استفاده کنید</translation>
 <translation id="4798236378408895261">‏پیوست <ph name="BEGIN_LINK" />گزارش‌های بلوتوث<ph name="END_LINK" /> (داخلی Google)</translation>
 <translation id="479863874072008121">مدیریت دستگاه‌ها</translation>
 <translation id="4800839971935185386">مرور به‌روزرسانی‌های نام و نماد</translation>
@@ -4063,6 +4069,7 @@
 <translation id="5039696241953571917">‏در «حساب Google» خود گذرواژه‌های ذخیره‌شده را مشاهده و مدیریت کنید</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5040823038948176460">تنظیمات محتوای دیگر</translation>
+<translation id="5041509233170835229">‏برنامه Chrome</translation>
 <translation id="5043440033854483429">نام می‌تواند از حرف، عدد، و خط تیره (-) تشکیل شود و باید بین ۱ تا ۱۵ نویسه داشته باشد.</translation>
 <translation id="5043913660911154449">‏یا PPD چاپگرتان را تعیین کنید <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
@@ -5390,6 +5397,7 @@
 <translation id="6393156038355142111">پیشنهاد گذرواژه قوی</translation>
 <translation id="6393550101331051049">اجازه دارد محتوای ناامن را نشان دهد</translation>
 <translation id="6395423953133416962">ارسال <ph name="BEGIN_LINK1" />اطلاعات سیستم<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />معیارها<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">برنامه سیستمی</translation>
 <translation id="6396988158856674517">سایت‌ها نمی‌توانند از حسگرهای حرکتی استفاده کنند</translation>
 <translation id="6398715114293939307">‏برداشتن «فروشگاه Google Play»</translation>
 <translation id="6398765197997659313">خروج از حالت تمام صفحه</translation>
@@ -5459,6 +5467,7 @@
 <translation id="6460566145397380451">‏اجازه دارد به دستگاه‌های MIDI مرتبط شود</translation>
 <translation id="6460601847208524483">یافتن بعدی</translation>
 <translation id="6461170143930046705">درحال جستجوی شبکه...</translation>
+<translation id="6462204616987156669">روی «برگه» کلیک راست کنید و «افزودن برگه به گروه جدید» را انتخاب کنید</translation>
 <translation id="6463795194797719782">&amp;ویرایش</translation>
 <translation id="6464825623202322042">این دستگاه</translation>
 <translation id="6465841119675156448">بدون اینترنت</translation>
@@ -5876,6 +5885,7 @@
 <translation id="6885771755599377173">پیش‌نمایش اطلاعات سیستم</translation>
 <translation id="6886871292305414135">باز کردن پیوند در &amp;برگه جدید</translation>
 <translation id="6889957081990109136">هنوز کلیدی اختصاص داده نشده است</translation>
+<translation id="689007770043972343">دیگر برگه‌های باز را به‌سمت گروه بکشید</translation>
 <translation id="6892812721183419409">بازکردن پیوند به‌عنوان <ph name="USER" /></translation>
 <translation id="6895032998810961280">‏درباره تنظیمات مضر نرم‌افزار و سیستم، و پردازش‌هایی که درحین این پاک‌سازی در رایانه‌تان پیدا شده است، جزئیاتی را به Google گزارش می‌دهد</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" /> تحت مدیریت <ph name="MANAGER" /> است و سرپرستتان ورود به سیستم به‌عنوان حساب ثانویه را مسدود کرده است</translation>
@@ -6453,6 +6463,7 @@
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{۱ کوکی}one{{NUM_COOKIES} کوکی}other{{NUM_COOKIES} کوکی}}</translation>
 <translation id="7493386493263658176">ممکن است افزونه <ph name="EXTENSION_NAME" /> همه نوشتاری را که تایپ می‌کنید (از جمله داده‌های شخصی مانند گذرواژه‌ها و شماره کارت‌های اعتباری) جمع‌آوری کند. می‌خواهید از این افزونه استفاده کنید؟</translation>
 <translation id="7494694779888133066">‏<ph name="WIDTH" /> ‏x‏ <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">‏برنامه Android</translation>
 <translation id="7495778526395737099">گذرواژه قدیمی‌تان را فراموش کردید؟</translation>
 <translation id="7497981768003291373">‏هیچ گزارش نوشتاری WebRTC که اخیراً ثبت شده باشد ندارید.</translation>
 <translation id="7501957181231305652">یا</translation>

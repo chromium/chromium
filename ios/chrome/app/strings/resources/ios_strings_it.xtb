@@ -405,6 +405,7 @@ Svolgi i passaggi che seguono:</translation>
 I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="4682686630151240767">1. Apri le Impostazioni dell'iPhone</translation>
 <translation id="4689564913179979534">Gestisci metodi di pagamento…</translation>
+<translation id="4697071790493980729">Nessun risultato trovato</translation>
 <translation id="470966556546083668">Non attivare la sincronizzazione</translation>
 <translation id="4731472194328757163">Accesso a fotocamera e microfono consentito</translation>
 <translation id="4737560986434232178">Cerca nelle schede recenti</translation>
@@ -489,6 +490,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5490005495580364134">Blocca tutti i cookie (opzione non consigliata)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h fa</translation>
 <translation id="5525269841082836315">Crea passphrase</translation>
+<translation id="5542540507657872337">Schede trovate: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff ti consente di iniziare a consultare un sito web su questo dispositivo per poi continuare facilmente sul Mac. Il sito web attualmente aperto verrà visualizzato nel Dock sul Mac.
 
 La funzione Handoff deve anche essere attivata nella sezione Generali di Impostazioni e sui dispositivi deve essere in uso lo stesso account iCloud.</translation>

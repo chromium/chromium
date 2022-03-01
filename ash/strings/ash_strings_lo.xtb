@@ -965,6 +965,7 @@
 <translation id="7076293881109082629">ກໍາລັງເຂົ້າ​ລະ​ບົບ</translation>
 <translation id="7086931198345821656">ອັບເດດນີ້ຕ້ອງມີການ Powerwash <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ຂໍ້ມູນທັງໝົດຈະຖືກລຶບອອກ. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບອັບເດດ <ph name="SYSTEM_APP_NAME" /> ຫຼ້າສຸດ.</translation>
 <translation id="7088960765736518739">ການເຂົ້າເຖິງດ້ວຍປຸ່ມ</translation>
+<translation id="7098053464892629930">ດາວໂຫຼດແອັບສຳລັບ <ph name="NAME" /> ຢູ່ Google Play ເພື່ອເບິ່ງຄຸນສົມບັດທີ່ສາມາດໃຊ້ໄດ້ທັງໝົດ</translation>
 <translation id="7098389117866926363">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານດ້ານ​ຊ້າຍ​ຢູ່​ເບື້ອງ​ຫຼັງ)</translation>
 <translation id="7106330611027933926">ສະແດງເດັສບາ</translation>
 <translation id="7118268675952955085">ຮູບໜ້າຈໍ</translation>
@@ -1209,6 +1210,7 @@
 <translation id="8660331759611631213">ຮາກຂັ້ນສອງຂອງ 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">ສະແດງລາຍການເຄືອຂ່າຍ. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">ເປີດ <ph name="NAME" /> ເພື່ອຕັ້ງຄ່າອຸປະກອນຂອງທ່ານ</translation>
 <translation id="8676770494376880701">ເຄື່ອງສາກ​ແບບ​ໃຊ້ໄຟຕໍ່າເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="8683506306463609433">ການຕິດຕາມປະສິດທິພາບເປີດນຳໃຊ້ຢູ່</translation>
 <translation id="8685326675965865247">ຊອກຫາໃນອຸປະກອນ, ແອັບ, ການຕັ້ງຄ່າ ແລະ ເວັບຂອງທ່ານ. ໃຊ້ປຸ່ມລູກສອນເພື່ອນຳທາງໃນແອັບຂອງທ່ານ.</translation>

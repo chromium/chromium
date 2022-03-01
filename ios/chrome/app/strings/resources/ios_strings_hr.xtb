@@ -405,6 +405,7 @@ Slijedite korake u nastavku:</translation>
 Vaši su podaci šifrirani vašom šifrom za sinkronizaciju. Unesite je da biste pokrenuli sinkronizaciju.</translation>
 <translation id="4682686630151240767">1. Otvorite postavke iPhonea</translation>
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
+<translation id="4697071790493980729">Nema rezultata</translation>
 <translation id="470966556546083668">Ne uključuj sinkronizaciju</translation>
 <translation id="4731472194328757163">Dopušten je pristup kameri i mikrofonu</translation>
 <translation id="4737560986434232178">Pretraživanje nedavnih kartica</translation>
@@ -489,6 +490,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5490005495580364134">Blokiranje svih kolačića (ne preporučuje se)</translation>
 <translation id="5513681519188741830">Prije <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Stvaranje zaporke</translation>
+<translation id="5542540507657872337">Pronađeno: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff vam omogućuje da počnete pregledavati web-lokaciju na ovom uređaju i nastavite na Macu. Trenutačno otvorena web-lokacija pojavit će se u Docku na vašem Macu.
 
 Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaji moraju upotrebljavati isti iCloud račun.</translation>

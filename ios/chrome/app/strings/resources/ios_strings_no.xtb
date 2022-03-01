@@ -405,6 +405,7 @@ Følg fremgangsmåten under:</translation>
 Dataene dine er kryptert med passordfrasen din for synkronisering. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="4682686630151240767">1. Åpne iPhone-innstillingene</translation>
 <translation id="4689564913179979534">Administrer betalingsmåter…</translation>
+<translation id="4697071790493980729">Fant ingen resultater</translation>
 <translation id="470966556546083668">Ikke slå på synkronisering</translation>
 <translation id="4731472194328757163">Kamera- og mikrofontilgang er tillatt</translation>
 <translation id="4737560986434232178">Søk i nylige faner</translation>
@@ -489,6 +490,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5490005495580364134">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
 <translation id="5513681519188741830">For <ph name="TIME" /> t siden</translation>
 <translation id="5525269841082836315">Opprett en passordfrase</translation>
+<translation id="5542540507657872337"><ph name="COUNT" /> er funnet</translation>
 <translation id="5548760955356983418">Med Handoff kan du begynne å se gjennom en nettside på denne enheten og deretter fortsette på Mac-en din uten problemer. Den åpne nettsiden vises i dokken til Mac-en din.
 
 Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene må bruke samme iCloud-konto.</translation>
