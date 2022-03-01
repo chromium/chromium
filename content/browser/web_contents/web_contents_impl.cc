@@ -5791,9 +5791,20 @@ void WebContentsImpl::DidNavigateAnyFramePostCommit(
   // we want to guard the dialog cancellations below.
   const bool is_active = render_frame_host->IsActive();
 
-  // If we navigate off the page, close all JavaScript dialogs.
-  if (is_active && !details.is_same_document)
+  // If we navigate off the active non-fenced frame page, close all JavaScript
+  // dialogs. We do not cancel the dialogs for fenced frames because it can be
+  // used as a communication channel. Please see also:
+  // RenderFrameHostManager::UnloadOldFrame in
+  // content/browser/renderer_host/render_frame_host_manager.cc
+  //
+  // TODO(crbug.com/1299379): Note that fenced frames cannot open modal dialogs
+  // so this only affects dialogs outside the fenced frame tree. If this is ever
+  // changed then the navigation should be deferred till the dialog from within
+  // the fenced frame is open.
+  if (is_active && !render_frame_host->IsNestedWithinFencedFrame() &&
+      !details.is_same_document) {
     CancelActiveAndPendingDialogs();
+  }
 
   // If this is a user-initiated navigation, start allowing JavaScript dialogs
   // again.

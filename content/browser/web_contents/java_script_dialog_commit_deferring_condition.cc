@@ -21,6 +21,18 @@ JavaScriptDialogCommitDeferringCondition::MaybeCreate(
   if (!web_contents.JavaScriptDialogDefersNavigations())
     return nullptr;
 
+  // To prevent the deferring is used as a channel from the primary main frame
+  // to fenced frames, we don't defer fenced frame navigation for modal dialogs.
+  // Note that the modal dialog blocks the renderer and prevents it from
+  // processing "CommitNavigation" message, otherwise.
+  //
+  // TODO(crbug.com/1299379): Note that fenced frames cannot open modal dialogs
+  // so this only affects dialogs outside the fenced frame tree. If this is ever
+  // changed then the navigation should be deferred until the dialog is closed.
+  if (navigation_request.frame_tree_node()->IsInFencedFrameTree()) {
+    return nullptr;
+  }
+
   if (navigation_request.IsInMainFrame()) {
     // A dialog should not defer navigations in the non-primary main frame (e.g.
     // prerendering).

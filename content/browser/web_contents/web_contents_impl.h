@@ -1370,6 +1370,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            ForEachFrameTreeInnerContents);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameBrowserTest, FrameIteration);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameTreeBrowserTest, ShouldIgnoreJsDialog);
   FRIEND_TEST_ALL_PREFIXES(FormStructureBrowserTest, HTMLFiles);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerTest, HistoryNavigate);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest, PageDoesBackAndReload);

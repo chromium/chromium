@@ -1013,6 +1013,14 @@ class FencedFrameTreeBrowserTest
     EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
   }
 
+  WebContentsImpl* web_contents() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  RenderFrameHostImpl* primary_main_frame_host() {
+    return web_contents()->GetMainFrame();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::Lock requests_lock_;
@@ -1795,6 +1803,98 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckSecFetchDestHeader) {
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   NavigateIframeInFencedFrame(fenced_frame_root_node->child_at(0), iframe_url);
   EXPECT_TRUE(CheckAndClearSecFetchDestHeader(iframe_url, "fencedframe"));
+}
+
+namespace {
+class TestJavaScriptDialogManager : public JavaScriptDialogManager,
+                                    public WebContentsDelegate {
+ public:
+  TestJavaScriptDialogManager() = default;
+  ~TestJavaScriptDialogManager() override = default;
+  // WebContentsDelegate overrides
+  JavaScriptDialogManager* GetJavaScriptDialogManager(
+      WebContents* source) override {
+    return this;
+  }
+
+  // JavaScriptDialogManager overrides
+  void RunJavaScriptDialog(WebContents* web_contents,
+                           RenderFrameHost* render_frame_host,
+                           JavaScriptDialogType dialog_type,
+                           const std::u16string& message_text,
+                           const std::u16string& default_prompt_text,
+                           DialogClosedCallback callback,
+                           bool* did_suppress_message) override {}
+  void RunBeforeUnloadDialog(WebContents* web_contents,
+                             RenderFrameHost* render_frame_host,
+                             bool is_reload,
+                             DialogClosedCallback callback) override {}
+  void CancelDialogs(WebContents* web_contents, bool reset_state) override {
+    cancel_dialogs_called_ = true;
+  }
+
+  bool cancel_dialogs_called() { return cancel_dialogs_called_; }
+
+ private:
+  bool cancel_dialogs_called_ = false;
+};
+}  // namespace
+
+// Test that navigation in fenced frame happens regardless of dialogs.
+// It should also keep the dialogs as-is.
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, ShouldIgnoreJsDialog) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var fenced_frame = document.createElement('fencedframe');"
+                     "document.body.appendChild(fenced_frame);"));
+
+  EXPECT_EQ(1U, root->child_count());
+
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  {
+    // Navigate the fenced frame.
+    GURL fenced_frame_url(
+        https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+    std::string navigate_script =
+        JsReplace("fenced_frame.src = $1;", fenced_frame_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame_root_node, fenced_frame_url, navigate_script);
+    EXPECT_TRUE(
+        CheckAndClearSecFetchDestHeader(fenced_frame_url, "fencedframe"));
+  }
+
+  // Setup test dialog manager and create dialog.
+  TestJavaScriptDialogManager dialog_manager;
+  web_contents()->SetDelegate(&dialog_manager);
+  web_contents()->RunJavaScriptDialog(web_contents()->GetMainFrame(), u"", u"",
+                                      JAVASCRIPT_DIALOG_TYPE_ALERT, false,
+                                      base::NullCallback());
+
+  {
+    // Navigate fenced frame.
+    const GURL new_url =
+        https_server()->GetURL("a.test", "/fenced_frames/empty.html");
+    std::string navigate_script =
+        JsReplace("fenced_frame.src = $1;", new_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame_root_node, new_url, navigate_script);
+  }
+
+  // We should not dismiss dialogs when the fenced frame's subframe navigates
+  // and swaps its RFH.
+  EXPECT_FALSE(dialog_manager.cancel_dialogs_called());
+
+  // Clean up test dialog manager.
+  web_contents()->SetDelegate(nullptr);
+  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // An observer class that asserts the page transition always is

@@ -660,11 +660,15 @@ void RenderFrameHostManager::UnloadOldFrame(
   // mojo::FrameNavigationControl::Unload message. Prerendering pages cannot
   // create modal dialogs and unloading a prerendering RFH should not cause
   // existing dialogs to close.
+  // To prevent the cancellation be used as a channel from fenced frames to
+  // the primary main frame, we won't cancel modal dialogs for fenced frame
+  // navigations.
   // TODO(crbug.com/1249466): Update CancelModalDialogsForRenderManager
   // to take a RFH/RPH and only clear relevant dialogs instead of all dialogs in
   // the WebContents.
   if (current_frame_host()->GetLifecycleState() !=
-      RenderFrameHost::LifecycleState::kPrerendering) {
+          RenderFrameHost::LifecycleState::kPrerendering &&
+      !current_frame_host()->IsNestedWithinFencedFrame()) {
     delegate_->CancelModalDialogsForRenderManager();
   }
 
