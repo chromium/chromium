@@ -37924,6 +37924,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Failed to open font file"/>
   <int value="6" label="Failed with an exception"/>
   <int value="7" label="Skipped to avoid retrying previous failure"/>
+  <int value="8" label="Font file descriptor was cached"/>
 </enum>
 
 <enum name="FetchRequestMode">
