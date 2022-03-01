@@ -1030,6 +1030,7 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
 base::ScopedCFTypeRef<CFDataRef> TrustStoreMac::GetMacNormalizedIssuer(
     const ParsedCertificate* cert) {
   base::ScopedCFTypeRef<CFDataRef> name_data;
+  base::AutoLock lock(crypto::GetMacSecurityServicesLock());
   // There does not appear to be any public API to get the normalized version
   // of a Name without creating a SecCertificate.
   base::ScopedCFTypeRef<SecCertificateRef> cert_handle(
@@ -1039,11 +1040,8 @@ base::ScopedCFTypeRef<CFDataRef> TrustStoreMac::GetMacNormalizedIssuer(
     LOG(ERROR) << "CreateCertBufferFromBytes";
     return name_data;
   }
-  {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    name_data.reset(
-        SecCertificateCopyNormalizedIssuerContent(cert_handle, nullptr));
-  }
+  name_data.reset(
+      SecCertificateCopyNormalizedIssuerContent(cert_handle, nullptr));
   if (!name_data)
     LOG(ERROR) << "SecCertificateCopyNormalizedIssuerContent";
   return name_data;
