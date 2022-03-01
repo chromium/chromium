@@ -14,7 +14,7 @@ cargo_crate("lib") {
   skip_unit_tests = true
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
-  deps = [ "//third_party/rust/serde_derive/v1:lib($host_toolchain)" ]
+  deps = [ "//third_party/rust/serde_derive/v1:lib" ]
   features = [
     "derive",
     "serde_derive",

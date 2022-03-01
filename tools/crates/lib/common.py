@@ -111,12 +111,6 @@ def gn_crate_path(crate_name: str, version: str,
     return "//" + "/".join(path + rel_path)
 
 
-def gn_toolchain_for_dep(is_proc_macro: bool) -> str:
-    # proc-macros must be compiled for the host toolchain, not the
-    # target, as they are consumed by the Rust compiler itself.
-    return "($host_toolchain)" if is_proc_macro else ""
-
-
 def os_third_party_dir(rel_path: list[str] = []) -> str:
     """The relative OS disk path to the top of the third party Rust directory
     where all third party crates are found, along with third_party.toml."""

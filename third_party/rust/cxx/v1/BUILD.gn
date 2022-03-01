@@ -15,7 +15,7 @@ cargo_crate("lib") {
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   deps = [
-    "//third_party/rust/cxxbridge_macro/v1:lib($host_toolchain)",
+    "//third_party/rust/cxxbridge_macro/v1:lib",
     "//third_party/rust/link_cplusplus/v1:lib",
   ]
   build_root = "crate/build.rs"

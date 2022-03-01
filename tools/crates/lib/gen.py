@@ -183,8 +183,6 @@ class DepSet:
         def __init__(self):
             # The architectures where the dependency is needed.
             self.archset = compiler.ArchSet.EMPTY()
-            # Whether the dependency is a proc-macro.
-            self.is_proc_macro: bool = False
 
     def __init__(self):
         self._map: dict[cargo.CrateKey, DepSet.Data] = {}
@@ -734,14 +732,12 @@ class CargoTreeDependency:
                  full_version: str = None,
                  crate_path: str = None,
                  features: list[str] = [],
-                 is_proc_macro: bool = False,
                  is_for_first_party_code: bool = False,
                  build_script_outputs: set[str] = set()):
         self.key = key
         self.full_version = full_version
         self.crate_path = crate_path
         self.features = features
-        self.is_proc_macro = is_proc_macro
         self.is_for_first_party_code = is_for_first_party_code
         self.build_script_outputs = build_script_outputs
 
@@ -749,18 +745,17 @@ class CargoTreeDependency:
         return (self.key == other.key
                 and self.full_version == other.full_version
                 and self.crate_path == other.crate_path
-                and self.features == other.features
-                and self.is_proc_macro == other.is_proc_macro and
+                and self.features == other.features and
                 self.is_for_first_party_code == other.is_for_first_party_code
                 and self.build_script_outputs == other.build_script_outputs)
 
     def __repr__(self) -> str:
         return "CargoTreeDependency(key={}, full_version={}, crate_path={}, " \
             "features={}, " \
-            "is_proc_macro={}, is_for_first_party_code={}, " \
+            "is_for_first_party_code={}, " \
             "build_script_outputs={})".format(
                 self.key, self.full_version, self.crate_path, self.features,
-                self.is_proc_macro, self.is_for_first_party_code,
+                self.is_for_first_party_code,
                 self.build_script_outputs)
 
 
@@ -809,7 +804,6 @@ def _parse_cargo_tree_dependency_line(args: argparse.Namespace,
                                full_version=dep_version,
                                crate_path=dep_path,
                                features=dep_features,
-                               is_proc_macro=dep_isprocmacro,
                                is_for_first_party_code=for_first_party_code,
                                build_script_outputs=build_script_outputs)
 
@@ -912,9 +906,6 @@ def _add_edges_for_dep_on_target_arch(
                 # Adds the edge from parent to dependency for all given target
                 # architectures.
                 dep_data.archset.add_archset(archset_for_new_edges)
-                # The parent needs to know if the dependency crate is a
-                # proc-macro.
-                dep_data.is_proc_macro = dep.is_proc_macro
     return
 
 
@@ -1138,8 +1129,7 @@ def _gen_build_rule(args: argparse.Namespace, build_data_set: BuildData,
             build_rule_usage.deps = [{
                 "deppath":
                 common.gn_crate_path(k.name, k.epoch) + ":" +
-                cargo.CrateBuildOutput.NORMAL.gn_target_name_for_dep() +
-                common.gn_toolchain_for_dep(depdata.is_proc_macro),
+                cargo.CrateBuildOutput.NORMAL.gn_target_name_for_dep(),
                 "compile_modes":
                 compiler.BuildConditionSet(depdata.archset),
             } for (k, depdata) in normal_deps.all_deps_data()]
@@ -1147,8 +1137,7 @@ def _gen_build_rule(args: argparse.Namespace, build_data_set: BuildData,
             build_rule_usage.build_deps = [{
                 "deppath":
                 common.gn_crate_path(k.name, k.epoch) + ":" +
-                cargo.CrateBuildOutput.BUILDRS.gn_target_name_for_dep() +
-                common.gn_toolchain_for_dep(depdata.is_proc_macro),
+                cargo.CrateBuildOutput.BUILDRS.gn_target_name_for_dep(),
                 "compile_modes":
                 compiler.BuildConditionSet(depdata.archset),
             } for (k, depdata) in build_deps.all_deps_data()]
@@ -1156,8 +1145,7 @@ def _gen_build_rule(args: argparse.Namespace, build_data_set: BuildData,
             build_rule_usage.dev_deps = [{
                 "deppath":
                 common.gn_crate_path(k.name, k.epoch) + ":" +
-                cargo.CrateBuildOutput.TESTS.gn_target_name_for_dep() +
-                common.gn_toolchain_for_dep(depdata.is_proc_macro),
+                cargo.CrateBuildOutput.TESTS.gn_target_name_for_dep(),
                 "compile_modes":
                 compiler.BuildConditionSet(depdata.archset),
             } for (k, depdata) in dev_deps.all_deps_data()]

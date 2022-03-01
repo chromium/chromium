@@ -6,17 +6,8 @@ import("//build/config/rust.gni")
 import("//build/rust/rust_target.gni")
 
 # Template for generating a Rust proc-macro library. Such targets produce a
-# dynamic library that is loaded during compilation, and thus should be
-# targeted toward the $host_toolchain, instead of the $current_toolchain.
-# Currently that is done by specifying the host toolchain in any dependency on
-# a proc-macro target, such as:
-#
-# deps = [
-#   "//a/proc/macro($host_toolchain)"
-# ]
-#
-# TODO(crbug.com/1299883): Improve this, such as how Fuchsia has done here.
-# https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/build/rust/rustc_macro.gni#258
+# dynamic library that is loaded during compilation and used to generate Rust
+# code for compilation.
 template("rust_macro") {
   rust_target(target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)

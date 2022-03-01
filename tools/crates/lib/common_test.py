@@ -108,12 +108,6 @@ class TestCommon(unittest.TestCase):
         r = common.gn_crate_path("foo-bar", "5", rel_path=["a", "b"])
         self.assertEqual(r, root + "/foo_bar/v5/a/b")
 
-    def test_gn_toolchain_for_dep(self):
-        r = common.gn_toolchain_for_dep(True)
-        self.assertEqual(r, "($host_toolchain)")
-        r = common.gn_toolchain_for_dep(False)
-        self.assertEqual(r, "")
-
     def test_os_crate_name_dir(self):
         # Test normalization of crate names.
         r = common.os_crate_name_dir("foo-bar")
