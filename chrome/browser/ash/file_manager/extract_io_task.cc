@@ -11,7 +11,9 @@ ExtractIOTask::ExtractIOTask(
     std::vector<storage::FileSystemURL> source_urls,
     storage::FileSystemURL parent_folder,
     scoped_refptr<storage::FileSystemContext> file_system_context)
-    : file_system_context_(file_system_context) {}
+    : file_system_context_(file_system_context) {
+  progress_.type = OperationType::kExtract;
+}
 
 ExtractIOTask::~ExtractIOTask() {}
 
