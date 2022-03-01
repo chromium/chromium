@@ -2541,7 +2541,8 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
       render_frame_host_->GetSiteInstance() == new_instance) {
     if (frame_tree_node_->IsMainFrame()) {
       frame_tree_node_->frame_tree()
-          ->GetRenderViewHost(new_instance)
+          ->GetRenderViewHost(
+              static_cast<SiteInstanceImpl*>(new_instance)->group())
           ->SetMainFrameRoutingId(MSG_ROUTING_NONE);
     }
 
@@ -2599,7 +2600,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
   }
 
   scoped_refptr<RenderViewHostImpl> render_view_host =
-      frame_tree->GetRenderViewHost(site_instance);
+      frame_tree->GetRenderViewHost(
+          static_cast<SiteInstanceImpl*>(site_instance)->group());
 
   switch (create_frame_case) {
     case CreateFrameCase::kInitChild:
@@ -2838,9 +2840,10 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
   }
 
   // If a proxy already exists and is alive, nothing needs to be done.
+  SiteInstanceGroup* group = static_cast<SiteInstanceImpl*>(instance)->group();
   RenderFrameProxyHost* proxy =
       render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
-          static_cast<SiteInstanceImpl*>(instance)->group());
+          group);
   if (proxy && proxy->is_render_frame_proxy_live())
     return;
 
@@ -2851,7 +2854,7 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
     // The RenderViewHost creates the page level structure in Blink. The first
     // object to depend on it is necessarily a main frame one.
     scoped_refptr<RenderViewHostImpl> render_view_host =
-        frame_tree_node_->frame_tree()->GetRenderViewHost(instance);
+        frame_tree_node_->frame_tree()->GetRenderViewHost(group);
     CHECK(render_view_host || frame_tree_node_->IsMainFrame());
     if (!render_view_host) {
       // Before creating a new RenderFrameProxyHost, ensure a RenderViewHost
@@ -2871,8 +2874,7 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
 
   // Make sure that the RenderFrameProxy is present in the renderer.
   if (frame_tree_node_->IsMainFrame() && proxy->GetRenderViewHost()) {
-    InitRenderView(static_cast<SiteInstanceImpl*>(instance)->group(),
-                   proxy->GetRenderViewHost(), proxy);
+    InitRenderView(group, proxy->GetRenderViewHost(), proxy);
   } else {
     proxy->InitRenderFrameProxy();
   }
@@ -3093,7 +3095,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
       ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
       [&](perfetto::EventContext ctx) {
         auto rvh = frame_tree_node_->frame_tree()->GetRenderViewHost(
-            dest_site_instance.get());
+            static_cast<SiteInstanceImpl*>(dest_site_instance.get())->group());
         if (rvh) {
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
           rvh->WriteIntoTrace(ctx.Wrap(event->set_render_view_host()));

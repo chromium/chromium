@@ -3513,7 +3513,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // load stop.
   RenderFrameHostImpl* rfh_a = root->current_frame_host();
   rfh_a->DisableUnloadTimerForTesting();
-  SiteInstanceImpl* site_instance_a = rfh_a->GetSiteInstance();
+  SiteInstanceGroup* site_instance_group_a = rfh_a->GetSiteInstance()->group();
   TestFrameNavigationObserver commit_observer(root);
   shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title2.html"));
   commit_observer.WaitForCommit();
@@ -3521,7 +3521,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
             new_shell->web_contents()->GetSiteInstance());
   EXPECT_TRUE(root->current_frame_host()
                   ->browsing_context_state()
-                  ->GetRenderFrameProxyHost(site_instance_a->group()));
+                  ->GetRenderFrameProxyHost(site_instance_group_a));
 
   // The previous RFH should still be pending deletion, as we wait for either
   // the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame or a timeout.
@@ -3547,20 +3547,20 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_TRUE(rvh_a->HasOneRef());
   EXPECT_TRUE(root->current_frame_host()
                   ->browsing_context_state()
-                  ->GetRenderFrameProxyHost(site_instance_a->group()));
+                  ->GetRenderFrameProxyHost(site_instance_group_a));
   EXPECT_FALSE(root->current_frame_host()
                    ->browsing_context_state()
-                   ->GetRenderFrameProxyHost(site_instance_a->group())
+                   ->GetRenderFrameProxyHost(site_instance_group_a)
                    ->is_render_frame_proxy_live());
 
   // Close the popup so there is no proxy for a.com in the original tab.
   new_shell->Close();
   EXPECT_FALSE(root->current_frame_host()
                    ->browsing_context_state()
-                   ->GetRenderFrameProxyHost(site_instance_a->group()));
+                   ->GetRenderFrameProxyHost(site_instance_group_a));
 
   // This should delete the RVH as well.
-  EXPECT_FALSE(root->frame_tree()->GetRenderViewHost(site_instance_a));
+  EXPECT_FALSE(root->frame_tree()->GetRenderViewHost(site_instance_group_a));
 
   // Go back in the main frame from b.com to a.com. In https://crbug.com/581912,
   // the browser process would crash here because there was no main frame

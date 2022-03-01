@@ -4113,7 +4113,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   crash_observer.Wait();
 
   // Verify that the RVH and RFH for A were cleaned up.
-  EXPECT_FALSE(root->frame_tree()->GetRenderViewHost(site_instance));
+  EXPECT_FALSE(root->frame_tree()->GetRenderViewHost(site_instance->group()));
   EXPECT_TRUE(deleted_observer.deleted());
 
   // Start a navigation back to A, being careful to stay in the same
@@ -4600,16 +4600,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Instead, tell A to detach B and then send a fake proxy creation IPC to A
   // that would've come from create-child-frame code in B.  Prepare parameters
   // for that IPC ahead of the detach, while B's FrameTreeNode still exists.
-  SiteInstance* site_instance_a = root->current_frame_host()->GetSiteInstance();
+  SiteInstanceGroup* site_instance_group_a =
+      root->current_frame_host()->GetSiteInstance()->group();
   RenderProcessHost* process_a =
       root->render_manager()->current_frame_host()->GetProcess();
   AgentSchedulingGroupHost* agent_scheduling_group_a =
-      AgentSchedulingGroupHost::GetOrCreate(
-          *static_cast<SiteInstanceImpl*>(site_instance_a)->group(),
-          *process_a);
+      AgentSchedulingGroupHost::GetOrCreate(*site_instance_group_a, *process_a);
   int new_routing_id = process_a->GetNextRoutingID();
-  int view_routing_id =
-      root->frame_tree()->GetRenderViewHost(site_instance_a)->GetRoutingID();
+  int view_routing_id = root->frame_tree()
+                            ->GetRenderViewHost(site_instance_group_a)
+                            ->GetRoutingID();
   int parent_routing_id =
       root->child_at(0)->render_manager()->GetProxyToParent()->GetRoutingID();
 
@@ -5565,11 +5565,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Ensure the RenderViewHost for the SiteInstance of the child is considered
   // inactive.
-  RenderViewHostImpl* rvh =
-      contents->GetPrimaryFrameTree()
-          .GetRenderViewHost(
-              root->child_at(0)->current_frame_host()->GetSiteInstance())
-          .get();
+  RenderViewHostImpl* rvh = contents->GetPrimaryFrameTree()
+                                .GetRenderViewHost(root->child_at(0)
+                                                       ->current_frame_host()
+                                                       ->GetSiteInstance()
+                                                       ->group())
+                                .get();
   EXPECT_FALSE(rvh->is_active());
 
   // Have the child frame navigate its parent to its SiteInstance.
@@ -5587,7 +5588,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Verify that the same RenderViewHost is preserved and that it is now active.
   EXPECT_EQ(rvh, contents->GetPrimaryFrameTree().GetRenderViewHost(
-                     root->current_frame_host()->GetSiteInstance()));
+                     root->current_frame_host()->GetSiteInstance()->group()));
   EXPECT_TRUE(rvh->is_active());
 }
 
@@ -6503,9 +6504,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(popup_shell);
 
   // The RenderViewHost for b.com in the main tab should not be active.
-  SiteInstance* b_instance = popup_shell->web_contents()->GetSiteInstance();
+  SiteInstanceGroup* b_group =
+      static_cast<SiteInstanceImpl*>(
+          popup_shell->web_contents()->GetSiteInstance())
+          ->group();
   RenderViewHostImpl* rvh =
-      web_contents()->GetPrimaryFrameTree().GetRenderViewHost(b_instance).get();
+      web_contents()->GetPrimaryFrameTree().GetRenderViewHost(b_group).get();
   EXPECT_FALSE(rvh->is_active());
 
   // Navigate main tab to a b.com URL that will not commit.
@@ -6557,9 +6561,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(popup_shell);
 
   // The RenderViewHost for b.com in the main tab should not be active.
-  SiteInstance* b_instance = popup_shell->web_contents()->GetSiteInstance();
+  SiteInstanceGroup* b_group =
+      static_cast<SiteInstanceImpl*>(
+          popup_shell->web_contents()->GetSiteInstance())
+          ->group();
   RenderViewHostImpl* rvh =
-      web_contents()->GetPrimaryFrameTree().GetRenderViewHost(b_instance).get();
+      web_contents()->GetPrimaryFrameTree().GetRenderViewHost(b_group).get();
   EXPECT_FALSE(rvh->is_active());
 
   // Navigate main tab to a b.com URL that will not commit.

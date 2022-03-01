@@ -432,14 +432,14 @@ void FrameTree::CreateProxiesForSiteInstance(
     SiteInstance* site_instance,
     const scoped_refptr<BrowsingContextState>&
         source_new_browsing_context_state) {
+  SiteInstanceGroup* group =
+      static_cast<SiteInstanceImpl*>(site_instance)->group();
   // Create the RenderFrameProxyHost for the new SiteInstance.
   if (!source || !source->IsMainFrame()) {
-    RenderViewHostImpl* render_view_host =
-        GetRenderViewHost(site_instance).get();
+    RenderViewHostImpl* render_view_host = GetRenderViewHost(group).get();
     if (render_view_host) {
-      root()->render_manager()->EnsureRenderViewInitialized(
-          render_view_host,
-          static_cast<SiteInstanceImpl*>(site_instance)->group());
+      root()->render_manager()->EnsureRenderViewInitialized(render_view_host,
+                                                            group);
     } else {
       // Due to the check above, we are creating either an opener proxy (when
       // source is null) or a main frame proxy due to a subframe navigation
@@ -602,11 +602,10 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
 }
 
 scoped_refptr<RenderViewHostImpl> FrameTree::GetRenderViewHost(
-    SiteInstance* site_instance) {
+    SiteInstanceGroup* group) {
   // When called from RenderFrameHostManager::CreateRenderFrameHost, it's
   // possible that a RenderProcessHost hasn't yet been created, which means
-  // `site_instance` won't have gotten a group yet.
-  auto* group = static_cast<SiteInstanceImpl*>(site_instance)->group();
+  // a SiteInstanceGroup won't have been created yet.
   if (!group)
     return nullptr;
 

@@ -49,6 +49,7 @@ class RenderViewHostImpl;
 class RenderFrameHostManager;
 class RenderWidgetHostDelegate;
 class SiteInstance;
+class SiteInstanceGroup;
 
 // Represents the frame tree for a page. With the exception of the main frame,
 // all FrameTreeNodes will be created/deleted in response to frame attach and
@@ -380,8 +381,7 @@ class CONTENT_EXPORT FrameTree {
   // Returns the existing RenderViewHost for a new RenderFrameHost.
   // There should always be such a RenderViewHost, because the main frame
   // RenderFrameHost for each SiteInstance should be created before subframes.
-  scoped_refptr<RenderViewHostImpl> GetRenderViewHost(
-      SiteInstance* site_instance);
+  scoped_refptr<RenderViewHostImpl> GetRenderViewHost(SiteInstanceGroup* group);
 
   // Returns the ID used for the RenderViewHost associated with
   // |site_instance_group|.
