@@ -6773,28 +6773,6 @@
             ]
         }
     ],
-    "V8FastApiCalls": [
-        {
-            "platforms": [
-                "linux",
-                "windows",
-                "android",
-                "mac",
-                "chromeos_lacros",
-                "chromeos",
-                "ios",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8TurboFastApiCalls"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8FlushBaselineCode": [
         {
             "platforms": [
