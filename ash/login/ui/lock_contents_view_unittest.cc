@@ -57,6 +57,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
@@ -3098,6 +3099,48 @@ TEST_F(LockContentsViewUnitTest, ToggleGaiaOnUsersChanged) {
   EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(1);
   AddUsers(0);
   Mock::VerifyAndClearExpectations(client.get());
+}
+
+TEST_F(LockContentsViewUnitTest, SmartLockStateHidesPasswordView) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSmartLockUIRevamp);
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Build login screen with 1 user.
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  LockContentsView::TestApi test_api(contents);
+  AddUsers(1);
+  const LockContentsView::UserState& user = test_api.users()[0];
+  SetWidget(CreateWidgetWithContent(contents));
+  LoginBigUserView* big_view =
+      LockContentsView::TestApi(contents).primary_big_view();
+  ASSERT_TRUE(big_view);
+  LoginAuthUserView* auth_user_view = big_view->auth_user();
+  ASSERT_TRUE(auth_user_view);
+
+  EXPECT_TRUE(auth_user_view->password_view()->GetVisible());
+
+  // Check that password view is still visible when auth
+  // factor is in kReady state.
+  DataDispatcher()->SetSmartLockState(
+      user.account_id, SmartLockState::kPhoneFoundLockedAndProximate);
+  EXPECT_TRUE(auth_user_view->password_view()->GetVisible());
+
+  // Check that password view is no longer visible when auth
+  // factor is in kClickRequired state.
+  DataDispatcher()->SetSmartLockState(user.account_id,
+                                      SmartLockState::kPhoneAuthenticated);
+  EXPECT_FALSE(auth_user_view->password_view()->GetVisible());
+
+  // Check that password view becomes visible when auth
+  // factor is in kErrorPermanent state.
+  DataDispatcher()->SetSmartLockState(user.account_id,
+                                      SmartLockState::kPasswordReentryRequired);
+  EXPECT_TRUE(auth_user_view->password_view()->GetVisible());
 }
 
 }  // namespace ash
