@@ -73,6 +73,8 @@ class MEDIA_EXPORT AudioDiscardHelper {
     return timestamp_helper_.base_timestamp() != kNoTimestamp;
   }
 
+  size_t decoder_delay() const { return decoder_delay_; }
+
  private:
   // The sample rate of the decoded audio samples.  Used by TimeDeltaToFrames()
   // and the timestamp helper.

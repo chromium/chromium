@@ -60,6 +60,7 @@ source_set("pipeline_integration_tests") {
     deps = [
       ":pipeline_integration_test_base",
       "//base",
+      "//base/test:test_support",
       "//media:media_buildflags",
       "//media:test_support",
       "//media/mojo/clients",

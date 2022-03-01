@@ -249,21 +249,21 @@ TEST(SupportedTypesTest, IsSupportedAudioTypeWithSpatialRenderingBasics) {
                             is_spatial_rendering}));
 }
 
-TEST(SupportedTypesTest, XHE_AACSupportedOnAndroidOnly) {
-  // TODO(dalecurtis): Update this test if we ever have support elsewhere.
+TEST(SupportedTypesTest, XHE_AACSupported) {
+  bool is_supported = false;
+
 #if BUILDFLAG(IS_ANDROID)
-  const bool is_supported =
-      kPropCodecsEnabled &&
-      base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_P;
+  is_supported = kPropCodecsEnabled &&
+                 base::android::BuildInfo::GetInstance()->sdk_int() >=
+                     base::android::SDK_VERSION_P;
+#elif BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (__builtin_available(macOS 10.15, *))
+    is_supported = true;
+#endif
 
   EXPECT_EQ(is_supported,
             IsSupportedAudioType(
                 {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false}));
-#else
-  EXPECT_FALSE(IsSupportedAudioType(
-      {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false}));
-#endif
 }
 
 TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
