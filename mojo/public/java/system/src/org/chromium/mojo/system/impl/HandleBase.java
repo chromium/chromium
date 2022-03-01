@@ -19,7 +19,7 @@ abstract class HandleBase implements Handle {
     /**
      * The pointer to the scoped handle owned by this object.
      */
-    private int mMojoHandle;
+    private long mMojoHandle;
 
     /**
      * The core implementation. Will be used to delegate all behavior.
@@ -29,7 +29,7 @@ abstract class HandleBase implements Handle {
     /**
      * Base constructor. Takes ownership of the passed handle.
      */
-    HandleBase(CoreImpl core, int mojoHandle) {
+    HandleBase(CoreImpl core, long mojoHandle) {
         mCore = core;
         mMojoHandle = mojoHandle;
     }
@@ -41,7 +41,7 @@ abstract class HandleBase implements Handle {
     protected HandleBase(HandleBase other) {
         mCore = other.mCore;
         HandleBase otherAsHandleImpl = other;
-        int mojoHandle = otherAsHandleImpl.mMojoHandle;
+        long mojoHandle = otherAsHandleImpl.mMojoHandle;
         otherAsHandleImpl.mMojoHandle = CoreImpl.INVALID_HANDLE;
         mMojoHandle = mojoHandle;
     }
@@ -53,7 +53,7 @@ abstract class HandleBase implements Handle {
     public void close() {
         if (mMojoHandle != CoreImpl.INVALID_HANDLE) {
             // After a close, the handle is invalid whether the close succeed or not.
-            int handle = mMojoHandle;
+            long handle = mMojoHandle;
             mMojoHandle = CoreImpl.INVALID_HANDLE;
             mCore.close(handle);
         }
@@ -95,8 +95,8 @@ abstract class HandleBase implements Handle {
      * @see Handle#releaseNativeHandle()
      */
     @Override
-    public int releaseNativeHandle() {
-        int result = mMojoHandle;
+    public long releaseNativeHandle() {
+        long result = mMojoHandle;
         mMojoHandle = CoreImpl.INVALID_HANDLE;
         return result;
     }
@@ -106,7 +106,7 @@ abstract class HandleBase implements Handle {
      *
      * @return the native scoped handle.
      */
-    int getMojoHandle() {
+    long getMojoHandle() {
         return mMojoHandle;
     }
 

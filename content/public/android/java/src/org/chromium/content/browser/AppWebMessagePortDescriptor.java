@@ -45,7 +45,7 @@ import org.chromium.mojo_base.mojom.UnguessableToken;
  */
 public class AppWebMessagePortDescriptor implements ConnectionErrorHandler {
     private static final long NATIVE_NULL = 0;
-    private static final int INVALID_NATIVE_MOJO_HANDLE = 0; // Mirrors CoreImpl.INVALID_HANDLE.
+    private static final long INVALID_NATIVE_MOJO_HANDLE = 0; // Mirrors CoreImpl.INVALID_HANDLE.
     private static final long INVALID_SEQUENCE_NUMBER = 0;
 
     /** Handle to the native blink::MessagePortDescriptor associated with this object. */
@@ -111,7 +111,7 @@ public class AppWebMessagePortDescriptor implements ConnectionErrorHandler {
     Connector entangleWithConnector() {
         ensureNativeMessagePortDescriptorExists();
         assert mConnector == null : "handle already taken";
-        int nativeHandle = AppWebMessagePortDescriptorJni.get().takeHandleToEntangle(
+        long nativeHandle = AppWebMessagePortDescriptorJni.get().takeHandleToEntangle(
                 mNativeMessagePortDescriptor);
         assert nativeHandle
                 != INVALID_NATIVE_MOJO_HANDLE : "native object returned an invalid handle";
@@ -177,7 +177,7 @@ public class AppWebMessagePortDescriptor implements ConnectionErrorHandler {
                 AppWebMessagePortDescriptorJni.get().passSerialized(mNativeMessagePortDescriptor);
         assert serialized.length == 4 : "native passSerialized returned an invalid value";
 
-        int nativeHandle = (int) serialized[0];
+        long nativeHandle = serialized[0];
         long idLow = serialized[1];
         long idHigh = serialized[2];
         long sequenceNumber = serialized[3];
@@ -254,7 +254,7 @@ public class AppWebMessagePortDescriptor implements ConnectionErrorHandler {
     /**
      * Wraps the provided native handle as MessagePipeHandle.
      */
-    MessagePipeHandle wrapNativeHandle(int nativeHandle) {
+    MessagePipeHandle wrapNativeHandle(long nativeHandle) {
         return CoreImpl.getInstance().acquireNativeHandle(nativeHandle).toMessagePipeHandle();
     }
 
@@ -282,7 +282,7 @@ public class AppWebMessagePortDescriptor implements ConnectionErrorHandler {
 
     private void disentangleImpl() {
         MessagePipeHandle handle = mConnector.passHandle();
-        int nativeHandle = handle.releaseNativeHandle();
+        long nativeHandle = handle.releaseNativeHandle();
         // An invalid handle should be returned iff the connection errored.
         if (mConnectorErrored) {
             assert nativeHandle
@@ -324,14 +324,14 @@ public class AppWebMessagePortDescriptor implements ConnectionErrorHandler {
     @NativeMethods
     interface Native {
         long[] createPair();
-        long create(int nativeHandle, long idLow, long idHigh, long sequenceNumber);
+        long create(long mojoHandle, long idLow, long idHigh, long sequenceNumber);
         // Deliberately do not use nativeObjectType naming to avoid automatic typecasting and
         // member function dispatch; these need to be routed to static functions.
 
         // Takes the handle from the native object for entangling with a mojo.Connector.
-        int takeHandleToEntangle(long blinkMessagePortDescriptor);
+        long takeHandleToEntangle(long blinkMessagePortDescriptor);
         // Returns the handle previously taken via "takeHandleToEntangle".
-        void giveDisentangledHandle(long blinkMessagePortDescriptor, int nativeHandle);
+        void giveDisentangledHandle(long blinkMessagePortDescriptor, long nativeHandle);
         // Indicates that the entangled error experienced a connection error. The descriptor must be
         // entangled at this point.
         void onConnectionError(long blinkMessagePortDescriptor);

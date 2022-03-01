@@ -59,7 +59,7 @@ class WatcherImpl implements Watcher {
     @NativeMethods
     interface Natives {
         long createWatcher(WatcherImpl caller);
-        int start(WatcherImpl caller, long implPtr, int mojoHandle, int flags);
+        int start(WatcherImpl caller, long implPtr, long mojoHandle, int flags);
         void cancel(WatcherImpl caller, long implPtr);
         void delete(WatcherImpl caller, long implPtr);
     }

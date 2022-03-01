@@ -80,7 +80,7 @@ public class InvalidHandle implements UntypedHandle, MessagePipeHandle, Consumer
      * @see Handle#releaseNativeHandle()
      */
     @Override
-    public int releaseNativeHandle() {
+    public long releaseNativeHandle() {
         return 0;
     }
 

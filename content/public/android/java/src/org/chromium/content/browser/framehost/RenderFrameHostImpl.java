@@ -246,7 +246,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean isRenderFrameCreated(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void getInterfaceToRendererFrame(long nativeRenderFrameHostAndroid,
-                RenderFrameHostImpl caller, String interfacename, int messagePipeRawHandle);
+                RenderFrameHostImpl caller, String interfacename, long messagePipeRawHandle);
         void terminateRendererDueToBadMessage(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller, int reason);
         boolean isProcessBlocked(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
