@@ -26,4 +26,7 @@ template("mixed_component") {
 
 set_defaults("mixed_component") {
   configs = default_component_configs
+
+  # TODO(crbug.com/1292951): Remove this line.
+  configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
 }

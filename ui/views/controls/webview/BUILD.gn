@@ -78,4 +78,7 @@ static_library("test_support") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+
+  # TODO(crbug.com/1292951): Remove this line.
+  configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
 }

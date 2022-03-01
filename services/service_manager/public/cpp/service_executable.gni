@@ -27,5 +27,8 @@ template("service_executable") {
     }
 
     deps += [ "//services/service_manager/public/cpp/service_executable:main" ]
+
+    # TODO(crbug.com/1292951): Remove this line.
+    configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
   }
 }
