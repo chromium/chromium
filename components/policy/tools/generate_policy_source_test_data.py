@@ -562,6 +562,8 @@ EXPECTED_CROS_POLICY_CONSTANTS_HEADER = '''
 #ifndef __BINDINGS_POLICY_CONSTANTS_H_
 #define __BINDINGS_POLICY_CONSTANTS_H_
 
+#include <array>
+
 namespace enterprise_management {
 class CloudPolicySettings;
 class BooleanPolicyProto;
@@ -591,40 +593,40 @@ extern const char* kDevicePolicyKeys[];
 struct BooleanPolicyAccess {
   const char* policy_key;
   bool per_profile;
-  enterprise_management::BooleanPolicyProto*
-      (enterprise_management::CloudPolicySettings::*mutable_proto_ptr)();
+  enterprise_management::BooleanPolicyProto* (*mutable_proto_ptr)(
+      enterprise_management::CloudPolicySettings* policy);
 };
-extern const BooleanPolicyAccess kBooleanPolicyAccess[];
+extern const std::array<BooleanPolicyAccess, 4> kBooleanPolicyAccess;
 
 // Access to the mutable protobuf function of all supported integer user
 // policies.
 struct IntegerPolicyAccess {
   const char* policy_key;
   bool per_profile;
-  enterprise_management::IntegerPolicyProto*
-      (enterprise_management::CloudPolicySettings::*mutable_proto_ptr)();
+  enterprise_management::IntegerPolicyProto* (*mutable_proto_ptr)(
+      enterprise_management::CloudPolicySettings* policy);
 };
-extern const IntegerPolicyAccess kIntegerPolicyAccess[];
+extern const std::array<IntegerPolicyAccess, 0> kIntegerPolicyAccess;
 
 // Access to the mutable protobuf function of all supported string user
 // policies.
 struct StringPolicyAccess {
   const char* policy_key;
   bool per_profile;
-  enterprise_management::StringPolicyProto*
-      (enterprise_management::CloudPolicySettings::*mutable_proto_ptr)();
+  enterprise_management::StringPolicyProto* (*mutable_proto_ptr)(
+      enterprise_management::CloudPolicySettings* policy);
 };
-extern const StringPolicyAccess kStringPolicyAccess[];
+extern const std::array<StringPolicyAccess, 1> kStringPolicyAccess;
 
 // Access to the mutable protobuf function of all supported stringlist user
 // policies.
 struct StringListPolicyAccess {
   const char* policy_key;
   bool per_profile;
-  enterprise_management::StringListPolicyProto*
-      (enterprise_management::CloudPolicySettings::*mutable_proto_ptr)();
+  enterprise_management::StringListPolicyProto* (*mutable_proto_ptr)(
+      enterprise_management::CloudPolicySettings* policy);
 };
-extern const StringListPolicyAccess kStringListPolicyAccess[];
+extern const std::array<StringListPolicyAccess, 0> kStringListPolicyAccess;
 
 }  // namespace policy
 
@@ -653,36 +655,52 @@ const char* kDevicePolicyKeys[] = {
 
   nullptr};
 
-constexpr BooleanPolicyAccess kBooleanPolicyAccess[] = {
+const std::array<BooleanPolicyAccess, 4> kBooleanPolicyAccess {{
   {key::kExampleBoolPolicy,
    false,
-   &em::CloudPolicySettings::mutable_exampleboolpolicy},
+   [](em::CloudPolicySettings* policy)
+       -> em::BooleanPolicyProto* {
+     return policy->mutable_exampleboolpolicy();
+   }
+  },
   {key::kExampleBoolMergeMetapolicy,
    false,
-   &em::CloudPolicySettings::mutable_exampleboolmergemetapolicy},
+   [](em::CloudPolicySettings* policy)
+       -> em::BooleanPolicyProto* {
+     return policy->mutable_exampleboolmergemetapolicy();
+   }
+  },
   {key::kExampleBoolPrecedenceMetapolicy,
    false,
-   &em::CloudPolicySettings::mutable_exampleboolprecedencemetapolicy},
+   [](em::CloudPolicySettings* policy)
+       -> em::BooleanPolicyProto* {
+     return policy->mutable_exampleboolprecedencemetapolicy();
+   }
+  },
   {key::kCloudOnlyPolicy,
    false,
-   &em::CloudPolicySettings::mutable_cloudonlypolicy},
-  {nullptr, false, nullptr},
-};
+   [](em::CloudPolicySettings* policy)
+       -> em::BooleanPolicyProto* {
+     return policy->mutable_cloudonlypolicy();
+   }
+  },
+}};
 
-constexpr IntegerPolicyAccess kIntegerPolicyAccess[] = {
-  {nullptr, false, nullptr},
-};
+const std::array<IntegerPolicyAccess, 0> kIntegerPolicyAccess {{
+}};
 
-constexpr StringPolicyAccess kStringPolicyAccess[] = {
+const std::array<StringPolicyAccess, 1> kStringPolicyAccess {{
   {key::kExampleStringPolicy,
    false,
-   &em::CloudPolicySettings::mutable_examplestringpolicy},
-  {nullptr, false, nullptr},
-};
+   [](em::CloudPolicySettings* policy)
+       -> em::StringPolicyProto* {
+     return policy->mutable_examplestringpolicy();
+   }
+  },
+}};
 
-constexpr StringListPolicyAccess kStringListPolicyAccess[] = {
-  {nullptr, false, nullptr},
-};
+const std::array<StringListPolicyAccess, 0> kStringListPolicyAccess {{
+}};
 
 }  // namespace policy
 '''
