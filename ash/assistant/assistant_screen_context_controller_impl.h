@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_screen_context_model.h"
-#include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
@@ -25,26 +24,19 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
-struct AssistantTree;
 class LayerTreeOwner;
 }  // namespace ui
 
 namespace ash {
 
-class AssistantControllerImpl;
-
 class ASH_EXPORT AssistantScreenContextControllerImpl
-    : public AssistantScreenContextController,
-      public AssistantControllerObserver,
-      public AssistantUiModelObserver,
-      public AssistantViewDelegateObserver {
+    : public AssistantScreenContextController {
  public:
   using ScreenContextCallback =
       base::OnceCallback<void(ax::mojom::AssistantStructurePtr,
                               const std::vector<uint8_t>&)>;
 
-  explicit AssistantScreenContextControllerImpl(
-      AssistantControllerImpl* assistant_controller);
+  AssistantScreenContextControllerImpl();
 
   AssistantScreenContextControllerImpl(
       const AssistantScreenContextControllerImpl&) = delete;
@@ -56,29 +48,11 @@ class ASH_EXPORT AssistantScreenContextControllerImpl
   // Provides a pointer to the |assistant| owned by AssistantService.
   void SetAssistant(chromeos::assistant::Assistant* assistant);
 
-  // Returns a reference to the underlying model.
-  const AssistantScreenContextModel* model() const { return &model_; }
-
   // AssistantScreenContextController:
   void RequestScreenshot(const gfx::Rect& rect,
                          RequestScreenshotCallback callback) override;
 
-  // AssistantControllerObserver:
-  void OnAssistantControllerConstructed() override;
-  void OnAssistantControllerDestroying() override;
-
-  // AssistantUiModelObserver:
-  void OnUiVisibilityChanged(
-      AssistantVisibility new_visibility,
-      AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
-
-  // AssistantViewDelegateObserver:
-  void OnHostViewVisibilityChanged(bool visible) override;
-
-  void RequestScreenContext(bool include_assistant_structure,
-                            const gfx::Rect& region,
+  void RequestScreenContext(const gfx::Rect& region,
                             ScreenContextCallback callback);
 
   std::unique_ptr<ui::LayerTreeOwner> CreateLayerForAssistantSnapshotForTest();
@@ -86,31 +60,11 @@ class ASH_EXPORT AssistantScreenContextControllerImpl
  private:
   friend class AssistantScreenContextControllerTest;
 
-  // Requests or clears the cached Assistant structure based on |visible|.
-  void UpdateAssistantStructure(bool visible);
-
-  void RequestAssistantStructure();
-
-  // Clears the cached Assistant structure.
-  void ClearAssistantStructure();
-
-  void OnRequestAssistantStructureCompleted(
-      ax::mojom::AssistantExtraPtr assistant_extra,
-      std::unique_ptr<ui::AssistantTree> assistant_tree);
-
-  void OnRequestScreenshotCompleted(bool include_assistant_structure,
-                                    ScreenContextCallback callback,
+  void OnRequestScreenshotCompleted(ScreenContextCallback callback,
                                     const std::vector<uint8_t>& screenshot);
-
-  AssistantControllerImpl* const assistant_controller_;  // Owned by Shell.
 
   // Owned by AssistantService.
   chromeos::assistant::Assistant* assistant_ = nullptr;
-
-  AssistantScreenContextModel model_;
-
-  base::ScopedObservation<AssistantController, AssistantControllerObserver>
-      assistant_controller_observation_{this};
 
   base::WeakPtrFactory<AssistantScreenContextControllerImpl> weak_factory_{
       this};

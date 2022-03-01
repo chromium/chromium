@@ -64,8 +64,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) MockAssistantViewDelegate
               (const std::string&),
               (override));
 
-  MOCK_METHOD(void, OnHostViewVisibilityChanged, (bool), (override));
-
   MOCK_METHOD(void,
               OnNotificationButtonPressed,
               (const std::string&, int),

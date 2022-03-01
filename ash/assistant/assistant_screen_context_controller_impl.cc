@@ -7,14 +7,12 @@
 #include <utility>
 #include <vector>
 
-#include "ash/assistant/assistant_controller_impl.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
@@ -29,6 +27,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/snapshot/snapshot_aura.h"
@@ -162,29 +161,10 @@ std::unique_ptr<ui::LayerTreeOwner> CreateLayerForAssistantSnapshot(
           std::move(blocked_layers), std::move(excluded_layers)));
 }
 
-bool IsTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
-}
-
-ax::mojom::AssistantStructurePtr CloneAssistantStructure(
-    const ax::mojom::AssistantStructure& structure) {
-  auto clone = ax::mojom::AssistantStructure::New();
-  clone->assistant_extra = structure.assistant_extra.Clone();
-  if (structure.assistant_tree) {
-    clone->assistant_tree =
-        std::make_unique<ui::AssistantTree>(*structure.assistant_tree);
-  }
-
-  return clone;
-}
-
 }  // namespace
 
-AssistantScreenContextControllerImpl::AssistantScreenContextControllerImpl(
-    AssistantControllerImpl* assistant_controller)
-    : assistant_controller_(assistant_controller) {
-  assistant_controller_observation_.Observe(AssistantController::Get());
-}
+AssistantScreenContextControllerImpl::AssistantScreenContextControllerImpl() =
+    default;
 
 AssistantScreenContextControllerImpl::~AssistantScreenContextControllerImpl() =
     default;
@@ -220,108 +200,20 @@ void AssistantScreenContextControllerImpl::RequestScreenshot(
                      std::move(layer_owner)));
 }
 
-void AssistantScreenContextControllerImpl::OnAssistantControllerConstructed() {
-  AssistantUiController::Get()->GetModel()->AddObserver(this);
-  assistant_controller_->view_delegate()->AddObserver(this);
-}
-
-void AssistantScreenContextControllerImpl::OnAssistantControllerDestroying() {
-  assistant_controller_->view_delegate()->RemoveObserver(this);
-  AssistantUiController::Get()->GetModel()->RemoveObserver(this);
-}
-
-void AssistantScreenContextControllerImpl::OnUiVisibilityChanged(
-    AssistantVisibility new_visibility,
-    AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
-  // In Clamshell, we need to cache the Assistant structure when Launcher the
-  // first to show, because we cannot retrieve the active ARC app window after
-  // it lose focus. Later Assistant UI visibility changes inside the Launcher
-  // will use the same Assistant structure cache until the Launcher is closed.
-  // However, in tablet mode, we need to cache the Assistant structure whenever
-  // Assistant UI shows and clear the cache when it closes.
-  if (!IsTabletMode())
-    return;
-
-  const bool visible = (new_visibility == AssistantVisibility::kVisible);
-  UpdateAssistantStructure(visible);
-}
-
-void AssistantScreenContextControllerImpl::OnHostViewVisibilityChanged(
-    bool visible) {
-  // See the comments in OnUiVisibilityChanged().
-  if (IsTabletMode())
-    return;
-
-  UpdateAssistantStructure(visible);
-}
-
 void AssistantScreenContextControllerImpl::RequestScreenContext(
-    bool include_assistant_structure,
     const gfx::Rect& region,
     ScreenContextCallback callback) {
   RequestScreenshot(
       region,
       base::BindOnce(
           &AssistantScreenContextControllerImpl::OnRequestScreenshotCompleted,
-          weak_factory_.GetWeakPtr(), include_assistant_structure,
-          std::move(callback)));
-}
-
-void AssistantScreenContextControllerImpl::UpdateAssistantStructure(
-    bool visible) {
-  if (!AssistantState::Get()->IsScreenContextAllowed())
-    return;
-
-  if (visible)
-    RequestAssistantStructure();
-  else
-    ClearAssistantStructure();
-}
-
-void AssistantScreenContextControllerImpl::RequestAssistantStructure() {
-  DCHECK(AssistantState::Get()->IsScreenContextAllowed());
-
-  auto* delegate = chromeos::assistant::AssistantBrowserDelegate::Get();
-  DCHECK(delegate);
-
-  // Request and cache Assistant structure for the active window.
-  delegate->RequestAssistantStructure(
-      base::BindOnce(&AssistantScreenContextControllerImpl::
-                         OnRequestAssistantStructureCompleted,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void AssistantScreenContextControllerImpl::ClearAssistantStructure() {
-  weak_factory_.InvalidateWeakPtrs();
-  model_.Clear();
-}
-
-void AssistantScreenContextControllerImpl::OnRequestAssistantStructureCompleted(
-    ax::mojom::AssistantExtraPtr assistant_extra,
-    std::unique_ptr<ui::AssistantTree> assistant_tree) {
-  auto structure = ax::mojom::AssistantStructure::New();
-  structure->assistant_extra = std::move(assistant_extra);
-  structure->assistant_tree = std::move(assistant_tree);
-  model_.assistant_structure()->SetValue(std::move(structure));
+          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AssistantScreenContextControllerImpl::OnRequestScreenshotCompleted(
-    bool include_assistant_structure,
     ScreenContextCallback callback,
     const std::vector<uint8_t>& screenshot) {
-  if (!include_assistant_structure) {
-    std::move(callback).Run(/*assistant_structure=*/nullptr, screenshot);
-    return;
-  }
-
-  model_.assistant_structure()->GetValueAsync(base::BindOnce(
-      [](ScreenContextCallback callback, const std::vector<uint8_t>& screenshot,
-         const ax::mojom::AssistantStructure& structure) {
-        std::move(callback).Run(CloneAssistantStructure(structure), screenshot);
-      },
-      std::move(callback), screenshot));
+  std::move(callback).Run(/*assistant_structure=*/nullptr, screenshot);
 }
 
 std::unique_ptr<ui::LayerTreeOwner>

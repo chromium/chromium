@@ -1709,11 +1709,6 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
 
     last_visible_ = real_visibility;
 
-    // We could make Assistant sub-controllers an AppListControllerObserver,
-    // but we do not want to introduce new dependency of AppListController to
-    // Assistant.
-    GetAssistantViewDelegate()->OnHostViewVisibilityChanged(real_visibility);
-
     // Updates AppsContainerView in `fullscreen_presenter_`.
     if (app_list_view)
       app_list_view->OnAppListVisibilityChanged(real_visibility);

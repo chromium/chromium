@@ -37,9 +37,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantViewDelegateObserver
   // Invoked when the dialog plate contents have been committed.
   virtual void OnDialogPlateContentsCommitted(const std::string& text) {}
 
-  // Invoked when the host view's visibility changed.
-  virtual void OnHostViewVisibilityChanged(bool visible) {}
-
   // Invoked when Assistant onboarding is shown.
   virtual void OnOnboardingShown() {}
 
@@ -93,9 +90,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantViewDelegate {
 
   // Invoked when the dialog plate contents have been committed.
   virtual void OnDialogPlateContentsCommitted(const std::string& text) = 0;
-
-  // Invoked when the host view's visibility changed.
-  virtual void OnHostViewVisibilityChanged(bool visible) = 0;
 
   // Invoked when an in-Assistant notification button is pressed.
   virtual void OnNotificationButtonPressed(const std::string& notification_id,
