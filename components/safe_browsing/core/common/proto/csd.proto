@@ -1713,6 +1713,18 @@ message ExtensionTelemetryReportRequest {
     }
 
     optional TabsExecuteScriptInfo tabs_execute_script_info = 1;
+
+    message RemoteHostContactedInfo {
+      message RemoteHostInfo {
+        // Sanitized url (hostname only) of the contacted remote host.
+        optional string url = 1;
+        // Number of times this host has been contacted by the extension.
+        optional uint32 contact_count = 2;
+      }
+      repeated RemoteHostInfo remote_host = 1;
+    }
+
+    optional RemoteHostContactedInfo remote_host_contacted_info = 2;
   }
 
   // Single report structure consists of all the signals observed for a

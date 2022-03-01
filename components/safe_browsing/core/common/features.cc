@@ -91,6 +91,10 @@ const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds{
     &kExtensionTelemetry, "UploadIntervalSeconds",
     /*default_value=*/3600};
 
+const base::Feature kExtensionTelemetryReportContactedHosts{
+    "SafeBrowsingExtensionTelemetryReportContactedHosts",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -189,6 +193,7 @@ constexpr struct {
     {&kDownloadBubble, true},
     {&kEnhancedProtection, true},
     {&kExtensionTelemetry, true},
+    {&kExtensionTelemetryReportContactedHosts, true},
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kPasswordProtectionForSignedInUsers, true},

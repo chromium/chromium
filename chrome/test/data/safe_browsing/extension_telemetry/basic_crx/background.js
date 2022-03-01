@@ -1,0 +1,14 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+chrome.test.getConfig(function(config) {
+  var baseUrl = 'http://example.com:' + config.testServer.port;
+  chrome.test.runTests([async function makeRequest() {
+    let url = `${baseUrl}/extensions/test_file.txt`;
+    let response = await fetch(url);
+    let text = await response.text();
+    chrome.test.assertEq('Hello!', text);
+    chrome.test.succeed();
+  }]);
+});

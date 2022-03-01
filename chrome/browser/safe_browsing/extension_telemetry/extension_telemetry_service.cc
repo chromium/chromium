@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -174,6 +175,10 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     signal_processors_.emplace(
         ExtensionSignalType::kTabsExecuteScript,
         std::make_unique<TabsExecuteScriptSignalProcessor>());
+    signal_processors_.emplace(
+        ExtensionSignalType::kRemoteHostContacted,
+        std::make_unique<RemoteHostContactedSignalProcessor>());
+
     // Start timer for sending periodic telemetry reports if reporting interval
     // is not 0. An interval of 0 effectively turns off creation and uploading
     // of telemetry reports.

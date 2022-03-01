@@ -25,6 +25,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 class ExtensionFunctionRegistry;
 class PrefService;
@@ -381,6 +382,15 @@ class ExtensionsBrowserClient {
   // Returns true if the given |tab_id| exists.
   virtual bool IsValidTabId(content::BrowserContext* context, int tab_id) const;
 
+  // Returns true if chrome extension telemetry service is enabled.
+  virtual bool IsExtensionTelemetryServiceEnabled(
+      content::BrowserContext* context) const;
+
+  // Returns true if remote host contacted signal feature is enabled.
+  // TODO(zackhan): This function is for measuring the impacts in finch
+  // experiments, will remove afterwards.
+  virtual bool IsExtensionTelemetryRemoteHostContactedSignalEnabled() const;
+
   // TODO(anunoy): This is a temporary implementation of notifying the
   // extension telemetry service of the tabs.executeScript API invocation
   // while its usefulness is evaluated.
@@ -388,6 +398,14 @@ class ExtensionsBrowserClient {
       content::BrowserContext* context,
       const ExtensionId& extension_id,
       const std::string& code) const;
+
+  // TODO(zackhan): This is a temporary implementation of notifying the
+  // extension telemetry service when there are web requests initiated from
+  // chrome extensions. Its usefulness will be evaluated.
+  virtual void NotifyExtensionRemoteHostContacted(
+      content::BrowserContext* context,
+      const ExtensionId& extension_id,
+      const GURL& url) const;
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

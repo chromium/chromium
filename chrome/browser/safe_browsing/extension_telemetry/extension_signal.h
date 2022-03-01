@@ -14,7 +14,8 @@ namespace safe_browsing {
 // numeric values should never be reused.
 enum class ExtensionSignalType {
   kTabsExecuteScript = 0,
-  kMaxValue = kTabsExecuteScript,
+  kRemoteHostContacted = 1,
+  kMaxValue = kRemoteHostContacted,
 };
 
 // An abstract signal. Subclasses provide type-specific functionality to

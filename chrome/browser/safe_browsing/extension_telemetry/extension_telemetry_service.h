@@ -139,6 +139,7 @@ class ExtensionTelemetryService : public KeyedService {
   SignalProcessors signal_processors_;
 
   friend class ExtensionTelemetryServiceTest;
+  friend class ExtensionTelemetryServiceBrowserTest;
 
   base::WeakPtrFactory<ExtensionTelemetryService> weak_factory_{this};
 };

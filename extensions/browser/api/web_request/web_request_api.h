@@ -211,7 +211,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
-          header_client);
+          header_client,
+      const url::Origin& request_initiator = url::Origin());
 
   // Any request which requires authentication to complete will be bounced
   // through this method.

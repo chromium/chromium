@@ -82,6 +82,9 @@ extern const base::Feature kExtensionTelemetry;
 // Specifies the upload interval for extension telemetry reports.
 extern const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds;
 
+// Enables reporting of remote hosts contacted by extensions in telemetry.
+extern const base::Feature kExtensionTelemetryReportContactedHosts;
+
 // Determines the tag to pass to Omaha to get a file type policy.
 extern const base::Feature kFileTypePoliciesTag;
 
