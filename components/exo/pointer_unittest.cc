@@ -175,14 +175,15 @@ class PointerTest : public test::ExoTestBase {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class PointerConstraintTest : public PointerTest {
  public:
-  PointerConstraintTest() = default;
+  PointerConstraintTest() {
+    feature_list_.InitAndEnableFeature(chromeos::features::kExoPointerLock);
+  }
 
   PointerConstraintTest(const PointerConstraintTest&) = delete;
   PointerConstraintTest& operator=(const PointerConstraintTest&) = delete;
 
   void SetUp() override {
     PointerTest::SetUp();
-    feature_list_.InitAndEnableFeature(chromeos::features::kExoPointerLock);
 
     shell_surface_ = BuildShellSurfaceWhichPermitsPointerLock();
     surface_ = shell_surface_->surface_for_testing();
@@ -229,6 +230,7 @@ class PointerConstraintTest : public PointerTest {
     return shell_surface;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<Pointer> pointer_;
   std::unique_ptr<Seat> seat_;
@@ -236,7 +238,6 @@ class PointerConstraintTest : public PointerTest {
   testing::NiceMock<MockPointerDelegate> delegate_;
   std::unique_ptr<ShellSurface> shell_surface_;
   Surface* surface_;
-  base::test::ScopedFeatureList feature_list_;
   aura::client::FocusClient* focus_client_;
 };
 #endif
@@ -1282,7 +1283,21 @@ TEST_F(PointerTest, OnPointerRelativeMotion) {
   pointer.reset();
 }
 
-TEST_F(PointerTest, OrdinalMotionOverridesRelativeMotion) {
+// TODO(b/161755250): the ifdef is only necessary because of the feature
+// flag. This code should work fine on non-cros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class PointerOrdinalMotionTest : public PointerTest {
+ public:
+  PointerOrdinalMotionTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kExoOrdinalMotion);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PointerOrdinalMotionTest, OrdinalMotionOverridesRelativeMotion) {
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
   gfx::Size buffer_size(10, 10);
@@ -1315,10 +1330,6 @@ TEST_F(PointerTest, OrdinalMotionOverridesRelativeMotion) {
   generator.Dispatch(&ev1);
 
   // When set, ordinal overrides the relative motion.
-  //
-  // TODO(b/161755250): the ifdef is only necessary because of the feature
-  // flag. This code should work fine on non-cros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   new_location = new_location + gfx::Vector2d(1, 1);
   ui::MouseEvent ev2(ui::ET_MOUSE_MOVED, new_location, new_location,
                      ui::EventTimeForNow(), generator.flags(), 0);
@@ -1326,15 +1337,11 @@ TEST_F(PointerTest, OrdinalMotionOverridesRelativeMotion) {
   EXPECT_CALL(relative_delegate,
               OnPointerRelativeMotion(testing::_, gfx::Vector2dF(1, 1),
                                       gfx::Vector2dF(99, 99)));
-  // This feature is gated behind a flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::features::kExoOrdinalMotion);
   generator.Dispatch(&ev2);
-#endif
 
   pointer->UnregisterRelativePointerDelegate(&relative_delegate);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PointerConstraintTest, ConstrainPointer) {

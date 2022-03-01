@@ -55,6 +55,7 @@ base::Lock& GetLock() {
 
 // We expect GetLock() to be acquired before accessing these variables.
 TestGpuServiceHolder* g_holder = nullptr;
+bool g_disallow_feature_list_overrides = true;
 bool g_should_register_listener = true;
 bool g_registered_listener = false;
 
@@ -149,9 +150,33 @@ void TestGpuServiceHolder::DoNotResetOnTestExit() {
   g_should_register_listener = false;
 }
 
+TestGpuServiceHolder::ScopedAllowRacyFeatureListOverrides::
+    ScopedAllowRacyFeatureListOverrides() {
+  base::AutoLock locked(GetLock());
+
+  // This must be called before GetInstance() is ever called.
+  DCHECK(!g_holder);
+  DCHECK(g_disallow_feature_list_overrides);
+  g_disallow_feature_list_overrides = false;
+}
+
+TestGpuServiceHolder::ScopedAllowRacyFeatureListOverrides::
+    ~ScopedAllowRacyFeatureListOverrides() {
+  base::AutoLock locked(GetLock());
+
+  DCHECK(!g_disallow_feature_list_overrides);
+  g_disallow_feature_list_overrides = true;
+}
+
 TestGpuServiceHolder::TestGpuServiceHolder(
     const gpu::GpuPreferences& gpu_preferences)
     : gpu_thread_("GPUMainThread"), io_thread_("GPUIOThread") {
+  if (g_disallow_feature_list_overrides) {
+    disallow_feature_overrides_.emplace(
+        "FeatureList overrides must happen before the GPU service thread has "
+        "been started.");
+  }
+
   base::Thread::Options gpu_thread_options;
 #if defined(USE_OZONE)
     gpu_thread_options.message_pump_type = ui::OzonePlatform::GetInstance()

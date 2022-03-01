@@ -56,6 +56,7 @@
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/viz/test/test_gpu_service_holder.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
@@ -90,6 +91,8 @@ bool IsItemEnabledInMenu(ui::MenuModel* menu, int command_id) {
 std::string GetAppNameInShelfGroup(uint32_t task_id) {
   return base::StringPrintf("AppInShelfGroup%d", task_id);
 }
+
+}  // namespace
 
 class ShelfContextMenuTest : public ChromeAshTestBase {
  public:
@@ -239,6 +242,9 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   }
 
  private:
+  // CrostiniTestHelper overrides feature list after GPU thread has started.
+  viz::TestGpuServiceHolder::ScopedAllowRacyFeatureListOverrides
+      gpu_thread_allow_racy_overrides_;
   base::test::ScopedCommandLine scoped_command_line_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_helper_;
@@ -736,5 +742,3 @@ TEST_F(ShelfContextMenuTest, WebApp) {
   EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::SHOW_APP_INFO));
   EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::MENU_PIN));
 }
-
-}  // namespace

@@ -262,12 +262,20 @@ TEST_F(ImmersiveModeControllerChromeosTest, LayeredSpinners) {
   EXPECT_TRUE(tabstrip->CanPaintThrobberToLayer());
 }
 
+class ImmersiveModeControllerChromeosWebUITabStripTest
+    : public ImmersiveModeControllerChromeosTest {
+ public:
+  ImmersiveModeControllerChromeosWebUITabStripTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kWebUITabStrip);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Ensures the WebUI tab strip can be opened during immersive reveal.
 // Regression test for crbug.com/1096569 where it couldn't be opened.
-TEST_F(ImmersiveModeControllerChromeosTest, WebUITabStripCanOpen) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kWebUITabStrip);
-
+TEST_F(ImmersiveModeControllerChromeosWebUITabStripTest, CanOpen) {
   AddTab(browser(), GURL("about:blank"));
 
   // The WebUI tab strip is only used in touch mode.

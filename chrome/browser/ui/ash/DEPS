@@ -22,4 +22,10 @@ specific_include_rules = {
   "chrome_shell_delegate\.cc": [
     "+cc/input/touch_action.h",
   ],
+  "chrome_shelf_controller_unittest\.cc": [
+    "+components/viz/test/test_gpu_service_holder.h",
+  ],
+  "shelf_context_menu_unittest\.cc": [
+    "+components/viz/test/test_gpu_service_holder.h",
+  ],
 }

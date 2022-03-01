@@ -5961,15 +5961,23 @@ TEST_F(DesksTest, PrimaryUserHasUsedDesksRecently) {
   desks_restore_util::OverrideClockForTesting(nullptr);
 }
 
+class DesksBentoBarTest : public DesksTest {
+ public:
+  DesksBentoBarTest() {
+    // Enable the bento bar feature through FeatureList instead of command line.
+    auto feature_list = std::make_unique<base::FeatureList>();
+    feature_list->RegisterFieldTrialOverride(
+        features::kBentoBar.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+        base::FieldTrialList::CreateFieldTrial("FooTrial", "Group1"));
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Tests the visibility of the vertical dots button inside desks bar.
-TEST_F(DesksTest, VerticalDotsButtonVisibility) {
-  // Enable the bento bar feature through FeatureList instead of command line.
-  base::test::ScopedFeatureList scoped_feature_list;
-  auto feature_list = std::make_unique<base::FeatureList>();
-  feature_list->RegisterFieldTrialOverride(
-      features::kBentoBar.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-      base::FieldTrialList::CreateFieldTrial("FooTrial", "Group1"));
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+TEST_F(DesksBentoBarTest, VerticalDotsButtonVisibility) {
   ASSERT_FALSE(desks_restore_util::HasPrimaryUserUsedDesksRecently());
   EXPECT_TRUE(features::IsBentoBarEnabled());
 

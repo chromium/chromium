@@ -5556,7 +5556,9 @@ TEST_F(SplitViewAppDraggingTest, BackdropBoundsDuringDrag) {
 // virtual keyboard improvement and the virtual keyboard.
 class SplitViewKeyboardTest : public SplitViewControllerTest {
  public:
-  SplitViewKeyboardTest() = default;
+  SplitViewKeyboardTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kAdjustSplitViewForVK);
+  }
 
   SplitViewKeyboardTest(const SplitViewKeyboardTest&) = delete;
   SplitViewKeyboardTest& operator=(const SplitViewKeyboardTest&) = delete;
@@ -5566,7 +5568,6 @@ class SplitViewKeyboardTest : public SplitViewControllerTest {
   // SplitViewControllerTest:
   void SetUp() override {
     SplitViewControllerTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(features::kAdjustSplitViewForVK);
     SetVirtualKeyboardEnabled(true);
   }
 

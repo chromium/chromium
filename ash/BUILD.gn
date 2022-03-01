@@ -2879,6 +2879,7 @@ test("ash_unittests") {
     "//components/ukm:test_support",
     "//components/user_manager",
     "//components/user_manager:test_support",
+    "//components/viz/test:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
     "//extensions/common:common_constants",

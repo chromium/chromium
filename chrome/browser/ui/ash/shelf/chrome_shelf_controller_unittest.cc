@@ -147,6 +147,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/viz/test/test_gpu_service_holder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
@@ -1207,6 +1208,10 @@ class ChromeShelfControllerTest : public ChromeShelfControllerTestBase,
   bool ShouldEnableSyncSettingsCategorization() const { return GetParam(); }
 
  private:
+  // CrostiniTestHelper overrides feature list after GPU thread has started.
+  viz::TestGpuServiceHolder::ScopedAllowRacyFeatureListOverrides
+      gpu_thread_allow_racy_overrides_;
+
   base::test::ScopedFeatureList feature_list_;
 };
 
