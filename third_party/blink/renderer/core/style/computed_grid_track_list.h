@@ -17,7 +17,7 @@ namespace blink {
 enum class AutoRepeatType : uint8_t { kNoAutoRepeat, kAutoFill, kAutoFit };
 enum class GridAxisType : uint8_t { kStandaloneAxis, kSubgriddedAxis };
 
-struct ComputedGridTrackList {
+struct CORE_EXPORT ComputedGridTrackList {
   ComputedGridTrackList() = default;
 
   bool operator==(const ComputedGridTrackList& other) const {
