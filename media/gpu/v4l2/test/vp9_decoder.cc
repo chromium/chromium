@@ -524,23 +524,19 @@ void Vp9Decoder::SetupFrameParams(
         "The number of reference frames in |Vp9FrameHeader| does not match "
         "|v4l2_ctrl_vp9_frame_decode_params|. Fix |Vp9FrameHeader|.");
 
-    // Buffer ID (|v4l2_buffer.index| in the CAPTURE queue) needs to be
-    // converted to reference ID. Reference ID of a frame can be specified by
-    // converting its buffer ID (microseconds) into nanoseconds. This is
-    // required because |ref| field of |v4l2_ctrl_vp9_frame_decode_params| for
-    // VIDIOC_S_EXT_CTRLS ioctl call is expected to be in nanoseconds. Thus,
-    // |kTimestampToNanoSecs| is multiplied to the buffer ID to get a reference
-    // ID. Technically, v4l2_timeval_to_ns() is suggested to be used to convert
-    // timestamp to nanoseconds, but multiplying the microseconds part of
-    // timestamp |tv_usec| by |kTimestampToNanoSecs| to make it nanoseconds
-    // is also known to work. This is how it is implemented in v4l2 video decode
-    // accelerator tests as well as in gstreamer.
+    // We need to convert a reference frame's frame_number() (in  microseconds)
+    // to reference ID (in nanoseconds). Technically, v4l2_timeval_to_ns() is
+    // suggested to be used to convert timestamp to nanoseconds, but multiplying
+    // the microseconds part of timestamp |tv_usec| by |kTimestampToNanoSecs| to
+    // make it nanoseconds is also known to work. This is how it is implemented
+    // in v4l2 video decode accelerator tests as well as in gstreamer.
     // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#buffer-management-while-decoding
     constexpr size_t kTimestampToNanoSecs = 1000;
 
     v4l2_frame_params->refs[i] =
-        ref_frames_[idx] ? ref_frames_[idx]->buffer_id() * kTimestampToNanoSecs
-                         : kInvalidSurface;
+        ref_frames_[idx]
+            ? ref_frames_[idx]->frame_number() * kTimestampToNanoSecs
+            : kInvalidSurface;
   }
   // TODO(stevecho): fill in the rest of |v4l2_frame_params| fields.
   FillV4L2VP9QuantizationParams(frame_hdr.quant_params,

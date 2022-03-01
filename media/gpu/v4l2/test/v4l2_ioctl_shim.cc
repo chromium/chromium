@@ -430,10 +430,14 @@ bool V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
       num_tries = kMaxRetryCount;
     }
 
-    // Frame number was used to setup |v4l2_buffer.timestamp.tv_usec| field of
-    // the OUTPUT queue for VIDIOC_QBUF ioctl call. Then, |tv_usec| is copied to
-    // |tv_usec| in the CAPTURE queue during VIDIOC_DQBUF ioctl call.
+    // We set |v4l2_buffer.timestamp.tv_usec| in the encoded chunk enqueued in
+    // the OUTPUT queue, and the driver propagates it to the corresponding
+    // decoded video frame (or at least is expected to). This gives us
+    // information about which encoded frame corresponds to the current decoded
+    // video frame.
     queue->GetBuffer(v4l2_buffer.index)->set_buffer_id(v4l2_buffer.index);
+    queue->GetBuffer(v4l2_buffer.index)
+        ->set_frame_number(v4l2_buffer.timestamp.tv_usec);
 
     *index = v4l2_buffer.index;
 
