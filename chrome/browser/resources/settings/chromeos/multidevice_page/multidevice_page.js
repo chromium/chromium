@@ -495,9 +495,9 @@ Polymer({
     // Show the notification access dialog if the url contains the correct
     // param.
     const urlParams = settings.Router.getInstance().getQueryParameters();
-    if (urlParams.get('showNotificationAccessSetupDialog') !== null) {
+    if (urlParams.get('showPhonePermissionSetupDialog') !== null) {
       this.phonePermissionSetupMode_ =
-          settings.PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
+          this.getPermissionSetupMode_(urlParams.get('mode'));
       this.showPhonePermissionSetupDialog_ = true;
     }
   },
@@ -688,5 +688,27 @@ Polymer({
       is_hardware_supported) {
     return loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled') &&
         is_hardware_supported;
+  },
+
+  /**
+   * @param {null|string} mode
+   * @return {settings.PhoneHubPermissionsSetupMode}
+   * @private
+   */
+  getPermissionSetupMode_(mode) {
+    if (mode === null) {
+      return settings.PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE;
+    }
+    switch (mode) {
+      case settings.PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE.toString():
+        return settings.PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
+      case settings.PhoneHubPermissionsSetupMode.APPS_SETUP_MODE.toString():
+        return settings.PhoneHubPermissionsSetupMode.APPS_SETUP_MODE;
+      case settings.PhoneHubPermissionsSetupMode.CAMERA_ROLL_SETUP_MODE.toString():
+        return settings.PhoneHubPermissionsSetupMode.CAMERA_ROLL_SETUP_MODE;
+      case settings.PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE.toString():
+      default:
+        return settings.PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE;
+    }
   },
 });

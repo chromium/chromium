@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
-// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceBrowserProxyImpl, PhoneHubNotificationAccessStatus, Router, routes, setNearbyShareSettingsForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceBrowserProxyImpl, PhoneHubNotificationAccessStatus, PhoneHubPermissionsSetupMode, Router, routes, setNearbyShareSettingsForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.m.js';
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -266,7 +266,7 @@ suite('Multidevice', function() {
   test('Open notification access setup dialog route param', async () => {
     settings.Router.getInstance().navigateTo(
         settings.routes.MULTIDEVICE_FEATURES,
-        new URLSearchParams('showNotificationAccessSetupDialog=true'));
+        new URLSearchParams('showPhonePermissionSetupDialog=true'));
 
     PolymerTest.clearBody();
     browserProxy = new multidevice.TestMultideviceBrowserProxy();
@@ -294,6 +294,9 @@ suite('Multidevice', function() {
     Polymer.dom.flush();
     assertTrue(!!multidevicePage.$$(
         'settings-multidevice-notification-access-setup-dialog'));
+    assertEquals(
+        multidevicePage.phonePermissionSetupMode_,
+        settings.PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE);
 
     // Close the dialog.
     multidevicePage.showPhonePermissionSetupDialog_ = false;
@@ -311,7 +314,7 @@ suite('Multidevice', function() {
   test('Open multidevice permissions setup dialog route param', async () => {
     settings.Router.getInstance().navigateTo(
         settings.routes.MULTIDEVICE_FEATURES,
-        new URLSearchParams('showNotificationAccessSetupDialog=true'));
+        new URLSearchParams('showPhonePermissionSetupDialog&mode=1'));
 
     PolymerTest.clearBody();
     browserProxy = new multidevice.TestMultideviceBrowserProxy();
@@ -340,6 +343,9 @@ suite('Multidevice', function() {
     Polymer.dom.flush();
     assertTrue(
         !!multidevicePage.$$('settings-multidevice-permissions-setup-dialog'));
+    assertEquals(
+        multidevicePage.phonePermissionSetupMode_,
+        settings.PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE);
 
     // Close the dialog.
     multidevicePage.showPhonePermissionSetupDialog_ = false;

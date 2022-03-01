@@ -27,7 +27,7 @@ namespace {
 // TODO: Update this URL once the new access setup dialog has been updated
 constexpr char kMultideviceSettingsUrl[] =
     "chrome://os-settings/multidevice/"
-    "features?showNotificationAccessSetupDialog";
+    "features?showPhonePermissionSetupDialog";
 
 }  // namespace
 

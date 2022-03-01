@@ -308,7 +308,7 @@ TEST_F(PhoneHubTrayTest, StartMultideviceFeatureSetUpFlow) {
   // for the notification set up flow.
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("chrome://os-settings/multidevice/"
-                           "features?showNotificationAccessSetupDialog"),
+                           "features?showPhonePermissionSetupDialog"),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction));
 
   LeftClickOn(notification_opt_in_set_up_button());
