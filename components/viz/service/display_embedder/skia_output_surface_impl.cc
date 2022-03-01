@@ -783,7 +783,7 @@ void SkiaOutputSurfaceImpl::CopyOutput(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (request->has_blit_request()) {
-    for (const auto& mailbox_holder : request->blit_request().mailboxes) {
+    for (const auto& mailbox_holder : request->blit_request().mailboxes()) {
       if (mailbox_holder.sync_token.HasData()) {
         resource_sync_tokens_.push_back(mailbox_holder.sync_token);
       }

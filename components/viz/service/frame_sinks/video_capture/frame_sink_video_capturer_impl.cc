@@ -28,11 +28,13 @@
 #include "components/viz/service/frame_sinks/video_capture/gpu_memory_buffer_video_frame_pool.h"
 #include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 #include "media/base/limits.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -863,6 +865,29 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
         request_properties.frame->mailbox_holder(0),
         request_properties.frame->mailbox_holder(1), gpu::MailboxHolder{}};
     blit_request = BlitRequest(content_rect.origin(), mailbox_holders);
+
+    // We haven't captured the frame yet, but let's pretend that we did for the
+    // sake of blend information computation. We will be asking for an entire
+    // frame (not just dirty part - for that, we'd need to know what the diff
+    // between the frame we got and current content version is).
+    VideoCaptureOverlay::CapturedFrameProperties frame_properties{
+        request_properties.active_frame_rect, request_properties.capture_rect,
+        request_properties.content_rect,
+        media::VideoPixelFormat::PIXEL_FORMAT_NV12};
+
+    for (const VideoCaptureOverlay* overlay : GetOverlaysInOrder()) {
+      absl::optional<VideoCaptureOverlay::BlendInformation> blend_information =
+          overlay->CalculateBlendInformation(frame_properties);
+      if (!blend_information)
+        continue;
+
+      // Blend in Skia happens from the unscaled bitmap, into the destination
+      // region expressed in content's (aka VideoFrame's) space:
+      blit_request->AppendBlendBitmap(
+          blend_information->source_region,
+          blend_information->destination_region_content,
+          overlay->bitmap().asImage());
+    }
   }
 
   // Request a copy of the next frame from the frame sink.
@@ -881,13 +906,15 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   request->SetScaleRatio(
       gfx::Vector2d(source_size.width(), source_size.height()),
       gfx::Vector2d(content_rect.width(), content_rect.height()));
-  // TODO(crbug.com/775740): As an optimization, set the result selection to
-  // just the part of the result that would have changed due to aggregated
-  // damage over all the frames that weren't captured.
+  // TODO(https://crbug.com/775740): As an optimization, set the result
+  // selection to just the part of the result that would have changed due to
+  // aggregated damage over all the frames that weren't captured. This is
+  // only possible if we kept track of the damage between contents stored
+  // in |frame|, and the current contents.
   request->set_result_selection(gfx::Rect(content_rect.size()));
 
   if (blit_request) {
-    request->set_blit_request(*blit_request);
+    request->set_blit_request(std::move(*blit_request));
   }
 
   // Clear the |dirty_rect_|, to indicate all changes at the source are now
@@ -1020,11 +1047,15 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
                           success);
   } else {
     DCHECK_EQ(pixel_format_, media::PIXEL_FORMAT_NV12);
+    // NV12 is only supported for GMBs for now, in which case there is nothing
+    // for us to do since the CopyOutputResults are already available in the
+    // video frame.
   }
 
   if (frame) {
-    if (pixel_format_ != media::PIXEL_FORMAT_NV12) {
-      // TODO(bialpio): implement overlays for NV12!
+    if (!frame->HasGpuMemoryBuffer()) {
+      // For GMB-backed video frames, overlays were already applied by
+      // CopyOutputRequest API. For in-memory frames, apply overlays here:
       auto overlay_renderer = VideoCaptureOverlay::MakeCombinedRenderer(
           GetOverlaysInOrder(),
           VideoCaptureOverlay::CapturedFrameProperties{

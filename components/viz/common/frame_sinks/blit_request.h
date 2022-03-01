@@ -7,37 +7,116 @@
 
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/cxx17_backports.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace viz {
+
+// `BlendBitmap` can be added to `BlitRequest`, and signifies that the caller
+// would like to blend (SrcOver) the specified bitmap onto the results of the
+// `CopyOutputRequest` that (transitively, via `BlitRequest`) contains this
+// blend bitmap.
+class VIZ_COMMON_EXPORT BlendBitmap {
+ public:
+  // |source_region| is expressed in |bitmap|'s coordinate system
+  // (i.e. 0,0 width x height rectangle). |destination_region| is expressed
+  // in the captured content's coordinate system. |bitmap| is the bitmap
+  // that will be blended over the CopyOutputRequest's output.
+  explicit BlendBitmap(const gfx::Rect& source_region,
+                       const gfx::Rect& destination_region,
+                       sk_sp<SkImage> image);
+
+  BlendBitmap(BlendBitmap&& other);
+  BlendBitmap& operator=(BlendBitmap&& other);
+
+  ~BlendBitmap();
+
+  SkImage* image() const { return image_.get(); }
+  const gfx::Rect& source_region() const { return source_region_; }
+  const gfx::Rect& destination_region() const { return destination_region_; }
+
+  std::string ToString() const;
+
+ private:
+  // Region in the |image_| that will be blended over.
+  gfx::Rect source_region_;
+  // Region in the destination that will be blended onto.
+  gfx::Rect destination_region_;
+  // The image that will be blended.
+  sk_sp<SkImage> image_;
+};
 
 // Structure describing a blit operation that can be appended to
 // `CopyOutputRequest` if the callers want to place the results of the operation
 // in textures that they own.
-struct VIZ_COMMON_EXPORT BlitRequest {
+class VIZ_COMMON_EXPORT BlitRequest {
+ public:
   explicit BlitRequest(
       const gfx::Point& destination_region_offset,
       const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
           mailboxes);
-  BlitRequest(const BlitRequest& other);
-  BlitRequest& operator=(const BlitRequest& other);
+
+  BlitRequest(BlitRequest&& other);
+  BlitRequest& operator=(BlitRequest&& other);
+
   ~BlitRequest();
 
+  std::string ToString() const;
+
+  const gfx::Point& destination_region_offset() const {
+    return destination_region_offset_;
+  }
+
+  const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
+  mailboxes() const {
+    return mailboxes_;
+  }
+
+  const gpu::MailboxHolder& mailbox(size_t i) const {
+    CHECK(i < base::size(mailboxes_));
+    return mailboxes_[i];
+  }
+
+  // Appends a new `BlendBitmap` request to this blit request.
+  // |source_region| is expressed in |image|'s coordinate system
+  // (i.e. 0,0 width x height rectangle). |destination_region| is expressed
+  // in the captured content's coordinate system. |image| is the image
+  // that will be blended over the CopyOutputRequest's output.
+  void AppendBlendBitmap(const gfx::Rect& source_region,
+                         const gfx::Rect& destination_region,
+                         sk_sp<SkImage> image) {
+    blend_bitmaps_.emplace_back(source_region, destination_region,
+                                std::move(image));
+  }
+
+  const std::vector<BlendBitmap>& blend_bitmaps() const {
+    return blend_bitmaps_;
+  }
+
+ private:
   // Offset from the origin of the image represented by the |mailboxes|.
   // The results of the blit request will be placed at that offset in those
   // images.
-  gfx::Point destination_region_offset;
+  gfx::Point destination_region_offset_;
+
   // Mailboxes with planes that will be populated.
   // The textures can (but don't have to be) backed by
   // a GpuMemoryBuffer. The pixel format of the request determines
   // how many planes need to be present.
-  std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailboxes;
+  std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailboxes_;
 
-  std::string ToString() const;
+  // Collection of bitmaps that will be blended onto the textures.
+  // They will be blended in order (so if i < j, bitmap at offset i will
+  // be blended before bitmap at offset j), using SrcOver blend mode.
+  std::vector<BlendBitmap> blend_bitmaps_;
 };
 
 }  // namespace viz

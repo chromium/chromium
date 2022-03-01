@@ -360,6 +360,7 @@ class SkiaOutputSurfaceImplOnGpu
       const gfx::ColorSpace& color_space,
       std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>&
           plane_access_datas);
+
   // Imports surfaces needed to store the data in NV12 format from a blit
   // request. |plane_access_datas| will be populated with information needed to
   // access the NV12 planes.
@@ -367,6 +368,11 @@ class SkiaOutputSurfaceImplOnGpu
       const BlitRequest& blit_request,
       std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>&
           plane_access_datas);
+
+  // Helper, blends `BlendBitmap`s set on the |blit_request| over the |canvas|.
+  // Used to implement handling of `CopyOutputRequest`s that contain
+  // `BlitRequest`s.
+  void BlendBitmapOverlays(SkCanvas* canvas, const BlitRequest& blit_request);
 
   // Schedules a task to check if any skia readback requests have completed
   // after a short delay. Will not schedule a task if there is already a

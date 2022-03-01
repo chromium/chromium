@@ -130,7 +130,7 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // Requests that the region copied by the CopyOutputRequest be blitted into
   // the caller's textures. Can be called only for CopyOutputRequests that
   // target native textures.
-  void set_blit_request(const BlitRequest& blit_request);
+  void set_blit_request(BlitRequest blit_request);
   bool has_blit_request() const { return blit_request_.has_value(); }
   const BlitRequest& blit_request() const { return *blit_request_; }
 
