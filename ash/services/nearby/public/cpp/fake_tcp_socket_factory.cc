@@ -97,6 +97,7 @@ void FakeTcpSocketFactory::CreateTCPServerSocket(
 }
 
 void FakeTcpSocketFactory::CreateTCPConnectedSocket(
+    base::TimeDelta timeout,
     const absl::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,

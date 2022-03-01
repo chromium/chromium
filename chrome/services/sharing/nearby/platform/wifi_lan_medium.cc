@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -23,6 +24,13 @@ namespace nearby {
 namespace chrome {
 
 namespace {
+
+// The max time spent trying to connect to another device's TCP socket. We
+// expect connection attempts to fail in practice, for example, when two devices
+// are on different networks. We want to fail quickly so another upgrade medium
+// like WebRTC can be used. The default networking stack timeout is too long; it
+// can take over 2 minutes.
+constexpr base::TimeDelta kConnectTimeout = base::Seconds(2);
 
 // The max size of the server socket's queue of pending connection requests from
 // remote sockets. Any additional connection requests are refused.
@@ -149,6 +157,7 @@ void WifiLanMedium::DoConnect(
   mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver =
       tcp_connected_socket.InitWithNewPipeAndPassReceiver();
   socket_factory_->CreateTCPConnectedSocket(
+      /*timeout=*/kConnectTimeout,
       /*local_addr=*/absl::nullopt, address_list,
       /*tcp_connected_socket_options=*/nullptr,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),

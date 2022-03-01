@@ -51,6 +51,7 @@ class FakeTcpSocketFactory : public sharing::mojom::TcpSocketFactory {
       mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
       CreateTCPServerSocketCallback callback) override;
   void CreateTCPConnectedSocket(
+      base::TimeDelta timeout,
       const absl::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,

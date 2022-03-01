@@ -271,6 +271,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.WifiLan.TimeToConnect" units="ms"
+    expires_after="2023-02-01">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time it takes to successfully connect to another device's TCP
+    server socket. Emitted after a cross-device connection is established over
+    TCP sockets. Not emitted on failure.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.{Medium}.Socket.{Operation}.Result"
     enum="BooleanSuccess" expires_after="2023-02-01">
   <owner>hansenmichael@google.com</owner>

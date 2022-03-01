@@ -8,7 +8,9 @@
 
 #include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "base/bind.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -37,6 +39,8 @@ class NearbyConnectionsTcpSocketFactoryTest : public ::testing::Test {
     FakeNetworkContext() = default;
     ~FakeNetworkContext() override = default;
 
+    bool should_invoke_connect_callback_ = true;
+
    private:
     // network::TestNetworkContext:
     void CreateTCPServerSocket(
@@ -64,10 +68,12 @@ class NearbyConnectionsTcpSocketFactoryTest : public ::testing::Test {
       EXPECT_EQ(1, remote_addr_list.size());
       EXPECT_EQ(kRemoteAddress, remote_addr_list[0]);
       EXPECT_EQ(kAnnotation, traffic_annotation);
-      std::move(callback).Run(
-          net::OK, local_addr, remote_addr_list[0],
-          /*receive_stream=*/mojo::ScopedDataPipeConsumerHandle(),
-          /*send_stream=*/mojo::ScopedDataPipeProducerHandle());
+      if (should_invoke_connect_callback_) {
+        std::move(callback).Run(
+            net::OK, local_addr, remote_addr_list[0],
+            /*receive_stream=*/mojo::ScopedDataPipeConsumerHandle(),
+            /*send_stream=*/mojo::ScopedDataPipeProducerHandle());
+      }
     }
   };
 
@@ -87,65 +93,148 @@ class NearbyConnectionsTcpSocketFactoryTest : public ::testing::Test {
     return fake_network_context_.get();
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
   std::unique_ptr<NearbyConnectionsTcpSocketFactory> factory_;
 };
 
 TEST_F(NearbyConnectionsTcpSocketFactoryTest, NetworkContextExists) {
-  factory_->CreateTCPServerSocket(
-      kLocalAddress.address(),
-      *ash::nearby::TcpServerSocketPort::FromUInt16(kLocalAddress.port()),
-      kBacklog, kAnnotation, /*receiver=*/mojo::NullReceiver(),
-      base::BindLambdaForTesting(
-          [](int32_t result,
-             const absl::optional<net::IPEndPoint>& local_addr) {
-            EXPECT_EQ(net::OK, result);
-            EXPECT_EQ(kLocalAddress, local_addr);
-          }));
-  factory_->CreateTCPConnectedSocket(
-      kLocalAddress, net::AddressList(kRemoteAddress),
-      /*tcp_connected_socket_options=*/nullptr, kAnnotation,
-      /*receiver=*/mojo::NullReceiver(),
-      /*observer=*/mojo::NullRemote(),
-      base::BindLambdaForTesting(
-          [](int32_t result, const absl::optional<net::IPEndPoint>& local_addr,
-             const absl::optional<net::IPEndPoint>& peer_addr,
-             mojo::ScopedDataPipeConsumerHandle receive_stream,
-             mojo::ScopedDataPipeProducerHandle send_stream) {
-            EXPECT_EQ(net::OK, result);
-            EXPECT_EQ(kLocalAddress, local_addr);
-            EXPECT_EQ(kRemoteAddress, peer_addr);
-          }));
+  {
+    base::RunLoop run_loop;
+    factory_->CreateTCPServerSocket(
+        kLocalAddress.address(),
+        *ash::nearby::TcpServerSocketPort::FromUInt16(kLocalAddress.port()),
+        kBacklog, kAnnotation, /*receiver=*/mojo::NullReceiver(),
+        base::BindLambdaForTesting(
+            [&run_loop](int32_t result,
+                        const absl::optional<net::IPEndPoint>& local_addr) {
+              EXPECT_EQ(net::OK, result);
+              EXPECT_EQ(kLocalAddress, local_addr);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    factory_->CreateTCPConnectedSocket(
+        /*timeout=*/base::Seconds(5), kLocalAddress,
+        net::AddressList(kRemoteAddress),
+        /*tcp_connected_socket_options=*/nullptr, kAnnotation,
+        /*receiver=*/mojo::NullReceiver(),
+        /*observer=*/mojo::NullRemote(),
+        base::BindLambdaForTesting(
+            [&run_loop](int32_t result,
+                        const absl::optional<net::IPEndPoint>& local_addr,
+                        const absl::optional<net::IPEndPoint>& peer_addr,
+                        mojo::ScopedDataPipeConsumerHandle receive_stream,
+                        mojo::ScopedDataPipeProducerHandle send_stream) {
+              EXPECT_EQ(net::OK, result);
+              EXPECT_EQ(kLocalAddress, local_addr);
+              EXPECT_EQ(kRemoteAddress, peer_addr);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
 }
 
 TEST_F(NearbyConnectionsTcpSocketFactoryTest, NetworkContextDoesNotExist) {
   fake_network_context_.reset();
 
   // Expect trivial data in callback when the network context is null.
-  factory_->CreateTCPServerSocket(
-      kLocalAddress.address(),
-      *ash::nearby::TcpServerSocketPort::FromUInt16(kLocalAddress.port()),
-      kBacklog, kAnnotation, /*receiver=*/mojo::NullReceiver(),
-      base::BindLambdaForTesting(
-          [](int32_t result,
-             const absl::optional<net::IPEndPoint>& local_addr) {
-            EXPECT_EQ(net::ERR_FAILED, result);
-            EXPECT_EQ(absl::nullopt, local_addr);
-          }));
-  factory_->CreateTCPConnectedSocket(
-      kLocalAddress, net::AddressList(kRemoteAddress),
-      /*tcp_connected_socket_options=*/nullptr, kAnnotation,
-      /*receiver=*/mojo::NullReceiver(),
-      /*observer=*/mojo::NullRemote(),
-      base::BindLambdaForTesting(
-          [](int32_t result, const absl::optional<net::IPEndPoint>& local_addr,
-             const absl::optional<net::IPEndPoint>& peer_addr,
-             mojo::ScopedDataPipeConsumerHandle receive_stream,
-             mojo::ScopedDataPipeProducerHandle send_stream) {
-            EXPECT_EQ(net::ERR_FAILED, result);
-            EXPECT_EQ(absl::nullopt, local_addr);
-            EXPECT_EQ(absl::nullopt, peer_addr);
-            EXPECT_EQ(mojo::ScopedDataPipeConsumerHandle(), receive_stream);
-            EXPECT_EQ(mojo::ScopedDataPipeProducerHandle(), send_stream);
-          }));
+  {
+    base::RunLoop run_loop;
+    factory_->CreateTCPServerSocket(
+        kLocalAddress.address(),
+        *ash::nearby::TcpServerSocketPort::FromUInt16(kLocalAddress.port()),
+        kBacklog, kAnnotation, /*receiver=*/mojo::NullReceiver(),
+        base::BindLambdaForTesting(
+            [&run_loop](int32_t result,
+                        const absl::optional<net::IPEndPoint>& local_addr) {
+              EXPECT_EQ(net::ERR_FAILED, result);
+              EXPECT_EQ(absl::nullopt, local_addr);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    factory_->CreateTCPConnectedSocket(
+        /*timeout=*/base::Seconds(5), kLocalAddress,
+        net::AddressList(kRemoteAddress),
+        /*tcp_connected_socket_options=*/nullptr, kAnnotation,
+        /*receiver=*/mojo::NullReceiver(),
+        /*observer=*/mojo::NullRemote(),
+        base::BindLambdaForTesting(
+            [&run_loop](int32_t result,
+                        const absl::optional<net::IPEndPoint>& local_addr,
+                        const absl::optional<net::IPEndPoint>& peer_addr,
+                        mojo::ScopedDataPipeConsumerHandle receive_stream,
+                        mojo::ScopedDataPipeProducerHandle send_stream) {
+              EXPECT_EQ(net::ERR_FAILED, result);
+              EXPECT_EQ(absl::nullopt, local_addr);
+              EXPECT_EQ(absl::nullopt, peer_addr);
+              EXPECT_EQ(mojo::ScopedDataPipeConsumerHandle(), receive_stream);
+              EXPECT_EQ(mojo::ScopedDataPipeProducerHandle(), send_stream);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+}
+
+TEST_F(NearbyConnectionsTcpSocketFactoryTest, ConnectTimeout) {
+  // Finishes in time.
+  {
+    base::RunLoop run_loop;
+    factory_->CreateTCPConnectedSocket(
+        /*timeout=*/base::Seconds(5), kLocalAddress,
+        net::AddressList(kRemoteAddress),
+        /*tcp_connected_socket_options=*/nullptr, kAnnotation,
+        /*receiver=*/mojo::NullReceiver(),
+        /*observer=*/mojo::NullRemote(),
+        base::BindLambdaForTesting(
+            [&run_loop](int32_t result,
+                        const absl::optional<net::IPEndPoint>& local_addr,
+                        const absl::optional<net::IPEndPoint>& peer_addr,
+                        mojo::ScopedDataPipeConsumerHandle receive_stream,
+                        mojo::ScopedDataPipeProducerHandle send_stream) {
+              EXPECT_EQ(net::OK, result);
+              EXPECT_EQ(kLocalAddress, local_addr);
+              EXPECT_EQ(kRemoteAddress, peer_addr);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  // Does not finish in time.
+  {
+    base::RunLoop run_loop;
+
+    // Make NetworkContext never finish.
+    fake_network_context_->should_invoke_connect_callback_ = false;
+
+    factory_->CreateTCPConnectedSocket(
+        /*timeout=*/base::Seconds(5), kLocalAddress,
+        net::AddressList(kRemoteAddress),
+        /*tcp_connected_socket_options=*/nullptr, kAnnotation,
+        /*receiver=*/mojo::NullReceiver(),
+        /*observer=*/mojo::NullRemote(),
+        base::BindLambdaForTesting(
+            [&run_loop](int32_t result,
+                        const absl::optional<net::IPEndPoint>& local_addr,
+                        const absl::optional<net::IPEndPoint>& peer_addr,
+                        mojo::ScopedDataPipeConsumerHandle receive_stream,
+                        mojo::ScopedDataPipeProducerHandle send_stream) {
+              EXPECT_EQ(net::ERR_TIMED_OUT, result);
+              EXPECT_EQ(absl::nullopt, local_addr);
+              EXPECT_EQ(absl::nullopt, peer_addr);
+              EXPECT_EQ(mojo::ScopedDataPipeConsumerHandle(), receive_stream);
+              EXPECT_EQ(mojo::ScopedDataPipeProducerHandle(), send_stream);
+              run_loop.Quit();
+            }));
+    // Note: We do not need to call TaskEnvironment::FastForwardBy();
+    // RunLoop::Run() auto-advances to the soonest delayed task when all managed
+    // threads are idle.
+    run_loop.Run();
+  }
 }

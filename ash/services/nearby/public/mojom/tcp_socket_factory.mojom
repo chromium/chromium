@@ -5,6 +5,7 @@
 module sharing.mojom;
 
 import "ash/services/nearby/public/mojom/tcp_server_socket_port.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -27,8 +28,13 @@ interface TcpSocketFactory {
       pending_receiver<network.mojom.TCPServerSocket> socket)
       => (int32 result, network.mojom.IPEndPoint? local_addr_out);
 
-  // See //services/network/public/mojom/network_context.mojom.
+  // See //services/network/public/mojom/network_context.mojom. One
+  // modification is a user-defined |timeout|. There is timeout logic in the
+  // networking stack, but it is not configurable and can be too long in
+  // practice (over 2 minutes). The networking stack timeout can still be
+  // triggered if |timeout| is too long.
   CreateTCPConnectedSocket(
+      mojo_base.mojom.TimeDelta timeout,
       network.mojom.IPEndPoint? local_addr,
       network.mojom.AddressList remote_addr_list,
       network.mojom.TCPConnectedSocketOptions? tcp_connected_socket_options,
