@@ -13,10 +13,6 @@
 
 namespace extensions {
 
-// Note: When updating this function, consider changing the way errors are
-// returned.
-// TODO(https://crbug.com/1056550): Return an error in case of unaffiliated user
-// in enterprise.deviceAttributes API
 class EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction
     : public ExtensionFunction {
  public:
@@ -32,10 +28,6 @@ class EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction
                              ENTERPRISE_DEVICEATTRIBUTES_GETDIRECTORYDEVICEID)
 };
 
-// Note: When updating this function, consider changing the way errors are
-// returned.
-// TODO(https://crbug.com/1056550): Return an error in case of unaffiliated user
-// in enterprise.deviceAttributes API
 class EnterpriseDeviceAttributesGetDeviceSerialNumberFunction
     : public ExtensionFunction {
  public:
@@ -52,10 +44,6 @@ class EnterpriseDeviceAttributesGetDeviceSerialNumberFunction
       ENTERPRISE_DEVICEATTRIBUTES_GETDEVICESERIALNUMBER)
 };
 
-// Note: When updating this function, consider changing the way errors are
-// returned.
-// TODO(https://crbug.com/1056550): Return an error in case of unaffiliated user
-// in enterprise.deviceAttributes API
 class EnterpriseDeviceAttributesGetDeviceAssetIdFunction
     : public ExtensionFunction {
  public:
@@ -75,10 +63,6 @@ class EnterpriseDeviceAttributesGetDeviceAssetIdFunction
                              ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEASSETID)
 };
 
-// Note: When updating this function, consider changing the way errors are
-// returned.
-// TODO(https://crbug.com/1056550): Return an error in case of unaffiliated user
-// in enterprise.deviceAttributes API
 class EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction
     : public ExtensionFunction {
  public:
@@ -95,10 +79,6 @@ class EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction
       ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEANNOTATEDLOCATION)
 };
 
-// Note: When updating this function, consider changing the way errors are
-// returned.
-// TODO(https://crbug.com/1056550): Return an error in case of unaffiliated user
-// in enterprise.deviceAttributes API
 class EnterpriseDeviceAttributesGetDeviceHostnameFunction
     : public ExtensionFunction {
  public:

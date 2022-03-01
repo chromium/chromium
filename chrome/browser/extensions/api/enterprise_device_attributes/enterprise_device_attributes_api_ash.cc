@@ -24,9 +24,6 @@
 
 namespace extensions {
 
-// TODO(http://crbug.com/1056550): Return an error if the user is not permitted
-// to get device attributes instead of an empty string.
-
 EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction::
     EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction() {}
 
