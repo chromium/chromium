@@ -155,10 +155,6 @@ group("closure_compile") {
     "cr:closure_compile",
     "cr/ui:closure_compile",
   ]
-
-  if (include_polymer) {
-    deps += [ "browser_command:closure_compile" ]
-  }
 }
 
 js_type_check("js_resources") {

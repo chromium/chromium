@@ -10,22 +10,20 @@ import {CommandHandlerFactory, CommandHandlerRemote} from './browser_command.moj
  * receiving the browser response.
  */
 
-/** @type {BrowserCommandProxy} */
-let instance = null;
+let instance: BrowserCommandProxy|null = null;
 
 export class BrowserCommandProxy {
-  /** @return {!BrowserCommandProxy} */
-  static getInstance() {
+  static getInstance(): BrowserCommandProxy {
     return instance || (instance = new BrowserCommandProxy());
   }
 
-  /** @param {BrowserCommandProxy} newInstance */
-  static setInstance(newInstance) {
+  static setInstance(newInstance: BrowserCommandProxy) {
     instance = newInstance;
   }
 
+  handler: CommandHandlerRemote;
+
   constructor() {
-    /** @type {!CommandHandlerRemote} */
     this.handler = new CommandHandlerRemote();
     const factory = CommandHandlerFactory.getRemote();
     factory.createBrowserCommandHandler(

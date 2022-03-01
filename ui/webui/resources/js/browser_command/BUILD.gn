@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -11,21 +10,6 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 mojom("mojo_bindings") {
   sources = [ "browser_command.mojom" ]
   webui_module_path = "chrome://resources/js/browser_command"
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/ui/webui/resources/js/browser_command/",
-                            root_build_dir),
-                  ]
-  deps = [ ":browser_command_proxy" ]
-}
-
-js_library("browser_command_proxy") {
-  deps = [ ":mojo_bindings_webui_js" ]
 }
 
 # Output folder used to copy() output.
@@ -42,7 +26,7 @@ ts_library("build_ts") {
   composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "browser_command_proxy.js",
+    "browser_command_proxy.ts",
     "browser_command.mojom-webui.js",
   ]
   deps = [ "//ui/webui/resources/mojo:library" ]
@@ -59,9 +43,9 @@ copy("copy_mojom") {
 }
 
 preprocess_if_expr("preprocess_src") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = tmp_folder
-  in_files = [ "browser_command_proxy.js" ]
+  in_files = [ "browser_command_proxy.ts" ]
 }
 
 generate_grd("build_grdp") {
