@@ -16,12 +16,28 @@
   :host([color-consent-container_]) #consentCardContainer {
     background-color: var(--google-blue-100);
   }
+  
+  .favicon-container {
+    text-align: center;
+    width: auto;
+  }
 
-  #faviconsContainer {
-    /* TODO(crbug.com/1298116): These are placehold style, need to update when
-     * loading favicons. */
-    background: var(--discount-chip-background);
-    border-radius: 4px;
+  .favicon-container ul {
+    list-style-type: none;
+    margin-block-end: 0;
+    margin-block-start: 0;
+    margin-inline-end: 6px;
+    padding: 0;
+  }
+
+  .favicon-container li {
+    display: inline;
+    margin-inline-end: -6px;
+  }
+
+  .favicon-image {
+    border: 2px solid var(--ntp-background-override-color);
+    border-radius: 50%;
     height: 24px;
     margin-inline-end: auto;
     margin-inline-start: auto;
@@ -37,7 +53,6 @@
     line-height: 20px;
     margin-inline-end: auto;
     margin-inline-start: auto;
-    margin-top: 4px;
     text-align: center;
     white-space: normal;
     width: 220px;
@@ -55,8 +70,16 @@
 </style>
 
 <div id="consentCardContainer">
-  <div id="faviconsContainer">
-    <!-- TODO(crbug/1298116): loop |merchants| and load the favicon to img. -->
+  <div id="faviconContainer">
+    <ul class="favicon-list">
+      <template id="favionRepeat" is="dom-repeat" items="[[merchants]]"
+          as="merchant">
+        <li class="favicon">
+          <img class="favicon-image" is="cr-auto-img"
+              auto-src="[[getFaviconUrl_(merchant.cartUrl.url)]]"></img>
+        </li>
+      </template>
+    </ul>
   </div>
   <div id="contentSteps">
     <iron-pages selected="[[currentStep]]">

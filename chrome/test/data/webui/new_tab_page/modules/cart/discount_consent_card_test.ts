@@ -100,6 +100,55 @@ suite('NewTabPageDiscountConsentCartTest', () => {
             capturedEvent, '\'discount-consent-rejected\' should be emitted');
       });
 
+  function buildFaviconUrl(merchantUrl: string): string {
+    return 'chrome://favicon2/?size=24&scale_factor=1x&show_fallback_monogram=&page_url=' +
+        encodeURIComponent(merchantUrl);
+  }
+
+  test('Verify favicon is loaded', async () => {
+    const carts = [
+      {
+        merchant: 'Amazon',
+        cartUrl: {url: 'https://amazon.com'},
+        productImageUrls: [
+          {url: 'https://image1.com'}, {url: 'https://image2.com'},
+          {url: 'https://image3.com'}
+        ],
+        discountText: ''
+      },
+      {
+        merchant: 'eBay',
+        cartUrl: {url: 'https://ebay.com'},
+        productImageUrls:
+            [{url: 'https://image4.com'}, {url: 'https://image5.com'}],
+        discountText: ''
+      },
+      {
+        merchant: 'BestBuy',
+        cartUrl: {url: 'https://bestbuy.com'},
+        productImageUrls: [],
+        discountText: ''
+      }
+    ];
+
+    discountConsentCard.merchants = carts;
+    await flushTasks();
+
+    const favicons = discountConsentCard.shadowRoot!.querySelectorAll(
+        '#faviconContainer ul.favicon-list li.favicon');
+    assertEquals(3, favicons.length, 'There should be three favicons.');
+
+    assertEquals(
+        buildFaviconUrl(carts[0]!.cartUrl.url),
+        favicons[0]!.querySelector('.favicon-image')!.getAttribute('src'));
+    assertEquals(
+        buildFaviconUrl(carts[1]!.cartUrl.url),
+        favicons[1]!.querySelector('.favicon-image')!.getAttribute('src'));
+    assertEquals(
+        buildFaviconUrl(carts[2]!.cartUrl.url),
+        favicons[2]!.querySelector('.favicon-image')!.getAttribute('src'));
+  });
+
   suite('Step two background has different color', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues(
