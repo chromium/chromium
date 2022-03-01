@@ -6,6 +6,8 @@
 
 #include "services/device/public/mojom/nfc.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_make_read_only_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_scan_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_write_options.h"
@@ -32,37 +34,40 @@ using mojom::blink::PermissionStatus;
 
 namespace {
 
-DOMException* NDEFErrorTypeToDOMException(
+v8::Local<v8::Value> NDEFErrorTypeToDOMException(
+    v8::Isolate* isolate,
     device::mojom::blink::NDEFErrorType error_type,
     const String& error_message) {
   switch (error_type) {
     case device::mojom::blink::NDEFErrorType::NOT_ALLOWED:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotAllowedError, error_message);
+      return V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kNotAllowedError, error_message);
     case device::mojom::blink::NDEFErrorType::NOT_SUPPORTED:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError, error_message);
+      return V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kNotSupportedError, error_message);
     case device::mojom::blink::NDEFErrorType::NOT_READABLE:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotReadableError, error_message);
+      return V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kNotReadableError, error_message);
     case device::mojom::blink::NDEFErrorType::INVALID_MESSAGE:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
-                                                error_message);
+      return V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kSyntaxError, error_message);
     case device::mojom::blink::NDEFErrorType::OPERATION_CANCELLED:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                                error_message);
+      return V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kAbortError, error_message);
     case device::mojom::blink::NDEFErrorType::IO_ERROR:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kNetworkError,
-                                                error_message);
+      return V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kNetworkError, error_message);
   }
   NOTREACHED();
   // Don't need to handle the case after a NOTREACHED().
-  return nullptr;
+  return v8::Local<v8::Value>();
 }
 
-DOMException* NDEFErrorPtrToDOMException(
+v8::Local<v8::Value> NDEFErrorPtrToDOMException(
+    v8::Isolate* isolate,
     device::mojom::blink::NDEFErrorPtr error) {
-  return NDEFErrorTypeToDOMException(error->error_type, error->error_message);
+  return NDEFErrorTypeToDOMException(isolate, error->error_type,
+                                     error->error_message);
 }
 
 constexpr char kNotSupportedOrPermissionDenied[] =
@@ -150,9 +155,20 @@ void NDEFReader::ReadOnRequestPermission(const NDEFScanOptions* options,
   if (!scan_resolver_)
     return;
 
+  ScriptState* script_state = scan_resolver_->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(scan_resolver_->GetExecutionContext(),
+                                     script_state)) {
+    scan_resolver_.Clear();
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(script_state);
+
   if (status != PermissionStatus::GRANTED) {
-    scan_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError, "NFC permission request denied."));
+    scan_resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "NFC permission request denied."));
     scan_resolver_.Clear();
     return;
   }
@@ -160,8 +176,9 @@ void NDEFReader::ReadOnRequestPermission(const NDEFScanOptions* options,
   scan_signal_ = options->getSignalOr(nullptr);
   if (scan_signal_) {
     if (scan_signal_->aborted()) {
-      scan_resolver_->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, kScanAbortMessage));
+      scan_resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+          script_state->GetIsolate(), DOMExceptionCode::kAbortError,
+          kScanAbortMessage));
       scan_resolver_.Clear();
       return;
     }
@@ -180,8 +197,19 @@ void NDEFReader::ReadOnRequestCompleted(
   if (!scan_resolver_)
     return;
 
+  ScriptState* script_state = scan_resolver_->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(scan_resolver_->GetExecutionContext(),
+                                     script_state)) {
+    scan_resolver_.Clear();
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(script_state);
+
   if (error) {
-    scan_resolver_->Reject(NDEFErrorPtrToDOMException(std::move(error)));
+    scan_resolver_->Reject(NDEFErrorPtrToDOMException(
+        script_state->GetIsolate(), std::move(error)));
   } else {
     scan_resolver_->Resolve();
   }
@@ -217,13 +245,25 @@ void NDEFReader::ReadAbort(AbortSignal* signal) {
   if (scan_signal_ != signal)
     return;
 
-  if (scan_resolver_) {
-    scan_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, kScanAbortMessage));
+  GetNfcProxy()->StopReading(this);
+
+  if (!scan_resolver_)
+    return;
+
+  ScriptState* script_state = scan_resolver_->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(scan_resolver_->GetExecutionContext(),
+                                     script_state)) {
     scan_resolver_.Clear();
+    return;
   }
 
-  GetNfcProxy()->StopReading(this);
+  ScriptState::Scope script_state_scope(script_state);
+
+  scan_resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kAbortError,
+      kScanAbortMessage));
+  scan_resolver_.Clear();
 }
 
 // https://w3c.github.io/web-nfc/#writing-content
@@ -281,17 +321,30 @@ void NDEFReader::WriteOnRequestPermission(
     const NDEFWriteOptions* options,
     device::mojom::blink::NDEFMessagePtr message,
     PermissionStatus status) {
+  DCHECK(resolver);
+
+  ScriptState* script_state = resolver->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(script_state);
+
   if (status != PermissionStatus::GRANTED) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError, "NFC permission request denied."));
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "NFC permission request denied."));
     return;
   }
 
   write_signal_ = options->getSignalOr(nullptr);
   if (write_signal_) {
     if (write_signal_->aborted()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, kWriteAbortMessage));
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          script_state->GetIsolate(), DOMExceptionCode::kAbortError,
+          kWriteAbortMessage));
       return;
     }
     write_signal_->AddAlgorithm(
@@ -313,10 +366,20 @@ void NDEFReader::WriteOnRequestCompleted(
 
   write_requests_.erase(resolver);
 
+  ScriptState* script_state = resolver->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(script_state);
+
   if (error.is_null()) {
     resolver->Resolve();
   } else {
-    resolver->Reject(NDEFErrorPtrToDOMException(std::move(error)));
+    resolver->Reject(NDEFErrorPtrToDOMException(script_state->GetIsolate(),
+                                                std::move(error)));
   }
 }
 
@@ -363,17 +426,30 @@ void NDEFReader::MakeReadOnlyOnRequestPermission(
     ScriptPromiseResolver* resolver,
     const NDEFMakeReadOnlyOptions* options,
     PermissionStatus status) {
+  DCHECK(resolver);
+
+  ScriptState* script_state = resolver->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(resolver->GetScriptState());
+
   if (status != PermissionStatus::GRANTED) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError, "NFC permission request denied."));
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "NFC permission request denied."));
     return;
   }
 
   make_read_only_signal_ = options->getSignalOr(nullptr);
   if (make_read_only_signal_) {
     if (make_read_only_signal_->aborted()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, kMakeReadOnlyAbortMessage));
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          script_state->GetIsolate(), DOMExceptionCode::kAbortError,
+          kMakeReadOnlyAbortMessage));
       return;
     }
     make_read_only_signal_->AddAlgorithm(
@@ -393,10 +469,20 @@ void NDEFReader::MakeReadOnlyOnRequestCompleted(
 
   make_read_only_requests_.erase(resolver);
 
+  ScriptState* script_state = resolver->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(script_state);
+
   if (error.is_null()) {
     resolver->Resolve();
   } else {
-    resolver->Reject(NDEFErrorPtrToDOMException(std::move(error)));
+    resolver->Reject(NDEFErrorPtrToDOMException(script_state->GetIsolate(),
+                                                std::move(error)));
   }
 }
 
@@ -441,12 +527,24 @@ PermissionService* NDEFReader::GetPermissionService() {
 
 void NDEFReader::ReadOnMojoConnectionError() {
   // If |scan_resolver_| has already settled this rejection is silently ignored.
-  if (scan_resolver_) {
-    scan_resolver_->Reject(NDEFErrorTypeToDOMException(
-        device::mojom::blink::NDEFErrorType::NOT_SUPPORTED,
-        kNotSupportedOrPermissionDenied));
+  if (!scan_resolver_)
+    return;
+
+  ScriptState* script_state = scan_resolver_->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(scan_resolver_->GetExecutionContext(),
+                                     script_state)) {
     scan_resolver_.Clear();
+    return;
   }
+
+  ScriptState::Scope script_state_scope(script_state);
+
+  scan_resolver_->Reject(NDEFErrorTypeToDOMException(
+      script_state->GetIsolate(),
+      device::mojom::blink::NDEFErrorType::NOT_SUPPORTED,
+      kNotSupportedOrPermissionDenied));
+  scan_resolver_.Clear();
 }
 
 void NDEFReader::WriteOnMojoConnectionError() {
@@ -458,7 +556,19 @@ void NDEFReader::WriteOnMojoConnectionError() {
   HeapHashSet<Member<ScriptPromiseResolver>> write_requests;
   write_requests_.swap(write_requests);
   for (ScriptPromiseResolver* resolver : write_requests) {
+    DCHECK(resolver);
+
+    ScriptState* script_state = resolver->GetScriptState();
+
+    if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                       script_state)) {
+      continue;
+    }
+
+    ScriptState::Scope script_state_scope(script_state);
+
     resolver->Reject(NDEFErrorTypeToDOMException(
+        script_state->GetIsolate(),
         device::mojom::blink::NDEFErrorType::NOT_SUPPORTED,
         kNotSupportedOrPermissionDenied));
   }
@@ -473,7 +583,19 @@ void NDEFReader::MakeReadOnlyOnMojoConnectionError() {
   HeapHashSet<Member<ScriptPromiseResolver>> make_read_only_requests;
   make_read_only_requests_.swap(make_read_only_requests);
   for (ScriptPromiseResolver* resolver : make_read_only_requests) {
+    DCHECK(resolver);
+
+    ScriptState* script_state = resolver->GetScriptState();
+
+    if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                       script_state)) {
+      continue;
+    }
+
+    ScriptState::Scope script_state_scope(script_state);
+
     resolver->Reject(NDEFErrorTypeToDOMException(
+        script_state->GetIsolate(),
         device::mojom::blink::NDEFErrorType::NOT_SUPPORTED,
         kNotSupportedOrPermissionDenied));
   }
