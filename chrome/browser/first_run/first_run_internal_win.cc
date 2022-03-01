@@ -33,7 +33,7 @@
 #include "chrome/installer/util/util_constants.h"
 #include "components/strings/grit/components_locale_settings.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/win/shell.h"
 
 namespace {
@@ -89,7 +89,9 @@ bool IsEULANotAccepted(installer::InitialPreferences* install_prefs) {
 // Writes the EULA to a temporary file, returned in |*eula_path|, and returns
 // true if successful.
 bool WriteEULAtoTempFile(base::FilePath* eula_path) {
-  std::string terms = l10n_util::GetStringUTF8(IDS_TERMS_HTML);
+  std::string terms =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDS_TERMS_HTML);
   return (!terms.empty() &&
           base::CreateTemporaryFile(eula_path) &&
           base::WriteFile(*eula_path, terms.data(), terms.size()) != -1);
