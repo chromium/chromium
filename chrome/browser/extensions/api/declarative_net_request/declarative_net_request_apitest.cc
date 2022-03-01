@@ -136,13 +136,7 @@ class DeclarativeNetRequestApiFencedFrameTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1278823): Flaky on Mac
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Load DISABLED_Load
-#else
-#define MAYBE_Load Load
-#endif
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiFencedFrameTest, MAYBE_Load) {
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiFencedFrameTest, Load) {
   ASSERT_TRUE(RunExtensionTest("fenced_frames")) << message_;
 }
 
