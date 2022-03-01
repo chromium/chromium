@@ -885,6 +885,40 @@ void WebAppIntegrationTestDriver::LaunchAppSettingsFromChromeApps(
 #endif
 }
 
+void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
+    const std::string& site_mode) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value())
+      << "No app installed for site: " << site_mode;
+
+  mojo::PendingReceiver<app_management::mojom::Page> page;
+  mojo::Remote<app_management::mojom::PageHandler> handler;
+  auto delegate =
+      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
+  AppManagementPageHandler app_management_page_handler(
+      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
+      profile(), *delegate);
+
+  app_management::mojom::AppPtr app;
+  app_management_page_handler.GetApp(
+      app_state->id,
+      base::BindLambdaForTesting([&](app_management::mojom::AppPtr result) {
+        app = std::move(result);
+      }));
+
+  EXPECT_EQ(app->id, app_state->id);
+  EXPECT_EQ(app->title.value(), app_state->name);
+  EXPECT_EQ(app->window_mode, app_state->window_mode);
+  EXPECT_EQ(app->run_on_os_login->login_mode, app_state->run_on_os_login_mode);
+  AfterStateCheckAction();
+#else
+  NOTREACHED() << "Not implemented on Chrome OS.";
+#endif
+}
+
 void WebAppIntegrationTestDriver::NavigateBrowser(
     const std::string& site_mode) {
   BeforeStateChangeAction();

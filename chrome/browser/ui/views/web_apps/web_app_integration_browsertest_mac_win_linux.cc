@@ -106,6 +106,15 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
   helper_.CheckAppNotInList("SiteA");
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckAppSettingsAppState) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.CheckAppSettingsAppState("SiteA");
+  helper_.UninstallFromMenu("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

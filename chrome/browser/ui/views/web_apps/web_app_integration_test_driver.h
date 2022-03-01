@@ -192,6 +192,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppInListTabbed(const std::string& site_mode);
   void CheckAppNavigationIsStartUrl();
   void CheckBrowserNavigationIsAppSettings(const std::string& site_mode);
+  void CheckAppSettingsAppState(const std::string& site_mode);
   void CheckAppNotInList(const std::string& site_mode);
   void CheckAppTitleSiteA(const std::string& title);
   void CheckAppWindowMode(const std::string& site_mode,

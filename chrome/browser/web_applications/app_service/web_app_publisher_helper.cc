@@ -577,6 +577,11 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   app->window_mode =
       GetDisplayMode(registrar().GetAppUserDisplayMode(web_app->app_id()));
 
+  const auto login_mode = registrar().GetAppRunOnOsLoginMode(web_app->app_id());
+  app->run_on_os_login =
+      apps::RunOnOsLogin(apps::ConvertMojomRunOnOsLoginModeToRunOnOsLoginMode(
+                             ConvertOsLoginModeToMojom(login_mode.value)),
+                         !login_mode.user_controllable);
   return app;
 }
 
