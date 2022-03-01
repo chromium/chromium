@@ -7,6 +7,7 @@
         runner: "elf",
         binary: "chrome",
         args: [
+            "--enable-cfv2",
             "--enable-features=Vulkan,CanvasOopRasterization",
         ],
 
