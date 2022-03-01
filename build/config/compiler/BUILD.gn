@@ -838,6 +838,9 @@ config("compiler") {
     # Optimization - don't include bitcode if it won't be used.
     rustflags += [ "-Cembed-bitcode=no" ]
   }
+  if (is_official_build) {
+    rustflags += [ "-Ccodegen-units=1" ]
+  }
 }
 
 # The BUILDCONFIG file sets this config on targets by default, which means when
