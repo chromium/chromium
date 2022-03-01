@@ -53,7 +53,7 @@
       }
 
       function nodeCallback(node) {
-        TestRunner.cssModel.matchedStylesPromise(node.id).then(callback);
+        TestRunner.cssModel.getMatchedStyles(node.id).then(callback);
       }
       ElementsTestRunner.selectNodeWithId('formatted', nodeCallback);
     },
@@ -146,7 +146,7 @@
       }
 
       function nodeCallback(node) {
-        TestRunner.cssModel.matchedStylesPromise(node.id).then(callback);
+        TestRunner.cssModel.getMatchedStyles(node.id).then(callback);
       }
       ElementsTestRunner.selectNodeWithId('unformatted', nodeCallback);
     },

@@ -74,7 +74,7 @@
 
     function testModifyInlineStyle(next) {
       var inlineStyle;
-      TestRunner.cssModel.inlineStylesPromise(nodeId).then(stylesCallback);
+      TestRunner.cssModel.getInlineStyles(nodeId).then(stylesCallback);
       TestRunner.cssModel.addEventListener(SDK.CSSModel.Events.StyleSheetChanged, onStyleSheetChanged);
       function onStyleSheetChanged(event) {
         if (event.data && event.data.edit)

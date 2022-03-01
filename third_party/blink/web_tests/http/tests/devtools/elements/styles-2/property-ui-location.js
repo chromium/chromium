@@ -16,7 +16,7 @@
   }
 
   function onNodeFound(node) {
-    TestRunner.cssModel.matchedStylesPromise(node.id).then(onMatchedStyles);
+    TestRunner.cssModel.getMatchedStyles(node.id).then(onMatchedStyles);
   }
 
   function onMatchedStyles(matchedResult) {

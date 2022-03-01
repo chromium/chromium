@@ -37,7 +37,7 @@
 
 
   const node = await ElementsTestRunner.selectNodeAndWaitForStylesPromise('inspected');
-  const matchedStyles = await TestRunner.cssModel.matchedStylesPromise(node.id);
+  const matchedStyles = await TestRunner.cssModel.getMatchedStyles(node.id);
   TestRunner.addResult('matchedStyles.computeCSSVariable()');
   dumpCSSVariable('--foo');
   dumpCSSVariable('--baz');

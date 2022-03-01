@@ -47,7 +47,7 @@
           return;
         }
 
-        TestRunner.cssModel.matchedStylesPromise(nodeId, false, false).then(callback);
+        TestRunner.cssModel.getMatchedStyles(nodeId, false, false).then(callback);
       }
 
       function callback(matchedResult) {

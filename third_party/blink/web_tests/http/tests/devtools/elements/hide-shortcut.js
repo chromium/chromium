@@ -80,13 +80,13 @@
 
       function callback() {
         TestRunner.addResult('=== Added hide shortcut ===');
-        TestRunner.cssModel.computedStylePromise(parentNode.id).then(callback2);
+        TestRunner.cssModel.getComputedStyle(parentNode.id).then(callback2);
       }
 
       function callback2(style) {
         TestRunner.addResult('=== Parent node is hidden ===');
         TestRunner.addResult(getPropertyText(style, 'visibility'));
-        TestRunner.cssModel.computedStylePromise(childNode.id).then(callback3);
+        TestRunner.cssModel.getComputedStyle(childNode.id).then(callback3);
       }
 
       function callback3(style) {
@@ -101,13 +101,13 @@
 
       function callback() {
         TestRunner.addResult('=== Removed hide shortcut ===');
-        TestRunner.cssModel.computedStylePromise(parentNode.id).then(callback2);
+        TestRunner.cssModel.getComputedStyle(parentNode.id).then(callback2);
       }
 
       function callback2(style) {
         TestRunner.addResult('=== Parent node is visible ===');
         TestRunner.addResult(getPropertyText(style, 'visibility'));
-        TestRunner.cssModel.computedStylePromise(childNode.id).then(callback3);
+        TestRunner.cssModel.getComputedStyle(childNode.id).then(callback3);
       }
 
       function callback3(style) {

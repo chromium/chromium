@@ -19,7 +19,7 @@
 
   function nodeSelected(node) {
     nodeId = node.id;
-    TestRunner.cssModel.matchedStylesPromise(nodeId).then(matchedStylesBefore);
+    TestRunner.cssModel.getMatchedStyles(nodeId).then(matchedStylesBefore);
   }
 
   async function matchedStylesBefore(matchedResult) {

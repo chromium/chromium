@@ -42,7 +42,7 @@
   ElementsTestRunner.nodeWithId('inspected', nodeFound);
 
   function nodeFound(node) {
-    TestRunner.cssModel.matchedStylesPromise(node.id).then(matchedStylesCallback);
+    TestRunner.cssModel.getMatchedStyles(node.id).then(matchedStylesCallback);
   }
 
   var styleSheetId;

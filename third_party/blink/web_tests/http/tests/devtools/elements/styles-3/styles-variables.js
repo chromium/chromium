@@ -50,7 +50,7 @@
   async function step1(node) {
     TestRunner.addResult('==== Computed style for ID1 ====');
     await ElementsTestRunner.dumpSelectedElementStyles(false, false);
-    TestRunner.cssModel.computedStylePromise(node.id).then(function(style) {
+    TestRunner.cssModel.getComputedStyle(node.id).then(function(style) {
       TestRunner.addResult('value of --a: ' + style.get('--a'));
       ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('id2', step2);
     });
@@ -59,7 +59,7 @@
   async function step2(node) {
     TestRunner.addResult('==== Computed style for ID2 ====');
     await ElementsTestRunner.dumpSelectedElementStyles(false, false);
-    TestRunner.cssModel.computedStylePromise(node.id).then(function(style) {
+    TestRunner.cssModel.getComputedStyle(node.id).then(function(style) {
       TestRunner.addResult('value of --b: ' + style.get('--b'));
       ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('id3', step3);
     });
@@ -68,7 +68,7 @@
   async function step3(node) {
     TestRunner.addResult('==== Computed style for ID3 ====');
     await ElementsTestRunner.dumpSelectedElementStyles(false, false);
-    TestRunner.cssModel.computedStylePromise(node.id).then(function(style) {
+    TestRunner.cssModel.getComputedStyle(node.id).then(function(style) {
       TestRunner.addResult('value of --b: ' + style.get('--b'));
       ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('id4', step4);
     });
@@ -77,7 +77,7 @@
   async function step4(node) {
     TestRunner.addResult('==== Computed style for ID4 ====');
     await ElementsTestRunner.dumpSelectedElementStyles(false, false);
-    TestRunner.cssModel.computedStylePromise(node.id).then(function(style) {
+    TestRunner.cssModel.getComputedStyle(node.id).then(function(style) {
       TestRunner.addResult('value of --a: ' + style.get('--a'));
       ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('id5', step5);
     });
@@ -86,7 +86,7 @@
   async function step5(node) {
     TestRunner.addResult('==== Computed style for ID5 ====');
     await ElementsTestRunner.dumpSelectedElementStyles(false, false);
-    TestRunner.cssModel.computedStylePromise(node.id).then(function(style) {
+    TestRunner.cssModel.getComputedStyle(node.id).then(function(style) {
       TestRunner.addResult('value of --a: ' + style.get('--a'));
       TestRunner.completeTest();
     });

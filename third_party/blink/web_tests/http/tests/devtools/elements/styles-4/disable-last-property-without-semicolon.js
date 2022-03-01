@@ -42,7 +42,7 @@
       }
 
       function nodeCallback(node) {
-        TestRunner.cssModel.matchedStylesPromise(node.id, false, false).then(callback);
+        TestRunner.cssModel.getMatchedStyles(node.id, false, false).then(callback);
       }
       ElementsTestRunner.selectNodeWithId('formatted', nodeCallback);
     },

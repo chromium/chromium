@@ -32,7 +32,7 @@
   }
 
   function onNodeFound(node) {
-    TestRunner.cssModel.inlineStylesPromise(node.id).then(onInlineStyle);
+    TestRunner.cssModel.getInlineStyles(node.id).then(onInlineStyle);
   }
 
   function onInlineStyle(inlineStyleResult) {
