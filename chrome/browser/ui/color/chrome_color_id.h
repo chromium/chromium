@@ -56,6 +56,9 @@
   E(kColorFrameCaptionInactive, ThemeProperties::COLOR_FRAME_CAPTION_INACTIVE) \
   /* Google branding colors. */ \
   E_CPONLY(kColorGooglePayLogo) \
+  /* InfoBar colors. */ \
+  E(kColorInfoBarBackground, ThemeProperties::COLOR_INFOBAR) \
+  E(kColorInfoBarForeground, ThemeProperties::COLOR_INFOBAR_TEXT) \
   /* Location bar colors. */ \
   E(kColorLocationBarBorder, ThemeProperties::COLOR_LOCATION_BAR_BORDER) \
   /* New Tab Page colors. */ \

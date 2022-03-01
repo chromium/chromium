@@ -214,7 +214,7 @@ void InfoBarView::OnThemeChanged() {
   const SkColor background_color = tp->GetColor(ThemeProperties::COLOR_INFOBAR);
   SetBackground(views::CreateSolidBackground(background_color));
 
-  const SkColor text_color = tp->GetColor(ThemeProperties::COLOR_TOOLBAR_TEXT);
+  const SkColor text_color = tp->GetColor(ThemeProperties::COLOR_INFOBAR_TEXT);
   if (close_button_) {
     views::SetImageFromVectorIcon(close_button_,
                                   vector_icons::kCloseRoundedIcon, text_color);

@@ -192,6 +192,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorGooglePayLogo] = {dark_mode ? SK_ColorWHITE
                                           : gfx::kGoogleGrey700};
 #endif
+  mixer[kColorInfoBarBackground] = {kColorToolbar};
+  mixer[kColorInfoBarForeground] = {kColorToolbarText};
   mixer[kColorLocationBarBorder] = {SkColorSetA(SK_ColorBLACK, 0x4D)};
   mixer[kColorNewTabPageBackground] = {kColorToolbar};
   mixer[kColorNewTabPageHeader] = {SkColorSetRGB(0x96, 0x96, 0x96)};

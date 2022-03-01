@@ -118,6 +118,8 @@ absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
       {TP::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT, kColorDownloadShelfButtonText},
       {TP::COLOR_FLYING_INDICATOR_BACKGROUND, kColorFlyingIndicatorBackground},
       {TP::COLOR_FLYING_INDICATOR_FOREGROUND, kColorFlyingIndicatorForeground},
+      {TP::COLOR_INFOBAR, kColorInfoBarBackground},
+      {TP::COLOR_INFOBAR_TEXT, kColorInfoBarForeground},
       {TP::COLOR_LOCATION_BAR_BORDER, kColorLocationBarBorder},
       {TP::COLOR_NTP_BACKGROUND, kColorNewTabPageBackground},
       {TP::COLOR_NTP_HEADER, kColorNewTabPageHeader},

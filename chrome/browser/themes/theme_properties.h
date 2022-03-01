@@ -148,6 +148,7 @@ class ThemeProperties {
 
     // Infobar colors.
     COLOR_INFOBAR,
+    COLOR_INFOBAR_TEXT,
 
     // Status bubble colors.
     COLOR_STATUS_BUBBLE,
