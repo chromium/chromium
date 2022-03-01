@@ -44,6 +44,7 @@ if (enable_pdf) {
     ]
   }
 
+  # Stub PPAPI module that just provides no-op entry points.
   static_library("pdf_ppapi") {
     sources = [ "pdf_ppapi.cc" ]
 
@@ -52,14 +53,8 @@ if (enable_pdf) {
     public = [ "pdf_ppapi.h" ]
 
     deps = [
-      ":internal",
-      ":out_of_process_instance",
-      ":pdf",
       "//base",
-      "//ppapi/cpp:objects",
-      "//ppapi/cpp/private:internal_module",
-      "//skia",
-      "//v8",
+      "//ppapi/c",
     ]
   }
 
@@ -306,37 +301,6 @@ if (enable_pdf) {
     }
   }
 
-  source_set("out_of_process_instance") {
-    visibility = [ ":*" ]
-
-    sources = [
-      "out_of_process_instance.cc",
-      "out_of_process_instance.h",
-    ]
-
-    configs += [ ":strict" ]
-
-    public_deps = [ "//third_party/abseil-cpp:absl" ]
-
-    deps = [
-      ":accessibility",
-      ":internal",
-      ":ppapi_migration",
-      "//base",
-      "//build:chromeos_buildflags",
-      "//net",
-      "//ppapi/cpp:objects",
-      "//ppapi/cpp/private:internal_module",
-      "//skia",
-      "//third_party/blink/public:blink_headers",
-      "//third_party/blink/public/common:headers",
-      "//ui/base",
-      "//ui/base/cursor/mojom:cursor_type",
-      "//url",
-    ]
-  }
-
-  # Eventual replacement for out_of_process_instance.
   static_library("pdf_view_web_plugin") {
     visibility = [
       ":*",
@@ -467,7 +431,6 @@ if (enable_pdf) {
       ":assert_enums",
       ":features",
       ":internal",
-      ":out_of_process_instance",
       ":pdf",
       ":pdf_test_utils",
       ":pdf_view_web_plugin",

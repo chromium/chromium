@@ -5,7 +5,6 @@
 #ifndef PDF_PDF_PPAPI_H_
 #define PDF_PDF_PPAPI_H_
 
-#include "base/component_export.h"
 #include "ppapi/c/pp_module.h"
 #include "ppapi/c/ppb.h"
 
