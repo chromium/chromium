@@ -222,6 +222,7 @@ public final class ProductionSupportedFlagList {
                     "Optimizes communication between URLLoader and CorsURLLoader."),
             Flag.baseFeature(NetworkServiceFeatures.COMBINE_RESPONSE_BODY,
                     "Reduces URLLoaderClient mojo calls."),
+            Flag.baseFeature(NetworkServiceFeatures.FASTER_SET_COOKIE, "Optimizes cookie access."),
             Flag.baseFeature(BlinkFeatures.SET_TIMEOUT_WITHOUT_CLAMP,
                     "Enables faster setTimeout(,0) by removing the 1 ms clamping."),
             Flag.baseFeature(BlinkFeatures.PAINT_HOLDING_CROSS_ORIGIN,
