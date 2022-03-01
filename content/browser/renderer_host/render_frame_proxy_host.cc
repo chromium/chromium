@@ -232,7 +232,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
     RenderFrameProxyHost* parent_proxy =
         frame_tree_node_->parent()
             ->browsing_context_state()
-            ->GetRenderFrameProxyHost(site_instance_group_.get());
+            ->GetRenderFrameProxyHost(site_instance_group());
     CHECK(parent_proxy);
 
     // Proxies that aren't live in the parent node should not be initialized
@@ -250,11 +250,11 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
   if (frame_tree_node_->opener()) {
     opener_frame_token =
         frame_tree_node_->render_manager()->GetOpenerFrameToken(
-            site_instance_group_.get());
+            site_instance_group());
   }
 
   int view_routing_id = GetRenderViewHost()->GetRoutingID();
-  site_instance_group_->agent_scheduling_group().CreateFrameProxy(
+  GetAgentSchedulingGroup().CreateFrameProxy(
       frame_token_, routing_id_, opener_frame_token, view_routing_id,
       parent_routing_id, frame_tree_node_->tree_scope_type(),
       frame_tree_node_->current_replication_state().Clone(),
@@ -371,7 +371,7 @@ void RenderFrameProxyHost::UpdateOpener() {
 
   auto opener_frame_token =
       frame_tree_node_->render_manager()->GetOpenerFrameToken(
-          site_instance_group_.get());
+          site_instance_group());
   GetAssociatedRemoteFrame()->UpdateOpener(opener_frame_token);
 }
 
