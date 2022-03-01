@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module Enums {
-  header "enum/enum.h"
-  requires cplusplus
-}
-
 module Classes {
   header "classes/inlined_class.h"
   header "classes/outlined_class.h"
   requires cplusplus
 }
+
+module Enums {
+  header "enum/enum.h"
+  requires cplusplus
+}
+
+module Namespace {
+  header "namespace/namespace.h"
+  requires cplusplus
+}
+

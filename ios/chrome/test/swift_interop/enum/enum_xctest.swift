@@ -36,6 +36,7 @@ class EnumTest: XCTestCase {
     let pet : Pet = Pet.goat
     XCTAssertEqual(pet, Pet.goat, "")
     XCTAssertNotEqual(pet, Pet.dogcow, "")
+    XCTAssertNotEqual(Pet.goat, Pet.dogcow)
 
     // These correctly fail. Cannot convert |Int| <-> |Pet|.
     // let animal : Pet = 7
