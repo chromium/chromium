@@ -21055,7 +21055,7 @@
       },
       'example_value': '37185d02-e055-11e7-80c1-9a214cf093ae',
       'id': 510,
-      'caption': '''The enrollment token of cloud policy on desktop''',
+      'caption': '''The enrollment token of cloud policy''',
       'tags': [],
       'desc': '''Setting the policy means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> tries to register itself with <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. The value of this policy is an enrollment token you can retrieve from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
