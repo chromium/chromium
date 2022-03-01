@@ -16,6 +16,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
@@ -117,6 +118,7 @@ public class OmniboxPedalsRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
+    @DisabledTest(message = "crbug.com/1298389")
     public void testPlayChromeDinoGamePedal() throws IOException, InterruptedException {
         List<AutocompleteMatch> suggestionsList = new ArrayList<>();
         suggestionsList.add(
