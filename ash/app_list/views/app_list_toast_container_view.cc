@@ -98,6 +98,7 @@ void AppListToastContainerView::CreateReorderNudgeView() {
                                         : &kReorderNudgeDarkClamshellIcon,
                            tablet_mode_ ? &kReorderNudgeLightTabletIcon
                                         : &kReorderNudgeLightClamshellIcon)
+          .SetIconBackground(true)
           .Build());
   current_toast_ = ToastType::kReorderNudge;
 }

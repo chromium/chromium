@@ -13,6 +13,7 @@
 #include "ash/style/pill_button.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/background.h"
@@ -24,6 +25,7 @@
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
+namespace {
 
 constexpr int kCornerRadius = 16;
 constexpr gfx::Insets kInteriorMarginClamshell(8, 8, 8, 20);
@@ -34,6 +36,36 @@ constexpr gfx::Insets kIconMargins(0, 8);
 constexpr int kToastHeight = 32;
 constexpr int kToastMaximumWidth = 640;
 constexpr int kToastMinimumWidth = 288;
+
+constexpr int kIconCornerRadius = 8;
+
+class IconImageWithBackground : public views::ImageView {
+ public:
+  IconImageWithBackground() = default;
+  IconImageWithBackground(const IconImageWithBackground&) = delete;
+  IconImageWithBackground& operator=(const IconImageWithBackground&) = delete;
+  ~IconImageWithBackground() override = default;
+
+ private:
+  // views::ImageView:
+  void OnPaint(gfx::Canvas* canvas) override {
+    if (GetImage().isNull())
+      return;
+
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    canvas->DrawRoundRect(GetContentsBounds(), kIconCornerRadius, flags);
+    SkPath mask;
+    mask.addRoundRect(gfx::RectToSkRect(GetContentsBounds()), kIconCornerRadius,
+                      kIconCornerRadius);
+    canvas->ClipPath(mask, true);
+    views::ImageView::OnPaint(canvas);
+  }
+};
+
+}  // namespace
 
 AppListToastView::Builder::Builder(const std::u16string title)
     : title_(title) {}
@@ -54,6 +86,9 @@ std::unique_ptr<AppListToastView> AppListToastView::Builder::Build() {
 
   if (icon_size_)
     toast->SetIconSize(*icon_size_);
+
+  if (has_icon_background_)
+    toast->AddIconBackground();
 
   if (has_button_)
     toast->SetButton(*button_text_, button_callback_);
@@ -109,6 +144,12 @@ AppListToastView::Builder& AppListToastView::Builder::SetButton(
 AppListToastView::Builder& AppListToastView::Builder::SetStyleForTabletMode(
     bool style_for_tablet_mode) {
   style_for_tablet_mode_ = style_for_tablet_mode;
+  return *this;
+}
+
+AppListToastView::Builder& AppListToastView::Builder::SetIconBackground(
+    bool has_icon_background) {
+  has_icon_background_ = has_icon_background;
   return *this;
 }
 
@@ -223,6 +264,17 @@ void AppListToastView::SetIconSize(int icon_size) {
     UpdateIconImage();
 }
 
+void AppListToastView::AddIconBackground() {
+  if (icon_) {
+    RemoveChildViewT(icon_);
+    icon_ = nullptr;
+  }
+
+  has_icon_background_ = true;
+  CreateIconView();
+  UpdateIconImage();
+}
+
 gfx::Size AppListToastView::GetMaximumSize() const {
   return gfx::Size(kToastMaximumWidth,
                    GetLayoutManager()->GetPreferredSize(this).height());
@@ -271,7 +323,10 @@ void AppListToastView::CreateIconView() {
   if (icon_)
     return;
 
-  icon_ = AddChildViewAt(std::make_unique<views::ImageView>(), 0);
+  icon_ = AddChildViewAt(has_icon_background_
+                             ? std::make_unique<IconImageWithBackground>()
+                             : std::make_unique<views::ImageView>(),
+                         0);
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   icon_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   icon_->SetProperty(views::kMarginsKey, kIconMargins);

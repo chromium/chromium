@@ -48,6 +48,7 @@ class ASH_EXPORT AppListToastView : public views::View {
     Builder& SetThemingIcons(const gfx::VectorIcon* dark_icon,
                              const gfx::VectorIcon* light_icon);
     Builder& SetIconSize(int icon_size);
+    Builder& SetIconBackground(bool has_icon_background);
 
     Builder& SetSubtitle(const std::u16string subtitle);
     Builder& SetButton(std::u16string button_text,
@@ -65,6 +66,7 @@ class ASH_EXPORT AppListToastView : public views::View {
     views::Button::PressedCallback button_callback_;
     bool has_button_ = false;
     bool style_for_tablet_mode_ = false;
+    bool has_icon_background_ = false;
   };
 
   explicit AppListToastView(const std::u16string title);
@@ -94,6 +96,9 @@ class ASH_EXPORT AppListToastView : public views::View {
   // background blur, and sets rounded corners on the toast layer.
   void StyleForTabletMode();
 
+  // Sets whether the icon for the toast should have a background.
+  void AddIconBackground();
+
   views::LabelButton* toast_button() const { return toast_button_; }
 
  private:
@@ -113,6 +118,9 @@ class ASH_EXPORT AppListToastView : public views::View {
 
   // Whether the toast UI should be style for tablet mode app list UI.
   bool style_for_tablet_mode_ = false;
+
+  // Whether the toast icon should be styled with a background.
+  bool has_icon_background_ = false;
 
   // Toast icon view.
   views::ImageView* icon_ = nullptr;

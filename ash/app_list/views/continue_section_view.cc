@@ -383,6 +383,7 @@ void ContinueSectionView::MaybeCreatePrivacyNotice() {
           .SetThemingIcons(&kContinueFilesDarkIcon, &kContinueFilesLightIcon)
           .SetIconSize(tablet_mode_ ? kPrivacyIconSizeTablet
                                     : kPrivacyIconSizeClamshell)
+          .SetIconBackground(true)
           .Build());
   privacy_toast_->SetProperty(
       views::kFlexBehaviorKey,
