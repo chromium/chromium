@@ -103,8 +103,8 @@ IntersectionObserver& DisplayLockDocumentState::EnsureIntersectionObserver() {
     // Paint containment requires using the overflow clip edge. To do otherwise
     // results in overflow-clip-margin not being painted in certain scenarios.
     intersection_observer_ = IntersectionObserver::Create(
-        {Length::Percent(150.f)}, {std::numeric_limits<float>::min()},
-        document_,
+        {Length::Percent(kViewportMarginPercentage)},
+        {std::numeric_limits<float>::min()}, document_,
         WTF::BindRepeating(
             &DisplayLockDocumentState::ProcessDisplayLockActivationObservation,
             WrapWeakPersistent(this)),

@@ -46,6 +46,18 @@ TEST_F(DeferredShapingTest, Basic) {
   EXPECT_FALSE(IsLocked("target"));
 }
 
+TEST_F(DeferredShapingTest, ViewportMargin) {
+  // The box starting around y=1200 (viewport height * 2) is not deferred due to
+  // a viewport margin setting for IntersectionObserver.
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1200px"></div>
+<div id="target">IFC</div>
+)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_FALSE(IsLocked("target"));
+}
+
 TEST_F(DeferredShapingTest, AlreadyAuto) {
   // If the element has content-visibility:auto, it never be deferred.
   SetBodyInnerHTML(R"HTML(

@@ -16,11 +16,8 @@ class DeferredShapingViewportScope {
   using PassKey = base::PassKey<DeferredShapingViewportScope>;
 
  public:
-  DeferredShapingViewportScope(LocalFrameView& view, LayoutUnit viewport_bottom)
-      : view_(view), previous_value_(view.CurrentViewportBottom()) {
-    view_.SetCurrentViewportBottom(PassKey(), viewport_bottom);
-  }
-
+  DeferredShapingViewportScope(LocalFrameView& view,
+                               const LayoutView& layout_view);
   ~DeferredShapingViewportScope() {
     view_.SetCurrentViewportBottom(PassKey(), previous_value_);
   }

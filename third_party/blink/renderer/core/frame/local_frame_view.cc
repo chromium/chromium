@@ -858,8 +858,7 @@ void LocalFrameView::PerformLayout() {
               !frame_->PagePopupOwner() &&
               !FirstMeaningfulPaintDetector::From(*frame_->GetDocument())
                    .SeenFirstMeaningfulPaint());
-      DeferredShapingViewportScope viewport_scope(
-          *this, GetLayoutView()->InitialContainingBlockSize().block_size);
+      DeferredShapingViewportScope viewport_scope(*this, *GetLayoutView());
       GetLayoutView()->UpdateLayout();
     }
   }

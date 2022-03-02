@@ -171,6 +171,8 @@ class CORE_EXPORT DisplayLockDocumentState final
 
   base::TimeTicks GetLockUpdateTimestamp();
 
+  static constexpr float kViewportMarginPercentage = 150.f;
+
  private:
   IntersectionObserver& EnsureIntersectionObserver();
 
