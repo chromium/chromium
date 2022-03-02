@@ -298,12 +298,6 @@ struct NGFragmentedOutOfFlowData final : NGPhysicalFragment::OutOfFlowData {
     return {descendants.data(), descendants.size()};
   }
 
-  void Clear() override {
-    oof_positioned_fragmentainer_descendants.clear();
-    multicols_with_pending_oofs.clear();
-    NGPhysicalFragment::OutOfFlowData::Clear();
-  }
-
   void Trace(Visitor* visitor) const override {
     visitor->Trace(oof_positioned_fragmentainer_descendants);
     visitor->Trace(multicols_with_pending_oofs);

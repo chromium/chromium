@@ -444,10 +444,13 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   }
 }
 
-NGPhysicalBoxFragment::~NGPhysicalBoxFragment() = default;
+NGPhysicalBoxFragment::~NGPhysicalBoxFragment() {
+  // Note: This function may not always be called because the dtor of
+  // NGPhysicalFragment is made non-virtual for memory efficiency.
+  ink_overflow_type_ = ink_overflow_.Reset(InkOverflowType());
+}
 
 void NGPhysicalBoxFragment::Dispose() {
-  ink_overflow_.Reset(InkOverflowType());
   if (const_has_fragment_items_)
     ComputeItemsAddress()->~NGFragmentItems();
   if (const_has_rare_data_)

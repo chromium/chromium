@@ -29,23 +29,10 @@ namespace {
 
 struct SameSizeAsNGPhysicalFragment
     : public GarbageCollected<SameSizeAsNGPhysicalFragment> {
-  // It is necessary to have not only the member variables but also
-  // USING_PRE_FINALIZER baceuse Win bots fail without it.
-  USING_PRE_FINALIZER(SameSizeAsNGPhysicalFragment, Dispose);
-
- public:
-  void Dispose() {}
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(layout_object);
-    visitor->Trace(break_token);
-    visitor->Trace(oof_data);
-  }
-
-  Member<LayoutObject> layout_object;
+  Member<void*> layout_object;
   PhysicalSize size;
-  [[maybe_unused]] unsigned flags;
-  Member<const NGBreakToken> break_token;
-  const Member<NGPhysicalFragment::OutOfFlowData> oof_data;
+  unsigned flags;
+  Member<void*> members[2];
 };
 
 ASSERT_SIZE(NGPhysicalFragment, SameSizeAsNGPhysicalFragment);
@@ -450,11 +437,11 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
   DCHECK(children_valid_);
 }
 
-NGPhysicalFragment::~NGPhysicalFragment() = default;
+NGPhysicalFragment::~NGPhysicalFragment() {
+  Dispose();
+}
 
 void NGPhysicalFragment::Dispose() {
-  if (UNLIKELY(oof_data_ && has_fragmented_out_of_flow_data_))
-    const_cast<NGPhysicalFragment*>(this)->ClearOutOfFlowData();
   switch (Type()) {
     case kFragmentBox:
       static_cast<NGPhysicalBoxFragment*>(this)->Dispose();
@@ -502,13 +489,6 @@ bool NGPhysicalFragment::NeedsOOFPositionedInfoPropagation() const {
           (FragmentedOutOfFlowData() &&
            FragmentedOutOfFlowData()->NeedsOOFPositionedInfoPropagation()));
   return !!oof_data_;
-}
-
-void NGPhysicalFragment::ClearOutOfFlowData() {
-  CHECK(oof_data_ && has_fragmented_out_of_flow_data_);
-  auto* oof_data = const_cast<Member<OutOfFlowData>*>(&oof_data_);
-  oof_data->Get()->Clear();
-  oof_data->Clear();
 }
 
 NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::CloneOutOfFlowData()
@@ -1056,10 +1036,6 @@ bool NGPhysicalFragment::DependsOnPercentageBlockSize(
     return true;
 
   return false;
-}
-
-void NGPhysicalFragment::OutOfFlowData::Clear() {
-  oof_positioned_descendants.clear();
 }
 
 void NGPhysicalFragment::OutOfFlowData::Trace(Visitor* visitor) const {

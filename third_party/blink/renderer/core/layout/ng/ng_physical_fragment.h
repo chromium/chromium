@@ -52,8 +52,6 @@ enum class NGOutlineType;
 // coordinate system.
 class CORE_EXPORT NGPhysicalFragment
     : public GarbageCollected<NGPhysicalFragment> {
-  USING_PRE_FINALIZER(NGPhysicalFragment, Dispose);
-
  public:
   enum NGFragmentType {
     kFragmentBox = 0,
@@ -602,10 +600,7 @@ class CORE_EXPORT NGPhysicalFragment
 
   struct OutOfFlowData : public GarbageCollected<OutOfFlowData> {
    public:
-    virtual void Clear();
-
     virtual void Trace(Visitor* visitor) const;
-
     HeapVector<NGPhysicalOutOfFlowPositionedNode> oof_positioned_descendants;
   };
 
