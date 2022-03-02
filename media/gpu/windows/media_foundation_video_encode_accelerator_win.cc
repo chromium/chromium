@@ -1288,6 +1288,11 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
 
   {
     MediaBufferScopedPointer scoped_buffer(output_buffer.Get());
+    if (!buffer_ref->mapping.IsValid() || !scoped_buffer.get()) {
+      DLOG(ERROR) << "Failed to copy bitstream media buffer.";
+      return;
+    }
+
     memcpy(buffer_ref->mapping.memory(), scoped_buffer.get(), size);
   }
 
