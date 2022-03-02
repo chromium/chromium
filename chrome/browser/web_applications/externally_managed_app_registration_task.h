@@ -34,7 +34,7 @@ class ExternallyManagedAppRegistrationTaskBase
   const GURL& install_url() const { return install_url_; }
 
  protected:
-  explicit ExternallyManagedAppRegistrationTaskBase(const GURL& install_url);
+  explicit ExternallyManagedAppRegistrationTaskBase(GURL install_url);
 
  private:
   const GURL install_url_;
@@ -45,7 +45,7 @@ class ExternallyManagedAppRegistrationTask
  public:
   using RegistrationCallback = base::OnceCallback<void(RegistrationResultCode)>;
 
-  ExternallyManagedAppRegistrationTask(const GURL& install_url,
+  ExternallyManagedAppRegistrationTask(GURL install_url,
                                        WebAppUrlLoader* url_loader,
                                        content::WebContents* web_contents,
                                        RegistrationCallback callback);
@@ -62,6 +62,9 @@ class ExternallyManagedAppRegistrationTask
   static void SetTimeoutForTesting(int registration_timeout_in_seconds);
 
  private:
+  // Check to see if there is already a service worker for the install url.
+  void CheckHasServiceWorker();
+
   void OnDidCheckHasServiceWorker(content::ServiceWorkerCapability capability);
 
   void OnWebContentsReady(WebAppUrlLoader::Result result);

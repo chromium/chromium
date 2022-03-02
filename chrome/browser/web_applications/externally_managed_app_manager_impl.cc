@@ -125,10 +125,12 @@ ExternallyManagedAppManagerImpl::CreateInstallationTask(
 
 std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
 ExternallyManagedAppManagerImpl::StartRegistration(GURL install_url) {
-  return std::make_unique<ExternallyManagedAppRegistrationTask>(
-      install_url, url_loader_.get(), web_contents_.get(),
+  ExternallyManagedAppRegistrationTask::RegistrationCallback callback =
       base::BindOnce(&ExternallyManagedAppManagerImpl::OnRegistrationFinished,
-                     weak_ptr_factory_.GetWeakPtr(), install_url));
+                     weak_ptr_factory_.GetWeakPtr(), install_url);
+  return std::make_unique<ExternallyManagedAppRegistrationTask>(
+      std::move(install_url), url_loader_.get(), web_contents_.get(),
+      std::move(callback));
 }
 
 void ExternallyManagedAppManagerImpl::OnRegistrationFinished(

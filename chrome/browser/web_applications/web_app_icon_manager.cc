@@ -259,7 +259,7 @@ TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconAndResizeBlocking(
   TypedResult<std::map<SquareSizePx, SkBitmap>> result;
 
   TypedResult<SkBitmap> read_result =
-      ReadIconBlocking(utils, web_apps_directory, icon_id);
+      ReadIconBlocking(std::move(utils), web_apps_directory, icon_id);
   if (read_result.HasErrors())
     return {.error_log = std::move(read_result.error_log)};
 
@@ -454,7 +454,7 @@ class WriteIconsJob {
                 IconBitmaps&& icon_bitmaps,
                 ShortcutsMenuIconBitmaps&& shortcuts_menu_icon_bitmaps,
                 IconsMap&& other_icons)
-      : utils_(utils),
+      : utils_(std::move(utils)),
         web_apps_directory_(std::move(web_apps_directory)),
         app_id_(std::move(app_id)),
         icon_bitmaps_(std::move(icon_bitmaps)),

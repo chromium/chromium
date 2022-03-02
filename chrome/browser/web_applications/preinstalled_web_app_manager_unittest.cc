@@ -134,7 +134,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     base::RunLoop run_loop;
     preinstalled_web_app_manager->LoadForTesting(base::BindLambdaForTesting(
         [&](std::vector<ExternalInstallOptions> install_options_list) {
-          result = install_options_list;
+          result = std::move(install_options_list);
           run_loop.Quit();
         }));
     run_loop.Run();

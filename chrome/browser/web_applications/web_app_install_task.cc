@@ -777,7 +777,8 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
   data_retriever_->GetIcons(
       web_contents, icon_urls, /*skip_page_favicons=*/true,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrieved, GetWeakPtr(),
-                     std::move(web_application_info), finalize_options));
+                     std::move(web_application_info),
+                     std::move(finalize_options)));
 }
 
 void WebAppInstallTask::OnIconsRetrieved(
@@ -801,7 +802,7 @@ void WebAppInstallTask::OnIconsRetrieved(
                            icons_http_results);
 
   install_finalizer_->FinalizeInstall(
-      *web_app_info, finalize_options,
+      *web_app_info, std::move(finalize_options),
       base::BindOnce(&WebAppInstallTask::OnInstallFinalized, GetWeakPtr()));
 }
 

@@ -162,7 +162,7 @@ class WebAppIconManagerTest : public WebAppTest {
         app_id, purposes, min_icon_size,
         base::BindLambdaForTesting([&](IconPurpose purpose, SkBitmap bitmap) {
           result.purpose = purpose;
-          result.bitmap = bitmap;
+          result.bitmap = std::move(bitmap);
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -175,7 +175,7 @@ class WebAppIconManagerTest : public WebAppTest {
     base::RunLoop run_loop;
     icon_manager().ReadSmallestIconAny(
         app_id, min_icon_size, base::BindLambdaForTesting([&](SkBitmap bitmap) {
-          result = bitmap;
+          result = std::move(bitmap);
           run_loop.Quit();
         }));
     run_loop.Run();

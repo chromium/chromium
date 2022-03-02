@@ -62,8 +62,8 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
   void InstallApp(ExternalInstallOptions install_options) {
-    auto result =
-        ExternallyManagedAppManagerInstall(profile(), install_options);
+    auto result = ExternallyManagedAppManagerInstall(
+        profile(), std::move(install_options));
     result_code_ = result.code;
   }
 

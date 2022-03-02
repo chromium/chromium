@@ -244,8 +244,8 @@ void WebAppShortcutManager::OnShortcutInfoRetrievedCreateShortcuts(
   locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
 
   internals::ScheduleCreatePlatformShortcuts(
-      std::move(shortcut_data_dir), locations, SHORTCUT_CREATION_BY_USER,
-      std::move(info), std::move(callback));
+      shortcut_data_dir, locations, SHORTCUT_CREATION_BY_USER, std::move(info),
+      std::move(callback));
 }
 
 void WebAppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu(
