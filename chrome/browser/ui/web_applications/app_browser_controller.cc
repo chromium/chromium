@@ -262,7 +262,6 @@ bool AppBrowserController::CanUserUninstall() const {
 void AppBrowserController::Uninstall(
     webapps::WebappUninstallSource webapp_uninstall_source) {
   NOTREACHED();
-  return;
 }
 
 void AppBrowserController::UpdateCustomTabBarVisibility(bool animate) const {

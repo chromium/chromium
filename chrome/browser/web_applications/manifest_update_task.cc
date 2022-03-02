@@ -103,21 +103,21 @@ void HaveIconContentsChanged(
       if (end_when_mismatch_detected) {
         icon_diff->diff_results |= ONE_OR_MORE_ICONS_CHANGED;
         return;
-      } else {
-        if (size == kInstallIconSize) {
-          icon_diff->diff_results |= INSTALL_ICON_CHANGED;
+      }
+
+      if (size == kInstallIconSize) {
+        icon_diff->diff_results |= INSTALL_ICON_CHANGED;
+        icon_diff->before = disk_bitmap;
+        icon_diff->after = downloaded_bitmap;
+      } else if (size == kLauncherIconSize) {
+        icon_diff->diff_results |= LAUNCHER_ICON_CHANGED;
+        if (icon_diff->before.drawsNothing() &&
+            icon_diff->after.drawsNothing()) {
           icon_diff->before = disk_bitmap;
           icon_diff->after = downloaded_bitmap;
-        } else if (size == kLauncherIconSize) {
-          icon_diff->diff_results |= LAUNCHER_ICON_CHANGED;
-          if (icon_diff->before.drawsNothing() &&
-              icon_diff->after.drawsNothing()) {
-            icon_diff->before = disk_bitmap;
-            icon_diff->after = downloaded_bitmap;
-          }
-        } else {
-          icon_diff->diff_results |= UNIMPORTANT_ICON_CHANGED;
         }
+      } else {
+        icon_diff->diff_results |= UNIMPORTANT_ICON_CHANGED;
       }
     }
   }

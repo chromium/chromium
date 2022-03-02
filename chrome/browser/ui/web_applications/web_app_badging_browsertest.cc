@@ -107,7 +107,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     awaiter_ = std::make_unique<base::RunLoop>();
 
     badging::BadgeManager* badge_manager =
-        badging::BadgeManagerFactory::GetInstance()->GetForProfile(profile());
+        badging::BadgeManagerFactory::GetForProfile(profile());
 
     // The delegate is owned by the badge manager. We hold a pointer to it for
     // the test.

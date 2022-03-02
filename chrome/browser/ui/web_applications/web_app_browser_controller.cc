@@ -304,11 +304,13 @@ std::u16string WebAppBrowserController::GetTitle() const {
       base::UTF8ToUTF16(provider_.registrar().GetAppShortName(app_id()));
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;
-  } else if (raw_title.empty()) {
-    return app_name;
-  } else {
-    return base::StrCat({app_name, u" - ", raw_title});
   }
+
+  if (raw_title.empty()) {
+    return app_name;
+  }
+
+  return base::StrCat({app_name, u" - ", raw_title});
 }
 
 std::u16string WebAppBrowserController::GetAppShortName() const {

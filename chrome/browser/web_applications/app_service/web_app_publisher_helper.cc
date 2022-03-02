@@ -1080,8 +1080,7 @@ void WebAppPublisherHelper::StopApp(const std::string& app_id) {
 #endif
 
   apps::BrowserAppInstanceTracker* instance_tracker =
-      apps::AppServiceProxyFactory::GetInstance()
-          ->GetForProfile(profile_)
+      apps::AppServiceProxyFactory::GetForProfile(profile_)
           ->BrowserAppInstanceTracker();
 
   instance_tracker->StopInstancesOfApp(app_id);
