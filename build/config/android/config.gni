@@ -69,6 +69,10 @@ if (is_android || is_chromeos) {
     }
   }
 
+  # Avoid typos when setting android_static_analysis in args.gn.
+  assert(android_static_analysis == "on" || android_static_analysis == "off" ||
+         android_static_analysis == "build_server")
+
   declare_args() {
     # Android API level for 32 bits platforms
     android32_ndk_api_level = default_min_sdk_version
