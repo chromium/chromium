@@ -1121,19 +1121,6 @@ class DictationCommandsExtensionTest : public DictationExtensionTest {
     return base::UTF16ToUTF8(text);
   }
 
-  void WaitForHelpUrlVisible() {
-    std::string error_message = "Still waiting for help URL to be visible";
-    SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    content::WebContents* web_contents =
-                        browser()->tab_strip_model()->GetActiveWebContents();
-                    return web_contents->GetVisibleURL().spec().rfind(
-                               "https://support.google.com/chromebook",
-                               /*pos=*/0) != 0;
-                  }),
-                  error_message)
-        .Wait();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1263,17 +1250,20 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MacroSucceededMetric) {
                                        /*expected_bucket_count=*/1);
 }
 
-// TODO(1266696): DictationCommandsExtensionTest.Help is flaky.
-// According to the flake occurrences tool, the OnDevice variant is the flaky
-// one; the Network variant passes consistently.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Help DISABLED_Help
-#else
-#define MAYBE_Help Help
-#endif
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MAYBE_Help) {
+IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, Help) {
   SendFinalResultAndWait("help");
-  WaitForHelpUrlVisible();
+
+  // Wait for the help URL to load.
+  SuccessWaiter(
+      base::BindLambdaForTesting([&]() {
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+        return web_contents->GetVisibleURL() ==
+               "https://support.google.com/chromebook?p=text_dictation_m100";
+      }),
+      "Still waiting for help URL to load")
+      .Wait();
+
   // Opening a new tab with the help center article toggles Dictation off.
   WaitForRecognitionStopped();
 }
