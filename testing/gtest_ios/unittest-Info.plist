@@ -51,6 +51,10 @@
 	<key>NSAllowsArbitraryLoads</key>
 	<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>This test needs to request access to your camera.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This test needs to request access to your microphone.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchImages</key>
