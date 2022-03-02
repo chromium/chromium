@@ -10,6 +10,7 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -99,7 +100,7 @@ void SiteSettingsCounter::Count() {
 
   auto handlers =
       handler_registry_->GetUserDefinedHandlers(period_start, period_end);
-  for (const ProtocolHandler& handler : handlers)
+  for (const custom_handlers::ProtocolHandler& handler : handlers)
     hosts.insert(handler.url().host());
 
   std::vector<std::string> never_prompt_sites =

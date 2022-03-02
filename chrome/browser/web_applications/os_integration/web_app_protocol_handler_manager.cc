@@ -12,6 +12,8 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
+using custom_handlers::ProtocolHandler;
+
 namespace web_app {
 
 WebAppProtocolHandlerManager::WebAppProtocolHandlerManager(Profile* profile)

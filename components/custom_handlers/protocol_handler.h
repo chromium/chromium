@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
-#define CONTENT_PUBLIC_COMMON_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
+#ifndef COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
+#define COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
 
 #include <memory>
 #include <string>
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "url/gurl.h"
 
-namespace content {
+namespace custom_handlers {
 
 // A single tuple of (protocol, url, last_modified) that indicates how URLs
 // of the given protocol should be rewritten to be handled.
 // The |last_modified| field is used to correctly perform deletion
 // of protocol handlers based on time ranges.
-class CONTENT_EXPORT ProtocolHandler {
+class ProtocolHandler {
  public:
   static ProtocolHandler CreateProtocolHandler(
       const std::string& protocol,
@@ -90,9 +89,7 @@ class CONTENT_EXPORT ProtocolHandler {
   const absl::optional<std::string>& web_app_id() const { return web_app_id_; }
   const base::Time& last_modified() const { return last_modified_; }
 
-  bool IsEmpty() const {
-    return protocol_.empty();
-  }
+  bool IsEmpty() const { return protocol_.empty(); }
 
 #if !defined(NDEBUG)
   // Returns a string representation suitable for use in debugging.
@@ -112,6 +109,6 @@ class CONTENT_EXPORT ProtocolHandler {
   blink::ProtocolHandlerSecurityLevel security_level_;
 };
 
-}  // namespace content
+}  // namespace custom_handlers
 
-#endif  // CONTENT_PUBLIC_COMMON_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
+#endif  // COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_

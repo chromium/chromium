@@ -349,36 +349,36 @@ absl::optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
   return protocol_handler_manager_->TranslateProtocolUrl(app_id, protocol_url);
 }
 
-std::vector<ProtocolHandler> OsIntegrationManager::GetHandlersForProtocol(
-    const std::string& protocol) {
+std::vector<custom_handlers::ProtocolHandler>
+OsIntegrationManager::GetHandlersForProtocol(const std::string& protocol) {
   if (!protocol_handler_manager_)
-    return std::vector<ProtocolHandler>();
+    return std::vector<custom_handlers::ProtocolHandler>();
 
   return protocol_handler_manager_->GetHandlersFor(protocol);
 }
 
-std::vector<ProtocolHandler> OsIntegrationManager::GetAppProtocolHandlers(
-    const AppId& app_id) {
+std::vector<custom_handlers::ProtocolHandler>
+OsIntegrationManager::GetAppProtocolHandlers(const AppId& app_id) {
   if (!protocol_handler_manager_)
-    return std::vector<ProtocolHandler>();
+    return std::vector<custom_handlers::ProtocolHandler>();
 
   return protocol_handler_manager_->GetAppProtocolHandlers(app_id);
 }
 
-std::vector<ProtocolHandler>
+std::vector<custom_handlers::ProtocolHandler>
 OsIntegrationManager::GetAllowedHandlersForProtocol(
     const std::string& protocol) {
   if (!protocol_handler_manager_)
-    return std::vector<ProtocolHandler>();
+    return std::vector<custom_handlers::ProtocolHandler>();
 
   return protocol_handler_manager_->GetAllowedHandlersForProtocol(protocol);
 }
 
-std::vector<ProtocolHandler>
+std::vector<custom_handlers::ProtocolHandler>
 OsIntegrationManager::GetDisallowedHandlersForProtocol(
     const std::string& protocol) {
   if (!protocol_handler_manager_)
-    return std::vector<ProtocolHandler>();
+    return std::vector<custom_handlers::ProtocolHandler>();
 
   return protocol_handler_manager_->GetDisallowedHandlersForProtocol(protocol);
 }

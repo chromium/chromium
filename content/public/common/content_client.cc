@@ -127,9 +127,4 @@ void ContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     mojo::BinderMap* binders) {}
 
-std::u16string ContentClient::GetLocalizedProtocolName(
-    const std::string& protocol) {
-  return base::UTF8ToUTF16(protocol);
-}
-
 }  // namespace content

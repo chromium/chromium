@@ -24,8 +24,8 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -45,8 +45,6 @@ using OsHooksErrors = std::bitset<OsHookType::kMaxValue + 1>;
 // OsHooksOptions contains the (install/uninstall) options of all Os hook
 // deployments.
 using OsHooksOptions = std::bitset<OsHookType::kMaxValue + 1>;
-
-using content::ProtocolHandler;
 
 // Used to pass install options configured from upstream caller.
 // All options are disabled by default.
@@ -160,14 +158,14 @@ class OsIntegrationManager : public AppRegistrarObserver {
   // Proxy calls for WebAppProtocolHandlerManager.
   virtual absl::optional<GURL> TranslateProtocolUrl(const AppId& app_id,
                                                     const GURL& protocol_url);
-  virtual std::vector<ProtocolHandler> GetHandlersForProtocol(
+  virtual std::vector<custom_handlers::ProtocolHandler> GetHandlersForProtocol(
       const std::string& protocol);
-  virtual std::vector<ProtocolHandler> GetAppProtocolHandlers(
+  virtual std::vector<custom_handlers::ProtocolHandler> GetAppProtocolHandlers(
       const AppId& app_id);
-  virtual std::vector<ProtocolHandler> GetAllowedHandlersForProtocol(
-      const std::string& protocol);
-  virtual std::vector<ProtocolHandler> GetDisallowedHandlersForProtocol(
-      const std::string& protocol);
+  virtual std::vector<custom_handlers::ProtocolHandler>
+  GetAllowedHandlersForProtocol(const std::string& protocol);
+  virtual std::vector<custom_handlers::ProtocolHandler>
+  GetDisallowedHandlersForProtocol(const std::string& protocol);
 
   // Getter for testing WebAppFileHandlerManager
   WebAppFileHandlerManager& file_handler_manager_for_testing();

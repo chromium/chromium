@@ -6,6 +6,8 @@ static_library("custom_handlers") {
   sources = [
     "pref_names.cc",
     "pref_names.h",
+    "protocol_handler.cc",
+    "protocol_handler.h",
     "protocol_handler_registry.cc",
     "protocol_handler_registry.h",
     "protocol_handler_throttle.cc",
@@ -17,9 +19,11 @@ static_library("custom_handlers") {
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/strings",
     "//components/user_prefs",
     "//content/public/browser",
     "//content/public/common",
+    "//net",
     "//services/network/public/cpp:cpp_base",
     "//third_party/blink/public/common:headers",
   ]
@@ -32,7 +36,6 @@ static_library("custom_handlers") {
 
     deps += [
       "//components/permissions",
-      "//components/strings",
       "//ui/base",
     ]
   }

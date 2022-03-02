@@ -159,8 +159,9 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
     }
     case ContentSettingsType::PROTOCOL_HANDLERS:
       chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents)
-          ->set_pending_protocol_handler(ProtocolHandler::CreateProtocolHandler(
-              "mailto", GURL("https://example.com/")));
+          ->set_pending_protocol_handler(
+              custom_handlers::ProtocolHandler::CreateProtocolHandler(
+                  "mailto", GURL("https://example.com/")));
       break;
 
     default:

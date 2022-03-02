@@ -7,14 +7,12 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/permissions/permission_request.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
 
 namespace permissions {
 enum class RequestType;
 }  // namespace permissions
-
-using content::ProtocolHandler;
 
 class GURL;
 namespace custom_handlers {

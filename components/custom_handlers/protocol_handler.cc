@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/common/custom_handlers/protocol_handler.h"
+#include "components/custom_handlers/protocol_handler.h"
 
 #include "base/json/values_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "net/base/escape.h"
@@ -12,8 +15,11 @@
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
+#include "ui/base/l10n/l10n_util.h"
 
-namespace content {
+using content::BrowserThread;
+
+namespace custom_handlers {
 
 ProtocolHandler::ProtocolHandler(
     const std::string& protocol,
@@ -32,6 +38,7 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     const std::string& protocol,
     const GURL& url,
     blink::ProtocolHandlerSecurityLevel security_level) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return ProtocolHandler(protocol, url, base::Time::Now(), security_level);
 }
 
@@ -52,6 +59,7 @@ ProtocolHandler ProtocolHandler::CreateWebAppProtocolHandler(
     const std::string& protocol,
     const GURL& url,
     const std::string& app_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return ProtocolHandler(protocol, url, app_id, base::Time::Now(),
                          blink::ProtocolHandlerSecurityLevel::kStrict);
 }
@@ -68,6 +76,7 @@ bool ProtocolHandler::IsValid() const {
   // This matches VerifyCustomHandlerURLSecurity() in blink's
   // NavigatorContentUtils.
   // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   bool has_valid_scheme =
       url_.SchemeIsHTTPOrHTTPS() ||
       (security_level_ ==
@@ -84,19 +93,21 @@ bool ProtocolHandler::IsValid() const {
                                            has_custom_scheme_prefix);
 }
 
-bool ProtocolHandler::IsSameOrigin(
-    const ProtocolHandler& handler) const {
+bool ProtocolHandler::IsSameOrigin(const ProtocolHandler& handler) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return handler.url().DeprecatedGetOriginAsURL() ==
          url_.DeprecatedGetOriginAsURL();
 }
 
 const ProtocolHandler& ProtocolHandler::EmptyProtocolHandler() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   static const ProtocolHandler* const kEmpty = new ProtocolHandler();
   return *kEmpty;
 }
 
 ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     const base::DictionaryValue* value) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsValidDict(value)) {
     return EmptyProtocolHandler();
   }
@@ -132,6 +143,7 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
 }
 
 GURL ProtocolHandler::TranslateUrl(const GURL& url) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::string translatedUrlSpec(url_.spec());
   base::ReplaceFirstSubstringAfterOffset(
       &translatedUrlSpec, 0, "%s",
@@ -140,6 +152,7 @@ GURL ProtocolHandler::TranslateUrl(const GURL& url) const {
 }
 
 std::unique_ptr<base::DictionaryValue> ProtocolHandler::Encode() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto d = std::make_unique<base::DictionaryValue>();
   d->SetString("protocol", protocol_);
   d->SetString("url", url_.spec());
@@ -154,18 +167,22 @@ std::unique_ptr<base::DictionaryValue> ProtocolHandler::Encode() const {
 
 std::u16string ProtocolHandler::GetProtocolDisplayName(
     const std::string& protocol) {
-  return content::GetContentClient()->GetLocalizedProtocolName(protocol);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (protocol == "mailto")
+    return l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_MAILTO_NAME);
+  if (protocol == "webcal")
+    return l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_WEBCAL_NAME);
+  return base::UTF8ToUTF16(protocol);
 }
 
 std::u16string ProtocolHandler::GetProtocolDisplayName() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetProtocolDisplayName(protocol_);
 }
 
 #if !defined(NDEBUG)
 std::string ProtocolHandler::ToString() const {
-  return "{ protocol=" + protocol_ +
-         ", url=" + url_.spec() +
-         " }";
+  return "{ protocol=" + protocol_ + ", url=" + url_.spec() + " }";
 }
 #endif
 
@@ -181,4 +198,4 @@ bool ProtocolHandler::operator<(const ProtocolHandler& other) const {
   return url_ < other.url_;
 }
 
-}  // namespace content
+}  // namespace custom_handlers

@@ -92,6 +92,7 @@
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/domain_reliability/clear_mode.h"
@@ -2345,10 +2346,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveProtocolHandler) {
   base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
   base::Time yesterday = base::Time::Now() - base::Days(1);
   registry->OnAcceptRegisterProtocolHandler(
-      content::ProtocolHandler::CreateProtocolHandler("news", kOrigin));
-  registry->OnAcceptRegisterProtocolHandler(
-      content::ProtocolHandler("mailto", kOrigin, yesterday,
-                               blink::ProtocolHandlerSecurityLevel::kStrict));
+      custom_handlers::ProtocolHandler::CreateProtocolHandler("news", kOrigin));
+  registry->OnAcceptRegisterProtocolHandler(custom_handlers::ProtocolHandler(
+      "mailto", kOrigin, yesterday,
+      blink::ProtocolHandlerSecurityLevel::kStrict));
   EXPECT_TRUE(registry->IsHandledProtocol("news"));
   EXPECT_TRUE(registry->IsHandledProtocol("mailto"));
   EXPECT_EQ(

@@ -424,12 +424,3 @@ void ChromeContentClient::ExposeInterfacesToBrowser(
           }),
       io_task_runner);
 }
-
-std::u16string ChromeContentClient::GetLocalizedProtocolName(
-    const std::string& protocol) {
-  if (protocol == "mailto")
-    return GetLocalizedString(IDS_REGISTER_PROTOCOL_HANDLER_MAILTO_NAME);
-  if (protocol == "webcal")
-    return GetLocalizedString(IDS_REGISTER_PROTOCOL_HANDLER_WEBCAL_NAME);
-  return ContentClient::GetLocalizedProtocolName(protocol);
-}

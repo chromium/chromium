@@ -9,8 +9,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <vector>
@@ -20,8 +20,6 @@ class Profile;
 namespace web_app {
 
 class WebAppRegistrar;
-
-using content::ProtocolHandler;
 
 class WebAppProtocolHandlerManager {
  public:
@@ -43,16 +41,16 @@ class WebAppProtocolHandlerManager {
                                             const GURL& protocol_url) const;
 
   // Gets the list of handlers for a given protocol.
-  std::vector<ProtocolHandler> GetHandlersFor(
+  std::vector<custom_handlers::ProtocolHandler> GetHandlersFor(
       const std::string& protocol) const;
 
   // Gets the list of handlers with launch permissions for a given protocol.
-  std::vector<ProtocolHandler> GetAllowedHandlersForProtocol(
+  std::vector<custom_handlers::ProtocolHandler> GetAllowedHandlersForProtocol(
       const std::string& protocol) const;
 
   // Gets the list of disallowed handlers for a given protocol.
-  std::vector<ProtocolHandler> GetDisallowedHandlersForProtocol(
-      const std::string& protocol) const;
+  std::vector<custom_handlers::ProtocolHandler>
+  GetDisallowedHandlersForProtocol(const std::string& protocol) const;
 
   // Gets the protocol handlers for `app_id`. Any protocols that the user
   // has explicitly disallowed, will be excluded.
@@ -61,7 +59,7 @@ class WebAppProtocolHandlerManager {
       const std::string& app_id) const;
 
   // Gets all protocol handlers for |app_id| as custom handler objects.
-  std::vector<ProtocolHandler> GetAppProtocolHandlers(
+  std::vector<custom_handlers::ProtocolHandler> GetAppProtocolHandlers(
       const AppId& app_id) const;
 
   // Registers OS specific protocol handlers for OSs that need them, using the

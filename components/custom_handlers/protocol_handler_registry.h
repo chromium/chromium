@@ -14,20 +14,21 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-using content::ProtocolHandler;
 using DefaultClientCallback = base::OnceCallback<void(bool)>;
 
 namespace custom_handlers {
+
+class ProtocolHandler;
 
 // This is where handlers for protocols registered with
 // navigator.registerProtocolHandler() are registered. Each Profile owns an

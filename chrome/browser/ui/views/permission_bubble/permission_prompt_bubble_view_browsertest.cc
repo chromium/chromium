@@ -159,8 +159,9 @@ class PermissionPromptBubbleViewBrowserTest
 
   permissions::PermissionRequest* MakeRegisterProtocolHandlerRequest() {
     std::string protocol = "mailto";
-    ProtocolHandler handler =
-        ProtocolHandler::CreateProtocolHandler(protocol, GetTestUrl());
+    custom_handlers::ProtocolHandler handler =
+        custom_handlers::ProtocolHandler::CreateProtocolHandler(protocol,
+                                                                GetTestUrl());
     custom_handlers::ProtocolHandlerRegistry* registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
             browser()->profile());

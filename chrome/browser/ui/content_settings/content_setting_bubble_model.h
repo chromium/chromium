@@ -22,7 +22,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -42,8 +42,6 @@ class WebContents;
 namespace ui {
 class Event;
 }
-
-using content::ProtocolHandler;
 
 // The hierarchy of bubble models:
 //
@@ -352,8 +350,8 @@ class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
   void PerformActionForSelectedItem();
 
   raw_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
-  ProtocolHandler pending_handler_;
-  ProtocolHandler previous_handler_;
+  custom_handlers::ProtocolHandler pending_handler_;
+  custom_handlers::ProtocolHandler previous_handler_;
 };
 
 // The model of the content settings bubble for media settings.

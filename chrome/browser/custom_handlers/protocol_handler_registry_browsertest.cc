@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/custom_handlers/protocol_handler.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -33,6 +35,7 @@
 #endif
 
 using content::WebContents;
+using custom_handlers::ProtocolHandler;
 using custom_handlers::ProtocolHandlerRegistry;
 
 namespace {

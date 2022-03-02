@@ -17,6 +17,7 @@
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "components/custom_handlers/pref_names.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -24,7 +25,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -32,7 +32,6 @@
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
 using content::BrowserThread;
-using content::ProtocolHandler;
 
 namespace custom_handlers {
 

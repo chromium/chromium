@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/url_constants.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
@@ -136,7 +137,7 @@ void ProtocolHandlersHandler::GetHandlersForProtocol(
       GetProtocolHandlerRegistry();
   handlers_value->SetStringKey(
       "protocol_display_name",
-      content::ProtocolHandler::GetProtocolDisplayName(protocol));
+      custom_handlers::ProtocolHandler::GetProtocolDisplayName(protocol));
   handlers_value->SetStringKey("protocol", protocol);
 
   base::ListValue handlers_list;
@@ -194,7 +195,7 @@ void ProtocolHandlersHandler::SendHandlersEnabledValue() {
 
 void ProtocolHandlersHandler::HandleRemoveHandler(
     const base::Value::List& args) {
-  ProtocolHandler handler(ParseHandlerFromArgs(args));
+  custom_handlers::ProtocolHandler handler(ParseHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
   GetProtocolHandlerRegistry()->RemoveHandler(handler);
 
@@ -215,19 +216,20 @@ void ProtocolHandlersHandler::HandleSetHandlersEnabled(
 }
 
 void ProtocolHandlersHandler::HandleSetDefault(const base::Value::List& args) {
-  const ProtocolHandler& handler(ParseHandlerFromArgs(args));
+  const custom_handlers::ProtocolHandler& handler(ParseHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
   GetProtocolHandlerRegistry()->OnAcceptRegisterProtocolHandler(handler);
 }
 
-ProtocolHandler ProtocolHandlersHandler::ParseHandlerFromArgs(
+custom_handlers::ProtocolHandler ProtocolHandlersHandler::ParseHandlerFromArgs(
     const base::Value::List& args) const {
   bool ok = args.size() >= 2u && args[0].is_string() && args[1].is_string();
   if (!ok)
-    return ProtocolHandler::EmptyProtocolHandler();
+    return custom_handlers::ProtocolHandler::EmptyProtocolHandler();
   std::string protocol = args[0].GetString();
   std::string url = args[1].GetString();
-  return ProtocolHandler::CreateProtocolHandler(protocol, GURL(url));
+  return custom_handlers::ProtocolHandler::CreateProtocolHandler(protocol,
+                                                                 GURL(url));
 }
 
 custom_handlers::ProtocolHandlerRegistry*
@@ -246,7 +248,7 @@ ProtocolHandlersHandler::GetAppHandlersForProtocol(
   if (!handlers.empty()) {
     handlers_value->SetStringPath(
         "protocol_display_name",
-        content::ProtocolHandler::GetProtocolDisplayName(protocol));
+        custom_handlers::ProtocolHandler::GetProtocolDisplayName(protocol));
     handlers_value->SetStringPath("protocol", protocol);
 
     base::ListValue handlers_list;
@@ -308,7 +310,7 @@ void ProtocolHandlersHandler::HandleObserveAppProtocolHandlers(
 
 void ProtocolHandlersHandler::HandleRemoveAllowedAppHandler(
     const base::Value::List& args) {
-  content::ProtocolHandler handler(ParseAppHandlerFromArgs(args));
+  custom_handlers::ProtocolHandler handler(ParseAppHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
   DCHECK(web_app_provider_);
 
@@ -322,7 +324,7 @@ void ProtocolHandlersHandler::HandleRemoveAllowedAppHandler(
 
 void ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler(
     const base::Value::List& args) {
-  content::ProtocolHandler handler(ParseAppHandlerFromArgs(args));
+  custom_handlers::ProtocolHandler handler(ParseAppHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
   DCHECK(web_app_provider_);
 
@@ -339,14 +341,15 @@ void ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler(
   // update the view then.
 }
 
-content::ProtocolHandler ProtocolHandlersHandler::ParseAppHandlerFromArgs(
+custom_handlers::ProtocolHandler
+ProtocolHandlersHandler::ParseAppHandlerFromArgs(
     const base::Value::List& args) const {
   const std::string* protocol = args[0].GetIfString();
   const std::string* url = args[1].GetIfString();
   const std::string* app_id = args[2].GetIfString();
   if (!protocol || !url || !app_id)
-    return content::ProtocolHandler::EmptyProtocolHandler();
-  return content::ProtocolHandler::CreateWebAppProtocolHandler(
+    return custom_handlers::ProtocolHandler::EmptyProtocolHandler();
+  return custom_handlers::ProtocolHandler::CreateWebAppProtocolHandler(
       *protocol, GURL(*url), *app_id);
 }
 

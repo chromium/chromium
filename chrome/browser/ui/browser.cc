@@ -163,6 +163,7 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -207,7 +208,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "content/public/common/page_zoom.h"
 #include "content/public/common/profiling.h"
 #include "content/public/common/url_constants.h"
@@ -289,11 +289,11 @@ using content::NativeWebKeyboardEvent;
 using content::NavigationController;
 using content::NavigationEntry;
 using content::OpenURLParams;
-using content::ProtocolHandler;
 using content::Referrer;
 using content::RenderWidgetHostView;
 using content::SiteInstance;
 using content::WebContents;
+using custom_handlers::ProtocolHandler;
 using extensions::Extension;
 using ui::WebDialogDelegate;
 using web_modal::WebContentsModalDialogManager;

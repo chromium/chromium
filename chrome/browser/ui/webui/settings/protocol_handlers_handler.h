@@ -17,7 +17,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // ProtocolHandlersHandler
@@ -30,8 +29,6 @@
 namespace base {
 class DictionaryValue;
 }
-
-using content::ProtocolHandler;
 
 namespace settings {
 
@@ -85,7 +82,8 @@ class ProtocolHandlersHandler
 
   // Parses a ProtocolHandler out of the arguments passed back from the view.
   // |args| is a list of [protocol, url].
-  ProtocolHandler ParseHandlerFromArgs(const base::Value::List& args) const;
+  custom_handlers::ProtocolHandler ParseHandlerFromArgs(
+      const base::Value::List& args) const;
 
   // Returns a JSON object describing the set of protocol handlers for the
   // given protocol.
@@ -115,7 +113,7 @@ class ProtocolHandlersHandler
 
   // Parses an App ProtocolHandler out of |args|, which is a list of [protocol,
   // url, app_id].
-  content::ProtocolHandler ParseAppHandlerFromArgs(
+  custom_handlers::ProtocolHandler ParseAppHandlerFromArgs(
       const base::Value::List& args) const;
 
   // Returns a DictionaryValue describing the set of app protocol handlers for

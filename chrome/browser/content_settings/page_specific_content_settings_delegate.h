@@ -8,11 +8,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
+#include "components/custom_handlers/protocol_handler.h"
 
 namespace chrome {
-
-using content::ProtocolHandler;
 
 class PageSpecificContentSettingsDelegate
     : public content_settings::PageSpecificContentSettings::Delegate,
@@ -30,25 +28,28 @@ class PageSpecificContentSettingsDelegate
       content::WebContents* web_contents);
 
   // Call to indicate that there is a protocol handler pending user approval.
-  void set_pending_protocol_handler(const ProtocolHandler& handler) {
+  void set_pending_protocol_handler(
+      const custom_handlers::ProtocolHandler& handler) {
     pending_protocol_handler_ = handler;
   }
 
-  const ProtocolHandler& pending_protocol_handler() const {
+  const custom_handlers::ProtocolHandler& pending_protocol_handler() const {
     return pending_protocol_handler_;
   }
 
   void ClearPendingProtocolHandler() {
-    pending_protocol_handler_ = ProtocolHandler::EmptyProtocolHandler();
+    pending_protocol_handler_ =
+        custom_handlers::ProtocolHandler::EmptyProtocolHandler();
   }
 
   // Sets the previous protocol handler which will be replaced by the
   // pending protocol handler.
-  void set_previous_protocol_handler(const ProtocolHandler& handler) {
+  void set_previous_protocol_handler(
+      const custom_handlers::ProtocolHandler& handler) {
     previous_protocol_handler_ = handler;
   }
 
-  const ProtocolHandler& previous_protocol_handler() const {
+  const custom_handlers::ProtocolHandler& previous_protocol_handler() const {
     return previous_protocol_handler_;
   }
 
@@ -101,14 +102,14 @@ class PageSpecificContentSettingsDelegate
   // registerProtocolHandler was invoked without user gesture.
   // The |IsEmpty| method will be true if no protocol handler is
   // pending registration.
-  ProtocolHandler pending_protocol_handler_ =
-      ProtocolHandler::EmptyProtocolHandler();
+  custom_handlers::ProtocolHandler pending_protocol_handler_ =
+      custom_handlers::ProtocolHandler::EmptyProtocolHandler();
 
   // The previous protocol handler to be replaced by
   // the pending_protocol_handler_, if there is one. Empty if
   // there is no handler which would be replaced.
-  ProtocolHandler previous_protocol_handler_ =
-      ProtocolHandler::EmptyProtocolHandler();
+  custom_handlers::ProtocolHandler previous_protocol_handler_ =
+      custom_handlers::ProtocolHandler::EmptyProtocolHandler();
 
   // The setting on the pending protocol handler registration. Persisted in case
   // the user opens the bubble and makes changes multiple times.

@@ -27,8 +27,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,7 +41,7 @@ const char kApp2Name[] = "app2 name";
 const char kApp2Url[] = "https://app2.com/%s";
 }  // namespace
 
-using content::ProtocolHandler;
+using custom_handlers::ProtocolHandler;
 
 namespace web_app {
 

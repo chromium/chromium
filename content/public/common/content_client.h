@@ -205,8 +205,6 @@ class CONTENT_EXPORT ContentClient {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::BinderMap* binders);
 
-  virtual std::u16string GetLocalizedProtocolName(const std::string&);
-
  private:
   friend class ContentClientInitializer;  // To set these pointers.
   friend class InternalTestInitializer;

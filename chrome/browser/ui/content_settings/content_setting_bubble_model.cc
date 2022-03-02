@@ -428,8 +428,10 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
                                       web_contents,
                                       ContentSettingsType::PROTOCOL_HANDLERS),
       registry_(registry),
-      pending_handler_(ProtocolHandler::EmptyProtocolHandler()),
-      previous_handler_(ProtocolHandler::EmptyProtocolHandler()) {
+      pending_handler_(
+          custom_handlers::ProtocolHandler::EmptyProtocolHandler()),
+      previous_handler_(
+          custom_handlers::ProtocolHandler::EmptyProtocolHandler()) {
   auto* content_settings =
       chrome::PageSpecificContentSettingsDelegate::FromWebContents(
           web_contents);

@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "chrome/grit/generated_resources.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/label.h"
@@ -47,7 +47,8 @@ WebAppProtocolHandlerIntentPickerView::CreateAboveAppInfoView() {
   auto open_app_label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(
           IDS_PROTOCOL_HANDLER_INTENT_PICKER_QUESTION,
-          content::ProtocolHandler::GetProtocolDisplayName(url_.scheme())),
+          custom_handlers::ProtocolHandler::GetProtocolDisplayName(
+              url_.scheme())),
       views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::TextStyle::STYLE_PRIMARY);
   open_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

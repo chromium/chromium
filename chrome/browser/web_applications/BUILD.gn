@@ -241,6 +241,7 @@ source_set("web_applications") {
     "//chrome/common",
     "//chrome/common:non_code_constants",
     "//components/content_settings/core/browser",
+    "//components/custom_handlers",
     "//components/resources:components_resources_grit",
 
     # TODO(crbug.com/1225132): Clean up this legacy crx dependency.

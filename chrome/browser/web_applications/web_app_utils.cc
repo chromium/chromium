@@ -342,8 +342,9 @@ void PersistProtocolHandlersUserChoice(
 
   OsIntegrationManager& os_integration_manager =
       provider->os_integration_manager();
-  const std::vector<ProtocolHandler> original_protocol_handlers =
-      os_integration_manager.GetAppProtocolHandlers(app_id);
+  const std::vector<custom_handlers::ProtocolHandler>
+      original_protocol_handlers =
+          os_integration_manager.GetAppProtocolHandlers(app_id);
 
   if (allowed) {
     provider->sync_bridge().AddAllowedLaunchProtocol(app_id,

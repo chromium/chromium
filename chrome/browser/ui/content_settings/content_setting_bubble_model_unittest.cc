@@ -59,6 +59,7 @@
 
 using content::WebContentsTester;
 using content_settings::PageSpecificContentSettings;
+using custom_handlers::ProtocolHandler;
 
 class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
  protected:
