@@ -57,7 +57,13 @@ ArcWindowHandler::ArcWindowHandler() {
     lifetime_manager->AddObserver(this);
 }
 
-ArcWindowHandler::~ArcWindowHandler() = default;
+ArcWindowHandler::~ArcWindowHandler() {
+  if (exo::WMHelper::HasInstance()) {
+    auto* lifetime_manager = exo::WMHelper::GetInstance()->GetLifetimeManager();
+    if (lifetime_manager)
+      lifetime_manager->RemoveObserver(this);
+  }
+}
 
 void ArcWindowHandler::OnDestroyed() {
   // Destroy all ARC ghost window when Wayland server shutdown.
