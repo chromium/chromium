@@ -498,7 +498,6 @@ _FUCHSIA_SHERLOCK_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_desktop'),
-    _GetBenchmarkConfig('system_health.memory_desktop')
 ])
 _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
@@ -664,8 +663,7 @@ FUCHSIA_PERF_ATLAS_FYI = PerfPlatform('fuchsia-perf-atlas-fyi',
                                       _FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS,
                                       1,
                                       'fuchsia',
-                                      is_fyi=True,
-                                      executables=FUCHSIA_EXEC_CONFIGS['atlas'])
+                                      is_fyi=True)
 
 # Calibration bots
 LINUX_PERF_CALIBRATION = PerfPlatform(

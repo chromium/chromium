@@ -1,6 +1,62 @@
 [
     {
-        "duration": "900.0",
-        "name": "base_perftests/_gtest_"
+        "duration": "3.0",
+        "name": "system_health.common_desktop/browse:media:youtube:2019"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/browse:tools:earth:2020"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/browse:tools:gmail-compose:2020"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/browse:tools:gmail-labelclick:2020"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/browse:tools:gmail-search:2020"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/browse:tools:photoshop:2021"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/browse:tools:photoshop_warm:2021"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/browse:tools:sheets:2019"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/browse_accessibility:media:youtube"
+    },
+    {
+        "duration": "23.0",
+        "name": "system_health.common_desktop/load:media:9gag"
+    },
+    {
+        "duration": "19.0",
+        "name": "system_health.common_desktop/load:news:flipboard"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/load:tools:chat:2020"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/load:tools:gmail:2019"
+    },
+    {
+        "duration": "131.0",
+        "name": "system_health.common_desktop/long_running:tools:gmail-foreground"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.common_desktop/multitab:misc:typical24"
     }
 ]
