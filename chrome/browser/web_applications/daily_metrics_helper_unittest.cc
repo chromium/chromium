@@ -18,7 +18,6 @@ namespace web_app {
 
 namespace {
 
-using base::Time;
 using testing::Contains;
 using testing::Key;
 using testing::Not;

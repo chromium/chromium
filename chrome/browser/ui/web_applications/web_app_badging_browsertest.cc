@@ -24,7 +24,6 @@
 #include "content/public/test/browser_test.h"
 
 using content::RenderFrameHost;
-using content::WebContents;
 
 namespace web_app {
 

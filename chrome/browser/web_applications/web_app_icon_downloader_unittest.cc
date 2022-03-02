@@ -21,8 +21,6 @@
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-using content::RenderViewHostTester;
-
 namespace web_app {
 
 namespace {

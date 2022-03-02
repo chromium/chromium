@@ -79,8 +79,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-using ui_test_utils::BrowserChangeObserver;
-
 namespace web_app {
 
 namespace {

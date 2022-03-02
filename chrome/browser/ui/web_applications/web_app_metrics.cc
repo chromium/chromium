@@ -27,7 +27,6 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 using DisplayMode = blink::mojom::DisplayMode;
-using absl::optional;
 using content::WebContents;
 
 namespace web_app {

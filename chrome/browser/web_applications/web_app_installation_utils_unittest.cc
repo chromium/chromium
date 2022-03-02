@@ -19,8 +19,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-using base::UTF8ToUTF16;
-
 namespace web_app {
 
 namespace {

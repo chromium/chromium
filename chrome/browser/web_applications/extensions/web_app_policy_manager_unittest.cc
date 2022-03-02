@@ -50,8 +50,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-using sync_preferences::TestingPrefServiceSyncable;
-
 namespace web_app {
 
 namespace {
