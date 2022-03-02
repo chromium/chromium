@@ -4,6 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -170,7 +171,13 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
 };
 
 // Test payment request methods are not supported by the payment app.
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, NotSupportedError) {
+// Flaky on Linux: http://crbug.com/1296289
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NotSupportedError DISABLED_NotSupportedError
+#else
+#define MAYBE_NotSupportedError NotSupportedError
+#endif
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, MAYBE_NotSupportedError) {
   InstallAlicePayForMethod("https://frankpay.com");
 
   {
