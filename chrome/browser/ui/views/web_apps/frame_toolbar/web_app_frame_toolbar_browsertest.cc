@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
@@ -48,7 +47,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/test/test_extension_dir.h"
@@ -551,24 +549,6 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         "rect");
   }
 
-  // Opens a new popup window from |web_contents| on |target_url| and returns
-  // the Browser it opened in.
-  Browser* OpenPopup(content::WebContents* web_contents,
-                     const std::string& target_url) {
-    GURL target_gurl(target_url);
-    content::TestNavigationObserver nav_observer(target_gurl);
-    nav_observer.StartWatchingNewWebContents();
-
-    std::string script =
-        "window.open('" + target_url + "', '_blank', 'popup');";
-    EXPECT_TRUE(content::ExecuteScript(web_contents, script));
-    nav_observer.Wait();
-
-    Browser* popup = chrome::FindLastActive();
-    EXPECT_TRUE(popup);
-    return popup;
-  }
-
  protected:
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 
@@ -675,47 +655,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   helper()->browser_view()->GetWidget()->SetBounds(new_bounds);
   title_watcher2.AlsoWaitForTitle(u"ongeometrychange");
   EXPECT_EQ(u"onresize", title_watcher2.WaitAndGetTitle());
-}
-
-// Test to ensure crbug.com/1298226 won't reproduce.
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       PopupFromWcoAppToItself) {
-  InstallAndLaunchWebApp();
-  ToggleWindowControlsOverlayAndWait();
-
-  auto* wco_app_web_contents = helper()->browser_view()->GetActiveWebContents();
-  Browser* popup = OpenPopup(
-      wco_app_web_contents,
-      EvalJs(wco_app_web_contents, "window.location.href").ExtractString());
-
-  auto* popup_web_contents =
-      BrowserView::GetBrowserViewForBrowser(popup)->GetActiveWebContents();
-
-  // When popup is opened pointing to itself, WCO's state will remain.
-  EXPECT_TRUE(EvalJs(popup_web_contents,
-                     "window.navigator.windowControlsOverlay.visible")
-                  .ExtractBool());
-}
-
-// Test to ensure crbug.com/1298237 won't reproduce.
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       PopupFromWcoAppToAnyOtherWebsite) {
-  InstallAndLaunchWebApp();
-  // The initial WCO state doesn't matter, but to highlight that it's different,
-  // the script is run with the WCO initially toggled on.
-  ToggleWindowControlsOverlayAndWait();
-
-  auto* wco_app_web_contents = helper()->browser_view()->GetActiveWebContents();
-  Browser* popup = OpenPopup(wco_app_web_contents, "https://google.com");
-
-  auto* popup_web_contents =
-      BrowserView::GetBrowserViewForBrowser(popup)->GetActiveWebContents();
-
-  // When popup is opened pointing to any other site, it will not know whether
-  // the app uses WCO or not. This also ensures it does not crash.
-  EXPECT_FALSE(EvalJs(popup_web_contents,
-                      "window.navigator.windowControlsOverlay.visible")
-                   .ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
