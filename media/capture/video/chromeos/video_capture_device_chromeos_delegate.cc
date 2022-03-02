@@ -191,8 +191,9 @@ void VideoCaptureDeviceChromeOSDelegate::StopAndDeAllocate(
     CloseDevice(base::UnguessableToken());
     CameraAppDeviceBridgeImpl::GetInstance()->OnVideoCaptureDeviceClosing(
         device_descriptor_.device_id);
+    camera_device_ipc_thread_.task_runner()->DeleteSoon(
+        FROM_HERE, std::move(camera_device_delegate_));
     camera_device_ipc_thread_.Stop();
-    camera_device_delegate_.reset();
     device_context_.reset();
   }
 }
