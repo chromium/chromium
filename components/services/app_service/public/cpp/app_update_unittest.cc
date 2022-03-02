@@ -239,7 +239,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_allow_uninstall_, u.AllowUninstall());
     EXPECT_EQ(expect_allow_uninstall_changed_, u.AllowUninstallChanged());
 
-    EXPECT_EQ(expect_has_badge_, u.GetHasBadge());
+    EXPECT_EQ(expect_has_badge_, u.HasBadge());
     EXPECT_EQ(expect_has_badge_changed_, u.HasBadgeChanged());
 
     EXPECT_EQ(expect_paused_, u.Paused());

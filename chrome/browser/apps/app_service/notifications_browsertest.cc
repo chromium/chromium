@@ -94,7 +94,7 @@ std::vector<arc::mojom::AppInfoPtr> GetTestAppsList() {
 }
 
 absl::optional<bool> HasBadge(Profile* profile, const std::string& app_id) {
-  auto mojom_has_badge = OptionalBool::kUnknown;
+  absl::optional<bool> mojom_has_badge;
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->FlushMojoCallsForTesting();
   proxy->AppRegistryCache().ForOneApp(
@@ -105,13 +105,13 @@ absl::optional<bool> HasBadge(Profile* profile, const std::string& app_id) {
   absl::optional<bool> has_badge;
   proxy->AppRegistryCache().ForApp(app_id,
                                    [&has_badge](const apps::AppUpdate& update) {
-                                     has_badge = update.GetHasBadge();
+                                     has_badge = update.HasBadge();
                                    });
 
-  if (has_badge.has_value()) {
-    if (has_badge.value() && mojom_has_badge == OptionalBool::kTrue)
+  if (has_badge.has_value() && has_badge == mojom_has_badge) {
+    if (has_badge.value())
       return true;
-    if (!has_badge.value() && mojom_has_badge == OptionalBool::kFalse)
+    if (!has_badge.value())
       return false;
   }
   return absl::nullopt;

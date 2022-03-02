@@ -55,8 +55,7 @@ class ASH_EXPORT AppListBadgeController
  private:
   // Updates whether a notification badge is shown for the AppListItemView
   // corresponding with the |app_id|.
-  void UpdateItemNotificationBadge(const std::string& app_id,
-                                   apps::mojom::OptionalBool has_badge);
+  void UpdateItemNotificationBadge(const std::string& app_id, bool has_badge);
 
   // Checks the notification badging pref and then updates whether a
   // notification badge is shown for each AppListItem.

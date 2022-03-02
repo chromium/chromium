@@ -238,7 +238,7 @@ void ShelfController::OnDisplayConfigurationChanged() {
 void ShelfController::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.HasBadgeChanged() &&
       notification_badging_pref_enabled_.value_or(false)) {
-    bool has_badge = update.HasBadge() == apps::mojom::OptionalBool::kTrue;
+    bool has_badge = update.HasBadge().value_or(false);
     model_.UpdateItemNotification(update.AppId(), has_badge);
   }
 }
@@ -256,7 +256,7 @@ void ShelfController::ShelfItemAdded(int index) {
 
   // Update the notification badge indicator for the newly added shelf item.
   cache_->ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-    bool has_badge = update.HasBadge() == apps::mojom::OptionalBool::kTrue;
+    bool has_badge = update.HasBadge().value_or(false);
     model_.UpdateItemNotification(update.AppId(), has_badge);
   });
 }
@@ -276,10 +276,9 @@ void ShelfController::UpdateAppNotificationBadging() {
   if (cache_) {
     cache_->ForEachApp([this](const apps::AppUpdate& update) {
       // Set the app notification badge hidden when the pref is disabled.
-      bool has_badge =
-          notification_badging_pref_enabled_.value()
-              ? (update.HasBadge() == apps::mojom::OptionalBool::kTrue)
-              : false;
+      bool has_badge = notification_badging_pref_enabled_.value()
+                           ? update.HasBadge().value_or(false)
+                           : false;
 
       model_.UpdateItemNotification(update.AppId(), has_badge);
     });

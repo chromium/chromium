@@ -47,8 +47,7 @@ void AppListBadgeController::OnAppListItemAdded(AppListItem* item) {
     // Update the notification badge indicator for the newly added app list
     // item.
     cache_->ForOneApp(item->id(), [item](const apps::AppUpdate& update) {
-      item->UpdateNotificationBadge(update.HasBadge() ==
-                                    apps::mojom::OptionalBool::kTrue);
+      item->UpdateNotificationBadge(update.HasBadge().value_or(false));
     });
   }
 }
@@ -80,7 +79,8 @@ void AppListBadgeController::OnActiveUserPrefServiceChanged(
 void AppListBadgeController::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.HasBadgeChanged() &&
       notification_badging_pref_enabled_.value_or(false)) {
-    UpdateItemNotificationBadge(update.AppId(), update.HasBadge());
+    UpdateItemNotificationBadge(update.AppId(),
+                                update.HasBadge().value_or(false));
   }
 }
 
@@ -91,13 +91,13 @@ void AppListBadgeController::OnAppRegistryCacheWillBeDestroyed(
 
 void AppListBadgeController::UpdateItemNotificationBadge(
     const std::string& app_id,
-    apps::mojom::OptionalBool has_badge) {
+    bool has_badge) {
   if (!model_)
     return;
   AppListItem* item = model_->FindItem(app_id);
   if (!item)
     return;
-  item->UpdateNotificationBadge(has_badge == apps::mojom::OptionalBool::kTrue);
+  item->UpdateNotificationBadge(has_badge);
 }
 
 void AppListBadgeController::UpdateAppNotificationBadging() {
@@ -115,11 +115,8 @@ void AppListBadgeController::UpdateAppNotificationBadging() {
   if (cache_) {
     cache_->ForEachApp([this](const apps::AppUpdate& update) {
       // Set the app notification badge hidden when the pref is disabled.
-      apps::mojom::OptionalBool has_badge =
-          notification_badging_pref_enabled_.value() &&
-                  (update.HasBadge() == apps::mojom::OptionalBool::kTrue)
-              ? apps::mojom::OptionalBool::kTrue
-              : apps::mojom::OptionalBool::kFalse;
+      bool has_badge = notification_badging_pref_enabled_.value() &&
+                       (update.HasBadge().value_or(false));
       UpdateItemNotificationBadge(update.AppId(), has_badge);
     });
   }
