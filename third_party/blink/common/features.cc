@@ -285,6 +285,11 @@ bool IsFencedFramesMPArchBased() {
          blink::features::FencedFramesImplementationType::kMPArch;
 }
 
+bool IsFencedFramesShadowDOMBased() {
+  return blink::features::kFencedFramesImplementationTypeParam.Get() ==
+         blink::features::FencedFramesImplementationType::kShadowDOM;
+}
+
 const base::Feature kInitialNavigationEntry{"InitialNavigationEntry",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 

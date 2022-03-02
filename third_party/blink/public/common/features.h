@@ -138,6 +138,7 @@ BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
 // Fenced Frames:
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 BLINK_COMMON_EXPORT bool IsFencedFramesMPArchBased();
+BLINK_COMMON_EXPORT bool IsFencedFramesShadowDOMBased();
 
 // Whether we will create initial NavigationEntry or not on FrameTree creation,
 // which also impacts the session history replacement decisions made in the

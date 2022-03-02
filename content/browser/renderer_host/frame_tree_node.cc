@@ -614,29 +614,48 @@ void FrameTreeNode::BeforeUnloadCanceled() {
 
 bool FrameTreeNode::NotifyUserActivation(
     blink::mojom::UserActivationNotificationType notification_type) {
+  // User activation notifications shouldn't propagate into/out of fenced
+  // frames.
+  // For ShadowDOM, fenced frames are in the same frame tree as their embedder,
+  // so we need to perform additional checks to enforce the boundary.
+  // For MPArch, fenced frames have a separate frame tree, so this boundary is
+  // enforced by default.
+  // https://docs.google.com/document/d/1WnIhXOFycoje_sEoZR3Mo0YNSR2Ki7LABIC_HEWFaog
+  bool shadow_dom_fenced_frame_enabled =
+      blink::features::IsFencedFramesEnabled() &&
+      blink::features::IsFencedFramesShadowDOMBased();
+
   // User Activation V2 requires activating all ancestor frames in addition to
   // the current frame. See
   // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
   for (RenderFrameHostImpl* rfh = current_frame_host(); rfh;
        rfh = rfh->GetParent()) {
-    // The use of GetParent above is acceptable with fenced frames, as
-    // the caller to this function will eventually reach
-    // RenderFrameHostManager::UpdateUserActivationState, which in turn will
-    // lead to the propagation of the user activation to all ancestors.
     rfh->DidReceiveUserActivation();
     rfh->frame_tree_node()->user_activation_state_.Activate(notification_type);
+
+    if (shadow_dom_fenced_frame_enabled &&
+        rfh->frame_tree_node()->IsFencedFrameRoot()) {
+      break;
+    }
   }
 
   render_manager_.browsing_context_state()->set_has_active_user_gesture(true);
 
+  absl::optional<base::UnguessableToken> originator_nonce =
+      fenced_frame_nonce();
+
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
   if (base::FeatureList::IsEnabled(
-          features::kUserActivationSameOriginVisibility) &&
-      frame_tree()->type() != FrameTree::Type::kFencedFrame) {
+          features::kUserActivationSameOriginVisibility)) {
     const url::Origin& current_origin =
         this->current_frame_host()->GetLastCommittedOrigin();
     for (FrameTreeNode* node : frame_tree()->Nodes()) {
+      if (shadow_dom_fenced_frame_enabled &&
+          node->fenced_frame_nonce() != originator_nonce) {
+        continue;
+      }
+
       if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
               current_origin)) {
         node->user_activation_state_.Activate(notification_type);
@@ -651,9 +670,28 @@ bool FrameTreeNode::NotifyUserActivation(
 }
 
 bool FrameTreeNode::ConsumeTransientUserActivation() {
+  // User activation consumptions shouldn't propagate into/out of fenced
+  // frames.
+  // For ShadowDOM, fenced frames are in the same frame tree as their embedder,
+  // so we need to perform additional checks to enforce the boundary.
+  // For MPArch, fenced frames have a separate frame tree, so this boundary is
+  // enforced by default.
+  // https://docs.google.com/document/d/1WnIhXOFycoje_sEoZR3Mo0YNSR2Ki7LABIC_HEWFaog
+  bool shadow_dom_fenced_frame_enabled =
+      blink::features::IsFencedFramesEnabled() &&
+      blink::features::IsFencedFramesShadowDOMBased();
+  absl::optional<base::UnguessableToken> originator_nonce =
+      fenced_frame_nonce();
+
   bool was_active = user_activation_state_.IsActive();
-  for (FrameTreeNode* node : frame_tree()->Nodes())
+  for (FrameTreeNode* node : frame_tree()->Nodes()) {
+    if (shadow_dom_fenced_frame_enabled &&
+        node->fenced_frame_nonce() != originator_nonce) {
+      continue;
+    }
+
     node->user_activation_state_.ConsumeIfActive();
+  }
   render_manager_.browsing_context_state()->set_has_active_user_gesture(false);
   return was_active;
 }

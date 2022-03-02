@@ -888,8 +888,8 @@ class FencedFrameTreeBrowserTest
     fenced_frame->WaitForDidStopLoadingForTesting();
   }
 
-  void AddIframeInFencedFrame(FrameTreeNode* fenced_frame,
-                              unsigned int child_index) {
+  FrameTreeNode* AddIframeInFencedFrame(FrameTreeNode* fenced_frame,
+                                        unsigned int child_index) {
     EXPECT_TRUE(
         ExecJs(fenced_frame,
                "var iframe_within_ff = document.createElement('iframe');"
@@ -898,6 +898,7 @@ class FencedFrameTreeBrowserTest
     auto* iframe = fenced_frame->child_at(child_index);
     EXPECT_FALSE(iframe->IsFencedFrameRoot());
     EXPECT_TRUE(iframe->IsInFencedFrameTree());
+    return iframe;
   }
 
   // Navigates the element created in AddIframeInFencedFrame.
@@ -2236,6 +2237,233 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, FenceUserActivation) {
+  // This test exercises browser-side user activation in the following layout:
+  // A: Top-level page    (origin 1)
+  //   B: fencedframe     (origin 1)
+  //     C1: iframe       (origin 1)
+  //       D: fencedframe (origin 1)
+  //         E1: iframe   (origin 1)
+  //         E2: iframe   (origin 2)
+  //     C2: iframe       (origin 2)
+  //   F: fencedframe     (origin 1)
+  //     G: iframe        (origin 1)
+  //
+  // See the design document for more details on intended semantics:
+  // https://docs.google.com/document/d/1WnIhXOFycoje_sEoZR3Mo0YNSR2Ki7LABIC_HEWFaog/
+
+  // Chrome disallows navigation to a URL in a frame that has more than one
+  // ancestor with that URL, so I have to circumvent it with query params.
+  const GURL kOrigin1Url =
+      https_server()->GetURL("a.test", "/fenced_frames/empty.html");
+  const GURL kOrigin1Url2 =
+      https_server()->GetURL("a.test", "/fenced_frames/empty.html?");
+  const GURL kOrigin1Url3 =
+      https_server()->GetURL("a.test", "/fenced_frames/empty.html??");
+  const GURL kOrigin2Url =
+      https_server()->GetURL("b.test", "/fenced_frames/empty.html");
+
+  // Navigate the top-level page.
+  EXPECT_TRUE(NavigateToURL(shell(), kOrigin1Url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  auto* nodeA = static_cast<WebContentsImpl*>(shell()->web_contents())
+                    ->GetPrimaryFrameTree()
+                    .root();
+  ASSERT_NE(nullptr, nodeA);
+
+  // Construct the children described above.
+  auto* nodeB = AddNestedFencedFrame(nodeA, 0);
+  ASSERT_NE(nullptr, nodeB);
+  NavigateNestedFencedFrame(nodeB, kOrigin1Url);
+
+  auto* nodeC1 = AddIframeInFencedFrame(nodeB, 0);
+  ASSERT_NE(nullptr, nodeC1);
+  NavigateIframeInFencedFrame(nodeC1, kOrigin1Url2);
+
+  auto* nodeD = AddNestedFencedFrame(nodeC1, 0);
+  ASSERT_NE(nullptr, nodeD);
+  NavigateNestedFencedFrame(nodeD, kOrigin1Url2);
+
+  auto* nodeE1 = AddIframeInFencedFrame(nodeD, 0);
+  ASSERT_NE(nullptr, nodeE1);
+  NavigateIframeInFencedFrame(nodeE1, kOrigin1Url3);
+
+  auto* nodeE2 = AddIframeInFencedFrame(nodeD, 1);
+  ASSERT_NE(nullptr, nodeE2);
+  NavigateIframeInFencedFrame(nodeE2, kOrigin2Url);
+
+  auto* nodeC2 = AddIframeInFencedFrame(nodeB, 1);
+  ASSERT_NE(nullptr, nodeC2);
+  NavigateIframeInFencedFrame(nodeC2, kOrigin2Url);
+
+  auto* nodeF = AddNestedFencedFrame(nodeA, 1);
+  ASSERT_NE(nullptr, nodeF);
+  NavigateNestedFencedFrame(nodeF, kOrigin1Url);
+
+  auto* nodeG = AddIframeInFencedFrame(nodeF, 0);
+  ASSERT_NE(nullptr, nodeG);
+  NavigateIframeInFencedFrame(nodeG, kOrigin1Url2);
+
+  // Now that the layout is set up, perform the actual user activation tests.
+  std::vector<FrameTreeNode*> nodes = {nodeA,  nodeB,  nodeC1, nodeD, nodeE1,
+                                       nodeE2, nodeC2, nodeF,  nodeG};
+
+  // Create some helper functions so we can express the user activation
+  // notification test cases more concisely.
+  auto ClearAll = [&nodes]() {
+    // User activation can only be cleared per frame tree in MPArch, so we'll
+    // do it from every node just to be safe.
+    for (auto* node : nodes) {
+      node->current_frame_host()->UpdateUserActivationState(
+          blink::mojom::UserActivationUpdateType::kClearActivation,
+          blink::mojom::UserActivationNotificationType::kNone);
+    }
+    for (auto* node : nodes) {
+      EXPECT_FALSE(node->HasStickyUserActivation());
+      EXPECT_FALSE(node->HasTransientUserActivation());
+    }
+  };
+
+  auto Activate = [](FrameTreeNode* node) {
+    node->UpdateUserActivationState(
+        blink::mojom::UserActivationUpdateType::kNotifyActivation,
+        blink::mojom::UserActivationNotificationType::kTest);
+  };
+
+  auto EXPECT_STICKY = [&nodes](std::vector<bool> should_be_activated) {
+    ASSERT_EQ(nodes.size(), should_be_activated.size());
+    for (size_t i = 0; i < nodes.size(); ++i) {
+      if (should_be_activated[i]) {
+        EXPECT_TRUE(nodes[i]->HasStickyUserActivation());
+        EXPECT_TRUE(nodes[i]->HasTransientUserActivation());
+      } else {
+        EXPECT_FALSE(nodes[i]->HasStickyUserActivation());
+        EXPECT_FALSE(nodes[i]->HasTransientUserActivation());
+      }
+    }
+  };
+
+  // Activate A, and check that no other frames are activated.
+  ClearAll();  // Clear all user activations before we start.
+  Activate(nodeA);
+  EXPECT_STICKY({true /*A*/, false /*B*/, false /*C1*/, false /*D*/,
+                 false /*E1*/, false /*E2*/, false /*C2*/, false /*F*/,
+                 false /*G*/});
+
+  // Activate B, and check that only B and C1 are activated.
+  ClearAll();
+  Activate(nodeB);
+  EXPECT_STICKY({false /*A*/, true /*B*/, true /*C1*/, false /*D*/,
+                 false /*E1*/, false /*E2*/, false /*C2*/, false /*F*/,
+                 false /*G*/});
+
+  // Activate C1, and check that only B and C1 are activated.
+  ClearAll();
+  Activate(nodeC1);
+  EXPECT_STICKY({false /*A*/, true /*B*/, true /*C1*/, false /*D*/,
+                 false /*E1*/, false /*E2*/, false /*C2*/, false /*F*/,
+                 false /*G*/});
+
+  // Activate C2, and check that only B and C2 are activated.
+  ClearAll();
+  Activate(nodeC2);
+  EXPECT_STICKY({false /*A*/, true /*B*/, false /*C1*/, false /*D*/,
+                 false /*E1*/, false /*E2*/, true /*C2*/, false /*F*/,
+                 false /*G*/});
+
+  // Activate D, and check that only D and E1 are activated.
+  ClearAll();
+  Activate(nodeD);
+  EXPECT_STICKY({false /*A*/, false /*B*/, false /*C1*/, true /*D*/,
+                 true /*E1*/, false /*E2*/, false /*C2*/, false /*F*/,
+                 false /*G*/});
+
+  // Activate E1, and check that only D and E1 are activated.
+  ClearAll();
+  Activate(nodeE1);
+  EXPECT_STICKY({false /*A*/, false /*B*/, false /*C1*/, true /*D*/,
+                 true /*E1*/, false /*E2*/, false /*C2*/, false /*F*/,
+                 false /*G*/});
+
+  // Activate E2, and check that only D and E2 are activated.
+  ClearAll();
+  Activate(nodeE2);
+  EXPECT_STICKY({false /*A*/, false /*B*/, false /*C1*/, true /*D*/,
+                 false /*E1*/, true /*E2*/, false /*C2*/, false /*F*/,
+                 false /*G*/});
+
+  // Activating F and G is equivalent to activating B and C1, so we omit them.
+
+  // Create some helper functions so we can express the user activation
+  // consumption test cases more concisely.
+  auto ActivateAll = [&nodes]() {
+    // Activate every individual frame just to be safe.
+    for (auto* node : nodes) {
+      node->current_frame_host()->UpdateUserActivationState(
+          blink::mojom::UserActivationUpdateType::kNotifyActivation,
+          blink::mojom::UserActivationNotificationType::kTest);
+    }
+    for (auto* node : nodes) {
+      EXPECT_TRUE(node->HasStickyUserActivation());
+      EXPECT_TRUE(node->HasTransientUserActivation());
+    }
+  };
+
+  auto Consume = [](FrameTreeNode* node) {
+    node->UpdateUserActivationState(
+        blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+        blink::mojom::UserActivationNotificationType::kTest);
+  };
+
+  auto EXPECT_TRANSIENT = [&nodes](std::vector<bool> should_be_activated) {
+    ASSERT_EQ(nodes.size(), should_be_activated.size());
+    for (size_t i = 0; i < nodes.size(); ++i) {
+      EXPECT_TRUE(nodes[i]->HasStickyUserActivation());
+      if (should_be_activated[i]) {
+        EXPECT_TRUE(nodes[i]->HasTransientUserActivation());
+      } else {
+        EXPECT_FALSE(nodes[i]->HasTransientUserActivation());
+      }
+    }
+  };
+
+  // These tests are the opposites of the ones above.
+  // Consume A, and check that no other frames are consumed.
+  ActivateAll();  // Activate all frames before we start.
+  Consume(nodeA);
+  EXPECT_TRANSIENT({false /*A*/, true /*B*/, true /*C1*/, true /*D*/,
+                    true /*E1*/, true /*E2*/, true /*C2*/, true /*F*/,
+                    true /*G*/});
+
+  // Consume B, and check that only B, C1, and C2 are consumed.
+  ActivateAll();
+  Consume(nodeB);
+  EXPECT_TRANSIENT({true /*A*/, false /*B*/, false /*C1*/, true /*D*/,
+                    true /*E1*/, true /*E2*/, false /*C2*/, true /*F*/,
+                    true /*G*/});
+
+  // Consume C2, and check that only B, C1, and C2 are consumed.
+  ActivateAll();
+  Consume(nodeC2);
+  EXPECT_TRANSIENT({true /*A*/, false /*B*/, false /*C1*/, true /*D*/,
+                    true /*E1*/, true /*E2*/, false /*C2*/, true /*F*/,
+                    true /*G*/});
+
+  // Consume D, and check that only D, E1, and E2 are consumed.
+  ActivateAll();
+  Consume(nodeD);
+  EXPECT_TRANSIENT({true /*A*/, true /*B*/, true /*C1*/, false /*D*/,
+                    false /*E1*/, false /*E2*/, true /*C2*/, true /*F*/,
+                    true /*G*/});
+
+  // Consume E1, and check that only D, E1, and E2 are consumed.
+  ActivateAll();
+  Consume(nodeE1);
+  EXPECT_TRANSIENT({true /*A*/, true /*B*/, true /*C1*/, false /*D*/,
+                    false /*E1*/, false /*E2*/, true /*C2*/, true /*F*/,
+                    true /*G*/});
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     FencedFrameTreeBrowserTest,
@@ -2987,7 +3215,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
 }
 
 // This is fenced frames test class differs on from FencedFrameTreeBrowserTest,
-// by testing MPArcg fenced frames exclusively (no ShadowDOM types), through the
+// by testing MPArch fenced frames exclusively (no ShadowDOM types), through the
 // use of FencedFrameTestHelper.
 class MPArchFencedFramesFrameTreeBrowserTest : public FrameTreeBrowserTest {
  public:
@@ -3010,48 +3238,5 @@ class MPArchFencedFramesFrameTreeBrowserTest : public FrameTreeBrowserTest {
  private:
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
-
-IN_PROC_BROWSER_TEST_F(MPArchFencedFramesFrameTreeBrowserTest,
-                       UserActivationToOutermostParent) {
-  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
-  const GURL kFencedFrameUrl =
-      embedded_test_server()->GetURL("/fenced_frames/nested.html");
-
-  // 1. Load starting page.
-  EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  EXPECT_FALSE(
-      current_frame_host()->frame_tree_node()->HasStickyUserActivation());
-
-  // 2. Load fenced frame into starting page.
-  auto* fenced_frame_rfh = static_cast<RenderFrameHostImpl*>(
-      fenced_frame_test_helper().CreateFencedFrame(current_frame_host(),
-                                                   kFencedFrameUrl));
-  ASSERT_NE(nullptr, fenced_frame_rfh);
-  ASSERT_TRUE(fenced_frame_rfh->frame_tree_node()->child_count());
-  auto* nested_frame_rfh =
-      fenced_frame_rfh->frame_tree_node()->child_at(0)->current_frame_host();
-
-  // 3. Clear the state for all render frame hosts
-  current_frame_host()->UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kClearActivation,
-      blink::mojom::UserActivationNotificationType::kNone);
-
-  EXPECT_FALSE(
-      current_frame_host()->frame_tree_node()->HasStickyUserActivation());
-  EXPECT_FALSE(fenced_frame_rfh->frame_tree_node()->HasStickyUserActivation());
-  EXPECT_FALSE(nested_frame_rfh->frame_tree_node()->HasStickyUserActivation());
-
-  // 4. Update the state for the child fenced-frame and check that activation
-  // state has propagated to its parent.
-  fenced_frame_rfh->UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kNotifyActivation,
-      blink::mojom::UserActivationNotificationType::kTest);
-  EXPECT_TRUE(
-      current_frame_host()->frame_tree_node()->HasStickyUserActivation());
-  EXPECT_TRUE(fenced_frame_rfh->frame_tree_node()->HasStickyUserActivation());
-  // State update should not propagate to child nodes, even if they are same
-  // origin.
-  EXPECT_FALSE(nested_frame_rfh->frame_tree_node()->HasStickyUserActivation());
-}
 
 }  // namespace content

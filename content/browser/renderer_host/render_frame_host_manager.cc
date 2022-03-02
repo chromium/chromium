@@ -1439,6 +1439,12 @@ void RenderFrameHostManager::CancelPendingIfNecessary(
 void RenderFrameHostManager::UpdateUserActivationState(
     blink::mojom::UserActivationUpdateType update_type,
     blink::mojom::UserActivationNotificationType notification_type) {
+  // Don't propagate user activations out of fenced frame trees.
+  FrameTreeNode* root = frame_tree_node_->frame_tree()->root();
+  if (root->IsFencedFrameRoot()) {
+    return;
+  }
+
   for (const auto& pair : browsing_context_state_->proxy_hosts()) {
     RenderFrameProxyHost* proxy = pair.second.get();
     proxy->GetAssociatedRemoteFrame()->UpdateUserActivationState(
@@ -1452,10 +1458,8 @@ void RenderFrameHostManager::UpdateUserActivationState(
   // TODO(mustaq): We should add activation consumption propagation from inner
   // to outer delegates, and also all state propagation from outer to inner
   // delegates. crbug.com/1026617.
-  RenderFrameProxyHost* outer_delegate_proxy = frame_tree_node_->frame_tree()
-                                                   ->root()
-                                                   ->render_manager()
-                                                   ->GetProxyToOuterDelegate();
+  RenderFrameProxyHost* outer_delegate_proxy =
+      root->render_manager()->GetProxyToOuterDelegate();
   if (outer_delegate_proxy &&
       update_type ==
           blink::mojom::UserActivationUpdateType::kNotifyActivation) {
