@@ -158,7 +158,14 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, IsProcessSandboxed) {
   EXPECT_TRUE(maybe_is_sandboxed.value());
 }
 
-IN_PROC_BROWSER_TEST_F(MojoSandboxTest, NotIsProcessSandboxed) {
+// TODO(https://crbug.com/1071420): There is currently no way to know whether a
+// child process is sandboxed or not on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_NotIsProcessSandboxed DISABLED_NotIsProcessSandboxed
+#else
+#define MAYBE_NotIsProcessSandboxed NotIsProcessSandboxed
+#endif
+IN_PROC_BROWSER_TEST_F(MojoSandboxTest, MAYBE_NotIsProcessSandboxed) {
   StartProcess(base::BindOnce([](UtilityProcessHost* host) {
     host->SetSandboxType(sandbox::mojom::Sandbox::kNoSandbox);
   }));
