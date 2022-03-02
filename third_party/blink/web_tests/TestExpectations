@@ -3336,6 +3336,7 @@ crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/work
 crbug.com/626703 [ Win ] external/wpt/css/css-animations/KeyframeEffect-getKeyframes.tentative.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac ] external/wpt/css/css-overflow/webkit-line-clamp-036.html [ Failure ]
 crbug.com/626703 [ Mac ] virtual/prerender/external/wpt/speculation-rules/prerender/media-autoplay.html [ Skip Timeout ]
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/media-autoplay.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Timeout ]
