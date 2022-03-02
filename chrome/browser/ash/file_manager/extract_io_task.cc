@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/extract_io_task.h"
 
+#include "components/services/unzip/content/unzip_service.h"
+
 namespace file_manager {
 namespace io_task {
 
@@ -23,6 +25,8 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
   complete_callback_ = std::move(complete_callback);
 
   VLOG(1) << "Executing EXTRACT_ARCHIVE IO task";
+  zip_file_extractor_ = unzip::LaunchUnzipper();
+
   Complete(State::kSuccess);
 }
 

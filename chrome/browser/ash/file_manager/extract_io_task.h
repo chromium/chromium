@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "components/services/unzip/public/cpp/unzip.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -37,6 +38,8 @@ class ExtractIOTask : public IOTask {
   void Complete(State state);
 
   const scoped_refptr<storage::FileSystemContext> file_system_context_;
+
+  mojo::PendingRemote<unzip::mojom::Unzipper> zip_file_extractor_;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;
