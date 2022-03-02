@@ -525,6 +525,18 @@ BOOL gChromeContextMenuEnabled = NO;
   }
 }
 
+- (web::WebState*)webState:(web::WebState*)webState
+         openURLWithParams:(const web::WebState::OpenURLParams&)params {
+  web::NavigationManager::WebLoadParams load_params(params.url);
+  load_params.referrer = params.referrer;
+  load_params.transition_type = params.transition;
+  load_params.is_renderer_initiated = params.is_renderer_initiated;
+  load_params.virtual_url = params.virtual_url;
+  _webState->GetNavigationManager()->LoadURLWithParams(load_params);
+  [self updateCurrentURLs];
+  return _webState.get();
+}
+
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:
     (web::WebState*)webState {
   return _javaScriptDialogPresenter.get();
