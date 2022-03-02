@@ -2737,7 +2737,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)stopNTP {
   [_ntpCoordinator stop];
-  [_ntpCoordinator disconnect];
   _ntpCoordinator = nullptr;
 }
 
@@ -4666,7 +4665,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           [self ntpCoordinatorForWebState:webState];
       DCHECK(newTabPageCoordinator);
       [newTabPageCoordinator stop];
-      [newTabPageCoordinator disconnect];
       _ntpCoordinatorsForWebStates.erase(webState);
     }
   }

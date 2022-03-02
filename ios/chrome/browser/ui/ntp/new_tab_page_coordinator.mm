@@ -378,18 +378,14 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   [self.containedViewController.view removeFromSuperview];
   [self.containedViewController removeFromParentViewController];
 
-  self.started = NO;
-}
-
-- (void)disconnect {
-  // TODO(crbug.com/1200303): Move this to stop once we stop starting/stopping
-  // the Coordinator when turning the feed on/off.
   [self.feedExpandedPref setObserver:nil];
   self.feedExpandedPref = nil;
 
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
   _discoverFeedProviderObserverBridge.reset();
+
+  self.started = NO;
 }
 
 // Updates the visible property based on viewPresented and sceneInForeground
