@@ -74,14 +74,6 @@ class GURL;
 // Shows the dialog for sending the current tab between a user's devices.
 - (void)showSendTabToSelfUI;
 
-// Requests the "desktop" version of the current page in the active tab.
-// TODO(crbug.com/1272497): Move requestDesktopSite and requestMobileSite to the
-// WebNavigationBrowserAgent, eliminating them as commands.
-- (void)requestDesktopSite;
-
-// Requests the "mobile" version of the current page in the active tab.
-- (void)requestMobileSite;
-
 // Prepares the browser to display a popup menu.
 - (void)prepareForPopupMenuPresentation:(PopupMenuCommandType)type;
 

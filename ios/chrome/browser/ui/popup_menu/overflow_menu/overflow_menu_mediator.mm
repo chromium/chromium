@@ -1022,14 +1022,15 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (void)requestDesktopSite {
   RecordAction(UserMetricsAction("MobileMenuRequestDesktopSite"));
   [self.dispatcher dismissPopupMenuAnimated:YES];
-  [self.dispatcher requestDesktopSite];
+  self.navigationAgent->RequestDesktopSite();
+  [self.dispatcher showDefaultSiteViewIPH];
 }
 
 // Dismisses the menu and requests the mobile version of the current page
 - (void)requestMobileSite {
   RecordAction(UserMetricsAction("MobileMenuRequestMobileSite"));
   [self.dispatcher dismissPopupMenuAnimated:YES];
-  [self.dispatcher requestMobileSite];
+  self.navigationAgent->RequestMobileSite();
 }
 
 // Dismisses the menu and opens Find In Page

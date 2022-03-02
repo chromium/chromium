@@ -86,11 +86,12 @@ using base::UserMetricsAction;
       break;
     case PopupMenuActionRequestDesktop:
       RecordAction(UserMetricsAction("MobileMenuRequestDesktopSite"));
-      [self.dispatcher requestDesktopSite];
+      self.navigationAgent->RequestDesktopSite();
+      [self.dispatcher showDefaultSiteViewIPH];
       break;
     case PopupMenuActionRequestMobile:
       RecordAction(UserMetricsAction("MobileMenuRequestMobileSite"));
-      [self.dispatcher requestMobileSite];
+      self.navigationAgent->RequestMobileSite();
       break;
     case PopupMenuActionSiteInformation:
       RecordAction(UserMetricsAction("MobileMenuSiteInformation"));

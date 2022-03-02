@@ -25,6 +25,7 @@ class PrefService;
 @protocol QRGenerationCommands;
 @class ShareImageData;
 @class ShareToData;
+class WebNavigationBrowserAgent;
 
 // Mediator used to generate activities.
 @interface ActivityServiceMediator : NSObject
@@ -41,6 +42,7 @@ class PrefService;
                     prefService:(PrefService*)prefService
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
              baseViewController:(UIViewController*)baseViewController
+                navigationAgent:(WebNavigationBrowserAgent*)agent
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

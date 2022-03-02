@@ -6,10 +6,15 @@
 #define IOS_CHROME_BROWSER_WEB_WEB_NAVIGATION_BROWSER_AGENT_H_
 
 #import "ios/chrome/browser/main/browser_user_data.h"
+#include "ios/web/common/user_agent.h"
 
 class Browser;
 @protocol WebNavigationNTPDelegate;
 class WebStateList;
+
+namespace web {
+class WebState;
+}
 
 // A browser agent that encapsulates logic for common web navigation tasks on
 // the current active web state in the associated browser.
@@ -41,17 +46,29 @@ class WebNavigationBrowserAgent
   void StopLoading();
   // Reloads the active web state.
   void Reload();
+  // Requests the "desktop" version of the current page in the active tab
+  void RequestDesktopSite();
+  // Requests the "mobile" version of the current page in the active tab.
+  void RequestMobileSite();
 
  private:
   friend class BrowserUserData<WebNavigationBrowserAgent>;
   explicit WebNavigationBrowserAgent(Browser* browser);
   BROWSER_USER_DATA_KEY_DECL();
 
+  // Reloads the original url of the last non-redirect item (including
+  // non-history items) with |userAgentType|.
+  void ReloadWithUserAgentType(web::UserAgentType userAgentType);
+  // Return the UserAgentType for a given |web_state|.
+  web::UserAgentType UserAgentType(web::WebState* web_state);
+
   // The web state list for the associated browser. This should never be
   // null.
   WebStateList* web_state_list_;
   // The delegate, if assigned. This may be nil.
   id<WebNavigationNTPDelegate> delegate_;
+  // The associated browser.
+  Browser* browser_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_WEB_NAVIGATION_BROWSER_AGENT_H_

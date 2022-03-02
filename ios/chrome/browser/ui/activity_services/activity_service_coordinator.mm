@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
@@ -70,13 +71,16 @@
       ios::BookmarkModelFactory::GetForBrowserState(browserState);
   id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);
+  WebNavigationBrowserAgent* agent =
+      WebNavigationBrowserAgent::FromBrowser(self.browser);
   self.mediator =
       [[ActivityServiceMediator alloc] initWithHandler:self.handler
                                       bookmarksHandler:bookmarksHandler
                                    qrGenerationHandler:self.scopedHandler
                                            prefService:browserState->GetPrefs()
                                          bookmarkModel:bookmarkModel
-                                    baseViewController:self.baseViewController];
+                                    baseViewController:self.baseViewController
+                                       navigationAgent:agent];
 
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();

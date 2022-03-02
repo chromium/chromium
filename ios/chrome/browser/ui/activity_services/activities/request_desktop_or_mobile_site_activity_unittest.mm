@@ -4,8 +4,16 @@
 
 #import "ios/chrome/browser/ui/activity_services/activities/request_desktop_or_mobile_site_activity.h"
 
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
@@ -19,7 +27,20 @@
 // Test fixture for covering the RequestDesktopOrMobileSiteActivity class.
 class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
  protected:
-  RequestDesktopOrMobileSiteActivityTest() {}
+  RequestDesktopOrMobileSiteActivityTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
+    agent_ = WebNavigationBrowserAgent::FromBrowser(browser_.get());
+    WebStateOpener opener;
+    auto web_state = std::make_unique<web::FakeWebState>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+    navigation_manager_ = navigation_manager.get();
+    web_state->SetNavigationManager(std::move(navigation_manager));
+    browser_->GetWebStateList()->InsertWebState(
+        0, std::move(web_state), WebStateList::InsertionFlags::INSERT_ACTIVATE,
+        opener);
+  }
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -32,10 +53,18 @@ class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
       web::UserAgentType user_agent) {
     return [[RequestDesktopOrMobileSiteActivity alloc]
         initWithUserAgent:user_agent
-                  handler:mocked_handler_];
+                  handler:mocked_handler_
+          navigationAgent:agent_];
   }
 
   id mocked_handler_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
+  WebNavigationBrowserAgent* agent_;
+  // Navigation manager for the web state at index 0 in |browser_|'s web state
+  // list.
+  web::FakeNavigationManager* navigation_manager_;
 };
 
 // Tests that the activity cannot be performed when the user agent is NONE.
@@ -48,8 +77,6 @@ TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentNone_ActivityDisabled) {
 // Tests that the activity is enabled, has the right title and triggers the
 // right action when the user agent is Desktop.
 TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentDesktop) {
-  [[mocked_handler_ expect] requestMobileSite];
-
   RequestDesktopOrMobileSiteActivity* activity =
       CreateActivity(web::UserAgentType::DESKTOP);
 
@@ -66,12 +93,13 @@ TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentDesktop) {
 
   [mocked_handler_ verify];
   [activity_partial_mock verify];
+  EXPECT_TRUE(navigation_manager_->RequestMobileSiteWasCalled());
 }
 
 // Tests that the activity is enabled, has the right title and triggers the
 // right action when the user agent is Mobile.
 TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentMobile) {
-  [[mocked_handler_ expect] requestDesktopSite];
+  [[mocked_handler_ expect] showDefaultSiteViewIPH];
 
   RequestDesktopOrMobileSiteActivity* activity =
       CreateActivity(web::UserAgentType::MOBILE);
@@ -89,4 +117,5 @@ TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentMobile) {
 
   [mocked_handler_ verify];
   [activity_partial_mock verify];
+  EXPECT_TRUE(navigation_manager_->RequestDesktopSiteWasCalled());
 }

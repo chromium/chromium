@@ -64,7 +64,8 @@ class ActivityServiceMediatorTest : public PlatformTest {
         qrGenerationHandler:mocked_qr_generation_handler_
                 prefService:pref_service_.get()
               bookmarkModel:nil
-         baseViewController:nil];
+         baseViewController:nil
+            navigationAgent:nil];
 
     pref_service_->registry()->RegisterBooleanPref(prefs::kPrintingEnabled,
                                                    true);

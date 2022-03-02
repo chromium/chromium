@@ -3890,23 +3890,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.sendTabToSelfCoordinator start];
 }
 
-// TODO(crbug.com/1272497): Move requestDesktopSite and requestMobileSite to the
-// WebNavigationBrowserAgent.
-- (void)requestDesktopSite {
-  [self reloadWithUserAgentType:web::UserAgentType::DESKTOP];
-
-  feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-      ->NotifyEvent(feature_engagement::events::kDesktopVersionRequested);
-
-  id<BrowserCommands> handler =
-      static_cast<id<BrowserCommands>>(self.commandDispatcher);
-  [handler showDefaultSiteViewIPH];
-}
-
-- (void)requestMobileSite {
-  [self reloadWithUserAgentType:web::UserAgentType::MOBILE];
-}
-
 // TODO(crbug.com/1272498): Refactor this command away, and add a mediator to
 // observe the active web state closing and push updates into the BVC for UI
 // work.
@@ -3987,19 +3970,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
   // stack.
   [self presentViewController:lensViewController animated:YES completion:nil];
-}
-
-#pragma mark - BrowserCommands helpers
-
-// Reloads the original url of the last non-redirect item (including non-history
-// items) with |userAgentType|.
-// TODO(crbug.com/1272497): Move this to the WebNavigationBrowserAgent.
-- (void)reloadWithUserAgentType:(web::UserAgentType)userAgentType {
-  if (self.userAgentType == userAgentType)
-    return;
-  web::WebState* webState = self.currentWebState;
-  web::NavigationManager* navigationManager = webState->GetNavigationManager();
-  navigationManager->ReloadWithUserAgentType(userAgentType);
 }
 
 #pragma mark - ChromeLensControllerDelegate

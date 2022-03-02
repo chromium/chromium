@@ -141,7 +141,11 @@ void FakeNavigationManager::Reload(ReloadType reload_type,
 
 void FakeNavigationManager::ReloadWithUserAgentType(
     UserAgentType user_agent_type) {
-  NOTREACHED();
+  if (user_agent_type == web::UserAgentType::MOBILE) {
+    request_mobile_site_was_called_ = true;
+  } else if (user_agent_type == web::UserAgentType::DESKTOP) {
+    request_desktop_site_was_called_ = true;
+  }
 }
 
 std::vector<NavigationItem*> FakeNavigationManager::GetBackwardItems() const {
@@ -199,6 +203,14 @@ bool FakeNavigationManager::LoadIfNecessaryWasCalled() {
 
 bool FakeNavigationManager::ReloadWasCalled() {
   return reload_was_called_;
+}
+
+bool FakeNavigationManager::RequestDesktopSiteWasCalled() {
+  return request_desktop_site_was_called_;
+}
+
+bool FakeNavigationManager::RequestMobileSiteWasCalled() {
+  return request_mobile_site_was_called_;
 }
 
 }  // namespace web
