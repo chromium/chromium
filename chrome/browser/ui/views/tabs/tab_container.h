@@ -31,7 +31,8 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
 
   TabContainer(TabStripController* controller,
                TabHoverCardController* hover_card_controller,
-               TabDragContext* drag_context);
+               TabDragContext* drag_context,
+               views::View* scroll_contents_view);
   ~TabContainer() override;
 
   void SetAvailableWidthCallback(
@@ -43,6 +44,8 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // Remove the tab from |tabs_view_model_|, but *not* from the View hierarchy,
   // so it can be animated closed.
   void RemoveTabFromViewModel(int index);
+
+  void ScrollTabToVisible(int model_index);
 
   void OnGroupCreated(const tab_groups::TabGroupId& group, TabStrip* tab_strip);
 
@@ -188,8 +191,14 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
 
   TabDragContext* drag_context_;
 
+  // The View that is to be scrolled by |tab_scrolling_animation_|.
+  views::View* scroll_contents_view_;
+
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_;
+
+  // Responsible for animating the scroll of the tab container.
+  std::unique_ptr<gfx::LinearAnimation> tab_scrolling_animation_;
 
   std::unique_ptr<TabStripLayoutHelper> layout_helper_;
 

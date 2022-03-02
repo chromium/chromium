@@ -143,8 +143,6 @@ class TabStrip : public views::View,
                    int model_index,
                    bool was_active);
 
-  void ScrollTabToVisible(int model_index);
-
   // Sets the tab data at the specified model index.
   void SetTabData(int model_index, TabRendererData data);
 
@@ -570,9 +568,6 @@ class TabStrip : public views::View,
 
   // The View parent for the tabs and the various group views.
   TabContainer* tab_container_;
-
-  // Responsible for animating the scroll of the tab strip.
-  std::unique_ptr<gfx::LinearAnimation> tab_scrolling_animation_;
 
   // The background offset used by inactive tabs to match the frame image.
   int background_offset_ = 0;

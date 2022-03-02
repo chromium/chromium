@@ -135,48 +135,6 @@ TabDragController::EventSource EventSourceFromEvent(
                                 : TabDragController::EVENT_SOURCE_MOUSE;
 }
 
-// Helper class that manages the tab scrolling animation.
-class TabScrollingAnimation : public gfx::LinearAnimation,
-                              public gfx::AnimationDelegate {
- public:
-  explicit TabScrollingAnimation(
-      TabStrip* tab_strip,
-      gfx::AnimationContainer* bounds_animator_container,
-      base::TimeDelta duration,
-      const gfx::Rect start_visible_rect,
-      const gfx::Rect end_visible_rect)
-      : gfx::LinearAnimation(duration,
-                             gfx::LinearAnimation::kDefaultFrameRate,
-                             this),
-        tab_strip_(tab_strip),
-        start_visible_rect_(start_visible_rect),
-        end_visible_rect_(end_visible_rect) {
-    SetContainer(bounds_animator_container);
-  }
-  TabScrollingAnimation(const TabScrollingAnimation&) = delete;
-  TabScrollingAnimation& operator=(const TabScrollingAnimation&) = delete;
-  ~TabScrollingAnimation() override = default;
-
-  void AnimateToState(double state) override {
-    gfx::Rect intermediary_rect(
-        start_visible_rect_.x() +
-            (end_visible_rect_.x() - start_visible_rect_.x()) * state,
-        start_visible_rect_.y(), start_visible_rect_.width(),
-        start_visible_rect_.height());
-
-    tab_strip_->ScrollRectToVisible(intermediary_rect);
-  }
-
-  void AnimationEnded(const gfx::Animation* animation) override {
-    tab_strip_->ScrollRectToVisible(end_visible_rect_);
-  }
-
- private:
-  const raw_ptr<TabStrip> tab_strip_;
-  const gfx::Rect start_visible_rect_;
-  const gfx::Rect end_visible_rect_;
-};
-
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -796,7 +754,8 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
       tab_container_(AddChildView(
           std::make_unique<TabContainer>(controller_.get(),
                                          hover_card_controller_.get(),
-                                         drag_context_.get()))) {
+                                         drag_context_.get(),
+                                         this))) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
   // depend on their selected state. This should probably be pushed down into
   // tabs.
@@ -1005,60 +964,6 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
     EndDrag(END_DRAG_COMPLETE);
 }
 
-void TabStrip::ScrollTabToVisible(int model_index) {
-  views::ScrollView* scroll_container =
-      views::ScrollView::GetScrollViewForContents(this);
-  if (!scroll_container) {
-    return;
-  }
-
-  // If the tab strip won't be scrollable after the current tabstrip animations
-  // complete, scroll animation wouldn't be meaningful.
-  if (ideal_bounds(GetTabCount() - 1).right() <=
-      tab_container_->GetAvailableWidthForTabContainer())
-    return;
-
-  if (tab_scrolling_animation_)
-    tab_scrolling_animation_->Stop();
-
-  gfx::Rect visible_content_rect = scroll_container->GetVisibleRect();
-  gfx::Rect active_tab_ideal_bounds = ideal_bounds(model_index);
-
-  if ((active_tab_ideal_bounds.x() >= visible_content_rect.x()) &&
-      (active_tab_ideal_bounds.right() <= visible_content_rect.right())) {
-    return;
-  }
-
-  bool scroll_left = active_tab_ideal_bounds.x() < visible_content_rect.x();
-  if (scroll_left) {
-    // Scroll the left edge of |visible_content_rect| to show the left edge of
-    // the tab at |model_index|. We can leave the width entirely up to the
-    // ScrollView.
-    gfx::Rect start_left_edge(visible_content_rect.x(),
-                              visible_content_rect.y(), 0, 0);
-    gfx::Rect target_left_edge(active_tab_ideal_bounds.x(),
-                               visible_content_rect.y(), 0, 0);
-    tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
-        this, tab_container_->bounds_animator().container(),
-        tab_container_->bounds_animator().GetAnimationDuration(),
-        start_left_edge, target_left_edge);
-    tab_scrolling_animation_->Start();
-  } else {
-    // Scroll the right edge of |visible_content_rect| to show the right edge
-    // of the tab at |model_index|. We can leave the width entirely up to the
-    // ScrollView.
-    gfx::Rect start_right_edge(visible_content_rect.right(),
-                               visible_content_rect.y(), 0, 0);
-    gfx::Rect target_right_edge(active_tab_ideal_bounds.right(),
-                                visible_content_rect.y(), 0, 0);
-    tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
-        this, tab_container_->bounds_animator().container(),
-        tab_container_->bounds_animator().GetAnimationDuration(),
-        start_right_edge, target_right_edge);
-    tab_scrolling_animation_->Start();
-  }
-}
-
 void TabStrip::SetTabData(int model_index, TabRendererData data) {
   Tab* tab = tab_at(model_index);
   const bool pinned = data.pinned;
@@ -1249,7 +1154,7 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
     tab_container_->layout_helper()->SetActiveTab(selected_tabs_.active(),
                                                   new_selection.active());
     if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
-      ScrollTabToVisible(new_selection.active());
+      tab_container_->ScrollTabToVisible(new_selection.active());
     }
   }
 
@@ -2093,8 +1998,6 @@ void TabStrip::CompleteAnimationAndLayout() {
   last_layout_size_ = size();
 
   tab_container_->bounds_animator().Cancel();
-  if (tab_scrolling_animation_)
-    tab_scrolling_animation_->SetCurrentValue(1);
 
   UpdateIdealBounds();
   tab_container_->SnapToIdealBounds();
