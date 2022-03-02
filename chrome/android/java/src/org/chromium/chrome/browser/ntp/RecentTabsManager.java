@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -32,7 +31,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -71,7 +69,6 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
 
     private final ProfileDataCache mProfileDataCache;
     private final SigninPromoController mSigninPromoController;
-    @Nullable
     private final SyncService mSyncService;
 
     /**
@@ -100,16 +97,17 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
                 SigninAccessPoint.RECENT_TABS, SyncConsentActivityLauncherImpl.get());
         mSyncService = SyncService.get();
 
-        mRecentlyClosedTabManager.setTabsUpdatedRunnable(() -> {
-            updateRecentlyClosedTabs();
-            postUpdate();
-        });
-
+        mRecentlyClosedTabManager.setTabsUpdatedRunnable(this::updateRecentlyClosedTabs);
         updateRecentlyClosedTabs();
-        registerForForeignSessionUpdates();
+
+        mForeignSessionHelper.setOnForeignSessionCallback(this::updateForeignSessions);
         updateForeignSessions();
         mForeignSessionHelper.triggerSessionSync();
-        registerObservers();
+
+        mSyncService.addSyncStateChangedListener(this);
+        mSignInManager.addSignInStateObserver(this);
+        mProfileDataCache.addObserver(this);
+        AccountManagerFacadeProvider.getInstance().addObserver(this);
         updatePromoState();
 
         SessionsInvalidationManager.get(mProfile).onRecentTabsPageOpened();
@@ -120,9 +118,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
      */
     public void destroy() {
         mIsDestroyed = true;
-        if (mSyncService != null) {
-            mSyncService.removeSyncStateChangedListener(this);
-        }
+        mSyncService.removeSyncStateChangedListener(this);
 
         mSignInManager.removeSignInStateObserver(this);
         mSignInManager = null;
@@ -148,34 +144,15 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mForeignSessionHelper = null;
     }
 
-    private void registerForForeignSessionUpdates() {
-        mForeignSessionHelper.setOnForeignSessionCallback(() -> {
-            updateForeignSessions();
-            postUpdate();
-        });
-    }
-
-    private void registerObservers() {
-        if (mSyncService != null) {
-            mSyncService.addSyncStateChangedListener(this);
-        }
-
-        mSignInManager.addSignInStateObserver(this);
-
-        mProfileDataCache.addObserver(this);
-        AccountManagerFacadeProvider.getInstance().addObserver(this);
-    }
-
     private void updateRecentlyClosedTabs() {
         mRecentlyClosedTabs =
                 mRecentlyClosedTabManager.getRecentlyClosedTabs(RECENTLY_CLOSED_MAX_TAB_COUNT);
+        onUpdateDone();
     }
 
     private void updateForeignSessions() {
         mForeignSessions = mForeignSessionHelper.getForeignSessions();
-        if (mForeignSessions == null) {
-            mForeignSessions = Collections.emptyList();
-        }
+        onUpdateDone();
     }
 
     /**
@@ -368,12 +345,6 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
             return SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE;
         }
 
-        if (mSyncService == null) {
-            // |mSyncService| will remain null until the next browser startup, so no sense in
-            // offering any promo.
-            return SyncPromoState.NO_PROMO;
-        }
-
         if (mSyncService.isSyncRequested() && !mForeignSessions.isEmpty()) {
             return SyncPromoState.NO_PROMO;
         }
@@ -431,7 +402,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         update();
     }
 
-    private void postUpdate() {
+    private void onUpdateDone() {
         if (mUpdatedCallback != null) {
             mUpdatedCallback.onUpdated();
         }
@@ -441,7 +412,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         updatePromoState();
         if (mIsDestroyed) return;
         updateForeignSessions();
-        postUpdate();
+        onUpdateDone();
     }
 
     @VisibleForTesting
