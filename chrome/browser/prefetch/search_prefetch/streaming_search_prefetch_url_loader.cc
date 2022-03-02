@@ -176,7 +176,6 @@ void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
   if (forwarding_client_) {
     DCHECK(!streaming_prefetch_request_);
-    DCHECK(self_pointer_);
     forwarding_client_->OnStartLoadingResponseBody(std::move(body));
     return;
   }
@@ -212,7 +211,6 @@ void StreamingSearchPrefetchURLLoader::OnDataComplete() {
 
 void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData() {
   DCHECK(forwarding_client_);
-  DCHECK(self_pointer_);
   DCHECK(!streaming_prefetch_request_);
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
 
@@ -249,7 +247,6 @@ void StreamingSearchPrefetchURLLoader::OnHandleReady(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
   DCHECK(forwarding_client_);
-  DCHECK(self_pointer_);
   DCHECK(!streaming_prefetch_request_);
   if (result != MOJO_RESULT_OK) {
     PostTaskToDeleteSelf();
@@ -260,7 +257,6 @@ void StreamingSearchPrefetchURLLoader::OnHandleReady(
 
 void StreamingSearchPrefetchURLLoader::PushData() {
   DCHECK(forwarding_client_);
-  DCHECK(self_pointer_);
   DCHECK(!streaming_prefetch_request_);
   while (true) {
     DCHECK_GE(bytes_of_raw_data_to_transfer_, write_position_);
@@ -293,7 +289,6 @@ void StreamingSearchPrefetchURLLoader::PushData() {
 
 void StreamingSearchPrefetchURLLoader::Finish() {
   DCHECK(forwarding_client_);
-  DCHECK(self_pointer_);
   DCHECK(!streaming_prefetch_request_);
 
   serving_from_data_ = false;
@@ -309,7 +304,6 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
   network_url_loader_.reset();
   if (forwarding_client_ && !serving_from_data_) {
     DCHECK(!streaming_prefetch_request_);
-    DCHECK(self_pointer_);
     forwarding_client_->OnComplete(status);
     return;
   }
@@ -330,7 +324,6 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
 
 void StreamingSearchPrefetchURLLoader::RunEventQueue() {
   DCHECK(forwarding_client_);
-  DCHECK(self_pointer_);
   DCHECK(!streaming_prefetch_request_);
   for (auto& event : event_queue_) {
     std::move(event).Run();
@@ -375,7 +368,6 @@ void StreamingSearchPrefetchURLLoader::OnURLLoaderMojoDisconnect() {
 
   if (streaming_prefetch_request_) {
     DCHECK(!forwarding_client_);
-    DCHECK(!self_pointer_);
     streaming_prefetch_request_->ErrorEncountered();
   } else {
     PostTaskToDeleteSelf();
