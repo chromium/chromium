@@ -177,9 +177,10 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(version_ui::kVersion,
                          version_info::GetVersionNumber());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, we don't have the concept of channels, in their usual semantics.
-  // Replace the channel string with "Lacros". https://crbug.com/1215734.
-  html_source->AddString(version_ui::kVersionModifier, "Lacros");
+  // On Lacros, add channel string with "Lacros".
+  html_source->AddString(
+      version_ui::kVersionModifier,
+      "Lacros/" + chrome::GetChannelName(chrome::WithExtendedStable(true)));
 #else
   html_source->AddString(
       version_ui::kVersionModifier,
