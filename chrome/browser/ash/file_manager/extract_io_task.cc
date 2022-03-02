@@ -51,7 +51,7 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
     }
   }
 
-  Complete(progress_.state);
+  Complete();
 }
 
 void ExtractIOTask::Cancel() {
@@ -61,9 +61,7 @@ void ExtractIOTask::Cancel() {
 
 // Calls the completion callback for the task. |progress_| should not be
 // accessed after calling this.
-void ExtractIOTask::Complete(State state) {
-  // TODO(crbug.com/953256) Remove this, state now handled during unpack.
-  progress_.state = state;
+void ExtractIOTask::Complete() {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(complete_callback_), std::move(progress_)));

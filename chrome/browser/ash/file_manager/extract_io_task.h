@@ -35,7 +35,7 @@ class ExtractIOTask : public IOTask {
   void Cancel() override;
 
  private:
-  void Complete(State state);
+  void Complete();
 
   void ZipExtractCallback(bool success);
 
