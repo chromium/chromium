@@ -200,9 +200,12 @@ const base::Feature kLoaderDataPipeTuningFeature{
 namespace {
 // The default Mojo ring buffer size, used to send the content body.
 static constexpr uint32_t kDefaultDataPipeAllocationSize = 512 * 1024;
+
+#if !BUILDFLAG(IS_CHROMEOS)
 // The larger ring buffer size, used primarily for network::URLLoader loads.
 // This value was optimized via Finch: see crbug.com/1041006.
 static constexpr uint32_t kLargerDataPipeAllocationSize = 2 * 1024 * 1024;
+#endif
 
 // The maximal number of bytes consumed in a loading task. When there are more
 // bytes in the data pipe, they will be consumed in following tasks. Setting too
@@ -215,6 +218,12 @@ static constexpr uint32_t kLargerMaxNumConsumedBytesInTask = 1024 * 1024;
 
 // static
 uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/1260751): It is unclear if the increased data pipe size
+  // is responsible for an increased CrOS crash rate, so the size is being
+  // reverted to the default while we investigate.
+  return kDefaultDataPipeAllocationSize;
+#else
   // For low-memory devices, always use the (smaller) default buffer size.
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
     return kDefaultDataPipeAllocationSize;
@@ -226,6 +235,7 @@ uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
     case DataPipeAllocationSize::kLargerSizeIfPossible:
       return kLargerDataPipeAllocationSize;
   }
+#endif
 }
 
 // static
