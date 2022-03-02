@@ -61,6 +61,13 @@ class WebInstanceHost {
     config_for_test_ = std::move(config);
   }
 
+  // The next created WebInstance will have access to the given directory handle
+  // for temporary directory reading and writing.
+  // Ownership of the directory is passed to the next created instance.
+  void set_tmp_dir(fuchsia::io::DirectoryHandle tmp_dir) {
+    tmp_dir_ = std::move(tmp_dir);
+  }
+
  private:
   // Returns the Launcher for the isolated Environment in which web instances
   // should run. If the Environment does not presently exist then it will be
@@ -73,6 +80,10 @@ class WebInstanceHost {
 
   // If true then new instances will have remote debug mode enabled.
   bool enable_remote_debug_mode_ = false;
+
+  // If set, then the next created WebInstance will gain ownership of this
+  // directory.
+  fuchsia::io::DirectoryHandle tmp_dir_;
 
   // Set by configuration tests.
   base::Value config_for_test_;

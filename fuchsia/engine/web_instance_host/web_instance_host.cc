@@ -803,6 +803,11 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
     ZX_CHECK(status == ZX_OK, status);
   }
 
+  if (tmp_dir_.is_valid()) {
+    launch_info.flat_namespace->paths.push_back("/tmp");
+    launch_info.flat_namespace->directories.push_back(tmp_dir_.TakeChannel());
+  }
+
   // Pass on the caller's service-directory request.
   launch_info.directory_request = services_request.TakeChannel();
 
