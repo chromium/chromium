@@ -6,12 +6,14 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_FEATURE_LIST_QUERY_PROCESSOR_H_
 
 #include <deque>
+#include <memory>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
+#include "components/segmentation_platform/internal/execution/query_processor.h"
 #include "components/segmentation_platform/internal/execution/uma_feature_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
@@ -19,6 +21,7 @@ namespace segmentation_platform {
 class FeatureAggregator;
 class FeatureProcessorState;
 class SignalDatabase;
+class SqlFeatureProcessor;
 
 // FeatureListQueryProcessor takes a segmentation model's metadata, processes
 // each feature in the metadata's feature list in order and computes an input
@@ -56,6 +59,15 @@ class FeatureListQueryProcessor {
   // until the feature list is empty.
   void ProcessNextInputFeature(
       std::unique_ptr<FeatureProcessorState> feature_processor_state);
+
+  // Callback called after a sql feature has been processed, indicating that we
+  // can safely discard the sql feature processor that handled the processing.
+  // Continue with the rest of the input features by calling
+  // ProcessNextInputFeature.
+  void OnSqlQueryProcessed(
+      std::unique_ptr<SqlFeatureProcessor> sql_feature_processor,
+      std::unique_ptr<FeatureProcessorState> feature_processor_state,
+      QueryProcessor::IndexedTensors result);
 
   // Feature processor for uma type of input features.
   UmaFeatureProcessor uma_feature_processor_;

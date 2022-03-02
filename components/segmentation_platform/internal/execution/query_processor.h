@@ -22,11 +22,14 @@ class QueryProcessor {
   using FeatureIndex = int;
   using Tensor = std::vector<float>;
   using IndexedTensors = std::map<FeatureIndex, Tensor>;
+  using QueryProcessorCallback =
+      base::OnceCallback<void(std::unique_ptr<FeatureProcessorState>,
+                              IndexedTensors)>;
 
   // Processes the data and return the tensor values in |callback|.
   virtual void Process(
       std::unique_ptr<FeatureProcessorState> feature_processor_state,
-      base::OnceCallback<IndexedTensors> callback) = 0;
+      QueryProcessorCallback callback) = 0;
 
   // Disallow copy/assign.
   QueryProcessor(const QueryProcessor&) = delete;
