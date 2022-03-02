@@ -183,6 +183,13 @@ AX_BASE_EXPORT extern const base::Feature kReaderModeSidePanel;
 AX_BASE_EXPORT bool IsReaderModeSidePanelEnabled();
 
 #if !BUILDFLAG(IS_ANDROID)
+// Enables using Screen AI library to add metadata for accessibility tools.
+AX_BASE_EXPORT extern const base::Feature kScreenAI;
+
+// Returns true if Screen AI feature is enabled. This feature uses a local
+// machine intelligence library to process browser screenshots and add metadata
+// to the accessibility tree.
+AX_BASE_EXPORT bool IsScreenAIEnabled();
 
 // Enables a feature whereby inaccessible (i.e. untagged) PDFs are made
 // accessible using an optical character recognition service. Due to the size of
@@ -193,7 +200,6 @@ AX_BASE_EXPORT extern const base::Feature kPdfOcr;
 // and the resulting text, together with its layout information, will be added
 // to the accessibility tree.
 AX_BASE_EXPORT bool IsPdfOcrEnabled();
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

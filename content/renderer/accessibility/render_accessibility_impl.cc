@@ -26,7 +26,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/common/content_features.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
 #include "content/renderer/accessibility/ax_image_annotator.h"
@@ -46,6 +45,7 @@
 #include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_event_intent.h"
@@ -1260,7 +1260,7 @@ void RenderAccessibilityImpl::StartOrStopLabelingImages(ui::AXMode old_mode,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void RenderAccessibilityImpl::StartOrStopScreenAIAnnotator(
     ui::AXMode new_mode) {
-  if (!base::FeatureList::IsEnabled(features::kScreenAI))
+  if (!features::IsScreenAIEnabled())
     return;
 
   if (new_mode.has_mode(ui::AXMode::kScreenReader) &&

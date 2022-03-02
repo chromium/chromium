@@ -211,13 +211,17 @@ bool IsReaderModeSidePanelEnabled() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+const base::Feature kScreenAI{"ScreenAI", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsScreenAIEnabled() {
+  return base::FeatureList::IsEnabled(::features::kScreenAI);
+}
 
 const base::Feature kPdfOcr{"PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsPdfOcrEnabled() {
   return base::FeatureList::IsEnabled(::features::kPdfOcr);
 }
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace features
