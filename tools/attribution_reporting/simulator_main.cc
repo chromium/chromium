@@ -246,7 +246,7 @@ Output JSON format:
       "report_time": 123,
 
       // URL to which the report would have been sent.
-      "report_url": "https://reporting.example/.well-known/attribution-reporting/report-attribution",
+      "report_url": "https://reporting.example/.well-known/attribution-reporting/report-event-attribution",
 
       // The report itself. See
       // https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#attribution-reports

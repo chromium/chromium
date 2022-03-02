@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*body=*/base::Value(), https_server());
   ASSERT_TRUE(https_server()->Start());
 
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        ImpressionFromCrossOriginSubframe_ReportSent) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        ImpressionOnNoOpenerNavigation_ReportSent) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(
     MultipleImpressionsPerConversion_ReportSentWithAttribution) {
   ExpectedReportWaiter expected_report(
       GURL("https://d.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"2", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(
   // Report will be sent for the impression with highest priority.
   ExpectedReportWaiter expected_report(
       GURL("https://d.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*body=*/base::Value(), https_server());
   ASSERT_TRUE(https_server()->Start());
 
@@ -654,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // the report's `trigger_data`.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"7", /*source_type=*/"event", /*trigger_data=*/"1",
       https_server());
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"5", /*source_type=*/"event", /*trigger_data=*/"1",
       https_server());
@@ -737,13 +737,13 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // the report's `trigger_data`.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"7", /*source_type=*/"event", /*trigger_data=*/"1",
       https_server());
   ExpectedReportWaiter expected_report_not_sent(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*body=*/base::Value(), https_server());
   ASSERT_TRUE(https_server()->Start());
 
@@ -795,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // the report's `trigger_data`.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"7", /*source_type=*/"event", /*trigger_data=*/"1",
       https_server());
@@ -832,14 +832,14 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report1(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
   // 12 below is sanitized to 4 here by `SanitizeTriggerData()`.
   ExpectedReportWaiter expected_report2(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"4", https_server());
@@ -907,7 +907,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
                        NoImpressionRegisteredOnPrerender) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"7", /*source_type=*/"event", /*trigger_data=*/"1",
       https_server());
@@ -967,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
                        ImpressionRegisteredOnActivatedPrerender) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"7", /*source_type=*/"event", /*trigger_data=*/"1",
       https_server());
@@ -1027,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
                        NoConversionsOnPrerender) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"7", /*source_type=*/"event", /*trigger_data=*/"1",
       https_server());
@@ -1088,7 +1088,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
                        ConversionsRegisteredOnActivatedPrerender) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-attribution"),
+           "report-event-attribution"),
       /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"7", /*source_type=*/"event", /*trigger_data=*/"1",
       https_server());

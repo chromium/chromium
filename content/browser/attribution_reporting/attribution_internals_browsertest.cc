@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         if (table.children.length === 11 &&
             table.children[0].children[2].innerText === "https://conversion.test" &&
             table.children[0].children[3].innerText ===
-              "https://report.test/.well-known/attribution-reporting/report-attribution" &&
+              "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
             table.children[0].children[6].innerText === "13" &&
             table.children[0].children[7].innerText === "yes" &&
             table.children[0].children[8].innerText === "Pending" &&
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         if (table.children.length === 11 &&
             table.children[10].children[2].innerText === "https://conversion.test" &&
             table.children[10].children[3].innerText ===
-              "https://report.test/.well-known/attribution-reporting/report-attribution" &&
+              "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
             table.children[10].children[6].innerText === "13" &&
             table.children[10].children[7].innerText === "yes" &&
             table.children[10].children[8].innerText === "Pending" &&
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         if (table.children.length === 11 &&
             table.children[0].children[2].innerText === "https://conversion.test" &&
             table.children[0].children[3].innerText ===
-              "https://report.test/.well-known/attribution-reporting/report-attribution" &&
+              "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
             table.children[0].children[6].innerText === "13" &&
             table.children[0].children[7].innerText === "yes" &&
             table.children[0].children[8].innerText === "Pending" &&

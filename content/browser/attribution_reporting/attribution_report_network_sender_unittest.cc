@@ -46,7 +46,8 @@ using ::testing::Mock;
 using Checkpoint = ::testing::MockFunction<void(int)>;
 
 const char kReportUrl[] =
-    "https://report.test/.well-known/attribution-reporting/report-attribution";
+    "https://report.test/.well-known/attribution-reporting/"
+    "report-event-attribution";
 
 AttributionReport DefaultReport() {
   return ReportBuilder(
@@ -246,7 +247,8 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_RequestAttributesSet) {
 
   const network::ResourceRequest* pending_request;
   EXPECT_TRUE(test_url_loader_factory_.IsPending(
-      "https://a.com/.well-known/attribution-reporting/report-attribution",
+      "https://a.com/.well-known/attribution-reporting/"
+      "report-event-attribution",
       &pending_request));
 
   // Ensure that the request is sent with no credentials.

@@ -100,7 +100,7 @@ GURL AttributionReport::ReportURL() const {
   struct Visitor {
     const char* operator()(const EventLevelData&) {
       static constexpr char kEventEndpointPath[] =
-          "/.well-known/attribution-reporting/report-attribution";
+          "/.well-known/attribution-reporting/report-event-attribution";
       return kEventEndpointPath;
     }
 

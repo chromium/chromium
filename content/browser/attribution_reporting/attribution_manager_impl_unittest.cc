@@ -410,11 +410,14 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportSent) {
 TEST_F(AttributionManagerImplTest,
        MultipleReportsWithSameReportTime_AllSentSimultaneously) {
   const GURL url_a(
-      "https://a.example/.well-known/attribution-reporting/report-attribution");
+      "https://a.example/.well-known/attribution-reporting/"
+      "report-event-attribution");
   const GURL url_b(
-      "https://b.example/.well-known/attribution-reporting/report-attribution");
+      "https://b.example/.well-known/attribution-reporting/"
+      "report-event-attribution");
   const GURL url_c(
-      "https://c.example/.well-known/attribution-reporting/report-attribution");
+      "https://c.example/.well-known/attribution-reporting/"
+      "report-event-attribution");
 
   const auto origin_a = url::Origin::Create(url_a);
   const auto origin_b = url::Origin::Create(url_b);
@@ -460,9 +463,11 @@ TEST_F(AttributionManagerImplTest,
 TEST_F(AttributionManagerImplTest,
        MultipleReportsWithDifferentReportTimes_SentInSequence) {
   const GURL url_a(
-      "https://a.example/.well-known/attribution-reporting/report-attribution");
+      "https://a.example/.well-known/attribution-reporting/"
+      "report-event-attribution");
   const GURL url_b(
-      "https://b.example/.well-known/attribution-reporting/report-attribution");
+      "https://b.example/.well-known/attribution-reporting/"
+      "report-event-attribution");
 
   const auto origin_a = url::Origin::Create(url_a);
   const auto origin_b = url::Origin::Create(url_b);
@@ -540,9 +545,11 @@ TEST_F(AttributionManagerImplTest,
 
 TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
   const GURL url_a(
-      "https://a.example/.well-known/attribution-reporting/report-attribution");
+      "https://a.example/.well-known/attribution-reporting/"
+      "report-event-attribution");
   const GURL url_b(
-      "https://b.example/.well-known/attribution-reporting/report-attribution");
+      "https://b.example/.well-known/attribution-reporting/"
+      "report-event-attribution");
 
   const auto origin_a = url::Origin::Create(url_a);
   const auto origin_b = url::Origin::Create(url_b);
