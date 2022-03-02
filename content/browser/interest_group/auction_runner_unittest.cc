@@ -2024,7 +2024,9 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
       ASSERT_TRUE(hit_breakpoints);
       base::Value::ConstListView hit_breakpoints_list =
           hit_breakpoints->GetListDeprecated();
-      ASSERT_EQ(1u, hit_breakpoints_list.size());
+      // This is LE and not EQ to work around
+      // https://bugs.chromium.org/p/v8/issues/detail?id=12586
+      ASSERT_LE(1u, hit_breakpoints_list.size());
       ASSERT_TRUE(hit_breakpoints_list[0].is_string());
       EXPECT_EQ(base::StringPrintf("1:7:0:%s", debug_url.spec().c_str()),
                 hit_breakpoints_list[0].GetString());

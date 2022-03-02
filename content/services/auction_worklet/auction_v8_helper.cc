@@ -246,8 +246,7 @@ constexpr base::TimeDelta AuctionV8Helper::kScriptTimeout =
     base::Milliseconds(50);
 
 AuctionV8Helper::FullIsolateScope::FullIsolateScope(AuctionV8Helper* v8_helper)
-    : locker_(v8_helper->isolate()),
-      isolate_scope_(v8_helper->isolate()),
+    : isolate_scope_(v8_helper->isolate()),
       handle_scope_(v8_helper->isolate()) {}
 
 AuctionV8Helper::FullIsolateScope::~FullIsolateScope() = default;
@@ -701,7 +700,7 @@ void AuctionV8Helper::CreateIsolate() {
 
   // Now the initialization is completed, create an isolate.
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
-      base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kUseLocker,
+      base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kSingleThread,
       gin::IsolateHolder::IsolateType::kUtility);
   FullIsolateScope v8_scope(this);
   scratch_context_.Reset(isolate(), CreateContext());

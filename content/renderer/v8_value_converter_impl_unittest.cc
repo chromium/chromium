@@ -22,7 +22,6 @@
 #include "v8/include/v8-date.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
-#include "v8/include/v8-locker.h"
 #include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -78,7 +77,6 @@ class V8ValueConverterImplTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    v8::Locker locked(isolate_);
     v8::HandleScope handle_scope(isolate_);
     v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate_);
     context_.Reset(isolate_, v8::Context::New(isolate_, nullptr, global));
@@ -292,7 +290,6 @@ TEST_F(V8ValueConverterImplTest, BasicRoundTrip) {
       "  \"empty-list\": [], \n"
       "}");
 
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -414,7 +411,6 @@ TEST_F(V8ValueConverterImplTest, KeysWithDots) {
   std::unique_ptr<base::Value> original =
       base::test::ParseJsonDeprecated("{ \"foo.bar\": \"baz\" }");
 
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -428,7 +424,6 @@ TEST_F(V8ValueConverterImplTest, KeysWithDots) {
 }
 
 TEST_F(V8ValueConverterImplTest, ObjectExceptions) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -473,7 +468,6 @@ TEST_F(V8ValueConverterImplTest, ObjectExceptions) {
 }
 
 TEST_F(V8ValueConverterImplTest, ArrayExceptions) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -516,7 +510,6 @@ TEST_F(V8ValueConverterImplTest, ArrayExceptions) {
 }
 
 TEST_F(V8ValueConverterImplTest, WeirdTypes) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -549,7 +542,6 @@ TEST_F(V8ValueConverterImplTest, WeirdTypes) {
 }
 
 TEST_F(V8ValueConverterImplTest, Prototype) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -575,7 +567,6 @@ TEST_F(V8ValueConverterImplTest, ObjectPrototypeSetter) {
   std::unique_ptr<base::Value> original =
       base::test::ParseJsonDeprecated("{ \"foo\": \"good value\" }");
 
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -644,7 +635,6 @@ TEST_F(V8ValueConverterImplTest, ArrayPrototypeSetter) {
   std::unique_ptr<base::Value> original =
       base::test::ParseJsonDeprecated("[100, 200, 300]");
 
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -710,7 +700,6 @@ TEST_F(V8ValueConverterImplTest, ArrayPrototypeSetter) {
 }
 
 TEST_F(V8ValueConverterImplTest, StripNullFromObjects) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -734,7 +723,6 @@ TEST_F(V8ValueConverterImplTest, StripNullFromObjects) {
 }
 
 TEST_F(V8ValueConverterImplTest, RecursiveObjects) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -780,7 +768,6 @@ TEST_F(V8ValueConverterImplTest, RecursiveObjects) {
 }
 
 TEST_F(V8ValueConverterImplTest, WeirdProperties) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -818,7 +805,6 @@ TEST_F(V8ValueConverterImplTest, WeirdProperties) {
 }
 
 TEST_F(V8ValueConverterImplTest, ArrayGetters) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -842,7 +828,6 @@ TEST_F(V8ValueConverterImplTest, ArrayGetters) {
 }
 
 TEST_F(V8ValueConverterImplTest, UndefinedValueBehavior) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -894,7 +879,6 @@ TEST_F(V8ValueConverterImplTest, UndefinedValueBehavior) {
 }
 
 TEST_F(V8ValueConverterImplTest, ObjectsWithClashingIdentityHash) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -931,7 +915,6 @@ TEST_F(V8ValueConverterImplTest, ObjectsWithClashingIdentityHash) {
 }
 
 TEST_F(V8ValueConverterImplTest, DetectCycles) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -981,7 +964,6 @@ TEST_F(V8ValueConverterImplTest, DetectCycles) {
 
 // Tests that reused object values with no cycles do not get nullified.
 TEST_F(V8ValueConverterImplTest, ReuseObjects) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -1043,7 +1025,6 @@ TEST_F(V8ValueConverterImplTest, ReuseObjects) {
 }
 
 TEST_F(V8ValueConverterImplTest, MaxRecursionDepth) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -1090,7 +1071,6 @@ TEST_F(V8ValueConverterImplTest, MaxRecursionDepth) {
 }
 
 TEST_F(V8ValueConverterImplTest, NegativeZero) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -1160,7 +1140,6 @@ class V8ValueConverterOverridingStrategyForTesting
 };
 
 TEST_F(V8ValueConverterImplTest, StrategyOverrides) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -1238,7 +1217,6 @@ class V8ValueConverterBypassStrategyForTesting
 // Verify that having a strategy that fallbacks to default behaviour
 // actually preserves it.
 TEST_F(V8ValueConverterImplTest, StrategyBypass) {
-  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);

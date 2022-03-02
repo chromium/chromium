@@ -28,7 +28,6 @@
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-isolate.h"
-#include "v8/include/v8-locker.h"
 #include "v8/include/v8-persistent-handle.h"
 
 namespace v8 {
@@ -74,7 +73,6 @@ class AuctionV8Helper
     ~FullIsolateScope();
 
    private:
-    const v8::Locker locker_;
     const v8::Isolate::Scope isolate_scope_;
     const v8::HandleScope handle_scope_;
   };

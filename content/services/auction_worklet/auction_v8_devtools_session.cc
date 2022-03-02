@@ -187,7 +187,6 @@ AuctionV8DevToolsSession::AuctionV8DevToolsSession(
 AuctionV8DevToolsSession::~AuctionV8DevToolsSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   std::move(on_delete_callback_).Run(this);
-  v8::Locker locker(v8_helper_->isolate());
   v8_session_.reset();
 }
 
@@ -238,7 +237,7 @@ void AuctionV8DevToolsSession::DispatchProtocolCommand(
           v8_inspector::StringView(
               reinterpret_cast<const uint8_t*>(method.data()),
               method.size()))) {
-    // Need v8 locker, isolate access.
+    // Need v8 isolate access.
     AuctionV8Helper::FullIsolateScope v8_scope(v8_helper_);
 
     v8_session_->dispatchProtocolMessage(cbor_message);

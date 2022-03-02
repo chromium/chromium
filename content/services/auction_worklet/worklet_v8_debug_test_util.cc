@@ -22,7 +22,6 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_inspector_util.h"
 #include "v8/include/v8-inspector.h"
-#include "v8/include/v8-locker.h"
 
 namespace auction_worklet {
 
@@ -157,7 +156,7 @@ void TestChannel::RunCommandOnV8Thread(int call_id,
   CHECK(
       v8_inspector::V8InspectorSession::canDispatchMethod(ToStringView(method)))
       << method << " " << payload;
-  // Need v8 locker, isolate access.
+  // Need isolate access.
   AuctionV8Helper::FullIsolateScope v8_scope(v8_helper_.get());
 
   // Send over the JSON message; we don't deal with CBOR in this fixture.
@@ -200,12 +199,7 @@ TestChannel* ScopedInspectorSupport::ConnectDebuggerSession(
 
 ScopedInspectorSupport::V8State::V8State() = default;
 ScopedInspectorSupport::V8State::~V8State() {
-  // Need lock before deleting the `inspector_sessions_`.
-  {
-    v8::Locker locker(v8_helper_->isolate());
-    inspector_sessions_.clear();
-  }
-
+  inspector_sessions_.clear();
   output_channels_.clear();
 
   // Delete inspector after `inspector_sessions_`, before `inspector_client`_
