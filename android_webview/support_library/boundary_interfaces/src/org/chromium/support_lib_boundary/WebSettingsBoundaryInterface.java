@@ -31,6 +31,9 @@ public interface WebSettingsBoundaryInterface {
     void setForceDark(int forceDarkMode);
     int getForceDark();
 
+    void setAlgorithmicDarkeningAllowed(boolean allow);
+    boolean isAlgorithmicDarkeningAllowed();
+
     @Retention(RetentionPolicy.SOURCE)
     @interface ForceDarkBehavior {
         int FORCE_DARK_ONLY = 0;

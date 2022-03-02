@@ -132,6 +132,27 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
+    public void setAlgorithmicDarkeningAllowed(boolean allow) {
+        if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            Log.w(TAG,
+                    "setAlgorithmicDarkeningAllowed() is a no-op in an app with"
+                            + "targetSdkVersion<T");
+            return;
+        }
+        mAwSettings.setAlgorithmicDarkeningAllowed(allow);
+    }
+
+    @Override
+    public boolean isAlgorithmicDarkeningAllowed() {
+        if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            Log.w(TAG,
+                    "isAlgorithmicDarkeningAllowed() is a no-op in an app with targetSdkVersion<T");
+            return false;
+        }
+        return mAwSettings.isAlgorithmicDarkeningAllowed();
+    }
+
+    @Override
     public void setWebAuthnSupport(int support) {
         // Currently a no-op while this functionality is built out.
     }
