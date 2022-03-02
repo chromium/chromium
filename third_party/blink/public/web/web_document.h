@@ -39,6 +39,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/web_css_origin.h"
 #include "third_party/blink/public/web/web_draggable_region.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -67,8 +68,6 @@ enum class BackForwardCacheAware { kAllow, kPossiblyDisallow };
 // Provides readonly access to some properties of a DOM document.
 class WebDocument : public WebNode {
  public:
-  enum CSSOrigin { kAuthorOrigin, kUserOrigin };
-
   WebDocument() = default;
   WebDocument(const WebDocument& e) = default;
 
@@ -125,13 +124,14 @@ class WebDocument : public WebNode {
   BLINK_EXPORT WebStyleSheetKey
   InsertStyleSheet(const WebString& source_code,
                    const WebStyleSheetKey* = nullptr,
-                   CSSOrigin = kAuthorOrigin,
+                   WebCssOrigin = WebCssOrigin::kAuthor,
                    BackForwardCacheAware = BackForwardCacheAware::kAllow);
 
   // Removes the CSS which was previously inserted by a call to
   // InsertStyleSheet().
-  BLINK_EXPORT void RemoveInsertedStyleSheet(const WebStyleSheetKey&,
-                                             CSSOrigin = kAuthorOrigin);
+  BLINK_EXPORT void RemoveInsertedStyleSheet(
+      const WebStyleSheetKey&,
+      WebCssOrigin = WebCssOrigin::kAuthor);
 
   // Arranges to call WebLocalFrameClient::didMatchCSS(frame(), ...) when one of
   // the selectors matches or stops matching an element in this document.

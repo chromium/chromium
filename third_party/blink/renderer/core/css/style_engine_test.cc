@@ -108,7 +108,7 @@ class StyleEngineTest : public PageTestBase {
         /* allow_visited_style */ false);
   }
 
-  void InjectSheet(String key, WebDocument::CSSOrigin origin, String text) {
+  void InjectSheet(String key, WebCssOrigin origin, String text) {
     auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
     auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
     sheet->ParseString(text);
@@ -253,7 +253,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
       "#t3 { color: white }");
   StyleSheetKey green_key("green");
   GetStyleEngine().InjectSheet(green_key, green_parsed_sheet,
-                               WebDocument::kUserOrigin);
+                               WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
 
   EXPECT_EQ(3u, GetStyleEngine().StyleForElementCount() - initial_count);
@@ -279,7 +279,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
       "#t3 { color: silver !important }");
   StyleSheetKey blue_key("blue");
   GetStyleEngine().InjectSheet(blue_key, blue_parsed_sheet,
-                               WebDocument::kUserOrigin);
+                               WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
 
   EXPECT_EQ(6u, GetStyleEngine().StyleForElementCount() - initial_count);
@@ -299,7 +299,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
       MakeRGB(192, 192, 192),
       t3->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
-  GetStyleEngine().RemoveInjectedSheet(green_key, WebDocument::kUserOrigin);
+  GetStyleEngine().RemoveInjectedSheet(green_key, WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(9u, GetStyleEngine().StyleForElementCount() - initial_count);
   ASSERT_TRUE(t1->GetComputedStyle());
@@ -315,7 +315,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
       MakeRGB(192, 192, 192),
       t3->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
-  GetStyleEngine().RemoveInjectedSheet(blue_key, WebDocument::kUserOrigin);
+  GetStyleEngine().RemoveInjectedSheet(blue_key, WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(12u, GetStyleEngine().StyleForElementCount() - initial_count);
   ASSERT_TRUE(t1->GetComputedStyle());
@@ -360,7 +360,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
       "}");
   StyleSheetKey font_face_key("font_face");
   GetStyleEngine().InjectSheet(font_face_key, font_face_parsed_sheet,
-                               WebDocument::kUserOrigin);
+                               WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
 
   // After injecting a more specific font, now there are two and the
@@ -403,7 +403,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   ASSERT_EQ(capabilities.slope,
             FontSelectionRange({ItalicSlopeValue(), ItalicSlopeValue()}));
 
-  GetStyleEngine().RemoveInjectedSheet(font_face_key, WebDocument::kUserOrigin);
+  GetStyleEngine().RemoveInjectedSheet(font_face_key, WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
 
   // After removing the injected style sheet we're left with a bold-normal and
@@ -435,7 +435,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   keyframes_parsed_sheet->ParseString("@keyframes dummy-animation { from {} }");
   StyleSheetKey keyframes_key("keyframes");
   GetStyleEngine().InjectSheet(keyframes_key, keyframes_parsed_sheet,
-                               WebDocument::kUserOrigin);
+                               WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
 
   // After injecting the style sheet, a @keyframes rule named dummy-animation
@@ -467,7 +467,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   ASSERT_TRUE(keyframes);
   EXPECT_EQ(1u, keyframes->Keyframes().size());
 
-  GetStyleEngine().RemoveInjectedSheet(keyframes_key, WebDocument::kUserOrigin);
+  GetStyleEngine().RemoveInjectedSheet(keyframes_key, WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
 
   // Injected @keyframes rules are no longer available once removed.
@@ -499,7 +499,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   StyleSheetKey custom_properties_key("custom_properties");
   GetStyleEngine().InjectSheet(custom_properties_key,
                                custom_properties_parsed_sheet,
-                               WebDocument::kUserOrigin);
+                               WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t6->GetComputedStyle());
   ASSERT_TRUE(t7->GetComputedStyle());
@@ -510,7 +510,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
       t7->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
   GetStyleEngine().RemoveInjectedSheet(custom_properties_key,
-                                       WebDocument::kUserOrigin);
+                                       WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t6->GetComputedStyle());
   ASSERT_TRUE(t7->GetComputedStyle());
@@ -544,8 +544,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
       "}");
   StyleSheetKey media_queries_sheet_key("media_queries_sheet");
   GetStyleEngine().InjectSheet(media_queries_sheet_key,
-                               media_queries_parsed_sheet,
-                               WebDocument::kUserOrigin);
+                               media_queries_parsed_sheet, WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t8->GetComputedStyle());
   EXPECT_EQ(MakeRGB(255, 0, 0), t8->GetComputedStyle()->VisitedDependentColor(
@@ -563,7 +562,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
                                     GetCSSPropertyColor()));
 
   GetStyleEngine().RemoveInjectedSheet(media_queries_sheet_key,
-                                       WebDocument::kUserOrigin);
+                                       WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t8->GetComputedStyle());
   EXPECT_EQ(
@@ -594,7 +593,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
       "}");
   StyleSheetKey author_sheet_key("author_sheet");
   GetStyleEngine().InjectSheet(author_sheet_key, parsed_author_sheet,
-                               WebDocument::kAuthorOrigin);
+                               WebCssOrigin::kAuthor);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t9->GetComputedStyle());
   ASSERT_TRUE(t10->GetComputedStyle());
@@ -606,8 +605,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   EXPECT_EQ(MakeRGB(0, 0, 0), t10->GetComputedStyle()->VisitedDependentColor(
                                    GetCSSPropertyColor()));
 
-  GetStyleEngine().RemoveInjectedSheet(author_sheet_key,
-                                       WebDocument::kAuthorOrigin);
+  GetStyleEngine().RemoveInjectedSheet(author_sheet_key, WebCssOrigin::kAuthor);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t9->GetComputedStyle());
   ASSERT_TRUE(t10->GetComputedStyle());
@@ -630,8 +628,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   parsed_removable_red_sheet->ParseString("#t11 { color: red !important; }");
   StyleSheetKey removable_red_sheet_key("removable_red_sheet");
   GetStyleEngine().InjectSheet(removable_red_sheet_key,
-                               parsed_removable_red_sheet,
-                               WebDocument::kUserOrigin);
+                               parsed_removable_red_sheet, WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t11->GetComputedStyle());
 
@@ -645,7 +642,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   StyleSheetKey removable_green_sheet_key("removable_green_sheet");
   GetStyleEngine().InjectSheet(removable_green_sheet_key,
                                parsed_removable_green_sheet,
-                               WebDocument::kUserOrigin);
+                               WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t11->GetComputedStyle());
 
@@ -657,7 +654,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   parsed_removable_red_sheet2->ParseString("#t11 { color: red !important; }");
   GetStyleEngine().InjectSheet(removable_red_sheet_key,
                                parsed_removable_red_sheet2,
-                               WebDocument::kUserOrigin);
+                               WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t11->GetComputedStyle());
 
@@ -665,7 +662,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
                                      GetCSSPropertyColor()));
 
   GetStyleEngine().RemoveInjectedSheet(removable_red_sheet_key,
-                                       WebDocument::kAuthorOrigin);
+                                       WebCssOrigin::kAuthor);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t11->GetComputedStyle());
 
@@ -674,7 +671,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
                                      GetCSSPropertyColor()));
 
   GetStyleEngine().RemoveInjectedSheet(removable_red_sheet_key,
-                                       WebDocument::kUserOrigin);
+                                       WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t11->GetComputedStyle());
 
@@ -683,7 +680,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
                                      GetCSSPropertyColor()));
 
   GetStyleEngine().RemoveInjectedSheet(removable_green_sheet_key,
-                                       WebDocument::kUserOrigin);
+                                       WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t11->GetComputedStyle());
 
@@ -692,7 +689,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
                                      GetCSSPropertyColor()));
 
   GetStyleEngine().RemoveInjectedSheet(removable_red_sheet_key,
-                                       WebDocument::kUserOrigin);
+                                       WebCssOrigin::kUser);
   UpdateAllLifecyclePhases();
   ASSERT_TRUE(t11->GetComputedStyle());
 
@@ -717,7 +714,7 @@ TEST_F(StyleEngineTest, InjectedUserNoAuthorFontFace) {
       "}");
 
   StyleSheetKey user_key("user");
-  GetStyleEngine().InjectSheet(user_key, user_sheet, WebDocument::kUserOrigin);
+  GetStyleEngine().InjectSheet(user_key, user_sheet, WebCssOrigin::kUser);
 
   UpdateAllLifecyclePhases();
 
@@ -749,7 +746,7 @@ TEST_F(StyleEngineTest, InjectedFontFace) {
       "}");
 
   StyleSheetKey user_key("user");
-  GetStyleEngine().InjectSheet(user_key, user_sheet, WebDocument::kUserOrigin);
+  GetStyleEngine().InjectSheet(user_key, user_sheet, WebCssOrigin::kUser);
 
   UpdateAllLifecyclePhases();
 
@@ -3375,7 +3372,7 @@ TEST_F(StyleEngineTest, RemoveDeclaredPropertiesEmptyRegistry) {
 
 TEST_F(StyleEngineTest, AtPropertyInUserOrigin) {
   // @property in the user origin:
-  InjectSheet("user1", WebDocument::kUserOrigin, R"CSS(
+  InjectSheet("user1", WebCssOrigin::kUser, R"CSS(
     @property --x {
       syntax: "<length>";
       inherits: false;
@@ -3387,7 +3384,7 @@ TEST_F(StyleEngineTest, AtPropertyInUserOrigin) {
   EXPECT_EQ("10px", ComputedValue(GetDocument().body(), "--x")->CssText());
 
   // @property in the author origin (should win over user origin)
-  InjectSheet("author", WebDocument::kAuthorOrigin, R"CSS(
+  InjectSheet("author", WebCssOrigin::kAuthor, R"CSS(
     @property --x {
       syntax: "<length>";
       inherits: false;
@@ -3399,7 +3396,7 @@ TEST_F(StyleEngineTest, AtPropertyInUserOrigin) {
   EXPECT_EQ("20px", ComputedValue(GetDocument().body(), "--x")->CssText());
 
   // An additional @property in the user origin:
-  InjectSheet("user2", WebDocument::kUserOrigin, R"CSS(
+  InjectSheet("user2", WebCssOrigin::kUser, R"CSS(
     @property --y {
       syntax: "<length>";
       inherits: false;
@@ -3417,7 +3414,7 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   ScopedCSSScrollTimelineForTest scoped_feature(true);
 
   // @scroll-timeline in the user origin:
-  InjectSheet("user1", WebDocument::kUserOrigin, R"CSS(
+  InjectSheet("user1", WebCssOrigin::kUser, R"CSS(
     @scroll-timeline timeline1 {
       source: selector(#scroller1);
     }
@@ -3429,7 +3426,7 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   EXPECT_EQ("selector(#scroller1)", rule1->GetSource()->CssText());
 
   // @scroll-timeline in the author origin (should win over user origin)
-  InjectSheet("author", WebDocument::kAuthorOrigin, R"CSS(
+  InjectSheet("author", WebCssOrigin::kAuthor, R"CSS(
     @scroll-timeline timeline1 {
       source: selector(#scroller2);
     }
@@ -3441,7 +3438,7 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   EXPECT_EQ("selector(#scroller2)", rule2->GetSource()->CssText());
 
   // An additional @scroll-timeline in the user origin:
-  InjectSheet("user2", WebDocument::kUserOrigin, R"CSS(
+  InjectSheet("user2", WebCssOrigin::kUser, R"CSS(
     @scroll-timeline timeline2 {
       source: selector(#scroller3);
     }
@@ -4523,7 +4520,7 @@ TEST_F(StyleEngineTest, CascadeLayersInOriginsAndTreeScopes) {
       MakeGarbageCollected<CSSParserContext>(GetDocument()));
   user_sheet->ParseString("@layer foo, bar;");
   StyleSheetKey user_key("user_layers");
-  GetStyleEngine().InjectSheet(user_key, user_sheet, WebDocument::kUserOrigin);
+  GetStyleEngine().InjectSheet(user_key, user_sheet, WebCssOrigin::kUser);
 
   GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <style>
@@ -4833,7 +4830,7 @@ TEST_F(StyleEngineTest, UserKeyframesOverrideWithCascadeLayers) {
     }
   )CSS");
   StyleSheetKey key("user");
-  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+  GetStyleEngine().InjectSheet(key, user_sheet, WebCssOrigin::kUser);
 
   GetDocument().body()->setInnerHTML(
       "<div id=target style='height: 100px'></div>");
@@ -4878,7 +4875,7 @@ TEST_F(StyleEngineTest, UserCounterStyleOverrideWithCascadeLayers) {
     }
   )CSS");
   StyleSheetKey key("user");
-  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+  GetStyleEngine().InjectSheet(key, user_sheet, WebCssOrigin::kUser);
 
   GetDocument().body()->setInnerHTML("<div id=target></div>");
 
@@ -4917,7 +4914,7 @@ TEST_F(StyleEngineTest, UserPropertyOverrideWithCascadeLayers) {
     }
   )CSS");
   StyleSheetKey key("user");
-  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+  GetStyleEngine().InjectSheet(key, user_sheet, WebCssOrigin::kUser);
 
   GetDocument().body()->setInnerHTML(
       "<div id=target style='height: 100px'></div>");
@@ -4945,7 +4942,7 @@ TEST_F(StyleEngineTest, UserAndAuthorPropertyOverrideWithCascadeLayers) {
     }
   )CSS");
   StyleSheetKey key("user");
-  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+  GetStyleEngine().InjectSheet(key, user_sheet, WebCssOrigin::kUser);
 
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
@@ -5017,7 +5014,7 @@ TEST_F(StyleEngineTest, UserScrollTimelineOverrideWithCascadeLayers) {
     }
   )CSS");
   StyleSheetKey key("user");
-  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+  GetStyleEngine().InjectSheet(key, user_sheet, WebCssOrigin::kUser);
 
   GetDocument().body()->setInnerHTML(
       "<div id=scroller><div id=scroll-contents></div></div>"
@@ -5064,7 +5061,7 @@ TEST_F(StyleEngineTest, UserAndAuthorScrollTimelineOverrideWithCascadeLayers) {
     }
   )CSS");
   StyleSheetKey key("user");
-  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+  GetStyleEngine().InjectSheet(key, user_sheet, WebCssOrigin::kUser);
 
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
@@ -5136,7 +5133,7 @@ TEST_F(StyleEngineSimTest, UserFontFaceOverrideWithCascadeLayers) {
   )CSS");
   StyleSheetKey key("user");
   GetDocument().GetStyleEngine().InjectSheet(key, user_sheet,
-                                             WebDocument::kUserOrigin);
+                                             WebCssOrigin::kUser);
 
   Compositor().BeginFrame();
 
@@ -5193,7 +5190,7 @@ TEST_F(StyleEngineSimTest, UserAndAuthorFontFaceOverrideWithCascadeLayers) {
   )CSS");
   StyleSheetKey key("user");
   GetDocument().GetStyleEngine().InjectSheet(key, user_sheet,
-                                             WebDocument::kUserOrigin);
+                                             WebCssOrigin::kUser);
 
   Compositor().BeginFrame();
 

@@ -185,25 +185,25 @@ const HeapVector<Member<StyleSheet>>& StyleEngine::StyleSheetsForStyleSheetList(
 
 void StyleEngine::InjectSheet(const StyleSheetKey& key,
                               StyleSheetContents* sheet,
-                              WebDocument::CSSOrigin origin) {
+                              WebCssOrigin origin) {
   HeapVector<std::pair<StyleSheetKey, Member<CSSStyleSheet>>>&
       injected_style_sheets =
-          origin == WebDocument::kUserOrigin ? injected_user_style_sheets_
-                                             : injected_author_style_sheets_;
+          origin == WebCssOrigin::kUser ? injected_user_style_sheets_
+                                        : injected_author_style_sheets_;
   injected_style_sheets.push_back(std::make_pair(
       key, MakeGarbageCollected<CSSStyleSheet>(sheet, *document_)));
-  if (origin == WebDocument::kUserOrigin)
+  if (origin == WebCssOrigin::kUser)
     MarkUserStyleDirty();
   else
     MarkDocumentDirty();
 }
 
 void StyleEngine::RemoveInjectedSheet(const StyleSheetKey& key,
-                                      WebDocument::CSSOrigin origin) {
+                                      WebCssOrigin origin) {
   HeapVector<std::pair<StyleSheetKey, Member<CSSStyleSheet>>>&
       injected_style_sheets =
-          origin == WebDocument::kUserOrigin ? injected_user_style_sheets_
-                                             : injected_author_style_sheets_;
+          origin == WebCssOrigin::kUser ? injected_user_style_sheets_
+                                        : injected_author_style_sheets_;
   // Remove the last sheet that matches.
   const auto& it = std::find_if(injected_style_sheets.rbegin(),
                                 injected_style_sheets.rend(),
@@ -212,7 +212,7 @@ void StyleEngine::RemoveInjectedSheet(const StyleSheetKey& key,
                                 });
   if (it != injected_style_sheets.rend()) {
     injected_style_sheets.erase(std::next(it).base());
-    if (origin == WebDocument::kUserOrigin)
+    if (origin == WebCssOrigin::kUser)
       MarkUserStyleDirty();
     else
       MarkDocumentDirty();

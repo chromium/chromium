@@ -228,7 +228,7 @@ WebElement WebDocument::FocusedElement() const {
 WebStyleSheetKey WebDocument::InsertStyleSheet(
     const WebString& source_code,
     const WebStyleSheetKey* key,
-    CSSOrigin origin,
+    WebCssOrigin origin,
     BackForwardCacheAware back_forward_cache_aware) {
   Document* document = Unwrap<Document>();
   DCHECK(document);
@@ -248,7 +248,7 @@ WebStyleSheetKey WebDocument::InsertStyleSheet(
 }
 
 void WebDocument::RemoveInsertedStyleSheet(const WebStyleSheetKey& key,
-                                           CSSOrigin origin) {
+                                           WebCssOrigin origin) {
   Unwrap<Document>()->GetStyleEngine().RemoveInjectedSheet(key, origin);
 }
 
