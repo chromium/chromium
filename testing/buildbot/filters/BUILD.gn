@@ -340,6 +340,7 @@ source_set("net_unittests_filters") {
     "//testing/buildbot/filters/android.emulator.net_unittests.filter",
     "//testing/buildbot/filters/android.emulator_10.net_unittests.filter",
     "//testing/buildbot/filters/android.emulator_11.net_unittests.filter",
+    "//testing/buildbot/filters/android.emulator_l.net_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.net_unittests.filter",
     "//testing/buildbot/filters/fuchsia.net_unittests.filter",
   ]
