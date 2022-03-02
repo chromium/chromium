@@ -9,12 +9,14 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/notification_service.h"
 
 namespace crosapi {
 namespace {
@@ -38,6 +40,9 @@ PrefsAsh::PrefsAsh(ProfileManager* profile_manager, PrefService* local_state)
   DCHECK(profile_manager_);
   DCHECK(local_state_);
 
+  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
+                              content::NotificationService::AllSources());
+
   profile_manager_->AddObserver(this);
   local_state_registrar_.Init(local_state_);
 
@@ -49,7 +54,7 @@ PrefsAsh::PrefsAsh(ProfileManager* profile_manager, PrefService* local_state)
 PrefsAsh::~PrefsAsh() {
   // Remove this observer, if the Primary logged in profile is not yet created.
   // On actual shutdown, the ProfileManager will destruct before CrosapiManager.
-  if (IsInObserverList() && profile_manager_) {
+  if (ProfileManagerObserver::IsInObserverList() && profile_manager_) {
     profile_manager_->RemoveObserver(this);
   }
 }
@@ -89,6 +94,7 @@ void PrefsAsh::AddObserver(mojom::PrefPath path,
   mojo::Remote<mojom::PrefObserver> remote(std::move(observer));
   remote->OnPrefChanged(value->Clone());
 
+  DCHECK(state->registrar);
   if (!state->registrar->IsObserved(state->path)) {
     // Unretained() is safe since PrefChangeRegistrar and RemoteSet within
     // observers_ are owned by this and wont invoke if PrefsAsh is destroyed.
@@ -118,11 +124,12 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       return State{local_state_, &local_state_registrar_,
                    metrics::prefs::kMetricsReportingEnabled};
     case mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled:
-      if (!profile_prefs_) {
+      if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return absl::nullopt;
       }
-      return State{profile_prefs_, &profile_prefs_registrar_,
+      return State{profile_prefs_registrar_->prefs(),
+                   profile_prefs_registrar_.get(),
                    ash::prefs::kAccessibilitySpokenFeedbackEnabled};
     case mojom::PrefPath::kDeviceSystemWideTracingEnabled:
       return State{local_state_, &local_state_registrar_,
@@ -141,6 +148,18 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
 
 void PrefsAsh::OnProfileManagerDestroying() {
   profile_manager_ = nullptr;
+}
+
+void PrefsAsh::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observation_.Reset();
+  profile_prefs_registrar_.reset();
+}
+
+void PrefsAsh::Observe(int type,
+                       const content::NotificationSource& source,
+                       const content::NotificationDetails& details) {
+  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+  profile_prefs_registrar_.reset();
 }
 
 void PrefsAsh::OnPrefChanged(mojom::PrefPath path) {
@@ -166,8 +185,9 @@ void PrefsAsh::OnDisconnect(mojom::PrefPath path, mojo::RemoteSetElementId id) {
 
 void PrefsAsh::OnPrimaryProfileReady(Profile* profile) {
   profile_manager_->RemoveObserver(this);
-  profile_prefs_ = profile->GetPrefs();
-  profile_prefs_registrar_.Init(profile_prefs_);
+
+  profile_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  profile_prefs_registrar_->Init(profile->GetPrefs());
 }
 
 }  // namespace crosapi
