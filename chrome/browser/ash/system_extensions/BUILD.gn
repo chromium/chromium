@@ -23,6 +23,8 @@ source_set("system_extensions") {
     "system_extensions_install_manager.cc",
     "system_extensions_install_manager.h",
     "system_extensions_install_status.h",
+    "system_extensions_internals_page_handler.cc",
+    "system_extensions_internals_page_handler.h",
     "system_extensions_profile_utils.cc",
     "system_extensions_profile_utils.h",
     "system_extensions_provider.cc",
@@ -40,6 +42,7 @@ source_set("system_extensions") {
   deps = [
     ":system_extensions_group",
     "//ash/constants",
+    "//ash/webui/system_extensions_internals_ui/mojom",
     "//base",
     "//chrome/browser/chromeos",
     "//chrome/browser/profiles",

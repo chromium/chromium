@@ -19,6 +19,7 @@ static_library("system_extensions_internals_ui") {
 
   deps = [
     "//ash/webui/resources:system_extensions_internals_resources",
+    "//ash/webui/system_extensions_internals_ui/mojom",
     "//content/public/browser",
     "//ui/webui",
   ]
@@ -30,7 +31,13 @@ js_type_check("closure_compile") {
 }
 
 js_library("system_extensions_internals") {
-  sources = [ "resources/index.js" ]
+  sources = [
+    "resources/index.js",
+    "resources/page_handler.js",
+  ]
+  externs_list =
+      [ "//ash/webui/web_applications/externs/file_handling.externs.js" ]
+  deps = [ "//ash/webui/system_extensions_internals_ui/mojom:mojom_webui_js" ]
 }
 
 js2gtest("browser_tests_js") {
@@ -43,13 +50,32 @@ js2gtest("browser_tests_js") {
 
 grd_prefix = "ash_system_extensions_internals"
 
+mojo_grdp = "$target_gen_dir/system_extensions_internals_mojo_resources.grdp"
+
+generate_grd("build_mojo_grdp") {
+  grd_prefix = grd_prefix
+  out_grd = mojo_grdp
+
+  deps = [ "//ash/webui/system_extensions_internals_ui/mojom:mojom_webui_js" ]
+
+  # Flatten out the dependency tree of your mojom and add generated bindings
+  # file here.
+  input_files = [ "ash/webui/system_extensions_internals_ui/mojom/system_extensions_internals_ui.mojom-webui.js" ]
+
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
+}
+
 generate_grd("build_grd") {
   input_files_base_dir = rebase_path("resources", "//")
   input_files = [
     "index.html",
     "index.js",
+    "page_handler.js",
   ]
 
   grd_prefix = grd_prefix
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  deps = [ ":build_mojo_grdp" ]
+  grdp_files = [ mojo_grdp ]
 }

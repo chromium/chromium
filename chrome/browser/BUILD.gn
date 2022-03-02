@@ -2440,6 +2440,8 @@ static_library("browser") {
       "//ash/webui/shimless_rma",
       "//ash/webui/shimless_rma/mojom",
       "//ash/webui/shortcut_customization_ui",
+      "//ash/webui/system_extensions_internals_ui",
+      "//ash/webui/system_extensions_internals_ui/mojom",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/ash/system_extensions",
       "//chrome/browser/ash/system_extensions/api/hid",
