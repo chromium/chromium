@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -196,6 +197,8 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
         if (!is_last_step_) {
           params.timeout = base::TimeDelta();
           params.dismiss_callback = abort_callback;
+        } else {
+          params.body_icon = &vector_icons::kCelebrationIcon;
         }
 
         std::unique_ptr<HelpBubble> bubble =
