@@ -109,8 +109,8 @@ interface DriveFs {
   // Returns the total and free space available in the user's Drive.
   GetQuotaUsage() => (FileError error, QuotaUsage quota);
 
-  // Turn on mirror sync capability.
-  EnableMirroring() => (MirrorSyncStatus status);
+  // Toggle mirror sync capability.
+  ToggleMirroring(bool enabled) => (MirrorSyncStatus status);
 };
 
 // Implemented by Chrome, used from DriveFS.

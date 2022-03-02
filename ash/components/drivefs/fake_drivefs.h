@@ -144,8 +144,9 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void GetQuotaUsage(
       drivefs::mojom::DriveFs::GetQuotaUsageCallback callback) override;
 
-  void EnableMirroring(
-      drivefs::mojom::DriveFs::EnableMirroringCallback callback) override;
+  void ToggleMirroring(
+      bool enabled,
+      drivefs::mojom::DriveFs::ToggleMirroringCallback callback) override;
 
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;

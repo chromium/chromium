@@ -81,6 +81,12 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
 
   // Triggered when the `DriveIntegrationService` is being destroyed.
   virtual void OnDriveIntegrationServiceDestroyed() {}
+
+  // Triggered when the mirroring functionality is enabled.
+  virtual void OnMirroringEnabled() {}
+
+  // Triggered when the mirroring functionality is disabled.
+  virtual void OnMirroringDisabled() {}
 };
 
 // DriveIntegrationService is used to integrate Drive to Chrome. This class
@@ -232,10 +238,12 @@ class DriveIntegrationService : public KeyedService,
                     bool crop_to_square,
                     GetThumbnailCallback callback);
 
-  // Enable Mirroring for the current device.
-  void EnableMirroring(
-      drivefs::mojom::DriveFs::EnableMirroringCallback callback);
+  // Toggle mirroring on or off defined by |enabled|.
+  void ToggleMirroring(
+      bool enabled,
+      drivefs::mojom::DriveFs::ToggleMirroringCallback callback);
 
+  // Returns whether mirroring is enabled.
   bool IsMirroringEnabled();
 
  private:
@@ -322,6 +330,8 @@ class DriveIntegrationService : public KeyedService,
       absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   void OnEnableMirroringStatusUpdate(drivefs::mojom::MirrorSyncStatus status);
+
+  void OnDisableMirroringStatusUpdate(drivefs::mojom::MirrorSyncStatus status);
 
   friend class DriveIntegrationServiceFactory;
 

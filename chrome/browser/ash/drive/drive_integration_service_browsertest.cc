@@ -298,6 +298,37 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceWithPrefDisabledBrowserTest,
   EXPECT_FALSE(drive_service->is_enabled());
 }
 
+class DriveMirrorSyncStatusObserver : public DriveIntegrationServiceObserver {
+ public:
+  explicit DriveMirrorSyncStatusObserver(bool expected_status)
+      : expected_status_(expected_status) {
+    quit_closure_ = run_loop_.QuitClosure();
+  }
+
+  DriveMirrorSyncStatusObserver(const DriveMirrorSyncStatusObserver&) = delete;
+  DriveMirrorSyncStatusObserver& operator=(
+      const DriveMirrorSyncStatusObserver&) = delete;
+
+  ~DriveMirrorSyncStatusObserver() override {}
+
+  void WaitForStatusChange() { run_loop_.Run(); }
+
+  void OnMirroringEnabled() override {
+    quit_closure_.Run();
+    EXPECT_TRUE(expected_status_);
+  }
+
+  void OnMirroringDisabled() override {
+    quit_closure_.Run();
+    EXPECT_FALSE(expected_status_);
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  base::RepeatingClosure quit_closure_;
+  bool expected_status_ = false;
+};
+
 class DriveIntegrationBrowserTestWithMirrorSyncEnabled
     : public DriveIntegrationServiceBrowserTest {
  public:
@@ -312,6 +343,22 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
       const DriveIntegrationBrowserTestWithMirrorSyncEnabled&) = delete;
 
   ~DriveIntegrationBrowserTestWithMirrorSyncEnabled() override {}
+
+  void ToggleMirrorSync(bool status) {
+    auto observer = std::make_unique<DriveMirrorSyncStatusObserver>(status);
+    auto* drive_service =
+        DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+    drive_service->AddObserver(observer.get());
+
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kDriveFsEnableMirrorSync, status);
+    observer->WaitForStatusChange();
+    EXPECT_EQ(browser()->profile()->GetPrefs()->GetBoolean(
+                  prefs::kDriveFsEnableMirrorSync),
+              status);
+
+    drive_service->RemoveObserver(observer.get());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -328,10 +375,24 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
   EXPECT_FALSE(drive_service->IsMirroringEnabled());
 
   // Enable mirroring and ensure the integration service has it enabled.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kDriveFsEnableMirrorSync,
-                                               true);
-  base::RunLoop().RunUntilIdle();
+  ToggleMirrorSync(true);
   EXPECT_TRUE(drive_service->IsMirroringEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
+                       DisableMirrorSync) {
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+
+  // Ensure the mirror syncing service is enabled.
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kDriveFsEnableMirrorSync));
+  EXPECT_FALSE(drive_service->IsMirroringEnabled());
+  ToggleMirrorSync(true);
+  EXPECT_TRUE(drive_service->IsMirroringEnabled());
+  // Disable mirroring and ensure the integration service has it disabled.
+  ToggleMirrorSync(false);
+  EXPECT_FALSE(drive_service->IsMirroringEnabled());
 }
 
 }  // namespace drive

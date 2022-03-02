@@ -421,12 +421,20 @@ class DriveIntegrationService::PreferenceWatcher
 
   void ToggleLocalMirroring() {
     DCHECK(integration_service_);
-    if (chromeos::features::IsDriveFsMirroringEnabled() &&
-        pref_service_->GetBoolean(prefs::kDriveFsEnableMirrorSync)) {
-      // TODO(b/216228528): Disable mirror sync when the API is available.
-      integration_service_->EnableMirroring(base::BindOnce(
-          &DriveIntegrationService::OnEnableMirroringStatusUpdate,
-          integration_service_->weak_ptr_factory_.GetWeakPtr()));
+    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+      return;
+    }
+
+    if (pref_service_->GetBoolean(prefs::kDriveFsEnableMirrorSync)) {
+      integration_service_->ToggleMirroring(
+          true, base::BindOnce(
+                    &DriveIntegrationService::OnEnableMirroringStatusUpdate,
+                    integration_service_->weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      integration_service_->ToggleMirroring(
+          false, base::BindOnce(
+                     &DriveIntegrationService::OnDisableMirroringStatusUpdate,
+                     integration_service_->weak_ptr_factory_.GetWeakPtr()));
     }
   }
 
@@ -970,6 +978,15 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   } else {
     UmaEmitMountOutcome(DriveMountStatus::kUnknownFailure, mount_start_);
   }
+
+  // Enable MirrorSync if the feature is enabled.
+  if (chromeos::features::IsDriveFsMirroringEnabled() &&
+      profile_->GetPrefs()->GetBoolean(prefs::kDriveFsEnableMirrorSync)) {
+    ToggleMirroring(
+        true,
+        base::BindOnce(&DriveIntegrationService::OnEnableMirroringStatusUpdate,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void DriveIntegrationService::OnUnmounted(
@@ -1158,8 +1175,22 @@ void DriveIntegrationService::OnSearchDriveByFileName(
 
 void DriveIntegrationService::OnEnableMirroringStatusUpdate(
     drivefs::mojom::MirrorSyncStatus status) {
-  VLOG(1) << "OnEnableMirroringStatusUpdate: " << status;
   mirroring_enabled_ = (status == drivefs::mojom::MirrorSyncStatus::kSuccess);
+  if (mirroring_enabled_) {
+    for (auto& observer : observers_) {
+      observer.OnMirroringEnabled();
+    }
+  }
+}
+
+void DriveIntegrationService::OnDisableMirroringStatusUpdate(
+    drivefs::mojom::MirrorSyncStatus status) {
+  if (status == drivefs::mojom::MirrorSyncStatus::kSuccess) {
+    mirroring_enabled_ = false;
+    for (auto& observer : observers_) {
+      observer.OnMirroringDisabled();
+    }
+  }
 }
 
 bool DriveIntegrationService::IsMirroringEnabled() {
@@ -1270,11 +1301,12 @@ void DriveIntegrationService::GetThumbnail(const base::FilePath& path,
   }
 }
 
-void DriveIntegrationService::EnableMirroring(
-    drivefs::mojom::DriveFs::EnableMirroringCallback callback) {
+void DriveIntegrationService::ToggleMirroring(
+    bool enabled,
+    drivefs::mojom::DriveFs::ToggleMirroringCallback callback) {
   if (chromeos::features::IsDriveFsMirroringEnabled() &&
       GetDriveFsInterface()) {
-    GetDriveFsInterface()->EnableMirroring(std::move(callback));
+    GetDriveFsInterface()->ToggleMirroring(enabled, std::move(callback));
   }
 }
 
