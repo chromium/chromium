@@ -18,16 +18,16 @@ import {
 export class Camera3DeviceInfo {
   readonly deviceId: string;
 
-  readonly videoResols: ResolutionList = [];
+  readonly videoResolutions: ResolutionList = [];
 
   readonly videoMaxFps: MaxFpsInfo = {};
 
   /**
    * @param deviceInfo Information of the video device.
    * @param facing Camera facing of the video device.
-   * @param photoResols Supported available photo resolutions
+   * @param photoResolutions Supported available photo resolutions
    *     of the video device.
-   * @param videoResolFpses Supported available video
+   * @param videoResolutionFpses Supported available video
    *     resolutions and maximal capture fps of the video device.
    * @param fpsRanges Supported fps ranges of the video device.
    * @param supportPTZ Is supported PTZ controls.
@@ -35,16 +35,16 @@ export class Camera3DeviceInfo {
   constructor(
       deviceInfo: MediaDeviceInfo,
       readonly facing: Facing,
-      readonly photoResols: ResolutionList,
-      videoResolFpses: VideoConfig[],
+      readonly photoResolutions: ResolutionList,
+      videoResolutionFpses: VideoConfig[],
       readonly fpsRanges: FpsRangeList,
       readonly supportPTZ: boolean,
   ) {
     this.deviceId = deviceInfo.deviceId;
-    videoResolFpses.filter(({maxFps}) => maxFps >= 24)
+    videoResolutionFpses.filter(({maxFps}) => maxFps >= 24)
         .forEach(({width, height, maxFps}) => {
           const r = new Resolution(width, height);
-          this.videoResols.push(r);
+          this.videoResolutions.push(r);
           this.videoMaxFps[r.toString()] = maxFps;
         });
   }

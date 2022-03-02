@@ -134,23 +134,24 @@ class Reconfigurer {
 
     for (const deviceId of this.getDeviceIdCandidates(cameraInfo)) {
       for (const mode of await this.getModeCandidates(deviceId)) {
-        let resolCandidates;
-        let photoRs;
+        let resolutionCandidates;
+        let photoResolutions;
         if (deviceOperator !== null) {
-          resolCandidates = this.modes.getResolutionCandidates(mode, deviceId);
-          photoRs = await deviceOperator.getPhotoResolutions(deviceId);
+          resolutionCandidates =
+              this.modes.getResolutionCandidates(mode, deviceId);
+          photoResolutions = await deviceOperator.getPhotoResolutions(deviceId);
         } else {
-          resolCandidates =
+          resolutionCandidates =
               this.modes.getFakeResolutionCandidates(mode, deviceId);
-          photoRs = resolCandidates.map((c) => c.resolution);
+          photoResolutions = resolutionCandidates.map((c) => c.resolution);
         }
-        const maxResolution = photoRs.reduce(
+        const maxResolution = photoResolutions.reduce(
             (maxR, r) =>
                 r !== null && (maxR === null || r.area > maxR.area) ? r : maxR);
         for (const {
                resolution: captureResolution,
                previewCandidates,
-             } of resolCandidates) {
+             } of resolutionCandidates) {
           const videoSnapshotResolution =
               state.get(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
               maxResolution :
