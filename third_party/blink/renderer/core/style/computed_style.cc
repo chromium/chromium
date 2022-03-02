@@ -2649,7 +2649,8 @@ bool ComputedStyle::ShouldApplyAnyContainment(const Element& element) const {
 }
 
 bool ComputedStyle::CanMatchSizeContainerQueries(const Element& element) const {
-  return IsContainerForSizeContainerQueries() &&
+  return RuntimeEnabledFeatures::LayoutNGEnabled() &&
+         IsContainerForSizeContainerQueries() &&
          !InsideFragmentationContextWithNondeterministicEngine() &&
          !element.ShouldForceLegacyLayout() &&
          (!element.IsSVGElement() ||
