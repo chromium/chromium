@@ -90,6 +90,7 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->accessible_name = notification.accessible_name();
   mojo_note->fullscreen_visibility =
       ToMojo(notification.fullscreen_visibility());
+  mojo_note->accent_color = notification.accent_color();
   return mojo_note;
 }
 

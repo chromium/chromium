@@ -7,6 +7,7 @@ module crosapi.mojom;
 import "chromeos/crosapi/mojom/bitmap.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
@@ -63,6 +64,9 @@ struct ButtonInfo {
 // API. See documentation at:
 // https://developer.mozilla.org/en-US/docs/Web/API/notification
 // https://developer.chrome.com/extensions/notifications#type-NotificationOptions
+//
+//  Next MinVersion: 4
+//  Next ID: 27
 [Stable]
 struct Notification {
   // Type of notification to show.
@@ -157,4 +161,8 @@ struct Notification {
   [MinVersion=2]
   // Whether the badge needs additional masking.
   bool badge_needs_additional_masking@25;
+
+  [MinVersion=3]
+  // Unified theme color used in new style notification.
+  skia.mojom.SkColor? accent_color@26;
 };

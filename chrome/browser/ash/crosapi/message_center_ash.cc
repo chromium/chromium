@@ -84,6 +84,7 @@ std::unique_ptr<mc::Notification> FromMojo(
   rich_data.accessible_name = notification->accessible_name;
   rich_data.fullscreen_visibility =
       FromMojo(notification->fullscreen_visibility);
+  rich_data.accent_color = notification->accent_color;
 
   gfx::Image icon;
   if (!notification->icon.isNull())
