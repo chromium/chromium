@@ -629,29 +629,4 @@ TEST_F(ClientControlledStateTest,
   EXPECT_EQ(WindowStateType::kMaximized, delegate()->new_state());
 }
 
-// Tests the restore behavior for fullscreen window. For fullscreen window, for
-// now it can only restore back to kNormal window state. Note: this behavior
-// may change after M99, see b/215710461.
-TEST_F(ClientControlledStateTest, FullscreenRestore) {
-  widget()->Maximize();
-  EXPECT_FALSE(widget()->IsMaximized());
-  state()->EnterNextState(window_state(), delegate()->new_state());
-  EXPECT_TRUE(widget()->IsMaximized());
-
-  widget()->SetFullscreen(true);
-  EXPECT_TRUE(widget()->IsMaximized());
-  EXPECT_EQ(WindowStateType::kMaximized, delegate()->old_state());
-  EXPECT_EQ(WindowStateType::kFullscreen, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state());
-  EXPECT_TRUE(widget()->IsFullscreen());
-
-  widget()->Restore();
-  EXPECT_TRUE(widget()->IsFullscreen());
-  EXPECT_EQ(WindowStateType::kFullscreen, delegate()->old_state());
-  EXPECT_EQ(WindowStateType::kNormal, delegate()->new_state());
-  state()->EnterNextState(window_state(), delegate()->new_state());
-  EXPECT_FALSE(widget()->IsMaximized());
-  EXPECT_FALSE(widget()->IsFullscreen());
-}
-
 }  // namespace ash
