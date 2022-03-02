@@ -149,6 +149,8 @@ class DocumentTransitionStyleTracker
   bool HasLiveNewContent() const;
   void EndTransition();
 
+  void AddConsoleError(AtomicString message, Vector<DOMNodeId> related_nodes);
+
   Member<Document> document_;
   State state_ = State::kIdle;
   VectorOf<AtomicString> pseudo_document_transition_tags_;

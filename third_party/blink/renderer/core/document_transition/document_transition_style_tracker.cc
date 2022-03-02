@@ -27,6 +27,12 @@
 namespace blink {
 namespace {
 
+const char* kElementSetModificationError =
+    "The element set cannot be modified at this transition state.";
+
+const char* kPaintContainmentNotSatisfied =
+    "Dropping element from transition. Shared element must contain paint";
+
 const AtomicString& RootTag() {
   DEFINE_STATIC_LOCAL(AtomicString, kRootTag, ("root"));
   return kRootTag;
@@ -101,13 +107,24 @@ DocumentTransitionStyleTracker::DocumentTransitionStyleTracker(
 
 DocumentTransitionStyleTracker::~DocumentTransitionStyleTracker() = default;
 
+void DocumentTransitionStyleTracker::AddConsoleError(
+    AtomicString message,
+    Vector<DOMNodeId> related_nodes) {
+  auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kRendering,
+      mojom::blink::ConsoleMessageLevel::kError, std::move(message));
+  console_message->SetNodes(document_->GetFrame(), std::move(related_nodes));
+  document_->AddConsoleMessage(console_message);
+}
+
 void DocumentTransitionStyleTracker::AddSharedElement(Element* element,
                                                       const AtomicString& tag) {
   DCHECK(element);
-  // TODO(vmpstr): Log a console warning if we're modifying elements in a state
-  // that does not permit to do so.
-  if (state_ == State::kCapturing || state_ == State::kStarted)
+  if (state_ == State::kCapturing || state_ == State::kStarted) {
+    AddConsoleError(kElementSetModificationError,
+                    {DOMNodeIds::IdForNode(element)});
     return;
+  }
 
   // TODO(vmpstr): One element can have multiple tags associated with it, but
   // it isn't currently allowed to have one tag be associated with more than one
@@ -120,8 +137,11 @@ void DocumentTransitionStyleTracker::AddSharedElement(Element* element,
 void DocumentTransitionStyleTracker::RemoveSharedElement(Element* element) {
   // TODO(vmpstr): Log a console warning if we're modifying elements in a state
   // that does not permit to do so.
-  if (state_ == State::kCapturing || state_ == State::kStarted)
+  if (state_ == State::kCapturing || state_ == State::kStarted) {
+    AddConsoleError(kElementSetModificationError,
+                    {DOMNodeIds::IdForNode(element)});
     return;
+  }
   for (wtf_size_t i = 0; i < pending_shared_elements_.size(); ++i) {
     if (pending_shared_elements_[i] == element) {
       pending_shared_elements_.EraseAt(i);
@@ -481,14 +501,8 @@ void DocumentTransitionStyleTracker::VerifySharedElements() {
       if (object->ShouldApplyPaintContainment())
         continue;
 
-      auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kError,
-          "Dropping element from transition. Shared element must have "
-          "containt:paint");
-      console_message->SetNodes(document_->GetFrame(),
-                                {DOMNodeIds::IdForNode(active_element)});
-      document_->AddConsoleMessage(console_message);
+      AddConsoleError(kPaintContainmentNotSatisfied,
+                      {DOMNodeIds::IdForNode(active_element)});
     }
 
     // Clear the shared element. Note that we don't remove the element from the
