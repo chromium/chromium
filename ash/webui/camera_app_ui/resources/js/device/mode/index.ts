@@ -146,7 +146,7 @@ export class Modes {
      * @param deviceId Id of video device.
      * @return Result of constraints-candidates.
      */
-    const getConstraintsForFakeCamera = function(
+    function getConstraintsForFakeCamera(
         videoMode: boolean, deviceId: string): StreamConstraints[] {
       const frameRate = {min: 20, ideal: 30};
       return [
@@ -168,7 +168,7 @@ export class Modes {
           },
         },
       ];
-    };
+    }
 
     // Workaround for b/184089334 on PTZ camera to use preview frame as photo
     // result.

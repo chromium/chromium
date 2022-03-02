@@ -539,6 +539,13 @@ module.exports = {
         selector: 'CallExpression[callee.property.name="forEach"]',
         message: 'forEach are not allowed. (go/tsstyle#iterating-containers)',
       },
+      // Disallow function() {...}. (go/tsstyle#function-declarations)
+      {
+        selector: ':not(:matches(MethodDefinition, Property))' +
+            ' > FunctionExpression:not([id])',
+        message: 'Use named function or arrow function instead. ' +
+            '(go/tsstyle#function-declarations)',
+      },
     ],
 
     '@typescript-eslint/naming-convention': [

@@ -37,9 +37,9 @@ function initGA(
   window.GoogleAnalyticsObject = 'ga';
   // Creates an initial ga() function.
   // The queued commands will be executed once analytics.js loads.
-  window.ga = window.ga || function(...args: unknown[]) {
-    (window.ga.q = window.ga.q || []).push(args);
-  } as UniversalAnalytics.ga;
+  window.ga = window.ga || ((...args: unknown[]) => {
+                             (window.ga.q = window.ga.q || []).push(args);
+                           }) as UniversalAnalytics.ga;
   window.ga.l = Date.now();
   const a = document.createElement('script');
   const m = document.getElementsByTagName('script')[0];
