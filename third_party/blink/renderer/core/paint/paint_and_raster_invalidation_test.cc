@@ -18,9 +18,8 @@ using ::testing::UnorderedElementsAreArray;
 static ContentLayerClientImpl* GetContentLayerClient(
     const LocalFrameView& root_frame_view,
     wtf_size_t index) {
-  const auto& clients = root_frame_view.GetPaintArtifactCompositor()
-                            ->ContentLayerClientsForTesting();
-  return index < clients.size() ? clients[index].get() : nullptr;
+  return root_frame_view.GetPaintArtifactCompositor()
+      ->ContentLayerClientForTesting(index);
 }
 
 const RasterInvalidationTracking* GetRasterInvalidationTracking(

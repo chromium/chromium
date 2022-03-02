@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_
 
+#include "cc/input/layer_selection_bound.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -88,6 +90,8 @@ class PLATFORM_EXPORT PendingLayer {
   const PaintChunk& FirstPaintChunk() const;
   const DisplayItem& FirstDisplayItem() const;
 
+  bool Matches(const PendingLayer& old_pending_layer) const;
+
   const TransformPaintPropertyNode& ScrollTranslationForScrollHitTestLayer()
       const;
 
@@ -96,8 +100,18 @@ class PLATFORM_EXPORT PendingLayer {
   void ForceDrawsContent() { draws_content_ = true; }
   bool DrawsContent() const { return draws_content_; }
 
-  bool RequiresOwnLayer() const {
-    return compositing_type_ != kOverlap && compositing_type_ != kOther;
+  bool ChunkRequiresOwnLayer() const {
+    bool result = compositing_type_ != kOverlap && compositing_type_ != kOther;
+#if DCHECK_IS_ON()
+    if (result) {
+      DCHECK(!content_layer_client_);
+      DCHECK_EQ(chunks_.size(), 1u);
+    } else {
+      DCHECK(!cc_layer_);
+      DCHECK_GE(chunks_.size(), 1u);
+    }
+#endif
+    return result;
   }
 
   bool PropertyTreeStateChanged() const;
@@ -105,6 +119,32 @@ class PLATFORM_EXPORT PendingLayer {
   bool MightOverlap(const PendingLayer& other) const;
 
   static void DecompositeTransforms(Vector<PendingLayer>& pending_layers);
+
+  // This is valid only when SetCclayer() or SetContentLayerClient() has been
+  // called.
+  cc::Layer& CcLayer() const {
+    if (content_layer_client_)
+      return content_layer_client_->Layer();
+    DCHECK(cc_layer_);
+    return *cc_layer_;
+  }
+
+  ContentLayerClientImpl* GetContentLayerClient() const {
+    return content_layer_client_.get();
+  }
+
+  // For this PendingLayer, creates a composited layer or uses the existing
+  // one in |old_pending_layer|, and updates the layer according to the current
+  // contents and properties of this PendingLayer.
+  void UpdateCompositedLayer(PendingLayer* old_pending_layer,
+                             cc::LayerSelection&,
+                             bool tracks_raster_invalidations);
+
+  // A lighter version of UpdateCompositedLayer(). Called when the existing
+  // composited layer has only repainted since the last update.
+  void UpdateCompositedLayerForRepaint(
+      scoped_refptr<const PaintArtifact> repainted_artifact,
+      cc::LayerSelection&);
 
  private:
   PendingLayer(const PaintChunkSubset&,
@@ -121,6 +161,17 @@ class PLATFORM_EXPORT PendingLayer {
   // True if this contains only a single solid color DrawingDisplayItem.
   bool IsSolidColor() const;
 
+  // The following methods are called by UpdateCompositedLayer(), each for a
+  // particular type of composited layer.
+  void UpdateForeignLayer();
+  void UpdateScrollHitTestLayer(PendingLayer* old_pending_layer);
+  void UpdateScrollbarLayer(PendingLayer* old_pending_layer);
+  void UpdateContentLayer(PendingLayer* old_pending_layer,
+                          bool tracks_raster_invalidations);
+
+  void UpdateLayerProperties();
+  void UpdateLayerSelection(cc::LayerSelection&);
+
   // The rects are in the space of property_tree_state.
   gfx::RectF bounds_;
   gfx::RectF rect_known_to_be_opaque_;
@@ -133,6 +184,11 @@ class PLATFORM_EXPORT PendingLayer {
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;
   CompositingType compositing_type_;
+
+  // This is set to non-null after layerization if ChunkRequiresOwnLayer().
+  scoped_refptr<cc::Layer> cc_layer_;
+  // This is set to non-null after layerization if !ChunkRequiresOwnLayer().
+  std::unique_ptr<ContentLayerClientImpl> content_layer_client_;
 };
 }  // namespace blink
 

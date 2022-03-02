@@ -82,12 +82,12 @@ class CaretDisplayItemClientTest : public PaintAndRasterInvalidationTest {
   }
 
   RasterInvalidationTracking* CaretRasterInvalidationTracking() const {
-    for (const auto& client : GetDocument()
-                                  .View()
-                                  ->GetPaintArtifactCompositor()
-                                  ->ContentLayerClientsForTesting()) {
+    wtf_size_t i = 0;
+    auto* pac = GetDocument().View()->GetPaintArtifactCompositor();
+    while (auto* client = pac->ContentLayerClientForTesting(i)) {
       if (client->Layer().DebugName() == "Caret")
         return client->GetRasterInvalidator().GetTracking();
+      ++i;
     }
     return nullptr;
   }

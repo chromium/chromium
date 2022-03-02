@@ -43,7 +43,7 @@ const PaintChunk& RasterInvalidator::GetOldChunk(wtf_size_t index) const {
 wtf_size_t RasterInvalidator::MatchNewChunkToOldChunk(
     const PaintChunk& new_chunk,
     wtf_size_t old_index) const {
-  if (!new_chunk.is_cacheable)
+  if (!new_chunk.CanMatchOldChunk())
     return kNotFound;
 
   for (wtf_size_t i = old_index; i < old_paint_chunks_info_.size(); i++) {

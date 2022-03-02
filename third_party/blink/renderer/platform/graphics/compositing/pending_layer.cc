@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/pending_layer.h"
 
+#include "cc/layers/scrollbar_layer_base.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -88,7 +91,7 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
       property_tree_state_(
           first_chunk.properties.GetPropertyTreeState().Unalias()),
       compositing_type_(kOther) {
-  DCHECK(!RequiresOwnLayer() || first_chunk.size() <= 1u);
+  DCHECK(!ChunkRequiresOwnLayer() || first_chunk.size() <= 1u);
   // Though text_known_to_be_on_opaque_background is only meaningful when
   // has_text is true, we expect text_known_to_be_on_opaque_background to be
   // true when !has_text to simplify code.
@@ -173,7 +176,7 @@ gfx::RectF PendingLayer::VisualRectForOverlapTesting(
 }
 
 void PendingLayer::Upcast(const PropertyTreeState& new_state) {
-  DCHECK(!RequiresOwnLayer());
+  DCHECK(!ChunkRequiresOwnLayer());
   if (property_tree_state_ == new_state)
     return;
 
@@ -187,19 +190,20 @@ void PendingLayer::Upcast(const PropertyTreeState& new_state) {
 }
 
 const PaintChunk& PendingLayer::FirstPaintChunk() const {
-  DCHECK(!RequiresOwnLayer() || chunks_.size() == 1);
   return *chunks_.begin();
 }
 
 const DisplayItem& PendingLayer::FirstDisplayItem() const {
-#if DCHECK_IS_ON()
-  // This method should never be called if the first paint chunk is empty.
-  if (RequiresOwnLayer())
-    DCHECK_EQ(FirstPaintChunk().size(), 1u);
-  else
-    DCHECK_GE(FirstPaintChunk().size(), 1u);
-#endif
   return *chunks_.begin().DisplayItems().begin();
+}
+
+bool PendingLayer::Matches(const PendingLayer& old_pending_layer) const {
+  if (ChunkRequiresOwnLayer() != old_pending_layer.ChunkRequiresOwnLayer())
+    return false;
+  if (ChunkRequiresOwnLayer() &&
+      compositing_type_ != old_pending_layer.compositing_type_)
+    return false;
+  return FirstPaintChunk().Matches(old_pending_layer.FirstPaintChunk());
 }
 
 // We will only allow merging if
@@ -212,7 +216,7 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
                                  bool dry_run) {
   if (&Chunks().GetPaintArtifact() != &guest.Chunks().GetPaintArtifact())
     return false;
-  if (RequiresOwnLayer() || guest.RequiresOwnLayer())
+  if (ChunkRequiresOwnLayer() || guest.ChunkRequiresOwnLayer())
     return false;
   if (&GetPropertyTreeState().Effect() != &guest_state.Effect())
     return false;
@@ -453,6 +457,176 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
     pending_layer.rect_known_to_be_opaque_.Offset(
         pending_layer.OffsetOfDecompositedTransforms());
   }
+}
+
+void PendingLayer::UpdateForeignLayer() {
+  DCHECK_EQ(compositing_type_, PendingLayer::kForeignLayer);
+
+  // UpdateTouchActionRects() depends on the layer's offset, but when the
+  // layer's offset changes, we do not call SetNeedsUpdate() (this is an
+  // optimization because the update would only cause an extra commit) This is
+  // only OK if the ForeignLayer doesn't have hit test data.
+  DCHECK(!FirstPaintChunk().hit_test_data);
+  const auto& foreign_layer_display_item =
+      To<ForeignLayerDisplayItem>(FirstDisplayItem());
+
+  gfx::Vector2dF layer_offset(
+      foreign_layer_display_item.VisualRect().OffsetFromOrigin());
+  cc_layer_ = foreign_layer_display_item.GetLayer();
+  cc_layer_->SetOffsetToTransformParent(layer_offset +
+                                        offset_of_decomposited_transforms_);
+}
+
+void PendingLayer::UpdateScrollHitTestLayer(PendingLayer* old_pending_layer) {
+  DCHECK_EQ(compositing_type_, kScrollHitTestLayer);
+
+  // We shouldn't decomposite scroll transform nodes.
+  DCHECK_EQ(gfx::Vector2dF(), offset_of_decomposited_transforms_);
+
+  const auto& scroll_node =
+      *ScrollTranslationForScrollHitTestLayer().ScrollNode();
+
+  DCHECK(!cc_layer_);
+  if (old_pending_layer)
+    cc_layer_ = std::move(old_pending_layer->cc_layer_);
+
+  if (cc_layer_) {
+    DCHECK_EQ(cc_layer_->element_id(), scroll_node.GetCompositorElementId());
+  } else {
+    cc_layer_ = cc::Layer::Create();
+    cc_layer_->SetElementId(scroll_node.GetCompositorElementId());
+    cc_layer_->SetHitTestable(true);
+  }
+
+  cc_layer_->SetOffsetToTransformParent(
+      gfx::Vector2dF(scroll_node.ContainerRect().OffsetFromOrigin()));
+  // TODO(pdr): The scroll layer's bounds are currently set to the clipped
+  // container bounds but this does not include the border. We may want to
+  // change this behavior to make non-composited and composited hit testing
+  // match (see: crbug.com/753124). To do this, use
+  // |scroll_hit_test->scroll_container_bounds|. Set the layer's bounds equal
+  // to the container because the scroll layer does not scroll.
+  cc_layer_->SetBounds(scroll_node.ContainerRect().size());
+
+  if (scroll_node.NodeChanged() != PaintPropertyChangeType::kUnchanged) {
+    cc_layer_->SetNeedsPushProperties();
+    cc_layer_->SetNeedsCommit();
+  }
+}
+
+void PendingLayer::UpdateScrollbarLayer(PendingLayer* old_pending_layer) {
+  DCHECK_EQ(compositing_type_, kScrollbarLayer);
+
+  const auto& item = FirstDisplayItem();
+  DCHECK(item.IsScrollbar());
+
+  const auto& scrollbar_item = To<ScrollbarDisplayItem>(item);
+  scoped_refptr<cc::ScrollbarLayerBase> scrollbar_layer;
+  if (old_pending_layer) {
+    scrollbar_layer = static_cast<cc::ScrollbarLayerBase*>(
+        std::move(old_pending_layer->cc_layer_).get());
+  }
+
+  scrollbar_layer = scrollbar_item.CreateOrReuseLayer(scrollbar_layer.get());
+  scrollbar_layer->SetOffsetToTransformParent(
+      scrollbar_layer->offset_to_transform_parent() +
+      gfx::Vector2dF(offset_of_decomposited_transforms_));
+  DCHECK(!cc_layer_);
+  cc_layer_ = std::move(scrollbar_layer);
+}
+
+void PendingLayer::UpdateContentLayer(PendingLayer* old_pending_layer,
+                                      bool tracks_raster_invalidations) {
+  DCHECK(!ChunkRequiresOwnLayer());
+  DCHECK(!content_layer_client_);
+  if (old_pending_layer)
+    content_layer_client_ = std::move(old_pending_layer->content_layer_client_);
+  if (!content_layer_client_) {
+    content_layer_client_ = std::make_unique<ContentLayerClientImpl>();
+    content_layer_client_->GetRasterInvalidator().SetTracksRasterInvalidations(
+        tracks_raster_invalidations);
+  }
+  content_layer_client_->UpdateCcPictureLayer(*this);
+}
+
+void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
+                                         cc::LayerSelection& layer_selection,
+                                         bool tracks_raster_invalidations) {
+  switch (compositing_type_) {
+    case PendingLayer::kForeignLayer:
+      UpdateForeignLayer();
+      break;
+    case PendingLayer::kScrollHitTestLayer:
+      UpdateScrollHitTestLayer(old_pending_layer);
+      break;
+    case PendingLayer::kScrollbarLayer:
+      UpdateScrollbarLayer(old_pending_layer);
+      break;
+    default:
+      DCHECK(!ChunkRequiresOwnLayer());
+      UpdateContentLayer(old_pending_layer, tracks_raster_invalidations);
+      break;
+  }
+
+  UpdateLayerProperties();
+  UpdateLayerSelection(layer_selection);
+}
+
+void PendingLayer::UpdateCompositedLayerForRepaint(
+    scoped_refptr<const PaintArtifact> repainted_artifact,
+    cc::LayerSelection& layer_selection) {
+  // Essentially replace the paint chunks of the pending layer with the
+  // repainted chunks in |repainted_artifact|. The pending layer's paint
+  // chunks (a |PaintChunkSubset|) actually store indices to |PaintChunk|s
+  // in a |PaintArtifact|. In repaint updates, chunks are not added,
+  // removed, or re-ordered, so we can simply swap in a repainted
+  // |PaintArtifact| instead of copying |PaintChunk|s individually.
+  const PaintArtifact& old_artifact = Chunks().GetPaintArtifact();
+  DCHECK_EQ(old_artifact.PaintChunks().size(),
+            repainted_artifact->PaintChunks().size());
+  SetPaintArtifact(std::move(repainted_artifact));
+
+  bool chunks_unchanged = true;
+  for (const auto& chunk : Chunks()) {
+    if (!chunk.is_moved_from_cached_subsequence) {
+      chunks_unchanged = false;
+      break;
+    }
+  }
+
+  if (!ChunkRequiresOwnLayer()) {
+    DCHECK(content_layer_client_);
+    // Checking |pending_layer_chunks_unchanged| is an optimization to avoid
+    // the expensive call to |UpdateCcPictureLayer| when no repainting occurs
+    // for this PendingLayer.
+    if (chunks_unchanged) {
+      // See RasterInvalidator::SetOldPaintArtifact() for the reason for this.
+      content_layer_client_->GetRasterInvalidator().SetOldPaintArtifact(
+          &Chunks().GetPaintArtifact());
+    } else {
+      content_layer_client_->UpdateCcPictureLayer(*this);
+    }
+  }
+
+  if (!chunks_unchanged)
+    UpdateLayerProperties();
+  UpdateLayerSelection(layer_selection);
+}
+
+void PendingLayer::UpdateLayerProperties() {
+  // Properties of foreign layers are managed by their owners.
+  if (compositing_type_ == PendingLayer::kForeignLayer)
+    return;
+  PaintChunksToCcLayer::UpdateLayerProperties(CcLayer(), GetPropertyTreeState(),
+                                              Chunks());
+}
+
+void PendingLayer::UpdateLayerSelection(cc::LayerSelection& layer_selection) {
+  // Foreign layers cannot contain selection.
+  if (compositing_type_ == PendingLayer::kForeignLayer)
+    return;
+  PaintChunksToCcLayer::UpdateLayerSelection(CcLayer(), GetPropertyTreeState(),
+                                             Chunks(), layer_selection);
 }
 
 bool PendingLayer::IsSolidColor() const {

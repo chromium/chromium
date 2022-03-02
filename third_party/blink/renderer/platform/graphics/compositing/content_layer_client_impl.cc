@@ -61,14 +61,9 @@ void ContentLayerClientImpl::AppendAdditionalInfoAsJSON(
 #endif
 }
 
-scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
+void ContentLayerClientImpl::UpdateCcPictureLayer(
     const PendingLayer& pending_layer) {
   const auto& paint_chunks = pending_layer.Chunks();
-  if (paint_chunks.begin()->is_cacheable)
-    id_.emplace(paint_chunks.begin()->id);
-  else
-    id_ = absl::nullopt;
-
 #if EXPENSIVE_DCHECKS_ARE_ON()
   paint_chunk_debug_data_ = std::make_unique<JSONArray>();
   for (auto it = paint_chunks.begin(); it != paint_chunks.end(); ++it) {
@@ -119,7 +114,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
       cc_picture_layer_->draws_content() == pending_layer.DrawsContent() &&
       !raster_under_invalidation_params) {
     DCHECK_EQ(cc_picture_layer_->bounds(), layer_bounds);
-    return cc_picture_layer_;
+    return;
   }
 
   cc_display_item_list_ = PaintChunksToCcLayer::Convert(
@@ -131,7 +126,14 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
   cc_picture_layer_->SetHitTestable(true);
   cc_picture_layer_->SetIsDrawable(pending_layer.DrawsContent());
 
-  return cc_picture_layer_;
+  bool contents_opaque = pending_layer.RectKnownToBeOpaque().Contains(
+      gfx::RectF(gfx::PointAtOffsetFromOrigin(pending_layer.LayerOffset()),
+                 gfx::SizeF(pending_layer.LayerBounds())));
+  cc_picture_layer_->SetContentsOpaque(contents_opaque);
+  if (!contents_opaque) {
+    cc_picture_layer_->SetContentsOpaqueForText(
+        pending_layer.TextKnownToBeOnOpaqueBackground());
+  }
 }
 
 void ContentLayerClientImpl::InvalidateRect(const gfx::Rect& rect) {
