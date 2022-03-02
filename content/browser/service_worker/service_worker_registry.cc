@@ -79,9 +79,15 @@ void CompleteFindSoon(
                                     status, std::move(callback)));
 }
 
-void RecordRetryCount(size_t retries) {
+void RecordRetryCount(size_t retries, size_t queue_size) {
   base::UmaHistogramCounts100("ServiceWorker.Storage.RetryCountForRecovery",
                               retries);
+
+  // We've seen traces with 14,000 ServiceWorkerStorageControl tasks
+  // (https://crbug.com/1302111), so ensure more than that can fit in the
+  // histogram buckets in case those were queued retries.
+  base::UmaHistogramCounts100000(
+      "ServiceWorker.Storage.RetryQueueSizeForRecovery", queue_size);
 }
 
 // Notifies quota manager that a disk write operation failed so that it can
@@ -1569,7 +1575,7 @@ void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
   if (connection_state_ == ConnectionState::kRecovering) {
     ++recovery_retry_counts_;
     if (recovery_retry_counts_ > kMaxRetryCounts) {
-      RecordRetryCount(kMaxRetryCounts);
+      RecordRetryCount(kMaxRetryCounts, inflight_calls_.size());
       CHECK(false) << "The Storage Service consistently crashes.";
       return;
     }
@@ -1592,7 +1598,7 @@ void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
 void ServiceWorkerRegistry::DidRecover() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RecordRetryCount(recovery_retry_counts_);
+  RecordRetryCount(recovery_retry_counts_, inflight_calls_.size());
 
   recovery_retry_counts_ = 0;
   connection_state_ = ConnectionState::kNormal;

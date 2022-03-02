@@ -1013,6 +1013,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.Storage.RetryQueueSizeForRecovery" units="tasks"
+    expires_after="2022-10-04">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The number of queued tasks that are waiting to be re-posted after recovering
+    from a Storage Service crash. Logged at the same time as
+    ServiceWorker.Storage.RetryCountForRecovery.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.{operation}Time" units="ms"
     expires_after="2022-08-24">
   <owner>cduvall@chromium.org</owner>
