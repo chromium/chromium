@@ -125,6 +125,8 @@ class TrayNetworkStateModel::Impl
 
   void OnNetworkCertificatesChanged() override {}
 
+  void OnPoliciesApplied(const std::string& userhash) override {}
+
   TrayNetworkStateModel* model_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;

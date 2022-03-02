@@ -42,6 +42,9 @@
   onVpnProvidersChanged() {},
 
   onNetworkCertificatesChanged() {},
+
+  /** @param {string} userhash */
+  onPoliciesApplied(userhash) {},
 };
 
 /** @interface */
@@ -69,4 +72,7 @@
   onVpnProvidersChanged() {}
 
   onNetworkCertificatesChanged() {}
+
+  /** @param {!string} userhash */
+  onPoliciesApplied(userhash) {}
 }

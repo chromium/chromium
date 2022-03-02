@@ -139,6 +139,7 @@ class TetherControllerImpl
   void OnDeviceStateListChanged() override;
   void OnVpnProvidersChanged() override {}
   void OnNetworkCertificatesChanged() override {}
+  void OnPoliciesApplied(const std::string& userhash) override {}
 
   void AttemptTurningOnTethering();
   void OnSetFeatureEnabled(bool success);

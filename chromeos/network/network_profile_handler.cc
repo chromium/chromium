@@ -82,6 +82,10 @@ void NetworkProfileHandler::RemoveObserver(NetworkProfileObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool NetworkProfileHandler::HasObserver(NetworkProfileObserver* observer) {
+  return observers_.HasObserver(observer);
+}
+
 void NetworkProfileHandler::GetManagerPropertiesCallback(
     absl::optional<base::Value> properties) {
   if (!properties) {
@@ -264,6 +268,9 @@ void NetworkProfileHandler::Init() {
 }
 
 NetworkProfileHandler::~NetworkProfileHandler() {
+  if (!ShillManagerClient::Get())
+    return;
+
   ShillManagerClient::Get()->RemovePropertyChangedObserver(this);
 }
 

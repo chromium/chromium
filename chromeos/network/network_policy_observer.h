@@ -27,6 +27,10 @@ class NetworkPolicyObserver {
   // Called every time a network is created or updated because of a policy.
   virtual void PolicyAppliedToNetwork(const std::string& service_path) {}
 
+  // Called just before ManagedNetworkConfigurationHandler is destroyed so that
+  // observers can safely stop observing.
+  virtual void OnManagedNetworkConfigurationHandlerShuttingDown() {}
+
  protected:
   virtual ~NetworkPolicyObserver() {}
 };

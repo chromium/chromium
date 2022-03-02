@@ -60,7 +60,7 @@ class NetworkHealthProvider
   bool ReceiverIsBound();
 
   // CrosNetworkConfigObserver
-  void OnNetworkStateListChanged() override;
+  void OnNetworkStateListChanged() override {}
   void OnDeviceStateListChanged() override;
   void OnActiveNetworksChanged(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
@@ -68,8 +68,9 @@ class NetworkHealthProvider
   void OnNetworkStateChanged(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state)
       override;
-  void OnVpnProvidersChanged() override;
-  void OnNetworkCertificatesChanged() override;
+  void OnVpnProvidersChanged() override {}
+  void OnNetworkCertificatesChanged() override {}
+  void OnPoliciesApplied(const std::string& userhash) override {}
 
   // Returns the list of observer guids. Each guid corresponds to one network
   // interface. Additionally, updates the currently |active_guid_| to the first

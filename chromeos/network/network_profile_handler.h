@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
 
   void AddObserver(NetworkProfileObserver* observer);
   void RemoveObserver(NetworkProfileObserver* observer);
+  bool HasObserver(NetworkProfileObserver* observer);
 
   void GetManagerPropertiesCallback(absl::optional<base::Value> properties);
 

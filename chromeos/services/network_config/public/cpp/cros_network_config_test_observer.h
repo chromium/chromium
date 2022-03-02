@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_OBSERVER_H_
 #define CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_OBSERVER_H_
 
-#include <map>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,6 +37,7 @@ class CrosNetworkConfigTestObserver : public mojom::CrosNetworkConfigObserver {
   void OnDeviceStateListChanged() override;
   void OnVpnProvidersChanged() override;
   void OnNetworkCertificatesChanged() override;
+  void OnPoliciesApplied(const std::string& userhash) override;
 
   int active_networks_changed() const { return active_networks_changed_; }
   int network_state_list_changed() const { return network_state_list_changed_; }
@@ -47,6 +48,7 @@ class CrosNetworkConfigTestObserver : public mojom::CrosNetworkConfigObserver {
   }
 
   int GetNetworkChangedCount(const std::string& guid) const;
+  int GetPolicyAppliedCount(const std::string& userhash) const;
   void ResetNetworkChanges();
 
   mojo::Receiver<mojom::CrosNetworkConfigObserver>& receiver() {
@@ -58,7 +60,8 @@ class CrosNetworkConfigTestObserver : public mojom::CrosNetworkConfigObserver {
  private:
   mojo::Receiver<mojom::CrosNetworkConfigObserver> receiver_{this};
   int active_networks_changed_ = 0;
-  std::map<std::string, int> networks_changed_;
+  base::flat_map<std::string, int> guid_to_networks_changed_count_map_;
+  base::flat_map<std::string, int> userhash_to_policies_applied_count_map_;
   int network_state_list_changed_ = 0;
   int device_state_list_changed_ = 0;
   int vpn_providers_changed_ = 0;

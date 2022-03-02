@@ -55,6 +55,10 @@ class CrosNetworkConfigTestHelper {
       ManagedNetworkConfigurationHandler* network_configuration_handler);
 
  protected:
+  // Called in |~CrosNetworkConfigTestHelper()| to set the global network config
+  // to nullptr and destroy cros_network_config_impl_.
+  void Shutdown();
+
   NetworkStateTestHelper network_state_helper_{
       /*use_default_devices_and_services=*/false};
   std::unique_ptr<CrosNetworkConfig> cros_network_config_impl_;

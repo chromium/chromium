@@ -423,8 +423,6 @@ void NetworkHealthProvider::ObserveNetwork(
   NotifyNetworkStateObserver(iter->second);
 }
 
-void NetworkHealthProvider::OnNetworkStateListChanged() {}
-
 void NetworkHealthProvider::OnDeviceStateListChanged() {
   GetDeviceState();
 }
@@ -438,9 +436,6 @@ void NetworkHealthProvider::OnNetworkStateChanged(
     network_mojom::NetworkStatePropertiesPtr network) {
   UpdateMatchingNetwork(std::move(network), /*must_match_existing_guid=*/true);
 }
-
-void NetworkHealthProvider::OnVpnProvidersChanged() {}
-void NetworkHealthProvider::OnNetworkCertificatesChanged() {}
 
 void NetworkHealthProvider::OnActiveNetworkStateListReceived(
     std::vector<network_mojom::NetworkStatePropertiesPtr> networks) {

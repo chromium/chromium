@@ -137,6 +137,7 @@ class WifiLanMediumTest : public ::testing::Test {
 
   void TearDown() override {
     wifi_lan_medium_.reset();
+    cros_network_config_helper_.reset();
     managed_network_config_handler_.reset();
     ui_proxy_config_service_.reset();
     network_configuration_handler_.reset();
@@ -199,15 +200,19 @@ class WifiLanMediumTest : public ::testing::Test {
  protected:
   // Boiler plate to set up a test CrosNetworkConfig mojo service.
   void InitializeCrosNetworkConfig(bool use_managed_config_handler) {
+    cros_network_config_helper_ =
+        std::make_unique<chromeos::network_config::CrosNetworkConfigTestHelper>(
+            /*initialize=*/false);
+
     if (use_managed_config_handler) {
       network_profile_handler_ =
           chromeos::NetworkProfileHandler::InitializeForTesting();
 
       network_configuration_handler_ =
           chromeos::NetworkConfigurationHandler::InitializeForTest(
-              cros_network_config_helper_.network_state_helper()
+              cros_network_config_helper_->network_state_helper()
                   .network_state_handler(),
-              cros_network_config_helper_.network_device_handler());
+              cros_network_config_helper_->network_device_handler());
 
       PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
       PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
@@ -217,16 +222,16 @@ class WifiLanMediumTest : public ::testing::Test {
       ui_proxy_config_service_ =
           std::make_unique<chromeos::UIProxyConfigService>(
               &user_prefs_, &local_state_,
-              cros_network_config_helper_.network_state_helper()
+              cros_network_config_helper_->network_state_helper()
                   .network_state_handler(),
               network_profile_handler_.get());
 
       managed_network_config_handler_ =
           chromeos::ManagedNetworkConfigurationHandler::InitializeForTesting(
-              cros_network_config_helper_.network_state_helper()
+              cros_network_config_helper_->network_state_helper()
                   .network_state_handler(),
               network_profile_handler_.get(),
-              cros_network_config_helper_.network_device_handler(),
+              cros_network_config_helper_->network_device_handler(),
               network_configuration_handler_.get(),
               ui_proxy_config_service_.get());
       managed_network_config_handler_->SetPolicy(
@@ -238,10 +243,10 @@ class WifiLanMediumTest : public ::testing::Test {
       base::RunLoop().RunUntilIdle();
     }
 
-    cros_network_config_helper_.Initialize(
+    cros_network_config_helper_->Initialize(
         managed_network_config_handler_.get());
-    cros_network_config_helper_.network_state_helper().ClearDevices();
-    cros_network_config_helper_.network_state_helper().ClearServices();
+    cros_network_config_helper_->network_state_helper().ClearDevices();
+    cros_network_config_helper_->network_state_helper().ClearServices();
 
     chromeos::network_config::BindToInProcessInstance(
         cros_network_config_.BindNewPipeAndPassReceiver());
@@ -254,13 +259,13 @@ class WifiLanMediumTest : public ::testing::Test {
       base::DictionaryValue ipv4;
       ipv4.SetKey(shill::kAddressProperty, base::Value(local_addr.ToString()));
       ipv4.SetKey(shill::kMethodProperty, base::Value(shill::kTypeIPv4));
-      cros_network_config_helper_.network_state_helper()
+      cros_network_config_helper_->network_state_helper()
           .ip_config_test()
           ->AddIPConfig(kIPv4ConfigPath, ipv4);
       base::RunLoop().RunUntilIdle();
     }
 
-    cros_network_config_helper_.network_state_helper()
+    cros_network_config_helper_->network_state_helper()
         .service_test()
         ->AddServiceWithIPConfig(kWifiServicePath, kWifiGuid, kWifiServiceName,
                                  shill::kTypeWifi, shill::kStateOnline,
@@ -317,8 +322,8 @@ class WifiLanMediumTest : public ::testing::Test {
   std::unique_ptr<chromeos::UIProxyConfigService> ui_proxy_config_service_;
   std::unique_ptr<chromeos::ManagedNetworkConfigurationHandler>
       managed_network_config_handler_;
-  chromeos::network_config::CrosNetworkConfigTestHelper
-      cros_network_config_helper_{/*initialize=*/false};
+  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+      cros_network_config_helper_;
   mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;
 
