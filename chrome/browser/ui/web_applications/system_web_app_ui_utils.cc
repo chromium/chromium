@@ -75,7 +75,7 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
 namespace web_app {
 
 absl::optional<SystemAppType> GetSystemWebAppTypeForAppId(Profile* profile,
-                                                          AppId app_id) {
+                                                          const AppId& app_id) {
   auto* provider = WebAppProvider::GetForSystemWebApps(profile);
   return provider ? provider->system_web_app_manager().GetSystemAppTypeForAppId(
                         app_id)

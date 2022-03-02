@@ -50,7 +50,7 @@ using InstallAppsResults =
 using UninstallAppsResults = std::vector<std::pair<GURL, bool>>;
 
 ExternalInstallOptions GetInstallOptions(
-    GURL url,
+    const GURL& url,
     absl::optional<bool> override_previous_user_uninstall =
         absl::optional<bool>()) {
   ExternalInstallOptions options(std::move(url), DisplayMode::kBrowser,
@@ -281,7 +281,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
               externally_managed_app_manager_impl->ui_manager(),
               externally_managed_app_manager_impl->finalizer(),
               externally_managed_app_manager_impl->install_manager(),
-              install_options),
+              std::move(install_options)),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl),
           externally_installed_app_prefs_(profile->GetPrefs()),
@@ -366,7 +366,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
     ~TestExternallyManagedAppRegistrationTask() override = default;
 
    private:
-    void OnProgress(GURL install_url) {
+    void OnProgress(const GURL& install_url) {
       if (externally_managed_app_manager_impl_->MaybePreemptRegistration())
         return;
       externally_managed_app_manager_impl_->OnRegistrationFinished(

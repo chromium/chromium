@@ -89,7 +89,7 @@ bool ExternalInstallOptions::operator==(
 base::Value ExternalInstallOptions::AsDebugValue() const {
   base::Value root(base::Value::Type::DICTIONARY);
 
-  auto ConvertStringList = [](const std::vector<std::string> list) {
+  auto ConvertStringList = [](const std::vector<std::string>& list) {
     base::Value list_json(base::Value::Type::LIST);
     for (const std::string& item : list)
       list_json.Append(item);

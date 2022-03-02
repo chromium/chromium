@@ -102,7 +102,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   void InstallTestApp(GURL start_url, bool await_metric) {
-    start_url_ = start_url;
+    start_url_ = std::move(start_url);
     in_scope_1_ = start_url_.Resolve("page1.html");
     in_scope_2_ = start_url_.Resolve("page2.html");
     scope_ = start_url_.GetWithoutFilename();
@@ -136,7 +136,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     return *provider;
   }
 
-  void AddTab(Browser* browser, GURL url) {
+  void AddTab(Browser* browser, const GURL& url) {
     content::TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
     chrome::AddTabAt(browser, url, /*index=*/-1, /*foreground=*/true);

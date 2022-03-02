@@ -45,7 +45,7 @@ absl::optional<AppId> GetAppId(content::RenderFrameHost* render_frame_host) {
 // *always* has the same *origin* as the calling app (normally the renderer
 // should only send the path, but a compromised renderer might send a full URL
 // instead and we guard against that here).
-GURL ResolvePathWithOrigin(const std::string& path, GURL origin) {
+GURL ResolvePathWithOrigin(const std::string& path, const GURL& origin) {
   return origin.Resolve(origin.Resolve(path).PathForRequest());
 }
 

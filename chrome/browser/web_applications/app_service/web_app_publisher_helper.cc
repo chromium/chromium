@@ -406,7 +406,7 @@ void WebAppPublisherHelper::SetWebAppShowInFields(apps::mojom::AppPtr& app,
 void WebAppPublisherHelper::PopulateWebAppPermissions(
     const WebApp* web_app,
     std::vector<apps::mojom::PermissionPtr>* target) {
-  const GURL url = web_app->start_url();
+  const GURL& url = web_app->start_url();
 
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -450,7 +450,7 @@ apps::Permissions WebAppPublisherHelper::CreatePermissions(
     const WebApp* web_app) {
   apps::Permissions permissions;
 
-  const GURL url = web_app->start_url();
+  const GURL& url = web_app->start_url();
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   DCHECK(host_content_settings_map);

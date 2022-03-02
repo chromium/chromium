@@ -32,8 +32,9 @@ constexpr const char kImagePath[] = "/ssl/google_files/logo.gif";
 // "REPLACE_WITH_HOST_AND_PORT" string replaced with |host_port_pair|.
 // The page at |original_path| should contain the string
 // "REPLACE_WITH_HOST_AND_PORT".
-std::string GetPathWithHostAndPortReplaced(const std::string& original_path,
-                                           net::HostPortPair host_port_pair) {
+std::string GetPathWithHostAndPortReplaced(
+    const std::string& original_path,
+    const net::HostPortPair& host_port_pair) {
   base::StringPairs replacement_text = {
       {"REPLACE_WITH_HOST_AND_PORT", host_port_pair.ToString()}};
   LOG(ERROR) << "host_port_pair.ToString() " << host_port_pair.ToString();

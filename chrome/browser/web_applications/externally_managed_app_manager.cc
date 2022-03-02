@@ -180,7 +180,7 @@ void ExternallyManagedAppManager::InstallForSynchronizeCallback(
   auto source_and_request = synchronize_requests_.find(source);
   DCHECK(source_and_request != synchronize_requests_.end());
   SynchronizeRequest& request = source_and_request->second;
-  request.install_results[app_url] = result;
+  request.install_results[app_url] = std::move(result);
   --request.remaining_install_requests;
   DCHECK_GE(request.remaining_install_requests, 0);
 

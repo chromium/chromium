@@ -25,7 +25,7 @@ class WebAppProvider;
 
 // Returns the system app type for the given App ID.
 absl::optional<SystemAppType> GetSystemWebAppTypeForAppId(Profile* profile,
-                                                          AppId app_id);
+                                                          const AppId& app_id);
 
 // Returns the PWA system App ID for the given system app type.
 absl::optional<AppId> GetAppIdForSystemWebApp(Profile* profile,

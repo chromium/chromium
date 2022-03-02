@@ -164,7 +164,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
 
  protected:
   // Expects a single badge change only.
-  void ExecuteScriptAndWaitForBadgeChange(std::string script,
+  void ExecuteScriptAndWaitForBadgeChange(const std::string& script,
                                           RenderFrameHost* on) {
     ExecuteScriptAndWaitForMultipleBadgeChanges(
         script, on, /*expected_badge_change_count=*/1);
@@ -173,7 +173,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
   // Handles badge changes that may affect multiple apps. Useful for testing
   // service workers, which can control many apps.
   void ExecuteScriptAndWaitForMultipleBadgeChanges(
-      std::string script,
+      const std::string& script,
       RenderFrameHost* on,
       size_t expected_badge_change_count) {
     expected_badge_change_count_ = expected_badge_change_count;
