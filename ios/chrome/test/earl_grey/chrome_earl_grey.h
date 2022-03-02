@@ -460,8 +460,10 @@ UIWindow* GetAnyKeyWindow();
 
 #pragma mark - Sync Utilities (EG2)
 
-// Waits for sync to be initialized or not. If not succeeded a GREYAssert is
-// induced.
+// Waits for sync engine to be initialized or not. It doesn't necessarily mean
+// that data types are configured and ready to use. See
+// SyncService::IsEngineInitialized() for details. If not succeeded a GREYAssert
+// is induced.
 - (void)waitForSyncInitialized:(BOOL)isInitialized
                    syncTimeout:(NSTimeInterval)timeout;
 

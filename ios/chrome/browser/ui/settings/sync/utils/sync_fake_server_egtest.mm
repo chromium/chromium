@@ -29,7 +29,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 // Waits for |entity_count| entities of type |entity_type|, and fails with
 // a GREYAssert if the condition is not met, within a short period of time.
-void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
+void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   ConditionBlock condition = ^{
     return [ChromeEarlGrey numberOfSyncEntitiesWithType:entity_type] ==
            entity_count;
@@ -52,7 +52,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [ChromeEarlGrey clearBookmarks];
 
   [ChromeEarlGrey clearSyncServerData];
-  AssertNumberOfEntities(0, syncer::AUTOFILL_PROFILE);
+  WaitForNumberOfEntities(0, syncer::AUTOFILL_PROFILE);
   [super tearDown];
 }
 
@@ -87,7 +87,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
   // Assert that the correct number of bookmarks have been synced.
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
-  AssertNumberOfEntities(1, syncer::BOOKMARKS);
+  WaitForNumberOfEntities(1, syncer::BOOKMARKS);
 }
 
 // Tests that a bookmark added on the client is uploaded to the Sync server.
@@ -99,7 +99,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey addBookmarkWithTitle:@"goo" URL:@"https://www.goo.com"];
-  AssertNumberOfEntities(1, syncer::BOOKMARKS);
+  WaitForNumberOfEntities(1, syncer::BOOKMARKS);
 }
 
 // Tests that a bookmark injected in the FakeServer is synced down to the
@@ -114,7 +114,9 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  WaitForNumberOfEntities(1, syncer::BOOKMARKS);
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo" expectedCount:1];
 }
 
@@ -212,6 +214,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
   // Verify that the autofill profile has been downloaded.
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  WaitForNumberOfEntities(1, syncer::AUTOFILL_PROFILE);
   GREYAssertTrue([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
                                               autofillProfileName:kFullName],
                  @"autofill profile should exist");
@@ -241,6 +244,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
   // Verify that the autofill profile has been downloaded.
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  WaitForNumberOfEntities(1, syncer::AUTOFILL_PROFILE);
   GREYAssertTrue([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
                                               autofillProfileName:kFullName],
                  @"autofill profile should exist");
@@ -287,6 +291,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
   // Verify that the autofill profile has been downloaded
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  WaitForNumberOfEntities(1, syncer::AUTOFILL_PROFILE);
   GREYAssertTrue([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
                                               autofillProfileName:kFullName],
                  @"autofill profile should exist");
@@ -327,7 +332,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
   // Verify the sessions on the sync server.
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
-  AssertNumberOfEntities(3, syncer::SESSIONS);
+  WaitForNumberOfEntities(3, syncer::SESSIONS);
 
   NSArray<NSString*>* specs = @[
     base::SysUTF8ToNSString(URL1.spec()),
@@ -420,7 +425,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
   // Trigger sync and wait for typed URL to be deleted.
   [ChromeEarlGrey triggerSyncCycleForType:syncer::TYPED_URLS];
-  AssertNumberOfEntities(0, syncer::TYPED_URLS);
+  WaitForNumberOfEntities(0, syncer::TYPED_URLS);
 }
 
 // Test that typed url is deleted from client after server sends tombstone for
@@ -482,6 +487,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  WaitForNumberOfEntities(2, syncer::BOOKMARKS);
 
   [BookmarkEarlGrey verifyBookmarksWithTitle:title1 expectedCount:1];
   [BookmarkEarlGrey verifyBookmarksWithTitle:title2 expectedCount:1];
@@ -494,7 +500,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
-  AssertNumberOfEntities(1, syncer::DEVICE_INFO);
+  WaitForNumberOfEntities(1, syncer::DEVICE_INFO);
   [ChromeEarlGrey waitForSyncInvalidationFields];
 }
 
