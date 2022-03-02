@@ -213,15 +213,12 @@ TEST_F(WebApkManagerTest, RemovesAppUninstalledFromChrome) {
   apps::webapk_prefs::AddWebApk(profile(), app_id, kTestWebApkPackageName);
   StartWebApkManager();
   arc_test()->app_instance()->SendRefreshPackageList({});
-  base::HistogramTester histograms;
 
   app_service_proxy()->UninstallSilently(
       app_id, apps::mojom::UninstallSource::kUnknown);
   app_service_test()->FlushMojoCalls();
 
   ASSERT_FALSE(apps::webapk_prefs::GetWebApkPackageName(profile(), app_id));
-  histograms.ExpectBucketCount(apps::kWebApkUninstallSourceHistogram,
-                               apps::WebApkUninstallSource::kAsh, 1);
 }
 
 TEST_F(WebApkManagerTest, QueuesUpdatedApp) {
@@ -327,12 +324,10 @@ TEST_F(WebApkManagerTest, RemovesUntrackedInstalledWebApk) {
                                 "org.chromium.webapk.package1");
   StartWebApkManager();
 
-  base::HistogramTester histograms;
   arc_test()->app_instance()->SendRefreshPackageList(std::move(packages));
 
   ASSERT_TRUE(ArcAppListPrefs::Get(profile())->GetPackage(
       "org.chromium.webapk.package1"));
   ASSERT_FALSE(ArcAppListPrefs::Get(profile())->GetPackage(
       "org.chromium.webapk.package2"));
-  histograms.ExpectUniqueSample("ChromeOS.WebAPK.UnlinkedWebAPKCount", 1, 1);
 }

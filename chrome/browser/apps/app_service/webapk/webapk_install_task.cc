@@ -462,19 +462,13 @@ void WebApkInstallTask::OnUrlLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   timer_.Stop();
 
-  int response_or_error_code = -1;
+  int response_code = -1;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
-    response_or_error_code =
-        url_loader_->ResponseInfo()->headers->response_code();
-  } else {
-    response_or_error_code = url_loader_->NetError();
+    response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
-  base::UmaHistogramSparse(kWebApkMinterErrorCodeHistogram,
-                           response_or_error_code);
 
-  if (!response_body || response_or_error_code != net::HTTP_OK) {
-    LOG(WARNING) << "WebAPK server request returned error "
-                 << response_or_error_code;
+  if (!response_body || response_code != net::HTTP_OK) {
+    LOG(WARNING) << "WebAPK server returned response code " << response_code;
     DeliverResult(WebApkInstallStatus::kNetworkError);
     return;
   }

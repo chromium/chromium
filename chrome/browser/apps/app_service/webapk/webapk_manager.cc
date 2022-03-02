@@ -203,7 +203,6 @@ void WebApkManager::OnPackageListInitialRefreshed() {
   // If an installed WebAPK is not listed in WebAPK prefs, then we will generate
   // and install a new WebAPK automatically, possibly resulting in duplicate
   // apps visible to the user.
-  int uninstall_count = 0;
   std::vector<std::string> installed_packages =
       app_list_prefs_->GetPackagesFromPrefs();
   base::flat_set<std::string> installed_webapk_packages =
@@ -211,7 +210,6 @@ void WebApkManager::OnPackageListInitialRefreshed() {
   for (const auto& package_name : installed_packages) {
     if (base::StartsWith(package_name, kGeneratedWebApkPackagePrefix) &&
         !installed_webapk_packages.contains(package_name)) {
-      uninstall_count++;
       auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
           app_list_prefs_->app_connection_holder(), UninstallPackage);
       if (!instance) {
@@ -219,14 +217,6 @@ void WebApkManager::OnPackageListInitialRefreshed() {
       }
       instance->UninstallPackage(package_name);
     }
-  }
-
-  if (uninstall_count > 0) {
-    // Record the number of instances of this issue so we can determine whether
-    // further investigation/prevention is warranted.
-    base::UmaHistogramCustomCounts("ChromeOS.WebAPK.UnlinkedWebAPKCount",
-                                   uninstall_count, /*min=*/1, /*max=*/20,
-                                   /*buckets=*/10);
   }
 }
 
@@ -248,26 +238,7 @@ void WebApkManager::OnPackageRemoved(const std::string& package_name,
 
   // TODO(crbug.com/1200199): Remove the web app as well, if it is still
   // installed and eligible, and WebAPKs are not disabled by policy.
-  absl::optional<std::string> app_id =
-      webapk_prefs::RemoveWebApkByPackageName(profile_, package_name);
-
-  if (!uninstalled || !app_id.has_value()) {
-    return;
-  }
-
-  bool is_installed_and_eligible = false;
-  proxy_->AppRegistryCache().ForOneApp(
-      app_id.value(), [&](const AppUpdate& update) {
-        is_installed_and_eligible = IsAppEligibleForWebApk(update);
-      });
-
-  // Record a metric so we can determine how often WebAPKs are uninstalled from
-  // Android settings.
-  WebApkUninstallSource uninstall_source = is_installed_and_eligible
-                                               ? WebApkUninstallSource::kArc
-                                               : WebApkUninstallSource::kAsh;
-  base::UmaHistogramEnumeration(kWebApkUninstallSourceHistogram,
-                                uninstall_source);
+  webapk_prefs::RemoveWebApkByPackageName(profile_, package_name);
 }
 
 void WebApkManager::OnArcPlayStoreEnabledChanged(bool enabled) {
