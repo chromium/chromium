@@ -17,6 +17,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -109,6 +111,7 @@ public final class PrivacySandboxDialogTest {
     }
 
     private void renderViewWithId(int id, String renderId) {
+        onViewWaiting(withId(id));
         onView(withId(id)).check((v, noMatchException) -> {
             if (noMatchException != null) throw noMatchException;
             // Allow disk writes and slow calls to render from UI thread.
@@ -147,6 +150,7 @@ public final class PrivacySandboxDialogTest {
             mDialog = new PrivacySandboxDialogConsent(sActivityTestRule.getActivity());
             mDialog.show();
         });
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
         onView(withId(R.id.privacy_sandbox_consent_dropdown)).perform(scrollTo());
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_consent_dialog_expanded");
