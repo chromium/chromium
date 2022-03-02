@@ -2188,6 +2188,23 @@
             ]
         }
     ],
+    "CrashReportBreadcrumbs": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LogBreadcrumbs"
+                    ]
+                }
+            ]
+        }
+    ],
     "CredentialProviderExtensionPromo": [
         {
             "platforms": [
