@@ -4,12 +4,15 @@
 # CL description:
 # - If the CL adds virtual tests (by adding new virtual suites or new
 #   directories to existing virtual suties), how many tests the CL adds.
-# - If the number of new tests is big (e.g. >=1000),
+# - If the number of new tests is big (e.g. >=500)
 #   - Whether the new tests can be skipped on some platforms / OS versions.
 #   - Whether the new directories are essential for test coverage.
 #   - Whether other alternatives [1] are more suitable than virtual suites.
-#   - How much more time of the swarm jobs for the blink_web_tests step on
-#     bots will take.
+#   - The percentage of time the virtual suite will take. The author can
+#     find this data in "layout_test_results" page ("Timing stats" in the
+#     top-right corner) linked from "archive results for blink_web_tests"
+#     step on try bots like linux-rel, mac-rel and win10_chromium_x64_rel_ng.
+#     Normally the percentage should be less than 5%.
 #
 # [1] https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags
 

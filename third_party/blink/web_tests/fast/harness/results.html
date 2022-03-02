@@ -195,12 +195,12 @@ p, h2, h3, h4 {
   color: green;
 }
 
-#timing-stats-table {
+.timing-stats-table {
   text-align: right;
   white-space: nowrap;
 }
 
-#timing-stats-table th {
+.timing-stats-table th {
   padding-left: 10px;
 }
 
@@ -239,7 +239,9 @@ p, h2, h3, h4 {
 <div id="timing-stats" class="popup hidden hide-on-esc">
   <button style="position:fixed;right:40px;" onclick="GUI.toggleVisibility('timing-stats')">Close</button>
   <h3>Timing stats</h3>
-  <table id="timing-stats-table"></table>
+  <table id="timing-stats-table" class="timing-stats-table"></table>
+  <h3>Virtual suites</h3>
+  <table id="timing-stats-virtuals" class="timing-stats-table"></table>
 </div>
 
 <div id="help" class="popup hidden hide-on-esc">
@@ -1705,8 +1707,11 @@ const GUI = {
     let table = document.querySelector("#timing-stats-table");
     if (!table.firstChild) {
       let counts = [];
+      let virtual_counts = {};
       let times = [];
+      let virtual_times = {};
       let timeout_counts = [];
+      let virtual_timeout_counts = {};
       let total_count = 0;
       let total_count_timeouts = 0;
       let max = 0;
@@ -1722,13 +1727,22 @@ const GUI = {
           total_time_all += time;
           // result.time is measured during the first run, so check the first
           // TIMEOUT here.
-          if (test.actual.startsWith('TIMEOUT')) {
+          let is_timeout = test.actual.startsWith('TIMEOUT');
+          if (is_timeout) {
             timeout_counts[int_time] = (timeout_counts[int_time] || 0) + 1;
             total_time_timeouts += time;
             total_count_timeouts++;
           }
           total_count++;
           max = Math.max(max, int_time + 1);
+
+          if (path.startsWith('/virtual/')) {
+            let suite = path.split('/', 3)[2];
+            virtual_counts[suite] = (virtual_counts[suite] || 0) + 1;
+            virtual_times[suite] = (virtual_times[suite] || 0) + time;
+            virtual_timeout_counts[suite] =
+                (virtual_timeout_counts[suite] || 0) + (is_timeout ? 1 : 0);
+          }
         }
       );
       let i = 0;
@@ -1774,6 +1788,40 @@ const GUI = {
                  <td>${Math.round(total_time_timeouts)}s</td>
                </tr>`;
       table.innerHTML = html;
+
+      // Generate timing stats for virtual suites.
+      html = `<tr>
+                <th>Suite</th>
+                <th colspan="2">Count/Percent<img class="stat-bar-count"></th>
+                <th>Timeouts</th>
+                <th colspan="2">Time/Percent<img class="stat-bar-time"></th>
+                <th style="width: 40%"></th>
+              </tr>`;
+      let virtual_array = [];
+      for (let suite in virtual_counts) {
+        virtual_array.push({
+          suite: suite,
+          count: virtual_counts[suite],
+          time: virtual_times[suite],
+          timeout_count: virtual_timeout_counts[suite],
+        });
+      }
+      virtual_array.sort((a, b) => { return b.time - a.time; });
+      for (let v of virtual_array) {
+        let count_percent = (v.count / total_count * 100).toFixed(2);
+        let time_percent = (v.time / total_time_all * 100).toFixed(2);
+        html += `<tr>
+                   <td>${v.suite}</td>
+                   <td>${v.count}</td><td>${count_percent}%</td>
+                   <td>${v.timeout_count}</td>
+                   <td>${Math.round(v.time)}s</td><td>${time_percent}%</td>
+                   <td>
+                     <div class="stat-bar-count" style="width: ${count_percent * 3}%"></div>
+                     <div class="stat-bar-time" style="width: ${time_percent * 3}%"></div>
+                   </td>
+                 </tr>`;
+      }
+      document.querySelector('#timing-stats-virtuals').innerHTML = html;
     }
     GUI.toggleVisibility('timing-stats');
   },
