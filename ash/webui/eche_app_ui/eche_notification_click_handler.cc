@@ -56,7 +56,8 @@ void EcheNotificationClickHandler::HandleNotificationClick(
     case LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited:
       launch_app_helper_->LaunchEcheApp(
           notification_id, app_metadata.package_name,
-          app_metadata.visible_app_name, app_metadata.user_id);
+          app_metadata.visible_app_name, app_metadata.user_id,
+          app_metadata.icon);
       is_waiting_for_streaming_to_show_ = true;
       break;
     case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock:

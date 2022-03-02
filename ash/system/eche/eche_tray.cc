@@ -25,6 +25,9 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -41,6 +44,8 @@ constexpr int kTrayIconMainAxisInset = 6;
 constexpr int kTrayIconCrossAxisInset = 0;
 
 constexpr int kIconColumnWidth = 16;
+constexpr int kIconWidth = 22;
+constexpr int kIconHeight = 22;
 
 constexpr gfx::Insets kBubblePadding(4, 4, kBubbleBottomPaddingDip, 4);
 
@@ -85,7 +90,9 @@ void EcheTray::AnchorUpdated() {
 
 void EcheTray::Initialize() {
   TrayBackgroundView::Initialize();
-  UpdateVisibility();
+
+  // By default the icon is not visible until Eche notification is clicked on.
+  SetVisiblePreferred(false);
 }
 
 void EcheTray::CloseBubble() {
@@ -162,6 +169,12 @@ void EcheTray::SetUrl(const GURL& url) {
   url_ = url;
 }
 
+void EcheTray::SetIcon(const gfx::Image& icon) {
+  icon_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+      icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
+      gfx::Size(kIconWidth, kIconHeight)));
+}
+
 void EcheTray::PurgeAndClose() {
   if (!bubble_)
     return;
@@ -172,6 +185,7 @@ void EcheTray::PurgeAndClose() {
 
   bubble_.reset();
   SetIsActive(false);
+  SetVisiblePreferred(false);
 }
 
 void EcheTray::HideBubble() {
@@ -219,10 +233,6 @@ void EcheTray::InitBubble() {
 
   SetIsActive(true);
   bubble_->GetBubbleView()->UpdateBubble();
-}
-
-void EcheTray::UpdateVisibility() {
-  SetVisiblePreferred(true);
 }
 
 void EcheTray::OnArrowBackActivated() {

@@ -27,6 +27,7 @@
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image.h"
 
 namespace ash {
 namespace eche_app {
@@ -37,7 +38,8 @@ void CloseEcheAppFunction() {}
 void LaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
                            const std::string& package_name,
                            const std::u16string& visible_name,
-                           const absl::optional<int64_t>& user_id) {}
+                           const absl::optional<int64_t>& user_id,
+                           const gfx::Image& icon) {}
 
 void LaunchNotificationFunction(
     const absl::optional<std::u16string>& title,

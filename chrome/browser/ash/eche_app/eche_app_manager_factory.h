@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/image/image.h"
 
 class Profile;
 
@@ -24,12 +25,12 @@ class LaunchedAppInfo {
  public:
   class Builder {
    public:
-    Builder() = default;
-    ~Builder() = default;
+    Builder();
+    ~Builder();
 
     std::unique_ptr<LaunchedAppInfo> Build() {
       return base::WrapUnique(
-          new LaunchedAppInfo(package_name_, visible_name_, user_id_));
+          new LaunchedAppInfo(package_name_, visible_name_, user_id_, icon_));
     }
     Builder& SetPackageName(const std::string& package_name) {
       package_name_ = package_name;
@@ -46,34 +47,39 @@ class LaunchedAppInfo {
       return *this;
     }
 
+    Builder& SetIcon(const gfx::Image& icon) {
+      icon_ = icon;
+      return *this;
+    }
+
    private:
     std::string package_name_;
     std::u16string visible_name_;
     absl::optional<int64_t> user_id_;
+    gfx::Image icon_;
   };
 
-  LaunchedAppInfo() = default;
+  LaunchedAppInfo();
   LaunchedAppInfo(const LaunchedAppInfo&) = delete;
   LaunchedAppInfo& operator=(const LaunchedAppInfo&) = delete;
-  ~LaunchedAppInfo() = default;
+  ~LaunchedAppInfo();
 
   std::string package_name() const { return package_name_; }
   std::u16string visible_name() const { return visible_name_; }
   absl::optional<int64_t> user_id() const { return user_id_; }
+  gfx::Image icon() const { return icon_; }
 
  protected:
   LaunchedAppInfo(const std::string& package_name,
                   const std::u16string& visible_name,
-                  const absl::optional<int64_t>& user_id) {
-    package_name_ = package_name;
-    visible_name_ = visible_name;
-    user_id_ = user_id;
-  }
+                  const absl::optional<int64_t>& user_id,
+                  const gfx::Image& icon);
 
  private:
   std::string package_name_;
   std::u16string visible_name_;
   absl::optional<int64_t> user_id_;
+  gfx::Image icon_;
 };
 
 // Factory to create a single EcheAppManager.

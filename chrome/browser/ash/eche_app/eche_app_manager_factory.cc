@@ -20,6 +20,7 @@
 #include "ash/webui/eche_app_ui/eche_uid_provider.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -45,6 +46,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/gfx/image/image.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -91,13 +93,16 @@ enum class NotificationInteraction {
   kMaxValue = kOpenAppStreaming,
 };
 
-void LaunchBubble(const GURL& url) {
+void LaunchBubble(const GURL& url, const gfx::Image& icon) {
   auto* eche_tray = GetEcheTray();
-  // TODO(nayebi): if it is null log an error? Dcheck?
+  DCHECK(eche_tray);
   if (eche_tray) {
     eche_tray->SetUrl(url);
+    eche_tray->SetIcon(icon);
+    eche_tray->SetVisiblePreferred(true);
     if (!features::IsEcheSWAInBackgroundEnabled()) {
       eche_tray->ShowBubble();
+
     } else {
       eche_tray->InitBubble();
 
@@ -111,12 +116,14 @@ void LaunchWebApp(const std::string& package_name,
                   const absl::optional<int64_t>& notification_id,
                   const std::u16string& visible_name,
                   const absl::optional<int64_t>& user_id,
+                  const gfx::Image& icon,
                   Profile* profile) {
   EcheAppManagerFactory::GetInstance()->SetLastLaunchedAppInfo(
       LaunchedAppInfo::Builder()
           .SetPackageName(package_name)
           .SetVisibleName(visible_name)
           .SetUserId(user_id)
+          .SetIcon(icon)
           .Build());
   std::u16string url;
   // Use hash mark(#) to send params to webui so we don't need to reload the
@@ -145,7 +152,7 @@ void LaunchWebApp(const std::string& package_name,
   const auto gurl = GURL(url);
 
   if (features::IsEcheCustomWidgetEnabled()) {
-    return LaunchBubble(gurl);
+    return LaunchBubble(gurl, icon);
   }
   web_app::SystemAppLaunchParams params;
   params.url = gurl;
@@ -157,8 +164,10 @@ void LaunchEcheApp(Profile* profile,
                    const absl::optional<int64_t>& notification_id,
                    const std::string& package_name,
                    const std::u16string& visible_name,
-                   const absl::optional<int64_t>& user_id) {
-  LaunchWebApp(package_name, notification_id, visible_name, user_id, profile);
+                   const absl::optional<int64_t>& user_id,
+                   const gfx::Image& icon) {
+  LaunchWebApp(package_name, notification_id, visible_name, user_id, icon,
+               profile);
   base::UmaHistogramEnumeration("Eche.NotificationClicked",
                                 NotificationInteraction::kOpenAppStreaming);
   EcheAppManagerFactory::GetInstance()
@@ -170,10 +179,26 @@ void RelaunchLast(Profile* profile) {
       EcheAppManagerFactory::GetInstance()->GetLastLaunchedAppInfo();
   LaunchEcheApp(profile, absl::nullopt, last_launched_app_info->package_name(),
                 last_launched_app_info->visible_name(),
-                last_launched_app_info->user_id());
+                last_launched_app_info->user_id(),
+                last_launched_app_info->icon());
 }
 
 }  // namespace
+
+LaunchedAppInfo::LaunchedAppInfo() = default;
+LaunchedAppInfo::~LaunchedAppInfo() = default;
+LaunchedAppInfo::LaunchedAppInfo(const std::string& package_name,
+                                 const std::u16string& visible_name,
+                                 const absl::optional<int64_t>& user_id,
+                                 const gfx::Image& icon) {
+  package_name_ = package_name;
+  visible_name_ = visible_name;
+  user_id_ = user_id;
+  icon_ = icon;
+}
+
+LaunchedAppInfo::Builder::Builder() = default;
+LaunchedAppInfo::Builder::~Builder() = default;
 
 // static
 EcheAppManager* EcheAppManagerFactory::GetForProfile(Profile* profile) {

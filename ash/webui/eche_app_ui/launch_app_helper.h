@@ -13,6 +13,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+namespace gfx {
+class Image;
+}  //  namespace gfx
+
 namespace ash {
 namespace eche_app {
 
@@ -62,7 +66,8 @@ class LaunchAppHelper {
       const absl::optional<int64_t>& notification_id,
       const std::string& package_name,
       const std::u16string& visible_name,
-      const absl::optional<int64_t>& user_id)>;
+      const absl::optional<int64_t>& user_id,
+      const gfx::Image& icon)>;
 
   using CloseEcheAppFunction = base::RepeatingCallback<void()>;
 
@@ -103,7 +108,8 @@ class LaunchAppHelper {
   void LaunchEcheApp(absl::optional<int64_t> notification_id,
                      const std::string& package_name,
                      const std::u16string& visible_name,
-                     const absl::optional<int64_t>& user_id) const;
+                     const absl::optional<int64_t>& user_id,
+                     const gfx::Image& icon) const;
 
   void CloseEcheApp() const;
 

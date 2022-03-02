@@ -17,6 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image.h"
 
 namespace ash {
 namespace eche_app {
@@ -27,7 +28,8 @@ void CloseEcheAppFunction() {}
 void LaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
                            const std::string& package_name,
                            const std::u16string& visible_name,
-                           const absl::optional<int64_t>& user_id) {}
+                           const absl::optional<int64_t>& user_id,
+                           const gfx::Image& icon) {}
 
 void LaunchNotificationFunction(
     const absl::optional<std::u16string>& title,
