@@ -22,6 +22,8 @@ var testProcessTotal = 2;
 var testProcessCount = 0;
 var testProcesses = [];
 
+const decoder = new TextDecoder();
+
 function TestProcess(id, type) {
   this.id_ = id;
   this.type_= type;
@@ -164,10 +166,12 @@ function getProcessIndexForId(id) {
   return undefined;
 };
 
-function processOutputListener(id, type, text) {
+function processOutputListener(id, type, data) {
   var processIndex = getProcessIndexForId(id);
   if (processIndex == undefined)
     return;
+
+  const text = decoder.decode(data);
 
   var process = testProcesses[processIndex];
 

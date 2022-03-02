@@ -83,7 +83,7 @@ chrome.terminalPrivate.onTerminalResize = function(id, width, height, callback) 
 chrome.terminalPrivate.ackOutput = function(id) {};
 
 /**
- * Open the Terminal tabbed window.
+ * Open a Terminal app window/tab
  * @param {{
  *   url: (string|undefined),
  *   asTab: (boolean|undefined)

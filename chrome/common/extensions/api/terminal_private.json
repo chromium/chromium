@@ -312,9 +312,9 @@
             "description": "Type of the output stream from which output came. When process exits, output type will be set to exit"
           },
           {
-            "name": "text",
-            "type": "string",
-            "description": "Text that was written to the output stream."
+            "name": "data",
+            "type": "binary",
+            "description": "Data that was written to the output stream."
           }
         ]
       },

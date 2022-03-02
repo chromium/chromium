@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
@@ -176,7 +177,8 @@ void NotifyProcessOutput(content::BrowserContext* browser_context,
   std::vector<base::Value> args;
   args.push_back(base::Value(terminal_id));
   args.push_back(base::Value(output_type));
-  args.push_back(base::Value(output));
+  args.push_back(base::Value(base::make_span(
+      reinterpret_cast<const uint8_t*>(&output[0]), output.size())));
 
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(browser_context);
