@@ -46,6 +46,11 @@ _IGNORE_WARNINGS = (
     # desugar doesn't preserve interfaces in the same way. This should be
     # removed when D8 is used for desugaring.
     r'Warning: Cannot emulate interface ',
+    # Desugaring configs may occasionally not match types in our program. This
+    # may happen temporarily until we move over to the new desugared library
+    # json flags. See crbug.com/1302088 - this should be removed when this bug
+    # is fixed.
+    r'Warning: Specification conversion: The following prefixes do not match any type:',  # pylint: disable=line-too-long
     # Only relevant for R8 when optimizing an app that doesn't use proto.
     r'Ignoring -shrinkunusedprotofields since the protobuf-lite runtime is',
 )
