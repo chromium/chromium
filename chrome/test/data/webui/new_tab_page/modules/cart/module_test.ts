@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {CartHandlerRemote} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
-import {$$, chromeCartDescriptor, ChromeCartModuleElement, ChromeCartProxy, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, chromeCartDescriptor, ChromeCartModuleElement, ChromeCartProxy, CrAutoImgElement, DiscountConsentCard, DiscountConsentVariation} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -13,6 +13,7 @@ import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_ut
 
 import {fakeMetricsPrivate, MetricsTracker} from '../../metrics_test_support.js';
 import {assertNotStyle, installMock} from '../../test_support.js';
+import {clickAcceptButton, clickCloseButton, clickRejectButton, nextStep} from './discount_consent_card_test_utils.js';
 
 suite('NewTabPageModulesChromeCartModuleTest', () => {
   let handler: TestBrowserProxy;
@@ -751,6 +752,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           consentCard.querySelector<HTMLElement>('#actionButton')!.innerText);
       assertEquals(0, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
 
+      const consentCardV2 = $$<HTMLElement>(moduleElement, '#consentCardV2');
+      assertTrue(consentCardV2 === null);
+
       // Act.
       consentCard.querySelector<HTMLElement>('#cancelButton')!.click();
       await flushTasks();
@@ -798,78 +802,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertEquals(1, metrics.count('NewTabPage.Carts.AcceptDiscountConsent'));
     });
 
-    test('scroll with consent card', async () => {
-      // Arrange.
-      const dummyMerchant = {
-        merchant: 'Dummy',
-        cartUrl: {url: 'https://dummy.com'},
-        productImageUrls: [],
-      };
-      const carts = Array.from({length: 10}, () => dummyMerchant);
-      handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
-      handler.setResultFor(
-          'getDiscountConsentCardVisible',
-          Promise.resolve({consentVisible: true}));
-
-      // Arrange.
-      const moduleElement =
-          await chromeCartDescriptor.initialize(0) as ChromeCartModuleElement;
-      assertTrue(!!moduleElement);
-      document.body.append(moduleElement);
-      moduleElement.$.cartItemRepeat.render();
-      const cartCarousel = moduleElement.$.cartCarousel;
-      moduleElement.scrollBehavior = 'auto';
-      const onScroll = () => {
-        moduleElement.dispatchEvent(new Event('scroll-finish'));
-      };
-      cartCarousel.addEventListener('scroll', onScroll, false);
-
-      // Assert.
-      const cartItems =
-          moduleElement.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
-              '.cart-item');
-      assertEquals(10, cartItems.length);
-
-      // Act.
-      let waitForLeftScrollVisibilityChange =
-          eventToPromise('left-scroll-hide', moduleElement);
-      let waitForRightScrollVisibilityChange =
-          eventToPromise('right-scroll-show', moduleElement);
-      moduleElement.style.width = '560px';
-      await waitForLeftScrollVisibilityChange;
-      await waitForRightScrollVisibilityChange;
-
-      // Assert.
-      checkScrollButtonVisibility(moduleElement, false, true);
-      checkVisibleRange(moduleElement, 0, 1);
-
-      // Act.
-      waitForLeftScrollVisibilityChange =
-          eventToPromise('left-scroll-show', moduleElement);
-      let waitForScrollFinished =
-          eventToPromise('scroll-finish', moduleElement);
-      moduleElement.shadowRoot!
-          .querySelector<HTMLElement>('#rightScrollButton')!.click();
-      await waitForScrollFinished;
-      await waitForLeftScrollVisibilityChange;
-
-      // Assert.
-      checkScrollButtonVisibility(moduleElement, true, true);
-      checkVisibleRange(moduleElement, 2, 5);
-
-      // Act.
-      waitForLeftScrollVisibilityChange =
-          eventToPromise('left-scroll-hide', moduleElement);
-      waitForScrollFinished = eventToPromise('scroll-finish', moduleElement);
-      moduleElement.shadowRoot!.querySelector<HTMLElement>(
-                                   '#leftScrollButton')!.click();
-      await waitForScrollFinished;
-      await waitForLeftScrollVisibilityChange;
-
-      // Assert.
-      checkScrollButtonVisibility(moduleElement, false, true);
-      checkVisibleRange(moduleElement, 0, 1);
-    });
+    test('scroll with consent card', async () => testScrollWithConsent());
 
     test('click on cart item', async () => {
       const carts = [
@@ -928,6 +861,80 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       }
       assertEquals(0, handler.getCallCount('getDiscountURL'));
     });
+  });
+
+
+  async function testScrollWithConsent() {
+    // Arrange.
+    const dummyMerchant = {
+      merchant: 'Dummy',
+      cartUrl: {url: 'https://dummy.com'},
+      productImageUrls: [],
+    };
+    const carts = Array.from({length: 10}, () => dummyMerchant);
+    handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
+    handler.setResultFor(
+        'getDiscountConsentCardVisible',
+        Promise.resolve({consentVisible: true}));
+
+    // Arrange.
+    const moduleElement =
+        await chromeCartDescriptor.initialize(0) as ChromeCartModuleElement;
+    assertTrue(!!moduleElement);
+    document.body.append(moduleElement);
+    moduleElement.$.cartItemRepeat.render();
+    const cartCarousel = moduleElement.$.cartCarousel;
+    moduleElement.scrollBehavior = 'auto';
+    const onScroll = () => {
+      moduleElement.dispatchEvent(new Event('scroll-finish'));
+    };
+    cartCarousel.addEventListener('scroll', onScroll, false);
+
+    // Assert.
+    const cartItems =
+        moduleElement.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
+            '.cart-item');
+    assertEquals(10, cartItems.length);
+
+    // Act.
+    let waitForLeftScrollVisibilityChange =
+        eventToPromise('left-scroll-hide', moduleElement);
+    let waitForRightScrollVisibilityChange =
+        eventToPromise('right-scroll-show', moduleElement);
+    moduleElement.style.width = '560px';
+    await waitForLeftScrollVisibilityChange;
+    await waitForRightScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, false, true);
+    checkVisibleRange(moduleElement, 0, 1);
+
+    // Act.
+    waitForLeftScrollVisibilityChange =
+        eventToPromise('left-scroll-show', moduleElement);
+    let waitForScrollFinished = eventToPromise('scroll-finish', moduleElement);
+    moduleElement.shadowRoot!.querySelector<HTMLElement>(
+                                 '#rightScrollButton')!.click();
+    await waitForScrollFinished;
+    await waitForLeftScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, true, true);
+    checkVisibleRange(moduleElement, 2, 5);
+
+    // Act.
+    waitForLeftScrollVisibilityChange =
+        eventToPromise('left-scroll-hide', moduleElement);
+    waitForScrollFinished = eventToPromise('scroll-finish', moduleElement);
+    moduleElement.shadowRoot!.querySelector<HTMLElement>(
+                                 '#leftScrollButton')!.click();
+    await waitForScrollFinished;
+    await waitForLeftScrollVisibilityChange;
+
+    // Assert.
+    checkScrollButtonVisibility(moduleElement, false, true);
+    checkVisibleRange(moduleElement, 0, 1);
+  }
 
     function checkScrollButtonVisibility(
         moduleElement: ChromeCartModuleElement, isLeftVisible: boolean,
@@ -975,7 +982,6 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           (cartCarousel.scrollLeft + cartCarousel.clientWidth) >
           (cart.offsetLeft + cart.offsetWidth);
     }
-  });
 
   suite('rule-based discount', () => {
     suiteSetup(() => {
@@ -1134,6 +1140,203 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertEquals(1, metrics.count('NewTabPage.Carts.DiscountCountAtLoad', 2));
       assertEquals(1, metrics.count('NewTabPage.Carts.DiscountAt', 0));
       assertEquals(1, metrics.count('NewTabPage.Carts.DiscountAt', 2));
+    });
+  });
+
+  suite('Discount consent v2', () => {
+    let moduleElement: ChromeCartModuleElement;
+
+    setup(() => {
+      handler.setResultFor(
+          'getDiscountConsentCardVisible',
+          Promise.resolve({consentVisible: true}));
+      loadTimeData.overrideValues({
+        modulesCartDiscountInlineCardShowCloseButton: true,
+        modulesCartConsentStepTwoDifferentColor: false,
+        modulesCartDiscountConsentRejectConfirmation: 'Reject confirmation!',
+        modulesCartDiscountConsentAcceptConfirmation: 'Accept confirmation!',
+        modulesCartDiscountConsentVariation: DiscountConsentVariation.Inline,
+      });
+    });
+
+    async function testClickingAcceptButtonOnConsentCard() {
+      // Arrange.
+      const consentToast = moduleElement.$.confirmDiscountConsentToast;
+      assertEquals(0, metrics.count('NewTabPage.Carts.AcceptDiscountConsent'));
+      const consentCard =
+          $$<DiscountConsentCard>(moduleElement, '#consentCardV2')!;
+      nextStep(consentCard);
+      await flushTasks();
+
+      // Act.
+      clickAcceptButton(consentCard);
+      await flushTasks();
+
+      // Assert.
+      assertEquals(false, isVisible(consentCard));
+      assertEquals(true, consentToast.open);
+      assertEquals(
+          'Accept confirmation!',
+          moduleElement.$.confirmDiscountConsentMessage.innerText);
+      assertEquals(1, metrics.count('NewTabPage.Carts.AcceptDiscountConsent'));
+    }
+
+    test('shows discount consent v2 in cart module', async () => {
+      const carts = [
+        {
+          merchant: 'Foo',
+          cartUrl: {url: 'https://foo.com'},
+          productImageUrls: []
+        },
+        {
+          merchant: 'Boo',
+          cartUrl: {url: 'https://Boo.com'},
+          productImageUrls: [],
+        },
+      ];
+      handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
+
+      // Arrange.
+      moduleElement =
+          await chromeCartDescriptor.initialize(0) as ChromeCartModuleElement;
+      assertTrue(!!moduleElement);
+      document.body.append(moduleElement);
+      moduleElement.$.consentCardElement.render();
+
+      // Assert.
+      const consentCard =
+          $$<DiscountConsentCard>(moduleElement, '#consentCardV2')!;
+      assertEquals(true, isVisible(consentCard));
+    });
+
+    test('scroll with consent card v2', async () => testScrollWithConsent());
+
+    suite('Inline consent with close button', () => {
+      let consentCard: DiscountConsentCard;
+
+      setup(async () => {
+        loadTimeData.overrideValues({
+          modulesCartDiscountInlineCardShowCloseButton: true,
+        });
+
+        const carts = [
+          {
+            merchant: 'Foo',
+            cartUrl: {url: 'https://foo.com'},
+            productImageUrls: []
+          },
+          {
+            merchant: 'Boo',
+            cartUrl: {url: 'https://Boo.com'},
+            productImageUrls: [],
+          },
+        ];
+        handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
+        moduleElement =
+            await chromeCartDescriptor.initialize(0) as ChromeCartModuleElement;
+        assertTrue(!!moduleElement);
+        document.body.append(moduleElement);
+        moduleElement.$.consentCardElement.render();
+
+        consentCard = $$<DiscountConsentCard>(moduleElement, '#consentCardV2')!;
+      });
+
+      test(
+          'Verify clicking close button in step 1 hides consent card',
+          async () => {
+            // Act.
+            clickCloseButton(consentCard);
+            await flushTasks();
+
+            // Assert.
+            assertEquals(false, isVisible(consentCard));
+          });
+
+      test(
+          'Verify clicking close button in step 2 hides consent card',
+          async () => {
+            // Arrange.
+            const consentToast = moduleElement.$.confirmDiscountConsentToast;
+            assertEquals(
+                0, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
+            nextStep(consentCard);
+            await flushTasks();
+
+            // Act.
+            clickCloseButton(consentCard);
+            await flushTasks();
+
+            // Assert.
+            assertEquals(false, isVisible(consentCard));
+            assertEquals(true, consentToast.open);
+            assertEquals(
+                'Reject confirmation!',
+                moduleElement.$.confirmDiscountConsentMessage.innerText);
+            assertEquals(
+                1, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
+          });
+
+      test(
+          'Verify clicking accept button in step 2 hides consent card',
+          async () => testClickingAcceptButtonOnConsentCard());
+    });
+
+    suite('Inline consent with no close button', () => {
+      let consentCard: DiscountConsentCard;
+
+      setup(async () => {
+        loadTimeData.overrideValues(
+            {modulesCartDiscountInlineCardShowCloseButton: false});
+
+        const carts = [
+          {
+            merchant: 'Foo',
+            cartUrl: {url: 'https://foo.com'},
+            productImageUrls: []
+          },
+          {
+            merchant: 'Boo',
+            cartUrl: {url: 'https://Boo.com'},
+            productImageUrls: [],
+          },
+        ];
+        handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
+        moduleElement =
+            await chromeCartDescriptor.initialize(0) as ChromeCartModuleElement;
+        assertTrue(!!moduleElement);
+        document.body.append(moduleElement);
+        moduleElement.$.consentCardElement.render();
+
+        consentCard = $$<DiscountConsentCard>(moduleElement, '#consentCardV2')!;
+      });
+
+      test(
+          'Verify clicking accpet button in step 2 hides consent card',
+          async () => testClickingAcceptButtonOnConsentCard());
+
+      test(
+          'Verify clicking reject button in step 2 hides consent card',
+          async () => {
+            // Arrange.
+            const consentToast = moduleElement.$.confirmDiscountConsentToast;
+            assertEquals(
+                0, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
+            nextStep(consentCard);
+            await flushTasks();
+
+            // Act.
+            clickRejectButton(consentCard);
+            await flushTasks();
+
+            // Assert.
+            assertEquals(false, isVisible(consentCard));
+            assertEquals(true, consentToast.open);
+            assertEquals(
+                'Reject confirmation!',
+                moduleElement.$.confirmDiscountConsentMessage.innerText);
+            assertEquals(
+                1, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
+          });
     });
   });
 });

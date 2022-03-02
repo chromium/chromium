@@ -299,26 +299,34 @@
       <div id="leftProbe" class="probe"></div>
       <template id="consentCardElement" is="dom-if"
           if="[[showDiscountConsent]]">
-        <div id="consentCard">
-          <div id="consentIconContainer">
-            <div id="consentIcon"></div>
+        <!-- TODO(crbug.com/1298116): Move this template to
+          discount_consent_card. -->
+        <template is="dom-if" if="[[!discountConsentHasTwoSteps_]]" restamp>
+          <div id="consentCard">
+            <div id="consentIconContainer">
+              <div id="consentIcon"></div>
+            </div>
+            <span id="consentContent">
+              $i18n{modulesCartDiscountConsentContent}
+            </span>
+            <div id="consentButtonContainer">
+              <cr-button id="cancelButton"
+                  class="cancel-button" on-click="onDiscountConsentRejected_"
+                  on-auxclick="onDisallowDiscount_">
+                $i18n{modulesCartDiscountConsentReject}
+              </cr-button>
+              <cr-button id="actionButton"
+                  class="action-button" on-click="onDiscountConsentAccepted_"
+                  on-auxclick="onAllowDiscount_">
+                $i18n{modulesCartDiscountConsentAccept}
+              </cr-button>
+            </div>
           </div>
-          <span id="consentContent">
-            $i18n{modulesCartDiscountConsentContent}
-          </span>
-          <div id="consentButtonContainer">
-            <cr-button id="cancelButton"
-                class="cancel-button" on-click="onDisallowDiscount_"
-                on-auxclick="onDisallowDiscount_">
-              $i18n{modulesCartDiscountConsentReject}
-            </cr-button>
-            <cr-button id="actionButton"
-                class="action-button" on-click="onAllowDiscount_"
-                on-auxclick="onAllowDiscount_">
-              $i18n{modulesCartDiscountConsentAccept}
-            </cr-button>
-          </div>
-        </div>
+        </template>
+        <template is="dom-if" if="[[discountConsentHasTwoSteps_]]" restamp>
+          <discount-consent-card id="consentCardV2"
+              merchants="[[firstThreeCartItems_]]"></discount-consent-card>
+        </template>
       </template>
       <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
         <div class="cart-container">

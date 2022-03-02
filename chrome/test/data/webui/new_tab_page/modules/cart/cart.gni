@@ -4,6 +4,7 @@
 
 cart_test_files = [
   "modules/cart/discount_consent_card_test.ts",
+  "modules/cart/discount_consent_card_test_utils.ts",
   "modules/cart/discount_consent_dialog_test.ts",
   "modules/cart/module_test.ts",
 ]

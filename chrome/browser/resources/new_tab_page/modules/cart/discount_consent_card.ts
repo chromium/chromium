@@ -42,6 +42,18 @@ interface Step {
   cancelButton?: ButtonInfo;
 }
 
+/**
+ * Indicate the variation of the consent card.
+ *   * Default, StringChange, and Dialog has one step.
+ *   * Inline has two steps.
+ */
+export enum DiscountConsentVariation {
+  Default = 0,
+  StringChange = 1,
+  Inline = 2,
+  Dialog = 3
+}
+
 // This is a configurable multi-step card. Each step is represented by the Step
 // interface.
 export class DiscountConsentCard extends I18nMixin
@@ -154,7 +166,7 @@ export class DiscountConsentCard extends I18nMixin
   }
 
   private onMerchantsChanged_() {
-    if (this.currentStep === 0) {
+    if (this.currentStep === 0 && this.steps_.length > 0) {
       // TODO(crbug.com/1298116): Build strings with merchant names and string
       // template from resource. We should also handle the case where the string
       // gets too long here.
