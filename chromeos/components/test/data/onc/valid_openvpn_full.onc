@@ -1,0 +1,22 @@
+{
+  "Type": "UnencryptedConfiguration",
+  "NetworkConfigurations": [
+    {
+      "GUID": "MyManagedVPN-VPN",
+      "Name": "MyManagedVPN",
+      "VPN": {
+        "Host": "example.com",
+        "OpenVPN": {
+          "Auth": "MD5",
+          "Cipher": "AES-192-CBC",
+          "ClientCertType": "None",
+          "CompressionAlgorithm": "LZO",
+          "KeyDirection": "1",
+          "TLSAuthContents": "-----BEGIN OpenVPN Static key V1-----\n83f8e7ccd99be189b4663e18615f9166\nd885cdea6c8accb0ebf5be304f0b8081\n5404f2a6574e029815d7a2fb65b83d0c\n676850714c6a56b23415a78e06aad6b1\n34900dd512049598382039e4816cb5ff\n1848532b71af47578c9b4a14b5bca49f\n99e0ae4dae2f4e5eadfea374aeb8fb1e\na6fdf02adc73ea778dfd43d64bf7bc75\n7779d629498f8c2fbfd32812bfdf6df7\n8cebafafef3e5496cb13202274f2768a\n1959bc53d67a70945c4c8c6f34b63327\nfb60dc84990ffec1243461e0b6310f61\ne90aee1f11fb6292d6f5fcd7cd508aab\n50d80f9963589c148cb4b933ec86128d\ned77d3fad6005b62f36369e2319f52bd\n09c6d2e52cce2362a05009dc29b6b39a\n-----END OpenVPN Static key V1-----\n"
+        },
+        "Type": "OpenVPN"
+      },
+      "Type": "VPN"
+    }
+  ]
+}

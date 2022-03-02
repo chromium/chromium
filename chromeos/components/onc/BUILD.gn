@@ -54,6 +54,7 @@ source_set("unit_tests") {
     ":onc",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//components/onc",
     "//net",
     "//testing/gtest",

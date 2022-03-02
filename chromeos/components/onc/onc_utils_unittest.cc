@@ -14,10 +14,12 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/components/onc/variable_expander.h"
+#include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -167,6 +169,49 @@ TEST(ONCUtils, SetHiddenSSIDField_WithValueSetTrue) {
   ASSERT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID));
   SetHiddenSSIDField(wifi_fields);
   EXPECT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID)->GetBool());
+}
+
+TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
+  constexpr auto* auth_key =
+      "-----BEGIN OpenVPN Static key V1-----\n"
+      "83f8e7ccd99be189b4663e18615f9166\n"
+      "d885cdea6c8accb0ebf5be304f0b8081\n"
+      "5404f2a6574e029815d7a2fb65b83d0c\n"
+      "676850714c6a56b23415a78e06aad6b1\n"
+      "34900dd512049598382039e4816cb5ff\n"
+      "1848532b71af47578c9b4a14b5bca49f\n"
+      "99e0ae4dae2f4e5eadfea374aeb8fb1e\n"
+      "a6fdf02adc73ea778dfd43d64bf7bc75\n"
+      "7779d629498f8c2fbfd32812bfdf6df7\n"
+      "8cebafafef3e5496cb13202274f2768a\n"
+      "1959bc53d67a70945c4c8c6f34b63327\n"
+      "fb60dc84990ffec1243461e0b6310f61\n"
+      "e90aee1f11fb6292d6f5fcd7cd508aab\n"
+      "50d80f9963589c148cb4b933ec86128d\n"
+      "ed77d3fad6005b62f36369e2319f52bd\n"
+      "09c6d2e52cce2362a05009dc29b6b39a\n"
+      "-----END OpenVPN Static key V1-----\n";
+  const auto onc_blob = test_utils::ReadTestData("valid_openvpn_full.onc");
+  base::Value network_configs{base::Value::Type::LIST};
+  base::Value global_network_config{base::Value::Type::DICTIONARY};
+  base::Value certificates{base::Value::Type::LIST};
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_USER_POLICY, "", &network_configs,
+      &global_network_config, &certificates));
+
+  const auto* open_vpn =
+      network_configs.GetList()[0].GetDict().FindByDottedPath("VPN.OpenVPN");
+  ASSERT_NE(open_vpn, nullptr);
+  base::Value::Dict expected{};
+  expected.Set(::onc::openvpn::kAuth, "MD5");
+  expected.Set(::onc::openvpn::kCipher, "AES-192-CBC");
+  expected.Set(::onc::openvpn::kCompressionAlgorithm,
+               ::onc::openvpn_compression_algorithm::kLzo);
+  expected.Set(::onc::openvpn::kTLSAuthContents, auth_key);
+  expected.Set(::onc::openvpn::kKeyDirection, "1");
+  EXPECT_THAT(*open_vpn, base::test::DictionaryHasValues(
+                             base::Value{std::move(expected)}));
 }
 
 struct MaskCredentialsTestCase {
