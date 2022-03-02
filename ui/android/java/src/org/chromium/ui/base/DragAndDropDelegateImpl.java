@@ -25,6 +25,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.R;
@@ -64,6 +65,9 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
 
     /** The type of drag target from the view this object tracks. */
     private @DragTargetType int mDragTargetType;
+
+    private float mDragStartXDp;
+    private float mDragStartYDp;
 
     private long mDragStartSystemElapsedTime;
 
@@ -121,11 +125,23 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
     // Implements View.OnDragListener
     @Override
     public boolean onDrag(View view, DragEvent dragEvent) {
-        if (dragEvent.getAction() == DragEvent.ACTION_DRAG_ENDED) {
-            onDragEnd(dragEvent);
-            reset();
-        } else if (dragEvent.getAction() == DragEvent.ACTION_DROP) {
-            mIsDropOnView = true;
+        // Only tracks drag event that started from the #startDragAndDrop.
+        if (!mIsDragStarted) return false;
+
+        switch (dragEvent.getAction()) {
+            case DragEvent.ACTION_DRAG_STARTED:
+                onDragStarted(dragEvent);
+                break;
+            case DragEvent.ACTION_DROP:
+                onDrop(dragEvent);
+                break;
+            case DragEvent.ACTION_DRAG_ENDED:
+                onDragEnd(dragEvent);
+                reset();
+                break;
+            default:
+                // No action needed for other types of drag actions.
+                break;
         }
         // Return false so this listener does not consume the drag event of the view it listened to.
         return false;
@@ -220,6 +236,24 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
             height *= downScaleRatio;
         }
         return new Pair<>(Math.round(width), Math.round(height));
+    }
+
+    private void onDragStarted(DragEvent dragStartEvent) {
+        mDragStartXDp = dragStartEvent.getX();
+        mDragStartYDp = dragStartEvent.getY();
+    }
+
+    private void onDrop(DragEvent dropEvent) {
+        mIsDropOnView = true;
+
+        final int dropDistance = Math.round(MathUtils.distance(
+                mDragStartXDp, mDragStartYDp, dropEvent.getX(), dropEvent.getY()));
+        RecordHistogram.recordExactLinearHistogram(
+                "Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip", dropDistance, 51);
+
+        long dropDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
+        RecordHistogram.recordMediumTimesHistogram(
+                "Android.DragDrop.FromWebContent.DropInWebContent.Duration", dropDuration);
     }
 
     private void onDragEnd(DragEvent dragEndEvent) {
