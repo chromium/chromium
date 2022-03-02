@@ -1,23 +1,6 @@
 const STORE_URL = '/wpt_internal/fenced_frame/resources/key-value-store.py';
 const REMOTE_EXECUTOR_URL = '/wpt_internal/fenced_frame/resources/remote-context-executor.https.html';
 
-// This is a dictionary of stash keys to access a specific piece of the
-// server-side stash. In order to communicate between browsing contexts that
-// cannot otherwise talk, the two browsing contexts (the producer and consumer)
-// must use the same key, which is impossible to obtain as you normally would
-// via the common API's token() method (which returns a UUID). Therefore in this
-// file, for each piece of data we're interested in communicating between the
-// fenced frame's embedder and the fenced frame itself, we have to fix a key so
-// that both frames can reference it. We need a separate stash key for each
-// test that passes data, since multiple tests can run in parallel and would
-// otherwise interfere with each other's server state.
-const KEYS = {
-  "embed_coep_require_corp"                     : "00000000-0000-0000-0000-000000000031",
-  "embed_no_coep"                               : "00000000-0000-0000-0000-000000000032",
-  // Don't use the KEYS system; use token() instead. For details, see
-  // third_party/blink/web_tests/wpt_internal/fenced_frame/README.md.
-}
-
 // Creates a URL that includes a list of stash key UUIDs that are being used
 // in the test. This allows us to generate UUIDs on the fly and let anything
 // (iframes, fenced frames, pop-ups, etc...) that wouldn't have access to the
