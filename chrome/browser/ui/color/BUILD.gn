@@ -29,7 +29,9 @@ source_set("mixers") {
   deps = [
     ":color_headers",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//chrome/browser:theme_properties",
+    "//ui/base:buildflags",
     "//ui/color:color",
     "//ui/color:mixers",
   ]
