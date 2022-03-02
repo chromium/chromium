@@ -31,7 +31,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
@@ -478,7 +477,6 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
-    @DisabledTest(message = "crbug.com/1300291")
     public void testPedalsStartedOnCtrlEnterKeyStroke() throws InterruptedException {
         mOmniboxUtils.requestFocus();
         mOmniboxUtils.typeText("Chrome accessibility", false);
@@ -490,10 +488,10 @@ public class OmniboxPedalsTest {
 
         // Select Pedal with the TAB key and activate it with an ENTER key.
         mOmniboxUtils.sendKey(KeyEvent.KEYCODE_TAB);
-        mOmniboxUtils.sendKey(KeyEvent.KEYCODE_ENTER);
 
         SettingsActivity settingsActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SettingsActivity.class, () -> {});
+                InstrumentationRegistry.getInstrumentation(), SettingsActivity.class,
+                () -> { mOmniboxUtils.sendKey(KeyEvent.KEYCODE_ENTER); });
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, AccessibilitySettings.class);
