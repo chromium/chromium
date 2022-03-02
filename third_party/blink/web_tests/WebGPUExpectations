@@ -508,6 +508,10 @@ crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader
 crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,firstTrailingBit:integer_builtin_functions,firstTrailingBit_signed:* [ Failure ]
 crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,firstTrailingBit:integer_builtin_functions,firstTrailingBit_unsigned:* [ Failure ]
 
+# Timeouts on Linux Intel only
+crbug.com/tint/1464 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,atomicity:atomicity:* [ Timeout ]
+crbug.com/tint/1464 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,coherence:corr:* [ Timeout ]
+
 ###
 ### Windows (D3D12) specific
 ###
