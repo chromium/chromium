@@ -65,6 +65,7 @@
 <translation id="5777187867430702742">Chromium-Seite</translation>
 <translation id="5862307444128926510">Willkommen bei Chromium</translation>
 <translation id="5945387852661427312">Sie melden sich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und geben dem Administrator der Domain Kontrolle über Ihre Chromium-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn Sie sich von Chromium abmelden, werden Ihre Daten auf dem Gerät gelöscht, bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
+<translation id="5983312940147103417">Chromium verbessern</translation>
 <translation id="602807004951640891">Wenn Sie Chromium nutzen, stimmen Sie damit den <ph name="BEGIN_LINK_TOS" />Nutzungsbedingungen<ph name="END_LINK_TOS" /> zu.</translation>
 <translation id="6119647025869519954">So legen Sie Chromium als Standardbrowser fest:
 1. Öffnen Sie die Einstellungen
@@ -103,6 +104,13 @@
 <translation id="7931842119211730154">Inkognitotabs sperren, wenn Chromium geschlossen wird</translation>
 <translation id="7980860476903281594">Chromium teilt Ihren Standort mit Websites, für die Sie das zulassen.</translation>
 <translation id="8013573822802650211">Melden Sie sich auf allen Ihren Geräten an, um Ihre Tabs überall dort aufzurufen, wo Sie Chromium verwenden</translation>
+<translation id="80599830191519229">Wenn aktiviert:
+<ph name="BEGIN_INDENT" />  • Sie helfen, Chromium für Nutzer zu optimieren, die es genauso verwenden wie Sie<ph name="END_INDENT" />
+
+Wichtige Hinweise:
+<ph name="BEGIN_INDENT" />  • Daten zu Ihrer Chromium-Nutzung werden an Google gesendet, können aber nicht mit Ihnen in Verbindung gebracht werden
+  • Falls Chromium abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten
+  • Falls Sie die Synchronisierung aktivieren, können die Messwerte auch Informationen zu den von Ihnen besuchten URLs enthalten<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Ihre Chromium-Daten von diesem Gerät löschen?</translation>
 <translation id="8175055321229419309">Tipp: <ph name="BEGIN_LINK" />Ziehen Sie Chromium in Ihr Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium konnte nicht nach Updates suchen. Versuchen Sie es später noch einmal.</translation>

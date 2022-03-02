@@ -76,6 +76,7 @@
 <translation id="175763766237925754">Geras (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1768959921651994223">Tapatybės nustatymo tipas</translation>
 <translation id="1782199038061388045">vertimas</translation>
 <translation id="1792647875738159689">Atšaukiamas nuskaitymas</translation>
 <translation id="1807246157184219062">Šviesi</translation>
@@ -99,6 +100,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> versija</translation>
 <translation id="2126937207024182736">Pasiekiama: <ph name="AVAILABLE_MEMORY" /> GB iš <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
+<translation id="2152882202543497059">Nuotraukų: <ph name="NUMBER" /></translation>
 <translation id="2157959690810728433">ĮTRAUKTAS Į EILĘ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: bandyti dar kartą</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
@@ -126,6 +128,7 @@
 <translation id="2446553403094072641">Slankiojo kablelio tikslumas</translation>
 <translation id="2448312741937722512">Tipas</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
+<translation id="2493126929778606526">Geriausios nuotraukos, parinktos automatiškai</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Atnaujinti dabartinio ekrano fono vaizdą</translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
@@ -136,6 +139,7 @@
 <translation id="2585245331261708204">„Chrome“ OS naujienos</translation>
 <translation id="2619761439309613843">Atnaujinimas per dieną</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2640549051766135490">Pasirinktas albumas „<ph name="TITLE" />“ (<ph name="DESC" />)</translation>
 <translation id="2695514675076754339">Įveskite aštuonių simbolių atrakinimo kodą</translation>
 <translation id="2712812801627182647">TLS autentifikavimo raktas</translation>
 <translation id="2740531572673183784">Gerai</translation>
@@ -230,6 +234,7 @@
 <translation id="4044093238444069296">Prie tinklų sietuvo prisijungti nepavyko</translation>
 <translation id="404928562651467259">ĮSPĖJIMAS</translation>
 <translation id="409427325554347132">Išsaugoti išsamią testo informaciją</translation>
+<translation id="4110686435123617899">Pasirinkti albumą „<ph name="TITLE" />“ (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB jutiklinė dalis</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
 <translation id="4140251671072434548">RMA serverio atrakinimas</translation>
@@ -290,6 +295,7 @@
 <translation id="475869545581454722">Atnaujintas „Chrome OS“ slaptažodis</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
 <translation id="4782311465517282004">Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite tekstą, kad būtų pateiktos apibrėžtys, vertimai ar vienetų konvertavimas.</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> nuotrauk.</translation>
 <translation id="4793756956024303490">Glaudinimo algoritmas</translation>
 <translation id="4794140124556169553">Centrinio procesoriaus testavimas gali turėti įtakos sistemos našumui</translation>
 <translation id="4808449224298348341">Spausdinimo užduotis atšaukta: <ph name="DOCUMENT_TITLE" /></translation>
@@ -334,6 +340,7 @@
 <translation id="5166918508782100047">Sparčiųjų atsakymų nustatymai</translation>
 <translation id="5168185087976003268">Akumuliatoriaus būsena</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
+<translation id="5190187232518914472">Atgaivinkite mėgstamiausius prisiminimus. Norėdami pridėti ar redaguoti albumus, eikite į <ph name="LINK_BEGIN" />„Google“ nuotraukas<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Ekrane nieko nerasta, dėl ko galėtume jums padėti.
 Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5212593641110061691">Bulvarinė spauda</translation>
@@ -610,6 +617,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8660881923941176839">svar.</translation>
 <translation id="8662671328352114214">Prisijungimas prie „<ph name="TYPE" />“ tinklo</translation>
 <translation id="8675354002693747642">Paruoštas bendrinti raktas</translation>
+<translation id="8677859815076891398">Nėra albumų. Sukurkite albumą <ph name="LINK_BEGIN" />„Google“ nuotraukose<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Šią funkciją galite valdyti rodyklės kairėn ar dešinėn klavišais.</translation>
 <translation id="871560550817059752">Nepavyko – baigėsi rašalas</translation>
 <translation id="8723108084122415655">Nenumatytojo tinklo delsa viršija slenksčio vertę</translation>

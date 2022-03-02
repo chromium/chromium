@@ -286,7 +286,6 @@
 <translation id="1276994519141842946">មិនអាច​លុប <ph name="APP_NAME" /> បានទេ</translation>
 <translation id="1277020343994096713">បង្កើតកូដ PIN ថ្មី ដែលខុសពីកូដ PIN បច្ចុប្បន្នរបស់អ្នក</translation>
 <translation id="1278859221870828664">ពិនិត្យមើលកម្មវិធី និងសេវាកម្ម Google Play</translation>
-<translation id="1279024913354609713">កុំ​អនុញ្ញាត</translation>
 <translation id="127946606521051357">ឧបករណ៍​នៅជិតកំពុង​ចែករំលែក</translation>
 <translation id="1280965841156951489">កែ​ឯកសារ</translation>
 <translation id="1282465000333679776">ចែករំលែក​សំឡេង​ប្រព័ន្ធ</translation>
@@ -680,6 +679,7 @@
 <translation id="1644852018355792105">បញ្ចូលកូដសម្ងាត់ប៊្លូធូសសម្រាប់ឧបករណ៍ <ph name="DEVICE" /></translation>
 <translation id="1645516838734033527">ដើម្បីរក្សាសុវត្ថិភាព <ph name="DEVICE_TYPE" /> របស់អ្នក Smart Lock តម្រូវឲ្យ​ប្រើ​ការចាក់សោអេក្រង់នៅលើ​ទូរសព្ទរបស់អ្នក។</translation>
 <translation id="1646982517418478057">សូមបញ្ចូលពាក្យសម្ងាត់ដើម្បីអ៊ិនគ្រីបវិញ្ញាបនបត្រនេះ</translation>
+<translation id="1647408325348388858">បើក​ ហើយកែ <ph name="FILE_NAME" /> នៅក្នុងកម្មវិធីលើអ៊ីនធឺណិតនេះឬ?</translation>
 <translation id="1648528859488547844">ប្រើ Wi‑Fi ឬ​បណ្តាញ​ទូរសព្ទចល័ត​ដើម្បីកំណត់​ទីតាំង</translation>
 <translation id="164936512206786300">ឈប់ផ្គូផ្គង​ឧបករណ៍​ប៊្លូធូស</translation>
 <translation id="1651008383952180276">អ្នក​ត្រូវតែ​បញ្ចូល​ឃ្លាសម្ងាត់​ដូចគ្នា​ពីរដង</translation>
@@ -1200,8 +1200,6 @@
 <translation id="2154502158735983655">អាន​ទិន្នន័យ​ឧបករណ៍ និង​ព័ត៌មាន​ឧបករណ៍ Chrome OS។</translation>
 <translation id="2155772377859296191">មើល​ទៅដូចជា <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">បុគ្គលិក​បម្រើសេវាកម្ម៖ <ph name="SCRIPT_URL" /></translation>
-<translation id="2156557113115192526">កុំសួរម្ដងទៀត នៅពេលបើកទម្រង់​ឯកសារនេះនៅក្នុងកម្មវិធីនេះ៖
-<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">ដំណើរការ​ការពិនិត្យសុវត្ថិភាព​ម្ដងទៀត</translation>
 <translation id="2157474325782140681">ដើម្បីទទួលបាន​មុខងារបន្ថែម សូមប្រើឧបករណ៍ភ្ជាប់ Dell​ ដែលរចនាឡើងសម្រាប់ដំណើរការជាមួយ​ Chromebook នេះ។</translation>
 <translation id="215753907730220065">ចាកចេញពីអេក្រង់ពេញ</translation>
@@ -2347,6 +2345,7 @@
 <translation id="33022249435934718">GDI ដោះស្រាយ</translation>
 <translation id="3302388252085547855">បញ្ចូលមូលហេតុ...</translation>
 <translation id="3303260552072730022">កម្មវិធីបន្ថែមបានចាប់ផ្តើមពេញអេក្រង់។</translation>
+<translation id="3303795387212510132">អនុញ្ញាត​ឱ្យកម្មវិធី​បើកតំណ <ph name="PROTOCOL_SCHEME" /> ដែរទេ?</translation>
 <translation id="3303818374450886607">ច្បាប់ចម្លង</translation>
 <translation id="3303855915957856445">រកមិនឃើញលទ្ធផលស្វែងរកទេ</translation>
 <translation id="3304212451103136496">បញ្ចុះតម្លៃ <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -3126,6 +3125,7 @@
 <translation id="4033963223187371752">គេហទំព័រដែលមានសុវត្ថិភាពអាចបង្កប់ខ្លឹមសារដែលគ្មានសុវត្ថិភាពដូចជា រូបភាព ឬស៊ុមបណ្ដាញជាដើម</translation>
 <translation id="4034824040120875894">ម៉ាស៊ីន​បោះពុម្ព</translation>
 <translation id="4035758313003622889">កម្មវិធីគ្រប់គ្រងភារកិច្ច</translation>
+<translation id="4035877632587724847">មិនអនុញ្ញាត</translation>
 <translation id="4036778507053569103">គោលការណ៍ដែលបានទាញយកពីម៉ាស៊ីនមេ​គ្មាន​សុពលភាពទេ។</translation>
 <translation id="4037084878352560732">សេះ</translation>
 <translation id="403725336528835653">សាកល្បង​សិន</translation>
@@ -3249,7 +3249,6 @@
 <translation id="4167686856635546851">ជាធម្មតា គេហទំព័រប្រើ JavaScript ដើម្បីបង្ហាញមុខងារអន្តរកម្មដូចជា វីដេអូហ្គេម ឬទម្រង់​បែបបទបណ្ដាញជាដើម</translation>
 <translation id="4168015872538332605">ការកំណត់មួយចំនួនជាកម្មសិទ្ធិរបស់ <ph name="PRIMARY_EMAIL" /> កំពុងត្រូវបានចែករំលែកជាមួយអ្នក។ ការកំណត់ទាំងនេះមានប្រសិទ្ធភាពលើគណនីរបស់អ្នក នៅពេលប្រើគណនីចូលច្រើនតែប៉ុណ្ណោះ។</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ដែលបញ្ចប់ដោយ <ph name="LAST_FOUR_DIGITS" /></translation>
-<translation id="4169535189173047238">កុំ​អនុញ្ញាត</translation>
 <translation id="4170314459383239649">សម្អាតនៅពេលចាកចេញ</translation>
 <translation id="417096670996204801">ជ្រើសរើសកម្រងព័ត៌មាន</translation>
 <translation id="4175137578744761569">ស្វាយខ្ចី និងស</translation>
@@ -3267,7 +3266,6 @@
 <translation id="4194570336751258953">បើកដំណើរការ ប៉ះ ដើម្បី ចុច</translation>
 <translation id="4195643157523330669">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="4195814663415092787">បន្តកន្លែងដែលអ្នកបានចាកចេញ</translation>
-<translation id="4197917636330710075">ទទួលបាន​ការបញ្ចុះតម្លៃ​សម្រាប់ <ph name="MERCHANT_NAME" /> និង <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">គេហទំព័របន្ថែម</translation>
 <translation id="4200689466366162458">ពាក្យផ្ទាល់ខ្លួន</translation>
 <translation id="4200983522494130825">ផ្ទាំងថ្មី</translation>
@@ -3321,7 +3319,6 @@
 <translation id="425573743389990240">កម្រិតទាញយកថាមពលជាវ៉ាត់ (តម្លៃអវិជ្ជមាន មានន័យថ្មកំពុងសាក)</translation>
 <translation id="4256316378292851214">រក្សាទុកវីដេអូជា...</translation>
 <translation id="4258348331913189841">ប្រព័ន្ធឯកសារ</translation>
-<translation id="4258786365875464621"><ph name="APP_ORIGIN" /> ចង់បើកឯកសារទាំងនេះ៖</translation>
 <translation id="4259388776256904261">អាចចំណាយពេលបន្តិច</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> អាច​បង្ក​គ្រោះថ្នាក់​។ ផ្ញើទៅ​កម្មវិធី​ការពារ​កម្រិតខ្ពស់​របស់ Google ដើម្បី​ស្កេន​ឬ? សូមចុច Shift+F6 ដើម្បីប្ដូរទៅផ្នែក​របារទាញយក។</translation>
 <translation id="4261429981378979799">​ការអនុញ្ញាត​កម្មវិធីបន្ថែម​</translation>
@@ -3797,6 +3794,7 @@
 <translation id="475088594373173692">អ្នកប្រើដំបូង</translation>
 <translation id="4756378406049221019">បញ្ឈប់/ផ្ទុកឡើងវិញ</translation>
 <translation id="4756388243121344051">ប្រវត្តិ</translation>
+<translation id="4759202969060787081">កុំ​បើក</translation>
 <translation id="4759238208242260848">ទាញយក</translation>
 <translation id="4761104368405085019">ប្រើម៉ៃក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="4762718786438001384">ទំហំផ្ទុកក្នុងឧបករណ៍សល់តិចណាស់</translation>
@@ -4882,6 +4880,7 @@
 <translation id="5889282057229379085">ចំនួនអតិបរមានៃ CAs អន្តរការី៖ <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">បណ្ដាញ Wi-Fi ជា​អាទិភាព</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
+<translation id="5896436821193322561">កុំអនុញ្ញាត</translation>
 <translation id="5900302528761731119">រូបថត Google ទម្រង់</translation>
 <translation id="590036993063074298">ព័ត៌មានលម្អិតអំពីគុណភាពនៃការបញ្ចាំង</translation>
 <translation id="5901069264981746702">ទិន្នន័យស្នាមម្រាមដៃ​របស់អ្នកត្រូវបាន​រក្សាទុកយ៉ាង​មានសុវត្ថិភាព និងមិនចេញពី <ph name="DEVICE_TYPE" /> របស់អ្នកឡើយ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
@@ -5498,7 +5497,6 @@
 <translation id="6498249116389603658">&amp;ភាសារបស់អ្នកទាំងអស់</translation>
 <translation id="6499143127267478107">ការដោះស្រាយឧបករណ៍ចែករំលែកនៅក្នុងស្គ្រីបប្រូកស៊ី...</translation>
 <translation id="6499764981457476645">រកមិនឃើញ​ឧបករណ៍​ដែលនៅជិតទេ</translation>
-<translation id="6501086852992132091"><ph name="APP_ORIGIN" /> ចង់បើកឯកសារនេះ៖</translation>
 <translation id="65017764184991091">ការបម្រុងទុក​កម្មវិធី និង​ឯកសារ Linux មិនបានសម្រេចទេ។ សកម្មភាពនេះ​អាចកើតឡើង ប្រសិនបើឧបករណ៍​របស់អ្នក​មិនមានទំហំផ្ទុក​ទំនេរ​គ្រប់គ្រាន់ទេ។ សាកល្បង​បង្កើនទំហំផ្ទុក​ខ្លះ​នៅលើឧបករណ៍​របស់អ្នក ឬជ្រើសរើស​ទីតាំងផ្សេង ដើម្បីបម្រុងទុក។</translation>
 <translation id="6501957628055559556">ទម្រង់ផ្ទុកទាំងអស់</translation>
 <translation id="650266656685499220">ដើម្បីបង្កើត​អាល់ប៊ុម សូមចូលទៅកាន់ Google រូបថត</translation>
@@ -6490,6 +6488,7 @@
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 ទៀត}other{{NUM_DOWNLOADS} ទៀត}}</translation>
 <translation id="7526989658317409655">ធាតុជំនួស</translation>
 <translation id="7527758104894292229">ធ្វើបច្ចុប្បន្នភាពពាក្យសម្ងាត់នៅក្នុងគណនី Google របស់អ្នក, <ph name="ACCOUNT" /></translation>
+<translation id="7528224636098571080">កុំ​បើក</translation>
 <translation id="7529411698175791732">សូមពិនិត្យមើល​ការតភ្ជាប់​អ៊ីនធឺណិត​របស់អ្នក។ ប្រសិនបើ​បញ្ហានេះ​នៅតែ​បន្ត​កើតឡើង សូមសាកល្បង​ចាកចេញ​ពី​គណនី រួច​ចូលវិញ​ម្តងទៀត។</translation>
 <translation id="7529876053219658589">{0,plural, =1{បិទ​ផ្ទាំងភ្ញៀវ}other{បិទ​ផ្ទាំងភ្ញៀវ}}</translation>
 <translation id="7530016656428373557">កម្រិតទាញយកថាមពលជាវ៉ាត់</translation>
@@ -6515,8 +6514,6 @@
 <translation id="7552846755917812628">សាកល្បងធ្វើតាមគន្លឹះខាងក្រោម៖</translation>
 <translation id="7553012839257224005">កំពុងពិនិត្យមើល​ទម្រង់ផ្ទុក Linux</translation>
 <translation id="7553242001898162573">បញ្ចូលពាក្យសម្ងាត់របស់អ្នក។</translation>
-<translation id="7553347517399115470">កុំសួរម្ដងទៀត នៅពេលបើកទម្រង់​ឯកសារទាំងនេះនៅក្នុងកម្មវិធីនេះ៖
-<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">អ្នកគ្រប់គ្រងរបស់អ្នក​មិនអនុញ្ញាតឱ្យប្រើ​ភាសានេះទេ</translation>
 <translation id="7554791636758816595">ផ្ទាំងថ្មី</translation>
 <translation id="7556033326131260574">Smart Lock មិនអាចផ្ទៀងផ្ទាត់គណនីរបស់អ្នកបានទេ។ វាយបញ្ចូលពាក្យសម្ងាត់របស់អ្នកដើម្បីចូល។</translation>
@@ -6539,6 +6536,7 @@
 <translation id="7573172247376861652">សាកថ្ម</translation>
 <translation id="7573594921350120855">ជាធម្មតា គេហទំព័រប្រើកាមេរ៉ាវីដេអូរបស់អ្នកសម្រាប់មុខងារទំនាក់ទំនងដូចជា ការជជែក​ជា​វីដេអូជាដើម</translation>
 <translation id="7574650250151586813">ដើម្បី​វាយបញ្ចូល​អត្ថបទ សូមដំឡើង​ជំនាន់​កម្មវិធី​ក្ដារចុច Daydream</translation>
+<translation id="7574676002608048667">ផ្ញើពាក្យសម្ងាត់</translation>
 <translation id="7576690715254076113">ប្រមូល</translation>
 <translation id="7576976045740938453">គណនី​មុខងារសាកល្បង​មានបញ្ហា។</translation>
 <translation id="7578137152457315135">ការកំណត់​ស្នាម​ម្រាមដៃ</translation>
@@ -6942,7 +6940,6 @@
 <translation id="7956373551960864128">ម៉ាស៊ីនបោះពុម្ព​ដែលអ្នកបាន​រក្សាទុក</translation>
 <translation id="7957074856830851026">មើលព័ត៌មានឧបករណ៍ ដូចជាលេខស៊េរី ឬលេខ​សម្គាល់​ទ្រព្យរបស់វាជាដើម</translation>
 <translation id="7957615753207896812">បើកការកំណត់ឧបករណ៍ក្តារចុច</translation>
-<translation id="7958437133377816580">ទទួលបានការបញ្ចុះតម្លៃសម្រាប់ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> និងអ្វីៗ​ជាច្រើនទៀត</translation>
 <translation id="7959074893852789871">ឯកសារបានផ្ទុកវិញ្ញាបនប័ត្រច្រើន ហើយពួកវាមួយចំនួនមិនត្រូវបាននាំចូលទេ៖</translation>
 <translation id="7959665254555683862">ផ្ទាំងឯកជនថ្មី</translation>
 <translation id="7961015016161918242">មិនដែល</translation>

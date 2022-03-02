@@ -76,6 +76,7 @@
 <translation id="175763766237925754">Baik (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1768959921651994223">Jenis autentikasi</translation>
 <translation id="1782199038061388045">terjemahan</translation>
 <translation id="1792647875738159689">Membatalkan pemindaian</translation>
 <translation id="1807246157184219062">Terang</translation>
@@ -99,6 +100,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Tersedia <ph name="AVAILABLE_MEMORY" /> GB dari <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2157959690810728433">DALAM ANTREAN</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Coba lagi</translation>
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
@@ -126,6 +128,7 @@
 <translation id="2446553403094072641">Akurasi floating point</translation>
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2461822463642141190">Arus</translation>
+<translation id="2493126929778606526">Foto terbaik Anda, dipilih otomatis</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Muat ulang gambar wallpaper saat ini</translation>
 <translation id="2517472476991765520">Pindai</translation>
@@ -136,6 +139,7 @@
 <translation id="2585245331261708204">Yang baru di Chrome OS</translation>
 <translation id="2619761439309613843">Muat Ulang Harian</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> dipilih</translation>
 <translation id="2695514675076754339">Masukkan kode buka kunci 8 karakter</translation>
 <translation id="2712812801627182647">Kunci autentikasi TLS</translation>
 <translation id="2740531572673183784">Oke</translation>
@@ -230,6 +234,7 @@
 <translation id="4044093238444069296">Tidak dapat terhubung ke gateway</translation>
 <translation id="404928562651467259">PERINGATAN</translation>
 <translation id="409427325554347132">Simpan detail pengujian</translation>
+<translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4131410914670010031">Hitam dan putih</translation>
 <translation id="4140251671072434548">Lakukan RMA Server Unlock</translation>
@@ -290,6 +295,7 @@
 <translation id="475869545581454722">Sandi Chrome OS diperbarui</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4782311465517282004">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793756956024303490">Algoritme kompresi</translation>
 <translation id="4794140124556169553">Menjalankan pengujian CPU dapat memengaruhi performa sistem Anda</translation>
 <translation id="4808449224298348341">Tugas pencetakan <ph name="DOCUMENT_TITLE" /> dibatalkan</translation>
@@ -334,6 +340,7 @@
 <translation id="5166918508782100047">Setelan jawaban instan</translation>
 <translation id="5168185087976003268">Kesehatan baterai</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
+<translation id="5190187232518914472">Hidupkan kembali memori favorit Anda. Untuk menambahkan atau mengedit album, buka <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Di layar tidak ada apa pun yang membutuhkan bantuan saya.
 Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -610,6 +617,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8660881923941176839">pound</translation>
 <translation id="8662671328352114214">Bergabung dengan jaringan <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Kunci yang dibagikan sebelumnya</translation>
+<translation id="8677859815076891398">Tidak ada album. Buat album di <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
 <translation id="871560550817059752">Gagal - Tinta habis</translation>
 <translation id="8723108084122415655">Jaringan non-default melebihi ambang batas latensi</translation>

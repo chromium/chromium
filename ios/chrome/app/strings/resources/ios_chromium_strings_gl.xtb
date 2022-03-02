@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Páxina de Chromium</translation>
 <translation id="5862307444128926510">Dámosche a benvida a Chromium</translation>
 <translation id="5945387852661427312">Estás iniciando sesión cunha conta xestionada por <ph name="DOMAIN" /> e proporcionándolle ao seu administrador o control dos teus datos de Chromium, que quedarán ligados permanentemente a esta conta. Se pechas sesión en Chromium, eliminaranse os teus datos deste dispositivo, pero seguirán almacenados na túa conta de Google.</translation>
+<translation id="5983312940147103417">Mellora Chromium</translation>
 <translation id="602807004951640891">Ao usar Chromium, aceptas as <ph name="BEGIN_LINK_TOS" />Condicións de servizo<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Para facer que Chromium sexa o teu navegador predeterminado, sigue estes pasos:
 1. Abre Configuración
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">Bloquear pestanas do modo de incógnito ao pechar Chromium</translation>
 <translation id="7980860476903281594">Chromium comparte a localización cos sitios que queiras.</translation>
 <translation id="8013573822802650211">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión en todos eles</translation>
+<translation id="80599830191519229">Cando esta opción está activada:
+<ph name="BEGIN_INDENT" />  • Axuda a mellorar Chromium para as persoas que o usan igual ca ti<ph name="END_INDENT" />
+
+Cuestións que se deben ter en conta:
+<ph name="BEGIN_INDENT" />  • Envíaselle a Google información sobre o uso que fas de Chromium, pero estes datos non están vinculados contigo
+  • Se se produce un erro en Chromium, entre os datos sobre o fallo podería incluírse algunha información persoal
+  • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Queres borrar os teus datos de Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Consello: <ph name="BEGIN_LINK" />Engade Chromium á barra de aplicacións<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium non puido buscar actualizacións. Téntao máis tarde.</translation>

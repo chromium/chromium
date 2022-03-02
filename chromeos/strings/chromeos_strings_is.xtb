@@ -99,6 +99,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, útgáfa <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB af <ph name="TOTAL_MEMORY" /> GB tiltæk</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> myndir</translation>
 <translation id="2157959690810728433">Í BIÐRÖÐ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reyna aftur</translation>
 <translation id="2161394479394250669">Hætta við prentverk</translation>
@@ -126,6 +127,7 @@
 <translation id="2446553403094072641">Nákvæmni hlaupakommu</translation>
 <translation id="2448312741937722512">Gerð</translation>
 <translation id="2461822463642141190">Núna</translation>
+<translation id="2493126929778606526">Bestu myndirnar þínar, valdar sjálfkrafa</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Endurnýja núverandi veggfóðursmynd</translation>
 <translation id="2517472476991765520">Leita</translation>
@@ -136,6 +138,7 @@
 <translation id="2585245331261708204">Nýjungar í Chrome OS</translation>
 <translation id="2619761439309613843">Uppfæra daglega</translation>
 <translation id="2620436844016719705">Kerfi</translation>
+<translation id="2640549051766135490">Albúmið <ph name="TITLE" /> <ph name="DESC" /> valið</translation>
 <translation id="2695514675076754339">Sláðu inn átta stafa kóðann til að taka úr lás</translation>
 <translation id="2712812801627182647">TLS-auðkenningarlykill</translation>
 <translation id="2740531572673183784">Í lagi</translation>
@@ -230,6 +233,7 @@
 <translation id="4044093238444069296">Ekki er hægt að tengjast gátt</translation>
 <translation id="404928562651467259">VIÐVÖRUN</translation>
 <translation id="409427325554347132">Vista niðurstöður prófunar</translation>
+<translation id="4110686435123617899">Velja albúm <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-snertiflötur</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>
 <translation id="4140251671072434548">Taka netþjón heimildar fyrir vöruskilum úr lás</translation>
@@ -290,6 +294,7 @@
 <translation id="475869545581454722">Aðgangsorð Chrome OS var uppfært</translation>
 <translation id="4773299976671772492">Stöðvað</translation>
 <translation id="4782311465517282004">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> mynd</translation>
 <translation id="4793756956024303490">Þjöppunarreiknirit</translation>
 <translation id="4794140124556169553">Keyrsla örgjörvaprófs kann að hafa áhrif á afköst kerfisins</translation>
 <translation id="4808449224298348341">Hætt við prentverkið <ph name="DOCUMENT_TITLE" /></translation>
@@ -334,6 +339,7 @@
 <translation id="5166918508782100047">Stillingar skjótra svara</translation>
 <translation id="5168185087976003268">Ástand rafhlöðu</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
+<translation id="5190187232518914472">Upplifðu uppáhaldsstundirnar aftur. Opnaðu <ph name="LINK_BEGIN" />Google myndir<ph name="LINK_END" /> til að bæta við eða breyta albúmum.</translation>
 <translation id="5212543919916444558">Ég finn ekkert á skjánum sem ég get aðstoðað þig með.
 Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -610,6 +616,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8660881923941176839">pund</translation>
 <translation id="8662671328352114214">Tengjast <ph name="TYPE" /> neti</translation>
 <translation id="8675354002693747642">PSK-lykill</translation>
+<translation id="8677859815076891398">Engin albúm. Búðu til albúm í <ph name="LINK_BEGIN" />Google myndum<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Notaðu ör til vinstri eða ör til hægri til að stjórna þessum eiginleika.</translation>
 <translation id="871560550817059752">Mistókst – blekið er búið</translation>
 <translation id="8723108084122415655">Ósjálfgefið net yfir biðþröskuldi</translation>

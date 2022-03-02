@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Chromium-sivu</translation>
 <translation id="5862307444128926510">Tervetuloa Chromiumiin</translation>
 <translation id="5945387852661427312">Olet kirjautumassa sisään verkkotunnuksen <ph name="DOMAIN" /> hallitsemalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chromium-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromiumista uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
+<translation id="5983312940147103417">Entistä parempi Chromium</translation>
 <translation id="602807004951640891">Käyttämällä Chromiumia hyväksyt <ph name="BEGIN_LINK_TOS" />käyttöehdot<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Näin teet Chromiumista oletusselaimesi:
 1. Avaa asetukset
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">Lukitse incognito-välilehdet, kun suljet Chromiumin</translation>
 <translation id="7980860476903281594">Chromium jakaa sijaintisi sallimillesi sivustoille.</translation>
 <translation id="8013573822802650211">Kirjaudu sisään kaikilla laitteillasi, jotta voit nähdä Chromium-välilehtesi missä tahansa</translation>
+<translation id="80599830191519229">Kun se on päällä:
+<ph name="BEGIN_INDENT" />  • Auta tekemään Chromiumista parempi muille, jotka käyttävät sitä samoin kuin sinä<ph name="END_INDENT" />
+
+Huomioitavaa:
+<ph name="BEGIN_INDENT" />  • Chromiumin käytöstä lähetetään tietoja Googlelle, mutta niitä ei liitetä sinuun
+  • Chromiumin kaatumisesta kerättävät tiedot saattavat sisältää henkilökohtaisia tietoja
+  • Jos laitat synkronoinnin päälle, tiedot voivat koskea myös avaamiasi URL-osoitteita<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Poistetaanko Chromium-data tältä laitteelta?</translation>
 <translation id="8175055321229419309">Vinkki: <ph name="BEGIN_LINK" />Siirrä Chromium Dockiin<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ei voinut tarkistaa, onko päivityksiä saatavilla. Yritä myöhemmin uudelleen.</translation>

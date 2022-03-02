@@ -284,7 +284,6 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> ஆப்ஸை நிறுவல் நீக்க முடியவில்லை</translation>
 <translation id="1277020343994096713">உங்களின் தற்போதைய பின்னிலிருந்து (PIN) மாறுபட்ட புதிய பின்னை (PIN) உருவாக்கவும்</translation>
 <translation id="1278859221870828664">Google Play ஆப்ஸ் &amp; சேவைகள் குறித்து அறிந்துகொள்ளுங்கள்</translation>
-<translation id="1279024913354609713">வேண்டாம்</translation>
 <translation id="127946606521051357">அருகிலுள்ள சாதனம் பகிர்கிறது</translation>
 <translation id="1280965841156951489">ஃபைல்களைத் திருத்து</translation>
 <translation id="1282465000333679776">சிஸ்டத்தின் ஆடியோவைப் பகிர்</translation>
@@ -1195,8 +1194,6 @@
 <translation id="2154502158735983655">Chrome OSஸின் சாதனத் தகவலையும் சாதனத் தரவையும் படித்தல்.</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> போல் தெரிகிறது</translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
-<translation id="2156557113115192526">பின்வரும் ஃபைல் வடிவத்தை இந்த ஆப்ஸில் திறக்கும்போது மீண்டும் கேட்காதே:
-<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">பாதுகாப்புச் சரிபார்ப்பை மீண்டும் இயக்கும்</translation>
 <translation id="2157474325782140681">கூடுதல் அம்சங்களைப் பெற இந்த Chromebookகுடன் இணங்குமாறு வடிவமைக்கப்பட்ட Dell டாக்கிங் ஸ்டேஷனைப் பயன்படுத்தவும்.</translation>
 <translation id="215753907730220065">முழுத்திரையிலிருந்து வெளியேறு</translation>
@@ -2336,6 +2333,7 @@
 <translation id="33022249435934718">GDI ஹேண்டில்ஸ்</translation>
 <translation id="3302388252085547855">காரணத்தை உள்ளிடுக...</translation>
 <translation id="3303260552072730022">நீட்டிப்பு முழுத்திரையில் தூண்டப்பட்டுள்ளது.</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> இணைப்புகளைத் திறக்க ஆப்ஸை அனுமதிக்கவா?</translation>
 <translation id="3303818374450886607">பிரதிகள்</translation>
 <translation id="3303855915957856445">தேடல் முடிவுகள் எதுவுமில்லை</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> தள்ளுபடி</translation>
@@ -3091,6 +3089,7 @@
 <translation id="4033963223187371752">பாதுகாப்பு இல்லாத படங்கள், இணைய ஃபிரேம்கள் போன்ற உள்ளடக்கத்தைப் பாதுகாக்கப்பட்ட தளங்கள் உட்பொதிக்கலாம்</translation>
 <translation id="4034824040120875894">பிரிண்டர்</translation>
 <translation id="4035758313003622889">&amp;பணி நிர்வாகி</translation>
+<translation id="4035877632587724847">வேண்டாம்</translation>
 <translation id="4036778507053569103">சேவையகத்திலிருந்து பதிவிறக்கிய கொள்கை தவறானது.</translation>
 <translation id="4037084878352560732">குதிரை</translation>
 <translation id="403725336528835653">முதலில் பயன்படுத்திப் பாருங்கள்</translation>
@@ -3213,7 +3212,6 @@
 <translation id="4167686856635546851">வழக்கமாக வீடியோ கேம்கள், வலைப் படிவங்கள் போன்ற ஊடாடக்கூடிய அம்சங்களைக் காட்டுவதற்காக Javascriptடைத் தளங்கள் பயன்படுத்தும்</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> க்கு உரிய சில அமைப்புகள் உங்களுடன் பகிரப்படுகின்றன. பல உள்நுழைவைப் பயன்படுத்தும்போது, இந்த அமைப்புகள் உங்கள் கணக்கை மட்டுமே பாதிக்கும்.</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />ல் முடிவடையும் <ph name="NETWORK_NAME" /></translation>
-<translation id="4169535189173047238">அனுமதிக்காதே</translation>
 <translation id="4170314459383239649">வெளியேறும் போது அழி</translation>
 <translation id="417096670996204801">சுயவிவரத்தைத் தேர்வுசெய்தல்</translation>
 <translation id="4175137578744761569">வெளிர் ஊதா &amp; வெள்ளை</translation>
@@ -3231,7 +3229,6 @@
 <translation id="4194570336751258953">கிளிக்குக்கு தட்டுவதை இயக்கு</translation>
 <translation id="4195643157523330669">புதிய தாவலில் திற</translation>
 <translation id="4195814663415092787">நான் விட்ட இடத்திலிருந்து தொடங்கு</translation>
-<translation id="4197917636330710075"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> வழங்கும் தள்ளுபடிகளைப் பெறுங்கள்</translation>
 <translation id="4198268995694216131">கூடுதல் தளங்கள்</translation>
 <translation id="4200689466366162458">பிரத்தியேக சொற்கள்</translation>
 <translation id="4200983522494130825">புதிய &amp;தாவல்</translation>
@@ -3285,7 +3282,6 @@
 <translation id="425573743389990240">வாட்ஸ் அலகில் பேட்டரி வெளியேற்ற வீதம் (எதிர்மறையான மதிப்பு என்பது பேட்டரி மின்னேற்றம் செய்யப்படுகிறது என பொருளாகும்)</translation>
 <translation id="4256316378292851214">வீடியோவை இவ்வாறு சே&amp;மி...</translation>
 <translation id="4258348331913189841">ஃபைல் முறைமைகள்</translation>
-<translation id="4258786365875464621">இந்த ஃபைல்களை <ph name="APP_ORIGIN" /> திறக்க விரும்புகிறது:</translation>
 <translation id="4259388776256904261">இதற்குச் சிறிது நேரம் ஆகலாம்</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> ஆபத்தானதாக இருக்கக்கூடும். ஸ்கேன் செய்வதற்காக இதை Googleளின் 'மேம்பட்ட பாதுகாப்புக்கு' அனுப்பவா? பதிவிறக்கங்கள் பட்டிக்குச் செல்ல Shift+F6 விசைகளை அழுத்தவும்.</translation>
 <translation id="4261429981378979799">நீட்டிப்பிற்கான அனுமதிகள்</translation>
@@ -5428,7 +5424,6 @@
 <translation id="6498249116389603658">&amp;உங்கள் எல்லா மொழிகளும்</translation>
 <translation id="6499143127267478107">ப்ராக்ஸி ஸ்கிரிப்டில் ஹோஸ்ட்டைக் கண்டறிகிறது...</translation>
 <translation id="6499764981457476645">சாதனங்கள் எதுவும் அருகில் இல்லை</translation>
-<translation id="6501086852992132091">இந்த ஃபைலை <ph name="APP_ORIGIN" /> திறக்க விரும்புகிறது:</translation>
 <translation id="65017764184991091">Linux ஆப்ஸ், ஃபைல்கள் ஆகியவை காப்புப் பிரதி எடுக்கப்படவில்லை. உங்கள் சாதனத்தில் போதிய அளவு சேமிப்பிடம் காலியாக இல்லாதபோது இவ்வாறு நிகழலாம். உங்கள் சாதனத்தில் சிறிது இடத்தைக் காலியாக்கவும் அல்லது காப்புப் பிரதி எடுக்க வேறு இடத்தைத் தேர்வுசெய்யவும்.</translation>
 <translation id="6501957628055559556">எல்லாக் கண்டெய்னர்களும்</translation>
 <translation id="650266656685499220">ஆல்பங்களை உருவாக்க Google Photosஸிற்குச் செல்லலாம்</translation>
@@ -6438,8 +6433,6 @@
 <translation id="7552846755917812628">பின்வரும் உதவிக் குறிப்புகளைச் செய்து பார்க்கவும்:</translation>
 <translation id="7553012839257224005">Linux கண்டெய்னரைச் சரிபார்க்கிறது</translation>
 <translation id="7553242001898162573">கடவுச்சொல்லை உள்ளிடவும்</translation>
-<translation id="7553347517399115470">பின்வரும் ஃபைல் வடிவங்களை இந்த ஆப்ஸில் திறக்கும்போது மீண்டும் கேட்காதே:
-<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">இந்த மொழியை உங்கள் நிர்வாகி அனுமதிக்கவில்லை</translation>
 <translation id="7554791636758816595">புதிய தாவல்</translation>
 <translation id="7556033326131260574">Smart Lockகால் உங்கள் கணக்கைச் சரிபார்க்க முடியவில்லை. நுழைவதற்கு உங்கள் கடவுச்சொல்லை உள்ளிடவும்.</translation>
@@ -6462,6 +6455,7 @@
 <translation id="7573172247376861652">பேட்டரி மின்னேற்றம்</translation>
 <translation id="7573594921350120855">வழக்கமாக வீடியோ அரட்டை போன்ற தகவல் தொடர்பு அம்சங்களைப் பயன்படுத்துவதற்காக உங்கள் வீடியோ கேமராவைத் தளங்கள் பயன்படுத்தும்</translation>
 <translation id="7574650250151586813">உரையை உள்ளிட, Daydream Keyboard ஆப்ஸைப் புதுப்பிக்கவும்</translation>
+<translation id="7574676002608048667">கடவுச்சொல்லை அனுப்பு</translation>
 <translation id="7576690715254076113">ஒப்பீடு</translation>
 <translation id="7576976045740938453">டெமோ பயன்முறைக் கணக்கில் ஒரு சிக்கல் ஏற்பட்டது.</translation>
 <translation id="7578137152457315135">கைரேகை அமைப்புகள்</translation>
@@ -6862,7 +6856,6 @@
 <translation id="7956373551960864128">நீங்கள் சேமித்துள்ள பிரிண்டர்கள்</translation>
 <translation id="7957074856830851026">வரிசை எண்/உரிமை ஐடி போன்ற சாதனத் தகவலைப் பார்த்தல்</translation>
 <translation id="7957615753207896812">கீபோர்டு அமைப்புகளைத் திற</translation>
-<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> மற்றும் பலர் வழங்கும் தள்ளுபடிகளைப் பெறுங்கள்</translation>
 <translation id="7959074893852789871">இந்த ஃபைலில் பல சான்றிதழ்கள் உள்ளன, அவற்றில் சில இறக்குமதி செய்யப்படவில்லை:</translation>
 <translation id="7959665254555683862">புதிய மறைநிலைப் &amp;பக்கம்</translation>
 <translation id="7961015016161918242">எப்போதும் இல்லை</translation>

@@ -100,6 +100,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostupno je <ph name="AVAILABLE_MEMORY" /> GB od <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2152882202543497059">Broj fotografija: <ph name="NUMBER" /></translation>
 <translation id="2157959690810728433">NA ČEKANJU</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Pokušaj ponovo</translation>
 <translation id="2161394479394250669">Otkaži zadatak ispisa</translation>
@@ -127,6 +128,7 @@
 <translation id="2446553403094072641">Točnost pomičnog zareza</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2461822463642141190">Trenutačno</translation>
+<translation id="2493126929778606526">Vaše najbolje automatski odabrane fotografije</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Osvježi trenutačnu sliku pozadine</translation>
 <translation id="2517472476991765520">Traži</translation>
@@ -137,6 +139,7 @@
 <translation id="2585245331261708204">Novo u OS-u Chrome</translation>
 <translation id="2619761439309613843">Dnevno osvježavanje</translation>
 <translation id="2620436844016719705">Sustav</translation>
+<translation id="2640549051766135490">Odabran je album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Unesite osmeroznamenkasti kôd za otključavanje.</translation>
 <translation id="2712812801627182647">Ključ za TLS autentifikaciju</translation>
 <translation id="2740531572673183784">U redu</translation>
@@ -231,6 +234,7 @@
 <translation id="4044093238444069296">Kontaktiranje pristupnika nije uspjelo</translation>
 <translation id="404928562651467259">UPOZORENJE</translation>
 <translation id="409427325554347132">Spremi pojedinosti testa</translation>
+<translation id="4110686435123617899">Odaberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB dodirna podloga</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
 <translation id="4140251671072434548">Otključavanje RMA poslužitelja</translation>
@@ -291,6 +295,7 @@
 <translation id="475869545581454722">Zaporka za OS Chrome je ažurirana</translation>
 <translation id="4773299976671772492">Zaustavljeno</translation>
 <translation id="4782311465517282004">Pronađite definicije, prijevode ili pretvorbe jedinica kada tekst kliknete desnom tipkom ili ga dodirnete i držite</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> fotografija</translation>
 <translation id="4793756956024303490">Algoritam kompresije</translation>
 <translation id="4794140124556169553">Testiranje procesora može utjecati na rad vašeg sustava</translation>
 <translation id="4808449224298348341">Otkazan zadatak ispisa dokumenta <ph name="DOCUMENT_TITLE" /></translation>
@@ -335,6 +340,7 @@
 <translation id="5166918508782100047">Postavke brzih odgovora</translation>
 <translation id="5168185087976003268">Status baterije</translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
+<translation id="5190187232518914472">Podsjetite se na svoje omiljene uspomene. Da biste dodali ili uredili albume, idite na <ph name="LINK_BEGIN" />Google fotografije<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Na zaslonu ne mogu pronaći ništa u vezi s čime mogu pružiti pomoć.
 Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -611,6 +617,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8660881923941176839">funta/funte</translation>
 <translation id="8662671328352114214">Pridruži se mreži <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Unaprijed podijeljen ključ</translation>
+<translation id="8677859815076891398">Nema albuma. Izradite album u <ph name="LINK_BEGIN" />Google fotografijama<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tipkom sa strelicom ulijevo ili strelicom udesno upravljajte ovom značajkom.</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>
 <translation id="8723108084122415655">Mreža koja nije zadana je iznad praga latencije</translation>

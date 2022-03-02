@@ -100,6 +100,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versjon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB av <ph name="TOTAL_MEMORY" /> GB er tilgjengelig</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> bilder</translation>
 <translation id="2157959690810728433">I KØ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv på nytt</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
@@ -127,6 +128,7 @@
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Nåværende</translation>
+<translation id="2493126929778606526">De beste bildene dine, valgt automatisk</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Last inn det nåværende bakgrunnsbildet på nytt</translation>
 <translation id="2517472476991765520">Skann</translation>
@@ -137,6 +139,7 @@
 <translation id="2585245331261708204">Dette er nytt i Chrome OS</translation>
 <translation id="2619761439309613843">Daglig oppdatering</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2640549051766135490">Albumet <ph name="TITLE" /> med <ph name="DESC" /> er valgt</translation>
 <translation id="2695514675076754339">Oppgi den 8-sifrede opplåsingskoden</translation>
 <translation id="2712812801627182647">TLS-autentiseringsnøkkel</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -231,6 +234,7 @@
 <translation id="4044093238444069296">Kan ikke kontakte gatewayen</translation>
 <translation id="404928562651467259">ADVARSEL</translation>
 <translation id="409427325554347132">Lagre testdetaljer</translation>
+<translation id="4110686435123617899">Velg albumet <ph name="TITLE" /> med <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-styreflate</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
 <translation id="4140251671072434548">Utfør RMA-tjeneropplåsing</translation>
@@ -291,6 +295,7 @@
 <translation id="475869545581454722">Chrome OS-passordet er oppdatert</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4782311465517282004">Få definisjoner, oversettelser eller enhetskonverteringer når du høyreklikker eller trykker og holder inne på tekst</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> bilde</translation>
 <translation id="4793756956024303490">Algoritme for komprimering</translation>
 <translation id="4794140124556169553">Kjøring av en prosessortest kan påvirke systemets ytelse</translation>
 <translation id="4808449224298348341">Avbrøt utskriftsjobben <ph name="DOCUMENT_TITLE" /></translation>
@@ -335,6 +340,7 @@
 <translation id="5166918508782100047">Innstillinger for Hurtiginfo</translation>
 <translation id="5168185087976003268">Batterihelse</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
+<translation id="5190187232518914472">Gjenopplev favorittøyeblikkene dine. For å legge til eller redigere album, gå til <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Jeg finner ikke noe på skjermen jeg kan hjelpe deg med. 
 Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -611,6 +617,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8660881923941176839">pund</translation>
 <translation id="8662671328352114214">Koble til <ph name="TYPE" />-nettverket</translation>
 <translation id="8675354002693747642">Forhåndsdelt nøkkel</translation>
+<translation id="8677859815076891398">Ingen album. Opprett et album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bruk venstre- eller høyrepilen for å administrere denne funksjonen.</translation>
 <translation id="871560550817059752">Mislykket – tom for blekk</translation>
 <translation id="8723108084122415655">Tidsforsinkelsen for ikke-standardnettverket er over grenseverdien</translation>

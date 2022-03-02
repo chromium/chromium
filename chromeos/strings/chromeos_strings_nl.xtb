@@ -76,6 +76,7 @@
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1768959921651994223">Verificatietype</translation>
 <translation id="1782199038061388045">vertaling</translation>
 <translation id="1792647875738159689">Scannen annuleren</translation>
 <translation id="1807246157184219062">Licht</translation>
@@ -99,6 +100,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versie <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beschikbaar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2157959690810728433">IN DE WACHTRIJ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Opnieuw proberen</translation>
 <translation id="2161394479394250669">Afdruktaak annuleren</translation>
@@ -126,6 +128,7 @@
 <translation id="2446553403094072641">Nauwkeurigheid van zwevendekommagetallen</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Huidig</translation>
+<translation id="2493126929778606526">Je beste foto's, automatisch geselecteerd</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">De huidige achtergrondafbeelding vernieuwen</translation>
 <translation id="2517472476991765520">Scannen</translation>
@@ -136,6 +139,7 @@
 <translation id="2585245331261708204">Nieuw bij Chrome OS</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620436844016719705">Systeem</translation>
+<translation id="2640549051766135490">Album geselecteerd: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="2695514675076754339">Geef de ontgrendelingscode van 8 tekens op</translation>
 <translation id="2712812801627182647">TLS-verificatiesleutel</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -230,6 +234,7 @@
 <translation id="4044093238444069296">Kan geen verbinding maken met de gateway</translation>
 <translation id="404928562651467259">WAARSCHUWING</translation>
 <translation id="409427325554347132">Testgegevens opslaan</translation>
+<translation id="4110686435123617899">Album selecteren: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB-touchpad</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
 <translation id="4140251671072434548">RMA Server Unlock uitvoeren</translation>
@@ -290,6 +295,7 @@
 <translation id="475869545581454722">Wachtwoord voor Chrome OS geüpdatet</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
 <translation id="4782311465517282004">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> foto('s)</translation>
 <translation id="4793756956024303490">Compressiealgoritme</translation>
 <translation id="4794140124556169553">Als je een CPU-test uitvoert, kan dit je systeemprestaties beïnvloeden</translation>
 <translation id="4808449224298348341">Afdruktaak <ph name="DOCUMENT_TITLE" /> geannuleerd</translation>
@@ -334,6 +340,7 @@
 <translation id="5166918508782100047">Instellingen voor Snelle antwoorden</translation>
 <translation id="5168185087976003268">Batterijprestaties</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
+<translation id="5190187232518914472">Beleef je favoriete herinneringen opnieuw. Ga naar <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> om albums toe te voegen of te bewerken.</translation>
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
 Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -610,6 +617,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8660881923941176839">pound</translation>
 <translation id="8662671328352114214">Deelnemen aan <ph name="TYPE" />-netwerk</translation>
 <translation id="8675354002693747642">Eerder gedeelde sleutel</translation>
+<translation id="8677859815076891398">Geen albums. Maak een album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gebruik de pijl naar rechts of pijl naar links om deze functie te beheren.</translation>
 <translation id="871560550817059752">Mislukt - Geen inkt meer</translation>
 <translation id="8723108084122415655">Niet-standaard netwerk overschrijdt drempel voor latentie</translation>

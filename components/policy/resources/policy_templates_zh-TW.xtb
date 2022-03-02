@@ -1726,6 +1726,10 @@
 <translation id="2905984450136807296">驗證資料快取生命週期</translation>
 <translation id="2906874737073861391">AppPack 擴充功能清單</translation>
 <translation id="2908277604670530363">Proxy 伺服器的並行連線數量上限</translation>
+<translation id="2909068176249499360">設定這項政策會導致系統強制啟用/停用快速配對功能。
+      快速配對是全新的藍牙配對流程，可連結配對的周邊裝置和 GAIA 帳戶。
+      這能讓其他以同一個 GAIA 帳戶登入的 Chrome OS (和 Android) 裝置自動進行配對。
+      如果不設定，系統會為企業版使用者停用預設值，為非客戶帳戶啟用預設值。</translation>
 <translation id="2912366658685903301">設定瀏覽器主題的顏色</translation>
 <translation id="291853569864365550">不在新分頁中顯示內容建議</translation>
 <translation id="2920795918401557243">此設定可讓使用者透過系統追蹤服務收集整個系統的效能追蹤記錄。
@@ -5816,6 +5820,13 @@
       如果將這項政策設為 False 或不設定，系統則會關閉回報功能，
       且在這兩種情況下，DataLeakPreventionRulesList 中以「ALLOW」層級限制定義的規則都不會回報事件。</translation>
 <translation id="7648907905084499629">對所有網站上的 Cookie 使用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行為</translation>
+<translation id="765347139142030086">如果將這項政策設為 Enabled，當與 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帳戶相關聯的政策和 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />政策發生衝突時，前者的優先順序會高於後者。
+
+      系統只會優先採用由安全使用者產生的政策。安全使用者指的是與機構相關聯的使用者，而且機構會利用 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務來管理他們的瀏覽器。其他所有使用者層級政策都會採用預設優先順序。
+
+      這項政策可以與 <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> 結合。如果同時啟用兩項政策，使用者雲端政策的優先順序也會高於相衝突的平台政策。
+
+      如果將這項政策設為 Disabled 或不設定，使用者層級的雲端政策就會採用預設優先順序。</translation>
 <translation id="7657261947024629645">效能最佳化。</translation>
 <translation id="7666228839913571182">允許第三方 Cookie</translation>
 <translation id="7668830462800981702">如果將這項政策設為啟用，當使用者在網址列中輸入非網址的文字時，系統會執行預設搜尋。如要指定預設搜尋引擎，請設定其餘的預設搜尋政策。如果將其餘的預設搜尋政策保留空白，使用者就可以選擇預設搜尋引擎。如果將這項政策設為停用，使用者在網址列中輸入非網址的文字時，系統不會執行任何搜尋。

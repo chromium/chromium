@@ -99,6 +99,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, sürüm <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB kullanılabilir</translation>
 <translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> fotoğraf</translation>
 <translation id="2157959690810728433">SIRAYA ALINDI</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yeniden dene</translation>
 <translation id="2161394479394250669">Yazdırma işini iptal et</translation>
@@ -126,6 +127,7 @@
 <translation id="2446553403094072641">Kayan nokta doğruluğu</translation>
 <translation id="2448312741937722512">Tür</translation>
 <translation id="2461822463642141190">Mevcut güç tüketimi</translation>
+<translation id="2493126929778606526">Otomatik olarak seçilen en iyi fotoğraflarınız</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Mevcut duvar kağıdı resmini yenile</translation>
 <translation id="2517472476991765520">Tara</translation>
@@ -136,6 +138,7 @@
 <translation id="2585245331261708204">Chrome OS yenilikleri</translation>
 <translation id="2619761439309613843">Günlük Yenileme</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> albümü seçildi</translation>
 <translation id="2695514675076754339">8 karakterli kilit açma kodunu girin</translation>
 <translation id="2712812801627182647">TLS kimlik doğrulama anahtarı</translation>
 <translation id="2740531572673183784">Tamam</translation>
@@ -230,6 +233,7 @@
 <translation id="4044093238444069296">Ağ geçidiyle iletişim kurulamıyor</translation>
 <translation id="404928562651467259">UYARI</translation>
 <translation id="409427325554347132">Test ayrıntılarını kaydet</translation>
+<translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albümünü seçin</translation>
 <translation id="4111761024568264522">USB dokunmatik alan</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4140251671072434548">RMA Sunucu Kilidini Açma İşlemi Yapın</translation>
@@ -290,6 +294,7 @@
 <translation id="475869545581454722">Chrome OS şifresi güncellendi</translation>
 <translation id="4773299976671772492">Durduruldu</translation>
 <translation id="4782311465517282004">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> fotoğraf</translation>
 <translation id="4793756956024303490">Sıkıştırma algoritması</translation>
 <translation id="4794140124556169553">CPU testi çalıştırmak sisteminizin performansını etkileyebilir</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> yazdırma işi iptal edildi</translation>
@@ -334,6 +339,7 @@
 <translation id="5166918508782100047">Bil bakalım ayarları</translation>
 <translation id="5168185087976003268">Pil sağlığı</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
+<translation id="5190187232518914472">En sevdiğiniz anılarınızı yeniden yaşayın. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'a giderek istediğiniz albümleri ekleyin veya düzenleyin.</translation>
 <translation id="5212543919916444558">Ekranınızda size yardımcı olabileceğim bir şey bulamıyorum.
 Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -610,6 +616,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8660881923941176839">libre</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ağına katılın</translation>
 <translation id="8675354002693747642">Önceden paylaşılan anahtar</translation>
+<translation id="8677859815076891398">Albüm yok. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'da albüm oluşturun.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu özelliği yönetmek için sol veya sağ ok tuşlarını kullanın.</translation>
 <translation id="871560550817059752">İşlem başarısız - Mürekkep yok</translation>
 <translation id="8723108084122415655">Varsayılan olmayan ağ, gecikme eşiğini aştı</translation>

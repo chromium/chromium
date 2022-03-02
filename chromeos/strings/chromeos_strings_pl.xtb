@@ -76,6 +76,7 @@
 <translation id="175763766237925754">Dobra (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1768959921651994223">Typ uwierzytelniania</translation>
 <translation id="1782199038061388045">tłumaczenie</translation>
 <translation id="1792647875738159689">Anuluję skanowanie</translation>
 <translation id="1807246157184219062">Jasny</translation>
@@ -99,6 +100,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostępne: <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2152882202543497059">Zdjęcia: <ph name="NUMBER" /></translation>
 <translation id="2157959690810728433">W KOLEJCE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: spróbuj ponownie</translation>
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
@@ -126,6 +128,7 @@
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Aktualnie</translation>
+<translation id="2493126929778606526">Twoje najlepsze zdjęcia wybrane automatycznie</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Odśwież bieżący obraz tapety</translation>
 <translation id="2517472476991765520">Skanuj</translation>
@@ -136,6 +139,7 @@
 <translation id="2585245331261708204">Co nowego w Chrome OS</translation>
 <translation id="2619761439309613843">Codziennie nowa</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2640549051766135490">Wybrano album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Wpisz 8-znakowy kod odblokowania</translation>
 <translation id="2712812801627182647">Klucz uwierzytelniania TLS</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -230,6 +234,7 @@
 <translation id="4044093238444069296">Nie udało się połączyć z bramą</translation>
 <translation id="404928562651467259">OSTRZEŻENIE</translation>
 <translation id="409427325554347132">Zapisz szczegóły testu</translation>
+<translation id="4110686435123617899">Wybierz album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
 <translation id="4140251671072434548">Przeprowadź odblokowanie serwera RMA</translation>
@@ -290,6 +295,7 @@
 <translation id="475869545581454722">Hasło do Chrome OS zostało zaktualizowane</translation>
 <translation id="4773299976671772492">Zatrzymano</translation>
 <translation id="4782311465517282004">Kliknij tekst prawym przyciskiem lub naciśnij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek</translation>
+<translation id="4791000909649665275">Liczba zdjęć: <ph name="NUMBER" /></translation>
 <translation id="4793756956024303490">Algorytm kompresji</translation>
 <translation id="4794140124556169553">Uruchomienie testu procesora może wpłynąć na wydajność systemu</translation>
 <translation id="4808449224298348341">Zadanie drukowania <ph name="DOCUMENT_TITLE" /> zostało anulowane</translation>
@@ -334,6 +340,7 @@
 <translation id="5166918508782100047">Ustawienia szybkich podpowiedzi</translation>
 <translation id="5168185087976003268">Kondycja baterii</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
+<translation id="5190187232518914472">Przeżyj to jeszcze raz. Aby dodawać lub edytować albumy, otwórz <ph name="LINK_BEGIN" />Zdjęcia Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Na Twoim ekranie nie ma nic, w czym mogę pomóc.
 Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -610,6 +617,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8660881923941176839">funty</translation>
 <translation id="8662671328352114214">Połącz z siecią <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Klucz wstępny</translation>
+<translation id="8677859815076891398">Brak albumów. Utwórz album w <ph name="LINK_BEGIN" />Zdjęciach Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Aby zarządzać tą funkcją, naciskaj klawisze strzałek w lewo lub w prawo.</translation>
 <translation id="871560550817059752">Niepowodzenie – brak tuszu</translation>
 <translation id="8723108084122415655">Sieć inna niż domyślna przekroczyła próg opóźnienia</translation>

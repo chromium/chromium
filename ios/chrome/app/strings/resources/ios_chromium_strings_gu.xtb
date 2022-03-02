@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Chromium પેજ</translation>
 <translation id="5862307444128926510">Chromium માં સ્વાગત છે</translation>
 <translation id="5945387852661427312">તમે <ph name="DOMAIN" /> દ્વારા મેનેજ એકાઉન્ટમાં સાઇન ઇન કરી રહ્યાં છો અને તમારા Chromium ડેટા પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો ડેટા આ એકાઉન્ટ સાથે કાયમીરૂપે જોડાયેલું રહેશે. Chromiumમાંથી સાઇન આઉટ કરવું આ ડિવાઇસ પરથી તમારો ડેટા ડિલીટ કરશે, પરંતુ એ તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે.</translation>
+<translation id="5983312940147103417">Chromiumને બહેતર બનાવો</translation>
 <translation id="602807004951640891">Chromiumનો ઉપયોગ કરીને, તમે તેની <ph name="BEGIN_LINK_TOS" />સેવાની શરતો<ph name="END_LINK_TOS" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="6119647025869519954">Chromiumને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવવા માટે:
 1. સેટિંગ ખોલો
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">તમે Chromium બંધ કરો, ત્યારે છૂપી ટૅબ લૉક કરો</translation>
 <translation id="7980860476903281594">Chromium તમે મંજૂરી આપો છો તે સાઇટ સાથે તમારા સ્થાનની માહિતી શેર કરે છે.</translation>
 <translation id="8013573822802650211">તમે જ્યાંથી Chromiumનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, તમારા બધાં ડિવાઇસ પર સાઇન ઇન કરો</translation>
+<translation id="80599830191519229">જ્યારે ચાલુ હોય:
+<ph name="BEGIN_INDENT" />  • તમે જે રીતે કરો છો, તે રીતે Chromiumનો ઉપયોગ કરતા લોકો માટે તેને બહેતર બનાવવામાં સહાય કરો<ph name="END_INDENT" />
+
+ધ્યાનમાં લેવા જેવી બાબતો:
+<ph name="BEGIN_INDENT" />  • Chromiumના તમારા વપરાશની માહિતી Googleને મોકલવામાં આવે છે, પણ તેને તમારી સાથે સાંકળવામાં આવતી નથી
+  • જો Chromium ક્રૅશ થાય, તો ક્રૅશની વિગતોમાં અમુક વ્યક્તિગત માહિતીનો સમાવેશ થઈ શકે છે
+  • જો તમે સિંક કરવાની સુવિધા ચાલુ કરો, તો મેટ્રિકમાં તમે જે URLsની મુલાકાત લીધી હોય, તેની માહિતીનો પણ સમાવેશ થઈ શકે છે<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">ડિવાઇસમાંથી તમારા Chromium ડેટાને સાફ કરીએ?</translation>
 <translation id="8175055321229419309">ટિપ: <ph name="BEGIN_LINK" />Chromium ને તમારા ડૉક પર ખસેડો<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium અપડેટ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>

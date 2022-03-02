@@ -76,6 +76,7 @@
 <translation id="175763766237925754">चांगला (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1768959921651994223">ऑथेंटिकेशन प्रकार</translation>
 <translation id="1782199038061388045">भाषांतर</translation>
 <translation id="1792647875738159689">स्कॅनिंग रद्द करत आहे</translation>
 <translation id="1807246157184219062">फिकट</translation>
@@ -99,6 +100,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB पैकी <ph name="AVAILABLE_MEMORY" /> उपलब्ध आहे</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> फोटो</translation>
 <translation id="2157959690810728433">क्‍यूमध्ये आहे</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: पुन्हा प्रयत्न करा</translation>
 <translation id="2161394479394250669">प्रिंट कार्य रद्द करा</translation>
@@ -126,6 +128,7 @@
 <translation id="2446553403094072641">फ्लोटिंग पॉइंटची अचूकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2461822463642141190">सद्य</translation>
+<translation id="2493126929778606526">तुमचे सर्वोत्तम फोटो, आपोआप निवडले</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">सध्याची वॉलपेपर इमेज रिफ्रेश करा</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
@@ -136,6 +139,7 @@
 <translation id="2585245331261708204">Chrome OS मध्ये नवीन</translation>
 <translation id="2619761439309613843">दैनिक रिफ्रेश</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
+<translation id="2640549051766135490">अल्‍बम <ph name="TITLE" /> <ph name="DESC" /> निवडला</translation>
 <translation id="2695514675076754339">८ वर्णांचा अनलॉक कोड एंटर करा</translation>
 <translation id="2712812801627182647">TLS ऑथेंटिकेशन की</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
@@ -230,6 +234,7 @@
 <translation id="4044093238444069296">गेटवेशी संपर्क साधू शकत नाही</translation>
 <translation id="404928562651467259">चेतावणी:</translation>
 <translation id="409427325554347132">चाचणीचे तपशील सेव्ह करा</translation>
+<translation id="4110686435123617899"><ph name="TITLE" /><ph name="DESC" /> अल्बम निवडा</translation>
 <translation id="4111761024568264522">USB टचपॅड</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
 <translation id="4140251671072434548">RMA सर्व्हर अनलॉक परफॉर्म करा</translation>
@@ -290,6 +295,7 @@
 <translation id="475869545581454722">Chrome OS चा पासवर्ड अपडेट करण्यात आला</translation>
 <translation id="4773299976671772492">थांबविले</translation>
 <translation id="4782311465517282004">तुम्ही मजकुरावर राइट-क्लिक करता तेव्हा किंवा त्याला स्पर्श करून तो धरून ठेवता तेव्हा व्याख्या, भाषांतरे किंवा युनिट रूपांतरे मिळवा</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> फोटो</translation>
 <translation id="4793756956024303490">काँप्रेशन अल्गोरिदम</translation>
 <translation id="4794140124556169553">सीपीयू चाचणी रन केल्याने तुमच्या सिस्टमच्या परफॉर्मन्सवर परिणाम होऊ शकतो</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> हे प्रिंट कार्य रद्द केले</translation>
@@ -334,6 +340,7 @@
 <translation id="5166918508782100047">क्विक आन्सर्स सेटिंग्ज</translation>
 <translation id="5168185087976003268">बॅटरीची स्थिती</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
+<translation id="5190187232518914472">तुमच्या आवडत्या आठवणी पुन्हा अनुभवा. अल्बम जोडण्यासाठी किंवा संपादित करण्यासाठी, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> वर जा.</translation>
 <translation id="5212543919916444558">मी मदत करू शकेन असे मला तुमच्या स्क्रीनवर काही आढळले नाही. 
 मला काहीही विचारण्यासाठी माइकवर टॅप करून पहा.</translation>
 <translation id="5212593641110061691">टॅब्लॉइड</translation>
@@ -610,6 +617,7 @@
 <translation id="8660881923941176839">पाउंड</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमध्‍‍‍‍ये सामील व्‍हा</translation>
 <translation id="8675354002693747642">आधी शेअर केलेली की</translation>
+<translation id="8677859815076891398">कोणतेही अल्बम नाहीत. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मध्ये एखादा अल्बम तयार करा.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> हे वैशिष्ट्य व्यवस्थापित करण्यासाठी लेफ्ट किंवा राइट अ‍ॅरो की वापरा.</translation>
 <translation id="871560550817059752">अयशस्वी झाले - शाई संपली आहे</translation>
 <translation id="8723108084122415655">डीफॉल्ट नसलेले नेटवर्क लेटन्सी सीमेपेक्षा जास्त आहे</translation>

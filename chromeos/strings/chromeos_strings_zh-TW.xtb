@@ -76,6 +76,7 @@
 <translation id="175763766237925754">良好 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1768959921651994223">驗證類型</translation>
 <translation id="1782199038061388045">翻譯</translation>
 <translation id="1792647875738159689">正在取消掃描</translation>
 <translation id="1807246157184219062">淺色</translation>
@@ -99,6 +100,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">可用空間：<ph name="AVAILABLE_MEMORY" /> GB (共 <ph name="TOTAL_MEMORY" /> GB)</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> 張相片</translation>
 <translation id="2157959690810728433">已排入佇列</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
@@ -126,6 +128,7 @@
 <translation id="2446553403094072641">浮點精確度</translation>
 <translation id="2448312741937722512">類型</translation>
 <translation id="2461822463642141190">電流</translation>
+<translation id="2493126929778606526">自動精選最佳相片</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">重新整理目前的桌布圖片</translation>
 <translation id="2517472476991765520">掃描</translation>
@@ -136,6 +139,7 @@
 <translation id="2585245331261708204">Chrome 作業系統的新功能</translation>
 <translation id="2619761439309613843">每日變換新桌布</translation>
 <translation id="2620436844016719705">系統</translation>
+<translation id="2640549051766135490">已選取相簿「<ph name="TITLE" />，<ph name="DESC" />」</translation>
 <translation id="2695514675076754339">輸入 8 位數解鎖碼</translation>
 <translation id="2712812801627182647">傳輸層安全標準 (TLS) 驗證金鑰</translation>
 <translation id="2740531572673183784">確定</translation>
@@ -230,6 +234,7 @@
 <translation id="4044093238444069296">無法連線至閘道</translation>
 <translation id="404928562651467259">警告</translation>
 <translation id="409427325554347132">儲存測試詳細資料</translation>
+<translation id="4110686435123617899">選取相簿「<ph name="TITLE" />，<ph name="DESC" />」</translation>
 <translation id="4111761024568264522">USB 觸控板</translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4140251671072434548">執行 RMA Server Unlock</translation>
@@ -290,6 +295,7 @@
 <translation id="475869545581454722">已更新 Chrome OS 密碼</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4782311465517282004">按住文字或在文字上按一下滑鼠右鍵後，就能取得定義、翻譯或單位轉換結果</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> 張相片</translation>
 <translation id="4793756956024303490">壓縮演算法</translation>
 <translation id="4794140124556169553">執行 CPU 測試可能會影響系統效能</translation>
 <translation id="4808449224298348341">已取消列印工作「<ph name="DOCUMENT_TITLE" />」</translation>
@@ -334,6 +340,7 @@
 <translation id="5166918508782100047">快速解答設定</translation>
 <translation id="5168185087976003268">電池壽命</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
+<translation id="5190187232518914472">重溫你最珍視的美好回憶。如要新增或編輯相簿，請前往 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />。</translation>
 <translation id="5212543919916444558">系統在你的畫面上找不到任何能提供協助的內容。
 請輕觸麥克風圖示，直接說出你的問題。</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -610,6 +617,7 @@
 <translation id="8660881923941176839">磅</translation>
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網路</translation>
 <translation id="8675354002693747642">預先共用金鑰</translation>
+<translation id="8677859815076891398">沒有任何相簿。請在 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />中建立相簿。</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />請使用向左鍵或向右鍵管理這項功能。</translation>
 <translation id="871560550817059752">失敗 - 墨水用盡</translation>
 <translation id="8723108084122415655">非預設網路超過延遲門檻</translation>

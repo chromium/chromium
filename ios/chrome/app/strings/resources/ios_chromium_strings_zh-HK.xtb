@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Chromium 頁面</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
 <translation id="5945387852661427312">您即將登入由 <ph name="DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chromium 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chromium，系統將刪除此裝置上的資料，但這些資料仍會儲存在您的 Google 帳戶中。</translation>
+<translation id="5983312940147103417">讓 Chromium 更臻完美</translation>
 <translation id="602807004951640891">使用 Chromium 即表示您同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
 <translation id="6119647025869519954">如何將 Chromium 設定為預設瀏覽器：
 1. 開啟「設定」
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">關閉 Chromium 時鎖定無痕式分頁</translation>
 <translation id="7980860476903281594">Chromium 會與您允許的網站分享您的位置資訊。</translation>
 <translation id="8013573822802650211">如要在任何使用 Chromium 的裝置上查看分頁，請在所有裝置上登入</translation>
+<translation id="80599830191519229">開啟時：
+<ph name="BEGIN_INDENT" />  • 可協助 Chromium 為使用者提供更優質的使用體驗<ph name="END_INDENT" />
+
+注意事項：
+<ph name="BEGIN_INDENT" />  • 系統會將 Chromium 使用情況傳送給 Google，但不會與您有任何關聯
+  • Chromium 當機時，有關當機詳情可能會包括部分個人資料
+  • 開啟同步處理功能後，數據可能亦會包括先前瀏覽網址的資料<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">要清除此裝置上的 Chromium 資料嗎？</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />請將 Chromium 移至工具列<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>

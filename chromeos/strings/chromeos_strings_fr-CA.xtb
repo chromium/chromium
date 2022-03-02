@@ -99,6 +99,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Espace disponible : <ph name="AVAILABLE_MEMORY" /> Go sur <ph name="TOTAL_MEMORY" /> Go</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2157959690810728433">PLACÉ EN FILE D'ATTENTE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : réessayer</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
@@ -126,6 +127,7 @@
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Actuelle</translation>
+<translation id="2493126929778606526">Vos meilleures photos, sélectionnées automatiquement</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />   <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
 <translation id="2517472476991765520">Rechercher</translation>
@@ -136,6 +138,7 @@
 <translation id="2585245331261708204">Nouveautés dans Chrome OS</translation>
 <translation id="2619761439309613843">Actualiser tous les jours</translation>
 <translation id="2620436844016719705">Système</translation>
+<translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> sélectionné</translation>
 <translation id="2695514675076754339">Entrer le code de déverrouillage à 8 caractères</translation>
 <translation id="2712812801627182647">Clé d'authentification TLS</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -230,6 +233,7 @@
 <translation id="4044093238444069296">Impossible de communiquer avec la passerelle</translation>
 <translation id="404928562651467259">AVERTISSEMENT</translation>
 <translation id="409427325554347132">Enregistrer les détails du test</translation>
+<translation id="4110686435123617899">Sélectionner un album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Pavé tactile USB</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="4140251671072434548">Effectuer le déverrouillage du serveur ARM</translation>
@@ -290,6 +294,7 @@
 <translation id="475869545581454722">Mot de passe de Chrome OS mis à jour</translation>
 <translation id="4773299976671772492">Arrêté</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4793756956024303490">Algorithme de compression</translation>
 <translation id="4794140124556169553">Effectuer un test de processeur peut avoir un impact sur les performances de votre système</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée : <ph name="DOCUMENT_TITLE" /></translation>
@@ -334,6 +339,7 @@
 <translation id="5166918508782100047">Paramètres des réponses rapides</translation>
 <translation id="5168185087976003268">État de la pile</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
+<translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter des albums ou modifier vos albums existants, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Je ne trouve aucun élément sur votre écran pour lequel je peux vous aider.
 Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation>
 <translation id="5212593641110061691">Tabloïd</translation>
@@ -610,6 +616,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8660881923941176839">livres</translation>
 <translation id="8662671328352114214">Se joindre au réseau <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Clé prépartagée</translation>
+<translation id="8677859815076891398">Aucun album. Créez un album dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilisez les touches de flèche vers la droite ou vers la gauche pour gérer cette fonctionnalité.</translation>
 <translation id="871560550817059752">Échec : à court d'encre</translation>
 <translation id="8723108084122415655">Le seuil de latence du réseau autre que par défaut est trop élevé</translation>

@@ -76,6 +76,7 @@
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1768959921651994223">Stawingstipe</translation>
 <translation id="1782199038061388045">vertaling</translation>
 <translation id="1792647875738159689">Kanselleer skandering</translation>
 <translation id="1807246157184219062">Lig</translation>
@@ -99,6 +100,7 @@
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, weergawe <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beskibaar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2157959690810728433">OP WAGLYS</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: herprobeer</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
@@ -126,6 +128,7 @@
 <translation id="2446553403094072641">Akkuraatheid van wisselpunt</translation>
 <translation id="2448312741937722512">Soort</translation>
 <translation id="2461822463642141190">Huidig</translation>
+<translation id="2493126929778606526">Jou beste foto's, outomaties gekies</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Herlaai die huidige muurpapierprent</translation>
 <translation id="2517472476991765520">Skandeer</translation>
@@ -136,6 +139,7 @@
 <translation id="2585245331261708204">Wat's nuut in Chrome OS</translation>
 <translation id="2619761439309613843">Herlaai daagliks</translation>
 <translation id="2620436844016719705">Stelsel</translation>
+<translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> is gekies</translation>
 <translation id="2695514675076754339">Voer die 8-karakterontsluitingkode in</translation>
 <translation id="2712812801627182647">TLS-stawingsleutel</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -230,6 +234,7 @@
 <translation id="4044093238444069296">Kan nie deurgang kontak nie</translation>
 <translation id="404928562651467259">WAARSKUWING</translation>
 <translation id="409427325554347132">Stoor toetsbesonderhede</translation>
+<translation id="4110686435123617899">Kies album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-raakpaneel</translation>
 <translation id="4131410914670010031">Swart en wit</translation>
 <translation id="4140251671072434548">Voer RMA-bedienerontsluit uit</translation>
@@ -290,6 +295,7 @@
 <translation id="475869545581454722">Chrome-bedryfstelselwagwoord is opgedateer</translation>
 <translation id="4773299976671772492">Gestop</translation>
 <translation id="4782311465517282004">Kry definisies, vertalings of eenheidomskakelings wanneer jy regsklik of teks raak en hou</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793756956024303490">Saampersingalgoritme</translation>
 <translation id="4794140124556169553">As jy 'n CPU-toets doen, kan dit jou stelselwerkverrigting affekteer</translation>
 <translation id="4808449224298348341">Gekanselleerde druktaak <ph name="DOCUMENT_TITLE" /></translation>
@@ -334,6 +340,7 @@
 <translation id="5166918508782100047">Vinnige Antwoorde-instellings</translation>
 <translation id="5168185087976003268">Batterygesondheid</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
+<translation id="5190187232518914472">Herleef jou gunstelingherinneringe. Gaan na <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> toe om albums by te voeg of te wysig.</translation>
 <translation id="5212543919916444558">Ek kry niks op jou skerm waarmee ek kan help nie.
 Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5212593641110061691">Ponieformaat</translation>
@@ -610,6 +617,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8660881923941176839">pond</translation>
 <translation id="8662671328352114214">Sluit by <ph name="TYPE" />-netwerk aan</translation>
 <translation id="8675354002693747642">Voorafgedeelde sleutel</translation>
+<translation id="8677859815076891398">Geen albums nie. Skep 'n album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gebruik links- of regspylsleutel om hierdie kenmerk te bestuur.</translation>
 <translation id="871560550817059752">Misluk – Ink is op</translation>
 <translation id="8723108084122415655">Nieversteknetwerk is bo traagheiddrempel</translation>

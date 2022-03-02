@@ -289,7 +289,6 @@
 <translation id="1276994519141842946">Не вдалося видалити додаток <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Створіть новий PIN-код, який відрізняється від поточного</translation>
 <translation id="1278859221870828664">Перегляньте додатки й сервіси Google Play</translation>
-<translation id="1279024913354609713">Не дозволяти</translation>
 <translation id="127946606521051357">Пристрій поблизу надсилає дані</translation>
 <translation id="1280965841156951489">Змінити файли</translation>
 <translation id="1282465000333679776">Надати доступ до системного аудіо</translation>
@@ -683,6 +682,7 @@
 <translation id="1644852018355792105">Введіть ключ доступу Bluetooth для пристрою <ph name="DEVICE" /></translation>
 <translation id="1645516838734033527">Щоб захистити ваш пристрій <ph name="DEVICE_TYPE" /> за допомогою Smart Lock, потрібно налаштувати блокування екрана на телефоні.</translation>
 <translation id="1646982517418478057">Введіть пароль, щоб зашифрувати цей сертифікат</translation>
+<translation id="1647408325348388858">Відкрити та редагувати файл "<ph name="FILE_NAME" />" у цьому веб-додатку?</translation>
 <translation id="1648528859488547844">Визначати місцезнаходження за допомогою Wi-Fi або мобільних мереж</translation>
 <translation id="164936512206786300">Відключити пристрій Bluetooth</translation>
 <translation id="1651008383952180276">Потрібно двічі ввести однакову парольну фразу</translation>
@@ -1203,8 +1203,6 @@
 <translation id="2154502158735983655">Перегляд інформації з пристроїв з ОС Chrome і даних пристрою.</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Синтаксис Service Worker: <ph name="SCRIPT_URL" /></translation>
-<translation id="2156557113115192526">Не запитувати знову, коли в цьому додатку відкриватиметься такий формат файлу:
-<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">Запустити перевірку безпеки знову</translation>
 <translation id="2157474325782140681">Щоб отримати додаткові функції, використовуйте док-станцію Dell, розроблену для цього комп'ютера Chromebook.</translation>
 <translation id="215753907730220065">Вийти з повноекранного режиму</translation>
@@ -2349,6 +2347,7 @@
 <translation id="33022249435934718">Обробка GDI</translation>
 <translation id="3302388252085547855">Введіть обґрунтування…</translation>
 <translation id="3303260552072730022">Розширення запустило повноекранний режим.</translation>
+<translation id="3303795387212510132">Дозволити додатку відкривати посилання <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Копії</translation>
 <translation id="3303855915957856445">Немає результатів</translation>
 <translation id="3304212451103136496">Знижка <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -3129,6 +3128,7 @@
 <translation id="4033963223187371752">Безпечні сайти можуть вбудовувати незахищений контент (як-от зображення чи веб-фрейми)</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4035758313003622889">&amp;Диспетчер завдань</translation>
+<translation id="4035877632587724847">Не дозволяти</translation>
 <translation id="4036778507053569103">Завантажене із сервера правило недійсне.</translation>
 <translation id="4037084878352560732">Кінь</translation>
 <translation id="403725336528835653">Спершу спробувати</translation>
@@ -3252,7 +3252,6 @@
 <translation id="4167686856635546851">Сайти використовують JavaScript для показу інтерактивних функцій, як-от відеоігри або веб-форми</translation>
 <translation id="4168015872538332605">Деякі налаштування, які встановив користувач <ph name="PRIMARY_EMAIL" />, доступні для вас. Ці налаштування впливають на ваш обліковий запис, лише коли використовується паралельний вхід.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> (останні цифри номера: <ph name="LAST_FOUR_DIGITS" />)</translation>
-<translation id="4169535189173047238">Не дозволяти</translation>
 <translation id="4170314459383239649">Очищати під час виходу</translation>
 <translation id="417096670996204801">Виберіть профіль</translation>
 <translation id="4175137578744761569">Світло-фіолетовий і білий</translation>
@@ -3270,7 +3269,6 @@
 <translation id="4194570336751258953">Увімкнути функцію "торкнутися, щоб натиснути"</translation>
 <translation id="4195643157523330669">Відкрити в новій вкладці</translation>
 <translation id="4195814663415092787">Продовжити з місця зупинки</translation>
-<translation id="4197917636330710075">Отримуйте знижки в магазинах "<ph name="MERCHANT_NAME" />" і "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="4198268995694216131">Інші сайти</translation>
 <translation id="4200689466366162458">Спеціальні слова</translation>
 <translation id="4200983522494130825">Нова &amp;вкладка</translation>
@@ -3324,7 +3322,6 @@
 <translation id="425573743389990240">Швидкість розряджання акумулятора у ватах (від’ємне значення означає, що акумулятор заряджається)</translation>
 <translation id="4256316378292851214">Збере&amp;гти відео як...</translation>
 <translation id="4258348331913189841">Файлові системи</translation>
-<translation id="4258786365875464621"><ph name="APP_ORIGIN" /> хоче відкрити ці файли:</translation>
 <translation id="4259388776256904261">Це може зайняти якийсь час</translation>
 <translation id="4260182282978351200">Файл <ph name="FILE_NAME" /> може бути небезпечним. Надіслати його в Додатковий захист Google на перевірку? Натискайте Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4261429981378979799">Дозволи розширення</translation>
@@ -3801,6 +3798,7 @@
 <translation id="475088594373173692">Перший користувач</translation>
 <translation id="4756378406049221019">Зупинити/оновити</translation>
 <translation id="4756388243121344051">&amp;Історія</translation>
+<translation id="4759202969060787081">Не відкривати</translation>
 <translation id="4759238208242260848">Завантаження</translation>
 <translation id="4761104368405085019">Використовувати ваш мікрофон</translation>
 <translation id="4762718786438001384">На диску пристрою дуже мало вільного місця</translation>
@@ -4887,6 +4885,7 @@
 <translation id="5889282057229379085">Максимальна кількість проміжних ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Основні мережі Wi-Fi</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
+<translation id="5896436821193322561">Не дозволяти</translation>
 <translation id="5900302528761731119">Фото профілю Google</translation>
 <translation id="590036993063074298">Відомості про якість трансляції</translation>
 <translation id="5901069264981746702"><ph name="DEVICE_TYPE" /> надійно зберігатиме дані про відбиток пальця та нікуди не надсилатиме їх. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -5505,7 +5504,6 @@
 <translation id="6498249116389603658">&amp;Усі мови</translation>
 <translation id="6499143127267478107">Визначення хосту в сценарії проксі-сервера...</translation>
 <translation id="6499764981457476645">Пристроїв поблизу не знайдено</translation>
-<translation id="6501086852992132091"><ph name="APP_ORIGIN" /> хоче відкрити цей файл:</translation>
 <translation id="65017764184991091">Не вдалося створити резервні копії додатків і файлів Linux. Можливо, це сталося через недостатній обсяг вільного місця. Спробуйте звільнити пам’ять або виберіть інше місце для резервних копій.</translation>
 <translation id="6501957628055559556">Усі контейнери</translation>
 <translation id="650266656685499220">Щоб створити альбоми, відкрийте Google Фото</translation>
@@ -6498,6 +6496,7 @@
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{і ще 1}one{і ще {NUM_DOWNLOADS}}few{і ще {NUM_DOWNLOADS}}many{і ще {NUM_DOWNLOADS}}other{і ще {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">Заповнювач</translation>
 <translation id="7527758104894292229">Оновіть його у своєму обліковому записі Google, <ph name="ACCOUNT" /></translation>
+<translation id="7528224636098571080">Не відкривати</translation>
 <translation id="7529411698175791732">Перевірте з’єднання з Інтернетом. Якщо проблема не зникне, вийдіть з облікового запису та знову ввійдіть.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Закрити вікно в режимі гостя}one{Закрити вікна в режимі гостя}few{Закрити вікна в режимі гостя}many{Закрити вікна в режимі гостя}other{Закрити вікна в режимі гостя}}</translation>
 <translation id="7530016656428373557">Швидкість розряджання акумулятора у ватах</translation>
@@ -6523,8 +6522,6 @@
 <translation id="7552846755917812628">Виконайте вказівки нижче.</translation>
 <translation id="7553012839257224005">Перевірка контейнера Linux</translation>
 <translation id="7553242001898162573">Пароль</translation>
-<translation id="7553347517399115470">Не запитувати знову, коли в цьому додатку відкриватимуться такі формати файлів:
-<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">Адміністратор заборонив перевірку орфографії для цієї мови</translation>
 <translation id="7554791636758816595">Нова вкладка</translation>
 <translation id="7556033326131260574">Smart Lock не вдалося підтвердити ваш обліковий запис. Щоб увійти, введіть пароль.</translation>
@@ -6950,7 +6947,6 @@
 <translation id="7956373551960864128">Збережені принтери</translation>
 <translation id="7957074856830851026">Переглядати інформацію з пристрою, наприклад серійний номер або ідентифікатор об'єкта</translation>
 <translation id="7957615753207896812">Відкрити налаштування клавіатури</translation>
-<translation id="7958437133377816580">Отримуйте знижки в магазинах "<ph name="MERCHANT_NAME" />", "<ph name="MERCHANT_NAME" />" та інших</translation>
 <translation id="7959074893852789871">Файл містив декілька сертифікатів, деякі з яких не було імпортовано:</translation>
 <translation id="7959665254555683862">Нова анонімна вкладка</translation>
 <translation id="7961015016161918242">Ніколи</translation>

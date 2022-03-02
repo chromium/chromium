@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Chromium-side</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5945387852661427312">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir dermed administratoren for dette domenet kontroll over Chromium-dataene dine. Dataene dine blir knyttet til denne kontoen permanent. Når du logger av Chromium, slettes dataene dine fra denne enheten, men de er fortsatt lagret i Google-kontoen din.</translation>
+<translation id="5983312940147103417">Gjør Chromium bedre</translation>
 <translation id="602807004951640891">Ved å bruke Chromium samtykker du i <ph name="BEGIN_LINK_TOS" />vilkårene for bruk<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">Slik velger du Chromium som standardnettleser:
 1. Åpne Innstillinger.
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">Lås inkognitofaner når du lukker Chromium</translation>
 <translation id="7980860476903281594">Chromium deler posisjonen din med nettsteder du tillater.</translation>
 <translation id="8013573822802650211">For å se fanene dine overalt hvor du bruker Chromium, logg på alle enhetene dine</translation>
+<translation id="80599830191519229">Når du gir samtykke
+<ph name="BEGIN_INDENT" />  • bidrar du til å gjøre Chromium bedre for folk som bruker nettleseren på samme måte som deg<ph name="END_INDENT" />
+
+Dette bør du tenke over:
+<ph name="BEGIN_INDENT" />  • Google mottar informasjon om hvordan du bruker Chromium, men informasjonen er ikke knyttet til deg
+  • Hvis Chromium krasjer, kan detaljene om krasjet inneholde enkelte personopplysninger
+  • Hvis du slår på synkronisering, kan verdiene også inneholde informasjon om nettadressene du besøker<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Vil du fjerne Chromium-dataene dine fra denne enheten?</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Flytt Chromium til dokken<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv igjen senere.</translation>
