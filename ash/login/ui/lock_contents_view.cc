@@ -569,6 +569,7 @@ FingerprintState LockContentsView::TestApi::GetFingerPrintState(
 LockContentsView::UserState::UserState(const LoginUserInfo& user_info)
     : account_id(user_info.basic_user_info.account_id) {
   fingerprint_state = user_info.fingerprint_state;
+  smart_lock_state = user_info.smart_lock_state;
   if (user_info.auth_type == proximity_auth::mojom::AuthType::ONLINE_SIGN_IN)
     force_online_sign_in = true;
   show_pin_pad_for_password = user_info.show_pin_pad_for_password;
@@ -2050,6 +2051,10 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
           to_update_auth |= LoginAuthUserView::AUTH_TAP;
         if (state->fingerprint_state != FingerprintState::UNAVAILABLE)
           to_update_auth |= LoginAuthUserView::AUTH_FINGERPRINT;
+        if (state->smart_lock_state != SmartLockState::kDisabled &&
+            state->smart_lock_state != SmartLockState::kInactive) {
+          to_update_auth |= LoginAuthUserView::AUTH_SMART_LOCK;
+        }
         if (state->auth_factor_is_hiding_password) {
           to_update_auth |=
               LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD;
