@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
@@ -28,6 +29,7 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.FeatureList;
+import org.chromium.chrome.browser.feed.FeedStreamViewResizer;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -37,7 +39,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -421,13 +422,15 @@ class TasksView extends CoordinatorLayoutForPointer {
 
     /**
      * Make the padding of header consistent with that of Feed recyclerview which is sized by {@link
-     * ViewResizer} in {@link FeedSurfaceCoordinator}
+     * FeedStreamViewResizer} in {@link FeedSurfaceCoordinator}
      */
     private void setHeaderPadding() {
-        int defaultPadding = 0;
+        int defaultPadding = getResources().getDimensionPixelSize(
+                org.chromium.chrome.R.dimen.content_suggestions_card_modern_margin);
         int widePadding =
                 getResources().getDimensionPixelSize(R.dimen.ntp_wide_card_lateral_margins);
 
-        ViewResizer.createAndAttach(mHeaderView, mUiConfig, defaultPadding, widePadding);
+        FeedStreamViewResizer.createAndAttach(
+                (Activity) mContext, mHeaderView, mUiConfig, defaultPadding, widePadding);
     }
 }
