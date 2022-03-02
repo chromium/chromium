@@ -72,6 +72,8 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG);
   set_margins(kShutdownConfirmationBubbleInsets + dialog_insets);
   set_close_on_deactivate(true);
+  SetCloseCallback(base::BindOnce(&ShelfShutdownConfirmationBubble::OnClosed,
+                                  base::Unretained(this)));
 
   views::FlexLayout* layout =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -144,10 +146,6 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
 }
 
 ShelfShutdownConfirmationBubble::~ShelfShutdownConfirmationBubble() {
-  if (cancel_callback_ && confirm_callback_) {
-    base::UmaHistogramEnumeration(kActionHistogramName,
-                                  ShelfShutdownConfirmationBubble::kDismissed);
-  }
   // In case shutdown confirmation bubble was dismissed, the pointer of the
   // ShelfShutdownConfirmationBubble in LoginShelfView shall be cleaned up.
   if (cancel_callback_) {
@@ -175,21 +173,32 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
 }
 
 void ShelfShutdownConfirmationBubble::OnCancelled() {
+  dialog_result_ = DialogResult::kCancelled;
   GetWidget()->Close();
-
-  base::UmaHistogramEnumeration(kActionHistogramName,
-                                ShelfShutdownConfirmationBubble::kCancelled);
-
-  std::move(cancel_callback_).Run();
 }
 
 void ShelfShutdownConfirmationBubble::OnConfirmed() {
+  dialog_result_ = DialogResult::kConfirmed;
   GetWidget()->Close();
+}
 
-  base::UmaHistogramEnumeration(kActionHistogramName,
-                                ShelfShutdownConfirmationBubble::kConfirmed);
-
-  std::move(confirm_callback_).Run();
+void ShelfShutdownConfirmationBubble::OnClosed() {
+  switch (dialog_result_) {
+    case DialogResult::kCancelled:
+      base::UmaHistogramEnumeration(
+          kActionHistogramName, ShelfShutdownConfirmationBubble::kCancelled);
+      std::move(cancel_callback_).Run();
+      break;
+    case DialogResult::kConfirmed:
+      base::UmaHistogramEnumeration(
+          kActionHistogramName, ShelfShutdownConfirmationBubble::kConfirmed);
+      std::move(confirm_callback_).Run();
+      break;
+    case DialogResult::kNone:
+      base::UmaHistogramEnumeration(
+          kActionHistogramName, ShelfShutdownConfirmationBubble::kDismissed);
+      break;
+  }
 }
 
 gfx::Size ShelfShutdownConfirmationBubble::CalculatePreferredSize() const {

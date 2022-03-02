@@ -69,6 +69,7 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   // Callback functions of cancel and confirm buttons
   void OnCancelled();
   void OnConfirmed();
+  void OnClosed();
   base::OnceClosure confirm_callback_;
   base::OnceClosure cancel_callback_;
 
@@ -76,6 +77,11 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   views::Label* title_ = nullptr;
   views::LabelButton* cancel_ = nullptr;
   views::LabelButton* confirm_ = nullptr;
+
+  enum class DialogResult { kNone, kCancelled, kConfirmed };
+
+  // A simple state machine to keep track of the dialog result.
+  DialogResult dialog_result_{DialogResult::kNone};
 };
 
 }  // namespace ash
