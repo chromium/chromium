@@ -508,6 +508,11 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
       style.SetDisplay(EDisplay::kNone);
     }
   }
+
+  if (IsA<HTMLBodyElement>(element) &&
+      element.GetDocument().FirstBodyElement() != element) {
+    style.SetIsSecondaryBodyElement();
+  }
 }
 
 void StyleAdjuster::AdjustOverflow(ComputedStyle& style, Element* element) {

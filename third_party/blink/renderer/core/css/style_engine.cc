@@ -2740,16 +2740,15 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
 void StyleEngine::ViewportDefiningElementDidChange() {
   // Guarded by if-test in UpdateStyleAndLayoutTree().
   DCHECK(GetDocument().documentElement());
+
+  // No need to update a layout object which will be destroyed.
   if (GetDocument().documentElement()->NeedsReattachLayoutTree())
     return;
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
   if (!body || body->NeedsReattachLayoutTree())
     return;
-  FirstBodyElementChanged(*body);
-}
 
-void StyleEngine::FirstBodyElementChanged(HTMLBodyElement& body) {
-  LayoutObject* layout_object = body.GetLayoutObject();
+  LayoutObject* layout_object = body->GetLayoutObject();
   if (layout_object && layout_object->IsLayoutBlock()) {
     // When the overflow style for documentElement changes to or from visible,
     // it changes whether the body element's box should have scrollable overflow
@@ -2762,6 +2761,22 @@ void StyleEngine::FirstBodyElementChanged(HTMLBodyElement& body) {
     // This update is also necessary if the first body element changes because
     // another body element is inserted or removed.
     layout_object->SetStyle(ComputedStyle::Clone(*layout_object->Style()));
+  }
+}
+
+void StyleEngine::FirstBodyElementChanged(HTMLBodyElement& body) {
+  // If a body element changed status as being the first body element or not,
+  // it might have changed its needs for scrollbars even if the style didn't
+  // change. Marking it for recalc here will make sure a new ComputedStyle is
+  // set on the layout object for the next style recalc, and the scrollbars will
+  // be updated in LayoutObject::SetStyle(). SetStyle cannot be called here
+  // directly because SetStyle() relies on style information to be up-to-date,
+  // otherwise scrollbar style update might crash.
+  LayoutObject* layout_object = body.GetLayoutObject();
+  if (layout_object && layout_object->IsLayoutBlock()) {
+    body.SetNeedsStyleRecalc(
+        kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                               style_change_reason::kViewportDefiningElement));
   }
 }
 

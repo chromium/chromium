@@ -65,14 +65,14 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
                     (current_image && !current_image->ErrorOccurred()))) {
     // The old_style check makes sure we don't enter here when attaching the
     // LayoutObject.
+    DCHECK(GetDocument().InStyleRecalc());
     DCHECK(!GetDocument().GetStyleEngine().InRebuildLayoutTree());
     // We may enter here when propagating writing-mode and direction from body
     // to the root element after layout tree rebuild. Skip NotifyOfSubtreeChange
     // for that case.
     if (GetDocument().documentElement() != GetNode() ||
         GetDocument().GetStyleEngine().NeedsStyleRecalc()) {
-      if (NotifyOfSubtreeChange() && !GetDocument().InStyleRecalc())
-        GetNode()->MarkAncestorsWithChildNeedsStyleRecalc();
+      NotifyOfSubtreeChange();
     }
   }
 
