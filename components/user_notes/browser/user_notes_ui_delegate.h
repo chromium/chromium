@@ -1,0 +1,34 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_USER_NOTES_BROWSER_USER_NOTES_UI_DELEGATE_H_
+#define COMPONENTS_USER_NOTES_BROWSER_USER_NOTES_UI_DELEGATE_H_
+
+#include <string>
+
+namespace user_notes {
+
+// Interface used by the UI layer (e.g. Side Panel on desktop) to delegate
+// handling for some note-specific user actions.
+class UserNotesUIDelegate {
+ public:
+  UserNotesUIDelegate() = default;
+  UserNotesUIDelegate(const UserNotesUIDelegate&) = delete;
+  UserNotesUIDelegate& operator=(const UserNotesUIDelegate&) = delete;
+  virtual ~UserNotesUIDelegate() = default;
+
+  // Called when a note in the UI is focused.
+  virtual void OnNoteFocused(std::string guid) = 0;
+
+  // Called when the user successfully creates a new note in the UI.
+  virtual void OnNoteCreationDone(std::string guid,
+                                  std::string note_content) = 0;
+
+  // Called when the user aborts the note creation process in the UI.
+  virtual void OnNoteCreationCancelled(std::string guid) = 0;
+};
+
+}  // namespace user_notes
+
+#endif  // COMPONENTS_USER_NOTES_BROWSER_USER_NOTES_UI_DELEGATE_H_
