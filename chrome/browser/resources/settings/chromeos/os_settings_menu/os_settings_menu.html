@@ -3,7 +3,7 @@
     /* The tap target extends slightly above each visible menu item. */
     --tap-target-padding: 3px;
     /* Width of the keyboard focus border. */
-    --focus-border-width: 1px;
+    --focus-border-width: 2px;
     box-sizing: border-box;
     display: block;
     padding-bottom: 2px;
@@ -100,7 +100,8 @@
   }
 
   :host-context(.focus-outline-visible) #advancedButton:focus {
-    outline: auto 5px -webkit-focus-ring-color;
+    border-radius: 0 20px 20px 0;
+    outline: var(--focus-border-width) solid var(--cros-focus-ring-color);
   }
 
   #advancedButton > span {
