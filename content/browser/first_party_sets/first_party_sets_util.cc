@@ -61,6 +61,7 @@ void FirstPartySetsUtil::SendAndUpdatePersistedSets(
                             const std::string&)> send_sets) {
   if (user_data_dir.empty()) {
     VLOG(1) << "Empty path. Failed loading serialized First-Party Sets file.";
+    SendPersistedSets(std::move(send_sets), base::FilePath(), "");
     return;
   }
 
@@ -80,9 +81,11 @@ void FirstPartySetsUtil::SendAndUpdatePersistedSets(
 
 void FirstPartySetsUtil::OnGetUpdatedSets(const base::FilePath& path,
                                           const std::string& sets) {
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&MaybeWriteSetsToDisk, path, sets));
+  if (!path.empty()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&MaybeWriteSetsToDisk, path, sets));
+  }
 }
 
 void FirstPartySetsUtil::SendPersistedSets(

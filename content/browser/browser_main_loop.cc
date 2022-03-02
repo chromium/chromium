@@ -987,17 +987,15 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
   // ShellBrowserMainParts initializes a ShellBrowserContext with user data
   // directory only in PreMainMessageLoopRun(). FirstPartySetsUtil needs to
   // access this directory, hence triggering after this stage has run.
-  if (GetContentClient()->browser()->IsFirstPartySetsEnabled()) {
-    FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
-        GetContentClient()->browser()->GetFirstPartySetsDirectory(),
-        /*send_sets=*/
-        base::BindOnce([](base::OnceCallback<void(const std::string&)> callback,
-                          const std::string& sets) {
-          content::GetNetworkService()
-              ->SetPersistedFirstPartySetsAndGetCurrentSets(
-                  sets, std::move(callback));
-        }));
-  }
+  FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
+      GetContentClient()->browser()->GetFirstPartySetsDirectory(),
+      /*send_sets=*/
+      base::BindOnce([](base::OnceCallback<void(const std::string&)> callback,
+                        const std::string& sets) {
+        content::GetNetworkService()
+            ->SetPersistedFirstPartySetsAndGetCurrentSets(sets,
+                                                          std::move(callback));
+      }));
 
   variations::MaybeScheduleFakeCrash();
 

@@ -35,6 +35,23 @@ class FirstPartySetsUtilTest : public ::testing::Test {
   base::test::TaskEnvironment env_;
 };
 
+TEST_F(FirstPartySetsUtilTest, SendAndUpdatePersistedSets_NoUserDataDir) {
+  bool sent_sets = false;
+  FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
+      base::FilePath(),
+      /*send_sets=*/
+      base::BindLambdaForTesting(
+          [&](base::OnceCallback<void(const std::string&)> callback,
+              const std::string& got) {
+            EXPECT_EQ(got, "");
+            sent_sets = true;
+            std::move(callback).Run("current sets");
+          }));
+
+  env_.RunUntilIdle();
+  EXPECT_TRUE(sent_sets);
+}
+
 TEST_F(FirstPartySetsUtilTest, SendAndUpdatePersistedSets_FileNotExist) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string expected_updated_sets = "updated first party sets";
