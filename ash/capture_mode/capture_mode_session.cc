@@ -1526,13 +1526,6 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
           if (capture_label_widget_)
             ignore_windows.insert(capture_label_widget_->GetNativeWindow());
 
-          auto* camera_controller =
-              CaptureModeController::Get()->camera_controller();
-          if (camera_controller && camera_controller->camera_preview_widget()) {
-            ignore_windows.insert(
-                camera_controller->camera_preview_widget()->GetNativeWindow());
-          }
-
           capture_window_observer_->UpdateSelectedWindowAtPosition(
               screen_location, ignore_windows);
         }

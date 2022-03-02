@@ -34,9 +34,17 @@ void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
   if (capture_mode_session_->IsInCountDownAnimation())
     return;
   location_in_screen_ = location_in_screen;
+
+  std::set<aura::Window*> updated_ignore_windows(ignore_windows);
+  auto* camera_controller = CaptureModeController::Get()->camera_controller();
+  if (camera_controller && camera_controller->camera_preview_widget()) {
+    updated_ignore_windows.insert(
+        camera_controller->camera_preview_widget()->GetNativeWindow());
+  }
+
   // Find the toplevel window under the mouse/touch position.
   aura::Window* window =
-      GetTopmostWindowAtPoint(location_in_screen_, ignore_windows);
+      GetTopmostWindowAtPoint(location_in_screen_, updated_ignore_windows);
   SetSelectedWindow(window);
   capture_mode_session_->UpdateCursor(location_in_screen, /*is_touch=*/false);
 }

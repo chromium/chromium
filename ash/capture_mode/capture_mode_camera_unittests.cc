@@ -1002,10 +1002,11 @@ TEST_F(CaptureModeCameraTest, ChangeFolderWhileVideoRecordingInProgress) {
             saved_video_file.DirName());
 }
 
-// Tests that there is no crash if moving the mouse to be on the top of the
-// camera preview after capture type switching. Selected window should not be
-// changed in this process either.
-TEST_F(CaptureModeCameraTest, HoveringMouseOverCameraPreview) {
+// Tests multiple scenarios to trigger selected window updates at located
+// position. Camera preview's native window should be added to the ignore
+// windows and no crash should happen in these cases.
+TEST_F(CaptureModeCameraTest,
+       UpdateSelectedWindowAtPositionWithCameraPreviewIgnored) {
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
   AddDefaultCamera();
@@ -1024,12 +1025,42 @@ TEST_F(CaptureModeCameraTest, HoveringMouseOverCameraPreview) {
   // candidates of the selected window. So moving the mouse to be on top of the
   // camera preview should not cause any crash or selected window changes.
   controller->SetType(CaptureModeType::kVideo);
-  event_generator->MoveMouseTo(camera_controller->camera_preview_widget()
-                                   ->GetWindowBoundsInScreen()
-                                   .CenterPoint());
-  EXPECT_EQ(window(), controller->capture_mode_session()->GetSelectedWindow());
+  const auto* camera_preview_widget =
+      camera_controller->camera_preview_widget();
+  const auto* capture_mode_session = controller->capture_mode_session();
+  event_generator->MoveMouseToCenterOf(
+      camera_preview_widget->GetNativeWindow());
+  EXPECT_EQ(window(), capture_mode_session->GetSelectedWindow());
+  EXPECT_TRUE(window()->IsVisible());
+  EXPECT_TRUE(camera_preview_widget->IsVisible());
 
-  controller->Stop();
+  // Hide `window_` with camera preview on should not cause any crash and
+  // selected window should be updated to nullptr.
+  window()->Hide();
+  EXPECT_FALSE(window()->IsVisible());
+  EXPECT_FALSE(camera_preview_widget->IsVisible());
+  EXPECT_FALSE(capture_mode_session->GetSelectedWindow());
+
+  // Reshow `window_` without hovering over it should not set the selected
+  // window. Camera preview should still be hidden as its parent hasn't been set
+  // to `window_` yet.
+  const auto* preview_native_window = camera_preview_widget->GetNativeWindow();
+  window()->Show();
+  EXPECT_TRUE(window()->IsVisible());
+  EXPECT_FALSE(camera_preview_widget->IsVisible());
+  EXPECT_FALSE(capture_mode_session->GetSelectedWindow());
+  EXPECT_EQ(preview_native_window->parent(),
+            preview_native_window->GetRootWindow()->GetChildById(
+                kShellWindowId_UnparentedContainer));
+
+  // Hovering over `window_` should set it to the selected window, camera
+  // preview widget should be reparented to it as well. And the camera preview
+  // widget should be visible now.
+  event_generator->MoveMouseToCenterOf(window());
+  EXPECT_EQ(preview_native_window->parent(),
+            capture_mode_session->GetSelectedWindow());
+  EXPECT_TRUE(camera_preview_widget->IsVisible());
+  EXPECT_EQ(window(), capture_mode_session->GetSelectedWindow());
 }
 
 class CameraPreviewBoundsTest
