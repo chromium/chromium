@@ -136,7 +136,7 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
   } else {
     soda_binary_installed_ = false;
     soda_progress_ = 0.0;
-    NotifyOnSodaError();
+    NotifyOnSodaError(LanguageCode::kNone);
     base::UmaHistogramTimes(kSodaBinaryInstallationFailureTimeTaken,
                             base::Time::Now() - start_time);
   }
@@ -163,7 +163,7 @@ void SodaInstallerImplChromeOS::OnLanguageInstalled(
   } else {
     // TODO: Notify the observer of the specific language pack that failed
     // to install. ChromeOS currently only supports the en-US language pack.
-    NotifyOnSodaLanguagePackError(language_code);
+    NotifyOnSodaError(language_code);
 
     base::UmaHistogramTimes(
         GetInstallationFailureTimeMetricForLanguagePack(language_code),

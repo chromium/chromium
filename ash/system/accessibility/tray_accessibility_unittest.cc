@@ -715,6 +715,7 @@ class TrayAccessibilitySodaTest : public TrayAccessibilityTest {
   }
 
   speech::LanguageCode en_us() { return speech::LanguageCode::kEnUs; }
+  speech::LanguageCode fr_fr() { return speech::LanguageCode::kFrFr; }
 
   void SetDictationViewSubtitleText(std::u16string text) {
     detailed_menu()->SetDictationViewSubtitleTextForTesting(text);
@@ -740,7 +741,7 @@ TEST_F(TrayAccessibilitySodaTest, OnSodaInstalledNotification) {
   EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
   soda_installer()->NotifySodaInstalledForTesting(en_us());
   EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
-  soda_installer()->NotifySodaInstalledForTesting(speech::LanguageCode::kFrFr);
+  soda_installer()->NotifySodaInstalledForTesting(fr_fr());
   EXPECT_EQ(kSodaDownloaded, GetDictationViewSubtitleText());
 }
 
@@ -750,8 +751,7 @@ TEST_F(TrayAccessibilitySodaTest, OnSodaProgressNotification) {
   // Do not give updates for the SODA binary.
   soda_installer()->NotifySodaDownloadProgressForTesting(50);
   EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
-  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(
-      50, speech::LanguageCode::kFrFr);
+  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(50, fr_fr());
   EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
   soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(50, en_us());
   EXPECT_EQ(kSodaInProgress, GetDictationViewSubtitleText());
@@ -767,10 +767,9 @@ TEST_F(TrayAccessibilitySodaTest, SodaBinaryErrorNotification) {
 TEST_F(TrayAccessibilitySodaTest, SodaLanguageErrorNotification) {
   // Do nothing if the failed language pack is different than the Dictation
   // locale.
-  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(
-      speech::LanguageCode::kFrFr);
+  soda_installer()->NotifySodaErrorForTesting(fr_fr());
   EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
-  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
+  soda_installer()->NotifySodaErrorForTesting(en_us());
   EXPECT_EQ(kSodaFailed, GetDictationViewSubtitleText());
 }
 

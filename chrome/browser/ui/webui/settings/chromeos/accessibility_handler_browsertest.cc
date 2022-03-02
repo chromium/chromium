@@ -197,11 +197,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest,
   size_t num_calls = GetNumWebUICalls();
   // Do nothing if the failed language pack is different than the Dictation
   // locale.
-  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(fr_fr());
+  soda_installer()->NotifySodaErrorForTesting(fr_fr());
   AssertWebUICalls(num_calls);
   // Fire the correct listener when the language pack matching the Dictation
   // locale fails.
-  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
+  soda_installer()->NotifySodaErrorForTesting(en_us());
   AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
       "dictation-locale-menu-subtitle-changed",

@@ -380,7 +380,14 @@ void MediaDialogView::OnSodaInstalled(speech::LanguageCode language_code) {
   live_caption_title_->SetText(GetLiveCaptionTitle(profile_->GetPrefs()));
 }
 
-void MediaDialogView::OnSodaError() {
+void MediaDialogView::OnSodaError(speech::LanguageCode language_code) {
+  // Check that language code matches the selected language for Live Caption or
+  // is LanguageCode::kNone (signifying the SODA binary failed).
+  if (!prefs::IsLanguageCodeForLiveCaption(language_code,
+                                           profile_->GetPrefs()) &&
+      language_code != speech::LanguageCode::kNone) {
+    return;
+  }
   if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     ToggleLiveCaption(false);
   }

@@ -976,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SodaFailedNotificationLanguageError) {
   SetDictationEnabled(true);
-  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
+  soda_installer()->NotifySodaErrorForTesting(en_us());
   AssertSodaNotificationShownForDictation(en_us_display_name(),
                                           /*success=*/false);
 }
@@ -1004,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   soda_installer()->NotifySodaInstalledForTesting();
   soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
-  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(fr_fr);
+  soda_installer()->NotifySodaErrorForTesting(fr_fr);
   AssertSodaNotificationShownForDictation(u"français (France)",
                                           /*success=*/false);
 }
@@ -1014,13 +1014,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SodaFailedNotificationNotShownTwice) {
   SetDictationEnabled(true);
-  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
+  soda_installer()->NotifySodaErrorForTesting(en_us());
   AssertSodaNotificationShownForDictation(en_us_display_name(),
                                           /*success=*/false);
   ClearMessageCenter();
 
   // No second message is shown on additional failures.
-  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
+  soda_installer()->NotifySodaErrorForTesting(en_us());
   AssertMessageCenterEmpty();
   soda_installer()->NotifySodaErrorForTesting();
   AssertMessageCenterEmpty();
@@ -1031,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SodaFailedNotificationShownOncePerDownload) {
   SetDictationEnabled(true);
-  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
+  soda_installer()->NotifySodaErrorForTesting(en_us());
   AssertSodaNotificationShownForDictation(en_us_display_name(),
                                           /*success=*/false);
   SetDictationEnabled(false);
@@ -1042,7 +1042,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 
   // A fresh attempt at Dictation means another chance to show an error message.
   SetDictationEnabled(true);
-  soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
+  soda_installer()->NotifySodaErrorForTesting(en_us());
   AssertSodaNotificationShownForDictation(en_us_display_name(),
                                           /*success=*/false);
 }

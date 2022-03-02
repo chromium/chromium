@@ -99,7 +99,15 @@ void ProjectorSodaInstallationController::OnSodaInstalled(
   app_client_->OnSodaInstalled();
 }
 
-void ProjectorSodaInstallationController::OnSodaError() {
+void ProjectorSodaInstallationController::OnSodaError(
+    speech::LanguageCode language_code) {
+  // Check that language code matches the selected language for projector or is
+  // LanguageCode::kNone (signifying the SODA binary failed).
+  if (language_code != speech::GetLanguageCode(GetLocale()) &&
+      language_code != speech::LanguageCode::kNone) {
+    return;
+  }
+
   projector_controller_->OnSpeechRecognitionAvailabilityChanged(
       ash::SpeechRecognitionAvailability::kSodaInstallationError);
   app_client_->OnSodaInstallError();

@@ -178,12 +178,20 @@ void SodaInstaller::NotifySodaInstalledForTesting(LanguageCode language_code) {
     NotifyOnSodaInstalled(language_code);
 }
 
-void SodaInstaller::NotifySodaErrorForTesting() {
-  soda_binary_installed_ = false;
-  is_soda_downloading_ = false;
-  installed_languages_.clear();
-  language_pack_progress_.clear();
-  NotifyOnSodaError();
+void SodaInstaller::NotifySodaErrorForTesting(LanguageCode language_code) {
+  // TODO: Call the actual functions in SodaInstallerImpl and
+  // SodaInstallerImpleChromeOS that do this logic rather than faking it.
+  if (language_code == LanguageCode::kNone) {
+    // Error with the SODA binary download.
+    soda_binary_installed_ = false;
+    is_soda_downloading_ = false;
+    language_pack_progress_.clear();
+  } else {
+    // Error with the language pack download.
+    if (base::Contains(language_pack_progress_, language_code))
+      language_pack_progress_.erase(language_code);
+  }
+  NotifyOnSodaError(language_code);
 }
 
 void SodaInstaller::UninstallSodaForTesting() {
@@ -212,14 +220,6 @@ void SodaInstaller::NotifyOnSodaLanguagePackProgressForTesting(
   NotifyOnSodaLanguagePackProgress(progress, language_code);
 }
 
-void SodaInstaller::NotifyOnSodaLanguagePackErrorForTesting(
-    LanguageCode language_code) {
-  auto it = language_pack_progress_.find(language_code);
-  if (it != language_pack_progress_.end())
-    language_pack_progress_.erase(language_code);
-  NotifyOnSodaLanguagePackError(language_code);
-}
-
 bool SodaInstaller::IsAnyLanguagePackInstalledForTesting() const {
   return !installed_languages_.empty();
 }
@@ -238,14 +238,9 @@ void SodaInstaller::NotifyOnSodaInstalled(LanguageCode language_code) {
     observer.OnSodaInstalled(language_code);
 }
 
-void SodaInstaller::NotifyOnSodaError() {
+void SodaInstaller::NotifyOnSodaError(LanguageCode language_code) {
   for (Observer& observer : observers_)
-    observer.OnSodaError();
-}
-
-void SodaInstaller::NotifyOnSodaLanguagePackError(LanguageCode language_code) {
-  for (Observer& observer : observers_)
-    observer.OnSodaLanguagePackError(language_code);
+    observer.OnSodaError(language_code);
 }
 
 void SodaInstaller::NotifyOnSodaProgress(int combined_progress) {

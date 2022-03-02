@@ -254,7 +254,7 @@ TEST_F(SodaInstallerImplChromeOSTest, LanguagePackErrorForTesting) {
   GetInstance()->NotifyOnSodaLanguagePackProgressForTesting(50, fr_fr);
   ASSERT_TRUE(GetInstance()->IsSodaDownloading(fr_fr));
   ASSERT_FALSE(IsLanguageInstalled(fr_fr));
-  GetInstance()->NotifyOnSodaLanguagePackErrorForTesting(fr_fr);
+  GetInstance()->NotifySodaErrorForTesting(fr_fr);
   ASSERT_FALSE(IsLanguageInstalled(fr_fr));
   ASSERT_FALSE(GetInstance()->IsSodaDownloading(fr_fr));
 }

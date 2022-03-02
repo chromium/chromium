@@ -2093,13 +2093,6 @@ void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
   soda_failed_notification_shown_ = false;
 }
 
-void AccessibilityManager::OnSodaInstallError(
-    speech::LanguageCode language_code) {
-  if (ShouldShowSodaFailedNotificationForDictation(language_code))
-    ShowSodaDownloadNotificationForDictation(false);
-  OnSodaInstallUpdated(0);
-}
-
 void AccessibilityManager::OnSodaInstallUpdated(int progress) {
   if (!::features::IsDictationOfflineAvailable())
     return;
@@ -2137,8 +2130,17 @@ void AccessibilityManager::OnSodaInstalled(speech::LanguageCode language_code) {
   OnSodaInstallUpdated(100);
 }
 
-void AccessibilityManager::OnSodaError() {
-  OnSodaInstallError(speech::LanguageCode::kNone);
+void AccessibilityManager::OnSodaError(speech::LanguageCode language_code) {
+  if (language_code != speech::LanguageCode::kNone &&
+      language_code != GetDictationLanguageCode()) {
+    return;
+  }
+
+  // Show the failed message if either the Dictation locale failed or the SODA
+  // binary failed (encoded by LanguageCode::kNone).
+  if (ShouldShowSodaFailedNotificationForDictation(language_code))
+    ShowSodaDownloadNotificationForDictation(false);
+  OnSodaInstallUpdated(0);
 }
 
 void AccessibilityManager::OnSodaLanguagePackProgress(
@@ -2148,11 +2150,6 @@ void AccessibilityManager::OnSodaLanguagePackProgress(
     return;
 
   OnSodaInstallUpdated(language_progress);
-}
-
-void AccessibilityManager::OnSodaLanguagePackError(
-    speech::LanguageCode language_code) {
-  OnSodaInstallError(language_code);
 }
 
 bool AccessibilityManager::ShouldShowSodaSucceededNotificationForDictation() {

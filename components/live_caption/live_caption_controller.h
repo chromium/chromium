@@ -85,7 +85,7 @@ class LiveCaptionController : public KeyedService,
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaProgress(int combined_progress) override {}
-  void OnSodaError() override {}
+  void OnSodaError(speech::LanguageCode language_code) override {}
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override {}

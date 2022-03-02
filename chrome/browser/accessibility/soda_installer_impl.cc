@@ -175,8 +175,6 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
 
       if (language_code != LanguageCode::kNone) {
         language_pack_progress_.erase(language_code);
-        NotifyOnSodaLanguagePackError(language_code);
-
         base::UmaHistogramTimes(
             GetInstallationFailureTimeMetricForLanguagePack(language_code),
             base::Time::Now() -
@@ -192,7 +190,7 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
         base::UmaHistogramBoolean(kSodaBinaryInstallationResult, false);
       }
 
-      NotifyOnSodaError();
+      NotifyOnSodaError(language_code);
       break;
     case Events::COMPONENT_CHECKING_FOR_UPDATES:
     case Events::COMPONENT_UPDATED:

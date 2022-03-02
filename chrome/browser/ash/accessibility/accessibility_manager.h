@@ -366,8 +366,7 @@ class AccessibilityManager
 
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
-  void OnSodaError() override;
-  void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
+  void OnSodaError(speech::LanguageCode language_code) override;
   void OnSodaProgress(int combined_progress) override {}
   void OnSodaLanguagePackProgress(int language_progress,
                                   speech::LanguageCode language_code) override;
@@ -493,7 +492,6 @@ class AccessibilityManager
 
   // SODA-related methods.
   void MaybeInstallSoda(const std::string& locale);
-  void OnSodaInstallError(speech::LanguageCode language_code);
   void OnSodaInstallUpdated(int progress);
   bool ShouldShowSodaSucceededNotificationForDictation();
   bool ShouldShowSodaFailedNotificationForDictation(

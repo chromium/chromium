@@ -34,8 +34,7 @@ class CaptionsHandler : public SettingsPageUIHandler,
 
   // SodaInstaller::Observer overrides:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
-  void OnSodaError() override;
-  void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
+  void OnSodaError(speech::LanguageCode language_code) override;
   void OnSodaProgress(int combined_progress) override;
   void OnSodaLanguagePackProgress(int language_progress,
                                   speech::LanguageCode language_code) override;
