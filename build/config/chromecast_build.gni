@@ -5,21 +5,30 @@
 # The args declared in this file should be referenced by components outside of
 # //chromecast. Args needed only in //chromecast should be declared in
 # //chromecast/chromecast.gni.
+#
+# TODO(crbug.com/1294964): Rename this file after is_chromecast is removed.
 declare_args() {
-  # Set this true for a Chromecast build. Chromecast builds are supported on
-  # Linux and Android.
+  # DEPRECATED.  This flag will be removed in the future; see https://crbug.com/1219802.
+  #
+  # New code should use enable_cast_receiver if the feature in question is
+  # required for all Cast-enabled browsers, or an alternative buildflag if it is
+  # for specific types of devices.
   is_chromecast = false
 
   # If true, IS_CAST_DEBUG_BUILD() will evaluate to 1 in version.h. Otherwise,
   # it will evaluate to 0. Overriding this when is_debug=false is useful for
   # doing engineering builds.
+  # TODO(crbug.com/1293511): Move to //chromecast or eliminate.
   cast_is_debug = is_debug
 
   # chromecast_branding is used to include or exclude Google-branded components.
   # Set it to "public" for a Chromium build.
+  # TODO(crbug.com/1293517): Remove usages in Chromium and move to //chromecast.
   chromecast_branding = "public"
 
   # Set this true for an audio-only Chromecast build.
+  # TODO(crbug.com/1293538): Replace with a buildflag for speaker-only builds not
+  # specific to Cast.
   is_cast_audio_only = false
 
   # If non empty, rpath of executables is set to this.
@@ -28,31 +37,40 @@ declare_args() {
 
   # Set true to enable modular_updater.
   enable_modular_updater = false
+
+  # True to enable the cast audio renderer.
+  #
+  # TODO(crbug.com/1293520):  Remove this buildflag.
+  enable_cast_audio_renderer = false
 }
 
-# Note(slan): This arg depends on the value of is_chromecast, and thus must be
-# declared in a separate block. These blocks can be combined when/if
-# crbug.com/542846 is resolved.
+declare_args() {
+  # Set this true for a Chromecast build. Chromecast builds are supported on
+  # Linux and Android.
+  #
+  # During the migration from is_chromecast, this must be set to the same value
+  # as is_chromecast.
+  enable_cast_receiver = is_chromecast
+}
+
 declare_args() {
   # True if Chromecast build is targeted for linux desktop. This type of build
   # is useful for testing and development, but currently supports only a subset
   # of Cast functionality. Though this defaults to true for x86 Linux devices,
   # this should be overriden manually for an embedded x86 build.
   # TODO(slan): Remove instances of this when x86 is a fully supported platform.
-  is_cast_desktop_build = is_chromecast && target_os == "linux" &&
+  #
+  # TODO(crbug.com/1293569): Move is_cast_desktop_build to //chromecast.
+  is_cast_desktop_build = enable_cast_receiver && target_os == "linux" &&
                           (target_cpu == "x86" || target_cpu == "x64")
-}
 
-declare_args() {
   # True to enable the cast renderer.  It is enabled by default for linux and
   # android audio only builds.
-  enable_cast_renderer = is_chromecast && (is_linux || is_chromeos ||
-                                           (is_cast_audio_only && is_android))
-}
-
-declare_args() {
-  # True to enable the cast audio renderer.
-  enable_cast_audio_renderer = false
+  #
+  # TODO(crbug.com/1293520):  Remove this buildflag.
+  enable_cast_renderer =
+      enable_cast_receiver &&
+      (is_linux || is_chromeos || (is_cast_audio_only && is_android))
 }
 
 # Configures media options for cast.  See media/media_options.gni
@@ -108,9 +126,16 @@ if (enable_cast_audio_renderer) {
 }
 
 # Assert that Chromecast is being built for a supported platform.
-assert(is_linux || is_chromeos || is_android || is_fuchsia || !is_chromecast,
-       "Chromecast builds are not supported on $target_os")
+assert(is_linux || is_chromeos || is_android || is_fuchsia ||
+           !enable_cast_receiver,
+       "Cast receiver builds are not supported on $target_os")
 
 # Assert that is_cast_audio_only and is_cast_desktop_build are both false on a
 # non-Chromecast build.
-assert(is_chromecast || (!is_cast_audio_only && !is_cast_desktop_build))
+#
+# NOTE: This restriction should be removed in the future as it should be
+# possible to build an audio-only Cast-enabled browser on any platform.
+assert(enable_cast_receiver || (!is_cast_audio_only && !is_cast_desktop_build))
+
+assert(enable_cast_receiver == is_chromecast,
+       "enable_cast_receiver and is_chromecast must be set to the same value.")
