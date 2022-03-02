@@ -97,17 +97,16 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       {{"migration_version", "1"}});
   Init();
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(true));
+      .WillRepeatedly(Return(true));
 
   migrator()->StartMigrationIfNecessary();
   RunUntilIdle();
 
   EXPECT_EQ(1, prefs()->GetInteger(
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
-  // Since for syncing users we don't manually migrate passwords
-  // |kTimeOfLastMigrationAttempt| shouldn't be updated.
-  EXPECT_EQ(0, prefs()->GetDouble(
-                   password_manager::prefs::kTimeOfLastMigrationAttempt));
+  EXPECT_EQ(
+      base::Time::Now().ToDoubleT(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
@@ -118,7 +117,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   Init();
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(false));
+      .WillRepeatedly(Return(false));
 
   migrator()->StartMigrationIfNecessary();
   RunUntilIdle();
@@ -138,8 +137,6 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
   prefs()->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
                      (base::Time::Now() - base::Hours(2)).ToDoubleT());
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(false));
 
   migrator()->StartMigrationIfNecessary();
   RunUntilIdle();
@@ -160,9 +157,6 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       /*disabled_features=*/{features::kUnifiedPasswordManagerAndroid});
   Init(/*current_migration_version=*/1);
 
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(false));
-
   migrator()->StartMigrationIfNecessary();
   RunUntilIdle();
 
@@ -181,9 +175,6 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
                             {features::kUnifiedPasswordManagerAndroid, {{}}}},
       /*disabled_features=*/{});
   Init(/*current_migration_version=*/1);
-
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(false));
 
   migrator()->StartMigrationIfNecessary();
   RunUntilIdle();
@@ -239,6 +230,37 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
   histogram_tester.ExpectTotalCount(kMigrationFinishedMetric, 1);
   histogram_tester.ExpectBucketCount(kMigrationFinishedMetric, false, 1);
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       InitialMigrationForSyncingUserShouldMoveLocalOnlyDataToAndroidBackend) {
+  feature_list().InitAndEnableFeatureWithParameters(
+      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
+      {{"migration_version", "1"}});
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  Init();
+  PasswordForm form = CreateTestPasswordForm();
+  android_backend().AddLoginAsync(form, base::DoNothing());
+
+  // 'skip_zero_click' is a local only field in PasswordForm and hence not
+  // available in Android backend before the migration.
+  PasswordForm form_with_local_data = form;
+  form_with_local_data.skip_zero_click = true;
+  built_in_backend().AddLoginAsync(form_with_local_data, base::DoNothing());
+
+  migrator()->StartMigrationIfNecessary();
+  RunUntilIdle();
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  std::vector<std::unique_ptr<PasswordForm>> expected_logins_android_backend;
+  expected_logins_android_backend.push_back(
+      std::make_unique<PasswordForm>(form_with_local_data));
+  EXPECT_CALL(mock_reply,
+              Run(LoginsResultsOrErrorAre(&expected_logins_android_backend)));
+  android_backend().GetAllLoginsAsync(mock_reply.Get());
+  RunUntilIdle();
 }
 
 // Holds the built in and android backend's logins and the expected result after
@@ -299,7 +321,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   BuiltInBackendToAndroidBackendMigratorTest::Init();
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(false));
+      .WillRepeatedly(Return(false));
 
   feature_list().InitAndEnableFeatureWithParameters(
       /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
@@ -338,9 +360,6 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
       /*disabled_features=*/{});
   BuiltInBackendToAndroidBackendMigratorTest::Init(
       /*current_migration_version=*/1);
-
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(true));
 
   const MigrationParam& p = GetParam();
 
@@ -448,8 +467,18 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestMetrics,
        MigrationMetricsTest) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(false));
+  if (GetParam().is_initial_migration) {
+    // During initial migration we query the sync status to decide whether run
+    // the code for migrating local-only data to Android backend.
+    EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+        .WillRepeatedly(Return(false));
+    // During successful initial migration we query the sync status to decide
+    // whether sync metadata should be deleted.
+    if (GetParam().is_successful_migration) {
+      EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+          .WillRepeatedly(Return(false));
+    }
+  }
 
   EXPECT_CALL(built_in_backend_, GetAllLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
@@ -519,8 +548,11 @@ class BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
        ShouldNotCompleteMigrationWhenWritingToAndroidBackendFails) {
+  // Sync state doesn't affect this test, run it arbitrarily for non-sync'ing
+  // users.
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillOnce(Return(false));
+      .WillRepeatedly(Return(false));
+
   // Add two credentials to the built-in backend.
   built_in_backend().AddLoginAsync(CreateTestPasswordForm(/*index=*/1),
                                    base::DoNothing());

@@ -109,18 +109,6 @@ BuiltInBackendToAndroidBackendMigrator::
     ~BuiltInBackendToAndroidBackendMigrator() = default;
 
 void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
-  bool is_initial_migration_needed = IsInitialMigrationNeeded(prefs_);
-
-  // For syncing users, we don't need to move passwords between the built-in
-  // and the Android backends, since both backends should be able to
-  // retrieve the same passwords from the sync server.
-  if (sync_delegate_->IsSyncingPasswordsEnabled() &&
-      is_initial_migration_needed) {
-    // TODO:(crbug.com/1252443) Drop metadata and only then update pref.
-    UpdateMigrationVersionInPref();
-    return;
-  }
-
   // Don't try to migrate passwords if there was an attempt earlier today.
   base::TimeDelta time_passed_since_last_migration_attempt =
       base::Time::Now() -
@@ -129,9 +117,11 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
   if (time_passed_since_last_migration_attempt < kMigrationThreshold)
     return;
 
+  bool is_initial_migration_needed = IsInitialMigrationNeeded(prefs_);
   // Manually migrate passwords between backends if initial or rolling migration
-  // is needed. Even for syncing users we still should do rolling migration to
-  // ensure deletions aren’t resurrected.
+  // is needed. Even for syncing users we still should do the initial migration
+  // to move local-only data that aren't synced to GMSCore and do the rolling
+  // migration to ensure deletions aren’t resurrected.
   if (is_initial_migration_needed ||
       base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid)) {
     metrics_reporter_ = std::make_unique<MigrationMetricsReporter>(
@@ -141,6 +131,10 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
 }
 
 void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
+  if (IsInitialMigrationNeeded(prefs_) &&
+      sync_delegate_->IsSyncingPasswordsEnabled()) {
+    // TODO(crbug.com/1302299): Drop metadata and only then update pref.
+  }
   prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
                      features::kMigrationVersion.Get());
 }
@@ -148,6 +142,19 @@ void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
 void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
   prefs_->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
                     base::Time::Now().ToDoubleT());
+
+  // For sync users, migrate local-only data from the built-in backend to the
+  // Android backend. The synced passwords should otherwise be identical. Update
+  // calls don't fail because they would add a password in the rare case that it
+  // doesn't exist in the Android backend.
+  if (IsInitialMigrationNeeded(prefs_) &&
+      sync_delegate_->IsSyncingPasswordsEnabled()) {
+    built_in_backend_->GetAllLoginsAsync(
+        base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
+                           MigrateNonSyncableDataToAndroidBackend,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
 
   auto barrier_callback = base::BarrierCallback<BackendAndLoginsResults>(
       2, base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
@@ -166,6 +173,38 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
   android_backend_->GetAllLoginsAsync(
       base::BindOnce(bind_backend_to_logins, base::Unretained(android_backend_))
           .Then(barrier_callback));
+}
+
+void BuiltInBackendToAndroidBackendMigrator::
+    MigrateNonSyncableDataToAndroidBackend(
+        LoginsResultOrError built_in_backend_logins_or_error) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(
+          built_in_backend_logins_or_error)) {
+    MigrationFinished(/*is_success=*/false);
+    return;
+  }
+
+  // Like a stack, callbacks are chained by  by passing 'callback_chain' as a
+  // completion for the next operation. At the end, update pref to mark
+  // successful completion.
+  base::OnceClosure callbacks_chain =
+      base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::MigrationFinished,
+                     weak_ptr_factory_.GetWeakPtr(), /*is_success=*/true);
+
+  callbacks_chain =
+      base::BindOnce(
+          &BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref,
+          weak_ptr_factory_.GetWeakPtr())
+          .Then(std::move(callbacks_chain));
+
+  for (const auto& login :
+       absl::get<LoginsResult>(built_in_backend_logins_or_error)) {
+    callbacks_chain = base::BindOnce(
+        &BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend,
+        weak_ptr_factory_.GetWeakPtr(), android_backend_, *login,
+        std::move(callbacks_chain));
+  }
+  std::move(callbacks_chain).Run();
 }
 
 void BuiltInBackendToAndroidBackendMigrator::
