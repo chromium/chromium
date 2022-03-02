@@ -2,8 +2,6 @@
 
 -All/EmergencyStopTracingTest.StopOnUIThread/0
 -All/EmergencyStopTracingTest.StopOnUIThread/1
--All/RenderFrameHostManagerTest.DontSelectInvalidFiles/0
--All/RenderFrameHostManagerTest.DontSelectInvalidFiles/1
 -All/RenderFrameHostManagerTest.IgnoreRendererDebugURLsWhenCrashed/0
 -All/RenderFrameHostManagerTest.IgnoreRendererDebugURLsWhenCrashed/1
 -All/SitePerProcessBrowserTest.RenderFrameProxyNotRecreatedDuringProcessShutdown/0

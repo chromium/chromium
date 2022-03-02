@@ -21,7 +21,7 @@ base::FilePath StringToFilePath(const String& str) {
         base::StringPiece16(str.Characters16(), str.length()));
   }
 
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   StringUTF8Adaptor utf8(str);
   return base::FilePath::FromUTF8Unsafe(utf8.AsStringPiece());
 #else
@@ -39,7 +39,7 @@ WebString FilePathToWebString(const base::FilePath& path) {
   if (path.empty())
     return WebString();
 
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return WebString::FromUTF8(path.value());
 #else
   return WebString::FromUTF16(path.AsUTF16Unsafe());
