@@ -635,10 +635,8 @@ IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest,
   base::flat_map<std::string, std::string> status;
   ASSERT_TRUE(ReadStatusFor("User policies", &status));
   EXPECT_EQ(status["time-since-last-refresh"], "0 secs ago");
-  EXPECT_EQ(status["time-since-last-fetch-attempt"], "0 secs ago");
   ASSERT_TRUE(ReadStatusFor("Device policies", &status));
   EXPECT_EQ(status["time-since-last-refresh"], "0 secs ago");
-  EXPECT_EQ(status["time-since-last-fetch-attempt"], "0 secs ago");
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest, ShowsCorrectTimesSinceRefresh) {
@@ -672,48 +670,8 @@ IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest, ShowsCorrectTimesSinceRefresh) {
   base::flat_map<std::string, std::string> status;
   ASSERT_TRUE(ReadStatusFor("User policies", &status));
   EXPECT_EQ(status["time-since-last-refresh"], "1 hour ago");
-  EXPECT_EQ(status["time-since-last-fetch-attempt"], "1 hour ago");
   ASSERT_TRUE(ReadStatusFor("Device policies", &status));
   EXPECT_EQ(status["time-since-last-refresh"], "1 hour ago");
-  EXPECT_EQ(status["time-since-last-fetch-attempt"], "1 hour ago");
-}
-
-IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest,
-                       ShowsCorrectRefreshTimesAfterFailedReload) {
-  // Verifies that the time since refresh of a policy set is correctly updated
-  // after a failed attempt to update policies.
-
-  // Mock time in policy server and classes used by refresh logic.
-  base::Time now = base::Time::Now();
-  logged_in_user_mixin_.GetEmbeddedPolicyTestServerMixin()
-      ->UpdatePolicyTimestamp(now);
-  base::SimpleTestClock status_provider_clock_mock;
-  status_provider_clock_mock.SetNow(now);
-  auto status_provider_clock_mock_closure =
-      policy::PolicyStatusProvider::OverrideClockForTesting(
-          &status_provider_clock_mock);
-  base::SimpleTestClock policy_refresher_clock_mock;
-  policy_refresher_clock_mock.SetNow(now);
-  auto policy_refresher_clock_mock_closure =
-      policy::CloudPolicyRefreshScheduler::OverrideClockForTesting(
-          &policy_refresher_clock_mock);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIPolicyURL)));
-  ASSERT_TRUE(ReloadPolicies());
-  logged_in_user_mixin_.GetEmbeddedPolicyTestServerMixin()->SetPolicyFetchError(
-      500);
-  status_provider_clock_mock.Advance(base::Hours(1));
-  policy_refresher_clock_mock.Advance(base::Hours(1));
-  ASSERT_TRUE(ReloadPolicies());
-
-  base::flat_map<std::string, std::string> status;
-  ASSERT_TRUE(ReadStatusFor("User policies", &status));
-  EXPECT_EQ(status["time-since-last-refresh"], "1 hour ago");
-  EXPECT_EQ(status["time-since-last-fetch-attempt"], "0 secs ago");
-  ASSERT_TRUE(ReadStatusFor("Device policies", &status));
-  EXPECT_EQ(status["time-since-last-refresh"], "1 hour ago");
-  EXPECT_EQ(status["time-since-last-fetch-attempt"], "0 secs ago");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

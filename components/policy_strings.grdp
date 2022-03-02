@@ -367,11 +367,8 @@ Additional details:
   <message name="IDS_POLICY_LABEL_MANAGED_BY" desc="Label for the manager in the policy status boxes. Manager can be a domain or an email address.">
     Managed by:
   </message>
-  <message name="IDS_POLICY_LABEL_TIME_SINCE_LAST_FETCH_ATTEMPT" desc="Label for the time since the last fetch attempt in the policy status boxes.">
-    Last fetch attempted:
-  </message>
   <message name="IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH" desc="Label for the time since the last refresh in the policy status boxes.">
-    Last policy timestamp:
+    Last fetched:
   </message>
   <message name="IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP" desc="Label for the time when the last cloud report is sent successfully.">
     Report sent:

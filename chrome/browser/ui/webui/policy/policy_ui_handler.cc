@@ -485,8 +485,7 @@ void UserPolicyStatusProviderLacros::GetStatus(base::DictionaryValue* dict) {
           ? base::Time::FromJavaTime(policy->timestamp())
           : base::Time();
   dict->SetStringKey("timeSinceLastRefresh",
-                     GetTimeSinceLastActionString(last_refresh_time));
-  // TODO(crbug.com/1217542): Add timeSinceLastFetchAttempt for LaCrOS.
+                     GetTimeSinceLastRefreshString(last_refresh_time));
 
   // TODO(https://crbug.com/1243869): Pass this information from Ash through
   // Mojo. Assume no error for now.
@@ -597,6 +596,10 @@ void UserActiveDirectoryPolicyStatusProvider::GetStatus(
   const em::PolicyData* policy = policy_manager_->store()->policy();
   const std::string client_id = policy ? policy->device_id() : std::string();
   const std::string username = policy ? policy->username() : std::string();
+  const base::Time last_refresh_time =
+      (policy && policy->has_timestamp())
+          ? base::Time::FromJavaTime(policy->timestamp())
+          : base::Time();
   const std::u16string status =
       policy::FormatStoreStatus(policy_manager_->store()->status(),
                                 policy_manager_->store()->validation_status());
@@ -611,17 +614,8 @@ void UserActiveDirectoryPolicyStatusProvider::GetStatus(
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                              ui::TimeFormat::LENGTH_SHORT, refresh_interval));
 
-  const base::Time last_refresh_time =
-      (policy && policy->has_timestamp())
-          ? base::Time::FromJavaTime(policy->timestamp())
-          : base::Time();
   dict->SetStringKey("timeSinceLastRefresh",
-                     GetTimeSinceLastActionString(last_refresh_time));
-
-  const base::Time last_refresh_attempt_time =
-      policy_manager_->scheduler()->last_refresh_attempt();
-  dict->SetStringKey("timeSinceLastFetchAttempt",
-                     GetTimeSinceLastActionString(last_refresh_attempt_time));
+                     GetTimeSinceLastRefreshString(last_refresh_time));
 
   // Check if profile is present. Note that profile is not present if object is
   // an instance of DeviceActiveDirectoryPolicyStatusProvider that inherits from

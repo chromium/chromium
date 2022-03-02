@@ -178,11 +178,6 @@ StatusBox.prototype = {
       this.setLabelAndShow_('.managed-by', status.enterpriseDomainManager);
     }
 
-    if (status.timeSinceLastFetchAttempt) {
-      this.setLabelAndShow_(
-          '.time-since-last-fetch-attempt', status.timeSinceLastFetchAttempt);
-    }
-
     if (status.timeSinceLastRefresh) {
       this.setLabelAndShow_(
           '.time-since-last-refresh', status.timeSinceLastRefresh);
