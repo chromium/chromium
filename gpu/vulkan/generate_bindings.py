@@ -74,6 +74,12 @@ VULKAN_INSTANCE_FUNCTIONS = [
     ]
   },
   {
+    'extension': 'VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME',
+    'functions': [
+      'vkCreateHeadlessSurfaceEXT',
+    ]
+  },
+  {
     'ifdef': 'defined(USE_VULKAN_XCB)',
     'extension': 'VK_KHR_XCB_SURFACE_EXTENSION_NAME',
     'functions': [

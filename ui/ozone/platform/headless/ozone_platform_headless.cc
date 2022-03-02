@@ -8,7 +8,10 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/ime/input_method_minimal.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -97,6 +100,20 @@ class OzonePlatformHeadless : public OzonePlatform {
       gfx::AcceleratedWidget widget) override {
     return std::make_unique<InputMethodMinimal>(delegate);
   }
+
+// Desktop Linux, not ChromeOS.
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMECAST)
+  const PlatformProperties& GetPlatformProperties() override {
+    static base::NoDestructor<OzonePlatform::PlatformProperties> properties;
+    static bool initialized = false;
+    if (!initialized) {
+      properties->uses_external_vulkan_image_factory = true;
+      initialized = true;
+    }
+    return *properties;
+  }
+#endif
 
   bool InitializeUI(const InitParams& params) override {
     window_manager_ = std::make_unique<HeadlessWindowManager>();

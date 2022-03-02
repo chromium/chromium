@@ -1,0 +1,157 @@
+// Copyright (c) 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ui/ozone/platform/headless/vulkan_implementation_headless.h"
+
+#include "base/base_paths.h"
+#include "base/callback_helpers.h"
+#include "base/files/file_path.h"
+#include "base/notreached.h"
+#include "base/path_service.h"
+#include "base/scoped_environment_variable_override.h"
+#include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_image.h"
+#include "gpu/vulkan/vulkan_instance.h"
+#include "gpu/vulkan/vulkan_surface.h"
+#include "gpu/vulkan/vulkan_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/ozone/platform/headless/vulkan_surface_headless.h"
+
+namespace ui {
+
+VulkanImplementationHeadless::VulkanImplementationHeadless(bool use_swiftshader)
+    : gpu::VulkanImplementation(use_swiftshader) {}
+
+bool VulkanImplementationHeadless::InitializeVulkanInstance(
+    bool using_surface) {
+  using_surface_ = using_surface;
+
+  std::vector<const char*> required_extensions = {
+      VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,
+      VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME};
+  if (using_surface_) {
+    required_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+    required_extensions.push_back(VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME);
+  }
+
+  base::FilePath path;
+  if (use_swiftshader()) {
+    if (!base::PathService::Get(base::DIR_MODULE, &path))
+      return false;
+    path = path.Append("libvk_swiftshader.so");
+  } else {
+    path = base::FilePath("libvulkan.so.1");
+  }
+
+  return vulkan_instance_.Initialize(path, required_extensions, {});
+}
+
+gpu::VulkanInstance* VulkanImplementationHeadless::GetVulkanInstance() {
+  return &vulkan_instance_;
+}
+
+std::unique_ptr<gpu::VulkanSurface>
+VulkanImplementationHeadless::CreateViewSurface(gfx::AcceleratedWidget window) {
+  if (!using_surface_)
+    return nullptr;
+  return VulkanSurfaceHeadless::Create(vulkan_instance_.vk_instance(), window);
+}
+
+bool VulkanImplementationHeadless::GetPhysicalDevicePresentationSupport(
+    VkPhysicalDevice device,
+    const std::vector<VkQueueFamilyProperties>& queue_family_properties,
+    uint32_t queue_family_index) {
+  // TODO(samans): Don't early out once Swiftshader supports this method.
+  // https://crbug.com/swiftshader/129
+  if (use_swiftshader())
+    return true;
+  // Should this be false?
+  return true;
+}
+
+std::vector<const char*>
+VulkanImplementationHeadless::GetRequiredDeviceExtensions() {
+  std::vector<const char*> extensions;
+  if (using_surface_)
+    extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+  return extensions;
+}
+
+std::vector<const char*>
+VulkanImplementationHeadless::GetOptionalDeviceExtensions() {
+  return {
+      VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
+      VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
+      VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
+      VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,
+      VK_KHR_INCREMENTAL_PRESENT_EXTENSION_NAME,
+      VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME,
+  };
+}
+
+VkFence VulkanImplementationHeadless::CreateVkFenceForGpuFence(
+    VkDevice vk_device) {
+  NOTREACHED();
+  return VK_NULL_HANDLE;
+}
+
+std::unique_ptr<gfx::GpuFence>
+VulkanImplementationHeadless::ExportVkFenceToGpuFence(VkDevice vk_device,
+                                                      VkFence vk_fence) {
+  NOTREACHED();
+  return nullptr;
+}
+
+VkSemaphore VulkanImplementationHeadless::CreateExternalSemaphore(
+    VkDevice vk_device) {
+  return gpu::CreateExternalVkSemaphore(
+      vk_device, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT);
+}
+
+VkSemaphore VulkanImplementationHeadless::ImportSemaphoreHandle(
+    VkDevice vk_device,
+    gpu::SemaphoreHandle sync_handle) {
+  return ImportVkSemaphoreHandle(vk_device, std::move(sync_handle));
+}
+
+gpu::SemaphoreHandle VulkanImplementationHeadless::GetSemaphoreHandle(
+    VkDevice vk_device,
+    VkSemaphore vk_semaphore) {
+  return gpu::GetVkSemaphoreHandle(
+      vk_device, vk_semaphore, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT);
+}
+
+VkExternalMemoryHandleTypeFlagBits
+VulkanImplementationHeadless::GetExternalImageHandleType() {
+  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
+}
+
+bool VulkanImplementationHeadless::CanImportGpuMemoryBuffer(
+    gfx::GpuMemoryBufferType memory_buffer_type) {
+  if (memory_buffer_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP)
+    return true;
+  return false;
+}
+
+std::unique_ptr<gpu::VulkanImage>
+VulkanImplementationHeadless::CreateImageFromGpuMemoryHandle(
+    gpu::VulkanDeviceQueue* device_queue,
+    gfx::GpuMemoryBufferHandle gmb_handle,
+    gfx::Size size,
+    VkFormat vk_format) {
+  constexpr auto kUsage =
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+  auto tiling = gmb_handle.native_pixmap_handle.modifier ==
+                        gfx::NativePixmapHandle::kNoModifier
+                    ? VK_IMAGE_TILING_OPTIMAL
+                    : VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;
+  return gpu::VulkanImage::CreateFromGpuMemoryBufferHandle(
+      device_queue, std::move(gmb_handle), size, vk_format, kUsage, /*flags=*/0,
+      tiling, VK_QUEUE_FAMILY_EXTERNAL);
+}
+
+}  // namespace ui

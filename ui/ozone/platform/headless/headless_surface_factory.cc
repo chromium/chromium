@@ -35,6 +35,10 @@
 #include "ui/ozone/platform/headless/headless_window_manager.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
 
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_LINUX)
+#include "ui/ozone/platform/headless/vulkan_implementation_headless.h"
+#endif
+
 namespace ui {
 
 namespace {
@@ -277,5 +281,14 @@ void HeadlessSurfaceFactory::CheckBasePath() const {
   if (!base::PathIsWritable(base_path_))
     PLOG(FATAL) << "Unable to write to output location";
 }
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_LINUX)
+std::unique_ptr<gpu::VulkanImplementation>
+HeadlessSurfaceFactory::CreateVulkanImplementation(
+    bool use_swiftshader,
+    bool allow_protected_memory) {
+  return std::make_unique<VulkanImplementationHeadless>(use_swiftshader);
+}
+#endif
 
 }  // namespace ui

@@ -298,6 +298,18 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
     }
   }
 
+  if (gfx::HasExtension(enabled_extensions,
+                        VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME)) {
+    vkCreateHeadlessSurfaceEXT =
+        reinterpret_cast<PFN_vkCreateHeadlessSurfaceEXT>(
+            vkGetInstanceProcAddr(vk_instance, "vkCreateHeadlessSurfaceEXT"));
+    if (!vkCreateHeadlessSurfaceEXT) {
+      DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                    << "vkCreateHeadlessSurfaceEXT";
+      return false;
+    }
+  }
+
 #if defined(USE_VULKAN_XCB)
   if (gfx::HasExtension(enabled_extensions,
                         VK_KHR_XCB_SURFACE_EXTENSION_NAME)) {
