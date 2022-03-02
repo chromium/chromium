@@ -55,8 +55,10 @@
   }
 }
 
-// Controls hit testing of the bottom toolbar. When the toolbar is transparent,
-// only respond to tapping on the new tab button.
+// |pointInside| is called as long as this view is on the screen (even if its
+// size is zero). It controls hit testing of the bottom toolbar. When the
+// toolbar is transparent and has the |_largeNewTabButton|, only respond to
+// tapping on that button.
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
   if ([self shouldShowFullBar]) {
     return [super pointInside:point withEvent:event];
@@ -393,7 +395,8 @@
 // Returns YES if the full toolbar should be shown instead of the floating
 // button.
 - (BOOL)shouldShowFullBar {
-  return [self shouldUseCompactLayout] || self.mode == TabGridModeSelection;
+  return [self shouldUseCompactLayout] || self.page == TabGridPageRemoteTabs ||
+         self.mode == TabGridModeSelection || self.mode == TabGridModeSearch;
 }
 
 // Returns YES if should use compact bottom toolbar layout.
