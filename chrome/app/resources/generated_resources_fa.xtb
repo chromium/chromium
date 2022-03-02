@@ -512,7 +512,7 @@
 <translation id="152629053603783244">‏بازراه‌اندازی Linux</translation>
 <translation id="1526335046150927198">فعال کردن شتاب پیمایش صفحه لمسی</translation>
 <translation id="1526560967942511387">سند بدون عنوان</translation>
-<translation id="1527336312600375509">نرخ بازخوانی نمایشگر</translation>
+<translation id="1527336312600375509">نرخ بازآوری نمایشگر</translation>
 <translation id="152913213824448541">مخاطبین «هم‌رسانی با اطراف»</translation>
 <translation id="1529891865407786369">منبع نیرو:</translation>
 <translation id="1530838837447122178">باز کردن تنظیمات موشواره و صفحه لمسی دستگاه</translation>
@@ -1259,7 +1259,7 @@
 <translation id="2261323523305321874">سرپرستتان تغییری در کل سیستم داده است که برخی نمایه‌های قدیمی را غیرفعال کرده است.</translation>
 <translation id="2262477216570151239">تأخیر پیش از تکرار</translation>
 <translation id="2263189956353037928">خروج از سیستم و ورود دوباره به آن</translation>
-<translation id="2263371730707937087">نرخ بازخوانی صفحه</translation>
+<translation id="2263371730707937087">نرخ بازآوری صفحه</translation>
 <translation id="2263679799334060788">‏بازخورد شما به ما کمک می‌کند Google Cast را بهبود ببخشیم و بابت ارائه آن از شما سپاس‌گزاریم.
     برای دریافت راهنمایی درباره عیب‌یابی مشکلات ارسال محتوا، لطفاً به
     <ph name="BEGIN_LINK" />
@@ -1430,7 +1430,7 @@
 <translation id="2431027948063157455">‏«دستیار Google» بارگیری نشد. لطفاً اتصال شبکه را بررسی کرده و دوباره امتحان کنید.</translation>
 <translation id="243179355394256322">‏سازمانتان ثبت‌نام دستگاه را به «فقط کاربران مجاز» محدود می‌کند. این کاربر مجاز نیست دستگاه‌ها را ثبت‌نام کند. لطفاً مطمئن شوید کاربر امتیاز سرپرستی «ثبت‌نام کردن Google Meet hardware» را در بخش «کاربران» از «کنسول سرپرست» داشته باشد.</translation>
 <translation id="243275146591958220">لغو بارگیری</translation>
-<translation id="2433452467737464329">‏برای بازخوانی خودکار صفحه، یک پارامتر جستجو به نشانی وب اضافه کنید: chrome://network/?refresh=&lt;sec&gt;‎</translation>
+<translation id="2433452467737464329">‏برای بازآوری خودکار صفحه، یک پارامتر جستجو به نشانی وب اضافه کنید: chrome://network/?refresh=&lt;sec&gt;‎</translation>
 <translation id="2433507940547922241">شکل ظاهری</translation>
 <translation id="2433836460518180625">فقط باز کردن قفل دستگاه</translation>
 <translation id="2434449159125086437">چاپگر راه‌اندازی نشد لطفاً پیکربندی را بررسی کنید و دوباره امتحان کنید.</translation>
@@ -1458,7 +1458,7 @@
 <translation id="2454247629720664989">کلمه کلیدی</translation>
 <translation id="2454264884354864965">دوربین خاموش است</translation>
 <translation id="2454524890947537054">درخواست وب تأیید شود؟</translation>
-<translation id="245650153866130664">برای بازخوانی خودکار بلیت، «به خاطر سپردن گذرواژه» را بررسی کنید. گذرواژه‌تان فقط در دستگاهتان ذخیره می‌شود.</translation>
+<translation id="245650153866130664">برای بازآوری خودکار بلیت، «به خاطر سپردن گذرواژه» را بررسی کنید. گذرواژه‌تان فقط در دستگاهتان ذخیره می‌شود.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> می‌خواهد چند فایل از <ph name="VOLUME_NAME" /> کپی کند.</translation>
 <translation id="2457842160081795172">درحال‌حاضر در کانال <ph name="CHANNEL_NAME" /> هستید</translation>
 <translation id="2458379781610688953">به‌روزرسانی حساب، <ph name="EMAIL" /></translation>
@@ -4259,7 +4259,7 @@
 <translation id="5407167491482639988">نامفهوم</translation>
 <translation id="5408750356094797285">بزرگ‌نمایی: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">‏از «حساب Google» شما.</translation>
-<translation id="5414198321558177633">درحال بازخوانی فهرست نمایه. ممکن است چند دقیقه طول بکشد.</translation>
+<translation id="5414198321558177633">درحال بازآوری فهرست نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="5414566801737831689">خواندن نمادهای وب‌سایت‌هایی که بازدید می‌کنید</translation>
 <translation id="5417312524372586921">طرح‌های زمینه مرورگر</translation>
 <translation id="5419405654816502573">Voice match</translation>
@@ -5031,7 +5031,7 @@
 <translation id="6227280783235722609">افزونه</translation>
 <translation id="6229849828796482487">‏قطع اتصال شبکه Wi-Fi</translation>
 <translation id="6231782223312638214">پیشنهادی</translation>
-<translation id="6231881193380278751">‏افزودن پارامتر جستار در نشانی وب برای بازخوانی خودکار صفحه: chrome://device-log/?refresh=&lt;sec&gt;</translation>
+<translation id="6231881193380278751">‏افزودن پارامتر جستار در نشانی وب برای بازآوری خودکار صفحه: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">باتری</translation>
 <translation id="6232116551750539448">اتصال به <ph name="NAME" /> قطع شده است</translation>
 <translation id="6233154960150021497">پیش‌فرض استفاده از صدا به‌جای صفحه‌کلید</translation>
@@ -6365,7 +6365,7 @@
 <translation id="7624337243375417909">‏caps lock غیرفعال</translation>
 <translation id="7625568159987162309">مشاهده مجوزها و داده‌های ذخیره‌شده در همه سایت‌ها</translation>
 <translation id="7625823789272218216">برگه جدید در چپ</translation>
-<translation id="7628201176665550262">نرخ بازخوانی</translation>
+<translation id="7628201176665550262">نرخ بازآوری</translation>
 <translation id="7629827748548208700">برگه: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و لازم می‌داند هربار به سیستم وارد شوید.</translation>
 <translation id="7631014249255418691">‏از برنامه‌ها و فایل‌های Linux پشتیبان‌گیری شد</translation>
@@ -6778,7 +6778,7 @@
 <translation id="8011372169388649948">«<ph name="BOOKMARK_TITLE" />» منتقل شد.</translation>
 <translation id="8012647001091218357">در حال حاضر نمی‌توانیم با والدینتان ارتباط برقرار کنیم. لطفاً دوباره امتحان کنید.</translation>
 <translation id="8013993649590906847">‏اگر تصویری توضیح مفیدی نداشته باشد، Chrome توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود.</translation>
-<translation id="8014154204619229810">در حال حاضر به‌روزرسان در حال اجراست. برای بررسی دوباره، بعد از یک دقیقه بازخوانی کنید.</translation>
+<translation id="8014154204619229810">در حال حاضر به‌روزرسان در حال اجراست. برای بررسی دوباره، بعد از یک دقیقه بازآوری کنید.</translation>
 <translation id="8014206674403687691">‏<ph name="IDS_SHORT_PRODUCT_NAME" /> قادر نیست به نسخه نصب شده قبلی بازگردد. لطفاً دوباره سعی کنید دستگاهتان را Powerwash کنید.</translation>
 <translation id="8015163965024115122">به حداکثر محدودیت استفاده از برنامه‌های <ph name="IDS_SHORT_PRODUCT_NAME" /> یا <ph name="IDS_SHORT_PRODUCT_NAME" /> که ولی‌تان تنظیم کرده است، رسیده‌اید.</translation>
 <translation id="8016266267177410919">فضای ذخیره‌سازی موقت</translation>
@@ -6892,7 +6892,7 @@
 <translation id="8117752106453549166">‏سرپرستتان درحال پیکربندی Linux است. پیکربندی چند دقیقه طول می‌کشد.</translation>
 <translation id="8118362518458010043">‏توسط Chrome غیرفعال شده است. ممکن است این افزونه ناامن باشد.</translation>
 <translation id="8118488170956489476">سازمانتان<ph name="BEGIN_LINK" />مرورگر را مدیریت می‌کند<ph name="END_LINK" /></translation>
-<translation id="8118515372935001629">نرخ بازخوانی نمایشگر</translation>
+<translation id="8118515372935001629">نرخ بازآوری نمایشگر</translation>
 <translation id="8118860139461251237">مدیریت بارگیری‌ها</translation>
 <translation id="8119438628456698432">درحال ایجاد فایل‌های گزارش…</translation>
 <translation id="811994229154425014">دوفاصله برای تایپ نقطه</translation>
