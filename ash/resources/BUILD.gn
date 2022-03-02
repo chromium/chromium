@@ -27,6 +27,7 @@ grit("resources") {
   ]
 
   deps = [
+    "//ash/services/cellular_setup/public/mojom:mojom_js",
     "//ash/services/multidevice_setup/public/mojom:mojom_js",
     "//chromeos/components/multidevice/mojom:mojom_js",
     "//chromeos/services/device_sync/public/mojom:mojom_js",

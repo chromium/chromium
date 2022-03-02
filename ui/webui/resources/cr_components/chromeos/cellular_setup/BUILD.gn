@@ -108,7 +108,7 @@ js_library("profile_discovery_list_page.m") {
 js_library("mojo_interface_provider.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js" ]
   deps = [
-    "//chromeos/services/cellular_setup/public/mojom:mojom_js_library_for_compile",
+    "//ash/services/cellular_setup/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":modulize" ]
@@ -201,7 +201,7 @@ js_library("psim_flow_ui.m") {
     ":provisioning_page.m",
     ":setup_loading_page.m",
     ":subflow_behavior.m",
-    "//chromeos/services/cellular_setup/public/mojom:mojom_js_library_for_compile",
+    "//ash/services/cellular_setup/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",

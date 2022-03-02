@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/esim_manager.h"
 
-#include "chromeos/services/cellular_setup/in_process_esim_manager.h"
+#include "ash/services/cellular_setup/in_process_esim_manager.h"
 
 namespace ash {
 

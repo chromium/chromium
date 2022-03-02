@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
 #include "ash/webui/network_ui/network_health_resource_provider.h"
 #include "ash/webui/network_ui/traffic_counters_resource_provider.h"
@@ -42,7 +43,6 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/onc/network_onc_utils.h"
-#include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"

@@ -12,6 +12,7 @@
   </outputs>
   <release seq="1">
     <includes>
+      <part file="cellular_resources.grdp" />
       <part file="multidevice_resources.grdp" />
     </includes>
   </release>
