@@ -107,8 +107,12 @@ void SetDragImage(const GURL& url,
   }
 
   gfx::Size size(button->GetPreferredSize());
-  button->SetBoundsRect(gfx::Rect(size));
+  // drag_widget's size must be set to show the drag image in RTL.
+  // However, on Windows, calling Widget::SetSize() resets
+  // the LabelButton's bounds via OnNativeWidgetSizeChanged().
+  // Therefore, call button->SetBoundsRect() after drag_widget->SetSize().
   drag_widget->SetSize(size);
+  button->SetBoundsRect(gfx::Rect(size));
 
   gfx::Vector2d press_point;
   if (press_pt)
