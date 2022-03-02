@@ -14,6 +14,8 @@ import unittest
 import generate_buildbot_json
 from pyfakefs import fake_filesystem_unittest
 
+# pylint: disable=super-with-arguments
+
 EMPTY_PYL_FILE = """\
 {
 }
@@ -96,7 +98,7 @@ class FakeBBGen(generate_buildbot_json.BBJSONGenerator):
   def check_output_file_consistency(self, verbose=False, dump=True):
     with dump_on_failure(self, dump=verbose and dump):
       super(FakeBBGen, self).check_output_file_consistency(verbose)
-# pragma pylint: enable=arguments-differ
+  # pragma pylint: enable=arguments-differ
 
 
 FOO_GTESTS_WATERFALL = """\

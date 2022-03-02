@@ -8,7 +8,8 @@ import io
 import sys
 import unittest
 
-class FakeStream(object):
+
+class FakeStream(object):  # pylint: disable=useless-object-inheritance
   def write(self, value):
     pass
 
@@ -18,7 +19,9 @@ class FakeStream(object):
 def main():
   cov = coverage.coverage(include='*generate_buildbot_json.py')
   cov.start()
+  # pylint: disable=import-outside-toplevel
   import generate_buildbot_json_unittest
+  # pylint: enable=import-outside-toplevel
   suite = unittest.TestLoader().loadTestsFromModule(
     generate_buildbot_json_unittest)
   unittest.TextTestRunner(stream=FakeStream()).run(suite)

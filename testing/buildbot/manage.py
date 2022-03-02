@@ -15,6 +15,7 @@ import collections
 import glob
 import json
 import os
+import six
 import subprocess
 import sys
 
@@ -254,7 +255,8 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
   try:
     config = json.loads(content)
   except ValueError as e:
-    raise Error('Exception raised while checking %s: %s' % (filepath, e))
+    six.raise_from(
+        Error('Exception raised while checking %s: %s' % (filepath, e)), e)
 
   for builder, data in sorted(config.items()):
     if builder in SKIP:
@@ -274,7 +276,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
           test not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl' %
                     (filename, builder, test))
-      elif test in ninja_targets:
+      if test in ninja_targets:
         ninja_targets_seen.add(test)
 
     for target in data.get('additional_compile_targets', []):
@@ -282,7 +284,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
           target not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl' %
                     (filename, builder, target))
-      elif target in ninja_targets:
+      if target in ninja_targets:
         ninja_targets_seen.add(target)
 
     gtest_tests = data.get('gtest_tests', [])
@@ -300,7 +302,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
           test not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl.' %
                     (filename, builder, test))
-      elif test in ninja_targets:
+      if test in ninja_targets:
         ninja_targets_seen.add(test)
 
       name = d.get('name', d['test'])
@@ -321,7 +323,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
           name not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl.' %
                     (filename, builder, name))
-      elif name in ninja_targets:
+      if name in ninja_targets:
         ninja_targets_seen.add(name)
 
     for d in data.get('instrumentation_tests', []):
@@ -330,7 +332,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
           name not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl.' %
                     (filename, builder, name))
-      elif name in ninja_targets:
+      if name in ninja_targets:
         ninja_targets_seen.add(name)
 
     # The trick here is that process_builder_remaining() is called before
@@ -415,10 +417,12 @@ def print_remaining(test_name, tests_location):
   total = total_local + total_swarming
   p_local = 100. * total_local / total
   p_swarming = 100. * total_swarming / total
+  # pylint: disable=bad-string-format-type
   print('%s%-*s %4d (%4.1f%%)   %4d (%4.1f%%)' %
       (colorama.Fore.WHITE, l, 'Total:', total_local, p_local,
         total_swarming, p_swarming))
   print('%-*s                %4d' % (l, 'Total executions:', total))
+  #pylint: enable=bad-string-format-type
 
 
 def main():

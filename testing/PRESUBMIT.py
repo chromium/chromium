@@ -34,12 +34,13 @@ def CommonChecks(input_api, output_api):
   output.extend(input_api.canned_checks.RunPylint(
       input_api,
       output_api,
-      files_to_skip=[r'gmock.*', r'gtest.*', r'trigger_scripts.*']))
+      files_to_skip=[r'gmock.*', r'gtest.*',
+          r'buildbot.*', r'trigger_scripts.*']))
   # Pylint2.7 is run on subdirs whose presubmit checks are migrated to Python3
   output.extend(input_api.canned_checks.RunPylint(
       input_api,
       output_api,
-      files_to_check=[r'trigger_scripts.*\.py$'],
+      files_to_check=[r'buildbot.*\.py$', r'trigger_scripts.*\.py$'],
       version='2.7'))
 
   return output
