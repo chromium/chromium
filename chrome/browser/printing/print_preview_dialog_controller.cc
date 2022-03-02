@@ -372,17 +372,16 @@ void PrintPreviewDialogController::OnPreviewDialogNavigated(
   ui::PageTransition type = details.entry->GetTransitionType();
 
   // New |preview_dialog| is created. Don't update/erase map entry.
-  if (waiting_for_new_preview_page_ &&
+  if (details.previous_main_frame_url.is_empty() && details.entry &&
+      IsPrintPreviewURL(details.entry->GetURL()) &&
       ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_AUTO_TOPLEVEL) &&
       details.type == content::NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY) {
-    waiting_for_new_preview_page_ = false;
     SaveInitiatorTitle(preview_dialog);
     return;
   }
 
   // Cloud print sign-in causes a reload.
-  if (!waiting_for_new_preview_page_ &&
-      ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_RELOAD) &&
+  if (ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_RELOAD) &&
       details.type == content::NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY &&
       IsPrintPreviewURL(details.previous_main_frame_url)) {
     return;
@@ -412,7 +411,6 @@ WebContents* PrintPreviewDialogController::CreatePrintPreviewDialog(
 
   // Add an entry to the map.
   preview_dialog_map_[preview_dialog] = initiator;
-  waiting_for_new_preview_page_ = true;
 
   // Make the print preview WebContents show up in the task manager.
   task_manager::WebContentsTags::CreateForPrintingContents(preview_dialog);
