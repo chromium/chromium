@@ -151,23 +151,6 @@ void InitializeCordRepExternal(absl::string_view data, CordRepExternal* rep) {
 
 }  // namespace cord_internal
 
-static CordRep* NewSubstring(CordRep* child, size_t offset, size_t length) {
-  // Never create empty substring nodes
-  if (length == 0) {
-    CordRep::Unref(child);
-    return nullptr;
-  } else {
-    CordRepSubstring* rep = new CordRepSubstring();
-    assert(child->IsExternal() || child->IsFlat());
-    assert((offset + length) <= child->length);
-    rep->length = length;
-    rep->tag = cord_internal::SUBSTRING;
-    rep->start = offset;
-    rep->child = child;
-    return VerifyTree(rep);
-  }
-}
-
 // Creates a CordRep from the provided string. If the string is large enough,
 // and not wasteful, we move the string into an external cord rep, preserving
 // the already allocated string contents.
@@ -643,7 +626,7 @@ static CordRep* RemovePrefixFrom(CordRep* node, size_t n) {
       start += node->substring()->start;
       node = node->substring()->child;
     }
-    node = NewSubstring(CordRep::Ref(node), start, len);
+    node = CordRepSubstring::Create(CordRep::Ref(node), start, len);
   }
   while (!rhs_stack.empty()) {
     node = Concat(node, CordRep::Ref(rhs_stack.back()));
@@ -678,7 +661,7 @@ static CordRep* RemoveSuffixFrom(CordRep* node, size_t n) {
       start = node->substring()->start;
       node = node->substring()->child;
     }
-    node = NewSubstring(CordRep::Ref(node), start, len);
+    node = CordRepSubstring::Create(CordRep::Ref(node), start, len);
   }
   while (!lhs_stack.empty()) {
     node = Concat(CordRep::Ref(lhs_stack.back()), node);
@@ -768,7 +751,7 @@ static CordRep* NewSubRange(CordRep* node, size_t pos, size_t n) {
         pos += node->substring()->start;
         node = node->substring()->child;
       }
-      results.push_back(NewSubstring(CordRep::Ref(node), pos, n));
+      results.push_back(CordRepSubstring::Create(CordRep::Ref(node), pos, n));
     }
   } while (!todo.empty());
   assert(results.size() == 1);
@@ -1157,12 +1140,7 @@ Cord Cord::ChunkIterator::AdvanceAndReadBytes(size_t n) {
                                            : payload->flat()->Data();
   const size_t offset = current_chunk_.data() - data;
 
-  CordRepSubstring* tree = new CordRepSubstring();
-  tree->tag = cord_internal::SUBSTRING;
-  tree->length = n;
-  tree->start = offset;
-  tree->child = CordRep::Ref(payload);
-
+  auto* tree = CordRepSubstring::Create(CordRep::Ref(payload), offset, n);
   subcord.contents_.EmplaceTree(VerifyTree(tree), method);
   bytes_remaining_ -= n;
   current_chunk_.remove_prefix(n);

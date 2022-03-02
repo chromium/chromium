@@ -113,6 +113,7 @@ EXPORTS
     ??0?$__split_buffer@UTransition@cctz@time_internal@absl@@AEAV?$allocator@UTransition@cctz@time_internal@absl@@@__1@std@@@__1@std@@QEAA@_K0AEAV?$allocator@UTransition@cctz@time_internal@absl@@@12@@Z
     ??0?$__split_buffer@UTransitionType@cctz@time_internal@absl@@AEAV?$allocator@UTransitionType@cctz@time_internal@absl@@@__1@std@@@__1@std@@QEAA@_K0AEAV?$allocator@UTransitionType@cctz@time_internal@absl@@@12@@Z
     ??0?$__split_buffer@UViableSubstitution@strings_internal@absl@@AEAV?$allocator@UViableSubstitution@strings_internal@absl@@@__1@std@@@__1@std@@QEAA@_K0AEAV?$allocator@UViableSubstitution@strings_internal@absl@@@12@@Z
+    ??0AlphaNum@absl@@QEAA@H@Z
     ??0AlphaNum@absl@@QEAA@UDec@1@@Z
     ??0AlphaNum@absl@@QEAA@UHex@1@@Z
     ??0AlphaNum@absl@@QEAA@_K@Z
@@ -568,6 +569,7 @@ EXPORTS
     ?LockWhen@Mutex@absl@@QEAAXAEBVCondition@2@@Z
     ?LockWhenWithDeadline@Mutex@absl@@QEAA_NAEBVCondition@2@VTime@2@@Z
     ?LockWhenWithTimeout@Mutex@absl@@QEAA_NAEBVCondition@2@VDuration@2@@Z
+    ?LogFatalNodeType@cord_internal@absl@@YAXPEAUCordRep@12@@Z
     ?LowLevelHash@hash_internal@absl@@YA_KPEBX_K1QEB_K@Z
     ?LowLevelHashImpl@MixingHashState@hash_internal@absl@@CA_KPEBE_K@Z
     ?MakeNs@KernelTimeout@synchronization_internal@absl@@CA_JVTime@3@@Z

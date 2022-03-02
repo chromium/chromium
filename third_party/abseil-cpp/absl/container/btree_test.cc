@@ -1762,6 +1762,22 @@ TEST(Btree, ValueComp) {
   EXPECT_FALSE(m2.value_comp()(std::make_pair("b", 0), std::make_pair("a", 0)));
 }
 
+// Test that we have the protected members from the std::map::value_compare API.
+// See https://en.cppreference.com/w/cpp/container/map/value_compare.
+TEST(Btree, MapValueCompProtected) {
+  struct key_compare {
+    bool operator()(int l, int r) const { return l < r; }
+    int id;
+  };
+  using value_compare = absl::btree_map<int, int, key_compare>::value_compare;
+  struct value_comp_child : public value_compare {
+    explicit value_comp_child(key_compare kc) : value_compare(kc) {}
+    int GetId() const { return comp.id; }
+  };
+  value_comp_child c(key_compare{10});
+  EXPECT_EQ(c.GetId(), 10);
+}
+
 TEST(Btree, DefaultConstruction) {
   absl::btree_set<int> s;
   absl::btree_map<int, int> m;

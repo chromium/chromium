@@ -1603,6 +1603,7 @@ EXPORTS
     ?Crash@Helper@internal_statusor@absl@@SAXABVStatus@3@@Z
     ?Create@CordRepBtree@cord_internal@absl@@SAPAV123@PAUCordRep@23@@Z
     ?Create@CordRepRing@cord_internal@absl@@SAPAV123@PAUCordRep@23@I@Z
+    ?Create@CordRepSubstring@cord_internal@absl@@SAPAU123@PAUCordRep@23@II@Z
     ?CreateFromLeaf@CordRepRing@cord_internal@absl@@CAPAV123@PAUCordRep@23@III@Z
     ?CreateSlow@CordRepBtree@cord_internal@absl@@CAPAV123@PAUCordRep@23@@Z
     ?CreateSlow@CordRepRing@cord_internal@absl@@CAPAV123@PAUCordRep@23@I@Z
@@ -2042,6 +2043,7 @@ EXPORTS
     ?LockWhen@Mutex@absl@@QAEXABVCondition@2@@Z
     ?LockWhenWithDeadline@Mutex@absl@@QAE_NABVCondition@2@VTime@2@@Z
     ?LockWhenWithTimeout@Mutex@absl@@QAE_NABVCondition@2@VDuration@2@@Z
+    ?LogFatalNodeType@cord_internal@absl@@YAXPAUCordRep@12@@Z
     ?LogSeverityName@absl@@YAPBDW4LogSeverity@1@@Z
     ?LossyAdd@CordzUpdateTracker@cord_internal@absl@@QAEXABV123@@Z
     ?LossyAdd@CordzUpdateTracker@cord_internal@absl@@QAEXW4MethodIdentifier@123@_J@Z

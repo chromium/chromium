@@ -335,8 +335,27 @@ constexpr bool compare_has_valid_result_type() {
          std::is_convertible<compare_result_type, absl::weak_ordering>::value;
 }
 
+template <typename original_key_compare, typename value_type>
+class map_value_compare {
+  template <typename Params>
+  friend class btree;
+
+  // Note: this `protected` is part of the API of std::map::value_compare. See
+  // https://en.cppreference.com/w/cpp/container/map/value_compare.
+ protected:
+  explicit map_value_compare(original_key_compare c) : comp(std::move(c)) {}
+
+  original_key_compare comp;  // NOLINT
+
+ public:
+  auto operator()(const value_type &lhs, const value_type &rhs) const
+      -> decltype(comp(lhs.first, rhs.first)) {
+    return comp(lhs.first, rhs.first);
+  }
+};
+
 template <typename Key, typename Compare, typename Alloc, int TargetNodeSize,
-          bool Multi, typename SlotPolicy>
+          bool IsMulti, bool IsMap, typename SlotPolicy>
 struct common_params {
   using original_key_compare = Compare;
 
@@ -384,6 +403,12 @@ struct common_params {
   using reference = value_type &;
   using const_reference = const value_type &;
 
+  using value_compare =
+      absl::conditional_t<IsMap,
+                          map_value_compare<original_key_compare, value_type>,
+                          original_key_compare>;
+  using is_map_container = std::integral_constant<bool, IsMap>;
+
   // For the given lookup key type, returns whether we can have multiple
   // equivalent keys in the btree. If this is a multi-container, then we can.
   // Otherwise, we can have multiple equivalent keys only if all of the
@@ -394,9 +419,9 @@ struct common_params {
   //   that we know has the same equivalence classes for all lookup types.
   template <typename LookupKey>
   constexpr static bool can_have_multiple_equivalent_keys() {
-    return Multi || (IsTransparent<key_compare>::value &&
-                     !std::is_same<LookupKey, Key>::value &&
-                     !kIsKeyCompareStringAdapted);
+    return IsMulti || (IsTransparent<key_compare>::value &&
+                       !std::is_same<LookupKey, Key>::value &&
+                       !kIsKeyCompareStringAdapted);
   }
 
   enum {
@@ -435,8 +460,7 @@ struct common_params {
     slot_policy::destroy(alloc, slot);
   }
   static void transfer(Alloc *alloc, slot_type *new_slot, slot_type *old_slot) {
-    construct(alloc, new_slot, old_slot);
-    destroy(alloc, old_slot);
+    slot_policy::transfer(alloc, new_slot, old_slot);
   }
   static void swap(Alloc *alloc, slot_type *a, slot_type *b) {
     slot_policy::swap(alloc, a, b);

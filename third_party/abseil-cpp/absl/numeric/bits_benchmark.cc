@@ -59,7 +59,7 @@ static void BM_bitwidth_nonzero(benchmark::State& state) {
   while (state.KeepRunningBatch(count)) {
     for (int i = 0; i < count; ++i) {
       const T value = values[i];
-      ABSL_INTERNAL_ASSUME(value > 0);
+      ABSL_ASSUME(value > 0);
       benchmark::DoNotOptimize(value);
     }
   }

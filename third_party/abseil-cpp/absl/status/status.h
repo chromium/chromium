@@ -24,11 +24,11 @@
 //   * A set of helper functions for creating status codes and checking their
 //     values
 //
-// Within Google, `absl::Status` is the primary mechanism for gracefully
-// handling errors across API boundaries (and in particular across RPC
-// boundaries). Some of these errors may be recoverable, but others may not.
-// Most functions that can produce a recoverable error should be designed to
-// return an `absl::Status` (or `absl::StatusOr`).
+// Within Google, `absl::Status` is the primary mechanism for communicating
+// errors in C++, and is used to represent error state in both in-process
+// library calls as well as RPC calls. Some of these errors may be recoverable,
+// but others may not. Most functions that can produce a recoverable error
+// should be designed to return an `absl::Status` (or `absl::StatusOr`).
 //
 // Example:
 //

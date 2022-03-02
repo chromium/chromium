@@ -181,22 +181,7 @@
 #define ABSL_PREDICT_TRUE(x) (x)
 #endif
 
-// ABSL_INTERNAL_ASSUME(cond)
-// Informs the compiler that a condition is always true and that it can assume
-// it to be true for optimization purposes. The call has undefined behavior if
-// the condition is false.
-// In !NDEBUG mode, the condition is checked with an assert().
-// NOTE: The expression must not have side effects, as it will only be evaluated
-// in some compilation modes and not others.
-//
-// Example:
-//
-//   int x = ...;
-//   ABSL_INTERNAL_ASSUME(x >= 0);
-//   // The compiler can optimize the division to a simple right shift using the
-//   // assumption specified above.
-//   int y = x / 16;
-//
+// Platform and compilation mode dependent implementation of ABSL_ASSUME.
 #if !defined(NDEBUG)
 #define ABSL_INTERNAL_ASSUME(cond) assert(cond)
 #elif ABSL_HAVE_BUILTIN(__builtin_assume)
@@ -214,6 +199,24 @@
     static_cast<void>(false && (cond)); \
   } while (0)
 #endif
+
+// ABSL_ASSUME(cond)
+// Informs the compiler that a condition is always true and that it can assume
+// it to be true for optimization purposes. The call has undefined behavior if
+// the condition is false.
+// In !NDEBUG mode, the condition is checked with an assert().
+// NOTE: The expression must not have side effects, as it may only be evaluated
+// in some compilation modes and not others.
+//
+// Example:
+//
+//   int x = ...;
+//   ABSL_ASSUME(x >= 0);
+//   // The compiler can optimize the division to a simple right shift using the
+//   // assumption specified above.
+//   int y = x / 16;
+//
+#define ABSL_ASSUME(cond) ABSL_INTERNAL_ASSUME(cond)
 
 // ABSL_INTERNAL_UNIQUE_SMALL_NAME(cond)
 // This macro forces small unique name on a static file level symbols like

@@ -716,7 +716,7 @@ inline void CordRepBtree::AlignBegin() {
     // size, and then do overlapping load/store of up to 4 pointers (inlined as
     // XMM, YMM or ZMM load/store) and up to 2 pointers (XMM / YMM), which is a)
     // compact and b) not clobbering any registers.
-    ABSL_INTERNAL_ASSUME(new_end <= kMaxCapacity);
+    ABSL_ASSUME(new_end <= kMaxCapacity);
 #ifdef __clang__
 #pragma unroll 1
 #endif
@@ -734,7 +734,7 @@ inline void CordRepBtree::AlignEnd() {
     const size_t new_end = end() + delta;
     set_begin(new_begin);
     set_end(new_end);
-    ABSL_INTERNAL_ASSUME(new_end <= kMaxCapacity);
+    ABSL_ASSUME(new_end <= kMaxCapacity);
 #ifdef __clang__
 #pragma unroll 1
 #endif

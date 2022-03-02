@@ -61,7 +61,7 @@ template <typename Key>
 struct set_slot_policy;
 
 template <typename Key, typename Compare, typename Alloc, int TargetNodeSize,
-          bool Multi>
+          bool IsMulti>
 struct set_params;
 
 }  // namespace container_internal
@@ -87,7 +87,7 @@ class btree_set
     : public container_internal::btree_set_container<
           container_internal::btree<container_internal::set_params<
               Key, Compare, Alloc, /*TargetNodeSize=*/256,
-              /*Multi=*/false>>> {
+              /*IsMulti=*/false>>> {
   using Base = typename btree_set::btree_set_container;
 
  public:
@@ -427,7 +427,7 @@ class btree_multiset
     : public container_internal::btree_multiset_container<
           container_internal::btree<container_internal::set_params<
               Key, Compare, Alloc, /*TargetNodeSize=*/256,
-              /*Multi=*/true>>> {
+              /*IsMulti=*/true>>> {
   using Base = typename btree_multiset::btree_multiset_container;
 
  public:
@@ -757,6 +757,12 @@ struct set_slot_policy {
   }
 
   template <typename Alloc>
+  static void transfer(Alloc *alloc, slot_type *new_slot, slot_type *old_slot) {
+    construct(alloc, new_slot, old_slot);
+    destroy(alloc, old_slot);
+  }
+
+  template <typename Alloc>
   static void swap(Alloc * /*alloc*/, slot_type *a, slot_type *b) {
     using std::swap;
     swap(*a, *b);
@@ -771,14 +777,11 @@ struct set_slot_policy {
 // A parameters structure for holding the type parameters for a btree_set.
 // Compare and Alloc should be nothrow copy-constructible.
 template <typename Key, typename Compare, typename Alloc, int TargetNodeSize,
-          bool Multi>
-struct set_params : common_params<Key, Compare, Alloc, TargetNodeSize, Multi,
-                                  set_slot_policy<Key>> {
+          bool IsMulti>
+struct set_params : common_params<Key, Compare, Alloc, TargetNodeSize, IsMulti,
+                                  /*IsMap=*/false, set_slot_policy<Key>> {
   using value_type = Key;
   using slot_type = typename set_params::common_params::slot_type;
-  using value_compare =
-      typename set_params::common_params::original_key_compare;
-  using is_map_container = std::false_type;
 
   template <typename V>
   static const V &key(const V &value) {
