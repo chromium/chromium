@@ -1033,28 +1033,8 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
     NGTableTypes::Rows* rows) {
   if (sections->IsEmpty())
     return;
-  // Redistribute table block size over sections algorithm:
-  // Compute section size guesses:
-  // min_guess_sum is sum of section sizes
-  // percentage_guess_sum is sum of kMinGuess + percentage guesses
 
-  // if table_block_size <= min_guess_sum, there is nothing to distribute.
-
-  // 1. if table_block_size > min_guess_sum distribute size to
-  //    percentage sections.
-  //    Sections grow in proportion to difference between their percentage
-  //    size and min size.
-  //
-  // 2. if table_block_size > percentage_guess_sum distribute size to
-  //    eligible sections.
-  //    Eligible sections:
-  //      if TBODY sections exist, only TBODY sections are eligible.
-  //      otherwise, all sections are eligible.
-  //
-  //    - grow auto eligible sections in proportion to their size
-  //    - grow fixed eligible sections in proportion to their size
-  //    - grow percentage eligible sections in proportion to their size
-
+  // Determine the table's block-size which we can distribute into.
   const LayoutUnit undistributable_space =
       (sections->size() + 1) * border_block_spacing;
   const LayoutUnit distributable_table_block_size =
@@ -1086,6 +1066,7 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
   LayoutUnit tbody_fixed_sections_size;
   LayoutUnit tbody_percent_sections_size;
 
+  // Collect all our different section types.
   for (wtf_size_t index = 0u; index < sections->size(); ++index) {
     const auto& section = sections->at(index);
     minimum_size_guess += section.block_size;
@@ -1093,18 +1074,16 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
         section.percent ? ComputePercentageSize(section) : section.block_size;
     has_tbody |= section.is_tbody;
 
-    if (section.is_constrained) {
-      if (section.percent.has_value()) {
-        percent_sections.push_back(index);
-        if (section.is_tbody)
-          tbody_percent_sections.push_back(index);
-      } else {
-        fixed_sections.push_back(index);
-        fixed_sections_size += section.block_size;
-        if (section.is_tbody) {
-          tbody_fixed_sections.push_back(index);
-          tbody_fixed_sections_size += section.block_size;
-        }
+    if (section.percent) {
+      percent_sections.push_back(index);
+      if (section.is_tbody)
+        tbody_percent_sections.push_back(index);
+    } else if (section.is_constrained) {
+      fixed_sections.push_back(index);
+      fixed_sections_size += section.block_size;
+      if (section.is_tbody) {
+        tbody_fixed_sections.push_back(index);
+        tbody_fixed_sections_size += section.block_size;
       }
     } else {
       auto_sections.push_back(index);
@@ -1116,18 +1095,33 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
     }
   }
 
+  // If the sections minimum size is greater than the distributable size -
+  // there isn't any free space to distribute into.
   if (distributable_table_block_size <= minimum_size_guess)
     return;
 
-  LayoutUnit current_sections_size = minimum_size_guess;
-
-  // Distribute to percent sections.
+  // Grow the (all) the percent sections up to what the percent specifies, and
+  // in proportion to the *difference* between their percent size, and their
+  // minimum size. E.g.
+  //
+  // <table style="height: 100px;">
+  //   <tbody style="height: 50%;"></tbody>
+  // </table>
+  // The above <tbody> will grow to 50px.
+  //
+  // <table style="height: 100px;">
+  //   <thead style="height: 50%;"></thead>
+  //   <tbody style="height: 50%;"><td style="height: 60px;"></td></tbody>
+  //   <tfoot style="height: 50%;"></tfoot>
+  // </table>
+  // The sections will be [20px, 60px, 20px]. The <tbody> doesn't grow as its
+  // hit its minimum, remaining space distributed according to their percent.
   if (!percent_sections.IsEmpty() && percent_size_guess > minimum_size_guess) {
-    LayoutUnit distributable_size =
+    const LayoutUnit distributable_size =
         std::min(percent_size_guess, distributable_table_block_size) -
         minimum_size_guess;
     DCHECK_GE(distributable_size, LayoutUnit());
-    LayoutUnit percent_minimum_difference =
+    const LayoutUnit percent_minimum_difference =
         percent_size_guess - minimum_size_guess;
 
     LayoutUnit remaining_deficit = distributable_size;
@@ -1139,7 +1133,7 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
       section.block_size += delta;
       section.needs_redistribution = true;
       remaining_deficit -= delta;
-      current_sections_size += delta;
+      minimum_size_guess += delta;
       percent_sections_size += section.block_size;
       if (section.is_tbody)
         tbody_percent_sections_size += section.block_size;
@@ -1148,89 +1142,64 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
     last_section.block_size += remaining_deficit;
     DCHECK_GE(last_section.block_size, LayoutUnit());
     percent_sections_size += remaining_deficit;
-    current_sections_size += remaining_deficit;
+    minimum_size_guess += remaining_deficit;
     if (last_section.is_tbody)
       tbody_percent_sections_size += remaining_deficit;
   }
 
-  // Distribute remaining sizes.
+  // Decide which sections to grow, we prefer any <tbody>-like sections over
+  // headers/footers. Then in order:
+  //  - auto sections.
+  //  - fixed sections.
+  //  - percent sections.
+  Vector<wtf_size_t>* sections_to_grow;
+  LayoutUnit sections_size;
+  if (has_tbody) {
+    if (!tbody_auto_sections.IsEmpty()) {
+      sections_to_grow = &tbody_auto_sections;
+      sections_size = tbody_auto_sections_size;
+    } else if (!tbody_fixed_sections.IsEmpty()) {
+      sections_to_grow = &tbody_fixed_sections;
+      sections_size = tbody_fixed_sections_size;
+    } else {
+      DCHECK(!tbody_percent_sections.IsEmpty());
+      sections_to_grow = &tbody_percent_sections;
+      sections_size = tbody_percent_sections_size;
+    }
+  } else {
+    if (!auto_sections.IsEmpty()) {
+      sections_to_grow = &auto_sections;
+      sections_size = auto_sections_size;
+    } else if (!fixed_sections.IsEmpty()) {
+      sections_to_grow = &fixed_sections;
+      sections_size = fixed_sections_size;
+    } else {
+      DCHECK(!percent_sections.IsEmpty());
+      sections_to_grow = &percent_sections;
+      sections_size = percent_sections_size;
+    }
+  }
+
+  // Distribute remaining size, evenly across the sections.
   LayoutUnit distributable_size =
-      distributable_table_block_size - current_sections_size;
+      distributable_table_block_size - minimum_size_guess;
   if (distributable_size > LayoutUnit()) {
     LayoutUnit remaining_deficit = distributable_size;
-    if (!tbody_auto_sections.IsEmpty() ||
-        (!has_tbody && !auto_sections.IsEmpty())) {
-      // Distribute to auto sections.
-      // Sections grow by ratio of their size / total auto sizes.
-      LayoutUnit total_auto_size =
-          has_tbody ? tbody_auto_sections_size : auto_sections_size;
-      Vector<wtf_size_t>& sections_to_grow =
-          has_tbody ? tbody_auto_sections : auto_sections;
-      for (auto& index : sections_to_grow) {
-        auto& section = sections->at(index);
-        LayoutUnit delta;
-        if (total_auto_size > LayoutUnit()) {
-          delta =
-              distributable_size.MulDiv(section.block_size, total_auto_size);
-        } else {
-          delta = distributable_size / sections_to_grow.size();
-        }
-        section.block_size += delta;
-        section.needs_redistribution = true;
-        remaining_deficit -= delta;
+    for (auto& index : *sections_to_grow) {
+      auto& section = sections->at(index);
+      LayoutUnit delta;
+      if (sections_size > LayoutUnit()) {
+        delta = distributable_size.MulDiv(section.block_size, sections_size);
+      } else {
+        delta = distributable_size / sections_to_grow->size();
       }
-      auto& last_section = sections->at(sections_to_grow.back());
-      last_section.block_size += remaining_deficit;
-      DCHECK_GE(last_section.block_size, LayoutUnit());
-    } else if (!tbody_fixed_sections.IsEmpty() ||
-               (!has_tbody && !fixed_sections.IsEmpty())) {
-      // Distribute to fixed sections.
-      // Sections grow by ratio of their size / total fixed sizes.
-      LayoutUnit total_fixed_size =
-          has_tbody ? tbody_fixed_sections_size : fixed_sections_size;
-      Vector<wtf_size_t>& sections_to_grow =
-          has_tbody ? tbody_fixed_sections : fixed_sections;
-      for (auto& index : sections_to_grow) {
-        auto& section = sections->at(index);
-        LayoutUnit delta;
-        if (total_fixed_size > LayoutUnit()) {
-          delta =
-              distributable_size.MulDiv(section.block_size, total_fixed_size);
-        } else {
-          delta = distributable_size / sections_to_grow.size();
-        }
-        section.block_size += delta;
-        section.needs_redistribution = true;
-        remaining_deficit -= delta;
-      }
-      auto& last_section = sections->at(sections_to_grow.back());
-      last_section.block_size += remaining_deficit;
-      DCHECK_GE(last_section.block_size, LayoutUnit());
-    } else {
-      DCHECK(!tbody_percent_sections.IsEmpty() ||
-             (!has_tbody && !percent_sections.IsEmpty()));
-      // Distribute to percentage sections.
-      LayoutUnit total_percent_size =
-          has_tbody ? tbody_percent_sections_size : percent_sections_size;
-      Vector<wtf_size_t>& sections_to_grow =
-          has_tbody ? tbody_percent_sections : percent_sections;
-      for (auto& index : sections_to_grow) {
-        auto& section = sections->at(index);
-        LayoutUnit delta;
-        if (total_percent_size > LayoutUnit()) {
-          delta =
-              distributable_size.MulDiv(section.block_size, total_percent_size);
-        } else {
-          delta = distributable_size / sections_to_grow.size();
-        }
-        section.block_size += delta;
-        section.needs_redistribution = true;
-        remaining_deficit -= delta;
-      }
-      auto& last_section = sections->at(sections_to_grow.back());
-      last_section.block_size += remaining_deficit;
-      DCHECK_GE(last_section.block_size, LayoutUnit());
+      section.block_size += delta;
+      section.needs_redistribution = true;
+      remaining_deficit -= delta;
     }
+    auto& last_section = sections->at(sections_to_grow->back());
+    last_section.block_size += remaining_deficit;
+    DCHECK_GE(last_section.block_size, LayoutUnit());
   }
 
   // Propagate new section sizes to rows.

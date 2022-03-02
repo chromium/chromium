@@ -1332,6 +1332,8 @@ crbug.com/958381 external/wpt/css/css-tables/tentative/paint/background-image-co
 crbug.com/958381 external/wpt/css/css-tables/tentative/paint/collapsed-border-large-cell.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/position-sticky-container.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/rowspan-height-redistribution.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/section-no-tbody-fixed-distribution.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/section-no-tbody-percent-distribution.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-height-redistribution.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-minmax.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-width-redistribution.html [ Failure ]
