@@ -32,10 +32,15 @@ class ProjectorAnnotationTray : public TrayBackgroundView {
   void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
 
  private:
-  // Deactives any annotation tool that is currently enabled and update the UI.
+  void ToggleAnnotator();
+  void EnableAnnotatorTool();
+  // Deactivates any annotation tool that is currently enabled and updates the
+  // UI.
   void DeactivateActiveTool();
 
   // Updates the icon in the status area.

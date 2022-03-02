@@ -96,17 +96,27 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
 ProjectorAnnotationTray::~ProjectorAnnotationTray() = default;
 
 bool ProjectorAnnotationTray::PerformAction(const ui::Event& event) {
-  if (bubble_) {
-    CloseBubble();
-  } else {
-    if (GetCurrentTool() == kToolNone) {
-      ShowBubble();
-    } else {
-      DeactivateActiveTool();
-    }
-  }
-
+  ToggleAnnotator();
   return true;
+}
+
+void ProjectorAnnotationTray::OnMouseEvent(ui::MouseEvent* event) {
+  if (event->type() != ui::ET_MOUSE_PRESSED) {
+    return;
+  }
+  if (event->IsRightMouseButton()) {
+    ShowBubble();
+  } else if (event->IsLeftMouseButton()) {
+    ToggleAnnotator();
+  }
+}
+
+void ProjectorAnnotationTray::OnGestureEvent(ui::GestureEvent* event) {
+  if (event->details().type() == ui::ET_GESTURE_LONG_PRESS) {
+    ShowBubble();
+  } else if (event->details().type() == ui::ET_GESTURE_TAP) {
+    ToggleAnnotator();
+  }
 }
 
 void ProjectorAnnotationTray::ClickedOutsideBubble() {
@@ -138,10 +148,6 @@ void ProjectorAnnotationTray::ShowBubble() {
     return;
 
   DCHECK(tray_container());
-
-  // There may still be an active tool if show bubble was called from an
-  // accelerator.
-  DeactivateActiveTool();
 
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
@@ -230,11 +236,28 @@ void ProjectorAnnotationTray::OnThemeChanged() {
   UpdateIcon();
 }
 
+void ProjectorAnnotationTray::ToggleAnnotator() {
+  if (GetCurrentTool() == kToolNone) {
+    EnableAnnotatorTool();
+  } else {
+    DeactivateActiveTool();
+  }
+  if (bubble_) {
+    CloseBubble();
+  }
+  UpdateIcon();
+}
+
+void ProjectorAnnotationTray::EnableAnnotatorTool() {
+  auto* controller = Shell::Get()->projector_controller();
+  DCHECK(controller);
+  controller->OnMarkerPressed();
+}
+
 void ProjectorAnnotationTray::DeactivateActiveTool() {
   auto* controller = Shell::Get()->projector_controller();
   DCHECK(controller);
   controller->ResetTools();
-  UpdateIcon();
 }
 
 void ProjectorAnnotationTray::UpdateIcon() {
@@ -243,14 +266,13 @@ void ProjectorAnnotationTray::UpdateIcon() {
       GetIconForTool(tool),
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  SetIsActive(GetCurrentTool() == kToolNone);
 }
 
 void ProjectorAnnotationTray::OnPenColorPressed(SkColor color) {
   // TODO(b/201664243) Pass the color for the marker.
-  auto* projector_controller = ProjectorControllerImpl::Get();
-  DCHECK(projector_controller);
-  projector_controller->OnMarkerPressed();
   CloseBubble();
+  UpdateIcon();
 }
 
 }  // namespace ash
