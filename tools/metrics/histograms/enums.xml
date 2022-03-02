@@ -55169,6 +55169,7 @@ from previous Chrome versions.
   <int value="482232604" label="PercentBasedScrolling:enabled"/>
   <int value="482429100"
       label="OmniboxClobberIsZeroSuggestEntrypoint:disabled"/>
+  <int value="482577697" label="PdfOcr:enabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
   <int value="484581911" label="ServiceWorkerSubresourceFilter:disabled"/>
   <int value="484596410" label="EnterpriseRealtimeExtensionRequest:disabled"/>
@@ -56691,6 +56692,7 @@ from previous Chrome versions.
   <int value="1561781431" label="VirtualKeyboardBorderedKey:enabled"/>
   <int value="1562855415" label="WebRtcUseMinMaxVEADimensions:disabled"/>
   <int value="1563255033" label="memlog-stack-mode"/>
+  <int value="1566945988" label="PdfOcr:disabled"/>
   <int value="1567695310" label="CrostiniBullseyeUpgrade:disabled"/>
   <int value="1567839560"
       label="ChromeHomePersonalizedOmniboxSuggestions:disabled"/>

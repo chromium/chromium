@@ -7237,6 +7237,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"pdf-ocr", flag_descriptions::kPdfOcrName,
+     flag_descriptions::kPdfOcrDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPdfOcr)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     {"pdf-xfa-forms", flag_descriptions::kPdfXfaFormsName,
      flag_descriptions::kPdfXfaFormsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfXfaSupport)},

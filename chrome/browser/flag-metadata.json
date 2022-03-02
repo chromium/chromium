@@ -4793,6 +4793,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "pdf-ocr",
+    "owners": [ "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "pdf-xfa-forms",
     "owners": [ "carlosil", "tsepez" ],
     "expiry_milestone": 105

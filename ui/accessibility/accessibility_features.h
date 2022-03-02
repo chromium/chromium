@@ -182,6 +182,20 @@ AX_BASE_EXPORT extern const base::Feature kReaderModeSidePanel;
 // side panel.
 AX_BASE_EXPORT bool IsReaderModeSidePanelEnabled();
 
+#if !BUILDFLAG(IS_ANDROID)
+
+// Enables a feature whereby inaccessible (i.e. untagged) PDFs are made
+// accessible using an optical character recognition service. Due to the size of
+// the OCR component, this feature targets desktop versions of Chrome for now.
+AX_BASE_EXPORT extern const base::Feature kPdfOcr;
+
+// Returns true if OCR will be performed on inaccessible (i.e. untagged) PDFs
+// and the resulting text, together with its layout information, will be added
+// to the accessibility tree.
+AX_BASE_EXPORT bool IsPdfOcrEnabled();
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 
 #endif  // UI_ACCESSIBILITY_ACCESSIBILITY_FEATURES_H_
