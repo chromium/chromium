@@ -243,9 +243,17 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   bool AddParsedProperties(const HeapVector<CSSPropertyValue, 256>&);
   bool AddRespectingCascade(const CSSPropertyValue&);
 
-  struct SetResult {
-    bool did_parse;
-    bool did_change;
+  enum SetResult {
+    // The value failed to parse correctly, and thus, there was no change.
+    kParseError,
+
+    // The value parsed correctly, but there was no change,
+    // as it matched the value already in place.
+    kUnchanged,
+
+    // The value parsed correctly, and there was a change.
+    // (This also includes properties being added or removed.)
+    kDidChange,
   };
   // These expand shorthand properties into multiple properties.
   SetResult SetProperty(CSSPropertyID unresolved_property,

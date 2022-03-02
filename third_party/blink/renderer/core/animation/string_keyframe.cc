@@ -62,7 +62,7 @@ MutableCSSPropertyValueSet::SetResult StringKeyframe::SetCSSPropertyValue(
   const CSSValue* parsed_value =
       property_map->GetPropertyCSSValue(custom_property_name);
 
-  if (result.did_parse && parsed_value) {
+  if (result != MutableCSSPropertyValueSet::kParseError && parsed_value) {
     // Per specification we only keep properties around which are parsable.
     input_properties_.Set(PropertyHandle(custom_property_name),
                           MakeGarbageCollected<PropertyResolver>(
@@ -82,9 +82,7 @@ MutableCSSPropertyValueSet::SetResult StringKeyframe::SetCSSPropertyValue(
   const CSSProperty& property = CSSProperty::Get(property_id);
 
   if (CSSAnimations::IsAnimationAffectingProperty(property)) {
-    bool did_parse = true;
-    bool did_change = false;
-    return MutableCSSPropertyValueSet::SetResult{did_parse, did_change};
+    return MutableCSSPropertyValueSet::kUnchanged;
   }
 
   auto* property_value_set = CreateCssPropertyValueSet();
@@ -111,7 +109,7 @@ MutableCSSPropertyValueSet::SetResult StringKeyframe::SetCSSPropertyValue(
   if (is_logical)
     has_logical_property_ = true;
 
-  if (result.did_parse) {
+  if (result != MutableCSSPropertyValueSet::kParseError) {
     // Per specification we only keep properties around which are parsable.
     auto* resolver = MakeGarbageCollected<PropertyResolver>(
         property, property_value_set, is_logical);

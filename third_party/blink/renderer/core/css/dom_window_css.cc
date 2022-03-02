@@ -54,8 +54,7 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
     return CSSParser::ParseValueForCustomProperty(
                dummy_style, "--valid", value, false,
                execution_context->GetSecureContextMode(), nullptr,
-               is_animation_tainted)
-        .did_parse;
+               is_animation_tainted) != MutableCSSPropertyValueSet::kParseError;
   }
 
 #if DCHECK_IS_ON()
@@ -67,8 +66,8 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
   auto* dummy_style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   return CSSParser::ParseValue(dummy_style, unresolved_property, value, false,
-                               execution_context)
-      .did_parse;
+                               execution_context) !=
+         MutableCSSPropertyValueSet::kParseError;
 }
 
 bool DOMWindowCSS::supports(const ExecutionContext* execution_context,

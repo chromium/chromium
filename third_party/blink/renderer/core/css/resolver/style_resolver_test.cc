@@ -918,8 +918,8 @@ TEST_F(StyleResolverTest, ComputeValueStandardProperty) {
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   MutableCSSPropertyValueSet::SetResult result = set->SetProperty(
       property_id, "var(--color)", false, SecureContextMode::kInsecureContext,
-      /*style_sheet_contents=*/nullptr);
-  ASSERT_TRUE(result.did_parse);
+      /*context_style_sheet=*/nullptr);
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError, result);
   const CSSValue* parsed_value = set->GetPropertyCSSValue(property_id);
   ASSERT_TRUE(parsed_value);
   const CSSValue* computed_value = StyleResolver::ComputeValue(

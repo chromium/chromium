@@ -478,7 +478,7 @@ void SVGAnimateElement::ApplyResultsToTarget(
         css_property_id_, animated_value_string, false,
         document.GetExecutionContext()->GetSecureContextMode(),
         document.ElementSheet().Contents());
-    if (set_result.did_change) {
+    if (set_result == MutableCSSPropertyValueSet::kDidChange) {
       target_element->SetNeedsStyleRecalc(
           kLocalStyleChange,
           StyleChangeReasonForTracing::Create(style_change_reason::kAnimation));

@@ -122,13 +122,12 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseValue(
   CSSTokenizedValue tokenized_value = ConsumeValue(stream);
   parser.ConsumeDeclarationValue(tokenized_value, unresolved_property,
                                  important, rule_type);
-  bool did_parse = false;
-  bool did_change = false;
-  if (!parser.parsed_properties_.IsEmpty()) {
-    did_parse = true;
-    did_change = declaration->AddParsedProperties(parser.parsed_properties_);
+  if (parser.parsed_properties_.IsEmpty()) {
+    return MutableCSSPropertyValueSet::kParseError;
+  } else if (!declaration->AddParsedProperties(parser.parsed_properties_)) {
+    return MutableCSSPropertyValueSet::kUnchanged;
   }
-  return MutableCSSPropertyValueSet::SetResult{did_parse, did_change};
+  return MutableCSSPropertyValueSet::kDidChange;
 }
 
 MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
@@ -144,13 +143,13 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
   CSSTokenizedValue tokenized_value = ConsumeValue(stream);
   parser.ConsumeVariableValue(tokenized_value, property_name, important,
                               is_animation_tainted);
-  bool did_parse = false;
-  bool did_change = false;
-  if (!parser.parsed_properties_.IsEmpty()) {
-    did_parse = true;
-    did_change = declaration->AddParsedProperties(parser.parsed_properties_);
+  if (parser.parsed_properties_.IsEmpty()) {
+    return MutableCSSPropertyValueSet::kParseError;
+  } else {
+    return declaration->AddParsedProperties(parser.parsed_properties_)
+               ? MutableCSSPropertyValueSet::kDidChange
+               : MutableCSSPropertyValueSet::kUnchanged;
   }
-  return MutableCSSPropertyValueSet::SetResult{did_parse, did_change};
 }
 
 static inline void FilterProperties(

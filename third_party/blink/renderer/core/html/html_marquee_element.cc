@@ -252,14 +252,14 @@ StringKeyframeEffectModel* HTMLMarqueeElement::CreateEffectModel(
   set_result = keyframe1->SetCSSPropertyValue(
       CSSPropertyID::kTransform, parameters.transform_begin,
       secure_context_mode, style_sheet_contents);
-  DCHECK(set_result.did_parse);
+  DCHECK_NE(MutableCSSPropertyValueSet::kParseError, set_result);
   keyframes.push_back(keyframe1);
 
   auto* keyframe2 = MakeGarbageCollected<StringKeyframe>();
   set_result = keyframe2->SetCSSPropertyValue(
       CSSPropertyID::kTransform, parameters.transform_end, secure_context_mode,
       style_sheet_contents);
-  DCHECK(set_result.did_parse);
+  DCHECK(set_result != MutableCSSPropertyValueSet::kParseError);
   keyframes.push_back(keyframe2);
 
   return MakeGarbageCollected<StringKeyframeEffectModel>(

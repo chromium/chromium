@@ -110,9 +110,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     const ExecutionContext* execution_context) {
   DCHECK(ThreadState::Current()->IsAllocationAllowed());
   if (string.IsEmpty()) {
-    bool did_parse = false;
-    bool did_change = false;
-    return MutableCSSPropertyValueSet::SetResult{did_parse, did_change};
+    return MutableCSSPropertyValueSet::kParseError;
   }
 
   CSSPropertyID resolved_property = ResolveCSSPropertyID(unresolved_property);
@@ -120,10 +118,10 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
   CSSValue* value = CSSParserFastPaths::MaybeParseValue(resolved_property,
                                                         string, parser_mode);
   if (value) {
-    bool did_parse = true;
-    bool did_change = declaration->SetProperty(CSSPropertyValue(
-        CSSPropertyName(resolved_property), *value, important));
-    return MutableCSSPropertyValueSet::SetResult{did_parse, did_change};
+    return declaration->SetProperty(CSSPropertyValue(
+               CSSPropertyName(resolved_property), *value, important))
+               ? MutableCSSPropertyValueSet::kDidChange
+               : MutableCSSPropertyValueSet::kUnchanged;
   }
   CSSParserContext* context;
   if (style_sheet) {
@@ -155,9 +153,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValueForCustomProperty(
   DCHECK(ThreadState::Current()->IsAllocationAllowed());
   DCHECK(CSSVariableParser::IsValidVariableName(property_name));
   if (value.IsEmpty()) {
-    bool did_parse = false;
-    bool did_change = false;
-    return MutableCSSPropertyValueSet::SetResult{did_parse, did_change};
+    return MutableCSSPropertyValueSet::kParseError;
   }
   CSSParserMode parser_mode = declaration->CssParserMode();
   CSSParserContext* context;

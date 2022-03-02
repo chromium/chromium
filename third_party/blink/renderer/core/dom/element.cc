@@ -6924,13 +6924,12 @@ bool Element::SetInlineStyleProperty(CSSPropertyID property_id,
   DCHECK_NE(property_id, CSSPropertyID::kVariable);
   DCHECK(IsStyledElement());
   bool did_change =
-      EnsureMutableInlineStyle()
-          .SetProperty(property_id, value, important,
-                       GetExecutionContext()
-                           ? GetExecutionContext()->GetSecureContextMode()
-                           : SecureContextMode::kInsecureContext,
-                       GetDocument().ElementSheet().Contents())
-          .did_change;
+      EnsureMutableInlineStyle().SetProperty(
+          property_id, value, important,
+          GetExecutionContext() ? GetExecutionContext()->GetSecureContextMode()
+                                : SecureContextMode::kInsecureContext,
+          GetDocument().ElementSheet().Contents()) ==
+      MutableCSSPropertyValueSet::kDidChange;
   if (did_change)
     InlineStyleChanged();
   return did_change;

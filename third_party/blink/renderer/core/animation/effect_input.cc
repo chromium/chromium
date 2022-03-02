@@ -111,7 +111,8 @@ void SetKeyframeValue(Element* element,
             : keyframe.SetCSSPropertyValue(css_property, value,
                                            secure_context_mode,
                                            style_sheet_contents);
-    if (!set_result.did_parse && execution_context) {
+    if (set_result == MutableCSSPropertyValueSet::kParseError &&
+        execution_context) {
       if (document.GetFrame()) {
         document.GetFrame()->Console().AddMessage(
             MakeGarbageCollected<ConsoleMessage>(

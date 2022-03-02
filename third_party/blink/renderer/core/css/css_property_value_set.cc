@@ -366,9 +366,9 @@ MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
   // and Gecko. Setting it to null seems to produce less consistent results, but
   // we treat it just the same.
   if (value.IsEmpty()) {
-    bool did_parse = true;
-    bool did_change = RemoveProperty(ResolveCSSPropertyID(unresolved_property));
-    return SetResult{did_parse, did_change};
+    return RemoveProperty(ResolveCSSPropertyID(unresolved_property))
+               ? kDidChange
+               : kUnchanged;
   }
 
   // When replacing an existing property value, this moves the property to the
@@ -386,9 +386,7 @@ MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
     StyleSheetContents* context_style_sheet,
     bool is_animation_tainted) {
   if (value.IsEmpty()) {
-    bool did_parse = true;
-    bool did_change = RemoveProperty(custom_property_name);
-    return MutableCSSPropertyValueSet::SetResult{did_parse, did_change};
+    return RemoveProperty(custom_property_name) ? kDidChange : kUnchanged;
   }
   return CSSParser::ParseValueForCustomProperty(
       this, custom_property_name, value, important, secure_context_mode,
