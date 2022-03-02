@@ -6725,17 +6725,22 @@ void RenderFrameHostImpl::CreateNewWindow(
           effective_transient_activation_state, params->opener_suppressed,
           &no_javascript_access);
 
-  bool was_consumed = false;
-  if (can_create_window) {
-    // Consume activation even w/o User Activation v2, to sync other renderers
-    // with calling renderer.
-    was_consumed = frame_tree_node_->UpdateUserActivationState(
-        blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
-        blink::mojom::UserActivationNotificationType::kNone);
-  } else {
-    std::move(callback).Run(mojom::CreateNewWindowStatus::kIgnore, nullptr);
+  // If this frame isn't allowed to create a window, return early (before we
+  // consume transient user activation).
+  if (!can_create_window) {
+    std::move(callback).Run(mojom::CreateNewWindowStatus::kBlocked, nullptr);
     return;
   }
+
+  // Otherwise, consume user activation before we proceed. In particular, it is
+  // important to do this before we return from the |opener_suppressed| case
+  // below.
+  // NB: This call will consume activations in the browser and the remote frame
+  // proxies for this frame. The initiating renderer will consume its view of
+  // the activations after we return.
+  bool was_consumed = frame_tree_node_->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+      blink::mojom::UserActivationNotificationType::kNone);
 
   // For Android WebView, we support a pop-up like behavior for window.open()
   // even if the embedding app doesn't support multiple windows. In this case,

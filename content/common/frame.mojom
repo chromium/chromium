@@ -554,8 +554,10 @@ struct CreateNewWindowParams {
 
 // Operation result when the renderer asks the browser to create a new window.
 enum CreateNewWindowStatus {
-  // Ignore creation of the new window. This can happen because creation is
-  // blocked or because the new window should have no opener relationship.
+  // Creation of the new window was blocked, e.g. because the source frame
+  // doesn't have user activation.
+  kBlocked,
+  // Ignore creation of the new window, e.g. because noopener is in effect.
   kIgnore,
   // Reuse the current window rather than creating a new window.
   kReuse,
