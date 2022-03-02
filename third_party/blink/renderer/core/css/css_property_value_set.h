@@ -239,22 +239,29 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
 
   unsigned PropertyCount() const { return property_vector_.size(); }
 
-  // Returns whether this style set was changed.
-  bool AddParsedProperties(const HeapVector<CSSPropertyValue, 256>&);
-  bool AddRespectingCascade(const CSSPropertyValue&);
-
   enum SetResult {
     // The value failed to parse correctly, and thus, there was no change.
-    kParseError,
+    kParseError = 0,
 
     // The value parsed correctly, but there was no change,
     // as it matched the value already in place.
-    kUnchanged,
+    kUnchanged = 1,
 
-    // The value parsed correctly, and there was a change.
-    // (This also includes properties being added or removed.)
-    kDidChange,
+    // The value parsed correctly, and there was a change to a property that
+    // already existed.
+    kModifiedExisting = 2,
+
+    // The value parsed correctly, and caused a property to be added or
+    // modified. (If you do not care whether it did, you can compare the
+    // enum using result >= kModifiedExisting.)
+    kChangedPropertySet = 3,
   };
+
+  SetResult AddParsedProperties(const HeapVector<CSSPropertyValue, 256>&);
+
+  // Returns whether this style set was changed.
+  bool AddRespectingCascade(const CSSPropertyValue&);
+
   // These expand shorthand properties into multiple properties.
   SetResult SetProperty(CSSPropertyID unresolved_property,
                         const String& value,
@@ -273,10 +280,11 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   void SetProperty(CSSPropertyID, const CSSValue&, bool important = false);
 
   // These do not. FIXME: This is too messy, we can do better.
-  bool SetProperty(CSSPropertyID,
-                   CSSValueID identifier,
-                   bool important = false);
-  bool SetProperty(const CSSPropertyValue&, CSSPropertyValue* slot = nullptr);
+  SetResult SetProperty(CSSPropertyID,
+                        CSSValueID identifier,
+                        bool important = false);
+  SetResult SetProperty(const CSSPropertyValue&,
+                        CSSPropertyValue* slot = nullptr);
 
   template <typename T>  // CSSPropertyID or AtomicString
   bool RemoveProperty(const T& property, String* return_text = nullptr);

@@ -124,10 +124,8 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseValue(
                                  important, rule_type);
   if (parser.parsed_properties_.IsEmpty()) {
     return MutableCSSPropertyValueSet::kParseError;
-  } else if (!declaration->AddParsedProperties(parser.parsed_properties_)) {
-    return MutableCSSPropertyValueSet::kUnchanged;
   }
-  return MutableCSSPropertyValueSet::kDidChange;
+  return declaration->AddParsedProperties(parser.parsed_properties_);
 }
 
 MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
@@ -146,9 +144,7 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
   if (parser.parsed_properties_.IsEmpty()) {
     return MutableCSSPropertyValueSet::kParseError;
   } else {
-    return declaration->AddParsedProperties(parser.parsed_properties_)
-               ? MutableCSSPropertyValueSet::kDidChange
-               : MutableCSSPropertyValueSet::kUnchanged;
+    return declaration->AddParsedProperties(parser.parsed_properties_);
   }
 }
 

@@ -200,13 +200,13 @@ void AbstractPropertySetCSSStyleDeclaration::SetPropertyInternal(
     bool is_animation_tainted = IsKeyframeStyle();
     did_change = PropertySet().SetProperty(
                      atomic_name, value, important, secure_context_mode,
-                     ContextStyleSheet(), is_animation_tainted) ==
-                 MutableCSSPropertyValueSet::kDidChange;
+                     ContextStyleSheet(), is_animation_tainted) >=
+                 MutableCSSPropertyValueSet::kModifiedExisting;
   } else {
     did_change =
         PropertySet().SetProperty(unresolved_property, value, important,
-                                  secure_context_mode, ContextStyleSheet()) ==
-        MutableCSSPropertyValueSet::kDidChange;
+                                  secure_context_mode, ContextStyleSheet()) >=
+        MutableCSSPropertyValueSet::kModifiedExisting;
   }
 
   DidMutate(did_change ? kPropertyChanged : kNoChanges);

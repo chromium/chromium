@@ -6928,8 +6928,8 @@ bool Element::SetInlineStyleProperty(CSSPropertyID property_id,
           property_id, value, important,
           GetExecutionContext() ? GetExecutionContext()->GetSecureContextMode()
                                 : SecureContextMode::kInsecureContext,
-          GetDocument().ElementSheet().Contents()) ==
-      MutableCSSPropertyValueSet::kDidChange;
+          GetDocument().ElementSheet().Contents()) >=
+      MutableCSSPropertyValueSet::kModifiedExisting;
   if (did_change)
     InlineStyleChanged();
   return did_change;
