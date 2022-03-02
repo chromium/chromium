@@ -66,7 +66,7 @@ to install the Debugging Tools.
 ## Install `depot_tools`
 
 Download the [depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
-and extract it somewhere.
+and extract it somewhere (eg: C:\src\depot_tools).
 
 *** note
 **Warning:** **DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
@@ -76,7 +76,9 @@ context menu though.
 ***
 
 Add depot_tools to the start of your PATH (must be ahead of any installs of
-Python). Assuming you unzipped the bundle to C:\src\depot_tools, open:
+Python. Note that environment variable names are case insensitive).
+
+Assuming you unzipped the bundle to C:\src\depot_tools, open:
 
 Control Panel → System and Security → System → Advanced system settings
 
@@ -85,8 +87,11 @@ put `C:\src\depot_tools` at the front (or at least in front of any directory
 that might already have a copy of Python or Git).
 
 If you don't have Administrator access, you can add a user-level PATH
-environment variable and put `C:\src\depot_tools` at the front, but
-if your system PATH has a Python in it, you will be out of luck.
+environment variable by opening:
+
+Control Panel → System and Security → System → Search for "Edit environment variables for your account"
+
+Add `C:\src\depot_tools` at the front. Note: If your system PATH has a Python in it, you will be out of luck.
 
 Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN system variable in the same way, and set
 it to 0. This tells depot_tools to use your locally installed version of Visual
