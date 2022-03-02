@@ -54,6 +54,14 @@ class CertBuilder {
       const base::FilePath& cert_and_key_file,
       CertBuilder* issuer);
 
+  // Initializes a CertBuilder that will return a certificate for the provided
+  // public key |spki_der|. It will be signed with the |issuer|, this builder
+  // will not have a private key, so it cannot produce self-signed certificates
+  // and |issuer| cannot be null.
+  static std::unique_ptr<CertBuilder> FromSubjectPublicKeyInfo(
+      base::span<const uint8_t> spki_der,
+      CertBuilder* issuer);
+
   // Creates a CertBuilder that will return a static |cert| and |key|.
   // This may be passed as the |issuer| param of another CertBuilder to create
   // a cert chain that ends in a pre-defined certificate.

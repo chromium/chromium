@@ -4336,7 +4336,6 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h",
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
-      "../browser/lacros/cert_db_initializer_browsertest.cc",
       "../browser/lacros/device_attributes_lacros_browsertest.cc",
 
       # download_controller_client_lacros_browsertest.cc should become a unit
@@ -4387,6 +4386,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/browser_service_lacros_browsertest.cc",
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
+      "../browser/lacros/cert_db_initializer_browsertest.cc",
       "../browser/lacros/clipboard_lacros_browsertest.cc",
       "../browser/lacros/crosapi_pref_observer_lacros_browsertest.cc",
       "../browser/lacros/holding_space_service_lacros_browsertest.cc",
@@ -4422,6 +4422,7 @@ if (is_chromeos_lacros) {
       "//chrome/app:command_ids",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/web_applications:web_applications_test_support",
+      "//chromeos/crosapi/cpp:cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",

@@ -134,6 +134,24 @@ std::unique_ptr<CertBuilder> CertBuilder::FromStaticCertFile(
   return CertBuilder::FromStaticCert(cert->cert_buffer(), private_key.get());
 }
 
+// static
+std::unique_ptr<CertBuilder> CertBuilder::FromSubjectPublicKeyInfo(
+    base::span<const uint8_t> spki_der,
+    CertBuilder* issuer) {
+  DCHECK(issuer);
+  auto builder = std::make_unique<CertBuilder>(/*orig_cert=*/nullptr, issuer);
+
+  CBS cbs;
+  CBS_init(&cbs, spki_der.data(), spki_der.size());
+  builder->key_ = bssl::UniquePtr<EVP_PKEY>(EVP_parse_public_key(&cbs));
+  // Check that there was no error in `EVP_parse_public_key` and that it
+  // consumed the entire public key.
+  if (!builder->key_ || (CBS_len(&cbs) != 0))
+    return nullptr;
+
+  return builder;
+}
+
 CertBuilder::~CertBuilder() = default;
 
 // static

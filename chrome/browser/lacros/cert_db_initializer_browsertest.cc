@@ -17,12 +17,17 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "net/cert/cert_database.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -122,6 +127,54 @@ void ImportCaCert(Profile* profile) {
   return future.Get();
 }
 
+// Generates an x509 client certificate for the `public_key_spki` and returns it
+// as a DER-encoded certificate.
+[[nodiscard]] std::vector<uint8_t> GenerateClientCertForPublicKey(
+    const std::vector<uint8_t>& public_key_spki) {
+  auto cert_builder = net::CertBuilder::FromSubjectPublicKeyInfo(
+      public_key_spki,
+      /*issuer=*/new net::CertBuilder(/*orig_cert=*/nullptr,
+                                      /*issuer=*/nullptr));
+  cert_builder->SetSignatureAlgorithmRsaPkca1(net::DigestAlgorithm::Sha256);
+  cert_builder->SetValidity(base::Time::Now(),
+                            base::Time::Now() + base::Days(30));
+
+  auto scoped_cert = cert_builder->GetX509Certificate();
+  auto cert_span =
+      net::x509_util::CryptoBufferAsSpan(scoped_cert->cert_buffer());
+  return std::vector<uint8_t>(cert_span.begin(), cert_span.end());
+}
+
+// Observes notifications about cert database changes during its lifetime.
+class ScopedCertDatabaseObserver : public net::CertDatabase::Observer {
+ public:
+  ScopedCertDatabaseObserver() {
+    net::CertDatabase::GetInstance()->AddObserver(this);
+  }
+  ~ScopedCertDatabaseObserver() override {
+    net::CertDatabase::GetInstance()->RemoveObserver(this);
+  }
+
+  void OnCertDBChanged() override {
+    notifications_received_++;
+    run_loop_.Quit();
+  }
+
+  // Waits for the next CertDBChanged notification if none were observed so far.
+  // Returns the amount of notifications received since creation. The counter is
+  // mostly used to detect unexpected notifications that could cause flakiness /
+  // false positives.
+  size_t Wait() {
+    // Noop if Quit() was ever called.
+    run_loop_.Run();
+    return notifications_received_;
+  }
+
+ private:
+  size_t notifications_received_ = 0;
+  base::RunLoop run_loop_;
+};
+
 class CertDbInitializerTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
@@ -173,5 +226,61 @@ IN_PROC_BROWSER_TEST_F(CertDbInitializerTest,
 IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, DISABLED_ImmediatelyAfterLaunch) {
   EXPECT_EQ(net::OK, VerifyServerCert(browser()->profile()));
 }
+
+// Tests that when Ash imports a new certificate, Lacros receives a
+// notification about it.
+IN_PROC_BROWSER_TEST_F(CertDbInitializerTest,
+                       DISABLED_CertsChangedNotificationFromAsh) {
+  auto& keystore_crosapi = chromeos::LacrosService::Get()
+                               ->GetRemote<crosapi::mojom::KeystoreService>();
+
+  // This test uses the Keystore mojo API to make Ash import a cert. Ash will
+  // only successfully import a cert if it owns a key pair associated with it.
+  // This call generates a new key pair.
+  base::test::TestFuture<crosapi::mojom::KeystoreBinaryResultPtr>
+      generate_key_result;
+  keystore_crosapi->GenerateKey(
+      crosapi::mojom::KeystoreType::kUser,
+      crosapi::keystore_service_util::MakeRsaKeystoreSigningAlgorithm(
+          /*modulus_length=*/2048, /*sw_backed=*/false),
+      generate_key_result.GetCallback());
+  ASSERT_FALSE(generate_key_result.Get()->is_error());
+
+  std::vector<uint8_t> client_cert =
+      GenerateClientCertForPublicKey(generate_key_result.Get()->get_blob());
+
+  ScopedCertDatabaseObserver observer;
+
+  // Generate and import a certificate.
+  base::test::TestFuture<bool /*is_error*/, crosapi::mojom::KeystoreError>
+      add_cert_result;
+  keystore_crosapi->AddCertificate(crosapi::mojom::KeystoreType::kUser,
+                                   client_cert, add_cert_result.GetCallback());
+  ASSERT_FALSE(add_cert_result.Get<0>())
+      << "Error: " << add_cert_result.Get<1>();
+
+  // Wait for the notification from Ash about cert database changes.
+  // If there are more than one, most likely there are other sources of changes
+  // in the background and the test should be rewritten somehow.
+  EXPECT_EQ(1u, observer.Wait());
+
+  // Check that the cert was actually imported.
+  base::test::TestFuture<crosapi::mojom::GetCertificatesResultPtr>
+      get_certs_result;
+  keystore_crosapi->GetCertificates(crosapi::mojom::KeystoreType::kUser,
+                                    get_certs_result.GetCallback());
+  ASSERT_FALSE(get_certs_result.Get()->is_error());
+  EXPECT_TRUE(
+      base::Contains(get_certs_result.Get()->get_certificates(), client_cert));
+}
+
+// TODO(b/191336682): Add a test similar to CertsChangedNotificationFromAsh, but
+// about system keystore. Right now system slot is not available/emulated in
+// lacros browser tests.
+
+// For a test that covers notifications in Ash when Lacros changes the database,
+// see network.CertSettingsPage tast test. Such a browser test could be written
+// by adding new methods into crosapi.TestController, but their implementation
+// would have a similar complexity to the notification mechanism itself.
 
 }  // namespace
