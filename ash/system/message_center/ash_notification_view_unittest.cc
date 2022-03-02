@@ -20,6 +20,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -192,10 +193,11 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
       EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
     }
 
-    // Ensure there is one more frame presented after animation finishes to
-    // allow animation throughput data to be passed from cc to ui.
-    std::ignore =
-        ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
+    // Force a frame then wait, ensuring there is one more frame presented after
+    // animation finishes to allow animation throughput data to be passed from
+    // cc to ui.
+    compositor->ScheduleFullRedraw();
+    EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
 
     // Smoothness should be recorded.
     histograms.ExpectTotalCount(animation_histogram_name, data_point_count);
@@ -665,8 +667,7 @@ TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
       "Ash.NotificationView.ActionsRow.FadeIn.AnimationSmoothness");
 }
 
-TEST_F(AshNotificationViewTest,
-       DISABLED_ImageExpandCollapseAnimationsRecordSmoothness) {
+TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -731,8 +732,7 @@ TEST_F(AshNotificationViewTest,
                           "ScaleAndTranslate.AnimationSmoothness");
 }
 
-TEST_F(AshNotificationViewTest,
-       DISABLED_GroupExpandCollapseAnimationsRecordSmoothness) {
+TEST_F(AshNotificationViewTest, GroupExpandCollapseAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
@@ -839,8 +839,7 @@ TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {
       "Ash.NotificationView.InlineReply.FadeOut.AnimationSmoothness");
 }
 
-TEST_F(AshNotificationViewTest,
-       DISABLED_InlineSettingsAnimationsRecordSmoothness) {
+TEST_F(AshNotificationViewTest, InlineSettingsAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
