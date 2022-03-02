@@ -54,6 +54,15 @@ void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
                                            int32_t y,
                                            int32_t width,
                                            int32_t height) {
+  aura::Window* target = GetWindow(id);
+  // TODO(crbug.com/1253318): Ensure this works with multiple screens.
+  if (target) {
+    target->SetBounds(gfx::Rect(x, y, width, height));
+  }
+}
+
+aura::Window* WindowManagementImpl::GetWindow(
+    const base::UnguessableToken& id) {
   aura::Window* target = nullptr;
   apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));
@@ -63,10 +72,8 @@ void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
           target = update.Window();
         }
       });
-  // TODO(crbug.com/1253318): Ensure this works with multiple screens.
-  if (target) {
-    target->SetBounds(gfx::Rect(x, y, width, height));
-  }
+
+  return target;
 }
 
 }  // namespace ash

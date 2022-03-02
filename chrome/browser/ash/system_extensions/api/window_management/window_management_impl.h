@@ -7,6 +7,7 @@
 
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
+#include "ui/aura/window.h"
 
 namespace content {
 class BrowserContext;
@@ -28,6 +29,8 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
                        int32_t height) override;
 
  private:
+  aura::Window* GetWindow(const base::UnguessableToken& id);
+
   content::BrowserContext* browser_context_;
 };
 
