@@ -107,9 +107,12 @@ export class DiceWebSigninInterceptAppElement extends
   private handleParametersChanged_(parameters: InterceptionParameters) {
     this.interceptionParameters_ = parameters;
     this.style.setProperty(
-        '--header-background-color', parameters.headerBackgroundColor);
+        '--intercepted-profile-color', parameters.interceptedProfileColor);
+    this.style.setProperty(
+        '--primary-profile-color', parameters.primaryProfileColor);
     this.style.setProperty('--header-text-color', parameters.headerTextColor);
     this.notifyPath('interceptionParameters_.interceptedAccount.isManaged');
+    this.notifyPath('interceptionParameters_.primaryAccount.isManaged');
   }
 }
 

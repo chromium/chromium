@@ -21,9 +21,12 @@ export type InterceptionParameters = {
   confirmButtonLabel: string,
   cancelButtonLabel: string,
   headerTextColor: string,
-  headerBackgroundColor: string,
+  interceptedProfileColor: string,
+  primaryProfileColor: string,
   interceptedAccount: AccountInfo,
+  primaryAccount: AccountInfo,
   showGuestOption: boolean,
+  useV2Design: boolean,
 };
 
 export interface DiceWebSigninInterceptBrowserProxy {

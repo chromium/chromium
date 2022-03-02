@@ -6,11 +6,31 @@
   }
 
   #header {
-    background-color: var(--header-background-color);
+    background-color: var(--intercepted-profile-color);
     color: var(--header-text-color);
     margin-bottom: 16px;
     min-height: 136px;
     position: relative;
+  }
+
+  #headerV2 {
+    --header-width: 290px;
+    --header-height: 140px;
+    left: calc(50% - var(--header-width)/2);
+    min-height: var(--header-height);
+    position: relative;
+    width: var(--header-width);
+  }
+
+  #headerV2 > * {
+    position: absolute;
+  }
+
+  #headerV2 > svg {
+    /* Override from the browser default of 300x150. This is the expected
+       viewport size from when the illustration was designed. */
+    height: var(--header-height);
+    width: var(--header-width);
   }
 
   #headerText {
@@ -24,7 +44,7 @@
     white-space: nowrap;
   }
 
-  #avatar-container {
+  #avatarContainer {
     --avatar-image-width: 60px;
     --avatar-border: 2px;
     --avatar-size: calc(var(--avatar-image-width) + 2 * var(--avatar-border));
@@ -34,7 +54,32 @@
     width: var(--avatar-size);
   }
 
-  #avatar {
+  .avatar-container-v2 {
+    --avatar-image-width: 32px;
+    --avatar-border: 2px;
+    --avatar-size: calc(var(--avatar-image-width) + 2 * var(--avatar-border));
+    height: var(--avatar-size);
+  }
+
+  #avatarPrimary {
+    left: calc(50% + 20px);
+    top: calc(50% - 10px);
+  }
+
+  #avatarIntercepted {
+    left: calc(50% - 55px);
+    top: calc(50% - 22px);
+  }
+
+  #headerImagePrimary {
+    --color-fill: var(--primary-profile-color);
+  }
+
+  #headerImageIntercepted {
+    --color-fill: var(--intercepted-profile-color);
+  }
+
+  .avatar {
     /** The user avatar may be transparent, add a background */
     background-color: var(--md-background-color);
     border: var(--avatar-border) solid var(--md-background-color);
@@ -48,7 +93,7 @@
     --badge-width: 20px;
     --badge-offset: -4px;
     background-color: var(--signin-work-badge-background-color);
-    border: 2px solid var(--header-background-color);
+    border: 2px solid var(--intercepted-profile-color);
     border-radius: 50%;
     bottom: var(--badge-offset);
     height: var(--badge-width);
@@ -109,42 +154,70 @@
   }
 
   #interceptDialog [slot=footer] {
-        background: var(--paper-grey-50);
-        border-top: none;
-        padding: 0;
-      }
+    background: var(--paper-grey-50);
+    border-top: none;
+    padding: 0;
+  }
 
-      @media (prefers-color-scheme: dark) {
-        #interceptDialog [slot=footer] {
-          background: rgb(50, 54, 57);  /* Custom color from Namrata. */
-        }
-      }
+  @media (prefers-color-scheme: dark) {
+    #interceptDialog [slot=footer] {
+      background: rgb(50, 54, 57);  /* Custom color from Namrata. */
+    }
+  }
 
-      .divider {
-        border-top: var(--cr-separator-line);
-      }
+  .divider {
+    border-top: var(--cr-separator-line);
+  }
 
-      #footer-description {
-        color: var(--cr-secondary-text-color);
-        padding: 16px;
-        text-align: center;
-      }
-
+  #footer-description {
+    color: var(--cr-secondary-text-color);
+    padding: 16px;
+    text-align: center;
+  }
 </style>
 
 <div role="dialog" id="interceptDialog" aria-labelledby="title"
      aria-describedby="contents">
-  <div id="header">
-    <div id="headerText">[[interceptionParameters_.headerText]]</div>
-    <div id="avatar-container">
-      <img id="avatar" alt=""
-          src="[[interceptionParameters_.interceptedAccount.pictureUrl]]">
-      <div class="work-badge" id="badge"
-          hidden="[[!interceptionParameters_.interceptedAccount.isManaged]]">
-        <iron-icon class="icon" icon="cr:domain"></iron-icon>
+  <template is="dom-if" if="[[interceptionParameters_.useV2Design]]" restamp>
+    <div id="headerV2">
+      <svg>
+        <use href="images/split_header.svg#primary" id="headerImagePrimary" >
+        </use>
+        <use href="images/split_header.svg#intercepted"
+            id="headerImageIntercepted">
+        </use>
+      </svg>
+      <div class="avatar-container-v2" id="avatarPrimary">
+        <img class="avatar" alt=""
+            src="[[interceptionParameters_.primaryAccount.pictureUrl]]">
+        <div class="work-badge"
+            hidden="[[!interceptionParameters_.primaryAccount.isManaged]]">
+          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+        </div>
+      </div>
+      <div class="avatar-container-v2" id="avatarIntercepted">
+        <img class="avatar" alt=""
+            src="[[interceptionParameters_.interceptedAccount.pictureUrl]]">
+        <div class="work-badge"
+            hidden="[[!interceptionParameters_.interceptedAccount.isManaged]]">
+          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+        </div>
       </div>
     </div>
-  </div>
+  </template>
+  <template is="dom-if" if="[[!interceptionParameters_.useV2Design]]" restamp>
+    <div id="header">
+      <div id="headerText">[[interceptionParameters_.headerText]]</div>
+      <div id="avatarContainer">
+        <img class="avatar" alt=""
+            src="[[interceptionParameters_.interceptedAccount.pictureUrl]]">
+        <div class="work-badge" id="badge"
+            hidden="[[!interceptionParameters_.interceptedAccount.isManaged]]">
+          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+        </div>
+      </div>
+    </div>
+  </template>
 
   <div id="body">
     <div id="title">[[interceptionParameters_.bodyTitle]]</div>

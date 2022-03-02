@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -15,11 +16,13 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/color_utils.h"
@@ -31,6 +34,16 @@ namespace {
 // Returns true if the account is managed (aka Enterprise, or Dasher).
 bool IsManaged(const AccountInfo& info) {
   return info.hosted_domain != kNoHostedDomainFound;
+}
+
+SkColor GetProfileHighlightColor(Profile* profile) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  DCHECK(entry);
+
+  return entry->GetProfileThemeColors().profile_highlight_color;
 }
 
 }  // namespace
@@ -179,9 +192,18 @@ base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
                         bubble_parameters_.show_guest_option);
   parameters.SetKey("interceptedAccount",
                     GetAccountInfoValue(intercepted_account()));
-  parameters.SetStringKey("headerBackgroundColor",
+  parameters.SetKey("primaryAccount", GetAccountInfoValue(primary_account()));
+  parameters.SetStringKey("interceptedProfileColor",
                           color_utils::SkColorToRgbaString(
                               bubble_parameters_.profile_highlight_color));
+  parameters.SetStringKey(
+      "primaryProfileColor",
+      color_utils::SkColorToRgbaString(
+          GetProfileHighlightColor(Profile::FromWebUI(web_ui()))));
+  parameters.SetBoolKey("useV2Design",
+                        !is_switch && base::FeatureList::IsEnabled(
+                                          kSyncPromoAfterSigninIntercept));
+
   parameters.SetStringKey(
       "headerTextColor",
       color_utils::SkColorToRgbaString(GetProfileForegroundTextColor(

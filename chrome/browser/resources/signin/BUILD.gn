@@ -85,6 +85,7 @@ generate_grd("build_grd") {
   if (enable_dice_support) {
     input_files += [
       "dice_web_signin_intercept/dice_web_signin_intercept.html",
+      "dice_web_signin_intercept/images/split_header.svg",
       "signin_reauth/images/account_passwords_reauth_illustration_dark.svg",
       "signin_reauth/images/account_passwords_reauth_illustration.svg",
       "signin_reauth/signin_reauth.html",

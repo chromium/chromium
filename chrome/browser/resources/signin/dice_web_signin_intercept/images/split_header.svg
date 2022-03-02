@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" width="290" height="140" fill="none" viewBox="0 0 290 140">
+  <rect width="290" height="140" fill="white"/>
+  <g id="primary">
+    <path fill="var(--color-fill)" d="M259.63 54.87a4.47 4.47 0 1 1 5.2-7.27l7.27 5.2a4.47 4.47 0 1 1-5.2 7.27l-7.27-5.2Z"/>
+    <path fill="var(--color-fill)" d="M253.91 90.73a1 1 0 0 1 .96-.3l3.26.77a1 1 0 0 1 .73.68l.97 3.2a1 1 0 0 1-.23.98l-2.29 2.44a1 1 0 0 1-.95.29l-3.26-.76a1 1 0 0 1-.73-.68l-.97-3.2a1 1 0 0 1 .22-.98l2.3-2.44Z"/>
+    <path fill="var(--color-fill)" d="M134 44a4 4 0 0 1 4-4h88a4 4 0 0 1 4 4v64a4 4 0 0 1-4 4h-88a4 4 0 0 1-4-4V44Z"/>
+    <path fill="var(--md-background-color)" d="M140 46c0-1.1.9-2 2-2h13a2 2 0 0 1 2 2v.87a1 1 0 0 0 1 1h73V113h-97V47.87h5a1 1 0 0 0 1-1V46Z"/>
+    <path fill="#E8EAED" d="M138 42h88v-4h-88v4Zm90 2v64h4V44h-4Zm-2 66h-88v4h88v-4Zm-90-2V44h-4v64h4Zm2 2a2 2 0 0 1-2-2h-4a6 6 0 0 0 6 6v-4Zm90-2a2 2 0 0 1-2 2v4a6 6 0 0 0 6-6h-4Zm-2-66a2 2 0 0 1 2 2h4a6 6 0 0 0-6-6v4Zm-88-4a6 6 0 0 0-6 6h4c0-1.1.9-2 2-2v-4Z"/>
+  </g>
+  <g id="intercepted">
+    <path fill="var(--color-fill)" d="M38.5 106a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z"/>
+    <path fill="var(--color-fill)" d="M30.6 45.18 19.07 49.9a.9.9 0 0 0-.2 1.55l9.84 7.6a.9.9 0 0 0 1.46-.59l1.66-12.33a.9.9 0 0 0-1.25-.96Z"/>
+    <path fill="var(--color-fill)" d="M60 32a4 4 0 0 1 4-4h88a4 4 0 0 1 4 4v64a4 4 0 0 1-4 4H64a4 4 0 0 1-4-4V32Z"/>
+    <path fill="var(--md-background-color)" d="M66 34c0-1.1.9-2 2-2h13a2 2 0 0 1 2 2v.87a1 1 0 0 0 1 1h73V101H60V35.87h5a1 1 0 0 0 1-1V34Z"/>
+    <path fill="#E8EAED" d="M64 30h88v-4H64v4Zm90 2v64h4V32h-4Zm-2 66H64v4h88v-4Zm-90-2V32h-4v64h4Zm2 2a2 2 0 0 1-2-2h-4a6 6 0 0 0 6 6v-4Zm90-2a2 2 0 0 1-2 2v4a6 6 0 0 0 6-6h-4Zm-2-66a2 2 0 0 1 2 2h4a6 6 0 0 0-6-6v4Zm-88-4a6 6 0 0 0-6 6h4c0-1.1.9-2 2-2v-4Z"/>
+  </g>
+</svg>

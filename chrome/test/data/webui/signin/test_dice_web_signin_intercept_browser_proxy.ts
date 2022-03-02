@@ -20,8 +20,11 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       confirmButtonLabel: '',
       showGuestOption: false,
       headerTextColor: '',
-      headerBackgroundColor: '',
+      interceptedProfileColor: '',
+      primaryProfileColor: '',
       interceptedAccount: {isManaged: false, pictureUrl: ''},
+      primaryAccount: {isManaged: false, pictureUrl: ''},
+      useV2Design: false,
     };
   }
 
