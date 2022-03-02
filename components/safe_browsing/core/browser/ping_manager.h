@@ -43,6 +43,10 @@ class PingManager : public KeyedService {
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);
+  void OnThreatDetailsReportURLLoaderComplete(
+      network::SimpleURLLoader* source,
+      bool has_access_token,
+      std::unique_ptr<std::string> response_body);
 
   // Report to Google when a SafeBrowsing warning is shown to the user.
   // |hit_report.threat_type| should be one of the types known by

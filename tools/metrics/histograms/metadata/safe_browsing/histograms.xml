@@ -205,6 +205,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.{IsAccessTokenIncluded}"
+    units="CombinedHttpResponseAndNetErrorCode" expires_after="2022-09-01">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the network result for a client safe browsing report request when
+    the request {IsAccessTokenIncluded}.
+  </summary>
+  <token key="IsAccessTokenIncluded">
+    <variant name="NoAccessToken" summary="has no access token"/>
+    <variant name="YesAccessToken" summary="has an access token"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.ClientSafeBrowsingReport.RequestHasToken"
     enum="BooleanSent" expires_after="2022-08-08">
   <owner>thefrog@chromium.org</owner>
@@ -2095,7 +2110,7 @@ Safe Browsing lookup mechanism is working as expected -->
 <histogram name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Result"
     enum="SafeBrowsingV4ApplyUpdateResult" expires_after="never">
 <!-- expires-never: This reports the outcome of applying a full
-update for a store received from PVer4 Safe Browsing service. 
+update for a store received from PVer4 Safe Browsing service.
 It helps us determine which Safe Browsing list is failing to
 update (when that happens, no list gets updated). -->
 

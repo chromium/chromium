@@ -21,6 +21,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -99,6 +100,21 @@ void PingManager::OnURLLoaderComplete(
   safebrowsing_reports_.erase(it);
 }
 
+void PingManager::OnThreatDetailsReportURLLoaderComplete(
+    network::SimpleURLLoader* source,
+    bool has_access_token,
+    std::unique_ptr<std::string> response_body) {
+  int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
+                          ? source->ResponseInfo()->headers->response_code()
+                          : 0;
+  std::string metric = "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.";
+  std::string suffix = (has_access_token ? "YesAccessToken" : "NoAccessToken");
+  RecordHttpResponseOrErrorCode((metric + suffix).c_str(), source->NetError(),
+                                response_code);
+
+  OnURLLoaderComplete(source, std::move(response_body));
+}
+
 // Sends a SafeBrowsing "hit" report.
 void PingManager::ReportSafeBrowsingHit(
     const safe_browsing::HitReport& hit_report) {
@@ -159,8 +175,9 @@ void PingManager::ReportThreatDetailsOnGotAccessToken(
 
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&PingManager::OnURLLoaderComplete, base::Unretained(this),
-                     loader.get()));
+      base::BindOnce(&PingManager::OnThreatDetailsReportURLLoaderComplete,
+                     base::Unretained(this), loader.get(),
+                     !access_token.empty()));
   safebrowsing_reports_.insert(std::move(loader));
 }
 
