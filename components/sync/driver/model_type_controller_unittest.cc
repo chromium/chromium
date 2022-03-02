@@ -253,6 +253,41 @@ TEST_F(ModelTypeControllerTest, StopWhenDatatypeDisabled) {
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
 
+// When Stop() is called with ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA, while
+// the controller is still stopping, data is indeed cleared, regardless of the
+// ShutdownReason of previous calls.
+TEST_F(ModelTypeControllerTest, StopWhileStopping) {
+  ModelTypeControllerDelegate::StartCallback start_callback;
+  EXPECT_CALL(*delegate(), OnSyncStarting)
+      .WillOnce(MoveArg<1>(&start_callback));
+  controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
+
+  ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
+
+  // Stop() should be deferred until OnSyncStarting() finishes.
+  base::MockCallback<base::OnceClosure> stop_completion;
+  EXPECT_CALL(stop_completion, Run()).Times(0);
+  EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
+
+  controller()->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
+                     stop_completion.Get());
+  ASSERT_EQ(DataTypeController::STOPPING, controller()->state());
+
+  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+                     stop_completion.Get());
+  ASSERT_EQ(DataTypeController::STOPPING, controller()->state());
+
+  // Data should be cleared.
+  EXPECT_CALL(*delegate(), OnSyncStopping(CLEAR_METADATA));
+
+  // The |stop_completion| callback should be called twice, because Stop() was
+  // called once while the state was MODEL_STARTING and another while the state
+  // was STOPPING.
+  EXPECT_CALL(stop_completion, Run()).Times(2);
+  std::move(start_callback).Run(std::make_unique<DataTypeActivationResponse>());
+  EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
+}
+
 // Test emulates disabling sync when datatype is not loaded yet. Metadata should
 // not be cleared as the delegate is potentially not ready to handle it.
 TEST_F(ModelTypeControllerTest, StopBeforeLoadModels) {
