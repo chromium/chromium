@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_GPU_WAYLAND_BUFFER_MANAGER_GPU_H_
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_WAYLAND_BUFFER_MANAGER_GPU_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 
@@ -63,13 +64,13 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
   // These two calls get the surface, which backs the |widget| and notifies it
   // about the submission and the presentation. After the surface receives the
-  // OnSubmission call, it can schedule a new buffer for swap.
+  // OnSubmission call, it can schedule a new frame for swap.
   void OnSubmission(gfx::AcceleratedWidget widget,
-                    uint32_t buffer_id,
+                    uint32_t frame_id,
                     gfx::SwapResult swap_result,
                     gfx::GpuFenceHandle release_fence_handle) override;
   void OnPresentation(gfx::AcceleratedWidget widget,
-                      uint32_t buffer_id,
+                      uint32_t frame_id,
                       const gfx::PresentationFeedback& feedback) override;
 
   // If the client, which uses this manager and implements WaylandSurfaceGpu,
@@ -122,6 +123,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // CommitBuffer() calls CommitOverlays() to commit only a primary plane
   // buffer.
   void CommitBuffer(gfx::AcceleratedWidget widget,
+                    uint32_t frame_id,
                     uint32_t buffer_id,
                     const gfx::Rect& bounds_rect,
                     float surface_scale_factor,
@@ -130,6 +132,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // |widget|.
   void CommitOverlays(
       gfx::AcceleratedWidget widget,
+      uint32_t frame_id,
       std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays);
 
   // Asks Wayland to destroy a wl_buffer.
@@ -182,12 +185,12 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Provides the WaylandSurfaceGpu, which backs the |widget|, with swap and
   // presentation results.
   void SubmitSwapResultOnOriginThread(gfx::AcceleratedWidget widget,
-                                      uint32_t buffer_id,
+                                      uint32_t frame_id,
                                       gfx::SwapResult swap_result,
                                       gfx::GpuFenceHandle release_fence);
   void SubmitPresentationOnOriginThread(
       gfx::AcceleratedWidget widget,
-      uint32_t buffer_id,
+      uint32_t frame_id,
       const gfx::PresentationFeedback& feedback);
 
   void OnHostDisconnected();
@@ -217,6 +220,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                   uint32_t buf_id);
   void CommitOverlaysTask(
       gfx::AcceleratedWidget widget,
+      uint32_t frame_id,
       std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays);
   void DestroyBufferTask(uint32_t buffer_id);
 

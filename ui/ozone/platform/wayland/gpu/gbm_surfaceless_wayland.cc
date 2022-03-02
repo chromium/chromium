@@ -6,7 +6,9 @@
 
 #include <sync/sync.h>
 #include <cmath>
+#include <cstdint>
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
@@ -120,12 +122,13 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
       solid_color_buffers_holder_(std::make_unique<SolidColorBufferHolder>()),
       weak_factory_(this) {
   buffer_manager_->RegisterSurface(widget_, this);
-  unsubmitted_frames_.push_back(std::make_unique<PendingFrame>());
+  unsubmitted_frames_.push_back(
+      std::make_unique<PendingFrame>(next_frame_id()));
 }
 
 void GbmSurfacelessWayland::QueueOverlayPlane(OverlayPlane plane,
                                               BufferId buffer_id) {
-  unsubmitted_frames_.back()->planes.emplace(buffer_id, std::move(plane));
+  unsubmitted_frames_.back()->planes.emplace_back(buffer_id, std::move(plane));
 }
 
 bool GbmSurfacelessWayland::ScheduleOverlayPlane(
@@ -196,7 +199,8 @@ void GbmSurfacelessWayland::SwapBuffersAsync(
   frame->presentation_callback = std::move(presentation_callback);
   frame->ScheduleOverlayPlanes(this);
 
-  unsubmitted_frames_.push_back(std::make_unique<PendingFrame>());
+  unsubmitted_frames_.push_back(
+      std::make_unique<PendingFrame>(next_frame_id()));
 
   // If Wayland server supports linux_explicit_synchronization_protocol, fences
   // should be shipped with buffers. Otherwise, we will wait for fences.
@@ -296,7 +300,8 @@ GbmSurfacelessWayland::~GbmSurfacelessWayland() {
   buffer_manager_->UnregisterSurface(widget_);
 }
 
-GbmSurfacelessWayland::PendingFrame::PendingFrame() = default;
+GbmSurfacelessWayland::PendingFrame::PendingFrame(uint32_t frame_id)
+    : frame_id(frame_id) {}
 
 GbmSurfacelessWayland::PendingFrame::~PendingFrame() = default;
 
@@ -366,14 +371,11 @@ void GbmSurfacelessWayland::MaybeSubmitFrames() {
       // The current scale factor of the surface, which is used to determine
       // the size in pixels of resources allocated by the GPU process.
       overlay_configs.back()->surface_scale_factor = surface_scale_factor_;
-#if DCHECK_IS_ON()
-      if (plane.second.overlay_plane_data.z_order == INT32_MIN)
-        background_buffer_id_ = plane.first;
-#endif
       plane.second.gpu_fence.reset();
     }
 
-    buffer_manager_->CommitOverlays(widget_, std::move(overlay_configs));
+    buffer_manager_->CommitOverlays(widget_, submitted_frame->frame_id,
+                                    std::move(overlay_configs));
     submitted_frames_.push_back(std::move(submitted_frame));
   }
 }
@@ -395,12 +397,15 @@ void GbmSurfacelessWayland::SetNoGLFlushForTests() {
   no_gl_flush_for_tests_ = true;
 }
 
-void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
+void GbmSurfacelessWayland::OnSubmission(uint32_t frame_id,
                                          const gfx::SwapResult& swap_result,
                                          gfx::GpuFenceHandle release_fence) {
-  DCHECK(!submitted_frames_.empty());
-  DCHECK(submitted_frames_.front()->planes.count(buffer_id) ||
-         buffer_id == background_buffer_id_);
+  // If the frame_id is stale, the gpu process just recovered from a crash so
+  // this frame_id can be ignored.
+  if (submitted_frames_.empty() ||
+      submitted_frames_.front()->frame_id != frame_id) {
+    return;
+  }
 
   auto submitted_frame = std::move(submitted_frames_.front());
   submitted_frames_.erase(submitted_frames_.begin());
@@ -414,7 +419,6 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
   std::move(submitted_frame->completion_callback)
       .Run(gfx::SwapCompletionResult(swap_result, std::move(release_fence)));
 
-  submitted_frame->pending_presentation_buffer = buffer_id;
   pending_presentation_frames_.push_back(std::move(submitted_frame));
 
   if (swap_result != gfx::SwapResult::SWAP_ACK) {
@@ -426,11 +430,12 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
 }
 
 void GbmSurfacelessWayland::OnPresentation(
-    BufferId buffer_id,
+    uint32_t frame_id,
     const gfx::PresentationFeedback& feedback) {
-  DCHECK(!pending_presentation_frames_.empty());
-  DCHECK_EQ(pending_presentation_frames_.front()->pending_presentation_buffer,
-            buffer_id);
+  if (pending_presentation_frames_.empty() ||
+      pending_presentation_frames_.front()->frame_id != frame_id) {
+    return;
+  }
 
   std::move(pending_presentation_frames_.front()->presentation_callback)
       .Run(feedback);

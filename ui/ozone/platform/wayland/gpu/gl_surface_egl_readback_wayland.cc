@@ -117,7 +117,8 @@ void GLSurfaceEglReadbackWayland::SwapBuffersAsync(
   ReadPixels(next_buffer->shm_mapping_.memory());
 
   const auto bounds = gfx::Rect(GetSize());
-  buffer_manager_->CommitBuffer(widget_, next_buffer->buffer_id_, bounds,
+  buffer_manager_->CommitBuffer(widget_, next_buffer->buffer_id_,
+                                /*frame_id*/ next_buffer->buffer_id_, bounds,
                                 surface_scale_factor_, bounds);
 }
 
@@ -132,7 +133,7 @@ GLSurfaceEglReadbackWayland::~GLSurfaceEglReadbackWayland() {
 }
 
 void GLSurfaceEglReadbackWayland::OnSubmission(
-    uint32_t buffer_id,
+    uint32_t frame_id,
     const gfx::SwapResult& swap_result,
     gfx::GpuFenceHandle release_fence) {
   DCHECK(release_fence.is_null());
@@ -142,7 +143,7 @@ void GLSurfaceEglReadbackWayland::OnSubmission(
     if (displayed_buffer_)
       available_buffers_.push_back(std::move(displayed_buffer_));
     displayed_buffer_ = std::move(in_flight_pixel_buffers_.front());
-    DCHECK_EQ(displayed_buffer_->buffer_id_, buffer_id);
+    DCHECK_EQ(displayed_buffer_->buffer_id_, frame_id);
   }
 
   in_flight_pixel_buffers_.pop_front();
@@ -154,7 +155,7 @@ void GLSurfaceEglReadbackWayland::OnSubmission(
 }
 
 void GLSurfaceEglReadbackWayland::OnPresentation(
-    uint32_t buffer_id,
+    uint32_t frame_id,
     const gfx::PresentationFeedback& feedback) {
   DCHECK(!presentation_callbacks_.empty());
   std::move(presentation_callbacks_.front()).Run(feedback);

@@ -93,6 +93,7 @@ class WaylandWindow : public PlatformWindow,
   // subsurface_stack_below_.size() >= below.
   bool ArrangeSubsurfaceStack(size_t above, size_t below);
   bool CommitOverlays(
+      uint32_t frame_id,
       std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr>& overlays);
 
   // Set whether this window has pointer focus and should dispatch mouse events.

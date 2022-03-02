@@ -109,6 +109,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // and OnPresentation on successful swap and pixels presented.
   void CommitOverlays(
       gfx::AcceleratedWidget widget,
+      uint32_t frame_id,
       std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlays) override;
 
   // Ensures a WaylandBufferHandle of |buffer_id| is created for the
@@ -124,11 +125,11 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // Tells the |buffer_manager_gpu_ptr_| the result of a swap call and provides
   // it with the presentation feedback.
   void OnSubmission(gfx::AcceleratedWidget widget,
-                    uint32_t buffer_id,
+                    uint32_t frame_id,
                     const gfx::SwapResult& swap_result,
                     gfx::GpuFenceHandle release_fence);
   void OnPresentation(gfx::AcceleratedWidget widget,
-                      uint32_t buffer_id,
+                      uint32_t frame_id,
                       const gfx::PresentationFeedback& feedback);
 
  private:

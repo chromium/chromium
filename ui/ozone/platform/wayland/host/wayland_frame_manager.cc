@@ -41,18 +41,30 @@ uint32_t GetPresentationKindFlags(uint32_t flags) {
 }  // namespace
 
 WaylandFrame::WaylandFrame(
+    uint32_t frame_id,
     WaylandSurface* root_surface,
     ui::ozone::mojom::WaylandOverlayConfigPtr root_config,
     base::circular_deque<std::pair<WaylandSubsurface*,
                                    ui::ozone::mojom::WaylandOverlayConfigPtr>>
-        subsurfaces_to_overlays,
-    bool expects_ack)
+        subsurfaces_to_overlays)
+    : frame_id(frame_id),
+      root_surface(root_surface),
+      root_config(std::move(root_config)),
+      subsurfaces_to_overlays(std::move(subsurfaces_to_overlays)),
+      submission_acked(false),
+      presentation_acked(false) {}
+
+WaylandFrame::WaylandFrame(
+    WaylandSurface* root_surface,
+    ui::ozone::mojom::WaylandOverlayConfigPtr root_config,
+    base::circular_deque<std::pair<WaylandSubsurface*,
+                                   ui::ozone::mojom::WaylandOverlayConfigPtr>>
+        subsurfaces_to_overlays)
     : root_surface(root_surface),
       root_config(std::move(root_config)),
       subsurfaces_to_overlays(std::move(subsurfaces_to_overlays)),
-      buffer_id(this->root_config ? this->root_config->buffer_id : 0),
-      submission_acked(!expects_ack),
-      presentation_acked(!expects_ack) {}
+      submission_acked(true),
+      presentation_acked(true) {}
 
 WaylandFrame::~WaylandFrame() = default;
 
@@ -107,7 +119,6 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
           subsurface_to_overlay.second->buffer_id);
       // Buffer is gone while this frame is pending, remove this config.
       if (!handle) {
-        frame->buffer_id = subsurface_to_overlay.second->buffer_id;
         frame->buffer_lost = true;
         subsurface_to_overlay.second.reset();
       } else if (!handle->wl_buffer() && !handle_pending_creation) {
@@ -121,7 +132,6 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
     auto* handle = connection_->buffer_manager_host()->EnsureBufferHandle(
         frame->root_surface, frame->root_config->buffer_id);
     if (!handle) {
-      frame->buffer_id = frame->root_config->buffer_id;
       frame->buffer_lost = true;
       frame->root_config.reset();
     } else if (!handle->wl_buffer() && !handle_pending_creation) {
@@ -285,7 +295,6 @@ void WaylandFrameManager::ApplySurfaceConfigure(
     // new wl_buffer, which leads to graphics freeze. So only setup
     // frame_callback when we're attaching a different buffer.
     if (!frame->wl_frame_callback) {
-      frame->buffer_id = config->buffer_id;
       frame->wl_frame_callback.reset(wl_surface_frame(surface->surface()));
       wl_callback_add_listener(frame->wl_frame_callback.get(), &frame_listener,
                                this);
@@ -540,8 +549,7 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
       continue;
     frame->presentation_acked = true;
     connection_->buffer_manager_host()->OnPresentation(
-        window_->GetWidget(), /*buffer_id*/ frame->buffer_id,
-        frame->feedback.value());
+        window_->GetWidget(), frame->frame_id, frame->feedback.value());
   }
 
   // Clear frames that are fully released and has already called
@@ -570,8 +578,8 @@ void WaylandFrameManager::ProcessOldSubmittedFrame(
   // release because SwapCompletionCallback indicates to the client that the
   // buffers in previous frame is available for reuse.
   connection_->buffer_manager_host()->OnSubmission(
-      window_->GetWidget(), /*buffer_id*/ frame->buffer_id,
-      gfx::SwapResult::SWAP_ACK, std::move(release_fence_handle));
+      window_->GetWidget(), frame->frame_id, gfx::SwapResult::SWAP_ACK,
+      std::move(release_fence_handle));
 
   // If presentation feedback is not supported, use a fake feedback. This
   // literally means there are no presentation feedback callbacks created.

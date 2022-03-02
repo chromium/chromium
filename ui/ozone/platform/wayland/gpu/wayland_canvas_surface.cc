@@ -95,8 +95,8 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   }
 
   void CommitBuffer(const gfx::Rect& damage, float buffer_scale) {
-    buffer_manager_->CommitBuffer(widget_, buffer_id_, gfx::Rect(size_),
-                                  buffer_scale, damage);
+    buffer_manager_->CommitBuffer(widget_, buffer_id_, /*frame_id*/ buffer_id_,
+                                  gfx::Rect(size_), buffer_scale, damage);
   }
 
   void OnUse() {
@@ -313,7 +313,7 @@ void WaylandCanvasSurface::ProcessUnsubmittedBuffers() {
   current_buffer_->CommitBuffer(damage, viewport_scale_);
 }
 
-void WaylandCanvasSurface::OnSubmission(uint32_t buffer_id,
+void WaylandCanvasSurface::OnSubmission(uint32_t frame_id,
                                         const gfx::SwapResult& swap_result,
                                         gfx::GpuFenceHandle release_fence) {
   DCHECK(release_fence.is_null());
@@ -323,15 +323,15 @@ void WaylandCanvasSurface::OnSubmission(uint32_t buffer_id,
   // it must be |current_buffer_| because we only submit new buffers when
   // |current_buffer_| is nullptr, and it is only set to nullptr in
   // |OnSubmission| and |ResizeCanvas|. In |ResizeCanvas|, |buffers_| is cleared
-  // so we will not know about |buffer_id|.
+  // so we will not know about |frame_id|.
   if (std::none_of(buffers_.begin(), buffers_.end(),
-                   [buffer_id](const auto& buffer) {
-                     return buffer->buffer_id() == buffer_id;
+                   [frame_id](const auto& buffer) {
+                     return buffer->buffer_id() == frame_id;
                    }))
     return;
 
   DCHECK(current_buffer_);
-  DCHECK_EQ(current_buffer_->buffer_id(), buffer_id);
+  DCHECK_EQ(current_buffer_->buffer_id(), frame_id);
 
   if (previous_buffer_)
     previous_buffer_->OnRelease();
@@ -344,7 +344,7 @@ void WaylandCanvasSurface::OnSubmission(uint32_t buffer_id,
 }
 
 void WaylandCanvasSurface::OnPresentation(
-    uint32_t buffer_id,
+    uint32_t frame_id,
     const gfx::PresentationFeedback& feedback) {
   last_timestamp_ = feedback.timestamp;
   last_interval_ = feedback.interval;

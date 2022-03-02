@@ -73,10 +73,10 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   void ProcessUnsubmittedBuffers();
 
   // WaylandSurfaceGpu overrides:
-  void OnSubmission(uint32_t buffer_id,
+  void OnSubmission(uint32_t frame_id,
                     const gfx::SwapResult& swap_result,
                     gfx::GpuFenceHandle release_fence) override;
-  void OnPresentation(uint32_t buffer_id,
+  void OnPresentation(uint32_t frame_id,
                       const gfx::PresentationFeedback& feedback) override;
 
   sk_sp<SkSurface> GetNextSurface();

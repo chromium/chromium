@@ -20,22 +20,28 @@ namespace ui {
 // the buffer.
 class WaylandSurfaceGpu {
  public:
-  virtual ~WaylandSurfaceGpu() {}
+  virtual ~WaylandSurfaceGpu() = default;
 
-  // Tells the surface the result of the last swap of buffer with the
-  // |buffer_id|. After this callback, the previously (before |buffer_id|)
-  // submitted buffer may be reused. This is guaranteed to be called
-  // in the same order that buffers were submitted.
-  virtual void OnSubmission(uint32_t buffer_id,
+  // Tells the surface the result of the last swap of frame with the |frame_id|.
+  // After this callback, the previously (before |frame_id|) submitted buffers
+  // may be reused. This is guaranteed to be called in the same order that
+  // frames were submitted. If not, there's been a GPU process crash and the
+  // stale |frame_id| can be ignored.
+  virtual void OnSubmission(uint32_t frame_id,
                             const gfx::SwapResult& swap_result,
                             gfx::GpuFenceHandle release_fence) = 0;
 
   // Tells the surface the result of the last presentation of buffer with the
-  // |buffer_id|. This is guaranteed to be called in the same order that
-  // buffers were submitted, and is guaranteed to be called after the
-  // corresponding call to |OnSubmission| for this buffer.
-  virtual void OnPresentation(uint32_t buffer_id,
+  // |frame_id|. This is guaranteed to be called in the same order that frames
+  // were submitted, and is guaranteed to be called after the corresponding call
+  // to |OnSubmission| for this frame.
+  virtual void OnPresentation(uint32_t frame_id,
                               const gfx::PresentationFeedback& feedback) = 0;
+
+  uint32_t next_frame_id() { return ++frame_id_; }
+
+ private:
+  uint32_t frame_id_ = 0u;
 };
 
 }  // namespace ui

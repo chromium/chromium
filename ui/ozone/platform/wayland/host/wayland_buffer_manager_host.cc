@@ -256,6 +256,7 @@ WaylandBufferHandle* WaylandBufferManagerHost::GetBufferHandle(
 
 void WaylandBufferManagerHost::CommitOverlays(
     gfx::AcceleratedWidget widget,
+    uint32_t frame_id,
     std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlays) {
   DCHECK(base::CurrentUIThread::IsSet());
 
@@ -282,7 +283,7 @@ void WaylandBufferManagerHost::CommitOverlays(
     }
   }
 
-  window->CommitOverlays(overlays);
+  window->CommitOverlays(frame_id, overlays);
 }
 
 void WaylandBufferManagerHost::DestroyBuffer(uint32_t buffer_id) {
@@ -425,24 +426,24 @@ bool WaylandBufferManagerHost::ValidateOverlayData(
 }
 
 void WaylandBufferManagerHost::OnSubmission(gfx::AcceleratedWidget widget,
-                                            uint32_t buffer_id,
+                                            uint32_t frame_id,
                                             const gfx::SwapResult& swap_result,
                                             gfx::GpuFenceHandle release_fence) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   DCHECK(buffer_manager_gpu_associated_);
-  buffer_manager_gpu_associated_->OnSubmission(widget, buffer_id, swap_result,
+  buffer_manager_gpu_associated_->OnSubmission(widget, frame_id, swap_result,
                                                std::move(release_fence));
 }
 
 void WaylandBufferManagerHost::OnPresentation(
     gfx::AcceleratedWidget widget,
-    uint32_t buffer_id,
+    uint32_t frame_id,
     const gfx::PresentationFeedback& feedback) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   DCHECK(buffer_manager_gpu_associated_);
-  buffer_manager_gpu_associated_->OnPresentation(widget, buffer_id, feedback);
+  buffer_manager_gpu_associated_->OnPresentation(widget, frame_id, feedback);
 }
 
 void WaylandBufferManagerHost::TerminateGpuProcess() {

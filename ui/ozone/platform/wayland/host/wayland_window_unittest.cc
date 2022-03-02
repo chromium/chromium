@@ -2661,7 +2661,8 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   background->surface_scale_factor = 1;
   background->opacity = 1.f;
   overlays.push_back(std::move(background));
-  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 1u,
+                                      std::move(overlays));
   mock_surface->SendFrameCallback();
 
   Sync();
@@ -2693,7 +2694,8 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   primary->surface_scale_factor = 1;
   primary->opacity = 1.f;
   overlays.push_back(std::move(primary));
-  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 2u,
+                                      std::move(overlays));
 
   Sync();
 
