@@ -733,6 +733,10 @@ void DragDropController::ForwardPendingLongTap() {
 void DragDropController::Cleanup() {
   for (aura::client::DragDropClientObserver& observer : observers_)
     observer.OnDragEnded();
+  if (!capture_delegate_ && drag_source_window_ &&
+      current_drag_event_source_ == ui::mojom::DragEventSource::kMouse) {
+    drag_source_window_->ReleaseCapture();
+  }
 
   // Do not remove observer `the drag_window_1 is same as `drag_source_window_`.
   // `drag_source_window_` is still necessary to process long tab and the

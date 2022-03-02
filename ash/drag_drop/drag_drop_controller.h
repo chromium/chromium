@@ -189,7 +189,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   base::OnceClosure quit_closure_;
 
   // If non-null, a drag is active which required a capture window.
-  DragDropCaptureDelegate* capture_delegate_;
+  DragDropCaptureDelegate* capture_delegate_ = nullptr;
 
   ui::mojom::DragEventSource current_drag_event_source_ =
       ui::mojom::DragEventSource::kMouse;

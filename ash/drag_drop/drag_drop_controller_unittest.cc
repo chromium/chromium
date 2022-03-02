@@ -585,6 +585,36 @@ TEST_F(DragDropControllerTest, DragDropInSingleViewTest) {
   EXPECT_TRUE(drag_view->drag_done_received_);
 }
 
+TEST_F(DragDropControllerTest, DragDropMouseReleasesWindowCapture) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
+  DragTestView* drag_view = new DragTestView;
+  AddViewToWidgetAndResize(widget.get(), drag_view);
+  aura::Window* window = widget->GetNativeView();
+
+  EXPECT_FALSE(window->HasCapture());
+
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), window);
+
+  generator.PressLeftButton();
+  window->SetCapture();  // aura::Window do not explicitly take capture, so call
+                         // this
+  // manually to simulate dragging a view which does take capture.
+  EXPECT_TRUE(window->HasCapture());
+
+  int n = 0;
+  auto loop_task = [&](bool inside) {
+    generator.MoveMouseBy(0, 1);
+    n++;
+
+    if (n == 17)
+      generator.ReleaseLeftButton();
+  };
+  RunWithClosure(base::BindLambdaForTesting(loop_task));
+
+  EXPECT_TRUE(drag_view->drag_done_received_);
+  EXPECT_FALSE(window->HasCapture());
+}
+
 TEST_F(DragDropControllerTest, DragDropWithZeroDragUpdates) {
   std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
   DragTestView* drag_view = new DragTestView;
