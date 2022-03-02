@@ -38,7 +38,7 @@ const CGFloat kStackViewImageSpacing = 16.0;
 const CGFloat kStackViewDescriptionsSpacing = 20.0;
 const CGFloat kLayoutGuideVerticalMargin = 8.0;
 const CGFloat kLayoutGuideMinHeight = 12.0;
-const CGFloat kDescriptionsInnerMargin = 16.0;
+const CGFloat kDescriptionsInnerMargin = 17.0;
 const CGFloat kLearnMoreVerticalInnerMargin = 8.0;
 const CGFloat kLearnMoreHorizontalInnerMargin = 16.0;
 
