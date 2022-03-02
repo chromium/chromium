@@ -4,39 +4,190 @@
 
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
+#include "base/time/clock.h"
+#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/database/metadata_utils.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
+
+using optimization_guide::proto::OptimizationTarget;
+
+const int kInvalidModelVersion = 0;
 
 namespace segmentation_platform {
+namespace {
 
-TrainingDataCollector::TrainingDataCollector(
+// Parse outputs into a map of metric hash of the uma output and its index in
+// the output list.
+std::map<uint64_t, int> ParseUmaOutputs(
+    const proto::SegmentationModelMetadata& metadata) {
+  std::map<uint64_t, int> hash_index_map;
+  if (!metadata.has_training_outputs())
+    return hash_index_map;
+
+  const auto& training_outputs = metadata.training_outputs();
+  for (int i = 0; i < training_outputs.outputs_size(); ++i) {
+    const auto output = training_outputs.outputs(i);
+    if (!output.has_uma_output() || !output.uma_output().has_uma_feature())
+      continue;
+
+    hash_index_map[output.uma_output().uma_feature().name_hash()] = i;
+  }
+  return hash_index_map;
+}
+
+}  // namespace
+
+class TrainingDataCollectorImpl : public TrainingDataCollector {
+ public:
+  TrainingDataCollectorImpl(SegmentInfoDatabase* segment_info_database,
+                            FeatureListQueryProcessor* processor,
+                            HistogramSignalHandler* histogram_signal_handler,
+                            base::Clock* clock)
+      : segment_info_database_(segment_info_database),
+        feature_list_query_processor_(processor),
+        histogram_signal_handler_(histogram_signal_handler),
+        clock_(clock) {}
+
+  ~TrainingDataCollectorImpl() override {
+    histogram_signal_handler_->RemoveObserver(this);
+  }
+
+ private:
+  // TrainingDataCollector implementation.
+  void OnModelMetadataUpdated() override { NOTIMPLEMENTED(); }
+
+  void OnServiceInitialized() override {
+    // TODO(xingliu): Filter out segments that doesn't contain enough data.
+    // Maybe reuse ModelExecutionSchedulerImpl::FilterEligibleSegments.
+    segment_info_database_->GetAllSegmentInfo(
+        base::BindOnce(&TrainingDataCollectorImpl::OnGetSegmentsInfoList,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnGetSegmentsInfoList(
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments) {
+    histogram_signal_handler_->AddObserver(this);
+
+    DCHECK(segments);
+    for (const auto& segment : *segments) {
+      const proto::SegmentInfo& segment_info = segment.second;
+      // Validate segment info.
+      auto validation_result =
+          metadata_utils::ValidateSegmentInfo(segment_info);
+      // TODO(xingliu): Record histogram for errors.
+      if (validation_result !=
+          metadata_utils::ValidationResult::kValidationSuccess) {
+        VLOG(1) << "Segment info validation failed for optimization target: "
+                << segment.first << ", validation result:"
+                << static_cast<int>(validation_result);
+        continue;
+      }
+
+      // Cache the histograms as outputs of training data, which needs to be
+      // immediately reported when the histogram is recorded.
+      auto hash_index_map = ParseUmaOutputs(segment_info.model_metadata());
+      for (const auto& hash_index : hash_index_map) {
+        immediate_collection_histograms_[hash_index.first].emplace(
+            segment.first);
+      }
+    }
+  }
+
+  // HistogramSignalHandler::Observer implementation.
+  void OnHistogramSignalUpdated(const std::string& histogram_name,
+                                base::HistogramBase::Sample sample) override {
+    auto hash = base::HashMetricName(histogram_name);
+    auto it = immediate_collection_histograms_.find(hash);
+    // Report training data for all models that are interested in
+    // |histogram_name| as output.
+    if (it != immediate_collection_histograms_.end()) {
+      std::vector<OptimizationTarget> optimization_targets(it->second.begin(),
+                                                           it->second.end());
+      segment_info_database_->GetSegmentInfoForSegments(
+          optimization_targets,
+          base::BindOnce(&TrainingDataCollectorImpl::ReportForSegmentsInfoList,
+                         weak_ptr_factory_.GetWeakPtr(), hash, sample));
+    }
+  }
+
+  void ReportForSegmentsInfoList(
+      uint64_t output_metric_hash,
+      base::HistogramBase::Sample output_metric_sample,
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments) {
+    DCHECK(segments);
+    for (const auto& segment : *segments) {
+      const proto::SegmentInfo& segment_info = segment.second;
+      // Figure out the output index.
+      auto hash_index_map = ParseUmaOutputs(segment_info.model_metadata());
+      if (hash_index_map.find(output_metric_hash) == hash_index_map.end())
+        continue;
+
+      // Generate training data input.
+      // TODO(xingliu): Validate immediate output is not included in the input
+      // features and update the comment in model_metadata.proto.
+      feature_list_query_processor_->ProcessFeatureList(
+          segment_info.model_metadata(), segment_info.segment_id(),
+          clock_->Now(),
+          base::BindOnce(&TrainingDataCollectorImpl::OnGetInputTensor,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         static_cast<float>(output_metric_sample),
+                         hash_index_map[output_metric_hash],
+                         segment_info.segment_id()));
+    }
+  }
+
+  void OnGetInputTensor(float output_value,
+                        int output_index,
+                        OptimizationTarget segment_id,
+                        bool success,
+                        const std::vector<float>& inputs) {
+    if (!success)
+      return;
+
+    // TODO(xingliu): Plumb model version to here.
+    auto ukm_source_id =
+        SegmentationUkmHelper::GetInstance()->RecordTrainingData(
+            segment_id, /*model_version=*/kInvalidModelVersion, inputs,
+            {output_value}, {output_index});
+    if (ukm_source_id == ukm::kInvalidSourceId) {
+      VLOG(1) << "Failed to collect training data for segment:" << segment_id;
+    }
+  }
+
+  raw_ptr<SegmentInfoDatabase> segment_info_database_;
+  raw_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
+  raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
+  raw_ptr<base::Clock> clock_;
+
+  // Hash of histograms for immediate training data collection. When any
+  // histogram hash contained in the map is recorded, a UKM message is reported
+  // right away.
+  base::flat_map<uint64_t,
+                 base::flat_set<optimization_guide::proto::OptimizationTarget>>
+      immediate_collection_histograms_;
+
+  base::WeakPtrFactory<TrainingDataCollectorImpl> weak_ptr_factory_{this};
+};
+
+// static
+std::unique_ptr<TrainingDataCollector> TrainingDataCollector::Create(
+    SegmentInfoDatabase* segment_info_database,
     FeatureListQueryProcessor* processor,
-    HistogramSignalHandler* histogram_signal_handler)
-    : feature_list_query_processor_(processor),
-      histogram_signal_handler_(histogram_signal_handler) {
-  DCHECK(histogram_signal_handler_);
-  histogram_signal_handler_->AddObserver(this);
-}
-
-TrainingDataCollector::~TrainingDataCollector() {
-  DCHECK(histogram_signal_handler_);
-  histogram_signal_handler_->RemoveObserver(this);
-}
-
-void TrainingDataCollector::OnModelMetadataUpdated() {
-  NOTIMPLEMENTED();
-}
-
-void TrainingDataCollector::OnServiceInitialized() {
-  NOTIMPLEMENTED();
-}
-
-void TrainingDataCollector::OnHistogramSignalUpdated(
-    const std::string& histogram_name,
-    base::HistogramBase::Sample) {
-  // TODO(xingliu): Check whether the histogram needs to trigger a data
-  // collection, and report to UKM.
-  NOTIMPLEMENTED();
+    HistogramSignalHandler* histogram_signal_handler,
+    base::Clock* clock) {
+  return std::make_unique<TrainingDataCollectorImpl>(
+      segment_info_database, processor, histogram_signal_handler, clock);
 }
 
 }  // namespace segmentation_platform

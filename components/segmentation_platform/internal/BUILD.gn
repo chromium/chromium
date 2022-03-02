@@ -153,6 +153,7 @@ source_set("unit_tests") {
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
+    "data_collection/training_data_collector_unittest.cc",
     "database/database_maintenance_impl_unittest.cc",
     "database/metadata_utils_unittest.cc",
     "database/mock_signal_database.cc",

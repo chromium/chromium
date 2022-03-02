@@ -15,7 +15,9 @@ namespace segmentation_platform {
 HistogramSignalHandler::HistogramSignalHandler(SignalDatabase* signal_database)
     : db_(signal_database), metrics_enabled_(false) {}
 
-HistogramSignalHandler::~HistogramSignalHandler() = default;
+HistogramSignalHandler::~HistogramSignalHandler() {
+  DCHECK(observers_.empty());
+}
 
 void HistogramSignalHandler::SetRelevantHistograms(
     const RelevantHistograms& histograms) {
