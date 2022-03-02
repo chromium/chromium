@@ -142,7 +142,10 @@ void LiveCaptionController::StopLiveCaption() {
   DestroyUI();
 }
 
-void LiveCaptionController::OnSodaInstalled() {
+void LiveCaptionController::OnSodaInstalled(
+    speech::LanguageCode language_code) {
+  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_))
+    return;
   // Live Caption should always be enabled when this is called. If Live Caption
   // has been disabled, then this should not be observing the SodaInstaller
   // anymore.

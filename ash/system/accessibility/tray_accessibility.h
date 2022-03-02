@@ -75,13 +75,11 @@ class ASH_EXPORT AccessibilityDetailedView
   void AppendAccessibilityList();
 
   void UpdateSodaInstallerObserverStatus();
-  void OnSodaInstallSucceeded();
   void OnSodaInstallProgress(int progress, speech::LanguageCode language_code);
   void OnSodaInstallFailed(speech::LanguageCode language_code);
 
   // SodaInstaller::Observer:
-  void OnSodaInstalled() override;
-  void OnSodaLanguagePackInstalled(speech::LanguageCode language_code) override;
+  void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaError() override;
   void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
   void OnSodaProgress(int combined_progress) override {}

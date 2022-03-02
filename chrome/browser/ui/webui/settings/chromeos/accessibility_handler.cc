@@ -162,21 +162,6 @@ void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
   }
 }
 
-void AccessibilityHandler::OnSodaInstallSucceeded() {
-  if (!speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-          GetDictationLocale())) {
-    return;
-  }
-
-  // Only show the success message if both the SODA binary and the language pack
-  // matching the Dictation locale have been downloaded.
-  FireWebUIListener(
-      "dictation-locale-menu-subtitle-changed",
-      base::Value(l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE,
-          GetDictationLocaleDisplayName())));
-}
-
 void AccessibilityHandler::OnSodaInstallProgress(
     int progress,
     speech::LanguageCode language_code) {
@@ -209,13 +194,17 @@ void AccessibilityHandler::OnSodaInstallFailed(
 }
 
 // SodaInstaller::Observer:
-void AccessibilityHandler::OnSodaInstalled() {
-  OnSodaInstallSucceeded();
-}
+void AccessibilityHandler::OnSodaInstalled(speech::LanguageCode language_code) {
+  if (language_code != GetDictationLocale())
+    return;
 
-void AccessibilityHandler::OnSodaLanguagePackInstalled(
-    speech::LanguageCode language_code) {
-  OnSodaInstallSucceeded();
+  // Only show the success message if both the SODA binary and the language pack
+  // matching the Dictation locale have been downloaded.
+  FireWebUIListener(
+      "dictation-locale-menu-subtitle-changed",
+      base::Value(l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE,
+          GetDictationLocaleDisplayName())));
 }
 
 void AccessibilityHandler::OnSodaLanguagePackProgress(

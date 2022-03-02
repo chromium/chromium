@@ -39,6 +39,8 @@ void SpeechRecognitionTestHelper::SetUpNetworkRecognition() {
 void SpeechRecognitionTestHelper::SetUpOnDeviceRecognition(Profile* profile) {
   // Fake that SODA is installed so SpeechRecognitionPrivate uses
   // OnDeviceSpeechRecognizer.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+      speech::LanguageCode::kEnUs);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
       ->SetTestingFactoryAndUse(

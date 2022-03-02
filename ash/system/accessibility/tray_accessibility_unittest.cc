@@ -738,10 +738,9 @@ TEST_F(TrayAccessibilitySodaTest, OnSodaInstalledNotification) {
   // correct language pack before doing anything.
   soda_installer()->NotifySodaInstalledForTesting();
   EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
-  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
-  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(
-      speech::LanguageCode::kFrFr);
+  soda_installer()->NotifySodaInstalledForTesting(speech::LanguageCode::kFrFr);
   EXPECT_EQ(kSodaDownloaded, GetDictationViewSubtitleText());
 }
 

@@ -74,7 +74,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
   }
 
   bool IsAnyLanguagePackInstalled() {
-    return soda_installer_impl_->IsAnyLanguagePackInstalled();
+    return soda_installer_impl_->IsAnyLanguagePackInstalledForTesting();
   }
 
   bool IsSodaDownloading() {
@@ -197,7 +197,13 @@ TEST_F(SodaInstallerImplChromeOSTest, InstallSodaForTesting) {
   ASSERT_FALSE(IsSodaDownloading());
   ASSERT_FALSE(IsLanguageInstalled(kEnglishLocale));
   ASSERT_FALSE(IsSodaDownloading());
+
+  // Install just the binary.
   GetInstance()->NotifySodaInstalledForTesting();
+  ASSERT_FALSE(IsSodaDownloading());
+
+  // Now install the language pack.
+  GetInstance()->NotifySodaInstalledForTesting(kEnglishLocale);
   ASSERT_TRUE(IsSodaInstalled());
   ASSERT_FALSE(IsSodaDownloading());
   ASSERT_TRUE(IsLanguageInstalled(kEnglishLocale));
@@ -235,7 +241,7 @@ TEST_F(SodaInstallerImplChromeOSTest, LanguagePackForTesting) {
   GetInstance()->NotifyOnSodaLanguagePackProgressForTesting(50, fr_fr);
   ASSERT_TRUE(GetInstance()->IsSodaDownloading(fr_fr));
   ASSERT_FALSE(IsLanguageInstalled(fr_fr));
-  GetInstance()->NotifyOnSodaLanguagePackInstalledForTesting(fr_fr);
+  GetInstance()->NotifySodaInstalledForTesting(fr_fr);
   ASSERT_TRUE(IsLanguageInstalled(fr_fr));
 }
 

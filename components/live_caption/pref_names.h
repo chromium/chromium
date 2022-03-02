@@ -7,6 +7,12 @@
 
 #include <string>
 
+#include "build/build_config.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/soda/constants.h"
+#endif
+
 class PrefService;
 
 namespace prefs {
@@ -18,6 +24,9 @@ extern const char kLiveCaptionEnabled[];
 extern const char kLiveCaptionLanguageCode[];
 
 const std::string GetLiveCaptionLanguageCode(PrefService* profile_prefs);
+bool IsLanguageCodeForLiveCaption(speech::LanguageCode language_code,
+                                  PrefService* profile_prefs);
+
 #endif  // !defined(ANDROID)
 
 // These kAccessibilityCaptions* caption style prefs are used on Android

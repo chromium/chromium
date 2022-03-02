@@ -100,6 +100,8 @@ class ProjectorSodaInstallationControllerTest : public testing::Test {
   }
 
   MockSodaInstaller* soda_installer() { return soda_installer_.get(); }
+  speech::LanguageCode en_us() { return speech::LanguageCode::kEnUs; }
+  speech::LanguageCode fr_fr() { return speech::LanguageCode::kFrFr; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -122,25 +124,21 @@ TEST_F(ProjectorSodaInstallationControllerTest, ShouldDownloadSoda) {
       .WillByDefault(
           testing::Return(std::vector<std::string>({kEnglishLocale})));
 
-  EXPECT_TRUE(soda_installation_controller()->ShouldDownloadSoda(
-      speech::LanguageCode::kEnUs));
+  EXPECT_TRUE(soda_installation_controller()->ShouldDownloadSoda(en_us()));
 
   // Other languages other than English are not currently supported.
-  EXPECT_FALSE(soda_installation_controller()->ShouldDownloadSoda(
-      speech::LanguageCode::kFrFr));
+  EXPECT_FALSE(soda_installation_controller()->ShouldDownloadSoda(fr_fr()));
 }
 
 TEST_F(ProjectorSodaInstallationControllerTest, IsSpeechRecognitionAvailable) {
   SetLocale(kEnglishLocale);
-  EXPECT_FALSE(soda_installation_controller()->IsSodaAvailable(
-      speech::LanguageCode::kEnUs));
+  EXPECT_FALSE(soda_installation_controller()->IsSodaAvailable(en_us()));
 
   EXPECT_CALL(app_client(), OnSodaInstalled()).Times(1);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  EXPECT_TRUE(soda_installation_controller()->IsSodaAvailable(
-      speech::LanguageCode::kEnUs));
-  EXPECT_FALSE(soda_installation_controller()->IsSodaAvailable(
-      speech::LanguageCode::kFrFr));
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
+  EXPECT_TRUE(soda_installation_controller()->IsSodaAvailable(en_us()));
+  EXPECT_FALSE(soda_installation_controller()->IsSodaAvailable(fr_fr()));
 }
 
 TEST_F(ProjectorSodaInstallationControllerTest, InstallSoda) {
@@ -153,6 +151,7 @@ TEST_F(ProjectorSodaInstallationControllerTest, InstallSoda) {
 
   EXPECT_CALL(app_client(), OnSodaInstalled()).Times(1);
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
 }
 
 TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallProgress) {

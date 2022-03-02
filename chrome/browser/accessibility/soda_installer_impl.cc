@@ -169,7 +169,6 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
           NotifyOnSodaLanguagePackProgress(language_progress, language_code);
         }
       }
-
     } break;
     case Events::COMPONENT_UPDATE_ERROR:
       is_soda_downloading_ = false;
@@ -185,7 +184,6 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
 
         base::UmaHistogramBoolean(
             GetInstallationResultMetricForLanguagePack(language_code), false);
-
       } else {
         base::UmaHistogramTimes(
             kSodaBinaryInstallationFailureTimeTaken,
@@ -207,8 +205,8 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
 void SodaInstallerImpl::OnSodaBinaryInstalled() {
   soda_binary_installed_ = true;
   is_soda_downloading_ = false;
-  if (IsAnyLanguagePackInstalled()) {
-    NotifyOnSodaInstalled();
+  for (LanguageCode language : installed_languages_) {
+    NotifyOnSodaInstalled(language);
   }
 
   base::UmaHistogramTimes(kSodaBinaryInstallationSuccessTimeTaken,
@@ -220,10 +218,9 @@ void SodaInstallerImpl::OnSodaLanguagePackInstalled(
     speech::LanguageCode language_code) {
   installed_languages_.insert(language_code);
   language_pack_progress_.erase(language_code);
-  NotifyOnSodaLanguagePackInstalled(language_code);
 
   if (soda_binary_installed_) {
-    NotifyOnSodaInstalled();
+    NotifyOnSodaInstalled(language_code);
   }
 
   base::UmaHistogramTimes(

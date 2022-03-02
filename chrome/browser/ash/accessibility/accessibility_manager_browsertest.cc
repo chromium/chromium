@@ -821,7 +821,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   // The nudge should not be requested to be shown because this was a
   // user-initiated change.
   EXPECT_FALSE(GetDictationOfflineNudgePref("en-US"));
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   EXPECT_FALSE(IsSodaDownloading());
   // The nudge was never shown.
   EXPECT_FALSE(GetDictationOfflineNudgePref("en-US"));
@@ -841,9 +842,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   // The nudge should be shown when SODA download finishes.
   EXPECT_FALSE(GetDictationOfflineNudgePref("en-US").value());
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  speech::SodaInstaller::GetInstance()
-      ->NotifyOnSodaLanguagePackInstalledForTesting(
-          speech::LanguageCode::kEnUs);
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
   EXPECT_FALSE(IsSodaDownloading());
   EXPECT_TRUE(GetDictationOfflineNudgePref("en-US").value());
   // No notifications were shown.
@@ -876,7 +875,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   ClearDictationOfflineNudgePref("en-US");
   EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/true);
   EXPECT_TRUE(IsSodaDownloading());
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   EXPECT_FALSE(IsSodaDownloading());
   EXPECT_TRUE(GetDictationOfflineNudgePref("en-US").value());
   UninstallSodaForTesting();
@@ -885,7 +885,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   // The second time the same language downloads, the nudge is not shown again.
   EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/false);
   EXPECT_TRUE(IsSodaDownloading());
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   EXPECT_FALSE(IsSodaDownloading());
   // Unchanged.
   EXPECT_TRUE(GetDictationOfflineNudgePref("en-US").value());
@@ -893,7 +894,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SodaInstalledBeforeDictationEnabled) {
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   ClearDictationOfflineNudgePref("en-US");
   EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/false);
 
@@ -920,7 +922,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   // enabled. This mocks selecting a new locale from settings.
   SetDictationLocale("en-US");
   EXPECT_TRUE(IsSodaDownloading());
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   EXPECT_FALSE(IsSodaDownloading());
   // The nudge was never shown because this was a user-initiated change.
   EXPECT_FALSE(GetDictationOfflineNudgePref("en-US"));
@@ -939,8 +942,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   speech::LanguageCode fr_fr = speech::LanguageCode::kFrFr;
   SetDictationEnabled(true);
   soda_installer()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
-  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(fr_fr);
+  soda_installer()->NotifySodaInstalledForTesting(fr_fr);
   AssertSodaNotificationShownForDictation(u"français (France)",
                                           /*success=*/true);
 }
@@ -950,7 +954,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SucceededNotificationCase2) {
   SetDictationEnabled(true);
-  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
   soda_installer()->NotifySodaInstalledForTesting();
   AssertSodaNotificationShownForDictation(en_us_display_name(),
@@ -982,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        LanguageInstalledBinaryFails) {
   SetDictationEnabled(true);
-  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
   soda_installer()->NotifySodaErrorForTesting();
   AssertSodaNotificationShownForDictation(en_us_display_name(),
@@ -998,6 +1002,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   speech::LanguageCode fr_fr = speech::LanguageCode::kFrFr;
   SetDictationEnabled(true);
   soda_installer()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
   soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(fr_fr);
   AssertSodaNotificationShownForDictation(u"français (France)",
@@ -1047,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest, NotTriggeredByUser) {
   EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/false);
   soda_installer()->NotifySodaInstalledForTesting();
-  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
 }
 
@@ -1059,7 +1064,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest, WrongLanguage) {
   SetDictationEnabled(true);
   soda_installer()->NotifySodaInstalledForTesting();
   AssertMessageCenterEmpty();
-  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
 }
 
@@ -1074,7 +1079,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
   // enabled. This mocks selecting a new locale from settings.
   SetDictationLocale("en-US");
   soda_installer()->NotifySodaInstalledForTesting();
-  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
 
   // The notification should have been shown.
   AssertSodaNotificationShownForDictation(en_us_display_name(),
@@ -1111,6 +1116,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(70, test_api->GetDictationSodaDownloadProgress());
   // If SODA download succeeds, the API will be called with a value of 100.
   soda_installer()->NotifySodaInstalledForTesting();
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   EXPECT_EQ(100, test_api->GetDictationSodaDownloadProgress());
 }
 

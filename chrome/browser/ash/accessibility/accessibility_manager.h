@@ -365,8 +365,7 @@ class AccessibilityManager
                                   double value);
 
   // SodaInstaller::Observer:
-  void OnSodaInstalled() override;
-  void OnSodaLanguagePackInstalled(speech::LanguageCode language_code) override;
+  void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaError() override;
   void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
   void OnSodaProgress(int combined_progress) override {}
@@ -494,7 +493,6 @@ class AccessibilityManager
 
   // SODA-related methods.
   void MaybeInstallSoda(const std::string& locale);
-  void OnSodaInstallSucceeded();
   void OnSodaInstallError(speech::LanguageCode language_code);
   void OnSodaInstallUpdated(int progress);
   bool ShouldShowSodaSucceededNotificationForDictation();
@@ -503,6 +501,7 @@ class AccessibilityManager
   void ShowSodaDownloadNotificationForDictation(bool succeeded);
 
   void ShowDictationLanguageUpgradedNudge(const std::string& locale);
+  speech::LanguageCode GetDictationLanguageCode();
 
   void CreateChromeVoxPanel();
 

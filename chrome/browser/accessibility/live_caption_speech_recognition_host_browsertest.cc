@@ -125,8 +125,11 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
   void SetLiveCaptionEnabled(bool enabled) {
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                  enabled);
-    if (enabled)
+    if (enabled) {
+      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+          speech::LanguageCode::kEnUs);
       speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+    }
   }
 
   bool HasBubbleController() {

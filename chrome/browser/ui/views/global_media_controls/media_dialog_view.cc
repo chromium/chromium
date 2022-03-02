@@ -373,7 +373,9 @@ void MediaDialogView::ToggleLiveCaption(bool enabled) {
   live_caption_button_->SetIsOn(enabled);
 }
 
-void MediaDialogView::OnSodaInstalled() {
+void MediaDialogView::OnSodaInstalled(speech::LanguageCode language_code) {
+  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_->GetPrefs()))
+    return;
   speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   live_caption_title_->SetText(GetLiveCaptionTitle(profile_->GetPrefs()));
 }

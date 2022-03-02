@@ -83,14 +83,20 @@ class LiveCaptionControllerTest : public InProcessBrowserTest {
   void SetLiveCaptionEnabled(bool enabled) {
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                  enabled);
-    if (enabled)
+    if (enabled) {
+      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+          en_us());
       speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+    }
   }
 
   void SetLiveCaptionEnabledOnProfile(bool enabled, Profile* profile) {
     profile->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
-    if (enabled)
+    if (enabled) {
+      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+          en_us());
       speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+    }
   }
 
   LiveCaptionController* GetController() {
@@ -181,6 +187,8 @@ class LiveCaptionControllerTest : public InProcessBrowserTest {
 #endif
   }
 
+  speech::LanguageCode en_us() { return speech::LanguageCode::kEnUs; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<CaptionBubbleContextBrowser> caption_bubble_context_;
@@ -263,6 +271,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalled) {
   EXPECT_FALSE(HasBubbleController());
 
   // The UI is only created after SODA is installed.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   EXPECT_TRUE(HasBubbleController());
 }

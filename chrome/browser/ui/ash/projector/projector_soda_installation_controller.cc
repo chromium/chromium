@@ -89,13 +89,11 @@ bool ProjectorSodaInstallationController::IsSodaAvailable(
   return speech::SodaInstaller::GetInstance()->IsSodaInstalled(language_code);
 }
 
-void ProjectorSodaInstallationController::OnSodaInstalled() {
-  auto* soda_installer = speech::SodaInstaller::GetInstance();
-  // Make sure that both SODA binary and the locale language are available
-  // before notifying that on device speech recognition is available.
-  if (!soda_installer->IsSodaInstalled(speech::GetLanguageCode(GetLocale())))
+void ProjectorSodaInstallationController::OnSodaInstalled(
+    speech::LanguageCode language_code) {
+  // Check that language code matches the selected language for projector.
+  if (language_code != speech::GetLanguageCode(GetLocale()))
     return;
-
   projector_controller_->OnSpeechRecognitionAvailabilityChanged(
       ash::SpeechRecognitionAvailability::kAvailable);
   app_client_->OnSodaInstalled();

@@ -95,6 +95,7 @@ class ProjectorClientImplUnitTest : public testing::Test {
     SetLocale(kEnglishLocale);
     soda_installer_ = std::make_unique<MockSodaInstaller>();
     soda_installer_->NotifySodaInstalledForTesting();
+    soda_installer_->NotifySodaInstalledForTesting(speech::LanguageCode::kEnUs);
     projector_client_ =
         std::make_unique<ProjectorClientImpl>(&projector_controller_);
   }

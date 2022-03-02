@@ -34,6 +34,12 @@ const std::string GetLiveCaptionLanguageCode(PrefService* profile_prefs) {
   return speech::kUsEnglishLocale;
 }
 
+bool IsLanguageCodeForLiveCaption(speech::LanguageCode language_code,
+                                  PrefService* profile_prefs) {
+  return language_code ==
+         speech::GetLanguageCode(GetLiveCaptionLanguageCode(profile_prefs));
+}
+
 #endif  // !defined(ANDROID)
 
 // String indicating the size of the captions text as a percentage.

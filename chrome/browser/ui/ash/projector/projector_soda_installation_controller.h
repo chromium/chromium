@@ -46,9 +46,7 @@ class ProjectorSodaInstallationController
 
  protected:
   // speech::SodaInstaller::Observer:
-  void OnSodaInstalled() override;
-  void OnSodaLanguagePackInstalled(
-      speech::LanguageCode language_code) override {}
+  void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaError() override;
   void OnSodaLanguagePackError(speech::LanguageCode language_code) override {}
   void OnSodaProgress(int combined_progress) override;

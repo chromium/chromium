@@ -127,7 +127,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void UpdateBubbleSize();
 
   // SodaInstaller::Observer overrides:
-  void OnSodaInstalled() override;
+  void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaError() override;
   void OnSodaProgress(int combined_progress) override;
 

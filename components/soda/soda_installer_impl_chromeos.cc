@@ -126,9 +126,10 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
   if (install_result.error == dlcservice::kErrorNone) {
     soda_binary_installed_ = true;
     SetSodaBinaryPath(base::FilePath(install_result.root_path));
-    if (IsLanguageInstalled(LanguageCode::kEnUs)) {
-      NotifyOnSodaInstalled();
-    }
+    // TODO(crbug.com/1161569): SODA is only available for English right now.
+    // Update this to notify on all installed languages.
+    if (IsLanguageInstalled(LanguageCode::kEnUs))
+      NotifyOnSodaInstalled(LanguageCode::kEnUs);
 
     base::UmaHistogramTimes(kSodaBinaryInstallationSuccessTimeTaken,
                             base::Time::Now() - start_time);
@@ -153,7 +154,7 @@ void SodaInstallerImplChromeOS::OnLanguageInstalled(
     installed_languages_.insert(language_code);
     SetLanguagePath(base::FilePath(install_result.root_path));
     if (soda_binary_installed_) {
-      NotifyOnSodaInstalled();
+      NotifyOnSodaInstalled(language_code);
     }
     base::UmaHistogramTimes(
         GetInstallationSuccessTimeMetricForLanguagePack(language_code),

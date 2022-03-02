@@ -58,7 +58,10 @@ void SpeechRecognitionClientBrowserInterface::
   OnSpeechRecognitionAvailabilityChanged();
 }
 
-void SpeechRecognitionClientBrowserInterface::OnSodaInstalled() {
+void SpeechRecognitionClientBrowserInterface::OnSodaInstalled(
+    speech::LanguageCode language_code) {
+  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_))
+    return;
   NotifyObservers(profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled));
 }
 

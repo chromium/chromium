@@ -151,9 +151,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaInstalledNotification) {
   // correct language pack before doing anything.
   soda_installer()->NotifySodaInstalledForTesting();
   AssertWebUICalls(num_calls);
-  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(en_us());
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertWebUICalls(num_calls);
-  soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(fr_fr());
+  soda_installer()->NotifySodaInstalledForTesting(fr_fr());
   AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
       "dictation-locale-menu-subtitle-changed",
@@ -285,6 +285,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, DictationLocalesCalculation) {
 IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest,
                        DictationLocalesOfflineAndInstalled) {
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
   MaybeAddDictationLocales();
   base::Value::ConstListView argument;
   ASSERT_TRUE(
