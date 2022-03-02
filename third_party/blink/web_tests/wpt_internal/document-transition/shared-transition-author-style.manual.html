@@ -57,16 +57,16 @@ let transitionStyle =
     background-color: grey;
   }
 
-  html::page-transition-container(shared-0) {
+  html::page-transition-container(target) {
     left: 50px;
   }
 
-  html::page-transition-outgoing-image(shared-0) {
+  html::page-transition-outgoing-image(target) {
     opacity: 0.5;
     animation-name: none;
   }
 
-  html::page-transition-incoming-image(shared-0) {
+  html::page-transition-incoming-image(target) {
     opacity: 0.5;
   }
   `
@@ -75,20 +75,20 @@ let pseudoStyle = document.createElement('style');
 pseudoStyle.appendChild(document.createTextNode(transitionStyle));
 
 async function runAnimation() {
-  await document.documentTransition.prepare({
-    rootTransition: "none",
-    sharedElements: [target]
-  });
+  document.createDocumentTransition(async (t) => {
+    t.setElement(target, "target");
+    await t.captureAndHold();
 
-  target.classList.remove(classes[i]);
-  i = (i + 1) % classes.length;
-  target.classList.add(classes[i]);
+    target.classList.remove(classes[i]);
+    i = (i + 1) % classes.length;
+    target.classList.add(classes[i]);
 
-  document.head.appendChild(pseudoStyle);
-  await document.documentTransition.start({
-    sharedElements: [target]
+    document.head.appendChild(pseudoStyle);
+
+    await t.start();
+
+    document.head.removeChild(pseudoStyle);
   });
-  document.head.removeChild(pseudoStyle);
 }
 
 function init() {

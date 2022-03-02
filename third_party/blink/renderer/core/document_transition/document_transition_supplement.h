@@ -12,6 +12,7 @@
 
 namespace blink {
 class DocumentTransition;
+class V8DocumentTransitionCallback;
 
 class CORE_EXPORT DocumentTransitionSupplement
     : public GarbageCollected<DocumentTransitionSupplement>,
@@ -23,7 +24,10 @@ class CORE_EXPORT DocumentTransitionSupplement
   static DocumentTransitionSupplement* From(Document&);
   static DocumentTransitionSupplement* FromIfExists(Document&);
 
-  static DocumentTransition* documentTransition(Document&);
+  static DocumentTransition* EnsureDocumentTransition(Document&);
+
+  static void createDocumentTransition(Document&,
+                                       V8DocumentTransitionCallback* callback);
 
   DocumentTransition* GetTransition();
 

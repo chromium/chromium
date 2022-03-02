@@ -9865,14 +9865,7 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
 
   void BeginTest() override {
     layer_tree_host()->AddDocumentTransitionRequest(
-        DocumentTransitionRequest::CreatePrepare(
-            DocumentTransitionRequest::Effect::kExplode,
-            /*document_tag=*/0, DocumentTransitionRequest::TransitionConfig(),
-            /*shared_element_config=*/{},
-            base::BindLambdaForTesting([this]() { CommitLambdaCalled(); }),
-            /*is_renderer_driven_animation=*/false));
-    layer_tree_host()->AddDocumentTransitionRequest(
-        DocumentTransitionRequest::CreateStart(
+        DocumentTransitionRequest::CreateCapture(
             /*document_tag=*/0, /*shared_element_count=*/0,
             base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
   }
@@ -9881,20 +9874,12 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
 
   void DisplayReceivedCompositorFrameOnThread(
       const viz::CompositorFrame& frame) override {
-    ASSERT_EQ(2u, frame.metadata.transition_directives.size());
+    ASSERT_EQ(1u, frame.metadata.transition_directives.size());
     const auto& save = frame.metadata.transition_directives[0];
     submitted_sequence_ids_.push_back(save.sequence_id());
 
     EXPECT_EQ(save.type(),
               viz::CompositorFrameTransitionDirective::Type::kSave);
-    EXPECT_EQ(save.effect(),
-              viz::CompositorFrameTransitionDirective::Effect::kExplode);
-
-    const auto& animate = frame.metadata.transition_directives[1];
-    EXPECT_GT(animate.sequence_id(), save.sequence_id());
-    EXPECT_EQ(animate.type(),
-              viz::CompositorFrameTransitionDirective::Type::kAnimate);
-    submitted_sequence_ids_.push_back(animate.sequence_id());
   }
 
   void DidReceiveCompositorFrameAck() override {
@@ -9903,7 +9888,7 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
     EndTest();
   }
 
-  void AfterTest() override { EXPECT_EQ(2, num_lambda_calls_); }
+  void AfterTest() override { EXPECT_EQ(1, num_lambda_calls_); }
 
   std::vector<uint32_t> submitted_sequence_ids_;
   int num_lambda_calls_ = 0;

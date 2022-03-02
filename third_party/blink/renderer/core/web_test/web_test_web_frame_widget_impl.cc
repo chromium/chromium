@@ -120,7 +120,7 @@ void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
 }
 
 void WebTestWebFrameWidgetImpl::DisableEndDocumentTransition() {
-  DocumentTransitionSupplement::documentTransition(
+  DocumentTransitionSupplement::EnsureDocumentTransition(
       *LocalRootImpl()->GetFrame()->GetDocument())
       ->DisableEndTransition();
 }
