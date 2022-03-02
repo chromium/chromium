@@ -17,6 +17,7 @@ import android.content.IntentFilter;
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.LinearLayout;
@@ -191,11 +192,21 @@ public class ContextualSearchInstrumentationBase {
     /**
      * A SelectionPopupController that has some methods stubbed out for testing.
      */
-    private static final class StubbedSelectionPopupController
+    protected static final class StubbedSelectionPopupController
             extends TestSelectionPopupController {
         private String mCurrentText;
+        private boolean mIsFocusedNodeEditable;
 
         public StubbedSelectionPopupController() {}
+
+        public void setIsFocusedNodeEditableForTest(boolean isFocusedNodeEditable) {
+            mIsFocusedNodeEditable = isFocusedNodeEditable;
+        }
+
+        @Override
+        public boolean isFocusedNodeEditable() {
+            return mIsFocusedNodeEditable;
+        }
 
         @Override
         public String getSelectedText() {
@@ -280,8 +291,18 @@ public class ContextualSearchInstrumentationBase {
         }
     }
 
+    /**
+     * The DOM node for the word "search" on the test page, which causes a plain search response
+     * with the Search Term "Search" from the Fake server.
+     */
     protected static final String SEARCH_NODE = "search";
     protected static final String SEARCH_NODE_TERM = "Search";
+
+    /**
+     * The DOM node for the word "intelligence" on the test page, which causes a search response
+     * for the Search Term "Intelligence" and also includes Related Searches suggestions.
+     */
+    protected static final String RELATED_SEARCHES_NODE = "intelligence";
 
     private static final String TAG = "CSIBase";
     private static final int TEST_TIMEOUT = 15000;
@@ -353,7 +374,7 @@ public class ContextualSearchInstrumentationBase {
     private LayoutManagerImpl mLayoutManager;
 
     private ActivityMonitor mActivityMonitor;
-    private ContextualSearchSelectionController mSelectionController;
+    protected ContextualSearchSelectionController mSelectionController;
     private ContextualSearchInstrumentationTestHost mTestHost;
 
     private float mDpToPx;
@@ -662,6 +683,14 @@ public class ContextualSearchInstrumentationBase {
      */
     protected void triggerNonResolve(String nodeId) throws TimeoutException {
         mTestHost.triggerNonResolve(nodeId);
+    }
+
+    /**
+     * Waits for the selected text string to be the given string, and asserts.
+     * @param text The string to wait for the selection to become.
+     */
+    protected void waitForSelectionToBe(final String text) {
+        mTestHost.waitForSelectionToBe(text);
     }
 
     /**
@@ -1145,7 +1174,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Waits for the Search Panel to expand, and asserts that it did expand.
      */
-    private void waitForPanelToExpand() {
+    protected void waitForPanelToExpand() {
         waitForPanelToEnterState(PanelState.EXPANDED);
     }
 
@@ -1177,6 +1206,42 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
+     * Asserts that the panel is still in the given state and continues to stay that way
+     * for a while.
+     * Waits for a reasonable amount of time for the panel to change to a different state,
+     * and verifies that it did not change state while this method is executing.
+     * Note that it's quite possible for the panel to transition through some other state and
+     * back to the initial state before this method is called without that being detected,
+     * because this method only monitors state during its own execution.
+     * @param initialState The initial state of the panel at the beginning of an operation that
+     *        should not change the panel state.
+     * @throws InterruptedException
+     */
+    protected void assertPanelStillInState(final @PanelState int initialState)
+            throws InterruptedException {
+        boolean didChangeState = false;
+        long startTime = SystemClock.uptimeMillis();
+        while (!didChangeState
+                && SystemClock.uptimeMillis() - startTime < TEST_EXPECTED_FAILURE_TIMEOUT) {
+            Thread.sleep(DEFAULT_POLLING_INTERVAL);
+            didChangeState = mPanel.getPanelState() != initialState;
+        }
+        Assert.assertFalse(didChangeState);
+    }
+
+    /**
+     * Shorthand for a common sequence:
+     * 1) Waits for gesture processing,
+     * 2) Waits for the panel to close,
+     * 3) Asserts that there is no selection and that the panel closed.
+     */
+    protected void waitForGestureToClosePanelAndAssertNoSelection() {
+        waitForPanelToClose();
+        assertPanelClosedOrUndefined();
+        Assert.assertTrue(TextUtils.isEmpty(getSelectedText()));
+    }
+
+    /**
      * Waits for the selection to be empty. Use this method any time a test repeatedly establishes
      * and dissolves a selection to ensure that the selection has been completely dissolved before
      * simulating the next selection event. This is needed because the renderer's notification of a
@@ -1192,7 +1257,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Waits for the panel to close and then waits for the selection to dissolve.
      */
-    private void waitForPanelToCloseAndSelectionEmpty() {
+    protected void waitForPanelToCloseAndSelectionEmpty() {
         waitForPanelToClose();
         waitForSelectionEmpty();
     }
@@ -1258,7 +1323,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Scrolls the base page.
      */
-    private void scrollBasePage() {
+    protected void scrollBasePage() {
         fling(0.f, 0.75f, 0.f, 0.7f, 100);
     }
 
@@ -1383,5 +1448,35 @@ public class ContextualSearchInstrumentationBase {
      */
     private Object loggedToRanker(@ContextualSearchInteractionRecorder.Feature int feature) {
         return getRankerLogger().getFeaturesLogged().get(feature);
+    }
+
+    /** Asserts that all the expected features have been logged to Ranker. **/
+    protected void assertLoggedAllExpectedFeaturesToRanker() {
+        for (int feature = 0; feature < ContextualSearchInteractionRecorder.Feature.NUM_ENTRIES;
+                feature++) {
+            if (expectedFeatureName(feature) != null) Assert.assertNotNull(loggedToRanker(feature));
+        }
+    }
+
+    /** Asserts that all the expected outcomes have been logged to Ranker. **/
+    protected void assertLoggedAllExpectedOutcomesToRanker() {
+        for (int feature = 0; feature < ContextualSearchInteractionRecorder.Feature.NUM_ENTRIES;
+                feature++) {
+            if (expectedOutcomeName(feature) != null) {
+                Assert.assertNotNull("Expected this outcome to be logged: " + feature,
+                        getRankerLogger().getOutcomesLogged().get(feature));
+            }
+        }
+    }
+
+    /**
+     * Returns whether all the supported gestures for opted-in users trigger a Resolve request,
+     * aka intelligent search.
+     */
+    protected boolean isConfigurationForResolvingGesturesOnly() {
+        // The current interpretation of the ability to resolve Longpress (which is forced by the
+        // Translations Feature as well as the LongpressResolve Feature) preserves a resolving Tap
+        // so there is no non-resolving gesture for opted-in users.
+        return mPolicy.canResolveLongpress();
     }
 }
