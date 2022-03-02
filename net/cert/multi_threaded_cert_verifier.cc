@@ -235,6 +235,7 @@ int MultiThreadedCertVerifier::Verify(const RequestParams& params,
 }
 
 void MultiThreadedCertVerifier::SetConfig(const CertVerifier::Config& config) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   LOG_IF(DFATAL, verify_proc_ &&
                      !verify_proc_->SupportsAdditionalTrustAnchors() &&
                      !config.additional_trust_anchors.empty())
