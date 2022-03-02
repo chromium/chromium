@@ -689,32 +689,28 @@ suite('InternetPage', function() {
     assertTrue(!!internetDetailMenu);
   });
 
-  test('Update global policy when network state changed', async function() {
-    await navigateToCellularDetailPage();
+  test(
+      'Update global policy when triggering OnPoliciesApplied()',
+      async function() {
+        await navigateToCellularDetailPage();
 
-    const detailPage = internetPage.$$('settings-internet-detail-page');
-    assertTrue(!!detailPage);
-    assertTrue(!!detailPage.globalPolicy);
-    assertFalse(detailPage.globalPolicy.allow_only_policy_cellular_networks);
+        const detailPage = internetPage.$$('settings-internet-detail-page');
+        assertTrue(!!detailPage);
+        assertTrue(!!detailPage.globalPolicy);
+        assertFalse(
+            detailPage.globalPolicy.allow_only_policy_cellular_networks);
 
-    // Set global policy and update a eSIM network.
-    const globalPolicy = {
-      allow_only_policy_cellular_networks: true,
-    };
-    mojoApi_.setGlobalPolicy(globalPolicy);
+        // Set global policy should also update the global policy
+        const globalPolicy = {
+          allow_only_policy_cellular_networks: true,
+        };
+        mojoApi_.setGlobalPolicy(globalPolicy);
+        await flushAsync();
 
-    // Modify same guid networkState should fire onNetworkStateChanged()
-    const mojom = chromeos.networkConfig.mojom;
-    const eSimNetwork = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, 'cellular1', 'name1');
-    eSimNetwork.connectionState = mojom.ConnectionStateType.kNotConnected;
-    mojoApi_.setManagedPropertiesForTest(eSimNetwork);
-    await flushAsync();
-
-    assertTrue(!!detailPage);
-    assertTrue(!!detailPage.globalPolicy);
-    assertTrue(detailPage.globalPolicy.allow_only_policy_cellular_networks);
-  });
+        assertTrue(!!detailPage);
+        assertTrue(!!detailPage.globalPolicy);
+        assertTrue(detailPage.globalPolicy.allow_only_policy_cellular_networks);
+      });
 
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently
   // such tests are flaky.
