@@ -144,76 +144,55 @@ function createFrame(url) {
     });
 }
 
-class PrerenderChannel extends EventTarget {
-  broadcastChannel = null;
-
-  constructor(uid, name) {
-    super();
-    this.broadcastChannel = new BroadcastChannel(`${uid}-${name}`);
-    this.broadcastChannel.addEventListener('message', e => {
-      this.dispatchEvent(new CustomEvent('message', {detail: e.data}));
-    });
-  }
-
-  postMessage(message) {
-    this.broadcastChannel.postMessage(message);
-  }
-
-  close() {
-    this.broadcastChannel.close();
-  }
-};
-
 async function create_prerendered_page(t) {
-  const uuid = token();
-  new PrerenderChannel(uuid, 'log').addEventListener('message', message => {
-    // Calling it with ['log'] to avoid lint issue. This log should be used for debugging
-    // the prerendered context, not testing.
-    if(window.console)
-      console['log']('[From Prerendered]', ...message.detail);
+  const init_uuid = token();
+  const prerender_uuid = token();
+  const init_remote = new RemoteContext(init_uuid);
+  const prerender_remote = new RemoteContext(prerender_uuid);
+  window.open(`/speculation-rules/prerender/resources/exec.html?uuid=${init_uuid}&init`, '_blank', 'noopener');
+  const url = `/speculation-rules/prerender/resources/exec.html?uuid=${prerender_uuid}&prerender`;
+
+  await init_remote.execute_script(url => {
+      const a = document.createElement('a');
+      a.href = url;
+      a.innerText = 'Activate';
+      document.body.appendChild(a);
+      const rules = document.createElement('script');
+      rules.type = "speculationrules";
+      rules.text = JSON.stringify({prerender: [{source: 'list', urls: [url]}]});
+      document.head.appendChild(rules);
+  }, [url]);
+
+  await prerender_remote.execute_script(() => {
+      window.import_script_to_prerendered_page = src => {
+        const script = document.createElement('script');
+        script.src = src;
+        document.head.appendChild(script);
+        return new Promise(resolve => script.addEventListener('load', resolve));
+      }
   });
 
-  const execChannel = new PrerenderChannel(uuid, 'exec');
-  const initChannel = new PrerenderChannel(uuid, 'initiator');
-  const exec = (func, args = []) => {
-      const receiver = token();
-      execChannel.postMessage({receiver, fn: func.toString(), args});
-      return new Promise((resolve, reject) => {
-        const channel = new PrerenderChannel(uuid, receiver);
-        channel.addEventListener('message', ({detail}) => {
-          channel.close();
-          if (detail.error)
-            reject(detail.error)
-          else
-            resolve(detail.result);
-        });
-      })
-    };
-
-  window.open(`/speculation-rules/prerender/resources/eval-init.html?uuid=${uuid}`, '_blank', 'noopener');
-  t.add_cleanup(() => initChannel.postMessage('close'));
-  t.add_cleanup(() => exec(() => window.close()));
-  await new Promise(resolve => {
-    const channel = new PrerenderChannel(uuid, 'ready');
-    channel.addEventListener('message', () => {
-      channel.close();
-      resolve();
-    });
+  t.add_cleanup(() => {
+    init_remote.execute_script(() => window.close());
+    prerender_remote.execute_script(() => window.close());
   });
 
   async function activate() {
-    const prerendering = exec(() => new Promise(resolve =>
+    const prerendering = prerender_remote.execute_script(() => new Promise(resolve =>
       document.addEventListener('prerenderingchange', () => {
         resolve(document.prerendering);
       })));
 
-    initChannel.postMessage('activate');
+    init_remote.execute_script(url => {
+      location.href = url;
+    }, [url]);
+
     if (await prerendering)
       throw new Error('Should not be prerendering at this point')
   }
 
   return {
-    exec,
+    exec: (fn, args) => prerender_remote.execute_script(fn, args),
     activate
   };
 }
