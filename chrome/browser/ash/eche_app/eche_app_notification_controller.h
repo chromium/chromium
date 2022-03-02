@@ -22,6 +22,8 @@ extern const char kEcheAppRetryConnectionNotifierId[];
 extern const char kEcheAppInactivityNotifierId[];
 extern const char kEcheAppFromWebWithoudButtonNotifierId[];
 extern const char kEcheAppDisabledByPhoneNotifierId[];
+extern const char kEcheAppLearnMoreUrl[];
+extern const char kEcheAppHelpUrl[];
 
 // Controller class to show notifications.
 class EcheAppNotificationController {

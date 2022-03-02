@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,14 +32,24 @@ class TestableNotificationController : public EcheAppNotificationController {
 
   // EcheAppNotificationController:
   MOCK_METHOD0(LaunchSettings, void());
-  MOCK_METHOD0(LaunchLearnMore, void());
   MOCK_METHOD0(LaunchTryAgain, void());
-  MOCK_METHOD0(LaunchHelp, void());
+};
+
+class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
 };
 
 class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
  protected:
-  EcheAppNotificationControllerTest() = default;
+  EcheAppNotificationControllerTest() {
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
+  }
+
   ~EcheAppNotificationControllerTest() override = default;
   EcheAppNotificationControllerTest(const EcheAppNotificationControllerTest&) =
       delete;
@@ -76,9 +87,16 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
     notification->delegate()->Click(0, absl::nullopt);
 
     // Clicking the second notification button should launch help.
-    EXPECT_CALL(*notification_controller_, LaunchHelp());
+    EXPECT_CALL(*new_window_delegate_,
+                OpenUrl(GURL(kEcheAppHelpUrl),
+                        NewWindowDelegate::OpenUrlFrom::kUserInteraction));
     notification->delegate()->Click(1, absl::nullopt);
   }
+
+  MockNewWindowDelegate* new_window_delegate_;
+
+ private:
+  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
 TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
@@ -99,7 +117,9 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
   notification->delegate()->Click(0, absl::nullopt);
 
   // Clicking the second notification button should launch help.
-  EXPECT_CALL(*notification_controller_, LaunchHelp());
+  EXPECT_CALL(*new_window_delegate_,
+              OpenUrl(GURL(kEcheAppHelpUrl),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
   notification->delegate()->Click(1, absl::nullopt);
 
   title = u"Connection Lost Title";
@@ -119,7 +139,9 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
   notification->delegate()->Click(0, absl::nullopt);
 
   // Clicking the second notification button should launch help.
-  EXPECT_CALL(*notification_controller_, LaunchHelp());
+  EXPECT_CALL(*new_window_delegate_,
+              OpenUrl(GURL(kEcheAppHelpUrl),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
   notification->delegate()->Click(1, absl::nullopt);
 
   title = u"Inactivity Title";
@@ -153,7 +175,9 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
   notification->delegate()->Click(0, absl::nullopt);
 
   // Clicking the second notification button should launch learn more.
-  EXPECT_CALL(*notification_controller_, LaunchLearnMore());
+  EXPECT_CALL(*new_window_delegate_,
+              OpenUrl(GURL(kEcheAppLearnMoreUrl),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
   notification->delegate()->Click(1, absl::nullopt);
 }
 

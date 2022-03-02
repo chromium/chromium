@@ -41,6 +41,9 @@ const char kEcheAppDisabledByPhoneNotifierId[] =
 // some point.
 const char kEcheAppLearnMoreUrl[] = "https://support.google.com/chromebook";
 
+// TODO(b/193583292): Wait for UX to build help site.
+const char kEcheAppHelpUrl[] = "https://support.google.com/chromebook";
+
 namespace {
 
 // Convenience function for creating a Notification.
@@ -86,7 +89,8 @@ void EcheAppNotificationController::LaunchTryAgain() {
 }
 
 void EcheAppNotificationController::LaunchHelp() {
-  // TODO(crbug.com/1241352): Wait for UX confirm.
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kEcheAppHelpUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 void EcheAppNotificationController::ShowNotificationFromWebUI(
