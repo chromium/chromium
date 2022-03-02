@@ -18,7 +18,7 @@ const base::Feature kMessagesForAndroidInfrastructure{
     "MessagesForAndroidInfrastructure", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidInstantApps{
-    "MessagesForAndroidInstantApps", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MessagesForAndroidInstantApps", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidNearOomReduction{
     "MessagesForAndroidNearOomReduction", base::FEATURE_ENABLED_BY_DEFAULT};
