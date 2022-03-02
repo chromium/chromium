@@ -237,7 +237,7 @@ void* oom_killer_memalign_purgeable(struct _malloc_zone_t* zone,
 
 bool CanGetContextForCFAllocator() {
 #if BUILDFLAG(IS_IOS)
-  return !base::ios::IsRunningOnOrLater(14, 0, 0);
+  return !base::ios::IsRunningOnOrLater(16, 0, 0);
 #else
   return !base::mac::IsOSLaterThan12_DontCallThis();
 #endif
