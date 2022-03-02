@@ -90,7 +90,7 @@ bool IsEULANotAccepted(installer::InitialPreferences* install_prefs) {
 // true if successful.
 bool WriteEULAtoTempFile(base::FilePath* eula_path) {
   std::string terms =
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      ui::ResourceBundle::GetSharedInstance().LoadLocalizedResourceString(
           IDS_TERMS_HTML);
   return (!terms.empty() &&
           base::CreateTemporaryFile(eula_path) &&
