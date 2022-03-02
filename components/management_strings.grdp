@@ -123,7 +123,7 @@
       Networking information such as addresses, interface configuration, and connection quality
     </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_HARDWARE_DATA" desc="Message stating that administrators see device hardware status.">
-      Device statistics such as CPU/RAM usage and hardware specifications
+      Device hardware specifications and statistics such as CPU/RAM utilization history
     </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_CRASH_REPORTS" desc="Message stating that administrators see the numbers and causes of the crashes that occurred on the device recently.">
       Numbers and causes of the crashes that occurred recently
