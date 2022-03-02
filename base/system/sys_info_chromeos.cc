@@ -8,8 +8,6 @@
 #include <stdint.h>
 #include <sys/utsname.h>
 
-#include "base/callback.h"
-#include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file.h"
@@ -17,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -48,10 +45,6 @@ const char kLsbReleaseTimeKey[] = "LSB_RELEASE_TIME";  // Seconds since epoch
 const char kLsbReleaseSourceKey[] = "lsb-release";
 const char kLsbReleaseSourceEnv[] = "env";
 const char kLsbReleaseSourceFile[] = "file";
-
-const char kSpacedCliPath[] = "/usr/sbin/spaced_cli";
-const char kSpacedGetFreeDiskSpaceAction[] = "get_free_disk_space";
-const char kSpacedGetTotalDiskSpaceAction[] = "get_total_disk_space";
 
 class ChromeOSVersionInfo {
  public:
@@ -175,28 +168,6 @@ ChromeOSVersionInfo& GetChromeOSVersionInfo() {
   return *version_info;
 }
 
-SysInfo::GetAppOutputCallback* g_chromeos_get_app_output_for_test = nullptr;
-
-int64_t GetInfoFromSpaced(StringPiece action, const base::FilePath& path) {
-  CommandLine command((base::FilePath(kSpacedCliPath)));
-  command.AppendSwitchPath(action, path);
-
-  std::string output;
-  bool ret;
-  if (g_chromeos_get_app_output_for_test) {
-    ret = g_chromeos_get_app_output_for_test->Run(command, &output);
-  } else {
-    ret = GetAppOutput(command, &output);
-  }
-
-  int64_t result;
-  if (!ret || !StringToInt64(output, &result) || result < 0) {
-    return -1;
-  }
-
-  return result;
-}
-
 }  // namespace
 
 // static
@@ -278,11 +249,6 @@ void SysInfo::ResetChromeOSVersionInfoForTest() {
 }
 
 // static
-void SysInfo::SetChromeOSGetAppOutputForTest(GetAppOutputCallback* callback) {
-  g_chromeos_get_app_output_for_test = callback;
-}
-
-// static
 void SysInfo::CrashIfChromeOSNonTestImage() {
   if (!IsRunningOnChromeOS())
     return;
@@ -297,16 +263,6 @@ void SysInfo::CrashIfChromeOSNonTestImage() {
 
   // Crash if can't find test-image marker in the release track.
   CHECK_NE(track.find(kTestImageRelease), std::string::npos);
-}
-
-// static
-int64_t SysInfo::GetFreeDiskSpaceFromSpaced(const base::FilePath& path) {
-  return GetInfoFromSpaced(kSpacedGetFreeDiskSpaceAction, path);
-}
-
-// static
-int64_t SysInfo::GetTotalDiskSpaceFromSpaced(const base::FilePath& path) {
-  return GetInfoFromSpaced(kSpacedGetTotalDiskSpaceAction, path);
 }
 
 }  // namespace base
