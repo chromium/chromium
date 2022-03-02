@@ -93,7 +93,8 @@ gfx::Rect EcheSystemAppDelegate::GetDefaultBoundsForEche() const {
   // than half of the windows.
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  const float bounds_aspect_ratio = bounds.width() / bounds.height();
+  const float bounds_aspect_ratio =
+      static_cast<float>(bounds.width()) / bounds.height();
   const bool is_landscape = (bounds_aspect_ratio >= 1);
   auto new_width = is_landscape ? (bounds.height() / 2) : bounds.width() / 2;
   if (kMinimumEcheSize.width() > new_width) {

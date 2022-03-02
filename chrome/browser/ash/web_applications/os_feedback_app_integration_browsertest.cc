@@ -94,11 +94,11 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, DefaultWindowBounds) {
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
 
   int expected_width = 600;
-  int expected_hight = 640;
+  int expected_height = 640;
   int x = (work_area.width() - expected_width) / 2;
-  int y = (work_area.height() - expected_hight) / 2;
+  int y = (work_area.height() - expected_height) / 2;
   EXPECT_EQ(browser->window()->GetBounds(),
-            gfx::Rect(x, y, expected_width, expected_hight));
+            gfx::Rect(x, y, expected_width, expected_height));
 }
 
 // Test that the Feedback App

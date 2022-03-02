@@ -57,11 +57,11 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   int expected_width = work_area.height() / 2;
-  int expected_hight = work_area.height() / 2 * aspect_ratio;
+  int expected_height = work_area.height() * aspect_ratio / 2;
   int x = (work_area.width() - expected_width) / 2;
-  int y = (work_area.height() - expected_hight) / 2;
+  int y = (work_area.height() - expected_height) / 2;
   EXPECT_EQ(browser->window()->GetBounds(),
-            gfx::Rect(x, y, expected_width, expected_hight));
+            gfx::Rect(x, y, expected_width, expected_height));
 }
 
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
@@ -78,11 +78,11 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   int expected_width = work_area.width() / 2;
-  int expected_hight = work_area.width() / 2 * aspect_ratio;
+  int expected_height = work_area.width() * aspect_ratio / 2;
   int x = (work_area.width() - expected_width) / 2;
-  int y = (work_area.height() - expected_hight) / 2;
+  int y = (work_area.height() - expected_height) / 2;
   EXPECT_EQ(browser->window()->GetBounds(),
-            gfx::Rect(x, y, expected_width, expected_hight));
+            gfx::Rect(x, y, expected_width, expected_height));
 }
 
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
