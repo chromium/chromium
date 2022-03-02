@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_database.h"
 #include "components/autofill/core/browser/strike_database_base.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "ui/gfx/image/image.h"
 
 namespace autofill {
@@ -288,7 +289,9 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableToolbarStatusChip) &&
+      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
           VirtualCardEnrollmentSource::kUpstream &&
       !avatar_animation_complete_) {
     return;
