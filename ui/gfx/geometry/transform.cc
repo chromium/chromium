@@ -443,6 +443,11 @@ void Transform::TransformVector(Vector3dF* vector) const {
   TransformVectorInternal(matrix_, vector);
 }
 
+void Transform::TransformVector4(SkV4* vector) const {
+  DCHECK(vector);
+  matrix_.mapScalars(vector->ptr());
+}
+
 bool Transform::TransformPointReverse(Point* point) const {
   DCHECK(point);
 

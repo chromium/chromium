@@ -2760,6 +2760,20 @@ TEST(XFormTest, BackFaceVisiblilityTolerance) {
   EXPECT_TRUE(backface_invisible.IsBackFaceVisible());
 }
 
+TEST(XFormTest, TransformVector4) {
+  Transform transform;
+  transform.matrix().setRC(0, 0, 2.5f);
+  transform.matrix().setRC(1, 1, 3.5f);
+  transform.matrix().setRC(2, 2, 4.5f);
+  transform.matrix().setRC(3, 3, 5.5f);
+  SkV4 v = {11.5f, 22.5f, 33.5f, 44.5f};
+  transform.TransformVector4(&v);
+  EXPECT_EQ(28.75f, v.x);
+  EXPECT_EQ(78.75f, v.y);
+  EXPECT_EQ(150.75f, v.z);
+  EXPECT_EQ(244.75f, v.w);
+}
+
 }  // namespace
 
 }  // namespace gfx

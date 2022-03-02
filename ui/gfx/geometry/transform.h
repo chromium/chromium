@@ -237,6 +237,9 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Applies the transformation to the vector.
   void TransformVector(Vector3dF* vector) const;
 
+  // Applies the transformation to the vector.
+  void TransformVector4(SkV4* vector) const;
+
   // Applies the reverse transformation on the point. Returns true if the
   // transformation can be inverted.
   bool TransformPointReverse(Point3F* point) const;
