@@ -35,29 +35,24 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
-#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_css_origin.h"
-#include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_global_rule_set.h"
-#include "third_party/blink/renderer/core/css/document_style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/invalidation/pending_invalidations.h"
 #include "third_party/blink/renderer/core/css/invalidation/style_invalidator.h"
 #include "third_party/blink/renderer/core/css/layout_tree_rebuild_root.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
-#include "third_party/blink/renderer/core/css/style_engine_context.h"
+#include "third_party/blink/renderer/core/css/rule_feature_set.h"
 #include "third_party/blink/renderer/core/css/style_invalidation_root.h"
 #include "third_party/blink/renderer/core/css/style_recalc_root.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
-#include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
-#include "third_party/blink/renderer/core/html/track/text_track.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
-#include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -65,24 +60,47 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace WTF {
+class TextPosition;
+}
+
 namespace blink {
 
 class CounterStyle;
 class CounterStyleMap;
 class CSSFontSelector;
+class CSSPropertyValueSet;
+class CSSScrollTimeline;
 class CSSStyleSheet;
+class CSSValue;
+class Document;
+class DocumentStyleSheetCollection;
+class ElementRuleCollector;
 class FontSelector;
+class HTMLBodyElement;
+class HTMLFieldSetElement;
 class HTMLSelectElement;
 class MediaQueryEvaluator;
 class Node;
+class ReferenceFilterOperation;
 class RuleFeatureSet;
 class ShadowTreeStyleSheetCollection;
 class DocumentStyleEnvironmentVariables;
 class CascadeLayerMap;
+class SpaceSplitString;
+class StyleEngineContext;
+class StyleResolver;
+class StyleResolverStats;
 class StyleRuleFontFace;
+class StyleRuleFontPaletteValues;
+class StyleRuleScrollTimeline;
+class StyleRuleKeyframes;
 class StyleRuleUsageTracker;
+class StyleSheet;
 class StyleSheetContents;
 class StyleInitialData;
+class TextTrack;
+class TreeScopeStyleSheetCollection;
 class ViewportStyleResolver;
 struct LogicalSize;
 
@@ -335,7 +353,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   CSSStyleSheet* CreateSheet(Element&,
                              const String& text,
-                             TextPosition start_position,
+                             WTF::TextPosition start_position,
                              StyleEngineContext&);
 
   void CollectFeaturesTo(RuleFeatureSet& features);
@@ -590,7 +608,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   CSSStyleSheet* ParseSheet(Element&,
                             const String& text,
-                            TextPosition start_position);
+                            WTF::TextPosition start_position);
 
   const DocumentStyleSheetCollection& GetDocumentStyleSheetCollection() const {
     DCHECK(document_style_sheet_collection_);
@@ -845,13 +863,18 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // The preferred color scheme is set in settings, but may be overridden by the
   // ForceDarkMode setting where the preferred_color_scheme_ will be set to
   // kLight to avoid dark styling to be applied before auto darkening.
-  mojom::PreferredColorScheme preferred_color_scheme_{
-      mojom::PreferredColorScheme::kLight};
+  //
+  // This data member should be initialized in the constructor in order to avoid
+  // including full mojom headers from this header.
+  mojom::blink::PreferredColorScheme preferred_color_scheme_;
 
   // We pass the used value of color-scheme from the iframe element in the
   // embedding document. If the color-scheme of the owner element and the root
   // element in the embedded document differ, use a solid backdrop color instead
   // of the default transparency of an iframe.
+  //
+  // This data member should be initialized in the constructor in order to avoid
+  // including full mojom headers from this header.
   mojom::blink::ColorScheme owner_color_scheme_;
 
   // The color of the canvas backdrop for the used color-scheme.

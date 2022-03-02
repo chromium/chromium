@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"

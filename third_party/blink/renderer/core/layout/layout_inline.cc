@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 
 #include "cc/base/region.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
