@@ -395,7 +395,7 @@ arc::mojom::ActionType GetArcActionType(const std::string& action) {
 }
 
 // Constructs an OpenUrlsRequest to be passed to
-// FileSystemInstance.OpenUrlsWithPermission.
+// FileSystemInstance.DEPRECATED_OpenUrlsWithPermission.
 arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
     const apps::mojom::IntentPtr& intent,
     const arc::mojom::ActivityNamePtr& activity,
@@ -449,12 +449,12 @@ void OnContentUrlResolved(const base::FilePath& file_path,
   } else {
     arc_file_system = ARC_GET_INSTANCE_FOR_METHOD(
         arc_service_manager->arc_bridge_service()->file_system(),
-        OpenUrlsWithPermission);
+        DEPRECATED_OpenUrlsWithPermission);
     if (!arc_file_system) {
       return;
     }
 
-    arc_file_system->OpenUrlsWithPermission(
+    arc_file_system->DEPRECATED_OpenUrlsWithPermission(
         ConstructOpenUrlsRequest(intent, activity, content_urls),
         base::DoNothing());
   }

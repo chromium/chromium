@@ -354,12 +354,13 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
   void RequestFileRemovalScan(
       const std::vector<std::string>& directory_paths) override;
   void ReindexDirectory(const std::string& directory_path) override;
-  void OpenUrlsWithPermission(mojom::OpenUrlsRequestPtr request,
-                              OpenUrlsWithPermissionCallback callback) override;
+  void DEPRECATED_OpenUrlsWithPermission(
+      mojom::OpenUrlsRequestPtr request,
+      DEPRECATED_OpenUrlsWithPermissionCallback callback) override;
   void OpenUrlsWithPermissionAndWindowInfo(
       mojom::OpenUrlsRequestPtr request,
       mojom::WindowInfoPtr window_info,
-      OpenUrlsWithPermissionCallback callback) override;
+      DEPRECATED_OpenUrlsWithPermissionCallback callback) override;
 
  private:
   // A pair of an authority and a document ID which identifies the location

@@ -476,7 +476,8 @@ interface FileSystemInstance {
   [MinVersion=14] RequestFileRemovalScan@20(array<string> directory_paths);
 
   // DEPRECATED. Use OpenUrlsWithPermissionAndWindowInfo() instead.
-  [MinVersion=8] OpenUrlsWithPermission@11(OpenUrlsRequest request) => ();
+  [MinVersion=8] DEPRECATED_OpenUrlsWithPermission@11(OpenUrlsRequest request)
+      => ();
 
   // Opens URLs by sending an intent to the specified activity with a specific
   // launch window info.

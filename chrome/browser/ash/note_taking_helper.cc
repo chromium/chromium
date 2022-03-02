@@ -768,11 +768,11 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
     arc::mojom::FileSystemInstance* arc_file_system =
         ARC_GET_INSTANCE_FOR_METHOD(
             arc::ArcServiceManager::Get()->arc_bridge_service()->file_system(),
-            OpenUrlsWithPermission);
+            DEPRECATED_OpenUrlsWithPermission);
     if (!arc_file_system)
       return LaunchResult::ANDROID_NOT_RUNNING;
-    arc_file_system->OpenUrlsWithPermission(std::move(request),
-                                            base::DoNothing());
+    arc_file_system->DEPRECATED_OpenUrlsWithPermission(std::move(request),
+                                                       base::DoNothing());
 
     arc::ArcMetricsService::RecordArcUserInteraction(
         profile, arc::UserInteractionType::APP_STARTED_FROM_STYLUS_TOOLS);

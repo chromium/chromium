@@ -95,7 +95,7 @@ arc::mojom::ActivityNamePtr AppIdToActivityName(const std::string& id) {
 }
 
 // Constructs an OpenUrlsRequest to be passed to
-// FileSystemInstance.OpenUrlsWithPermission.
+// FileSystemInstance.DEPRECATED_OpenUrlsWithPermission.
 arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
     const TaskDescriptor& task,
     const std::vector<GURL>& content_urls,
@@ -286,7 +286,7 @@ void ExecuteArcTaskAfterContentUrlsResolved(
 
   arc::mojom::FileSystemInstance* arc_file_system = ARC_GET_INSTANCE_FOR_METHOD(
       arc_service_manager->arc_bridge_service()->file_system(),
-      OpenUrlsWithPermission);
+      DEPRECATED_OpenUrlsWithPermission);
   if (!arc_file_system) {
     std::move(done).Run(
         extensions::api::file_manager_private::TASK_RESULT_FAILED,
@@ -296,8 +296,8 @@ void ExecuteArcTaskAfterContentUrlsResolved(
 
   arc::mojom::OpenUrlsRequestPtr request =
       ConstructOpenUrlsRequest(task, content_urls, mime_types);
-  arc_file_system->OpenUrlsWithPermission(std::move(request),
-                                          base::DoNothing());
+  arc_file_system->DEPRECATED_OpenUrlsWithPermission(std::move(request),
+                                                     base::DoNothing());
   // TODO(benwells): return the correct code here, depending on how the app
   // will be opened in multiprofile.
   std::move(done).Run(
