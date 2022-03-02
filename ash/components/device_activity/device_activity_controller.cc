@@ -108,15 +108,15 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& psm_device_active_secret) {
-
   // Retrieve full hardware class from machine statistics object.
   // Default |full_hardware_class| to kHardwareClassKeyNotFound if retrieval
   // from machine statistics fails.
+  //
+  // TODO(hirthanan): This is used for debugging purposes until crbug/1289722
+  // has launched.
   std::string full_hardware_class = kHardwareClassKeyNotFound;
-
-  // TODO(hirthanan): Uncomment these lines after crbug/1289722 has launched.
-  // statistics_provider_->GetMachineStatistic(
-  //     chromeos::system::kHardwareClassKey, &full_hardware_class);
+  statistics_provider_->GetMachineStatistic(chromeos::system::kHardwareClassKey,
+                                            &full_hardware_class);
 
   if (trigger == Trigger::kNetwork) {
     da_client_network_ = std::make_unique<DeviceActivityClient>(
