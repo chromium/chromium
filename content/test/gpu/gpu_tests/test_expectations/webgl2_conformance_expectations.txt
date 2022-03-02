@@ -408,14 +408,6 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-rend
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_sizes_04.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturespecification/basic_copyteximage2d.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturespecification/basic_copytexsubimage2d.html [ Failure ]
-# Post Python 3 conversion: crbug.com/1266604
-crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
-crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/clipping.html [ Failure ]
-crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/fborender/shared_colorbuffer_00.html [ Failure ]
-crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/fborender/shared_colorbuffer_01.html [ Failure ]
-crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/fborender/shared_colorbuffer_02.html [ Failure ]
-crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/fborender/shared_colorbuffer_clear.html [ Failure ]
-crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/fragdepth.html [ Failure ]
 crbug.com/1298619 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 ######################################################################
@@ -789,6 +781,10 @@ crbug.com/1175226 [ android android-pixel-4 angle-opengles passthrough ] conform
 crbug.com/1175229 [ android android-pixel-4 angle-opengles passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ Failure ]
 crbug.com/1175229 [ android android-pixel-4 angle-opengles passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_short_5_6_5.html [ Failure ]
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
+
+crbug.com/1302143 [ android android-pixel-4 no-passthrough ] deqp/functional/gles3/transformfeedback/array_interleaved_lines.html [ RetryOnFailure ]
+crbug.com/1302143 [ android android-pixel-4 no-passthrough ] deqp/functional/gles3/transformfeedback/array_interleaved_points.html [ RetryOnFailure ]
+crbug.com/1302143 [ android android-pixel-4 no-passthrough ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_triangles.html [ RetryOnFailure ]
 
 crbug.com/1191030 [ android android-pixel-4 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
