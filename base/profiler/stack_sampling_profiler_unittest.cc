@@ -310,10 +310,7 @@ void TestLibraryUnload(bool wait_until_unloaded, ModuleCache* module_cache) {
   UnwindScenario::SampleEvents events;
   TargetThread target_thread(
       BindLambdaForTesting([&]() { scenario.Execute(&events); }));
-
-  PlatformThreadHandle target_thread_handle;
-  EXPECT_TRUE(PlatformThread::Create(0, &target_thread, &target_thread_handle));
-
+  target_thread.Start();
   events.ready_for_sample.Wait();
 
   WaitableEvent sampling_thread_completed(
@@ -347,7 +344,7 @@ void TestLibraryUnload(bool wait_until_unloaded, ModuleCache* module_cache) {
   // Cause the target thread to finish, so that it's no longer executing code in
   // the library we're about to unload.
   events.sample_finished.Signal();
-  PlatformThread::Join(target_thread_handle);
+  target_thread.Join();
 
   // Unload the library now that it's not being used.
   if (wait_until_unloaded)
@@ -1133,19 +1130,14 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleSampledThreads) {
   UnwindScenario::SampleEvents events1;
   TargetThread target_thread1(
       BindLambdaForTesting([&]() { scenario1.Execute(&events1); }));
-  PlatformThreadHandle target_thread_handle1;
-  EXPECT_TRUE(
-      PlatformThread::Create(0, &target_thread1, &target_thread_handle1));
+  target_thread1.Start();
   events1.ready_for_sample.Wait();
 
   UnwindScenario scenario2(BindRepeating(&CallWithPlainFunction));
   UnwindScenario::SampleEvents events2;
   TargetThread target_thread2(
       BindLambdaForTesting([&]() { scenario2.Execute(&events2); }));
-
-  PlatformThreadHandle target_thread_handle2;
-  EXPECT_TRUE(
-      PlatformThread::Create(0, &target_thread2, &target_thread_handle2));
+  target_thread2.Start();
   events2.ready_for_sample.Wait();
 
   // Providing an initial delay makes it more likely that both will be
@@ -1201,8 +1193,8 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleSampledThreads) {
 
   events1.sample_finished.Signal();
   events2.sample_finished.Signal();
-  PlatformThread::Join(target_thread_handle1);
-  PlatformThread::Join(target_thread_handle2);
+  target_thread1.Join();
+  target_thread2.Join();
 }
 
 // A simple thread that runs a profiler on another thread.
@@ -1521,6 +1513,101 @@ PROFILER_TEST_F(StackSamplingProfilerTest,
   ASSERT_TRUE(metadata2.item.key.has_value());
   EXPECT_EQ(100, *metadata2.item.key);
   EXPECT_EQ(11, metadata2.item.value);
+}
+
+PROFILER_TEST_F(
+    StackSamplingProfilerTest,
+    ApplyMetadataToPastSamples_PassedToProfileBuilder_MultipleCollections) {
+  SamplingParams params;
+  params.sampling_interval = Milliseconds(10);
+  // 10,000 samples ensures the profiler continues running until manually
+  // stopped, after applying metadata.
+  params.samples_per_profile = 10000;
+  ModuleCache module_cache1, module_cache2;
+
+  WaitableEvent profiler1_started;
+  WaitableEvent profiler2_started;
+  WaitableEvent profiler1_metadata_applied;
+  WaitableEvent profiler2_metadata_applied;
+
+  Profile profile1;
+  WaitableEvent sampling_completed1;
+  TargetThread target_thread1(BindLambdaForTesting([&]() {
+    StackSamplingProfiler profiler1(
+        target_thread1.thread_token(), params,
+        std::make_unique<TestProfileBuilder>(
+            &module_cache1, BindLambdaForTesting([&](Profile result_profile) {
+              profile1 = std::move(result_profile);
+              sampling_completed1.Signal();
+            })),
+        CreateCoreUnwindersFactoryForTesting(&module_cache1),
+        RepeatingClosure());
+    profiler1.Start();
+    profiler1_started.Signal();
+    profiler2_started.Wait();
+
+    // Record metadata on past samples only for this thread. The time range
+    // shouldn't affect the outcome, it should always be passed to the
+    // ProfileBuilder.
+    ApplyMetadataToPastSamples(TimeTicks(), TimeTicks::Now(), "TestMetadata1",
+                               10, 10, SampleMetadataScope::kThread);
+
+    profiler1_metadata_applied.Signal();
+    profiler2_metadata_applied.Wait();
+    profiler1.Stop();
+  }));
+  target_thread1.Start();
+
+  Profile profile2;
+  WaitableEvent sampling_completed2;
+  TargetThread target_thread2(BindLambdaForTesting([&]() {
+    StackSamplingProfiler profiler2(
+        target_thread2.thread_token(), params,
+        std::make_unique<TestProfileBuilder>(
+            &module_cache2, BindLambdaForTesting([&](Profile result_profile) {
+              profile2 = std::move(result_profile);
+              sampling_completed2.Signal();
+            })),
+        CreateCoreUnwindersFactoryForTesting(&module_cache2),
+        RepeatingClosure());
+    profiler2.Start();
+    profiler2_started.Signal();
+    profiler1_started.Wait();
+
+    // Record metadata on past samples only for this thread.
+    ApplyMetadataToPastSamples(TimeTicks(), TimeTicks::Now(), "TestMetadata2",
+                               20, 20, SampleMetadataScope::kThread);
+
+    profiler2_metadata_applied.Signal();
+    profiler1_metadata_applied.Wait();
+    profiler2.Stop();
+  }));
+  target_thread2.Start();
+
+  target_thread1.Join();
+  target_thread2.Join();
+
+  // Wait for the profile to be captured before checking expectations.
+  sampling_completed1.Wait();
+  sampling_completed2.Wait();
+
+  ASSERT_EQ(1u, profile1.retrospective_metadata.size());
+  ASSERT_EQ(1u, profile2.retrospective_metadata.size());
+
+  {
+    const RetrospectiveMetadata& metadata1 = profile1.retrospective_metadata[0];
+    EXPECT_EQ(HashMetricName("TestMetadata1"), metadata1.item.name_hash);
+    ASSERT_TRUE(metadata1.item.key.has_value());
+    EXPECT_EQ(10, *metadata1.item.key);
+    EXPECT_EQ(10, metadata1.item.value);
+  }
+  {
+    const RetrospectiveMetadata& metadata2 = profile2.retrospective_metadata[0];
+    EXPECT_EQ(HashMetricName("TestMetadata2"), metadata2.item.name_hash);
+    ASSERT_TRUE(metadata2.item.key.has_value());
+    EXPECT_EQ(20, *metadata2.item.key);
+    EXPECT_EQ(20, metadata2.item.value);
+  }
 }
 
 }  // namespace base

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/threading/platform_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -129,7 +130,10 @@ class BASE_EXPORT MetadataRecorder {
   MetadataRecorder& operator=(const MetadataRecorder&) = delete;
 
   struct BASE_EXPORT Item {
-    Item(uint64_t name_hash, absl::optional<int64_t> key, int64_t value);
+    Item(uint64_t name_hash,
+         absl::optional<int64_t> key,
+         absl::optional<PlatformThreadId> thread_id,
+         int64_t value);
     Item();
 
     Item(const Item& other);
@@ -139,20 +143,28 @@ class BASE_EXPORT MetadataRecorder {
     uint64_t name_hash;
     // The key if specified when setting the item.
     absl::optional<int64_t> key;
+    // The thread_id is captured from the current thread for a thread-scoped
+    // item.
+    absl::optional<PlatformThreadId> thread_id;
     // The value of the metadata item.
     int64_t value;
   };
   static constexpr size_t MAX_METADATA_COUNT = 50;
   typedef std::array<Item, MAX_METADATA_COUNT> ItemArray;
 
-  // Sets a value for a (|name_hash|, |key|) pair, overwriting any value
-  // previously set for the pair. Nullopt keys are treated as just another key
-  // state for the purpose of associating values.
-  void Set(uint64_t name_hash, absl::optional<int64_t> key, int64_t value);
+  // Sets a value for a (|name_hash|, |key|, |thread_id|) tuple, overwriting any
+  // value previously set for the tuple. Nullopt keys are treated as just
+  // another key state for the purpose of associating values.
+  void Set(uint64_t name_hash,
+           absl::optional<int64_t> key,
+           absl::optional<PlatformThreadId> thread_id,
+           int64_t value);
 
   // Removes the item with the specified name hash and optional key. Has no
   // effect if such an item does not exist.
-  void Remove(uint64_t name_hash, absl::optional<int64_t> key);
+  void Remove(uint64_t name_hash,
+              absl::optional<int64_t> key,
+              absl::optional<PlatformThreadId> thread_id);
 
   // An object that provides access to a MetadataRecorder's items and holds the
   // necessary exclusive read lock until the object is destroyed. Reclaiming of
@@ -179,22 +191,25 @@ class BASE_EXPORT MetadataRecorder {
    public:
     // Acquires an exclusive read lock on the metadata recorder which is held
     // until the object is destroyed.
-    explicit MetadataProvider(MetadataRecorder* metadata_recorder)
+    explicit MetadataProvider(MetadataRecorder* metadata_recorder,
+                              PlatformThreadId thread_id)
         EXCLUSIVE_LOCK_FUNCTION(metadata_recorder_->read_lock_);
     ~MetadataProvider() UNLOCK_FUNCTION();
     MetadataProvider(const MetadataProvider&) = delete;
     MetadataProvider& operator=(const MetadataProvider&) = delete;
 
-    // Retrieves the first |available_slots| items in the metadata recorder and
-    // copies them into |items|, returning the number of metadata items that
-    // were copied. To ensure that all items can be copied, |available slots|
-    // should be greater than or equal to |MAX_METADATA_COUNT|. Requires
-    // NO_THREAD_SAFETY_ANALYSIS because clang's analyzer doesn't understand the
-    // cross-class locking used in this class' implementation.
+    // Retrieves the first |available_slots| items in the metadata recorder for
+    // |thread_id| and copies them into |items|, returning the number of
+    // metadata items that were copied. To ensure that all items can be copied,
+    // |available slots| should be greater than or equal to
+    // |MAX_METADATA_COUNT|. Requires NO_THREAD_SAFETY_ANALYSIS because clang's
+    // analyzer doesn't understand the cross-class locking used in this class'
+    // implementation.
     size_t GetItems(ItemArray* const items) const NO_THREAD_SAFETY_ANALYSIS;
 
    private:
     const raw_ptr<const MetadataRecorder> metadata_recorder_;
+    PlatformThreadId thread_id_;
     base::AutoLock auto_lock_;
   };
 
@@ -212,14 +227,15 @@ class BASE_EXPORT MetadataRecorder {
     // is marked as active.
     std::atomic<bool> is_active{false};
 
-    // Neither name_hash or key require atomicity or memory order constraints
-    // because no reader will attempt to read them mid-write. Specifically,
-    // readers wait until |is_active| is true to read them. Because |is_active|
-    // is always stored with a memory_order_release fence, we're guaranteed that
-    // |name_hash| and |key| will be finished writing before |is_active| is set
-    // to true.
+    // Neither name_hash, key or thread_id require atomicity or memory order
+    // constraints because no reader will attempt to read them mid-write.
+    // Specifically, readers wait until |is_active| is true to read them.
+    // Because |is_active| is always stored with a memory_order_release fence,
+    // we're guaranteed that |name_hash|, |key| and |thread_id| will be finished
+    // writing before |is_active| is set to true.
     uint64_t name_hash;
     absl::optional<int64_t> key;
+    absl::optional<PlatformThreadId> thread_id;
 
     // Requires atomic reads and writes to avoid word tearing when updating an
     // existing item unsynchronized. Does not require acquire/release semantics
@@ -240,7 +256,10 @@ class BASE_EXPORT MetadataRecorder {
       EXCLUSIVE_LOCKS_REQUIRED(write_lock_)
           EXCLUSIVE_LOCKS_REQUIRED(read_lock_);
 
-  size_t GetItems(ItemArray* const items) const
+  // Retrieves items in the metadata recorder that are active for |thread_id|
+  // and copies them into |items|, returning the number of metadata items that
+  // were copied.
+  size_t GetItems(ItemArray* const items, PlatformThreadId thread_id) const
       EXCLUSIVE_LOCKS_REQUIRED(read_lock_);
 
   // Metadata items that the recorder has seen. Rather than implementing the
