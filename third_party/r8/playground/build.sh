@@ -39,6 +39,7 @@ $JAVA_BIN/java -cp $R8_PATH com.android.tools.r8.R8 \
     --desugared-lib-pg-conf-output desugar_jdk_libs.pgcfg \
     --no-minification \
     --pg-conf playground.pgcfg \
+    --pg-map-output Playground.mapping \
     --output . \
     *.class
 $DEXDUMP -d classes.dex > dexdump.txt
@@ -56,5 +57,5 @@ if [[ -n $(cat desugar_jdk_libs.pgcfg) ]]; then
   unzip -p desugar_jdk_libs.dex.jar classes.dex > desugar_jdk_libs.dex
 fi
 du -b *.dex
-echo 'dexdump.txt updated.'
+echo 'Outputs are: Playground.mapping, classes.dex, dexdump.txt'
 
