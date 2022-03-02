@@ -409,9 +409,9 @@ export class Preview {
       return;
     }
 
-    dom.getAll('.metadata.value', HTMLElement).forEach((element) => {
+    for (const element of dom.getAll('.metadata.value', HTMLElement)) {
       element.style.display = 'none';
-    });
+    }
 
     const displayCategory = (selector: string, enabled: boolean) => {
       dom.get(selector, HTMLElement).classList.toggle('mode-on', enabled);

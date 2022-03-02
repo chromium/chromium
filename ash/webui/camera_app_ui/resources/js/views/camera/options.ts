@@ -110,8 +110,9 @@ export class Options implements CameraUI {
 
   private updateVideoConstFpsOption(prefFps: number|null) {
     this.toggleFps.checked = prefFps === 60;
-    SUPPORTED_CONSTANT_FPS.forEach(
-        (fps) => state.set(state.assertState(`fps-${fps}`), fps === prefFps));
+    for (const fps of SUPPORTED_CONSTANT_FPS) {
+      state.set(state.assertState(`fps-${fps}`), fps === prefFps);
+    }
   }
 
   onUpdateCapability(cameraInfo: CameraInfo): void {

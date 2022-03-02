@@ -60,14 +60,14 @@ function activate(index: number) {
   // Restore the view's child elements' tabindex and then focus the view.
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'false');
-  dom.getAllFrom(view.root, '[tabindex]', HTMLElement).forEach((element) => {
+  for (const element of dom.getAllFrom(view.root, '[tabindex]', HTMLElement)) {
     if (element.dataset['tabindex'] === undefined) {
       // First activation, no need to restore tabindex from data-tabindex.
-      return;
+      continue;
     }
     element.setAttribute('tabindex', element.dataset['tabindex']);
     element.removeAttribute('data-tabindex');
-  });
+  }
   view.focus();
 }
 
@@ -79,11 +79,11 @@ function activate(index: number) {
 function deactivate(index: number) {
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'true');
-  dom.getAllFrom(view.root, '[tabindex]', HTMLElement).forEach((element) => {
+  for (const element of dom.getAllFrom(view.root, '[tabindex]', HTMLElement)) {
     element.dataset['tabindex'] =
         assertExists(element.getAttribute('tabindex'));
     element.setAttribute('tabindex', '-1');
-  });
+  }
   const activeElement = document.activeElement;
   if (activeElement instanceof HTMLElement) {
     activeElement.blur();

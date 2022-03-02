@@ -316,8 +316,9 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     if (!SUPPORTED_CONSTANT_FPS.includes(prefFps)) {
       return;
     }
-    SUPPORTED_CONSTANT_FPS.forEach(
-        (fps) => state.set(state.assertState(`fps-${fps}`), fps === prefFps));
+    for (const fps of SUPPORTED_CONSTANT_FPS) {
+      state.set(state.assertState(`fps-${fps}`), fps === prefFps);
+    }
     const resolutionFpses = this.prefFpses[deviceId] || {};
     resolutionFpses[resolution.toString()] = prefFps;
     this.prefFpses[deviceId] = resolutionFpses;
@@ -574,11 +575,11 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
     this.devicePTZSupportMap = new Map(
         devices.map(({deviceId, supportPTZ}) => [deviceId, supportPTZ]));
 
-    devices.forEach(({
-                      deviceId,
-                      photoResolutions,
-                      videoResolutions: previewResolutions,
-                    }) => {
+    for (const {
+           deviceId,
+           photoResolutions,
+           videoResolutions: previewResolutions,
+         } of devices) {
       const previewRatios = this.groupResolutionRatio(previewResolutions);
       const captureRatios = this.groupResolutionRatio(photoResolutions);
       const pairedResolutions: CapturePreviewResolutions[] = [];
@@ -607,7 +608,7 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
             new Resolution(0, -1));
       }
       this.prefResolution.set(deviceId, prefResolution);
-    });
+    }
     this.saveResolutionPreference('devicePhotoResolution');
   }
 

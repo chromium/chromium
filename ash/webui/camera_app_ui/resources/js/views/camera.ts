@@ -404,8 +404,11 @@ export class Camera extends View implements CameraViewUI {
       if (!state.get(state.State.CAMERA_CONFIGURING) && state.get(Mode.SCAN) &&
           this.scanOptions.isDocumentModeEanbled() &&
           nav.isTopMostView(this.name)) {
-        dom.getAll('button.shutter', HTMLButtonElement)
-            .forEach((btn) => btn.offsetParent && btn.focus());
+        for (const btn of dom.getAll('button.shutter', HTMLButtonElement)) {
+          if (btn.offsetParent !== null) {
+            btn.focus();
+          }
+        }
       }
     };
     state.addObserver(state.State.CAMERA_CONFIGURING, checkRefocus);
@@ -431,8 +434,11 @@ export class Camera extends View implements CameraViewUI {
       }
 
       // Avoid focusing invisible shutters.
-      dom.getAll('button.shutter', HTMLButtonElement)
-          .forEach((btn) => btn.offsetParent && btn.focus());
+      for (const btn of dom.getAll('button.shutter', HTMLButtonElement)) {
+        if (btn.offsetParent !== null) {
+          btn.focus();
+        }
+      }
     })();
   }
 

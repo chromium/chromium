@@ -101,7 +101,9 @@ export class PerfLogger {
 
     const duration = performance.now() - startTime;
     ChromeHelper.getInstance().stopTracing(event);
-    this.listeners.forEach((listener) => listener({event, duration, perfInfo}));
+    for (const listener of this.listeners) {
+      listener({event, duration, perfInfo});
+    }
   }
 
   /**

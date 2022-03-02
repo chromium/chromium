@@ -69,12 +69,13 @@ export class BaseSettings extends View {
 
     dom.getFrom(this.root, '.menu-header button', HTMLButtonElement)
         .addEventListener('click', () => this.leave());
-    dom.getAllFrom(this.root, '.menu-item', HTMLElement).forEach((element) => {
+    for (const element of dom.getAllFrom(
+             this.root, '.menu-item', HTMLElement)) {
       const handler = itemHandlers[element.id];
       if (handler !== undefined) {
         element.addEventListener('click', handler);
       }
-    });
+    }
 
     this.defaultFocus = dom.getFrom(this.root, '[tabindex]', HTMLElement);
 
@@ -318,42 +319,40 @@ export class ResolutionSettings extends BaseSettings {
         this.frontSetting = this.backSetting = null;
         this.externalSettings = [];
 
-        devices.forEach(
-            ({deviceId, facing, photoResolutions, videoResolutions}) => {
-              const deviceSetting = {
-                deviceId,
-                photo: {
-                  prefResolution: assertInstanceof(
-                      cameraManager.getPrefPhotoResolution(deviceId),
-                      Resolution),
-                  resolutions:
-                      /* Filter out resolutions of megapixels < 0.1 i.e.
-                       * megapixels 0.0 */
-                      photoResolutions.filter((r) => r.area >= 100000),
-                },
-                video: {
-                  prefResolution: assertInstanceof(
-                      cameraManager.getPrefVideoResolution(deviceId),
-                      Resolution),
-                  resolutions: videoResolutions,
-                },
-              };
-              switch (facing) {
-                case Facing.USER:
-                  this.frontSetting = deviceSetting;
-                  break;
-                case Facing.ENVIRONMENT:
-                  this.backSetting = deviceSetting;
-                  break;
-                case Facing.EXTERNAL:
-                  this.externalSettings.push(deviceSetting);
-                  break;
-                default:
-                  reportError(
-                      ErrorType.UNKNOWN_FACING, ErrorLevel.ERROR,
-                      new Error(`Ignore device of unknown facing: ${facing}`));
-              }
-            });
+        for (const {deviceId, facing, photoResolutions, videoResolutions} of
+                 devices) {
+          const deviceSetting = {
+            deviceId,
+            photo: {
+              prefResolution: assertInstanceof(
+                  cameraManager.getPrefPhotoResolution(deviceId), Resolution),
+              resolutions:
+                  /* Filter out resolutions of megapixels < 0.1 i.e.
+                   * megapixels 0.0 */
+                  photoResolutions.filter((r) => r.area >= 100000),
+            },
+            video: {
+              prefResolution: assertInstanceof(
+                  cameraManager.getPrefVideoResolution(deviceId), Resolution),
+              resolutions: videoResolutions,
+            },
+          };
+          switch (facing) {
+            case Facing.USER:
+              this.frontSetting = deviceSetting;
+              break;
+            case Facing.ENVIRONMENT:
+              this.backSetting = deviceSetting;
+              break;
+            case Facing.EXTERNAL:
+              this.externalSettings.push(deviceSetting);
+              break;
+            default:
+              reportError(
+                  ErrorType.UNKNOWN_FACING, ErrorLevel.ERROR,
+                  new Error(`Ignore device of unknown facing: ${facing}`));
+          }
+        }
         this.updateResolutions();
       },
       onUpdateConfig: (config: CameraConfig) => {
@@ -380,9 +379,9 @@ export class ResolutionSettings extends BaseSettings {
   }
 
   private updateOptionAvailability(): void {
-    dom.getAll('.resolution-option>input', HTMLInputElement).forEach((e) => {
+    for (const e of dom.getAll('.resolution-option>input', HTMLInputElement)) {
       e.disabled = !this.cameraAvailble || state.get(state.State.TAKING);
-    });
+    }
   }
 
 
@@ -502,7 +501,7 @@ export class ResolutionSettings extends BaseSettings {
       }
     }
 
-    this.externalSettings.forEach((config, index) => {
+    for (const [index, config] of this.externalSettings.entries()) {
       const {deviceId} = config;
       let titleItem: HTMLElement;
       let photoItem: HTMLElement;
@@ -546,7 +545,7 @@ export class ResolutionSettings extends BaseSettings {
           photoItem, deviceId, config.photo, this.photoOptionTextTemplate);
       prepareItem(
           videoItem, deviceId, config.video, this.videoOptionTextTemplate);
-    });
+    }
     // Force closing opened setting of unplugged device.
     if ((state.get(ViewName.PHOTO_RESOLUTION_SETTINGS) ||
          state.get(ViewName.VIDEO_RESOLUTION_SETTINGS)) &&

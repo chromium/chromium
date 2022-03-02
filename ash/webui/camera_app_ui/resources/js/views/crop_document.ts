@@ -204,7 +204,7 @@ export class CropDocument extends Review<boolean> {
       return new Size(width, height);
     })();
 
-    this.corners.forEach((corn) => {
+    for (const corn of this.corners) {
       // Start dragging on one corner.
       corn.el.addEventListener('pointerdown', (e) => {
         e.preventDefault();
@@ -286,7 +286,7 @@ export class CropDocument extends Review<boolean> {
           clearKeydown();
         }
       });
-    });
+    }
 
     // Stop dragging.
     for (const eventName of ['pointerup', 'pointerleave', 'pointercancel']) {
@@ -486,23 +486,24 @@ export class CropDocument extends Review<boolean> {
   private updateCornerEl() {
     const cords = this.corners.map(({pt: {x, y}}) => `${x},${y}`).join(' ');
     this.cropArea.setAttribute('points', cords);
-    this.corners.forEach((corn) => {
+    for (const corn of this.corners) {
       const style = corn.el.attributeStyleMap;
       style.set('left', CSS.px(corn.pt.x));
       style.set('top', CSS.px(corn.pt.y));
-    });
+    }
   }
 
   private updateCornerElAriaLabel() {
-    [I18nString.LABEL_DOCUMENT_TOP_LEFT_CORNER,
-     I18nString.LABEL_DOCUMENT_BOTTOM_LEFT_CORNER,
-     I18nString.LABEL_DOCUMENT_BOTTOM_RIGHT_CORNER,
-     I18nString.LABEL_DOCUMENT_TOP_RIGHT_CORNER,
-    ].forEach((label, index) => {
+    for (const [index, label] of
+             [I18nString.LABEL_DOCUMENT_TOP_LEFT_CORNER,
+              I18nString.LABEL_DOCUMENT_BOTTOM_LEFT_CORNER,
+              I18nString.LABEL_DOCUMENT_BOTTOM_RIGHT_CORNER,
+              I18nString.LABEL_DOCUMENT_TOP_RIGHT_CORNER,
+    ].entries()) {
       const cornEl =
           this.corners[(this.rotation + index) % this.corners.length].el;
       cornEl.setAttribute('i18n-aria', label);
-    });
+    }
     util.setupI18nElements(this.root);
   }
 
@@ -532,18 +533,18 @@ export class CropDocument extends Review<boolean> {
 
     // Update corner space.
     if (this.cornerSpaceSize === null) {
-      this.initialCorners.forEach(({x, y}, idx) => {
+      for (const [idx, {x, y}] of this.initialCorners.entries()) {
         this.corners[idx].pt = new Point(x * newImageW, y * newImageH);
-      });
+      }
       this.initialCorners = [];
     } else {
       const oldImageW = this.cornerSpaceSize?.width || newImageW;
       const oldImageH = this.cornerSpaceSize?.height || newImageH;
-      this.corners.forEach((corn) => {
+      for (const corn of this.corners) {
         corn.pt = new Point(
             corn.pt.x / oldImageW * newImageW,
             corn.pt.y / oldImageH * newImageH);
-      });
+      }
     }
     this.cornerSpaceSize = new Size(newImageW, newImageH);
 

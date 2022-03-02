@@ -39,7 +39,9 @@ function getAnimations({el, onChild}: {el: HTMLElement, onChild: boolean}):
  */
 async function doCancel({el, onChild}: {el: HTMLElement, onChild: boolean}):
     Promise<void> {
-  getAnimations({el, onChild}).forEach((a) => a.cancel());
+  for (const a of getAnimations({el, onChild})) {
+    a.cancel();
+  }
   await getQueueFor(el).flush();
 }
 

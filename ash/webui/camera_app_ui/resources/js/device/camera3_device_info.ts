@@ -41,12 +41,14 @@ export class Camera3DeviceInfo {
       readonly supportPTZ: boolean,
   ) {
     this.deviceId = deviceInfo.deviceId;
-    videoResolutionFpses.filter(({maxFps}) => maxFps >= 24)
-        .forEach(({width, height, maxFps}) => {
-          const r = new Resolution(width, height);
-          this.videoResolutions.push(r);
-          this.videoMaxFps[r.toString()] = maxFps;
-        });
+    for (const {width, height, maxFps} of videoResolutionFpses) {
+      if (maxFps < 24) {
+        continue;
+      }
+      const r = new Resolution(width, height);
+      this.videoResolutions.push(r);
+      this.videoMaxFps[r.toString()] = maxFps;
+    }
   }
 
   /**

@@ -106,7 +106,9 @@ export class DeviceInfoUpdater {
     } else {
       this.camera3DevicesInfo = null;
     }
-    this.deviceChangeListeners.forEach((l) => l(this));
+    for (const listener of this.deviceChangeListeners) {
+      listener(this);
+    }
   }
 
   /**

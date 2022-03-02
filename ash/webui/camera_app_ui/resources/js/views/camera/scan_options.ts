@@ -75,24 +75,24 @@ export class ScanOptions implements CameraUI {
     this.documentCornerOverylay = new DocumentCornerOverlay(
         (p) => this.cameraManager.setPointOfInterest(p));
 
-    [this.photoBarcodeOption, ...this.scanOptions].forEach((opt) => {
-      opt.addEventListener('click', (evt) => {
+    for (const option of [this.photoBarcodeOption, ...this.scanOptions]) {
+      option.addEventListener('click', (evt) => {
         if (state.get(state.State.CAMERA_CONFIGURING)) {
           evt.preventDefault();
         }
       });
-    });
+    }
     this.photoBarcodeOption.addEventListener('change', () => {
       this.updateOption(
           this.photoBarcodeOption.checked ? ScanType.BARCODE : null);
     });
-    this.scanOptions.forEach((opt) => {
-      opt.addEventListener('change', () => {
-        if (opt.checked) {
+    for (const option of this.scanOptions) {
+      option.addEventListener('change', () => {
+        if (option.checked) {
           this.updateOption(this.getToggledScanOption());
         }
       });
-    });
+    }
   }
 
   /**

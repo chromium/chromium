@@ -109,21 +109,23 @@ export function setupI18nElements(rootElement: DocumentFragment|Element): void {
   const setAriaLabel = (element: HTMLElement, attr: string) =>
       element.setAttribute('aria-label', getMessage(element, attr));
 
-  getElements('i18n-text')
-      .forEach(
-          (element) => element.textContent = getMessage(element, 'i18n-text'));
-  getElements('i18n-tooltip-true')
-      .forEach(
-          (element) => element.setAttribute(
-              'tooltip-true', getMessage(element, 'i18n-tooltip-true')));
-  getElements('i18n-tooltip-false')
-      .forEach(
-          (element) => element.setAttribute(
-              'tooltip-false', getMessage(element, 'i18n-tooltip-false')));
-  getElements('i18n-aria')
-      .forEach((element) => setAriaLabel(element, 'i18n-aria'));
-  tooltip.setup(getElements('i18n-label'))
-      .forEach((element) => setAriaLabel(element, 'i18n-label'));
+  for (const element of getElements('i18n-text')) {
+    element.textContent = getMessage(element, 'i18n-text');
+  }
+  for (const element of getElements('i18n-tooltip-true')) {
+    element.setAttribute(
+        'tooltip-true', getMessage(element, 'i18n-tooltip-true'));
+  }
+  for (const element of getElements('i18n-tooltip-false')) {
+    element.setAttribute(
+        'tooltip-false', getMessage(element, 'i18n-tooltip-false'));
+  }
+  for (const element of getElements('i18n-aria')) {
+    setAriaLabel(element, 'i18n-aria');
+  }
+  for (const element of tooltip.setup(getElements('i18n-label'))) {
+    setAriaLabel(element, 'i18n-label');
+  }
 }
 
 /**

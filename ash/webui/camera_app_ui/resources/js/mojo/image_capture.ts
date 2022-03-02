@@ -154,12 +154,12 @@ export class CrosImageCapture {
     }
 
     const cameraMetadataTagInverseLookup: Record<number, string> = {};
-    Object.entries(CameraMetadataTag).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(CameraMetadataTag)) {
       if (key === 'MIN_VALUE' || key === 'MAX_VALUE') {
         return;
       }
       cameraMetadataTagInverseLookup[value] = key;
-    });
+    }
 
     const callback = (metadata: CameraMetadata) => {
       const parsedMetadata: Record<string, unknown> = {};

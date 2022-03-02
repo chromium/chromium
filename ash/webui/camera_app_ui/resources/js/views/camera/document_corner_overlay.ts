@@ -356,14 +356,14 @@ export class DocumentCornerOverlay {
     });
 
     // Set start of dot transition.
-    starts.forEach((corn, idx) => {
+    for (const [idx, corn] of starts.entries()) {
       const prevIdx = (idx + 3) % 4;
       const nextIdx = (idx + 1) % 4;
       this.corners[idx].place(corn, starts[prevIdx], starts[nextIdx]);
-    });
+    }
 
     // Set start of line transition.
-    this.sides.forEach((line, i) => {
+    for (const [i, line] of this.sides.entries()) {
       const startCorn = starts[i];
       const startCorn2 = starts[(i + 1) % 4];
       const startSide = vectorFromPoints(startCorn2, startCorn);
@@ -372,18 +372,18 @@ export class DocumentCornerOverlay {
         angle: startSide.cssRotateAngle(),
         length: startSide.length(),
       });
-    });
+    }
 
     void this.cornerContainer.offsetParent;  // Force start state of transition.
 
     // Set end of dot transition.
-    corners.forEach((corn, i) => {
+    for (const [i, corn] of corners.entries()) {
       const prevIdx = (i + 3) % 4;
       const nextIdx = (i + 1) % 4;
       this.corners[i].place(corn, corners[prevIdx], corners[nextIdx]);
-    });
+    }
 
-    this.sides.forEach((line, i) => {
+    for (const [i, line] of this.sides.entries()) {
       const endCorn = corners[i];
       const endCorn2 = corners[(i + 1) % 4];
       const endSide = vectorFromPoints(endCorn2, endCorn);
@@ -392,19 +392,19 @@ export class DocumentCornerOverlay {
         angle: endSide.cssRotateAngle(),
         length: endSide.length(),
       });
-    });
+    }
   }
 
   /**
    * Place first 4 corners on the overlay and play settle animation.
    */
   private updateCorners(corners: Point[]) {
-    corners.forEach((corn, i) => {
+    for (const [i, corn] of corners.entries()) {
       const prevIdx = (i + 3) % 4;
       const nextIdx = (i + 1) % 4;
       this.corners[i].place(corn, corners[prevIdx], corners[nextIdx]);
-    });
-    this.sides.forEach((line, i) => {
+    }
+    for (const [i, line] of this.sides.entries()) {
       const corn = corners[i];
       const corn2 = corners[(i + 1) % 4];
       const side = vectorFromPoints(corn2, corn);
@@ -413,7 +413,7 @@ export class DocumentCornerOverlay {
         angle: side.cssRotateAngle(),
         length: side.length(),
       });
-    });
+    }
   }
 
   /**

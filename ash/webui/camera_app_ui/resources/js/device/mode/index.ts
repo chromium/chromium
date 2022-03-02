@@ -320,11 +320,11 @@ export class Modes {
       },
     };
 
-    [state.State.EXPERT, state.State.SAVE_METADATA].forEach((s) => {
+    for (const s of [state.State.EXPERT, state.State.SAVE_METADATA]) {
       state.addObserver(s, () => {
         this.updateSaveMetadata();
       });
-    });
+    }
   }
 
   initialize(handler: CaptureHandler): void {
