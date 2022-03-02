@@ -80,13 +80,6 @@ class WebDialogDelegate;
 struct SelectedFileInfo;
 }  // namespace ui
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-namespace web_app {
-struct UrlHandlerLaunchParams;
-}
-#endif
-
 namespace chrome {
 
 // Shows or hides the Task Manager. |browser| can be NULL when called from Ash.
@@ -206,27 +199,6 @@ void ShowWebAppFileLaunchDialog(const std::vector<base::FilePath>& file_paths,
                                 const web_app::AppId& app_id,
                                 WebAppLaunchAcceptanceCallback close_callback);
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-// Callback that runs when the Web App URL Handler Intent Picker dialog is
-// closed. `accepted` is true when the dialog is accepted, false otherwise.
-// `launch_params` contains information of the app that is selected to open by
-// the user. It is null when the user selects to open the browser.
-using WebAppUrlHandlerAcceptanceCallback = base::OnceCallback<void(
-    bool accepted,
-    absl::optional<web_app::UrlHandlerLaunchParams> launch_params)>;
-
-// Shows the Web App URL Handler Intent Picker dialog and runs
-// `dialog_close_callback` on closure with the dialog acceptance status and
-// information of the user-selected app. `launch_params_list` contains
-// information of all the apps to show. `url` is the URL to launch if the
-// dialog is accepted by the user.
-void ShowWebAppUrlHandlerIntentPickerDialog(
-    const GURL& url,
-    std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,
-    WebAppUrlHandlerAcceptanceCallback dialog_close_callback);
-#endif
 
 // Sets whether |ShowWebAppDialog| should accept immediately without any
 // user interaction. |auto_open_in_window| sets whether the open in window

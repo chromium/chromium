@@ -898,8 +898,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     return;
   }
 
-  StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
-      urls, base::BindOnce(&OpenUrlsInBrowser, urls));
+  OpenUrlsInBrowser(urls);
 }
 
 // This is called after profiles have been loaded and preferences registered.
