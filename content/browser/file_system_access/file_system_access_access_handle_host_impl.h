@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
@@ -93,6 +94,13 @@ class FileSystemAccessAccessHandleHostImpl
       capacity_allocation_host_;
 
   const storage::FileSystemURL url_;
+
+  // FileSystemAccessFileHandleHost::CloseCallback which is set when Close() is
+  // called on an Access Handle. The Close() call will eventually destroy
+  // `this`, allowing `close_callback_` to be run in the destructor, after the
+  // file has been closed and the capacity allocation has been cleaned up but
+  // before `receiver_` is destroyed (which the callback replies via).
+  base::ScopedClosureRunner close_callback_;
 
   // Comes from `FileSystemOperation::OpenFileCallback`'s `on_close_callback`,
   // which needs to run when its corresponding file closes. `on_close_callback_`

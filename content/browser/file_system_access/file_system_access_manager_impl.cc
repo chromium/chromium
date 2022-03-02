@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -1334,22 +1335,20 @@ void FileSystemAccessManagerImpl::RemoveFileWriter(
 }
 
 void FileSystemAccessManagerImpl::RemoveAccessHandleHost(
-    FileSystemAccessAccessHandleHostImpl* access_handle_host,
-    base::OnceCallback<void()> callback) {
+    FileSystemAccessAccessHandleHostImpl* access_handle_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(access_handle_host);
 
   // Capacity allocations only exist in non-incognito mode.
   if (context()->is_incognito()) {
-    DidCleanupAccessHandleCapacityAllocation(access_handle_host,
-                                             std::move(callback));
+    DidCleanupAccessHandleCapacityAllocation(access_handle_host);
     return;
   }
   CleanupAccessHandleCapacityAllocation(
       access_handle_host->url(), access_handle_host->granted_capacity(),
       base::BindOnce(&FileSystemAccessManagerImpl::
                          DidCleanupAccessHandleCapacityAllocation,
-                     weak_factory_.GetWeakPtr(), access_handle_host,
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(), access_handle_host));
 }
 
 void FileSystemAccessManagerImpl::RemoveToken(
@@ -1432,7 +1431,7 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForPath(
 void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocation(
     const storage::FileSystemURL& url,
     int64_t allocated_file_size,
-    base::OnceCallback<void()> callback) {
+    base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(allocated_file_size, 0);
 
@@ -1448,7 +1447,7 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocation(
 void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
     const storage::FileSystemURL& url,
     int64_t allocated_file_size,
-    base::OnceCallback<void()> callback,
+    base::OnceClosure callback,
     base::File::Error result,
     const base::File::Info& file_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1473,11 +1472,10 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
 }
 
 void FileSystemAccessManagerImpl::DidCleanupAccessHandleCapacityAllocation(
-    FileSystemAccessAccessHandleHostImpl* access_handle_host,
-    base::OnceCallback<void()> callback) {
+    FileSystemAccessAccessHandleHostImpl* access_handle_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(access_handle_host);
-  std::move(callback).Run();
+
   size_t count_removed =
       access_handle_host_receivers_.erase(access_handle_host);
   DCHECK_EQ(1u, count_removed);
