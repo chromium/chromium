@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
@@ -61,8 +60,6 @@
 #include "components/feature_engagement/test/test_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/management/management_service.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -342,13 +339,7 @@ void WaitForFirstNonEmptyPaint(const GURL& url, content::WebContents* target) {
 class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  public:
   ProfilePickerCreationFlowBrowserTest()
-      : feature_list_(feature_engagement::kIPHProfileSwitchFeature) {
-    // Ensure the platform is unmanaged
-    platform_management_ =
-        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
-            policy::ManagementServiceFactory::GetForPlatform(),
-            policy::EnterpriseManagementAuthority::NONE);
-  }
+      : feature_list_(feature_engagement::kIPHProfileSwitchFeature) {}
 
   void SetUpInProcessBrowserTestFixture() override {
     ProfilePickerTestBase::SetUpInProcessBrowserTestFixture();
@@ -571,8 +562,6 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
-      platform_management_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowPicker) {
