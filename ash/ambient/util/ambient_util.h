@@ -5,11 +5,14 @@
 #ifndef ASH_AMBIENT_UTIL_AMBIENT_UTIL_H_
 #define ASH_AMBIENT_UTIL_AMBIENT_UTIL_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/strings/string_piece.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/shadow_value.h"
 
@@ -41,6 +44,36 @@ ASH_EXPORT gfx::ShadowValues GetTextShadowValues(
     const ui::ColorProvider* color_provider);
 
 ASH_EXPORT bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic);
+
+// A "dynamic" asset is a placeholder in an ambient Lottie animation where a
+// photo of interest goes (ex: from a user’s google photos album). This
+// contrasts with a "static" asset, which is a fixed image in the animation that
+// does not change between animation cycles.
+//
+// The dynamic asset ids for ambient mode take the following format:
+// "_CrOS_Photo_Position<position_id>_<idx>".
+//
+// A "position" represents a physical location on the screen where a photo
+// appears. Its identifier is arbitrary and opaque. But there may be multiple
+// assets assigned to a given position. For example, if an animation has a
+// cross-fade transition from image 1 to image 2, there may be 2 image assets
+// in the animation that share the same position id. However, their indices
+// (the last element of the identifier) will be different. Example:
+// "_CrOS_Photo_PositionA_1"
+// "_CrOS_Photo_PositionA_2"
+// ...
+//
+// The only requirement for the index is that it must reflect the order in which
+// that asset appears at its position. The absolute index values do not matter.
+//
+// Note this naming convention is agreed upon with the animation designer, so
+// any changes to the logic must be confirmed with them.
+//
+// Returns false and leaves the output arguments untouched if the |asset_id|
+// does not match the naming convention above.
+ASH_EXPORT bool ParseDynamicLottieAssetId(base::StringPiece asset_id,
+                                          std::string& position_id,
+                                          int& idx);
 
 }  // namespace util
 }  // namespace ambient

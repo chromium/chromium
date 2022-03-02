@@ -7,12 +7,20 @@
 #ifndef ASH_AMBIENT_TEST_AMBIENT_TEST_UTIL_H_
 #define ASH_AMBIENT_TEST_AMBIENT_TEST_UTIL_H_
 
+#include "base/strings/string_piece.h"
+
 namespace ash {
 
 struct AmbientPhotoConfig;
 
-// Generates a customizable lottie id that incorporates the |unique_id| in it.
+// Generates a generic customizable lottie id that incorporates the |unique_id|
+// in it.
 std::string GenerateLottieCustomizableIdForTesting(int unique_id);
+
+// Generates a lottie dynamic image asset id for testing purposes (see
+// ParseDynamicLottieAssetId() for details).
+std::string GenerateLottieDynamicAssetIdForTesting(base::StringPiece position,
+                                                   int idx);
 
 // Returns an AmbientPhotoConfig for a lottie animation with the number of
 // assets specified by |num_assets|,

@@ -10,7 +10,10 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/utility/lottie_util.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -88,6 +91,17 @@ bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic_type) {
     case ::ambient::TopicType::kOther:
       return false;
   }
+}
+
+bool ParseDynamicLottieAssetId(base::StringPiece asset_id,
+                               std::string& position_id,
+                               int& idx) {
+  static const base::NoDestructor<std::string> kAssetIdPatternStr(
+      base::StrCat({kLottieCustomizableIdPrefix,
+                    R"(_Photo_Position([[:alnum:]]+)_([[:digit:]]+).*)"}));
+  static const base::NoDestructor<RE2> kAssetIdPattern(
+      kAssetIdPatternStr->data());
+  return RE2::FullMatch(asset_id.data(), *kAssetIdPattern, &position_id, &idx);
 }
 
 }  // namespace util

@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -92,10 +93,13 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
 
   cc::SkottieResourceMetadataMap BuildSkottieResourceMetadata() const {
     cc::SkottieResourceMetadataMap resource_metadata;
-    for (int i = 0; i < kNumDynamicAssets; ++i) {
+    char position_id = 'A';
+    for (int i = 0; i < kNumDynamicAssets; ++i, ++position_id) {
       CHECK(resource_metadata.RegisterAsset(
           "dummy-resource-path", "dummy-resource-name",
-          GenerateLottieCustomizableIdForTesting(i), /*size=*/absl::nullopt));
+          GenerateLottieDynamicAssetIdForTesting(
+              /*position=*/std::string(1, position_id), /*idx=*/1),
+          /*size=*/absl::nullopt));
     }
     return resource_metadata;
   }
@@ -122,9 +126,12 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
       std::array<absl::optional<gfx::Size>, kNumDynamicAssets> asset_sizes =
           std::array<absl::optional<gfx::Size>, kNumDynamicAssets>()) {
     std::vector<scoped_refptr<ImageAsset>> all_assets;
-    for (int asset_idx = 0; asset_idx < kNumDynamicAssets; ++asset_idx) {
+    char position_id = 'A';
+    for (int asset_idx = 0; asset_idx < kNumDynamicAssets;
+         ++asset_idx, ++position_id) {
       all_assets.push_back(
-          LoadAsset(GenerateLottieCustomizableIdForTesting(asset_idx),
+          LoadAsset(GenerateLottieDynamicAssetIdForTesting(
+                        /*position=*/std::string(1, position_id), /*idx=*/1),
                     asset_sizes[asset_idx]));
     }
     return all_assets;
@@ -403,10 +410,14 @@ TEST_F(AmbientAnimationPhotoProviderTest,
   EXPECT_CALL(
       observer,
       OnDynamicImageAssetsRefreshed(AllOf(
-          ElementsAre(Key(GenerateLottieCustomizableIdForTesting(0)),
-                      Key(GenerateLottieCustomizableIdForTesting(1)),
-                      Key(GenerateLottieCustomizableIdForTesting(2)),
-                      Key(GenerateLottieCustomizableIdForTesting(3))),
+          ElementsAre(Key(GenerateLottieDynamicAssetIdForTesting(
+                          /*position=*/"A", /*idx=*/1)),
+                      Key(GenerateLottieDynamicAssetIdForTesting(
+                          /*position=*/"B", /*idx=*/1)),
+                      Key(GenerateLottieDynamicAssetIdForTesting(
+                          /*position=*/"C", /*idx=*/1)),
+                      Key(GenerateLottieDynamicAssetIdForTesting(
+                          /*position=*/"D", /*idx=*/1))),
           UnorderedElementsAre(Pair(_, TopicHasDetails("attribution-a")),
                                Pair(_, TopicHasDetails("attribution-b")),
                                Pair(_, TopicHasDetails("attribution-c")),
@@ -428,10 +439,14 @@ TEST_F(AmbientAnimationPhotoProviderTest,
   EXPECT_CALL(
       observer,
       OnDynamicImageAssetsRefreshed(AllOf(
-          ElementsAre(Key(GenerateLottieCustomizableIdForTesting(0)),
-                      Key(GenerateLottieCustomizableIdForTesting(1)),
-                      Key(GenerateLottieCustomizableIdForTesting(2)),
-                      Key(GenerateLottieCustomizableIdForTesting(3))),
+          ElementsAre(Key(GenerateLottieDynamicAssetIdForTesting(
+                          /*position=*/"A", /*idx=*/1)),
+                      Key(GenerateLottieDynamicAssetIdForTesting(
+                          /*position=*/"B", /*idx=*/1)),
+                      Key(GenerateLottieDynamicAssetIdForTesting(
+                          /*position=*/"C", /*idx=*/1)),
+                      Key(GenerateLottieDynamicAssetIdForTesting(
+                          /*position=*/"D", /*idx=*/1))),
           UnorderedElementsAre(Pair(_, TopicHasDetails("attribution-e")),
                                Pair(_, TopicHasDetails("attribution-f")),
                                Pair(_, TopicHasDetails("attribution-g")),

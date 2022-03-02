@@ -110,8 +110,9 @@ class AmbientAnimationAttributionProviderTest2DynamicAssets
       : AmbientAnimationAttributionProviderTest(
             GenerateLottieCustomizableIdForTesting(0) + "Attribution",
             GenerateLottieCustomizableIdForTesting(1) + "Attribution",
-            GenerateLottieCustomizableIdForTesting(0) + "Asset",
-            GenerateLottieCustomizableIdForTesting(1) + "Asset") {}
+            GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/1),
+            GenerateLottieDynamicAssetIdForTesting(/*position=*/"A",
+                                                   /*idx=*/2)) {}
 };
 
 class AmbientAnimationAttributionProviderTest1DynamicAsset
@@ -122,7 +123,8 @@ class AmbientAnimationAttributionProviderTest1DynamicAsset
             "static-text-node",
             GenerateLottieCustomizableIdForTesting(1) + "Attribution",
             "static-asset-id",
-            GenerateLottieCustomizableIdForTesting(1) + "Asset") {}
+            GenerateLottieDynamicAssetIdForTesting(/*position=*/"A",
+                                                   /*idx=*/1)) {}
 };
 
 TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,

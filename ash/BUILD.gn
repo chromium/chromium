@@ -2331,6 +2331,7 @@ test("ash_unittests") {
     "ambient/ui/jitter_calculator_unittest.cc",
     "ambient/ui/media_string_view_unittest.cc",
     "ambient/ui/photo_view_unittest.cc",
+    "ambient/util/ambient_util_unittest.cc",
     "app_menu/notification_menu_controller_unittest.cc",
     "app_menu/notification_menu_view_unittest.cc",
     "app_menu/notification_overflow_view_unittest.cc",

@@ -6,20 +6,56 @@
 
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/utility/lottie_util.h"
+#include "base/containers/flat_map.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "cc/paint/skottie_resource_metadata.h"
 
 namespace ash {
 namespace {
 
-size_t GetNumDynamicAssetsInAnimation(
-    const cc::SkottieResourceMetadataMap& skottie_resource_metadata) {
-  size_t num_dynamic_assets = 0;
-  for (const auto& resource_pair : skottie_resource_metadata.asset_storage()) {
-    const std::string& asset_id = resource_pair.first;
-    if (IsCustomizableLottieId(asset_id))
-      ++num_dynamic_assets;
+void ParseDynamicAssetsIdsInAnimation(
+    const cc::SkottieResourceMetadataMap& skottie_resource_metadata,
+    std::size_t& num_total_positions_out,
+    std::size_t& num_assets_per_position_out) {
+  base::flat_map<std::string, std::size_t> position_to_num_assets;
+  std::string position_id;
+  int idx = 0;
+  for (const auto& [asset_id, _] : skottie_resource_metadata.asset_storage()) {
+    if (!IsCustomizableLottieId(asset_id)) {
+      DVLOG(4) << "Ignoring static image asset id";
+      continue;
+    }
+
+    if (!ambient::util::ParseDynamicLottieAssetId(asset_id, position_id, idx)) {
+      NOTREACHED() << "Lottie file contains invalid dynamic asset id "
+                   << asset_id;
+    }
+
+    auto iter =
+        position_to_num_assets.try_emplace(position_id, /*initial count*/ 0)
+            .first;
+    ++iter->second;
   }
-  return num_dynamic_assets;
+
+  if (position_to_num_assets.empty()) {
+    num_total_positions_out = 0;
+    num_assets_per_position_out = 0;
+    return;
+  }
+
+  // Currently, it's expected that all positions in the animations have the same
+  // number of assets assigned to it. If this fails, the animation is invalid
+  // and must be updated by the designer as the rest of the pipeline was not
+  // designed with case in mind.
+  num_total_positions_out = position_to_num_assets.size();
+  num_assets_per_position_out = position_to_num_assets.begin()->second;
+  for (const auto& [position, num_assets_assigned] : position_to_num_assets) {
+    if (num_assets_assigned != num_assets_per_position_out) {
+      LOG(FATAL) << "Position " << position << " has " << num_assets_assigned
+                 << "assets. Expected " << num_assets_per_position_out;
+    }
+  }
 }
 
 }  // namespace
@@ -28,13 +64,15 @@ ASH_EXPORT AmbientPhotoConfig CreateAmbientAnimationPhotoConfig(
     const cc::SkottieResourceMetadataMap& skottie_resource_metadata) {
   AmbientPhotoConfig config;
   config.should_split_topics = true;
-  // Unlike the slideshow screensaver, the animated screensaver has
-  // motion/activity in it. So in the worst case scenario, we can repeat the
-  // animation cycle with the same set of image assets indefinitely and the
-  // screen won't burn. Hence, only 1 set of assets is required in the buffer.
-  config.num_topic_sets_to_buffer = 1;
-  config.topic_set_size =
-      GetNumDynamicAssetsInAnimation(skottie_resource_metadata);
+
+  // Example: If there are 6 positions and 2 assets per position, this will
+  // initially prepare and buffer 6 * 2 = 12 topics. Afterwards, all future
+  // refreshes will prepare 6 topics, effectively giving each position a new
+  // topic.
+  ParseDynamicAssetsIdsInAnimation(
+      skottie_resource_metadata,
+      /*num_total_positions_out=*/config.topic_set_size,
+      /*num_assets_per_position_out=*/config.num_topic_sets_to_buffer);
 
   // Once an animation cycle starts rendering (including the very first
   // cycle), start preparing the next set of decoded topics for the next

@@ -14,25 +14,78 @@ namespace ash {
 
 using ::testing::Eq;
 
-TEST(AmbientAnimationPhotoConfigTest, SetsTopicSetSize) {
+TEST(AmbientAnimationPhotoConfigTest, SetsTopicSetFields) {
   cc::SkottieResourceMetadataMap skottie_resource_metadata;
-  EXPECT_THAT(CreateAmbientAnimationPhotoConfig(skottie_resource_metadata)
-                  .topic_set_size,
-              Eq(0u));
+  AmbientPhotoConfig config =
+      CreateAmbientAnimationPhotoConfig(skottie_resource_metadata);
+  EXPECT_THAT(config.topic_set_size, Eq(0u));
+  EXPECT_THAT(config.num_topic_sets_to_buffer, Eq(0u));
+
   ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
       "test-resource-path", "test-resource-name-0",
-      GenerateLottieCustomizableIdForTesting(/*unique_id=*/0),
+      GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/1),
       /*size=*/absl::nullopt));
-  EXPECT_THAT(CreateAmbientAnimationPhotoConfig(skottie_resource_metadata)
-                  .topic_set_size,
-              Eq(1u));
   ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
-      "test-resource-path", "test-resource-name-1",
-      GenerateLottieCustomizableIdForTesting(/*unique_id=*/1),
+      "test-resource-path", "test-resource-name-0",
+      GenerateLottieDynamicAssetIdForTesting(/*position=*/"B", /*idx=*/1),
       /*size=*/absl::nullopt));
-  EXPECT_THAT(CreateAmbientAnimationPhotoConfig(skottie_resource_metadata)
-                  .topic_set_size,
-              Eq(2u));
+  config = CreateAmbientAnimationPhotoConfig(skottie_resource_metadata);
+  EXPECT_THAT(config.topic_set_size, Eq(2u));
+  EXPECT_THAT(config.num_topic_sets_to_buffer, Eq(1u));
+
+  ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
+      "test-resource-path", "test-resource-name-0",
+      GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/2),
+      /*size=*/absl::nullopt));
+  ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
+      "test-resource-path", "test-resource-name-0",
+      GenerateLottieDynamicAssetIdForTesting(/*position=*/"B", /*idx=*/2),
+      /*size=*/absl::nullopt));
+  config = CreateAmbientAnimationPhotoConfig(skottie_resource_metadata);
+  EXPECT_THAT(config.topic_set_size, Eq(2u));
+  EXPECT_THAT(config.num_topic_sets_to_buffer, Eq(2u));
+}
+
+TEST(AmbientAnimationPhotoConfigTest, DoesNotCountStaticAssets) {
+  cc::SkottieResourceMetadataMap skottie_resource_metadata;
+  ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
+      "test-resource-path", "test-resource-name-0",
+      GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/1),
+      /*size=*/absl::nullopt));
+  ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
+      "test-resource-path", "test-resource-name-0",
+      GenerateLottieDynamicAssetIdForTesting(/*position=*/"B", /*idx=*/1),
+      /*size=*/absl::nullopt));
+  ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
+      "test-resource-path", "test-resource-name-0", "StaticAssetId1",
+      /*size=*/absl::nullopt));
+  ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
+      "test-resource-path", "test-resource-name-0", "StaticAssetId2",
+      /*size=*/absl::nullopt));
+  AmbientPhotoConfig config =
+      CreateAmbientAnimationPhotoConfig(skottie_resource_metadata);
+  EXPECT_THAT(config.topic_set_size, Eq(2u));
+  EXPECT_THAT(config.num_topic_sets_to_buffer, Eq(1u));
+}
+
+TEST(AmbientAnimationPhotoConfigTest, FatalIfAnimationAssetIdsInvalid) {
+  cc::SkottieResourceMetadataMap skottie_resource_metadata;
+  // Position A and Position B have a different number of assets assigned to
+  // them. This is currently considered invalid.
+  ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
+      "test-resource-path", "test-resource-name-0",
+      GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/1),
+      /*size=*/absl::nullopt));
+  ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
+      "test-resource-path", "test-resource-name-0",
+      GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/2),
+      /*size=*/absl::nullopt));
+  ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
+      "test-resource-path", "test-resource-name-0",
+      GenerateLottieDynamicAssetIdForTesting(/*position=*/"B", /*idx=*/1),
+      /*size=*/absl::nullopt));
+  EXPECT_DEATH_IF_SUPPORTED(
+      CreateAmbientAnimationPhotoConfig(skottie_resource_metadata), "");
 }
 
 }  // namespace ash

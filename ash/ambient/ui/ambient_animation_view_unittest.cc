@@ -67,8 +67,8 @@ class AmbientAnimationViewTest : public AmbientAshTestBase,
     auto static_resources =
         std::make_unique<FakeAmbientAnimationStaticResources>();
     static_resources->SetLottieData(cc::CreateCustomLottieDataWith2Assets(
-        GenerateLottieCustomizableIdForTesting(/*unique_id=*/0),
-        GenerateLottieCustomizableIdForTesting(/*unique_id=*/1)));
+        GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/1),
+        GenerateLottieDynamicAssetIdForTesting(/*position=*/"B", /*idx=*/1)));
 
     model_ =
         std::make_unique<AmbientBackendModel>(CreateAmbientAnimationPhotoConfig(
