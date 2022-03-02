@@ -20,8 +20,12 @@ class BreadcrumbManagerKeyedServiceFactory
     : public BrowserContextKeyedServiceFactory {
  public:
   static BreadcrumbManagerKeyedServiceFactory* GetInstance();
+
+  // Returns the keyed service for `context`. If `create` is true, the service
+  // will be created if it doesn't already exist.
   static breadcrumbs::BreadcrumbManagerKeyedService* GetForBrowserContext(
-      content::BrowserContext* context);
+      content::BrowserContext* context,
+      bool create = true);
 
   BreadcrumbManagerKeyedServiceFactory(
       const BreadcrumbManagerKeyedServiceFactory&) = delete;

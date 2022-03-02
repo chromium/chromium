@@ -834,7 +834,8 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
 
   if (BreadcrumbsStatus::IsEnabled()) {
     breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(this);
+        BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
+            this, /*create=*/true);
     breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
         .ObserveBreadcrumbManagerService(breadcrumb_service);
 
@@ -868,9 +869,10 @@ ProfileImpl::~ProfileImpl() {
   StopCreateSessionServiceTimer();
 #endif
 
-  if (BreadcrumbsStatus::IsEnabled()) {
-    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(this);
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
+      BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
+          this, /*create=*/false);
+  if (breadcrumb_service) {
     breadcrumb_service->StopPersisting();
     breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
         .StopObservingBreadcrumbManagerService(breadcrumb_service);
