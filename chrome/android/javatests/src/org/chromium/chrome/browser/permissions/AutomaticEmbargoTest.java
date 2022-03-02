@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.permissions;
 
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.LargeTest;
@@ -15,9 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
@@ -80,10 +77,6 @@ public class AutomaticEmbargoTest {
     @Test
     @LargeTest
     @Feature({"Location"})
-    @DisableIf.
-    Build(message = "Test is failing on Nexus 5X (64-bit) + Android M, see crbug.com/1111001.",
-            sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            supported_abis_includes = "arm64-v8a")
     public void testGeolocationEmbargo() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
@@ -101,7 +94,6 @@ public class AutomaticEmbargoTest {
     @Test
     @LargeTest
     @Feature({"MIDI"})
-    @FlakyTest(message = "crbug.com/1232946")
     public void testMIDIEmbargo() throws Exception {
         runTest(MIDI_TEST_FILE, "", "fail", 0);
     }
@@ -109,11 +101,8 @@ public class AutomaticEmbargoTest {
     @Test
     @LargeTest
     @Feature({"MediaPermissions"})
-    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1)
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    public void
-    testCameraEmbargo() throws Exception {
+    public void testCameraEmbargo() throws Exception {
         runTest(MEDIA_TEST_FILE, "initiate_getMicrophone()", "deny", 0);
     }
 
@@ -121,21 +110,15 @@ public class AutomaticEmbargoTest {
     @LargeTest
     @Feature({"MediaPermissions"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1)
-    public void
-    testMicrophoneEmbargo() throws Exception {
+    public void testMicrophoneEmbargo() throws Exception {
         runTest(MEDIA_TEST_FILE, "initiate_getCamera()", "deny", 0);
     }
 
     @Test
     @LargeTest
     @Feature({"MediaPermissions"})
-    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1)
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    public void
-    testMicrophoneAndCameraEmbargo() throws Exception {
+    public void testMicrophoneAndCameraEmbargo() throws Exception {
         runTest(MEDIA_TEST_FILE, "initiate_getCombined()", "deny", 0);
     }
 }
