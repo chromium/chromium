@@ -177,7 +177,7 @@ TEST_F(AppListPresenterImplTest,
             shelf_layout_manager->GetShelfBackgroundType());
   HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
 
-  for (int id : kContainersThatWontHideAppListOnFocus) {
+  for (int id : AppListPresenterImpl::kIdsOfContainersThatWontHideAppList) {
     // Create a widget with a specific container id and make sure that the
     // kHomeLauncher background is still shown.
     std::unique_ptr<views::Widget> widget = CreateTestWidget(nullptr, id);
