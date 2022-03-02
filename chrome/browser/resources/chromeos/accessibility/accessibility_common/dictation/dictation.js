@@ -39,10 +39,10 @@ export class Dictation {
     this.localePref_ = '';
 
     /**
-     * The state of Dictation.
-     * @private {!Dictation.DictationState}
+     * Whether or not Dictation is active.
+     * @private {boolean}
      */
-    this.state_ = Dictation.DictationState.OFF;
+    this.active_ = false;
 
     /** @private {Audio} */
     this.cancelTone_ = new Audio('dictation/earcons/null_selection.wav');
@@ -76,7 +76,8 @@ export class Dictation {
    * @private
    */
   initialize_() {
-    this.inputController_ = new InputController(() => this.stopDictation_());
+    this.inputController_ =
+        new InputController(() => this.stopDictation_(/*notify=*/ true));
     this.uiController_ = new UIController();
     this.speechParser_ = new SpeechParser(this.inputController_);
 
@@ -134,26 +135,19 @@ export class Dictation {
    * @private
    */
   onToggleDictation_(activated) {
-    if (activated && this.state_ === Dictation.DictationState.OFF) {
-      this.state_ = Dictation.DictationState.STARTING;
-      this.startTone_.play();
-      this.setStopTimeout_(Dictation.Timeouts.NO_FOCUSED_IME_MS);
-      this.inputController_.connect(() => this.maybeStartSpeechRecognition_());
+    if (activated && !this.active_) {
+      this.startDictation_();
     } else {
-      this.onDictationStopped_();
+      this.stopDictation_(/*notify=*/ false);
     }
   }
 
-  /**
-   * Sets the timeout to stop Dictation.
-   * @param {number} durationMs
-   * @private
-   */
-  setStopTimeout_(durationMs) {
-    if (this.stopTimeoutId_ !== null) {
-      clearTimeout(this.stopTimeoutId_);
-    }
-    this.stopTimeoutId_ = setTimeout(() => this.stopDictation_(), durationMs);
+  /** @private */
+  startDictation_() {
+    this.active_ = true;
+    this.startTone_.play();
+    this.setStopTimeout_(Dictation.Timeouts.NO_FOCUSED_IME_MS);
+    this.inputController_.connect(() => this.maybeStartSpeechRecognition_());
   }
 
   /**
@@ -163,7 +157,7 @@ export class Dictation {
    * @private
    */
   maybeStartSpeechRecognition_() {
-    if (this.state_ === Dictation.DictationState.STARTING) {
+    if (this.active_) {
       chrome.speechRecognitionPrivate.start(
           /** @type {!StartOptions} */ (this.speechRecognitionOptions_),
           (type) => this.onSpeechRecognitionStarted_(type));
@@ -172,39 +166,23 @@ export class Dictation {
       // We are no longer starting up - perhaps a stop came
       // through during the async callbacks. Ensure cleanup
       // by calling stopDictation_().
-      this.stopDictation_();
+      this.stopDictation_(/*notify=*/ true);
     }
   }
 
   /**
-   * Stops Dictation in the browser / ash if it wasn't already stopped.
-   * The Dictation extension should always use this method to stop Dictation
-   * to ensure that Browser/Ash knows that Dictation has stopped. When
-   * AccessibilityManager receives the toggleDictation signal it will call
-   * back through onDictationStopped_() for state cleanup.
+   * Stops Dictation and notifies the browser.
+   * @param {boolean} notify True if we should notify the browser that Dictation
+   * stopped.
    * @private
    */
-  stopDictation_() {
-    if (this.state_ === Dictation.DictationState.OFF ||
-        this.state_ === Dictation.DictationState.STOPPING) {
+  stopDictation_(notify) {
+    if (!this.active_) {
       return;
     }
 
-    chrome.accessibilityPrivate.toggleDictation();
-    this.state_ = Dictation.DictationState.STOPPING;
-  }
-
-  /**
-   * Called when Dictation has been toggled off. Cleans up IME, local state,
-   * and speech recognition.
-   * @private
-   */
-  onDictationStopped_() {
-    if (this.state_ === Dictation.DictationState.OFF) {
-      return;
-    }
-
-    this.state_ = Dictation.DictationState.OFF;
+    this.active_ = false;
+    // Stop speech recognition.
     chrome.speechRecognitionPrivate.stop({}, () => {});
     if (this.inputController_.hasCompositionText() || this.interimText_) {
       this.endTone_.play();
@@ -221,6 +199,24 @@ export class Dictation {
     }
     this.inputController_.disconnect();
     Dictation.removeAsInputMethod();
+
+    // Notify the browser that Dictation turned off.
+    if (notify) {
+      chrome.accessibilityPrivate.toggleDictation();
+    }
+  }
+
+  /**
+   * Sets the timeout to stop Dictation.
+   * @param {number} durationMs
+   * @private
+   */
+  setStopTimeout_(durationMs) {
+    if (this.stopTimeoutId_ !== null) {
+      clearTimeout(this.stopTimeoutId_);
+    }
+    this.stopTimeoutId_ =
+        setTimeout(() => this.stopDictation_(/*notify=*/ true), durationMs);
   }
 
   /**
@@ -229,7 +225,7 @@ export class Dictation {
    * @private
    */
   async onSpeechRecognitionResult_(event) {
-    if (this.state_ !== Dictation.DictationState.LISTENING) {
+    if (!this.active_) {
       return;
     }
 
@@ -304,16 +300,14 @@ export class Dictation {
       // speechRecognitionPrivate.start() caused an error. When this happens,
       // the speech recognition private API will turn the associated recognizer
       // off. To align with this, we should call `stopDictation_`.
-      this.stopDictation_();
+      this.stopDictation_(/*notify=*/ true);
       return;
     }
 
-    if (this.state_ !== Dictation.DictationState.STARTING) {
-      // We tried to stop during speech shutdown.
+    if (!this.active_) {
       return;
     }
 
-    this.state_ = Dictation.DictationState.LISTENING;
     this.clearInterimText_();
 
     // Record metrics.
@@ -337,7 +331,7 @@ export class Dictation {
     this.metricsUtils_ = null;
 
     // Stop dictation if it wasn't already stopped.
-    this.stopDictation_();
+    this.stopDictation_(/*notify=*/ true);
   }
 
   /**
@@ -348,7 +342,7 @@ export class Dictation {
     // TODO: Dictation does not surface speech recognition errors to the user.
     // Informing the user of errors, for example lack of network connection or a
     // missing microphone, would be a useful feature.
-    this.stopDictation_();
+    this.stopDictation_(/*notify=*/ true);
   }
 
   /**
@@ -496,17 +490,6 @@ export class Dictation {
         InputController.IME_ENGINE_ID);
   }
 }
-
-/**
- * Dictation states.
- * @enum {!string}
- */
-Dictation.DictationState = {
-  OFF: 'OFF',
-  STARTING: 'STARTING',
-  LISTENING: 'LISTENING',
-  STOPPING: 'STOPPING',
-};
 
 /**
  * Dictation locale pref.

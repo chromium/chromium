@@ -29,16 +29,10 @@ SYNC_TEST_F(
       this.checkDictationImeInactive();
       this.toggleDictationOn(1);
 
-      // Blur the input context. Dictation should get toggled off.
+      // Blur the input context. Speech recognition and Dictation should turn
+      // off. Dictation should immediately begin cleaning up state.
       this.mockInputIme.callOnBlur(1);
       assertFalse(this.mockAccessibilityPrivate.getDictationActive());
-      // Speech recognition remains active until Dictation is toggled off.
-      assertTrue(this.mockSpeechRecognitionPrivate.isStarted());
-      // Now that we've confirmed that Dictation JS tried to toggle Dictation,
-      // via AccessibilityPrivate, we can call the onToggleDictation
-      // callback as AccessibilityManager would do, to allow Dictation JS to
-      // clean up state.
-      this.toggleDictationOffFromA11yPrivate();
       assertFalse(this.mockSpeechRecognitionPrivate.isStarted());
     });
 
@@ -140,17 +134,12 @@ SYNC_TEST_F(
       this.mockInputIme.callOnFocus(1);
       this.mockInputIme.callOnBlur(1);
 
-      // Speech recognition remains active until Dictation is toggled off.
-      assertTrue(this.mockSpeechRecognitionPrivate.isStarted());
-      // Check that a request to toggle dictation off was sent.
+      // Check that dictation and speech recognition are both off.
+      assertFalse(this.mockSpeechRecognitionPrivate.isStarted());
       assertFalse(this.mockAccessibilityPrivate.getDictationActive());
 
-      // Speech recognition is active, although shutdown is already in
-      // progress.
-      this.mockSpeechRecognitionPrivate.fireMockOnResultEvent('kitties', true);
-
-      // Complete toggle -- this is async so other things could have
-      // happened in the meantime.
+      // Complete toggle -- this event will be fired as a result of turning
+      // Dictation off.
       this.mockAccessibilityPrivate.callOnToggleDictation(false);
       assertFalse(this.mockSpeechRecognitionPrivate.isStarted());
 
