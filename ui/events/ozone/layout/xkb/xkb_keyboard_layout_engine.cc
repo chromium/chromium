@@ -30,14 +30,6 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_code_conversion_xkb.h"
 
-// xkb_keymap_key_get_mods_for_level is relatively new (introduced in ver 1.0,
-// Sep 6, 2020), thus it is not available on some platform, such as Ubuntu
-// 18.04, which we still supports.
-// Thus declare the function as weak here, so we can check the availability on
-// runtime.
-extern "C" __attribute__((weak)) decltype(
-    xkb_keymap_key_get_mods_for_level) xkb_keymap_key_get_mods_for_level;
-
 namespace ui {
 
 namespace {
@@ -900,17 +892,7 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
   }
 
   // Reconstruct keysym map.
-  std::vector<std::pair<XkbKeysymMapKey, uint32_t>> keysym_map;
-  auto AddEntries = [&keysym_map](base::span<const xkb_keysym_t> keysyms,
-                                  base::span<const xkb_mod_mask_t> masks,
-                                  xkb_keycode_t keycode) {
-    if (keysyms.empty() || masks.empty())
-      return;
-    for (xkb_keysym_t keysym : keysyms) {
-      for (xkb_mod_mask_t mask : masks)
-        keysym_map.emplace_back(XkbKeysymMapKey(keysym, mask), keycode);
-    }
-  };
+  std::vector<XkbKeysymMapEntry> keysym_map;
 
   const xkb_keycode_t min_key = xkb_keymap_min_keycode(keymap);
   const xkb_keycode_t max_key = xkb_keymap_max_keycode(keymap);
@@ -924,34 +906,33 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
         const xkb_keysym_t* keysyms;
         int num_syms = xkb_keymap_key_get_syms_by_level(keymap, keycode, layout,
                                                         level, &keysyms);
-        if (xkb_keymap_key_get_mods_for_level) {
-          xkb_mod_mask_t masks[100];  // Large enough buffer.
-          int num_mods = xkb_keymap_key_get_mods_for_level(
-              keymap, keycode, layout, level, masks, std::size(masks));
-          AddEntries(base::make_span(keysyms, num_syms),
-                     base::make_span(masks, num_mods), keycode);
-        } else {
-          // If not, unfortunately, there's no convenient/efficient way
-          // to take the possible masks. Thus, use mask 0 always.
-          constexpr xkb_mod_mask_t kMask[] = {0};
-          AddEntries(base::make_span(keysyms, num_syms), kMask, keycode);
-        }
+        for (int i = 0; i < num_syms; ++i)
+          keysym_map.emplace_back(
+              XkbKeysymMapEntry{keysyms[i], keycode, layout});
       }
     }
   }
 
-  // Sort here. If there are multiple entries for a (keysym, mask) pair,
-  // min keycode wins.
-  std::sort(keysym_map.begin(), keysym_map.end());
+  // Then sort and unique here. On tie break, smaller keycode comes first.
+  std::sort(
+      keysym_map.begin(), keysym_map.end(),
+      [](const XkbKeysymMapEntry& entry1, const XkbKeysymMapEntry& entry2) {
+        return std::tie(entry1.xkb_keysym, entry1.xkb_keycode,
+                        entry1.xkb_layout) < std::tie(entry2.xkb_keysym,
+                                                      entry2.xkb_keycode,
+                                                      entry2.xkb_layout);
+      });
   keysym_map.erase(
-      std::unique(keysym_map.begin(), keysym_map.end(),
-                  [](const std::pair<XkbKeysymMapKey, uint32_t>& entry1,
-                     const std::pair<XkbKeysymMapKey, uint32_t>& entry2) {
-                    return entry1.first == entry2.first;
-                  }),
+      std::unique(
+          keysym_map.begin(), keysym_map.end(),
+          [](const XkbKeysymMapEntry& entry1, const XkbKeysymMapEntry& entry2) {
+            return std::tie(entry1.xkb_keysym, entry1.xkb_keycode,
+                            entry1.xkb_layout) == std::tie(entry2.xkb_keysym,
+                                                           entry2.xkb_keycode,
+                                                           entry2.xkb_layout);
+          }),
       keysym_map.end());
-  xkb_keysym_map_ = base::flat_map<XkbKeysymMapKey, uint32_t>(
-      base::sorted_unique, std::move(keysym_map));
+  xkb_keysym_map_ = std::move(keysym_map);
 
   layout_index_ = 0;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -999,18 +980,38 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
 
 DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(uint32_t keysym,
                                                     uint32_t modifiers) const {
-  // If xkb_keymap_key_get_mods_for_level is not available, all entries are
-  // stored with modifiers mask is 0.
-  if (!xkb_keymap_key_get_mods_for_level)
-    modifiers = 0;
-
-  auto iter = xkb_keysym_map_.find(XkbKeysymMapKey(keysym, modifiers));
-  if (iter == xkb_keysym_map_.end()) {
-    VLOG(1) << "No Keycode found for the keysym: " << keysym
-            << ", modifiers: " << modifiers;
-    return DomCode::NONE;
+  // Look up all candidates.
+  auto range = std::equal_range(
+      xkb_keysym_map_.begin(), xkb_keysym_map_.end(), XkbKeysymMapEntry{keysym},
+      [](const XkbKeysymMapEntry& entry1, const XkbKeysymMapEntry& entry2) {
+        return entry1.xkb_keysym < entry2.xkb_keysym;
+      });
+  if (range.first != range.second) {
+    // Note: value is already in the lexicographical order, so smaller keycode
+    // comes first.
+    for (std::unique_ptr<xkb_state, XkbStateDeleter> xkb_state(
+             xkb_state_new(xkb_state_get_keymap(xkb_state_.get())));
+         range.first != range.second; ++range.first) {
+      xkb_keycode_t xkb_keycode = range.first->xkb_keycode;
+      xkb_layout_index_t xkb_layout = range.first->xkb_layout;
+      // The argument does not have any info about the layout, so we assume the
+      // current layout here.
+      if (xkb_layout != layout_index_)
+        continue;
+      xkb_state_update_mask(xkb_state.get(), modifiers, 0, 0, 0, 0, xkb_layout);
+      const xkb_keysym_t* out_keysyms;
+      int num_syms =
+          xkb_state_key_get_syms(xkb_state.get(), xkb_keycode, &out_keysyms);
+      for (int i = 0; i < num_syms; ++i) {
+        if (out_keysyms[i] == keysym)
+          return KeycodeConverter::NativeKeycodeToDomCode(xkb_keycode);
+      }
+    }
   }
-  return KeycodeConverter::NativeKeycodeToDomCode(iter->second);
+
+  VLOG(1) << "No Keycode found for the keysym: " << keysym
+          << ", modifiers: " << modifiers;
+  return DomCode::NONE;
 }
 
 bool XkbKeyboardLayoutEngine::XkbLookup(xkb_keycode_t xkb_keycode,

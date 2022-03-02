@@ -17,9 +17,6 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 
-extern "C" __attribute__((weak)) decltype(
-    xkb_keymap_key_get_mods_for_level) xkb_keymap_key_get_mods_for_level;
-
 namespace ui {
 
 namespace {
@@ -945,35 +942,31 @@ TEST_F(XkbLayoutEngineVkTest, GetDomCodeByKeysym) {
   constexpr struct {
     uint32_t keysym;
     uint32_t modifiers;
-    DomCode dom_code;
+    DomCode expected_dom_code;
   } kTestCases[] = {
-      {65307, 0, ui::DomCode::ESCAPE},       {65288, 0, ui::DomCode::BACKSPACE},
-      {65293, 0, ui::DomCode::ENTER},        {65289, 0, ui::DomCode::TAB},
+      {65307, 0, ui::DomCode::ESCAPE},
+      {65288, 0, ui::DomCode::BACKSPACE},
+      {65293, 0, ui::DomCode::ENTER},
+      {65289, 0, ui::DomCode::TAB},
       {65056, kShiftMask, ui::DomCode::TAB},
+
+      // Test conflict keysym case. We use '<' as a testing example.
+      // On pc101 layout, intl_backslash is expected without SHIFT modifier.
+      {60, 0, ui::DomCode::INTL_BACKSLASH},
+      // And, if SHIFT is pressed, comma key is expected.
+      {60, kShiftMask, ui::DomCode::COMMA},
+
+      // Test for space key. The keysym mapping has only one keycode entry.
+      // It expects all modifiers are ignored. Used SHIFT as testing example.
+      {32, 0, ui::DomCode::SPACE},
+      {32, kShiftMask, ui::DomCode::SPACE},
   };
 
   for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.keysym);
-    EXPECT_EQ(test_case.dom_code, layout_engine_->GetDomCodeByKeysym(
-                                      test_case.keysym, test_case.modifiers));
-  }
-
-  // Test conflict keysym case. We use '<' as a testing sample.
-  constexpr uint32_t kLessThanCode = 60;
-  if (xkb_keymap_key_get_mods_for_level) {
-    // If there's no modifier, on pc101 us layout, intl_backslash is expected.
-    EXPECT_EQ(ui::DomCode::INTL_BACKSLASH,
-              layout_engine_->GetDomCodeByKeysym(kLessThanCode, 0));
-    // If there's shift modifier, comma key is expected.
-    EXPECT_EQ(ui::DomCode::COMMA,
-              layout_engine_->GetDomCodeByKeysym(kLessThanCode, kShiftMask));
-  } else {
-    // If xkb_keymap_key_get_mods_for_level is unavailable, fallback to older
-    // implementation, which ignores modifiers.
-    EXPECT_EQ(ui::DomCode::COMMA,
-              layout_engine_->GetDomCodeByKeysym(kLessThanCode, 0));
-    EXPECT_EQ(ui::DomCode::COMMA,
-              layout_engine_->GetDomCodeByKeysym(kLessThanCode, kShiftMask));
+    EXPECT_EQ(test_case.expected_dom_code,
+              layout_engine_->GetDomCodeByKeysym(test_case.keysym,
+                                                 test_case.modifiers))
+        << "input: " << test_case.keysym << ", " << test_case.modifiers;
   }
 }
 

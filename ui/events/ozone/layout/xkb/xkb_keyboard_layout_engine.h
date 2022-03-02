@@ -74,14 +74,19 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   };
   std::vector<XkbFlagMapEntry> xkb_flag_map_;
 
-  // Table from (xkb_keysym, xkb_modifier) to xkb_keycode for the current
-  // keymap. Note that there could be multiple keycodes mapped to the same
-  // keysym. In the case, the first one (smallest keycode) will be
-  // kept.
-  // The first element is keysym value. The second element is a bit-mask of
-  // modifiers.
-  using XkbKeysymMapKey = std::pair<uint32_t, uint32_t>;
-  base::flat_map<XkbKeysymMapKey, uint32_t> xkb_keysym_map_;
+  // The data to reverse look up xkb_keycode/xkb_layout from xkb_keysym.
+  // The data is sorted in the (xkb_keysym, xkb_keycode, xkb_layout) dictionary
+  // order. Note that there can be multiple keycode/layout for a keysym, so
+  // this is a multi map.
+  // We can binary search on this vector by keysym as the key, and iterate from
+  // the begin to the end of the range linearly. Then, on tie break, smaller
+  // keycode wins.
+  struct XkbKeysymMapEntry {
+    xkb_keysym_t xkb_keysym;
+    xkb_keycode_t xkb_keycode;
+    xkb_layout_index_t xkb_layout;
+  };
+  std::vector<XkbKeysymMapEntry> xkb_keysym_map_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Flag mask for num lock, which is always considered enabled in ChromeOS.
