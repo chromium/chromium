@@ -409,6 +409,13 @@ void AppListBubblePresenter::OnPressOutsideBubble() {
   // Presses outside the bubble could be activating a shelf item. Record the
   // app list state prior to dismissal.
   controller_->RecordAppListState();
+
+  // The press outside the bubble might spawn a menu. If the bubble is active at
+  // the end of the hide animation, an activation change event will cause the
+  // menu to close. Deactivate now so menus stay open. https://crbug.com/1299088
+  if (bubble_widget_->IsActive()) {
+    bubble_widget_->Deactivate();
+  }
   Dismiss();
 }
 

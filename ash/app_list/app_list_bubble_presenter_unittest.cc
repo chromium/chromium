@@ -16,6 +16,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
+#include "ash/root_window_controller.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -770,6 +771,36 @@ TEST_F(AppListBubblePresenterTest, BubblePositionWithRightAutoHideShelf) {
   EXPECT_FALSE(
       IsNear(bubble_view_top_right, GetPrimaryDisplay().bounds().top_right()));
   EXPECT_TRUE(IsNear(bubble_view_top_right, GetShelfBounds().origin()));
+}
+
+// Regression test for https://crbug.com/1299088
+TEST_F(AppListBubblePresenterTest, ContextMenuStaysOpenAfterDismissAppList) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Spawn a context menu by right-clicking outside the bubble's bounds.
+  views::Widget* bubble_widget = presenter->bubble_widget_for_test();
+  gfx::Point outside_bubble =
+      bubble_widget->GetWindowBoundsInScreen().top_right() +
+      gfx::Vector2d(10, 0);
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(outside_bubble);
+  generator->ClickRightButton();
+
+  auto* rwc = RootWindowController::ForWindow(bubble_widget->GetNativeWindow());
+  ASSERT_TRUE(rwc->IsContextMenuShown());
+
+  // Wait for bubble to animate closed.
+  LayerAnimationStoppedWaiter().Wait(
+      presenter->bubble_view_for_test()->layer());
+  ASSERT_FALSE(presenter->IsShowing());
+
+  // Context menu is still open.
+  EXPECT_TRUE(rwc->IsContextMenuShown());
 }
 
 }  // namespace
