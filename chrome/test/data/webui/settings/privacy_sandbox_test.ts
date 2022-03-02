@@ -393,6 +393,9 @@ suite('PrivacySandboxSettings3', function() {
 
     // Clicking on the learn more link should open the dialog.
     page.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')!.click();
+    assertEquals(
+        'Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     await flushTasks();
     assertLearnMoreDialogVisible();
 
@@ -408,6 +411,9 @@ suite('PrivacySandboxSettings3', function() {
     // Clicking on the ad personalization row should open the dialog.
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#adPersonalizationRow')!.click();
+    assertEquals(
+        'Settings.PrivacySandbox.AdPersonalization.Opened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     await flushTasks();
     assertAdPersonalizationDialogVisible();
 
@@ -425,11 +431,15 @@ suite('PrivacySandboxSettings3', function() {
                         '#adPersonalizationRow')!.click();
     await flushTasks();
     assertAdPersonalizationDialogVisible();
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Clicking on the link row for removed interests should take you to the
     // removed interests page.
     page.shadowRoot!
         .querySelector<HTMLElement>('.ad-personalization-removed-row')!.click();
+    assertEquals(
+        'Settings.PrivacySandbox.RemovedInterests.Opened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     await flushTasks();
     assertAdPersonalizationRemovedDialogVisible();
 
@@ -451,6 +461,9 @@ suite('PrivacySandboxSettings3', function() {
 
     // Clicking on the ad measurement row should open the dialog.
     page.shadowRoot!.querySelector<HTMLElement>('#adMeasurementRow')!.click();
+    assertEquals(
+        'Settings.PrivacySandbox.AdMeasurement.Opened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     await flushTasks();
     assertAdMeasurementDialogVisible();
 
@@ -482,6 +495,9 @@ suite('PrivacySandboxSettings3', function() {
 
     // Clicking on the spam & fraud row should open the dialog.
     page.shadowRoot!.querySelector<HTMLElement>('#spamAndFraudRow')!.click();
+    assertEquals(
+        'Settings.PrivacySandbox.SpamFraud.Opened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     await flushTasks();
     assertSpamAndFraudDialogVisible();
 
@@ -528,12 +544,15 @@ suite('PrivacySandboxSettings3', function() {
                         '#adPersonalizationBackButton')!.click();
     await flushTasks();
     assertAdPersonalizationDialogVisible();
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Remove topic from main page.
     const item =
         topTopicsSection.querySelector('privacy-sandbox-interest-item')!;
     item.shadowRoot!.querySelector('cr-button')!.click();
-    await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.AdPersonalization.TopicRemoved',
+        await metricsBrowserProxy.whenCalled('recordAction'));
 
     // Assert the topic is no longer visible.
     assertEquals(
@@ -545,6 +564,7 @@ suite('PrivacySandboxSettings3', function() {
         .querySelector<HTMLElement>('.ad-personalization-removed-row')!.click();
     await flushTasks();
     assertAdPersonalizationRemovedDialogVisible();
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Assert the topic was moved to removed page.
     blockedTopics = blockedTopicsSection.querySelector('dom-repeat')!;
@@ -558,8 +578,10 @@ suite('PrivacySandboxSettings3', function() {
     assertEquals(2, items.length);
     for (const item of items) {
       item.shadowRoot!.querySelector('cr-button')!.click();
+      assertEquals(
+          'Settings.PrivacySandbox.RemovedInterests.TopicAdded',
+          await metricsBrowserProxy.whenCalled('recordAction'));
     }
-    await flushTasks();
 
     // Assert all topics are gone.
     assertEquals(
@@ -611,12 +633,15 @@ suite('PrivacySandboxSettings3', function() {
                         '#adPersonalizationBackButton')!.click();
     await flushTasks();
     assertAdPersonalizationDialogVisible();
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Remove site from main page.
     const item =
         joiningSitesSection.querySelector('privacy-sandbox-interest-item')!;
     item.shadowRoot!.querySelector('cr-button')!.click();
-    await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.AdPersonalization.SiteRemoved',
+        await metricsBrowserProxy.whenCalled('recordAction'));
 
     // Assert the site is no longer visible.
     assertEquals(
@@ -629,6 +654,7 @@ suite('PrivacySandboxSettings3', function() {
         .querySelector<HTMLElement>('.ad-personalization-removed-row')!.click();
     await flushTasks();
     assertAdPersonalizationRemovedDialogVisible();
+    metricsBrowserProxy.resetResolver('recordAction');
 
     // Assert the site was moved to removed page.
     blockedSites = blockedSitesSection.querySelector('dom-repeat')!;
@@ -642,8 +668,10 @@ suite('PrivacySandboxSettings3', function() {
     assertEquals(2, items.length);
     for (const item of items) {
       item.shadowRoot!.querySelector('cr-button')!.click();
+      assertEquals(
+          'Settings.PrivacySandbox.RemovedInterests.SiteAdded',
+          await metricsBrowserProxy.whenCalled('recordAction'));
     }
-    await flushTasks();
 
     // Assert all sites are gone.
     assertEquals(

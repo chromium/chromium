@@ -189,26 +189,41 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     // Stop the propagation of events, so that clicking on links inside
     // actionable items won't trigger action.
     e.stopPropagation();
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked');
     this.privacySandboxSettingsView_ =
         PrivacySandboxSettingsView.LEARN_MORE_DIALOG;
   }
 
   private onAdPersonalizationRowClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.AdPersonalization.Opened');
     this.privacySandboxSettingsView_ =
         PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG;
   }
 
   private onAdPersonalizationRemovedRowClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.RemovedInterests.Opened');
     this.privacySandboxSettingsView_ =
         PrivacySandboxSettingsView.AD_PERSONALIZATION_REMOVED_DIALOG;
   }
 
+  private onAdPersonalizationBackButtonClick_() {
+    this.privacySandboxSettingsView_ =
+        PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG;
+  }
+
   private onAdMeasurementRowClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.AdMeasurement.Opened');
     this.privacySandboxSettingsView_ =
         PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG;
   }
 
   private onSpamAndFraudRowClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.SpamFraud.Opened');
     this.privacySandboxSettingsView_ =
         PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG;
   }
@@ -245,6 +260,10 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     this.blockedTopics_ = this.blockedTopics_.slice();
     // If the interest was previously removed, set it to allowed, and vice
     // versa.
+    this.metricsBrowserProxy_.recordAction(
+        interest.removed ?
+            'Settings.PrivacySandbox.RemovedInterests.TopicAdded' :
+            'Settings.PrivacySandbox.AdPersonalization.TopicRemoved');
     this.privacySandboxBrowserProxy_.setTopicAllowed(
         interest.topic!, /*allowed=*/ interest.removed);
   }
@@ -273,6 +292,10 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     this.blockedSites_ = this.blockedSites_.slice();
     // If the interest was previously removed, set it to allowed, and vice
     // versa.
+    this.metricsBrowserProxy_.recordAction(
+        interest.removed ?
+            'Settings.PrivacySandbox.RemovedInterests.SiteAdded' :
+            'Settings.PrivacySandbox.AdPersonalization.SiteRemoved');
     this.privacySandboxBrowserProxy_.setFledgeJoiningAllowed(
         interest.site!, /*allowed=*/ interest.removed);
   }

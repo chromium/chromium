@@ -25999,10 +25999,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.AdPersonalization.SiteRemoved">
+  <owner>dullweber@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User removed a site that was previously in their allowed sites list.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.AdPersonalization.TopicRemoved">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
-  <description>User removed a topic.</description>
+  <description>
+    User removed a topic that was previously in their allowed topics list.
+  </description>
 </action>
 
 <action name="Settings.PrivacySandbox.ApisDisabled">
@@ -26084,10 +26094,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.RemovedInterests.SiteAdded">
+  <owner>dullweber@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <description>
+    User added back a site that was previously in their removed sites list.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.RemovedInterests.TopicAdded">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
-  <description>User added back a topic</description>
+  <description>
+    User added back a topic that was previously in their removed topics list.
+  </description>
 </action>
 
 <action name="Settings.PrivacySandbox.SpamFraud.Opened">
