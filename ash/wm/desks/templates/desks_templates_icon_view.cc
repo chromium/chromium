@@ -63,11 +63,18 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
   icon_identifier_ = icon_identifier;
   count_ = count;
 
+  // The count to be displayed on the label. If `icon_identifier_` is empty, it
+  // is an overflow icon and should display the number of hidden icons.
+  // Otherwise, it should display `count_` - 1 to avoid overcounting the
+  // displayed icon.
+  const int visible_count =
+      count_ > 1 && !icon_identifier_.empty() ? count_ - 1 : count_;
+
   if (count_ > 1 || icon_identifier_.empty()) {
     DCHECK(!count_label_);
     count_label_ = AddChildView(
         views::Builder<views::Label>()
-            .SetText(GetCountString(count_))
+            .SetText(GetCountString(visible_count))
             .SetBorder(views::CreateEmptyBorder(gfx::Insets(
                 kCountLabelInsetSize, kCountLabelInsetSize,
                 kCountLabelInsetSize,

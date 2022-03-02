@@ -222,7 +222,7 @@ void DesksTemplatesIconContainer::Layout() {
         break;
     }
     overflow_icon_view->UpdateCount(overflow_icon_view->count() +
-                                    num_hidden_icons);
+                                    num_hidden_icons + 1);
   } else if (overflow_icon_view->count() == 0) {
     // There is no overflow so hide the overflow icon view.
     overflow_icon_view->SetVisible(false);

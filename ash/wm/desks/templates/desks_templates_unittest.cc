@@ -1117,17 +1117,73 @@ TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   DesksTemplatesIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
-  EXPECT_EQ(u"+5", overflow_icon_view.count_label()->GetText());
+  // We created (3 + 4) * 2 = 14 windows. The first 4 icon views are displayed,
+  // each with a "+1" count label, which leaves 14 - (4 * 2) = 6 windows.
+  EXPECT_EQ(u"+6", overflow_icon_view.count_label()->GetText());
   EXPECT_TRUE(overflow_icon_view.desks_templates_icon_view()->GetVisible());
   EXPECT_TRUE(
       item_view->Contains(overflow_icon_view.desks_templates_icon_view()));
 }
 
+// Tests that apps with multiple window are counted correctly.
+//   _______________________________________________________________________________
+//   |  _________  _________   _________________   _________________   _________
+//   | |  |       |  |       |   |       |       |   |       |       |   | |   |
+//   |  |   I   |  |   I   |   |   I      + 1  |   |   I   |  + 1  |   |  + 3  |
+//   | |  |_______|  |_______|   |_______|_______|   |_______|_______| |_______|
+//   |
+//   |_____________________________________________________________________________|
+//
+TEST_F(DesksTemplatesTest, IconViewMultipleWindows) {
+  // Create a `DeskTemplate` that contains some apps with multiple windows and
+  // more than kMaxIcons windows. The grid should appear like the above diagram.
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+           CreateRestoreData(std::vector<int>{1, 1, 2, 2, 3}));
+
+  // Enter overview and show the Desks Templates Grid.
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Get the icon views.
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
+      /*grid_item_index=*/0);
+  const std::vector<DesksTemplatesIconView*>& icon_views =
+      DesksTemplatesItemViewTestApi(item_view).GetIconViews();
+
+  // There should be 1 * 2 icon views for the 2 apps with 1 window, 2 * 2 icon
+  // views for the 2 apps with multiple windows, and 1 overflow icon view.
+  EXPECT_EQ(5u, icon_views.size());
+
+  // Verify each of the apps' count labels are correct.
+  DesksTemplatesIconViewTestApi icon_view_1(icon_views[0]);
+  EXPECT_TRUE(icon_view_1.icon_view());
+  EXPECT_FALSE(icon_view_1.count_label());
+
+  DesksTemplatesIconViewTestApi icon_view_2(icon_views[1]);
+  EXPECT_TRUE(icon_view_2.icon_view());
+  EXPECT_FALSE(icon_view_2.count_label());
+
+  DesksTemplatesIconViewTestApi icon_view_3(icon_views[2]);
+  EXPECT_TRUE(icon_view_3.icon_view());
+  EXPECT_TRUE(icon_view_3.count_label());
+  EXPECT_EQ(u"+1", icon_view_3.count_label()->GetText());
+
+  DesksTemplatesIconViewTestApi icon_view_4(icon_views[3]);
+  EXPECT_TRUE(icon_view_4.icon_view());
+  EXPECT_TRUE(icon_view_4.count_label());
+  EXPECT_EQ(u"+1", icon_view_4.count_label()->GetText());
+
+  // The overflow counter should display the number of excess apps.
+  DesksTemplatesIconViewTestApi overflow_icon_view{icon_views.back()};
+  EXPECT_FALSE(overflow_icon_view.icon_view());
+  EXPECT_TRUE(overflow_icon_view.count_label());
+  EXPECT_EQ(u"+3", overflow_icon_view.count_label()->GetText());
+}
+
 // Tests that when an app has more than 9 windows, its label is changed to "9+".
 TEST_F(DesksTemplatesTest, IconViewMoreThan9Windows) {
-  // Create a `DeskTemplate` using which has 1 app with 10 windows.
+  // Create a `DeskTemplate` using which has 1 app with 11 windows.
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
-           CreateRestoreData(std::vector<int>{10}));
+           CreateRestoreData(std::vector<int>{11}));
 
   // Enter overview and show the Desks Templates Grid.
   OpenOverviewAndShowTemplatesGrid();
