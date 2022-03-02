@@ -52,6 +52,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -3095,6 +3096,43 @@ IN_PROC_BROWSER_TEST_P(PerDeskShelfAppBrowserTest, AppMenus) {
     EXPECT_EQ(5 + kTitleAndSeparatorCount,
               model_adapter->model()->GetItemCount());
   }
+}
+
+// The Browsertest verifying Files System Web App features.
+class FilesSystemWebAppPinnedTest : public ShelfPlatformAppBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kFilesSWA, features::kEnableAllSystemWebApps}, {});
+    ShelfPlatformAppBrowserTest::SetUp();
+  }
+
+  void WaitForSystemAppsSynchronized() {
+    base::RunLoop run_loop;
+    WebAppProvider::GetForSystemWebApps(browser()->profile())
+        ->system_web_app_manager()
+        .on_apps_synchronized()
+        .Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FilesSystemWebAppPinnedTest, EnterpriseMigration) {
+  // Setup: the customer pins Files Chrome App (hhaomji... app ID).
+  base::DictionaryValue entry;
+  entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
+               base::Value(file_manager::kFileManagerAppId));
+  base::ListValue policy_value;
+  policy_value.Append(std::move(entry));
+  profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps, policy_value);
+  WaitForSystemAppsSynchronized();
+
+  // Expected results: fkiggjm... is pinned.
+  ash::ShelfID shelf_id(file_manager::kFileManagerSwaAppId);
+  EXPECT_TRUE(ChromeShelfController::instance()->IsPinned(shelf_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfAppBrowserTest, ::testing::Bool());

@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/default_pinned_apps.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
@@ -251,7 +252,20 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
 
     // Handle Chrome App ids
     if (crx_file::id_util::IdIsValid(*policy_entry)) {
-      result.emplace_back(*policy_entry);
+      if (*policy_entry == file_manager::kFileManagerAppId &&
+          chromeos::features::IsFileManagerSwaEnabled()) {
+        absl::optional<std::string> files_app_id =
+            web_app::GetAppIdForSystemWebApp(
+                helper->profile(), web_app::SystemAppType::FILE_MANAGER);
+        if (files_app_id) {
+          result.emplace_back(*files_app_id);
+        } else {
+          // Fall-back to the policy_entry if we cannot fetch one for Files app.
+          result.emplace_back(*policy_entry);
+        }
+      } else {
+        result.emplace_back(*policy_entry);
+      }
       continue;
     }
 
