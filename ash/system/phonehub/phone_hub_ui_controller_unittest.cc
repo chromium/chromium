@@ -7,8 +7,14 @@
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/components/phonehub/fake_tether_controller.h"
 #include "ash/components/phonehub/phone_model_test_util.h"
+#include "ash/shell.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
+#include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_ash_web_view_factory.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +42,10 @@ class PhoneHubUiControllerTest : public AshTestBase,
 
   // AshTestBase:
   void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {chromeos::features::kEcheSWA, chromeos::features::kEcheCustomWidget},
+        {});
+
     AshTestBase::SetUp();
 
     // Create user 1 session and simulate its login.
@@ -97,6 +107,13 @@ class PhoneHubUiControllerTest : public AshTestBase,
   std::unique_ptr<PhoneHubUiController> controller_;
   phonehub::FakePhoneHubManager phone_hub_manager_;
   bool ui_state_changed_ = false;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+  // Calling the factory constructor is enough to set it up.
+  std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
+      std::make_unique<TestAshWebViewFactory>();
 };
 
 TEST_F(PhoneHubUiControllerTest, NotEligibleForFeature) {
@@ -304,6 +321,21 @@ TEST_F(PhoneHubUiControllerTest, TimerExpiresBluetoothDisconnectedView) {
 
   auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kBluetoothDisabledView, content_view->GetID());
+}
+
+TEST_F(PhoneHubUiControllerTest, HandleBubbleOpenedShouldCloseEcheBubble) {
+  EcheTray* eche_tray =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
+  eche_tray->SetUrl(GURL("http://google.com"));
+  eche_tray->SetVisiblePreferred(true);
+  eche_tray->ShowBubble();
+  EXPECT_TRUE(
+      eche_tray->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  controller_->HandleBubbleOpened();
+
+  EXPECT_FALSE(
+      eche_tray->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
 }
 
 }  // namespace ash

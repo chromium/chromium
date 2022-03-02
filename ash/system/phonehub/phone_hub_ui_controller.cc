@@ -11,8 +11,10 @@
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/tether_controller.h"
 #include "ash/components/phonehub/user_action_recorder.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/system/phonehub/bluetooth_disabled_view.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_connected_view.h"
@@ -20,6 +22,7 @@
 #include "ash/system/phonehub/phone_disconnected_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/tether_connection_pending_view.h"
+#include "ash/system/status_area_widget.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -103,6 +106,15 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
 }
 
 void PhoneHubUiController::HandleBubbleOpened() {
+  // Make sure Eche window is not shown.
+  if (features::IsEcheCustomWidgetEnabled()) {
+    EcheTray* eche_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->eche_tray();
+    if (eche_tray)
+      eche_tray->CloseBubble();
+  }
+
   if (!phone_hub_manager_)
     return;
 
