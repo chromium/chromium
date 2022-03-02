@@ -2358,130 +2358,135 @@ function ScrubbyScrollBar(scrollView) {
 
 // Mixin containing utilities for identifying and navigating between
 // valid day/week/month ranges.
-var DateRangeManager = {
-  _setValidDateConfig(config) {
-    this.config = {};
+function dateRangeManagerMixin(baseClass) {
+  class DateRangeManager extends baseClass {
+    _setValidDateConfig(config) {
+      this.config = {};
 
-    this.config.minimum = (typeof config.min !== 'undefined' && config.min) ?
-        parseDateString(config.min) :
-        this._dateTypeConstructor.Minimum;
-    this.config.maximum = (typeof config.max !== 'undefined' && config.max) ?
-        parseDateString(config.max) :
-        this._dateTypeConstructor.Maximum;
-    this.config.minimumValue = this.config.minimum.valueOf();
-    this.config.maximumValue = this.config.maximum.valueOf();
-    this.config.step = (typeof config.step !== 'undefined') ?
-        Number(config.step) :
-        this._dateTypeConstructor.DefaultStep;
-    this.config.stepBase = (typeof config.stepBase !== 'undefined') ?
-        Number(config.stepBase) :
-        this._dateTypeConstructor.DefaultStepBase;
-  },
-
-  _isValidForStep(value) {
-    // nextAllowedValue is the time closest (looking forward) to value that is
-    // within the interval specified by the step and the stepBase.  This may
-    // be equal to value.
-    var nextAllowedValue =
-        (Math.ceil((value - this.config.stepBase) / this.config.step) *
-         this.config.step) +
-        this.config.stepBase;
-    // If the nextAllowedValue is between value and the next nearest possible time
-    // for this control type (determined by adding the smallest time interval, given
-    // by DefaultStep, to value) then we consider it to be valid.
-    return nextAllowedValue < (value + this._dateTypeConstructor.DefaultStep);
-  },
-
-  /**
-   * @param {!number} value
-   * @return {!boolean}
-   */
-  _outOfRange(value) {
-    return value < this.config.minimumValue || value > this.config.maximumValue;
-  },
-
-  /**
-   * @param {!DateType} dayOrWeekOrMonth
-   * @return {!boolean}
-   */
-  isValid(dayOrWeekOrMonth) {
-    var value = dayOrWeekOrMonth.valueOf();
-    return dayOrWeekOrMonth instanceof this._dateTypeConstructor &&
-        !this._outOfRange(value) && this._isValidForStep(value);
-  },
-
-  /**
-   * @param {!DayOrWeekOrMonth} dayOrWeekOrMonth
-   * @return {?DayOrWeekOrMonth}
-   */
-  getNearestValidRangeLookingForward(dayOrWeekOrMonth) {
-    if (dayOrWeekOrMonth < this.config.minimumValue) {
-      // Performance optimization: avoid wasting lots of time in the below
-      // loop if dayOrWeekOrMonth is significantly less than the min.
-      dayOrWeekOrMonth =
-          this._dateTypeConstructor.createFromValue(this.config.minimumValue);
+      this.config.minimum = (typeof config.min !== 'undefined' && config.min) ?
+          parseDateString(config.min) :
+          this._dateTypeConstructor.Minimum;
+      this.config.maximum = (typeof config.max !== 'undefined' && config.max) ?
+          parseDateString(config.max) :
+          this._dateTypeConstructor.Maximum;
+      this.config.minimumValue = this.config.minimum.valueOf();
+      this.config.maximumValue = this.config.maximum.valueOf();
+      this.config.step = (typeof config.step !== 'undefined') ?
+          Number(config.step) :
+          this._dateTypeConstructor.DefaultStep;
+      this.config.stepBase = (typeof config.stepBase !== 'undefined') ?
+          Number(config.stepBase) :
+          this._dateTypeConstructor.DefaultStepBase;
     }
 
-    while (!this.isValid(dayOrWeekOrMonth) &&
-           dayOrWeekOrMonth < this.config.maximumValue) {
-      dayOrWeekOrMonth = dayOrWeekOrMonth.next();
+    _isValidForStep(value) {
+      // nextAllowedValue is the time closest (looking forward) to value that is
+      // within the interval specified by the step and the stepBase.  This may
+      // be equal to value.
+      var nextAllowedValue =
+          (Math.ceil((value - this.config.stepBase) / this.config.step) *
+           this.config.step) +
+          this.config.stepBase;
+      // If the nextAllowedValue is between value and the next nearest possible
+      // time for this control type (determined by adding the smallest time
+      // interval, given by DefaultStep, to value) then we consider it to be
+      // valid.
+      return nextAllowedValue < (value + this._dateTypeConstructor.DefaultStep);
     }
 
-    return this.isValid(dayOrWeekOrMonth) ? dayOrWeekOrMonth : null;
-  },
-
-  /**
-  * @param {!DayOrWeekOrMonth} dayOrWeekOrMonth
-  * @return {?DayOrWeekOrMonth}
-  */
-  getNearestValidRangeLookingBackward(dayOrWeekOrMonth) {
-    if (dayOrWeekOrMonth > this.config.maximumValue) {
-      // Performance optimization: avoid wasting lots of time in the below
-      // loop if dayOrWeekOrMonth is significantly greater than the max.
-      dayOrWeekOrMonth =
-          this._dateTypeConstructor.createFromValue(this.config.maximumValue);
+    /**
+     * @param {!number} value
+     * @return {!boolean}
+     */
+    _outOfRange(value) {
+      return value < this.config.minimumValue ||
+          value > this.config.maximumValue;
     }
 
-    while (!this.isValid(dayOrWeekOrMonth) &&
-           dayOrWeekOrMonth > this.config.minimumValue) {
-      dayOrWeekOrMonth = dayOrWeekOrMonth.previous();
+    /**
+     * @param {!DateType} dayOrWeekOrMonth
+     * @return {!boolean}
+     */
+    isValid(dayOrWeekOrMonth) {
+      var value = dayOrWeekOrMonth.valueOf();
+      return dayOrWeekOrMonth instanceof this._dateTypeConstructor &&
+          !this._outOfRange(value) && this._isValidForStep(value);
     }
 
-    return this.isValid(dayOrWeekOrMonth) ? dayOrWeekOrMonth : null;
-  },
-
-  /**
-  * @param {!DayOrWeekOrMonth} dayOrWeekOrMonth
-  * @param {!boolean} lookForwardFirst
-  * @return {?DayOrWeekOrMonth}
-  */
-  getNearestValidRange(dayOrWeekOrMonth, lookForwardFirst) {
-    var result = null;
-    if (lookForwardFirst) {
-      if (!(result =
-                this.getNearestValidRangeLookingForward(dayOrWeekOrMonth))) {
-        result = this.getNearestValidRangeLookingBackward(dayOrWeekOrMonth);
+    /**
+     * @param {!DayOrWeekOrMonth} dayOrWeekOrMonth
+     * @return {?DayOrWeekOrMonth}
+     */
+    getNearestValidRangeLookingForward(dayOrWeekOrMonth) {
+      if (dayOrWeekOrMonth < this.config.minimumValue) {
+        // Performance optimization: avoid wasting lots of time in the below
+        // loop if dayOrWeekOrMonth is significantly less than the min.
+        dayOrWeekOrMonth =
+            this._dateTypeConstructor.createFromValue(this.config.minimumValue);
       }
-    } else {
-      if (!(result =
-                this.getNearestValidRangeLookingBackward(dayOrWeekOrMonth))) {
-        result = this.getNearestValidRangeLookingForward(dayOrWeekOrMonth);
+
+      while (!this.isValid(dayOrWeekOrMonth) &&
+             dayOrWeekOrMonth < this.config.maximumValue) {
+        dayOrWeekOrMonth = dayOrWeekOrMonth.next();
       }
+
+      return this.isValid(dayOrWeekOrMonth) ? dayOrWeekOrMonth : null;
     }
 
-    return result;
-  },
+    /**
+     * @param {!DayOrWeekOrMonth} dayOrWeekOrMonth
+     * @return {?DayOrWeekOrMonth}
+     */
+    getNearestValidRangeLookingBackward(dayOrWeekOrMonth) {
+      if (dayOrWeekOrMonth > this.config.maximumValue) {
+        // Performance optimization: avoid wasting lots of time in the below
+        // loop if dayOrWeekOrMonth is significantly greater than the max.
+        dayOrWeekOrMonth =
+            this._dateTypeConstructor.createFromValue(this.config.maximumValue);
+      }
 
-  /**
-  * @param {!Day} day
-  * @param {!boolean} lookForwardFirst
-  * @return {?DayOrWeekOrMonth}
-  */
-  getValidRangeNearestToDay(day, lookForwardFirst) {
-    var dayOrWeekOrMonth = this._dateTypeConstructor.createFromDay(day);
-    return this.getNearestValidRange(dayOrWeekOrMonth, lookForwardFirst);
+      while (!this.isValid(dayOrWeekOrMonth) &&
+             dayOrWeekOrMonth > this.config.minimumValue) {
+        dayOrWeekOrMonth = dayOrWeekOrMonth.previous();
+      }
+
+      return this.isValid(dayOrWeekOrMonth) ? dayOrWeekOrMonth : null;
+    }
+
+    /**
+     * @param {!DayOrWeekOrMonth} dayOrWeekOrMonth
+     * @param {!boolean} lookForwardFirst
+     * @return {?DayOrWeekOrMonth}
+     */
+    getNearestValidRange(dayOrWeekOrMonth, lookForwardFirst) {
+      var result = null;
+      if (lookForwardFirst) {
+        if (!(result =
+                  this.getNearestValidRangeLookingForward(dayOrWeekOrMonth))) {
+          result = this.getNearestValidRangeLookingBackward(dayOrWeekOrMonth);
+        }
+      } else {
+        if (!(result =
+                  this.getNearestValidRangeLookingBackward(dayOrWeekOrMonth))) {
+          result = this.getNearestValidRangeLookingForward(dayOrWeekOrMonth);
+        }
+      }
+
+      return result;
+    }
+
+    /**
+     * @param {!Day} day
+     * @param {!boolean} lookForwardFirst
+     * @return {?DayOrWeekOrMonth}
+     */
+    getValidRangeNearestToDay(day, lookForwardFirst) {
+      var dayOrWeekOrMonth = this._dateTypeConstructor.createFromDay(day);
+      return this.getNearestValidRange(dayOrWeekOrMonth, lookForwardFirst);
+    }
   }
-};
+  return DateRangeManager;
+}
 
 /**
  * @constructor
@@ -2606,7 +2611,9 @@ function YearListCell(shortMonthLabels) {
   };
 }
 
-class YearListView extends ListView {
+// clang-format off
+class YearListView extends dateRangeManagerMixin(ListView) {
+  // clang-format on
   /**
    * @param {!Month} minimumMonth
    * @param {!Month} maximumMonth
@@ -3192,8 +3199,6 @@ class YearListView extends ListView {
     }
   }
 }
-
-Object.assign(YearListView.prototype, DateRangeManager);
 
 /**
  * @constructor
@@ -4307,7 +4312,9 @@ class CalendarTableView extends ListView {
 
 // ----------------------------------------------------------------
 
-class CalendarPicker extends View {
+// clang-format off
+class CalendarPicker extends dateRangeManagerMixin(View) {
+  // clang-format on
   /**
    * @param {!Object} config
    */
@@ -5010,8 +5017,6 @@ class CalendarPicker extends View {
     }
   }
 }
-
-Object.assign(CalendarPicker.prototype, DateRangeManager);
 
 // ----------------------------------------------------------------
 
