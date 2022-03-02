@@ -45,7 +45,7 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   SharedMemoryBuffer(const SharedMemoryBuffer&) = delete;
   SharedMemoryBuffer& operator=(const SharedMemoryBuffer&) = delete;
 
-  ~SharedMemoryBuffer() { buffer_manager_->DestroyBuffer(widget_, buffer_id_); }
+  ~SharedMemoryBuffer() { buffer_manager_->DestroyBuffer(buffer_id_); }
 
   // Returns SkSurface, which the client can use to write to this buffer.
   sk_sp<SkSurface> sk_surface() const { return sk_surface_; }

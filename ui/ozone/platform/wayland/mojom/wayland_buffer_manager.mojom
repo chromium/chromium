@@ -73,14 +73,11 @@ interface WaylandBufferManagerHost {
 
   // These two methods are independent from the type of rendering.
   //
-  // Destroys a wl_buffer created by WaylandConnection based on the |buffer_id|
-  // for the WaylandWindow, which has the following |widget|. The |buffer_id|
-  // is the unique id of the buffer objects being destroyed on the browser
-  // process side. If the buffer with |buffer_id| has never been assigned to an
-  // AcceleratedWidget, it can be destroyed by passing a null widget
-  // with a correct buffer id. Providing wrong pair of the |widget| and the
-  // |buffer_id| will result in the termination of the GPU process.
-  DestroyBuffer(gfx.mojom.AcceleratedWidget widget, uint32 buffer_id);
+  // Destroys a wl_buffer created by WaylandConnection based on the |buffer_id|.
+  // The |buffer_id| is the unique id of the buffer objects being destroyed on
+  // the browser process side. Providing wrong |buffer_id| will result in the
+  // termination of the GPU process.
+  DestroyBuffer(uint32 buffer_id);
 
   // Send overlay configurations for a frame to a WaylandWindow with the
   // following |widget|.

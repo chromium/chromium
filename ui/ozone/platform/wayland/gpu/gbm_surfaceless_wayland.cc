@@ -77,8 +77,7 @@ GbmSurfacelessWayland::SolidColorBufferHolder::GetOrCreateSolidColorBuffer(
 
 void GbmSurfacelessWayland::SolidColorBufferHolder::OnSubmission(
     BufferId buffer_id,
-    WaylandBufferManagerGpu* buffer_manager,
-    gfx::AcceleratedWidget widget) {
+    WaylandBufferManagerGpu* buffer_manager) {
   // Solid color buffers do not require on submission as skia doesn't track
   // them. Instead, they are tracked by GbmSurfacelessWayland. In the future,
   // when SharedImageFactory allows to create non-backed shared images, this
@@ -96,7 +95,7 @@ void GbmSurfacelessWayland::SolidColorBufferHolder::OnSubmission(
     // ones until the maximum number of available solid color buffer.
     while (available_solid_color_buffers_.size() > kMaxSolidColorBuffers) {
       buffer_manager->DestroyBuffer(
-          widget, available_solid_color_buffers_.begin()->buffer_id);
+          available_solid_color_buffers_.begin()->buffer_id);
       available_solid_color_buffers_.erase(
           available_solid_color_buffers_.begin());
     }
@@ -104,10 +103,9 @@ void GbmSurfacelessWayland::SolidColorBufferHolder::OnSubmission(
 }
 
 void GbmSurfacelessWayland::SolidColorBufferHolder::EraseBuffers(
-    WaylandBufferManagerGpu* buffer_manager,
-    gfx::AcceleratedWidget widget) {
+    WaylandBufferManagerGpu* buffer_manager) {
   for (const auto& buffer : available_solid_color_buffers_)
-    buffer_manager->DestroyBuffer(widget, buffer.buffer_id);
+    buffer_manager->DestroyBuffer(buffer.buffer_id);
   available_solid_color_buffers_.clear();
 }
 
@@ -289,7 +287,7 @@ bool GbmSurfacelessWayland::Resize(const gfx::Size& size,
   surface_scale_factor_ = scale_factor;
 
   // Remove all the buffers.
-  solid_color_buffers_holder_->EraseBuffers(buffer_manager_, widget_);
+  solid_color_buffers_holder_->EraseBuffers(buffer_manager_);
 
   return gl::SurfacelessEGL::Resize(size, scale_factor, color_space, has_alpha);
 }
@@ -408,8 +406,7 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
   submitted_frames_.erase(submitted_frames_.begin());
   for (auto& plane : submitted_frame->planes) {
     // Let the holder mark this buffer as free to reuse.
-    solid_color_buffers_holder_->OnSubmission(plane.first, buffer_manager_,
-                                              widget_);
+    solid_color_buffers_holder_->OnSubmission(plane.first, buffer_manager_);
   }
   submitted_frame->planes.clear();
   submitted_frame->overlays.clear();

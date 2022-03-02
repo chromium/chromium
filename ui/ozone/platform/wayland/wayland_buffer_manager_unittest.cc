@@ -199,12 +199,10 @@ class WaylandBufferManagerTest : public WaylandTest {
     Sync();
   }
 
-  void DestroyBufferAndSetTerminateExpectation(gfx::AcceleratedWidget widget,
-                                               uint32_t buffer_id,
-                                               bool fail) {
+  void DestroyBufferAndSetTerminateExpectation(uint32_t buffer_id, bool fail) {
     SetTerminateCallbackExpectationAndDestroyChannel(&callback_, fail);
 
-    buffer_manager_gpu_->DestroyBuffer(widget, buffer_id);
+    buffer_manager_gpu_->DestroyBuffer(buffer_id);
 
     Sync();
   }
@@ -256,8 +254,7 @@ TEST_P(WaylandBufferManagerTest, CreateDmabufBasedBuffers) {
 
   CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
                                                     kDmabufBufferId);
-  DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                          kDmabufBufferId, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
 }
 
 TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
@@ -307,8 +304,7 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
   EXPECT_EQ(params_vector[0]->modifier_lo_, kFormatModiferLinear & UINT32_MAX);
 
   // Clean up.
-  DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                          kDmabufBufferId, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
 }
 
 TEST_P(WaylandBufferManagerTest, CreateShmBasedBuffers) {
@@ -316,8 +312,7 @@ TEST_P(WaylandBufferManagerTest, CreateShmBasedBuffers) {
 
   CreateShmBasedBufferAndSetTerminateExpecation(false /*fail*/, kShmBufferId);
 
-  DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                          kShmBufferId, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kShmBufferId, false /*fail*/);
 }
 
 TEST_P(WaylandBufferManagerTest, ValidateDataFromGpu) {
@@ -388,11 +383,10 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
   // ... impossible to destroy non-existing buffer.
   {
     // Either it is attached...
-    DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, true /*fail*/);
+    DestroyBufferAndSetTerminateExpectation(kBufferId1, true /*fail*/);
 
     // Or not attached.
-    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                            kBufferId1, true /*fail*/);
+    DestroyBufferAndSetTerminateExpectation(kBufferId1, true /*fail*/);
   }
 
   // Can destroy the buffer without specifying the widget.
@@ -404,8 +398,7 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
     buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, window_->GetBounds(),
                                       kDefaultScale, window_->GetBounds());
 
-    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                            kBufferId1, false /*fail*/);
+    DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
   }
 
   // Still can destroy the buffer even if it has not been attached to any
@@ -414,7 +407,7 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
     EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
     CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
                                                       kBufferId1);
-    DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+    DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
   }
 
   // ... impossible to destroy buffers twice.
@@ -430,23 +423,20 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
     CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
                                                       kBufferId2);
 
-    DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+    DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
     // Can't destroy the buffer with non-existing id (the manager cleared the
     // state after the previous failure).
-    DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, true /*fail*/);
+    DestroyBufferAndSetTerminateExpectation(kBufferId1, true /*fail*/);
 
     // Non-attached buffer must have been also destroyed (we can't destroy it
     // twice) if there was a failure.
-    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                            kBufferId2, true /*fail*/);
+    DestroyBufferAndSetTerminateExpectation(kBufferId2, true /*fail*/);
 
     // Create and destroy non-attached buffer twice.
     CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
                                                       kBufferId2);
-    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                            kBufferId2, false /*fail*/);
-    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                            kBufferId2, true /*fail*/);
+    DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
+    DestroyBufferAndSetTerminateExpectation(kBufferId2, true /*fail*/);
   }
 }
 
@@ -517,8 +507,7 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
                                                false /* fail */);
 
   // Destroying the buffer causes all wl_buffer objects to be destroyed.
-  DestroyBufferAndSetTerminateExpectation(window_->GetWidget(), 1u,
-                                          false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(1u, false /*fail*/);
   SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
   buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), 1u,
                                     window_->GetBounds(), kDefaultScale,
@@ -681,8 +670,8 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
 
   Sync();
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
 }
 
 TEST_P(WaylandBufferManagerTest,
@@ -753,7 +742,7 @@ TEST_P(WaylandBufferManagerTest,
   EXPECT_CALL(mock_surface_gpu,
               OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, /*fail=*/false);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, /*fail=*/false);
   mock_surface->DestroyPrevAttachedBuffer();
   mock_surface->SendFrameCallback();
   Sync();
@@ -793,13 +782,13 @@ TEST_P(WaylandBufferManagerTest,
               ::testing::Eq(gfx::PresentationFeedback::Flags::kFailure))))
       .Times(1);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId3, _)).Times(1);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, /*fail=*/false);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, /*fail=*/false);
   mock_surface->DestroyPrevAttachedBuffer();
   mock_surface->SendFrameCallback();
   mock_wp_presentation->SendPresentationCallback();
   Sync();
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId3, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId3, false /*fail*/);
 }
 
 // This test ensures that a discarded presentation feedback sent prior receiving
@@ -945,9 +934,9 @@ TEST_P(WaylandBufferManagerTest,
 
   Sync();
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId3, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId3, false /*fail*/);
 }
 
 TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
@@ -1022,10 +1011,8 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
 
   Sync();
 
-  DestroyBufferAndSetTerminateExpectation(widget, kDmabufBufferId,
-                                          false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kDmabufBufferId2,
-                                          false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kDmabufBufferId2, false /*fail*/);
 }
 
 // Tests the surface does not have buffers attached until it's configured at
@@ -1086,8 +1073,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
 
     window_->SetPointerFocus(false);
     temp_window.reset();
-    DestroyBufferAndSetTerminateExpectation(widget, kDmabufBufferId,
-                                            false /*fail*/);
+    DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
 
     Sync();
   }
@@ -1204,9 +1190,9 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
 
   Sync();
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId3, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId3, false /*fail*/);
 }
 
 TEST_P(WaylandBufferManagerTest, DestroyBufferForDestroyedWindow) {
@@ -1226,7 +1212,7 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferForDestroyedWindow) {
   Sync();
 
   temp_window.reset();
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId, false /*fail*/);
 }
 
 TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionSingleBuffer) {
@@ -1258,7 +1244,7 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionSingleBuffer) {
 
   Sync();
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId, false /*fail*/);
 }
 
 TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
@@ -1334,8 +1320,8 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
 
   Sync();
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
 }
 
 // Tests that OnSubmission and OnPresentation are properly triggered if a buffer
@@ -1389,7 +1375,7 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferCommittedTwiceInARow) {
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
 
   // Destroying buffer2 should do nothing yet.
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
   Sync();
 
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
@@ -1399,7 +1385,7 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferCommittedTwiceInARow) {
               OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(2);
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(2);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
   Sync();
 
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
@@ -1466,8 +1452,8 @@ TEST_P(WaylandBufferManagerTest, ReleaseBufferCommittedTwiceInARow) {
 
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
 }
 
 // Tests that OnSubmission and OnPresentation callbacks are properly called
@@ -1548,9 +1534,9 @@ TEST_P(WaylandBufferManagerTest, ReleaseOrderDifferentToCommitOrder) {
 
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId3, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId3, false /*fail*/);
 }
 
 // This test verifies that submitting the buffer more than once results in
@@ -1711,8 +1697,8 @@ TEST_P(WaylandBufferManagerTest,
 
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
 }
 
 // Tests that submitting a single buffer only receives an OnSubmission. This is
@@ -1744,7 +1730,7 @@ TEST_P(WaylandBufferManagerTest, OnSubmissionCalledForSingleBuffer) {
                                     bounds);
   Sync();
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
 }
 
 // Tests that when CommitOverlays(), root_surface can only be committed once all
@@ -1900,9 +1886,9 @@ TEST_P(WaylandBufferManagerTest, FencedRelease) {
 
   Sync();
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId3, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId3, false /*fail*/);
 }
 
 // Tests that destroying a channel doesn't result in resetting surface state
@@ -1994,7 +1980,7 @@ TEST_P(WaylandBufferManagerTest,
                                     bounds);
   Sync();
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
 }
 
 // Tests that destroying a channel results in attaching null buffers to the root
@@ -2385,8 +2371,8 @@ TEST_P(WaylandBufferManagerTest, FeedbacksAreDiscardedIfClientMisbehaves) {
     testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
   }
 
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
 }
 
 TEST_P(WaylandBufferManagerTest, ExecutesTasksAfterInitialization) {
@@ -2404,8 +2390,7 @@ TEST_P(WaylandBufferManagerTest, ExecutesTasksAfterInitialization) {
   buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), kDmabufBufferId,
                                     window_->GetBounds(), kDefaultScale,
                                     window_->GetBounds());
-  DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                          kDmabufBufferId, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
 
   base::RunLoop().RunUntilIdle();
 
@@ -2514,10 +2499,8 @@ class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
     mock_surface_of_subsurface->SendFrameCallback();
     mock_surface->SendFrameCallback();
 
-    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                            kBufferId1, false);
-    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
-                                            kBufferId2, false);
+    DestroyBufferAndSetTerminateExpectation(kBufferId1, false);
+    DestroyBufferAndSetTerminateExpectation(kBufferId2, false);
   }
 };
 

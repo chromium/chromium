@@ -163,12 +163,12 @@ void GLSurfaceEglReadbackWayland::OnPresentation(
 
 void GLSurfaceEglReadbackWayland::DestroyBuffers() {
   for (const auto& pixel_buffer : available_buffers_)
-    buffer_manager_->DestroyBuffer(widget_, pixel_buffer->buffer_id_);
+    buffer_manager_->DestroyBuffer(pixel_buffer->buffer_id_);
   for (const auto& pixel_buffer : in_flight_pixel_buffers_)
-    buffer_manager_->DestroyBuffer(widget_, pixel_buffer->buffer_id_);
+    buffer_manager_->DestroyBuffer(pixel_buffer->buffer_id_);
 
   if (displayed_buffer_)
-    buffer_manager_->DestroyBuffer(widget_, displayed_buffer_->buffer_id_);
+    buffer_manager_->DestroyBuffer(displayed_buffer_->buffer_id_);
 
   available_buffers_.clear();
   in_flight_pixel_buffers_.clear();

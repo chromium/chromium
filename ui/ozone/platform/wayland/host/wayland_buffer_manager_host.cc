@@ -285,11 +285,7 @@ void WaylandBufferManagerHost::CommitOverlays(
   window->CommitOverlays(overlays);
 }
 
-void WaylandBufferManagerHost::DestroyBuffer(
-    [[maybe_unused]] gfx::AcceleratedWidget widget,
-    uint32_t buffer_id) {
-  // TODO(fangzhoug): Remove |widget| from the argument list of the mojo
-  // interface.
+void WaylandBufferManagerHost::DestroyBuffer(uint32_t buffer_id) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   TRACE_EVENT1("wayland", "WaylandBufferManagerHost::DestroyBuffer",

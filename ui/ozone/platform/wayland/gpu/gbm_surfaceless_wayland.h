@@ -91,10 +91,8 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
         WaylandBufferManagerGpu* buffer_manager);
 
     void OnSubmission(BufferId buffer_id,
-                      WaylandBufferManagerGpu* buffer_manager,
-                      gfx::AcceleratedWidget widget);
-    void EraseBuffers(WaylandBufferManagerGpu* buffer_manager,
-                      gfx::AcceleratedWidget widget);
+                      WaylandBufferManagerGpu* buffer_manager);
+    void EraseBuffers(WaylandBufferManagerGpu* buffer_manager);
 
    private:
     // Gpu-size holder for the solid color buffers. These are not backed by

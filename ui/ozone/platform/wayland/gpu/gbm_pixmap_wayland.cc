@@ -34,7 +34,7 @@ GbmPixmapWayland::GbmPixmapWayland(WaylandBufferManagerGpu* buffer_manager)
 
 GbmPixmapWayland::~GbmPixmapWayland() {
   if (gbm_bo_ && widget_ != gfx::kNullAcceleratedWidget)
-    buffer_manager_->DestroyBuffer(widget_, buffer_id_);
+    buffer_manager_->DestroyBuffer(buffer_id_);
 }
 
 bool GbmPixmapWayland::InitializeBuffer(

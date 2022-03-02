@@ -103,8 +103,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
                               uint32_t buffer_id) override;
 
   // Called by the GPU to destroy the imported wl_buffer with a |buffer_id|.
-  void DestroyBuffer(gfx::AcceleratedWidget widget,
-                     uint32_t buffer_id) override;
+  void DestroyBuffer(uint32_t buffer_id) override;
   // Called by the GPU and asks to configure the surface/subsurfaces and attach
   // wl_buffers to WaylandWindow with the specified |widget|. Calls OnSubmission
   // and OnPresentation on successful swap and pixels presented.

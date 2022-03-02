@@ -133,7 +133,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays);
 
   // Asks Wayland to destroy a wl_buffer.
-  void DestroyBuffer(gfx::AcceleratedWidget widget, uint32_t buffer_id);
+  void DestroyBuffer(uint32_t buffer_id);
 
 #if defined(WAYLAND_GBM)
   // Returns a gbm_device based on a DRM render node.
@@ -218,7 +218,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   void CommitOverlaysTask(
       gfx::AcceleratedWidget widget,
       std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays);
-  void DestroyBufferTask(gfx::AcceleratedWidget widget, uint32_t buffer_id);
+  void DestroyBufferTask(uint32_t buffer_id);
 
 #if defined(WAYLAND_GBM)
   // Finds drm render node, opens it and stores the handle into

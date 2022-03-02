@@ -295,20 +295,19 @@ void WaylandBufferManagerGpu::CommitOverlays(
   RunOrQueueTask(std::move(task));
 }
 
-void WaylandBufferManagerGpu::DestroyBuffer(gfx::AcceleratedWidget widget,
-                                            uint32_t buffer_id) {
+void WaylandBufferManagerGpu::DestroyBuffer(uint32_t buffer_id) {
   DCHECK(gpu_thread_runner_);
   if (!gpu_thread_runner_->BelongsToCurrentThread()) {
     // Do the mojo call on the GpuMainThread.
     gpu_thread_runner_->PostTask(
         FROM_HERE, base::BindOnce(&WaylandBufferManagerGpu::DestroyBuffer,
-                                  base::Unretained(this), widget, buffer_id));
+                                  base::Unretained(this), buffer_id));
     return;
   }
 
   base::OnceClosure task =
       base::BindOnce(&WaylandBufferManagerGpu::DestroyBufferTask,
-                     base::Unretained(this), widget, buffer_id);
+                     base::Unretained(this), buffer_id);
   RunOrQueueTask(std::move(task));
 }
 
@@ -515,12 +514,11 @@ void WaylandBufferManagerGpu::CommitOverlaysTask(
   remote_host_->CommitOverlays(widget, std::move(overlays));
 }
 
-void WaylandBufferManagerGpu::DestroyBufferTask(gfx::AcceleratedWidget widget,
-                                                uint32_t buffer_id) {
+void WaylandBufferManagerGpu::DestroyBufferTask(uint32_t buffer_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   DCHECK(remote_host_);
 
-  remote_host_->DestroyBuffer(widget, buffer_id);
+  remote_host_->DestroyBuffer(buffer_id);
 }
 
 }  // namespace ui

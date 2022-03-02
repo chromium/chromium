@@ -222,7 +222,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     env.SetTerminateGpuCallback(manager_host);
   }
 
-  manager_host->DestroyBuffer(widget, kBufferId);
+  manager_host->DestroyBuffer(kBufferId);
 
   // Wait until the buffers are destroyed.
   SyncServer(&server, &env.task_environment);
