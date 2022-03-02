@@ -41,11 +41,12 @@ CSSRGB* CSSRGB::Create(
   if (!(r = ToNumberOrPercentage(red)) || !(g = ToNumberOrPercentage(green)) ||
       !(b = ToNumberOrPercentage(blue))) {
     exception_state.ThrowTypeError(
-        "Color channel must be a number or percentage.");
+        "Color channel must be interpretable as a number or a percentage.");
     return nullptr;
   }
   if (!(a = ToPercentage(alpha))) {
-    exception_state.ThrowTypeError("Alpha must be a percentage.");
+    exception_state.ThrowTypeError(
+        "Alpha must be interpretable as a percentage.");
     return nullptr;
   }
   return MakeGarbageCollected<CSSRGB>(r, g, b, a);
@@ -74,7 +75,7 @@ void CSSRGB::setR(
     r_ = value;
   } else {
     exception_state.ThrowTypeError(
-        "Color channel must be a number or percentage.");
+        "Color channel must be interpretable as a number or a percentage.");
   }
 }
 
@@ -85,7 +86,7 @@ void CSSRGB::setG(
     g_ = value;
   } else {
     exception_state.ThrowTypeError(
-        "Color channel must be a number or percentage.");
+        "Color channel must be interpretable as a number or a percentage.");
   }
 }
 
@@ -96,17 +97,19 @@ void CSSRGB::setB(
     b_ = value;
   } else {
     exception_state.ThrowTypeError(
-        "Color channel must be a number or percentage.");
+        "Color channel must be interpretable as a number or a percentage.");
   }
 }
 
 void CSSRGB::setAlpha(
     const V8CSSNumberish* alpha,
     ExceptionState& exception_state) {
-  if (auto* value = ToPercentage(alpha))
+  if (auto* value = ToPercentage(alpha)) {
     alpha_ = value;
-  else
-    exception_state.ThrowTypeError("Alpha must be a percentage.");
+  } else {
+    exception_state.ThrowTypeError(
+        "Alpha must be interpretable as a percentage.");
+  }
 }
 
 Color CSSRGB::ToColor() const {

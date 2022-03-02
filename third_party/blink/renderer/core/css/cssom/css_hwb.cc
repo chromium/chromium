@@ -47,7 +47,7 @@ CSSHWB* CSSHWB::Create(CSSNumericValue* hue,
   if (!(w = ToPercentage(white)) || !(b = ToPercentage(black)) ||
       !(a = ToPercentage(alpha))) {
     exception_state.ThrowTypeError(
-        "black, white and alpha values must all be percentages.");
+        "Black, white and alpha must be interpretable as percentages.");
     return nullptr;
   }
 
@@ -75,26 +75,32 @@ void CSSHWB::setH(CSSNumericValue* hue, ExceptionState& exception_state) {
 
 void CSSHWB::setW(const V8CSSNumberish* white,
                   ExceptionState& exception_state) {
-  if (auto* value = ToPercentage(white))
+  if (auto* value = ToPercentage(white)) {
     w_ = value;
-  else
-    exception_state.ThrowTypeError("White must be a percentage.");
+  } else {
+    exception_state.ThrowTypeError(
+        "White must be interpretable as a percentage.");
+  }
 }
 
 void CSSHWB::setB(const V8CSSNumberish* black,
                   ExceptionState& exception_state) {
-  if (auto* value = ToPercentage(black))
+  if (auto* value = ToPercentage(black)) {
     b_ = value;
-  else
-    exception_state.ThrowTypeError("Black must be a percentage.");
+  } else {
+    exception_state.ThrowTypeError(
+        "Black must be interpretable as a percentage.");
+  }
 }
 
 void CSSHWB::setAlpha(const V8CSSNumberish* alpha,
                       ExceptionState& exception_state) {
-  if (auto* value = ToPercentage(alpha))
+  if (auto* value = ToPercentage(alpha)) {
     alpha_ = value;
-  else
-    exception_state.ThrowTypeError("Alpha must be a percentage.");
+  } else {
+    exception_state.ThrowTypeError(
+        "Alpha must be interpretable as a percentage.");
+  }
 }
 
 Color CSSHWB::ToColor() const {
