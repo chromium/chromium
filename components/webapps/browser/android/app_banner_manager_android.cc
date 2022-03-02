@@ -518,7 +518,11 @@ void AppBannerManagerAndroid::Install(
 
 void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
   if (!base::FeatureList::IsEnabled(
-          features::kInstallableAmbientBadgeInfoBar)) {
+          features::kInstallableAmbientBadgeInfoBar) &&
+      !base::FeatureList::IsEnabled(
+          features::kInstallableAmbientBadgeMessage) &&
+      !base::FeatureList::IsEnabled(
+          messages::kMessagesForAndroidInfrastructure)) {
     return;
   }
 

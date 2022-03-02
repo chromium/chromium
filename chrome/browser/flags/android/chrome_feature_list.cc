@@ -371,6 +371,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSyncUseSessionsUnregisterDelay,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &video_tutorials::features::kVideoTutorials,
+    &webapps::features::kInstallableAmbientBadgeMessage,
     &webapps::features::kInstallableAmbientBadgeInfoBar,
 };
 
