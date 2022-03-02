@@ -120,4 +120,72 @@ ParseAttributionAggregatableSources(const AtomicString& json_string) {
       ResponseParseStatus::kSuccess, std::move(sources));
 }
 
+bool ParseEventTriggerData(
+    const AtomicString& json_string,
+    WTF::Vector<mojom::blink::EventTriggerDataPtr>& event_trigger_data) {
+  // Populate attribution data from provided JSON.
+  std::unique_ptr<JSONValue> json = ParseJSON(json_string);
+
+  // TODO(johnidel): Log a devtools issues if JSON parsing fails and on
+  // individual early exits below.
+  if (!json)
+    return false;
+
+  JSONArray* array_value = JSONArray::Cast(json.get());
+  if (!array_value)
+    return false;
+
+  // Do not proceed if too many event trigger data are specified.
+  if (array_value->size() > kMaxAttributionEventTriggerData)
+    return false;
+
+  // Process each event trigger.
+  for (wtf_size_t i = 0; i < array_value->size(); ++i) {
+    JSONValue* value = array_value->at(i);
+    DCHECK(value);
+
+    const auto* object_val = JSONObject::Cast(value);
+    if (!object_val)
+      return false;
+
+    mojom::blink::EventTriggerDataPtr event_trigger =
+        mojom::blink::EventTriggerData::New();
+
+    String trigger_data_string;
+    // A valid header must declare data for each sub-item.
+    if (!object_val->GetString("trigger_data", &trigger_data_string))
+      return false;
+    bool trigger_data_is_valid = false;
+    uint64_t trigger_data_value =
+        trigger_data_string.ToUInt64Strict(&trigger_data_is_valid);
+
+    // Default invalid data values to 0 so a report will get sent.
+    event_trigger->data = trigger_data_is_valid ? trigger_data_value : 0;
+
+    // Treat invalid priority and deduplication key as if they were not set.
+    String priority_string;
+    if (object_val->GetString("priority", &priority_string)) {
+      bool priority_is_valid = false;
+      int64_t priority = priority_string.ToInt64Strict(&priority_is_valid);
+      if (priority_is_valid)
+        event_trigger->priority = priority;
+    }
+
+    // Treat invalid priority and deduplication_key as if they were not set.
+    String dedup_key_string;
+    if (object_val->GetString("deduplication_key", &dedup_key_string)) {
+      bool dedup_key_is_valid = false;
+      uint64_t dedup_key = dedup_key_string.ToUInt64Strict(&dedup_key_is_valid);
+      if (dedup_key_is_valid) {
+        event_trigger->dedup_key =
+            mojom::blink::AttributionTriggerDedupKey::New(dedup_key);
+      }
+    }
+
+    event_trigger_data.push_back(std::move(event_trigger));
+  }
+
+  return true;
+}
+
 }  // namespace blink::attribution_response_parsing

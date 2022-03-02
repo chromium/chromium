@@ -106,21 +106,33 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
   ~MockDataHost() override;
 
   void WaitForSourceData(size_t num_source_data);
+  void WaitForTriggerData(size_t num_trigger_data);
 
   const std::vector<blink::mojom::AttributionSourceDataPtr>& source_data()
       const {
     return source_data_;
   }
 
+  const std::vector<blink::mojom::AttributionTriggerDataPtr>& trigger_data()
+      const {
+    return trigger_data_;
+  }
+
  private:
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(
       blink::mojom::AttributionSourceDataPtr data) override;
+  void TriggerDataAvailable(
+      blink::mojom::AttributionTriggerDataPtr data) override;
 
   size_t min_source_data_count_ = 0;
-  mojo::Receiver<blink::mojom::AttributionDataHost> receiver_{this};
-  base::RunLoop wait_loop_;
   std::vector<blink::mojom::AttributionSourceDataPtr> source_data_;
+
+  size_t min_trigger_data_count_ = 0;
+  std::vector<blink::mojom::AttributionTriggerDataPtr> trigger_data_;
+
+  base::RunLoop wait_loop_;
+  mojo::Receiver<blink::mojom::AttributionDataHost> receiver_{this};
 };
 
 class MockDataHostManager : public AttributionDataHostManager {

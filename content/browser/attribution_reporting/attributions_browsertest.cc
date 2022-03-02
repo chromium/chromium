@@ -714,9 +714,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
       "a.test",
       "/attribution_reporting/register_source_headers_debug_key.html");
 
-  EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace("createAttributionSourceImg($1);", register_url)));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
 
   GURL conversion_url = https_server()->GetURL(
       "b.test", "/attribution_reporting/page_with_conversion_redirect.html");

@@ -71,7 +71,7 @@ function createAndClickImpressionTag(params) {
   return anchor;
 }
 
-function createAttributionSourceImg(src) {
+function createAttributionSrcImg(src) {
   const img = document.createElement('img');
   img.setAttribute('target', "top");
   img.width = 100;

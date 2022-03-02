@@ -67,10 +67,27 @@ void MockDataHost::WaitForSourceData(size_t num_source_data) {
   wait_loop_.Run();
 }
 
+void MockDataHost::WaitForTriggerData(size_t num_trigger_data) {
+  min_trigger_data_count_ = num_trigger_data;
+  if (trigger_data_.size() >= min_trigger_data_count_) {
+    return;
+  }
+  wait_loop_.Run();
+}
+
 void MockDataHost::SourceDataAvailable(
     blink::mojom::AttributionSourceDataPtr data) {
   source_data_.push_back(std::move(data));
   if (source_data_.size() < min_source_data_count_) {
+    return;
+  }
+  wait_loop_.Quit();
+}
+
+void MockDataHost::TriggerDataAvailable(
+    blink::mojom::AttributionTriggerDataPtr data) {
+  trigger_data_.push_back(std::move(data));
+  if (trigger_data_.size() < min_trigger_data_count_) {
     return;
   }
   wait_loop_.Quit();

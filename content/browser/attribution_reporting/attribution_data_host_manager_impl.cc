@@ -145,6 +145,11 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   attribution_manager_->HandleSource(std::move(storable_source));
 }
 
+void AttributionDataHostManagerImpl::TriggerDataAvailable(
+    blink::mojom::AttributionTriggerDataPtr data) {
+  // TODO(johnidel): Add browser process handling for attributionsrc triggers.
+}
+
 void AttributionDataHostManagerImpl::OnDataHostDisconnected() {
   receiver_source_destinations_.erase(receivers_.current_receiver());
 }

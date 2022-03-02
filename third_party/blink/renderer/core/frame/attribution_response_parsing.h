@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_RESPONSE_PARSING_H_
 
 #include <utility>
+#include <vector>
 
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -46,6 +47,19 @@ struct ResponseParseResult {
 // }]
 CORE_EXPORT ResponseParseResult<mojom::blink::AttributionAggregatableSources>
 ParseAttributionAggregatableSources(const AtomicString& json_string);
+
+// Parses event trigger data header of the form:
+//
+// [{
+//   "trigger_data": "5"
+//   "priority": "10",
+//   "deduplication_key": "456"
+// }]
+//
+// Returns whether parsing was successful.
+CORE_EXPORT bool ParseEventTriggerData(
+    const AtomicString& json_string,
+    WTF::Vector<mojom::blink::EventTriggerDataPtr>& event_trigger_data);
 
 }  // namespace blink::attribution_response_parsing
 

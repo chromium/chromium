@@ -8,10 +8,6 @@ import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/conversions/attribution_data_host.mojom";
 import "url/mojom/origin.mojom";
 
-struct DedupKey {
-  uint64 value;
-};
-
 struct Conversion {
   // Origin of the conversion registration redirect.
   url.mojom.Origin reporting_origin;
@@ -30,7 +26,7 @@ struct Conversion {
 
   // Key specified in conversion redirect for deduplication against existing
   // conversions with the same source.
-  DedupKey? dedup_key;
+  AttributionTriggerDedupKey? dedup_key;
 
   // The request id of the conversion redirect. In case the conversion is
   // invalid and an error is reported to DevTools, the error can be tied to the

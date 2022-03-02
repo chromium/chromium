@@ -61,6 +61,44 @@ struct AttributionSourceData {
   AttributionAggregatableSources aggregatable_sources;
 };
 
+// Deduplication key set by a reporting origin which prevents duplicate triggers
+// from generating multiple attribution reports for a given source.
+struct AttributionTriggerDedupKey {
+  // Arbitrary value for deduplication set by the reporting origin.
+  uint64 value;
+};
+
+// Mojo representation of the trigger configuration provided by a reporting
+// origin. This data is provided arbitrarily by certain subresources on a
+// page which invoke Attribution Reporting.
+struct EventTriggerData {
+  // Value which identifies this trigger in attribution reports, determined by
+  // reporting origin.
+  uint64 data = 0;
+
+  // Priority of this trigger relative to other attributed triggers for a
+  // source. Reports created with high priority triggers will be reported over
+  // lower priority ones.
+  int64 priority = 0;
+
+  // Key which allows deduplication against existing attributions for the same
+  // source.
+  AttributionTriggerDedupKey? dedup_key;
+};
+
+// Represents a request from a reporting origin to trigger attribution on a
+// given site. See:
+// https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#triggering-attribution
+struct AttributionTriggerData {
+  // Origin that registered this trigger, used to determine which source this
+  // trigger is associated with.
+  url.mojom.Origin reporting_origin;
+
+  // List of all event trigger data objects declared by the event trigger
+  // header. This data is arbitrarily set by the reporting_origin.
+  array<EventTriggerData> event_triggers;
+};
+
 // Browser-process interface responsible for processing attribution
 // configurations registered by the renderer. These configurations may be sent
 // out of the normal frame lifecycle, e.g. after the frame is destroyed.
@@ -68,4 +106,8 @@ interface AttributionDataHost {
   // Called when data from the renderer is available for a given attributionsrc
   // request.
   SourceDataAvailable(AttributionSourceData data);
+
+  // Called when trigger data from the renderer is available for a given
+  // attributionsrc request.
+  TriggerDataAvailable(AttributionTriggerData data);
 };

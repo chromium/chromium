@@ -41,13 +41,27 @@ class CORE_EXPORT AttributionSrcLoader
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(local_frame_);
-    visitor->Trace(resource_data_host_map_);
+    visitor->Trace(resource_context_map_);
     RawResourceClient::Trace(visitor);
   }
 
   String DebugName() const override { return "AttributionSrcLoader"; }
 
  private:
+  // Represents what events are able to be registered from an attributionsrc.
+  enum class AttributionSrcType { kUndetermined, kSource, kTrigger };
+
+  // State associated with each ongoing attribution src request.
+  struct AttributionSrcContext {
+    // Type of events this request can register. In some cases, this will not be
+    // assigned until the first event is received. A single attributionsrc
+    // request can only register one type of event across redirects.
+    AttributionSrcType type;
+
+    // Remote used for registering responses with the browser-process.
+    mojo::Remote<mojom::blink::AttributionDataHost> data_host;
+  };
+
   // RawResourceClient:
   void ResponseReceived(Resource* resource,
                         const ResourceResponse& response) override;
@@ -59,16 +73,19 @@ class CORE_EXPORT AttributionSrcLoader
   void HandleResponseHeaders(Resource* resource,
                              const ResourceResponse& response);
   void HandleSourceRegistration(Resource* resource,
-                                const ResourceResponse& response);
+                                const ResourceResponse& response,
+                                AttributionSrcContext& context);
+  void HandleTriggerRegistration(Resource* resource,
+                                 const ResourceResponse& response,
+                                 AttributionSrcContext& context);
 
   void LogAuditIssue(AttributionReportingIssueType issue_type,
                      const String& string,
                      HTMLElement* element = nullptr);
 
   Member<LocalFrame> local_frame_;
-  HeapHashMap<WeakMember<Resource>,
-              mojo::Remote<mojom::blink::AttributionDataHost>>
-      resource_data_host_map_;
+  HeapHashMap<WeakMember<Resource>, AttributionSrcContext>
+      resource_context_map_;
 };
 
 }  // namespace blink

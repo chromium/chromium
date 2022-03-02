@@ -14,6 +14,8 @@ constexpr size_t kMaxAttributionFiltersPerSource = 50;
 constexpr size_t kMaxBytesPerAttributionAggregatableKeyId = 25;
 constexpr size_t kMaxAttributionAggregatableKeysPerSource = 50;
 
+constexpr size_t kMaxAttributionEventTriggerData = 10;
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_ATTRIBUTION_REPORTING_CONSTANTS_H_

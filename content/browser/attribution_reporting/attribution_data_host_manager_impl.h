@@ -63,6 +63,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(
       blink::mojom::AttributionSourceDataPtr data) override;
+  void TriggerDataAvailable(
+      blink::mojom::AttributionTriggerDataPtr data) override;
 
   void OnDataHostDisconnected();
 

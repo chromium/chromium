@@ -166,7 +166,9 @@ void AttributionSrcLoader::Register(const KURL& src_url,
   local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       &conversion_host);
   conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver());
-  resource_data_host_map_.insert(resource, std::move(data_host));
+  resource_context_map_.insert(
+      resource, AttributionSrcContext{.type = AttributionSrcType::kUndetermined,
+                                      .data_host = std::move(data_host)});
 }
 
 void AttributionSrcLoader::Shutdown() {
@@ -186,28 +188,50 @@ bool AttributionSrcLoader::RedirectReceived(Resource* resource,
 }
 
 void AttributionSrcLoader::NotifyFinished(Resource* resource) {
-  DCHECK(resource_data_host_map_.Contains(resource));
-  resource_data_host_map_.erase(resource);
+  DCHECK(resource_context_map_.Contains(resource));
+  resource_context_map_.erase(resource);
 }
 
 void AttributionSrcLoader::HandleResponseHeaders(
     Resource* resource,
     const ResourceResponse& response) {
-  if (!resource_data_host_map_.Contains(resource))
+  auto it = resource_context_map_.find(resource);
+  if (it == resource_context_map_.end())
     return;
 
+  AttributionSrcContext& context = it->value;
+
   const auto& headers = response.HttpHeaderFields();
-  if (headers.Contains(http_names::kAttributionReportingRegisterSource))
-    HandleSourceRegistration(resource, response);
+
+  bool can_process_source = context.type == AttributionSrcType::kUndetermined ||
+                            context.type == AttributionSrcType::kSource;
+  if (can_process_source &&
+      headers.Contains(http_names::kAttributionReportingRegisterSource)) {
+    context.type = AttributionSrcType::kSource;
+    HandleSourceRegistration(resource, response, context);
+    return;
+  }
+
+  // TODO(johnidel): Consider surfacing an error when source and trigger headers
+  // are present together.
+  bool can_process_trigger =
+      context.type == AttributionSrcType::kUndetermined ||
+      context.type == AttributionSrcType::kTrigger;
+  if (can_process_trigger &&
+      headers.Contains(http_names::kAttributionReportingRegisterEventTrigger)) {
+    context.type = AttributionSrcType::kTrigger;
+    HandleTriggerRegistration(resource, response, context);
+  }
 
   // TODO(johnidel): Add parsing for trigger and filter headers.
 }
 
 void AttributionSrcLoader::HandleSourceRegistration(
     Resource* resource,
-    const ResourceResponse& response) {
-  auto it = resource_data_host_map_.find(resource);
-  DCHECK_NE(it, resource_data_host_map_.end());
+    const ResourceResponse& response,
+    AttributionSrcContext& context) {
+  auto it = resource_context_map_.find(resource);
+  DCHECK_NE(it, resource_context_map_.end());
 
   mojom::blink::AttributionSourceDataPtr source_data =
       mojom::blink::AttributionSourceData::New();
@@ -294,7 +318,33 @@ void AttributionSrcLoader::HandleSourceRegistration(
           aggregatable_sources_json);
   source_data->aggregatable_sources = std::move(aggregatable_sources.value);
 
-  it->value->SourceDataAvailable(std::move(source_data));
+  context.data_host->SourceDataAvailable(std::move(source_data));
+}
+
+void AttributionSrcLoader::HandleTriggerRegistration(
+    Resource* resource,
+    const ResourceResponse& response,
+    AttributionSrcContext& context) {
+  mojom::blink::AttributionTriggerDataPtr trigger_data =
+      mojom::blink::AttributionTriggerData::New();
+
+  // Verify the current url is trustworthy and capable of registering triggers.
+  scoped_refptr<const SecurityOrigin> reporting_origin =
+      SecurityOrigin::CreateFromString(response.CurrentRequestUrl());
+  if (!reporting_origin->IsPotentiallyTrustworthy())
+    return;
+  trigger_data->reporting_origin =
+      SecurityOrigin::Create(response.CurrentRequestUrl());
+
+  // Populate event triggers.
+  bool success = attribution_response_parsing::ParseEventTriggerData(
+      response.HttpHeaderField(
+          http_names::kAttributionReportingRegisterEventTrigger),
+      trigger_data->event_triggers);
+  if (!success)
+    return;
+
+  context.data_host->TriggerDataAvailable(std::move(trigger_data));
 }
 
 void AttributionSrcLoader::LogAuditIssue(

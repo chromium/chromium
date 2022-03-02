@@ -1086,6 +1086,7 @@ test("content_browsertests") {
     "../browser/accessibility/snapshot_ax_tree_browsertest.cc",
     "../browser/accessibility/touch_accessibility_aura_browsertest.cc",
     "../browser/attribution_reporting/attribution_internals_browsertest.cc",
+    "../browser/attribution_reporting/attribution_src_browsertest.cc",
     "../browser/attribution_reporting/attributions_browsertest.cc",
     "../browser/attribution_reporting/attributions_origin_trial_browsertest.cc",
     "../browser/attribution_reporting/source_declaration_browsertest.cc",

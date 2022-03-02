@@ -932,7 +932,8 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
 
   if (String string = search_params->get("dedup-key")) {
     if (absl::optional<uint64_t> value = parse_uint64(string)) {
-      conversion->dedup_key = mojom::blink::DedupKey::New(*value);
+      conversion->dedup_key =
+          mojom::blink::AttributionTriggerDedupKey::New(*value);
     } else {
       AuditsIssue::ReportAttributionIssue(
           document_->domWindow(),
