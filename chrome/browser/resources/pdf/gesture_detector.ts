@@ -5,107 +5,82 @@
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {Point} from './constants.js';
 
-/**
- * @typedef {{
- *   type: string,
- *   detail: !PinchEventDetail,
- * }}
- */
-export let Gesture;
+export type Gesture = {
+  type: string,
+  detail: PinchEventDetail,
+};
 
-/**
- * @typedef {{
- *   center: !Point,
- *   direction: (string|undefined),
- *   scaleRatio: (?number|undefined),
- *   startScaleRatio: (?number|undefined),
- * }}
- */
-export let PinchEventDetail;
+export type PinchEventDetail = {
+  center: Point,
+  direction?: string,
+  scaleRatio?: number|null,
+  startScaleRatio?: number|null,
+};
 
 // A class that listens for touch events and produces events when these
 // touches form gestures (e.g. pinching).
 export class GestureDetector {
+  private element_: HTMLElement;
+  private pinchStartEvent_: TouchEvent|null = null;
+  private lastTouchTouchesCount_: number = 0;
+  private lastEvent_: TouchEvent|null = null;
+  private isPresentationMode_: boolean = false;
+
   /**
-   * @param {!Element} element The element to monitor for touch gestures.
+   * The scale relative to the start of the pinch when handling ctrl-wheels.
+   * null when there is no ongoing pinch.
    */
-  constructor(element) {
-    /** @private {!Element} */
+  private accumulatedWheelScale_: number|null = null;
+
+  /**
+   * A timeout ID from setTimeout used for sending the pinchend event when
+   * handling ctrl-wheels.
+   */
+  private wheelEndTimeout_: number|null = null;
+  private eventTarget_: EventTarget = new EventTarget();
+
+  /** @param element The element to monitor for touch gestures. */
+  constructor(element: HTMLElement) {
     this.element_ = element;
 
     this.element_.addEventListener(
-        'touchstart',
-        /** @type {function(!Event)} */ (this.onTouchStart_.bind(this)),
+        'touchstart', (this.onTouchStart_.bind(this) as (p1: Event) => any),
         {passive: true});
 
-    const boundOnTouch =
-        /** @type {function(!Event)} */ (this.onTouch_.bind(this));
+    const boundOnTouch = (this.onTouch_.bind(this) as (p1: Event) => any);
     this.element_.addEventListener('touchmove', boundOnTouch, {passive: true});
     this.element_.addEventListener('touchend', boundOnTouch, {passive: true});
     this.element_.addEventListener(
         'touchcancel', boundOnTouch, {passive: true});
 
     this.element_.addEventListener(
-        'wheel',
-        /** @type {function(!Event)} */ (this.onWheel_.bind(this)),
-        {passive: false});
+        'wheel', this.onWheel_.bind(this), {passive: false});
     document.addEventListener(
-        'contextmenu', e => this.handleContextMenuEvent_(e));
-
-    this.pinchStartEvent_ = null;
-    this.lastTouchTouchesCount_ = 0;
-
-    /** @private {boolean} */
-    this.isPresentationMode_ = false;
-
-    /** @private {TouchEvent} */
-    this.lastEvent_ = null;
-
-    /**
-     * The scale relative to the start of the pinch when handling ctrl-wheels.
-     * null when there is no ongoing pinch.
-     *
-     * @private {?number}
-     */
-    this.accumulatedWheelScale_ = null;
-
-    /**
-     * A timeout ID from setTimeout used for sending the pinchend event when
-     * handling ctrl-wheels.
-     *
-     * @private {?number}
-     */
-    this.wheelEndTimeout_ = null;
-
-    /** @private {!EventTarget} */
-    this.eventTarget_ = new EventTarget();
+        'contextmenu', this.handleContextMenuEvent_.bind(this));
   }
 
-  /** @param {boolean} enabled */
-  setPresentationMode(enabled) {
+  setPresentationMode(enabled: boolean) {
     this.isPresentationMode_ = enabled;
   }
 
-  /** @return {!EventTarget} */
-  getEventTarget() {
+  getEventTarget(): EventTarget {
     return this.eventTarget_;
   }
 
   /**
    * Public for tests.
-   * @return {boolean} True if the last touch start was a two finger touch.
+   * @return True if the last touch start was a two finger touch.
    */
-  wasTwoFingerTouch() {
+  wasTwoFingerTouch(): boolean {
     return this.lastTouchTouchesCount_ === 2;
   }
 
   /**
    * Call the relevant listeners with the given |PinchEventDetail|.
-   * @param {string} type The type of pinch event.
-   * @param {!PinchEventDetail} detail The event to notify the listeners of.
-   * @private
+   * @param type The type of pinch event.
+   * @param detail The event to notify the listeners of.
    */
-  notify_(type, detail) {
+  private notify_(type: string, detail: PinchEventDetail) {
     // Adjust center into element-relative coordinates.
     const clientRect = this.element_.getBoundingClientRect();
     detail.center = {
@@ -116,12 +91,8 @@ export class GestureDetector {
     this.eventTarget_.dispatchEvent(new CustomEvent(type, {detail}));
   }
 
-  /**
-   * The callback for touchstart events on the element.
-   * @param {!TouchEvent} event Touch event on the element.
-   * @private
-   */
-  onTouchStart_(event) {
+  /** The callback for touchstart events on the element. */
+  private onTouchStart_(event: TouchEvent) {
     this.lastTouchTouchesCount_ = event.touches.length;
     if (!this.wasTwoFingerTouch()) {
       return;
@@ -132,17 +103,13 @@ export class GestureDetector {
     this.notify_('pinchstart', {center: center(event)});
   }
 
-  /**
-   * The callback for touch move, end, and cancel events on the element.
-   * @param {!TouchEvent} event Touch event on the element.
-   * @private
-   */
-  onTouch_(event) {
+  /** The callback for touch move, end, and cancel events on the element. */
+  private onTouch_(event: TouchEvent) {
     if (!this.pinchStartEvent_) {
       return;
     }
 
-    const lastEvent = /** @type {!TouchEvent} */ (this.lastEvent_);
+    const lastEvent = this.lastEvent_!;
 
     // Check if the pinch ends with the current event.
     if (event.touches.length < 2 ||
@@ -150,10 +117,9 @@ export class GestureDetector {
       const startScaleRatio = pinchScaleRatio(lastEvent, this.pinchStartEvent_);
       this.pinchStartEvent_ = null;
       this.lastEvent_ = null;
-      this.notify_('pinchend', {
-        startScaleRatio: startScaleRatio,
-        center: center(lastEvent),
-      });
+      this.notify_(
+          'pinchend',
+          {startScaleRatio: startScaleRatio, center: center(lastEvent)});
       return;
     }
 
@@ -161,20 +127,17 @@ export class GestureDetector {
     const startScaleRatio = pinchScaleRatio(event, this.pinchStartEvent_);
     this.notify_('pinchupdate', {
       scaleRatio: scaleRatio,
-      direction: scaleRatio > 1.0 ? 'in' : 'out',
+      // TODO(dhoss): Handle case where `scaleRatio` is null?
+      direction: scaleRatio! > 1.0 ? 'in' : 'out',
       startScaleRatio: startScaleRatio,
-      center: center(event),
+      center: center(event)
     });
 
     this.lastEvent_ = event;
   }
 
-  /**
-   * The callback for wheel events on the element.
-   * @param {!WheelEvent} event Wheel event on the element.
-   * @private
-   */
-  onWheel_(event) {
+  /** The callback for wheel events on the element. */
+  private onWheel_(event: WheelEvent) {
     // We handle ctrl-wheels to invoke our own pinch zoom. On Mac, synthetic
     // ctrl-wheels are created from trackpad pinches. We handle these ourselves
     // to prevent the browser's native pinch zoom. We also use our pinch
@@ -236,32 +199,28 @@ export class GestureDetector {
     }, gestureEndDelayMs);
   }
 
-  /**
-   * @param {!Event} e The context menu event
-   * @private
-   */
-  handleContextMenuEvent_(e) {
+  private handleContextMenuEvent_(e: MouseEvent) {
     // Stop Chrome from popping up the context menu on long press. We need to
     // make sure the start event did not have 2 touches because we don't want
     // to block two finger tap opening the context menu. We check for
     // firesTouchEvents in order to not block the context menu on right click.
-    const capabilities =
-        /** @type {{ sourceCapabilities: Object }} */ (e).sourceCapabilities;
-    if (capabilities.firesTouchEvents && !this.wasTwoFingerTouch()) {
+    const capabilities = e.sourceCapabilities;
+    if (capabilities && capabilities.firesTouchEvents &&
+        !this.wasTwoFingerTouch()) {
       e.preventDefault();
     }
   }
 }
 
 /**
- * Computes the change in scale between this touch event
- * and a previous one.
- * @param {!TouchEvent} event Latest touch event on the element.
- * @param {!TouchEvent} prevEvent A previous touch event on the element.
- * @return {?number} The ratio of the scale of this event and the
- *     scale of the previous one.
+ * Computes the change in scale between this touch event and a previous one.
+ * @param event Latest touch event on the element.
+ * @param prevEvent A previous touch event on the element.
+ * @return The ratio of the scale of this event and the scale of the previous
+ *     one.
  */
-function pinchScaleRatio(event, prevEvent) {
+function pinchScaleRatio(event: TouchEvent, prevEvent: TouchEvent): number|
+    null {
   const distance1 = distance(prevEvent);
   const distance2 = distance(event);
   return distance1 === 0 ? null : distance2 / distance1;
@@ -269,10 +228,10 @@ function pinchScaleRatio(event, prevEvent) {
 
 /**
  * Computes the distance between fingers.
- * @param {!TouchEvent} event Touch event with at least 2 touch points.
- * @return {number} Distance between touch[0] and touch[1].
+ * @param event Touch event with at least 2 touch points.
+ * @return Distance between touch[0] and touch[1].
  */
-function distance(event) {
+function distance(event: TouchEvent): number {
   const touch1 = event.touches[0];
   const touch2 = event.touches[1];
   const dx = touch1.clientX - touch2.clientX;
@@ -282,10 +241,10 @@ function distance(event) {
 
 /**
  * Computes the midpoint between fingers.
- * @param {!TouchEvent} event Touch event with at least 2 touch points.
- * @return {!Point} Midpoint between touch[0] and touch[1].
+ * @param event Touch event with at least 2 touch points.
+ * @return Midpoint between touch[0] and touch[1].
  */
-function center(event) {
+function center(event: TouchEvent): Point {
   const touch1 = event.touches[0];
   const touch2 = event.touches[1];
   return {

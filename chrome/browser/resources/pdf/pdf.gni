@@ -7,7 +7,7 @@ import("//pdf/features.gni")
 # Files to pass directly to preprocess_if_expr() that are used only in PDF
 # Viewer.
 pdf_non_webcomponents_files = [
-  "bookmark_type.js",
+  "bookmark_type.ts",
   "local_storage_proxy.js",
   "navigator.js",
   "pdf_viewer_wrapper.js",
@@ -66,12 +66,12 @@ print_preview_webcomponents_files = [
 # and Print Preview.
 shared_non_webcomponents_files = [
   "browser_api.js",
-  "constants.js",
+  "constants.ts",
   "controller.js",
-  "gesture_detector.js",
+  "gesture_detector.ts",
   "internal_plugin.js",
   "main.js",
-  "metrics.js",
+  "metrics.ts",
   "open_pdf_params_parser.js",
   "pdf_scripting_api.js",
   "pdf_viewer_base.js",
@@ -87,7 +87,7 @@ shared_webcomponents_files = [
   "elements/icons.js",
   "elements/shared-vars.js",
   "elements/viewer-error-dialog.js",
-  "pdf_viewer_shared_style.js",
+  "pdf_viewer_shared_style.ts",
 ]
 
 # Print Preview's GRDP needs all the shared + Print Preview specific files.

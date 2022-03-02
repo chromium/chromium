@@ -171,8 +171,6 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-assert(enable_pdf, "enable_pdf check failed")
-
 html_to_js("web_components") {
   js_files = pdf_webcomponents_files + print_preview_webcomponents_files +
              shared_webcomponents_files

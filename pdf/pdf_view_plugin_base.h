@@ -87,7 +87,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
     kFailed,
   };
 
-  // Must match `SaveRequestType` in chrome/browser/resources/pdf/constants.js.
+  // Must match `SaveRequestType` in chrome/browser/resources/pdf/constants.ts.
   enum class SaveRequestType {
     kAnnotation = 0,
     kOriginal = 1,

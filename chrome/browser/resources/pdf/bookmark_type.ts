@@ -13,15 +13,13 @@
  *
  * |children| is an array of the |Bookmark|s that are below this in a table of
  * contents tree
- * structure.
- * @typedef {{
- *   title: string,
- *   page: (number | undefined),
- *   x: (number | undefined),
- *   y: (number | undefined),
- *   zoom: (number | undefined),
- *   uri: (string | undefined),
- *   children: !Array<!Bookmark>
- * }}
  */
-export let Bookmark;
+export type Bookmark = {
+  title: string,
+  children: Bookmark[],
+  page?: number,
+  x?: number,
+  y?: number,
+  zoom?: number,
+  uri?: string,
+};

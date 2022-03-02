@@ -43,10 +43,13 @@ chrome.test.runTests(function() {
       resetForTesting();
       chrome.metricsPrivate = new MockMetricsPrivate();
 
-      const keys = Object.keys(UserAction).filter(key => {
-        return key !== 'DOCUMENT_OPENED' && key !== 'NUMBER_OF_ACTIONS' &&
-            !key.endsWith('_FIRST');
-      });
+      const keys = Object.keys(UserAction)
+                       .filter(key => Number.isInteger(UserAction[key]))
+                       .filter(key => {
+                         return key !== 'DOCUMENT_OPENED' &&
+                             key !== 'NUMBER_OF_ACTIONS' &&
+                             !key.endsWith('_FIRST');
+                       });
 
       for (const key of keys) {
         const firstKey = `${key}_FIRST`;
