@@ -95,14 +95,6 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
       refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
                         : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
 
-  // In case state_keys aren't available, we have no scheduler. See also
-  // DeviceCloudPolicyInitializer::TryToCreateClient and b/181140445
-  base::Time last_refresh_time =
-      refresh_scheduler ? refresh_scheduler->last_refresh()
-                        : policy && policy->has_timestamp()
-                              ? base::Time::FromJavaTime(policy->timestamp())
-                              : base::Time();
-
   bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
                   client->status() == DM_STATUS_SUCCESS;
   dict->SetBoolKey("error", !no_error);
@@ -114,8 +106,19 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
       "refreshInterval",
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                              ui::TimeFormat::LENGTH_SHORT, refresh_interval));
+  base::Time last_refresh_time =
+      policy && policy->has_timestamp()
+          ? base::Time::FromJavaTime(policy->timestamp())
+          : base::Time();
   dict->SetStringKey("timeSinceLastRefresh",
-                     GetTimeSinceLastRefreshString(last_refresh_time));
+                     GetTimeSinceLastActionString(last_refresh_time));
+
+  // In case state_keys aren't available, we have no scheduler. See also
+  // DeviceCloudPolicyInitializer::TryToCreateClient and b/181140445.
+  base::Time last_fetch_attempted_time =
+      refresh_scheduler ? refresh_scheduler->last_refresh() : base::Time();
+  dict->SetStringKey("timeSinceLastFetchAttempt",
+                     GetTimeSinceLastActionString(last_fetch_attempted_time));
 }
 
 // static
@@ -156,14 +159,14 @@ std::u16string PolicyStatusProvider::GetPolicyStatusFromStore(
 }
 
 // static
-std::u16string PolicyStatusProvider::GetTimeSinceLastRefreshString(
-    base::Time last_refresh_time) {
-  if (last_refresh_time.is_null())
+std::u16string PolicyStatusProvider::GetTimeSinceLastActionString(
+    base::Time last_action_time) {
+  if (last_action_time.is_null())
     return l10n_util::GetStringUTF16(IDS_POLICY_NEVER_FETCHED);
   base::Time now = GetClock()->Now();
   base::TimeDelta elapsed_time;
-  if (now > last_refresh_time)
-    elapsed_time = now - last_refresh_time;
+  if (now > last_action_time)
+    elapsed_time = now - last_action_time;
   return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
                                 ui::TimeFormat::LENGTH_SHORT, elapsed_time);
 }
