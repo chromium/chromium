@@ -27,13 +27,13 @@ void ChromeQuickAnswersTestBase::SetUp() {
 }
 
 void ChromeQuickAnswersTestBase::TearDown() {
-  quick_answers_controller_.reset();
-
   // Menu.
   menu_parent_.reset();
   menu_runner_.reset();
   menu_model_.reset();
   menu_delegate_.reset();
+
+  quick_answers_controller_.reset();
 
   ChromeAshTestBase::TearDown();
 }

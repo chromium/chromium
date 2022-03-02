@@ -316,7 +316,9 @@ QuickAnswersView::QuickAnswersView(const gfx::Rect& anchor_view_bounds,
       reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
 }
 
-QuickAnswersView::~QuickAnswersView() = default;
+QuickAnswersView::~QuickAnswersView() {
+  controller_->OnQuickAnswersViewDestroyed();
+}
 
 const char* QuickAnswersView::GetClassName() const {
   return "QuickAnswersView";

@@ -61,18 +61,6 @@ class QuickAnswersUiController {
   // Closes the user consent view.
   void CloseUserConsentView();
 
-  // Used by the controller to check if the user consent view is currently
-  // showing instead of QuickAnswers.
-  bool is_showing_user_consent_view() const {
-    return user_consent_view_ != nullptr;
-  }
-
-  // Used by the controller to check if the QuickAnswers view is currently
-  // showing.
-  bool is_showing_quick_answers_view() const {
-    return quick_answers_view_ != nullptr;
-  }
-
   // Invoked when user clicks the Dogfood button on Quick-Answers related views.
   void OnDogfoodButtonPressed();
 
@@ -85,6 +73,23 @@ class QuickAnswersUiController {
 
   // Handle consent result from user consent view.
   void OnUserConsentResult(bool consented);
+
+  // Called when the corresponding view is destroyed. The UI controller should
+  // reset references to the views to avoid timing issues on destruction.
+  void OnQuickAnswersViewDestroyed();
+  void OnUserConsentViewDestroyed();
+
+  // Used by the controller to check if the user consent view is currently
+  // showing instead of QuickAnswers.
+  bool is_showing_user_consent_view() const {
+    return user_consent_view_ != nullptr;
+  }
+
+  // Used by the controller to check if the QuickAnswers view is currently
+  // showing.
+  bool is_showing_quick_answers_view() const {
+    return quick_answers_view_ != nullptr;
+  }
 
   const QuickAnswersView* quick_answers_view_for_testing() const {
     return quick_answers_view_;

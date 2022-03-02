@@ -155,7 +155,9 @@ UserConsentView::UserConsentView(const gfx::Rect& anchor_view_bounds,
       IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT));
 }
 
-UserConsentView::~UserConsentView() = default;
+UserConsentView::~UserConsentView() {
+  ui_controller_->OnUserConsentViewDestroyed();
+}
 
 const char* UserConsentView::GetClassName() const {
   return "UserConsentView";

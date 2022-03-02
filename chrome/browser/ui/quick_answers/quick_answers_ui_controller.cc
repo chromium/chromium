@@ -153,3 +153,11 @@ void QuickAnswersUiController::OnUserConsentResult(bool consented) {
   if (consented && quick_answers_view_)
     quick_answers_view_->RequestFocus();
 }
+
+void QuickAnswersUiController::OnQuickAnswersViewDestroyed() {
+  quick_answers_view_ = nullptr;
+}
+
+void QuickAnswersUiController::OnUserConsentViewDestroyed() {
+  user_consent_view_ = nullptr;
+}
