@@ -1156,6 +1156,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
         modulesCartDiscountConsentRejectConfirmation: 'Reject confirmation!',
         modulesCartDiscountConsentAcceptConfirmation: 'Accept confirmation!',
         modulesCartDiscountConsentVariation: DiscountConsentVariation.Inline,
+        modulesCartStepOneUseStaticContent: true,
+        modulesCartConsentStepOneButton: 'Continue',
+        modulesCartStepOneStaticContent: 'Step one consent',
+        modulesCartConsentStepTwoContent: 'Step two consent',
       });
     });
 

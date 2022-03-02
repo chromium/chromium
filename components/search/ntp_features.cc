@@ -207,7 +207,7 @@ const base::FeatureParam<bool>
     kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent{
         &commerce::kDiscountConsentV2,
         kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContentParam,
-        true};
+        false};
 const char kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContentParam[] =
     "step-one-static-content";
 const base::FeatureParam<std::string>
