@@ -225,7 +225,12 @@
   E(kColorToolbarInkDrop, ThemeProperties::COLOR_TOOLBAR_INK_DROP) \
   E(kColorToolbarSeparator, \
     ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR) \
-  E(kColorToolbarText, ThemeProperties::COLOR_TOOLBAR_TEXT)
+  E(kColorToolbarText, ThemeProperties::COLOR_TOOLBAR_TEXT) \
+  /* Window control button background colors */ \
+  E(kColorWindowControlButtonBackgroundActive, \
+    ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE) \
+  E(kColorWindowControlButtonBackgroundInactive, \
+    ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE)
 
 #if BUILDFLAG(IS_WIN)
 #define CHROME_NATIVE_COLOR_IDS \

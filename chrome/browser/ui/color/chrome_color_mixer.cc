@@ -321,4 +321,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarInkDrop] = ui::GetColorWithMaxContrast(kColorToolbar);
   mixer[kColorToolbarSeparator] = ui::SetAlpha(kColorToolbarButtonIcon, 0x4D);
   mixer[kColorToolbarText] = {dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
+  mixer[kColorWindowControlButtonBackgroundActive] = {ui::kColorFrameActive};
+  mixer[kColorWindowControlButtonBackgroundInactive] = {
+      ui::kColorFrameInactive};
 }

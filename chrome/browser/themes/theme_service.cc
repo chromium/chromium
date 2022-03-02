@@ -262,6 +262,10 @@ absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
       {TP::COLOR_TOOLBAR_INK_DROP, kColorToolbarInkDrop},
       {TP::COLOR_TOOLBAR_TEXT, kColorToolbarText},
       {TP::COLOR_TOOLBAR_VERTICAL_SEPARATOR, kColorToolbarSeparator},
+      {TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE,
+       kColorWindowControlButtonBackgroundActive},
+      {TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE,
+       kColorWindowControlButtonBackgroundInactive},
   });
   // clang-format on
   auto* color_it = kMap.find(color_id);
