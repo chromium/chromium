@@ -536,7 +536,7 @@ TEST_F(SyncServiceCryptoTest, ShouldIgnoreNotMatchingBootstrapToken) {
   // Mimic the engine determining that a passphrase is required.
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto());
   // There should be no attempt to populate wrong key to the |engine_|.
-  EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey(_)).Times(0);
+  EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey).Times(0);
   crypto_.OnPassphraseRequired(
       KeyDerivationParams::CreateForPbkdf2(),
       MakeEncryptedData(kTestPassphrase,
@@ -569,7 +569,7 @@ TEST_F(SyncServiceCryptoTest, ShouldIgnoreCorruptedBootstrapToken) {
   // Mimic the engine determining that a passphrase is required.
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto());
   // There should be no attempt to populate wrong key to the |engine_|.
-  EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey(_)).Times(0);
+  EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey).Times(0);
   crypto_.OnPassphraseRequired(
       KeyDerivationParams::CreateForPbkdf2(),
       MakeEncryptedData(kTestPassphrase,
@@ -607,7 +607,7 @@ TEST_F(SyncServiceCryptoTest, ShouldDecryptWithNigoriKey) {
   // Passing wrong decryption key should be ignored.
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto()).Times(0);
   EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey).Times(0);
-  EXPECT_CALL(delegate_, SetEncryptionBootstrapToken(_)).Times(0);
+  EXPECT_CALL(delegate_, SetEncryptionBootstrapToken).Times(0);
   crypto_.SetDecryptionNigoriKey(Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), "wrongpassphrase"));
   EXPECT_TRUE(crypto_.IsPassphraseRequired());
@@ -636,7 +636,7 @@ TEST_F(SyncServiceCryptoTest,
 
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto()).Times(0);
   EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey).Times(0);
-  EXPECT_CALL(delegate_, SetEncryptionBootstrapToken(_)).Times(0);
+  EXPECT_CALL(delegate_, SetEncryptionBootstrapToken).Times(0);
   crypto_.SetDecryptionNigoriKey(Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), "unexpected_passphrase"));
   EXPECT_FALSE(crypto_.IsPassphraseRequired());

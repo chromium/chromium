@@ -158,11 +158,11 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     // To avoid DCHECK failures in tests that exercise SetPrimaryAccount(),
     // return non-null for RegisterAuthenticationFactor(). This registration
     // operation will never complete, though.
-    ON_CALL(*connection_, RegisterAuthenticationFactor(_, _, _, _, _, _, _))
+    ON_CALL(*connection_, RegisterAuthenticationFactor)
         .WillByDefault(testing::InvokeWithoutArgs([&]() {
           return std::make_unique<TrustedVaultConnection::Request>();
         }));
-    ON_CALL(*connection_, RegisterDeviceWithoutKeys(_, _, _))
+    ON_CALL(*connection_, RegisterDeviceWithoutKeys)
         .WillByDefault(testing::InvokeWithoutArgs([&]() {
           return std::make_unique<TrustedVaultConnection::Request>();
         }));
@@ -665,9 +665,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
   ASSERT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
 
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
-      .Times(0);
-  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(_, _, _)).Times(0);
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
 
   base::HistogramTester histogram_tester;
   backend()->SetPrimaryAccount(account_info,
@@ -724,9 +723,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                   .device_registered());
 
   // The device should not register again.
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
-      .Times(0);
-  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(_, _, _)).Times(0);
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
 
   base::HistogramTester histogram_tester;
   backend()->SetPrimaryAccount(account_info,
@@ -748,7 +746,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_registration_callback;
-  ON_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
+  ON_CALL(*connection(), RegisterAuthenticationFactor)
       .WillByDefault(
           [&](const CoreAccountInfo&, const std::vector<std::vector<uint8_t>>&,
               int, const SecureBoxPublicKey&, AuthenticationFactorType,
@@ -759,7 +757,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
             return std::make_unique<TrustedVaultConnection::Request>();
           });
 
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor);
   // Setting the primary account will trigger device registration.
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
@@ -774,8 +772,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // throttled.
   base::HistogramTester histogram_tester;
   ResetBackend();
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   backend()->ReadDataFromDisk();
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
@@ -789,7 +786,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // registration attempt, which should now be unthrottled.
   base::HistogramTester histogram_tester2;
   ResetBackend();
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor);
   clock()->Advance(kTrustedVaultServiceThrottlingDuration.Get());
   backend()->ReadDataFromDisk();
   backend()->SetPrimaryAccount(account_info,
@@ -811,7 +808,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_registration_callback;
-  ON_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
+  ON_CALL(*connection(), RegisterAuthenticationFactor)
       .WillByDefault(
           [&](const CoreAccountInfo&, const std::vector<std::vector<uint8_t>>&,
               int, const SecureBoxPublicKey&, AuthenticationFactorType,
@@ -822,7 +819,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
             return std::make_unique<TrustedVaultConnection::Request>();
           });
 
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor);
   // Setting the primary account will trigger device registration.
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
@@ -836,7 +833,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Mimic a restart to trigger device registration attempt, which should not be
   // throttled.
   ResetBackend();
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor);
   backend()->ReadDataFromDisk();
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
@@ -853,7 +850,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_registration_callback;
-  ON_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
+  ON_CALL(*connection(), RegisterAuthenticationFactor)
       .WillByDefault(
           [&](const CoreAccountInfo&, const std::vector<std::vector<uint8_t>>&,
               int, const SecureBoxPublicKey&, AuthenticationFactorType,
@@ -866,7 +863,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   clock()->SetNow(base::Time::Now());
 
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor);
   // Setting the primary account will trigger device registration.
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
@@ -882,7 +879,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   device_registration_callback =
       TrustedVaultConnection::RegisterAuthenticationFactorCallback();
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor);
   // Reset and set primary account to trigger device registration attempt.
   backend()->SetPrimaryAccount(absl::nullopt,
                                /*has_persistent_auth_error=*/false);
@@ -978,7 +975,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                                /*has_persistent_auth_error=*/false);
 
   TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
-  ON_CALL(*connection(), DownloadNewKeys(_, _, _, _))
+  ON_CALL(*connection(), DownloadNewKeys)
       .WillByDefault(
           [&](const CoreAccountInfo&,
               const absl::optional<TrustedVaultKeyAndVersion>&,
@@ -989,7 +986,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
           });
 
   clock()->SetNow(base::Time::Now());
-  EXPECT_CALL(*connection(), DownloadNewKeys(_, _, _, _));
+  EXPECT_CALL(*connection(), DownloadNewKeys);
 
   // FetchKeys() should trigger keys downloading.
   backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
@@ -1003,7 +1000,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
            /*last_key_version=*/0);
 
   download_keys_callback = TrustedVaultConnection::DownloadNewKeysCallback();
-  EXPECT_CALL(*connection(), DownloadNewKeys(_, _, _, _)).Times(0);
+  EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);
   // Following request should be throttled.
   backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
   EXPECT_TRUE(download_keys_callback.is_null());
@@ -1012,7 +1009,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Advance time to pass the throttling duration and trigger another attempt.
   clock()->Advance(kTrustedVaultServiceThrottlingDuration.Get());
 
-  EXPECT_CALL(*connection(), DownloadNewKeys(_, _, _, _));
+  EXPECT_CALL(*connection(), DownloadNewKeys);
   backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
   EXPECT_FALSE(download_keys_callback.is_null());
 }
@@ -1140,8 +1137,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                                /*has_persistent_auth_error=*/false);
   backend()->StoreKeys(account_info.gaia, kVaultKeys, kLastKeyVersion);
 
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
 
   base::MockCallback<base::OnceClosure> completion_callback;
   EXPECT_CALL(completion_callback, Run());
@@ -1163,8 +1159,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // No request should be issued while there is no primary account.
   base::MockCallback<base::OnceClosure> completion_callback;
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   backend()->AddTrustedRecoveryMethod(account_info.gaia, kPublicKey,
                                       kMethodTypeHint,
                                       completion_callback.Get());

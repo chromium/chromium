@@ -283,9 +283,9 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateFolderFromSpecifics) {
   std::unique_ptr<bookmarks::BookmarkModel> model =
       bookmarks::TestBookmarkClient::CreateModel();
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
-  EXPECT_CALL(favicon_service, AddPageNoVisitForBookmark(_, _)).Times(0);
-  EXPECT_CALL(favicon_service, MergeFavicon(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(favicon_service, DeleteFaviconMappings(_, _)).Times(0);
+  EXPECT_CALL(favicon_service, AddPageNoVisitForBookmark).Times(0);
+  EXPECT_CALL(favicon_service, MergeFavicon).Times(0);
+  EXPECT_CALL(favicon_service, DeleteFaviconMappings).Times(0);
   base::HistogramTester histogram_tester;
   const bookmarks::BookmarkNode* node = CreateBookmarkNodeFromSpecifics(
       bm_specifics,

@@ -17,7 +17,6 @@ namespace ash {
 
 namespace {
 
-using testing::_;
 using testing::Eq;
 using testing::NotNull;
 using testing::Return;
@@ -183,20 +182,20 @@ TEST_F(SyncExplicitPassphraseClientAshTest,
   wrong_account_key->id = "user2";
   wrong_account_key->account_type = crosapi::mojom::AccountType::kGaia;
 
-  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey(_)).Times(0);
+  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey).Times(0);
   client()->SetDecryptionNigoriKey(std::move(wrong_account_key),
                                    MakeTestMojoNigoriKey());
 }
 
 TEST_F(SyncExplicitPassphraseClientAshTest,
        ShouldHandleNullKeyWhenSettingDecryptionKey) {
-  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey(_)).Times(0);
+  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey).Times(0);
   client()->SetDecryptionNigoriKey(GetSyncingAccountKey(), nullptr);
 }
 
 TEST_F(SyncExplicitPassphraseClientAshTest,
        ShouldHandleInvalidKeyWhenSettingDecryptionKey) {
-  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey(_)).Times(0);
+  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey).Times(0);
 
   crosapi::mojom::NigoriKeyPtr mojo_nigori_key =
       crosapi::mojom::NigoriKey::New();
@@ -204,7 +203,7 @@ TEST_F(SyncExplicitPassphraseClientAshTest,
   mojo_nigori_key->encryption_key = {1, 2, 3};
   mojo_nigori_key->mac_key = {1, 2, 3};
 
-  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey(_)).Times(0);
+  EXPECT_CALL(*sync_user_settings(), SetDecryptionNigoriKey).Times(0);
   client()->SetDecryptionNigoriKey(GetSyncingAccountKey(),
                                    std::move(mojo_nigori_key));
 }
