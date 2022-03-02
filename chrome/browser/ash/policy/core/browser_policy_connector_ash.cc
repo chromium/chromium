@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/policy/remote_commands/affiliated_remote_commands_invalidator.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_reboot_handler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_update_checker.h"
+#include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
 #include "chrome/browser/ash/policy/server_backed_state/active_directory_device_state_uploader.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
@@ -329,7 +330,8 @@ void BrowserPolicyConnectorAsh::Init(
       std::make_unique<DeviceScheduledRebootHandler>(
           ash::CrosSettings::Get(),
           std::make_unique<ScheduledTaskExecutorImpl>(
-              DeviceScheduledRebootHandler::kRebootTimerTag));
+              DeviceScheduledRebootHandler::kRebootTimerTag),
+          std::make_unique<RebootNotificationsScheduler>());
 }
 
 void BrowserPolicyConnectorAsh::PreShutdown() {
