@@ -40,7 +40,7 @@
 namespace media {
 
 namespace {
-
+const uint32_t kDefaultGOPLength = 3000;
 const uint32_t kDefaultTargetBitrate = 5000000u;
 const size_t kMaxFrameRateNumerator = 30;
 const size_t kMaxFrameRateDenominator = 1;
@@ -402,7 +402,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
     frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
   bitrate_ = config.bitrate;
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
-  gop_length_ = config.gop_length;
+  gop_length_ = config.gop_length.value_or(kDefaultGOPLength);
   low_latency_mode_ = config.require_low_delay;
 
   if (config.HasTemporalLayer())
@@ -838,11 +838,9 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     }
   }
 
-  if (gop_length_.has_value()) {
-    var.ulVal = gop_length_.value();
-    hr = codec_api_->SetValue(&CODECAPI_AVEncMPVGOPSize, &var);
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set low keyframe interval", false);
-  }
+  var.ulVal = gop_length_;
+  hr = codec_api_->SetValue(&CODECAPI_AVEncMPVGOPSize, &var);
+  RETURN_ON_HR_FAILURE(hr, "Couldn't set keyframe interval", false);
 
   if (S_OK == codec_api_->IsModifiable(&CODECAPI_AVLowLatencyMode)) {
     var.vt = VT_BOOL;

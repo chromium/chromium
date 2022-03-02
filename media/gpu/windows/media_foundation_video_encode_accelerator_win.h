@@ -186,7 +186,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Group of picture length for encoded output stream, indicates the
   // distance between two key frames.
-  absl::optional<uint32_t> gop_length_;
+  uint32_t gop_length_;
 
   Microsoft::WRL::ComPtr<IMFActivate> activate_;
   Microsoft::WRL::ComPtr<IMFTransform> encoder_;
