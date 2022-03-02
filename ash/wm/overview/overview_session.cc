@@ -1067,9 +1067,12 @@ void OverviewSession::UpdateAccessibilityFocus() {
   // Note that this order matches the order of the tab cycling in
   // `OverviewHighlightController::GetTraversableViews`.
   for (auto& grid : grid_list_) {
-    for (const auto& item : grid->window_list())
-      a11y_widgets.push_back(item->item_widget());
-
+    if (grid->IsShowingDesksTemplatesGrid()) {
+      a11y_widgets.push_back(grid->desks_templates_grid_widget());
+    } else {
+      for (const auto& item : grid->window_list())
+        a11y_widgets.push_back(item->item_widget());
+    }
     if (grid->desks_widget())
       a11y_widgets.push_back(const_cast<views::Widget*>(grid->desks_widget()));
 

@@ -2026,6 +2026,32 @@ TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorInOverview) {
   CheckA11yOverrides("save", save_widget, desk_widget, focus_widget);
 }
 
+// Tests that accessibility overrides are set as expected after entering
+// templates view.
+TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorInViewingTemplate) {
+  auto window = CreateTestWindow(gfx::Rect(100, 100));
+
+  AddEntry(base::GUID::GenerateRandomV4(), "test_template", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  auto* focus_widget = views::Widget::GetWidgetForNativeWindow(
+      GetOverviewSession()->GetOverviewFocusWindow());
+  DCHECK(focus_widget);
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* desk_widget =
+      const_cast<views::Widget*>(overview_grid->desks_widget());
+  DCHECK(desk_widget);
+  views::Widget* template_widget = overview_grid->desks_templates_grid_widget();
+  DCHECK(template_widget);
+
+  // Order should be [focus_widget, template_widget, desk_widget].
+  CheckA11yOverrides("focus", focus_widget, desk_widget, template_widget);
+  CheckA11yOverrides("template", template_widget, focus_widget, desk_widget);
+  CheckA11yOverrides("desk", desk_widget, template_widget, focus_widget);
+}
+
 TEST_F(DesksTemplatesTest, LayoutItemsInLandscape) {
   UpdateDisplay("800x600");
 
