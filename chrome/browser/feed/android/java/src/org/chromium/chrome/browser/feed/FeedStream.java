@@ -11,6 +11,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
@@ -149,6 +150,10 @@ public class FeedStream implements Stream {
             // sheet is closed. This is to fix the problem that the last focused view is not
             // restored after opening and closing the bottom sheet.
             mLastFocusedView = mActivity.getCurrentFocus();
+            // If the talkback is enabled, also remember the accessibility focused view, which may
+            // be different from the focused view, so that we can get back to it once the bottom
+            // sheet is closed.
+            mLastAccessibilityFocusedView = findAccessibilityFocus(actionSourceView);
 
             // Make a sheetContent with the view.
             mBottomSheetContent = new CardMenuBottomSheetContent(view);
@@ -156,9 +161,15 @@ public class FeedStream implements Stream {
             mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
-                    if (mLastFocusedView == null) return;
-                    mLastFocusedView.requestFocus();
-                    mLastFocusedView = null;
+                    if (mLastFocusedView != null) {
+                        mLastFocusedView.requestFocus();
+                        mLastFocusedView = null;
+                    }
+                    if (mLastAccessibilityFocusedView != null) {
+                        mLastAccessibilityFocusedView.sendAccessibilityEvent(
+                                AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                        mLastAccessibilityFocusedView = null;
+                    }
                 }
             });
             mBottomSheetController.requestShowContent(mBottomSheetContent, true);
@@ -167,6 +178,21 @@ public class FeedStream implements Stream {
         @Override
         public void dismissBottomSheet() {
             FeedStream.this.dismissBottomSheet();
+        }
+
+        /**
+         * Search the view hierarchy to find the accessibility focused view.
+         */
+        private View findAccessibilityFocus(View view) {
+            if (view == null || view.isAccessibilityFocused()) return view;
+            if (!(view instanceof ViewGroup)) return null;
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); ++i) {
+                View childView = viewGroup.getChildAt(i);
+                View focusedView = findAccessibilityFocus(childView);
+                if (focusedView != null) return focusedView;
+            }
+            return null;
         }
 
         private void openSuggestionUrl(String url, int disposition) {
@@ -433,6 +459,7 @@ public class FeedStream implements Stream {
     private BottomSheetContent mBottomSheetContent;
     private String mBottomSheetOriginatingSliceId;
     private View mLastFocusedView;
+    private View mLastAccessibilityFocusedView;
 
     /**
      * Creates a new Feed Stream.
