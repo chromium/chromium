@@ -13,8 +13,8 @@
 class LacrosFirstRunSignedInFlowController
     : public ProfilePickerSignedInFlowController {
  public:
-  using OnboardingFinishedCallback =
-      base::OnceCallback<void(BrowserOpenedCallback maybe_callback)>;
+  using OnboardingFinishedCallback = base::OnceCallback<void(
+      ProfilePicker::BrowserOpenedCallback maybe_callback)>;
 
   // `onboarding_finished_callback` only gets called if the onboarding finishes
   // successfully. It gets a `maybe_callback` as a parameter which is empty in
@@ -33,9 +33,9 @@ class LacrosFirstRunSignedInFlowController
       const ProfilePickerSignedInFlowController&) = delete;
 
   // ProfilePickerSignedInFlowController:
-  void Init() override;
   void Cancel() override;
-  void FinishAndOpenBrowser(BrowserOpenedCallback callback) override;
+  void FinishAndOpenBrowser(
+      ProfilePicker::BrowserOpenedCallback callback) override;
 
  private:
   // Callback that gets called if the onboarding finishes successfully.

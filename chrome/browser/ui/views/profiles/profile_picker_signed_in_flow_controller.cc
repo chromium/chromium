@@ -50,9 +50,9 @@ void ProfilePickerSignedInFlowController::Init() {
                                      "primary account must be passed in.";
   email_ = account_info.email;
 
-  base::OnceClosure sync_consent_completed_closure =
-      base::BindOnce(&ProfilePickerSignedInFlowController::FinishAndOpenBrowser,
-                     weak_ptr_factory_.GetWeakPtr(), BrowserOpenedCallback());
+  base::OnceClosure sync_consent_completed_closure = base::BindOnce(
+      &ProfilePickerSignedInFlowController::FinishAndOpenBrowser,
+      weak_ptr_factory_.GetWeakPtr(), ProfilePicker::BrowserOpenedCallback());
 
   // TurnSyncOnHelper deletes itself once done.
   new TurnSyncOnHelper(

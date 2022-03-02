@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
@@ -15,7 +16,9 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
@@ -135,8 +138,30 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_SingleProfile) {
   EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
 }
 
+class ProfilePickerParamsTest : public testing::Test {
+ public:
+  ProfilePickerParamsTest() = default;
+
+  void SetUp() override {
+    auto profile_manager_unique = std::make_unique<FakeProfileManager>(
+        base::CreateUniqueTempDirectoryScopedToTest());
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(
+        std::move(profile_manager_unique));
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+TEST_F(ProfilePickerParamsTest, FromEntryPoint_ProfilePath) {
+  ProfilePicker::Params params = ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  EXPECT_EQ(base::FilePath(chrome::kSystemProfileDir),
+            params.profile_path().BaseName());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST(ProfilePickerParamsTest, ForLacrosSelectAvailableAccount) {
+TEST_F(ProfilePickerParamsTest, ForLacrosSelectAvailableAccount) {
   base::FilePath path = base::FilePath::FromASCII("/test/path");
   testing::StrictMock<base::MockOnceCallback<void(const std::string&)>>
       callback;
@@ -144,9 +169,37 @@ TEST(ProfilePickerParamsTest, ForLacrosSelectAvailableAccount) {
     ProfilePicker::Params params =
         ProfilePicker::Params::ForLacrosSelectAvailableAccount(path,
                                                                callback.Get());
-    EXPECT_EQ(path, params.custom_profile_path());
+    EXPECT_EQ(path, params.profile_path());
     // The callback is called at destruction.
     EXPECT_CALL(callback, Run(std::string()));
+  }
+}
+
+TEST_F(ProfilePickerParamsTest, ForLacrosPrimaryProfileFirstRun_Exit) {
+  testing::StrictMock<
+      base::MockOnceCallback<void(bool, ProfilePicker::BrowserOpenedCallback)>>
+      callback;
+  {
+    ProfilePicker::Params params =
+        ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(callback.Get());
+    EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
+              params.profile_path().BaseName());
+    // The callback is called at destruction.
+    EXPECT_CALL(callback, Run(false, ::testing::_));
+  }
+}
+
+TEST_F(ProfilePickerParamsTest, ForLacrosPrimaryProfileFirstRun_Notify) {
+  testing::StrictMock<
+      base::MockOnceCallback<void(bool, ProfilePicker::BrowserOpenedCallback)>>
+      callback;
+  {
+    ProfilePicker::Params params =
+        ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(callback.Get());
+    EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
+              params.profile_path().BaseName());
+    EXPECT_CALL(callback, Run(true, ::testing::_));
+    params.NotifyFirstRunFinished(base::DoNothing());
   }
 }
 #endif

@@ -22,7 +22,8 @@ LacrosFirstRunSignedInFlowController::LacrosFirstRunSignedInFlowController(
 LacrosFirstRunSignedInFlowController::~LacrosFirstRunSignedInFlowController() {
   // Call the callback if not called yet (unless the flow has been canceled).
   if (onboarding_finished_callback_)
-    std::move(onboarding_finished_callback_).Run(BrowserOpenedCallback());
+    std::move(onboarding_finished_callback_)
+        .Run(ProfilePicker::BrowserOpenedCallback());
 }
 
 void LacrosFirstRunSignedInFlowController::Cancel() {
@@ -32,7 +33,7 @@ void LacrosFirstRunSignedInFlowController::Cancel() {
 }
 
 void LacrosFirstRunSignedInFlowController::FinishAndOpenBrowser(
-    BrowserOpenedCallback callback) {
+    ProfilePicker::BrowserOpenedCallback callback) {
   // TODO(crbug.com/1300109): Ask crosapi for extended account info on
   // construction and renaming the profile here.
   std::move(onboarding_finished_callback_).Run(std::move(callback));

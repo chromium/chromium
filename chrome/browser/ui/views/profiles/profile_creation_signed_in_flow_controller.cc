@@ -149,7 +149,7 @@ void ProfileCreationSignedInFlowController::Cancel() {
 }
 
 void ProfileCreationSignedInFlowController::FinishAndOpenBrowser(
-    BrowserOpenedCallback callback) {
+    ProfilePicker::BrowserOpenedCallback callback) {
   // Do nothing if the sign-in flow is aborted or if this has already been
   // called. Note that this can get called first time from a special case
   // handling (such as the Settings link) and than second time when the
@@ -197,7 +197,7 @@ void ProfileCreationSignedInFlowController::OnProfileNameAvailable() {
 }
 
 void ProfileCreationSignedInFlowController::FinishAndOpenBrowserImpl(
-    BrowserOpenedCallback callback) {
+    ProfilePicker::BrowserOpenedCallback callback) {
   TRACE_EVENT1(
       "browser",
       "ProfileCreationSignedInFlowController::FinishAndOpenBrowserImpl",
@@ -288,7 +288,7 @@ void ProfileCreationSignedInFlowController::OnSignInContentsFreedUp() {
 }
 
 void ProfileCreationSignedInFlowController::OnBrowserOpened(
-    BrowserOpenedCallback finish_flow_callback,
+    ProfilePicker::BrowserOpenedCallback finish_flow_callback,
     Profile* profile_with_browser_opened) {
   CHECK_EQ(profile_with_browser_opened, profile());
   TRACE_EVENT1("browser",

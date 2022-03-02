@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
+class Browser;
 class GURL;
 class Profile;
 namespace content {
@@ -30,6 +31,12 @@ class WebView;
 
 class ProfilePicker {
  public:
+  using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  using FirstRunExitedCallback =
+      base::OnceCallback<void(bool finished, BrowserOpenedCallback callback)>;
+#endif
+
   // Only work when passed as the argument 'on_select_profile_target_url' to
   // ProfilePicker::Show.
   static const char kTaskManagerUrl[];
@@ -51,7 +58,11 @@ class ProfilePicker {
     // May only be used on lacros, opens an account picker, listing all accounts
     // that are not used in the provided profile, yet.
     kLacrosSelectAvailableAccount = 8,
-    kMaxValue = kLacrosSelectAvailableAccount,
+    // May only be used on lacros, opens a first run experience (provided no
+    // policies prevent it) to let the user opt in to sync, etc. for the primary
+    // profile.
+    kLacrosPrimaryProfileFirstRun = 9,
+    kMaxValue = kLacrosPrimaryProfileFirstRun,
   };
 
   class Params final {
@@ -76,6 +87,9 @@ class ProfilePicker {
 
     EntryPoint entry_point() const { return entry_point_; }
 
+    // Returns the path to the profile to use to display the Web UI.
+    const base::FilePath& profile_path() const { return profile_path_; }
+
     // May be non-empty only for the `kBackgroundModeManager` entry point.
     const GURL& on_select_profile_target_url() const {
       return on_select_profile_target_url_;
@@ -84,8 +98,8 @@ class ProfilePicker {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Builds parameter with the `kLacrosSelectAvailableAccount` entry point.
     //
-    // `custom_profile_path` specifies the profile that should be used to render
-    // the profile picker. If `custom_profile_path` matches the current value
+    // `profile_path` specifies the profile that should be used to render
+    // the profile picker. If `profile_path` matches the current value
     // for an existing picker, then `Show()` reactivates the existing picker.
     // Otherwise `Show()` hides the current window and shows a new one.
     //
@@ -93,30 +107,50 @@ class ProfilePicker {
     // the account selection screen. If the user closes the window, it is called
     // with the empty string. If the user clicks "Use another account" and
     // starts an OS account addition, this callback is passed to
-    // `ShowAddACcountDialog()` and will be called with its result.
+    // `ShowAddAccountDialog()` and will be called with its result.
     static Params ForLacrosSelectAvailableAccount(
-        const base::FilePath& custom_profile_path,
+        const base::FilePath& profile_path,
         base::OnceCallback<void(const std::string&)> account_selected_callback);
 
-    // May be non-empty only for the `kLacrosSelectAvailableAccount` entry
-    // point. See `ForLacrosSelectAvailableAccount()` for more details.
-    const base::FilePath& custom_profile_path() const {
-      return custom_profile_path_;
-    }
+    // Builds parameter with the `kLacrosPrimaryProfileFirstRun` entry point.
+    //
+    // `first_run_exited_callback` is called when the first run experience is
+    // exited, with `true` if the user actually finished it, or `false` if it
+    // was exited early.
+    static Params ForLacrosPrimaryProfileFirstRun(
+        FirstRunExitedCallback first_run_exited_callback);
 
     // Calls `account_selected_callback_`. See
     // `ForLacrosSelectAvailableAccount()` for more details.
     void NotifyAccountSelected(const std::string& gaia_id);
+
+    // Calls `first_run_exited_callback_`, forwarding `callback`. See
+    // `ForLacrosPrimaryProfileFirstRun()` for more details.
+    //
+    // Does not take any argument for `finished` as we assume that calling it
+    // indicates that the flow is actually finished, not just an early exit.
+    // The callback is called with `false` through the param's destructor
+    // instead.
+    void NotifyFirstRunFinished(BrowserOpenedCallback callback);
 #endif
+
+    // Returns the URL to load as initial content for the profile picker. If an
+    // empty URL is returned, the profile picker should not be shown until
+    // another explicit call with a non-empty URL given to the view
+    // (see `ProfilePickerView::ShowScreen()` for example)
+    GURL GetInitialURL();
 
    private:
     // Constructor is private, use static functions instead.
-    explicit Params(EntryPoint entry_point);
+    explicit Params(EntryPoint entry_point, const base::FilePath& profile_path);
 
     EntryPoint entry_point_ = EntryPoint::kOnStartup;
     GURL on_select_profile_target_url_;
-    base::FilePath custom_profile_path_;
+    base::FilePath profile_path_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     base::OnceCallback<void(const std::string&)> account_selected_callback_;
+    FirstRunExitedCallback first_run_exited_callback_;
+#endif
   };
 
   // Values for the ProfilePickerOnStartupAvailability policy. Should not be

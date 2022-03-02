@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -76,6 +77,10 @@
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/views/profiles/lacros_first_run_signed_in_flow_controller.h"
+#endif
+
 namespace {
 
 ProfilePickerView* g_profile_picker_view = nullptr;
@@ -94,28 +99,6 @@ constexpr int kSupportedAcceleratorCommands[] = {
     IDC_RELOAD
 #endif
 };
-
-GURL CreateURLForEntryPoint(ProfilePicker::EntryPoint entry_point) {
-  GURL base_url = GURL(chrome::kChromeUIProfilePickerUrl);
-  switch (entry_point) {
-    case ProfilePicker::EntryPoint::kOnStartup: {
-      GURL::Replacements replacements;
-      replacements.SetQueryStr(chrome::kChromeUIProfilePickerStartupQuery);
-      return base_url.ReplaceComponents(replacements);
-    }
-    case ProfilePicker::EntryPoint::kProfileMenuManageProfiles:
-    case ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion:
-    case ProfilePicker::EntryPoint::kNewSessionOnExistingProcess:
-    case ProfilePicker::EntryPoint::kProfileLocked:
-    case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
-    case ProfilePicker::EntryPoint::kBackgroundModeManager:
-      return base_url;
-    case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
-      return base_url.Resolve("new-profile");
-    case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
-      return base_url.Resolve("account-selection-lacros");
-  }
-}
 
 class ProfilePickerWidget : public views::Widget {
  public:
@@ -429,6 +412,9 @@ void ProfilePickerView::ShowScreen(
                      base::Unretained(this), contents,
                      std::move(navigation_finished_closure)),
       contents);
+
+  if (!GetWidget()->IsVisible())
+    GetWidget()->Show();
 }
 
 void ProfilePickerView::ShowScreenInPickerContents(
@@ -521,13 +507,9 @@ ProfilePickerView::~ProfilePickerView() {
 }
 
 bool ProfilePickerView::MaybeReopen(ProfilePicker::Params& params) {
-  bool same_path = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  same_path = params_.custom_profile_path() == params.custom_profile_path();
-#endif
-  // Need to reopen if already closing or if `custom_profile_path()` differs
+  // Need to reopen if already closing or if `profile_path()` differs
   // from the current one (as we can't switch the profile during run-time).
-  if (state_ != kClosing && same_path)
+  if (state_ != kClosing && params_.profile_path() == params.profile_path())
     return false;
 
   restart_on_window_closing_ =
@@ -548,13 +530,8 @@ void ProfilePickerView::Display() {
     // simplify tests.
     BuildLayout();
 
-    base::FilePath profile_path = ProfilePicker::GetPickerProfilePath();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (!params_.custom_profile_path().empty())
-      profile_path = params_.custom_profile_path();
-#endif
     g_browser_process->profile_manager()->CreateProfileAsync(
-        profile_path,
+        params_.profile_path(),
         base::BindRepeating(&ProfilePickerView::OnPickerProfileCreated,
                             weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -612,8 +589,27 @@ void ProfilePickerView::Init(Profile* picker_profile) {
       views::HWNDForWidget(GetWidget()));
 #endif
 
-  ShowScreenInPickerContents(CreateURLForEntryPoint(params_.entry_point()));
-  GetWidget()->Show();
+  if (params_.entry_point() ==
+      ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(crbug.com/1300109): Consider some refactoring to share this
+    // `WebContents` for usage in this class instead of a separate `contents_`.
+    std::unique_ptr<content::WebContents> contents_for_signed_in_flow =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(picker_profile));
+
+    signed_in_flow_ = std::make_unique<LacrosFirstRunSignedInFlowController>(
+        this, picker_profile, std::move(contents_for_signed_in_flow),
+        /*profile_color=*/absl::optional<SkColor>(),
+        base::BindOnce(&ProfilePicker::Params::NotifyFirstRunFinished,
+                       base::Unretained(&params_)));
+    signed_in_flow_->Init();
+#else
+    NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  } else {
+    ShowScreenInPickerContents(params_.GetInitialURL());
+  }
   state_ = kReady;
 
   PrefService* prefs = g_browser_process->local_state();
@@ -736,6 +732,7 @@ void ProfilePickerView::CancelSignedInFlow() {
       return;
     }
     case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
+    case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
       NOTREACHED() << "Signed in flow is not reachable from this entry point";
   }
 }

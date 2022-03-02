@@ -10,13 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-class Browser;
 class Profile;
 
 namespace content {
@@ -30,8 +30,6 @@ class WebContents;
 class ProfilePickerSignedInFlowController
     : public content::WebContentsDelegate {
  public:
-  using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
-
   ProfilePickerSignedInFlowController(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
@@ -53,7 +51,8 @@ class ProfilePickerSignedInFlowController
   // created, opening a browser window for this profile and calling
   // `callback`. If empty `callback` is provided, the default action is
   // performed: showing the profile customization bubble and/or profile IPH.
-  virtual void FinishAndOpenBrowser(BrowserOpenedCallback callback) = 0;
+  virtual void FinishAndOpenBrowser(
+      ProfilePicker::BrowserOpenedCallback callback) = 0;
 
   // Finishes the sign-in process by moving to the sync confirmation screen.
   void SwitchToSyncConfirmation();

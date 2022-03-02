@@ -37,7 +37,8 @@ class ProfileCreationSignedInFlowController
   // ProfilePickerSignedInFlowController:
   void Init() override;
   void Cancel() override;
-  void FinishAndOpenBrowser(BrowserOpenedCallback callback) override;
+  void FinishAndOpenBrowser(
+      ProfilePicker::BrowserOpenedCallback callback) override;
 
  private:
   // IdentityManager::Observer:
@@ -47,7 +48,7 @@ class ProfileCreationSignedInFlowController
   void OnExtendedAccountInfoTimeout(const CoreAccountInfo& account);
   void OnProfileNameAvailable();
 
-  void FinishAndOpenBrowserImpl(BrowserOpenedCallback callback);
+  void FinishAndOpenBrowserImpl(ProfilePicker::BrowserOpenedCallback callback);
 
   // Finishes the flow by finalizing the profile and continuing the SAML
   // sign-in in a browser window.
@@ -56,8 +57,9 @@ class ProfileCreationSignedInFlowController
 
   // Internal callback to finish the last steps of the signed-in creation
   // flow.
-  void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,
-                       Profile* profile_with_browser_opened);
+  void OnBrowserOpened(
+      ProfilePicker::BrowserOpenedCallback finish_flow_callback,
+      Profile* profile_with_browser_opened);
 
   // For finishing the profile creation flow, the extended account info is
   // needed (for properly naming the new profile). After a timeout, a fallback
