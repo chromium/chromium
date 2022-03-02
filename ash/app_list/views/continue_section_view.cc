@@ -60,7 +60,7 @@ constexpr size_t kPrivacyIconSizeClamshell = 60;
 constexpr size_t kPrivacyIconSizeTablet = 48;
 
 // Privacy toast interior margin
-constexpr gfx::Insets kPrivacyToastInteriorMargin(12, 12, 12, 16);
+constexpr gfx::Insets kPrivacyToastInteriorMarginClamshell(12, 12, 12, 16);
 
 // Delay before marking the privacy notice as swhon.
 const base::TimeDelta kPrivacyNoticeShownDelay = base::Seconds(6);
@@ -389,7 +389,8 @@ void ContinueSectionView::MaybeCreatePrivacyNotice() {
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kScaleToMaximum));
-  privacy_toast_->UpdateInteriorMargins(kPrivacyToastInteriorMargin);
+  if (!tablet_mode_)
+    privacy_toast_->UpdateInteriorMargins(kPrivacyToastInteriorMarginClamshell);
 }
 
 bool ContinueSectionView::FirePrivacyNoticeShownTimerForTest() {

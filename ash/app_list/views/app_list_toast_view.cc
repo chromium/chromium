@@ -28,10 +28,8 @@ namespace ash {
 namespace {
 
 constexpr int kCornerRadius = 16;
-constexpr gfx::Insets kInteriorMarginClamshell(8, 8, 8, 20);
-constexpr gfx::Insets kInteriorMarginTablet(8, 8, 8, 16);
+constexpr gfx::Insets kInteriorMargin(8, 8, 8, 16);
 constexpr gfx::Insets kTitleContainerMargin(0, 16, 0, 24);
-constexpr gfx::Insets kIconMargins(0, 8);
 
 constexpr int kToastHeight = 32;
 constexpr int kToastMaximumWidth = 640;
@@ -155,7 +153,7 @@ AppListToastView::Builder& AppListToastView::Builder::SetIconBackground(
 
 AppListToastView::AppListToastView(const std::u16string title) {
   layout_manager_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kInteriorMarginClamshell));
+      views::BoxLayout::Orientation::kHorizontal, kInteriorMargin));
   layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
@@ -176,8 +174,6 @@ AppListToastView::~AppListToastView() = default;
 
 void AppListToastView::StyleForTabletMode() {
   style_for_tablet_mode_ = true;
-
-  UpdateInteriorMargins(kInteriorMarginTablet);
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -329,7 +325,6 @@ void AppListToastView::CreateIconView() {
                          0);
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   icon_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
-  icon_->SetProperty(views::kMarginsKey, kIconMargins);
 }
 
 }  // namespace ash
