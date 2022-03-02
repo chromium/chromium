@@ -38,8 +38,11 @@ using chrome_test_util::WindowWithNumber;
 using chrome_test_util::AddToBookmarksButton;
 using chrome_test_util::AddToReadingListButton;
 using chrome_test_util::CloseTabMenuButton;
+using chrome_test_util::TabGridCellAtIndex;
+using chrome_test_util::TabGridNormalModePageControl;
 using chrome_test_util::TabGridSearchBar;
 using chrome_test_util::TabGridSearchCancelButton;
+using chrome_test_util::TabGridSearchModeToolbar;
 using chrome_test_util::TabGridSearchTabsButton;
 using chrome_test_util::TabGridSelectTabsMenuButton;
 
@@ -59,9 +62,19 @@ char kResponse4[] = "Test Page 4 content";
 const CFTimeInterval kSnackbarAppearanceTimeout = 5;
 const CFTimeInterval kSnackbarDisappearanceTimeout = 11;
 
+id<GREYMatcher> TabGridCell() {
+  return grey_allOf(grey_kindOfClassName(@"GridCell"),
+                    grey_sufficientlyVisible(), nil);
+}
+
 id<GREYMatcher> TabWithTitle(NSString* title) {
-  return grey_allOf(grey_accessibilityLabel(title), grey_sufficientlyVisible(),
-                    nil);
+  return grey_allOf(TabGridCell(), grey_accessibilityLabel(title),
+                    grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> TabWithTitleAndIndex(char* title, unsigned int index) {
+  return grey_allOf(TabWithTitle([NSString stringWithUTF8String:title]),
+                    TabGridCellAtIndex(index), nil);
 }
 
 // Identifer for cell at given |index| in the tab grid.
@@ -104,6 +117,12 @@ void WaitForTabGridFullscreen() {
       base::test::ios::kWaitForUIElementTimeout, condition);
   GREYAssertTrue(fullscreenAchieved, @"BrowserViewHiderView still shown");
 }
+
+// Returns a matcher for the scrim view on the tab search.
+id<GREYMatcher> SearchScrim() {
+  return grey_accessibilityID(kTabGridScrimIdentifier);
+}
+
 }  // namespace
 
 @interface TabGridTestCase : WebHttpServerChromeTestCase {
@@ -118,11 +137,18 @@ void WaitForTabGridFullscreen() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-
-  if ([self isRunningTest:@selector(testEnterExitSearch)]) {
-    config.features_enabled.push_back(kTabsSearch);
+  std::vector<SEL> searchTests = {
+      @selector(testEnterExitSearch),
+      @selector(testTabGridResetAfterExitingSearch),
+      @selector(testScrimVisibleInSearchModeWhenSearchBarIsEmpty),
+      @selector(testTapOnSearchScrimExitsSearchMode),
+      @selector(testSearchRegularOpenTabs)};
+  for (SEL test : searchTests) {
+    if ([self isRunningTest:test]) {
+      config.features_enabled.push_back(kTabsSearch);
+      break;
+    }
   }
-
   return config;
 }
 
@@ -1208,15 +1234,130 @@ void WaitForTabGridFullscreen() {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey showTabSwitcher];
 
+  // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridSearchBar()]
-      performAction:grey_typeText(@"text")];
+
+  // Verify that search mode is active.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+
+  // Exit search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchCancelButton()]
       performAction:grey_tap()];
 
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
-                  @"All tabs did not return after exiting search.");
+  // Verify that normal mode is active.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridNormalModePageControl()]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that exiting search mode reset the tabs count to the original number.
+- (void)testTabGridResetAfterExitingSearch {
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode & search with a query that produce no results.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridSearchBar()]
+      performAction:grey_typeText(@"hello")];
+
+  // Verify that search reduced the number of visible tabs.
+  [self verifyVisibleTabsCount:0];
+
+  // Exit search mode & verify that tabs grid was reset.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchCancelButton()]
+      performAction:grey_tap()];
+  [self verifyVisibleTabsCount:2];
+}
+
+// Tests that the scrim view is always shown when the search bar is empty in the
+// search mode.
+- (void)testScrimVisibleInSearchModeWhenSearchBarIsEmpty {
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Upon entry, the search bar is empty. Verify that scrim is visible.
+  [[EarlGrey selectElementWithMatcher:SearchScrim()]
+      assertWithMatcher:grey_notNil()];
+
+  // Searching with any query should render scrim invisible.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(@"text")];
+  [[EarlGrey selectElementWithMatcher:SearchScrim()]
+      assertWithMatcher:grey_nil()];
+
+  // Clearing search bar text should render scrim visible again.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_clearText()];
+  [[EarlGrey selectElementWithMatcher:SearchScrim()]
+      assertWithMatcher:grey_notNil()];
+
+  // Cancel search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchCancelButton()]
+      performAction:grey_tap()];
+
+  // Verify that scrim is not visible anymore.
+  [[EarlGrey selectElementWithMatcher:SearchScrim()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that tapping on the scrim view while in search mode dismisses the scrim
+// and exits search mode.
+- (void)testTapOnSearchScrimExitsSearchMode {
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Tap on scrim.
+  [[EarlGrey selectElementWithMatcher:SearchScrim()] performAction:grey_tap()];
+
+  // Verify that search mode is exit, scrim not visible, and transition to
+  // normal mode was successful.
+  [[EarlGrey selectElementWithMatcher:SearchScrim()]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGridNormalModePageControl()]
+      assertWithMatcher:grey_notNil()];
+  [self verifyVisibleTabsCount:2];
+}
+
+// Tests that searching in open tabs in the regular mode will filter the tabs
+// correctly.
+- (void)testSearchRegularOpenTabs {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+
+  [self verifyVisibleTabsCount:4];
+
+  // Enter search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+
+  // Searching with the word "Page" should match only 3 results.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(@"Page")];
+  [self verifyVisibleTabsCount:3];
+
+  // Verify that search results are correct and in the expected order.
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle1, 0)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle4, 2)]
+      assertWithMatcher:grey_notNil()];
+
+  // Cancel search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchCancelButton()]
+      performAction:grey_tap()];
 }
 
 #pragma mark - Helper Methods
@@ -1230,6 +1371,23 @@ void WaitForTabGridFullscreen() {
 
   [ChromeEarlGrey loadURL:_URL3];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+}
+
+- (void)loadTestURLsInNewTabs {
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL4];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse4];
 }
 
 // Loads a URL in a new tab and deletes it to populate Recent Tabs. Then,
@@ -1335,6 +1493,23 @@ void WaitForTabGridFullscreen() {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  kSnackbarDisappearanceTimeout, wait_for_disappearance),
              @"Snackbar did not disappear.");
+}
+
+// Verifies that the tab grid has exactly |expectedCount| tabs.
+- (void)verifyVisibleTabsCount:(NSUInteger)expectedCount {
+  // Verify that the cell # |expectedCount| exist.
+  if (expectedCount == 0) {
+    [[EarlGrey selectElementWithMatcher:TabGridCell()]
+        assertWithMatcher:grey_nil()];
+  } else {
+    [[[EarlGrey selectElementWithMatcher:TabGridCell()]
+        atIndex:expectedCount - 1] assertWithMatcher:grey_notNil()];
+  }
+  // Then verify that there is no more cells after that.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(TabGridCell(),
+                                          TabGridCellAtIndex(expectedCount),
+                                          nil)] assertWithMatcher:grey_nil()];
 }
 
 @end

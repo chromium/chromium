@@ -602,6 +602,10 @@ id<GREYMatcher> TabGridOtherDevicesPanelButton() {
   return [ChromeMatchersAppInterface tabGridOtherDevicesPanelButton];
 }
 
+id<GREYMatcher> TabGridNormalModePageControl() {
+  return [ChromeMatchersAppInterface tabGridNormalModePageControl];
+}
+
 id<GREYMatcher> TabGridBackground() {
   return [ChromeMatchersAppInterface tabGridBackground];
 }
@@ -799,6 +803,10 @@ id<GREYMatcher> TabGridSearchBar() {
 
 id<GREYMatcher> TabGridSearchCancelButton() {
   return [ChromeMatchersAppInterface tabGridSearchCancelButton];
+}
+
+id<GREYMatcher> TabGridSearchModeToolbar() {
+  return [ChromeMatchersAppInterface tabGridSearchModeToolbar];
 }
 
 }  // namespace chrome_test_util

@@ -930,6 +930,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kTabGridRemoteTabsPageButtonIdentifier);
 }
 
++ (id<GREYMatcher>)tabGridNormalModePageControl {
+  return grey_allOf(
+      grey_kindOfClassName(@"UIControl"),
+      grey_descendant(
+          [ChromeMatchersAppInterface tabGridIncognitoTabsPanelButton]),
+      grey_descendant([ChromeMatchersAppInterface tabGridOpenTabsPanelButton]),
+      grey_descendant(
+          [ChromeMatchersAppInterface tabGridOtherDevicesPanelButton]),
+      grey_ancestor(grey_kindOfClassName(@"UIToolbar")),
+      grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)tabGridBackground {
   return grey_accessibilityID(kGridBackgroundIdentifier);
 }
@@ -1212,6 +1224,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)tabGridSearchCancelButton {
   return grey_allOf(grey_accessibilityID(kTabGridCancelButtonIdentifier),
                     grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridSearchModeToolbar {
+  return grey_allOf(
+      grey_kindOfClassName(@"UIToolbar"),
+      grey_descendant([ChromeMatchersAppInterface tabGridSearchBar]),
+      grey_descendant([ChromeMatchersAppInterface tabGridSearchCancelButton]),
+      grey_sufficientlyVisible(), nil);
 }
 
 @end
