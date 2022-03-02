@@ -625,7 +625,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void ResetScrollOriginChanged() { scroll_origin_changed_ = false; }
   void UpdateScrollOrigin();
   void UpdateScrollDimensions();
-  void UpdateScrollbarEnabledState();
+  void UpdateScrollbarEnabledState(bool is_horizontal_scrollbar_frozen = false,
+                                   bool is_vertical_scrollbar_frozen = false);
 
   // Update the proportions used for thumb rect dimensions.
   void UpdateScrollbarProportions();

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<title>Ensure toggling display of custom scrollbars via :disabled pseudo does not hang.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+* ::-webkit-scrollbar {
+  height: 8px; width: 8px
+}
+
+* ::-webkit-scrollbar:disabled {
+  display: none
+}
+
+.scroller {
+  overflow: auto;
+  max-width:200px;
+  position:relative;
+  height: 8px;
+}
+
+.abs {
+  position: absolute;
+  bottom: -4px; right: -10px;
+  width: 40px; height: 10%;
+}
+</style>
+<div class="scroller">
+ <div class="abs"></div>
+</div>
+<script>
+test(function() {
+    document.body.offsetLeft 
+  }, 'Should not crash/hang');
+</script>

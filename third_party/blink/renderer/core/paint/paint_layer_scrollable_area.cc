@@ -905,16 +905,31 @@ void PaintLayerScrollableArea::UpdateScrollDimensions() {
   UpdateScrollOrigin();
 }
 
-void PaintLayerScrollableArea::UpdateScrollbarEnabledState() {
+void PaintLayerScrollableArea::UpdateScrollbarEnabledState(
+    bool is_horizontal_scrollbar_frozen,
+    bool is_vertical_scrollbar_frozen) {
   bool force_disable =
       GetPageScrollbarTheme().ShouldDisableInvisibleScrollbars() &&
       ScrollbarsHiddenIfOverlay();
 
-  if (HorizontalScrollbar())
-    HorizontalScrollbar()->SetEnabled(HasHorizontalOverflow() &&
-                                      !force_disable);
-  if (VerticalScrollbar())
-    VerticalScrollbar()->SetEnabled(HasVerticalOverflow() && !force_disable);
+  // Don't update the enabled state of a custom scrollbar if that scrollbar
+  // is frozen. Otherwise re-running the style cascade with the change in
+  // :disabled pseudo state matching for custom scrollbars can cause infinite
+  // loops in layout.
+  if (Scrollbar* horizontal_scrollbar = HorizontalScrollbar()) {
+    if (!horizontal_scrollbar->IsCustomScrollbar() ||
+        !is_horizontal_scrollbar_frozen) {
+      horizontal_scrollbar->SetEnabled(HasHorizontalOverflow() &&
+                                       !force_disable);
+    }
+  }
+
+  if (Scrollbar* vertical_scrollbar = VerticalScrollbar()) {
+    if (!vertical_scrollbar->IsCustomScrollbar() ||
+        !is_vertical_scrollbar_frozen) {
+      vertical_scrollbar->SetEnabled(HasVerticalOverflow() && !force_disable);
+    }
+  }
 }
 
 void PaintLayerScrollableArea::UpdateScrollbarProportions() {
@@ -1062,7 +1077,8 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
   // the data changes, then this will try to re-snap.
   SetSnapContainerDataNeedsUpdate(true);
   {
-    UpdateScrollbarEnabledState();
+    UpdateScrollbarEnabledState(is_horizontal_scrollbar_frozen,
+                                is_vertical_scrollbar_frozen);
 
     UpdateScrollbarProportions();
   }
