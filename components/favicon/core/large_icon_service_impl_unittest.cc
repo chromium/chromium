@@ -135,7 +135,7 @@ TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServer) {
       "&check_seen=true&size=48&min_size=16&max_size=256"
       "&fallback_opts=TYPE,SIZE,URL&url=http://www.example.com/");
 
-  EXPECT_CALL(mock_favicon_service_, UnableToDownloadFavicon(_)).Times(0);
+  EXPECT_CALL(mock_favicon_service_, UnableToDownloadFavicon).Times(0);
   EXPECT_CALL(mock_favicon_service_,
               CanSetOnDemandFavicons(GURL(kDummyUrl),
                                      favicon_base::IconType::kTouchIcon, _))
@@ -281,7 +281,7 @@ TEST_F(LargeIconServiceTest, ShouldNotCheckOnPublicUrls) {
 TEST_F(LargeIconServiceTest, ShouldNotQueryGoogleServerIfInvalidScheme) {
   const GURL kDummyFtpUrl("ftp://www.example.com");
 
-  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_(_, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
 
   base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
 
@@ -302,7 +302,7 @@ TEST_F(LargeIconServiceTest, ShouldNotQueryGoogleServerIfInvalidScheme) {
 TEST_F(LargeIconServiceTest, ShouldNotQueryGoogleServerIfInvalidURL) {
   const GURL kDummyInvalidUrl("htt");
 
-  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_(_, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
 
   base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
 
@@ -333,8 +333,7 @@ TEST_F(LargeIconServiceTest, ShouldReportUnavailableIfFetchFromServerFails) {
         return base::ThreadTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), true));
       });
-  EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons).Times(0);
 
   base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
   EXPECT_CALL(*mock_image_fetcher_,
@@ -365,10 +364,9 @@ TEST_F(LargeIconServiceTest, ShouldNotGetFromGoogleServerIfUnavailable) {
                    "&fallback_opts=TYPE,SIZE,URL&url=http://www.example.com/")))
       .WillByDefault(Return(true));
 
-  EXPECT_CALL(mock_favicon_service_, UnableToDownloadFavicon(_)).Times(0);
-  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_(_, _, _, _)).Times(0);
-  EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(mock_favicon_service_, UnableToDownloadFavicon).Times(0);
+  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
+  EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons).Times(0);
 
   base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
   large_icon_service_
@@ -386,7 +384,7 @@ TEST_F(LargeIconServiceTest, ShouldNotGetFromGoogleServerIfUnavailable) {
 }
 
 TEST_F(LargeIconServiceTest, ShouldNotGetFromGoogleServerIfCannotSet) {
-  EXPECT_CALL(mock_favicon_service_, UnableToDownloadFavicon(_)).Times(0);
+  EXPECT_CALL(mock_favicon_service_, UnableToDownloadFavicon).Times(0);
   EXPECT_CALL(mock_favicon_service_,
               CanSetOnDemandFavicons(GURL(kDummyUrl),
                                      favicon_base::IconType::kTouchIcon, _))
@@ -395,9 +393,8 @@ TEST_F(LargeIconServiceTest, ShouldNotGetFromGoogleServerIfCannotSet) {
             FROM_HERE, base::BindOnce(std::move(callback), false));
       });
 
-  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_(_, _, _, _)).Times(0);
-  EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons(_, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
+  EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons).Times(0);
 
   base::MockCallback<favicon_base::GoogleFaviconServerCallback> callback;
   large_icon_service_

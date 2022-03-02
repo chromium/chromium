@@ -52,7 +52,7 @@ class ContentFaviconDriverTest : public content::RenderViewHostTestHarness {
   const GURL kFakeManifestURL = GURL("http://www.google.com/manifest.json");
 
   ContentFaviconDriverTest() {
-    ON_CALL(favicon_service_, UpdateFaviconMappingsAndFetch(_, _, _, _, _, _))
+    ON_CALL(favicon_service_, UpdateFaviconMappingsAndFetch)
         .WillByDefault([](auto, auto, auto, auto,
                           favicon_base::FaviconResultsCallback callback,
                           base::CancelableTaskTracker* tracker) {
@@ -62,7 +62,7 @@ class ContentFaviconDriverTest : public content::RenderViewHostTestHarness {
                   std::move(callback),
                   std::vector<favicon_base::FaviconRawBitmapResult>()));
         });
-    ON_CALL(favicon_service_, GetFaviconForPageURL(_, _, _, _, _))
+    ON_CALL(favicon_service_, GetFaviconForPageURL)
         .WillByDefault([](auto, auto, auto,
                           favicon_base::FaviconResultsCallback callback,
                           base::CancelableTaskTracker* tracker) {

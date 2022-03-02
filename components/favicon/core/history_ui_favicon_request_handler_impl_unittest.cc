@@ -74,14 +74,14 @@ class MockFaviconServiceWithFake : public MockFaviconService {
  public:
   MockFaviconServiceWithFake() {
     // Fake won't respond with any icons at first.
-    ON_CALL(*this, GetRawFaviconForPageURL(_, _, _, _, _, _))
+    ON_CALL(*this, GetRawFaviconForPageURL)
         .WillByDefault([](auto, auto, auto, auto,
                           favicon_base::FaviconRawBitmapCallback callback,
                           auto) {
           std::move(callback).Run(favicon_base::FaviconRawBitmapResult());
           return kTaskId;
         });
-    ON_CALL(*this, GetFaviconImageForPageURL(_, _, _))
+    ON_CALL(*this, GetFaviconImageForPageURL)
         .WillByDefault(
             [](auto, favicon_base::FaviconImageCallback callback, auto) {
               std::move(callback).Run(favicon_base::FaviconImageResult());
