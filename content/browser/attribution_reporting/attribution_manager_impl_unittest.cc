@@ -15,17 +15,13 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -235,9 +231,7 @@ class AttributionManagerImplTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         browser_context_(std::make_unique<TestBrowserContext>()),
         mock_storage_policy_(
-            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
-        cookie_checker_(new MockCookieChecker()),
-        report_sender_(new MockReportSender()) {}
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {}
 
   void SetUp() override {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
@@ -264,24 +258,25 @@ class AttributionManagerImplTest : public testing::Test {
     // sequence.
     storage_delegate->DetachFromSequence();
 
+    auto cookie_checker = std::make_unique<MockCookieChecker>();
+    cookie_checker_ = cookie_checker.get();
+
+    auto report_sender = std::make_unique<MockReportSender>();
+    report_sender_ = report_sender.get();
+
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
         AttributionManagerImpl::DefaultIsReportAllowedCallback(
             browser_context_.get()),
         dir_.GetPath(), mock_storage_policy_, std::move(storage_delegate),
-        absl::WrapUnique(cookie_checker_.get()),
-        absl::WrapUnique(report_sender_.get()),
+        std::move(cookie_checker), std::move(report_sender),
         static_cast<StoragePartitionImpl*>(
             browser_context_->GetDefaultStoragePartition()));
   }
 
   void ShutdownManager() {
-    // Allow the network sender to be reused across `CreateManager()`
-    // invocations by ensuring that the manager doesn't destroy it.
-    if (attribution_manager_) {
-      attribution_manager_->cookie_checker_.release();
-      attribution_manager_->report_sender_.release();
-      attribution_manager_.reset();
-    }
+    cookie_checker_ = nullptr;
+    report_sender_ = nullptr;
+    attribution_manager_.reset();
   }
 
   void CreateAggregationService() {
@@ -345,8 +340,8 @@ class AttributionManagerImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
-  const raw_ptr<MockCookieChecker> cookie_checker_;
-  const raw_ptr<MockReportSender> report_sender_;
+  raw_ptr<MockCookieChecker> cookie_checker_;
+  raw_ptr<MockReportSender> report_sender_;
   raw_ptr<MockAggregationService> aggregation_service_;
 
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
@@ -646,13 +641,13 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   ShutdownManager();
 
   // Fast-forward past the reporting window and past report expiry.
   task_environment_.FastForwardBy(kFirstReportingWindow);
   task_environment_.FastForwardBy(base::Days(100));
-  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // Simulate startup and ensure the report is sent before being expired.
   // Advance by the max offline report delay, per
