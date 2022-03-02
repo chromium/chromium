@@ -822,8 +822,8 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void didCloseTab(int tabId, boolean incognito) {
-            Profile profile = mTabModelSelector.getModel(incognito).getProfile();
+        public void didCloseTab(Tab tab) {
+            Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
             OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
             if (bridge == null) return;
 
@@ -831,7 +831,7 @@ public class OfflinePageUtils {
             // the UI will no longer show the page, and the page would also be cleaned up by GC
             // given enough time.
             ClientId clientId =
-                    new ClientId(OfflinePageBridge.LAST_N_NAMESPACE, Integer.toString(tabId));
+                    new ClientId(OfflinePageBridge.LAST_N_NAMESPACE, Integer.toString(tab.getId()));
             List<ClientId> clientIds = new ArrayList<>();
             clientIds.add(clientId);
 

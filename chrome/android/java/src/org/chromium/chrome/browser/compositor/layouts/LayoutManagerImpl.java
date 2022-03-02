@@ -223,8 +223,8 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         }
 
         @Override
-        public void didCloseTab(int tabId, boolean incognito) {
-            tabClosed(tabId, incognito, false);
+        public void didCloseTab(Tab tab) {
+            tabClosed(tab.getId(), tab.isIncognito(), false);
         }
 
         @Override

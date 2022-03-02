@@ -34,20 +34,9 @@ public interface TabModelObserver {
     default void willCloseTab(Tab tab, boolean animate) {}
 
     /**
-     * Called right after {@code tab} has been destroyed.
+     * Called right before {@code tab} will be destroyed.
      *
-     * @param tabId The ID of the tab that was destroyed.
-     * @param incognito True if the closed tab was incognito.
-     *
-     * @deprecated Use {@link #didCloseTab(Tab)} instead
-     */
-    @Deprecated
-    default void didCloseTab(int tabId, boolean incognito) {}
-
-    /**
-     * Called right after {@code tab} has been destroyed.
-     *
-     * @param tab The tab that was closed.
+     * @param tab The {@link Tab} that was closed.
      */
     default void didCloseTab(Tab tab) {}
 

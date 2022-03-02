@@ -312,7 +312,7 @@ public class UndoTabModelTest {
         }
 
         @Override
-        public void didCloseTab(int tabId, boolean incognito) {
+        public void didCloseTab(Tab tab) {
             mTabClosedCallback.notifyCalled();
         }
     }

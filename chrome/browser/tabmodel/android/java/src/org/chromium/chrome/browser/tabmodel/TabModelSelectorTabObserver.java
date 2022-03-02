@@ -62,10 +62,9 @@ public class TabModelSelectorTabObserver
             }
 
             @Override
-            public void didCloseTab(int tabId, boolean incognito) {
-                Tab tab = mTabsToClose.get(tabId);
-                if (tab != null) {
-                    mTabsToClose.remove(tabId);
+            public void didCloseTab(Tab tab) {
+                if (mTabsToClose.get(tab.getId()) != null) {
+                    mTabsToClose.remove(tab.getId());
                     onTabUnregistered(tab);
                 }
             }

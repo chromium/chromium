@@ -587,7 +587,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             mTabModelObserver = new TabModelSelectorTabModelObserver(mTabModelSelector) {
                 @Override
-                public void didCloseTab(int tabId, boolean incognito) {
+                public void didCloseTab(Tab tab) {
                     closeIfNoTabsAndHomepageEnabled(false);
                 }
 

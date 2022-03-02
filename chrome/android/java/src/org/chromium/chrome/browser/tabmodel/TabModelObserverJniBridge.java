@@ -53,10 +53,10 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void didCloseTab(int tabId, boolean incognito) {
+    public final void didCloseTab(Tab tab) {
         assert mNativeTabModelObserverJniBridge != 0;
-        TabModelObserverJniBridgeJni.get().didCloseTab(
-                mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tabId, incognito);
+        TabModelObserverJniBridgeJni.get().didCloseTab(mNativeTabModelObserverJniBridge,
+                TabModelObserverJniBridge.this, tab.getId(), tab.isIncognito());
     }
 
     @Override

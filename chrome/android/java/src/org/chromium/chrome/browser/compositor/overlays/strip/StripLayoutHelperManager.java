@@ -526,8 +526,8 @@ public class StripLayoutHelperManager implements SceneOverlay {
             }
 
             @Override
-            public void didCloseTab(int tabId, boolean incognito) {
-                getStripLayoutHelper(incognito).tabClosed(time(), tabId);
+            public void didCloseTab(Tab tab) {
+                getStripLayoutHelper(tab.isIncognito()).tabClosed(time(), tab.getId());
                 updateModelSwitcherButton();
             }
 

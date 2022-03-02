@@ -655,7 +655,6 @@ public class TabModelImpl extends TabModelJniBridge {
         mTabContentManager.removeTabThumbnail(tab.getId());
 
         for (TabModelObserver obs : mObservers) obs.didCloseTab(tab);
-        for (TabModelObserver obs : mObservers) obs.didCloseTab(tab.getId(), tab.isIncognito());
         if (notifyTabClosureCommitted) {
             for (TabModelObserver obs : mObservers) obs.tabClosureCommitted(tab);
         }

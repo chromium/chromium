@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -163,7 +164,7 @@ public class PartnerHomepageIntegrationTest {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             tabModel.addObserver(new TabModelObserver() {
                 @Override
-                public void didCloseTab(int tabId, boolean incognito) {
+                public void didCloseTab(Tab tab) {
                     if (tabModel.getCount() == 0) tabClosed.notifyCalled();
                 }
             });
