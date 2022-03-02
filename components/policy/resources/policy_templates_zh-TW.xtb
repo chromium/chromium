@@ -1721,6 +1721,10 @@
 <translation id="2905984450136807296">驗證資料快取生命週期</translation>
 <translation id="2906874737073861391">AppPack 擴充功能清單</translation>
 <translation id="2908277604670530363">Proxy 伺服器的並行連線數量上限</translation>
+<translation id="2909068176249499360">設定這項政策會導致系統強制啟用/停用快速配對功能。
+      快速配對是全新的藍牙配對流程，可連結配對的周邊裝置和 GAIA 帳戶。
+      這能讓其他以同一個 GAIA 帳戶登入的 Chrome OS (和 Android) 裝置自動進行配對。
+      如果不設定，系統會為企業版使用者停用預設值，為非客戶帳戶啟用預設值。</translation>
 <translation id="2912366658685903301">設定瀏覽器主題的顏色</translation>
 <translation id="291853569864365550">不在新分頁中顯示內容建議</translation>
 <translation id="2920795918401557243">此設定可讓使用者透過系統追蹤服務收集整個系統的效能追蹤記錄。

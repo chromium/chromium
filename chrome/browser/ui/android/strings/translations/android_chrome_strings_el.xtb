@@ -358,6 +358,7 @@
 <translation id="3029276696788198026">Χωρίς προφόρτωση</translation>
 <translation id="3029704984691124060">Οι φράσεις πρόσβασης δεν συμφωνούν</translation>
 <translation id="3031225630520268969">Διεπαφή χρήστη για παροχή συναίνεσης σχετικά με τη φωνητική αναζήτηση μέσω του Βοηθού</translation>
+<translation id="3034163383943672781">Η λήψη θα ξεκινήσει στις <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Λάβετε βοήθεια<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Παρακολούθηση τιμής</translation>
 <translation id="3037517125981011456">Εμφανίζει μηνύματα προτροπής για σύνδεση στο Chrome.</translation>
@@ -1412,6 +1413,7 @@
 <translation id="9065203028668620118">Επεξεργασία</translation>
 <translation id="9065383040763568503">Αποθηκευμένα δεδομένα τα οποία το Chrome θεωρεί ότι δεν είναι σημαντικά (π.χ. ιστότοποι χωρίς αποθηκευμένες ρυθμίσεις ή που δεν επισκέπτεστε συχνά)</translation>
 <translation id="906781307897697745">σε <ph name="PRODUCT_NAME" /></translation>
+<translation id="9069543557624799859">Η λήψη θα ξεκινήσει στις <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Δεν υπάρχουν μη αναγνωσμένες σελίδες</translation>
 <translation id="9070377983101773829">Έναρξη φωνητικής αναζήτησης</translation>
 <translation id="9074336505530349563">Για λήψη εξατομικευμένου περιεχομένου που προτείνεται από την Google, συνδεθείτε και ενεργοποιήστε τον συγχρονισμό</translation>

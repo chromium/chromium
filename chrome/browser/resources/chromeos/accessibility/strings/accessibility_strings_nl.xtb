@@ -10,7 +10,7 @@
 <translation id="1025074108959230262">Sticky modus uitgezet</translation>
 <translation id="1031961866430398710">dan</translation>
 <translation id="1038643060055067718">Regels:</translation>
-<translation id="1038795173450935438">Als je vooruit door items op een pagina wilt bladeren, druk je op Zoeken + pijl-rechts. Je kunt op Zoeken + pijl-links drukken om naar het vorige item te gaan. Druk op Zoeken + pijl-omlaag om naar de volgende regel te gaan. Druk op Zoeken + pijl-omhoog om naar de vorige regel te gaan. Als je een item bereikt waarop je wilt klikken, druk je op Zoeken + spatiebalk.</translation>
+<translation id="1038795173450935438">Als je vooruit door items op een pagina wilt bladeren, druk je op Zoeken plus pijl-rechts. Je kunt op Zoeken plus pijl-links drukken om naar het vorige item te gaan. Druk op Zoeken plus pijl-omlaag om naar de volgende regel te gaan. Druk op Zoeken plus pijl-omhoog om naar de vorige regel te gaan. Als je een item bereikt waarop je wilt klikken, druk je op Zoeken plus spatiebalk.</translation>
 <translation id="106222400312645156">rwhdr</translation>
 <translation id="1065552602950927991">Ongeldige invoer.</translation>
 <translation id="1066085461259044485">Bosgroen</translation>
@@ -467,7 +467,7 @@
 <translation id="4053520724192563562">Limoengroen</translation>
 <translation id="4054936709456751127">status</translation>
 <translation id="4058278702844053247">Een pagina die wordt geladen</translation>
-<translation id="4065205963140826639">Gebruik nu Zoeken + pijl-rechts om de knop Volgende te zoeken en druk vervolgens op Zoeken + spatiebalk om erop te klikken.</translation>
+<translation id="4065205963140826639">Gebruik nu Zoeken plus pijl-rechts om de knop Volgende te zoeken en druk vervolgens op Zoeken plus spatiebalk om erop te klikken.</translation>
 <translation id="4081085052247739398">{COUNT,plural, =1{tilde}other{# tildes}}</translation>
 <translation id="409334809956508737">Vorig object</translation>
 <translation id="4099274309791143834">met submenu</translation>
@@ -493,7 +493,7 @@
 <translation id="4225355998815256469">Formulierbesturingselementen</translation>
 <translation id="4230834257931120629">Licht leisteengrijs</translation>
 <translation id="4231102694147661229">Opties voor ontwikkelaars aanzetten</translation>
-<translation id="423428485095722850">Druk op Zoeken+spatiebalk om te schakelen</translation>
+<translation id="423428485095722850">Druk op Zoeken plus spatiebalk om te schakelen</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, niveau <ph name="GRADE" /></translation>
 <translation id="4246217262268234757">Staalblauw</translation>
 <translation id="4253168017788158739">Opmerking</translation>
@@ -591,7 +591,7 @@
 <translation id="4993152509206108683">Snelheid <ph name="PERCENT" /> procent</translation>
 <translation id="4994420463726586413">Huidige batterijstatus aankondigen</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, keuzerondje geselecteerd</translation>
-<translation id="5011664330025416377">Druk op Zoeken+spatiebalk om te activeren</translation>
+<translation id="5011664330025416377">Druk op Zoeken plus spatiebalk om te activeren</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, keuzerondje voor menu-item geselecteerd</translation>
 <translation id="5020651427400641814">Spraakregistratie aanzetten</translation>
 <translation id="5041394372352067729">Brailleweergave naar bovenkant pagina verplaatsen</translation>
@@ -688,7 +688,7 @@
 <translation id="5653397561111110475">Toegankelijkheidsfuncties van het touchscreen van Chromebook gebruiken</translation>
 <translation id="5655682562155942719">Navigatieopdrachten</translation>
 <translation id="56637627897541303">Tekstgebied</translation>
-<translation id="5669637233317991674">Druk op Zoeken + pijl-rechts of Zoeken + pijl-links om door deze les te navigeren</translation>
+<translation id="5669637233317991674">Druk op Zoeken plus pijl-rechts of Zoeken plus pijl-links om door deze les te navigeren</translation>
 <translation id="5677240841070992068">Huidige locatie</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">definitie</translation>
@@ -716,11 +716,11 @@
 <translation id="5850707923114094062">Achteruitschuiven</translation>
 <translation id="5851548754964597211">Tabbladlijst</translation>
 <translation id="5866042630553435010">Gedeeltelijk gecontroleerd</translation>
-<translation id="5866210856231860256">Druk op Zoeken + pijl-rechts of Zoeken + pijl-links om door lessen voor dit onderwerp te browsen</translation>
+<translation id="5866210856231860256">Druk op Zoeken plus pijl-rechts of Zoeken plus pijl-links om door lessen voor dit onderwerp te browsen</translation>
 <translation id="5867591286054666064">Zolang de handleiding is geopend, kun je op een toets drukken om de naam te horen.</translation>
 <translation id="5869546221129391014">Raster</translation>
 <translation id="5876817486144482042">Spraakvolume verlagen</translation>
-<translation id="5878206664863390311">Druk op Zoeken + pijl-rechts of Zoeken + pijl-links om door onderwerpen te browsen</translation>
+<translation id="5878206664863390311">Druk op Zoeken plus pijl-rechts of Zoeken plus pijl-links om door onderwerpen te browsen</translation>
 <translation id="5878908838135392163">Poederblauw</translation>
 <translation id="588108970619830498">Tekst-naar-spraak-instellingen resetten naar standaardwaarden</translation>
 <translation id="5891934789323004067">Tabel</translation>
@@ -1104,7 +1104,7 @@
 <translation id="8693391540059827073">Mijn favoriete seizoen</translation>
 <translation id="8696284982970258155">Honinggeel</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{pijpteken}other{# verticale pijptekens}}</translation>
-<translation id="8741370088760768424">Hint: Druk op Zoeken + de spatiebalk om het huidige item te activeren.</translation>
+<translation id="8741370088760768424">Hint: Druk op Zoeken plus de spatiebalk om het huidige item te activeren.</translation>
 <translation id="8743786158317878347">gestructureerde content openen, zoals tabellen</translation>
 <translation id="8747966237988593539">Geordende lijst</translation>
 <translation id="8749988712346667988">Zilver</translation>

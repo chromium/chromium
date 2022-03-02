@@ -358,6 +358,7 @@
 <translation id="3029276696788198026">គ្មានការផ្ទុក​ជាមុនទេ</translation>
 <translation id="3029704984691124060">ឃ្លាសម្ងាត់មិនត្រូវគ្នា</translation>
 <translation id="3031225630520268969">ui នៃ​ការយល់ព្រម​ឱ្យប្រើជំនួយការ​សម្រាប់​ការស្វែងរក​តាមសំឡេង</translation>
+<translation id="3034163383943672781">ការទាញយក​នឹងចាប់ផ្ដើម​នៅថ្ងៃទី <ph name="DATE" />។</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ទទួលជំនួយ<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">កំពុងតាមដាន​តម្លៃ</translation>
 <translation id="3037517125981011456">បង្ហាញ​សារសម្រាប់​ចូល Chrome</translation>
@@ -1412,6 +1413,7 @@
 <translation id="9065203028668620118">កែប្រែ</translation>
 <translation id="9065383040763568503">ទិន្នន័យ​ដែលបានរក្សាទុក​ដែល Chrome គិតថា​មិនសំខាន់ (ឧ. គេហទំព័រ​ដែលមិនមាន​ការកំណត់​ដែលបានរក្សាទុក ឬ​គេហទំព័រ​ដែលអ្នក​មិនសូវ​ចូលមើល​ញឹកញាប់)</translation>
 <translation id="906781307897697745">នៅក្នុង <ph name="PRODUCT_NAME" /></translation>
+<translation id="9069543557624799859">ការទាញយកនឹងចាប់ផ្ដើមនៅម៉ោង <ph name="TIME" />។</translation>
 <translation id="9069999660519089861">គ្មានទំព័រ​ដែលមិនទាន់អានទេ</translation>
 <translation id="9070377983101773829">ចាប់ផ្តើមស្វែងរកដោយសម្លេង</translation>
 <translation id="9074336505530349563">ដើម្បីទទួលបានខ្លឹមសារស្របតាមបុគ្គលដែលណែនាំដោយ Google សូមបើកសមកាលកម្ម</translation>

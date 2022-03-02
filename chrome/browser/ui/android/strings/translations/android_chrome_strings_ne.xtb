@@ -358,6 +358,7 @@
 <translation id="3029276696788198026">कुनै पनि पेज प्रिलोड नगरियोस्</translation>
 <translation id="3029704984691124060">पासफ्रेजहरू मेल खाँदैनन्</translation>
 <translation id="3031225630520268969">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI</translation>
+<translation id="3034163383943672781"><ph name="DATE" /> मा डाउनलोड सुरु हुने छ।</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />मद्दत प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ</translation>
 <translation id="3037517125981011456">Chrome मा साइन इन गर्ने निर्देशन देखाउँछ</translation>
@@ -1411,6 +1412,7 @@
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9065383040763568503">Chrome लाई महत्त्वपूर्ण छैन जस्तो लागेको भण्डारण गरिएका डेटा (जस्तै सेटिङ सेभ नगरिएका साइट वा तपाईंले खासै नखोल्ने साइटका भण्डारण गरिएका डेटा)</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> मा</translation>
+<translation id="9069543557624799859"><ph name="TIME" /> मा डाउनलोड सुरु हुने छ।</translation>
 <translation id="9069999660519089861">सबै लेख पढिसकिएको छ</translation>
 <translation id="9070377983101773829">आवाज खोजी सुरु गर्नुहोस्</translation>
 <translation id="9074336505530349563">Google ले सिफारिस गरेका वैयक्तीकृत सामग्री प्राप्त गर्न साइन इन गरी सिंक गर्ने सुविधा सक्रिय गर्नुहोस्।</translation>

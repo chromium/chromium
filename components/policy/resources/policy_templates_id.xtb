@@ -1756,6 +1756,11 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2905984450136807296">Masa berlaku cache data autentikasi</translation>
 <translation id="2906874737073861391">Daftar ekstensi AppPack</translation>
 <translation id="2908277604670530363">Jumlah maksimal sambungan serentak ke server proxy</translation>
+<translation id="2909068176249499360">Menyetel kebijakan ini akan memaksa pengaktifan atau penonaktifan Sambungan Cepat.
+      Sambungan Cepat adalah alur penyambungan Bluetooth baru yang menautkan periferal yang disambungkan dengan akun GAIA.
+      Penyambungan ini memungkinkan perangkat Chrome OS (dan Android) lain yang login dengan akun GAIA yang sama untuk disambungkan secara otomatis.
+      Jika kebijakan ini tidak disetel, nilai default akan disetel ke nonaktif untuk pengguna versi bisnis dan disetel ke aktif untuk
+      akun yang tidak terkelola.</translation>
 <translation id="2912366658685903301">Mengonfigurasi warna tema browser</translation>
 <translation id="291853569864365550">Jangan tampilkan saran konten di halaman Tab Baru</translation>
 <translation id="2920795918401557243">Setelan ini memungkinkan pengumpulan jejak performa di seluruh sistem menggunakan layanan pelacakan sistem.

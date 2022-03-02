@@ -358,6 +358,7 @@
 <translation id="3029276696788198026">Без предварително зареждане</translation>
 <translation id="3029704984691124060">Пропуските не са идентични</translation>
 <translation id="3031225630520268969">Потребителски интерфейс за даване на съгласие за ползване на Асистент при гласови търсения</translation>
+<translation id="3034163383943672781">Изтеглянето ще стартира на <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Получете помощ<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Цената се проследява</translation>
 <translation id="3037517125981011456">Показва подкани за влизане в Chrome</translation>
@@ -1412,6 +1413,7 @@
 <translation id="9065203028668620118">Редактиране</translation>
 <translation id="9065383040763568503">Съхранявани данни, които Chrome не счита за важни (напр. рядко посещавани сайтове или такива без запазени настройки)</translation>
 <translation id="906781307897697745">в(ъв) <ph name="PRODUCT_NAME" /></translation>
+<translation id="9069543557624799859">Изтеглянето ще стартира в <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Няма непрочетени страници</translation>
 <translation id="9070377983101773829">Стартиране на гласово търсене</translation>
 <translation id="9074336505530349563">Влезте в профила си и включете синхронизирането, за да получавате персонализирано съдържание, предлагано от Google</translation>

@@ -358,6 +358,7 @@
 <translation id="3029276696788198026">පූර්ව පූරණය නැත</translation>
 <translation id="3029704984691124060">රහස්පද නොගැලපේ</translation>
 <translation id="3031225630520268969">සහායක හඬ සෙවීම් අනුමත ui</translation>
+<translation id="3034163383943672781">බාගැනීම <ph name="DATE" /> ආරම්භ වනු ඇත.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />උදවු ගන්න<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">මිල හඹා යාම</translation>
 <translation id="3037517125981011456">Chrome වෙත පිරීමට ප්‍රේරණ පෙන්වයි</translation>
@@ -1412,6 +1413,7 @@
 <translation id="9065203028668620118">සංස්කරණය කරන්න</translation>
 <translation id="9065383040763568503">Chrome වැදගත් යැයි නොසිතන ගබඩා කළ දත්ත (උදා: සුරැකූ සැකසීම් නැති හෝ ඔබ නිතර නොපිවිසෙන අඩවි)</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> තුළ</translation>
+<translation id="9069543557624799859">බාගැනීම <ph name="TIME" />ට ආරම්භ වනු ඇත.</translation>
 <translation id="9069999660519089861">නොකියවූ පිටු නැත</translation>
 <translation id="9070377983101773829">හඬ සෙවීම අරඹන්න</translation>
 <translation id="9074336505530349563">Google විසින් යෝජනා කරන ලද පෞද්ගලීකරණය කළ අන්තර්ගතය ලබා ගැනීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
