@@ -155,7 +155,27 @@ class CORE_EXPORT RuleFeatureSet {
   bool NeedsHasInvalidationForElement(Element&) const;
   bool NeedsHasInvalidationForPseudoClass(
       CSSSelector::PseudoType pseudo_type) const;
-  bool NeedsHasInvalidationForPseudoStateChange() const;
+
+  inline bool NeedsHasInvalidationForClassChange() const {
+    return !classes_in_has_argument_.IsEmpty();
+  }
+  inline bool NeedsHasInvalidationForAttributeChange() const {
+    return !attributes_in_has_argument_.IsEmpty();
+  }
+  inline bool NeedsHasInvalidationForIdChange() const {
+    return !ids_in_has_argument_.IsEmpty();
+  }
+  inline bool NeedsHasInvalidationForPseudoStateChange() const {
+    return !pseudos_in_has_argument_.IsEmpty();
+  }
+  inline bool NeedsHasInvalidation() const {
+    return universal_in_has_argument_ ||
+           !tag_names_in_has_argument_.IsEmpty() ||
+           NeedsHasInvalidationForClassChange() ||
+           NeedsHasInvalidationForAttributeChange() ||
+           NeedsHasInvalidationForIdChange() ||
+           NeedsHasInvalidationForPseudoStateChange();
+  }
 
   bool HasIdsInSelectors() const { return id_invalidation_sets_.size() > 0; }
   bool InvalidatesParts() const { return metadata_.invalidates_parts; }

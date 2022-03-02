@@ -1071,6 +1071,7 @@ void StyleEngine::ClassChangedForElement(
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      features.NeedsHasInvalidationForClassChange() &&
       PossiblyAffectingHasState(element)) {
     unsigned changed_size = changed_classes.size();
     for (unsigned i = 0; i < changed_size; ++i) {
@@ -1105,9 +1106,12 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
     return;
   }
 
+  const RuleFeatureSet& features = GetRuleFeatureSet();
+
   bool needs_schedule_invalidation = !IsSubtreeAndSiblingsStyleDirty(element);
   bool possibly_affecting_has_state =
       RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      features.NeedsHasInvalidationForClassChange() &&
       PossiblyAffectingHasState(element);
   if (!needs_schedule_invalidation && !possibly_affecting_has_state)
     return;
@@ -1118,7 +1122,6 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
 
   InvalidationLists invalidation_lists;
   bool affecting_has_state = false;
-  const RuleFeatureSet& features = GetRuleFeatureSet();
 
   for (unsigned i = 0; i < new_classes.size(); ++i) {
     bool found = false;
@@ -1197,6 +1200,7 @@ void StyleEngine::AttributeChangedForElement(
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      features.NeedsHasInvalidationForAttributeChange() &&
       PossiblyAffectingHasState(element)) {
     if (features.NeedsHasInvalidationForAttribute(attribute_name))
       InvalidateAncestorsOrSiblingsAffectedByHas(element);
@@ -1228,6 +1232,7 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      features.NeedsHasInvalidationForIdChange() &&
       PossiblyAffectingHasState(element)) {
     if ((!old_id.IsEmpty() && features.NeedsHasInvalidationForId(old_id)) ||
         (!new_id.IsEmpty() && features.NeedsHasInvalidationForId(new_id))) {
@@ -1262,6 +1267,7 @@ void StyleEngine::PseudoStateChangedForElement(
 
   if (invalidate_ancestors_or_siblings &&
       RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      features.NeedsHasInvalidationForPseudoStateChange() &&
       PossiblyAffectingHasState(element)) {
     if (features.NeedsHasInvalidationForPseudoClass(pseudo_type))
       InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(element);
@@ -1485,6 +1491,8 @@ void StyleEngine::ElementInsertedOrRemoved(Element* parent,
     return;
 
   const RuleFeatureSet& features = GetRuleFeatureSet();
+  if (!features.NeedsHasInvalidation())
+    return;
 
   if (features.NeedsHasInvalidationForElement(element)) {
     InvalidateAncestorsOrSiblingsAffectedByHas(
@@ -1505,6 +1513,9 @@ void StyleEngine::SubtreeInsertedOrRemoved(Element* parent,
     return;
 
   const RuleFeatureSet& features = GetRuleFeatureSet();
+  if (!features.NeedsHasInvalidation())
+    return;
+
   for (Element& element :
        ElementTraversal::InclusiveDescendantsOf(subtree_root)) {
     if (features.NeedsHasInvalidationForElement(element)) {

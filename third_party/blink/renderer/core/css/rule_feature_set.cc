@@ -1575,10 +1575,6 @@ bool RuleFeatureSet::NeedsHasInvalidationForPseudoClass(
   return pseudos_in_has_argument_.Contains(pseudo_type);
 }
 
-bool RuleFeatureSet::NeedsHasInvalidationForPseudoStateChange() const {
-  return !pseudos_in_has_argument_.IsEmpty();
-}
-
 void RuleFeatureSet::InvalidationSetFeatures::Add(
     const InvalidationSetFeatures& other) {
   classes.AppendVector(other.classes);
