@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -232,12 +233,10 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   // TODO(crbug.com/1102946): Exo does not support custom mime types. In this
   // case, |data_offer_| will hold an empty mime_types list and, at this point,
   // it's safe just to skip the offer checks and requests here.
-  if (data_offer_->mime_types().empty())
+  if (!base::Contains(data_offer_->mime_types(), kMimeTypeChromiumWindow)) {
+    DVLOG(1) << "OnEnter. No valid mime type found.";
     return;
-
-  // Ensure this is a valid "window drag" offer.
-  DCHECK_EQ(data_offer_->mime_types().size(), 1u);
-  DCHECK_EQ(data_offer_->mime_types().front(), kMimeTypeChromiumWindow);
+  }
 
   // Accept the offer and set the dnd action.
   data_offer_->SetDndActions(kDndActionWindowDrag);
