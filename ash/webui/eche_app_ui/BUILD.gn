@@ -118,6 +118,7 @@ source_set("unit_tests") {
     "eche_message_receiver_impl_unittest.cc",
     "eche_notification_click_handler_unittest.cc",
     "eche_notification_generator_unittest.cc",
+    "eche_presence_manager_unittest.cc",
     "eche_recent_app_click_handler_unittest.cc",
     "eche_signaler_unittest.cc",
     "eche_uid_provider_unittest.cc",

@@ -29,7 +29,7 @@ class EchePresenceManager : public FeatureStatusProvider::Observer,
                             public EcheMessageReceiver::Observer {
  public:
   EchePresenceManager(
-      EcheFeatureStatusProvider* eche_feature_status_provider,
+      FeatureStatusProvider* eche_feature_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       std::unique_ptr<secure_channel::PresenceMonitorClient>
@@ -59,7 +59,7 @@ class EchePresenceManager : public FeatureStatusProvider::Observer,
   void StopMonitoring();
   void OnTimerExpired();
 
-  EcheFeatureStatusProvider* eche_feature_status_provider_;
+  FeatureStatusProvider* eche_feature_status_provider_;
   device_sync::DeviceSyncClient* device_sync_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   std::unique_ptr<secure_channel::PresenceMonitorClient>

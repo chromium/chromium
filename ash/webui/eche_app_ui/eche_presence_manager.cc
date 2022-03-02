@@ -25,7 +25,7 @@ constexpr base::TimeDelta kMaximumLastSeenAge = base::Minutes(5);
 }  // namespace
 
 EchePresenceManager::EchePresenceManager(
-    EcheFeatureStatusProvider* eche_feature_status_provider,
+    FeatureStatusProvider* eche_feature_status_provider,
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     std::unique_ptr<secure_channel::PresenceMonitorClient>
