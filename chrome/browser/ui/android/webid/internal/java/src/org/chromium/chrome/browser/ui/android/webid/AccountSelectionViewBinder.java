@@ -189,24 +189,24 @@ class AccountSelectionViewBinder {
             SpanApplier.SpanInfo termsOfServiceSpan =
                     createLink(context, properties.mTermsOfServiceUrl, "link_terms_of_service");
 
-            // TODO(crbug.com/1293913): Validate string choices.
-            int consentTextId = (privacyPolicySpan == null && termsOfServiceSpan == null)
-                    ? R.string.account_selection_data_sharing_consent_no_links
+            int consentTextId = termsOfServiceSpan == null
+                    ? R.string.account_selection_data_sharing_consent_no_tos
                     : R.string.account_selection_data_sharing_consent;
             String consentText = String.format(view.getContext().getString(consentTextId),
                     properties.mFormattedIdpEtldPlusOne);
 
-            // If the consent text includes the link for the privacy policy or the terms of service,
-            // and there is no corresponding URL, remove the link tag.
+            // If the consent text includes the link for the privacy policy and there is no
+            // corresponding URL, remove the link tag. This cannot happen for the terms of service
+            // as we just performed the check. This could potentially happen for privacy policy
+            // because the API checks whether there is some nonempty string provided, but we later
+            // transform this into a URL, and it may become empty when sanity checking.
             List<SpanApplier.SpanInfo> spans = new ArrayList<>();
             if (privacyPolicySpan == null) {
                 consentText = consentText.replaceAll("</?link_privacy_policy>", "");
             } else {
                 spans.add(privacyPolicySpan);
             }
-            if (termsOfServiceSpan == null) {
-                consentText = consentText.replaceAll("</?link_terms_of_service>", "");
-            } else {
+            if (termsOfServiceSpan != null) {
                 spans.add(termsOfServiceSpan);
             }
 
