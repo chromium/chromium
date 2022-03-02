@@ -204,12 +204,12 @@ export class CropDocument extends Review<boolean> {
       return new Size(width, height);
     })();
 
-    for (const corn of this.corners) {
+    for (const corner of this.corners) {
       // Start dragging on one corner.
-      corn.el.addEventListener('pointerdown', (e) => {
+      corner.el.addEventListener('pointerdown', (e) => {
         e.preventDefault();
-        assert(e.target === corn.el);
-        this.setDragging(corn, assertInstanceof(e, PointerEvent).pointerId);
+        assert(e.target === corner.el);
+        this.setDragging(corner, assertInstanceof(e, PointerEvent).pointerId);
       });
 
       // Use arrow key to move corner.
@@ -232,11 +232,11 @@ export class CropDocument extends Review<boolean> {
       };
       const announcer = new MovementAnnouncer();
 
-      corn.el.addEventListener('blur', () => {
+      corner.el.addEventListener('blur', () => {
         clearKeydown();
       });
 
-      corn.el.addEventListener('keydown', (e) => {
+      corner.el.addEventListener('keydown', (e) => {
         const keyIdx = getKeyIndex(e);
         if (keyIdx === -1 || pressedKeyIndices.has(keyIdx)) {
           return;
@@ -255,13 +255,13 @@ export class CropDocument extends Review<boolean> {
             moveY += moveXY.y;
           }
           announcer.updateMovement(announceMoveX, announceMoveY);
-          const {x: curX, y: curY} = corn.pt;
+          const {x: curX, y: curY} = corner.pt;
           const nextPt = new Point(curX + moveX, curY + moveY);
-          const validPt = this.mapToValidArea(corn, nextPt);
+          const validPt = this.mapToValidArea(corner, nextPt);
           if (validPt === null) {
             return;
           }
-          corn.pt = validPt;
+          corner.pt = validPt;
           this.updateCornerEl();
         };
         pressedKeyIndices.add(keyIdx);
@@ -276,7 +276,7 @@ export class CropDocument extends Review<boolean> {
         }
       });
 
-      corn.el.addEventListener('keyup', (e) => {
+      corner.el.addEventListener('keyup', (e) => {
         const keyIdx = getKeyIndex(e);
         if (keyIdx === -1) {
           return;
@@ -301,11 +301,11 @@ export class CropDocument extends Review<boolean> {
       e.preventDefault();
 
       const pointerId = assertInstanceof(e, PointerEvent).pointerId;
-      const corn = this.findDragging(pointerId);
-      if (corn === null) {
+      const corner = this.findDragging(pointerId);
+      if (corner === null) {
         return;
       }
-      assert(corn.el.classList.contains('dragging'));
+      assert(corner.el.classList.contains('dragging'));
 
       let dragX = e.offsetX;
       let dragY = e.offsetY;
@@ -318,11 +318,11 @@ export class CropDocument extends Review<boolean> {
         dragY += util.getStyleValueInPx(style, 'top') - cornerSize.height / 2;
       }
 
-      const validPt = this.mapToValidArea(corn, new Point(dragX, dragY));
+      const validPt = this.mapToValidArea(corner, new Point(dragX, dragY));
       if (validPt === null) {
         return;
       }
-      corn.pt = validPt;
+      corner.pt = validPt;
       this.updateCornerEl();
     });
 
@@ -357,9 +357,9 @@ export class CropDocument extends Review<boolean> {
     return {corners: newCorners, rotation: ROTATIONS[this.rotation]};
   }
 
-  private setDragging(corn: Corner, pointerId: number) {
-    corn.el.classList.add('dragging');
-    corn.pointerId = pointerId;
+  private setDragging(corner: Corner, pointerId: number) {
+    corner.el.classList.add('dragging');
+    corner.pointerId = pointerId;
   }
 
   private findDragging(pointerId: number): Corner|null {
@@ -367,21 +367,21 @@ export class CropDocument extends Review<boolean> {
   }
 
   private clearDragging(pointerId: number) {
-    const corn = this.findDragging(pointerId);
-    if (corn === null) {
+    const corner = this.findDragging(pointerId);
+    if (corner === null) {
       return;
     }
-    corn.el.classList.remove('dragging');
-    corn.pointerId = null;
+    corner.el.classList.remove('dragging');
+    corner.pointerId = null;
   }
 
-  private mapToValidArea(corn: Corner, pt: Point): Point|null {
+  private mapToValidArea(corner: Corner, pt: Point): Point|null {
     assert(this.cornerSpaceSize !== null);
     pt = new Point(
         Math.max(Math.min(pt.x, this.cornerSpaceSize.width), 0),
         Math.max(Math.min(pt.y, this.cornerSpaceSize.height), 0));
 
-    const idx = this.corners.findIndex((c) => c === corn);
+    const idx = this.corners.findIndex((c) => c === corner);
     assert(idx !== -1);
     const prevPt = this.corners[(idx + 3) % 4].pt;
     const nextPt = this.corners[(idx + 1) % 4].pt;
@@ -486,10 +486,10 @@ export class CropDocument extends Review<boolean> {
   private updateCornerEl() {
     const cords = this.corners.map(({pt: {x, y}}) => `${x},${y}`).join(' ');
     this.cropArea.setAttribute('points', cords);
-    for (const corn of this.corners) {
-      const style = corn.el.attributeStyleMap;
-      style.set('left', CSS.px(corn.pt.x));
-      style.set('top', CSS.px(corn.pt.y));
+    for (const corner of this.corners) {
+      const style = corner.el.attributeStyleMap;
+      style.set('left', CSS.px(corner.pt.x));
+      style.set('top', CSS.px(corner.pt.y));
     }
   }
 
@@ -540,10 +540,10 @@ export class CropDocument extends Review<boolean> {
     } else {
       const oldImageW = this.cornerSpaceSize?.width || newImageW;
       const oldImageH = this.cornerSpaceSize?.height || newImageH;
-      for (const corn of this.corners) {
-        corn.pt = new Point(
-            corn.pt.x / oldImageW * newImageW,
-            corn.pt.y / oldImageH * newImageH);
+      for (const corner of this.corners) {
+        corner.pt = new Point(
+            corner.pt.x / oldImageW * newImageW,
+            corner.pt.y / oldImageH * newImageH);
       }
     }
     this.cornerSpaceSize = new Size(newImageW, newImageH);
@@ -585,9 +585,9 @@ export class CropDocument extends Review<boolean> {
     this.frameSize = new Size(rect.width, rect.height);
     this.updateImage();
     // Clear all dragging corners.
-    for (const corn of this.corners) {
-      if (corn.pointerId !== null) {
-        this.clearDragging(corn.pointerId);
+    for (const corner of this.corners) {
+      if (corner.pointerId !== null) {
+        this.clearDragging(corner.pointerId);
       }
     }
   }
