@@ -326,6 +326,6 @@ UserActionMonitor.Action = class {
    * @private
    */
   static onCommand_(command) {
-    CommandHandler.onCommand(command);
+    CommandHandlerInterface.instance.onCommand(command);
   }
 };

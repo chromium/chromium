@@ -29,7 +29,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
             mockFeedback.expectSpeech('ChromeVox Options');
             callback(mockFeedback, evt);
           });
-      CommandHandler.onCommand('showOptionsPage');
+      CommandHandlerInterface.instance.onCommand('showOptionsPage');
     });
   }
 

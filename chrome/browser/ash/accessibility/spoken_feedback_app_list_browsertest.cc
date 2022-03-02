@@ -217,7 +217,7 @@ class SpokenFeedbackAppListBaseTest
   void ReadWindowTitle() {
     extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
         browser()->profile(), extension_misc::kChromeVoxExtensionId,
-        "CommandHandler.onCommand('readCurrentTitle');");
+        "CommandHandlerInterface.instance.onCommand('readCurrentTitle');");
   }
 
   AppListItem* FindItemByName(const std::string& name, int* index) {

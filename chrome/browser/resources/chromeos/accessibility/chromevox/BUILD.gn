@@ -39,7 +39,7 @@ chromevox_modules = [
   "background/chromevox_state.js",
   "background/classic_background.js",
   "background/color.js",
-  "background/command_handler.js",
+  "background/command_handler_interface.js",
   "background/custom_automation_event.js",
   "background/desktop_automation_handler.js",
   "background/editing/editable_line.js",
@@ -119,6 +119,7 @@ chromevox_modules = [
 chromevox_es6_modules = [
   "../common/instance_checker.js",
   "background/background.js",
+  "background/command_handler.js",
   "background/download_handler.js",
   "background/earcon_engine.js",
   "background/earcons.js",

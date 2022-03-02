@@ -12,6 +12,8 @@ GEN_INCLUDE(['../testing/fake_objects.js']);
 ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
+
     window.press = this.press;
 
     await new Promise(r => {

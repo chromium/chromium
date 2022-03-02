@@ -538,7 +538,7 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Mute', function() {
 TEST_F('ChromeVoxTtsBackgroundTest', 'ResetTtsSettingsClearsVoice', function() {
   this.newCallback(async () => {
     ChromeVox.tts.ttsEngines_[0].currentVoice = '';
-    CommandHandler.onCommand('resetTextToSpeechSettings');
+    CommandHandlerInterface.instance.onCommand('resetTextToSpeechSettings');
     await new Promise(r => {
       ChromeVox.tts.speak = textString => {
         if (textString === 'Reset text to speech settings to default values') {

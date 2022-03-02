@@ -21,13 +21,12 @@ goog.require('UserActionMonitor');
  * changes.
  * @interface
  */
-ChromeVoxStateObserver = function() {};
-
-ChromeVoxStateObserver.prototype = {
+ChromeVoxStateObserver = class {
   /**
    * @param {cursors.Range} range The new range.
+   * @param {boolean=} opt_fromEditing
    */
-  onCurrentRangeChanged(range) {}
+  onCurrentRangeChanged(range, opt_fromEditing) {}
 };
 
 /**
@@ -97,6 +96,7 @@ ChromeVoxState.prototype = {
 
   /**
    * @param {cursors.Range} newRange The new range.
+   * @param {boolean=} opt_fromEditing
    */
   setCurrentRange: goog.abstractMethod,
   /**

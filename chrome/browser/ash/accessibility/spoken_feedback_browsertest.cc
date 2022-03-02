@@ -138,7 +138,7 @@ void LoggedInSpokenFeedbackTest::SendStickyKeyCommand() {
   // To avoid flakes in sending keys, execute the command directly in js.
   extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
       browser()->profile(), extension_misc::kChromeVoxExtensionId,
-      "CommandHandler.onCommand('toggleStickyMode');");
+      "CommandHandlerInterface.instance.onCommand('toggleStickyMode');");
 }
 
 void LoggedInSpokenFeedbackTest::SendMouseMoveTo(const gfx::Point& location) {
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
   sm_.Call([this]() {
     extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
         browser()->profile(), extension_misc::kChromeVoxExtensionId,
-        "CommandHandler.onCommand('showKbExplorerPage');");
+        "CommandHandlerInterface.instance.onCommand('showKbExplorerPage');");
   });
   sm_.ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   sm_.Call([this]() {
     extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
         browser()->profile(), extension_misc::kChromeVoxExtensionId,
-        "CommandHandler.onCommand('showKbExplorerPage');");
+        "CommandHandlerInterface.instance.onCommand('showKbExplorerPage');");
   });
   sm_.ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "

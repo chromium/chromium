@@ -11,6 +11,7 @@ goog.provide('editing.TextEditHandler');
 
 goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
+goog.require('Color');
 goog.require('IntentHandler');
 goog.require('Output');
 goog.require('OutputEventType');
@@ -976,7 +977,7 @@ editing.EditingChromeVoxStateObserver = class {
   }
 
   /** @override */
-  onCurrentRangeChanged(range) {
+  onCurrentRangeChanged(range, opt_fromEditing) {
     const inputType = range && range.start.node.inputType;
     if (inputType === 'email' || inputType === 'url') {
       BrailleBackground.getInstance().getTranslatorManager().refresh(

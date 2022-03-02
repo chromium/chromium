@@ -572,16 +572,16 @@ TEST_F('ChromeVoxTutorialTest', 'RestartNudges', function() {
       });
     };
     restart = false;
-    CommandHandler.onCommand('nextObject');
+    CommandHandlerInterface.instance.onCommand('nextObject');
     await waitForRestartNudges();
     // Show a lesson.
     tutorial.curriculum = 'essential_keys';
     tutorial.showLesson_(0);
     restart = false;
-    CommandHandler.onCommand('nextObject');
+    CommandHandlerInterface.instance.onCommand('nextObject');
     await waitForRestartNudges();
     restart = false;
-    CommandHandler.onCommand('nextObject');
+    CommandHandlerInterface.instance.onCommand('nextObject');
     await waitForRestartNudges();
   });
 });

@@ -1046,7 +1046,7 @@ TEST_F('ChromeVoxBackgroundTest', 'Selection', function() {
     // Fakes a toggleSelection command.
     root.addEventListener('textSelectionChanged', function() {
       if (root.focusOffset === 3) {
-        CommandHandler.onCommand('toggleSelection');
+        CommandHandlerInterface.instance.onCommand('toggleSelection');
       }
     }, true);
 

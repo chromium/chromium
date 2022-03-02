@@ -37,7 +37,7 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
 
       desktop.addEventListener(
           chrome.automation.EventType.LOAD_COMPLETE, listener);
-      CommandHandler.onCommand('showKbExplorerPage');
+      CommandHandlerInterface.instance.onCommand('showKbExplorerPage');
     });
   }
 

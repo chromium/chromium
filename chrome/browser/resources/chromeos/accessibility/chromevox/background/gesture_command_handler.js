@@ -9,7 +9,7 @@
 goog.provide('GestureCommandHandler');
 
 goog.require('ChromeVoxState');
-goog.require('CommandHandler');
+goog.require('CommandHandlerInterface');
 goog.require('EventGenerator');
 goog.require('EventSourceState');
 goog.require('GestureCommandData');
@@ -113,7 +113,7 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
 
   const command = commandData.command;
   if (command) {
-    CommandHandler.onCommand(command);
+    CommandHandlerInterface.instance.onCommand(command);
   }
 };
 

@@ -45,22 +45,22 @@ BrailleCommandHandler.onBrailleKeyEvent = function(evt, content) {
   Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
   switch (evt.command) {
     case BrailleKeyCommand.PAN_LEFT:
-      CommandHandler.onCommand('previousObject');
+      CommandHandlerInterface.instance.onCommand('previousObject');
       break;
     case BrailleKeyCommand.PAN_RIGHT:
-      CommandHandler.onCommand('nextObject');
+      CommandHandlerInterface.instance.onCommand('nextObject');
       break;
     case BrailleKeyCommand.LINE_UP:
-      CommandHandler.onCommand('previousLine');
+      CommandHandlerInterface.instance.onCommand('previousLine');
       break;
     case BrailleKeyCommand.LINE_DOWN:
-      CommandHandler.onCommand('nextLine');
+      CommandHandlerInterface.instance.onCommand('nextLine');
       break;
     case BrailleKeyCommand.TOP:
-      CommandHandler.onCommand('jumpToTop');
+      CommandHandlerInterface.instance.onCommand('jumpToTop');
       break;
     case BrailleKeyCommand.BOTTOM:
-      CommandHandler.onCommand('jumpToBottom');
+      CommandHandlerInterface.instance.onCommand('jumpToBottom');
       break;
     case BrailleKeyCommand.ROUTING:
       BrailleCommandHandler.onRoutingCommand_(
@@ -76,7 +76,7 @@ BrailleCommandHandler.onBrailleKeyEvent = function(evt, content) {
       const command = BrailleCommandData.getCommand(evt.brailleDots);
       if (command) {
         if (BrailleCommandHandler.onEditCommand_(command)) {
-          CommandHandler.onCommand(command);
+          CommandHandlerInterface.instance.onCommand(command);
         }
       }
       break;

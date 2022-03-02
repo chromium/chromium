@@ -12,6 +12,8 @@ GEN_INCLUDE([
  */
 ChromeVoxLiveRegionsTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
+    await super.setUpDeferred();
+
     window.TreeChangeType = chrome.automation.TreeChangeType;
     await importModule('LiveRegions', '/chromevox/background/live_regions.js');
   }

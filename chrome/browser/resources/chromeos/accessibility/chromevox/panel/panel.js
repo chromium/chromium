@@ -429,8 +429,9 @@ Panel = class {
           menu.addMenuItem(
               binding.title, keyText, brailleText, gestureText, function() {
                 const CommandHandler =
-                    chrome.extension.getBackgroundPage()['CommandHandler'];
-                CommandHandler['onCommand'](binding.command);
+                    chrome.extension
+                        .getBackgroundPage()['CommandHandlerInterface'];
+                CommandHandler.instance.onCommand(binding.command);
               }, binding.command);
         }
       });
@@ -463,8 +464,9 @@ Panel = class {
           touchMenu.addMenuItem(
               item.titleText, '', '', item.gestureText, function() {
                 const CommandHandler =
-                    chrome.extension.getBackgroundPage()['CommandHandler'];
-                CommandHandler['onCommand'](item.command);
+                    chrome.extension
+                        .getBackgroundPage()['CommandHandlerInterface'];
+                CommandHandler.instance.onCommand(item.command);
               }, item.command);
         }
       }
@@ -1214,8 +1216,8 @@ Panel = class {
       chromeVoxStateInstance.destroyUserActionMonitor();
     });
     $('chromevox-tutorial').addEventListener('requestfullydescribe', (evt) => {
-      const commandHandler = backgroundPage['CommandHandler'];
-      commandHandler.onCommand('fullyDescribe');
+      const commandHandler = backgroundPage['CommandHandlerInterface'];
+      commandHandler.instance.onCommand('fullyDescribe');
     });
     $('chromevox-tutorial').addEventListener('requestearcon', (evt) => {
       const earconId = evt.detail.earconId;
@@ -1302,7 +1304,7 @@ Panel = class {
 Panel.PanelStateObserver = class {
   constructor() {}
 
-  onCurrentRangeChanged(range) {
+  onCurrentRangeChanged(range, opt_fromEditing) {
     if (Panel.mode_ === Panel.Mode.FULLSCREEN_TUTORIAL) {
       if (Panel.tutorial && Panel.tutorial.restartNudges) {
         Panel.tutorial.restartNudges();
@@ -1374,6 +1376,7 @@ window.addEventListener('hashchange', function() {
   // it in in every case. (fullscreen/focus turns the state off, collapse
   // turns it back on).
   if (Panel.originalStickyState_) {
-    bkgnd['CommandHandler']['onCommand']('toggleStickyMode');
+    bkgnd['CommandHandlerInterface']['instance']['onCommand'](
+        'toggleStickyMode');
   }
 }, false);

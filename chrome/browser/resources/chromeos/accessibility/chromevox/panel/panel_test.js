@@ -103,7 +103,7 @@ TEST_F('ChromeVoxPanelTest', 'ActivateMenu', function() {
 // TODO(https://crbug.com/1299765): Re-enable once flaky timeouts are fixed.
 TEST_F('ChromeVoxPanelTest', 'DISABLED_LinkMenu', function() {
   this.runWithLoadedTree(this.linksDoc, async function(root) {
-    CommandHandler.onCommand('showLinksList');
+    CommandHandlerInterface.instance.onCommand('showLinksList');
     await this.waitForMenu('role_link');
     this.fireMockEvent('ArrowLeft')();
     this.assertActiveMenuItem('role_landmark', 'No items');
@@ -117,7 +117,7 @@ TEST_F('ChromeVoxPanelTest', 'DISABLED_LinkMenu', function() {
 TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', function() {
   this.runWithLoadedTree(
       `<button>Cancel</button><button>OK</button>`, async function(root) {
-        CommandHandler.onCommand('showFormsList');
+        CommandHandlerInterface.instance.onCommand('showFormsList');
         await this.waitForMenu('panel_menu_form_controls');
         this.fireMockEvent('ArrowDown')();
         this.assertActiveMenuItem('panel_menu_form_controls', 'OK Button');
@@ -191,7 +191,7 @@ TEST_F('ChromeVoxPanelTest', 'InternationalFormControlsMenu', function() {
     localStorage['languageSwitching'] = 'true';
     this.getPanelWindow().LocaleOutputHelper.instance.availableVoices_ =
         [{'lang': 'en-US'}, {'lang': 'es-ES'}];
-    CommandHandler.onCommand('showFormsList');
+    CommandHandlerInterface.instance.onCommand('showFormsList');
     await this.waitForMenu('panel_menu_form_controls');
     this.fireMockEvent('ArrowDown')();
     this.assertActiveMenuItem(
@@ -203,7 +203,7 @@ TEST_F('ChromeVoxPanelTest', 'InternationalFormControlsMenu', function() {
 
 TEST_F('ChromeVoxPanelTest', 'ActionsMenu', function() {
   this.runWithLoadedTree(this.linksDoc, async function(root) {
-    CommandHandler.onCommand('showActionsMenu');
+    CommandHandlerInterface.instance.onCommand('showActionsMenu');
     await this.waitForMenu('panel_menu_actions');
     this.fireMockEvent('ArrowDown')();
     this.assertActiveMenuItem('panel_menu_actions', 'Start Or End Selection');

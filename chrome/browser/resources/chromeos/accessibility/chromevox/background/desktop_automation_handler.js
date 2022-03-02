@@ -12,7 +12,7 @@ goog.require('AutoScrollHandler');
 goog.require('AutomationObjectConstructorInstaller');
 goog.require('BaseAutomationHandler');
 goog.require('ChromeVoxState');
-goog.require('CommandHandler');
+goog.require('CommandHandlerInterface');
 goog.require('CustomAutomationEvent');
 goog.require('editing.TextEditHandler');
 
@@ -418,7 +418,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         ChromeVoxState.instance.setCurrentRange(
             cursors.Range.fromNode(evt.target));
         ChromeVox.tts.stop();
-        CommandHandler.onCommand('readFromHere');
+        CommandHandlerInterface.instance.onCommand('readFromHere');
         return;
       }
 
@@ -513,7 +513,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
 
       // Sync ChromeVox range with selection.
       if (!ChromeVoxState.isReadingContinuously) {
-        ChromeVoxState.instance.setCurrentRange(selectedRange);
+        ChromeVoxState.instance.setCurrentRange(
+            selectedRange, true /* from editing */);
       }
     }
     this.textEditHandler_.onEvent(evt);

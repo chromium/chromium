@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {InstanceChecker} from '../../common/instance_checker.js';
+
+import {CommandHandler} from './command_handler.js';
 import {DownloadHandler} from './download_handler.js';
 import {Earcons} from './earcons.js';
 import {FindHandler} from './find_handler.js';
@@ -102,7 +104,6 @@ export class Background extends ChromeVoxState {
     /** @private {!PageLoadSoundHandler} */
     this.pageLoadSoundHandler_ = new PageLoadSoundHandler();
 
-    CommandHandler.init();
     FindHandler.init();
     DownloadHandler.init();
     JaPhoneticData.init(JaPhoneticMap.MAP);
@@ -142,9 +143,11 @@ export class Background extends ChromeVoxState {
   }
 
   /**
+   * @param {cursors.Range} newRange The new range.
+   * @param {boolean=} opt_fromEditing
    * @override
    */
-  setCurrentRange(newRange) {
+  setCurrentRange(newRange, opt_fromEditing) {
     // Clear anything that was frozen on the braille display whenever
     // the user navigates.
     ChromeVox.braille.thaw();
@@ -158,8 +161,9 @@ export class Background extends ChromeVoxState {
 
     this.previousRange_ = this.currentRange_;
     this.currentRange_ = newRange;
+
     ChromeVoxState.observers.forEach(function(observer) {
-      observer.onCurrentRangeChanged(newRange);
+      observer.onCurrentRangeChanged(newRange, opt_fromEditing);
     });
 
     if (!this.currentRange_) {
@@ -318,7 +322,7 @@ export class Background extends ChromeVoxState {
           const isClassicEnabled = false;
           port.postMessage({target: 'next', isClassicEnabled});
         } else if (action === 'onCommand') {
-          CommandHandler.onCommand(msg['command']);
+          CommandHandlerInterface.instance.onCommand(msg['command']);
         } else if (action === 'flushNextUtterance') {
           Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
         }
