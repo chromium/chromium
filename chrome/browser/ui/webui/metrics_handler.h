@@ -60,6 +60,11 @@ class MetricsHandler : public content::WebUIMessageHandler {
   // UmaHistogramMedium. Handles times up to 3 minutes. |args| contains the
   // histogram name and a value in milliseconds.
   void HandleRecordMediumTime(const base::ListValue* args);
+
+  // Callback for the "metricsHandler:recordSparseHistogram" message. This
+  // records into a sparse histogram. |args| contains the histogram name and
+  // the sample value to record.
+  void HandleRecordSparseHistogram(const base::ListValue* args);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_HANDLER_H_

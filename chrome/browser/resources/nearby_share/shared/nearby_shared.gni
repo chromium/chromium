@@ -8,7 +8,7 @@ nearby_shared_auto_imports = [
   "chrome/browser/resources/nearby_share/shared/nearby_contact_manager.html|getContactManager,observeContactManager",
   "ui/webui/resources/html/assert.html|assert,assertNotReached",
   "ui/webui/resources/html/cr.html|sendWithPromise",
-  "chrome/browser/resources/nearby_share/shared/nearby_metrics_logger.html|processOnboardingInitiatedMetrics,processOnboardingCompleteMetrics,processOnboardingCancelledMetrics,NearbyShareOnboardingFinalState",
+  "chrome/browser/resources/nearby_share/shared/nearby_metrics_logger.html|processOnboardingInitiatedMetrics,processOnboardingCompleteMetrics,processOnboardingCancelledMetrics,NearbyShareOnboardingFinalState,processOnePageOnboardingInitiatedMetrics,processOnePageOnboardingCancelledMetrics,processOnePageOnboardingCompleteMetrics,processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics,processOnePageOnboardingVisibilityPageShownMetrics,processOnePageOnboardingManageContactsMetrics",
 ]
 
 nearby_shared_namespace_rewrites = [

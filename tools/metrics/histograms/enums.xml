@@ -62374,6 +62374,20 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Cancelled on Device Name Page"/>
   <int value="1" label="Candelled on Set Visibility Page"/>
   <int value="2" label="Onboarding Complete"/>
+  <int value="3" label="Cancelled on initial page"/>
+</enum>
+
+<enum name="NearbyShareOnboardingFlowEvent">
+  <int value="1" label="Onboarding shown"/>
+  <int value="12" label="Confirm on initial page"/>
+  <int value="13" label="Cancel on initial page"/>
+  <int value="14" label="Visibility button on initial page clicked"/>
+  <int value="141" label="Device visibility page shown"/>
+  <int value="1412" label="All contacts visibility selected and confirmed"/>
+  <int value="1413" label="Some contacts visibility selected and confirmed"/>
+  <int value="1414" label="Hidden visibility selected and confirmed"/>
+  <int value="1415" label="Manage contacts selected"/>
+  <int value="1416" label="Cancel selected on visibility page"/>
 </enum>
 
 <enum name="NearbyShareServiceStatusCode">

@@ -61,7 +61,8 @@ Polymer({
 
   /** @private */
   onClose_() {
-    // TODO(crbug.com/1265562): Add new metrics
+    processOnePageOnboardingCancelledMetrics(
+        NearbyShareOnboardingFinalState.INITIAL_PAGE);
     this.fire('onboarding-cancelled');
   },
 
@@ -80,7 +81,7 @@ Polymer({
   /** @private */
   onViewEnterStart_() {
     this.$$('#deviceName').focus();
-    // TODO(crbug.com/1265562): Add new metrics
+    processOnePageOnboardingInitiatedMetrics(new URL(document.URL));
   },
 
   /** @private */
@@ -108,6 +109,9 @@ Polymer({
             this.set('settings.visibility', this.getDefaultVisibility_());
             this.set('settings.isOnboardingComplete', true);
             this.set('settings.enabled', true);
+            processOnePageOnboardingCompleteMetrics(
+                NearbyShareOnboardingFinalState.INITIAL_PAGE,
+                this.getDefaultVisibility_());
             this.fire('onboarding-complete');
           }
         });
@@ -125,6 +129,7 @@ Polymer({
      * nearby_share_prefs.cc:kNearbySharingBackgroundVisibilityName
      */
     this.set('settings.visibility', this.getDefaultVisibility_());
+    processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics();
     this.fire('change-page', {page: 'visibility'});
   },
 
@@ -181,7 +186,7 @@ Polymer({
    * setting visibility selection to 'all contacts' in nearby_visibility_page in
    * existing onboarding workflow.
    *
-   * @return {number} default visibility
+   * @return {?nearbyShare.mojom.Visibility} default visibility
    *
    * TODO(crbug.com/1265562): remove this function once the old onboarding is
    * deprecated and default visibility is changed in
@@ -226,7 +231,7 @@ Polymer({
       case nearbyShare.mojom.Visibility.kSelectedContacts:
         return 'contact-group';
       case nearbyShare.mojom.Visibility.kNoOne:
-        return 'visibility-off"';
+        return 'visibility-off';
       default:
         return 'contact-all';
     }

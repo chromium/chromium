@@ -890,6 +890,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.Onboarding.FlowEvent"
+    enum="NearbyShareOnboardingFlowEvent" expires_after="2023-02-01">
+  <owner>pushi@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records how users interacte with the onboarding flow. Emitted when users
+    embark the Nearby Share onboarding flow, click buttons during the process.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.Onboarding.Result"
     enum="NearbyShareOnboardingFinalState" expires_after="2023-02-01">
   <owner>cvandermerwe@chromium.org</owner>

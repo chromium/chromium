@@ -601,6 +601,18 @@ Polymer({
   },
 
   /**
+   * Return the selected visibility as a enum to nearby_visibiity_page when
+   * logging metric to avoid potential race condition
+   *
+   * @return {?nearbyShare.mojom.Visibility}
+   *
+   * @public
+   */
+  getSelectedVisibility() {
+    return visibilityStringToValue(this.selectedVisibility);
+  },
+
+  /**
    * Returns the icon based on Light/Dark mode.
    * @returns {string}
    * @private

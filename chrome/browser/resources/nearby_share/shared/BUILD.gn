@@ -179,6 +179,7 @@ js_library("nearby_visibility_page") {
     ":nearby_page_template",
     ":nearby_share_settings_behavior",
     "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:load_time_data",
   ]
 }
 
@@ -357,6 +358,7 @@ js_library("nearby_visibility_page.m") {
     ":nearby_share_settings_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data",
   ]
   extra_deps = [ ":nearby_visibility_page_module" ]
 }

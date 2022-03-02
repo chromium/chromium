@@ -45,6 +45,10 @@ void MetricsHandler::RegisterMessages() {
       "metricsHandler:recordMediumTime",
       base::BindRepeating(&MetricsHandler::HandleRecordMediumTime,
                           base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "metricsHandler:recordSparseHistogram",
+      base::BindRepeating(&MetricsHandler::HandleRecordSparseHistogram,
+                          base::Unretained(this)));
 }
 
 void MetricsHandler::HandleRecordAction(const base::ListValue* args) {
@@ -111,4 +115,11 @@ void MetricsHandler::HandleRecordMediumTime(const base::ListValue* args) {
   DCHECK_GE(value, 0);
 
   base::UmaHistogramMediumTimes(histogram_name, base::Milliseconds(value));
+}
+
+void MetricsHandler::HandleRecordSparseHistogram(const base::ListValue* args) {
+  const std::string& histogram_name = args->GetListDeprecated()[0].GetString();
+  int sample = args->GetListDeprecated()[1].GetInt();
+
+  base::UmaHistogramSparse(histogram_name, sample);
 }
