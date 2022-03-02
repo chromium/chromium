@@ -827,6 +827,19 @@ class CalendarViewAnimationTest : public AshTestBase {
   views::View* previous_label() { return calendar_view_->previous_label_; }
   views::View* current_label() { return calendar_view_->current_label_; }
   views::View* next_label() { return calendar_view_->next_label_; }
+  views::ScrollView* scroll_view() { return calendar_view_->scroll_view_; }
+  views::ScrollView::ScrollBarMode GetScrollBarMode() {
+    return scroll_view()->GetVerticalScrollBarMode();
+  }
+
+  // The position of the `next_month_`.
+  int NextMonthPosition() {
+    return previous_label()->GetPreferredSize().height() +
+           calendar_view_->previous_month_->GetPreferredSize().height() +
+           current_label()->GetPreferredSize().height() +
+           calendar_view_->current_month_->GetPreferredSize().height();
+  }
+
   bool is_scrolling_up() { return calendar_view_->is_scrolling_up_; }
 
   void ScrollUpOneMonth() {
@@ -1030,6 +1043,81 @@ TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   ScrollDownOneMonth();
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
+  EXPECT_EQ(u"2021", header_year()->GetText());
+}
+
+// The content view should not be scrollable when the month view is animating.
+TEST_F(CalendarViewAnimationTest, NotScrollableWhenAnimating) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("24 Oct 2021 10:00 GMT", &date));
+
+  CreateCalendarView();
+  // Gives it a duration to let the animation finish and pass the cool down
+  // duration.
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+  UpdateMonth(date);
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  EXPECT_EQ(u"October", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
+
+  // The scrll bar is enaled before tapping on the up button.
+  EXPECT_EQ(views::ScrollView::ScrollBarMode::kHiddenButEnabled,
+            GetScrollBarMode());
+
+  // Scrolls to the previous month.
+  ScrollUpOneMonth();
+
+  // If scrolls down, the month views and labels will be animating.
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
+  task_environment()->FastForwardBy(
+      calendar_utils::kAnimationDurationForVisibility);
+  EXPECT_TRUE(current_month()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(next_month()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(next_label()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(previous_month()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(previous_label()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(current_label()->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(u"October", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
+
+  // Try to scrol to the next month.
+  scroll_view()->ScrollToPosition(scroll_view()->vertical_scroll_bar(),
+                                  NextMonthPosition());
+
+  // Should not scroll and keep showing the animation.
+  EXPECT_EQ(views::ScrollView::ScrollBarMode::kDisabled, GetScrollBarMode());
+  EXPECT_TRUE(current_month()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(next_month()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(next_label()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(previous_month()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(previous_label()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(current_label()->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(u"October", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
+
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  // Animation finished. On the previous month.
+  EXPECT_EQ(u"September", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
+  EXPECT_EQ(views::ScrollView::ScrollBarMode::kHiddenButEnabled,
+            GetScrollBarMode());
+
+  // Try to scroll to the next month. Should get to the next month.
+  scroll_view()->ScrollToPosition(scroll_view()->vertical_scroll_bar(),
+                                  NextMonthPosition());
+  EXPECT_EQ(views::ScrollView::ScrollBarMode::kHiddenButEnabled,
+            GetScrollBarMode());
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+  EXPECT_EQ(u"October", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
