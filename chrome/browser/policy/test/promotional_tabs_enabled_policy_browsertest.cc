@@ -170,7 +170,7 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     command_line->RemoveSwitch(switches::kForceFirstRun);
-    command_line->AppendSwitch(switches::kNoFirstRun);
+    command_line->AppendSwitch(switches::kForceWhatsNew);
     command_line->AppendSwitchPath(switches::kUserDataDir, temp_dir_.GetPath());
 
     // Suppress the welcome page by setting the pref indicating that it has

@@ -6,6 +6,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -53,8 +55,18 @@ bool IsRemoteContentDisabled() {
 }
 
 bool ShouldShowForState(PrefService* local_state) {
-  if (!local_state)
+  if (!local_state || !local_state->FindPreference(prefs::kLastWhatsNewVersion))
     return false;
+
+  // Allow disabling the What's New experience in tests using the standard
+  // kNoFirstRun switch. This behavior can be overridden using the
+  // kForceWhatsNew switch for the What's New experience integration tests.
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kNoFirstRun) &&
+      !command_line->HasSwitch(switches::kForceWhatsNew)) {
+    return false;
+  }
 
   if (!base::FeatureList::IsEnabled(features::kChromeWhatsNewUI))
     return false;
