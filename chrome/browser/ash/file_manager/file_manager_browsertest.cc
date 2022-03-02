@@ -521,21 +521,34 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug.com/1236842): Remove flakiness and enable this test.
 #if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
         TestCase("keyboardFocusOutlineVisible"),
+        TestCase("keyboardFocusOutlineVisible").FilesSwa(),
         TestCase("keyboardFocusOutlineVisible").EnableTrash(),
+        TestCase("keyboardFocusOutlineVisible").EnableTrash().FilesSwa(),
         TestCase("keyboardFocusOutlineVisibleMouse"),
+        TestCase("keyboardFocusOutlineVisibleMouse").FilesSwa(),
         TestCase("keyboardFocusOutlineVisibleMouse").EnableTrash(),
+        TestCase("keyboardFocusOutlineVisibleMouse").EnableTrash().FilesSwa(),
 #endif
         TestCase("keyboardSelectDriveDirectoryTree"),
+        TestCase("keyboardSelectDriveDirectoryTree").FilesSwa(),
         TestCase("keyboardDisableCopyWhenDialogDisplayed"),
+        TestCase("keyboardDisableCopyWhenDialogDisplayed").FilesSwa(),
         TestCase("keyboardOpenNewWindow"),
-        TestCase("keyboardOpenNewWindow").InGuestMode(),
         TestCase("keyboardOpenNewWindow").FilesSwa(),
-        TestCase("renameFileDownloads").InGuestMode(),
+        TestCase("keyboardOpenNewWindow").InGuestMode(),
+        TestCase("keyboardOpenNewWindow").InGuestMode().FilesSwa(),
         TestCase("renameFileDownloads"),
+        TestCase("renameFileDownloads").FilesSwa(),
+        TestCase("renameFileDownloads").InGuestMode(),
+        TestCase("renameFileDownloads").InGuestMode().FilesSwa(),
         TestCase("renameFileDrive"),
-        TestCase("renameNewFolderDownloads").InGuestMode(),
+        TestCase("renameFileDrive").FilesSwa(),
         TestCase("renameNewFolderDownloads"),
-        TestCase("renameRemovableWithKeyboardOnFileList")));
+        TestCase("renameNewFolderDownloads").FilesSwa(),
+        TestCase("renameNewFolderDownloads").InGuestMode(),
+        TestCase("renameNewFolderDownloads").InGuestMode().FilesSwa(),
+        TestCase("renameRemovableWithKeyboardOnFileList"),
+        TestCase("renameRemovableWithKeyboardOnFileList").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ContextMenu, /* context_menu.js for file list */
