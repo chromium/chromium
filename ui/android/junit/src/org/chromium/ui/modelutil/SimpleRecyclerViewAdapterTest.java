@@ -7,14 +7,15 @@ package org.chromium.ui.modelutil;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.view.View;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -45,9 +46,6 @@ public class SimpleRecyclerViewAdapterTest {
     // Mockito Spies allow us to intercept calls to parent class.
     private SimpleRecyclerViewAdapter mSpyAdapter;
 
-    @Mock
-    View mMockView;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -62,9 +60,10 @@ public class SimpleRecyclerViewAdapterTest {
                         .useConstructor(mModelList)
                         .defaultAnswer(Mockito.CALLS_REAL_METHODS));
 
-        mSpyAdapter.registerType(VIEW_TYPE_1, parent -> mMockView, (m, v, p) -> {});
-        mSpyAdapter.registerType(VIEW_TYPE_2, parent -> mMockView, (m, v, p) -> {});
-        mSpyAdapter.registerType(VIEW_TYPE_3, parent -> mMockView, (m, v, p) -> {});
+        View view = new View(Robolectric.setupActivity(Activity.class));
+        mSpyAdapter.registerType(VIEW_TYPE_1, parent -> view, (m, v, p) -> {});
+        mSpyAdapter.registerType(VIEW_TYPE_2, parent -> view, (m, v, p) -> {});
+        mSpyAdapter.registerType(VIEW_TYPE_3, parent -> view, (m, v, p) -> {});
     }
 
     @Test
