@@ -182,7 +182,10 @@ std::string TileConfig::GetExperimentTag(const std::string& country_code) {
 
   std::string tag = base::GetFieldTrialParamValueByFeature(
       features::kQueryTiles, kExperimentTagKey);
-  if (tag.empty() && features::IsQueryTilesEnabledForCountry(country_code)) {
+  if (tag.empty() &&
+      !base::FeatureList::IsEnabled(
+          query_tiles::features::kQueryTilesDisableCountryOverride) &&
+      features::IsQueryTilesEnabledForCountry(country_code)) {
     return kDefaultExperimentTagForTrendingEnabledCountries;
   }
   return tag;

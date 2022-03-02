@@ -37,6 +37,9 @@ extern const base::Feature kQueryTilesRemoveTrendingTilesAfterInactivity;
 // Whether segmentation rules are applied to query tiles.
 extern const base::Feature kQueryTilesSegmentation;
 
+// Whether to disable the override rules introduced for countries.
+extern const base::Feature kQueryTilesDisableCountryOverride;
+
 // Returns whether query tiles are enabled for the country.
 bool IsQueryTilesEnabledForCountry(const std::string& country_code);
 }  // namespace features

@@ -43,8 +43,10 @@ std::string GetCountryCode() {
 }
 
 bool IsQueryTilesEnabled() {
-  return query_tiles::features::IsQueryTilesEnabledForCountry(
-             GetCountryCode()) ||
+  return (!base::FeatureList::IsEnabled(
+              query_tiles::features::kQueryTilesDisableCountryOverride) &&
+          query_tiles::features::IsQueryTilesEnabledForCountry(
+              GetCountryCode())) ||
          (base::FeatureList::IsEnabled(query_tiles::features::kQueryTiles) &&
           base::FeatureList::IsEnabled(
               query_tiles::features::kQueryTilesInNTP));

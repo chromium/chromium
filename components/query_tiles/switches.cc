@@ -25,6 +25,9 @@ const base::Feature kQueryTilesRemoveTrendingTilesAfterInactivity{
 const base::Feature kQueryTilesSegmentation{"QueryTilesSegmentation",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kQueryTilesDisableCountryOverride{
+    "QueryTilesDisableCountryOverride", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsQueryTilesEnabledForCountry(const std::string& country_code) {
   std::string enabled_countries[] = {"IN", "NG"};
   for (const auto& country : enabled_countries) {
