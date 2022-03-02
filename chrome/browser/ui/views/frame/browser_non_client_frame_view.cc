@@ -173,18 +173,6 @@ void BrowserNonClientFrameView::UpdateFrameColor() {
   SchedulePaint();
 }
 
-SkColor BrowserNonClientFrameView::GetToolbarTopSeparatorColor() const {
-  const int color_id =
-      ShouldPaintAsActive()
-          ? ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR
-          : ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE;
-  // The vertical tab separator might show through the stroke if the stroke
-  // color is translucent.  To prevent this, always use an opaque stroke color.
-  return color_utils::GetResultingPaintColor(
-      GetThemeProvider()->GetColor(color_id),
-      GetFrameColor(BrowserFrameActiveState::kUseCurrent));
-}
-
 absl::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   const ui::ThemeProvider* tp = GetThemeProvider();

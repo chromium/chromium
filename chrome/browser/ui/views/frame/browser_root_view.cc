@@ -17,6 +17,7 @@
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -340,8 +341,16 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
     }
     canvas->UndoDeviceScaleFactor();
 
+    const auto* widget = GetWidget();
+    DCHECK(widget);
+    const SkColor toolbar_top_separator_color =
+        widget->GetThemeProvider()->GetColor(
+            tabstrip()->ShouldPaintAsActiveFrame()
+                ? ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE
+                : ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE);
+
     cc::PaintFlags flags;
-    flags.setColor(tabstrip()->GetToolbarTopSeparatorColor());
+    flags.setColor(toolbar_top_separator_color);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
     canvas->DrawRect(gfx::RectF(x, bottom - scale, width, scale), flags);

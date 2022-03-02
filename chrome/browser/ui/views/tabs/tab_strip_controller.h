@@ -213,10 +213,6 @@ class TabStripController {
   // state.
   virtual SkColor GetFrameColor(BrowserFrameActiveState active_state) const = 0;
 
-  // Returns COLOR_TOOLBAR_TOP_SEPARATOR[,_INACTIVE] depending on the activation
-  // state of the window.
-  virtual SkColor GetToolbarTopSeparatorColor() const = 0;
-
   // For non-transparent windows, returns the background tab image resource ID
   // if the image has been customized, directly or indirectly, by the theme.
   virtual absl::optional<int> GetCustomBackgroundId(

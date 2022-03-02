@@ -90,7 +90,6 @@ class FakeBaseTabStripController : public TabStripController {
   bool ShouldPaintAsActiveFrame() const override;
   bool CanDrawStrokes() const override;
   SkColor GetFrameColor(BrowserFrameActiveState active_state) const override;
-  SkColor GetToolbarTopSeparatorColor() const override;
   absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;

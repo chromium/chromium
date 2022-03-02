@@ -1054,9 +1054,13 @@ void GtkUi::UpdateColors() {
     // If we can't get a contrasting stroke from the theme, have ThemeService
     // provide a stroke color for us.
     if (toolbar_top_separator_has_good_contrast()) {
-      color_map[ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR] =
+      color_map[ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE] =
           toolbar_top_separator;
-      color_map[ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE] =
+      color_map[ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE] =
+          toolbar_top_separator_inactive;
+      color_map[ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE] =
+          toolbar_top_separator;
+      color_map[ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE] =
           toolbar_top_separator_inactive;
     }
   }

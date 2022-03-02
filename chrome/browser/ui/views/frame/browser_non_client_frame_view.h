@@ -109,10 +109,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // to be repainted.
   virtual void UpdateFrameColor();
 
-  // Returns COLOR_TOOLBAR_TOP_SEPARATOR[,_INACTIVE] depending on the activation
-  // state of the window.
-  SkColor GetToolbarTopSeparatorColor() const;
-
   // For non-transparent windows, returns the background tab image resource ID
   // if the image has been customized, directly or indirectly, by the theme.
   absl::optional<int> GetCustomBackgroundId(

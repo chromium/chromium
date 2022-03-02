@@ -1574,10 +1574,6 @@ bool TabStrip::ShouldPaintAsActiveFrame() const {
   return controller_->ShouldPaintAsActiveFrame();
 }
 
-SkColor TabStrip::GetToolbarTopSeparatorColor() const {
-  return controller_->GetToolbarTopSeparatorColor();
-}
-
 SkColor TabStrip::GetTabSeparatorColor() const {
   return separator_color_;
 }
@@ -2643,9 +2639,6 @@ ADD_READONLY_PROPERTY_METADATA(int, ModelCount)
 ADD_READONLY_PROPERTY_METADATA(int, PinnedTabCount)
 ADD_READONLY_PROPERTY_METADATA(absl::optional<int>, FocusedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(int, StrokeThickness)
-ADD_READONLY_PROPERTY_METADATA(SkColor,
-                               ToolbarTopSeparatorColor,
-                               ui::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                TabSeparatorColor,
                                ui::metadata::SkColorConverter)

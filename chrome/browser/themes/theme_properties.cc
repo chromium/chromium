@@ -94,8 +94,10 @@ SkColor GetLightModeColor(int id) {
       return gfx::kGoogleGrey100;
 
     // Properties not stored in theme pack.
-    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR:
-    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE:
+    case ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE:
+    case ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE:
+    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE:
+    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE:
       return SkColorSetA(SK_ColorBLACK, 0x40);
     case ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_TEXT:
       return SK_ColorWHITE;

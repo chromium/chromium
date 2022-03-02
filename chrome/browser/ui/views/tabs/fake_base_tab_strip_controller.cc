@@ -290,10 +290,6 @@ SkColor FakeBaseTabStripController::GetFrameColor(
   return gfx::kPlaceholderColor;
 }
 
-SkColor FakeBaseTabStripController::GetToolbarTopSeparatorColor() const {
-  return gfx::kPlaceholderColor;
-}
-
 absl::optional<int> FakeBaseTabStripController::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   return absl::nullopt;

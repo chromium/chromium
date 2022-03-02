@@ -49,9 +49,11 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
 
     // Window Text
     case ThemeProperties::COLOR_BOOKMARK_SEPARATOR:
+    case ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE:
+    case ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE:
     case ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR:
-    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR:
-    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE:
+    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE:
+    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE:
     case ThemeProperties::COLOR_LOCATION_BAR_BORDER:
       system_theme_color = ui::NativeTheme::SystemThemeColor::kWindowText;
       break;

@@ -576,10 +576,6 @@ SkColor BrowserTabStripController::GetFrameColor(
   return GetFrameView()->GetFrameColor(active_state);
 }
 
-SkColor BrowserTabStripController::GetToolbarTopSeparatorColor() const {
-  return GetFrameView()->GetToolbarTopSeparatorColor();
-}
-
 absl::optional<int> BrowserTabStripController::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   return GetFrameView()->GetCustomBackgroundId(active_state);

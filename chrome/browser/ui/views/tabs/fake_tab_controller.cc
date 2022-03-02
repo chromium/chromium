@@ -68,10 +68,6 @@ bool FakeTabController::HasVisibleBackgroundTabShapes() const {
   return false;
 }
 
-SkColor FakeTabController::GetToolbarTopSeparatorColor() const {
-  return SK_ColorBLACK;
-}
-
 SkColor FakeTabController::GetTabSeparatorColor() const {
   return SK_ColorBLACK;
 }

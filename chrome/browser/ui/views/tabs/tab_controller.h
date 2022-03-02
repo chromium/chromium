@@ -163,10 +163,6 @@ class TabController {
   // active.
   virtual bool ShouldPaintAsActiveFrame() const = 0;
 
-  // Returns COLOR_TOOLBAR_TOP_SEPARATOR[,_INACTIVE] depending on the activation
-  // state of the window.
-  virtual SkColor GetToolbarTopSeparatorColor() const = 0;
-
   // Returns the color of the separator between the tabs.
   virtual SkColor GetTabSeparatorColor() const = 0;
 

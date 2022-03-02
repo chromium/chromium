@@ -45,7 +45,8 @@ bool IncreasedContrastThemeSupplier::GetColor(int id, SkColor* color) const {
     case ThemeProperties::COLOR_FRAME_ACTIVE_INCOGNITO:
       *color = SK_ColorDKGRAY;
       return true;
-    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR:
+    case ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE:
+    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE:
       *color = is_dark_mode_ ? SK_ColorDKGRAY : SK_ColorLTGRAY;
       return true;
     case ThemeProperties::COLOR_LOCATION_BAR_BORDER:
