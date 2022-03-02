@@ -1,9 +1,4 @@
 {
-    "90": {
-        "name": "m90",
-        "project": "chromium-m90",
-        "ref": "refs/branch-heads/4430"
-    },
     "92": {
         "name": "m92",
         "project": "chromium-m92",
