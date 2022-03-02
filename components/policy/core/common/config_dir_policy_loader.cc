@@ -138,8 +138,9 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
   // to existing keys, but the ConfigDirPolicyProvider gives priority to the
   // last file in lexicographic order.
   for (const base::FilePath& config_file : base::Reversed(files)) {
-    JSONFileValueDeserializer deserializer(config_file,
-                                           base::JSON_ALLOW_TRAILING_COMMAS);
+    JSONFileValueDeserializer deserializer(
+        config_file, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
+                         base::JSON_ALLOW_TRAILING_COMMAS);
     int error_code = 0;
     std::string error_msg;
     std::unique_ptr<base::Value> value =
