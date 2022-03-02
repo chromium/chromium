@@ -3281,7 +3281,7 @@ enum WebFeature {
   kEarlyHintsPreload = 3967,
   kClientHintsUAReduced = 3968,
   kSpeculationRulesPrerender = 3969,
-  kExecCommandWithTrustedTypes = 3970,
+  kOBSOLETE_ExecCommandWithTrustedTypes = 3970,
   kCSSSelectorPseudoHasInSnapshotProfile = 3971,
   kCSSSelectorPseudoHasInLiveProfile = 3972,
   kNavigatorPdfViewerEnabled = 3973,

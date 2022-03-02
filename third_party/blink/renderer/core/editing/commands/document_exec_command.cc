@@ -136,13 +136,6 @@ bool Document::execCommand(const String& command_name,
   TidyUpHTMLStructure(*this);
   const EditorCommand editor_command = GetCommand(this, command_name);
 
-  // Count how often the error condition of crbug.com/1230567 occurs.
-  if (CodeUnitCompareIgnoringASCIICase(command_name, "insertHTML") == 0 &&
-      value && value->IsString() &&
-      RequireTrustedTypesCheck(GetExecutionContext())) {
-    UseCounter::Count(*this, WebFeature::kExecCommandWithTrustedTypes);
-  }
-
   String checked_value =
       TrustedTypesCheck(this, editor_command, value, exception_state);
   if (exception_state.HadException())
