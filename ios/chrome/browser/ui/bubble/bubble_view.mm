@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
+#include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -18,6 +19,9 @@
 #error "This file requires ARC support."
 #endif
 
+// Accessibility identifier for the close button.
+NSString* const kBubbleViewCloseButtonIdentifier =
+    @"BubbleViewCloseButtonIdentifier";
 
 namespace {
 // The color of the bubble (both circular background and arrow).
@@ -56,6 +60,12 @@ const CGFloat kShadowOpacity = 0.1f;
 // Bezier curve constants.
 const CGFloat kControlPointCenter = 0.243125;
 const CGFloat kControlPointEnd = 0.514375;
+
+// The size of the close button.
+const CGFloat kCloseButtonSize = 48.0f;
+// The padding for the top and trailing edges of the close button.
+const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
+
 }  // namespace
 
 @interface BubbleView ()
@@ -65,6 +75,8 @@ const CGFloat kControlPointEnd = 0.514375;
 @property(nonatomic, strong, readonly) UIView* background;
 // Triangular arrow that points to the target UI element.
 @property(nonatomic, strong, readonly) UIView* arrow;
+// Optional close button displayed at the trailing top corner of the bubble.
+@property(nonatomic, strong, readonly) UIButton* closeButton;
 // Triangular shape, the backing layer for the arrow.
 @property(nonatomic, weak) CAShapeLayer* arrowLayer;
 @property(nonatomic, assign, readonly) BubbleArrowDirection direction;
@@ -80,6 +92,7 @@ const CGFloat kControlPointEnd = 0.514375;
 @synthesize direction = _direction;
 @synthesize alignment = _alignment;
 @synthesize needsAddSubviews = _needsAddSubviews;
+@synthesize closeButton = _closeButton;
 
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
@@ -90,6 +103,7 @@ const CGFloat kControlPointEnd = 0.514375;
     _alignment = alignment;
     _label = [BubbleView labelWithText:text];
     _needsAddSubviews = YES;
+    _showsCloseButton = NO;
   }
   return self;
 }
@@ -161,6 +175,58 @@ const CGFloat kControlPointEnd = 0.514375;
   return _arrow;
 }
 
+// Lazy loads the close button.
+- (UIButton*)closeButton {
+  if (!_closeButton) {
+    UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+        configurationWithScale:UIImageSymbolScaleMedium];
+    UIImage* buttonImage = [UIImage systemImageNamed:@"xmark"
+                                   withConfiguration:configuration];
+    // Computes the paddings to position the button's image. The button is
+    // bigger than the image for accessibility purposes.
+    const CGFloat closeButtonBottomPadding = kCloseButtonSize -
+                                             kCloseButtonTopTrailingPadding -
+                                             buttonImage.size.height;
+    const CGFloat closeButtonLeadingPadding = kCloseButtonSize -
+                                              kCloseButtonTopTrailingPadding -
+                                              buttonImage.size.width;
+    UIButton* button;
+    // setImageEdgeInsets from UIButton is deprecated since iOS 15.0, the new
+    // API uses UIButtonConfiguration to set the image inset.
+    if (@available(iOS 15.0, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration.plainButtonConfiguration copy];
+      [buttonConfiguration setImage:buttonImage];
+      [buttonConfiguration
+          setContentInsets:NSDirectionalEdgeInsetsMake(
+                               kCloseButtonTopTrailingPadding,
+                               closeButtonLeadingPadding,
+                               closeButtonBottomPadding,
+                               kCloseButtonTopTrailingPadding)];
+      button = [UIButton buttonWithConfiguration:buttonConfiguration
+                                   primaryAction:nil];
+    } else {
+      button = [UIButton buttonWithType:UIButtonTypeSystem];
+      [button setImage:buttonImage forState:UIControlStateNormal];
+      [button.imageView setBounds:CGRectZero];
+      [button.imageView setContentMode:UIViewContentModeScaleAspectFit];
+      [button setImageEdgeInsets:UIEdgeInsetsMakeDirected(
+                                     kCloseButtonTopTrailingPadding,
+                                     closeButtonLeadingPadding,
+                                     closeButtonBottomPadding,
+                                     kCloseButtonTopTrailingPadding)];
+    }
+    [button setTintColor:[UIColor colorNamed:kSolidButtonTextColor]];
+    [button addTarget:self
+                  action:@selector(closeButtonWasTapped:)
+        forControlEvents:UIControlEventTouchUpInside];
+    [button setAccessibilityIdentifier:kBubbleViewCloseButtonIdentifier];
+    [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+    _closeButton = button;
+  }
+  return _closeButton;
+}
+
 #pragma mark - Private class methods
 
 // Return a label to be used for a BubbleView that displays white text.
@@ -179,6 +245,14 @@ const CGFloat kControlPointEnd = 0.514375;
 
 #pragma mark - Private instance methods
 
+// Handles taps on the close button.
+- (void)closeButtonWasTapped:(UIButton*)button {
+  DCHECK(self.showsCloseButton);
+  if ([self.delegate respondsToSelector:@selector(didTapCloseButton)]) {
+    [self.delegate didTapCloseButton];
+  }
+}
+
 // Add a drop shadow to the bubble.
 - (void)addShadow {
   [self.layer setShadowOffset:kShadowOffset];
@@ -196,44 +270,61 @@ const CGFloat kControlPointEnd = 0.514375;
   [constraints addObject:[self arrowAlignmentConstraint]];
   // Add constraints that depend on the bubble's direction.
   [constraints addObjectsFromArray:[self arrowDirectionConstraints]];
+  // Add constraints for close button.
+  if (self.showsCloseButton) {
+    [constraints addObjectsFromArray:[self closeButtonConstraints]];
+  }
   [NSLayoutConstraint activateConstraints:constraints];
 }
 
 // Return an array of constraints that do not depend on the bubble's arrow
 // direction or alignment.
 - (NSArray<NSLayoutConstraint*>*)generalConstraints {
+  UIView* background = self.background;
+  UIView* label = self.label;
   NSArray<NSLayoutConstraint*>* constraints = @[
     // Center the background view on the bubble view.
-    [self.background.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-    // Ensure that the background view is less wide than the bubble view, and
-    // add a margin to the sides of the background.
-    [self.background.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.widthAnchor
-                                 constant:kBubbleMargin * 2],
-    // Ensure that the background view is as wide as the label, with added
-    // padding on the sides of the label.
-    [self.background.widthAnchor
-        constraintEqualToAnchor:self.label.widthAnchor
-                       constant:kLabelHorizontalPadding * 2],
-    // Enforce the minimum width of the background view.
-    [self.background.widthAnchor
+    [background.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+    // Add a margin to the sides of the background.
+    [background.widthAnchor constraintEqualToAnchor:self.widthAnchor
+                                           constant:-kBubbleMargin * 2],
+    [background.widthAnchor
         constraintGreaterThanOrEqualToConstant:[self minBubbleWidth] -
                                                kBubbleMargin * 2],
-    // Ensure that the background view is as tall as the label, with added
-    // padding to the top and bottom of the label.
-    [self.background.heightAnchor
-        constraintEqualToAnchor:self.label.heightAnchor
-                       constant:kLabelVerticalPadding * 2],
-    // Center the label on the background view.
-    [self.label.centerXAnchor
-        constraintEqualToAnchor:self.background.centerXAnchor],
-    [self.label.centerYAnchor
-        constraintEqualToAnchor:self.background.centerYAnchor],
+    // Ensure that the background view is as wide as the label, with added
+    // padding on the sides of the label.
+    [label.topAnchor
+        constraintGreaterThanOrEqualToAnchor:background.topAnchor
+                                    constant:kLabelVerticalPadding],
+    [background.bottomAnchor
+        constraintGreaterThanOrEqualToAnchor:label.bottomAnchor
+                                    constant:kLabelVerticalPadding],
+    [label.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:background.leadingAnchor
+                                    constant:kLabelHorizontalPadding],
+    [background.trailingAnchor
+        constraintGreaterThanOrEqualToAnchor:label.trailingAnchor
+                                    constant:kLabelHorizontalPadding],
     // Enforce the arrow's size, scaling by |kArrowScaleFactor| to prevent gaps
     // between the arrow and the background view.
     [self.arrow.widthAnchor constraintEqualToConstant:kArrowSize.width],
     [self.arrow.heightAnchor constraintEqualToConstant:kArrowSize.height]
 
+  ];
+  return constraints;
+}
+
+// Returns the constraint for the close button.
+- (NSArray<NSLayoutConstraint*>*)closeButtonConstraints {
+  UIView* closeButton = self.closeButton;
+  NSArray<NSLayoutConstraint*>* constraints = @[
+    [closeButton.widthAnchor constraintEqualToConstant:kCloseButtonSize],
+    [closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
+    [closeButton.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:self.label.trailingAnchor],
+    [closeButton.topAnchor constraintEqualToAnchor:self.background.topAnchor],
+    [closeButton.trailingAnchor
+        constraintEqualToAnchor:self.background.trailingAnchor],
   ];
   return constraints;
 }
@@ -312,6 +403,9 @@ const CGFloat kControlPointEnd = 0.514375;
     [self addSubview:self.arrow];
     [self addSubview:self.background];
     [self addSubview:self.label];
+    if (self.showsCloseButton) {
+      [self addSubview:self.closeButton];
+    }
     // Set |needsAddSubviews| to NO to ensure that the subviews are only added
     // to the view hierarchy once.
     self.needsAddSubviews = NO;
@@ -332,7 +426,13 @@ const CGFloat kControlPointEnd = 0.514375;
 - (CGSize)sizeThatFits:(CGSize)size {
   // The combined horizontal inset distance of the label with respect to the
   // bubble.
-  CGFloat labelHorizontalInset = (kBubbleMargin + kLabelHorizontalPadding) * 2;
+  CGFloat labelHorizontalInset = kBubbleMargin * 2 + kLabelHorizontalPadding;
+  // Add close button size, which is on the trailing edge of the labels.
+  if (self.showsCloseButton) {
+    labelHorizontalInset += MAX(kCloseButtonSize, kLabelHorizontalPadding);
+  } else {
+    labelHorizontalInset += kLabelHorizontalPadding;
+  }
   // The combined vertical inset distance of the label with respect to the
   // bubble.
   CGFloat labelVerticalInset =
