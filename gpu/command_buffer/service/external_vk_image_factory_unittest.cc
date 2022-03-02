@@ -294,7 +294,7 @@ TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
     std::vector<GrBackendSemaphore> begin_semaphores;
     std::vector<GrBackendSemaphore> end_semaphores;
     auto skia_scoped_access = skia_representation->BeginScopedWriteAccess(
-        1 /* final_msaa_count */,
+        /*final_msaa_count=*/1,
         SkSurfaceProps(0 /* flags */, kUnknown_SkPixelGeometry),
         &begin_semaphores, &end_semaphores,
         gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);

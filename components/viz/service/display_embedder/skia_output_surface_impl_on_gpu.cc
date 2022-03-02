@@ -561,8 +561,9 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
+  const auto& characterization = ddl->characterization();
   auto scoped_access = backing_representation->BeginScopedWriteAccess(
-      /*final_msaa_count=*/0, ddl->characterization().surfaceProps(),
+      characterization.sampleCount(), characterization.surfaceProps(),
       &begin_semaphores, &end_semaphores,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!scoped_access) {
@@ -703,7 +704,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
       std::vector<GrBackendSemaphore> end_semaphores;
 
       auto scoped_write = representation->BeginScopedWriteAccess(
-          0 /* final_msaa_count */, surface_props, &begin_semaphores,
+          /*final_msaa_count=*/1, surface_props, &begin_semaphores,
           &end_semaphores,
           gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
 
@@ -828,7 +829,7 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
 
     std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>
         scoped_write = representation->BeginScopedWriteAccess(
-            /*final_msaa_count=*/0, surface_props, &plane_data.begin_semaphores,
+            /*final_msaa_count=*/1, surface_props, &plane_data.begin_semaphores,
             &plane_data.end_semaphores,
             gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
     SkSurface* dest_surface = scoped_write->surface();
@@ -870,7 +871,7 @@ bool SkiaOutputSurfaceImplOnGpu::ImportSurfacesForNV12Planes(
 
     std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>
         scoped_write = representation->BeginScopedWriteAccess(
-            /*final_msaa_count=*/0, surface_props, &plane_data.begin_semaphores,
+            /*final_msaa_count=*/1, surface_props, &plane_data.begin_semaphores,
             &plane_data.end_semaphores,
             gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
     SkSurface* dest_surface = scoped_write->surface();
@@ -997,8 +998,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   std::vector<GrBackendSemaphore> end_semaphores;
 
   auto scoped_write = representation->BeginScopedWriteAccess(
-      0 /* final_msaa_count */, surface_props, &begin_semaphores,
-      &end_semaphores,
+      /*final_msaa_count=*/1, surface_props, &begin_semaphores, &end_semaphores,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
 
   absl::optional<SkVector> scaling;
@@ -1174,7 +1174,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
     // TODO(https://crbug.com/1226672): Use BeginScopedReadAccess instead
     scoped_access = backing_representation->BeginScopedWriteAccess(
-        /*final_msaa_count=*/0, surface_props, &begin_semaphores,
+        /*final_msaa_count=*/1, surface_props, &begin_semaphores,
         &end_semaphores,
         gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
     surface = scoped_access->surface();
@@ -1428,7 +1428,7 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
     DCHECK(overlay.mailbox.IsZero());
     overlay.mailbox = backing->mailbox();
     auto scoped_access = backing->BeginScopedWriteAccess(
-        /*final_msaa_count=*/0, characterization.surfaceProps(),
+        characterization.sampleCount(), characterization.surfaceProps(),
         /*begin_semaphores=*/nullptr,
         /*end_semaphores=*/nullptr,
         gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);

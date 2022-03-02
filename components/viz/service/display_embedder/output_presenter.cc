@@ -58,7 +58,7 @@ void OutputPresenter::Image::BeginWriteSkia() {
   // so allow uncleared access.
   // TODO(vasilyt): Props and MSAA
   scoped_skia_write_access_ = skia_representation_->BeginScopedWriteAccess(
-      0 /* final_msaa_count */, surface_props, &begin_semaphores,
+      /*final_msaa_count=*/1, surface_props, &begin_semaphores,
       &end_semaphores_,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
   DCHECK(scoped_skia_write_access_);

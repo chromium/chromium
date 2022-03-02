@@ -106,7 +106,7 @@ void ReadbackTextureOnGpuThread(gpu::SharedImageManager* shared_image_manager,
   std::vector<GrBackendSemaphore> end_semaphores;
 
   auto scoped_write = representation->BeginScopedWriteAccess(
-      /*final_msaa_count=*/0, surface_props, &begin_semaphores, &end_semaphores,
+      /*final_msaa_count=*/1, surface_props, &begin_semaphores, &end_semaphores,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
 
   auto* surface = scoped_write->surface();

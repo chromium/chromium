@@ -179,7 +179,7 @@ SharedImageRepresentationSkia::BeginScopedWriteAccess(
     AllowUnclearedAccess allow_uncleared,
     bool use_sk_surface) {
   return BeginScopedWriteAccess(
-      0 /* final_msaa_count */,
+      /*final_msaa_count=*/1,
       SkSurfaceProps(0 /* flags */, kUnknown_SkPixelGeometry), begin_semaphores,
       end_semaphores, allow_uncleared, use_sk_surface);
 }
