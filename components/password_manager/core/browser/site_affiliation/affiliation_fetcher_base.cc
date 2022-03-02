@@ -10,6 +10,7 @@
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -141,25 +142,16 @@ void AffiliationFetcherBase::OnSimpleLoaderComplete(
   base::TimeDelta fetch_time = fetch_timer_.Elapsed();
   // Note that invoking the |delegate_| may destroy |this| synchronously, so the
   // invocation must happen last.
-  auto result_data = std::make_unique<AffiliationFetcherDelegate::Result>();
-  if (response_body) {
-    if (ParseResponse(*response_body, result_data.get())) {
-      LogFetchResult(AffiliationFetchResult::kSuccess, fetch_time,
-                     response_body->size());
-      delegate_->OnFetchSucceeded(this, std::move(result_data));
-    } else {
-      LogFetchResult(AffiliationFetchResult::kMalformed, fetch_time,
-                     response_body->size());
-      delegate_->OnMalformedResponse(this);
-    }
-  } else {
+  bool success = simple_url_loader_->NetError() == net::OK;
+  int response_code = 0;
+  if (simple_url_loader_->ResponseInfo() &&
+      simple_url_loader_->ResponseInfo()->headers) {
+    response_code =
+        simple_url_loader_->ResponseInfo()->headers->response_code();
+  }
+
+  if (!success || net::HTTP_OK != response_code) {
     LogFetchResult(AffiliationFetchResult::kFailure, fetch_time);
-    int response_code = -1;
-    if (simple_url_loader_->ResponseInfo() &&
-        simple_url_loader_->ResponseInfo()->headers) {
-      response_code =
-          simple_url_loader_->ResponseInfo()->headers->response_code();
-    }
     base::UmaHistogramSparse(
         "PasswordManager.AffiliationFetcher.FetchHttpResponseCode",
         response_code);
@@ -168,6 +160,18 @@ void AffiliationFetcherBase::OnSimpleLoaderComplete(
         "PasswordManager.AffiliationFetcher.FetchErrorCode",
         -simple_url_loader_->NetError());
     delegate_->OnFetchFailed(this);
+    return;
+  }
+
+  auto result_data = std::make_unique<AffiliationFetcherDelegate::Result>();
+  if (ParseResponse(*response_body, result_data.get())) {
+    LogFetchResult(AffiliationFetchResult::kSuccess, fetch_time,
+                   response_body->size());
+    delegate_->OnFetchSucceeded(this, std::move(result_data));
+  } else {
+    LogFetchResult(AffiliationFetchResult::kMalformed, fetch_time,
+                   response_body->size());
+    delegate_->OnMalformedResponse(this);
   }
 }
 
