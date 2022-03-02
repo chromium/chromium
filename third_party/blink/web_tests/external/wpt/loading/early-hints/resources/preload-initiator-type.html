@@ -2,13 +2,13 @@
 <meta charset=utf-8>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="early-hints-helpers.js"></script>
 <body>
 <script>
 async_test((t) => {
-    const params = new URLSearchParams(window.location.search);
-    const preloads = params.getAll("preloads");
+    const preloads = getPreloadsFromSearchParams();
     assert_equals(preloads.length, 1);
-    const preload = JSON.parse(preloads[0]);
+    const preload = preloads[0];
 
     const el = document.createElement("script");
     el.src = preload.url;

@@ -20,3 +20,19 @@ function navigateToTestWithEarlyHints(test_url, preloads) {
     const url = "resources/early-hints-test-loader.h2.py?" + params.toString();
     window.location.replace(new URL(url, window.location));
 }
+
+/**
+ * Parses the query string of the current window location and returns preloads
+ * in the Early Hints response sent via `navigateToTestWithEarlyHints()`.
+ *
+ * @returns {Array<Preload>}
+ */
+function getPreloadsFromSearchParams() {
+    const params = new URLSearchParams(window.location.search);
+    const encoded_preloads = params.getAll("preloads");
+    const preloads = [];
+    for (const encoded of encoded_preloads) {
+        preloads.push(JSON.parse(encoded));
+    }
+    return preloads;
+}
