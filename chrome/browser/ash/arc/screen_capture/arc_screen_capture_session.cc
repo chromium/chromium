@@ -275,17 +275,24 @@ void ArcScreenCaptureSession::SetOutputBuffer(
 
 void ArcScreenCaptureSession::QueryCompleted(
     GLuint query_id,
+    std::unique_ptr<DesktopTexture> desktop_texture,
     std::unique_ptr<PendingBuffer> pending_buffer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Notify ARC++ that the buffer is ready.
-  std::move(pending_buffer->callback_).Run();
 
   gpu::gles2::GLES2Interface* gl = GetContextProvider()->ContextGL();
   if (!gl) {
     LOG(ERROR) << "Unable to get the GL context";
     return;
   }
+
+  // Return CopyOutputResult resources after texture copy happens.
+  gl->DeleteTextures(1, &desktop_texture->texture_);
+  gpu::SyncToken sync_token;
+  gl->GenSyncTokenCHROMIUM(sync_token.GetData());
+  std::move(desktop_texture->release_callback_).Run(sync_token, false);
+
+  // Notify ARC++ that the buffer is ready.
+  std::move(pending_buffer->callback_).Run();
 
   // Return resources for ARC++ buffer. The GpuMemoryBuffer will go out of
   // scope and be destroyed too.
@@ -359,17 +366,10 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
                  gfx::Rect(0, 0, size_.width(), size_.height()));
   gl->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
 
-  // Return CopyOutputResult resources after texture copy happens.
-  gl->DeleteTextures(1, &desktop_texture->texture_);
-  if (desktop_texture->release_callback_) {
-    gpu::SyncToken sync_token;
-    gl->GenSyncTokenCHROMIUM(sync_token.GetData());
-    std::move(desktop_texture->release_callback_).Run(sync_token, false);
-  }
-
   context_provider->ContextSupport()->SignalQuery(
       query_id, base::BindOnce(&ArcScreenCaptureSession::QueryCompleted,
                                weak_ptr_factory_.GetWeakPtr(), query_id,
+                               std::move(desktop_texture),
                                std::move(pending_buffer)));
 }
 

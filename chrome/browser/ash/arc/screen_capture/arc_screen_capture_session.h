@@ -99,6 +99,7 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
   void OnDesktopCaptured(std::unique_ptr<viz::CopyOutputResult> result);
   // Callback for completion of GL commands.
   void QueryCompleted(GLuint query_id,
+                      std::unique_ptr<DesktopTexture> desktop_texture,
                       std::unique_ptr<PendingBuffer> pending_buffer);
   // Callback for a user clicking Stop on the notification for screen capture.
   void NotificationStop();
