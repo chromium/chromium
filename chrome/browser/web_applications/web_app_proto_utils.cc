@@ -44,7 +44,7 @@ sync_pb::WebAppIconInfo_Purpose IconInfoPurposeToSyncPurpose(
 
 absl::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
     const char* container_name_for_logging,
-    RepeatedIconInfosProto manifest_icons_proto) {
+    const RepeatedIconInfosProto& manifest_icons_proto) {
   std::vector<apps::IconInfo> manifest_icons;
   for (const sync_pb::WebAppIconInfo& icon_info_proto : manifest_icons_proto) {
     apps::IconInfo icon_info;

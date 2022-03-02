@@ -166,8 +166,8 @@ class WebAppInstallTaskTest : public WebAppTest {
   }
 
   void CreateRendererAppInfo(const GURL& url,
-                             const std::string name,
-                             const std::string description,
+                             const std::string& name,
+                             const std::string& description,
                              const GURL& scope,
                              absl::optional<SkColor> theme_color,
                              DisplayMode user_display_mode) {
@@ -184,8 +184,8 @@ class WebAppInstallTaskTest : public WebAppTest {
   }
 
   void CreateRendererAppInfo(const GURL& url,
-                             const std::string name,
-                             const std::string description) {
+                             const std::string& name,
+                             const std::string& description) {
     CreateRendererAppInfo(url, name, description, GURL(), absl::nullopt,
                           /*user_display_mode=*/DisplayMode::kStandalone);
   }
@@ -403,8 +403,8 @@ class WebAppInstallTaskWithRunOnOsLoginTest : public WebAppInstallTaskTest {
   ~WebAppInstallTaskWithRunOnOsLoginTest() override = default;
 
   void CreateRendererAppInfo(const GURL& url,
-                             const std::string name,
-                             const std::string description,
+                             const std::string& name,
+                             const std::string& description,
                              const GURL& scope,
                              absl::optional<SkColor> theme_color,
                              DisplayMode user_display_mode) {
@@ -1496,12 +1496,12 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
   // Installs the app and validates |final_web_app_info| matches the args passed
   // in.
   InstallResult InstallWebAppWithShortcutsMenuValidateAndGetResults(
-      GURL start_url,
+      const GURL& start_url,
       SkColor theme_color,
-      std::string shortcut_name,
-      GURL shortcut_url,
+      const std::string& shortcut_name,
+      const GURL& shortcut_url,
       SquareSizePx icon_size,
-      GURL icon_src) {
+      const GURL& icon_src) {
     InstallResult result;
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = start_url;
@@ -1573,12 +1573,12 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
   // Updates the app and validates |final_web_app_info| matches the args passed
   // in.
   InstallResult UpdateWebAppWithShortcutsMenuValidateAndGetResults(
-      GURL url,
+      const GURL& url,
       SkColor theme_color,
-      std::string shortcut_name,
-      GURL shortcut_url,
+      const std::string& shortcut_name,
+      const GURL& shortcut_url,
       SquareSizePx icon_size,
-      GURL icon_src) {
+      const GURL& icon_src) {
     InstallResult result;
     const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 

@@ -40,7 +40,7 @@ LocaleOverrides ConvertTranslationItemToLocaleOverrides(
 }
 
 blink::Manifest::TranslationItem ConvertLocaleOverridesToTranslationItem(
-    LocaleOverrides locale_overrides) {
+    const LocaleOverrides& locale_overrides) {
   blink::Manifest::TranslationItem translation_item;
 
   if (locale_overrides.has_name()) {

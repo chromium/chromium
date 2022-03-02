@@ -177,7 +177,7 @@ bool RemoveEntityDataAppFromAppsList(const std::string& storage_key,
 
 void RunCallbacksOnInstall(
     const std::vector<WebApp*>& apps,
-    FakeWebAppRegistryController::RepeatingInstallCallback callback,
+    const FakeWebAppRegistryController::RepeatingInstallCallback& callback,
     webapps::InstallResultCode code) {
   for (WebApp* app : apps)
     callback.Run(app->app_id(), code);

@@ -408,6 +408,9 @@ WebApp::SyncFallbackData::~SyncFallbackData() = default;
 WebApp::SyncFallbackData::SyncFallbackData(
     const SyncFallbackData& sync_fallback_data) = default;
 
+WebApp::SyncFallbackData::SyncFallbackData(
+    SyncFallbackData&& sync_fallback_data) noexcept = default;
+
 WebApp::SyncFallbackData& WebApp::SyncFallbackData::operator=(
     SyncFallbackData&& sync_fallback_data) = default;
 

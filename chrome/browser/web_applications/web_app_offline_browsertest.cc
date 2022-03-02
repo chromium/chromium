@@ -37,7 +37,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
  public:
   // Start a web app without a service worker and disconnect.
   void StartWebAppAndDisconnect(content::WebContents* web_contents,
-                                std::string relative_url) {
+                                base::StringPiece relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::NavigateToURLAndWait(browser(), target_url);
     web_app::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
@@ -53,7 +53,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
 
   // Start a PWA with a service worker and disconnect.
   void StartPwaAndDisconnect(content::WebContents* web_contents,
-                             std::string relative_url) {
+                             base::StringPiece relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::ServiceWorkerRegistrationWaiter registration_waiter(
         browser()->profile(), target_url);

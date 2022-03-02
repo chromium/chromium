@@ -87,11 +87,12 @@ std::vector<SkBitmap>::const_iterator FindEqualOrLargerSkBitmapVector(
   return bitmap_vector.end();
 }
 
-void ValidateIconsGeneratedAndResizedCorrectly(std::vector<SkBitmap> downloaded,
-                                               SizeToBitmap size_map,
-                                               std::set<int> sizes_to_generate,
-                                               int expected_generated,
-                                               int expected_resized) {
+void ValidateIconsGeneratedAndResizedCorrectly(
+    const std::vector<SkBitmap>& downloaded,
+    const SizeToBitmap& size_map,
+    const std::set<int>& sizes_to_generate,
+    int expected_generated,
+    int expected_resized) {
   GURL empty_url("");
   int number_generated = 0;
   int number_resized = 0;
@@ -134,7 +135,9 @@ void ValidateIconsGeneratedAndResizedCorrectly(std::vector<SkBitmap> downloaded,
   EXPECT_EQ(expected_resized, number_resized);
 }
 
-void ValidateBitmapSizeAndColor(SkBitmap bitmap, int size, SkColor color) {
+void ValidateBitmapSizeAndColor(const SkBitmap& bitmap,
+                                int size,
+                                SkColor color) {
   // Obtain pixel lock to access pixels.
   EXPECT_EQ(color, bitmap.getColor(0, 0));
   EXPECT_EQ(size, bitmap.width());

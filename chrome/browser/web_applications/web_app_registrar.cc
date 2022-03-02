@@ -479,7 +479,7 @@ bool WebAppRegistrar::WasInstalledBySubApp(const AppId& app_id) const {
 
 bool WebAppRegistrar::IsAllowedLaunchProtocol(
     const AppId& app_id,
-    std::string protocol_scheme) const {
+    const std::string& protocol_scheme) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app &&
          base::Contains(web_app->allowed_launch_protocols(), protocol_scheme);
@@ -487,7 +487,7 @@ bool WebAppRegistrar::IsAllowedLaunchProtocol(
 
 bool WebAppRegistrar::IsDisallowedLaunchProtocol(
     const AppId& app_id,
-    std::string protocol_scheme) const {
+    const std::string& protocol_scheme) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && base::Contains(web_app->disallowed_launch_protocols(),
                                    protocol_scheme);

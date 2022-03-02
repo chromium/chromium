@@ -67,7 +67,7 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
   app->AddSource(Source::kSync);
 
   // app_id is a hash of start_url. Parse start_url first:
-  GURL start_url(sync_data.start_url());
+  const GURL start_url(sync_data.start_url());
   if (start_url.is_empty() || !start_url.is_valid()) {
     DLOG(ERROR) << "ApplySyncDataToApp: start_url parse error.";
     return;
@@ -91,7 +91,7 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
   }
 
   if (app->start_url().is_empty()) {
-    app->SetStartUrl(std::move(start_url));
+    app->SetStartUrl(start_url);
   } else if (app->start_url() != start_url) {
     DLOG(ERROR)
         << "ApplySyncDataToApp: existing start_url doesn't match start_url.";
@@ -322,7 +322,7 @@ void WebAppSyncBridge::SetUserPageOrdinal(const AppId& app_id,
   if (!registrar_->IsInstalled(app_id))
     return;
   if (web_app)
-    web_app->SetUserPageOrdinal(page_ordinal);
+    web_app->SetUserPageOrdinal(std::move(page_ordinal));
 }
 
 void WebAppSyncBridge::SetUserLaunchOrdinal(
@@ -337,7 +337,7 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
     return;
   WebApp* web_app = update->UpdateApp(app_id);
   if (web_app)
-    web_app->SetUserLaunchOrdinal(launch_ordinal);
+    web_app->SetUserLaunchOrdinal(std::move(launch_ordinal));
 }
 
 void WebAppSyncBridge::AddAllowedLaunchProtocol(

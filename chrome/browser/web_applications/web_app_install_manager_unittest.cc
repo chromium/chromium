@@ -359,7 +359,7 @@ class WebAppInstallManagerTest
 
   std::map<SquareSizePx, SkBitmap> ReadIcons(const AppId& app_id,
                                              IconPurpose purpose,
-                                             SortedSizesPx sizes_px) {
+                                             const SortedSizesPx& sizes_px) {
     std::map<SquareSizePx, SkBitmap> result;
     base::RunLoop run_loop;
     icon_manager().ReadIcons(

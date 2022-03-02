@@ -105,7 +105,7 @@ void GenerateIcon(SizeToBitmap* bitmaps,
   (*bitmaps)[output_size] = GenerateBitmap(output_size, color, icon_letter);
 }
 
-void GenerateIcons(std::set<SquareSizePx> generate_sizes,
+void GenerateIcons(const std::set<SquareSizePx>& generate_sizes,
                    char16_t icon_letter,
                    SkColor generated_icon_color,
                    SizeToBitmap* bitmap_map) {

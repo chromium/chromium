@@ -202,6 +202,7 @@ class WebApp {
     ~SyncFallbackData();
     // Copyable and move-assignable to support Copy-on-Write with Commit.
     SyncFallbackData(const SyncFallbackData& sync_fallback_data);
+    SyncFallbackData(SyncFallbackData&& sync_fallback_data) noexcept;
     SyncFallbackData& operator=(SyncFallbackData&& sync_fallback_data);
 
     base::Value AsDebugValue() const;

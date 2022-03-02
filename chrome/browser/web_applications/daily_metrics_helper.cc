@@ -35,7 +35,7 @@ int BucketedDailySeconds(base::TimeDelta delta) {
 // This class exists just to be friended by |UkmRecorder|.
 class DesktopWebAppUkmRecorder {
  public:
-  static void Emit(DailyInteraction record) {
+  static void Emit(const DailyInteraction& record) {
     DCHECK(record.start_url.is_valid());
     ukm::SourceId source_id =
         ukm::UkmRecorder::GetSourceIdForDesktopWebAppStartUrl(record.start_url);
@@ -153,7 +153,7 @@ void EmitRecord(DailyInteraction record, Profile* profile) {
   url::Origin origin = url::Origin::Create(record.start_url);
   // Ensure origin is still in the history before emitting.
   ukm_background_service->GetBackgroundSourceIdIfAllowed(
-      origin, base::BindOnce(&EmitIfSourceIdExists, record));
+      origin, base::BindOnce(&EmitIfSourceIdExists, std::move(record)));
 }
 
 void EmitRecords(Profile* profile) {
@@ -206,7 +206,8 @@ void UpdateRecord(DailyInteraction& record, PrefService* prefs) {
 }  // namespace
 
 DailyInteraction::DailyInteraction() = default;
-DailyInteraction::DailyInteraction(GURL start_url) : start_url(start_url) {}
+DailyInteraction::DailyInteraction(GURL start_url)
+    : start_url(std::move(start_url)) {}
 DailyInteraction::DailyInteraction(const DailyInteraction&) = default;
 DailyInteraction::~DailyInteraction() = default;
 

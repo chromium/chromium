@@ -115,8 +115,8 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
 
   // Synchronous version of FinalizeInstall.
   FinalizeInstallResult AwaitFinalizeInstall(
-      WebAppInstallInfo info,
-      WebAppInstallFinalizer::FinalizeOptions options) {
+      const WebAppInstallInfo& info,
+      const WebAppInstallFinalizer::FinalizeOptions& options) {
     FinalizeInstallResult result{};
     base::RunLoop run_loop;
     finalizer().FinalizeInstall(

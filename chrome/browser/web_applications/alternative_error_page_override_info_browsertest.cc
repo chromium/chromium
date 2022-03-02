@@ -43,7 +43,7 @@ class AlternativeErrorPageOverrideInfoBrowserTest
   // Helper function to prepare PWA and retrieve information from the
   // alternative error page function.
   content::mojom::AlternativeErrorPageOverrideInfoPtr GetErrorPageInfo(
-      std::string html) {
+      base::StringPiece html) {
     ChromeContentBrowserClient browser_client;
     content::ScopedContentBrowserClientSetting setting(&browser_client);
 
