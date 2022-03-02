@@ -24,6 +24,10 @@ constexpr const char kFstabPath[] = "/run/arcvm/host_generated/fstab";
 constexpr const char kKernel[] = "vmlinux";
 constexpr const char kRootFs[] = "system.raw.img";
 constexpr const char kVendorImage[] = "vendor.raw.img";
+// Path to block apex payload. This is a composite disk containing
+// Android apexes which will be mounted as block devices.
+// This is a relative path starting from kBuiltinPath.
+constexpr const char kBlockApexPath[] = "apex/payload.img";
 
 }  // namespace
 
@@ -39,7 +43,11 @@ FileSystemStatus::FileSystemStatus()
       guest_kernel_path_(base::FilePath(kBuiltinPath).Append(kKernel)),
       fstab_path_(kFstabPath),
       is_system_image_ext_format_(IsSystemImageExtFormat(system_image_path_)),
-      has_adbd_json_(base::PathExists(base::FilePath(kAdbdJson))) {}
+      has_adbd_json_(base::PathExists(base::FilePath(kAdbdJson))) {
+  auto apex_path = base::FilePath(kBuiltinPath).Append(kBlockApexPath);
+  block_apex_path_ =
+      base::PathExists(apex_path) ? apex_path : base::FilePath("");
+}
 
 // static
 bool FileSystemStatus::IsHostRootfsWritable() {
