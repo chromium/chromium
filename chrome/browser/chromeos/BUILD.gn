@@ -1132,6 +1132,8 @@ source_set("chromeos") {
     "../ash/borealis/borealis_context_manager.h",
     "../ash/borealis/borealis_context_manager_impl.cc",
     "../ash/borealis/borealis_context_manager_impl.h",
+    "../ash/borealis/borealis_credits.cc",
+    "../ash/borealis/borealis_credits.h",
     "../ash/borealis/borealis_disk_manager.h",
     "../ash/borealis/borealis_disk_manager_dispatcher.cc",
     "../ash/borealis/borealis_disk_manager_dispatcher.h",

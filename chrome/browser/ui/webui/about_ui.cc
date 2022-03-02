@@ -33,6 +33,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/ash/borealis/borealis_credits.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -347,6 +348,20 @@ class ChromeOSCreditsHandler
   // Chrome OS credits contents that was loaded from file.
   std::string contents_;
 };
+
+void OnBorealisCreditsLoaded(content::URLDataSource::GotDataCallback callback,
+                             std::string credits_html) {
+  if (credits_html.empty()) {
+    credits_html = l10n_util::GetStringUTF8(IDS_BOREALIS_CREDITS_PLACEHOLDER);
+  }
+  std::move(callback).Run(base::RefCountedString::TakeString(&credits_html));
+}
+
+void HandleBorealisCredits(Profile* profile,
+                           content::URLDataSource::GotDataCallback callback) {
+  borealis::LoadBorealisCredits(
+      profile, base::BindOnce(&OnBorealisCreditsLoaded, std::move(callback)));
+}
 
 class CrostiniCreditsHandler
     : public base::RefCountedThreadSafe<CrostiniCreditsHandler> {
@@ -673,6 +688,9 @@ void AboutUIHTMLSource::StartDataRequest(
   } else if (source_name_ == chrome::kChromeUICrostiniCreditsHost) {
     CrostiniCreditsHandler::Start(profile(), path, std::move(callback));
     return;
+  } else if (source_name_ == chrome::kChromeUIBorealisCreditsHost) {
+    HandleBorealisCredits(profile(), std::move(callback));
+    return;
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   } else if (source_name_ == chrome::kChromeUITermsHost) {
@@ -717,7 +735,8 @@ std::string AboutUIHTMLSource::GetMimeType(const std::string& path) {
 bool AboutUIHTMLSource::ShouldAddContentSecurityPolicy() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (source_name_ == chrome::kChromeUIOSCreditsHost ||
-      source_name_ == chrome::kChromeUICrostiniCreditsHost) {
+      source_name_ == chrome::kChromeUICrostiniCreditsHost ||
+      source_name_ == chrome::kChromeUIBorealisCreditsHost) {
     return false;
   }
 #endif

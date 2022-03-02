@@ -301,6 +301,8 @@ const char kChromeUIIntenetDetailDialogURL[] =
     "chrome://internet-detail-dialog/";
 const char kChromeUIInternetConfigDialogHost[] = "internet-config-dialog";
 const char kChromeUIInternetDetailDialogHost[] = "internet-detail-dialog";
+const char kChromeUIBorealisCreditsHost[] = "borealis-credits";
+const char kChromeUIBorealisCreditsURL[] = "chrome://borealis-credits/";
 const char kChromeUICrostiniCreditsHost[] = "crostini-credits";
 const char kChromeUICrostiniCreditsURL[] = "chrome://crostini-credits/";
 const char kChromeUILockScreenNetworkHost[] = "lock-network";
@@ -390,6 +392,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
     kChromeUIAddSupervisionHost,
     kChromeUIAssistantOptInHost,
     kChromeUIBluetoothPairingHost,
+    kChromeUIBorealisCreditsHost,
     kChromeUICertificateManagerHost,
     kChromeUICrostiniCreditsHost,
     kChromeUICrostiniInstallerHost,
@@ -661,6 +664,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUIWebApksHost,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    kChromeUIBorealisCreditsHost,
     kChromeUICertificateManagerHost,
     kChromeUICrostiniCreditsHost,
     kChromeUICryptohomeHost,

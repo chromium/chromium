@@ -686,6 +686,7 @@ bool IsAboutUI(const GURL& url) {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
           || url.host_piece() == chrome::kChromeUIOSCreditsHost ||
+          url.host_piece() == chrome::kChromeUIBorealisCreditsHost ||
           url.host_piece() == chrome::kChromeUICrostiniCreditsHost
 #endif
   );  // NOLINT
@@ -1530,6 +1531,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kChromeUIBluetoothPairingURL),
       GURL(chrome::kOsUIComponentsUrl), GURL(chrome::kChromeUICrashesUrl),
       GURL(chrome::kOsUICrashesUrl), GURL(chrome::kOsUICreditsURL),
+      GURL(chrome::kChromeUIBorealisCreditsURL),
       GURL(chrome::kChromeUICrostiniCreditsURL),
       GURL(chrome::kChromeUICrostiniInstallerUrl),
       GURL(chrome::kChromeUICrostiniUpgraderUrl),

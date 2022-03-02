@@ -5794,6 +5794,9 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_BOREALIS_APP_NAME" desc="" translateable="false">
     Steam
   </message>
+  <message name="IDS_BOREALIS_CREDITS_PLACEHOLDER" desc="Shown to users who navigate to about://borealis-credits when the real credits file can't be shown (e.g. because borealis is not running)" translateable="false">
+    Borealis is either not installed or not running. Please run Borealis to view credits.
+  </message>
   <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE" desc="" translateable="false">
     Set up <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>
   </message>

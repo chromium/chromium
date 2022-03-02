@@ -283,6 +283,8 @@ extern const char kChromeUIIntenetConfigDialogURL[];
 extern const char kChromeUIIntenetDetailDialogURL[];
 extern const char kChromeUIInternetConfigDialogHost[];
 extern const char kChromeUIInternetDetailDialogHost[];
+extern const char kChromeUIBorealisCreditsHost[];
+extern const char kChromeUIBorealisCreditsURL[];
 extern const char kChromeUICrostiniCreditsHost[];
 extern const char kChromeUICrostiniCreditsURL[];
 extern const char kChromeUILockScreenNetworkHost[];
