@@ -70,6 +70,10 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
       const enterprise_management::CloudPolicySettings& policy,
       const std::string& policy_user);
 
+  // Updates the timestamp returned by the server for policies. By default,
+  // server returns current time as timestamp.
+  void UpdatePolicyTimestamp(const base::Time& timestamp);
+
   // Updates policy selected by |type| and optional |entity_id|. The policy is
   // set to the proto serialized in |serialized_policy|. This does not trigger
   // policy invalidation, hence test authors must manually trigger a policy

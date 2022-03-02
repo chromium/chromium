@@ -256,10 +256,10 @@ PolicyRow.prototype = {
    */
   decorate() {
     const toggle = this.querySelector('.policy.row .toggle');
-    toggle.addEventListener('click', this.toggleExpanded_.bind(this));
+    toggle.addEventListener('click', () => this.toggleExpanded_());
 
     const copy = this.querySelector('.copy-value');
-    copy.addEventListener('click', this.copyValue_.bind(this));
+    copy.addEventListener('click', () => this.copyValue_());
   },
 
   /** @param {Policy} policy */

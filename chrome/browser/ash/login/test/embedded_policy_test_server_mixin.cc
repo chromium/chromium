@@ -109,6 +109,11 @@ void EmbeddedPolicyTestServerMixin::UpdateUserPolicy(
                policy.SerializeAsString());
 }
 
+void EmbeddedPolicyTestServerMixin::UpdatePolicyTimestamp(
+    const base::Time& timestamp) {
+  policy_test_server_->policy_storage()->set_timestamp(timestamp);
+}
+
 void EmbeddedPolicyTestServerMixin::UpdatePolicy(
     const std::string& type,
     const std::string& serialized_policy) {
