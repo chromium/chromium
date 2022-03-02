@@ -18,7 +18,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/federated_auth_request_service.h"
-#include "content/browser/webid/id_token_request_callback_data.h"
 #include "content/browser/webid/test/mock_active_session_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
@@ -44,7 +43,6 @@ using blink::mojom::LogoutRpsRequest;
 using blink::mojom::LogoutRpsRequestPtr;
 using blink::mojom::LogoutRpsStatus;
 using blink::mojom::RequestIdTokenStatus;
-using blink::mojom::RequestMode;
 using blink::mojom::RevokeStatus;
 using Entry = ukm::builders::Blink_FedCm;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
@@ -79,7 +77,6 @@ constexpr char kClientMetadataEndpoint[] =
 constexpr char kRevokeEndpoint[] = "https://idp.example/revoke";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
-constexpr char kSigninUrl[] = "https://idp.example/signin";
 constexpr char kClientId[] = "client_id_123";
 constexpr char kNonce[] = "nonce123";
 
@@ -100,7 +97,6 @@ typedef struct {
   const char* provider;
   const char* client_id;
   const char* nonce;
-  RequestMode mode;
   bool prefer_auto_sign_in;
 } RequestParameters;
 
@@ -119,12 +115,6 @@ struct MockClientIdConfiguration {
 };
 
 typedef struct {
-  absl::optional<SigninResponse> signin_response;
-  const char* signin_url_or_token;
-  absl::optional<UserApproval> token_permission;
-} MockPermissionConfiguration;
-
-typedef struct {
   absl::optional<FetchStatus> accounts_response;
   AccountList accounts;
   absl::optional<FetchStatus> token_response;
@@ -133,14 +123,12 @@ typedef struct {
 
 typedef struct {
   const char* token;
-  absl::optional<UserApproval> initial_permission;
   absl::optional<FetchStatus> manifest_fetch_status;
   absl::optional<MockClientIdConfiguration> client_metadata;
   const char* idp_endpoint;
   const char* accounts_endpoint;
   const char* token_endpoint;
   const char* client_metadata_endpoint;
-  MockPermissionConfiguration Permission_conf;
   MockMediatedConfiguration Mediated_conf;
 } MockConfiguration;
 
@@ -162,8 +150,6 @@ std::ostream& operator<<(std::ostream& os,
 
 static const MockMediatedConfiguration kMediatedNoop{absl::nullopt, kAccounts,
                                                      absl::nullopt};
-static const MockPermissionConfiguration kPermissionNoop{absl::nullopt, "",
-                                                         absl::nullopt};
 static const MockClientIdConfiguration kSuccessfulClientId{
     FetchStatus::kSuccess, kPrivacyPolicyUrl, kTermsOfServiceUrl};
 
@@ -176,230 +162,99 @@ static const MockClientIdConfiguration kClientMetadataNoResponse{
 static const MockClientIdConfiguration kClientMetadataInvalidResponse{
     FetchStatus::kInvalidResponseError, "", ""};
 
-static const AuthRequestTestCase kPermissionTestCases[]{
-    {"Successful run with the IdP page loaded",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
-      kToken},
-     {kToken,
-      UserApproval::kApproved,
-      FetchStatus::kSuccess,
-      absl::nullopt,
-      kIdpEndpoint,
-      "",
-      "",
-      "",
-      {SigninResponse::kLoadIdp, kSigninUrl, UserApproval::kApproved},
-      kMediatedNoop}},
-
-    {"Successful run with a token response from the idp_endpoint",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
-      kToken},
-     {kToken,
-      UserApproval::kApproved,
-      FetchStatus::kSuccess,
-      absl::nullopt,
-      kIdpEndpoint,
-      "",
-      "",
-      "",
-      {SigninResponse::kTokenGranted, kToken, absl::nullopt},
-      kMediatedNoop}},
-
-    {"Initial user permission denied",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kApprovalDeclined,
-      FederatedAuthRequestResult::kApprovalDeclined, kEmptyToken},
-     {kToken, UserApproval::kDenied, absl::nullopt, absl::nullopt, "", "", "",
-      "", kPermissionNoop, kMediatedNoop}},
-
-    {"FedCM manifest file not found",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound,
-      kEmptyToken},
-     {kToken, UserApproval::kApproved, FetchStatus::kHttpNotFoundError,
-      absl::nullopt, "", "", "", "", kPermissionNoop, kMediatedNoop}},
-
-    {"FedCM manifest fetch error",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingManifestNoResponse,
-      kEmptyToken},
-     {kToken, UserApproval::kApproved, FetchStatus::kNoResponseError,
-      absl::nullopt, "", "", "", "", kPermissionNoop, kMediatedNoop}},
-
-    {"Error parsing FedCM manifest for Permission mode",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-      kEmptyToken},
-     {kToken, UserApproval::kApproved, FetchStatus::kInvalidResponseError,
-      absl::nullopt, "", kAccountsEndpoint, kTokenEndpoint, "", kPermissionNoop,
-      kMediatedNoop}},
-
-    {"Error reaching the idpendpoint",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorFetchingSignin,
-      FederatedAuthRequestResult::kErrorFetchingSignin, kEmptyToken},
-     {kToken,
-      UserApproval::kApproved,
-      FetchStatus::kSuccess,
-      absl::nullopt,
-      kIdpEndpoint,
-      "",
-      "",
-      "",
-      {SigninResponse::kSigninError, "", absl::nullopt},
-      kMediatedNoop}},
-
-    {"Error parsing the idpendpoint response",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorInvalidSigninResponse,
-      FederatedAuthRequestResult::kErrorInvalidSigninResponse, kEmptyToken},
-     {kToken,
-      UserApproval::kApproved,
-      FetchStatus::kSuccess,
-      absl::nullopt,
-      kIdpEndpoint,
-      "",
-      "",
-      "",
-      {SigninResponse::kInvalidResponseError, "", absl::nullopt},
-      kMediatedNoop}},
-
-    {"IdP window closed before token provision",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kError, FederatedAuthRequestResult::kError,
-      kEmptyToken},
-     {kEmptyToken,
-      UserApproval::kApproved,
-      FetchStatus::kSuccess,
-      absl::nullopt,
-      kIdpEndpoint,
-      "",
-      "",
-      "",
-      {SigninResponse::kLoadIdp, kSigninUrl, absl::nullopt},
-      kMediatedNoop}},
-
-    {"Token provision declined by user after IdP window closed",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kApprovalDeclined,
-      FederatedAuthRequestResult::kApprovalDeclined, kEmptyToken},
-     {kToken,
-      UserApproval::kApproved,
-      FetchStatus::kSuccess,
-      absl::nullopt,
-      kIdpEndpoint,
-      "",
-      "",
-      "",
-      {SigninResponse::kLoadIdp, kSigninUrl, UserApproval::kDenied},
-      kMediatedNoop}}};
-
 static const AuthRequestTestCase kMediatedTestCases[]{
     {"Error parsing FedCM manifest for Mediated mode missing token endpoint",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce},
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       kEmptyToken},
-     {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, absl::nullopt,
-      kIdpEndpoint, kAccountsEndpoint, "", kClientMetadataEndpoint,
-      kPermissionNoop, kMediatedNoop}},
+     {kToken, FetchStatus::kInvalidResponseError, absl::nullopt, kIdpEndpoint,
+      kAccountsEndpoint, "", kClientMetadataEndpoint, kMediatedNoop}},
 
     {"Error parsing FedCM manifest for Mediated mode missing accounts endpoint",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce},
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       kEmptyToken},
-     {kToken, absl::nullopt, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint,
-      "", kTokenEndpoint, kClientMetadataEndpoint, kPermissionNoop,
-      kMediatedNoop}},
+     {kToken, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint, "",
+      kTokenEndpoint, kClientMetadataEndpoint, kMediatedNoop}},
     {"Error due to accounts endpoint in different origin than identity "
      "provider",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce},
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       kEmptyToken},
-     {kToken, absl::nullopt, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint,
+     {kToken, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint,
       kCrossOriginAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
-      kPermissionNoop, kMediatedNoop}},
+      kMediatedNoop}},
 
     {"Error reaching Accounts endpoint",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce},
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
       kEmptyToken},
      {kEmptyToken,
-      absl::nullopt,
       FetchStatus::kSuccess,
       kSuccessfulClientId,
       "",
       kAccountsEndpoint,
       kTokenEndpoint,
       kClientMetadataEndpoint,
-      kPermissionNoop,
       {FetchStatus::kNoResponseError, kAccounts, absl::nullopt}}},
 
     {"Error parsing Accounts response",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce},
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
       kEmptyToken},
      {kToken,
-      absl::nullopt,
       FetchStatus::kSuccess,
       kSuccessfulClientId,
       "",
       kAccountsEndpoint,
       kTokenEndpoint,
       kClientMetadataEndpoint,
-      kPermissionNoop,
       {FetchStatus::kInvalidResponseError, kAccounts, absl::nullopt}}},
 
     {"Successful Mediated flow",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce},
      {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
       kToken},
      {kToken,
-      absl::nullopt,
       FetchStatus::kSuccess,
       kSuccessfulClientId,
       "",
       kAccountsEndpoint,
       kTokenEndpoint,
       kClientMetadataEndpoint,
-      kPermissionNoop,
       {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}},
 
     {"Client metadata file not found",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce},
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
       kEmptyToken},
-     {kToken, absl::nullopt, FetchStatus::kSuccess, kClientMetadataHttpNotFound,
-      "", kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
-      kPermissionNoop, kMediatedNoop}},
+     {kToken, FetchStatus::kSuccess, kClientMetadataHttpNotFound, "",
+      kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+      kMediatedNoop}},
 
     {"Client metadata empty response",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce},
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
       kEmptyToken},
-     {kToken, absl::nullopt, FetchStatus::kSuccess, kClientMetadataNoResponse,
-      "", kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
-      kPermissionNoop, kMediatedNoop}},
+     {kToken, FetchStatus::kSuccess, kClientMetadataNoResponse, "",
+      kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+      kMediatedNoop}},
 
     {"Client metadata invalid response",
-     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {kIdpTestOrigin, kClientId, kNonce},
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingClientMetadataInvalidResponse,
       kEmptyToken},
-     {kToken, absl::nullopt, FetchStatus::kSuccess,
-      kClientMetadataInvalidResponse, "", kAccountsEndpoint, kTokenEndpoint,
-      kClientMetadataEndpoint, kPermissionNoop, kMediatedNoop}},
+     {kToken, FetchStatus::kSuccess, kClientMetadataInvalidResponse, "",
+      kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+      kMediatedNoop}},
 };
 
 // Helper class for receiving the mojo method callback.
@@ -570,10 +425,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   std::pair<RequestIdTokenStatus, absl::optional<std::string>>
   PerformAuthRequest(const std::string& client_id,
                      const std::string& nonce,
-                     blink::mojom::RequestMode mode,
                      bool prefer_auto_sign_in) {
     AuthRequestCallbackHelper auth_helper;
-    request_remote_->RequestIdToken(provider_, client_id, nonce, mode,
+    request_remote_->RequestIdToken(provider_, client_id, nonce,
                                     prefer_auto_sign_in,
                                     auth_helper.callback());
     auth_helper.WaitForCallback();
@@ -601,53 +455,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return revoke_helper.status();
   }
 
-  void SetPermissionMockExpectations(const MockPermissionConfiguration& conf,
-                                     std::string token) {
-    if (conf.signin_response) {
-      EXPECT_CALL(*mock_request_manager_, SendSigninRequest(_, _, _))
-          .WillOnce(Invoke(
-              [&](const GURL&, const std::string&,
-                  IdpNetworkRequestManager::SigninRequestCallback callback) {
-                std::move(callback).Run(*conf.signin_response,
-                                        conf.signin_url_or_token);
-              }));
-    }
-
-    // The IdP dialog only shows when kLoadIdP is the return code from the
-    // signin request.
-    if (conf.signin_response == SigninResponse::kLoadIdp) {
-      EXPECT_CALL(*mock_dialog_controller_, ShowIdProviderWindow(_, _, _, _))
-          .WillOnce(Invoke([=](WebContents*, WebContents* idp_web_contents,
-                               const GURL&,
-                               IdentityRequestDialogController::
-                                   IdProviderWindowClosedCallback callback) {
-            close_idp_window_callback_ = std::move(callback);
-            auto* request_callback_data =
-                IdTokenRequestCallbackData::Get(idp_web_contents);
-            EXPECT_TRUE(request_callback_data);
-            auto rp_done_callback = request_callback_data->TakeDoneCallback();
-            IdTokenRequestCallbackData::Remove(idp_web_contents);
-            EXPECT_TRUE(rp_done_callback);
-            std::move(rp_done_callback).Run(token);
-          }));
-
-      EXPECT_CALL(*mock_dialog_controller_, CloseIdProviderWindow())
-          .WillOnce(
-              Invoke([&]() { std::move(close_idp_window_callback_).Run(); }));
-    }
-
-    if (conf.token_permission) {
-      EXPECT_CALL(*mock_dialog_controller_,
-                  ShowTokenExchangePermissionDialog(_, _, _))
-          .WillOnce(Invoke(
-              [&](content::WebContents* idp_web_contents, const GURL& idp_url,
-                  IdentityRequestDialogController::TokenExchangeApprovalCallback
-                      callback) {
-                std::move(callback).Run(*conf.token_permission);
-              }));
-    }
-  }
-
   void SetMediatedMockExpectations(const MockMediatedConfiguration& conf,
                                    std::string token,
                                    bool prefer_auto_sign_in) {
@@ -670,10 +477,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         // e.g. for sign up flow, multiple accounts, user opt-out etc. In this
         // case, it's up to the test to expect this mock function call.
         EXPECT_CALL(*mock_dialog_controller_,
-                    ShowAccountsDialog(_, _, _, _, _, _, _, _))
+                    ShowAccountsDialog(_, _, _, _, _, _, _))
             .WillOnce(Invoke(
                 [&](content::WebContents* rp_web_contents,
-                    content::WebContents* idp_web_contents,
                     const GURL& idp_signin_url,
                     base::span<const content::IdentityRequestAccount> accounts,
                     const IdentityProviderMetadata& idp_metadata,
@@ -689,7 +495,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       }
     } else {
       EXPECT_CALL(*mock_dialog_controller_,
-                  ShowAccountsDialog(_, _, _, _, _, _, _, _))
+                  ShowAccountsDialog(_, _, _, _, _, _, _))
           .Times(0);
     }
 
@@ -711,22 +517,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   }
 
   void SetMockExpectations(const AuthRequestTestCase& test_case) {
-    if (test_case.config.initial_permission) {
-      EXPECT_CALL(*mock_dialog_controller_,
-                  ShowInitialPermissionDialog(_, _, _, _))
-          .WillOnce(Invoke(
-              [&](WebContents*, const GURL&,
-                  IdentityRequestDialogController::PermissionDialogMode,
-                  IdentityRequestDialogController::InitialApprovalCallback
-                      callback) {
-                std::move(callback).Run(*test_case.config.initial_permission);
-              }));
-    } else {
-      EXPECT_CALL(*mock_dialog_controller_,
-                  ShowInitialPermissionDialog(_, _, _, _))
-          .Times(0);
-    }
-
     if (test_case.config.manifest_fetch_status) {
       EXPECT_CALL(*mock_request_manager_, FetchManifest(_, _, _))
           .WillOnce(Invoke(
@@ -764,8 +554,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
           .Times(0);
     }
 
-    SetPermissionMockExpectations(test_case.config.Permission_conf,
-                                  test_case.config.token);
     SetMediatedMockExpectations(test_case.config.Mediated_conf,
                                 test_case.config.token,
                                 test_case.inputs.prefer_auto_sign_in);
@@ -910,11 +698,6 @@ class BasicFederatedAuthRequestImplTest
     : public FederatedAuthRequestImplTest,
       public ::testing::WithParamInterface<AuthRequestTestCase> {};
 
-INSTANTIATE_TEST_SUITE_P(PermissionTests,
-                         BasicFederatedAuthRequestImplTest,
-                         ::testing::ValuesIn(kPermissionTestCases),
-                         ::testing::PrintToStringParamName());
-
 INSTANTIATE_TEST_SUITE_P(MediatedTests,
                          BasicFederatedAuthRequestImplTest,
                          ::testing::ValuesIn(kMediatedTestCases),
@@ -925,9 +708,9 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequests) {
   AuthRequestTestCase test_case = GetParam();
   CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(auth_response.first, test_case.expected.return_status);
   EXPECT_EQ(auth_response.second, test_case.expected.token);
 }
@@ -936,9 +719,9 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
   AuthRequestTestCase test_case = GetParam();
   CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(main_test_rfh()->GetFederatedAuthRequestIssueCount(
                 test_case.expected.devtools_issue_status),
             auth_response.first == RequestIdTokenStatus::kSuccess ? 0 : 1);
@@ -1033,53 +816,44 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutNoEndpoints) {
 
 static const AuthRequestTestCase kSuccessfulMediatedSignUpTestCase{
     "Successful mediated flow with one account",
-    {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
-     kNotPreferAutoSignIn},
+    {kIdpTestOrigin, kClientId, kNonce, kNotPreferAutoSignIn},
     {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
      kToken},
     {kToken,
-     absl::nullopt,
      FetchStatus::kSuccess,
      kSuccessfulClientId,
      "",
      kAccountsEndpoint,
      kTokenEndpoint,
      kClientMetadataEndpoint,
-     kPermissionNoop,
      {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}};
 
 static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
     "Failed mediated flow with one account",
-    {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
-     kNotPreferAutoSignIn},
+    {kIdpTestOrigin, kClientId, kNonce, kNotPreferAutoSignIn},
     {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
      kToken},
     {kToken,
-     absl::nullopt,
      FetchStatus::kSuccess,
      kSuccessfulClientId,
      "",
      kAccountsEndpoint,
      kTokenEndpoint,
      kClientMetadataEndpoint,
-     kPermissionNoop,
      {FetchStatus::kSuccess, kAccounts, FetchStatus::kInvalidResponseError}}};
 
 static const AuthRequestTestCase kSuccessfulMediatedAutoSignInTestCase{
     "Successful mediated flow with one account",
-    {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
-     kPreferAutoSignIn},
+    {kIdpTestOrigin, kClientId, kNonce, kPreferAutoSignIn},
     {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
      kToken},
     {kToken,
-     absl::nullopt,
      FetchStatus::kSuccess,
      kSuccessfulClientId,
      "",
      kAccountsEndpoint,
      kTokenEndpoint,
      kClientMetadataEndpoint,
-     kPermissionNoop,
      {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}};
 
 TEST_F(BasicFederatedAuthRequestImplTest,
@@ -1087,9 +861,9 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
   CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
 
   EXPECT_EQ(LoginState::kSignUp, displayed_accounts()[0].login_state);
 }
@@ -1114,9 +888,9 @@ TEST_F(BasicFederatedAuthRequestImplTest,
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .WillOnce(Return(true));
 
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
 }
 
@@ -1141,9 +915,9 @@ TEST_F(BasicFederatedAuthRequestImplTest,
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .Times(1);
 
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest,
@@ -1163,9 +937,9 @@ TEST_F(BasicFederatedAuthRequestImplTest,
               GrantSharingPermissionForAccount(_, _, _))
       .Times(0);
 
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
@@ -1194,11 +968,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _))
       .WillOnce(Invoke(
-          [&](content::WebContents* rp_web_contents,
-              content::WebContents* idp_web_contents,
-              const GURL& idp_signin_url,
+          [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
@@ -1210,9 +982,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
           }));
 
   EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
 
   ASSERT_FALSE(displayed_accounts.empty());
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignIn);
@@ -1229,11 +1001,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
   const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
   CreateAuthRequest(GURL(test_case.inputs.provider));
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _))
       .WillOnce(Invoke(
-          [&](content::WebContents* rp_web_contents,
-              content::WebContents* idp_web_contents,
-              const GURL& idp_signin_url,
+          [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
@@ -1245,9 +1015,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
           }));
 
   SetMockExpectations(test_case);
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
 
   ASSERT_FALSE(displayed_accounts.empty());
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignUp);
@@ -1283,11 +1053,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _))
       .WillOnce(Invoke(
-          [&](content::WebContents* rp_web_contents,
-              content::WebContents* idp_web_contents,
-              const GURL& idp_signin_url,
+          [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
@@ -1300,9 +1068,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
           }));
 
   EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
 
   ASSERT_FALSE(displayed_accounts.empty());
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignIn);
@@ -1404,9 +1172,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
   ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                         ukm_loop.QuitClosure());
 
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(auth_response.second.value(), kToken);
 
   ukm_loop.Run();
@@ -1452,9 +1220,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                         ukm_loop.QuitClosure());
 
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
 
   ukm_loop.Run();
@@ -1487,19 +1255,16 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   AccountList displayed_accounts;
   const AuthRequestTestCase test_case = {
       "Failed mediated flow due to user not selecting an account",
-      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
-       kNotPreferAutoSignIn},
+      {kIdpTestOrigin, kClientId, kNonce, kNotPreferAutoSignIn},
       {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
        kToken},
       {kToken,
-       absl::nullopt,
        FetchStatus::kSuccess,
        kSuccessfulClientId,
        "",
        kAccountsEndpoint,
        kTokenEndpoint,
        kClientMetadataEndpoint,
-       kPermissionNoop,
        {FetchStatus::kSuccess, kAccounts, absl::nullopt,
         /*customized_dialog=*/true}}};
   auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
@@ -1510,11 +1275,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
       &mock_sharing_permission_delegate);
 
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _))
       .WillOnce(Invoke(
-          [&](content::WebContents* rp_web_contents,
-              content::WebContents* idp_web_contents,
-              const GURL& idp_signin_url,
+          [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
@@ -1531,9 +1294,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
                                         ukm_loop.QuitClosure());
 
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
 
   ukm_loop.Run();
 
@@ -1582,9 +1345,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .WillOnce(Return(true));
 
-  auto auth_response = PerformAuthRequest(
-      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
-      test_case.inputs.prefer_auto_sign_in);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
 
   histogram_tester.ExpectBucketCount("Blink.FedCm.WebContentsVisible", 1, 1);
@@ -1600,19 +1363,16 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
 
   const AuthRequestTestCase test_case = {
       "Failed mediated flow due to user leaving the page",
-      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
-       kNotPreferAutoSignIn},
+      {kIdpTestOrigin, kClientId, kNonce, kNotPreferAutoSignIn},
       {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
        kToken},
       {kToken,
-       absl::nullopt,
        FetchStatus::kSuccess,
        kSuccessfulClientId,
        "",
        kAccountsEndpoint,
        kTokenEndpoint,
        kClientMetadataEndpoint,
-       kPermissionNoop,
        {FetchStatus::kSuccess, kAccounts, absl::nullopt,
         /*customized_dialog=*/true}}};
   CreateAuthRequest(GURL(test_case.inputs.provider));
@@ -1623,7 +1383,6 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   ASSERT_NE(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
 
   PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                     test_case.inputs.mode,
                      test_case.inputs.prefer_auto_sign_in);
 
   histogram_tester.ExpectBucketCount("Blink.FedCm.WebContentsVisible", 0, 1);

@@ -8,7 +8,6 @@ namespace content {
 
 void ShellIdentityDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
-    content::WebContents* idp_web_contents,
     const GURL& idp_signin_url,
     base::span<const IdentityRequestAccount> accounts,
     const IdentityProviderMetadata& idp_metadata,

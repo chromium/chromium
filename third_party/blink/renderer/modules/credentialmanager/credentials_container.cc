@@ -98,7 +98,6 @@ using MojoPublicKeyCredentialRequestOptions =
     mojom::blink::PublicKeyCredentialRequestOptions;
 using mojom::blink::GetAssertionAuthenticatorResponsePtr;
 using mojom::blink::RequestIdTokenStatus;
-using mojom::blink::RequestMode;
 using payments::mojom::blink::PaymentCredentialStorageStatus;
 
 constexpr char kCryptotokenOrigin[] =
@@ -858,14 +857,6 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
   return true;
 }
 
-RequestMode ToRequestMode(const String& mode) {
-  if (mode == "mediated") {
-    return RequestMode::kMediated;
-  } else {
-    return RequestMode::kPermission;
-  }
-}
-
 void OnRequestIdToken(ScriptPromiseResolver* resolver,
                       RequestIdTokenStatus status,
                       const WTF::String& id_token) {
@@ -1190,8 +1181,7 @@ ScriptPromise CredentialsContainer::get(
         auto* fedcm_get_request =
             CredentialManagerProxy::From(script_state)->FedCmGetRequest();
         fedcm_get_request->RequestIdToken(
-            provider_url, client_id, nonce,
-            ToRequestMode(options->federated()->mode()), prefer_auto_sign_in,
+            provider_url, client_id, nonce, prefer_auto_sign_in,
             WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver)));
         return promise;
       }

@@ -46,7 +46,6 @@ class CONTENT_EXPORT FederatedAuthRequestService
   void RequestIdToken(const GURL& provider,
                       const std::string& client_id,
                       const std::string& nonce,
-                      blink::mojom::RequestMode mode,
                       bool prefer_auto_sign_in,
                       RequestIdTokenCallback) override;
   void CancelTokenRequest() override;

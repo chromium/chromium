@@ -17,15 +17,8 @@
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
-class WebIdDialog;
 
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
-using InitialApprovalCallback =
-    content::IdentityRequestDialogController::InitialApprovalCallback;
-using IdProviderWindowClosedCallback =
-    content::IdentityRequestDialogController::IdProviderWindowClosedCallback;
-using TokenExchangeApprovalCallback =
-    content::IdentityRequestDialogController::TokenExchangeApprovalCallback;
 using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;
 
@@ -46,33 +39,14 @@ class IdentityDialogController
   int GetBrandIconMinimumSize() override;
   int GetBrandIconIdealSize() override;
 
-  void ShowInitialPermissionDialog(
-      content::WebContents* rp_web_contents,
-      const GURL& idp_url,
-      content::IdentityRequestDialogController::PermissionDialogMode mode,
-      InitialApprovalCallback) override;
-
   void ShowAccountsDialog(
       content::WebContents* rp_web_contents,
-      content::WebContents* idp_web_contents,
       const GURL& idp_url,
       base::span<const content::IdentityRequestAccount> accounts,
       const content::IdentityProviderMetadata& idp_metadata,
       const content::ClientIdData& client_data,
       content::IdentityRequestAccount::SignInMode sign_in_mode,
       AccountSelectionCallback on_selected) override;
-
-  void ShowIdProviderWindow(content::WebContents* rp_web_contents,
-                            content::WebContents* idp_web_contents,
-                            const GURL& idp_signin_url,
-                            IdProviderWindowClosedCallback) override;
-
-  void CloseIdProviderWindow() override;
-
-  void ShowTokenExchangePermissionDialog(
-      content::WebContents* rp_web_contents,
-      const GURL& idp_url,
-      TokenExchangeApprovalCallback) override;
 
   // AccountSelectionView::Delegate:
 
@@ -83,17 +57,11 @@ class IdentityDialogController
   gfx::NativeView GetNativeView() override;
 
  private:
-  WebIdDialog& GetOrCreateView(content::WebContents* rp_web_contents);
-  raw_ptr<WebIdDialog> view_{nullptr};
-
   void OnViewClosed();
 
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
   raw_ptr<content::WebContents> rp_web_contents_;
-  IdProviderWindowClosedCallback view_closed_callback_;
-
-  base::WeakPtrFactory<IdentityDialogController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_

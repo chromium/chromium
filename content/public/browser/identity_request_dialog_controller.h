@@ -123,63 +123,17 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // icon is displayed in the accounts dialog.
   virtual int GetBrandIconMinimumSize();
 
-  // Permission-oriented flow methods.
-
-  // Shows the initial permission dialog to the user.
-  //
-  // - |rp_web_contents| is the RP web contents that has initiated the
-  //   identity request.
-  // - |idp_url| is the IDP URL that gets displayed to the user.
-  // - |mode| determines whether the dialog should maintain state across
-  //   multiple calls
-  // - |approval_callback| callback is called with appropriate status depending
-  //   on whether user granted or denied the permission.
-  //
-  // 'IdentityRequestDialogController' is destroyed before
-  // |rp_web_contents|.
-  virtual void ShowInitialPermissionDialog(
-      WebContents* rp_web_contents,
-      const GURL& idp_url,
-      PermissionDialogMode mode,
-      InitialApprovalCallback approval_callback);
-
   // Shows and accounts selections for the given IDP. The |on_selected| callback
   // is called with the selected account id or empty string otherwise.
   // |sign_in_mode| represents whether this is an auto sign in flow.
   virtual void ShowAccountsDialog(
       content::WebContents* rp_web_contents,
-      content::WebContents* idp_web_contents,
       const GURL& idp_signin_url,
       base::span<const IdentityRequestAccount> accounts,
       const IdentityProviderMetadata& idp_metadata,
       const ClientIdData& client_id_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       AccountSelectionCallback on_selected);
-
-  // Shows the identity provider sign-in page at the given URL using the
-  // |idp_web_contents| inside a modal window. The |on_closed| callback is
-  // called when the window is closed by user or programmatically as a result of
-  // invoking CloseIdProviderWindow().
-  //
-  // 'IdentityRequestDialogController' is destroyed before either WebContents.
-  virtual void ShowIdProviderWindow(content::WebContents* rp_web_contents,
-                                    content::WebContents* idp_web_contents,
-                                    const GURL& idp_signin_url,
-                                    IdProviderWindowClosedCallback on_closed);
-
-  // Closes the identity provider sign-in window if any.
-  virtual void CloseIdProviderWindow();
-
-  // Shows the secondary permission dialog to the user.
-  // - |rp_web_contents| is the RP web contents that has initiated the
-  //   identity request.
-  // - |idp_url| is the IDP URL that gets displayed to the user.
-  // - |approval_callback| callback is called with appropriate status depending
-  //   on whether user granted or denied the permission.
-  virtual void ShowTokenExchangePermissionDialog(
-      content::WebContents* rp_web_contents,
-      const GURL& idp_url,
-      TokenExchangeApprovalCallback approval_callback);
 };
 
 }  // namespace content

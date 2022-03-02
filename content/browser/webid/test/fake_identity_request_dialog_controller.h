@@ -23,10 +23,8 @@ class WebContents;
 class FakeIdentityRequestDialogController
     : public IdentityRequestDialogController {
  public:
-  FakeIdentityRequestDialogController(
-      absl::optional<UserApproval> initial_permission_response,
-      absl::optional<UserApproval> token_exchange_permission_response,
-      std::string id_token);
+  explicit FakeIdentityRequestDialogController(
+      absl::optional<std::string> dialog_selected_account);
   ~FakeIdentityRequestDialogController() override;
 
   FakeIdentityRequestDialogController(
@@ -34,32 +32,16 @@ class FakeIdentityRequestDialogController
   FakeIdentityRequestDialogController& operator=(
       const FakeIdentityRequestDialogController&) = delete;
 
-  void ShowInitialPermissionDialog(WebContents*,
-                                   const GURL&,
-                                   PermissionDialogMode mode,
-                                   InitialApprovalCallback callback) override;
-  void ShowIdProviderWindow(WebContents*,
-                            WebContents* idp_web_contents,
-                            const GURL&,
-                            IdProviderWindowClosedCallback callback) override;
-  void CloseIdProviderWindow() override;
-  void ShowTokenExchangePermissionDialog(
-      WebContents*,
-      const GURL&,
-      TokenExchangeApprovalCallback callback) override;
+  void ShowAccountsDialog(WebContents* rp_web_contents,
+                          const GURL& idp_signin_url,
+                          base::span<const IdentityRequestAccount> accounts,
+                          const IdentityProviderMetadata& idp_metadata,
+                          const ClientIdData& client_id_data,
+                          IdentityRequestAccount::SignInMode sign_in_mode,
+                          AccountSelectionCallback on_selected) override;
 
  private:
-  // User action on the initial IdP tracking permission prompt. nullopt
-  // prevents the callback from being invoked.
-  absl::optional<UserApproval> initial_permission_response_;
-
-  // User action on the token exchange permission prompt. nullopt
-  // prevents the callback from being invoked.
-  absl::optional<UserApproval> token_exchange_permission_response_;
-
-  std::string id_token_;
-
-  base::OnceClosure close_idp_window_callback_;
+  absl::optional<std::string> dialog_selected_account_;
 };
 
 }  // namespace content

@@ -47,25 +47,22 @@ namespace {
 constexpr char kRpHostName[] = "rp.example";
 constexpr char kIdpOrigin[] = "https://idp.example.org";
 constexpr char kExpectedManifestPath[] = "/fedcm.json";
-constexpr char kIdpEndpointRelativeValue[] = "/fedcm/sign-in";
-constexpr char kTestManifestResponseBody[] =
-    "{\"idp_endpoint\": \"/fedcm/sign-in\"}";
-constexpr char kTestIdpEndpointBody[] = "{\"signin_url\": \"/fedcm/\"}";
 constexpr char kTestContentType[] = "application/json";
 constexpr char kIdpForbiddenHeader[] = "Sec-FedCM-CSRF";
-// Value will be added here as token introspection is implemented.
+
+// Id token value in //content/test/data/id_token_endpoint.json
 constexpr char kIdToken[] = "[not a real token]";
-constexpr char kIdpEndpointTokenResponse[] =
-    "{\"id_token\": \"[not a real token]\"}";
 
 // This class implements the IdP logic, and responds to requests sent to the
 // test HTTP server.
 class IdpTestServer {
  public:
-  struct ResponseDetails {
+  struct ManifestDetails {
     HttpStatusCode status_code;
-    std::string body;
     std::string content_type;
+    std::string accounts_endpoint_url;
+    std::string client_metadata_endpoint_url;
+    std::string id_token_endpoint_url;
   };
 
   IdpTestServer() = default;
@@ -86,24 +83,15 @@ class IdpTestServer {
 
     auto response = std::make_unique<BasicHttpResponse>();
     if (IsManifestRequest(request)) {
-      BuildResponseFromDetails(*response.get(), manifest_details_);
-      return response;
-    }
-
-    if (IsIdpEndpointRequest(request)) {
-      BuildResponseFromDetails(*response.get(), idp_endpoint_details_);
+      BuildManifestResponseFromDetails(*response.get(), manifest_details_);
       return response;
     }
 
     return nullptr;
   }
 
-  void SetManifestResponseDetails(ResponseDetails details) {
+  void SetManifestResponseDetails(ManifestDetails details) {
     manifest_details_ = details;
-  }
-
-  void SetIdpEndpointResponseDetails(ResponseDetails details) {
-    idp_endpoint_details_ = details;
   }
 
  private:
@@ -115,33 +103,34 @@ class IdpTestServer {
     return false;
   }
 
-  bool IsIdpEndpointRequest(const HttpRequest& request) {
-    if (request.method == HttpMethod::METHOD_GET &&
-        request.relative_url.rfind(kIdpEndpointRelativeValue, 0) == 0 &&
-        request.all_headers.find(kIdpForbiddenHeader) != std::string::npos) {
-      return true;
-    }
-    return false;
-  }
-
-  void BuildResponseFromDetails(BasicHttpResponse& response,
-                                const ResponseDetails& details) {
+  void BuildManifestResponseFromDetails(BasicHttpResponse& response,
+                                        const ManifestDetails& details) {
+    std::string content = ConvertToJsonDictionary(
+        {{"accounts_endpoint", details.accounts_endpoint_url},
+         {"client_metadata_endpoint", details.client_metadata_endpoint_url},
+         {"id_token_endpoint", details.id_token_endpoint_url}});
     response.set_code(details.status_code);
-    response.set_content(details.body);
+    response.set_content(content);
     response.set_content_type(details.content_type);
   }
 
-  // Response values for the types of requests that are sent to the IdP.
-  // These have default values that can be overridden for specific tests.
-  ResponseDetails manifest_details_ = {net::HTTP_OK, kTestManifestResponseBody,
-                                       kTestContentType};
-  ResponseDetails idp_endpoint_details_ = {net::HTTP_OK, kTestIdpEndpointBody,
-                                           kTestContentType};
+  std::string ConvertToJsonDictionary(
+      const std::map<std::string, std::string>& data) {
+    std::string out = "{";
+    for (auto it : data) {
+      out += "\"" + it.first + "\":\"" + it.second + "\",";
+    }
+    if (!out.empty()) {
+      out[out.length() - 1] = '}';
+    }
+    return out;
+  }
+
+  ManifestDetails manifest_details_;
 };
 
 }  // namespace
 
-// TODO(yigu): Update the tests (e.g. fedcm manifest) to cover mediation mode.
 class WebIdBrowserTest : public ContentBrowserTest {
  public:
   WebIdBrowserTest() = default;
@@ -164,9 +153,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
         shell(), https_server().GetURL(kRpHostName, "/title1.html")));
 
     test_browser_client_ = std::make_unique<WebIdTestContentBrowserClient>();
-    SetTestIdentityRequestDialogController(
-        IdentityRequestDialogController::UserApproval::kApproved,
-        IdentityRequestDialogController::UserApproval::kApproved);
+    SetTestIdentityRequestDialogController("not_real_account");
     old_client_ = SetBrowserClientForTesting(test_browser_client_.get());
   }
 
@@ -206,8 +193,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
            BaseIdpUrl() + R"(',
                 clientId: 'client_id_1',
                 nonce: '12345',
-              }],
-              mode: "permission",
+              }]
             }
           }));
           return x;
@@ -215,13 +201,21 @@ class WebIdBrowserTest : public ContentBrowserTest {
     )";
   }
 
+  IdpTestServer::ManifestDetails BuildValidManifestDetails() {
+    std::string accounts_endpoint_url = "/fedcm/accounts_endpoint.json";
+    std::string client_metadata_endpoint_url =
+        "/fedcm/client_metadata_endpoint.json";
+    std::string id_token_endpoint_url = "/fedcm/id_token_endpoint.json";
+    return {net::HTTP_OK, kTestContentType, accounts_endpoint_url,
+            client_metadata_endpoint_url, id_token_endpoint_url};
+  }
+
   IdpTestServer* idp_server() { return idp_server_.get(); }
 
   void SetTestIdentityRequestDialogController(
-      IdentityRequestDialogController::UserApproval initial_permission_response,
-      IdentityRequestDialogController::UserApproval token_exchange_response) {
+      const std::string& dialog_selected_account) {
     auto controller = std::make_unique<FakeIdentityRequestDialogController>(
-        initial_permission_response, token_exchange_response, kIdToken);
+        dialog_selected_account);
     test_browser_client_->SetIdentityRequestDialogController(
         std::move(controller));
   }
@@ -236,14 +230,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
 // Verify a standard login flow with IdP sign-in page.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FullLoginFlow) {
-  EXPECT_EQ(std::string(kIdToken), EvalJs(shell(), GetBasicRequestString()));
-}
-
-// Verify abbreviated login flow where IdP returns a token from the
-// |idp_endpoint|.
-IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FastLoginFlow) {
-  idp_server()->SetIdpEndpointResponseDetails(
-      {net::HTTP_OK, kIdpEndpointTokenResponse, kTestContentType});
+  idp_server()->SetManifestResponseDetails(BuildValidManifestDetails());
 
   EXPECT_EQ(std::string(kIdToken), EvalJs(shell(), GetBasicRequestString()));
 }
@@ -251,53 +238,21 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FastLoginFlow) {
 // Verify full login flow where the IdP uses absolute rather than relative
 // URLs.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, AbsoluteURLs) {
-  std::string idp_endpoint_absolute_url =
-      BaseIdpUrl() + kIdpEndpointRelativeValue;
-  std::string manifest_response_body =
-      "{\"idp_endpoint\": \"" + idp_endpoint_absolute_url + "\"}";
-  idp_server()->SetManifestResponseDetails(
-      {net::HTTP_OK, manifest_response_body, kTestContentType});
+  IdpTestServer::ManifestDetails manifest_details = BuildValidManifestDetails();
+  manifest_details.accounts_endpoint_url = "/fedcm/accounts_endpoint.json";
+  manifest_details.client_metadata_endpoint_url =
+      "/fedcm/client_metadata_endpoint.json";
+  manifest_details.id_token_endpoint_url = "/fedcm/id_token_endpoint.json";
 
-  std::string signin_url_absolute_url = BaseIdpUrl() + "/fedcm";
-  std::string idp_endpoint_response_body =
-      "{\"signin_url\": \"" + signin_url_absolute_url + "\"}";
-  idp_server()->SetIdpEndpointResponseDetails(
-      {net::HTTP_OK, idp_endpoint_response_body, kTestContentType});
+  idp_server()->SetManifestResponseDetails(manifest_details);
 
   EXPECT_EQ(std::string(kIdToken), EvalJs(shell(), GetBasicRequestString()));
 }
 
-// Simulate the user declining the permission dialog to allow the request to
-// proceed.
-IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, InitialPermissionDeclined) {
-  SetTestIdentityRequestDialogController(
-      IdentityRequestDialogController::UserApproval::kDenied,
-      IdentityRequestDialogController::UserApproval::kApproved);
-
-  std::string expected_error =
-      "a JavaScript error: \"AbortError: User "
-      "declined the sign-in attempt.\"\n";
-  EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
-}
-
-// Simulate the user declining to share the ID token after it has been
-// provided.
-// TODO(kenrb): Add a variant of this test that denies approval when the token
-// has been provided from the idp_endpoint. Currently the permission prompt does
-// not get displayed in that case.
-IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, TokenExchangePermissionDeclined) {
-  SetTestIdentityRequestDialogController(
-      IdentityRequestDialogController::UserApproval::kApproved,
-      IdentityRequestDialogController::UserApproval::kDenied);
-
-  std::string expected_error =
-      "a JavaScript error: \"AbortError: User "
-      "declined the sign-in attempt.\"\n";
-  EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
-}
-
-// Verify an attempt to invoke WebID with an insecure IDP path fails.
+// Verify an attempt to invoke FedCM with an insecure IDP path fails.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
+  idp_server()->SetManifestResponseDetails(BuildValidManifestDetails());
+
   std::string script = R"(
         (async () => {
           var x = (await navigator.credentials.get({

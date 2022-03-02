@@ -8114,7 +8114,6 @@ test("unit_tests") {
       "../browser/ui/views/user_education/help_bubble_view_unittest.cc",
       "../browser/ui/views/user_education/new_badge_label_unittest.cc",
       "../browser/ui/views/user_education/tip_marquee_view_unittest.cc",
-      "../browser/ui/views/webid/webid_dialog_views_unittest.cc",
       "../browser/ui/window_name_prompt/window_name_prompt_unittest.cc",
     ]
     if (is_linux) {

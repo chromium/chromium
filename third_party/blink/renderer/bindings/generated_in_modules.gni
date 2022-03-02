@@ -1208,8 +1208,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_midi_port_device_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_midi_port_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_midi_port_type.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_mode.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_mode.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_notification_action_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_notification_action_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_notification_direction.cc",

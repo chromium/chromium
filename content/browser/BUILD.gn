@@ -2064,8 +2064,6 @@ source_set("browser") {
     "webid/federated_auth_request_service.h",
     "webid/flags.cc",
     "webid/flags.h",
-    "webid/id_token_request_callback_data.cc",
-    "webid/id_token_request_callback_data.h",
     "webid/idp_network_request_manager.cc",
     "webid/idp_network_request_manager.h",
     "webid/redirect_uri_data.cc",

@@ -47,7 +47,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
       const GURL& provider,
       const std::string& client_id,
       const std::string& nonce,
-      blink::mojom::RequestMode mode,
       bool prefer_auto_sign_in,
       blink::mojom::FederatedAuthRequest::RequestIdTokenCallback);
   void CancelTokenRequest();
@@ -95,14 +94,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata data);
 
-  void OnSigninApproved(IdentityRequestDialogController::UserApproval approval);
-  void OnSigninResponseReceived(IdpNetworkRequestManager::SigninResponse status,
-                                const std::string& url_or_token);
-  void OnTokenProvided(const std::string& id_token);
-  void OnIdpPageClosed();
-  void OnTokenProvisionApproved(
-      IdentityRequestDialogController::UserApproval approval);
-
   void DownloadBitmap(const GURL& icon_url,
                       int ideal_icon_size,
                       WebContents::ImageDownloadCallback callback);
@@ -117,11 +108,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
                                const std::string& id_token);
   void DispatchOneLogout();
   void OnLogoutCompleted();
-  std::unique_ptr<WebContents> CreateIdpWebContents();
-  // |should_call_callback| represents whether we should call the callback to
-  // either resolve or reject the promise immediately when the renderer receives
-  // the IPC from the browser. For some failures we choose to reject with
-  // |delay_timer_| for privacy reasons.
   void CompleteRequest(blink::mojom::FederatedAuthRequestResult,
                        const std::string& id_token,
                        bool should_call_callback);
@@ -185,8 +171,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   std::string client_id_;
   std::string nonce_;
 
-  blink::mojom::RequestMode mode_;
-
   bool prefer_auto_sign_in_;
 
   // Fetched from the IDP FedCM manifest configuration.
@@ -196,12 +180,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
     GURL accounts;
     GURL client_metadata;
   } endpoints_;
-
-  // The WebContents that is used to load the IDP sign-up page. This is
-  // created here to allow us to setup proper callbacks on it using
-  // |IdTokenRequestCallbackData|. It is then passed along to
-  // chrome/browser/ui machinery to be used to load IDP sign-in content.
-  std::unique_ptr<WebContents> idp_web_contents_;
 
   raw_ptr<FederatedIdentityActiveSessionPermissionContextDelegate>
       active_session_permission_delegate_ = nullptr;
@@ -214,7 +192,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   // The account that was selected by the user. This is only applicable to the
   // mediation flow.
   std::string account_id_;
-  std::string id_token_;
   base::TimeTicks start_time_;
   base::TimeTicks show_accounts_dialog_time_;
   base::TimeTicks select_account_time_;

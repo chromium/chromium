@@ -36,11 +36,6 @@ enum RevokeStatus {
   kError
 };
 
-enum RequestMode {
-  kMediated,
-  kPermission,
-};
-
 // The details of a single logout request from an identity provider.
 struct LogoutRpsRequest {
   // URL to which the request will be sent. The origin is validated to
@@ -57,15 +52,13 @@ struct LogoutRpsRequest {
 // This interface is called from a renderer process and implemented in the
 // browser process.
 interface FederatedAuthRequest {
-  // Requests an IdToken to be generated, given an IDP URL, some request
-  // parameters, and a mode that specifies the UI flow.
+  // Requests an IdToken to be generated, given an IDP URL.
   // |client_id| and |nonce| can be empty strings to omit the fields in the
   // request sent to the provider.
   // Returns the raw content of the IdToken.
   RequestIdToken(url.mojom.Url provider,
                  string client_id,
                  string nonce,
-                 RequestMode mode,
                  bool prefer_auto_sign_in) =>
       (RequestIdTokenStatus status, string? id_token);
 

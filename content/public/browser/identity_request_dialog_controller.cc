@@ -58,17 +58,8 @@ int IdentityRequestDialogController::GetBrandIconMinimumSize() {
   return 0;
 }
 
-void IdentityRequestDialogController::ShowInitialPermissionDialog(
-    WebContents* rp_web_contents,
-    const GURL& idp_url,
-    PermissionDialogMode mode,
-    InitialApprovalCallback approval_callback) {
-  std::move(approval_callback).Run(UserApproval::kDenied);
-}
-
 void IdentityRequestDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
-    content::WebContents* idp_web_contents,
     const GURL& idp_signin_url,
     base::span<const IdentityRequestAccount> accounts,
     const IdentityProviderMetadata& idp_metadata,
@@ -76,23 +67,6 @@ void IdentityRequestDialogController::ShowAccountsDialog(
     IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected) {
   std::move(on_selected).Run(/*account_id=*/"", /*is_sign_in=*/false);
-}
-
-void IdentityRequestDialogController::ShowIdProviderWindow(
-    content::WebContents* rp_web_contents,
-    content::WebContents* idp_web_contents,
-    const GURL& idp_signin_url,
-    IdProviderWindowClosedCallback on_closed) {
-  std::move(on_closed).Run();
-}
-
-void IdentityRequestDialogController::CloseIdProviderWindow() {}
-
-void IdentityRequestDialogController::ShowTokenExchangePermissionDialog(
-    content::WebContents* rp_web_contents,
-    const GURL& idp_url,
-    TokenExchangeApprovalCallback approval_callback) {
-  std::move(approval_callback).Run(UserApproval::kDenied);
 }
 
 }  // namespace content
