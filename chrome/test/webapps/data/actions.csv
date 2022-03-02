@@ -64,10 +64,10 @@ install_windowed,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,install_create_sho
 install_with_shortcut,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,install_policy_app_windowed_shortcut & install_policy_app_tabbed_shortcut & install_create_shortcut_windowed & install_omnibox_icon & install_menu_option & install_create_shortcut_tabbed,63,,,,,N/A (Parameterized Action),,
 launch,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,launch_from_menu_option & launch_from_launch_icon & launch_from_chrome_apps & launch_from_platform_shortcut,64,,,,,N/A (Parameterized Action),,
 launch_from_browser,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,launch_from_menu_option & launch_from_launch_icon & launch_from_chrome_apps,65,,,,,N/A (Parameterized Action),,
-launch_no_launch_icon,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,launch_from_menu_option & launch_from_chrome_apps & launch_from_platform_shortcut,66,,,,,N/A (Parameterized Action),All ways to launch an app except by using the launch icon - which isn't available for 'browser' apps.,
+launch_from_shortcut_or_list,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,launch_from_chrome_apps & launch_from_platform_shortcut,66,,,,,N/A (Parameterized Action),All ways to launch an app that are still available for 'browser' apps.,
 uninstall_by_user,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,uninstall_from_list & uninstall_from_menu & uninstall_from_os & uninstall_from_app_settings,67,,,,,N/A (Parameterized Action),,
 manifest_update_icons,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,68,,,,,Not Yet Implemented,Updates the icon field in the manifest of the website.,finnur@ is working on this
-launch_from_menu_option,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,69,,,,,Not Yet Implemented,"Launch the web app by navigating the browser to the web app, and selecting the ""Launch _"" menu option in the 3-dot menu.",P1
+launch_from_menu_option,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,69,,,,,Implemented,"Launch the web app by navigating the browser to the web app, and selecting the ""Launch _"" menu option in the 3-dot menu.","cliffordcheng@, P1"
 manifest_update_display_browser,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,70,,,,,Implemented,Updates the display property of the manifest to 'browser' on the given site's manifest,"cliffordcheng@, P1"
 check_tab_not_created,,,94,,,,,Implemented,A tab was not created by the last state change action,"cliffordcheng@, P1"
 open_in_chrome,,,71,,,,,Implemented,Click on the 'open in chrome' link in the 3-dot menu of the app window,"cliffordcheng@, P1"
