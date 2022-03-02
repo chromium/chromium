@@ -99,13 +99,23 @@ void PermissionsOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void PermissionsOverlayTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                                    bool animate) {
   if (infobar == infobar_) {
+    infobar_manager_scoped_observation_.Reset();
     infobar_ = nullptr;
   }
+}
+
+void PermissionsOverlayTabHelper::OnManagerShuttingDown(
+    infobars::InfoBarManager* manager) {
+  DCHECK(infobar_manager_scoped_observation_.IsObservingSource(manager));
+  infobar_manager_scoped_observation_.Reset();
 }
 
 void PermissionsOverlayTabHelper::ShowInfoBar() {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state_);
+  if (!infobar_manager_scoped_observation_.IsObservingSource(infobar_manager)) {
+    infobar_manager_scoped_observation_.Observe(infobar_manager);
+  }
 
   std::unique_ptr<PermissionsOverlayInfobarDelegate> delegate(
       std::make_unique<PermissionsOverlayInfobarDelegate>(
