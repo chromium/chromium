@@ -276,9 +276,8 @@ Polymer({
 
   /** @private */
   nextPage_() {
-    const isScreenLockRequired = loadTimeData.getBoolean('isEcheAppEnabled') &&
-        loadTimeData.getBoolean('isPhoneScreenLockEnabled') &&
-        !loadTimeData.getBoolean('isChromeosScreenLockEnabled');
+    const isScreenLockRequired =
+        this.isScreenLockRequired_();
     switch (this.flowState_) {
       case SetupFlowStatus.INTRO:
         if (isScreenLockRequired) {
@@ -454,6 +453,20 @@ Polymer({
    */
   computeShouldShowAppsItem_() {
     return this.flowState_ === SetupFlowStatus.INTRO &&
+        (this.phonePermissionSetupMode ===
+             PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE ||
+         this.phonePermissionSetupMode ===
+             PhoneHubPermissionsSetupMode.APPS_SETUP_MODE);
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isScreenLockRequired_() {
+    return loadTimeData.getBoolean('isEcheAppEnabled') &&
+        loadTimeData.getBoolean('isPhoneScreenLockEnabled') &&
+        !loadTimeData.getBoolean('isChromeosScreenLockEnabled') &&
         (this.phonePermissionSetupMode ===
              PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE ||
          this.phonePermissionSetupMode ===

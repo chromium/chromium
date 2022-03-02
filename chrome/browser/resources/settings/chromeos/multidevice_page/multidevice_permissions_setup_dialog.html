@@ -251,60 +251,60 @@
       </div>
       <div id="dialogBody" slot="body">
         <template is="dom-if" if="[[!hasStartedSetupAttempt_]]" restamp>
+          <div id="start-setup-description">
+            <div id="half-container">
+              <div id="illustration"></div>
+            </div>
+            <div id="half-container">
+              <div id="feature-description">
+                <template is="dom-if" if="[[shouldShowNotificationItem_]]"
+                    restamp>
+                  <div id="feature-details-container">
+                    <iron-icon id="feature-icon"
+                        icon="os-settings:multidevice-better-together-suite">
+                    </iron-icon>
+                    <div id="feature-details-description">
+                      <div id="feature-title">
+                        $i18n{multidevicePermissionsSetupNotificationsTitle}
+                      </div>
+                      <div id="feature-subtitle">
+                        $i18n{multidevicePermissionsSetupNotificationsSummary}
+                       </div>
+                    </div>
+                  </div>
+                </template>
+                <template is="dom-if" if="[[shouldShowAppsItem_]]" restamp>
+                  <div id="feature-details-container">
+                    <iron-icon id="feature-icon"
+                        icon="os-settings:multidevice-better-together-suite">
+                    </iron-icon>
+                    <div id="feature-details-description">
+                      <div id="feature-title">
+                        $i18n{multidevicePermissionsSetupAppsTitle}
+                      </div>
+                      <div id="feature-subtitle">
+                         $i18n{multidevicePermissionsSetupAppsSummary}
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template is="dom-if" if="[[hasStartedSetupAttempt_]]" restamp>
           <template is="dom-if" if="[[shouldShowScreenLockInstructions_(flowState_)]]" restamp>
             <settings-multidevice-screen-lock-subpage
                 is-screen-lock-enabled="{{isScreenLockEnabled_}}"
                 is-password-dialog-showing="{{isPasswordDialogShowing}}">
             </settings-multidevice-screen-lock-subpage>
-          </template>
+          </template> 
           <template is="dom-if" if="[[!shouldShowScreenLockInstructions_(flowState_)]]" restamp>
-            <div id="start-setup-description">
-              <div id="half-container">
-                <div id="illustration"></div>
-              </div>
-              <div id="half-container">
-                <div id="feature-description">
-                  <template is="dom-if" if="[[shouldShowNotificationItem_]]"
-                      restamp>
-                    <div id="feature-details-container">
-                      <iron-icon id="feature-icon"
-                          icon="os-settings:multidevice-better-together-suite">
-                      </iron-icon>
-                      <div id="feature-details-description">
-                        <div id="feature-title">
-                          $i18n{multidevicePermissionsSetupNotificationsTitle}
-                        </div>
-                        <div id="feature-subtitle">
-                          $i18n{multidevicePermissionsSetupNotificationsSummary}
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-                  <template is="dom-if" if="[[shouldShowAppsItem_]]" restamp>
-                    <div id="feature-details-container">
-                      <iron-icon id="feature-icon"
-                          icon="os-settings:multidevice-better-together-suite">
-                      </iron-icon>
-                      <div id="feature-details-description">
-                        <div id="feature-title">
-                          $i18n{multidevicePermissionsSetupAppsTitle}
-                        </div>
-                        <div id="feature-subtitle">
-                          $i18n{multidevicePermissionsSetupAppsSummary}
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-                </div>
-              </div>
-            </div>
-          </template>
-        </template>
-        <template is="dom-if" if="[[hasStartedSetupAttempt_]]" restamp>
-          <div id="illustration"></div>
-          <template is="dom-if" if="[[description_]]" restamp>
-            <localized-link localized-string="[[description_]]">
-            </localized-link>
+            <div id="illustration"></div>
+            <template is="dom-if" if="[[description_]]" restamp>
+              <localized-link localized-string="[[description_]]">
+              </localized-link>
+            </template>
           </template>
         </template>
         <template is="dom-if" if="[[shouldShowSetupInstructionsSeparately_]]"
@@ -350,6 +350,14 @@
                 on-click="nextPage_">
               $i18n{next}
             </cr-button>
+          </template>
+          <template is="dom-if" if="[[hasStartedSetupAttempt_]]" restamp>
+            <template is="dom-if" if="[[shouldShowScreenLockInstructions_(flowState_)]]" restamp>
+              <cr-button id="getStartedButton" class="action-button"
+                  on-click="nextPage_">
+                $i18n{next}
+              </cr-button>
+            </template>
           </template>
           <template is="dom-if" if="[[shouldShowTryAgainButton_(setupState_)]]"
               restamp>
