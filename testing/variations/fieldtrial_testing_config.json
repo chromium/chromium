@@ -1695,6 +1695,21 @@
             ]
         }
     ],
+    "ClankAppLanguagePrompt": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppLanguagePrompt"
+                    ]
+                }
+            ]
+        }
+    ],
     "CleanUndecryptablePasswordsLinuxDuringInitialSync": [
         {
             "platforms": [
