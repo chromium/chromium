@@ -255,13 +255,20 @@ void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
 }
 
 void AddressPoolManager::Pool::GetStats(PoolStats* stats) {
-  ScopedGuard scoped_lock(lock_);
-  stats->usage = alloc_bitset_.count();
+  std::bitset<kMaxSuperPagesInPool> pages;
+  size_t i;
+  {
+    ScopedGuard scoped_lock(lock_);
+    pages = alloc_bitset_;
+    i = bit_hint_;
+  }
+
+  stats->usage = pages.count();
 
   size_t largest_run = 0;
   size_t current_run = 0;
-  for (size_t i = bit_hint_; i < total_bits_; ++i) {
-    if (!alloc_bitset_[i]) {
+  for (; i < total_bits_; ++i) {
+    if (!pages[i]) {
       current_run += 1;
       continue;
     } else if (current_run > largest_run) {
@@ -483,40 +490,40 @@ size_t CountUsedSuperPages(const std::bitset<bitsize>& bitmap,
 }  // namespace
 
 bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
+  std::bitset<AddressPoolManagerBitmap::kRegularPoolBits> regular_pool_bits;
+  std::bitset<AddressPoolManagerBitmap::kBRPPoolBits> brp_pool_bits;
   {
     ScopedGuard scoped_lock(AddressPoolManagerBitmap::GetLock());
-
-    // Pool usage is read out from the address pool bitmaps.
-    // The output stats are sized in super pages, so we interpret
-    // the bitmaps into super page usage.
-    static_assert(
-        kSuperPageSize %
-                AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap ==
-            0,
-        "information loss when calculating metrics");
-    constexpr size_t kRegularPoolBitsPerSuperPage =
-        kSuperPageSize /
-        AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap;
-
-    // Get 32-bit pool usage.
-    stats->regular_pool_stats.usage =
-        CountUsedSuperPages(AddressPoolManagerBitmap::regular_pool_bits_,
-                            kRegularPoolBitsPerSuperPage);
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-    static_assert(
-        kSuperPageSize %
-                AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap ==
-            0,
-        "information loss when calculating metrics");
-    constexpr size_t kBRPPoolBitsPerSuperPage =
-        kSuperPageSize / AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap;
-    stats->brp_pool_stats.usage = CountUsedSuperPages(
-        AddressPoolManagerBitmap::brp_pool_bits_, kBRPPoolBitsPerSuperPage);
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+    regular_pool_bits = AddressPoolManagerBitmap::regular_pool_bits_;
+    brp_pool_bits = AddressPoolManagerBitmap::brp_pool_bits_;
   }  // scoped_lock
 
+  // Pool usage is read out from the address pool bitmaps.
+  // The output stats are sized in super pages, so we interpret
+  // the bitmaps into super page usage.
+  static_assert(
+      kSuperPageSize %
+              AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap ==
+          0,
+      "information loss when calculating metrics");
+  constexpr size_t kRegularPoolBitsPerSuperPage =
+      kSuperPageSize /
+      AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap;
+
+  // Get 32-bit pool usage.
+  stats->regular_pool_stats.usage =
+      CountUsedSuperPages(regular_pool_bits, kRegularPoolBitsPerSuperPage);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 #if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
+  static_assert(
+      kSuperPageSize % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap ==
+          0,
+      "information loss when calculating metrics");
+  constexpr size_t kBRPPoolBitsPerSuperPage =
+      kSuperPageSize / AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap;
+  stats->brp_pool_stats.usage =
+      CountUsedSuperPages(brp_pool_bits, kBRPPoolBitsPerSuperPage);
+
   // Get blocklist size.
   for (const auto& blocked :
        AddressPoolManagerBitmap::brp_forbidden_super_page_map_) {
