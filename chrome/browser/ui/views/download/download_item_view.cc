@@ -41,8 +41,8 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -66,7 +66,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/text/bytes_formatting.h"
-#include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -611,8 +610,7 @@ void DownloadItemView::OnPaintBackground(gfx::Canvas* canvas) {
   gfx::Rect rect(width() - 1, 0, 1, height());
   rect.Inset(0, kTopBottomPadding);
   canvas->FillRect(GetMirroredRect(rect),
-                   GetThemeProvider()->GetColor(
-                       ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR));
+                   GetColorProvider()->GetColor(kColorToolbarSeparator));
 }
 
 void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
@@ -699,7 +697,7 @@ void DownloadItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   const SkColor background_color =
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_DOWNLOAD_SHELF);
+      GetColorProvider()->GetColor(kColorDownloadShelf);
   SetBackground(views::CreateSolidBackground(background_color));
 
   shelf_->ConfigureButtonForTheme(open_now_button_);
@@ -1281,7 +1279,7 @@ void DownloadItemView::UpdateDropdownButtonImage() {
       dropdown_button_,
       dropdown_pressed_ ? vector_icons::kCaretDownIcon
                         : vector_icons::kCaretUpIcon,
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR_TEXT));
+      GetColorProvider()->GetColor(kColorToolbarText));
   dropdown_button_->SizeToPreferredSize();
 }
 
