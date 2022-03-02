@@ -42,8 +42,6 @@ class ContentsWebView
   // WebView overrides:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
-  void ViewHierarchyChanged(
-      const views::ViewHierarchyChangedDetails& details) override;
   void OnThemeChanged() override;
   void RenderViewReady() override;
   void OnLetterboxingChanged() override;
@@ -56,7 +54,6 @@ class ContentsWebView
   void DestroyClonedLayer() override;
 
  private:
-  absl::optional<SkColor> GetBackgroundColor();
   void UpdateBackgroundColor();
   StatusBubbleViews* status_bubble_;
 

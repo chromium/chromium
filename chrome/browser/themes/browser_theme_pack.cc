@@ -98,7 +98,7 @@ constexpr int kTallestFrameHeight = kTallestTabHeight + 19;
 // changed default theme assets, if you need themes to recreate their generated
 // images (which are cached), if you changed how missing values are
 // generated, or if you changed any constants.
-const int kThemePackVersion = 89;
+const int kThemePackVersion = 90;
 
 // IDs that are in the DataPack won't clash with the positive integer
 // uint16_t. kHeaderID should always have the maximum value because we want the
@@ -1607,9 +1607,9 @@ void BrowserThemePack::SetFrameAndToolbarRelatedColors() {
   }
   SkColor omnibox_background_color;
   if (GetColor(TP::COLOR_OMNIBOX_BACKGROUND, &omnibox_background_color)) {
-    SetColor(TP::COLOR_OMNIBOX_BACKGROUND,
-             color_utils::GetResultingPaintColor(omnibox_background_color,
-                                                 toolbar_color));
+    omnibox_background_color = color_utils::GetResultingPaintColor(
+        omnibox_background_color, toolbar_color);
+    SetColor(TP::COLOR_OMNIBOX_BACKGROUND, omnibox_background_color);
   } else {
     omnibox_background_color =
         TP::GetDefaultColor(TP::COLOR_OMNIBOX_BACKGROUND, false);
@@ -1890,9 +1890,15 @@ void BrowserThemePack::GenerateMissingNtpColors() {
   gfx::Image image = GetImageNamed(IDR_THEME_NTP_BACKGROUND);
   bool has_background_image = !image.IsEmpty();
 
+  // Opaquify background color.
   SkColor background_color;
   bool has_background_color =
       GetColor(TP::COLOR_NTP_BACKGROUND, &background_color);
+  if (has_background_color) {
+    background_color = color_utils::GetResultingPaintColor(
+        background_color, TP::GetDefaultColor(TP::COLOR_NTP_BACKGROUND, false));
+    SetColor(TP::COLOR_NTP_BACKGROUND, background_color);
+  }
 
   // Calculate NTP text color based on NTP background.
   SkColor text_color;

@@ -44,7 +44,8 @@ StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
 void ContentsWebView::SetBackgroundColorOverride(
     absl::optional<SkColor> background_color) {
   background_color_override_ = background_color;
-  UpdateBackgroundColor();
+  if (GetWidget())
+    UpdateBackgroundColor();
 }
 
 bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -56,59 +57,37 @@ void ContentsWebView::OnVisibleBoundsChanged() {
     status_bubble_->Reposition();
 }
 
-void ContentsWebView::ViewHierarchyChanged(
-    const views::ViewHierarchyChangedDetails& details) {
-  WebView::ViewHierarchyChanged(details);
-  if (details.is_add)
-    UpdateBackgroundColor();
-}
-
 void ContentsWebView::OnThemeChanged() {
   views::WebView::OnThemeChanged();
   UpdateBackgroundColor();
 }
 
 void ContentsWebView::OnLetterboxingChanged() {
-  UpdateBackgroundColor();
-}
-
-absl::optional<SkColor> ContentsWebView::GetBackgroundColor() {
-  if (background_color_override_.has_value())
-    return background_color_override_;
-
-  const ui::ThemeProvider* const theme = GetThemeProvider();
-  if (!theme)
-    return absl::nullopt;
-
-  return color_utils::GetResultingPaintColor(
-      theme->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND), SK_ColorWHITE);
+  if (GetWidget())
+    UpdateBackgroundColor();
 }
 
 void ContentsWebView::UpdateBackgroundColor() {
-  const absl::optional<SkColor> background_color = GetBackgroundColor();
-  if (!background_color.has_value())
-    return;
-
-  const SkColor ntp_background = background_color.value();
+  // TODO(pkasting): In a Color Pipeline world, COLOR_NTP_BACKGROUND should get
+  // overridden by PWA windows in their mixer chain as necessary.  Then the
+  // override here can go away, and the custom calculations for the letterboxing
+  // case can become a separate color (recipe) in the main chrome mixer.
+  SkColor ntp_background = background_color_override_.value_or(
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND));
   if (is_letterboxing()) {
     // Set the background color to a dark tint of the new tab page's background
     // color.  This is the color filled within the WebView's bounds when its
     // child view is sized specially for fullscreen tab capture.  See WebView
     // header file comments for more details.
-    const int kBackgroundBrightness = 0x33;  // 20%
+    constexpr SkAlpha kBackgroundBrightness = 0x33;  // 20%
     // Make sure the background is opaque.
-    const SkColor dimmed_ntp_background = SkColorSetARGB(
+    ntp_background = SkColorSetARGB(
         SkColorGetA(ntp_background),
-        SkColorGetR(ntp_background) * kBackgroundBrightness / 0xFF,
-        SkColorGetG(ntp_background) * kBackgroundBrightness / 0xFF,
-        SkColorGetB(ntp_background) * kBackgroundBrightness / 0xFF);
-    SetBackground(views::CreateSolidBackground(dimmed_ntp_background));
-  } else {
-    SetBackground(views::CreateSolidBackground(ntp_background));
+        SkColorGetR(ntp_background) * kBackgroundBrightness / SK_AlphaOPAQUE,
+        SkColorGetG(ntp_background) * kBackgroundBrightness / SK_AlphaOPAQUE,
+        SkColorGetB(ntp_background) * kBackgroundBrightness / SK_AlphaOPAQUE);
   }
-  // Changing a view's background does not necessarily schedule the view to be
-  // redrawn.
-  SchedulePaint();
+  SetBackground(views::CreateSolidBackground(ntp_background));
 
   if (web_contents()) {
     content::RenderWidgetHostView* rwhv =
@@ -171,7 +150,8 @@ void ContentsWebView::DestroyClonedLayer() {
 
 void ContentsWebView::RenderViewReady() {
   // Set the background color to be the theme's ntp background on startup.
-  UpdateBackgroundColor();
+  if (GetWidget())
+    UpdateBackgroundColor();
   WebView::RenderViewReady();
 }
 
