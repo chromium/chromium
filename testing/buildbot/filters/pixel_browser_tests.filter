@@ -34,7 +34,6 @@ PageInfoBubbleViewHistoryDialogBrowserTest.*
 PasswordReuseModalWarningTest.*
 PermissionRequestChipDialogBrowserTest.*
 *PermissionPromptBubbleViewBrowserTest.*
-ProfileSigninConfirmationDialogTest.*
 PromptForScanningModalDialogTest.*
 QRCodeGeneratorBubbleBrowserTest.*
 RelaunchRecommendedBubbleViewDialogTest.*
@@ -49,7 +48,6 @@ TabGroupEditorBubbleViewDialogBrowserTest.*
 TabHoverCardBubbleViewBrowserTest.*
 UpdateRecommendedDialogTest.*
 WebAppConfirmViewBrowserTest.*
-WorkProfileSigninConfirmationDialogTest.*
 ZoomBubbleDialogTest.*
 
 # This test uses random network port and shows it on ui.
