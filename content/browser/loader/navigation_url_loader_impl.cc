@@ -1028,9 +1028,11 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
   // While not a true redirect, a redirect loop can be simulated by repeatedly
   // closing the socket and presenting a different ALPS setting with each new
   // handshake.
-  if (redirect_limit_-- == 0) {
+  if (--accept_ch_restart_limit_ == 0) {
     LogAcceptCHFrameStatus(AcceptCHFrameRestart::kRedirectOverflow);
-    std::move(callback).Run(net::ERR_TOO_MANY_REDIRECTS);
+    OnComplete(network::URLLoaderCompletionStatus(
+        net::ERR_TOO_MANY_ACCEPT_CH_RESTARTS));
+    std::move(callback).Run(net::ERR_TOO_MANY_ACCEPT_CH_RESTARTS);
     return;
   }
 

@@ -61,6 +61,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/features.h"
@@ -71,6 +72,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/url_request/url_request.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
@@ -1185,6 +1187,54 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, ClientHintsAlps) {
   histogram_tester.ExpectBucketCount(
       "ClientHints.AcceptCHFrame",
       content::AcceptCHFrameRestart::kNavigationRestarted, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, ClientHintsAlpsRestartLimit) {
+  net::test_server::EmbeddedTestServer server_1(
+      net::EmbeddedTestServer::TYPE_HTTPS,
+      net::test_server::HttpConnection::Protocol::kHttp2);
+  net::test_server::EmbeddedTestServer server_2(
+      net::EmbeddedTestServer::TYPE_HTTPS,
+      net::test_server::HttpConnection::Protocol::kHttp2);
+
+  server_1.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto http_response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+        http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+        http_response->AddCustomHeader("Location", server_2.GetURL("/").spec());
+        return http_response;
+      }));
+  server_2.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto http_response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+        http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+        http_response->AddCustomHeader("Location", server_1.GetURL("/").spec());
+        return http_response;
+      }));
+
+  server_1.SetAlpsAcceptCH("", "sec-ch-ua-arch");
+  server_2.SetAlpsAcceptCH("", "sec-ch-ua-arch");
+
+  ASSERT_TRUE(server_1.Start());
+  ASSERT_TRUE(server_2.Start());
+
+  base::HistogramTester histogram_tester;
+  content::TestNavigationObserver nav_observer(
+      browser()->tab_strip_model()->GetActiveWebContents(), 1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), server_1.GetURL("/")));
+  histogram_tester.ExpectBucketCount(
+      "ClientHints.AcceptCHFrame",
+      content::AcceptCHFrameRestart::kNavigationRestarted,
+      net::URLRequest::kMaxRedirects);
+  histogram_tester.ExpectBucketCount(
+      "ClientHints.AcceptCHFrame",
+      content::AcceptCHFrameRestart::kRedirectOverflow, 1);
+  EXPECT_EQ(net::ERR_TOO_MANY_ACCEPT_CH_RESTARTS,
+            nav_observer.last_net_error_code());
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
