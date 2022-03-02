@@ -42,8 +42,8 @@ ci.builder(
 ci.builder(
     name = "android-pie-arm64-wpt-rel-non-cq",
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|arm64",
-        short_name = "P-WPT",
+        category = "wpt|webview",
+        short_name = "p-arm64",
     ),
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
@@ -53,8 +53,8 @@ ci.builder(
 ci.builder(
     name = "android-chrome-pie-x86-wpt-fyi-rel",
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|web-platform",
-        short_name = "P",
+        category = "wpt|chrome",
+        short_name = "p-x86",
     ),
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
@@ -74,8 +74,8 @@ ci.builder(
 ci.builder(
     name = "android-weblayer-pie-x86-wpt-fyi-rel",
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|weblayer",
-        short_name = "P",
+        category = "wpt|weblayer",
+        short_name = "p-x86",
     ),
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
@@ -85,8 +85,8 @@ ci.builder(
 ci.builder(
     name = "android-weblayer-pie-x86-wpt-smoketest",
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|weblayer",
-        short_name = "P",
+        category = "wpt|weblayer",
+        short_name = "p-x86",
     ),
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
@@ -96,8 +96,8 @@ ci.builder(
 ci.builder(
     name = "android-webview-pie-x86-wpt-fyi-rel",
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|webview",
-        short_name = "P",
+        category = "wpt|webview",
+        short_name = "p-x86",
     ),
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
