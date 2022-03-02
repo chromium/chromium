@@ -49,6 +49,17 @@
     --iron-icon-width: 20px;
     --iron-icon-fill-color: var(--cros-link-color);
   }
+  .image-container iron-icon[icon='personalization:checkmark'] {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    bottom: 0;
+    position: absolute;
+    right: 0;
+  }
+  .image-container:not([aria-selected='true'])
+      iron-icon[icon='personalization:checkmark'] {
+    display: none;
+  }
 </style>
 <div id="container">
   <template is="dom-if" if="[[isCameraPresent_]]">
@@ -67,18 +78,22 @@
     </iron-icon>
   </div>
   <template is="dom-if" if="[[profileImage_]]">
-    <div class="image-container">
+    <div class="image-container"
+        aria-selected$="[[getProfileImageAriaSelected_(profileImage_, image_)]]">
       <paper-ripple class="circle"></paper-ripple>
       <img id="profileImage" src="[[profileImage_.url]]"
           on-click="onSelectProfileImage_"
           on-keypress="onSelectProfileImage_">
+      <iron-icon icon="personalization:checkmark"></iron-icon>
     </div>
   </template>
   <template is="dom-repeat" items="[[defaultUserImages_]]">
-    <div class="image-container">
+    <div class="image-container"
+        aria-selected$="[[getDefaultUserImageAriaSelected_(item, image_)]]">
       <paper-ripple class="circle"></paper-ripple>
       <img src="[[item.url.url]]" data-id$="[[item.index]]"
           on-click="onSelectDefaultImage_" on-keypress="onSelectDefaultImage_">
+      <iron-icon icon="personalization:checkmark"></iron-icon>
     </div>
   </template>
 </div>

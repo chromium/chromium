@@ -38,6 +38,8 @@ export class AvatarList extends WithPersonalizationStore {
 
       profileImage_: Object,
 
+      image_: Object,
+
       /** The presence of a device camera. */
       isCameraPresent_: {
         type: Boolean,
@@ -57,6 +59,7 @@ export class AvatarList extends WithPersonalizationStore {
   private profileImage_: Url|null;
   private isCameraPresent_: boolean;
   private cameraMode_: AvatarCameraMode|null;
+  private image_: Url|null;
 
   connectedCallback() {
     super.connectedCallback();
@@ -66,6 +69,7 @@ export class AvatarList extends WithPersonalizationStore {
         'profileImage_', state => state.user.profileImage);
     this.watch<AvatarList['isCameraPresent_']>(
         'isCameraPresent_', state => state.user.isCameraPresent);
+    this.watch<AvatarList['image_']>('image_', state => state.user.image);
     this.updateFromStore();
     fetchDefaultUserImages(getUserProvider(), this.getStore());
   }
@@ -82,6 +86,18 @@ export class AvatarList extends WithPersonalizationStore {
 
     const index = parseInt(id, 10);
     getUserProvider().selectDefaultImage(index);
+  }
+
+  private getProfileImageAriaSelected_(
+      profileImage: Url|null, selectedImage: Url|null): string {
+    return (!!profileImage && !!selectedImage &&
+            selectedImage.url === profileImage.url)
+        .toString();
+  }
+
+  private getDefaultUserImageAriaSelected_(
+      image: DefaultUserImage, selectedImage: Url|null): string {
+    return (!!selectedImage && selectedImage.url === image.url.url).toString();
   }
 
   private onSelectProfileImage_(event: Event) {
