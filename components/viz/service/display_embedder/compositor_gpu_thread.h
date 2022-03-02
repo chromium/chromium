@@ -39,9 +39,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
 
   ~CompositorGpuThread() override;
 
-  scoped_refptr<gpu::SharedContextState> shared_context_state() const {
-    return shared_context_state_;
-  }
+  scoped_refptr<gpu::SharedContextState> GetSharedContextState();
 
   VulkanContextProvider* vulkan_context_provider() const {
     return vulkan_context_provider_.get();
