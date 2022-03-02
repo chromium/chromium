@@ -289,6 +289,7 @@ export async function testExtractAllCommand(done) {
   const folderEntry = MockDirectoryEntry.create(downloadsFileSystem, '/folder');
   const textFileEntry = new MockEntry(downloadsFileSystem, '/file.txt');
   const zipFileEntry = new MockEntry(downloadsFileSystem, '/archive.zip');
+  const imageFileEntry = new MockEntry(downloadsFileSystem, '/image.jpg');
 
   // Mock `Event`.
   const event = {
@@ -341,12 +342,19 @@ export async function testExtractAllCommand(done) {
   assertFalse(event.canExecute);
   assertTrue(event.command.hidden);
 
-  // Check: canExecute is false and command hidden for multiple selection.
-  currentSelection.entries = [zipFileEntry, textFileEntry];
+  // Check: canExecute is false and command hidden for no ZIP multi-selection.
+  currentSelection.entries = [imageFileEntry, textFileEntry];
   currentSelection.totalCount = 2;
   command.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertTrue(event.command.hidden);
+
+  // Check: canExecute is true and command visible for ZIP multiple selection.
+  currentSelection.entries = [zipFileEntry, textFileEntry];
+  currentSelection.totalCount = 2;
+  command.canExecute(event, fileManager);
+  assertTrue(event.canExecute);
+  assertFalse(event.command.hidden);
 
   // Check: ZIP canExecute is true and command visible for multiple selection.
   zipCommand.canExecute(event, fileManager);

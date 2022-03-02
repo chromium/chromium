@@ -2108,13 +2108,20 @@ CommandHandler.COMMANDS_['extract-all'] = new class extends FilesCommand {
     const dirEntry = fileManager.getCurrentDirectoryEntry();
     const selection = fileManager.getSelection();
 
-    // Enable this only for a single selected file which is an archive.
-    // TODO(crbug.com/953256) allow more selections and check for ZIP only.
-    if (selection.entries.length === 1 && selection.iconType === 'archive') {
-      event.command.setHidden(false);
-      event.canExecute = dirEntry && !fileManager.directoryModel.isReadOnly() &&
-          selection && selection.totalCount > 0;
+    if (!dirEntry || fileManager.directoryModel.isReadOnly() || !selection ||
+        selection.totalCount === 0) {
+      event.command.setHidden(true);
+      event.canExecute = false;
     } else {
+      // Check the selected entries for a ZIP archive in the selected set.
+      for (const entry of selection.entries) {
+        if (FileType.getExtension(entry) === '.zip') {
+          event.command.setHidden(false);
+          event.canExecute = true;
+          return;
+        }
+      }
+      // Didn't find any ZIP files, disable extract-all.
       event.command.setHidden(true);
       event.canExecute = false;
     }
