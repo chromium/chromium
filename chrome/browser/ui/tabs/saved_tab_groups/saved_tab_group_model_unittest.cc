@@ -30,16 +30,16 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
 
   void TearDown() override { saved_tab_group_model_.reset(); }
 
-  void SavedTabGroupAdded(const SavedTabGroup& group) override {
+  void SavedTabGroupAdded(const SavedTabGroup& group, int index) override {
     retrieved_group_.emplace_back(group);
+    retrieved_index_ = index;
   }
 
-  void SavedTabGroupWillBeRemoved(const SavedTabGroup& group) override {
-    retrieved_group_.emplace_back(group);
-  }
+  void SavedTabGroupRemoved(int index) override { retrieved_index_ = index; }
 
-  void SavedTabGroupUpdated(const SavedTabGroup& group) override {
+  void SavedTabGroupUpdated(const SavedTabGroup& group, int index) override {
     retrieved_group_.emplace_back(group);
+    retrieved_index_ = index;
   }
 
   void SavedTabGroupMoved(const SavedTabGroup& group) override {
@@ -48,6 +48,7 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
 
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
   std::vector<SavedTabGroup> retrieved_group_;
+  int retrieved_index_ = -1;
   std::string base_path_ = "file:///c:/tmp/";
 };
 
@@ -259,16 +260,21 @@ TEST_F(SavedTabGroupModelObserverTest, AddElement) {
   SavedTabGroup group_4(id_4, title_4, color_4, urls_4);
   saved_tab_group_model_->Add(group_4);
 
-  SavedTabGroup received_group = retrieved_group_[retrieved_group_.size() - 1];
+  const int index = retrieved_group_.size() - 1;
+  ASSERT_GE(index, 0);
+
+  SavedTabGroup received_group = retrieved_group_[index];
   EXPECT_EQ(group_4.group_id, received_group.group_id);
   EXPECT_EQ(group_4.title, received_group.title);
   EXPECT_EQ(group_4.color, received_group.color);
   EXPECT_EQ(group_4.urls, received_group.urls);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.group_id),
+            retrieved_index_);
 }
 
-// Tests that SavedTabGroupModelObserver::WillBeRemoved passes the correct
+// Tests that SavedTabGroupModelObserver::Removed passes the correct
 // element from the model.
-TEST_F(SavedTabGroupModelObserverTest, WillBeRemovedElement) {
+TEST_F(SavedTabGroupModelObserverTest, RemovedElement) {
   tab_groups::TabGroupId id_4 = tab_groups::TabGroupId::GenerateNew();
   const std::u16string title_4 = u"Test Test";
   const tab_groups::TabGroupColorId& color_4 =
@@ -281,14 +287,22 @@ TEST_F(SavedTabGroupModelObserverTest, WillBeRemovedElement) {
   saved_tab_group_model_->Add(group_4);
   saved_tab_group_model_->Remove(id_4);
 
-  SavedTabGroup received_group = retrieved_group_[retrieved_group_.size() - 1];
+  const int index = retrieved_group_.size() - 1;
+  ASSERT_GE(index, 0);
+
+  SavedTabGroup received_group = retrieved_group_[index];
   EXPECT_EQ(group_4.group_id, received_group.group_id);
   EXPECT_EQ(group_4.title, received_group.title);
   EXPECT_EQ(group_4.color, received_group.color);
   EXPECT_EQ(group_4.urls, received_group.urls);
+
+  // The model will removed an and send the index that element was at before it
+  // was removed. Because the only element in the model exists, we get -1.
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.group_id), -1);
+  EXPECT_EQ(retrieved_index_, 0);
 }
 
-// Tests that SavedTabGroupModelObserver::WillBeRemoved passes the correct
+// Tests that SavedTabGroupModelObserver::Updated passes the correct
 // element from the model.
 TEST_F(SavedTabGroupModelObserverTest, UpdatedElement) {
   tab_groups::TabGroupId id_4 = tab_groups::TabGroupId::GenerateNew();
@@ -310,9 +324,14 @@ TEST_F(SavedTabGroupModelObserverTest, UpdatedElement) {
                                                        /*is_collapsed*/ false);
   saved_tab_group_model_->Update(id_4, &new_visual_data);
 
-  SavedTabGroup received_group = retrieved_group_[retrieved_group_.size() - 1];
+  const int index = retrieved_group_.size() - 1;
+  ASSERT_GE(index, 0);
+
+  SavedTabGroup received_group = retrieved_group_[index];
   EXPECT_EQ(id_4, received_group.group_id);
   EXPECT_EQ(new_title, received_group.title);
   EXPECT_EQ(new_color, received_group.color);
   EXPECT_EQ(group_4.urls, received_group.urls);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.group_id),
+            retrieved_index_);
 }

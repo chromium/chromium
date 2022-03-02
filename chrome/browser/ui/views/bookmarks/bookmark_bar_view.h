@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
@@ -36,6 +37,7 @@ class Browser;
 class BrowserView;
 class Profile;
 class ReadLaterButton;
+class SavedTabGroupModel;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -70,7 +72,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
                         public views::DragController,
                         public views::AnimationDelegateViews,
                         public BookmarkMenuControllerObserver,
-                        public bookmarks::BookmarkBubbleObserver {
+                        public bookmarks::BookmarkBubbleObserver,
+                        public SavedTabGroupModelObserver {
  public:
   class ButtonSeparatorView;
 
@@ -217,6 +220,15 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void BookmarkNodeFaviconChanged(bookmarks::BookmarkModel* model,
                                   const bookmarks::BookmarkNode* node) override;
 
+  // SavedTabGroupModelObserver:
+  void SavedTabGroupAdded(const SavedTabGroup& group, int index) override;
+  void SavedTabGroupRemoved(int index) override;
+  void SavedTabGroupUpdated(const SavedTabGroup& group, int index) override;
+  void SavedTabGroupMoved(const SavedTabGroup& group) override;
+
+  void SavedTabGroupAddedImpl(const SavedTabGroup& group, int index);
+  void SavedTabGroupRemovedImpl(int index);
+
   // views::DragController:
   void WriteDragDataForView(views::View* sender,
                             const gfx::Point& press_pt,
@@ -251,6 +263,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
                        const ui::Event& event);
   void OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
                            const ui::Event& event);
+  void OnTabGroupButtonPressed(const SavedTabGroup* group,
+                               const ui::Event& event);
 
   // NOTE: unless otherwise stated all methods that take an index are in terms
   // of the bookmark bar view. Typically the view index and model index are the
@@ -276,12 +290,21 @@ class BookmarkBarView : public views::AccessiblePaneView,
   std::unique_ptr<views::View> CreateBookmarkButton(
       const bookmarks::BookmarkNode* node);
 
+  // Create the button for rendering the specified save tab group.
+  std::unique_ptr<views::View> CreateTabGroupButton(const SavedTabGroup& group,
+                                                    const size_t index);
+
   // Creates the button for rendering the apps page shortcut.
   std::unique_ptr<views::LabelButton> CreateAppsPageShortcutButton();
 
   // Configures the button from the specified node. This sets the text,
   // and icon.
   void ConfigureButton(const bookmarks::BookmarkNode* node,
+                       views::LabelButton* button);
+
+  // Configures the button from the specified saved tab group. This sets the
+  // text, text color, highlight and background color of the tab group.
+  void ConfigureButton(const SavedTabGroup& saved_group,
                        views::LabelButton* button);
 
   // Implementation for BookmarkNodeAddedImpl. Returns true if LayoutAndPaint()
@@ -365,10 +388,15 @@ class BookmarkBarView : public views::AccessiblePaneView,
     SchedulePaint();
   }
 
+  // Inserts the saved tab groups stored in saved_tab_group_model_ as buttons
+  // whenever a new bookmark_bar_view instance is created. When a new
+  // bookmark_bar_view is created, tab_group_buttons_ has no data, even if there
+  // exists data in saved_tab_group_model_.
+  void InsertTabGroupButtonsFromModel();
+
   // Inserts |button| in logical position |index| in the bar, maintaining
   // correct focus traversal order.
-  void InsertBookmarkButtonAtIndex(std::unique_ptr<views::View> button,
-                                   size_t index);
+  void InsertButtonAtIndex(std::unique_ptr<views::View> button, size_t index);
 
   // Returns the model index for the bookmark associated with |button|,
   // or size_t{-1} if |button| is not a bookmark button from this bar.
@@ -403,7 +431,11 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // BookmarkModel that owns the entries and folders that are shown in this
   // view. This is owned by the Profile.
-  raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_ = nullptr;
+
+  // SavedTabGroupModel that owns the saved tab groups that are shown in this
+  // view. This is owned by the Profile.
+  raw_ptr<SavedTabGroupModel> saved_tab_group_model_ = nullptr;
 
   // ManagedBookmarkService. This is owned by the Profile.
   raw_ptr<bookmarks::ManagedBookmarkService> managed_ = nullptr;
@@ -443,6 +475,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   std::vector<views::LabelButton*> tab_group_buttons_;
 
   raw_ptr<ButtonSeparatorView> bookmarks_separator_view_ = nullptr;
+  raw_ptr<ButtonSeparatorView> tab_groups_separator_view_ = nullptr;
 
   raw_ptr<ReadLaterButton> read_later_button_ = nullptr;
   raw_ptr<ButtonSeparatorView> read_later_separator_view_ = nullptr;

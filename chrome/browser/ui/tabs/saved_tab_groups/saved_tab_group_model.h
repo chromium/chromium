@@ -9,24 +9,24 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
 
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
+class Profile;
 class SavedTabGroupModelObserver;
 struct SavedTabGroup;
 
 // Serves to maintain the current state of all saved tab groups in the current
 // session.
-class SavedTabGroupModel : public KeyedService {
+class SavedTabGroupModel {
  public:
   SavedTabGroupModel();
+  explicit SavedTabGroupModel(Profile* profile);
   SavedTabGroupModel(const SavedTabGroupModel&) = delete;
   SavedTabGroupModel& operator=(const SavedTabGroupModel& other) = delete;
-  ~SavedTabGroupModel() override;
+  ~SavedTabGroupModel();
 
   const std::vector<SavedTabGroup>& saved_tab_groups() {
     return saved_tab_groups_;
@@ -40,6 +40,7 @@ class SavedTabGroupModel : public KeyedService {
   int Count() { return saved_tab_groups_.size(); }
   bool IsEmpty() { return Count() <= 0; }
   const SavedTabGroup* Get(const tab_groups::TabGroupId tab_group_id);
+  Profile* profile() { return profile_; }
 
   // Updates a single tab groups visual data (title, color).
   void Update(const tab_groups::TabGroupId tab_group_id,
@@ -56,6 +57,7 @@ class SavedTabGroupModel : public KeyedService {
   // The observers.
   base::ObserverList<SavedTabGroupModelObserver>::Unchecked observers_;
   std::vector<SavedTabGroup> saved_tab_groups_;
+  Profile* profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_H_

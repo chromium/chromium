@@ -153,10 +153,11 @@ TabStripSelectionChange& TabStripSelectionChange::operator=(
 ////////////////////////////////////////////////////////////////////////////////
 // TabGroupChange
 //
-TabGroupChange::TabGroupChange(tab_groups::TabGroupId group,
+TabGroupChange::TabGroupChange(TabStripModel* model,
+                               tab_groups::TabGroupId group,
                                Type type,
                                std::unique_ptr<Delta> deltap)
-    : group(group), type(type), delta(std::move(deltap)) {}
+    : group(group), model(model), type(type), delta(std::move(deltap)) {}
 
 TabGroupChange::~TabGroupChange() = default;
 
@@ -168,9 +169,11 @@ const TabGroupChange::VisualsChange* TabGroupChange::GetVisualsChange() const {
   return static_cast<const VisualsChange*>(delta.get());
 }
 
-TabGroupChange::TabGroupChange(tab_groups::TabGroupId group,
+TabGroupChange::TabGroupChange(TabStripModel* model,
+                               tab_groups::TabGroupId group,
                                VisualsChange deltap)
-    : TabGroupChange(group,
+    : TabGroupChange(model,
+                     group,
                      Type::kVisualsChanged,
                      std::make_unique<VisualsChange>(std::move(deltap))) {}
 

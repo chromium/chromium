@@ -1269,7 +1269,7 @@ void TabStripModel::CreateTabGroup(const tab_groups::TabGroupId& group) {
   if (!group_model_)
     return;
 
-  TabGroupChange change(group, TabGroupChange::kCreated);
+  TabGroupChange change(this, group, TabGroupChange::kCreated);
   for (auto& observer : observers_)
     observer.OnTabGroupChanged(change);
 }
@@ -1278,7 +1278,7 @@ void TabStripModel::OpenTabGroupEditor(const tab_groups::TabGroupId& group) {
   if (!group_model_)
     return;
 
-  TabGroupChange change(group, TabGroupChange::kEditorOpened);
+  TabGroupChange change(this, group, TabGroupChange::kEditorOpened);
   for (auto& observer : observers_)
     observer.OnTabGroupChanged(change);
 }
@@ -1288,7 +1288,7 @@ void TabStripModel::ChangeTabGroupContents(
   if (!group_model_)
     return;
 
-  TabGroupChange change(group, TabGroupChange::kContentsChanged);
+  TabGroupChange change(this, group, TabGroupChange::kContentsChanged);
   for (auto& observer : observers_)
     observer.OnTabGroupChanged(change);
 }
@@ -1299,7 +1299,7 @@ void TabStripModel::ChangeTabGroupVisuals(
   if (!group_model_)
     return;
 
-  TabGroupChange change(group, visuals);
+  TabGroupChange change(this, group, visuals);
   for (auto& observer : observers_)
     observer.OnTabGroupChanged(change);
 }
@@ -1308,7 +1308,7 @@ void TabStripModel::MoveTabGroup(const tab_groups::TabGroupId& group) {
   if (!group_model_)
     return;
 
-  TabGroupChange change(group, TabGroupChange::kMoved);
+  TabGroupChange change(this, group, TabGroupChange::kMoved);
   for (auto& observer : observers_)
     observer.OnTabGroupChanged(change);
 }
@@ -1317,7 +1317,7 @@ void TabStripModel::CloseTabGroup(const tab_groups::TabGroupId& group) {
   if (!group_model_)
     return;
 
-  TabGroupChange change(group, TabGroupChange::kClosed);
+  TabGroupChange change(this, group, TabGroupChange::kClosed);
   for (auto& observer : observers_)
     observer.OnTabGroupChanged(change);
 }

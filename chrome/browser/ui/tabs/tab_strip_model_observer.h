@@ -269,15 +269,19 @@ struct TabGroupChange {
     const tab_groups::TabGroupVisualData* new_visuals;
   };
 
-  TabGroupChange(tab_groups::TabGroupId group,
+  TabGroupChange(TabStripModel* model,
+                 tab_groups::TabGroupId group,
                  Type type,
                  std::unique_ptr<Delta> deltap = nullptr);
-  explicit TabGroupChange(tab_groups::TabGroupId group, VisualsChange deltap);
+  TabGroupChange(TabStripModel* model,
+                 tab_groups::TabGroupId group,
+                 VisualsChange deltap);
   ~TabGroupChange();
 
   const VisualsChange* GetVisualsChange() const;
 
   tab_groups::TabGroupId group;
+  TabStripModel* model;
   Type type;
 
  private:

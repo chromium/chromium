@@ -12,8 +12,10 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_factory.h"
+
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/grit/generated_resources.h"
@@ -142,16 +144,16 @@ void TabGroup::SaveGroup() {
     urls.push_back(url);
   }
 
-  SavedTabGroupModel* backend =
-      SavedTabGroupModelFactory::GetForProfile(controller_->GetProfile());
+  SavedTabGroupKeyedService* backend =
+      SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
   SavedTabGroup saved_tab_group(id_, visual_data_->title(),
                                 visual_data_->color(), urls);
-  backend->Add(saved_tab_group);
+  backend->model()->Add(saved_tab_group);
 }
 
 void TabGroup::UnsaveGroup() {
   is_saved_ = false;
-  SavedTabGroupModel* backend =
-      SavedTabGroupModelFactory::GetForProfile(controller_->GetProfile());
-  backend->Remove(id_);
+  SavedTabGroupKeyedService* backend =
+      SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
+  backend->model()->Remove(id_);
 }
