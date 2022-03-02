@@ -105,7 +105,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeSuggestedActionSearchWeb];
   searchWebItem.title =
       l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB);
-  searchWebItem.image = [[UIImage imageNamed:@"popup_menu_search"]
+  searchWebItem.image = [[UIImage imageNamed:@"popup_menu_web"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   [model addItem:searchWebItem
       toSectionWithIdentifier:kSectionIdentifierSuggestedActions];

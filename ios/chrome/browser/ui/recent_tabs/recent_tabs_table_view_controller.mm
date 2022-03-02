@@ -764,7 +764,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       initWithType:ItemTypeSuggestedActionSearchWeb];
   searchWebItem.title =
       l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB);
-  searchWebItem.image = [[UIImage imageNamed:@"popup_menu_search"]
+  searchWebItem.image = [[UIImage imageNamed:@"popup_menu_web"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   [model addItem:searchWebItem
       toSectionWithIdentifier:SectionIdentifierSuggestedActions];
@@ -775,7 +775,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
         initWithType:ItemTypeSuggestedActionSearchOpenTabs];
     searchOpenTabsItem.title = l10n_util::GetNSString(
         IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_OPEN_TABS);
-    searchOpenTabsItem.image = [[UIImage imageNamed:@"popup_menu_search"]
+    searchOpenTabsItem.image = [[UIImage imageNamed:@"popup_menu_open_tabs"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [model addItem:searchOpenTabsItem
         toSectionWithIdentifier:SectionIdentifierSuggestedActions];
