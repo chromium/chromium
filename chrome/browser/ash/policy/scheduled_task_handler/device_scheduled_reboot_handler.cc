@@ -12,6 +12,7 @@
 
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/timezone_settings.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -61,6 +62,21 @@ DeviceScheduledRebootHandler::~DeviceScheduledRebootHandler() {
   ash::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 }
 
+void DeviceScheduledRebootHandler::TimezoneChanged(
+    const icu::TimeZone& time_zone) {
+  // Anytime the time zone changes,
+  // |scheduled_reboot_data_->next_scheduled_task_time_ticks| needs to be reset,
+  // as it would be incorrect in the context of a new time zone. For this
+  // purpose, treat it as a new policy and call |OnScheduledRebootDataChanged|
+  // instead of |StartRebootTimer| directly.
+  OnScheduledRebootDataChanged();
+}
+
+void DeviceScheduledRebootHandler::SetRebootDelayForTest(
+    const base::TimeDelta& reboot_delay) {
+  reboot_delay_for_testing_ = reboot_delay;
+}
+
 void DeviceScheduledRebootHandler::OnRebootTimerExpired() {
   // If no policy exists, state should have been reset and this callback
   // shouldn't have fired.
@@ -77,16 +93,6 @@ void DeviceScheduledRebootHandler::OnRebootTimerExpired() {
   // If the device is not in the kiosk mode, start the timer again and try for
   // the reboot next time on schedule.
   StartRebootTimer();
-}
-
-void DeviceScheduledRebootHandler::TimezoneChanged(
-    const icu::TimeZone& time_zone) {
-  // Anytime the time zone changes,
-  // |scheduled_reboot_data_->next_scheduled_task_time_ticks| needs to be reset,
-  // as it would be incorrect in the context of a new time zone. For this
-  // purpose, treat it as a new policy and call |OnScheduledRebootDataChanged|
-  // instead of |StartRebootTimer| directly.
-  OnScheduledRebootDataChanged();
 }
 
 void DeviceScheduledRebootHandler::OnScheduledRebootDataChanged() {
@@ -119,6 +125,7 @@ void DeviceScheduledRebootHandler::StartRebootTimer() {
   // timer for the next reboot. Otherwise the next reboot timer will
   // be inaccurately scheduled. Hence, a wake lock must always be held for this
   // entire task.
+  // Always add delay to scheduled task time.
   scheduled_task_executor_->Start(
       &scheduled_reboot_data_.value(),
       base::BindOnce(
@@ -127,7 +134,8 @@ void DeviceScheduledRebootHandler::StartRebootTimer() {
           ScopedWakeLock(device::mojom::WakeLockType::kPreventAppSuspension,
                          kWakeLockReason)),
       base::BindOnce(&DeviceScheduledRebootHandler::OnRebootTimerExpired,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      GetExternalDelay());
 }
 
 void DeviceScheduledRebootHandler::OnRebootTimerStartResult(
@@ -144,6 +152,13 @@ void DeviceScheduledRebootHandler::OnRebootTimerStartResult(
 void DeviceScheduledRebootHandler::ResetState() {
   scheduled_task_executor_->Reset();
   scheduled_reboot_data_ = absl::nullopt;
+}
+
+const base::TimeDelta DeviceScheduledRebootHandler::GetExternalDelay() const {
+  return reboot_delay_for_testing_.has_value()
+             ? reboot_delay_for_testing_.value()
+             : scheduled_task_util::GenerateRandomDelay(
+                   ash::features::kDeviceForceScheduledRebootMaxDelay.Get());
 }
 
 }  // namespace policy

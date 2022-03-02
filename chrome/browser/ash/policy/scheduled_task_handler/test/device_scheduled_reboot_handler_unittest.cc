@@ -28,6 +28,7 @@ namespace policy {
 
 namespace {
 constexpr char kRebootTaskTimeFieldName[] = "reboot_time";
+constexpr base::TimeDelta kExternalRebootDelay = base::Seconds(100);
 }
 
 class DeviceScheduledRebootHandlerForTest
@@ -79,6 +80,8 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
     device_scheduled_reboot_handler_ =
         std::make_unique<DeviceScheduledRebootHandlerForTest>(
             ash::CrosSettings::Get(), std::move(task_executor));
+    // Set 0 delay for tests.
+    device_scheduled_reboot_handler_->SetRebootDelayForTest(base::TimeDelta());
   }
 
   ~DeviceScheduledRebootHandlerTest() override {
@@ -111,6 +114,11 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
     }
 
     return true;
+  }
+
+  const base::TimeDelta GetRebootDelay() const {
+    return (scheduled_task_executor_->GetScheduledTaskTime() -
+            task_environment_.GetMockClock()->Now());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -292,6 +300,46 @@ TEST_F(DeviceScheduledRebootHandlerTest, CheckIfMonthlyRebootIsScheduled) {
       second_reboot_time - scheduled_task_executor_->GetCurrentTime();
   ASSERT_TRUE(second_reboot_delay.has_value());
   task_environment_.FastForwardBy(second_reboot_delay.value());
+  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
+}
+
+TEST_F(DeviceScheduledRebootHandlerTest,
+       CheckIfDailyRebootIsScheduledWithExternalDelay) {
+  device_scheduled_reboot_handler_->SetRebootDelayForTest(kExternalRebootDelay);
+
+  // Calculate time from one hour from now and set the reboot policy to
+  // happen daily at that time.
+  base::TimeDelta delay_from_now = base::Hours(1);
+  auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
+      scheduled_task_executor_->GetTimeZone(),
+      scheduled_task_executor_->GetCurrentTime(), delay_from_now,
+      ScheduledTaskExecutor::Frequency::kDaily, kRebootTaskTimeFieldName);
+
+  // Set a new scheduled reboot, fast forward to right before the
+  // expected reboot and then check if an reboot is not scheduled.
+  const base::TimeDelta small_delay = base::Milliseconds(1);
+  cros_settings_.device_settings()->Set(
+      ash::kDeviceScheduledReboot,
+      std::move(policy_and_next_reboot_time.first));
+  int expected_scheduled_reboots = 0;
+  int expected_reboot_requests = 0;
+
+  // Verify that final delay is equal to delay_from_now + external_delay.
+  base::TimeDelta final_delay = GetRebootDelay();
+  EXPECT_EQ(final_delay, delay_from_now + kExternalRebootDelay);
+  task_environment_.FastForwardBy(final_delay - small_delay);
+  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
+
+  // Fast forward to the expected reboot time and then check if the
+  // reboot is scheduled, but not executed since we are not in the kiosk mode.
+  expected_scheduled_reboots += 1;
+  task_environment_.FastForwardBy(small_delay);
+  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
+
+  // Fast forward to the next day and then check if the reboot is scheduled
+  // again.
+  expected_scheduled_reboots += 1;
+  task_environment_.FastForwardBy(base::Days(1));
   EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
 }
 

@@ -26,8 +26,10 @@ class FakeScheduledTaskExecutor : public ScheduledTaskExecutor {
   // ScheduledTaskExecutor implementation:
   void Start(ScheduledTaskData* scheduled_task_data,
              chromeos::OnStartNativeTimerCallback result_cb,
-             TimerCallback timer_expired_cb) override;
+             TimerCallback timer_expired_cb,
+             base::TimeDelta small_delay = base::TimeDelta()) override;
   void Reset() override;
+  const base::Time GetScheduledTaskTime() const override;
 
   void SetTimeZone(std::unique_ptr<icu::TimeZone> time_zone);
 
@@ -49,6 +51,9 @@ class FakeScheduledTaskExecutor : public ScheduledTaskExecutor {
 
   // Timer that is scheduled to execute the task.
   base::OneShotTimer timer_;
+
+  // Scheduled task time.
+  base::Time scheduled_task_time_;
 };
 }  // namespace policy
 

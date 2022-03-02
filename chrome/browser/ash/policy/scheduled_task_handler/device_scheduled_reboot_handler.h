@@ -39,6 +39,9 @@ class DeviceScheduledRebootHandler
   // The tag associated to register |scheduled_task_executor_|.
   static constexpr char kRebootTimerTag[] = "DeviceScheduledRebootHandler";
 
+  // Sets reboot delay for testing.
+  void SetRebootDelayForTest(const base::TimeDelta& reboot_delay);
+
  protected:
   // Called when scheduled timer fires. Triggers a reboot and
   // schedules the next reboot based on |scheduled_reboot_data_|.
@@ -59,6 +62,11 @@ class DeviceScheduledRebootHandler
   // Reset all state and cancel all pending tasks
   void ResetState();
 
+  // Returns random delay between 0 and maximum reboot delay set by
+  // ash::features::kDeviceForceScheduledRebootMaxDelay feature or
+  // |reboot_delay_for_testing_| if set.
+  const base::TimeDelta GetExternalDelay() const;
+
   // Used to retrieve Chrome OS settings. Not owned.
   ash::CrosSettings* const cros_settings_;
 
@@ -71,6 +79,9 @@ class DeviceScheduledRebootHandler
 
   // Timer that is scheduled to check for updates.
   std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor_;
+
+  // Delay added to scheduled reboot time, used for testing.
+  absl::optional<base::TimeDelta> reboot_delay_for_testing_;
 };
 
 }  // namespace policy

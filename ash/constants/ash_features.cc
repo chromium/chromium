@@ -1433,6 +1433,10 @@ const base::Feature kDeviceActiveClientMonthlyCheckMembership{
 const base::Feature kDeviceForceScheduledReboot{
     "DeviceForceScheduledReboot", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Maximum delay added to reboot time when DeviceScheduledReboot policy is set.
+const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay{
+    &kDeviceForceScheduledReboot, "max-delay-in-seconds", 120};
+
 // Enables or disables whether to store UMA logs per-user and whether metrics
 // consent is per-user.
 const base::Feature kPerUserMetrics{"PerUserMetricsConsent",

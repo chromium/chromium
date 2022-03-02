@@ -11,11 +11,13 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/values.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
 
 namespace policy {
 namespace {
+
 ScheduledTaskExecutor::Frequency GetFrequency(const std::string& frequency) {
   if (frequency == "DAILY")
     return ScheduledTaskExecutor::Frequency::kDaily;
@@ -256,6 +258,13 @@ std::unique_ptr<icu::Calendar> CalculateNextScheduledTimeAfter(
   DCHECK(IsAfter(*scheduled_task_time, time));
 
   return scheduled_task_time;
+}
+
+base::TimeDelta GenerateRandomDelay(int max_delay_in_seconds) {
+  int64_t max_delay_in_ms = max_delay_in_seconds * 1000;
+  int64_t random_delay =
+      static_cast<int64_t>(base::RandGenerator(max_delay_in_ms));
+  return base::Milliseconds(random_delay);
 }
 
 }  // namespace scheduled_task_util

@@ -29,10 +29,10 @@ class ScheduledTaskExecutorImpl : public ScheduledTaskExecutor {
   // ScheduledTaskExecutor:
   void Start(ScheduledTaskData* scheduled_task_data,
              chromeos::OnStartNativeTimerCallback result_cb,
-             TimerCallback timer_expired_cb) override;
-
-  // ScheduledTaskExecutor:
+             TimerCallback timer_expired_cb,
+             base::TimeDelta external_delay = base::TimeDelta()) override;
   void Reset() override;
+  const base::Time GetScheduledTaskTime() const override;
 
  private:
   // Returns current time.
@@ -49,6 +49,9 @@ class ScheduledTaskExecutorImpl : public ScheduledTaskExecutor {
 
   // Timer that is scheduled to execute the task.
   std::unique_ptr<chromeos::NativeTimer> scheduled_task_timer_;
+
+  // Time when the task will be executed.
+  base::Time scheduled_task_time_;
 };
 
 }  // namespace policy
