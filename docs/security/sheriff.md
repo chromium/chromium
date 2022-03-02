@@ -222,6 +222,9 @@ Tips for reproducing bugs:
   100% of the test case. If not, use a disposable virtual machine. If you're
   inside Google, a good way to do this is using
   [Redshell](https://goto.google.com/redshell-for-chrome-sheriffs).
+* [Instructions for using an Android emulator can be found
+  here](/docs/android_emulator.md). If you're inside Google, we have a
+  [guide for testing using Google infrastructure](https://goto.google.com/android-for-chrome-sheriffs).
 * When you can't just build from a specific branch locally, check out
   [https://dev.chromium.org/getting-involved/dev-channel](https://dev.chromium.org/getting-involved/dev-channel)
   or
