@@ -1358,12 +1358,12 @@
    {
     "name": "document-transition",
     "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
-    "expiry_milestone" : 98
+    "expiry_milestone" : 104
   },
    {
     "name": "document-transition-slowdown-factor",
     "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
-    "expiry_milestone" : 98
+    "expiry_milestone" : 104
   },
   {
     "name": "double-buffer-compositing",
