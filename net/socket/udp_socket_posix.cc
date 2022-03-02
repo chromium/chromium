@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_APPLE)
+// This must be defined before including <netinet/in.h>
+// to use IPV6_DONTFRAG, one of the IPv6 Sockets option introduced by RFC 3542
+#define __APPLE_USE_RFC_3542
+#endif  // BUILDFLAG(IS_APPLE)
+
 #include "net/socket/udp_socket_posix.h"
 
 #include <errno.h>
@@ -30,7 +38,6 @@
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
@@ -63,6 +70,10 @@
 #include <dlfcn.h>
 #include <pthread.h>
 #endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace net {
 
@@ -546,8 +557,24 @@ int UDPSocketPosix::SetDoNotFragment() {
   DCHECK_NE(socket_, kInvalidSocket);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-#if !defined(IP_PMTUDISC_DO)
+#if !defined(IP_PMTUDISC_DO) && !BUILDFLAG(IS_MAC)
   return ERR_NOT_IMPLEMENTED;
+
+// setsockopt(IP_DONTFRAG) is supported on macOS from Big Sur
+#elif BUILDFLAG(IS_MAC)
+  if (!base::mac::IsAtLeastOS11()) {
+    return ERR_NOT_IMPLEMENTED;
+  }
+  int val = 1;
+  if (addr_family_ == AF_INET6) {
+    int rv =
+        setsockopt(socket_, IPPROTO_IPV6, IPV6_DONTFRAG, &val, sizeof(val));
+    // IP_DONTFRAG is not supported on v4mapped addresses.
+    return rv == 0 ? OK : MapSystemError(errno);
+  }
+  int rv = setsockopt(socket_, IPPROTO_IP, IP_DONTFRAG, &val, sizeof(val));
+  return rv == 0 ? OK : MapSystemError(errno);
+
 #else
   if (addr_family_ == AF_INET6) {
     int val = IPV6_PMTUDISC_DO;
