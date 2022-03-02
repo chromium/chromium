@@ -1072,6 +1072,7 @@
   "linux-upload-perfetto": {
     "gn_args": {
       "dcheck_always_on": false,
+      "enable_perfetto_zlib": true,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -1158,6 +1159,7 @@
   "mac-upload-perfetto": {
     "gn_args": {
       "dcheck_always_on": false,
+      "enable_perfetto_zlib": true,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -1219,6 +1221,7 @@
   "win-upload-perfetto": {
     "gn_args": {
       "dcheck_always_on": false,
+      "enable_perfetto_zlib": true,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true

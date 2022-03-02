@@ -367,7 +367,7 @@
       'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
       'linux-perfetto-rel': 'perfetto_release_bot',
-      'linux-upload-perfetto': 'release_bot',
+      'linux-upload-perfetto': 'release_bot_perfetto_zlib',
       'linux-wpt-fyi-rel': 'release_bot_minimal_symbols_dcheck_always_on',
       'linux-wpt-identity-fyi-rel': 'release_bot_minimal_symbols',
       'linux-wpt-input-fyi-rel': 'release_bot_minimal_symbols',
@@ -377,13 +377,13 @@
       'mac-hermetic-upgrade-rel': 'release_bot',
       'mac-paeverywhere-x64-fyi-dbg': 'debug_bot_paeverywhere_x64',
       'mac-paeverywhere-x64-fyi-rel': 'release_trybot_paeverywhere_x64',
-      'mac-upload-perfetto': 'release_bot',
+      'mac-upload-perfetto': 'release_bot_perfetto_zlib',
       'win-annotator-rel': 'release_bot',
       'win-celab-builder-rel': 'release_bot_minimal_symbols',
       'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86',
       'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
       'win-pixel-builder-rel': 'release_bot',
-      'win-upload-perfetto': 'release_bot',
+      'win-upload-perfetto': 'release_bot_perfetto_zlib',
       'win10-code-coverage': 'clang_code_coverage',
       'win32-archive-rel-goma-rbe-canary': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-archive-rel-goma-rbe-latest': 'release_bot_x86_minimal_symbols_enable_archive_compression',
@@ -3087,6 +3087,10 @@
       'release', 'official_optimize_goma', 'fuchsia', 'arm64'
     ],
 
+    'release_bot_perfetto_zlib' : [
+      'release_bot', 'perfetto_zlib',
+    ],
+
     'release_trybot': [
       'release_trybot',
     ],
@@ -3975,6 +3979,10 @@
 
     'perfetto': {
       'gn_args': 'use_perfetto_client_library=true',
+    },
+
+    'perfetto_zlib': {
+      'gn_args': 'enable_perfetto_zlib=true',
     },
 
     'pgo_phase_0': {
