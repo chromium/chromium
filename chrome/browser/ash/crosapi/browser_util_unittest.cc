@@ -687,4 +687,44 @@ TEST_F(BrowserUtilTest, IsProfileMigrationCompletedForUser) {
                                                                 user_id_hash));
 }
 
+TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
+  {
+    browser_util::SetLacrosEnabledForTest(false);
+    EXPECT_FALSE(browser_util::IsLacrosEnabled());
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
+    EXPECT_TRUE(browser_util::IsAshBrowserSyncEnabled());
+  }
+
+  {
+    browser_util::SetLacrosEnabledForTest(true);
+    EXPECT_TRUE(browser_util::IsLacrosEnabled());
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
+    EXPECT_TRUE(browser_util::IsAshBrowserSyncEnabled());
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {chromeos::features::kLacrosOnly, chromeos::features::kLacrosPrimary,
+         chromeos::features::kLacrosSupport},
+        {});
+    browser_util::SetLacrosEnabledForTest(false);
+    EXPECT_FALSE(browser_util::IsLacrosEnabled());
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
+    EXPECT_TRUE(browser_util::IsAshBrowserSyncEnabled());
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {chromeos::features::kLacrosOnly, chromeos::features::kLacrosPrimary,
+         chromeos::features::kLacrosSupport},
+        {});
+    browser_util::SetLacrosEnabledForTest(true);
+    EXPECT_TRUE(browser_util::IsLacrosEnabled());
+    EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
+    EXPECT_FALSE(browser_util::IsAshBrowserSyncEnabled());
+  }
+}
+
 }  // namespace crosapi

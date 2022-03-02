@@ -800,5 +800,17 @@ base::StringPiece GetLacrosAvailabilityPolicyName(LacrosLaunchSwitch value) {
   return base::StringPiece();
 }
 
+bool IsAshBrowserSyncEnabled() {
+  // Turn off sync from Ash if Lacros is enabled and Ash web browser is
+  // disabled.
+  // TODO(crbug.com/1293250): We must check whether profile migration is
+  // completed or not here. Currently that is checked inside `IsLacrosEnabled()`
+  // but it is planned to be decoupled with the function in the future.
+  if (IsLacrosEnabled() && !IsAshWebBrowserEnabled())
+    return false;
+
+  return true;
+}
+
 }  // namespace browser_util
 }  // namespace crosapi
