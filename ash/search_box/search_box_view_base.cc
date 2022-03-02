@@ -107,6 +107,13 @@ class SearchBoxImageButton : public views::ImageButton {
     // OnPaintBackground();
     SetInstallFocusRingOnFocus(false);
 
+    // Inkdrop only on click.
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    SetHasInkDropActionOnClick(true);
+    views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
+                                                 /*highlight_on_hover=*/false);
+    UpdateInkDropColors();
+
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
 
@@ -144,6 +151,11 @@ class SearchBoxImageButton : public views::ImageButton {
     SchedulePaint();
   }
 
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    UpdateInkDropColors();
+  }
+
   void set_is_showing(bool is_showing) { is_showing_ = is_showing; }
   bool is_showing() { return is_showing_; }
 
@@ -152,6 +164,18 @@ class SearchBoxImageButton : public views::ImageButton {
 
   // Whether the button is showing/shown or hiding/hidden.
   bool is_showing_ = false;
+
+  void UpdateInkDropColors() {
+    SkColor search_box_card_background_color =
+        AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor();
+
+    views::InkDrop::Get(this)->SetBaseColor(
+        AppListColorProvider::Get()->GetInkDropBaseColor(
+            search_box_card_background_color));
+    views::InkDrop::Get(this)->SetVisibleOpacity(
+        AppListColorProvider::Get()->GetInkDropOpacity(
+            search_box_card_background_color));
+  }
 
   // views::View overrides:
   void OnPaintBackground(gfx::Canvas* canvas) override {
