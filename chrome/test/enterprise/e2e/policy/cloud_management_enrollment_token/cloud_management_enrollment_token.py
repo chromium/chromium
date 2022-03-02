@@ -32,7 +32,7 @@ class CloudManagementEnrollmentTokenTest(ChromeEnterpriseTestCase):
     if token == None:
       path = "gs://%s/secrets/enrollToken" % self.gsbucket
       cmd = r'gsutil cat ' + path
-      token = self.RunCommand(self.win_config['dc'], cmd).rstrip()
+      token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
     self.SetPolicy(self.win_config['dc'], r'CloudManagementEnrollmentToken',
                    token, 'String')
     self.RunCommand(self.win_config['client'], 'gpupdate /force')

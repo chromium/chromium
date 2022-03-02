@@ -8,7 +8,7 @@ from datetime import datetime
 
 from chrome_ent_test.infra.core import before_all, category, environment, test
 from infra import ChromeEnterpriseTestCase
-from splunk_server import SplunkApiService
+from .splunk_server import SplunkApiService
 
 
 @category("chrome_only")
@@ -19,7 +19,7 @@ class ReportingConnectorwithSplunkTest(ChromeEnterpriseTestCase):
   def getSplunkCredentials(self):
     path = "gs://%s/secrets/splunkInstances.json" % self.gsbucket
     cmd = r'gsutil cat ' + path
-    return self.RunCommand(self.win_config['dc'], cmd).rstrip()
+    return self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
 
   @before_all
   def setup(self):

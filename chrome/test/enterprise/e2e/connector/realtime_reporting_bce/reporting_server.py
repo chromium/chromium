@@ -5,7 +5,7 @@
 import os
 
 from googleapiclient.discovery import build
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 
 
 class RealTimeReportingServer():
@@ -24,7 +24,7 @@ class RealTimeReportingServer():
       """
     localDir = os.path.dirname(os.path.abspath(__file__))
     filePath = os.path.join(localDir, 'service_accountkey.json')
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    credentials = service_account.Credentials.from_service_account_file(
         filePath, scopes=self.SCOPES)
 
     delegatedCreds = credentials.create_delegated(user_email)

@@ -152,7 +152,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     args = subprocess.list2cmdline(args)
     cmd = r'%s %s %s' % (self._pythonExecutablePath[instance_name], file_name,
                          args)
-    return self.RunCommand(instance_name, cmd)
+    return self.RunCommand(instance_name, cmd).decode()
 
   def RunUITest(self, instance_name, test_file, timeout=300, args=[]):
     """Runs a UI test on an instance.
@@ -181,7 +181,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
                                     file_name, args)
     cmd = (r'%s c:\cel\supporting_files\run_ui_test.py --timeout %s -- %s') % (
         self._pythonExecutablePath[instance_name], timeout, ui_test_cmd)
-    return self.RunCommand(instance_name, cmd, timeout=timeout)
+    return self.RunCommand(instance_name, cmd, timeout=timeout).decode()
 
   def _generatePassword(self):
     """Generates a random password."""
