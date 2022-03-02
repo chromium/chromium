@@ -80,9 +80,6 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 // of the Passwords Screen.
 @property(nonatomic, strong, readonly) NSDate* successfulReauthTime;
 
-// The coordinator's BrowserState.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
-
 // FaviconLoader is a keyed service that uses LargeIconService to retrieve
 // favicon images.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;

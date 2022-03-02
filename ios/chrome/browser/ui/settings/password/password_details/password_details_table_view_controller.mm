@@ -1006,7 +1006,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 // Shows a snack bar with |message| and provides haptic feedback. The haptic
-// feedback is either for success or for error, depending on |success|.
+// feedback is either for success or for error, depending on |success|. Deselect
+// cell if there was one selected.
 - (void)showToast:(NSString*)message forSuccess:(BOOL)success {
   TriggerHapticFeedbackForNotification(success
                                            ? UINotificationFeedbackTypeSuccess
@@ -1015,6 +1016,12 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                                      buttonText:nil
                                   messageAction:nil
                                completionAction:nil];
+
+  if ([self.tableView indexPathForSelectedRow]) {
+    [self.tableView
+        deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow]
+                      animated:YES];
+  }
 }
 
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
