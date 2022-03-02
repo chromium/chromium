@@ -4,17 +4,23 @@
 
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink::attribution_response_parsing {
@@ -60,6 +66,55 @@ mojom::blink::AttributionAggregatableKeyPtr ParseAttributionAggregatableKey(
   }
 
   return mojom::blink::AttributionAggregatableKey::New(high_bits, low_bits);
+}
+
+bool ParseAttributionFilterData(
+    JSONValue* value,
+    mojom::blink::AttributionFilterData& filter_data) {
+  if (!value)
+    return true;
+
+  JSONObject* object = JSONObject::Cast(value);
+  if (!object)
+    return false;
+
+  const wtf_size_t num_filters = object->size();
+  if (num_filters > kMaxAttributionFiltersPerSource)
+    return false;
+
+  for (wtf_size_t i = 0; i < num_filters; ++i) {
+    JSONObject::Entry entry = object->at(i);
+
+    if (entry.first.CharactersSizeInBytes() >
+        kMaxBytesPerAttributionFilterString) {
+      return false;
+    }
+
+    JSONArray* array = JSONArray::Cast(entry.second);
+    if (!array)
+      return false;
+
+    const wtf_size_t num_values = array->size();
+    if (num_values > kMaxValuesPerAttributionFilter)
+      return false;
+
+    WTF::Vector<String> values;
+
+    for (wtf_size_t j = 0; j < num_values; ++j) {
+      String value;
+      if (!array->at(j)->AsString(&value))
+        return false;
+
+      if (value.CharactersSizeInBytes() > kMaxBytesPerAttributionFilterString)
+        return false;
+
+      values.push_back(std::move(value));
+    }
+
+    filter_data.filter_values.insert(entry.first, std::move(values));
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -118,6 +173,74 @@ ParseAttributionAggregatableSources(const AtomicString& json_string) {
 
   return ResponseParseResult<mojom::blink::AttributionAggregatableSources>(
       ResponseParseStatus::kSuccess, std::move(sources));
+}
+
+bool ParseSourceRegistrationHeader(
+    const AtomicString& json_string,
+    mojom::blink::AttributionSourceData& source_data) {
+  // TODO(apaseltiner): Consider applying a max stack depth to this.
+  std::unique_ptr<JSONValue> json = ParseJSON(json_string);
+
+  if (!json)
+    return false;
+
+  JSONObject* object = JSONObject::Cast(json.get());
+  if (!object)
+    return false;
+
+  String event_id_string;
+  if (!object->GetString("source_event_id", &event_id_string))
+    return false;
+  bool event_id_is_valid = false;
+  uint64_t event_id = event_id_string.ToUInt64Strict(&event_id_is_valid);
+
+  // For source registrations where there is no mechanism to raise an error,
+  // such as on an img element, it is more useful to log the source with
+  // default data so that a reporting origin can learn the failure mode.
+  source_data.source_event_id = event_id_is_valid ? event_id : 0;
+
+  String destination_string;
+  if (!object->GetString("destination", &destination_string))
+    return false;
+  scoped_refptr<const SecurityOrigin> destination =
+      SecurityOrigin::CreateFromString(destination_string);
+  if (!destination->IsPotentiallyTrustworthy())
+    return false;
+  source_data.destination = std::move(destination);
+
+  // Treat invalid expiry, priority, and debug key as if they were not set.
+  String priority_string;
+  if (object->GetString("priority", &priority_string)) {
+    bool priority_is_valid = false;
+    int64_t priority = priority_string.ToInt64Strict(&priority_is_valid);
+    if (priority_is_valid)
+      source_data.priority = priority;
+  }
+
+  String expiry_string;
+  if (object->GetString("expiry", &expiry_string)) {
+    bool expiry_is_valid = false;
+    int64_t expiry = expiry_string.ToInt64Strict(&expiry_is_valid);
+    if (expiry_is_valid)
+      source_data.expiry = base::Seconds(expiry);
+  }
+
+  String debug_key_string;
+  if (object->GetString("debug_key", &debug_key_string)) {
+    bool debug_key_is_valid = false;
+    uint64_t debug_key = debug_key_string.ToUInt64Strict(&debug_key_is_valid);
+    if (debug_key_is_valid) {
+      source_data.debug_key = mojom::blink::AttributionDebugKey::New(debug_key);
+    }
+  }
+
+  source_data.filter_data = mojom::blink::AttributionFilterData::New();
+  if (!ParseAttributionFilterData(object->Get("filter_data"),
+                                  *source_data.filter_data)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool ParseEventTriggerData(

@@ -48,6 +48,10 @@ struct ResponseParseResult {
 CORE_EXPORT ResponseParseResult<mojom::blink::AttributionAggregatableSources>
 ParseAttributionAggregatableSources(const AtomicString& json_string);
 
+CORE_EXPORT bool ParseSourceRegistrationHeader(
+    const AtomicString& json_string,
+    mojom::blink::AttributionSourceData& source_data);
+
 // Parses event trigger data header of the form:
 //
 // [{

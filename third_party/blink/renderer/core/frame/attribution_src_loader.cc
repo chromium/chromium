@@ -6,11 +6,9 @@
 
 #include <utility>
 
-#include "base/time/time.h"
+#include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -20,8 +18,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
-#include "third_party/blink/renderer/platform/json/json_parser.h"
-#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -36,64 +32,9 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-namespace {
-
-bool ParseAttributionFilterData(
-    JSONValue* value,
-    mojom::blink::AttributionFilterData& filter_data) {
-  if (!value)
-    return true;
-
-  JSONObject* object = JSONObject::Cast(value);
-  if (!object)
-    return false;
-
-  const wtf_size_t num_filters = object->size();
-  if (num_filters > kMaxAttributionFiltersPerSource)
-    return false;
-
-  for (wtf_size_t i = 0; i < num_filters; ++i) {
-    JSONObject::Entry entry = object->at(i);
-
-    if (entry.first.CharactersSizeInBytes() >
-        kMaxBytesPerAttributionFilterString) {
-      return false;
-    }
-
-    JSONArray* array = JSONArray::Cast(entry.second);
-    if (!array)
-      return false;
-
-    const wtf_size_t num_values = array->size();
-    if (num_values > kMaxValuesPerAttributionFilter)
-      return false;
-
-    WTF::Vector<String> values;
-
-    for (wtf_size_t j = 0; j < num_values; ++j) {
-      String value;
-      if (!array->at(j)->AsString(&value))
-        return false;
-
-      if (value.CharactersSizeInBytes() > kMaxBytesPerAttributionFilterString)
-        return false;
-
-      values.push_back(std::move(value));
-    }
-
-    filter_data.filter_values.insert(entry.first, std::move(values));
-  }
-
-  return true;
-}
-
-}  // namespace
 
 AttributionSrcLoader::AttributionSrcLoader(LocalFrame* frame)
     : local_frame_(frame) {}
@@ -235,7 +176,6 @@ void AttributionSrcLoader::HandleSourceRegistration(
 
   mojom::blink::AttributionSourceDataPtr source_data =
       mojom::blink::AttributionSourceData::New();
-  source_data->filter_data = mojom::blink::AttributionFilterData::New();
 
   // Verify the current url is trustworthy and capable of registering sources.
   scoped_refptr<const SecurityOrigin> reporting_origin =
@@ -245,69 +185,10 @@ void AttributionSrcLoader::HandleSourceRegistration(
   source_data->reporting_origin =
       SecurityOrigin::Create(response.CurrentRequestUrl());
 
-  // Populate attribution data from provided JSON.
-  // TODO(apaseltiner): Consider applying a max stack depth to this.
-  std::unique_ptr<JSONValue> json = ParseJSON(response.HttpHeaderField(
-      http_names::kAttributionReportingRegisterSource));
-
-  // TODO(johnidel): Log a devtools issues if JSON parsing fails and on
-  // individual early exits below.
-  if (!json)
-    return;
-
-  JSONObject* object = JSONObject::Cast(json.get());
-  if (!object)
-    return;
-
-  String event_id_string;
-  if (!object->GetString("source_event_id", &event_id_string))
-    return;
-  bool event_id_is_valid = false;
-  uint64_t event_id = event_id_string.ToUInt64Strict(&event_id_is_valid);
-
-  // For source registrations where there is no mechanism to raise an error,
-  // such as on an img element, it is more useful to log the source with
-  // default data so that a reporting origin can learn the failure mode.
-  source_data->source_event_id = event_id_is_valid ? event_id : 0;
-
-  String destination_string;
-  if (!object->GetString("destination", &destination_string))
-    return;
-  scoped_refptr<const SecurityOrigin> destination =
-      SecurityOrigin::CreateFromString(destination_string);
-  if (!destination->IsPotentiallyTrustworthy())
-    return;
-  source_data->destination = std::move(destination);
-
-  // Treat invalid expiry, priority, and debug key as if they were not set.
-  String priority_string;
-  if (object->GetString("priority", &priority_string)) {
-    bool priority_is_valid = false;
-    int64_t priority = priority_string.ToInt64Strict(&priority_is_valid);
-    if (priority_is_valid)
-      source_data->priority = priority;
-  }
-
-  String expiry_string;
-  if (object->GetString("expiry", &expiry_string)) {
-    bool expiry_is_valid = false;
-    int64_t expiry = expiry_string.ToInt64Strict(&expiry_is_valid);
-    if (expiry_is_valid)
-      source_data->expiry = base::Seconds(expiry);
-  }
-
-  String debug_key_string;
-  if (object->GetString("debug_key", &debug_key_string)) {
-    bool debug_key_is_valid = false;
-    uint64_t debug_key = debug_key_string.ToUInt64Strict(&debug_key_is_valid);
-    if (debug_key_is_valid) {
-      source_data->debug_key =
-          mojom::blink::AttributionDebugKey::New(debug_key);
-    }
-  }
-
-  if (!ParseAttributionFilterData(object->Get("filter_data"),
-                                  *source_data->filter_data)) {
+  if (!attribution_response_parsing::ParseSourceRegistrationHeader(
+          response.HttpHeaderField(
+              http_names::kAttributionReportingRegisterSource),
+          *source_data)) {
     return;
   }
 
