@@ -37,9 +37,15 @@ class ExtractIOTask : public IOTask {
  private:
   void Complete(State state);
 
-  const scoped_refptr<storage::FileSystemContext> file_system_context_;
+  void ZipExtractCallback(bool success);
 
-  mojo::PendingRemote<unzip::mojom::Unzipper> zip_file_extractor_;
+  // URLs of the files that have archives in them for extraction.
+  const std::vector<storage::FileSystemURL> source_urls_;
+
+  // Parent folder of the files in 'source_urls_'.
+  const storage::FileSystemURL parent_folder_;
+
+  const scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;
