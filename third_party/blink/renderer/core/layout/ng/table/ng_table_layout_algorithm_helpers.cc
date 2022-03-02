@@ -1055,11 +1055,10 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
   //    - grow fixed eligible sections in proportion to their size
   //    - grow percentage eligible sections in proportion to their size
 
-  unsigned block_space_count = sections->size() + 1;
-  LayoutUnit undistributable_space = block_space_count * border_block_spacing;
-
-  LayoutUnit distributable_table_block_size =
-      std::max(LayoutUnit(), table_block_size - undistributable_space);
+  const LayoutUnit undistributable_space =
+      (sections->size() + 1) * border_block_spacing;
+  const LayoutUnit distributable_table_block_size =
+      (table_block_size - undistributable_space).ClampNegativeToZero();
 
   auto ComputePercentageSize = [&distributable_table_block_size](
                                    auto& section) {
@@ -1069,47 +1068,49 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
         LayoutUnit(*section.percent * distributable_table_block_size / 100));
   };
 
+  LayoutUnit minimum_size_guess;
+  LayoutUnit percent_size_guess;
+  bool has_tbody = false;
+
+  Vector<wtf_size_t> auto_sections;
+  Vector<wtf_size_t> fixed_sections;
+  Vector<wtf_size_t> percent_sections;
+  Vector<wtf_size_t> tbody_auto_sections;
+  Vector<wtf_size_t> tbody_fixed_sections;
+  Vector<wtf_size_t> tbody_percent_sections;
+
   LayoutUnit auto_sections_size;
   LayoutUnit fixed_sections_size;
   LayoutUnit percent_sections_size;
   LayoutUnit tbody_auto_sections_size;
   LayoutUnit tbody_fixed_sections_size;
   LayoutUnit tbody_percent_sections_size;
-  LayoutUnit minimum_size_guess;
-  LayoutUnit percent_size_guess;
 
-  unsigned auto_sections_count = 0;
-  unsigned fixed_sections_count = 0;
-  unsigned percent_sections_count = 0;
-  unsigned tbody_auto_sections_count = 0;
-  unsigned tbody_fixed_sections_count = 0;
-  unsigned tbody_percent_sections_count = 0;
-
-  for (const NGTableTypes::Section& section : *sections) {
+  for (wtf_size_t index = 0u; index < sections->size(); ++index) {
+    const auto& section = sections->at(index);
     minimum_size_guess += section.block_size;
-    if (section.percent.has_value())
-      percent_size_guess += ComputePercentageSize(section);
-    else
-      percent_size_guess += section.block_size;
+    percent_size_guess +=
+        section.percent ? ComputePercentageSize(section) : section.block_size;
+    has_tbody |= section.is_tbody;
 
     if (section.is_constrained) {
       if (section.percent.has_value()) {
-        percent_sections_count++;
+        percent_sections.push_back(index);
         if (section.is_tbody)
-          tbody_percent_sections_count++;
+          tbody_percent_sections.push_back(index);
       } else {
-        fixed_sections_count++;
+        fixed_sections.push_back(index);
         fixed_sections_size += section.block_size;
         if (section.is_tbody) {
+          tbody_fixed_sections.push_back(index);
           tbody_fixed_sections_size += section.block_size;
-          tbody_fixed_sections_count++;
         }
       }
     } else {
-      auto_sections_count++;
+      auto_sections.push_back(index);
       auto_sections_size += section.block_size;
       if (section.is_tbody) {
-        tbody_auto_sections_count++;
+        tbody_auto_sections.push_back(index);
         tbody_auto_sections_size += section.block_size;
       }
     }
@@ -1121,7 +1122,7 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
   LayoutUnit current_sections_size = minimum_size_guess;
 
   // Distribute to percent sections.
-  if (percent_sections_count > 0 && percent_size_guess > minimum_size_guess) {
+  if (!percent_sections.IsEmpty() && percent_size_guess > minimum_size_guess) {
     LayoutUnit distributable_size =
         std::min(percent_size_guess, distributable_table_block_size) -
         minimum_size_guess;
@@ -1129,126 +1130,109 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
     LayoutUnit percent_minimum_difference =
         percent_size_guess - minimum_size_guess;
 
-    LayoutUnit rounding_error_tally = distributable_size;
-    NGTableTypes::Section* last_section = nullptr;
-    for (NGTableTypes::Section& section : *sections) {
-      if (!section.percent)
-        continue;
-      LayoutUnit delta = LayoutUnit(
-          distributable_size *
-          (ComputePercentageSize(section).ToFloat() - section.block_size) /
+    LayoutUnit remaining_deficit = distributable_size;
+    for (auto& index : percent_sections) {
+      auto& section = sections->at(index);
+      LayoutUnit delta = distributable_size.MulDiv(
+          ComputePercentageSize(section) - section.block_size,
           percent_minimum_difference);
       section.block_size += delta;
       section.needs_redistribution = true;
-      rounding_error_tally -= delta;
+      remaining_deficit -= delta;
       current_sections_size += delta;
-      last_section = &section;
       percent_sections_size += section.block_size;
       if (section.is_tbody)
         tbody_percent_sections_size += section.block_size;
     }
-    DCHECK_LT(rounding_error_tally,
-              LayoutUnit(1));  // DO NOT CHECK IN, cluster fuzz magnet
-    DCHECK(last_section);
-    last_section->block_size += rounding_error_tally;
-    percent_sections_size += rounding_error_tally;
-    current_sections_size += rounding_error_tally;
-    if (last_section->is_tbody)
-      percent_sections_size += rounding_error_tally;
+    auto& last_section = sections->at(percent_sections.back());
+    last_section.block_size += remaining_deficit;
+    DCHECK_GE(last_section.block_size, LayoutUnit());
+    percent_sections_size += remaining_deficit;
+    current_sections_size += remaining_deficit;
+    if (last_section.is_tbody)
+      tbody_percent_sections_size += remaining_deficit;
   }
 
   // Distribute remaining sizes.
-  bool has_tbody = tbody_auto_sections_count > 0 ||
-                   tbody_fixed_sections_count > 0 ||
-                   tbody_percent_sections_count > 0;
   LayoutUnit distributable_size =
       distributable_table_block_size - current_sections_size;
   if (distributable_size > LayoutUnit()) {
-    LayoutUnit rounding_error_tally = distributable_size;
-    if ((tbody_auto_sections_count > 0) ||
-        (!has_tbody && auto_sections_count > 0)) {
+    LayoutUnit remaining_deficit = distributable_size;
+    if (!tbody_auto_sections.IsEmpty() ||
+        (!has_tbody && !auto_sections.IsEmpty())) {
       // Distribute to auto sections.
       // Sections grow by ratio of their size / total auto sizes.
-      NGTableTypes::Section* last_section = nullptr;
       LayoutUnit total_auto_size =
           has_tbody ? tbody_auto_sections_size : auto_sections_size;
-      for (NGTableTypes::Section& section : *sections) {
-        if (section.is_constrained || (section.is_tbody != has_tbody))
-          continue;
+      Vector<wtf_size_t>& sections_to_grow =
+          has_tbody ? tbody_auto_sections : auto_sections;
+      for (auto& index : sections_to_grow) {
+        auto& section = sections->at(index);
         LayoutUnit delta;
         if (total_auto_size > LayoutUnit()) {
-          delta = LayoutUnit(distributable_size.ToFloat() * section.block_size /
-                             total_auto_size);
+          delta =
+              distributable_size.MulDiv(section.block_size, total_auto_size);
         } else {
-          delta = LayoutUnit(
-              distributable_size.ToFloat() /
-              (has_tbody ? tbody_auto_sections_count : auto_sections_count));
+          delta = distributable_size / sections_to_grow.size();
         }
         section.block_size += delta;
         section.needs_redistribution = true;
-        rounding_error_tally -= delta;
-        last_section = &section;
+        remaining_deficit -= delta;
       }
-      DCHECK(last_section);
-      last_section->block_size += rounding_error_tally;
-    } else if ((tbody_fixed_sections_count > 0) ||
-               (!has_tbody && fixed_sections_count > 0)) {
+      auto& last_section = sections->at(sections_to_grow.back());
+      last_section.block_size += remaining_deficit;
+      DCHECK_GE(last_section.block_size, LayoutUnit());
+    } else if (!tbody_fixed_sections.IsEmpty() ||
+               (!has_tbody && !fixed_sections.IsEmpty())) {
       // Distribute to fixed sections.
-      // Sections grow  by ration of their size / total fixed sizes.
-      NGTableTypes::Section* last_section = nullptr;
+      // Sections grow by ratio of their size / total fixed sizes.
       LayoutUnit total_fixed_size =
           has_tbody ? tbody_fixed_sections_size : fixed_sections_size;
-      for (NGTableTypes::Section& section : *sections) {
-        if (!section.is_constrained || section.percent.has_value())
-          continue;
-        if (section.is_tbody != has_tbody)
-          continue;
+      Vector<wtf_size_t>& sections_to_grow =
+          has_tbody ? tbody_fixed_sections : fixed_sections;
+      for (auto& index : sections_to_grow) {
+        auto& section = sections->at(index);
         LayoutUnit delta;
         if (total_fixed_size > LayoutUnit()) {
-          delta = LayoutUnit(distributable_size.ToFloat() * section.block_size /
-                             total_fixed_size);
+          delta =
+              distributable_size.MulDiv(section.block_size, total_fixed_size);
         } else {
-          delta = LayoutUnit(
-              distributable_size.ToFloat() /
-              (has_tbody ? tbody_fixed_sections_count : fixed_sections_count));
+          delta = distributable_size / sections_to_grow.size();
         }
         section.block_size += delta;
         section.needs_redistribution = true;
-        rounding_error_tally -= delta;
-        last_section = &section;
+        remaining_deficit -= delta;
       }
-      DCHECK(last_section);
-      last_section->block_size += rounding_error_tally;
+      auto& last_section = sections->at(sections_to_grow.back());
+      last_section.block_size += remaining_deficit;
+      DCHECK_GE(last_section.block_size, LayoutUnit());
     } else {
-      DCHECK((tbody_percent_sections_count > 0) ||
-             (!has_tbody && percent_sections_count > 0));
+      DCHECK(!tbody_percent_sections.IsEmpty() ||
+             (!has_tbody && !percent_sections.IsEmpty()));
       // Distribute to percentage sections.
-      NGTableTypes::Section* last_section = nullptr;
       LayoutUnit total_percent_size =
           has_tbody ? tbody_percent_sections_size : percent_sections_size;
-      for (NGTableTypes::Section& section : *sections) {
-        if (!section.percent.has_value())
-          continue;
-        if (section.is_tbody != has_tbody)
-          continue;
+      Vector<wtf_size_t>& sections_to_grow =
+          has_tbody ? tbody_percent_sections : percent_sections;
+      for (auto& index : sections_to_grow) {
+        auto& section = sections->at(index);
         LayoutUnit delta;
         if (total_percent_size > LayoutUnit()) {
-          delta = LayoutUnit(distributable_size.ToFloat() * section.block_size /
-                             total_percent_size);
+          delta =
+              distributable_size.MulDiv(section.block_size, total_percent_size);
         } else {
-          delta = LayoutUnit(distributable_size.ToFloat() /
-                             (has_tbody ? tbody_percent_sections_count
-                                        : percent_sections_count));
+          delta = distributable_size / sections_to_grow.size();
         }
         section.block_size += delta;
         section.needs_redistribution = true;
-        rounding_error_tally -= delta;
-        last_section = &section;
+        remaining_deficit -= delta;
       }
-      DCHECK(last_section);
-      last_section->block_size += rounding_error_tally;
+      auto& last_section = sections->at(sections_to_grow.back());
+      last_section.block_size += remaining_deficit;
+      DCHECK_GE(last_section.block_size, LayoutUnit());
     }
   }
+
   // Propagate new section sizes to rows.
   for (NGTableTypes::Section& section : *sections) {
     if (!section.needs_redistribution)
