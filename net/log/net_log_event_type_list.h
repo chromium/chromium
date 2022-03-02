@@ -687,20 +687,6 @@ EVENT_TYPE(SIGNED_CERTIFICATE_TIMESTAMPS_CHECKED)
 // }
 EVENT_TYPE(CERT_CT_COMPLIANCE_CHECKED)
 
-// The EV certificate was checked for compliance with Certificate Transparency
-// requirements.
-//
-// The following parameters are attached to the event:
-// {
-//    "certificate": <An X.509 certificate, same format as in
-//                   CERT_VERIFIER_JOB.>
-//    "policy_enforcement_required": <boolean>
-//    "build_timely": <boolean>
-//    "ct_compliance_status": <string describing compliance status>
-//    "ev_whitelist_version": <optional; string representing whitelist version>
-// }
-EVENT_TYPE(EV_CERT_CT_COMPLIANCE_CHECKED)
-
 // A Certificate Transparency log entry was audited for inclusion in the
 // log.
 //
