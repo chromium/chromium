@@ -5180,7 +5180,7 @@
       'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'supported_on': ['chrome.*:9-','android:46-','webview_android:49-','chrome_os:62-'],
+      'supported_on': ['chrome.*:9-100','android:46-100','webview_android:49-100','chrome_os:62-100'],
       'deprecated': True,
       'features': {
         'dynamic_refresh': False,
@@ -5223,7 +5223,7 @@
       'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'supported_on': ['chrome.*:9-','android:46-','chrome_os:62-'],
+      'supported_on': ['chrome.*:9-100','android:46-100','chrome_os:62-100'],
       'deprecated': True,
       'features': {
         'dynamic_refresh': False,
@@ -5423,7 +5423,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
+      'supported_on': ['chrome.*:8-100', 'chrome_os:11-100'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5497,7 +5497,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
+      'supported_on': ['chrome.*:8-100', 'chrome_os:11-100'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8639,7 +8639,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'supported_on': ['chrome.*:34-'],
+      'supported_on': ['chrome.*:34-100'],
       'deprecated': True,
       'features': {
         'dynamic_refresh': True,
@@ -8692,7 +8692,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'supported_on': ['chrome.*:34-'],
+      'supported_on': ['chrome.*:34-100'],
       'deprecated': True,
       'features': {
         'dynamic_refresh': True,
@@ -19592,7 +19592,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': [
-        'chrome_os:61-',
+        'chrome_os:61-100',
       ],
       'features': {
         'dynamic_refresh': True,
@@ -20402,7 +20402,7 @@
         'items': { 'type': 'string' }
       },
       # Spell checking is provided by macOS, so can't be controlled on Mac.
-      'supported_on': ['chrome.win:75-', 'chrome.linux:75-', 'chrome_os:75-'],
+      'supported_on': ['chrome.win:75-100', 'chrome.linux:75-100', 'chrome_os:75-100'],
       'deprecated': True,
       'features': {
         'can_be_recommended': False,
@@ -20998,7 +20998,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'supported_on': ['chrome.*:68-', 'chrome_os:68-'],
+      'supported_on': ['chrome.*:68-100', 'chrome_os:68-100'],
       'deprecated': True,
       'features': {
         'dynamic_refresh': True,
@@ -25524,7 +25524,7 @@
     {
       'name': 'ExternalPrintServersWhitelist',
       'owners': ['file://chromeos/printing/OWNERS', 'luum@chromium.org'],
-      'supported_on': ['chrome_os:79-'],
+      'supported_on': ['chrome_os:79-100'],
       'id': 631,
       'features': {
         'dynamic_refresh': True,
@@ -26400,7 +26400,7 @@
       },
       'caption': '''Per-App Time Limits Whitelist''',
       'tags': [],
-      'supported_on': ['chrome_os: 80-'],
+      'supported_on': ['chrome_os: 80-100'],
       'desc': '''This policy specifies which applications and URLs should be whitelisted for per-app usage restrictions.
         The configured whitelist are applied to the apps installed on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> for the given user with per-app time limits.
         The configured whitelist can only be applied to child user accounts and take effect when <ph name="PER_APP_TIME_LIMITS_POLICY_NAME">PerAppTimeLimits</ph> policy is set.

@@ -56,7 +56,6 @@ const char* kSensitivePolicies[] = {
     key::kRestoreOnStartupURLs,
     key::kSafeBrowsingForTrustedSourcesEnabled,
     key::kSafeBrowsingEnabled,
-    key::kSafeBrowsingWhitelistDomains,
     key::kSafeBrowsingAllowlistDomains,
 };
 

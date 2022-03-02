@@ -57,42 +57,22 @@ void RemapRenamedPolicies(PolicyMap* policies) {
   base::flat_set<std::string> policy_lists_to_merge =
       policy::ValueToStringSet(merge_list);
   const std::vector<std::pair<const char*, const char*>> renamed_policies = {{
-      {policy::key::kSafeBrowsingWhitelistDomains,
-       policy::key::kSafeBrowsingAllowlistDomains},
-      {policy::key::kSpellcheckLanguageBlacklist,
-       policy::key::kSpellcheckLanguageBlocklist},
       {policy::key::kURLBlacklist, policy::key::kURLBlocklist},
       {policy::key::kURLWhitelist, policy::key::kURLAllowlist},
 #if !BUILDFLAG(IS_ANDROID)
       {policy::key::kAutoplayWhitelist, policy::key::kAutoplayAllowlist},
-#endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      {policy::key::kExtensionInstallBlacklist,
-       policy::key::kExtensionInstallBlocklist},
-      {policy::key::kExtensionInstallWhitelist,
-       policy::key::kExtensionInstallAllowlist},
-      {policy::key::kNativeMessagingBlacklist,
-       policy::key::kNativeMessagingBlocklist},
-      {policy::key::kNativeMessagingWhitelist,
-       policy::key::kNativeMessagingAllowlist},
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(OS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS)
       {policy::key::kAttestationExtensionWhitelist,
        policy::key::kAttestationExtensionAllowlist},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      {policy::key::kExternalPrintServersWhitelist,
-       policy::key::kExternalPrintServersAllowlist},
       {policy::key::kNativePrintersBulkBlacklist,
        policy::key::kPrintersBulkBlocklist},
       {policy::key::kNativePrintersBulkWhitelist,
        policy::key::kPrintersBulkAllowlist},
-      {policy::key::kPerAppTimeLimitsWhitelist,
-       policy::key::kPerAppTimeLimitsAllowlist},
       {policy::key::kQuickUnlockModeWhitelist,
        policy::key::kQuickUnlockModeAllowlist},
-      {policy::key::kNoteTakingAppsLockScreenWhitelist,
-       policy::key::kNoteTakingAppsLockScreenAllowlist},
 #if defined(USE_CUPS)
       {policy::key::kPrintingAPIExtensionsWhitelist,
        policy::key::kPrintingAPIExtensionsAllowlist},
@@ -326,10 +306,9 @@ void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
                                 update_task_ptr_factory_.GetWeakPtr()));
 }
 
-void PolicyServiceImpl::NotifyNamespaceUpdated(
-    const PolicyNamespace& ns,
-    const PolicyMap& previous,
-    const PolicyMap& current) {
+void PolicyServiceImpl::NotifyNamespaceUpdated(const PolicyNamespace& ns,
+                                               const PolicyMap& previous,
+                                               const PolicyMap& current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto iterator = observers_.find(ns.domain);
   if (iterator != observers_.end()) {

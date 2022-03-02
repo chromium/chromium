@@ -1134,52 +1134,7 @@
     "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
   "ExternalPrintServersWhitelist": {
-    "os": [
-      "chromeos_ash"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set).",
-        "prefs": {
-          "native_printing.external_print_servers_whitelist": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "ExternalPrintServersWhitelist": [
-            "id4", "id7", "id10"
-          ]
-        },
-        "prefs": {
-          "native_printing.external_print_servers_whitelist": {
-            "value": [
-              "id4", "id7", "id10"
-            ]
-          }
-        }
-      },
-      {
-        "note": "ExternalPrintServersAllowlist has higher precedence.",
-        "policies": {
-          "ExternalPrintServersWhitelist": [
-            "id1", "id2", "id3"
-          ],
-          "ExternalPrintServersAllowlist": [
-            "id44", "id55"
-          ]
-        },
-        "prefs": {
-          "native_printing.external_print_servers_whitelist": {
-            "value": [
-              "id44", "id55"
-            ]
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "ExternalPrintServersAllowlist": {
     "os": [
@@ -1205,24 +1160,6 @@
           "native_printing.external_print_servers_whitelist": {
             "value": [
               "id1", "id2", "id3"
-            ]
-          }
-        }
-      },
-      {
-        "note": "ExternalPrintServersWhitelist has lower precedence.",
-        "policies": {
-          "ExternalPrintServersAllowlist": [
-            "id1", "id2"
-          ],
-          "ExternalPrintServersWhitelist": [
-            "id100", "id200"
-          ]
-        },
-        "prefs": {
-          "native_printing.external_print_servers_whitelist": {
-            "value": [
-              "id1", "id2"
             ]
           }
         }
@@ -2915,27 +2852,7 @@
     ]
   },
   "AuthServerWhitelist": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "android"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "AuthServerWhitelist": "localhost"
-        },
-        "prefs": {
-          "auth.server_allowlist": {
-            "location": "local_state",
-            "value": "localhost"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "AuthServerAllowlist": {
     "os": [
@@ -2956,44 +2873,11 @@
             "default_value": ""
           }
         }
-      },
-      {
-        "note": "New policy override deprecated one.",
-        "policies": {
-          "AuthServerAllowlist": "192.168.0.*,192.168.1.*",
-          "AuthServerWhitelist": "192.168.0.*,192.168.1.*,192.168.2.*"
-        },
-        "prefs": {
-          "auth.server_allowlist": {
-            "location": "local_state",
-            "value": "192.168.0.*,192.168.1.*"
-          }
-        }
       }
     ]
   },
   "AuthNegotiateDelegateWhitelist": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "android"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "AuthNegotiateDelegateWhitelist": "localhost"
-        },
-        "prefs": {
-          "auth.negotiate_delegate_whitelist": {
-            "location": "local_state",
-            "value": "localhost"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "AuthNegotiateDelegateAllowlist": {
     "os": [
@@ -3023,19 +2907,6 @@
           "auth.negotiate_delegate_whitelist": {
             "location": "local_state",
             "value": "localhost,*.example.com"
-          }
-        }
-      },
-      {
-        "note": "New policy overrides deprecated one",
-        "policies": {
-          "AuthNegotiateDelegateAllowlist": "localhost",
-          "AuthNegotiateDelegateWhitelist": "localhost,*.example.com"
-        },
-        "prefs": {
-          "auth.negotiate_delegate_whitelist": {
-            "location": "local_state",
-            "value": "localhost"
           }
         }
       }
@@ -3540,67 +3411,7 @@
     ]
   },
   "SpellcheckLanguageBlacklist": {
-    "os": [
-      "win",
-      "linux",
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set)",
-        "prefs": {
-          "spellcheck.blocked_dictionaries": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple value",
-        "policies": {
-          "SpellcheckLanguageBlacklist": [
-            "fr"
-          ]
-        },
-        "prefs": {
-          "spellcheck.blocked_dictionaries": {
-            "value": [
-              "fr"
-            ]
-          }
-        }
-      },
-      {
-        "note": "SpellcheckEnabled precedence",
-        "policies": {
-          "SpellcheckLanguageBlacklist": [
-            "fr"
-          ],
-          "SpellcheckEnabled": false
-        },
-        "prefs": {
-          "spellcheck.blocked_dictionaries": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "SpellcheckLanguage precedence",
-        "policies": {
-          "SpellcheckLanguageBlacklist": [
-            "fr"
-          ],
-          "SpellcheckLanguage": [
-            "fr"
-          ]
-        },
-        "prefs": {
-          "spellcheck.blocked_dictionaries": {
-            "value": []
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "SpellcheckLanguageBlocklist": {
     "os": [
@@ -3662,27 +3473,6 @@
             "value": []
           }
         }
-      },
-      {
-        "note": "Precedence over SpellcheckLanguageBlacklist",
-        "policies": {
-          "SpellcheckLanguageBlocklist": [
-            "fr",
-            "it"
-          ],
-          "SpellcheckLanguageBlacklist": [
-            "it",
-            "es"
-          ]
-        },
-        "prefs": {
-          "spellcheck.blocked_dictionaries": {
-            "value": [
-              "fr",
-              "it"
-            ]
-          }
-        }
       }
     ]
   },
@@ -3738,25 +3528,7 @@
     "reason_for_missing_test": "Policy was removed"
   },
   "ExtensionInstallBlacklist": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExtensionInstallBlacklist": [
-            "*"
-          ]
-        },
-        "prefs": {
-          "extensions.install.denylist": {}
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "ExtensionInstallBlocklist": {
     "os": [
@@ -3780,25 +3552,7 @@
     ]
   },
   "ExtensionInstallWhitelist": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExtensionInstallWhitelist": [
-            "lcncmkcnkcdbbanbjakcencbaoegdjlp"
-          ]
-        },
-        "prefs": {
-          "extensions.install.allowlist": {}
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "ExtensionInstallAllowlist": {
     "os": [
@@ -10231,23 +9985,7 @@
     ]
   },
   "NativeMessagingBlacklist": {
-    "os": [
-      "win",
-      "linux",
-      "mac"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "NativeMessagingBlacklist": [
-            "*"
-          ]
-        },
-        "prefs": {
-          "native_messaging.blacklist": {}
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "NativeMessagingBlocklist": {
     "os": [
@@ -10269,23 +10007,7 @@
     ]
   },
   "NativeMessagingWhitelist": {
-    "os": [
-      "win",
-      "linux",
-      "mac"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "NativeMessagingWhitelist": [
-            "native.messaging.host.name"
-          ]
-        },
-        "prefs": {
-          "native_messaging.whitelist": {}
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "NativeMessagingAllowlist": {
     "os": [
@@ -12857,19 +12579,7 @@
     "reason_for_missing_test": "Policy was removed"
   },
   "NoteTakingAppsLockScreenWhitelist": {
-    "os": [
-      "chromeos_ash"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "NoteTakingAppsLockScreenWhitelist": []
-        },
-        "prefs": {
-          "settings.note_taking_apps_lock_screen_whitelist": {}
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "NoteTakingAppsLockScreenAllowlist": {
     "os": [
@@ -13470,29 +13180,7 @@
     ]
   },
   "SafeBrowsingWhitelistDomains": {
-    "os": [
-      "win",
-      "mac",
-      "linux",
-      "chromeos_ash",
-      "chromeos_lacros"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SafeBrowsingWhitelistDomains": [
-            "google.com"
-          ]
-        },
-        "prefs": {
-          "safebrowsing.safe_browsing_whitelist_domains": {
-            "value": [
-              "google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "SafeBrowsingAllowlistDomains": {
     "os": [
@@ -13522,24 +13210,6 @@
         "prefs": {
           "safebrowsing.safe_browsing_whitelist_domains": {
             "default_value": []
-          }
-        }
-      },
-      {
-        "note": "SafeBrowsingWhitelistDomains has been deprecated, and the new name should take precedence.",
-        "policies": {
-          "SafeBrowsingWhitelistDomains": [
-            "old.name.com"
-          ],
-          "SafeBrowsingAllowlistDomains": [
-            "new.name.com"
-          ]
-        },
-        "prefs": {
-          "safebrowsing.safe_browsing_whitelist_domains": {
-            "value": [
-              "new.name.com"
-            ]
           }
         }
       }
@@ -14596,38 +14266,7 @@
     ]
   },
   "PerAppTimeLimitsWhitelist": {
-    "os": [
-      "chromeos_ash"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PerAppTimeLimitsWhitelist": {
-            "scheme_list": [
-              "chrome",
-              "files"
-            ],
-            "domain_list": [
-              "support.google.com",
-              "policies.google.com"
-            ],
-            "app_list": [
-              {
-                "app_id": "pjkljhegncpnkpknbcohdijeoejaedia",
-                "app_type": "EXTENSION"
-              },
-              {
-                "app_id": "iniodglblcgmngkgdipeiclkdjjpnlbn",
-                "app_type": "BUILT-IN"
-              }
-            ]
-          }
-        },
-        "prefs": {
-          "child_user.per_app_time_limits.whitelist": {}
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "PerAppTimeLimitsAllowlist": {
     "os": [
