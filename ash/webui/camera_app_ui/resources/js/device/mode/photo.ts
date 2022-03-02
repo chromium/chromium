@@ -166,6 +166,7 @@ export class PhotoFactory extends ModeFactory {
 
   produce(): ModeBase {
     assert(this.previewVideo !== null);
+    assert(this.facing !== null);
     return new Photo(
         this.previewVideo, this.facing, this.captureResolution, this.handler);
   }

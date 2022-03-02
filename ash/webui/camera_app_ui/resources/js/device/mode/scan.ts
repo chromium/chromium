@@ -91,6 +91,7 @@ export class ScanFactory extends ModeFactory {
 
   produce(): ModeBase {
     assert(this.previewVideo !== null);
+    assert(this.facing !== null);
     return new Scan(
         this.previewVideo,
         this.facing,

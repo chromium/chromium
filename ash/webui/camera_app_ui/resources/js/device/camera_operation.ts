@@ -32,6 +32,7 @@ import {StreamConstraints} from './stream_constraints.js';
 import {StreamManager} from './stream_manager.js';
 import {
   CameraConfig,
+  CameraConfigCandidate,
   CameraInfo,
   CameraViewUI,
   ModeConstraints,
@@ -47,7 +48,7 @@ interface ConfigureCandidate {
 }
 
 export interface EventListener {
-  onTryingNewConfig(config: CameraConfig): void;
+  onTryingNewConfig(config: CameraConfigCandidate): void;
   onUpdateConfig(config: CameraConfig): Promise<void>;
   onUpdateCapability(cameraInfo: CameraInfo): void;
 }
@@ -59,7 +60,11 @@ class Reconfigurer {
   /**
    * Preferred configuration.
    */
-  config: CameraConfig;
+  config: CameraConfig|null = null;
+
+  private readonly initialFacing: Facing|null;
+
+  private readonly initialMode: Mode;
 
   private shouldSuspend = false;
 
@@ -68,11 +73,11 @@ class Reconfigurer {
       private readonly modes: Modes,
       private readonly listener: EventListener,
       private readonly modeConstraints: ModeConstraints,
-      facing: Facing,
+      facing: Facing|null,
   ) {
-    const mode = util.assertEnumVariant(
+    this.initialMode = util.assertEnumVariant(
         Mode, this.modeConstraints.exact ?? this.modeConstraints.default);
-    this.config = {deviceId: null, facing, mode};
+    this.initialFacing = facing;
   }
 
   setShouldSuspend(value: boolean) {
@@ -100,17 +105,15 @@ class Reconfigurer {
       devices = cameraInfo.devicesInfo;
     }
 
-    const preferredFacing = this.config.facing === Facing.NOT_SET ?
-        util.getDefaultFacing() :
-        this.config.facing;
+    const preferredFacing =
+        this.config?.facing ?? this.initialFacing ?? util.getDefaultFacing();
     // Put the selected video device id first.
     const sorted = devices.map((device) => device.deviceId).sort((a, b) => {
       if (a === b) {
         return 0;
       }
-      if (this.config.deviceId !== null ?
-              a === this.config.deviceId :
-              (facings && facings[a] === preferredFacing)) {
+      if (this.config !== null ? a === this.config.deviceId :
+                                 (facings && facings[a] === preferredFacing)) {
         return -1;
       }
       return 1;
@@ -124,7 +127,8 @@ class Reconfigurer {
           await this.modes.isSupported(this.modeConstraints.exact, deviceId));
       return [this.modeConstraints.exact];
     }
-    return this.modes.getModeCandidates(deviceId, this.config.mode);
+    return this.modes.getModeCandidates(
+        deviceId, this.config?.mode ?? this.initialMode);
   }
 
   private async *
@@ -215,15 +219,13 @@ class Reconfigurer {
         return false;
       }
 
-      const nextConfig: CameraConfig = {
+      this.listener.onTryingNewConfig({
         deviceId: c.deviceId,
-        facing: (c.deviceId !== null ?
-                     cameraInfo.getCamera3DeviceInfo(c.deviceId)?.facing :
-                     null) ??
-            Facing.NOT_SET,
+        facing: c.deviceId !== null ?
+            cameraInfo.getCamera3DeviceInfo(c.deviceId)?.facing ?? null :
+            null,
         mode: c.mode,
-      };
-      this.listener.onTryingNewConfig(nextConfig);
+      });
       this.modes.setCaptureParams(
           c.mode, c.constraints, c.captureResolution,
           c.videoSnapshotResolution);
@@ -231,18 +233,20 @@ class Reconfigurer {
         await this.modes.prepareDevice();
         const factory = this.modes.getModeFactory(c.mode);
         const stream = await this.preview.open(c.constraints);
-        // For legacy linux VCD, the facing and device id can only be known
+        // For non-ChromeOS VCD, the facing and device id can only be known
         // after preview is actually opened.
         const facing = this.preview.getFacing();
-        nextConfig.facing = facing;
         const deviceId = assertString(this.preview.getDeviceId());
-        nextConfig.deviceId = deviceId;
 
         await this.checkEnablePTZ(c);
         factory.setPreviewVideo(this.preview.getVideo());
         factory.setFacing(facing);
         await this.modes.updateMode(factory, stream, facing, deviceId);
-        this.config = nextConfig;
+        this.config = {
+          deviceId,
+          facing,
+          mode: c.mode,
+        };
         await this.listener.onUpdateConfig(this.config);
 
         return true;
@@ -263,7 +267,7 @@ class Reconfigurer {
             // We cannot get the camera facing from stream since it might
             // not be successfully opened. Therefore, we asked the camera
             // facing via Mojo API.
-            let facing = Facing.NOT_SET;
+            let facing: Facing|null = null;
             if (deviceOperator !== null) {
               facing = await deviceOperator.getCameraFacing(c.deviceId);
             }
@@ -345,7 +349,7 @@ export class OperationScheduler {
       private readonly infoUpdater: DeviceInfoUpdater,
       private readonly listener: EventListener,
       preview: Preview,
-      defaultFacing: Facing,
+      defaultFacing: Facing|null,
       modeConstraints: ModeConstraints,
   ) {
     this.modes = new Modes(this.photoPreferrer, this.videoPreferrer);

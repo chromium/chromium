@@ -138,7 +138,7 @@ export abstract class ModeFactory {
   /**
    * Camera facing of current mode.
    */
-  protected facing = Facing.NOT_SET;
+  protected facing: Facing|null = null;
 
   /**
    * @param constraints Constraints for preview stream.

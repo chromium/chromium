@@ -88,6 +88,7 @@ export class Square extends Photo {
 export class SquareFactory extends PhotoFactory {
   produce(): ModeBase {
     assert(this.previewVideo !== null);
+    assert(this.facing !== null);
     return new Square(
         this.previewVideo, this.facing, this.captureResolution, this.handler);
   }

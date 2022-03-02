@@ -79,7 +79,7 @@ export class Preview {
    */
   private focusMarker: symbol|null = null;
 
-  private facing = Facing.NOT_SET;
+  private facing: Facing|null = null;
 
   private deviceId: string|null = null;
 
@@ -133,7 +133,7 @@ export class Preview {
   }
 
   getFacing(): Facing {
-    return this.facing;
+    return util.assertEnumVariant(Facing, this.facing);
   }
 
   getDeviceId(): string|null {
@@ -155,15 +155,7 @@ export class Preview {
   }
 
   private async updateFacing() {
-    if (!(await DeviceOperator.isSupported())) {
-      this.facing = Facing.NOT_SET;
-      return;
-    }
     const {facingMode} = this.getVideoTrack().getSettings();
-    if (facingMode === undefined) {
-      this.facing = Facing.EXTERNAL;
-      return;
-    }
     switch (facingMode) {
       case 'user':
         this.facing = Facing.USER;
@@ -172,7 +164,8 @@ export class Preview {
         this.facing = Facing.ENVIRONMENT;
         return;
       default:
-        throw new Error('Unknown facing: ' + facingMode);
+        this.facing = Facing.EXTERNAL;
+        return;
     }
   }
 

@@ -102,6 +102,7 @@ export class PortraitFactory extends PhotoFactory {
 
   produce(): ModeBase {
     assert(this.previewVideo !== null);
+    assert(this.facing !== null);
     return new Portrait(
         this.previewVideo, this.facing, this.captureResolution,
         this.portraitHandler);

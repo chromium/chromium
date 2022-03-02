@@ -649,6 +649,7 @@ export class VideoFactory extends ModeFactory {
       };
     }
     assert(this.previewVideo !== null);
+    assert(this.facing !== null);
     return new Video(
         this.previewVideo, captureConstraints, this.captureResolution,
         this.snapshotResolution, this.facing, this.handler);

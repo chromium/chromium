@@ -93,7 +93,7 @@ export enum Facing {
   VIRTUAL_USER = 'virtual_user',
   VIRTUAL_ENV = 'virtual_environment',
   VIRTUAL_EXT = 'virtual_external',
-  NOT_SET = '(not set)',
+  UNKNOWN = 'unknown',
 }
 
 export enum ViewName {

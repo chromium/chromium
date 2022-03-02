@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {
+  assert,
   assertExists,
   assertInstanceof,
   assertString,
@@ -101,7 +102,7 @@ export class CameraManager implements EventListener {
 
   constructor(
       private readonly perfLogger: PerfLogger,
-      defaultFacing: Facing,
+      defaultFacing: Facing|null,
       modeConstraints: ModeConstraints,
   ) {
     this.preview = new Preview(async () => {
@@ -143,7 +144,7 @@ export class CameraManager implements EventListener {
   }
 
   private getDeviceId(): string {
-    return assertString(this.scheduler.reconfigurer.config.deviceId);
+    return assertString(this.scheduler.reconfigurer.config?.deviceId);
   }
 
   getPreviewVideo(): PreviewVideo {
@@ -299,6 +300,7 @@ export class CameraManager implements EventListener {
       }
       if (devices.length > 0) {
         index = (index + 1) % devices.length;
+        assert(this.scheduler.reconfigurer.config !== null);
         this.scheduler.reconfigurer.config.deviceId = devices[index].deviceId;
       }
     });
@@ -312,6 +314,7 @@ export class CameraManager implements EventListener {
 
   switchMode(mode: Mode): Promise<boolean>|null {
     return this.tryReconfigure(() => {
+      assert(this.scheduler.reconfigurer.config !== null);
       this.scheduler.reconfigurer.config.mode = mode;
     });
   }
@@ -326,6 +329,7 @@ export class CameraManager implements EventListener {
       // Changing the configure of the camera not currently opened, thus no
       // reconfiguration are required.
       preferer.changePreferredResolution(deviceId, resolution);
+      assert(this.scheduler.reconfigurer.config !== null);
       return this.onUpdateConfig(this.scheduler.reconfigurer.config)
           .then(() => true);
     }

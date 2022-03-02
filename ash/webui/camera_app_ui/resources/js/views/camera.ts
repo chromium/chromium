@@ -102,7 +102,7 @@ export class Camera extends View implements CameraViewUI {
 
   protected readonly review = new review.Review();
 
-  protected facing = Facing.NOT_SET;
+  protected facing: Facing|null = null;
 
   protected shutterType = metrics.ShutterType.UNKNOWN;
 
@@ -273,6 +273,13 @@ export class Camera extends View implements CameraViewUI {
 
     this.initVideoEncoderOptions();
     await this.initScanMode();
+  }
+
+  /**
+   * Gets current facing after |initialize()|.
+   */
+  protected getFacing(): Facing {
+    return util.assertEnumVariant(Facing, this.facing);
   }
 
   private updateModeUI(mode: Mode) {
@@ -474,7 +481,10 @@ export class Camera extends View implements CameraViewUI {
             assertInstanceof(e, Error));
       } finally {
         this.take = null;
-        state.set(state.State.TAKING, false, {hasError, facing: this.facing});
+        state.set(state.State.TAKING, false, {
+          hasError,
+          facing: this.getFacing(),
+        });
         this.focus();  // Refocus the visible shutter button for ChromeVox.
       }
     })();
@@ -505,7 +515,7 @@ export class Camera extends View implements CameraViewUI {
   async handleVideoSnapshot({resolution, blob, timestamp, metadata}:
                                 PhotoResult): Promise<void> {
     metrics.sendCaptureEvent({
-      facing: this.facing,
+      facing: this.getFacing(),
       resolution,
       shutterType: this.shutterType,
       isVideoSnapshot: true,
@@ -535,7 +545,7 @@ export class Camera extends View implements CameraViewUI {
           await this.checkPhotoResult(pendingPhotoResult);
 
       metrics.sendCaptureEvent({
-        facing: this.facing,
+        facing: this.getFacing(),
         resolution,
         shutterType: this.shutterType,
         isVideoSnapshot: false,
@@ -550,7 +560,7 @@ export class Camera extends View implements CameraViewUI {
       }
       state.set(
           PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false,
-          {resolution, facing: this.facing});
+          {resolution, facing: this.getFacing()});
     } catch (e) {
       state.set(
           PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false, {hasError: true});
@@ -568,7 +578,7 @@ export class Camera extends View implements CameraViewUI {
           await this.checkPhotoResult(pendingReference);
 
       metrics.sendCaptureEvent({
-        facing: this.facing,
+        facing: this.getFacing(),
         resolution,
         shutterType: this.shutterType,
         isVideoSnapshot: false,
@@ -607,7 +617,7 @@ export class Camera extends View implements CameraViewUI {
     } finally {
       state.set(
           PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, false,
-          {hasError, facing: this.facing});
+          {hasError, facing: this.getFacing()});
     }
   }
 
@@ -685,7 +695,7 @@ export class Camera extends View implements CameraViewUI {
         let fixType = metrics.DocFixType.NONE;
         const sendEvent = (docResult: metrics.DocResultType) => {
           metrics.sendCaptureEvent({
-            facing: this.facing,
+            facing: this.getFacing(),
             resolution: originImage.resolution,
             shutterType: this.shutterType,
             docResult,
@@ -818,7 +828,7 @@ export class Camera extends View implements CameraViewUI {
     const sendEvent = (gifResult: metrics.GifResultType) => {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.GIF,
-        facing: this.facing,
+        facing: this.getFacing(),
         resolution,
         duration,
         shutterType: this.shutterType,
@@ -863,7 +873,7 @@ export class Camera extends View implements CameraViewUI {
     try {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.NORMAL_VIDEO,
-        facing: this.facing,
+        facing: this.getFacing(),
         duration,
         resolution,
         shutterType: this.shutterType,
@@ -872,7 +882,7 @@ export class Camera extends View implements CameraViewUI {
       await this.resultSaver.finishSaveVideo(videoSaver);
       state.set(
           PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false,
-          {resolution, facing: this.facing});
+          {resolution, facing: this.getFacing()});
     } catch (e) {
       state.set(
           PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false, {hasError: true});

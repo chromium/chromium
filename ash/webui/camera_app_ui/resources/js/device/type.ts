@@ -53,21 +53,31 @@ export class CameraInfo {
  * camera will be opened with.
  */
 export interface CameraConfig {
+  deviceId: string;
+  facing: Facing;
+  mode: Mode;
+}
+
+/**
+ * The next |CameraConfig| to be tried.
+ */
+export interface CameraConfigCandidate {
   /**
-   * May be null for device using legacy linux VCD.
+   * The only null case is for opening the default facing camera on non-ChromeOS
+   * VCD.
    */
   deviceId: string|null;
-
   /**
-   * May be Facing.NOT_SET for device using legacy linux VCD.
+   * On device using non-ChromeOS VCD, camera facing is unknown before opening
+   * the camera.
    */
-  facing: Facing;
+  facing: Facing|null;
   mode: Mode;
 }
 
 export interface CameraUI {
   onUpdateCapability?(cameraInfo: CameraInfo): void;
-  onTryingNewConfig?(config: CameraConfig): void;
+  onTryingNewConfig?(config: CameraConfigCandidate): void;
   onUpdateConfig?(config: CameraConfig): Promise<void>|void;
   onCameraUnavailable?(): void;
   onCameraAvailble?(): void;
