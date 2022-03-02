@@ -37,6 +37,8 @@ class EcheUidProvider : public mojom::UidGenerator {
   void Bind(mojo::PendingReceiver<mojom::UidGenerator> receiver);
 
  private:
+  friend class EcheUidProviderTest;
+
   std::string ConvertBinaryToString(base::span<const uint8_t> src);
   absl::optional<std::vector<uint8_t>> ConvertStringToBinary(
       base::StringPiece str,
