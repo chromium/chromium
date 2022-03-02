@@ -245,6 +245,14 @@ display::PanelOrientation GetPanelOrientation(int fd,
   int index = GetDrmProperty(fd, connector, "panel orientation", &property);
   if (index < 0)
     return display::PanelOrientation::kNormal;
+
+  // If the DRM driver doesn't provide panel orientation then this property
+  // will be DRM_MODE_PANEL_ORIENTATION_UNKNOWN (which is -1, except
+  // `prop_values` is unsigned, so compare against max uint64_t). Assume that
+  // panels with unknown orientation have normal orientation.
+  if (connector->prop_values[index] == std::numeric_limits<uint64_t>::max())
+    return display::PanelOrientation::kNormal;
+
   DCHECK_LE(connector->prop_values[index], display::PanelOrientation::kLast);
   return static_cast<display::PanelOrientation>(connector->prop_values[index]);
 }
