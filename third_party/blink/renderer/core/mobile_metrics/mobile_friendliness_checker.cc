@@ -172,7 +172,7 @@ bool ShouldSkipSubtree(const LayoutObject* object) {
   const auto& style = object->StyleRef();
   return object->IsElementContinuation() ||
          style.Visibility() != EVisibility::kVisible ||
-         style.ContentVisibility() != EContentVisibility::kVisible;
+         !style.IsContentVisibilityVisible();
 }
 
 // Appends |object| to evaluation targets if the object is a tap target.

@@ -2093,6 +2093,10 @@ class ComputedStyle : public ComputedStyleBase,
     return IsInlineOrBlockSizeContainer() && StyleType() == kPseudoIdNone;
   }
 
+  bool IsContentVisibilityVisible() const {
+    return ContentVisibility() == EContentVisibility::kVisible;
+  }
+
   // Display utility functions.
   bool IsDisplayReplacedType() const {
     return IsDisplayReplacedType(Display());
@@ -2772,9 +2776,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool IsSizeContainer() const {
     return (ContainerType() & kContainerTypeSize) == kContainerTypeSize;
-  }
-  bool IsContentVisibilityVisible() const {
-    return ContentVisibility() == EContentVisibility::kVisible;
   }
 
   void SetInternalVisitedColor(const StyleColor& v) {

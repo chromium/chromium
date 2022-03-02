@@ -543,7 +543,7 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
   auto& view = *GetLayoutBox()->GetFrameView();
   NGInlineNodeData::ShapingState new_state = NGInlineNodeData::kShapingDone;
   if (view.AllowDeferredShaping() && !GetLayoutBox()->IsInsideFlowThread() &&
-      Style().ContentVisibility() == EContentVisibility::kVisible) {
+      Style().IsContentVisibilityVisible()) {
     DCHECK(IsHorizontalWritingMode(Style().GetWritingMode()));
     const LayoutUnit viewport_bottom = view.CurrentViewportBottom();
     DCHECK_NE(viewport_bottom, kIndefiniteSize) << GetLayoutBox();

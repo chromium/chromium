@@ -2924,8 +2924,7 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     }
   }
 
-  if (ShouldApplyStrictContainment() &&
-      (style_->ContentVisibility() == EContentVisibility::kVisible)) {
+  if (ShouldApplyStrictContainment() && style_->IsContentVisibilityVisible()) {
     if (ShouldApplyStyleContainment()) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kCSSContainAllWithoutContentVisibility);
