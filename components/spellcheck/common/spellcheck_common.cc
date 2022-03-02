@@ -135,18 +135,18 @@ base::FilePath GetVersionedFileName(base::StringPiece input_language,
       {"sh", "-4-0"},
       {"sr", "-4-0"},
 
-      // January 2020: Update en-* and fa-IR dictionaries from upstream.
-      {"en-AU", "-9-0"},
-      {"en-CA", "-9-0"},
-      {"en-GB", "-9-0"},
-      {"en-US", "-9-0"},
+      // January 2020: Update fa-IR dictionaries from upstream.
       {"fa-IR", "-9-0"},
 
       // March 2020: Update uk-UA dictionary from upstream.
       {"uk-UA", "-4-0"},
 
-      // June 2020: Add the en-GB-oxendict dictionary.
-      {"en-GB-oxendict", "-9-0"},
+      // March 2022: Update en-* dictionaries from upstream.
+      {"en-AU", "-10-0"},
+      {"en-CA", "-10-0"},
+      {"en-GB", "-10-0"},
+      {"en-GB-oxendict", "-10-0"},
+      {"en-US", "-10-0"},
   };
 
   // Generate the bdict file name using default version string or special
