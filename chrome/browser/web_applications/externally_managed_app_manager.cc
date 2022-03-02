@@ -92,7 +92,8 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
   DCHECK(!base::Contains(synchronize_requests_, install_source));
 
   std::vector<GURL> installed_urls;
-  for (auto apps_it : registrar_->GetExternallyInstalledApps(install_source)) {
+  for (const auto& apps_it :
+       registrar_->GetExternallyInstalledApps(install_source)) {
     // TODO: Remove this check once we cleanup ExternallyInstalledWebAppPrefs on
     // external app uninstall.
     // https://crbug.com/1300382
@@ -108,6 +109,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
   std::sort(installed_urls.begin(), installed_urls.end());
 
   std::vector<GURL> desired_urls;
+  desired_urls.reserve(desired_apps_install_options.size());
   for (const auto& info : desired_apps_install_options)
     desired_urls.push_back(info.install_url);
 
@@ -146,7 +148,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
 
 void ExternallyManagedAppManager::SetRegistrationCallbackForTesting(
     RegistrationCallback callback) {
-  registration_callback_ = callback;
+  registration_callback_ = std::move(callback);
 }
 
 void ExternallyManagedAppManager::ClearRegistrationCallbackForTesting() {
