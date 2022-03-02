@@ -68,11 +68,6 @@ void MetricsServicesManager::LoadingStateChanged(bool is_loading) {
   GetMetricsServiceClient()->LoadingStateChanged(is_loading);
 }
 
-void MetricsServicesManager::OnPluginLoadingError(
-    const base::FilePath& plugin_path) {
-  GetMetricsServiceClient()->OnPluginLoadingError(plugin_path);
-}
-
 std::unique_ptr<const base::FieldTrial::EntropyProvider>
 MetricsServicesManager::CreateEntropyProviderForTesting() {
   return client_->GetMetricsStateManager()->CreateDefaultEntropyProvider();

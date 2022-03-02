@@ -7824,7 +7824,6 @@ test("unit_tests") {
 
   if (enable_plugins) {
     sources += [
-      "../browser/metrics/plugin_metrics_provider_unittest.cc",
       "../browser/plugins/chrome_plugin_service_filter_unittest.cc",
       "../browser/plugins/plugin_finder_unittest.cc",
       "../browser/plugins/plugin_info_host_impl_unittest.cc",

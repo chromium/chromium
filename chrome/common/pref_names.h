@@ -569,10 +569,6 @@ extern const char kStabilityOtherUserCrashCount[];
 extern const char kStabilityKernelCrashCount[];
 extern const char kStabilitySystemUncleanShutdownCount[];
 
-extern const char kStabilityPluginStats[];
-extern const char kStabilityPluginName[];
-extern const char kStabilityPluginCrashes[];
-
 extern const char kBrowserSuppressDefaultBrowserPrompt[];
 
 extern const char kBrowserWindowPlacement[];

@@ -180,8 +180,6 @@ void PluginObserver::RemovePluginPlaceholderHost(
 }
 
 void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {
-  g_browser_process->GetMetricsServicesManager()->OnPluginLoadingError(
-      plugin_path);
   std::u16string plugin_name =
       PluginService::GetInstance()->GetPluginDisplayNameByPath(plugin_path);
   CreatePluginObserverInfoBar(

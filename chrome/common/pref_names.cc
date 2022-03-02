@@ -1725,10 +1725,6 @@ const char kProfileAttributes[] = "profile.info_cache";
 // not happen if the browser crashes, so we remove the profile on next start.
 const char kProfilesDeleted[] = "profiles.profiles_deleted";
 
-// This is the location of a list of dictionaries of plugin stability stats.
-const char kStabilityPluginStats[] =
-    "user_experience_metrics.stability.plugin_stats2";
-
 // On Chrome OS, total number of non-Chrome user process crashes
 // since the last report.
 const char kStabilityOtherUserCrashCount[] =
@@ -1742,11 +1738,6 @@ const char kStabilityKernelCrashCount[] =
 // last report.
 const char kStabilitySystemUncleanShutdownCount[] =
     "user_experience_metrics.stability.system_unclean_shutdowns";
-
-// The keys below are used for the dictionaries in the
-// kStabilityPluginStats list.
-const char kStabilityPluginName[] = "name";
-const char kStabilityPluginCrashes[] = "crashes";
 
 // String containing the version of Chrome for which Chrome will not prompt the
 // user about setting Chrome as the default browser.

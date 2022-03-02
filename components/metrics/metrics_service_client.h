@@ -17,10 +17,6 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "url/gurl.h"
 
-namespace base {
-class FilePath;
-}
-
 namespace ukm {
 class UkmService;
 }
@@ -128,9 +124,6 @@ class MetricsServiceClient {
 
   // Called when loading state changed, e.g. start/stop loading.
   virtual void LoadingStateChanged(bool is_loading) {}
-
-  // Called on plugin loading errors.
-  virtual void OnPluginLoadingError(const base::FilePath& plugin_path) {}
 
   // Called on renderer crashes in some embedders (e.g., those that do not use
   // //content and thus do not have //content's notification system available

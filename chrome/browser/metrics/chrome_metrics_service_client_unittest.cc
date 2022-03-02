@@ -179,11 +179,6 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   expected_providers += 2;
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // PluginMetricsProvider.
-  expected_providers++;
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // LacrosMetricsProvider.
   expected_providers++;

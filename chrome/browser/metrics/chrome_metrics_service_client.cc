@@ -139,10 +139,6 @@
 #include "extensions/common/extension.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/metrics/plugin_metrics_provider.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/metrics/lacros_metrics_provider.h"
 #endif
@@ -522,10 +518,6 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
   ChromeAndroidMetricsProvider::RegisterPrefs(registry);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  PluginMetricsProvider::RegisterPrefs(registry);
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   metrics::PerUserStateManagerChromeOS::RegisterPrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -627,15 +619,6 @@ ChromeMetricsServiceClient::CreateUploader(
 
 base::TimeDelta ChromeMetricsServiceClient::GetStandardUploadInterval() {
   return metrics::GetUploadInterval(metrics::ShouldUseCellularUploadInterval());
-}
-
-void ChromeMetricsServiceClient::OnPluginLoadingError(
-    const base::FilePath& plugin_path) {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  plugin_metrics_provider_->LogPluginLoadingError(plugin_path);
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 
 bool ChromeMetricsServiceClient::IsReportingPolicyManaged() {
@@ -783,12 +766,6 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<DesktopPlatformFeaturesMetricsProvider>());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  plugin_metrics_provider_ = new PluginMetricsProvider(local_state);
-  metrics_service_->RegisterMetricsProvider(
-      std::unique_ptr<metrics::MetricsProvider>(plugin_metrics_provider_));
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics_service_->RegisterMetricsProvider(

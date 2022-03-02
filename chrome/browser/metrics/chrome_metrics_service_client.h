@@ -37,7 +37,6 @@
 #endif
 
 class BrowserActivityWatcher;
-class PluginMetricsProvider;
 class Profile;
 class PrefRegistrySimple;
 
@@ -97,7 +96,6 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
       override;
   base::TimeDelta GetStandardUploadInterval() override;
   void LoadingStateChanged(bool is_loading) override;
-  void OnPluginLoadingError(const base::FilePath& plugin_path) override;
   bool IsReportingPolicyManaged() override;
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
   bool IsUMACellularUploadLogicEnabled() override;
@@ -219,12 +217,6 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // Number of async histogram fetch requests in progress.
   int num_async_histogram_fetches_in_progress_ = 0;
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // The PluginMetricsProvider instance that was registered with
-  // MetricsService. Has the same lifetime as |metrics_service_|.
-  raw_ptr<PluginMetricsProvider> plugin_metrics_provider_ = nullptr;
-#endif
 
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.

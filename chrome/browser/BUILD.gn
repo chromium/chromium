@@ -6917,8 +6917,6 @@ static_library("browser") {
 
   if (enable_plugins) {
     sources += [
-      "metrics/plugin_metrics_provider.cc",
-      "metrics/plugin_metrics_provider.h",
       "plugins/chrome_content_browser_client_plugins_part.cc",
       "plugins/chrome_content_browser_client_plugins_part.h",
       "plugins/chrome_plugin_service_filter.cc",

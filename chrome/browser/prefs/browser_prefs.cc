@@ -716,8 +716,6 @@ const char kDataReductionProxyLastEnabledTime[] =
     "data_reduction.last_enabled_time";
 
 // Deprecated 02/2022.
-const char kStabilityChildProcessCrashCount[] =
-    "user_experience_metrics.stability.child_process_crash_count";
 #if !BUILDFLAG(IS_ANDROID)
 const char kMediaRouterCloudServicesPrefSet[] =
     "media_router.cloudservices.prefset";
@@ -732,6 +730,14 @@ const char kWebSQLInThirdPartyContextEnabled[] =
 const char kPhoneHubCameraRollPendingStatePrefName[] =
     "multidevice_setup.phone_hub_camera_roll_pending_state";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 03/2022.
+const char kStabilityChildProcessCrashCount[] =
+    "user_experience_metrics.stability.child_process_crash_count";
+#if BUILDFLAG(ENABLE_PLUGINS)
+const char kStabilityPluginStats[] =
+    "user_experience_metrics.stability.plugin_stats2";
+#endif
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -763,8 +769,13 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kStabilitySessionEndCompleted, true);
 
   // Deprecated 02/2022.
-  registry->RegisterIntegerPref(kStabilityChildProcessCrashCount, 0);
   registry->RegisterBooleanPref(kWebSQLInThirdPartyContextEnabled, false);
+
+  // Deprecated 03/2002.
+  registry->RegisterIntegerPref(kStabilityChildProcessCrashCount, 0);
+#if BUILDFLAG(ENABLE_PLUGINS)
+  registry->RegisterListPref(kStabilityPluginStats);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1595,6 +1606,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 02/2022.
   local_state->ClearPref(kWebSQLInThirdPartyContextEnabled);
+
+  // Added 03/2002.
+  local_state->ClearPref(kStabilityChildProcessCrashCount);
+#if BUILDFLAG(ENABLE_PLUGINS)
+  local_state->ClearPref(kStabilityPluginStats);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
