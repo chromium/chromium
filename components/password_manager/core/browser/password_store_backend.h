@@ -52,7 +52,8 @@ using LoginsOrErrorReply = base::OnceCallback<void(LoginsResultOrError)>;
 class PasswordStoreBackend {
  public:
   // Delegate which provides information about current sync status and an
-  // account used for syncing.
+  // account used for syncing. It can be called only after Sync service was
+  // instantiated.
   class SyncDelegate {
    public:
     SyncDelegate() = default;
@@ -65,7 +66,8 @@ class PasswordStoreBackend {
     // Tells whether sync enabled or not.
     virtual bool IsSyncingPasswordsEnabled() = 0;
 
-    // Active syncing account if one exist.
+    // Active syncing account if one exist. If sync disabled absl::nullopt will
+    // be returned.
     virtual absl::optional<std::string> GetSyncingAccount() = 0;
   };
 
