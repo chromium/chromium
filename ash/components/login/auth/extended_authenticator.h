@@ -73,23 +73,6 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) ExtendedAuthenticator
       base::OnceCallback<void(user_data_auth::CryptohomeErrorCode)>
           callback) = 0;
 
-  // Attempts to add a new |key| for the user identified/authorized by
-  // |context|. If a key with the same label already exists, the behavior
-  // depends on the |replace_existing| flag. If the flag is set, the old key is
-  // replaced. If the flag is not set, an error occurs. It is not allowed to
-  // replace the key used for authorization.
-  virtual void AddKey(const UserContext& context,
-                      const cryptohome::KeyDefinition& key,
-                      bool replace_existing,
-                      base::OnceClosure success_callback) = 0;
-
-  // Attempts to remove the key labeled |key_to_remove| for the user identified/
-  // authorized by |context|. It is possible to remove the key used for
-  // authorization, although it should be done with extreme care.
-  virtual void RemoveKey(const UserContext& context,
-                         const std::string& key_to_remove,
-                         base::OnceClosure success_callback) = 0;
-
   // Hashes the key in |user_context| with the system salt it its type is
   // KEY_TYPE_PASSWORD_PLAIN and passes the resulting UserContext to the
   // |callback|.

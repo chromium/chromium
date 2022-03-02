@@ -117,23 +117,6 @@ void ExtendedAuthenticatorImpl::OnFingerprintScanComplete(
   std::move(callback).Run(reply->error());
 }
 
-void ExtendedAuthenticatorImpl::AddKey(const UserContext& context,
-                                       const cryptohome::KeyDefinition& key,
-                                       bool clobber_if_exists,
-                                       base::OnceClosure success_callback) {
-  TransformKeyIfNeeded(
-      context, base::BindOnce(&ExtendedAuthenticatorImpl::DoAddKey, this, key,
-                              clobber_if_exists, std::move(success_callback)));
-}
-
-void ExtendedAuthenticatorImpl::RemoveKey(const UserContext& context,
-                                          const std::string& key_to_remove,
-                                          base::OnceClosure success_callback) {
-  TransformKeyIfNeeded(
-      context, base::BindOnce(&ExtendedAuthenticatorImpl::DoRemoveKey, this,
-                              key_to_remove, std::move(success_callback)));
-}
-
 void ExtendedAuthenticatorImpl::TransformKeyIfNeeded(
     const UserContext& user_context,
     ContextCallback callback) {
@@ -181,50 +164,6 @@ void ExtendedAuthenticatorImpl::DoAuthenticateToCheck(
       request, base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete<
                                   ::user_data_auth::CheckKeyReply>,
                               this, "Cryptohome-CheckKeyEx-End", user_context,
-                              std::move(success_callback)));
-}
-
-void ExtendedAuthenticatorImpl::DoAddKey(const cryptohome::KeyDefinition& key,
-                                         bool clobber_if_exists,
-                                         base::OnceClosure success_callback,
-                                         const UserContext& user_context) {
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
-      "Cryptohome-AddKeyEx-Start", false);
-
-  ::user_data_auth::AddKeyRequest request;
-  cryptohome::KeyDefinitionToKey(key, request.mutable_key());
-  request.set_clobber_if_exists(clobber_if_exists);
-  const Key* const auth_key = user_context.GetKey();
-  *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
-      cryptohome::Identification(user_context.GetAccountId()));
-  *request.mutable_authorization_request() =
-      cryptohome::CreateAuthorizationRequest(auth_key->GetLabel(),
-                                             auth_key->GetSecret());
-  chromeos::UserDataAuthClient::Get()->AddKey(
-      request, base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete<
-                                  ::user_data_auth::AddKeyReply>,
-                              this, "Cryptohome-AddKeyEx-End", user_context,
-                              std::move(success_callback)));
-}
-
-void ExtendedAuthenticatorImpl::DoRemoveKey(const std::string& key_to_remove,
-                                            base::OnceClosure success_callback,
-                                            const UserContext& user_context) {
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
-      "Cryptohome-RemoveKeyEx-Start", false);
-
-  ::user_data_auth::RemoveKeyRequest request;
-  request.mutable_key()->mutable_data()->set_label(key_to_remove);
-  const Key* const auth_key = user_context.GetKey();
-  *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
-      cryptohome::Identification(user_context.GetAccountId()));
-  *request.mutable_authorization_request() =
-      cryptohome::CreateAuthorizationRequest(auth_key->GetLabel(),
-                                             auth_key->GetSecret());
-  chromeos::UserDataAuthClient::Get()->RemoveKey(
-      request, base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete<
-                                  ::user_data_auth::RemoveKeyReply>,
-                              this, "Cryptohome-RemoveKeyEx-End", user_context,
                               std::move(success_callback)));
 }
 

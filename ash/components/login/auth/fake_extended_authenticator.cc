@@ -56,19 +56,6 @@ void FakeExtendedAuthenticator::AuthenticateWithFingerprint(
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
 }
 
-void FakeExtendedAuthenticator::AddKey(const UserContext& context,
-                                       const cryptohome::KeyDefinition& key,
-                                       bool replace_existing,
-                                       base::OnceClosure success_callback) {
-  NOTREACHED();
-}
-
-void FakeExtendedAuthenticator::RemoveKey(const UserContext& context,
-                                          const std::string& key_to_remove,
-                                          base::OnceClosure success_callback) {
-  NOTREACHED();
-}
-
 void FakeExtendedAuthenticator::TransformKeyIfNeeded(
     const UserContext& user_context,
     ContextCallback callback) {
