@@ -1,0 +1,28 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View name='Test label'
+++android.widget.TextView name='aria label'
+++android.widget.TextView name='Test label'
+++android.widget.EditText clickable editable_text has_non_empty_value name='Textbox' hint='aria label' text_change_added_count=7
+++android.widget.EditText clickable editable_text has_non_empty_value name='Textbox with aria-labelledby' hint='Test label' text_change_added_count=28
+++android.widget.Button role_description='button' clickable name='aria label'
+++android.widget.Button role_description='button' clickable name='Test label'
+++android.widget.EditText clickable editable_text focusable hint='aria label' input_type=1
+++android.widget.ListView role_description='list box' clickable collection state_description='2 items' item_count=2 row_count=2
+++++android.view.View collection_item focusable name='Option 1' state_description='in list, item 1 of 2'
+++++android.view.View collection_item focusable name='Option 2' state_description='in list, item 2 of 2' item_index=1 row_index=1
+++android.widget.EditText clickable editable_text focusable hint='Test label' input_type=1
+++android.widget.ListView role_description='list box' clickable collection state_description='2 items' item_count=2 row_count=2
+++++android.view.View collection_item focusable name='Option 3' state_description='in list, item 1 of 2'
+++++android.view.View collection_item focusable name='Option 4' state_description='in list, item 2 of 2' item_index=1 row_index=1
+++android.widget.Spinner clickable focusable name='Combobox' hint='aria label'
+++android.widget.ListView role_description='list box' clickable collection state_description='2 items' item_count=2 row_count=2
+++++android.view.View collection_item focusable name='Option 5' state_description='in list, item 1 of 2'
+++++android.view.View collection_item focusable name='Option 6' state_description='in list, item 2 of 2' item_index=1 row_index=1
+++android.widget.Spinner clickable focusable name='Combobox with aria-labelledby' hint='Test label'
+++android.widget.ListView role_description='list box' clickable collection state_description='2 items' item_count=2 row_count=2
+++++android.view.View collection_item focusable name='Option 7' state_description='in list, item 1 of 2'
+++++android.view.View collection_item focusable name='Option 8' state_description='in list, item 2 of 2' item_index=1 row_index=1
+++android.widget.Spinner role_description='time picker' clickable focusable name='12:05' hint='aria label' input_type=36
+++android.widget.Spinner role_description='time picker' clickable focusable name='12:05' hint='Test label' input_type=36
+++android.widget.Spinner role_description='color picker' clickable focusable name='#E4E4E4'
+++android.widget.Spinner role_description='color picker' clickable focusable name='#E4E4E4'

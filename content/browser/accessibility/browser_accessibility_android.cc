@@ -627,10 +627,10 @@ bool BrowserAccessibilityAndroid::IsLeafConsideringChildren() const {
   return true;
 }
 
-// Note: this is used to compute an object's name on Android, and is exposed as
-// the name field in Android dump tree tests.
-// TODO(accessibility) Should it be called GetName() so that engineers not
-// familiar with Android can find it more easily?
+// Note: In the Android accessibility API, the word "text" is used where other
+// platforms would use "name". The value returned here will appear in dump tree
+// tests as "name" in the ...-android.txt files, but as "text" in the
+// ...-android-external.txt files. On other platforms this may be ::GetName().
 std::u16string BrowserAccessibilityAndroid::GetTextContentUTF16() const {
   if (ui::IsIframe(GetRole()))
     return std::u16string();
@@ -753,6 +753,11 @@ std::u16string BrowserAccessibilityAndroid::GetValueForControl() const {
   return value;
 }
 
+// This method maps to the Android API's "hint" attribute. For nodes that have
+// chosen to expose their value in the name ("text") attribute, the hint must
+// contain the text that would otherwise have been present. The hint includes
+// the placeholder and describedby values for all nodes regardless of where the
+// value is placed. These pieces of content are concatenated for Android.
 std::u16string BrowserAccessibilityAndroid::GetHint() const {
   std::vector<std::u16string> strings;
 
@@ -1917,6 +1922,11 @@ bool BrowserAccessibilityAndroid::HasListMarkerChild() const {
   return false;
 }
 
+// This method determines if a node should expose its value as a name, which is
+// placed in the Android API's "text" attribute. For controls that can take on
+// a value (e.g. a date time, or combobox), we wish to expose the value that
+// the user has chosen. When the value is exposed as the name, then the
+// accessible name is added to the Android API's "hint" attribute instead.
 bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {
   switch (GetRole()) {
     case ax::mojom::Role::kDate:
@@ -1933,6 +1943,9 @@ bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {
     return false;
 
   if (IsTextField())
+    return true;
+
+  if (IsCombobox())
     return true;
 
   if (GetRole() == ax::mojom::Role::kPopUpButton &&

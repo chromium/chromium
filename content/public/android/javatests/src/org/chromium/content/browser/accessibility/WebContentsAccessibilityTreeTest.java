@@ -1855,6 +1855,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_interactiveControlsWithLabels() {
+        performHtmlTest("interactive-controls-with-labels.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_isInteresting() {
         performHtmlTest("isInteresting.html");
     }
