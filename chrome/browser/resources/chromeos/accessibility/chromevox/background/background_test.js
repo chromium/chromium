@@ -1052,6 +1052,10 @@ TEST_F('ChromeVoxBackgroundTest', 'Selection', function() {
 
     mockFeedback.call(doCmd('toggleSelection'))
         .expectSpeech('simple', 'selected')
+        .call(doCmd('nextObject'))
+        .expectSpeech('doc', 'selected')
+        .call(doCmd('previousObject'))
+        .expectSpeech('doc', 'unselected')
         .call(doCmd('nextCharacter'))
         .expectSpeech('i', 'selected')
         .call(doCmd('previousCharacter'))

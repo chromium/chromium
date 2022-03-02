@@ -221,8 +221,7 @@ export class Background extends ChromeVoxState {
     let selectedRange;
     let msg;
 
-    if (this.pageSel_ && this.pageSel_.isValid() && range.isValid() &&
-        !opt_skipSettingSelection) {
+    if (this.pageSel_ && this.pageSel_.isValid() && range.isValid()) {
       // Suppress hints.
       o.withoutHints();
 
