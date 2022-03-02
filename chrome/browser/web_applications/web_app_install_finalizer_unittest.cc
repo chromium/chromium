@@ -142,7 +142,7 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
     file_handlers->push_back(std::move(file_handler));
   }
 
-  WebAppInstallFinalizer& finalizer() { return *finalizer_.get(); }
+  WebAppInstallFinalizer& finalizer() { return *finalizer_; }
   WebAppRegistrar& registrar() {
     return fake_registry_controller_->registrar();
   }

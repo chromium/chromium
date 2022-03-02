@@ -32,7 +32,7 @@ class ProtocolHandlerManagerTest : public WebAppTest {
   }
 
   FakeWebAppProtocolHandlerManager& protocol_handler_manager() {
-    return *protocol_handler_manager_.get();
+    return *protocol_handler_manager_;
   }
 
   FakeWebAppRegistryController& controller() {

@@ -347,7 +347,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
         ++internal_iter_;
         FilterAndSkipApps();
       }
-      WebAppType& operator*() const { return *internal_iter_->second.get(); }
+      WebAppType& operator*() const { return *internal_iter_->second; }
       bool operator!=(const Iter& iter) const {
         return internal_iter_ != iter.internal_iter_;
       }

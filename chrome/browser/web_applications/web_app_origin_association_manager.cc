@@ -66,7 +66,7 @@ WebAppOriginAssociationManager::GetParser() {
 
 webapps::WebAppOriginAssociationFetcher&
 WebAppOriginAssociationManager::GetFetcher() {
-  return *(fetcher_.get());
+  return *fetcher_;
 }
 
 }  // namespace web_app

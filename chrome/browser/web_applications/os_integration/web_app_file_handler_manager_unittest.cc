@@ -182,7 +182,7 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
   }
 
   FakeWebAppFileHandlerManager& file_handler_manager() {
-    return *file_handler_manager_.get();
+    return *file_handler_manager_;
   }
 
   FakeWebAppRegistryController& controller() {
