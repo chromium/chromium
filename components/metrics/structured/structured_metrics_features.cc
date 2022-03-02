@@ -14,7 +14,7 @@ const base::Feature kStructuredMetrics{"EnableStructuredMetrics",
 
 // TODO(b/181724341): Remove this experimental once the feature is rolled out.
 const base::Feature kBluetoothSessionizedMetrics{
-    "BluetoothSessionizedMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+    "BluetoothSessionizedMetrics", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kUseCrosApiInterface{"UseCrosApiInterface",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
