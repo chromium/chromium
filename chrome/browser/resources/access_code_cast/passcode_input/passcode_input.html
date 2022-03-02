@@ -1,0 +1,137 @@
+<style include="cr-shared-style">
+  :host {
+    --passcode-input-active-color: var(--google-blue-50);
+    --passcode-input-background-color: var(--google-grey-50);
+    --passcode-input-background-color-focused: var(--google-grey-100);
+    --passcode-input-color: var(--cr-primary-text-color);
+    --passcode-input-color-disabled: var(--google-grey-600);
+    --passcode-input-focus-color: var(--google-blue-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --passcode-input-active-color: rgba(138, 180, 248, 0.3);
+      --passcode-input-background-color: rgba(0, 0, 0, 0.15);
+      --passcode-input-background-color-focused: rgba(0, 0, 0, 0.3);
+      --passcode-input-focus-color: var(--google-blue-300);
+    }
+  }
+
+  @keyframes blink {
+    from {
+      background-color: var(--passcode-input-focus-color);
+    }
+    to {
+      background-color: var(--passcode-input-focus-color);
+    }
+    50% {
+      background-color: transparent;
+    }
+  }
+
+  #container {
+    height: 48px;
+    position: relative;
+    text-align: unset;
+  }
+
+  .char {
+    color: var(--passcode-input-color);
+    margin: auto;
+  }
+
+  .char-box {
+    background-color: var(--passcode-input-background-color);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 20px;
+    height: 40px;
+    line-height: 40px;
+    margin: 4px;
+    position: relative;
+    text-align: center;
+    transition: background-color 120ms ease-out;
+    vertical-align: middle;
+    width: 40px;
+  }
+
+  .char-box-container {
+    display: flex;
+    margin-inline-start: 14px;
+    position: absolute;
+  }
+
+  .cursor-filled::after {
+    animation: 1s blink step-end infinite;
+    background-color: var(--passcode-input-focus-color);
+    content: '';
+    height: 20px;
+    margin-inline-start: 2px;
+    position: absolute;
+    top: 10px;
+    width: 2px;
+  }
+
+  .cursor-empty::before {
+    animation: 1s blink step-end infinite;
+    background-color: var(--passcode-input-focus-color);
+    content: '';
+    height: 20px;
+    margin-inline-start: -1px;
+    position: absolute;
+    top: 10px;
+    width: 2px;
+  }
+
+  .cursor-start::before {
+    animation: 1s blink step-end infinite;
+    background-color: var(--passcode-input-focus-color);
+    content: '';
+    height: 20px;
+    margin-inline-start: -4px;
+    position: absolute;
+    top: 10px;
+    width: 2px;
+  }
+
+  .disabled {
+    color: var(--passcode-input-color-disabled);
+  }
+
+  .focused {
+    background-color: var(--passcode-input-background-color-focused);
+    transition: background-color 120ms ease-in;
+  }
+
+  .active {
+    background-color: var(--passcode-input-active-color);
+  }
+
+  .hidden-input {
+    font-family: monospace;
+    font-size: 20px;
+    letter-spacing: 36px;
+    opacity: 0;
+    padding: 11px;
+    position: absolute;
+    z-index: 100;
+  }
+</style>
+<div id='container'>
+  <input
+      aria-label="[[ariaLabel]]"
+      autocomplete="off"
+      class="hidden-input"
+      disabled="[[disabled]]"
+      id="inputElement"
+      spellcheck="false"
+      type="text"
+  >
+  <div class="char-box-container" aria-hidden="true">
+    <template is="dom-repeat" items="[[charDisplayBoxes]]" as="charBox">
+      <div class="char-box" id="char-box-[[index]]">
+        <p class="char" id="char-[[index]]"></p>
+      </div>
+    </template>
+  </div>
+</div>

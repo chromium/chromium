@@ -14,11 +14,14 @@
   .center-content {
     display: flex;
     justify-content: center;
-    text-align: center;
     width: 100%;
   }
 
-  .space {
+  .space-1 {
+    height: 8px;
+  }
+
+  .space-2 {
     height: 32px;
   }
 
@@ -46,11 +49,17 @@
   <div slot="body">
     <div id="codeInputView">
       <div class="body-1">$i18n{accessCodeMessage}</div>
-      <div class="space"></div>
+      <div class="space-2"></div>
       <div class="center-content">
-        <c2c-code-input length="6" value="" id="codeInput"
-          disabled="[[!canCast]]"></c2c-code-input>
+        <c2c-passcode-input
+            aria-label="[[inputLabel]]"
+            disabled="[[!canCast]]"
+            id="codeInput"
+            length="6"
+            value="{{accessCode}}"
+        ></c2c-passcode-input>
       </div>
+      <div class="space-1"></div>
       <template is="dom-if" if="[[qrScannerEnabled]]" class="center-content">
         <div class="center-content">
           <cr-button on-click="switchToQrInput" class="center text-button">
@@ -68,7 +77,7 @@
   <div slot="button-container">
     <cr-button on-click="close" class="cancel-button">$i18n{cancel}</cr-button>
     <cr-button id="castButton" on-click="addSinkAndCast" class="action-button"
-      disabled="[[castButtonDisabled(accessCode, canCast)]]">
+      disabled="[[submitDisabled]]">
       $i18n{submit}
     </cr-button>
     <cr-button id="backButton" on-click="switchToCodeInput"

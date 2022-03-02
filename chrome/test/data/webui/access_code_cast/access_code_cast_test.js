@@ -51,7 +51,10 @@ export function createTestProxy(addResult, castResult, castCallback) {
     async isQrScanningAvailable() {
       return Promise.resolve(true);
     },
-    closeDialog() {}
+    closeDialog() {},
+    isDialog() {
+      return true;
+    }
   };
 }
 
