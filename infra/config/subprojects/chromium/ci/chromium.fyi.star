@@ -127,6 +127,9 @@ ci.builder(
     ),
     notifies = ["chrome-memory-safety"],
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -138,6 +141,9 @@ ci.builder(
     ),
     notifies = ["chrome-memory-safety"],
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
