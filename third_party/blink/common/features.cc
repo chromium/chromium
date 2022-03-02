@@ -225,7 +225,7 @@ const base::Feature kSharedStorageAPI{"SharedStorageAPI",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<int>
     kSharedStorageURLSelectionOperationInputURLSizeLimit{
-        &kSharedStorageAPI, "url_selection_operation_input_url_size_limit", 5};
+        &kSharedStorageAPI, "url_selection_operation_input_url_size_limit", 8};
 const base::FeatureParam<int> kMaxSharedStorageStringLength = {
     &kSharedStorageAPI, "MaxSharedStorageStringLength", 1024};
 const base::FeatureParam<int> kMaxSharedStorageEntriesPerOrigin = {
