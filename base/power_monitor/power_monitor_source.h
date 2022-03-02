@@ -36,8 +36,8 @@ class BASE_EXPORT PowerMonitorSource {
 
   // Reads the initial operating system CPU speed limit, if available on the
   // platform. Otherwise returns PowerThermalObserver::kSpeedLimitMax.
-  // Only called on the main thead in PowerMonitor::Initialize().
-  // The actual speed limit value will be updated asynchronosulsy via the
+  // Only called on the main thread in PowerMonitor::Initialize().
+  // The actual speed limit value will be updated asynchronously via the
   // ProcessSpeedLimitEvent() if/when the value changes.
   virtual int GetInitialSpeedLimit();
 

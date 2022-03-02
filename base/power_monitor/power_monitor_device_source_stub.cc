@@ -8,7 +8,6 @@
 namespace base {
 
 bool PowerMonitorDeviceSource::IsOnBatteryPower() {
-  NOTIMPLEMENTED();
   return false;
 }
 
