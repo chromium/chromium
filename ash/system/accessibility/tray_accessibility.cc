@@ -603,25 +603,6 @@ void AccessibilityDetailedView::UpdateSodaInstallerObserverStatus() {
   }
 }
 
-void AccessibilityDetailedView::OnSodaInstallProgress(
-    int progress,
-    speech::LanguageCode language_code) {
-  // TODO(https://crbug.com/1266491): Ensure we use combined progress instead
-  // of just the language pack progress.
-  if (language_code != GetDictationLocale())
-    return;
-
-  // Only show the progress message if this applies to the language pack
-  // matching the Dictation locale.
-  AccessibilityControllerImpl* controller =
-      Shell::Get()->accessibility_controller();
-  if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
-    dictation_view_->SetSubText(l10n_util::GetStringFUTF16Int(
-        IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_PROGRESS,
-        progress));
-  }
-}
-
 // SodaInstaller::Observer:
 void AccessibilityDetailedView::OnSodaInstalled(
     speech::LanguageCode language_code) {
@@ -657,10 +638,23 @@ void AccessibilityDetailedView::OnSodaError(
   }
 }
 
-void AccessibilityDetailedView::OnSodaLanguagePackProgress(
-    int language_progress,
-    speech::LanguageCode language_code) {
-  OnSodaInstallProgress(language_progress, language_code);
+void AccessibilityDetailedView::OnSodaProgress(
+    speech::LanguageCode language_code,
+    int progress) {
+  if (language_code != speech::LanguageCode::kNone &&
+      language_code != GetDictationLocale()) {
+    return;
+  }
+
+  // Only show the progress message if this applies to the SODA binary (encoded
+  // by LanguageCode::kNone) or the language pack matching the Dictation locale.
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
+    dictation_view_->SetSubText(l10n_util::GetStringFUTF16Int(
+        IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_PROGRESS,
+        progress));
+  }
 }
 
 void AccessibilityDetailedView::SetDictationViewSubtitleTextForTesting(

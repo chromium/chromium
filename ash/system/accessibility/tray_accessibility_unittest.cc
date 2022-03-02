@@ -748,12 +748,11 @@ TEST_F(TrayAccessibilitySodaTest, OnSodaInstalledNotification) {
 // Ensures we only notify the user of progress for the language pack matching
 // the Dictation locale.
 TEST_F(TrayAccessibilitySodaTest, OnSodaProgressNotification) {
-  // Do not give updates for the SODA binary.
-  soda_installer()->NotifySodaDownloadProgressForTesting(50);
+  soda_installer()->NotifySodaProgressForTesting(50, fr_fr());
   EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
-  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(50, fr_fr());
-  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
-  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(50, en_us());
+  soda_installer()->NotifySodaProgressForTesting(50);
+  EXPECT_EQ(kSodaInProgress, GetDictationViewSubtitleText());
+  soda_installer()->NotifySodaProgressForTesting(50, en_us());
   EXPECT_EQ(kSodaInProgress, GetDictationViewSubtitleText());
 }
 

@@ -801,6 +801,7 @@ class AccessibilityManagerSodaTest : public AccessibilityManagerTest {
   }
 
   speech::LanguageCode en_us() { return speech::LanguageCode::kEnUs; }
+  speech::LanguageCode fr_fr() { return speech::LanguageCode::kFrFr; }
 
   const std::u16string en_us_display_name() {
     return u"English (United States)";
@@ -939,12 +940,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        SucceededNotificationCase1) {
   // For this test, pretend that the Dictation locale is fr-FR.
   g_browser_process->SetApplicationLocale("fr-FR");
-  speech::LanguageCode fr_fr = speech::LanguageCode::kFrFr;
   SetDictationEnabled(true);
   soda_installer()->NotifySodaInstalledForTesting();
   soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
-  soda_installer()->NotifySodaInstalledForTesting(fr_fr);
+  soda_installer()->NotifySodaInstalledForTesting(fr_fr());
   AssertSodaNotificationShownForDictation(u"français (France)",
                                           /*success=*/true);
 }
@@ -999,12 +999,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                        BinaryInstalledLanguageFails) {
   // For this test, pretend that the Dictation locale is fr-FR.
   g_browser_process->SetApplicationLocale("fr-FR");
-  speech::LanguageCode fr_fr = speech::LanguageCode::kFrFr;
   SetDictationEnabled(true);
   soda_installer()->NotifySodaInstalledForTesting();
   soda_installer()->NotifySodaInstalledForTesting(en_us());
   AssertMessageCenterEmpty();
-  soda_installer()->NotifySodaErrorForTesting(fr_fr);
+  soda_installer()->NotifySodaErrorForTesting(fr_fr());
   AssertSodaNotificationShownForDictation(u"français (France)",
                                           /*success=*/false);
 }
@@ -1100,19 +1099,16 @@ IN_PROC_BROWSER_TEST_F(
 
   // The API will not be called if the language pack differs from the Dictation
   // locale.
-  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(
-      30, speech::LanguageCode::kFrFr);
+  soda_installer()->NotifySodaProgressForTesting(30, fr_fr());
   EXPECT_EQ(0, test_api->GetDictationSodaDownloadProgress());
   // The API will be called if the language pack matches the Dictation locale.
-  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(
-      50, speech::LanguageCode::kEnUs);
+  soda_installer()->NotifySodaProgressForTesting(50, en_us());
   EXPECT_EQ(50, test_api->GetDictationSodaDownloadProgress());
   // If SODA download fails, the API will be called with a value of 0.
   soda_installer()->NotifySodaErrorForTesting();
   EXPECT_EQ(0, test_api->GetDictationSodaDownloadProgress());
   // Reset to a non-zero value.
-  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(
-      70, speech::LanguageCode::kEnUs);
+  soda_installer()->NotifySodaProgressForTesting(70, en_us());
   EXPECT_EQ(70, test_api->GetDictationSodaDownloadProgress());
   // If SODA download succeeds, the API will be called with a value of 100.
   soda_installer()->NotifySodaInstalledForTesting();

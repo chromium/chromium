@@ -57,7 +57,10 @@ class SodaInstallerImpl : public SodaInstaller,
   void OnSodaLanguagePackInstalled(speech::LanguageCode language_code);
 
  private:
-  std::map<std::string, update_client::CrxUpdateItem> downloading_components_;
+  void UpdateAndNotifyOnSodaProgress(speech::LanguageCode language_code);
+
+  std::map<speech::LanguageCode, update_client::CrxUpdateItem>
+      downloading_components_;
 
   base::Time soda_binary_install_start_time_;
   base::flat_map<LanguageCode, base::Time> language_pack_install_start_time_;

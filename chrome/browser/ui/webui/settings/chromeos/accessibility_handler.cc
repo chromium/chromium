@@ -162,23 +162,6 @@ void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
   }
 }
 
-void AccessibilityHandler::OnSodaInstallProgress(
-    int progress,
-    speech::LanguageCode language_code) {
-  // TODO(https://crbug.com/1266491): Ensure we use combined progress instead
-  // of just the language pack progress.
-  if (language_code != GetDictationLocale())
-    return;
-
-  // Only show the progress message if this applies to the language pack
-  // matching the Dictation locale.
-  FireWebUIListener(
-      "dictation-locale-menu-subtitle-changed",
-      base::Value(l10n_util::GetStringFUTF16Int(
-          IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_PROGRESS,
-          progress)));
-}
-
 // SodaInstaller::Observer:
 void AccessibilityHandler::OnSodaInstalled(speech::LanguageCode language_code) {
   if (language_code != GetDictationLocale())
@@ -193,10 +176,20 @@ void AccessibilityHandler::OnSodaInstalled(speech::LanguageCode language_code) {
           GetDictationLocaleDisplayName())));
 }
 
-void AccessibilityHandler::OnSodaLanguagePackProgress(
-    int language_progress,
-    speech::LanguageCode language_code) {
-  OnSodaInstallProgress(language_progress, language_code);
+void AccessibilityHandler::OnSodaProgress(speech::LanguageCode language_code,
+                                          int progress) {
+  if (language_code != speech::LanguageCode::kNone &&
+      language_code != GetDictationLocale()) {
+    return;
+  }
+
+  // Only show the progress message if either the Dictation locale or the SODA
+  // binary has progress (encoded by LanguageCode::kNone).
+  FireWebUIListener(
+      "dictation-locale-menu-subtitle-changed",
+      base::Value(l10n_util::GetStringFUTF16Int(
+          IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_PROGRESS,
+          progress)));
 }
 
 void AccessibilityHandler::OnSodaError(speech::LanguageCode language_code) {

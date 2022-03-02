@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
@@ -24,32 +25,6 @@
 #include "components/update_client/crx_update_item.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
-
-namespace {
-
-int GetDownloadProgress(
-    const std::map<std::string, update_client::CrxUpdateItem>&
-        downloading_components) {
-  int total_bytes = 0;
-  int downloaded_bytes = 0;
-
-  for (auto component : downloading_components) {
-    if (component.second.downloaded_bytes >= 0 &&
-        component.second.total_bytes > 0) {
-      downloaded_bytes += component.second.downloaded_bytes;
-      total_bytes += component.second.total_bytes;
-    }
-  }
-
-  if (total_bytes == 0)
-    return -1;
-
-  DCHECK_LE(downloaded_bytes, total_bytes);
-  return 100 * base::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
-                           0.0, 1.0);
-}
-
-}  // namespace
 
 namespace speech {
 
@@ -151,23 +126,15 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
     case Events::COMPONENT_UPDATE_UPDATING: {
       update_client::CrxUpdateItem item;
       g_browser_process->component_updater()->GetComponentDetails(id, &item);
-      downloading_components_[id] = item;
-      const int combined_progress =
-          GetDownloadProgress(downloading_components_);
+      downloading_components_[language_code] = item;
 
-      // When GetDownloadProgress returns -1, do nothing. It returns -1 when the
-      // downloaded or total bytes is unknown.
-      if (combined_progress != -1) {
-        NotifyOnSodaProgress(combined_progress);
-      }
-
-      if (language_code != LanguageCode::kNone) {
-        const int language_progress = GetDownloadProgress(
-            std::map<std::string, update_client::CrxUpdateItem>{{id, item}});
-        if (language_progress != -1) {
-          language_pack_progress_[language_code] = language_progress;
-          NotifyOnSodaLanguagePackProgress(language_progress, language_code);
+      if (language_code == LanguageCode::kNone &&
+          !language_pack_progress_.empty()) {
+        for (auto language : language_pack_progress_) {
+          UpdateAndNotifyOnSodaProgress(language.first);
         }
+      } else {
+        UpdateAndNotifyOnSodaProgress(language_code);
       }
     } break;
     case Events::COMPONENT_UPDATE_ERROR:
@@ -226,6 +193,34 @@ void SodaInstallerImpl::OnSodaLanguagePackInstalled(
       base::Time::Now() - language_pack_install_start_time_[language_code]);
   base::UmaHistogramBoolean(
       GetInstallationResultMetricForLanguagePack(language_code), true);
+}
+
+void SodaInstallerImpl::UpdateAndNotifyOnSodaProgress(
+    speech::LanguageCode language_code) {
+  int total_bytes = 0;
+  int downloaded_bytes = 0;
+  speech::LanguageCode soda_code = speech::LanguageCode::kNone;
+
+  if (base::Contains(downloading_components_, soda_code)) {
+    total_bytes += downloading_components_[soda_code].total_bytes;
+    downloaded_bytes += downloading_components_[soda_code].downloaded_bytes;
+  }
+
+  if (language_code != soda_code) {
+    total_bytes += downloading_components_[language_code].total_bytes;
+    downloaded_bytes += downloading_components_[language_code].downloaded_bytes;
+  }
+
+  if (total_bytes == 0)
+    return;
+
+  DCHECK_LE(downloaded_bytes, total_bytes);
+  int progress =
+      100 * base::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
+                        0.0, 1.0);
+  if (language_code != soda_code)
+    language_pack_progress_[language_code] = progress;
+  NotifyOnSodaProgress(language_code, progress);
 }
 
 }  // namespace speech

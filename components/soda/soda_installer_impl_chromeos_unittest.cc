@@ -225,7 +225,7 @@ TEST_F(SodaInstallerImplChromeOSTest, SodaProgressForTesting) {
   ASSERT_FALSE(IsSodaDownloading());
   ASSERT_FALSE(IsLanguageInstalled(kEnglishLocale));
   Init();
-  GetInstance()->NotifySodaDownloadProgressForTesting(50);
+  GetInstance()->NotifySodaProgressForTesting(50);
   ASSERT_FALSE(IsSodaInstalled());
   ASSERT_FALSE(IsAnyLanguagePackInstalled());
   ASSERT_TRUE(IsSodaDownloading());
@@ -238,7 +238,7 @@ TEST_F(SodaInstallerImplChromeOSTest, LanguagePackForTesting) {
   Init();
   RunUntilIdle();
   ASSERT_FALSE(IsLanguageInstalled(fr_fr));
-  GetInstance()->NotifyOnSodaLanguagePackProgressForTesting(50, fr_fr);
+  GetInstance()->NotifySodaProgressForTesting(50, fr_fr);
   ASSERT_TRUE(GetInstance()->IsSodaDownloading(fr_fr));
   ASSERT_FALSE(IsLanguageInstalled(fr_fr));
   GetInstance()->NotifySodaInstalledForTesting(fr_fr);
@@ -251,7 +251,7 @@ TEST_F(SodaInstallerImplChromeOSTest, LanguagePackErrorForTesting) {
   Init();
   RunUntilIdle();
   ASSERT_FALSE(IsLanguageInstalled(fr_fr));
-  GetInstance()->NotifyOnSodaLanguagePackProgressForTesting(50, fr_fr);
+  GetInstance()->NotifySodaProgressForTesting(50, fr_fr);
   ASSERT_TRUE(GetInstance()->IsSodaDownloading(fr_fr));
   ASSERT_FALSE(IsLanguageInstalled(fr_fr));
   GetInstance()->NotifySodaErrorForTesting(fr_fr);

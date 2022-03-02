@@ -114,6 +114,13 @@ void ProjectorSodaInstallationController::OnSodaError(
 }
 
 void ProjectorSodaInstallationController::OnSodaProgress(
-    int combined_progress) {
-  app_client_->OnSodaInstallProgress(combined_progress);
+    speech::LanguageCode language_code,
+    int progress) {
+  // Check that language code matches the selected language for projector or is
+  // LanguageCode::kNone (signifying the SODA binary has progress).
+  if (language_code != speech::GetLanguageCode(GetLocale()) &&
+      language_code != speech::LanguageCode::kNone) {
+    return;
+  }
+  app_client_->OnSodaInstallProgress(progress);
 }

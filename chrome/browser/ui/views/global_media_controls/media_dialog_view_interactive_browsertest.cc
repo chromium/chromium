@@ -538,7 +538,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void OnSodaProgress(int progress) {
-    speech::SodaInstaller::GetInstance()->NotifySodaDownloadProgressForTesting(
+    speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(
         progress);
   }
 

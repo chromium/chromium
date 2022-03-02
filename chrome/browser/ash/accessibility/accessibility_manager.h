@@ -367,9 +367,8 @@ class AccessibilityManager
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaError(speech::LanguageCode language_code) override;
-  void OnSodaProgress(int combined_progress) override {}
-  void OnSodaLanguagePackProgress(int language_progress,
-                                  speech::LanguageCode language_code) override;
+  void OnSodaProgress(speech::LanguageCode language_code,
+                      int progress) override;
 
   // Test helpers:
   void SetProfileForTest(Profile* profile);

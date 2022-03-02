@@ -2143,13 +2143,14 @@ void AccessibilityManager::OnSodaError(speech::LanguageCode language_code) {
   OnSodaInstallUpdated(0);
 }
 
-void AccessibilityManager::OnSodaLanguagePackProgress(
-    int language_progress,
-    speech::LanguageCode language_code) {
-  if (language_code != GetDictationLanguageCode())
+void AccessibilityManager::OnSodaProgress(speech::LanguageCode language_code,
+                                          int progress) {
+  if (language_code != speech::LanguageCode::kNone &&
+      language_code != GetDictationLanguageCode()) {
     return;
+  }
 
-  OnSodaInstallUpdated(language_progress);
+  OnSodaInstallUpdated(progress);
 }
 
 bool AccessibilityManager::ShouldShowSodaSucceededNotificationForDictation() {

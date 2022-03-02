@@ -116,25 +116,35 @@ void CaptionsHandler::OnSodaError(speech::LanguageCode language_code) {
                     base::Value(speech::GetLanguageName(language_code)));
 }
 
-void CaptionsHandler::OnSodaProgress(int combined_progress) {
-  FireWebUIListener("soda-download-progress-changed",
-                    base::Value(l10n_util::GetStringFUTF16Int(
-                        IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS,
-                        combined_progress)),
-                    base::Value());
-}
-
-void CaptionsHandler::OnSodaLanguagePackProgress(
-    int language_progress,
-    speech::LanguageCode language_code) {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage))
-    return;
-
-  FireWebUIListener("soda-download-progress-changed",
-                    base::Value(l10n_util::GetStringFUTF16Int(
-                        IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS,
-                        language_progress)),
-                    base::Value(speech::GetLanguageName(language_code)));
+void CaptionsHandler::OnSodaProgress(speech::LanguageCode language_code,
+                                     int progress) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
+      soda_available_) {
+    // If multi-language is disabled and the language code received is not for
+    // Live Caption (perhaps it is downloading because another feature, such as
+    // dictation on ChromeOS, has a different language selected), then return
+    // early. We do not check for a matching language if multi-language is
+    // enabled because we show all of the languages' download status in the UI,
+    // even ones that are not currently selected.
+    // Check that language code matches the selected language for Live Caption
+    // or is LanguageCode::kNone (signifying the SODA binary progress).
+    if (!prefs::IsLanguageCodeForLiveCaption(language_code, prefs_) &&
+        language_code != speech::LanguageCode::kNone) {
+      return;
+    }
+  }
+  // If the language code is kNone, this means that only the SODA binary has
+  // begun downloading. Therefore we pass the Live Caption language along to the
+  // WebUI, since that is the language which will begin downloading.
+  if (language_code == speech::LanguageCode::kNone) {
+    language_code =
+        speech::GetLanguageCode(prefs::GetLiveCaptionLanguageCode(prefs_));
+  }
+  FireWebUIListener(
+      "soda-download-progress-changed",
+      base::Value(l10n_util::GetStringFUTF16Int(
+          IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS, progress)),
+      base::Value(speech::GetLanguageName(language_code)));
 }
 
 }  // namespace settings

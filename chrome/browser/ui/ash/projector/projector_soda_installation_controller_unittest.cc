@@ -157,8 +157,7 @@ TEST_F(ProjectorSodaInstallationControllerTest, InstallSoda) {
 TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallProgress) {
   SetLocale(kEnglishLocale);
   EXPECT_CALL(app_client(), OnSodaInstallProgress(50)).Times(1);
-  speech::SodaInstaller::GetInstance()->NotifySodaDownloadProgressForTesting(
-      50);
+  speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(50);
 }
 
 TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallError) {

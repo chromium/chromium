@@ -396,10 +396,17 @@ void MediaDialogView::OnSodaError(speech::LanguageCode language_code) {
       IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR));
 }
 
-void MediaDialogView::OnSodaProgress(int combined_progress) {
+void MediaDialogView::OnSodaProgress(speech::LanguageCode language_code,
+                                     int progress) {
+  // Check that language code matches the selected language for Live Caption or
+  // is LanguageCode::kNone (signifying the SODA binary has progress).
+  if (!prefs::IsLanguageCodeForLiveCaption(language_code,
+                                           profile_->GetPrefs()) &&
+      language_code != speech::LanguageCode::kNone) {
+    return;
+  }
   live_caption_title_->SetText(l10n_util::GetStringFUTF16Int(
-      IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS,
-      combined_progress));
+      IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS, progress));
 }
 
 std::unique_ptr<global_media_controls::MediaItemUIView>

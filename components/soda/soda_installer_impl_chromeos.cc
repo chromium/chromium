@@ -5,6 +5,7 @@
 #include "components/soda/soda_installer_impl_chromeos.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -182,23 +183,21 @@ void SodaInstallerImplChromeOS::OnSodaProgress(double progress) {
 
 void SodaInstallerImplChromeOS::OnLanguageProgress(double progress) {
   language_pack_progress_[LanguageCode::kEnUs] = progress;
-
-  // TODO: Notify the observer of the specific language pack that is currently
-  // being installed. ChromeOS currently only supports the en-US language pack.
-  NotifyOnSodaLanguagePackProgress(progress, LanguageCode::kEnUs);
+  OnSodaCombinedProgress();
 }
 
 void SodaInstallerImplChromeOS::OnSodaCombinedProgress() {
   // TODO(crbug.com/1055150): Consider updating this implementation.
   // e.g.: (1) starting progress from 0% if we are downloading language
   // only (2) weighting download progress proportionally to DLC binary size.
-  double language_progress = 0;
-  auto it = language_pack_progress_.find(LanguageCode::kEnUs);
-  if (it != language_pack_progress_.end())
-    language_progress = it->second;
+  double language_progress = 0.0;
+  if (base::Contains(language_pack_progress_, LanguageCode::kEnUs))
+    language_progress = language_pack_progress_[LanguageCode::kEnUs];
 
   const double progress = (soda_progress_ + language_progress) / 2;
-  NotifyOnSodaProgress(base::ClampFloor(100 * progress));
+  // TODO: Notify the observer of the specific language pack that is currently
+  // being installed. ChromeOS currently only supports the en-US language pack.
+  NotifyOnSodaProgress(LanguageCode::kEnUs, base::ClampFloor(100 * progress));
 }
 
 void SodaInstallerImplChromeOS::OnDlcUninstalled(const std::string& dlc_id,
