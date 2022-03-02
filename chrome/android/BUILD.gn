@@ -790,7 +790,7 @@ java_group("chrome_all_java") {
   ]
 
   if (disable_autofill_assistant_dfm) {
-    deps += [ "//chrome/android/features/autofill_assistant:java" ]
+    deps += [ "//components/autofill_assistant/android:java" ]
   }
 
   if (disable_tab_ui_dfm) {
@@ -806,7 +806,6 @@ java_group("chrome_all_java") {
 group("jni_headers") {
   public_deps = [
     ":chrome_jni_headers",
-    "//chrome/android/features/autofill_assistant:jni_headers",
     "//chrome/android/features/autofill_assistant:jni_headers_public",
     "//chrome/android/features/keyboard_accessory:jni_headers",
     "//chrome/android/features/start_surface:jni_headers",
@@ -840,6 +839,7 @@ group("jni_headers") {
     "//chrome/browser/ui/messages/android:jni_headers",
     "//chrome/browser/util:jni_headers",
     "//chrome/browser/webauthn/android:jni_headers",
+    "//components/autofill_assistant/android:jni_headers",
     "//components/autofill_assistant/android:jni_headers_public",
     "//components/image_fetcher:jni_headers",
     "//components/media_router/browser/android:jni_headers",

@@ -5,7 +5,6 @@
 #include "chrome/browser/android/autofill_assistant/generic_ui_nested_controller_android.h"
 
 #include "base/android/jni_string.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AssistantViewFactory_jni.h"
 #include "chrome/browser/android/autofill_assistant/assistant_generic_ui_delegate.h"
 #include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_events_android.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/android/autofill_assistant/interaction_handler_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/android/autofill_assistant/view_handler_android.h"
+#include "components/autofill_assistant/android/jni_headers/AssistantViewFactory_jni.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/generic_ui_java_generated_enums.h"

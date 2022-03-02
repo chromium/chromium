@@ -30,14 +30,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBox;
-import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBoxCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBoxModel;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.R;
+import org.chromium.components.autofill_assistant.infobox.AssistantInfoBox;
+import org.chromium.components.autofill_assistant.infobox.AssistantInfoBoxCoordinator;
+import org.chromium.components.autofill_assistant.infobox.AssistantInfoBoxModel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**

@@ -9,6 +9,7 @@ import com.google.protobuf.GeneratedMessageLite;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.autofill_assistant.AutofillAssistantDependencyInjector;
 
 import java.util.ArrayList;
 import java.util.List;

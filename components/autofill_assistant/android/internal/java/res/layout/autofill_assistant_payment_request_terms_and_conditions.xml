@@ -10,7 +10,7 @@
               android:orientation="vertical">
 
     <!-- Third party terms and conditions. -->
-    <org.chromium.chrome.browser.autofill_assistant.user_data.AssistantChoiceList
+    <org.chromium.components.autofill_assistant.user_data.AssistantChoiceList
         android:id="@+id/third_party_terms_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         app:column_spacing="8dp"
         app:layout_has_edit_button="false">
         <!-- Choices are created in code. -->
-    </org.chromium.chrome.browser.autofill_assistant.user_data.AssistantChoiceList>
+    </org.chromium.components.autofill_assistant.user_data.AssistantChoiceList>
 
     <!-- Privacy notice. -->
     <TextView

@@ -10,10 +10,10 @@
 #include "base/android/jni_string.h"
 #include "base/android/locale_utils.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AssistantCollectUserDataNativeDelegate_jni.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill_assistant/android/jni_headers/AssistantCollectUserDataNativeDelegate_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

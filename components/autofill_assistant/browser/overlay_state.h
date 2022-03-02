@@ -10,7 +10,7 @@
 namespace autofill_assistant {
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
-// org.chromium.chrome.browser.autofill_assistant.overlay)
+// org.chromium.components.autofill_assistant.overlay)
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AssistantOverlayState
 enum OverlayState {
   // The overlay is completely hidden.

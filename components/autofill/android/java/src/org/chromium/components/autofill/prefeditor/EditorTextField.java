@@ -36,7 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Handles validation and display of one field from the {@link EditorFieldModel}. */
-@VisibleForTesting
+// TODO(b/173103628): Re-enable this
+//@VisibleForTesting
 public class EditorTextField extends FrameLayout implements EditorFieldView, View.OnClickListener {
     // TODO(crbug.com/1300201): Replace with EditorDialog field once migrated.
     /** The indicator for input fields that are required. */

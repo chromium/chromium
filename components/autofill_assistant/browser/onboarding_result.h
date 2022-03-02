@@ -8,7 +8,7 @@
 namespace autofill_assistant {
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
-// org.chromium.chrome.browser.autofill_assistant.onboarding)
+// org.chromium.components.autofill_assistant.onboarding)
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AssistantOnboardingResult
 enum class OnboardingResult {
   // The onboarding was dismissed. No explicit choice was made.

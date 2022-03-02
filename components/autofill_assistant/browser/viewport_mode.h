@@ -10,7 +10,7 @@
 namespace autofill_assistant {
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
-// org.chromium.chrome.browser.autofill_assistant)
+// org.chromium.components.autofill_assistant)
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AssistantViewportMode
 enum ViewportMode {
   // Don't resize the layout nor visual viewport.

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/android/autofill_assistant/generic_ui_events_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AssistantViewEvents_jni.h"
 #include "chrome/browser/android/autofill_assistant/view_handler_android.h"
+#include "components/autofill_assistant/android/jni_headers/AssistantViewEvents_jni.h"
 
 namespace autofill_assistant {
 namespace android_events {

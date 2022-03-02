@@ -32,7 +32,7 @@
 
     <!-- Default Radiobutton is 32dp big but only has a 24dp big circle. This leaves a 4dp
          padding that needs to be subtracted from the start. -->
-    <org.chromium.chrome.browser.autofill_assistant.user_data.AssistantChoiceList
+    <org.chromium.components.autofill_assistant.user_data.AssistantChoiceList
         android:id="@+id/radiobutton_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,5 +42,5 @@
         app:column_spacing="8dp"
         android:visibility="gone">
         <!-- Choices are created in code. -->
-    </org.chromium.chrome.browser.autofill_assistant.user_data.AssistantChoiceList>
+    </org.chromium.components.autofill_assistant.user_data.AssistantChoiceList>
 </LinearLayout>

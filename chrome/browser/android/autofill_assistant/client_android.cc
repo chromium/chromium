@@ -18,11 +18,11 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/default_tick_clock.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantClient_jni.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantDirectActionImpl_jni.h"
 #include "chrome/browser/android/autofill_assistant/annotate_dom_model_service_factory.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/password_manager/password_change_success_tracker_factory.h"
+#include "components/autofill_assistant/android/jni_headers/AutofillAssistantClient_jni.h"
+#include "components/autofill_assistant/android/jni_headers/AutofillAssistantDirectActionImpl_jni.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/display_strings_util.h"
@@ -316,7 +316,7 @@ base::android::ScopedJavaLocalRef<jobjectArray> ClientAndroid::GetDirectActions(
   // Prepare the java array to hold the direct actions.
   base::android::ScopedJavaLocalRef<jclass> directaction_array_class =
       base::android::GetClass(env,
-                              "org/chromium/chrome/browser/autofill_assistant/"
+                              "org/chromium/components/autofill_assistant/"
                               "AutofillAssistantDirectActionImpl",
                               "autofill_assistant");
 

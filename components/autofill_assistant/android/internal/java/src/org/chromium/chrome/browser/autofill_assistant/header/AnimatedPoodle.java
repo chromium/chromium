@@ -21,7 +21,7 @@ import org.chromium.chrome.autofill_assistant.common.R;
  * <p>Warning: do not rename this class or change the signature of the non-private methods
  * (including constructor) without adapting the associated downstream code.
  */
-/* package */ class AnimatedPoodle {
+public class AnimatedPoodle {
     private final ImageView mView;
 
     /**
@@ -29,7 +29,7 @@ import org.chromium.chrome.autofill_assistant.common.R;
      * pixels that displays a centered poodle with a width and height of {@code poodleSizePx}
      * pixels.
      */
-    /* package */ AnimatedPoodle(Context context, int viewSizePx, int poodleSizePx) {
+    public AnimatedPoodle(Context context, int viewSizePx, int poodleSizePx) {
         mView = new ImageView(context);
         mView.setImageDrawable(
                 AppCompatResources.getDrawable(context, R.drawable.ic_autofill_assistant_24dp));
@@ -40,12 +40,12 @@ import org.chromium.chrome.autofill_assistant.common.R;
     }
 
     /** Get the view associated to this animated poodle. */
-    /* package */ View getView() {
+    public View getView() {
         return mView;
     }
 
     /** Enable or disable the spin animation. */
-    /* package */ void setSpinEnabled(boolean enabled) {
+    public void setSpinEnabled(boolean enabled) {
         // Do nothing.
     }
 }

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/android/autofill_assistant/assistant_bottom_bar_delegate.h"
 
-#include "chrome/android/features/autofill_assistant/jni_headers/AssistantBottomBarNativeDelegate_jni.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
+#include "components/autofill_assistant/android/jni_headers/AssistantBottomBarNativeDelegate_jni.h"
 
 using base::android::AttachCurrentThread;
 

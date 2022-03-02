@@ -6,10 +6,10 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AssistantTriggerScriptBridge_jni.h"
 #include "chrome/browser/android/autofill_assistant/assistant_header_model.h"
 #include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
+#include "components/autofill_assistant/android/jni_headers/AssistantTriggerScriptBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

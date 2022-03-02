@@ -6,8 +6,8 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/BaseOnboardingCoordinator_jni.h"
 #include "chrome/browser/android/autofill_assistant/onboarding_fetcher_factory.h"
+#include "components/autofill_assistant/android/jni_headers/BaseOnboardingCoordinator_jni.h"
 #include "components/autofill_assistant/browser/autofill_assistant_onboarding_fetcher.h"
 
 namespace autofill_assistant {

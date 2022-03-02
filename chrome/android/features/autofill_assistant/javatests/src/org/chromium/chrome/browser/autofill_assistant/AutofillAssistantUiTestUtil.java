@@ -52,7 +52,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipIcon;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -63,6 +62,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptUIProto
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptUIProto.TriggerChip;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.autofill_assistant.TriggerContext;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.image_fetcher.ImageFetcher;

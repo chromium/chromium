@@ -17,7 +17,7 @@ import org.chromium.content_public.browser.WebContents;
  */
 // TODO(fga): Figure out how to do this.
 @ModuleInterface(module = "autofill_assistant",
-        impl = "org.chromium.chrome.browser.autofill_assistant.AutofillAssistantModuleEntryImpl")
+        impl = "org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryImpl")
 public interface AutofillAssistantModuleEntry {
     /**
      * Creates a concrete {@code AssistantOnboardingHelper} object. Its contents are opaque to

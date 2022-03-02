@@ -41,15 +41,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetails;
-import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsModel;
-import org.chromium.chrome.browser.autofill_assistant.details.AssistantPlaceholdersConfiguration;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.R;
+import org.chromium.components.autofill_assistant.details.AssistantDetails;
+import org.chromium.components.autofill_assistant.details.AssistantDetailsCoordinator;
+import org.chromium.components.autofill_assistant.details.AssistantDetailsModel;
+import org.chromium.components.autofill_assistant.details.AssistantPlaceholdersConfiguration;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;

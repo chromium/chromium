@@ -4,8 +4,8 @@
 
 #include "chrome/browser/android/autofill_assistant/assistant_form_delegate.h"
 
-#include "chrome/android/features/autofill_assistant/jni_headers/AssistantFormDelegate_jni.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
+#include "components/autofill_assistant/android/jni_headers/AssistantFormDelegate_jni.h"
 
 using base::android::AttachCurrentThread;
 

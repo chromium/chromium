@@ -8,7 +8,7 @@
 namespace autofill_assistant {
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
-// org.chromium.chrome.browser.autofill_assistant.header)
+// org.chromium.components.autofill_assistant.header)
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AssistantTtsButtonState
 enum TtsButtonState {
   // No TTS is playing.

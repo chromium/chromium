@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.autofill_assistant.AutofillAssistantDependencyInjector;
 
 /**
  * Test service which communicates with a real, but non-prod endpoint.

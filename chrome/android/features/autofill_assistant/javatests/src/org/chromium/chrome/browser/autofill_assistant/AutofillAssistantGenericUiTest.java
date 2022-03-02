@@ -67,8 +67,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDimension;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.AutofillCreditCardProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.AutofillFormatProto;
@@ -159,6 +157,8 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ViewProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.R;
+import org.chromium.components.autofill_assistant.generic_ui.AssistantDimension;
 
 import java.util.ArrayList;
 import java.util.Arrays;

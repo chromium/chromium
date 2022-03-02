@@ -6,9 +6,9 @@
 
 #include "base/android/jni_string.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AssistantGenericUiDelegate_jni.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
+#include "components/autofill_assistant/android/jni_headers/AssistantGenericUiDelegate_jni.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
 using base::android::AttachCurrentThread;

@@ -42,7 +42,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.DirectActionProto;
@@ -65,6 +64,7 @@ import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntry;
 import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
 import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
+import org.chromium.components.autofill_assistant.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;

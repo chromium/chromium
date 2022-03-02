@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.findViewsWithTag;
-import static org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator.DIVIDER_TAG;
 import static org.chromium.components.autofill_assistant.AssistantTagsForTesting.COLLECT_USER_DATA_CHOICE_LIST;
+import static org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataCoordinator.DIVIDER_TAG;
 
 import android.view.View;
 import android.widget.LinearLayout;
@@ -18,20 +18,20 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantChoiceList;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataDelegate;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantLoginChoice;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantTermsAndConditionsState;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantUserDataEventType;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpander;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpanderAccordion;
 import org.chromium.components.autofill_assistant.AssistantAutofillProfile;
 import org.chromium.components.autofill_assistant.AssistantOptionModel;
 import org.chromium.components.autofill_assistant.AssistantPaymentInstrument;
 import org.chromium.components.autofill_assistant.AssistantTagsForTesting;
+import org.chromium.components.autofill_assistant.generic_ui.AssistantValue;
+import org.chromium.components.autofill_assistant.user_data.AssistantChoiceList;
+import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
+import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataDelegate;
+import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel;
+import org.chromium.components.autofill_assistant.user_data.AssistantLoginChoice;
+import org.chromium.components.autofill_assistant.user_data.AssistantTermsAndConditionsState;
+import org.chromium.components.autofill_assistant.user_data.AssistantUserDataEventType;
+import org.chromium.components.autofill_assistant.user_data.AssistantVerticalExpander;
+import org.chromium.components.autofill_assistant.user_data.AssistantVerticalExpanderAccordion;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashMap;
@@ -342,7 +342,7 @@ public class AutofillAssistantCollectUserDataTestHelper {
 
         return new CreditCard("", "https://example.com", /* isLocal = */ isLocal, true, profileName,
                 cardNumber, "1111", "12", "2050", "visa",
-                org.chromium.chrome.autofill_assistant.R.drawable.visa_card, billingAddressId,
+                org.chromium.components.autofill_assistant.R.drawable.visa_card, billingAddressId,
                 /* serverId= */ "");
     }
 

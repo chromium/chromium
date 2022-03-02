@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.GetUserDataResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportsScriptResponseProto;
+import org.chromium.components.autofill_assistant.AutofillAssistantDependencyInjector;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -11,7 +11,7 @@
 namespace autofill_assistant {
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
-// org.chromium.chrome.browser.autofill_assistant)
+// org.chromium.components.autofill_assistant)
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AssistantChevronStyle
 enum class VerticalExpanderChevronStyle {
   NOT_SET_AUTOMATIC = 0,
@@ -20,7 +20,7 @@ enum class VerticalExpanderChevronStyle {
 };
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
-// org.chromium.chrome.browser.autofill_assistant.drawable)
+// org.chromium.components.autofill_assistant.drawable)
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AssistantDrawableIcon
 enum class DrawableIcon {
   DRAWABLE_ICON_UNDEFINED = 0,

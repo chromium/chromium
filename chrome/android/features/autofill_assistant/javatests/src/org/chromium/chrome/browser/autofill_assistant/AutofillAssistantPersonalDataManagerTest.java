@@ -67,7 +67,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
-import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -82,6 +81,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.UseAddressProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.R;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -725,7 +725,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 isCompletelyDisplayed());
         CreditCard card = new CreditCard("", "https://example.com", /* isLocal= */ true,
                 /* isCached= */ true, "John Doe", "4111111111111111", "1111", "12", "2000", "visa",
-                org.chromium.chrome.autofill_assistant.R.drawable.visa_card, profileId,
+                org.chromium.components.autofill_assistant.R.drawable.visa_card, profileId,
                 /* serverId= */ "");
         mHelper.setCreditCard(card);
         waitUntilViewMatchesCondition(
