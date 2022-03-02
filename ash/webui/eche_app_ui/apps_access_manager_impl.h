@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver.h"
@@ -27,10 +28,12 @@ class AppsAccessManagerImpl : public AppsAccessManager,
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  explicit AppsAccessManagerImpl(EcheConnector* eche_connector,
-                                 EcheMessageReceiver* message_receiver,
-                                 FeatureStatusProvider* feature_status_provider,
-                                 PrefService* pref_service);
+  explicit AppsAccessManagerImpl(
+      EcheConnector* eche_connector,
+      EcheMessageReceiver* message_receiver,
+      FeatureStatusProvider* feature_status_provider,
+      PrefService* pref_service,
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
 
   ~AppsAccessManagerImpl() override;
 
@@ -54,6 +57,8 @@ class AppsAccessManagerImpl : public AppsAccessManager,
   void AttemptAppsAccessStateRequest();
   void GetAppsAccessStateRequest();
   void SendShowAppsAccessSetupRequest();
+  void UpdateFeatureEnabledState(AccessStatus access_status);
+  bool IsWaitingForAccessToInitiallyEnableApps() const;
 
   AppsAccessManager::AccessStatus ComputeAppsAccessState(
       proto::AppsAccessState apps_access_state);
@@ -63,6 +68,7 @@ class AppsAccessManagerImpl : public AppsAccessManager,
   EcheMessageReceiver* message_receiver_;
   FeatureStatusProvider* feature_status_provider_;
   PrefService* pref_service_;
+  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   bool initialized_ = false;
 };
 

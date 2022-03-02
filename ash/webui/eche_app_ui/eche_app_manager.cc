@@ -94,7 +94,8 @@ EcheAppManager::EcheAppManager(
           eche_connector_.get(),
           message_receiver_.get(),
           feature_status_provider_.get(),
-          pref_service)) {
+          pref_service,
+          multidevice_setup_client)) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(

@@ -5,6 +5,8 @@
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "ash/webui/eche_app_ui/apps_access_setup_operation.h"
 #include "ash/webui/eche_app_ui/fake_eche_connector.h"
 #include "ash/webui/eche_app_ui/fake_eche_message_receiver.h"
@@ -51,6 +53,12 @@ class FakeOperationDelegate : public AppsAccessSetupOperation::Delegate {
 };
 }  // namespace
 
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
+
+// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
+namespace multidevice_setup = ::chromeos::multidevice_setup;
+
 class AppsAccessManagerImplTest : public testing::Test {
  protected:
   AppsAccessManagerImplTest() = default;
@@ -61,6 +69,8 @@ class AppsAccessManagerImplTest : public testing::Test {
 
   void SetUp() override {
     AppsAccessManagerImpl::RegisterPrefs(pref_service_.registry());
+    multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
+
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kEcheSWA,
                               chromeos::features::
@@ -86,7 +96,8 @@ class AppsAccessManagerImplTest : public testing::Test {
                              static_cast<int>(expected_status));
     apps_access_manager_ = std::make_unique<AppsAccessManagerImpl>(
         fake_eche_connector_.get(), fake_eche_message_receiver_.get(),
-        fake_feature_status_provider_.get(), &pref_service_);
+        fake_feature_status_provider_.get(), &pref_service_,
+        &fake_multidevice_setup_client_);
     apps_access_manager_->AddObserver(&fake_observer_);
   }
 
@@ -141,6 +152,15 @@ class AppsAccessManagerImplTest : public testing::Test {
     return fake_eche_connector_->attempt_nearby_connection_count();
   }
 
+  void SetFeatureState(Feature feature, FeatureState feature_state) {
+    fake_multidevice_setup_client_.SetFeatureState(feature, feature_state);
+  }
+
+  multidevice_setup::FakeMultiDeviceSetupClient*
+  fake_multidevice_setup_client() {
+    return &fake_multidevice_setup_client_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeObserver fake_observer_;
@@ -150,6 +170,7 @@ class AppsAccessManagerImplTest : public testing::Test {
   std::unique_ptr<FakeEcheConnector> fake_eche_connector_;
   std::unique_ptr<FakeEcheMessageReceiver> fake_eche_message_receiver_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
+  multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
 };
 
 TEST_F(AppsAccessManagerImplTest, InitiallyGranted) {
@@ -389,6 +410,8 @@ TEST_F(AppsAccessManagerImplTest, SimulateConnectedToDependentFeaturePending) {
 }
 
 TEST_F(AppsAccessManagerImplTest, FlipAccessNotGrantedToGranted) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kEnabledByUser);
   Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
   VerifyAppsAccessGrantedState(
       AppsAccessManager::AccessStatus::kAvailableButNotGranted);
@@ -400,9 +423,16 @@ TEST_F(AppsAccessManagerImplTest, FlipAccessNotGrantedToGranted) {
 
   VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
   EXPECT_EQ(1u, GetNumObserverCalls());
+
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
 }
 
 TEST_F(AppsAccessManagerImplTest, FlipAccessGrantedToNotGranted) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kDisabledByUser);
   Initialize(AppsAccessManager::AccessStatus::kAccessGranted);
   VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
 
@@ -417,6 +447,8 @@ TEST_F(AppsAccessManagerImplTest, FlipAccessGrantedToNotGranted) {
 }
 
 TEST_F(AppsAccessManagerImplTest, AccessNotChanged) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kEnabledByUser);
   Initialize(AppsAccessManager::AccessStatus::kAccessGranted);
   VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
 
@@ -427,6 +459,67 @@ TEST_F(AppsAccessManagerImplTest, AccessNotChanged) {
 
   VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
   EXPECT_EQ(0u, GetNumObserverCalls());
+
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+}
+
+TEST_F(AppsAccessManagerImplTest, InitiallyEnableApps) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+
+  // Simulate flipping the access state to granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  // If the kEche feature has not been explicitly set yet, enable it
+  // when Phone Hub is enabled and access has been granted.
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       ShouleNotEnableEcheFeatureWhenPhoneHubIsDisabled) {
+  // Explicitly disable Phone Hub, all sub feature should be disabled
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kDisabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kDisabledByUser);
+  Initialize(AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(
+      AppsAccessManager::AccessStatus::kAvailableButNotGranted);
+
+  // No action after access is granted
+  // Simulate flipping the access state to granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  EXPECT_EQ(
+      0u,
+      fake_multidevice_setup_client()->NumPendingSetFeatureEnabledStateCalls());
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       SimulateAccessNotGrantedShouleDisableEcheFeature) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kEche, FeatureState::kEnabledByUser);
+  Initialize(AppsAccessManager::AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(AppsAccessManager::AccessStatus::kAccessGranted);
+
+  // Test that there is a call to disable kEche when apps access has been
+  // revoked. Simulate flipping the access state to not granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/false, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
 }
 
 }  // namespace eche_app

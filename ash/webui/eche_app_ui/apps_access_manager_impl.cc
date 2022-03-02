@@ -5,6 +5,7 @@
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "ash/webui/eche_app_ui/pref_names.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "chromeos/components/multidevice/logging/logging.h"
@@ -13,6 +14,13 @@
 
 namespace ash {
 namespace eche_app {
+
+namespace {
+
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
+
+}  // namespace
 
 // static
 void AppsAccessManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -25,11 +33,13 @@ AppsAccessManagerImpl::AppsAccessManagerImpl(
     EcheConnector* eche_connector,
     EcheMessageReceiver* message_receiver,
     FeatureStatusProvider* feature_status_provider,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
     : eche_connector_(eche_connector),
       message_receiver_(message_receiver),
       feature_status_provider_(feature_status_provider),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      multidevice_setup_client_(multidevice_setup_client) {
   DCHECK(message_receiver_);
   DCHECK(feature_status_provider_);
   current_feature_status_ = feature_status_provider_->GetStatus();
@@ -76,6 +86,7 @@ void AppsAccessManagerImpl::OnGetAppsAccessStateResponseReceived(
   if (apps_access_state_response.result() == proto::Result::RESULT_NO_ERROR) {
     AccessStatus access_status =
         ComputeAppsAccessState(apps_access_state_response.apps_access_state());
+    UpdateFeatureEnabledState(access_status);
     SetAccessStatusInternal(access_status);
   }
 }
@@ -142,8 +153,10 @@ void AppsAccessManagerImpl::AttemptAppsAccessStateRequest() {
   const FeatureStatus previous_feature_status = current_feature_status_;
   const FeatureStatus new_feature_status =
       feature_status_provider_->GetStatus();
+
   if (previous_feature_status == new_feature_status)
     return;
+
   if (new_feature_status == FeatureStatus::kDisconnected) {
     eche_connector_->AttemptNearbyConnection();
     return;
@@ -197,6 +210,46 @@ AppsAccessManager::AccessStatus AppsAccessManagerImpl::ComputeAppsAccessState(
     return AccessStatus::kAccessGranted;
   }
   return AccessStatus::kAvailableButNotGranted;
+}
+
+void AppsAccessManagerImpl::UpdateFeatureEnabledState(
+    AccessStatus access_status) {
+  const FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(Feature::kEche);
+  switch (access_status) {
+    case AccessStatus::kAccessGranted:
+      if (IsWaitingForAccessToInitiallyEnableApps()) {
+        PA_LOG(INFO) << "Enabling Apps for the first time now "
+                     << "that access has been granted by the phone.";
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kEche, /*enabled=*/true, /*auth_token=*/absl::nullopt,
+            base::DoNothing());
+      }
+      break;
+    case AccessStatus::kAvailableButNotGranted:
+      // Disable Apps if apps access has been revoked
+      // by the phone.
+      if (feature_state == FeatureState::kEnabledByUser) {
+        PA_LOG(INFO) << "Disabling kEche feature.";
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kEche, /*enabled=*/false,
+            /*auth_token=*/absl::nullopt, base::DoNothing());
+      }
+      break;
+  }
+}
+
+bool AppsAccessManagerImpl::IsWaitingForAccessToInitiallyEnableApps() const {
+  // If the Phone Hub apps feature has never been explicitly set, we should
+  // enable it after
+  // 1. the top-level Phone Hub feature is enabled, and
+  // 2. the phone has granted access.
+  // We do *not* want to automatically enable the feature unless the opt-in flow
+  // was triggered from this device
+  return chromeos::multidevice_setup::IsDefaultFeatureEnabledValue(
+             Feature::kEche, pref_service_) &&
+         multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
+             FeatureState::kEnabledByUser;
 }
 
 }  // namespace eche_app
