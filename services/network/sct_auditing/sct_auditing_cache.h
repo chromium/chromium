@@ -82,6 +82,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
       const net::SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps);
 
+  // Returns true if |sct_leaf_hash| corresponds to a known popular SCT.
+  bool IsPopularSCT(base::span<const uint8_t> sct_leaf_hash);
+
   void ClearCache();
 
   void set_sampling_rate(double rate) { sampling_rate_ = rate; }
