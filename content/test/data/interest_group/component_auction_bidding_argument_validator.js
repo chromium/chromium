@@ -17,7 +17,8 @@ function generateBid(
       'ad': ad,
       'bid': 2,
       'render': ad.renderUrl,
-      'adComponents': [interestGroup.adComponents[0].renderUrl]
+      'adComponents': [interestGroup.adComponents[0].renderUrl],
+      'allowComponentAuction': true,
   };
 }
 

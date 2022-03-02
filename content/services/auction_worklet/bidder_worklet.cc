@@ -596,6 +596,20 @@ void BidderWorklet::V8State::GenerateBid(
     return;
   }
 
+  if (browser_signal_top_level_seller_origin) {
+    bool allow_component_auction;
+    if (!result_dict.Get("allowComponentAuction", &allow_component_auction) ||
+        !allow_component_auction) {
+      errors_out.push_back(base::StrCat(
+          {script_source_url_.spec(),
+           " generateBid() return value does not have allowComponentAuction "
+           "set to true. Bid dropped from component auction."}));
+      PostErrorBidCallbackToUserThread(std::move(callback),
+                                       std::move(errors_out));
+      return;
+    }
+  }
+
   if (bid <= 0 || std::isnan(bid) || !std::isfinite(bid)) {
     PostErrorBidCallbackToUserThread(std::move(callback),
                                      std::move(errors_out));

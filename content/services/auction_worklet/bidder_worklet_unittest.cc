@@ -288,7 +288,7 @@ class BidderWorkletTest : public testing::Test {
       const absl::optional<GURL>& expected_report_url,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
-    auto bidder_worklet = CreateWorkletAndGenerateBid();
+    auto bidder_worklet = CreateWorklet();
     ASSERT_TRUE(bidder_worklet);
 
     base::RunLoop run_loop;
@@ -474,6 +474,7 @@ class BidderWorkletTest : public testing::Test {
   absl::optional<url::Origin> browser_signal_top_level_seller_origin_;
 
   std::string seller_signals_;
+  // Used for both the output GenerateBid(), and the input of ReportWin().
   absl::optional<uint32_t> data_version_;
   GURL browser_signal_render_url_;
   double browser_signal_bid_;
@@ -1605,10 +1606,13 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopLevelSellerOrigin) {
                                    /*ad_components=*/absl::nullopt,
                                    base::TimeDelta()));
 
+  // Need to set `allowComponentAuction` to true for a bid to be created when
+  // topLevelSeller is non-null.
   browser_signal_top_level_seller_origin_ =
       url::Origin::Create(GURL("https://foo.test"));
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: browserSignals.topLevelSeller, bid:1, render:"https://response.test/"})",
+      R"({ad: browserSignals.topLevelSeller, bid:1, render:"https://response.test/",
+          allowComponentAuction: true})",
       mojom::BidderWorkletBid::New(
           R"("https://foo.test")", 1, GURL("https://response.test/"),
           /*ad_components=*/absl::nullopt, base::TimeDelta()));
@@ -1729,6 +1733,73 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
           std::vector<GURL>{GURL("https://ad_component.test/"),
                             GURL("https://ad_component2.test/")},
           base::TimeDelta()));
+}
+
+// Test behavior of the `allowComponentAuction` output field, which can block
+// bids when not set to true and `topLevelSellerOrigin` is non-null.
+TEST_F(BidderWorkletTest, GenerateBidAllowComponentAuction) {
+  // In all success cases, this is the returned bid.
+  const auto kBidOnSuccess = mojom::BidderWorkletBid::New(
+      "null", 1, GURL("https://response.test/"),
+      /*ad_components=*/absl::nullopt, base::TimeDelta());
+
+  // Use a null `topLevelSellerOrigin`. `allowComponentAuction` value should be
+  // ignored.
+  browser_signal_top_level_seller_origin_ = absl::nullopt;
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: true})",
+      kBidOnSuccess.Clone());
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: false})",
+      kBidOnSuccess.Clone());
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/"})",
+      kBidOnSuccess.Clone());
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: 0})",
+      kBidOnSuccess.Clone());
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: 1})",
+      kBidOnSuccess.Clone());
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: "OnTuesdays"})",
+      kBidOnSuccess.Clone());
+
+  // Use a non-null `topLevelSellerOrigin`. `allowComponentAuction` value must
+  // be "true" for a bid to be generated. This uses the standard Javascript
+  // behavior for how to convert non-bools to a bool.
+  browser_signal_top_level_seller_origin_ =
+      url::Origin::Create(GURL("https://foo.test"));
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: true})",
+      kBidOnSuccess.Clone());
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: false})",
+      mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() return value does not have "
+       "allowComponentAuction set to true. Bid dropped from component "
+       "auction."});
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/"})",
+      mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() return value does not have "
+       "allowComponentAuction set to true. Bid dropped from component "
+       "auction."});
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: 0})",
+      mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
+      {"https://url.test/ generateBid() return value does not have "
+       "allowComponentAuction set to true. Bid dropped from component "
+       "auction."});
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: 1})",
+      kBidOnSuccess.Clone());
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: null, bid:1, render:"https://response.test/", allowComponentAuction: "OnTuesdays"})",
+      kBidOnSuccess.Clone());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidWasm404) {
@@ -2276,13 +2347,7 @@ TEST_F(BidderWorkletTest, ReportWinInterestGroupName) {
 }
 
 TEST_F(BidderWorkletTest, ReportWinDataVersion) {
-  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
-  interest_group_trusted_bidding_signals_keys_.emplace();
-  interest_group_trusted_bidding_signals_keys_->push_back("key1");
-  AddVersionedJsonResponse(
-      &url_loader_factory_,
-      GURL("https://signals.test/?hostname=top.window.test&keys=key1"),
-      R"({"key1":1})", 5u);
+  data_version_ = 5u;
   RunReportWinWithFunctionBodyExpectingResult(
       "sendReportTo('https://dataVersion/'+browserSignals.dataVersion)",
       GURL("https://dataVersion/5"));

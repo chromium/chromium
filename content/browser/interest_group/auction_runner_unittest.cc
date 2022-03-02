@@ -97,7 +97,11 @@ std::string MakeBidScript(const url::Origin& seller,
                          "groupName": interestGroupName,
                          "renderUrl": "data for " + renderUrl,
                          "seller": seller},
-                    bid: bid, render: renderUrl};
+                    bid: bid,
+                    render: renderUrl,
+                    // Only need to allow component auction participation when
+                    // `topLevelSeller` is populated.
+                    allowComponentAuction: "topLevelSeller" in browserSignals};
       if (interestGroup.adComponents) {
         result.adComponents = [interestGroup.adComponents[0].renderUrl];
         result.ad.adComponentsUrl = interestGroup.adComponents[0].renderUrl;
@@ -2295,11 +2299,16 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   const char kBidScript[] = R"(
       function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                            trustedBiddingSignals, browserSignals) {
-        if (browserSignals.seller == "https://component.seller1.test")
-          return {ad: [], bid: 1, render: "https://component-bid.test/"};
-        if (browserSignals.seller == "https://component.seller2.test")
-          return {ad: [], bid: 3, render: "https://component-bid.test/"};
-        return {ad: [], bid: 2, render: "https://top-level-bid.test/"};
+        if (browserSignals.seller == "https://component.seller1.test") {
+          return {ad: [], bid: 1, render: "https://component-bid.test/",
+                  allowComponentAuction: true};
+        }
+        if (browserSignals.seller == "https://component.seller2.test") {
+          return {ad: [], bid: 3, render: "https://component-bid.test/",
+                  allowComponentAuction: true};
+        }
+        return {ad: [], bid: 2, render: "https://top-level-bid.test/",
+                allowComponentAuction: false};
       }
 
     function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
