@@ -138,7 +138,8 @@ void RecordModelUpdateVersion(
 // remote Optimization Guide Service.
 bool ShouldFetchModels(bool off_the_record, PrefService* pref_service) {
   return optimization_guide::features::IsRemoteFetchingEnabled(pref_service) &&
-         !off_the_record;
+         !off_the_record &&
+         optimization_guide::features::IsModelDownloadingEnabled();
 }
 
 std::unique_ptr<optimization_guide::proto::PredictionModel>
@@ -347,17 +348,15 @@ void PredictionManager::FetchModels() {
   // initialization flow since the model engine version needs to continuously be
   // updated for the fetch.
   proto::ModelInfo base_model_info;
-  if (features::IsModelDownloadingEnabled()) {
-    // There should only be one supported model engine version at a time.
-    base_model_info.add_supported_model_engine_versions(
-        proto::MODEL_ENGINE_VERSION_TFLITE_2_9_0_1);
-    // This histogram is used for integration tests. Do not remove.
-    // Update this to be 10000 if/when we exceed 100 model engine versions.
-    LOCAL_HISTOGRAM_COUNTS_100(
-        "OptimizationGuide.PredictionManager.SupportedModelEngineVersion",
-        static_cast<int>(
-            *base_model_info.supported_model_engine_versions().begin()));
-  }
+  // There should only be one supported model engine version at a time.
+  base_model_info.add_supported_model_engine_versions(
+      proto::MODEL_ENGINE_VERSION_TFLITE_2_9_0_1);
+  // This histogram is used for integration tests. Do not remove.
+  // Update this to be 10000 if/when we exceed 100 model engine versions.
+  LOCAL_HISTOGRAM_COUNTS_100(
+      "OptimizationGuide.PredictionManager.SupportedModelEngineVersion",
+      static_cast<int>(
+          *base_model_info.supported_model_engine_versions().begin()));
 
   if (switches::IsModelOverridePresent())
     return;
@@ -370,11 +369,9 @@ void PredictionManager::FetchModels() {
   if (registered_optimization_targets_and_metadata_.empty())
     return;
 
-  // TODO(crbug/1245793): Do not fetch models if model downloading is not
-  // enabled. This is not done currently since there are too many tests that
-  // depend on the fetch always going out even in the non-downloads case and the
-  // overall cleanup is already in progress.
-
+  // We should have already created a prediction model download manager if we
+  // initiated the fetching of models.
+  DCHECK(prediction_model_download_manager_);
   if (prediction_model_download_manager_) {
     bool download_service_available =
         prediction_model_download_manager_->IsAvailableForDownloads();
@@ -487,6 +484,9 @@ void PredictionManager::UpdatePredictionModels(
   bool has_models_to_update = false;
   for (const auto& model : prediction_models) {
     if (model.has_model() && !model.model().download_url().empty()) {
+      // We should only be updating the store for on-the-record profiles and
+      // after the store has been initialized.
+      DCHECK(prediction_model_download_manager_);
       if (prediction_model_download_manager_) {
         GURL download_url(model.model().download_url());
         if (download_url.is_valid()) {

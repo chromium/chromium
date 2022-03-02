@@ -512,6 +512,33 @@ TEST_F(PredictionManagerRemoteFetchingDisabledTest, RemoteFetchingDisabled) {
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
 }
 
+class PredictionManagerModelDownloadingDisabledTest
+    : public PredictionManagerTestBase {
+ public:
+  PredictionManagerModelDownloadingDisabledTest() {
+    // This needs to be done before any tasks are run that might check if a
+    // feature is enabled, to avoid tsan errors.
+    feature_list_.InitAndDisableFeature(
+        features::kOptimizationGuideModelDownloading);
+  }
+};
+
+TEST_F(PredictionManagerModelDownloadingDisabledTest,
+       ModelDownloadingDisabledShouldNotFetch) {
+  CreatePredictionManager();
+
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+  SetStoreInitialized();
+
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+}
+
 class PredictionManagerTest : public PredictionManagerTestBase {
  public:
   PredictionManagerTest() {
@@ -575,8 +602,7 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   // Make sure the test histogram is recorded. We don't check for value here
   // since that is too much toil for someone whenever they add a new version.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionManager.SupportedModelEngineVersion",
-      features::IsModelDownloadingEnabled() ? 1 : 0);
+      "OptimizationGuide.PredictionManager.SupportedModelEngineVersion", 1);
 
   EXPECT_TRUE(prediction_manager()->GetRegisteredOptimizationTargets().contains(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
@@ -754,8 +780,7 @@ TEST_F(PredictionManagerTest,
   // We don't check for value here since that is too much toil for someone
   // whenever they add a new version.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionManager.SupportedModelEngineVersion",
-      features::IsModelDownloadingEnabled() ? 1 : 0);
+      "OptimizationGuide.PredictionManager.SupportedModelEngineVersion", 1);
 
   EXPECT_TRUE(prediction_manager()->GetRegisteredOptimizationTargets().contains(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
