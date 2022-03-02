@@ -22,8 +22,10 @@
 
 namespace blink {
 
+class AbortSignal;
 class Document;
-class DocumentTransitionSetElementOptions;
+class DocumentTransitionPrepareOptions;
+class DocumentTransitionStartOptions;
 class Element;
 class ExceptionState;
 class LayoutObject;
@@ -51,46 +53,13 @@ class CORE_EXPORT DocumentTransition
   // ActiveScriptWrappable functionality.
   bool HasPendingActivity() const override;
 
-  bool CanCreateNewTransition() const {
-    return state_ == State::kIdle && !script_mutations_allowed_;
-  }
-
-  class ScriptMutationsAllowedScope {
-    STACK_ALLOCATED();
-
-   public:
-    ~ScriptMutationsAllowedScope() {
-      transition_->script_mutations_allowed_ = false;
-      transition_->FinalizeNewTransition();
-    }
-
-   private:
-    friend class DocumentTransition;
-
-    explicit ScriptMutationsAllowedScope(DocumentTransition* transition)
-        : transition_(transition) {
-      transition_->script_mutations_allowed_ = true;
-      transition_->AssertNoTransition();
-      transition_->StartNewTransition();
-    }
-
-    DocumentTransition* transition_;
-  };
-
-  ScriptMutationsAllowedScope CreateScriptMutationsAllowedScope() {
-    return ScriptMutationsAllowedScope{this};
-  }
-
   // JavaScript API implementation.
-  void setElement(ScriptState*,
-                  Element*,
-                  const AtomicString&,
-                  const DocumentTransitionSetElementOptions*,
-                  ExceptionState&);
-  ScriptPromise captureAndHold(ScriptState*, ExceptionState&);
-  ScriptPromise start(ScriptState*, ExceptionState&);
-  void ignoreCSSTaggedElements(ScriptState*, ExceptionState&);
-  void abandon(ScriptState*, ExceptionState&);
+  ScriptPromise prepare(ScriptState*,
+                        const DocumentTransitionPrepareOptions*,
+                        ExceptionState&);
+  ScriptPromise start(ScriptState*,
+                      const DocumentTransitionStartOptions*,
+                      ExceptionState&);
 
   // This uses std::move semantics to take the request from this object.
   std::unique_ptr<DocumentTransitionRequest> TakePendingRequest();
@@ -136,21 +105,20 @@ class CORE_EXPORT DocumentTransition
   // LifecycleNotificationObserver overrides.
   void WillStartLifecycleUpdate(const LocalFrameView&) override;
 
-  bool HasActiveTransition() const { return state_ != State::kIdle; }
-
  private:
   friend class DocumentTransitionTest;
 
-  enum class State { kIdle, kCapturing, kCaptured, kStarted };
-
-  void AssertNoTransition();
-  void StartNewTransition();
-  void FinalizeNewTransition();
+  enum class State { kIdle, kPreparing, kPrepared, kStarted };
 
   void NotifyHasChangesToCommit();
 
-  void NotifyCaptureFinished(uint32_t sequence_id);
+  void NotifyPrepareFinished(uint32_t sequence_id);
   void NotifyStartFinished(uint32_t sequence_id);
+
+  // Sets new active shared elements. Note that this is responsible for making
+  // sure we invalidate the right bits both on the old and new elements.
+  void SetActiveSharedElements(HeapVector<Member<Element>> elements);
+  void InvalidateActiveElements();
 
   // Used to defer visual updates between transition prepare finishing and
   // transition start to allow the page to set up the final scene
@@ -161,6 +129,8 @@ class CORE_EXPORT DocumentTransition
   // Allow canceling a transition until it reaches start().
   void CancelPendingTransition(const char* abort_message);
 
+  void Abort(AbortSignal* signal);
+
   // Resets internal state, called in both abort situations and transition
   // finished situations.
   void ResetState(bool abort_style_tracker = true);
@@ -169,8 +139,20 @@ class CORE_EXPORT DocumentTransition
 
   State state_ = State::kIdle;
 
-  Member<ScriptPromiseResolver> capture_promise_resolver_;
+  Member<ScriptPromiseResolver> prepare_promise_resolver_;
   Member<ScriptPromiseResolver> start_promise_resolver_;
+  Member<AbortSignal> signal_;
+
+  // `active_shared_elements_` represents elements that are identified as shared
+  // during the current step of the transition. Specifically, it represents
+  // `prepare()` call sharedElements if the state is kPreparing and `start()`
+  // call sharedElements if the state is kStarted.
+  // `prepare_shared_element_count_` represents the number of shared elements
+  // that were specified in the `prepare()` call. This is used to verify that
+  // the number of shared elements specified in the `prepare()` and `start()`
+  // calls is the same.
+  HeapVector<Member<Element>> active_shared_elements_;
+  wtf_size_t prepare_shared_element_count_ = 0u;
 
   // Created conditionally if renderer based SharedElementTransitions is
   // enabled.
@@ -191,9 +173,6 @@ class CORE_EXPORT DocumentTransition
   uint32_t document_tag_ = 0u;
 
   bool deferring_commits_ = false;
-
-  // This is set to true when we allow script calls to modify state.
-  bool script_mutations_allowed_ = false;
 
   // Set only for tests.
   bool disable_end_transition_ = false;

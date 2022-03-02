@@ -19,11 +19,9 @@ input {
 
 .top {
   top: 0px;
-  background: green;
 }
 .bottom {
   bottom: 0px;
-  background: blue;
 }
 
 div {
@@ -31,64 +29,37 @@ div {
   left: 0px;
   right: 0px;
   height: 40vh;
+  background: green;
   contain: paint;
 }
 </style>
 
 <input id=toggle type=button value="Toggle!"></input>
 <div id=target class=top>
-The div should alternate being at the bottom and at the top.
-The color at the top is green and bottom is blue.
-During the animation, the div has an (x, y) offset and its
-content is a blend of green and blue. There is also a grey
-background with a slight offset from the top.
+The green div should alternate being at the bottom and at the top.
+Other than green and pink background no other colors should appear.
 </div>
 
 <script>
 let classes = ["top", "bottom"]
+let backgroundColors = ["lightpink", "lightblue"]
 let i = 0;
-
-let transitionStyle =
-  `html::page-transition {
-    top: 50px;
-  }
-
-  html::page-transition-container(root) {
-    background-color: grey;
-  }
-
-  html::page-transition-container(shared-0) {
-    left: 50px;
-  }
-
-  html::page-transition-outgoing-image(shared-0) {
-    opacity: 0.5;
-    animation-name: none;
-  }
-
-  html::page-transition-incoming-image(shared-0) {
-    opacity: 0.5;
-  }
-  `
-
-let pseudoStyle = document.createElement('style');
-pseudoStyle.appendChild(document.createTextNode(transitionStyle));
-
 async function runAnimation() {
   await document.documentTransition.prepare({
-    rootTransition: "none",
-    sharedElements: [target]
+    rootTransition: "explode",
+    rootConfig: {duration:"500", delay: "500"},
+    sharedElements: [target],
+    sharedElementsConfig: [{duration:"1000", delay:"1000"}]
   });
 
+  document.body.style.background = backgroundColors[i];
   target.classList.remove(classes[i]);
   i = (i + 1) % classes.length;
   target.classList.add(classes[i]);
 
-  document.head.appendChild(pseudoStyle);
   await document.documentTransition.start({
     sharedElements: [target]
   });
-  document.head.removeChild(pseudoStyle);
 }
 
 function init() {

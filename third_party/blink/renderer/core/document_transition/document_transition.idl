@@ -9,21 +9,13 @@
     Exposed=Window,
     RuntimeEnabled=DocumentTransition
 ] interface DocumentTransition {
-  // Set or unset (if tag is null) an element that will participate in the next
-  // transition, whether as a part of captureAndHold or start phases.
-  [CallWith=ScriptState, RaisesException] void setElement(Element element, DOMString? tag, optional DocumentTransitionSetElementOptions options = {});
+  // - This should only be called after any previous start() calls have resolved.
+  // - Rejects any previous unresolved prepare() promises.
+  // - Returns a promise that resolves after the transition has been
+  //   prepared.
+  [CallWith=ScriptState, RaisesException] Promise<void> prepare(optional DocumentTransitionPrepareOptions options = {});
 
-  // Request to capture the currently set elements, including the root, and
-  // hold visual contents until start is called
-  [CallWith=ScriptState, RaisesException] Promise<void> captureAndHold();
-
-  // Starts the transition with the captured elements and elements set for
-  // start.
-  [CallWith=ScriptState, RaisesException] Promise<void> start();
-
-  // Ignores CSS tagged elements
-  [CallWith=ScriptState, RaisesException] void ignoreCSSTaggedElements();
-
-  // Abandons the transition.
-  [CallWith=ScriptState, RaisesException] void abandon();
+  // Can only be called after prepare(), during the task during
+  // which prepare() most recently resolved.
+  [CallWith=ScriptState, RaisesException] Promise<void> start(optional DocumentTransitionStartOptions options = {});
 };

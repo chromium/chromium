@@ -9,12 +9,13 @@ div {
   background-color: blue;
   contain: paint;
 }
-html::page-transition-outgoing-image(shared) {
+html::page-transition-container(shared-0) { isolation: isolate; }
+html::page-transition-outgoing-image(shared-0) {
   opacity: 1;
   mix-blend-mode: normal;
   animation: unset;
 }
-html::page-transition-incoming-image(shared) {
+html::page-transition-incoming-image(shared-0) {
   opacity: 1;
   mix-blend-mode: multiply;
   animation: unset;
@@ -32,19 +33,20 @@ if (window.testRunner) {
 async function doTransition() {
   let elem = document.getElementsByTagName("div")[0];
 
-  document.createDocumentTransition(async (t) => {
-    t.setElement(elem, "shared");
-    await t.captureAndHold();
-
-    elem.style.backgroundColor = "red";
-
-    await t.start();
-
-    if (window.testRunner) {
-      requestAnimationFrame(() => requestAnimationFrame(() => testRunner.notifyDone()));
-    }
+  await document.documentTransition.prepare({
+    rootTransition: "none",
+    sharedElements: [elem]
   });
+
+  elem.style.backgroundColor = "red";
+  await document.documentTransition.start({
+    sharedElements: [elem]
+  });
+
+  if (window.testRunner) {
+    requestAnimationFrame(() => requestAnimationFrame(() => testRunner.notifyDone()));
+  }
 }
 
-onload = requestAnimationFrame(() => requestAnimationFrame(doTransition));
+onload = doTransition;
 </script>
