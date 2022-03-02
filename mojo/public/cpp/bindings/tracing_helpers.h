@@ -24,11 +24,4 @@
 #define TRACE_CATEGORY_OR_DISABLED_BY_DEFAULT_MOJOM(category) category
 #endif
 
-namespace mojo {
-
-using MessageToStableIPCHashCallback = uint32_t (*)(Message&);
-using MessageToMethodNameCallback = const char* (*)(Message&);
-
-}  // namespace mojo
-
 #endif  // MOJO_PUBLIC_CPP_BINDINGS_TRACING_HELPERS_H_

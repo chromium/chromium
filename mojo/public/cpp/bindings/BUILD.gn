@@ -98,6 +98,7 @@ component("bindings_base") {
     "map_traits_stl.h",
     "message.h",
     "message_header_validator.h",
+    "message_metadata_helpers.h",
     "scoped_interface_endpoint_handle.h",
     "scoped_message_error_crash_key.cc",
     "scoped_message_error_crash_key.h",

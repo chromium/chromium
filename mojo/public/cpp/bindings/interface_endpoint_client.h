@@ -33,9 +33,9 @@
 #include "mojo/public/cpp/bindings/lib/control_message_proxy.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/message_dispatcher.h"
+#include "mojo/public/cpp/bindings/message_metadata_helpers.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
-#include "mojo/public/cpp/bindings/tracing_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
