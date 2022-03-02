@@ -1317,7 +1317,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Adds the top toolbar and sets constraints.
 - (void)setupTopToolbar {
-  TabGridTopToolbar* topToolbar = [[TabGridTopToolbar alloc] init];
+  // In iOS 13+, constraints break if the UIToolbar is initialized with a null
+  // or zero rect frame. An arbitrary non-zero frame fixes this issue.
+  TabGridTopToolbar* topToolbar =
+      [[TabGridTopToolbar alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   self.topToolbar = topToolbar;
   topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:topToolbar];
