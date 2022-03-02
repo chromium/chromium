@@ -114,8 +114,12 @@ void ExtractVoiceSearchAudioDataFromWebState(
       stringWithFormat:kTTSAudioDataExtractorScriptFormat, kTTSStartTag];
 
   web::WebFrame* web_frame = web::GetMainFrame(webState);
-  std::string script = base::SysNSStringToUTF8(tts_extraction_script);
+  if (!web_frame) {
+    completion(nil);
+    return;
+  }
 
+  std::string script = base::SysNSStringToUTF8(tts_extraction_script);
   web_frame->ExecuteJavaScript(
       script, BindOnce(^(const base::Value* value) {
         if (value->is_string()) {
