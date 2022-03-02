@@ -7,16 +7,8 @@ import("//buildtools/deps_revisions.gni")
 assert(use_custom_libcxx, "should only be used if use_custom_libcxx is set")
 
 declare_args() {
-  # lldb pretty printing only works when libc++ is built in the __1 (or __ndk1)
-  # namespaces.  For pretty printing to work out-of-the-box on Mac (where lldb
-  # is primarily used), this flag is set to false to build with the __1
-  # namespace (to maintain ABI compatibility, this implies building without
-  # _LIBCPP_ABI_UNSTABLE).  This is not necessary on non-component builds
-  # because we leave the ABI version set to __1 in that case because libc++
-  # symbols are not exported.
-  # TODO(thomasanderson): Set this to true by default once rL352899 is available
-  # in MacOS's lldb.
-  libcxx_abi_unstable = !(is_apple && is_debug && is_component_build)
+  # TODO(thakis): Make this just a variable, not an arg.
+  libcxx_abi_unstable = true
 }
 
 # TODO(xiaohuic): https://crbug/917533 Crashes on internal ChromeOS build.
