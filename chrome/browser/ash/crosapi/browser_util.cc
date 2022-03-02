@@ -49,9 +49,6 @@ bool g_profile_migration_completed_for_test = false;
 
 absl::optional<bool> g_lacros_primary_browser_for_test;
 
-LacrosLaunchSwitchSource g_lacros_launch_switch_source =
-    LacrosLaunchSwitchSource::kUnknown;
-
 // At session start the value for LacrosLaunchSwitch logic is applied and the
 // result is stored in this value which is used after that as a cache.
 absl::optional<LacrosLaunchSwitch> g_lacros_launch_switch_cache;
@@ -120,41 +117,33 @@ LacrosLaunchSwitch GetLaunchSwitch() {
 
 // Given a raw policy value, decides what LacrosLaunchSwitch value should be
 // used as a result of policy application.
-std::pair<LacrosLaunchSwitch, LacrosLaunchSwitchSource>
-DetermineLacrosLaunchSwitchFromPolicyValue(base::StringPiece policy_value) {
+LacrosLaunchSwitch DetermineLacrosLaunchSwitchFromPolicyValue(
+    base::StringPiece policy_value) {
   // Users can set this switch in chrome://flags to disable the effect of the
   // lacros-availability policy.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(ash::switches::kLacrosAvailabilityIgnore)) {
-    return std::make_pair(LacrosLaunchSwitch::kUserChoice,
-                          LacrosLaunchSwitchSource::kForcedByUser);
-  }
+  if (command_line->HasSwitch(ash::switches::kLacrosAvailabilityIgnore))
+    return LacrosLaunchSwitch::kUserChoice;
 
   if (policy_value.empty()) {
     // Some tests call IsLacrosAllowedToBeEnabled but don't have the value set.
-    return std::make_pair(LacrosLaunchSwitch::kUserChoice,
-                          LacrosLaunchSwitchSource::kPossiblySetByUser);
+    return LacrosLaunchSwitch::kUserChoice;
   }
 
   auto* map_entry = policy_value_to_enum.find(policy_value);
   if (map_entry == policy_value_to_enum.end()) {
     LOG(ERROR) << "Invalid LacrosLaunchSwitch policy value: " << policy_value;
-    return std::make_pair(LacrosLaunchSwitch::kUserChoice,
-                          LacrosLaunchSwitchSource::kPossiblySetByUser);
+    return LacrosLaunchSwitch::kUserChoice;
   }
 
   auto result = map_entry->second;
   if (IsGoogleInternal() &&
       !base::FeatureList::IsEnabled(kLacrosGooglePolicyRollout) &&
       result != LacrosLaunchSwitch::kLacrosDisallowed) {
-    return std::make_pair(LacrosLaunchSwitch::kUserChoice,
-                          LacrosLaunchSwitchSource::kPossiblySetByUser);
+    return LacrosLaunchSwitch::kUserChoice;
   }
 
-  return std::make_pair(result,
-                        result == LacrosLaunchSwitch::kUserChoice
-                            ? LacrosLaunchSwitchSource::kPossiblySetByUser
-                            : LacrosLaunchSwitchSource::kForcedByPolicy);
+  return result;
 }
 
 // Gets called from IsLacrosAllowedToBeEnabled with primary user or from
@@ -415,11 +404,9 @@ bool IsLacrosEnabledForMigration(const User* user,
     // Before Policy is initialized, the value won't be available.
     // So, we'll use the value preserved in the feature flags.
     // See also LacrosAvailabilityPolicyObserver how it will be propergated.
-    launch_switch =
-        DetermineLacrosLaunchSwitchFromPolicyValue(
-            base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                kLacrosAvailabilityPolicySwitch))
-            .first;
+    launch_switch = DetermineLacrosLaunchSwitchFromPolicyValue(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kLacrosAvailabilityPolicySwitch));
   } else {
     DCHECK_EQ(policy_init_state, PolicyInitState::kAfterInit);
     launch_switch = GetLaunchSwitch();
@@ -699,9 +686,8 @@ void CacheLacrosLaunchSwitch(const policy::PolicyMap& map) {
   }
 
   const base::Value* value = map.GetValue(policy::key::kLacrosAvailability);
-  std::tie(g_lacros_launch_switch_cache, g_lacros_launch_switch_source) =
-      DetermineLacrosLaunchSwitchFromPolicyValue(value ? value->GetString()
-                                                       : base::StringPiece());
+  g_lacros_launch_switch_cache = DetermineLacrosLaunchSwitchFromPolicyValue(
+      value ? value->GetString() : base::StringPiece());
 }
 
 ComponentInfo GetLacrosComponentInfo() {
@@ -787,7 +773,18 @@ void SetProfileMigrationCompletedForTest(bool is_completed) {
 }
 
 LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource() {
-  return g_lacros_launch_switch_source;
+  if (!g_lacros_launch_switch_cache.has_value())
+    return LacrosLaunchSwitchSource::kUnknown;
+
+  // Note: this check needs to be consistent with the one in
+  // DetermineLacrosLaunchSwitchFromPolicyValue.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(ash::switches::kLacrosAvailabilityIgnore))
+    return LacrosLaunchSwitchSource::kForcedByUser;
+
+  return GetLaunchSwitch() == LacrosLaunchSwitch::kUserChoice
+             ? LacrosLaunchSwitchSource::kPossiblySetByUser
+             : LacrosLaunchSwitchSource::kForcedByPolicy;
 }
 
 base::StringPiece GetLacrosAvailabilityPolicyName(LacrosLaunchSwitch value) {

@@ -5,10 +5,12 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -24,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using crosapi::browser_util::LacrosLaunchSwitch;
+using crosapi::browser_util::LacrosLaunchSwitchSource;
 using crosapi::browser_util::LacrosSelection;
 using user_manager::User;
 using version_info::Channel;
@@ -724,6 +727,41 @@ TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
     EXPECT_FALSE(browser_util::IsAshBrowserSyncEnabled());
+  }
+}
+
+TEST_F(BrowserUtilTest, GetLacrosLaunchSwitchSource) {
+  // If LaunchSwitch is not set, the source is unknown.
+  EXPECT_EQ(LacrosLaunchSwitchSource::kUnknown,
+            browser_util::GetLacrosLaunchSwitchSource());
+
+  // If the policy says UserChoice, lacros state may be set by user.
+  {
+    ScopedLacrosLaunchSwitchCache cache(LacrosLaunchSwitch::kUserChoice);
+    EXPECT_EQ(LacrosLaunchSwitchSource::kPossiblySetByUser,
+              browser_util::GetLacrosLaunchSwitchSource());
+  }
+
+  // The policy can be ignored by command line flag.
+  // In the case, it is forced by user. Note that if the flag is set,
+  // LacrosLaunchSwitch is always kUserChoice.
+  {
+    ScopedLacrosLaunchSwitchCache cache(LacrosLaunchSwitch::kUserChoice);
+    base::test::ScopedCommandLine cmd_line;
+    cmd_line.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kLacrosAvailabilityIgnore);
+    EXPECT_EQ(LacrosLaunchSwitchSource::kForcedByUser,
+              browser_util::GetLacrosLaunchSwitchSource());
+  }
+
+  // Otherwise, the LaunchSwitch is set by the policy.
+  for (const auto launch_switch :
+       {LacrosLaunchSwitch::kLacrosDisallowed, LacrosLaunchSwitch::kSideBySide,
+        LacrosLaunchSwitch::kLacrosPrimary, LacrosLaunchSwitch::kLacrosOnly}) {
+    ScopedLacrosLaunchSwitchCache cache(launch_switch);
+    EXPECT_EQ(LacrosLaunchSwitchSource::kForcedByPolicy,
+              browser_util::GetLacrosLaunchSwitchSource())
+        << static_cast<int>(launch_switch);
   }
 }
 
