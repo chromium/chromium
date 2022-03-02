@@ -1136,6 +1136,13 @@ var defaultTests = [
     });
   },
 
+  function isLacrosPrimaryBrowser() {
+    chrome.autotestPrivate.isLacrosPrimaryBrowser(
+        chrome.test.callbackPass(function(primary) {
+          chrome.test.assertTrue(typeof primary === 'boolean');
+        }));
+  },
+
   // KEEP |lockScreen()| TESTS AT THE BOTTOM OF THE defaultTests AS IT WILL
   // CHANGE THE SESSION STATE TO LOCKED STATE.
   function lockScreen() {

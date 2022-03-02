@@ -72,6 +72,7 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/crosapi/automation_ash.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
@@ -1883,6 +1884,20 @@ AutotestPrivateIsArcProvisionedFunction::Run() {
   DVLOG(1) << "AutotestPrivateIsArcProvisionedFunction";
   return RespondNow(OneArgument(base::Value(
       arc::IsArcProvisioned(Profile::FromBrowserContext(browser_context())))));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateIsLacrosPrimaryBrowserFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateIsLacrosPrimaryBrowserFunction::
+    ~AutotestPrivateIsLacrosPrimaryBrowserFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateIsLacrosPrimaryBrowserFunction::Run() {
+  DVLOG(1) << "AutotestPrivateIsLacrosPrimaryBrowserFunction";
+  return RespondNow(OneArgument(
+      base::Value(crosapi::browser_util::IsLacrosPrimaryBrowser())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
