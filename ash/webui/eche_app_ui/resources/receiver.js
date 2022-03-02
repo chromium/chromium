@@ -93,6 +93,11 @@ const EcheApiBindingImpl = new class {
         Message.SHOW_NOTIFICATION, {title, message, notificationType});
   }
 
+  startStreaming() {
+    console.log('echeapi receiver.js startStreaming');
+    parentMessagePipe.sendMessage(Message.START_STREAMING);
+  }
+
   sendTimeHistogram(histogram, value) {
     console.log('echeapi receiver.js sendTimeHistogram');
     parentMessagePipe.sendMessage(
@@ -131,6 +136,8 @@ echeapi.system.registerNotificationReceiver =
     EcheApiBindingImpl.onReceivedNotification.bind(EcheApiBindingImpl);
 echeapi.system.showCrOSNotification =
     EcheApiBindingImpl.showNotification.bind(EcheApiBindingImpl);
+echeapi.system.startStreaming =
+    EcheApiBindingImpl.startStreaming.bind(EcheApiBindingImpl);
 echeapi.system.sendTimeHistogram =
     EcheApiBindingImpl.sendTimeHistogram.bind(EcheApiBindingImpl);
 echeapi.system.sendEnumHistogram =

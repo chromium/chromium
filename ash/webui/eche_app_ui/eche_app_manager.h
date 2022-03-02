@@ -41,6 +41,7 @@ class EcheUidProvider;
 class SystemInfo;
 class SystemInfoProvider;
 class AppsAccessManager;
+class EcheDisplayStreamHandler;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
@@ -75,6 +76,9 @@ class EcheAppManager : public KeyedService {
   void BindNotificationGeneratorInterface(
       mojo::PendingReceiver<mojom::NotificationGenerator> receiver);
 
+  void BindDisplayStreamHandlerInterface(
+      mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver);
+
   AppsAccessManager* GetAppsAccessManager();
 
   // KeyedService:
@@ -84,6 +88,7 @@ class EcheAppManager : public KeyedService {
   std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
   std::unique_ptr<EcheFeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<LaunchAppHelper> launch_app_helper_;
+  std::unique_ptr<EcheDisplayStreamHandler> display_stream_handler_;
   std::unique_ptr<EcheNotificationClickHandler>
       eche_notification_click_handler_;
   std::unique_ptr<EcheConnector> eche_connector_;

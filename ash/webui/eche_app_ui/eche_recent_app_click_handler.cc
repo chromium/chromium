@@ -5,6 +5,9 @@
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
 
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
@@ -14,9 +17,11 @@ namespace eche_app {
 EcheRecentAppClickHandler::EcheRecentAppClickHandler(
     phonehub::PhoneHubManager* phone_hub_manager,
     FeatureStatusProvider* feature_status_provider,
-    LaunchAppHelper* launch_app_helper)
+    LaunchAppHelper* launch_app_helper,
+    EcheDisplayStreamHandler* display_stream_handler)
     : feature_status_provider_(feature_status_provider),
-      launch_app_helper_(launch_app_helper) {
+      launch_app_helper_(launch_app_helper),
+      display_stream_handler_(display_stream_handler) {
   notification_handler_ =
       phone_hub_manager->GetNotificationInteractionHandler();
   recent_apps_handler_ = phone_hub_manager->GetRecentAppsInteractionHandler();
@@ -28,6 +33,9 @@ EcheRecentAppClickHandler::EcheRecentAppClickHandler(
     recent_apps_handler_->AddRecentAppClickObserver(this);
     is_click_handler_set_ = true;
   }
+
+  if (features::IsEcheSWAInBackgroundEnabled())
+    display_stream_handler_->AddObserver(this);
 }
 
 EcheRecentAppClickHandler::~EcheRecentAppClickHandler() {
@@ -36,6 +44,9 @@ EcheRecentAppClickHandler::~EcheRecentAppClickHandler() {
     notification_handler_->RemoveNotificationClickHandler(this);
   if (recent_apps_handler_)
     recent_apps_handler_->RemoveRecentAppClickObserver(this);
+
+  if (features::IsEcheSWAInBackgroundEnabled())
+    display_stream_handler_->RemoveObserver(this);
 }
 
 void EcheRecentAppClickHandler::HandleNotificationClick(
@@ -62,6 +73,7 @@ void EcheRecentAppClickHandler::OnRecentAppClicked(
       launch_app_helper_->LaunchEcheApp(
           /*notification_id=*/absl::nullopt, app_metadata.package_name,
           app_metadata.visible_app_name, app_metadata.user_id);
+      is_waiting_for_streaming_to_show_ = true;
       break;
     case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock:
       launch_app_helper_->ShowNotification(
@@ -97,6 +109,20 @@ void EcheRecentAppClickHandler::OnFeatureStatusChanged() {
     notification_handler_->RemoveNotificationClickHandler(this);
     recent_apps_handler_->RemoveRecentAppClickObserver(this);
     is_click_handler_set_ = false;
+    is_waiting_for_streaming_to_show_ = false;
+  }
+}
+
+void EcheRecentAppClickHandler::OnStartStreaming() {
+  if (features::IsEcheCustomWidgetEnabled()) {
+    // TODO(paulzchen): Move the eche tray control to factory.
+    auto* eche_tray = Shell::GetPrimaryRootWindowController()
+                          ->GetStatusAreaWidget()
+                          ->eche_tray();
+    if (eche_tray && is_waiting_for_streaming_to_show_) {
+      eche_tray->ShowBubble();
+      is_waiting_for_streaming_to_show_ = false;
+    }
   }
 }
 

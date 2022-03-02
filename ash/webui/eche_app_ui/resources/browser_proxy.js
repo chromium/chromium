@@ -43,6 +43,8 @@ systemInfo.setSystemInfoObserver(
 const notificationGenerator =
     ash.echeApp.mojom.NotificationGenerator.getRemote();
 
+const displayStreamHandler = ash.echeApp.mojom.DisplayStreamHandler.getRemote();
+
 /**
  * A pipe through which we can send messages to the guest frame.
  * Use an undefined `target` to find the <iframe> automatically.
@@ -147,6 +149,12 @@ const notificationGenerator =
            histogramData.histogram, histogramData.value,
            histogramData.maxValue);
      });
+
+ // Register START_STREAMING pipes.
+ guestMessagePipe.registerHandler(Message.START_STREAMING, async () => {
+   console.log('echeapi browser_proxy.js startStreaming');
+   displayStreamHandler.startStreaming();
+ });
 
  // We can't access hash change event inside iframe so parse the notification
  // info from the anchor part of the url when hash is changed and send them to

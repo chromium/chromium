@@ -531,6 +531,15 @@ void BindEcheNotificationGenerator(
   }
 }
 
+void BindEcheDisplayStreamHandler(
+    ash::eche_app::EcheAppManager* manager,
+    mojo::PendingReceiver<ash::eche_app::mojom::DisplayStreamHandler>
+        receiver) {
+  if (manager) {
+    manager->BindDisplayStreamHandlerInterface(std::move(receiver));
+  }
+}
+
 template <>
 WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
                                                     const GURL& url) {
@@ -541,7 +550,8 @@ WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
       web_ui, base::BindRepeating(&BindEcheSignalingMessageExchanger, manager),
       base::BindRepeating(&BindSystemInfoProvider, manager),
       base::BindRepeating(&BindEcheUidGenerator, manager),
-      base::BindRepeating(&BindEcheNotificationGenerator, manager));
+      base::BindRepeating(&BindEcheNotificationGenerator, manager),
+      base::BindRepeating(&BindEcheDisplayStreamHandler, manager));
 }
 
 void BindScanService(

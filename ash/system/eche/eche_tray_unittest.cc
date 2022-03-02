@@ -95,4 +95,31 @@ TEST_F(EcheTrayTest, EcheTrayShowBubbleAndTapTwice) {
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
 }
 
+TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
+  // Verify the eche tray button is not active, and the eche tray bubble
+  // is not shown initially.
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_FALSE(eche_tray()->get_bubble_wrapper_for_test());
+
+  // Allow us to create the bubble but it is not visible until we need this
+  // bubble to show up.
+  eche_tray()->SetUrl(GURL("http://google.com"));
+  eche_tray()->InitBubble();
+  eche_tray()->HideBubble();
+
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
+  EXPECT_FALSE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  // Request this bubble to show up.
+  eche_tray()->ShowBubble();
+  // Wait for the tray bubble widget to open.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(eche_tray()->is_active());
+  EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+}
+
 }  // namespace ash

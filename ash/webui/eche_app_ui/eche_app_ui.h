@@ -22,12 +22,15 @@ class EcheAppUI : public ui::MojoWebUIController {
       base::RepeatingCallback<void(mojo::PendingReceiver<mojom::UidGenerator>)>;
   using BindNotificationGeneratorCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<mojom::NotificationGenerator>)>;
+  using BindDisplayStreamHandlerCallback = base::RepeatingCallback<void(
+      mojo::PendingReceiver<mojom::DisplayStreamHandler>)>;
 
   EcheAppUI(content::WebUI* web_ui,
             BindSignalingMessageExchangerCallback exchanger_callback,
             BindSystemInfoProviderCallback system_info_callback,
             BindUidGeneratorCallback generator_callback,
-            BindNotificationGeneratorCallback notification_callback);
+            BindNotificationGeneratorCallback notification_callback,
+            BindDisplayStreamHandlerCallback stream_handler_callback);
   EcheAppUI(const EcheAppUI&) = delete;
   EcheAppUI& operator=(const EcheAppUI&) = delete;
   ~EcheAppUI() override;
@@ -42,11 +45,15 @@ class EcheAppUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<mojom::NotificationGenerator> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver);
+
  private:
   const BindSignalingMessageExchangerCallback bind_exchanger_callback_;
   const BindSystemInfoProviderCallback bind_system_info_callback_;
   const BindUidGeneratorCallback bind_generator_callback_;
   const BindNotificationGeneratorCallback bind_notification_callback_;
+  const BindDisplayStreamHandlerCallback bind_stream_handler_callback_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

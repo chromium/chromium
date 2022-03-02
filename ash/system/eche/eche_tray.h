@@ -75,6 +75,11 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
 
   void HideBubble();
 
+  // Set up the params and init the bubble.
+  // Note: This function makes the bubble active and makes the
+  // TrayBackgroundView's background inkdrop activate.
+  void InitBubble();
+
   // Test helpers
   TrayBubbleWrapper* get_bubble_wrapper_for_test() { return bubble_.get(); }
 

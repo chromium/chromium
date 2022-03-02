@@ -88,3 +88,10 @@ interface NotificationGenerator {
   ShowNotification(mojo_base.mojom.String16 title,
           mojo_base.mojom.String16 message, WebNotificationType type);
 };
+
+// Interface for streaming a display video with which the connection is
+// established. TODO(paulzchen): Using generic method `OnStreamStatusChanged`.
+interface DisplayStreamHandler {
+  // Stream a display video for Eche.
+  StartStreaming();
+};

@@ -96,7 +96,14 @@ void LaunchBubble(const GURL& url) {
   // TODO(nayebi): if it is null log an error? Dcheck?
   if (eche_tray) {
     eche_tray->SetUrl(url);
-    eche_tray->ShowBubble();
+    if (!features::IsEcheSWAInBackgroundEnabled()) {
+      eche_tray->ShowBubble();
+    } else {
+      eche_tray->InitBubble();
+
+      // Hide bubble first until the streaming is ready.
+      eche_tray->HideBubble();
+    }
   }
 }
 

@@ -6,6 +6,9 @@
 
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
@@ -15,9 +18,11 @@ namespace eche_app {
 EcheNotificationClickHandler::EcheNotificationClickHandler(
     phonehub::PhoneHubManager* phone_hub_manager,
     FeatureStatusProvider* feature_status_provider,
-    LaunchAppHelper* launch_app_helper)
+    LaunchAppHelper* launch_app_helper,
+    EcheDisplayStreamHandler* display_stream_handler)
     : feature_status_provider_(feature_status_provider),
-      launch_app_helper_(launch_app_helper) {
+      launch_app_helper_(launch_app_helper),
+      display_stream_handler_(display_stream_handler) {
   handler_ = phone_hub_manager->GetNotificationInteractionHandler();
   feature_status_provider_->AddObserver(this);
   if (handler_ && IsClickable(feature_status_provider_->GetStatus())) {
@@ -27,12 +32,18 @@ EcheNotificationClickHandler::EcheNotificationClickHandler(
     PA_LOG(INFO)
         << "No Phone Hub interaction handler to set Eche click handler";
   }
+
+  if (features::IsEcheSWAInBackgroundEnabled())
+    display_stream_handler_->AddObserver(this);
 }
 
 EcheNotificationClickHandler::~EcheNotificationClickHandler() {
   feature_status_provider_->RemoveObserver(this);
   if (is_click_handler_set_ && handler_)
     handler_->RemoveNotificationClickHandler(this);
+
+  if (features::IsEcheSWAInBackgroundEnabled())
+    display_stream_handler_->RemoveObserver(this);
 }
 
 void EcheNotificationClickHandler::HandleNotificationClick(
@@ -46,6 +57,7 @@ void EcheNotificationClickHandler::HandleNotificationClick(
       launch_app_helper_->LaunchEcheApp(
           notification_id, app_metadata.package_name,
           app_metadata.visible_app_name, app_metadata.user_id);
+      is_waiting_for_streaming_to_show_ = true;
       break;
     case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock:
       launch_app_helper_->ShowNotification(
@@ -80,12 +92,27 @@ void EcheNotificationClickHandler::OnFeatureStatusChanged() {
   } else if (is_click_handler_set_ && !clickable) {
     handler_->RemoveNotificationClickHandler(this);
     is_click_handler_set_ = false;
+    is_waiting_for_streaming_to_show_ = false;
   }
 
   if (NeedClose(feature_status_provider_->GetStatus()) &&
       !base::FeatureList::IsEnabled(features::kEcheSWADebugMode)) {
     PA_LOG(INFO) << "Close Eche app window";
+    is_waiting_for_streaming_to_show_ = false;
     launch_app_helper_->CloseEcheApp();
+  }
+}
+
+void EcheNotificationClickHandler::OnStartStreaming() {
+  if (features::IsEcheCustomWidgetEnabled()) {
+    // TODO(paulzchen): Move the eche tray control to factory.
+    auto* eche_tray = Shell::GetPrimaryRootWindowController()
+                          ->GetStatusAreaWidget()
+                          ->eche_tray();
+    if (eche_tray && is_waiting_for_streaming_to_show_) {
+      eche_tray->ShowBubble();
+      is_waiting_for_streaming_to_show_ = false;
+    }
   }
 }
 

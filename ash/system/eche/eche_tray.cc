@@ -102,44 +102,7 @@ void EcheTray::ShowBubble() {
     return;
   }
 
-  TrayBubbleView::InitParams init_params;
-  init_params.delegate = this;
-  init_params.parent_window = GetBubbleWindowContainer();
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = GetBubbleAnchor()->GetAnchorBoundsInScreen();
-  init_params.insets = GetTrayBubbleInsets();
-  init_params.shelf_alignment = shelf()->alignment();
-  // TODO(nayebi): get the width relative to the screen size
-  init_params.preferred_width = 400;
-  init_params.close_on_deactivate = false;
-  init_params.has_shadow = false;
-  init_params.translucent = true;
-  init_params.reroute_event_handler = false;
-  init_params.corner_radius = kTrayItemCornerRadius;
-
-  auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
-  bubble_view->SetCanActivate(true);
-  bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
-
-  auto* header_view = bubble_view->AddChildView(CreateBubbleHeaderView());
-  // The layer is needed to draw the header non-opaquely that is needed to
-  // match the phone hub behavior.
-  header_view->SetPaintToLayer();
-  header_view->layer()->SetFillsBoundsOpaquely(false);
-
-  AshWebView::InitParams params;
-  auto web_view = AshWebViewFactory::Get()->Create(params);
-  // TODO(nayebi): Use GetDefaultBoundsForEche()
-  web_view->SetPreferredSize(gfx::Size(400, 600));
-  if (!url_.is_empty())
-    web_view->Navigate(url_);
-  bubble_view->AddChildView(std::move(web_view));
-
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view.release(),
-                                                /*event_handling=*/false);
-
-  SetIsActive(true);
-  bubble_->GetBubbleView()->UpdateBubble();
+  InitBubble();
 
   // TODO(nayebi): Add metric updates.
 }
@@ -216,6 +179,46 @@ void EcheTray::HideBubble() {
   bubble_->bubble_view()->SetVisible(false);
   bubble_->GetBubbleWidget()->Deactivate();
   bubble_->GetBubbleWidget()->Hide();
+}
+
+void EcheTray::InitBubble() {
+  TrayBubbleView::InitParams init_params;
+  init_params.delegate = this;
+  init_params.parent_window = GetBubbleWindowContainer();
+  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
+  init_params.anchor_rect = GetBubbleAnchor()->GetAnchorBoundsInScreen();
+  init_params.insets = GetTrayBubbleInsets();
+  init_params.shelf_alignment = shelf()->alignment();
+  // TODO(nayebi): get the width relative to the screen size
+  init_params.preferred_width = 400;
+  init_params.close_on_deactivate = false;
+  init_params.has_shadow = false;
+  init_params.translucent = true;
+  init_params.reroute_event_handler = false;
+  init_params.corner_radius = kTrayItemCornerRadius;
+
+  auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
+  bubble_view->SetCanActivate(true);
+  bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
+
+  auto* header_view = bubble_view->AddChildView(CreateBubbleHeaderView());
+  // The layer is needed to draw the header non-opaquely that is needed to
+  // match the phone hub behavior.
+  header_view->SetPaintToLayer();
+  header_view->layer()->SetFillsBoundsOpaquely(false);
+
+  auto web_view = AshWebViewFactory::Get()->Create(AshWebView::InitParams());
+  // TODO(nayebi): Use GetDefaultBoundsForEche()
+  web_view->SetPreferredSize(gfx::Size(400, 600));
+  if (!url_.is_empty())
+    web_view->Navigate(url_);
+  bubble_view->AddChildView(std::move(web_view));
+
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view.release(),
+                                                /*event_handling=*/false);
+
+  SetIsActive(true);
+  bubble_->GetBubbleView()->UpdateBubble();
 }
 
 void EcheTray::UpdateVisibility() {

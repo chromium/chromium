@@ -24,12 +24,14 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
                      BindSignalingMessageExchangerCallback exchanger_callback,
                      BindSystemInfoProviderCallback system_info_callback,
                      BindUidGeneratorCallback generator_callback,
-                     BindNotificationGeneratorCallback notification_callback)
+                     BindNotificationGeneratorCallback notification_callback,
+                     BindDisplayStreamHandlerCallback stream_handler_callback)
     : ui::MojoWebUIController(web_ui),
       bind_exchanger_callback_(std::move(exchanger_callback)),
       bind_system_info_callback_(std::move(system_info_callback)),
       bind_generator_callback_(std::move(generator_callback)),
-      bind_notification_callback_(std::move(notification_callback)) {
+      bind_notification_callback_(std::move(notification_callback)),
+      bind_stream_handler_callback_(std::move(stream_handler_callback)) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(browser_context,
@@ -109,6 +111,11 @@ void EcheAppUI::BindInterface(
 void EcheAppUI::BindInterface(
     mojo::PendingReceiver<mojom::NotificationGenerator> receiver) {
   bind_notification_callback_.Run(std::move(receiver));
+}
+
+void EcheAppUI::BindInterface(
+    mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver) {
+  bind_stream_handler_callback_.Run(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EcheAppUI)

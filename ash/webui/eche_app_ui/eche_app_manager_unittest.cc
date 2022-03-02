@@ -12,6 +12,7 @@
 #include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
+#include "ash/webui/eche_app_ui/eche_display_stream_handler.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "base/bind.h"
@@ -134,6 +135,10 @@ class EcheAppManagerTest : public testing::Test {
     return notification_generator_remote_;
   }
 
+  mojo::Remote<mojom::DisplayStreamHandler>& display_stream_handler_remote() {
+    return display_stream_handler_remote_;
+  }
+
   void Bind() {
     manager_->BindSignalingMessageExchangerInterface(
         signaling_message_exchanger_remote_.BindNewPipeAndPassReceiver());
@@ -143,6 +148,8 @@ class EcheAppManagerTest : public testing::Test {
         uid_generator_remote_.BindNewPipeAndPassReceiver());
     manager_->BindNotificationGeneratorInterface(
         notification_generator_remote_.BindNewPipeAndPassReceiver());
+    manager_->BindDisplayStreamHandlerInterface(
+        display_stream_handler_remote_.BindNewPipeAndPassReceiver());
   }
 
  private:
@@ -163,6 +170,7 @@ class EcheAppManagerTest : public testing::Test {
   mojo::Remote<mojom::SystemInfoProvider> system_info_provider_remote_;
   mojo::Remote<mojom::UidGenerator> uid_generator_remote_;
   mojo::Remote<mojom::NotificationGenerator> notification_generator_remote_;
+  mojo::Remote<mojom::DisplayStreamHandler> display_stream_handler_remote_;
 };
 
 TEST_F(EcheAppManagerTest, BindCheck) {
@@ -170,6 +178,7 @@ TEST_F(EcheAppManagerTest, BindCheck) {
   EXPECT_FALSE(system_info_provider_remote());
   EXPECT_FALSE(uid_generator_remote());
   EXPECT_FALSE(notification_generator_remote());
+  EXPECT_FALSE(display_stream_handler_remote());
 
   Bind();
 
@@ -177,6 +186,7 @@ TEST_F(EcheAppManagerTest, BindCheck) {
   EXPECT_TRUE(system_info_provider_remote());
   EXPECT_TRUE(uid_generator_remote());
   EXPECT_TRUE(notification_generator_remote());
+  EXPECT_TRUE(display_stream_handler_remote());
 }
 
 }  // namespace eche_app

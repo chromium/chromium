@@ -89,4 +89,6 @@
   TIME_HISTOGRAM_MESSAGE: 'time_histagram_message',
   // Message for sending metrics data for recording enum histogram.
   ENUM_HISTOGRAM_MESSAGE: 'enum_histagram_message',
+  // Message for starting the display video of Eche.
+  START_STREAMING: 'start_streaming',
 };

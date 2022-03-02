@@ -9,6 +9,7 @@
 #include "ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 #include "ash/webui/eche_app_ui/eche_connector_impl.h"
+#include "ash/webui/eche_app_ui/eche_display_stream_handler.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver_impl.h"
 #include "ash/webui/eche_app_ui/eche_notification_generator.h"
 #include "ash/webui/eche_app_ui/eche_presence_manager.h"
@@ -59,11 +60,13 @@ EcheAppManager::EcheAppManager(
                                             launch_eche_app_function,
                                             close_eche_app_function,
                                             launch_notification_function)),
+      display_stream_handler_(std::make_unique<EcheDisplayStreamHandler>()),
       eche_notification_click_handler_(
           std::make_unique<EcheNotificationClickHandler>(
               phone_hub_manager,
               feature_status_provider_.get(),
-              launch_app_helper_.get())),
+              launch_app_helper_.get(),
+              display_stream_handler_.get())),
       eche_connector_(
           std::make_unique<EcheConnectorImpl>(feature_status_provider_.get(),
                                               connection_manager_.get())),
@@ -83,7 +86,8 @@ EcheAppManager::EcheAppManager(
           std::make_unique<EcheRecentAppClickHandler>(
               phone_hub_manager,
               feature_status_provider_.get(),
-              launch_app_helper_.get())),
+              launch_app_helper_.get(),
+              display_stream_handler_.get())),
       notification_generator_(std::make_unique<EcheNotificationGenerator>(
           launch_app_helper_.get())),
       apps_access_manager_(std::make_unique<AppsAccessManagerImpl>(
@@ -119,6 +123,11 @@ void EcheAppManager::BindNotificationGeneratorInterface(
   notification_generator_->Bind(std::move(receiver));
 }
 
+void EcheAppManager::BindDisplayStreamHandlerInterface(
+    mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver) {
+  display_stream_handler_->Bind(std::move(receiver));
+}
+
 AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
   return apps_access_manager_.get();
 }
@@ -136,6 +145,7 @@ void EcheAppManager::Shutdown() {
   signaler_.reset();
   eche_connector_.reset();
   eche_notification_click_handler_.reset();
+  display_stream_handler_.reset();
   launch_app_helper_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();
