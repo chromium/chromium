@@ -503,6 +503,9 @@ SkColor ThemeHelper::GetDefaultColor(
       return SkColorSetA(
           GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
           0x3A);
+    case TP::COLOR_NTP_SECTION_BORDER:
+      return SkColorSetA(
+          GetColor(TP::COLOR_NTP_HEADER, incognito, theme_supplier), 0x50);
     case TP::COLOR_NTP_TEXT_LIGHT:
       return IncreaseLightness(
           GetColor(TP::COLOR_NTP_TEXT, incognito, theme_supplier), 0.40);

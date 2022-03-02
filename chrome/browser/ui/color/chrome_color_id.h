@@ -64,7 +64,13 @@
   /* New Tab Page colors. */ \
   E(kColorNewTabPageBackground, ThemeProperties::COLOR_NTP_BACKGROUND) \
   E(kColorNewTabPageHeader, ThemeProperties::COLOR_NTP_HEADER) \
+  E(kColorNewTabPageLink, ThemeProperties::COLOR_NTP_LINK) \
+  E(kColorNewTabPageLogo, ThemeProperties::COLOR_NTP_LOGO) \
+  E(kColorNewTabPageMostVisitedTileBackground, \
+    ThemeProperties::COLOR_NTP_SHORTCUT) \
+  E(kColorNewTabPageSectionBorder, ThemeProperties::COLOR_NTP_SECTION_BORDER) \
   E(kColorNewTabPageText, ThemeProperties::COLOR_NTP_TEXT) \
+  E(kColorNewTabPageTextLight, ThemeProperties::COLOR_NTP_TEXT_LIGHT) \
   /* Omnibox colors. */ \
   E(kColorOmniboxBackground, ThemeProperties::COLOR_OMNIBOX_BACKGROUND) \
   E(kColorOmniboxBackgroundHovered, \

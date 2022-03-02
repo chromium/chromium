@@ -98,7 +98,7 @@ constexpr int kTallestFrameHeight = kTallestTabHeight + 19;
 // changed default theme assets, if you need themes to recreate their generated
 // images (which are cached), if you changed how missing values are
 // generated, or if you changed any constants.
-const int kThemePackVersion = 88;
+const int kThemePackVersion = 89;
 
 // IDs that are in the DataPack won't clash with the positive integer
 // uint16_t. kHeaderID should always have the maximum value because we want the
@@ -1077,6 +1077,13 @@ void BrowserThemePack::AddColorMixers(
       {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelf},
       {TP::COLOR_FRAME_ACTIVE, ui::kColorFrameActive},
       {TP::COLOR_FRAME_INACTIVE, ui::kColorFrameInactive},
+      {TP::COLOR_NTP_BACKGROUND, kColorNewTabPageBackground},
+      {TP::COLOR_NTP_HEADER, kColorNewTabPageHeader},
+      {TP::COLOR_NTP_LINK, kColorNewTabPageLink},
+      {TP::COLOR_NTP_LOGO, kColorNewTabPageLogo},
+      {TP::COLOR_NTP_SECTION_BORDER, kColorNewTabPageSectionBorder},
+      {TP::COLOR_NTP_SHORTCUT, kColorNewTabPageMostVisitedTileBackground},
+      {TP::COLOR_NTP_TEXT, kColorNewTabPageText},
       {TP::COLOR_INFOBAR, kColorInfoBarBackground},
       {TP::COLOR_INFOBAR_TEXT, kColorInfoBarForeground},
       {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
@@ -1928,6 +1935,11 @@ void BrowserThemePack::GenerateMissingNtpColors() {
                                          background_color,
                                          /*luminosity_change=*/0.2f));
   }
+
+  // Calculate NTP section border color.
+  SkColor header_color;
+  if (GetColor(TP::COLOR_NTP_HEADER, &header_color))
+    SetColor(TP::COLOR_NTP_SECTION_BORDER, SkColorSetA(header_color, 0x50));
 }
 
 void BrowserThemePack::RepackImages(const ImageCache& images,

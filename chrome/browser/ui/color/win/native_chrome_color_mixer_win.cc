@@ -212,6 +212,12 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   // actually pass in these IDs.
   FrameColorHelper::Get()->AddBorderAccentColors(mixer);
 
+  if (key.color_mode == ui::ColorProviderManager::ColorMode::kLight) {
+    mixer[kColorNewTabPageBackground] = {ui::kColorNativeWindow};
+    mixer[kColorNewTabPageLink] = {ui::kColorNativeHotlight};
+    mixer[kColorNewTabPageText] = {ui::kColorNativeWindowText};
+  }
+
   if (key.contrast_mode != ui::ColorProviderManager::ContrastMode::kHigh) {
     FrameColorHelper::Get()->AddNativeChromeColors(mixer, key);
     return;

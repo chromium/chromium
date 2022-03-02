@@ -474,19 +474,8 @@ void NTPResourceCache::CreateNewTabCSS(
   SkColor color_text_light =
       GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_TEXT_LIGHT);
 
-  SkColor color_header =
-      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_HEADER);
-  // Generate a lighter color for the header gradients.
-  color_utils::HSL header_lighter;
-  color_utils::SkColorToHSL(color_header, &header_lighter);
-  header_lighter.l += (1 - header_lighter.l) * 0.33;
-
-  // Generate section border color from the header color. See
-  // BookmarkBarView::Paint for how we do this for the bookmark bar
-  // borders.
-  SkColor color_section_border =
-      SkColorSetARGB(80, SkColorGetR(color_header), SkColorGetG(color_header),
-                     SkColorGetB(color_header));
+  SkColor color_section_border = GetThemeColor(
+      native_theme, *tp, ThemeProperties::COLOR_NTP_SECTION_BORDER);
 
   // Generate the replacements.
   ui::TemplateReplacements substitutions;

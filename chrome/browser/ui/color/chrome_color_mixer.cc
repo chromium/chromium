@@ -73,6 +73,24 @@ ui::ColorTransform AdjustHighlightColorForContrast(
                              std::move(dark_extreme), std::move(light_extreme));
 }
 
+ui::ColorTransform IncreaseLightness(ui::ColorTransform input_transform,
+                                     double percent) {
+  const auto generator = [](ui::ColorTransform input_transform, double percent,
+                            SkColor input_color, const ui::ColorMixer& mixer) {
+    const SkColor color = input_transform.Run(input_color, mixer);
+    color_utils::HSL result;
+    color_utils::SkColorToHSL(color, &result);
+    result.l += (1 - result.l) * percent;
+    const SkColor result_color =
+        color_utils::HSLToSkColor(result, SkColorGetA(color));
+    DVLOG(2) << "ColorTransform IncreaseLightness:"
+             << " Input: " << ui::SkColorName(color)
+             << " Result: " << ui::SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(input_transform), percent);
+}
+
 // This differs from ui::SelectColorBasedOnInput in that we're checking if the
 // input transform is *not* dark under the assumption that the background color
 // *is* dark from a potential custom theme. Additionally, if the mode is
@@ -197,8 +215,17 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorLocationBarBorder] = {SkColorSetA(SK_ColorBLACK, 0x4D)};
   mixer[kColorNewTabPageBackground] = {kColorToolbar};
   mixer[kColorNewTabPageHeader] = {SkColorSetRGB(0x96, 0x96, 0x96)};
+  mixer[kColorNewTabPageLink] = {dark_mode ? gfx::kGoogleBlue300
+                                           : SkColorSetRGB(0x06, 0x37, 0x74)};
+  mixer[kColorNewTabPageLogo] = {SkColorSetRGB(0xEE, 0xEE, 0xEE)};
+  mixer[kColorNewTabPageMostVisitedTileBackground] = {
+      dark_mode ? gfx::kGoogleGrey900 : gfx::kGoogleGrey100};
+  mixer[kColorNewTabPageSectionBorder] =
+      ui::SetAlpha(kColorNewTabPageHeader, 0x50);
   mixer[kColorNewTabPageText] = {dark_mode ? gfx::kGoogleGrey200
                                            : SK_ColorBLACK};
+  mixer[kColorNewTabPageTextLight] =
+      IncreaseLightness(kColorNewTabPageText, 0.40);
   mixer[kColorOmniboxBackground] = {dark_mode ? gfx::kGoogleGrey900
                                               : gfx::kGoogleGrey100};
   mixer[kColorOmniboxText] =

@@ -253,10 +253,11 @@ class ThemeProperties {
     COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_ACTIVE,
     COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_INACTIVE,
 
-    COLOR_NTP_TEXT_LIGHT,
     COLOR_NTP_LOGO,
+    COLOR_NTP_SECTION_BORDER,
     // Color for the background of the most visited/custom link tile.
     COLOR_NTP_SHORTCUT,
+    COLOR_NTP_TEXT_LIGHT,
 
 #if BUILDFLAG(IS_WIN)
     // The colors of the 1px border around the window on Windows 10.
