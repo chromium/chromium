@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -39,7 +40,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -82,14 +82,14 @@ class NativeIOFile::FileState
   bool IsValid() {
     DCHECK(!IsMainThread());
 
-    WTF::MutexLocker locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     return file_.IsValid();
   }
 
   void Close() {
     DCHECK(!IsMainThread());
 
-    WTF::MutexLocker locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     file_.Close();
@@ -100,7 +100,7 @@ class NativeIOFile::FileState
   std::pair<int64_t, base::File::Error> GetLength() {
     DCHECK(!IsMainThread());
 
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     int64_t length = file_.GetLength();
@@ -116,7 +116,7 @@ class NativeIOFile::FileState
     DCHECK(!IsMainThread());
     DCHECK_GE(expected_length, 0);
 
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     bool success = file_.SetLength(expected_length);
@@ -130,7 +130,7 @@ class NativeIOFile::FileState
 #if BUILDFLAG(IS_MAC)
   // Used to implement browser-side SetLength() on macOS < 10.15.
   base::File TakeFile() {
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     return std::move(file_);
@@ -138,7 +138,7 @@ class NativeIOFile::FileState
 
   // Used to implement browser-side SetLength() on macOS < 10.15.
   void SetFile(base::File file) {
-    WTF::MutexLocker locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(!file_.IsValid()) << __func__ << " called on valid file";
 
     file_ = std::move(file);
@@ -155,7 +155,7 @@ class NativeIOFile::FileState
     DCHECK_GE(file_offset, 0);
     DCHECK_GE(read_size, 0);
 
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     int read_bytes = file_.Read(file_offset, buffer->Data(), read_size);
@@ -177,7 +177,7 @@ class NativeIOFile::FileState
     DCHECK_GE(file_offset, 0);
     DCHECK_GE(write_size, 0);
 
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     int written_bytes = file_.Write(file_offset, buffer->Data(), write_size);
@@ -196,7 +196,7 @@ class NativeIOFile::FileState
   base::File::Error Flush() {
     DCHECK(!IsMainThread());
 
-    WTF::MutexLocker mutex_locker(mutex_);
+    base::AutoLock auto_lock(lock_);
     DCHECK(file_.IsValid()) << __func__ << " called on invalid file";
 
     bool success = file_.Flush();
@@ -205,10 +205,10 @@ class NativeIOFile::FileState
 
  private:
   // Lock coordinating cross-thread access to the state.
-  WTF::Mutex mutex_;
+  base::Lock lock_;
 
   // The file on disk backing this NativeIOFile.
-  base::File file_ GUARDED_BY(mutex_);
+  base::File file_ GUARDED_BY(lock_);
 };
 
 NativeIOFile::NativeIOFile(
