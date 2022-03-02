@@ -28,9 +28,12 @@ namespace browser_switcher {
 namespace {
 
 // Open 'chrome://browser-switch/?url=...' in the current tab.
-void OpenBrowserSwitchPage(content::WebContents* web_contents,
+void OpenBrowserSwitchPage(base::WeakPtr<content::WebContents> web_contents,
                            const GURL& url,
                            ui::PageTransition transition_type) {
+  if (!web_contents)
+    return;
+
   GURL about_url(chrome::kChromeUIBrowserSwitchURL);
   about_url = net::AppendQueryParameter(about_url, "url", url.spec());
   content::OpenURLParams params(about_url, content::Referrer(),
@@ -71,7 +74,7 @@ bool MaybeLaunchAlternativeBrowser(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&OpenBrowserSwitchPage,
-                     base::Unretained(navigation_handle->GetWebContents()), url,
+                     navigation_handle->GetWebContents()->GetWeakPtr(), url,
                      navigation_handle->GetPageTransition()));
   return true;
 }
