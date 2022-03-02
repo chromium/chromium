@@ -80,6 +80,12 @@ LoginFailureReason GetLoginFailureReasonForReport(
 }
 }  // namespace
 
+// static
+const base::Feature
+    LoginLogoutReporter::kEnableKioskAndGuestLoginLogoutReporting{
+        "EnableKioskAndGuestLoginLogoutReporting",
+        base::FEATURE_ENABLED_BY_DEFAULT};
+
 AccountId LoginLogoutReporter::Delegate::GetLastLoginAttemptAccountId() const {
   if (!ash::ExistingUserController::current_controller()) {
     return EmptyAccountId();
@@ -115,10 +121,11 @@ std::unique_ptr<LoginLogoutReporter> LoginLogoutReporter::Create(
 // static
 std::unique_ptr<LoginLogoutReporter> LoginLogoutReporter::CreateForTest(
     std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
-    std::unique_ptr<LoginLogoutReporter::Delegate> delegate) {
-  return base::WrapUnique(
-      new LoginLogoutReporter(std::move(reporter_helper), std::move(delegate),
-                              /*managed_session_service=*/nullptr));
+    std::unique_ptr<LoginLogoutReporter::Delegate> delegate,
+    policy::ManagedSessionService* managed_session_service) {
+  return base::WrapUnique(new LoginLogoutReporter(std::move(reporter_helper),
+                                                  std::move(delegate),
+                                                  managed_session_service));
 }
 
 void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
@@ -127,26 +134,27 @@ void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
     return;
   }
 
-  record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
   const LoginLogoutSessionType session_type = GetSessionType(account_id);
+  if (!base::FeatureList::IsEnabled(kEnableKioskAndGuestLoginLogoutReporting) &&
+      (session_type == LoginLogoutSessionType::GUEST_SESSION ||
+       session_type == LoginLogoutSessionType::KIOSK_SESSION)) {
+    return;
+  }
+  record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
   record.set_session_type(session_type);
   const std::string& user_email = account_id.GetUserEmail();
-  if (session_type == LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION) {
+  if (session_type == LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION ||
+      session_type == LoginLogoutSessionType::GUEST_SESSION) {
     record.set_is_guest_session(true);
   } else if (session_type == LoginLogoutSessionType::REGULAR_USER_SESSION &&
              reporter_helper_->ShouldReportUser(user_email)) {
     record.mutable_affiliated_user()->set_user_email(user_email);
   }
-
   reporter_helper_->ReportEvent(&record, ::reporting::Priority::SECURITY);
 }
 
 void LoginLogoutReporter::OnLogin(Profile* profile) {
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user->IsKioskType()) {
-    return;
-  }
-
   LoginLogoutRecord record;
   record.mutable_login_event();
   MaybeReportEvent(std::move(record), user->GetAccountId());
@@ -154,10 +162,6 @@ void LoginLogoutReporter::OnLogin(Profile* profile) {
 
 void LoginLogoutReporter::OnSessionTerminationStarted(
     const user_manager::User* user) {
-  if (user->IsKioskType()) {
-    return;
-  }
-
   LoginLogoutRecord record;
   record.mutable_logout_event();
   MaybeReportEvent(std::move(record), user->GetAccountId());

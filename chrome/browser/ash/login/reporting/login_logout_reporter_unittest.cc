@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter_test_delegate.h"
 
+#include "ash/components/login/session/session_termination_manager.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -17,483 +19,445 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 
+using testing::_;
+using testing::Eq;
+using testing::StrEq;
+
 namespace ash {
 namespace reporting {
 
-using ::testing::_;
+constexpr char user_email[] = "user@managed.com";
 
-class LoginLogoutReporterTest : public ::testing::Test {
- protected:
-  void SetUp() override {
-    chromeos::PowerManagerClient::InitializeFake();
+class LoginLogoutTestHelper {
+ public:
+  LoginLogoutTestHelper() = default;
+
+  LoginLogoutTestHelper(const LoginLogoutTestHelper&) = delete;
+  LoginLogoutTestHelper& operator=(const LoginLogoutTestHelper&) = delete;
+
+  ~LoginLogoutTestHelper() = default;
+
+  void Init() {
+    PowerManagerClient::InitializeFake();
+    session_termination_manager_ =
+        std::make_unique<SessionTerminationManager>();
     auto user_manager = std::make_unique<FakeChromeUserManager>();
     user_manager_ = user_manager.get();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
+    scoped_feature_list_.InitAndEnableFeature(
+        LoginLogoutReporter::kEnableKioskAndGuestLoginLogoutReporting);
   }
 
-  void TearDown() override { chromeos::PowerManagerClient::Shutdown(); }
+  void Shutdown() { PowerManagerClient::Shutdown(); }
 
-  std::unique_ptr<TestingProfile> CreateRegularProfile(
-      base::StringPiece user_email) {
-    AccountId account_id = AccountId::FromUserEmail(std::string(user_email));
+  void DisableKioskAndGuestLoginLogoutReporting() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndDisableFeature(
+        LoginLogoutReporter::kEnableKioskAndGuestLoginLogoutReporting);
+  }
+
+  std::unique_ptr<TestingProfile> CreateProfile(user_manager::User* user) {
     TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(account_id.GetUserEmail());
+    profile_builder.SetProfileName(user->GetAccountId().GetUserEmail());
     auto profile = profile_builder.Build();
-    user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id, true);
+    ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                            profile.get());
+    user_manager_->LoginUser(user->GetAccountId(), true);
     return profile;
+  }
+
+  std::unique_ptr<TestingProfile> CreateRegularUserProfile() {
+    AccountId account_id = AccountId::FromUserEmail(user_email);
+    auto* const user = user_manager_->AddUser(account_id);
+    return CreateProfile(user);
   }
 
   std::unique_ptr<TestingProfile> CreatePublicAccountProfile() {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-            "guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(account_id.GetUserEmail());
-    auto profile = profile_builder.Build();
-    user_manager_->AddPublicAccountUser(account_id);
-    user_manager_->LoginUser(account_id, true);
-    return profile;
+            "managed_guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+    auto* const user = user_manager_->AddPublicAccountUser(account_id);
+    return CreateProfile(user);
+  }
+
+  std::unique_ptr<TestingProfile> CreateGuestProfile() {
+    auto* const user = user_manager_->AddGuestUser();
+    return CreateProfile(user);
   }
 
   std::unique_ptr<TestingProfile> CreateKioskAppProfile() {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
             "kiosk", policy::DeviceLocalAccount::TYPE_KIOSK_APP));
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(account_id.GetUserEmail());
-    auto profile = profile_builder.Build();
-    user_manager_->AddKioskAppUser(account_id);
-    user_manager_->LoginUser(account_id, true);
-    return profile;
+    auto* const user = user_manager_->AddKioskAppUser(account_id);
+    return CreateProfile(user);
   }
+
+  std::unique_ptr<TestingProfile> CreateArcKioskAppProfile() {
+    AccountId account_id =
+        AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
+            "arc_kiosk", policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP));
+    auto* const user = user_manager_->AddArcKioskAppUser(account_id);
+    return CreateProfile(user);
+  }
+
+  std::unique_ptr<TestingProfile> CreateWebKioskAppProfile() {
+    AccountId account_id =
+        AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
+            "webkiosk", policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP));
+    auto* const user = user_manager_->AddWebKioskAppUser(account_id);
+    return CreateProfile(user);
+  }
+
+  std::unique_ptr<TestingProfile> CreateProfileByType(
+      user_manager::UserType user_type) {
+    switch (user_type) {
+      case user_manager::USER_TYPE_REGULAR:
+        return CreateRegularUserProfile();
+      case user_manager::USER_TYPE_GUEST:
+        return CreateGuestProfile();
+      case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+        return CreatePublicAccountProfile();
+      case user_manager::USER_TYPE_KIOSK_APP:
+        return CreateKioskAppProfile();
+      case user_manager::USER_TYPE_ARC_KIOSK_APP:
+        return CreateArcKioskAppProfile();
+      case user_manager::USER_TYPE_WEB_KIOSK_APP:
+        return CreateWebKioskAppProfile();
+      default:
+        NOTREACHED();
+        return nullptr;
+    }
+  }
+
+  std::unique_ptr<::reporting::UserEventReporterHelperTesting>
+  GetReporterHelper(bool reporting_enabled, bool should_report_user) {
+    auto mock_queue = std::unique_ptr<::reporting::MockReportQueue,
+                                      base::OnTaskRunnerDeleter>(
+        new testing::NiceMock<::reporting::MockReportQueue>(),
+        base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+
+    ON_CALL(*mock_queue, AddRecord(_, ::reporting::Priority::SECURITY, _))
+        .WillByDefault([&](base::StringPiece record_string,
+                           ::reporting::Priority event_priority,
+                           ::reporting::ReportQueue::EnqueueCallback) {
+          ++report_count_;
+          EXPECT_TRUE(record_.ParseFromArray(record_string.data(),
+                                             record_string.size()));
+        });
+
+    auto reporter_helper =
+        std::make_unique<::reporting::UserEventReporterHelperTesting>(
+            reporting_enabled, should_report_user, std::move(mock_queue));
+    return reporter_helper;
+  }
+
+  LoginLogoutRecord GetRecord() { return record_; }
+
+  int GetReportCount() { return report_count_; }
 
  private:
   FakeChromeUserManager* user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<SessionTerminationManager> session_termination_manager_;
+
+  LoginLogoutRecord record_;
+  int report_count_ = 0;
+};
+
+struct LoginLogoutReporterTestCase {
+  user_manager::UserType user_type;
+  LoginLogoutSessionType expected_session_type;
+};
+
+class LoginLogoutReporterTest
+    : public ::testing::TestWithParam<LoginLogoutReporterTestCase> {
+ protected:
+  void SetUp() override { test_helper_.Init(); }
+
+  void TearDown() override { test_helper_.Shutdown(); }
+
+  LoginLogoutTestHelper test_helper_;
 };
 
 TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogin) {
-  static constexpr char user_email[] = "affiliated@managed.org";
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
-
-  LoginLogoutRecord record;
-  ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord(_, _, _))
-      .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
-                               ::reporting::Priority event_priority,
-                               ::reporting::ReportQueue::EnqueueCallback) {
-            EXPECT_TRUE(record.ParseFromArray(record_string.data(),
-                                              record_string.size()));
-            priority = event_priority;
-          });
-
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/true, std::move(mock_queue));
+  policy::ManagedSessionService managed_session_service;
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/true);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>());
-  auto profile = CreateRegularProfile(user_email);
-  reporter->OnLogin(profile.get());
+      std::make_unique<LoginLogoutReporterTestDelegate>(),
+      &managed_session_service);
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
+  auto profile = test_helper_.CreateRegularUserProfile();
+  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
+  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
   ASSERT_TRUE(record.has_affiliated_user());
   ASSERT_TRUE(record.affiliated_user().has_user_email());
-  EXPECT_THAT(record.affiliated_user().user_email(), testing::Eq(user_email));
+  EXPECT_THAT(record.affiliated_user().user_email(), StrEq(user_email));
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
+              Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   ASSERT_TRUE(record.has_login_event());
   EXPECT_FALSE(record.login_event().has_failure());
 }
 
-TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
-  static constexpr char user_email[] = "unaffiliated@unmanaged.org";
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
+  const auto test_case = GetParam();
+  const bool is_guest_session =
+      test_case.user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
+      test_case.user_type == user_manager::USER_TYPE_GUEST;
 
-  LoginLogoutRecord record;
-  ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord(_, _, _))
-      .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
-                               ::reporting::Priority event_priority,
-                               ::reporting::ReportQueue::EnqueueCallback) {
-            EXPECT_TRUE(record.ParseFromArray(record_string.data(),
-                                              record_string.size()));
-            priority = event_priority;
-          });
-
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/false, std::move(mock_queue));
+  policy::ManagedSessionService managed_session_service;
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>());
-  auto profile = CreateRegularProfile(user_email);
-  reporter->OnLogin(profile.get());
+      std::make_unique<LoginLogoutReporterTestDelegate>(),
+      &managed_session_service);
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
+  auto profile = test_helper_.CreateProfileByType(test_case.user_type);
+  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
+  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
   EXPECT_TRUE(record.has_event_timestamp_sec());
-  EXPECT_FALSE(record.is_guest_session());
+  EXPECT_THAT(record.is_guest_session(), Eq(is_guest_session));
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
-  ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.has_session_type());
-  EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
-  EXPECT_FALSE(record.login_event().has_failure());
-}
-
-TEST_F(LoginLogoutReporterTest, ReportManagedGuestLogin) {
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
-
-  LoginLogoutRecord record;
-  ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord(_, _, _))
-      .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
-                               ::reporting::Priority event_priority,
-                               ::reporting::ReportQueue::EnqueueCallback) {
-            EXPECT_TRUE(record.ParseFromArray(record_string.data(),
-                                              record_string.size()));
-            priority = event_priority;
-          });
-
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/false, std::move(mock_queue));
-
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>());
-  auto profile = CreatePublicAccountProfile();
-  reporter->OnLogin(profile.get());
-
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
-  EXPECT_TRUE(record.has_event_timestamp_sec());
-  EXPECT_TRUE(record.is_guest_session());
-  EXPECT_FALSE(record.has_logout_event());
-  EXPECT_FALSE(record.has_affiliated_user());
+  EXPECT_THAT(record.session_type(), Eq(test_case.expected_session_type));
   ASSERT_TRUE(record.has_login_event());
-  ASSERT_TRUE(record.has_session_type());
-  EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
   EXPECT_FALSE(record.login_event().has_failure());
-}
-
-TEST_F(LoginLogoutReporterTest, KioskLogin) {
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
-
-  EXPECT_CALL(*mock_queue, AddRecord).Times(0);
-
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/false, std::move(mock_queue));
-
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>());
-  auto profile = CreateKioskAppProfile();
-  reporter->OnLogin(profile.get());
 }
 
 TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogout) {
-  static constexpr char user_email[] = "affiliated@managed.org";
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
-
-  LoginLogoutRecord record;
-  ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord(_, _, _))
-      .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
-                               ::reporting::Priority event_priority,
-                               ::reporting::ReportQueue::EnqueueCallback) {
-            EXPECT_TRUE(record.ParseFromArray(record_string.data(),
-                                              record_string.size()));
-            priority = event_priority;
-          });
-
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/true, std::move(mock_queue));
+  policy::ManagedSessionService managed_session_service;
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/true);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>());
-  auto profile = CreateRegularProfile(user_email);
-  reporter->OnSessionTerminationStarted(
-      ProfileHelper::Get()->GetUserByProfile(profile.get()));
+      std::make_unique<LoginLogoutReporterTestDelegate>(),
+      &managed_session_service);
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
+  auto profile = test_helper_.CreateRegularUserProfile();
+  managed_session_service.OnSessionWillBeTerminated();
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_login_event());
   EXPECT_TRUE(record.has_logout_event());
   ASSERT_TRUE(record.has_affiliated_user());
   ASSERT_TRUE(record.affiliated_user().has_user_email());
-  EXPECT_THAT(record.affiliated_user().user_email(), testing::Eq(user_email));
+  EXPECT_THAT(record.affiliated_user().user_email(), StrEq(user_email));
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
+              Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
 }
 
-TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
-  static constexpr char user_email[] = "unaffiliated@unmanaged.org";
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
+  const auto test_case = GetParam();
+  const bool is_guest_session =
+      test_case.user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
+      test_case.user_type == user_manager::USER_TYPE_GUEST;
 
-  LoginLogoutRecord record;
-  ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord(_, _, _))
-      .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
-                               ::reporting::Priority event_priority,
-                               ::reporting::ReportQueue::EnqueueCallback) {
-            EXPECT_TRUE(record.ParseFromArray(record_string.data(),
-                                              record_string.size()));
-            priority = event_priority;
-          });
-
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/false, std::move(mock_queue));
+  policy::ManagedSessionService managed_session_service;
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>());
-  auto profile = CreateRegularProfile(user_email);
-  reporter->OnSessionTerminationStarted(
-      ProfileHelper::Get()->GetUserByProfile(profile.get()));
+      std::make_unique<LoginLogoutReporterTestDelegate>(),
+      &managed_session_service);
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
+  auto profile = test_helper_.CreateProfileByType(test_case.user_type);
+  managed_session_service.OnSessionWillBeTerminated();
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
   EXPECT_TRUE(record.has_event_timestamp_sec());
-  EXPECT_FALSE(record.is_guest_session());
+  EXPECT_THAT(record.is_guest_session(), Eq(is_guest_session));
   EXPECT_FALSE(record.has_login_event());
   EXPECT_TRUE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_session_type());
-  EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
+  EXPECT_THAT(record.session_type(), Eq(test_case.expected_session_type));
 }
 
-TEST_F(LoginLogoutReporterTest, ReportManagedGuestLogout) {
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
-
-  LoginLogoutRecord record;
-  ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord(_, _, _))
-      .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
-                               ::reporting::Priority event_priority,
-                               ::reporting::ReportQueue::EnqueueCallback) {
-            EXPECT_TRUE(record.ParseFromArray(record_string.data(),
-                                              record_string.size()));
-            priority = event_priority;
-          });
-
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/true, std::move(mock_queue));
+TEST_P(LoginLogoutReporterTest, KioskAndGuestLoginLogoutReportingDisabled) {
+  test_helper_.DisableKioskAndGuestLoginLogoutReporting();
+  const auto test_case = GetParam();
+  policy::ManagedSessionService managed_session_service;
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>());
-  auto profile = CreatePublicAccountProfile();
-  reporter->OnSessionTerminationStarted(
-      ProfileHelper::Get()->GetUserByProfile(profile.get()));
+      std::make_unique<LoginLogoutReporterTestDelegate>(),
+      &managed_session_service);
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
-  EXPECT_TRUE(record.has_event_timestamp_sec());
-  EXPECT_TRUE(record.is_guest_session());
-  EXPECT_FALSE(record.has_login_event());
-  EXPECT_TRUE(record.has_logout_event());
-  EXPECT_FALSE(record.has_affiliated_user());
-  ASSERT_TRUE(record.has_session_type());
-  EXPECT_THAT(record.session_type(),
-              testing::Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
+  auto profile = test_helper_.CreateProfileByType(test_case.user_type);
+  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
+  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  managed_session_service.OnSessionWillBeTerminated();
+
+  int expected_report_count =
+      test_case.user_type == user_manager::USER_TYPE_GUEST ||
+              test_case.user_type == user_manager::USER_TYPE_KIOSK_APP ||
+              test_case.user_type == user_manager::USER_TYPE_ARC_KIOSK_APP ||
+              test_case.user_type == user_manager::USER_TYPE_WEB_KIOSK_APP
+          ? 0
+          : 2;
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(expected_report_count));
 }
 
-TEST_F(LoginLogoutReporterTest, KioskLogout) {
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
-
-  EXPECT_CALL(*mock_queue, AddRecord).Times(0);
-
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/false, std::move(mock_queue));
+TEST_P(LoginLogoutReporterTest, ReportLoginLogoutDisabled) {
+  const auto test_case = GetParam();
+  policy::ManagedSessionService managed_session_service;
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/false,
+      /*should_report_user=*/false);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>());
-  auto profile = CreateKioskAppProfile();
-  reporter->OnSessionTerminationStarted(
-      ProfileHelper::Get()->GetUserByProfile(profile.get()));
+      std::make_unique<LoginLogoutReporterTestDelegate>(),
+      &managed_session_service);
+
+  auto profile = test_helper_.CreateProfileByType(test_case.user_type);
+  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
+  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  managed_session_service.OnSessionWillBeTerminated();
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
 }
 
-TEST_F(LoginLogoutReporterTest, ReportAffiliatedLoginFailure) {
-  static constexpr char user_email[] = "affiliated@managed.org";
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         LoginLogoutReporterTest,
+                         ::testing::ValuesIn<LoginLogoutReporterTestCase>(
+                             {{user_manager::USER_TYPE_REGULAR,
+                               LoginLogoutSessionType::REGULAR_USER_SESSION},
+                              {user_manager::USER_TYPE_GUEST,
+                               LoginLogoutSessionType::GUEST_SESSION},
+                              {user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                               LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION},
+                              {user_manager::USER_TYPE_KIOSK_APP,
+                               LoginLogoutSessionType::KIOSK_SESSION},
+                              {user_manager::USER_TYPE_ARC_KIOSK_APP,
+                               LoginLogoutSessionType::KIOSK_SESSION},
+                              {user_manager::USER_TYPE_WEB_KIOSK_APP,
+                               LoginLogoutSessionType::KIOSK_SESSION}}));
 
-  LoginLogoutRecord record;
-  ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord(_, _, _))
-      .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
-                               ::reporting::Priority event_priority,
-                               ::reporting::ReportQueue::EnqueueCallback) {
-            EXPECT_TRUE(record.ParseFromArray(record_string.data(),
-                                              record_string.size()));
-            priority = event_priority;
-          });
+class LoginFailureReporterTest : public ::testing::TestWithParam<AuthFailure> {
+ protected:
+  void SetUp() override { test_helper_.Init(); }
 
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/true, std::move(mock_queue));
+  void TearDown() override { test_helper_.Shutdown(); }
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>(
-          AccountId::FromUserEmail(std::string(user_email))));
-  reporter->OnLoginFailure(AuthFailure(AuthFailure::OWNER_REQUIRED));
+  LoginLogoutTestHelper test_helper_;
+};
 
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
+TEST_F(LoginFailureReporterTest, ReportAffiliatedLoginFailure_OwnerRequired) {
+  policy::ManagedSessionService managed_session_service;
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
+      AccountId::FromUserEmail(user_email));
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/true);
+
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
+
+  managed_session_service.OnAuthFailure(
+      AuthFailure(AuthFailure::OWNER_REQUIRED));
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
   ASSERT_TRUE(record.has_affiliated_user());
   ASSERT_TRUE(record.affiliated_user().has_user_email());
-  EXPECT_THAT(record.affiliated_user().user_email(), testing::Eq(user_email));
+  EXPECT_THAT(record.affiliated_user().user_email(), StrEq(user_email));
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
               testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
-              testing::Eq(LoginFailureReason::OWNER_REQUIRED));
+              Eq(LoginFailureReason::OWNER_REQUIRED));
 }
 
-TEST_F(LoginLogoutReporterTest, ReportAffiliatedLoginAuthenticationFailure) {
-  static constexpr char user_email[] = "affiliated@managed.org";
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+TEST_F(LoginFailureReporterTest,
+       ReportAffiliatedLoginFailure_UnrecoverableCryptohome) {
+  policy::ManagedSessionService managed_session_service;
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
+      AccountId::FromUserEmail(user_email));
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/true);
 
-  LoginLogoutRecord record;
-  ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord(_, _, _))
-      .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
-                               ::reporting::Priority event_priority,
-                               ::reporting::ReportQueue::EnqueueCallback) {
-            EXPECT_TRUE(record.ParseFromArray(record_string.data(),
-                                              record_string.size()));
-            priority = event_priority;
-          });
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/true, std::move(mock_queue));
+  managed_session_service.OnAuthFailure(
+      AuthFailure(AuthFailure::UNRECOVERABLE_CRYPTOHOME));
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>(
-          AccountId::FromUserEmail(std::string(user_email))));
-  reporter->OnLoginFailure(
-      AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
-
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
   ASSERT_TRUE(record.has_affiliated_user());
   ASSERT_TRUE(record.affiliated_user().has_user_email());
-  EXPECT_THAT(record.affiliated_user().user_email(), testing::Eq(user_email));
-  ASSERT_TRUE(record.has_login_event());
+  EXPECT_THAT(record.affiliated_user().user_email(), StrEq(user_email));
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
               testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
+  ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
-              testing::Eq(LoginFailureReason::AUTHENTICATION_ERROR));
+              Eq(LoginFailureReason::UNRECOVERABLE_CRYPTOHOME));
 }
 
-TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLoginFailure) {
-  static constexpr char user_email[] = "unaffiliated@unmanaged.org";
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+TEST_F(LoginFailureReporterTest, ReportUnaffiliatedLoginFailure_TpmError) {
+  policy::ManagedSessionService managed_session_service;
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
+      AccountId::FromUserEmail(user_email));
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
-  LoginLogoutRecord record;
-  ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord(_, _, _))
-      .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
-                               ::reporting::Priority event_priority,
-                               ::reporting::ReportQueue::EnqueueCallback) {
-            EXPECT_TRUE(record.ParseFromArray(record_string.data(),
-                                              record_string.size()));
-            priority = event_priority;
-          });
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/false, std::move(mock_queue));
+  managed_session_service.OnAuthFailure(AuthFailure(AuthFailure::TPM_ERROR));
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>(
-          AccountId::FromUserEmail(std::string(user_email))));
-  reporter->OnLoginFailure(AuthFailure(AuthFailure::TPM_ERROR));
-
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
@@ -504,41 +468,29 @@ TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLoginFailure) {
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
-              testing::Eq(LoginFailureReason::TPM_ERROR));
+              Eq(LoginFailureReason::TPM_ERROR));
 }
 
-TEST_F(LoginLogoutReporterTest, ReportManagedGuestLoginFailure) {
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+TEST_F(LoginFailureReporterTest,
+       ReportPublicAccountLoginFailure_TpmUpdateRequired) {
+  policy::ManagedSessionService managed_session_service;
+  AccountId account_id =
+      AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
+          "managed_guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(account_id);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
-  LoginLogoutRecord record;
-  ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord(_, _, _))
-      .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
-                               ::reporting::Priority event_priority,
-                               ::reporting::ReportQueue::EnqueueCallback) {
-            EXPECT_TRUE(record.ParseFromArray(record_string.data(),
-                                              record_string.size()));
-            priority = event_priority;
-          });
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/true,
-          /*should_report_user=*/false, std::move(mock_queue));
+  managed_session_service.OnAuthFailure(
+      AuthFailure(AuthFailure::TPM_UPDATE_REQUIRED));
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>(
-          AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-              "guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION))));
-  reporter->OnLoginFailure(
-      AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
-
-  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::SECURITY));
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
   EXPECT_TRUE(record.has_event_timestamp_sec());
   EXPECT_TRUE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
@@ -549,29 +501,209 @@ TEST_F(LoginLogoutReporterTest, ReportManagedGuestLoginFailure) {
   ASSERT_TRUE(record.has_login_event());
   ASSERT_TRUE(record.login_event().has_failure());
   ASSERT_THAT(record.login_event().failure().reason(),
-              testing::Eq(LoginFailureReason::INTERNAL_LOGIN_FAILURE_REASON));
+              Eq(LoginFailureReason::TPM_UPDATE_REQUIRED));
 }
 
-TEST_F(LoginLogoutReporterTest, ShouldNotReportEvent) {
-  static constexpr char user_email[] = "affiliated@managed.org";
-  auto mock_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new testing::StrictMock<::reporting::MockReportQueue>(),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+TEST_F(LoginFailureReporterTest,
+       ReportPublicAccountLoginFailure_CouldNotMountTmpfs) {
+  policy::ManagedSessionService managed_session_service;
+  AccountId account_id =
+      AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
+          "managed_guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(account_id);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
-  EXPECT_CALL(*mock_queue, AddRecord).Times(0);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
-  auto reporter_helper =
-      std::make_unique<::reporting::UserEventReporterHelperTesting>(
-          /*reporting_enabled=*/false,
-          /*should_report_user=*/true, std::move(mock_queue));
+  managed_session_service.OnAuthFailure(
+      AuthFailure(AuthFailure::COULD_NOT_MOUNT_TMPFS));
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper),
-      std::make_unique<LoginLogoutReporterTestDelegate>());
-  auto profile = CreateRegularProfile(user_email);
-  reporter->OnLogin(profile.get());
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
+  EXPECT_TRUE(record.has_event_timestamp_sec());
+  EXPECT_TRUE(record.is_guest_session());
+  EXPECT_FALSE(record.has_logout_event());
+  EXPECT_FALSE(record.has_affiliated_user());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
+  ASSERT_TRUE(record.has_login_event());
+  ASSERT_TRUE(record.login_event().has_failure());
+  ASSERT_THAT(record.login_event().failure().reason(),
+              Eq(LoginFailureReason::COULD_NOT_MOUNT_TMPFS));
 }
+
+TEST_F(LoginFailureReporterTest, ReportGuestLoginFailure_MissingCryptohome) {
+  policy::ManagedSessionService managed_session_service;
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
+      user_manager::GuestAccountId());
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
+
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
+
+  managed_session_service.OnAuthFailure(
+      AuthFailure(AuthFailure::MISSING_CRYPTOHOME));
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
+  EXPECT_TRUE(record.has_event_timestamp_sec());
+  EXPECT_TRUE(record.is_guest_session());
+  EXPECT_FALSE(record.has_logout_event());
+  EXPECT_FALSE(record.has_affiliated_user());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::GUEST_SESSION));
+  ASSERT_TRUE(record.has_login_event());
+  ASSERT_TRUE(record.login_event().has_failure());
+  ASSERT_THAT(record.login_event().failure().reason(),
+              Eq(LoginFailureReason::MISSING_CRYPTOHOME));
+}
+
+TEST_F(LoginFailureReporterTest, GuestLoginLogoutReportingDisabled) {
+  test_helper_.DisableKioskAndGuestLoginLogoutReporting();
+
+  policy::ManagedSessionService managed_session_service;
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
+      user_manager::GuestAccountId());
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
+
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
+
+  managed_session_service.OnAuthFailure(
+      AuthFailure(AuthFailure::MISSING_CRYPTOHOME));
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
+}
+
+TEST_F(LoginFailureReporterTest, ReportLoginLogoutDisabled) {
+  policy::ManagedSessionService managed_session_service;
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
+      AccountId::FromUserEmail(user_email));
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/false,
+      /*should_report_user=*/true);
+
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
+
+  managed_session_service.OnAuthFailure(
+      AuthFailure(AuthFailure::MISSING_CRYPTOHOME));
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
+}
+
+TEST_P(LoginFailureReporterTest,
+       ReportUnaffiliatedLoginFailure_AuthenticationError) {
+  policy::ManagedSessionService managed_session_service;
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
+      AccountId::FromUserEmail(user_email));
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
+
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
+
+  managed_session_service.OnAuthFailure(GetParam());
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
+  EXPECT_TRUE(record.has_event_timestamp_sec());
+  EXPECT_FALSE(record.is_guest_session());
+  EXPECT_FALSE(record.has_logout_event());
+  EXPECT_FALSE(record.has_affiliated_user());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
+  ASSERT_TRUE(record.has_login_event());
+  ASSERT_TRUE(record.login_event().has_failure());
+  ASSERT_THAT(record.login_event().failure().reason(),
+              Eq(LoginFailureReason::AUTHENTICATION_ERROR));
+}
+
+TEST_P(LoginFailureReporterTest,
+       ReportPublicAccountLoginFailure_InternalLoginFailure) {
+  policy::ManagedSessionService managed_session_service;
+  AccountId account_id =
+      AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
+          "managed_guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(account_id);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
+
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
+
+  managed_session_service.OnAuthFailure(GetParam());
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
+  EXPECT_TRUE(record.has_event_timestamp_sec());
+  EXPECT_TRUE(record.is_guest_session());
+  EXPECT_FALSE(record.has_logout_event());
+  EXPECT_FALSE(record.has_affiliated_user());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION));
+  ASSERT_TRUE(record.has_login_event());
+  ASSERT_TRUE(record.login_event().has_failure());
+  ASSERT_THAT(record.login_event().failure().reason(),
+              Eq(LoginFailureReason::INTERNAL_LOGIN_FAILURE_REASON));
+}
+
+TEST_P(LoginFailureReporterTest, ReportGuestLoginFailure_InternalLoginFailure) {
+  policy::ManagedSessionService managed_session_service;
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
+      user_manager::GuestAccountId());
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
+
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
+
+  managed_session_service.OnAuthFailure(GetParam());
+  const LoginLogoutRecord& record = test_helper_.GetRecord();
+
+  ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
+  EXPECT_TRUE(record.has_event_timestamp_sec());
+  EXPECT_TRUE(record.is_guest_session());
+  EXPECT_FALSE(record.has_logout_event());
+  EXPECT_FALSE(record.has_affiliated_user());
+  ASSERT_TRUE(record.has_session_type());
+  EXPECT_THAT(record.session_type(),
+              testing::Eq(LoginLogoutSessionType::GUEST_SESSION));
+  ASSERT_TRUE(record.has_login_event());
+  ASSERT_TRUE(record.login_event().has_failure());
+  ASSERT_THAT(record.login_event().failure().reason(),
+              Eq(LoginFailureReason::INTERNAL_LOGIN_FAILURE_REASON));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LoginFailureReporterTest,
+    ::testing::Values<AuthFailure>(
+        AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME),
+        AuthFailure(AuthFailure::DATA_REMOVAL_FAILED),
+        AuthFailure(AuthFailure::USERNAME_HASH_FAILED),
+        AuthFailure(AuthFailure::FAILED_TO_INITIALIZE_TOKEN)));
 
 }  // namespace reporting
 }  // namespace ash
