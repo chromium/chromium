@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
@@ -52,6 +54,8 @@ class FrameViewPropertyTreePrinter
   }
 
   void CollectNodes(const LayoutObject& object) {
+    Traits::AddSharedElementTransitionProperties(object, *this);
+
     for (const auto* fragment = &object.FirstFragment(); fragment;
          fragment = fragment->NextFragment()) {
       if (const auto* properties = fragment->PaintProperties())
@@ -86,6 +90,9 @@ class PropertyTreePrinterTraits<TransformPaintPropertyNodeOrAlias> {
     printer.AddNode(properties.ScrollTranslation());
     printer.AddNode(properties.TransformIsolationNode());
   }
+  static void AddSharedElementTransitionProperties(
+      const LayoutObject& object,
+      PropertyTreePrinter<TransformPaintPropertyNodeOrAlias>& printer) {}
   static void AddOtherProperties(
       const FrameView& frame_view,
       PropertyTreePrinter<TransformPaintPropertyNodeOrAlias>& printer) {}
@@ -110,6 +117,9 @@ class PropertyTreePrinterTraits<ClipPaintPropertyNodeOrAlias> {
     printer.AddNode(properties.OverflowClip());
     printer.AddNode(properties.ClipIsolationNode());
   }
+  static void AddSharedElementTransitionProperties(
+      const LayoutObject& object,
+      PropertyTreePrinter<ClipPaintPropertyNodeOrAlias>& printer) {}
   static void AddOtherProperties(
       const LocalFrameView& frame_view,
       PropertyTreePrinter<ClipPaintPropertyNodeOrAlias>& printer) {}
@@ -136,6 +146,19 @@ class PropertyTreePrinterTraits<EffectPaintPropertyNodeOrAlias> {
     printer.AddNode(properties.EffectIsolationNode());
   }
 
+  static void AddSharedElementTransitionProperties(
+      const LayoutObject& object,
+      PropertyTreePrinter<EffectPaintPropertyNodeOrAlias>& printer) {
+    auto* supplement =
+        DocumentTransitionSupplement::FromIfExists(object.GetDocument());
+    if (!supplement ||
+        !supplement->GetTransition()->IsTransitionParticipant(object)) {
+      return;
+    }
+
+    printer.AddNode(supplement->GetTransition()->GetEffect(object));
+  }
+
   static void AddOtherProperties(
       const LocalFrameView& frame_view,
       PropertyTreePrinter<EffectPaintPropertyNodeOrAlias>& printer) {
@@ -158,6 +181,9 @@ class PropertyTreePrinterTraits<ScrollPaintPropertyNode> {
     printer.AddNode(properties.Scroll());
   }
 
+  static void AddSharedElementTransitionProperties(
+      const LayoutObject& object,
+      PropertyTreePrinter<ScrollPaintPropertyNode>& printer) {}
   static void AddOtherProperties(
       const LocalFrameView& frame_view,
       PropertyTreePrinter<ScrollPaintPropertyNode>& printer) {}
