@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
@@ -26,26 +27,6 @@
 namespace content {
 
 namespace {
-
-bool IsFilterDataValid(const blink::mojom::AttributionFilterData& filter_data) {
-  if (filter_data.filter_values.size() > blink::kMaxAttributionFiltersPerSource)
-    return false;
-
-  for (const auto& [filter, values] : filter_data.filter_values) {
-    if (filter.size() > blink::kMaxBytesPerAttributionFilterString)
-      return false;
-
-    if (values.size() > blink::kMaxValuesPerAttributionFilter)
-      return false;
-
-    for (const auto& value : values) {
-      if (value.size() > blink::kMaxBytesPerAttributionFilterString)
-        return false;
-    }
-  }
-
-  return true;
-}
 
 proto::AttributionAggregatableSources ConvertToProto(
     const blink::mojom::AttributionAggregatableSources& aggregatable_sources) {
@@ -123,7 +104,10 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     return;
   }
 
-  if (!IsFilterDataValid(*data->filter_data))
+  absl::optional<AttributionFilterData> filter_data =
+      AttributionFilterData::FromFilterValues(
+          std::move(data->filter_data->filter_values));
+  if (!filter_data.has_value())
     return;
 
   absl::optional<AttributionAggregatableSources> aggregatable_sources =
@@ -137,7 +121,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
       reporting_origin, source_time,
       CommonSourceInfo::GetExpiryTime(data->expiry, source_time,
                                       context.source_type),
-      context.source_type, data->priority,
+      context.source_type, data->priority, std::move(*filter_data),
       data->debug_key ? absl::make_optional(data->debug_key->value)
                       : absl::nullopt,
       std::move(*aggregatable_sources)));

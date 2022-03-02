@@ -18,3 +18,12 @@ message AttributionAggregatableKey {
 message AttributionAggregatableSources {
   map<string, AttributionAggregatableKey> sources = 1;
 }
+
+message AttributionFilterValues {
+  repeated string values = 1;
+}
+
+// Proto equivalent of `blink::mojom::AttributionData`.
+message AttributionFilterData {
+  map<string, AttributionFilterValues> filter_values = 1;
+}

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -130,13 +131,14 @@ class AttributionSimulatorInputParser {
     if (has_error_)
       return;
 
+    // TODO(apaseltiner): Parse filter data from `cfg`.
     events_.emplace_back(
         StorableSource(CommonSourceInfo(
             source_event_id, std::move(source_origin),
             std::move(destination_origin), std::move(reporting_origin),
             source_time,
             CommonSourceInfo::GetExpiryTime(expiry, source_time, *source_type),
-            *source_type, priority, debug_key,
+            *source_type, priority, AttributionFilterData(), debug_key,
             AttributionAggregatableSources())),
         std::move(source));
   }

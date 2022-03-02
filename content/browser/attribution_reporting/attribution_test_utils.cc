@@ -425,6 +425,11 @@ SourceBuilder& SourceBuilder::SetPriority(int64_t priority) {
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetFilterData(AttributionFilterData filter_data) {
+  filter_data_ = std::move(filter_data);
+  return *this;
+}
+
 SourceBuilder& SourceBuilder::SetDebugKey(absl::optional<uint64_t> debug_key) {
   debug_key_ = debug_key;
   return *this;
@@ -457,7 +462,7 @@ CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
       source_event_id_, impression_origin_, conversion_origin_,
       reporting_origin_, impression_time_,
       /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
-      debug_key_, aggregatable_sources_);
+      filter_data_, debug_key_, aggregatable_sources_);
 }
 
 StorableSource SourceBuilder::Build() const {
@@ -654,13 +659,19 @@ bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
   return tie(a) == tie(b);
 }
 
+bool operator==(const AttributionFilterData& a,
+                const AttributionFilterData& b) {
+  return a.filter_values() == b.filter_values();
+}
+
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
   const auto tie = [](const CommonSourceInfo& source) {
-    return std::make_tuple(
-        source.source_event_id(), source.impression_origin(),
-        source.conversion_origin(), source.reporting_origin(),
-        source.impression_time(), source.expiry_time(), source.source_type(),
-        source.priority(), source.debug_key(), source.aggregatable_sources());
+    return std::make_tuple(source.source_event_id(), source.impression_origin(),
+                           source.conversion_origin(),
+                           source.reporting_origin(), source.impression_time(),
+                           source.expiry_time(), source.source_type(),
+                           source.priority(), source.filter_data(),
+                           source.debug_key(), source.aggregatable_sources());
   };
   return tie(a) == tie(b);
 }
@@ -890,6 +901,27 @@ std::ostream& operator<<(std::ostream& out,
              << "}";
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionFilterData& filter_data) {
+  out << "{";
+
+  const char* outer_separator = "";
+  for (const auto& [filter, values] : filter_data.filter_values()) {
+    out << outer_separator << filter << "=[";
+
+    const char* inner_separator = "";
+    for (const auto& value : values) {
+      out << inner_separator << value;
+      inner_separator = ", ";
+    }
+
+    out << "]";
+    outer_separator = ", ";
+  }
+
+  return out << "}";
+}
+
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
   return out << "{source_event_id=" << source.source_event_id()
              << ",impression_origin=" << source.impression_origin()
@@ -898,7 +930,8 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
              << ",impression_time=" << source.impression_time()
              << ",expiry_time=" << source.expiry_time()
              << ",source_type=" << source.source_type()
-             << ",priority=" << source.priority() << ",debug_key="
+             << ",priority=" << source.priority()
+             << ",filter_data=" << source.filter_data() << ",debug_key="
              << (source.debug_key() ? base::NumberToString(*source.debug_key())
                                     : "null")
              << ",aggregatable_sources=" << source.aggregatable_sources()

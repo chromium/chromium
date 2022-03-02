@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -51,18 +52,18 @@
 namespace content {
 
 // Version number of the database.
-const int AttributionStorageSql::kCurrentVersionNumber = 27;
+const int AttributionStorageSql::kCurrentVersionNumber = 28;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 27;
+const int AttributionStorageSql::kCompatibleVersionNumber = 28;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
 //
 // Note that all versions >=15 were introduced during the transitional state of
 // the Attribution Reporting API and can be removed when done.
-const int AttributionStorageSql::kDeprecatedVersionNumber = 26;
+const int AttributionStorageSql::kDeprecatedVersionNumber = 27;
 
 namespace {
 
@@ -182,7 +183,7 @@ struct StoredSourceData {
 // expected ordering of columns used for the input to this function.
 absl::optional<StoredSourceData> ReadSourceFromStatement(
     sql::Statement& statement) {
-  DCHECK_EQ(statement.ColumnCount(), 14);
+  DCHECK_EQ(statement.ColumnCount(), 15);
 
   StoredSource::Id source_id(statement.ColumnInt64(0));
   uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(1));
@@ -201,10 +202,12 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   int64_t aggregatable_budget_consumed = statement.ColumnInt64(12);
   absl::optional<AttributionAggregatableSources> aggregatable_sources =
       ParseAggregatableSources(statement.ColumnString(13));
+  absl::optional<AttributionFilterData> filter_data =
+      AttributionFilterData::Deserialize(statement.ColumnString(14));
 
   if (!source_type.has_value() || !attribution_logic.has_value() ||
       num_conversions < 0 || aggregatable_budget_consumed < 0 ||
-      !aggregatable_sources.has_value()) {
+      !aggregatable_sources.has_value() || !filter_data.has_value()) {
     return absl::nullopt;
   }
 
@@ -213,7 +216,8 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
           CommonSourceInfo(source_event_id, std::move(impression_origin),
                            std::move(conversion_origin),
                            std::move(reporting_origin), impression_time,
-                           expiry_time, *source_type, priority, debug_key,
+                           expiry_time, *source_type, priority,
+                           std::move(*filter_data), debug_key,
                            std::move(*aggregatable_sources)),
           *attribution_logic, source_id),
       .num_conversions = num_conversions,
@@ -227,7 +231,8 @@ absl::optional<StoredSourceData> ReadSourceToAttribute(
       "SELECT impression_id,impression_data,impression_origin,"
       "conversion_origin,reporting_origin,impression_time,expiry_time,"
       "source_type,attributed_truthfully,priority,debug_key,"
-      "num_conversions,aggregatable_budget_consumed,aggregatable_sources "
+      "num_conversions,aggregatable_budget_consumed,aggregatable_sources,"
+      "filter_data "
       "FROM impressions "
       "WHERE impression_id = ?";
   sql::Statement statement(
@@ -293,7 +298,8 @@ AttributionStorageSql::DeactivateSources(
         "SELECT impression_id,impression_data,impression_origin,"
         "conversion_origin,reporting_origin,impression_time,expiry_time,"
         "source_type,attributed_truthfully,priority,debug_key,"
-        "num_conversions,aggregatable_budget_consumed,aggregatable_sources "
+        "num_conversions,aggregatable_budget_consumed,aggregatable_sources,"
+        "filter_data "
         "FROM impressions "
         DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
         "WHERE conversion_destination = ? AND reporting_origin = ? AND "
@@ -439,8 +445,8 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       "reporting_origin,impression_time,expiry_time,source_type,"
       "attributed_truthfully,priority,impression_site,"
       "num_conversions,active,debug_key,aggregatable_budget_consumed,"
-      "aggregatable_sources)"
-      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?)";
+      "aggregatable_sources,filter_data)"
+      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(common_info.source_event_id()));
@@ -461,6 +467,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
 
   statement.BindBlob(
       14, common_info.aggregatable_sources().proto().SerializeAsString());
+  statement.BindBlob(15, common_info.filter_data().Serialize());
 
   if (!statement.Run())
     return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -910,7 +917,7 @@ bool AttributionStorageSql::StoreReport(
 // ordering of columns used for the input to this function.
 absl::optional<AttributionReport>
 AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
-  DCHECK_EQ(statement.ColumnCount(), 20);
+  DCHECK_EQ(statement.ColumnCount(), 21);
 
   uint64_t trigger_data = DeserializeUint64(statement.ColumnInt64(0));
   base::Time trigger_time = statement.ColumnTime(1);
@@ -937,6 +944,8 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
       ColumnUint64OrNull(statement, 18);
   absl::optional<AttributionAggregatableSources> aggregatable_sources =
       ParseAggregatableSources(statement.ColumnString(19));
+  absl::optional<AttributionFilterData> source_filter_data =
+      AttributionFilterData::Deserialize(statement.ColumnString(20));
 
   // Ensure origins are valid before continuing. This could happen if there is
   // database corruption.
@@ -947,7 +956,8 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   if (impression_origin.opaque() || conversion_origin.opaque() ||
       reporting_origin.opaque() || !source_type.has_value() ||
       !attribution_logic.has_value() || failed_send_attempts < 0 ||
-      !external_report_id.is_valid() || !aggregatable_sources.has_value()) {
+      !external_report_id.is_valid() || !aggregatable_sources.has_value() ||
+      !source_filter_data.has_value()) {
     return absl::nullopt;
   }
 
@@ -958,7 +968,8 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
                        std::move(conversion_origin),
                        std::move(reporting_origin), impression_time,
                        expiry_time, *source_type, attribution_source_priority,
-                       source_debug_key, std::move(*aggregatable_sources)),
+                       std::move(*source_filter_data), source_debug_key,
+                       std::move(*aggregatable_sources)),
       *attribution_logic, source_id);
 
   AttributionReport report(
@@ -1020,7 +1031,7 @@ AttributionStorageSql::GetEventLevelReportsInternal(base::Time max_report_time,
       "I.impression_origin,I.conversion_origin,I.reporting_origin,"
       "I.impression_data,I.impression_time,I.expiry_time,I.impression_id,"
       "I.source_type,I.priority,I.attributed_truthfully,I.debug_key,"
-      "C.debug_key,I.aggregatable_sources "
+      "C.debug_key,I.aggregatable_sources,I.filter_data "
       "FROM conversions C JOIN impressions I ON "
       "C.impression_id = I.impression_id WHERE C.report_time <= ? "
       "LIMIT ?";
@@ -1103,7 +1114,7 @@ absl::optional<AttributionReport> AttributionStorageSql::GetReport(
       "I.impression_origin,I.conversion_origin,I.reporting_origin,"
       "I.impression_data,I.impression_time,I.expiry_time,I.impression_id,"
       "I.source_type,I.priority,I.attributed_truthfully,I.debug_key,"
-      "C.debug_key,I.aggregatable_sources "
+      "C.debug_key,I.aggregatable_sources,I.filter_data "
       "FROM conversions C JOIN impressions I ON "
       "C.impression_id = I.impression_id WHERE C.conversion_id = ?";
   sql::Statement statement(
@@ -1563,7 +1574,8 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
       "SELECT impression_id,impression_data,impression_origin,"
       "conversion_origin,reporting_origin,impression_time,expiry_time,"
       "source_type,attributed_truthfully,priority,debug_key,"
-      "num_conversions,aggregatable_budget_consumed,aggregatable_sources "
+      "num_conversions,aggregatable_budget_consumed,aggregatable_sources,"
+      "filter_data "
       "FROM impressions "
       "WHERE active = 1 and expiry_time > ? "
       "LIMIT ?";
@@ -1749,6 +1761,8 @@ bool AttributionStorageSql::CreateSchema() {
   // |StoredSource::AttributionLogic| enum.
   // |impression_site| is used to optimize the lookup of sources;
   // |CommonSourceInfo::ImpressionSite| is always derived from the origin.
+  // |filter_data| is a serialized `AttributionFilterData` used for source
+  // matching.
   //
   // |impression_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
@@ -1770,7 +1784,8 @@ bool AttributionStorageSql::CreateSchema() {
       "impression_site TEXT NOT NULL,"
       "debug_key INTEGER,"
       "aggregatable_budget_consumed INTEGER NOT NULL,"
-      "aggregatable_sources BLOB NOT NULL)";
+      "aggregatable_sources BLOB NOT NULL,"
+      "filter_data BLOB NOT NULL)";
   if (!db_->Execute(kImpressionTableSql))
     return false;
 
@@ -2277,7 +2292,7 @@ AttributionStorageSql::GetAggregatableContributionReportsInternal(
       "A.trigger_time,I.impression_origin,I.conversion_origin,"
       "I.reporting_origin,I.impression_data,I.impression_time,I.expiry_time,"
       "I.impression_id,I.source_type,I.priority,I.attributed_truthfully,"
-      "I.debug_key,A.debug_key,I.aggregatable_sources "
+      "I.debug_key,A.debug_key,I.aggregatable_sources,I.filter_data "
       "FROM aggregatable_contributions AS C "
       DCHECK_SQL_INDEXED_BY("contribution_report_time_idx")
       "JOIN aggregatable_report_metadata AS A "
@@ -2325,6 +2340,8 @@ AttributionStorageSql::GetAggregatableContributionReportsInternal(
         ColumnUint64OrNull(statement, 19);
     absl::optional<AttributionAggregatableSources> aggregatable_sources =
         ParseAggregatableSources(statement.ColumnString(20));
+    absl::optional<AttributionFilterData> filter_data =
+        AttributionFilterData::Deserialize(statement.ColumnString(21));
 
     // Ensure origins are valid before continuing. This could happen if there is
     // database corruption.
@@ -2332,7 +2349,8 @@ AttributionStorageSql::GetAggregatableContributionReportsInternal(
         !external_report_id.is_valid() || impression_origin.opaque() ||
         conversion_origin.opaque() || reporting_origin.opaque() ||
         !source_type.has_value() || !attribution_logic.has_value() ||
-        failed_send_attempts < 0 || !aggregatable_sources.has_value()) {
+        failed_send_attempts < 0 || !aggregatable_sources.has_value() ||
+        !filter_data.has_value()) {
       continue;
     }
 
@@ -2343,7 +2361,8 @@ AttributionStorageSql::GetAggregatableContributionReportsInternal(
                          std::move(conversion_origin),
                          std::move(reporting_origin), impression_time,
                          expiry_time, *source_type, attribution_source_priority,
-                         source_debug_key, std::move(*aggregatable_sources)),
+                         std::move(*filter_data), source_debug_key,
+                         std::move(*aggregatable_sources)),
         *attribution_logic, source_id);
 
     AttributionReport report(

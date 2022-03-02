@@ -23,6 +23,7 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -352,6 +353,8 @@ class SourceBuilder {
   SourceBuilder& SetAttributionLogic(
       StoredSource::AttributionLogic attribution_logic);
 
+  SourceBuilder& SetFilterData(AttributionFilterData filter_data);
+
   SourceBuilder& SetDebugKey(absl::optional<uint64_t> debug_key);
 
   SourceBuilder& SetSourceId(StoredSource::Id source_id);
@@ -379,6 +382,7 @@ class SourceBuilder {
   int64_t priority_ = 0;
   StoredSource::AttributionLogic attribution_logic_ =
       StoredSource::AttributionLogic::kTruthfully;
+  AttributionFilterData filter_data_;
   absl::optional<uint64_t> debug_key_;
   // `base::StrongAlias` does not automatically initialize the value here.
   // Ensure that we don't use uninitialized memory.
@@ -528,6 +532,8 @@ class AggregatableSourcesMojoBuilder {
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
 
+bool operator==(const AttributionFilterData& a, const AttributionFilterData& b);
+
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
 
 bool operator==(const AttributionInfo& a, const AttributionInfo& b);
@@ -573,6 +579,9 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionTrigger& conversion);
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionFilterData& filter_data);
 
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source);
 
@@ -668,6 +677,11 @@ MATCHER_P(ImpressionTimeIs, matcher, "") {
 
 MATCHER_P(SourceDebugKeyIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.common_info().debug_key(),
+                            result_listener);
+}
+
+MATCHER_P(SourceFilterDataIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.common_info().filter_data(),
                             result_listener);
 }
 

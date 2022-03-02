@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -48,6 +49,7 @@ class CONTENT_EXPORT CommonSourceInfo {
                    base::Time expiry_time,
                    SourceType source_type,
                    int64_t priority,
+                   AttributionFilterData filter_data,
                    absl::optional<uint64_t> debug_key,
                    AttributionAggregatableSources aggregatable_sources);
 
@@ -74,6 +76,8 @@ class CONTENT_EXPORT CommonSourceInfo {
   SourceType source_type() const { return source_type_; }
 
   int64_t priority() const { return priority_; }
+
+  const AttributionFilterData& filter_data() const { return filter_data_; }
 
   absl::optional<uint64_t> debug_key() const { return debug_key_; }
 
@@ -104,6 +108,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   base::Time expiry_time_;
   SourceType source_type_;
   int64_t priority_;
+  AttributionFilterData filter_data_;
   absl::optional<uint64_t> debug_key_;
   AttributionAggregatableSources aggregatable_sources_;
 

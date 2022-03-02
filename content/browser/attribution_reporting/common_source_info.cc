@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/common_source_info.h"
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "net/base/schemeful_site.h"
@@ -39,6 +41,7 @@ CommonSourceInfo::CommonSourceInfo(
     base::Time expiry_time,
     SourceType source_type,
     int64_t priority,
+    AttributionFilterData filter_data,
     absl::optional<uint64_t> debug_key,
     AttributionAggregatableSources aggregatable_sources)
     : source_event_id_(source_event_id),
@@ -49,6 +52,7 @@ CommonSourceInfo::CommonSourceInfo(
       expiry_time_(expiry_time),
       source_type_(source_type),
       priority_(priority),
+      filter_data_(std::move(filter_data)),
       debug_key_(debug_key),
       aggregatable_sources_(std::move(aggregatable_sources)) {
   // 30 days is the max allowed expiry for an impression.

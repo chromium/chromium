@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
@@ -2151,6 +2152,21 @@ TEST_F(AttributionStorageTest, TriggerDataSanitized) {
                   AllOf(ReportSourceIs(
                             SourceTypeIs(CommonSourceInfo::SourceType::kEvent)),
                         EventLevelDataIs(TriggerDataIs(1)))));
+}
+
+TEST_F(AttributionStorageTest, SourceFilterData_RoundTrips) {
+  storage()->StoreSource(
+      SourceBuilder().SetFilterData(AttributionFilterData()).Build());
+
+  auto filter_data =
+      AttributionFilterData::FromFilterValues({{"abc", {"x", "y"}}});
+  ASSERT_TRUE(filter_data.has_value());
+
+  storage()->StoreSource(SourceBuilder().SetFilterData(*filter_data).Build());
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceFilterDataIs(AttributionFilterData()),
+                          SourceFilterDataIs(*filter_data)));
 }
 
 }  // namespace content

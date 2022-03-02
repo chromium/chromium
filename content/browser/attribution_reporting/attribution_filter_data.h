@@ -1,0 +1,48 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_FILTER_DATA_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_FILTER_DATA_H_
+
+#include <string>
+#include <vector>
+
+#include "base/containers/flat_map.h"
+#include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace content {
+
+// Supports persistence to disk via serializaton to/from proto.
+class CONTENT_EXPORT AttributionFilterData {
+ public:
+  using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
+
+  static absl::optional<AttributionFilterData> Deserialize(const std::string&);
+
+  static absl::optional<AttributionFilterData> FromFilterValues(FilterValues&&);
+
+  AttributionFilterData();
+
+  ~AttributionFilterData();
+
+  AttributionFilterData(const AttributionFilterData&);
+  AttributionFilterData(AttributionFilterData&&);
+
+  AttributionFilterData& operator=(const AttributionFilterData&);
+  AttributionFilterData& operator=(AttributionFilterData&&);
+
+  const FilterValues& filter_values() const { return filter_values_; }
+
+  std::string Serialize() const;
+
+ private:
+  explicit AttributionFilterData(FilterValues filter_values);
+
+  FilterValues filter_values_;
+};
+
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_FILTER_DATA_H_
