@@ -704,6 +704,32 @@ ci.builder(
 # End - Reclient migration, phase 2, block 1 shadow builders
 
 ci.builder(
+    name = "Win ASan Release (reclient shadow)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win asan",
+        short_name = "rel",
+    ),
+    os = os.WINDOWS_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.builder(
+    name = "Win ASan Release Media (reclient shadow)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win asan",
+        short_name = "med",
+    ),
+    os = os.WINDOWS_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.builder(
     name = "Win x64 Builder (reclient)",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
