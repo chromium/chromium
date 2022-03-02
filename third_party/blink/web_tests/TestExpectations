@@ -7312,6 +7312,7 @@ crbug.com/1272801 http/tests/permissions/chromium/test-request-sharedworker.html
 
 # Flaky with setTimeout without clamp
 crbug.com/1272955 http/tests/devtools/extensions/extensions-timeline-api.js [ Failure Pass ]
+crbug.com/1302309 external/wpt/streams/transferable/writable-stream.html [ Failure Pass ]
 
 # Flaky as depends upon order of execution.
 crbug.com/1274917 external/wpt/content-security-policy/inheritance/history.sub.html [ Failure Pass Timeout ]

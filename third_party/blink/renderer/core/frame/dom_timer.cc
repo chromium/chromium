@@ -102,7 +102,7 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   TaskType task_type;
   if (timeout.is_zero()) {
     task_type = TaskType::kJavascriptTimerImmediate;
-    DCHECK_LT(nesting_level_, kMaxTimerNestingLevel);
+    DCHECK_LT(nesting_level_, max_nesting_level);
   } else if (nesting_level_ >= kMaxTimerNestingLevel) {
     task_type = TaskType::kJavascriptTimerDelayedHighNesting;
   } else {
@@ -184,7 +184,11 @@ void DOMTimer::Fired() {
     // Make adjustments when the nesting level becomes >= |kMaxNestingLevel|.
     // Note: The implementation uses >= instead of >, contrary to what the spec
     // requires crbug.com/1108877.
-    if (nesting_level_ == kMaxTimerNestingLevel) {
+    int max_nesting_level =
+        features::IsMaxUnthrottledTimeoutNestingLevelEnabled()
+            ? features::GetMaxUnthrottledTimeoutNestingLevel()
+            : kMaxTimerNestingLevel;
+    if (nesting_level_ == max_nesting_level) {
       // Move to the TaskType that corresponds to nesting level >=
       // |kMaxNestingLevel|.
       MoveToNewTaskRunner(
@@ -194,7 +198,7 @@ void DOMTimer::Fired() {
         AugmentRepeatInterval(kMinimumInterval - RepeatInterval());
     }
 
-    DCHECK(nesting_level_ < kMaxTimerNestingLevel ||
+    DCHECK(nesting_level_ < max_nesting_level ||
            RepeatInterval() >= kMinimumInterval);
 
     // No access to member variables after this point, it can delete the timer.

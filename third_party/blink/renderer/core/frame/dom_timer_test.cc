@@ -136,6 +136,10 @@ const char* const kSetTimeoutNestedScriptText =
 TEST_F(DOMTimerTest, setTimeout_ClampsAfter4Nestings) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kMaxUnthrottledTimeoutNestingLevel);
+
   ExecuteScriptAndWaitUntilIdle(kSetTimeoutNestedScriptText);
 
   auto times(ToDoubleArray(EvalExpression("times"), scope));
@@ -159,6 +163,10 @@ const char* const kSetIntervalScriptText =
 TEST_F(DOMTimerTest, setInterval_ClampsAfter4Iterations) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kMaxUnthrottledTimeoutNestingLevel);
+
   ExecuteScriptAndWaitUntilIdle(kSetIntervalScriptText);
 
   auto times(ToDoubleArray(EvalExpression("times"), scope));
@@ -166,8 +174,33 @@ TEST_F(DOMTimerTest, setInterval_ClampsAfter4Iterations) {
   EXPECT_THAT(times, ElementsAreArray(kExpectedTimings));
 }
 
+TEST_F(DOMTimerTest, setInterval_ClampsAfter5Iterations) {
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kMaxUnthrottledTimeoutNestingLevel, {{"nesting", "6"}});
+
+  ExecuteScriptAndWaitUntilIdle(kSetIntervalScriptText);
+
+  auto times(ToDoubleArray(EvalExpression("times"), scope));
+
+  EXPECT_THAT(times, ElementsAreArray({
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(4., kThreshold),
+                     }));
+}
+
 TEST_F(DOMTimerTest, setInterval_NestingResetsForLaterCalls) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kMaxUnthrottledTimeoutNestingLevel);
 
   ExecuteScriptAndWaitUntilIdle(kSetIntervalScriptText);
 

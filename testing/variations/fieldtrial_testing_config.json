@@ -4015,6 +4015,31 @@
             ]
         }
     ],
+    "MaxUnthrottledTimeoutNestingLevel": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "nesting": "100"
+                    },
+                    "enable_features": [
+                        "MaxUnthrottledTimeoutNestingLevel"
+                    ]
+                }
+            ]
+        }
+    ],
     "MediaFoundationD3D11VideoCapture": [
         {
             "platforms": [
