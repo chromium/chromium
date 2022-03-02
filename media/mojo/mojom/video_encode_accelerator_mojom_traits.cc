@@ -332,7 +332,7 @@ bool StructTraits<media::mojom::SpatialLayerDataView,
 bool StructTraits<media::mojom::ConstantBitrateDataView, media::Bitrate>::Read(
     media::mojom::ConstantBitrateDataView input,
     media::Bitrate* output) {
-  *output = media::Bitrate::ConstantBitrate(input.target());
+  *output = media::Bitrate::ConstantBitrate(input.target_bps());
   return true;
 }
 
@@ -340,11 +340,12 @@ bool StructTraits<media::mojom::ConstantBitrateDataView, media::Bitrate>::Read(
 bool StructTraits<media::mojom::VariableBitrateDataView, media::Bitrate>::Read(
     media::mojom::VariableBitrateDataView input,
     media::Bitrate* output) {
-  if (input.target() > input.peak())
+  if (input.target_bps() > input.peak_bps())
     return false;
-  if (input.peak() == 0u)
+  if (input.peak_bps() == 0u)
     return false;
-  *output = media::Bitrate::VariableBitrate(input.target(), input.peak());
+  *output =
+      media::Bitrate::VariableBitrate(input.target_bps(), input.peak_bps());
   return true;
 }
 
@@ -398,7 +399,7 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadBitrate(&bitrate))
     return false;
   DCHECK((bitrate.mode() == media::Bitrate::Mode::kConstant) ==
-         (bitrate.peak() == 0u));
+         (bitrate.peak_bps() == 0u));
 
   absl::optional<uint32_t> initial_framerate;
   if (input.has_initial_framerate())

@@ -77,7 +77,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     VideoEncodeAccelerator::Config::SpatialLayer layer;
     layer.width = opts.frame_size.width();
     layer.height = opts.frame_size.height();
-    layer.bitrate_bps = config.bitrate.target();
+    layer.bitrate_bps = config.bitrate.target_bps();
     if (initial_framerate.has_value())
       layer.framerate = initial_framerate.value();
     layer.num_of_temporal_layers = num_temporal_layers;

@@ -158,7 +158,7 @@ VideoBitrateAllocation AllocateBitrateForDefaultEncoding(
     const VideoEncodeAccelerator::Config& config) {
   if (config.spatial_layers.empty()) {
     return AllocateBitrateForDefaultEncodingWithBitrates(
-        {config.bitrate.target()},
+        {config.bitrate.target_bps()},
         /*num_temporal_layers=*/1u);
   }
 

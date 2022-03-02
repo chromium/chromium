@@ -75,14 +75,14 @@ struct SpatialLayer {
 // This defines a mojo transport format for a media::Bitrate of type kConstant.
 // The default target here matches that in media::Bitrate.
 struct ConstantBitrate {
-  uint32 target = 0;
+  uint32 target_bps = 0;
 };
 
 // This defines a mojo transport format for a media::Bitrate of type kVariable.
 // The default target here matches that in media::Bitrate.
 struct VariableBitrate {
-  uint32 target = 0;
-  uint32 peak;
+  uint32 target_bps = 0;
+  uint32 peak_bps;
 };
 
 // This defines a mojo transport format for media::Bitrate.

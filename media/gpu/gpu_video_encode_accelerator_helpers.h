@@ -37,7 +37,7 @@ MEDIA_GPU_EXPORT std::vector<uint8_t> GetFpsAllocation(
 // spatial layer (|config.spatial_layers[i].bitrate_bps| is distributed to
 // temporal layers in the spatial layer based on the same bitrate division ratio
 // as a software encoder. If |config.spatial_layers| is empty,
-// VideoBitrateAllocation(0, 0) is set to |config.bitrate.target()| as it is
+// VideoBitrateAllocation(0, 0) is set to |config.bitrate.target_bps()| as it is
 // a configuration with no layers.
 MEDIA_GPU_EXPORT VideoBitrateAllocation
 AllocateBitrateForDefaultEncoding(const VideoEncodeAccelerator::Config& config);

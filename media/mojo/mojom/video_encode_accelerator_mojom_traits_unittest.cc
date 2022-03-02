@@ -120,8 +120,8 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTripVariableBitrate) {
 TEST(VariableBitrateStructTraitTest, PeakZeroBps_Rejected) {
   mojom::VariableBitratePtr mojom_variable_bitrate =
       mojom::VariableBitrate::New();
-  mojom_variable_bitrate->target = 0u;
-  mojom_variable_bitrate->peak = 0u;
+  mojom_variable_bitrate->target_bps = 0u;
+  mojom_variable_bitrate->peak_bps = 0u;
   Bitrate output;
 
   bool result = mojo::test::SerializeAndDeserialize<mojom::VariableBitrate>(
@@ -132,8 +132,8 @@ TEST(VariableBitrateStructTraitTest, PeakZeroBps_Rejected) {
 TEST(VariableBitrateStructTraitTest, PeakLessThanTarget_Rejected) {
   mojom::VariableBitratePtr mojom_variable_bitrate =
       mojom::VariableBitrate::New();
-  mojom_variable_bitrate->target = 6000u;
-  mojom_variable_bitrate->peak = 5999u;
+  mojom_variable_bitrate->target_bps = 6000u;
+  mojom_variable_bitrate->peak_bps = 5999u;
   Bitrate output;
 
   bool result = mojo::test::SerializeAndDeserialize<mojom::VariableBitrate>(

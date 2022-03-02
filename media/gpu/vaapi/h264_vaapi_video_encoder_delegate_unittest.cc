@@ -206,7 +206,7 @@ bool H264VaapiVideoEncoderDelegateTest::InitializeEncoder(
   auto& sl = vea_config.spatial_layers[0];
   sl.width = vea_config.input_visible_size.width();
   sl.height = vea_config.input_visible_size.height();
-  sl.bitrate_bps = vea_config.bitrate.target();
+  sl.bitrate_bps = vea_config.bitrate.target_bps();
   sl.framerate = vea_config.initial_framerate.value_or(30);
   sl.max_qp = 30;
   sl.num_of_temporal_layers = num_temporal_layers;

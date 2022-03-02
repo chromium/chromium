@@ -322,7 +322,7 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
   if (num_temporal_layers_ > 1)
     initial_bitrate_allocation = AllocateBitrateForDefaultEncoding(config);
   else
-    initial_bitrate_allocation.SetBitrate(0, 0, config.bitrate.target());
+    initial_bitrate_allocation.SetBitrate(0, 0, config.bitrate.target_bps());
 
   current_params_.max_qp = kMaxQPForSoftwareRateCtrl;
 

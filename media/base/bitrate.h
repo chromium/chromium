@@ -30,28 +30,25 @@ class MEDIA_EXPORT Bitrate {
   // or 64-bit value you want to use as input, you must explicitly convert to
   // uint32_t before calling. This is intended to prevent implicit and unsafe
   // type conversion.
-  static constexpr Bitrate ConstantBitrate(uint32_t target_bitrate) {
-    return Bitrate(Mode::kConstant, target_bitrate, 0);
+  static constexpr Bitrate ConstantBitrate(uint32_t target_bps) {
+    return Bitrate(Mode::kConstant, target_bps, 0);
   }
-  static Bitrate VariableBitrate(uint32_t target_bitrate,
-                                 uint32_t peak_bitrate);
+  static Bitrate VariableBitrate(uint32_t target_bps, uint32_t peak_bps);
 
   // Deleted variants: you must SAFELY convert to uint32_t before calling.
   // See base/numerics/safe_conversions.h for functions to safely convert
   // between types.
-  static Bitrate ConstantBitrate(int target_bitrate) = delete;
-  static Bitrate VariableBitrate(int target_bitrate, int peak_bitrate) = delete;
-  static Bitrate VariableBitrate(int target_bitrate,
-                                 uint32_t peak_bitrate) = delete;
-  static Bitrate VariableBitrate(uint32_t target_bitrate,
-                                 int peak_bitrate) = delete;
-  static Bitrate ConstantBitrate(uint64_t target_bitrate) = delete;
-  static Bitrate VariableBitrate(uint64_t target_bitrate,
-                                 uint64_t peak_bitrate) = delete;
-  static Bitrate VariableBitrate(uint64_t target_bitrate,
-                                 uint32_t peak_bitrate) = delete;
-  static Bitrate VariableBitrate(uint32_t target_bitrate,
-                                 uint64_t peak_bitrate) = delete;
+  static Bitrate ConstantBitrate(int target_bps) = delete;
+  static Bitrate VariableBitrate(int target_bps, int peak_bps) = delete;
+  static Bitrate VariableBitrate(int target_bps, uint32_t peak_bps) = delete;
+  static Bitrate VariableBitrate(uint32_t target_bps, int peak_bps) = delete;
+  static Bitrate ConstantBitrate(uint64_t target_bps) = delete;
+  static Bitrate VariableBitrate(uint64_t target_bps,
+                                 uint64_t peak_bps) = delete;
+  static Bitrate VariableBitrate(uint64_t target_bps,
+                                 uint32_t peak_bps) = delete;
+  static Bitrate VariableBitrate(uint32_t target_bps,
+                                 uint64_t peak_bps) = delete;
 
   bool operator==(const Bitrate& right) const;
   bool operator!=(const Bitrate& right) const;
@@ -60,17 +57,17 @@ class MEDIA_EXPORT Bitrate {
   constexpr Mode mode() const { return mode_; }
 
   // Accessor for |target_|.
-  constexpr uint32_t target() const { return target_; }
+  constexpr uint32_t target_bps() const { return target_bps_; }
 
   // Accessor for |peak_|. Returns 0 if |mode_| is
   // Mode::kConstantBitrate.
-  uint32_t peak() const;
+  uint32_t peak_bps() const;
 
   std::string ToString() const;
 
  private:
-  constexpr Bitrate(Mode mode, uint32_t target_bitrate, uint32_t peak_bitrate)
-      : mode_(mode), target_(target_bitrate), peak_(peak_bitrate) {}
+  constexpr Bitrate(Mode mode, uint32_t target_bps, uint32_t peak_bps)
+      : mode_(mode), target_bps_(target_bps), peak_bps_(peak_bps) {}
 
   // These member variables cannot be const (despite the intent that we do not
   // change them after creation) because we must have an assignment operator for
@@ -81,10 +78,10 @@ class MEDIA_EXPORT Bitrate {
   Mode mode_ = Mode::kConstant;
 
   // Target bitrate for the stream in bits per second.
-  uint32_t target_ = 0u;
+  uint32_t target_bps_ = 0u;
 
   // For use with Mode::kVariable. Peak bitrate in bits per second.
-  uint32_t peak_ = 0u;
+  uint32_t peak_bps_ = 0u;
 };
 
 }  // namespace media

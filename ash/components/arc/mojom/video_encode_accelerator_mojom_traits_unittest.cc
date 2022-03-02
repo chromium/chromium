@@ -43,7 +43,7 @@ TEST(BitrateDataViewUnionTraitsTest, ConstantBitrateMaximumTarget) {
                                                            output_bitrate);
 
   EXPECT_EQ(input_bitrate, output_bitrate);
-  EXPECT_EQ(output_bitrate.target(), std::numeric_limits<uint32_t>::max());
+  EXPECT_EQ(output_bitrate.target_bps(), std::numeric_limits<uint32_t>::max());
 }
 
 TEST(BitrateDataViewUnionTraitsTest, VariableBitrateMaximumTargetAndPeak) {
@@ -56,8 +56,8 @@ TEST(BitrateDataViewUnionTraitsTest, VariableBitrateMaximumTargetAndPeak) {
                                                            output_bitrate);
 
   EXPECT_EQ(input_bitrate, output_bitrate);
-  EXPECT_EQ(output_bitrate.target(), std::numeric_limits<uint32_t>::max());
-  EXPECT_EQ(output_bitrate.peak(), std::numeric_limits<uint32_t>::max());
+  EXPECT_EQ(output_bitrate.target_bps(), std::numeric_limits<uint32_t>::max());
+  EXPECT_EQ(output_bitrate.peak_bps(), std::numeric_limits<uint32_t>::max());
 }
 
 TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {

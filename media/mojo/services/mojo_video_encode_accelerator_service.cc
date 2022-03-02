@@ -198,7 +198,7 @@ void MojoVideoEncodeAcceleratorService::
   if (!encoder_)
     return;
 
-  DVLOG(2) << __func__ << " bitrate=" << bitrate.target()
+  DVLOG(2) << __func__ << " bitrate=" << bitrate.target_bps()
            << " framerate=" << framerate;
 
   encoder_->RequestEncodingParametersChange(bitrate, framerate);

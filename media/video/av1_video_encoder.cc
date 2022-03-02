@@ -96,7 +96,7 @@ EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
 
   if (opts.bitrate.has_value()) {
     auto& bitrate = opts.bitrate.value();
-    config.rc_target_bitrate = bitrate.target() / 1000;
+    config.rc_target_bitrate = bitrate.target_bps() / 1000;
     switch (bitrate.mode()) {
       case Bitrate::Mode::kVariable:
         config.rc_end_usage = AOM_VBR;

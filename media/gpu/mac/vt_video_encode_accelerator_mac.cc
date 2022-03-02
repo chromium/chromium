@@ -370,8 +370,8 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
 
   switch (bitrate.mode()) {
     case Bitrate::Mode::kConstant:
-      if (bitrate.target() != static_cast<uint32_t>(target_bitrate_)) {
-        target_bitrate_ = bitrate.target();
+      if (bitrate.target_bps() != static_cast<uint32_t>(target_bitrate_)) {
+        target_bitrate_ = bitrate.target_bps();
         bitrate_adjuster_.SetTargetBitrateBps(target_bitrate_);
         SetAdjustedConstantBitrate(bitrate_adjuster_.GetAdjustedBitrateBps());
       }
@@ -412,10 +412,11 @@ void VTVideoEncodeAccelerator::SetVariableBitrate(const Bitrate& bitrate) {
       compression_session_);
   [[maybe_unused]] bool rv =
       session_property_setter.Set(kVTCompressionPropertyKey_AverageBitRate,
-                                  static_cast<int32_t>(bitrate.target()));
-  rv &= session_property_setter.Set(kVTCompressionPropertyKey_DataRateLimits,
-                                    video_toolbox::ArrayWithIntegerAndFloat(
-                                        bitrate.peak() / kBitsPerByte, 1.0f));
+                                  static_cast<int32_t>(bitrate.target_bps()));
+  rv &=
+      session_property_setter.Set(kVTCompressionPropertyKey_DataRateLimits,
+                                  video_toolbox::ArrayWithIntegerAndFloat(
+                                      bitrate.peak_bps() / kBitsPerByte, 1.0f));
   DLOG_IF(ERROR, !rv)
       << "Couldn't change bitrate parameters of encode session.";
 }

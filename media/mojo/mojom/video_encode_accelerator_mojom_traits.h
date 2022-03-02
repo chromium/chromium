@@ -326,7 +326,9 @@ struct StructTraits<media::mojom::SpatialLayerDataView,
 
 template <>
 struct StructTraits<media::mojom::ConstantBitrateDataView, media::Bitrate> {
-  static uint32_t target(const media::Bitrate& input) { return input.target(); }
+  static uint32_t target_bps(const media::Bitrate& input) {
+    return input.target_bps();
+  }
 
   static bool Read(media::mojom::ConstantBitrateDataView input,
                    media::Bitrate* output);
@@ -334,8 +336,12 @@ struct StructTraits<media::mojom::ConstantBitrateDataView, media::Bitrate> {
 
 template <>
 struct StructTraits<media::mojom::VariableBitrateDataView, media::Bitrate> {
-  static uint32_t target(const media::Bitrate& input) { return input.target(); }
-  static uint32_t peak(const media::Bitrate& input) { return input.peak(); }
+  static uint32_t target_bps(const media::Bitrate& input) {
+    return input.target_bps();
+  }
+  static uint32_t peak_bps(const media::Bitrate& input) {
+    return input.peak_bps();
+  }
   static bool Read(media::mojom::VariableBitrateDataView input,
                    media::Bitrate* output);
 };

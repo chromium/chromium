@@ -106,7 +106,7 @@ arc::mojom::ConstantBitrate
 UnionTraits<arc::mojom::BitrateDataView, media::Bitrate>::constant(
     const media::Bitrate& input) {
   arc::mojom::ConstantBitrate constant_bitrate;
-  constant_bitrate.target = input.target();
+  constant_bitrate.target = input.target_bps();
   return constant_bitrate;
 }
 
@@ -115,8 +115,8 @@ arc::mojom::VariableBitrate
 UnionTraits<arc::mojom::BitrateDataView, media::Bitrate>::variable(
     const media::Bitrate& input) {
   arc::mojom::VariableBitrate variable_bitrate;
-  variable_bitrate.target = input.target();
-  variable_bitrate.peak = input.peak();
+  variable_bitrate.target = input.target_bps();
+  variable_bitrate.peak = input.peak_bps();
   return variable_bitrate;
 }
 
@@ -180,9 +180,9 @@ bool StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
     return false;
   if (bitrate.has_value()) {
     DCHECK((bitrate->mode() == media::Bitrate::Mode::kVariable) ||
-           (bitrate->peak() == 0u));
+           (bitrate->peak_bps() == 0u));
     DCHECK((bitrate->mode() == media::Bitrate::Mode::kConstant) ||
-           (bitrate->peak() >= bitrate->target()));
+           (bitrate->peak_bps() >= bitrate->target_bps()));
   } else {
     bitrate =
         media::Bitrate::ConstantBitrate(input.initial_bitrate_deprecated());

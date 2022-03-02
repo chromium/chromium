@@ -105,7 +105,7 @@ struct StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
 
   static uint32_t initial_bitrate_deprecated(
       const media::VideoEncodeAccelerator::Config& input) {
-    return input.bitrate.target();
+    return input.bitrate.target_bps();
   }
 
   static uint32_t initial_framerate(

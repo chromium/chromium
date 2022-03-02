@@ -734,7 +734,8 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeInputOutputParameters(
   hr = imf_output_media_type_->SetGUID(MF_MT_SUBTYPE,
                                        VideoCodecToMFSubtype(codec_));
   RETURN_ON_HR_FAILURE(hr, "Couldn't set video format", false);
-  hr = imf_output_media_type_->SetUINT32(MF_MT_AVG_BITRATE, bitrate_.target());
+  hr = imf_output_media_type_->SetUINT32(MF_MT_AVG_BITRATE,
+                                         bitrate_.target_bps());
   RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
   hr = MFSetAttributeRatio(imf_output_media_type_.Get(), MF_MT_FRAME_RATE,
                            frame_rate_, 1);
@@ -816,14 +817,14 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     }
   }
 
-  var.ulVal = bitrate_.target();
+  var.ulVal = bitrate_.target_bps();
   hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
   if (!compatible_with_win7_) {
     RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
   }
 
   if (bitrate_.mode() == Bitrate::Mode::kVariable) {
-    var.ulVal = bitrate_.peak();
+    var.ulVal = bitrate_.peak_bps();
     hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
     if (!compatible_with_win7_) {
       RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
@@ -1434,7 +1435,7 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
                                      MF_MT_FRAME_RATE, framerate, 1);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set frame rate for output type", );
 
-    imf_output_media_type_->SetUINT32(MF_MT_AVG_BITRATE, bitrate.target());
+    imf_output_media_type_->SetUINT32(MF_MT_AVG_BITRATE, bitrate.target_bps());
     RETURN_ON_HR_FAILURE(hr, "Couldn't set average bitrate for output type", );
 
     hr = MFSetAttributeRatio(imf_input_media_type_.Get(), MF_MT_FRAME_RATE,
@@ -1488,14 +1489,14 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     bitrate_ = bitrate;
     VARIANT var;
     var.vt = VT_UI4;
-    var.ulVal = bitrate.target();
+    var.ulVal = bitrate.target_bps();
     HRESULT hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
     if (!compatible_with_win7_) {
       RETURN_ON_HR_FAILURE(hr, "Couldn't update mean bitrate", );
     }
 
     if (bitrate.mode() == Bitrate::Mode::kVariable) {
-      var.ulVal = bitrate.peak();
+      var.ulVal = bitrate.peak_bps();
       hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
       if (!compatible_with_win7_) {
         RETURN_ON_HR_FAILURE(hr, "Couldn't set max bitrate", );

@@ -185,7 +185,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
   }
 
   frame_size_ = config.input_visible_size;
-  last_set_bitrate_ = config.bitrate.target();
+  last_set_bitrate_ = config.bitrate.target_bps();
 
   // Only consider using MediaCodec if it's likely backed by hardware.
   if (MediaCodecUtil::IsKnownUnaccelerated(codec,
@@ -200,7 +200,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
   media_codec_ = MediaCodecBridgeImpl::CreateVideoEncoder(
-      codec, config.input_visible_size, config.bitrate.target(),
+      codec, config.input_visible_size, config.bitrate.target_bps(),
       INITIAL_FRAMERATE, i_frame_interval, pixel_format);
 
   if (!media_codec_) {
@@ -293,9 +293,9 @@ void AndroidVideoEncodeAccelerator::RequestEncodingParametersChange(
   DVLOG(3) << __PRETTY_FUNCTION__ << ": bitrate: " << bitrate.ToString()
            << ", framerate: " << framerate;
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (bitrate.target() != last_set_bitrate_) {
-    last_set_bitrate_ = bitrate.target();
-    media_codec_->SetVideoBitrate(bitrate.target(), framerate);
+  if (bitrate.target_bps() != last_set_bitrate_) {
+    last_set_bitrate_ = bitrate.target_bps();
+    media_codec_->SetVideoBitrate(bitrate.target_bps(), framerate);
   }
   // Note: Android's MediaCodec doesn't allow mid-stream adjustments to
   // framerate, so we ignore that here.  This is OK because Android only uses

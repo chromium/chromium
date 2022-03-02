@@ -1475,19 +1475,21 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
   if (bitrate.mode() != Bitrate::Mode::kConstant)
     return;
 
-  if (current_bitrate_ == bitrate.target() && current_framerate_ == framerate)
+  if (current_bitrate_ == bitrate.target_bps() &&
+      current_framerate_ == framerate) {
     return;
-  if (bitrate.target() == 0 || framerate == 0)
+  }
+  if (bitrate.target_bps() == 0 || framerate == 0)
     return;
 
   VLOGF(2) << "bitrate=" << bitrate.ToString() << ", framerate=" << framerate;
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   TRACE_EVENT2("media,gpu", "V4L2VEA::RequestEncodingParametersChangeTask",
                "bitrate", bitrate.ToString(), "framerate", framerate);
-  if (current_bitrate_ != bitrate.target() &&
+  if (current_bitrate_ != bitrate.target_bps() &&
       !device_->SetExtCtrls(
           V4L2_CTRL_CLASS_MPEG,
-          {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE, bitrate.target())})) {
+          {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE, bitrate.target_bps())})) {
     VLOGF(1) << "Failed changing bitrate";
     NOTIFY_ERROR(kPlatformFailureError);
     return;
@@ -1504,7 +1506,7 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     IOCTL_OR_ERROR_RETURN(VIDIOC_S_PARM, &parms);
   }
 
-  current_bitrate_ = bitrate.target();
+  current_bitrate_ = bitrate.target_bps();
   current_framerate_ = framerate;
 }
 
@@ -1771,15 +1773,15 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
 
   // Check whether the h264 level is valid.
   if (!CheckH264LevelLimits(config.output_profile, h264_level,
-                            config.bitrate.target(), framerate,
+                            config.bitrate.target_bps(), framerate,
                             framesize_in_mbs)) {
     absl::optional<uint8_t> valid_level =
-        FindValidH264Level(config.output_profile, config.bitrate.target(),
+        FindValidH264Level(config.output_profile, config.bitrate.target_bps(),
                            framerate, framesize_in_mbs);
     if (!valid_level) {
       VLOGF(1) << "Could not find a valid h264 level for"
                << " profile=" << config.output_profile
-               << " bitrate=" << config.bitrate.target()
+               << " bitrate=" << config.bitrate.target_bps()
                << " framerate=" << framerate
                << " size=" << config.input_visible_size.ToString();
       NOTIFY_ERROR(kInvalidArgumentError);

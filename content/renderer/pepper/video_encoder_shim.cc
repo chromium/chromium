@@ -186,7 +186,7 @@ void VideoEncoderShim::EncoderImpl::Initialize(const Config& config) {
   config_.g_lag_in_frames = 0;
   config_.g_timebase.num = 1;
   config_.g_timebase.den = base::Time::kMicrosecondsPerSecond;
-  config_.rc_target_bitrate = config.bitrate.target() / 1000;
+  config_.rc_target_bitrate = config.bitrate.target_bps() / 1000;
   config_.rc_min_quantizer = min_quantizer;
   config_.rc_max_quantizer = max_quantizer;
   // Do not saturate CPU utilization just for encoding. On a lower-end system
@@ -197,7 +197,7 @@ void VideoEncoderShim::EncoderImpl::Initialize(const Config& config) {
 
   // Use Q/CQ mode if no target bitrate is given. Note that in the VP8/CQ case
   // the meaning of rc_target_bitrate changes to target maximum rate.
-  if (config.bitrate.target() == 0) {
+  if (config.bitrate.target_bps() == 0) {
     if (config.output_profile == media::VP9PROFILE_PROFILE0) {
       config_.rc_end_usage = VPX_Q;
     } else if (config.output_profile == media::VP8PROFILE_ANY) {
@@ -264,7 +264,7 @@ void VideoEncoderShim::EncoderImpl::RequestEncodingParametersChange(
   }
   framerate_ = framerate;
 
-  uint32_t bitrate_kbit = bitrate.target() / 1000;
+  uint32_t bitrate_kbit = bitrate.target_bps() / 1000;
   if (config_.rc_target_bitrate == bitrate_kbit)
     return;
 
