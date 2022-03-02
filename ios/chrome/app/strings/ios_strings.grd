@@ -1668,7 +1668,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Microphone
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION" desc="Description of the permissions infobar used to update site permissions.">
-       "<ph name="SITE_NAME">$1</ph>" permissions will reset to off when you leave this site.
+        <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>"<ph name="SITE_NAME">$1</ph>"<ph name="END_BOLD">END_BOLD</ph> permissions will reset to off when you leave this site.
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_MODAL_TITLE" desc="Title of the permissions infobar used to update site permissions.">
         Access

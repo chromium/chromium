@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
-#import "ios/chrome/browser/ui/elements/instruction_view_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
@@ -52,6 +51,9 @@ NSString* const kScrollViewIdentifier =
 
 NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
     @"kMetricsConsentCheckboxAccessibilityIdentifier";
+
+NSString* const kBeginBoldTag = @"BEGIN_BOLD[ \t]*";
+NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
 // Add the field trial variation parameters to the app launch configuration.
 void SetupVariationForConfig(AppLaunchConfiguration& config,
@@ -623,18 +625,15 @@ GREYLayoutConstraint* BelowConstraint() {
   StringWithTag firstInstructionParsed = ParseStringWithTag(
       l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
-      instruction_view::kInstructionViewBeginBoldTag,
-      instruction_view::kInstructionViewEndBoldTag);
+      kBeginBoldTag, kEndBoldTag);
   StringWithTag secondInstructionParsed = ParseStringWithTag(
       l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
-      instruction_view::kInstructionViewBeginBoldTag,
-      instruction_view::kInstructionViewEndBoldTag);
+      kBeginBoldTag, kEndBoldTag);
   StringWithTag thirdInstructionParsed = ParseStringWithTag(
       l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP),
-      instruction_view::kInstructionViewBeginBoldTag,
-      instruction_view::kInstructionViewEndBoldTag);
+      kBeginBoldTag, kEndBoldTag);
 
   // Verify instruction order.
   id<GREYMatcher> firstInstruction = grey_text(firstInstructionParsed.string);

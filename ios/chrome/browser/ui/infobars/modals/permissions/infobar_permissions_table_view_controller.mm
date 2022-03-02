@@ -14,11 +14,12 @@
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_presentation_handler.h"
 #include "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -155,14 +156,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Private Methods
 
 // Helper that returns the permissionsDescription item.
-- (TableViewTextItem*)permissionsDescriptionItem {
-  TableViewTextItem* descriptionItem =
-      [[TableViewTextItem alloc] initWithType:ItemTypePermissionsDescription];
-  descriptionItem.text = self.permissionsDescription;
-  descriptionItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  descriptionItem.textFont =
-      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
-  descriptionItem.enabled = NO;
+- (SettingsImageDetailTextItem*)permissionsDescriptionItem {
+  SettingsImageDetailTextItem* descriptionItem =
+      [[SettingsImageDetailTextItem alloc]
+          initWithType:ItemTypePermissionsDescription];
+
+  NSMutableAttributedString* descriptionAttributedString =
+      [[NSMutableAttributedString alloc]
+          initWithAttributedString:PutBoldPartInString(
+                                       self.permissionsDescription,
+                                       kTableViewSublabelFontStyle)];
+
+  NSDictionary* attrs = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
+  };
+  [descriptionAttributedString
+      addAttributes:attrs
+              range:NSMakeRange(0, descriptionAttributedString.length)];
+  descriptionItem.attributedText = descriptionAttributedString;
   return descriptionItem;
 }
 

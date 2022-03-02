@@ -33,7 +33,6 @@ PermissionsInfobarModalOverlayRequestConfig::
       web_state_->GetNavigationManager()->GetVisibleItem();
   const GURL& URL = visible_item->GetURL();
 
-  // TODO(crbug.com/1289645): Bold the host part.
   permissions_description_ =
       l10n_util::GetNSStringF(IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION,
                               base::UTF8ToUTF16(URL.host()));

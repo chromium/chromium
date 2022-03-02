@@ -90,4 +90,10 @@ NSString* SubstringOfWidth(NSString* string,
 // |characterRange| in the |textView|.
 CGRect TextViewLinkBound(UITextView* textView, NSRange characterRange);
 
+// Parses a string with an embedded bold part inside, delineated by
+// "BEGIN_BOLD" and "END_BOLD". Returns an attributed string with bold part and
+// the given font style.
+NSAttributedString* PutBoldPartInString(NSString* string,
+                                        UIFontTextStyle font_style);
+
 #endif  // IOS_CHROME_COMMON_STRING_UTIL_H_

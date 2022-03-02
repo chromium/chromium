@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 
 #include "base/check.h"
-#import "ios/chrome/browser/ui/elements/instruction_view_constants.h"
 #include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -139,7 +138,9 @@ constexpr CGFloat kIconLabelWidth = 30;
   instructionLabel.textColor = [UIColor colorNamed:kGrey800Color];
   instructionLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  instructionLabel.attributedText = [self putBoldPartInString:instruction];
+
+  instructionLabel.attributedText =
+      PutBoldPartInString(instruction, UIFontTextStyleSubheadline);
   instructionLabel.numberOfLines = 0;
   instructionLabel.adjustsFontForContentSizeCategory = YES;
   instructionLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -165,36 +166,6 @@ constexpr CGFloat kIconLabelWidth = 30;
   ]];
 
   return line;
-}
-
-// Parses a string with an embedded bold part inside, delineated by
-// "BEGIN_BOLD" and "END_BOLD". Returns an attributed string with bold part.
-- (NSAttributedString*)putBoldPartInString:(NSString*)string {
-  StringWithTag parsedString =
-      ParseStringWithTag(string, instruction_view::kInstructionViewBeginBoldTag,
-                         instruction_view::kInstructionViewEndBoldTag);
-
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
-
-  UIFontDescriptor* defaultDescriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
-
-  UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline]
-      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-
-  [attributedString addAttribute:NSFontAttributeName
-                           value:[UIFont fontWithDescriptor:defaultDescriptor
-                                                       size:0.0]
-                           range:NSMakeRange(0, parsedString.string.length)];
-
-  [attributedString addAttribute:NSFontAttributeName
-                           value:[UIFont fontWithDescriptor:boldDescriptor
-                                                       size:0.0]
-                           range:parsedString.range];
-
-  return attributedString;
 }
 
 // Creates a view with a round numbered label in it.

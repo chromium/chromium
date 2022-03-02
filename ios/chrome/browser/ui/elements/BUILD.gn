@@ -34,7 +34,6 @@ source_set("elements") {
     "windowed_container_view.mm",
   ]
   deps = [
-    ":instruction_view_constants",
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/colors",
@@ -61,14 +60,6 @@ source_set("selector_coordinator") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
-  ]
-}
-
-source_set("instruction_view_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "instruction_view_constants.h",
-    "instruction_view_constants.mm",
   ]
 }
 
