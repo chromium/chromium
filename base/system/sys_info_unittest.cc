@@ -429,54 +429,6 @@ TEST_F(SysInfoTest, ScopedRunningOnChromeOS) {
   EXPECT_EQ(was_running, SysInfo::IsRunningOnChromeOS());
 }
 
-SysInfo::GetAppOutputCallback MockGetAppOutputTestCallback(
-    const std::string& mock_output,
-    bool mock_ret) {
-  return BindRepeating(
-      [](const std::string& expected_output, bool return_value,
-         const CommandLine& cl, std::string* out) -> bool {
-        *out = expected_output;
-        return return_value;
-      },
-      mock_output, mock_ret);
-}
-
-TEST_F(SysInfoTest, SpacedValidQuery) {
-  FilePath dummy_path("/a/b/c");
-  auto mock_get_app_output = MockGetAppOutputTestCallback("1234", true);
-  SysInfo::SetChromeOSGetAppOutputForTest(&mock_get_app_output);
-  EXPECT_EQ(SysInfo::GetTotalDiskSpaceFromSpaced(dummy_path), 1234);
-  EXPECT_EQ(SysInfo::GetFreeDiskSpaceFromSpaced(dummy_path), 1234);
-  SysInfo::SetChromeOSGetAppOutputForTest(nullptr);
-}
-
-TEST_F(SysInfoTest, SpacedInternalFailure) {
-  FilePath dummy_path("/a/b/c");
-  auto mock_get_app_output = MockGetAppOutputTestCallback("-1", true);
-  SysInfo::SetChromeOSGetAppOutputForTest(&mock_get_app_output);
-  EXPECT_EQ(SysInfo::GetTotalDiskSpaceFromSpaced(dummy_path), -1);
-  EXPECT_EQ(SysInfo::GetFreeDiskSpaceFromSpaced(dummy_path), -1);
-  SysInfo::SetChromeOSGetAppOutputForTest(nullptr);
-}
-
-TEST_F(SysInfoTest, SpacedFailedInvocation) {
-  FilePath dummy_path("/a/b/c");
-  auto mock_get_app_output = MockGetAppOutputTestCallback("5", false);
-  SysInfo::SetChromeOSGetAppOutputForTest(&mock_get_app_output);
-  EXPECT_EQ(SysInfo::GetTotalDiskSpaceFromSpaced(dummy_path), -1);
-  EXPECT_EQ(SysInfo::GetFreeDiskSpaceFromSpaced(dummy_path), -1);
-  SysInfo::SetChromeOSGetAppOutputForTest(nullptr);
-}
-
-TEST_F(SysInfoTest, SpacedInvalidOutput) {
-  FilePath dummy_path("/a/b/c");
-  auto mock_get_app_output = MockGetAppOutputTestCallback("foo", true);
-  SysInfo::SetChromeOSGetAppOutputForTest(&mock_get_app_output);
-  EXPECT_EQ(SysInfo::GetTotalDiskSpaceFromSpaced(dummy_path), -1);
-  EXPECT_EQ(SysInfo::GetFreeDiskSpaceFromSpaced(dummy_path), -1);
-  SysInfo::SetChromeOSGetAppOutputForTest(nullptr);
-}
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace base
