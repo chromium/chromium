@@ -157,8 +157,7 @@ TEST_F(LinuxKeyRotationCommandTest, MojoAcceptInvitation) {
   StartTestRotation("MojoInvitation", KeyRotationCommand::Status::SUCCEEDED);
 }
 
-// Tests for a key rotation failure when the chrome management service failed
-// to store the signing key to persistence storage.
+// Tests for a key rotation when the chrome management service succeeded.
 MULTIPROCESS_TEST_MAIN(Success) {
   return chrome_management_service::kSuccess;
 }
@@ -167,56 +166,23 @@ TEST_F(LinuxKeyRotationCommandTest, RotateSuccess) {
   StartTestRotation("Success", KeyRotationCommand::Status::SUCCEEDED);
 }
 
+// Tests for a key rotation failure when the chrome management service failed.
+MULTIPROCESS_TEST_MAIN(Failure) {
+  return chrome_management_service::kFailure;
+}
+
+TEST_F(LinuxKeyRotationCommandTest, RotateFailure) {
+  StartTestRotation("Failure", KeyRotationCommand::Status::FAILED);
+}
+
 // Tests for a key rotation failure when the chrome management service failed
-// to store the signing key to persistence storage.
-MULTIPROCESS_TEST_MAIN(FailureToWrite) {
-  return chrome_management_service::kStoreKeyFailure;
+// with an unknown error.
+MULTIPROCESS_TEST_MAIN(UnknownFailure) {
+  return 3;
 }
 
-TEST_F(LinuxKeyRotationCommandTest, RotateFailureToWriteToSigningKeyStorage) {
-  StartTestRotation("FailureToWrite", KeyRotationCommand::Status::FAILED);
-}
-
-// Tests for a key rotation failure when the chrome management service failed
-// to upload the key to the dm server.
-MULTIPROCESS_TEST_MAIN(FailureToSendKey) {
-  return chrome_management_service::kUploadKeyFailure;
-}
-
-TEST_F(LinuxKeyRotationCommandTest, RotateFailureUploadFailure) {
-  StartTestRotation("FailureToSendKey", KeyRotationCommand::Status::FAILED);
-}
-
-// Tests for a key rotation failure when the chrome management service was
-// already running and a another rotate request occurred.
-MULTIPROCESS_TEST_MAIN(DuplicateProcess) {
-  return chrome_management_service::kInstanceAlreadyRunning;
-}
-
-TEST_F(LinuxKeyRotationCommandTest, RotateFailureAnotherInstanceRunning) {
-  StartTestRotation("DuplicateProcess", KeyRotationCommand::Status::FAILED);
-}
-
-// Tests for a key rotation failure when the chrome management service exited
-// with an unknown positive error code.
-MULTIPROCESS_TEST_MAIN(UnkownFailurePositiveErrorCode) {
-  return 5;
-}
-
-TEST_F(LinuxKeyRotationCommandTest, RotateFailureUnknownPositiveErrorCode) {
-  StartTestRotation("UnkownFailurePositiveErrorCode",
-                    KeyRotationCommand::Status::FAILED);
-}
-
-// Tests for a key rotation failure when the chrome management service exited
-// with an unknown negative error code.
-MULTIPROCESS_TEST_MAIN(UnkownFailureNegativeErrorCode) {
-  return -1;
-}
-
-TEST_F(LinuxKeyRotationCommandTest, RotateFailureUnknownNegativeErrorCode) {
-  StartTestRotation("UnkownFailureNegativeErrorCode",
-                    KeyRotationCommand::Status::FAILED);
+TEST_F(LinuxKeyRotationCommandTest, RotateFailure_UnknownError) {
+  StartTestRotation("UnknownFailure", KeyRotationCommand::Status::FAILED);
 }
 
 // Tests for a key rotation failure when an invalid process was launched.

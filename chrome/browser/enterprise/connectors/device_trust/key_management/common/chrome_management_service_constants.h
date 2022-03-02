@@ -11,12 +11,8 @@ namespace chrome_management_service {
 
 // Process exit codes of the chrome management service executable.
 enum Status {
-  kSuccess = 0,           // Successfully executed the key rotation.
-  kStoreKeyFailure = 1,   // Writing to signing key storage failed.
-  kUploadKeyFailure = 2,  // Sending the public key to the DM server failed.
-  kInstanceAlreadyRunning = 3,  // Another instance of service is running.
-  kInvalidHostName = 4,  // The hostname for dm_server_url on a stable channel
-                         // is not a prod hostname.
+  kSuccess = 0,
+  kFailure = 1,
 };
 
 namespace switches {

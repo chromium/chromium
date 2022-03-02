@@ -111,8 +111,11 @@ void LinuxKeyRotationCommand::Trigger(const Params& params, Callback callback) {
             channel.PrepareToPassRemoteEndpoint(&options, &command_line);
 
             base::Process process = launch_callback.Run(command_line, options);
-            if (!process.IsValid())
+            if (!process.IsValid()) {
+              SYSLOG(ERROR) << "Device trust key rotation failed. Could not "
+                               "launch the ChromeManagementService process.";
               return KeyRotationCommand::Status::FAILED;
+            }
 
             channel.RemoteProcessLaunchAttempted();
             mojo::OutgoingInvitation::Send(std::move(invitation),
@@ -126,27 +129,12 @@ void LinuxKeyRotationCommand::Trigger(const Params& params, Callback callback) {
               return KeyRotationCommand::Status::TIMED_OUT;
             }
 
-            switch (exit_code) {
-              case chrome_management_service::kSuccess:
-                return KeyRotationCommand::Status::SUCCEEDED;
-
-              case chrome_management_service::kStoreKeyFailure:
-                SYSLOG(ERROR) << "Device trust key rotation failed. Could not "
-                                 "write to signing key storage.";
-                break;
-              case chrome_management_service::kUploadKeyFailure:
-                SYSLOG(ERROR) << "Device trust key rotation failed. Could not "
-                                 "send public key to DM server.";
-                break;
-              case chrome_management_service::kInstanceAlreadyRunning:
-                SYSLOG(ERROR) << "Device trust key rotation failed. Another "
-                                 "instance of the "
-                                 "ChromeManagementService is running.";
-                break;
-              default:
-                SYSLOG(ERROR)
-                    << "Device trust key rotation failed with exit code: "
-                    << exit_code;
+            if (exit_code == chrome_management_service::kSuccess) {
+              return KeyRotationCommand::Status::SUCCEEDED;
+            } else if (exit_code != chrome_management_service::kFailure) {
+              SYSLOG(ERROR)
+                  << "Device trust key rotation failed with exit code: "
+                  << exit_code;
             }
             return KeyRotationCommand::Status::FAILED;
           },

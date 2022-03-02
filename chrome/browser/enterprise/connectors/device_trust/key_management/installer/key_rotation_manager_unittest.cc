@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -129,8 +130,8 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_WithKey) {
   EXPECT_FALSE(upload_key_request.signature().empty());
 
   // Should expect one successful attempt to rotate a key.
-  histogram_tester.ExpectUniqueSample(
-      status_histogram_name(), KeyRotationManager::RotationStatus::SUCCESS, 1);
+  histogram_tester.ExpectUniqueSample(status_histogram_name(),
+                                      RotationStatus::SUCCESS, 1);
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
   histogram_tester.ExpectUniqueSample(http_code_histogram_name(), kSuccessCode,
                                       1);
@@ -163,10 +164,9 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_NoKey) {
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
 
   EXPECT_TRUE(manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
-
   // Should expect one successful attempt to rotate a key.
-  histogram_tester.ExpectUniqueSample(
-      status_histogram_name(), KeyRotationManager::RotationStatus::SUCCESS, 1);
+  histogram_tester.ExpectUniqueSample(status_histogram_name(),
+                                      RotationStatus::SUCCESS, 1);
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 
@@ -196,8 +196,8 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_NoKey) {
   EXPECT_TRUE(manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
 
   // Should expect one successful attempt to rotate a key.
-  histogram_tester.ExpectUniqueSample(
-      status_histogram_name(), KeyRotationManager::RotationStatus::SUCCESS, 1);
+  histogram_tester.ExpectUniqueSample(status_histogram_name(),
+                                      RotationStatus::SUCCESS, 1);
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 
@@ -242,8 +242,7 @@ TEST_P(KeyRotationManagerTest,
 
   //   Should expect one failed attempt to rotate a key on first try.
   histogram_tester.ExpectUniqueSample(
-      status_histogram_name(),
-      KeyRotationManager::RotationStatus::FAILURE_CANNOT_UPLOAD_KEY, 1);
+      status_histogram_name(), RotationStatus::FAILURE_CANNOT_UPLOAD_KEY, 1);
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
   histogram_tester.ExpectUniqueSample(http_code_histogram_name(),
                                       kHardFailureCode, 1);
@@ -292,9 +291,7 @@ TEST_P(
   // Should expect one failed attempt to rotate a key with max tries.
   histogram_tester.ExpectUniqueSample(
       status_histogram_name(),
-      KeyRotationManager::RotationStatus::
-          FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED,
-      1);
+      RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED, 1);
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
   histogram_tester.ExpectUniqueSample(http_code_histogram_name(),
                                       kTransientFailureCode, 1);
@@ -325,8 +322,8 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_WithKey) {
   EXPECT_TRUE(manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
 
   // Should expect one successful attempt to rotate a key.
-  histogram_tester.ExpectUniqueSample(
-      status_histogram_name(), KeyRotationManager::RotationStatus::SUCCESS, 1);
+  histogram_tester.ExpectUniqueSample(status_histogram_name(),
+                                      RotationStatus::SUCCESS, 1);
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 
@@ -358,8 +355,7 @@ TEST_P(KeyRotationManagerTest,
 
   // Should expect one failed attempt to rotate a key.
   histogram_tester.ExpectUniqueSample(
-      status_histogram_name(),
-      KeyRotationManager::RotationStatus::FAILURE_CANNOT_STORE_KEY, 1);
+      status_histogram_name(), RotationStatus::FAILURE_CANNOT_STORE_KEY, 1);
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 
@@ -397,9 +393,7 @@ TEST_P(KeyRotationManagerTest,
   // Should expect one failed attempt to rotate a key on first try.
   histogram_tester.ExpectUniqueSample(
       status_histogram_name(),
-      KeyRotationManager::RotationStatus::
-          FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED,
-      1);
+      RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED, 1);
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 
@@ -441,9 +435,7 @@ TEST_P(KeyRotationManagerTest,
   // Should expect one failed attempt to rotate a key with max tries.
   histogram_tester.ExpectUniqueSample(
       status_histogram_name(),
-      KeyRotationManager::RotationStatus::
-          FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED,
-      1);
+      RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED, 1);
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 

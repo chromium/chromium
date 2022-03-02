@@ -3,12 +3,16 @@
 # found in the LICENSE file.
 
 source_set("elevated_rotation") {
-  public = [ "key_rotation_manager.h" ]
+  public = [
+    "key_rotation_manager.h",
+    "metrics_util.h",
+  ]
 
   sources = [
     "key_rotation_manager.cc",
     "key_rotation_manager_impl.cc",
     "key_rotation_manager_impl.h",
+    "metrics_util.cc",
   ]
 
   deps = [

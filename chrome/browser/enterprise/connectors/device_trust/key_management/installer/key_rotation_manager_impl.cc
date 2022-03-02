@@ -9,11 +9,12 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/syslog_logging.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "crypto/unexportable_key.h"
 #include "url/gurl.h"
 
@@ -39,29 +40,6 @@ BPKUR::KeyType AlgorithmToType(
       return BPKUR::RSA_KEY;
     case crypto::SignatureVerifier::ECDSA_SHA256:
       return BPKUR::EC_KEY;
-  }
-}
-
-void RecordRotationStatus(const std::string& nonce,
-                          KeyRotationManager::RotationStatus status) {
-  if (nonce.empty()) {
-    base::UmaHistogramEnumeration(
-        "Enterprise.DeviceTrust.RotateSigningKey.NoNonce.Status", status);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Enterprise.DeviceTrust.RotateSigningKey.WithNonce.Status", status);
-  }
-}
-
-void RecordUploadCode(const std::string& nonce, int status_code) {
-  if (nonce.empty()) {
-    base::UmaHistogramSparse(
-        "Enterprise.DeviceTrust.RotateSigningKey.NoNonce.UploadCode",
-        status_code);
-  } else {
-    base::UmaHistogramSparse(
-        "Enterprise.DeviceTrust.RotateSigningKey.WithNonce.UploadCode",
-        status_code);
   }
 }
 
@@ -107,12 +85,16 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
   if (!new_key_pair) {
     RecordRotationStatus(nonce,
                          RotationStatus::FAILURE_CANNOT_GENERATE_NEW_KEY);
+    SYSLOG(ERROR) << "Device trust key rotation failed. Could not generate a "
+                     "new signing key.";
     return false;
   }
 
   if (!persistence_delegate_->StoreKeyPair(new_trust_level,
                                            new_key_pair->GetWrappedKey())) {
     RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_STORE_KEY);
+    SYSLOG(ERROR) << "Device trust key rotation failed. Could not write to "
+                     "signing key storage.";
     return false;
   }
 
@@ -121,6 +103,8 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
           new_trust_level, new_key_pair, nonce,
           request.mutable_browser_public_key_upload_request())) {
     RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_BUILD_REQUEST);
+    SYSLOG(ERROR) << "Device trust key rotation failed. Could not build the "
+                     "upload key request.";
     return false;
   }
 
@@ -168,6 +152,8 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
                          FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED_RESTORE_FAILED
                    : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED);
     RecordRotationStatus(nonce, status);
+    SYSLOG(ERROR) << "Device trust key rotation failed. Could not send public "
+                     "key to DM server.";
     return false;
   }
 
