@@ -25,7 +25,8 @@ async function testEncodingConfiguration(name, width, height, count, acc) {
 
   let support = await VideoEncoder.isConfigSupported(encoder_config);
   if (!support.supported) {
-    testRunner.notifyDone();
+    PerfTestRunner.log("Skipping test. Unsupported encoder config" +
+                       JSON.stringify(encoder_config));
     return;
   }
 

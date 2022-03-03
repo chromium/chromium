@@ -5,6 +5,7 @@
 </head>
 <body>
 <script src="../resources/runner.js"></script>
+<script src="videoFrame-utils.js"></script>
 <canvas id="canvas" width="1280" height="720"></canvas>
 
 <script id="fragment-shader" type="glsl">
@@ -25,35 +26,7 @@
 <script>
 
 (async function() {
-  const config = {
-    codec: "avc1.64001f",
-    codedWidth: 1280,
-    codedHeight: 720
-  };
-
-  const support = await VideoDecoder.isConfigSupported(config);
-  if (!support.supported) {
-    testRunner.notifyDone();
-    return;
-  }
-
-  const result = await fetch("resources/720p.h264");
-  const buf = await result.arrayBuffer();
-  const chunk = new EncodedVideoChunk({
-    timestamp: 0,
-    type: "key",
-    data: buf
-  });
-
-  let frame = null;
-  const decoder = new VideoDecoder({
-    output: f => frame = f,
-    error: e => PerfTestRunner.log("Decode error:" + e)
-  });
-  decoder.configure(config);
-  decoder.decode(chunk);
-  await decoder.flush();
-
+  let frame = await createDecodedFrame();
   if (frame == null) {
     PerfTestRunner.logFatalError("No frame decoded");
     return;

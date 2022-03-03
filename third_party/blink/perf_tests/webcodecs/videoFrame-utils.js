@@ -26,7 +26,8 @@ async function createDecodedFrame() {
 
   const support = await VideoDecoder.isConfigSupported(config);
   if (!support.supported) {
-    testRunner.notifyDone();
+    PerfTestRunner.logFatalError("Skipping test. Unsupported decoder config:" +
+                                 JSON.stringify(config));
     return null;
   }
 
