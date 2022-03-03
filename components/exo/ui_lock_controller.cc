@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/bluetooth_devices_observer.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
@@ -30,6 +31,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -78,6 +80,31 @@ bool IsUILockControllerEnabled(aura::Window* window) {
       window->GetProperty(chromeos::kUseOverviewToExitFullscreen) ||
       window->GetProperty(chromeos::kUseOverviewToExitPointerLock)) {
     return true;
+  }
+  return false;
+}
+
+// Return true if an external keyboard is attached to the device.
+//
+// Note: May mistakenly return true when certain non-keyboard devices are
+// attached; see crbug/882410, crbug/884096.
+//
+// Copied from ash/keyboard/virtual_keyboard_controller.cc.
+// TODO(cpelling): Refactor to avoid duplicating this logic.
+bool HasExternalKeyboard() {
+  ui::DeviceDataManager* device_data_manager =
+      ui::DeviceDataManager::GetInstance();
+
+  ash::BluetoothDevicesObserver bluetooth(base::DoNothing());
+
+  for (const ui::InputDevice& device :
+       device_data_manager->GetKeyboardDevices()) {
+    ui::InputDeviceType type = device.type;
+    if (type == ui::InputDeviceType::INPUT_DEVICE_USB ||
+        (type == ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH &&
+         bluetooth.IsConnectedBluetoothDevice(device))) {
+      return true;
+    }
   }
   return false;
 }
@@ -181,13 +208,24 @@ class ExitNotifier : public ui::EventHandler, public ash::WindowStateObserver {
           views::Widget::ClosedReason::kUnspecified);
     }
 
-    if (ash::KeyboardController::Get()->AreTopRowKeysFunctionKeys()) {
-      pointer_capture_notification_ =
-          CreateEscNotification(window_, IDS_PRESS_TO_EXIT_MOUSELOCK_TWO_KEYS,
-                                {IDS_APP_SEARCH_KEY, IDS_APP_OVERVIEW_KEY});
+    if (HasExternalKeyboard()) {
+      if (ash::KeyboardController::Get()->AreTopRowKeysFunctionKeys()) {
+        pointer_capture_notification_ =
+            CreateEscNotification(window_, IDS_PRESS_TO_EXIT_MOUSELOCK_TWO_KEYS,
+                                  {IDS_APP_META_KEY, IDS_APP_F5_KEY});
+      } else {
+        pointer_capture_notification_ = CreateEscNotification(
+            window_, IDS_PRESS_TO_EXIT_MOUSELOCK, {IDS_APP_F5_KEY});
+      }
     } else {
-      pointer_capture_notification_ = CreateEscNotification(
-          window_, IDS_PRESS_TO_EXIT_MOUSELOCK, {IDS_APP_OVERVIEW_KEY});
+      if (ash::KeyboardController::Get()->AreTopRowKeysFunctionKeys()) {
+        pointer_capture_notification_ =
+            CreateEscNotification(window_, IDS_PRESS_TO_EXIT_MOUSELOCK_TWO_KEYS,
+                                  {IDS_APP_SEARCH_KEY, IDS_APP_OVERVIEW_KEY});
+      } else {
+        pointer_capture_notification_ = CreateEscNotification(
+            window_, IDS_PRESS_TO_EXIT_MOUSELOCK, {IDS_APP_OVERVIEW_KEY});
+      }
     }
 
     pointer_capture_notification_->Show();
@@ -281,14 +319,26 @@ class ExitNotifier : public ui::EventHandler, public ash::WindowStateObserver {
     }
 
     if (window_->GetProperty(chromeos::kUseOverviewToExitFullscreen)) {
-      if (ash::KeyboardController::Get()->AreTopRowKeysFunctionKeys()) {
-        fullscreen_esc_notification_ = CreateEscNotification(
-            window_, IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN_TWO_KEYS,
-            {IDS_APP_SEARCH_KEY, IDS_APP_OVERVIEW_KEY});
+      if (HasExternalKeyboard()) {
+        if (ash::KeyboardController::Get()->AreTopRowKeysFunctionKeys()) {
+          fullscreen_esc_notification_ = CreateEscNotification(
+              window_, IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN_TWO_KEYS,
+              {IDS_APP_META_KEY, IDS_APP_F5_KEY});
+        } else {
+          fullscreen_esc_notification_ = CreateEscNotification(
+              window_, IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN,
+              {IDS_APP_F5_KEY});
+        }
       } else {
-        fullscreen_esc_notification_ = CreateEscNotification(
-            window_, IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN,
-            {IDS_APP_OVERVIEW_KEY});
+        if (ash::KeyboardController::Get()->AreTopRowKeysFunctionKeys()) {
+          fullscreen_esc_notification_ = CreateEscNotification(
+              window_, IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN_TWO_KEYS,
+              {IDS_APP_SEARCH_KEY, IDS_APP_OVERVIEW_KEY});
+        } else {
+          fullscreen_esc_notification_ = CreateEscNotification(
+              window_, IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN,
+              {IDS_APP_OVERVIEW_KEY});
+        }
       }
     } else {
       fullscreen_esc_notification_ = CreateEscNotification(
