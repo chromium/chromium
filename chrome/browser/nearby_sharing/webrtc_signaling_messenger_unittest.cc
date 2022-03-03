@@ -25,14 +25,6 @@ const char kOAuthToken[] = "oauth_token";
 const char kTestAccount[] = "test@test.test";
 const char kCountryCode[] = "ZZ";
 
-chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
-CreateReceiveMessagesResponse(const std::string& msg) {
-  chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
-      response;
-  response.mutable_inbox_message()->set_message(msg);
-  return response;
-}
-
 class FakeIncomingMessagesListener
     : public sharing::mojom::IncomingMessagesListener {
  public:

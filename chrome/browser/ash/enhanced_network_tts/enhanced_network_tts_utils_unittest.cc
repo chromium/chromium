@@ -163,7 +163,7 @@ TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
   EXPECT_TRUE(result->is_data());
   EXPECT_EQ(result->get_data()->audio, std::vector<uint8_t>({1, 2, 5}));
   EXPECT_TRUE(result->get_data()->last_data);
-  EXPECT_EQ(result->get_data()->time_info[0]->text_offset, 4);
+  EXPECT_EQ(result->get_data()->time_info[0]->text_offset, 4u);
 
   result = UnpackJsonResponse(*json, 4 /* start_index */,
                               false /* is_last_request */);
@@ -171,7 +171,7 @@ TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
   EXPECT_TRUE(result->is_data());
   EXPECT_EQ(result->get_data()->audio, std::vector<uint8_t>({1, 2, 5}));
   EXPECT_FALSE(result->get_data()->last_data);
-  EXPECT_EQ(result->get_data()->time_info[0]->text_offset, 4);
+  EXPECT_EQ(result->get_data()->time_info[0]->text_offset, 4u);
 }
 
 TEST_F(EnhancedNetworkTtsUtilsTest,

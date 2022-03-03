@@ -1099,7 +1099,7 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceConvertsSparseDiskToFixed) {
           [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
                  response_or_error) {
             EXPECT_TRUE(response_or_error);
-            EXPECT_EQ(response_or_error.Value(), 0);
+            EXPECT_EQ(response_or_error.Value(), 0u);
           }));
   disk_manager_->ReleaseSpace(1 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();

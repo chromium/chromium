@@ -1169,7 +1169,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
   notification_manager->HandleIOTaskProgress(status);
 
   // Check: We have the 1 notification.
-  ASSERT_EQ(1, GetNotificationCount());
+  ASSERT_EQ(1u, GetNotificationCount());
 
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -1185,7 +1185,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
   notification_manager->HandleIOTaskProgress(status);
 
   // Check: We have the same notification.
-  ASSERT_EQ(1, GetNotificationCount());
+  ASSERT_EQ(1u, GetNotificationCount());
   notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
           "swa-file-operation-1");
@@ -1198,7 +1198,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
   notification_manager->HandleIOTaskProgress(status);
 
   // Notification should disappear.
-  ASSERT_EQ(0, GetNotificationCount());
+  ASSERT_EQ(0u, GetNotificationCount());
 }
 
 TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
@@ -1223,14 +1223,14 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
   const io_task::IOTaskId task_id = io_task_controller.Add(std::move(task));
 
   // Check: We have the 1 notification.
-  ASSERT_EQ(1, GetNotificationCount());
+  ASSERT_EQ(1u, GetNotificationCount());
 
   // Click on the cancel button.
   notification_platform_bridge->ClickButtonIndexById("swa-file-operation-1",
                                                      /*button_index=*/0);
 
   // Notification should disappear.
-  ASSERT_EQ(0, GetNotificationCount());
+  ASSERT_EQ(0u, GetNotificationCount());
 
   // The last status observed should be Cancelled.
   ASSERT_EQ(io_task::State::kCancelled, task_statuses[task_id].back());

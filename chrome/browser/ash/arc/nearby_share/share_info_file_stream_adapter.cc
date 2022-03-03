@@ -187,7 +187,7 @@ void ShareInfoFileStreamAdapter::OnProducerStreamUpdate(
 void ShareInfoFileStreamAdapter::WriteToPipe() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(producer_stream_.is_valid());
-  DCHECK_NE(pipe_write_size_, 0);
+  DCHECK_NE(pipe_write_size_, 0u);
 
   while (true) {
     uint32_t bytes_to_write = pipe_write_size_ - pipe_write_offset_;

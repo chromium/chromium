@@ -565,7 +565,7 @@ TEST_F(LorgnetteScannerManagerTest, GetCaps) {
   WaitForResult();
   ASSERT_TRUE(scanner_capabilities());
   const auto caps = scanner_capabilities().value();
-  ASSERT_EQ(caps.resolutions_size(), 1u);
+  ASSERT_EQ(caps.resolutions_size(), 1);
   EXPECT_EQ(caps.resolutions()[0], 300u);
   EXPECT_EQ(caps.sources_size(), 0u);
   ASSERT_EQ(caps.color_modes_size(), 1u);

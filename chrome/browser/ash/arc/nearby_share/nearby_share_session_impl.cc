@@ -261,7 +261,7 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
 void NearbyShareSessionImpl::OnPreparedDirectory(base::File::Error result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(arc_window_);
-  DCHECK_GT(file_handler_->GetTotalSizeOfFiles(), 0);
+  DCHECK_GT(file_handler_->GetTotalSizeOfFiles(), 0u);
 
   DVLOG(1) << __func__;
   if (result == base::File::FILE_ERROR_NO_SPACE) {

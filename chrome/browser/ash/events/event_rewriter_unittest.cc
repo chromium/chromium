@@ -4029,7 +4029,7 @@ void EventRewriterTest::DontRewriteIfNotRewritten(int right_click_flags) {
 
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick) {
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_ALT_DOWN);
-  EXPECT_EQ(message_center_.NotificationCount(), 0);
+  EXPECT_EQ(message_center_.NotificationCount(), 0u);
 }
 
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick_New) {
@@ -4038,14 +4038,14 @@ TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick_New) {
   scoped_feature_list_.InitAndEnableFeature(
       ::features::kImprovedKeyboardShortcuts);
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_ALT_DOWN);
-  EXPECT_EQ(message_center_.NotificationCount(), 0);
+  EXPECT_EQ(message_center_.NotificationCount(), 0u);
 }
 
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_SearchClickIsRightClick) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kUseSearchClickForRightClick);
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN);
-  EXPECT_EQ(message_center_.NotificationCount(), 0);
+  EXPECT_EQ(message_center_.NotificationCount(), 0u);
 }
 
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickDeprecated) {
@@ -4053,7 +4053,7 @@ TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickDeprecated) {
   // generate a notification.
   scoped_feature_list_.InitAndEnableFeature(::features::kDeprecateAltClick);
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN);
-  EXPECT_EQ(message_center_.NotificationCount(), 0);
+  EXPECT_EQ(message_center_.NotificationCount(), 0u);
 }
 
 TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
@@ -4090,7 +4090,7 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
     EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
 
     // Expect a deprecation notification.
-    EXPECT_EQ(message_center_.NotificationCount(), 1);
+    EXPECT_EQ(message_center_.NotificationCount(), 1u);
     ClearNotifications();
   }
   {
@@ -4106,7 +4106,7 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
     EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
 
     // Don't expect a new notification on release.
-    EXPECT_EQ(message_center_.NotificationCount(), 0);
+    EXPECT_EQ(message_center_.NotificationCount(), 0u);
   }
 
   // No rewrite or notification for non-touchpad devices.
@@ -4123,7 +4123,7 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
     EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
 
     // No notification expected for this case.
-    EXPECT_EQ(message_center_.NotificationCount(), 0);
+    EXPECT_EQ(message_center_.NotificationCount(), 0u);
   }
   {
     ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
@@ -4136,7 +4136,7 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
     EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
 
     // No notification expected for this case.
-    EXPECT_EQ(message_center_.NotificationCount(), 0);
+    EXPECT_EQ(message_center_.NotificationCount(), 0u);
   }
 }
 
@@ -4233,7 +4233,7 @@ TEST_F(EventRewriterTest, IdentifyKeyboardCustomLayout) {
   EXPECT_EQ(out_layout, ui::EventRewriterChromeOS::kKbdTopRowLayoutCustom);
 
   // Basic inspection to match kKbdDefaultCustomTopRowLayout
-  EXPECT_EQ(15, scan_code_map.size());
+  EXPECT_EQ(15u, scan_code_map.size());
 
   ASSERT_TRUE(scan_code_map.contains(1));
   EXPECT_EQ(ui::VKEY_F1, scan_code_map[1].key_code);

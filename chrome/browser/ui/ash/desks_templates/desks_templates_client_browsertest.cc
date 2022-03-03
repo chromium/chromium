@@ -1125,7 +1125,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetDeskTemplateJson) {
 // once the extension is deprecated.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUIBasic) {
   auto* desk_model = DesksTemplatesClient::Get()->GetDeskModel();
-  ASSERT_EQ(0, desk_model->GetEntryCount());
+  ASSERT_EQ(0u, desk_model->GetEntryCount());
 
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
@@ -1146,7 +1146,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUIBasic) {
 
   ash::WaitForDesksTemplatesUI();
 
-  EXPECT_EQ(1, desk_model->GetEntryCount());
+  EXPECT_EQ(1u, desk_model->GetEntryCount());
 
   // Tests that since we have one template right now, so that the expanded state
   // desk button is shown, and the desk templates grid has one item.
@@ -1999,7 +1999,7 @@ class DesksTemplatesClientArcTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
                        SystemUILaunchTemplateWithArcApp) {
   auto* desk_model = DesksTemplatesClient::Get()->GetDeskModel();
-  ASSERT_EQ(0, desk_model->GetEntryCount());
+  ASSERT_EQ(0u, desk_model->GetEntryCount());
 
   constexpr char kTestAppPackage[] = "test.arc.app.package";
   arc_helper()->InstallTestApps(kTestAppPackage, /*multi_app=*/false);
@@ -2026,7 +2026,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
   ash::WaitForOverviewEnterAnimation();
 
   ClickSaveDeskAsTemplateButton();
-  ASSERT_EQ(1, desk_model->GetEntryCount());
+  ASSERT_EQ(1u, desk_model->GetEntryCount());
 
   // Exit overview and close the Arc window. We'll need to verify if it
   // reopens later.

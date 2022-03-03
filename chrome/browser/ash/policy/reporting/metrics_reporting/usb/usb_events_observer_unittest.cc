@@ -94,7 +94,8 @@ TEST_F(UsbEventsObserverTest, UsbOnRemove) {
   EXPECT_THAT(usb_telemetry.vendor(), StrEq(kTestVendor));
   EXPECT_THAT(usb_telemetry.vid(), Eq(kTestVid));
   EXPECT_EQ(metric_data.event_data().type(), MetricEventType::USB_REMOVED);
-  ASSERT_EQ(usb_telemetry.categories().size(), kTestCategories.size());
+  ASSERT_EQ(static_cast<size_t>(usb_telemetry.categories().size()),
+            kTestCategories.size());
 
   for (size_t i = 0; i < kTestCategories.size(); ++i) {
     EXPECT_THAT(usb_telemetry.categories()[i], StrEq(kTestCategories[i]));
@@ -132,7 +133,8 @@ TEST_F(UsbEventsObserverTest, UsbOnAdd) {
   EXPECT_THAT(usb_telemetry.vendor(), StrEq(kTestVendor));
   EXPECT_THAT(usb_telemetry.vid(), Eq(kTestVid));
   EXPECT_EQ(metric_data.event_data().type(), MetricEventType::USB_ADDED);
-  ASSERT_THAT(usb_telemetry.categories().size(), Eq(kTestCategories.size()));
+  ASSERT_EQ(static_cast<size_t>(usb_telemetry.categories().size()),
+            kTestCategories.size());
 
   for (size_t i = 0; i < kTestCategories.size(); ++i) {
     EXPECT_THAT(usb_telemetry.categories()[i], StrEq(kTestCategories[i]));

@@ -961,7 +961,7 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithTwoPages) {
 
   const std::vector<std::string> scanned_images =
       scan_service_->GetScannedImagesForTesting();
-  EXPECT_EQ(1, scanned_images.size());
+  EXPECT_EQ(1u, scanned_images.size());
   EXPECT_EQ(second_scanned_image, scanned_images[0]);
 
   // Expect 1 record of the Scanning.NumPagesScanned metric in the 1 pages

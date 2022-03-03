@@ -1008,7 +1008,7 @@ TEST_F(VolumeManagerTest, VolumeManagerInitializeMyFilesVolume) {
   volume_manager()->Initialize();  // Adds "Downloads"
   std::vector<base::WeakPtr<Volume>> volume_list =
       volume_manager()->GetVolumeList();
-  ASSERT_GT(volume_list.size(), 0);
+  ASSERT_GT(volume_list.size(), 0u);
   auto volume = base::ranges::find_if(volume_list, [](auto& v) {
     return v->volume_id() == "downloads:MyFiles";
   });

@@ -300,7 +300,7 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
     if (has_files) {
       ResolveImages();
     } else {
-      DCHECK_GT(image_preview_->GetImageViewCount(), 0);
+      DCHECK_GT(image_preview_->GetImageViewCount(), 0u);
       const auto icon_color = ColorProvider::Get()->GetContentLayerColor(
           ColorProvider::ContentLayerType::kIconColorProminent);
       gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(

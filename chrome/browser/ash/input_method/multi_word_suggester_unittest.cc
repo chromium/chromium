@@ -785,7 +785,7 @@ TEST_F(MultiWordSuggesterTest,
   suggester_->OnSurroundingTextChanged(u"why aren't", 10, 10);
   suggester_->Suggest(u"why aren't", 10, 10);
 
-  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 0);
+  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 0u);
 }
 
 TEST_F(MultiWordSuggesterTest, ShowingSuggestionsTriggersAnnouncement) {
@@ -800,7 +800,7 @@ TEST_F(MultiWordSuggesterTest, ShowingSuggestionsTriggersAnnouncement) {
   suggester_->Suggest(u"why are", 7, 7);
   suggester_->OnExternalSuggestionsUpdated(suggestions);
 
-  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 1);
+  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 1u);
   EXPECT_EQ(suggestion_handler_.GetAnnouncements().back(),
             u"predictive writing candidate shown, press tab to accept");
 }
@@ -824,7 +824,7 @@ TEST_F(MultiWordSuggesterTest,
   suggester_->OnSurroundingTextChanged(u"why aren't", 10, 10);
   suggester_->Suggest(u"why aren't", 10, 10);
 
-  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 1);
+  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 1u);
   EXPECT_EQ(suggestion_handler_.GetAnnouncements().back(),
             u"predictive writing candidate shown, press tab to accept");
 }
@@ -842,7 +842,7 @@ TEST_F(MultiWordSuggesterTest, AcceptingSuggestionTriggersAnnouncement) {
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
 
-  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2);
+  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2u);
   EXPECT_EQ(suggestion_handler_.GetAnnouncements().back(),
             u"predictive writing candidate inserted");
 }
@@ -863,7 +863,7 @@ TEST_F(MultiWordSuggesterTest,
   suggester_->OnSurroundingTextChanged(u"why aren", 8, 8);
   suggester_->Suggest(u"why aren", 8, 8);
 
-  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2);
+  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2u);
 }
 
 TEST_F(MultiWordSuggesterTest, DismissingSuggestionTriggersAnnouncement) {
@@ -879,7 +879,7 @@ TEST_F(MultiWordSuggesterTest, DismissingSuggestionTriggersAnnouncement) {
   suggester_->OnExternalSuggestionsUpdated(suggestions);
   suggester_->DismissSuggestion();
 
-  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2);
+  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2u);
   EXPECT_EQ(suggestion_handler_.GetAnnouncements().back(),
             u"predictive writing candidate dismissed");
 }
@@ -900,7 +900,7 @@ TEST_F(MultiWordSuggesterTest,
   suggester_->OnSurroundingTextChanged(u"why aren", 8, 8);
   suggester_->Suggest(u"why aren", 8, 8);
 
-  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2);
+  ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 2u);
 }
 
 }  // namespace input_method

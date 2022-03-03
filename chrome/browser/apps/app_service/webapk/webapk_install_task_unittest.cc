@@ -213,7 +213,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
   ASSERT_EQ(fake_webapk_instance()->handled_packages().size(), 1u);
   ASSERT_EQ(fake_webapk_instance()->handled_packages().count(
                 "org.chromium.webapk.some_package"),
-            1);
+            1u);
 
   ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),
               testing::ElementsAre(app_id));
@@ -256,9 +256,9 @@ TEST_F(WebApkInstallTaskTest, ShareTarget) {
   EXPECT_EQ(manifest.share_targets(0).params().url(), "share_url");
   EXPECT_FALSE(manifest.share_targets(0).params().has_title());
   EXPECT_EQ(manifest.share_targets(0).params().files(0).name(), "images");
-  EXPECT_EQ(manifest.share_targets(0).params().files(0).accept_size(), 1u);
+  EXPECT_EQ(manifest.share_targets(0).params().files(0).accept_size(), 1);
   EXPECT_EQ(manifest.share_targets(0).params().files(0).accept(0), "image/*");
-  EXPECT_EQ(manifest.share_targets(0).params().files(1).accept_size(), 2u);
+  EXPECT_EQ(manifest.share_targets(0).params().files(1).accept_size(), 2);
 }
 
 TEST_F(WebApkInstallTaskTest, NoIconInManifest) {
@@ -303,7 +303,7 @@ TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
   ASSERT_FALSE(InstallWebApk(app_id));
   ASSERT_EQ(fake_webapk_instance()->handled_packages().count(
                 "org.chromium.webapk.some_package"),
-            1);
+            1u);
   ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0u);
   histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
                                apps::WebApkInstallStatus::kGooglePlayError, 1);
