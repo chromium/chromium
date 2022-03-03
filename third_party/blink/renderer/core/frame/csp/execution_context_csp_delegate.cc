@@ -284,11 +284,11 @@ void ExecutionContextCSPDelegate::DispatchViolationEventInternal(
 
   if (auto* document = GetDocument()) {
     if (element && element->isConnected() && element->GetDocument() == document)
-      element->EnqueueEvent(event, TaskType::kInternalDefault);
+      element->DispatchEvent(event);
     else
-      document->EnqueueEvent(event, TaskType::kInternalDefault);
+      document->DispatchEvent(event);
   } else if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_)) {
-    scope->EnqueueEvent(event, TaskType::kInternalDefault);
+    scope->DispatchEvent(event);
   }
 }
 
