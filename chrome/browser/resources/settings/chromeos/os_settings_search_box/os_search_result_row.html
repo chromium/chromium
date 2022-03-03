@@ -3,9 +3,12 @@
     width: 100%;
   }
 
-  :host([selected]) [focus-row-container],
-  :host(:not([selected])) [focus-row-container]:hover {
+  :host([selected]) [focus-row-container] {
     background-color: var(--cros-highlight-color);
+  }
+
+  :host(:not([selected])) [focus-row-container]:hover {
+    background-color: var(--cros-highlight-color-hover);
   }
 
   :host-context([dir=rtl]) #actionTypeIcon {
