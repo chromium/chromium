@@ -14,6 +14,7 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
@@ -61,7 +62,7 @@ class ManagedSessionServiceTest
     return profile;
   }
 
-  void GuestLogin() {
+  std::unique_ptr<TestingProfile> GuestLogin() {
     user_manager::User* const user = user_manager_->AddGuestUser();
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(user->GetAccountId().GetUserEmail());
@@ -70,6 +71,7 @@ class ManagedSessionServiceTest
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                                  profile.get());
     user_manager_->LoginUser(user->GetAccountId(), true);
+    return profile;
   }
 
   ManagedSessionService* managed_session_service() {
@@ -90,8 +92,6 @@ class ManagedSessionServiceTest
 
   int ObservedLoginCount() { return observed_login_count_; }
 
-  int ObservedGuestLoginCount() { return observed_guest_login_count_; }
-
   int ObservedSessionTerminationCount() {
     return observed_session_termination_count_;
   }
@@ -103,7 +103,6 @@ class ManagedSessionServiceTest
     logged_in_ = profile;
     ++observed_login_count_;
   }
-  void OnGuestLogin() override { ++observed_guest_login_count_; }
   void OnLogout(Profile* profile) override { logged_out_ = profile; }
   void OnSessionTerminationStarted(const user_manager::User*) override {
     ++observed_session_termination_count_;
@@ -137,8 +136,6 @@ class ManagedSessionServiceTest
   std::unique_ptr<ManagedSessionService> managed_session_service_;
 
   int observed_login_count_ = 0;
-
-  int observed_guest_login_count_ = 0;
 
   int observed_session_termination_count_ = 0;
 };
@@ -213,6 +210,15 @@ TEST_F(ManagedSessionServiceTest, OnUserProfileLoadedPrimary) {
   EXPECT_TRUE(unaffiliated_profile->IsSameOrParent(logged_in_));
 }
 
+TEST_F(ManagedSessionServiceTest, OnUserProfileLoadedGuest) {
+  const auto guest_profile = GuestLogin();
+  managed_session_service()->AddObserver(this);
+
+  session_manager()->NotifyUserProfileLoaded(user_manager::GuestAccountId());
+
+  EXPECT_TRUE(guest_profile->IsSameOrParent(logged_in_));
+}
+
 TEST_F(ManagedSessionServiceTest,
        OnProfileWillBeDestroyedAffiliatedAndPrimary) {
   AccountId affiliated_account_id =
@@ -251,6 +257,16 @@ TEST_F(ManagedSessionServiceTest, OnProfileWillBeDestroyedPrimary) {
   unaffiliated_profile->MaybeSendDestroyedNotification();
 
   EXPECT_TRUE(unaffiliated_profile->IsSameOrParent(logged_in_));
+}
+
+TEST_F(ManagedSessionServiceTest, OnProfileWillBeDestroyedGuest) {
+  const auto guest_profile = GuestLogin();
+  managed_session_service()->AddObserver(this);
+
+  session_manager()->NotifyUserProfileLoaded(user_manager::GuestAccountId());
+  guest_profile->MaybeSendDestroyedNotification();
+
+  EXPECT_TRUE(guest_profile->IsSameOrParent(logged_out_));
 }
 
 TEST_F(ManagedSessionServiceTest, SuspendDone) {
@@ -321,19 +337,23 @@ TEST_F(ManagedSessionServiceTest, LoginBeforeCreate) {
   EXPECT_EQ(ObservedSessionTerminationCount(), 1);
 }
 
-TEST_F(ManagedSessionServiceTest, GuestLogin) {
-  GuestLogin();
+TEST_F(ManagedSessionServiceTest, GuestLoginBeforeCreate) {
+  const auto guest_profile = GuestLogin();
 
   ManagedSessionService managed_session_service;
   managed_session_service.AddObserver(this);
 
-  EXPECT_EQ(ObservedLoginCount(), 0);
-  ASSERT_EQ(ObservedGuestLoginCount(), 1);
+  EXPECT_EQ(ObservedLoginCount(), 1);
+  EXPECT_TRUE(guest_profile->IsSameOrParent(logged_in_));
 
   ::ash::SessionTerminationManager::Get()->StopSession(
       login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);
 
   EXPECT_EQ(ObservedSessionTerminationCount(), 1);
+
+  guest_profile->MaybeSendDestroyedNotification();
+
+  EXPECT_TRUE(guest_profile->IsSameOrParent(logged_out_));
 }
 
 TEST_F(ManagedSessionServiceTest, LoggedInProfileNotCreated) {

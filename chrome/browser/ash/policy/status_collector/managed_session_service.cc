@@ -49,13 +49,9 @@ void ManagedSessionService::AddObserver(
     ManagedSessionService::Observer* observer) {
   observers_.AddObserver(observer);
   if (is_logged_in_observed_) {
-    if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
-      observer->OnGuestLogin();
-    } else {
-      auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
-          user_manager::UserManager::Get()->GetPrimaryUser());
-      observer->OnLogin(profile);
-    }
+    auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
+        user_manager::UserManager::Get()->GetPrimaryUser());
+    observer->OnLogin(profile);
   }
 }
 
@@ -177,9 +173,7 @@ void ManagedSessionService::SetLoginStatus() {
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_logged_in_observed_ = true;
-  if (!user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
-    profile_observations_.AddObservation(profile);
-  }
+  profile_observations_.AddObservation(profile);
   if (ash::SessionTerminationManager::Get()) {
     ash::SessionTerminationManager::Get()->AddObserver(this);
   }

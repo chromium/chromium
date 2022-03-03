@@ -41,9 +41,6 @@ class ManagedSessionService : public session_manager::SessionManagerObserver,
     // Occurs when a user has logged in.
     virtual void OnLogin(Profile* profile) {}
 
-    // Occurs when a user login as guest.
-    virtual void OnGuestLogin() {}
-
     // Occurs when a user has logged out.
     // TODO(b/194215634):: Check if this function can be replaced by
     // `OnSessionTerminationStarted`
