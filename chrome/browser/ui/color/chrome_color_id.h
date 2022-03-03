@@ -123,6 +123,10 @@
   E_CPONLY(kColorTabForegroundActiveFrameInactive) \
   E_CPONLY(kColorTabForegroundInactiveFrameActive) \
   E_CPONLY(kColorTabForegroundInactiveFrameInactive) \
+  E(kColorTabHoverCardBackground, \
+    ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_BACKGROUND) \
+  E(kColorTabHoverCardForeground, \
+    ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_FOREGROUND) \
   /* The colors used for tab groups in the tabstrip. */ \
   E(kColorTabGroupTabStripFrameActiveGrey, \
     ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREY) \

@@ -327,6 +327,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabGroupBookmarkBarOrange] = SelectColorBasedOnDarkInputOrMode(
       dark_mode, input_transform, flat_orange, {gfx::kGoogleOrange050});
 
+  mixer[kColorTabHoverCardBackground] = {dark_mode ? gfx::kGoogleGrey900
+                                                   : gfx::kGoogleGrey050};
+  mixer[kColorTabHoverCardForeground] = {dark_mode ? gfx::kGoogleGrey700
+                                                   : gfx::kGoogleGrey300};
   mixer[kColorThumbnailTabBackground] = ui::BlendForMinContrast(
       ui::kColorAccent, ui::kColorFrameActive, absl::nullopt,
       color_utils::kMinimumVisibleContrastRatio);
