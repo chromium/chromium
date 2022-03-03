@@ -11,7 +11,6 @@ goog.require('AutomationUtil');
 goog.require('AutoScrollHandler');
 goog.require('BackgroundKeyboardHandler');
 goog.require('BrailleCommandData');
-goog.require('BrailleCommandHandler');
 goog.require('BrailleKeyCommand');
 goog.require('ChromeVoxBackground');
 goog.require('ChromeVoxEditableTextBase');

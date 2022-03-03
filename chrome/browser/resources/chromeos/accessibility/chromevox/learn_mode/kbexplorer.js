@@ -45,7 +45,8 @@ KbExplorer = class {
     chrome.accessibilityPrivate.onAccessibilityGesture.addListener(
         KbExplorer.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, true);
-    window.backgroundWindow['BrailleCommandHandler']['setEnabled'](false);
+    chrome.runtime.sendMessage(
+        {target: 'BrailleCommandHandler', action: 'setEnabled', value: false});
     chrome.runtime.sendMessage(
         {target: 'GestureCommandHandler', action: 'setEnabled', value: false});
 
@@ -296,7 +297,8 @@ KbExplorer = class {
     chrome.accessibilityPrivate.onAccessibilityGesture.removeListener(
         KbExplorer.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, false);
-    window.backgroundWindow['BrailleCommandHandler']['setEnabled'](true);
+    chrome.runtime.sendMessage(
+        {target: 'BrailleCommandHandler', action: 'setEnabled', value: true});
     chrome.runtime.sendMessage(
         {target: 'GestureCommandHandler', action: 'setEnabled', value: true});
   }

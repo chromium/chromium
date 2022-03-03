@@ -35,7 +35,6 @@ chromevox_modules = [
   "background/braille_background.js",
   "background/braille_captions_background.js",
   "background/braille_command_data.js",
-  "background/braille_command_handler.js",
   "background/chromevox_state.js",
   "background/classic_background.js",
   "background/color.js",
@@ -119,6 +118,7 @@ chromevox_modules = [
 chromevox_es6_modules = [
   "../common/instance_checker.js",
   "background/background.js",
+  "background/braille_command_handler.js",
   "background/command_handler.js",
   "background/download_handler.js",
   "background/earcon_engine.js",
