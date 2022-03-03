@@ -268,14 +268,14 @@ std::string ExtractStringInGlobalScope(content::WebContents* web_ui,
   return result;
 }
 
-// Waits for the "shownav" attribute to show up in the MediaApp's current
-// handler. Also checks the panel isn't open indicating an edit is not in
-// progress. This prevents trying to traverse a directory before other files are
-// available / while editing.
+// Waits for the "filetraversalenabled" attribute to show up in the MediaApp's
+// current handler. Also checks the panel isn't open indicating an edit is not
+// in progress. This prevents trying to traverse a directory before other files
+// are available / while editing.
 content::EvalJsResult WaitForNavigable(content::WebContents* web_ui) {
   constexpr char kScript[] = R"(
       (async function waitForNavigable() {
-        await waitForNode(':not([panelopen])[shownav]');
+        await waitForNode(':not([panelopen])[filetraversalenabled]');
       })();
   )";
 
@@ -1189,7 +1189,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest, MediaControls) {
   EXPECT_EQ(u"Gallery", observer.source_title);
 }
 
-// Test that the MediaApp can navigate other files in the directory of a file
+// Test that the MediaApp can traverse other files in the directory of a file
 // that was opened, even if those files have changed since launch.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
                        FileOpenCanTraverseDirectory) {
