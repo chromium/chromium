@@ -56,15 +56,13 @@ class FirstPartySetsLoader {
   // declarations, and assigns to `sets_`.
   void OnReadSetsFile(const std::string& raw_sets);
 
-  // We must ensure there's no intersection between the manually-specified set
-  // and the sets that came from Component Updater. (When reconciling the
-  // manually-specified set and `sets_`, entries in the manually-specified set
-  // always win.) We must also ensure that `sets_` includes the set described by
-  // `manually_specified_set_`.
+  // Modifies `sets_` to include the CLI-provided set, if any. Must not be
+  // called until the loader has received the CLI flag value via
+  // `SetManuallySpecifiedSet`, and the public sets via `SetComponentSets`.
   void ApplyManuallySpecifiedSet();
 
   // Checks the required inputs have been received, and if so, invokes the
-  // callback `on_load_complete_`.
+  // callback `on_load_complete_`, after merging sets appropriately.
   void MaybeFinishLoading();
 
   // Represents the mapping of site -> site, where keys are members of sets,

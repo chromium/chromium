@@ -80,7 +80,6 @@ void FirstPartySetsLoader::SetManuallySpecifiedSet(
   manually_specified_set_ = {CanonicalizeSet(base::SplitString(
       flag_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY))};
 
-  ApplyManuallySpecifiedSet();
   MaybeFinishLoading();
 }
 
@@ -114,7 +113,6 @@ void FirstPartySetsLoader::OnReadSetsFile(const std::string& raw_sets) {
   std::istringstream stream(raw_sets);
   sets_ = FirstPartySetParser::ParseSetsFromStream(stream);
 
-  ApplyManuallySpecifiedSet();
   component_sets_parse_progress_ = Progress::kFinished;
   MaybeFinishLoading();
 }
@@ -133,10 +131,10 @@ void FirstPartySetsLoader::DisposeFile(base::File sets_file) {
 
 void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!manually_specified_set_.has_value() ||
-      !manually_specified_set_.value().has_value()) {
+  DCHECK_EQ(component_sets_parse_progress_, Progress::kFinished);
+  DCHECK(manually_specified_set_.has_value());
+  if (!manually_specified_set_.value().has_value())
     return;
-  }
 
   const net::SchemefulSite& manual_owner =
       manually_specified_set_.value()->first;
@@ -179,6 +177,7 @@ void FirstPartySetsLoader::MaybeFinishLoading() {
   if (component_sets_parse_progress_ != Progress::kFinished ||
       !manually_specified_set_.has_value())
     return;
+  ApplyManuallySpecifiedSet();
   std::move(on_load_complete_).Run(std::move(sets_));
 }
 
