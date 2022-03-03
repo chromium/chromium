@@ -228,12 +228,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // frame's origin.
   virtual std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() = 0;
 
-  // Rewrites the request URL just before sending to the URL loader.
-  //
-  // TODO(crbug.com/1238829): This is a workaround for Pepper not supporting
-  // chrome-untrusted://print/ URLs.
-  virtual std::string RewriteRequestUrl(base::StringPiece url) const;
-
   bool HandleInputEvent(const blink::WebInputEvent& event);
 
   // Handles `postMessage()` calls from the embedder.

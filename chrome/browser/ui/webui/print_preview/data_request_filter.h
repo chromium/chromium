@@ -28,15 +28,13 @@ struct PrintPreviewIdAndPageIndex {
 // Adds a request filter for serving preview PDF data.
 void AddDataRequestFilter(content::WebUIDataSource& source);
 
-// Parses a preview PDF data path (i.e., what comes after chrome://print/ or
+// Parses a preview PDF data path (i.e., what comes after
 // chrome-untrusted://print/).
 //
 // The format for requesting preview PDF data is as follows:
-//   chrome://print/<ui_id>/<page_index>/print.pdf
 //   chrome-untrusted://print/<ui_id>/<page_index>/print.pdf
 //
 // Example:
-//   chrome://print/123/10/print.pdf
 //   chrome-untrusted://print/123/10/print.pdf
 absl::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
     const std::string& path);

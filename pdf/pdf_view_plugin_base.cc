@@ -796,7 +796,7 @@ void PdfViewPluginBase::LoadUrl(base::StringPiece url, bool is_print_preview) {
     last_progress_sent_ = 0;
 
   UrlRequest request;
-  request.url = RewriteRequestUrl(url);
+  request.url = static_cast<std::string>(url);
   request.method = "GET";
   request.ignore_redirects = true;
 
@@ -807,10 +807,6 @@ void PdfViewPluginBase::LoadUrl(base::StringPiece url, bool is_print_preview) {
       base::BindOnce(is_print_preview ? &PdfViewPluginBase::DidOpenPreview
                                       : &PdfViewPluginBase::DidOpen,
                      GetWeakPtr(), std::move(loader)));
-}
-
-std::string PdfViewPluginBase::RewriteRequestUrl(base::StringPiece url) const {
-  return std::string(url);
 }
 
 void PdfViewPluginBase::InvalidateAfterPaintDone() {
