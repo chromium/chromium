@@ -200,6 +200,13 @@ void FakeFileSystemInstance::AddRoot(const Root& root) {
   roots_.insert(std::make_pair(key, root));
 }
 
+void FakeFileSystemInstance::AddOpenSession(const std::string& url_id,
+                                            const int fd) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_EQ(0u, open_urls_.count(url_id));
+  open_urls_.insert(std::make_pair(url_id, fd));
+}
+
 void FakeFileSystemInstance::SetGetLastChangeTimeCallback(
     GetLastChangeTimeCallback ctime_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -381,8 +388,9 @@ void FakeFileSystemInstance::OpenFileToRead(const std::string& url,
       base::BindOnce(std::move(callback), std::move(wrapped_handle)));
 }
 
-void FakeFileSystemInstance::OpenFileToWrite(const std::string& url,
-                                             OpenFileToWriteCallback callback) {
+void FakeFileSystemInstance::DEPRECATED_OpenFileToWrite(
+    const std::string& url,
+    DEPRECATED_OpenFileToWriteCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto iter = files_.find(url);
   if (iter == files_.end()) {
@@ -402,6 +410,46 @@ void FakeFileSystemInstance::OpenFileToWrite(const std::string& url,
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(wrapped_handle)));
+}
+
+void FakeFileSystemInstance::CloseFileSession(
+    const std::string& url_id,
+    const std::string& error_message) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto iter = open_urls_.find(url_id);
+  if (iter != open_urls_.end())
+    return;
+  open_urls_.erase(url_id);
+}
+
+void FakeFileSystemInstance::OpenFileSessionToWrite(
+    const GURL& url,
+    OpenFileSessionToWriteCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  constexpr char kUrlId[] = "url_id";
+  auto iter = files_.find(url.spec());
+  if (iter == files_.end()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), mojom::FileSessionPtr()));
+    return;
+  }
+  const File& file = iter->second;
+  base::ScopedFD fd =
+      file.seekable == File::Seekable::YES
+          ? CreateRegularFileDescriptor(file, base::File::Flags::FLAG_OPEN |
+                                                  base::File::Flags::FLAG_WRITE)
+          : CreateStreamFileDescriptorToWrite(file.url);
+  DCHECK(fd.is_valid());
+  AddOpenSession(kUrlId, fd.get());
+  mojo::ScopedHandle wrapped_handle =
+      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
+  DCHECK(wrapped_handle.is_valid());
+  mojom::FileSessionPtr file_session = mojom::FileSession::New();
+  file_session->url_id = kUrlId;
+  file_session->fd = std::move(wrapped_handle);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(file_session)));
 }
 
 void FakeFileSystemInstance::OpenThumbnail(const std::string& url,

@@ -73,7 +73,9 @@ class ArcFileSystemOperationRunner
   using OpenThumbnailCallback =
       mojom::FileSystemInstance::OpenThumbnailCallback;
   using OpenFileToWriteCallback =
-      mojom::FileSystemInstance::OpenFileToWriteCallback;
+      mojom::FileSystemInstance::DEPRECATED_OpenFileToWriteCallback;
+  using OpenFileSessionToWriteCallback =
+      mojom::FileSystemInstance::OpenFileSessionToWriteCallback;
   using GetDocumentCallback = mojom::FileSystemInstance::GetDocumentCallback;
   using GetChildDocumentsCallback =
       mojom::FileSystemInstance::GetChildDocumentsCallback;
@@ -142,7 +144,12 @@ class ArcFileSystemOperationRunner
   void OpenThumbnail(const GURL& url,
                      const gfx::Size& size,
                      OpenThumbnailCallback callback);
+  // TODO(b/220547241): Remove DEPRECATED function from file_system.mojom.
   void OpenFileToWrite(const GURL& url, OpenFileToWriteCallback callback);
+  void CloseFileSession(const std::string& session_id,
+                        const std::string& error_message);
+  void OpenFileSessionToWrite(const GURL& url,
+                              OpenFileSessionToWriteCallback callback);
   void GetDocument(const std::string& authority,
                    const std::string& document_id,
                    GetDocumentCallback callback);

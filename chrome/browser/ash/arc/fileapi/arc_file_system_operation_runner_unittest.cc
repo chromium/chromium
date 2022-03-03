@@ -30,6 +30,7 @@ constexpr char kAuthority[] = "authority";
 constexpr char kDocumentId[] = "document_id";
 constexpr char kRootId[] = "root_id";
 constexpr char kUrl[] = "content://test";
+constexpr char kUrlId[] = "url_id";
 
 }  // namespace
 
@@ -132,6 +133,12 @@ class ArcFileSystemOperationRunnerTest : public testing::Test {
         base::BindOnce(
             [](int* counter, mojo::ScopedHandle handle) { ++*counter; },
             counter));
+    runner_->OpenFileSessionToWrite(
+        GURL(kUrl),
+        base::BindOnce([](int* counter,
+                          mojom::FileSessionPtr file_session) { ++*counter; },
+                       counter));
+    runner_->CloseFileSession(kUrlId, /*error_message=*/std::string());
 
     // RemoveWatcher() is never deferred.
     runner_->RemoveWatcher(
@@ -154,7 +161,7 @@ TEST_F(ArcFileSystemOperationRunnerTest, RunImmediately) {
   CallSetShouldDefer(false);
   CallAllFunctions(&counter);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(11, counter);
+  EXPECT_EQ(12, counter);
 }
 
 TEST_F(ArcFileSystemOperationRunnerTest, DeferAndRun) {
@@ -166,7 +173,7 @@ TEST_F(ArcFileSystemOperationRunnerTest, DeferAndRun) {
 
   CallSetShouldDefer(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(11, counter);
+  EXPECT_EQ(12, counter);
 }
 
 // TODO(nya,hidehiko): Check if we should keep this test.
@@ -191,7 +198,7 @@ TEST_F(ArcFileSystemOperationRunnerTest, FileInstanceUnavailable) {
   CallSetShouldDefer(false);
   CallAllFunctions(&counter);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(11, counter);
+  EXPECT_EQ(12, counter);
 }
 
 }  // namespace arc

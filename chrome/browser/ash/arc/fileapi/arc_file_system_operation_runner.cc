@@ -207,13 +207,54 @@ void ArcFileSystemOperationRunner::OpenFileToWrite(
     return;
   }
   auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->file_system(), OpenFileToWrite);
+      arc_bridge_service_->file_system(), DEPRECATED_OpenFileToWrite);
   if (!file_system_instance) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
     return;
   }
-  file_system_instance->OpenFileToWrite(url.spec(), std::move(callback));
+  file_system_instance->DEPRECATED_OpenFileToWrite(url.spec(),
+                                                   std::move(callback));
+}
+
+void ArcFileSystemOperationRunner::CloseFileSession(
+    const std::string& url_id,
+    const std::string& error_message) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (should_defer_) {
+    deferred_operations_.emplace_back(
+        base::BindOnce(&ArcFileSystemOperationRunner::CloseFileSession,
+                       weak_ptr_factory_.GetWeakPtr(), url_id, error_message));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), CloseFileSession);
+  if (!file_system_instance) {
+    LOG(WARNING) << "Failed to call CloseFileSession.";
+    return;
+  }
+  file_system_instance->CloseFileSession(url_id, error_message);
+}
+
+void ArcFileSystemOperationRunner::OpenFileSessionToWrite(
+    const GURL& url,
+    OpenFileSessionToWriteCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (should_defer_) {
+    deferred_operations_.emplace_back(base::BindOnce(
+        &ArcFileSystemOperationRunner::OpenFileSessionToWrite,
+        weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), OpenFileSessionToWrite);
+  if (!file_system_instance) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), mojom::FileSessionPtr()));
+    return;
+  }
+  file_system_instance->OpenFileSessionToWrite(url, std::move(callback));
 }
 
 void ArcFileSystemOperationRunner::GetDocument(const std::string& authority,

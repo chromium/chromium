@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 21
+// Next MinVersion: 22
 
 module arc.mojom;
 
@@ -269,6 +269,16 @@ struct RootSize {
   int64 capacity_bytes;
 };
 
+// Returned output for OpenFileSessionToWrite.
+struct FileSession {
+  // Unique ID for the URL that is opened and mapped to a ParcelFileDescriptor
+  // object to be closed after the ChromeOS file operation(s).
+  string url_id;
+
+  // FD for writing or reading the file specified by the URL.
+  handle fd;
+};
+
 // Next method ID: 12
 interface FileSystemHost {
   // Returns the name of the file specified by the URL.
@@ -323,8 +333,10 @@ interface FileSystemHost {
       (FileSelectorElements elements);
 };
 
-// Deprecated method IDs: 5
-// Next method ID: 24
+// The browser process is using this interface in ArcFileSystemOperationRunner,
+// the ARC process implements this interface used by ArcFileSystemService.
+// Deprecated method IDs: 5, 18
+// Next method ID: 26
 interface FileSystemInstance {
   // Notes about Android Documents Provider:
   //
@@ -440,14 +452,23 @@ interface FileSystemInstance {
   // URL.
   [MinVersion=1] OpenFileToRead@2(string url) => (handle? fd);
 
-  // Asks the ContentResolver to get a FD to write the file specified by the
-  // URL.
-  [MinVersion=13] OpenFileToWrite@18(string url) => (handle? fd);
+  // DEPRECATED. Use OpenFileSessionToWrite() instead.
+  [MinVersion=13] DEPRECATED_OpenFileToWrite@18(string url) => (handle? fd);
 
   // Asks the ContentResolver to get a FD to read the thumbnail of a
   // DocumentsProvider file specified by the URL. The thumbnail should be close
   // in size (width and height) but not necessarily the same as |size_hint|.
   [MinVersion=15] OpenThumbnail@21(string url, Size size_hint) => (handle? fd);
+
+  // Closes the ParcelFileDescriptor corresponding to the url_id. An error
+  // message can be sent to the ContentProvider as needed.
+  [MinVersion=21] CloseFileSession@24(string url_id, string error_message);
+
+  // Asks the ContentResolver to get a FD to write to the file specified by the
+  // URL. FileSession is returned with a unique ID corresponding to the open
+  // session so the file can be closed properly after remote write operation.
+  [MinVersion=21] OpenFileSessionToWrite@25(url.mojom.Url url) =>
+      (FileSession? file_session);
 
   // Uninstalls a document watcher.
   //
@@ -486,5 +507,5 @@ interface FileSystemInstance {
   // ensure that the user is correctly aware of the URLs and the activity they
   // are passing.
   [MinVersion=19] OpenUrlsWithPermissionAndWindowInfo@23(
-      OpenUrlsRequest request, WindowInfo window_info)  => ();
+      OpenUrlsRequest request, WindowInfo window_info) => ();
 };
