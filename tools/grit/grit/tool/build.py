@@ -479,10 +479,6 @@ are exported to translation interchange files (e.g. XMB files), etc.
       ]
       error = '''Asserted file list does not match.
 
-Expected output files:
-%s
-Actual output files:
-%s
 Missing output files:
 %s
 Extra output files:
@@ -490,8 +486,8 @@ Extra output files:
 Duplicate actual output files:
 %s
 '''
-      print(error % ('\n'.join(asserted), '\n'.join(actual), '\n'.join(missing),
-                     '\n'.join(extra), '\n'.join(duplicates)))
+      print(error %
+            ('\n'.join(missing), '\n'.join(extra), '\n'.join(duplicates)))
       return False
     return True
 
