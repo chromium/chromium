@@ -42,6 +42,7 @@ void TestHelpBubble::SimulateTimeout() {
 void TestHelpBubble::SimulateButtonPress(int button_index) {
   CHECK_LT(button_index, static_cast<int>(params_.buttons.size()));
   std::move(params_.buttons[button_index].callback).Run();
+  Close();
 }
 
 void TestHelpBubble::CloseBubbleImpl() {
