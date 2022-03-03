@@ -1,6 +1,7 @@
 <link rel="import" href="../../../html/polymer.html">
 
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
@@ -38,7 +39,7 @@
       #esimQrCodeDetection {
         background-color: var(--cros-bg-color-dropped-elevation-1);
         border-radius: 4px;
-        margin: 20px 0 20px 0;
+        margin: 20px 0 15px 0;
         overflow: hidden;
         position: relative;
       }
@@ -171,7 +172,7 @@
         filter: brightness(2.1);
       }
 
-      #loadingMessage {
+      #inputSubtitle {
         bottom: 0;
         color: var(--cros-text-color-secondary);
         font-size: var(--cr-form-field-label-font-size);
@@ -284,8 +285,10 @@
               value="{{activationCode}}"
               disabled="[[showBusy]]"
               on-keydown="onKeyDown_"
-              invalid="[[shouldActivationCodeInputBeInvalid_(state_)]]"
-              error-message="[[i18n('scanQrCodeInvalid')]]">
+              invalid="[[shouldActivationCodeInputBeInvalid_(state_,
+                  isActivationCodeInvalidFormat_)]]"
+              error-message="[[getInputErrorMessage_()]]"
+              aria-description="[[getInputSubtitle_(showBusy)]]">
             <template is="dom-if" if="[[showBusy]]">
               <div slot="suffix">
                 <paper-spinner-lite active>
@@ -293,8 +296,10 @@
               </div>
             </template>
           </cr-input>
-          <div id="loadingMessage" hidden$="[[!showBusy]]">
-              [[i18n('scanQrCodeLoading')]]
+          <div id="inputSubtitle"
+              hidden$="[[shouldActivationCodeInputBeInvalid_(state_,
+                  isActivationCodeInvalidFormat_)]]">
+            [[getInputSubtitle_(showBusy)]]
           </div>
         </div>
       </div>

@@ -10,6 +10,12 @@
 let shouldBarcodeDetectionFail = false;
 
 /**
+ * The barcode returned by successful calls to detect().
+ * @type {string}
+ */
+let detectedBarcode = 'LPA:1$ACTIVATION_CODE';
+
+/**
  * @implements {BarcodeDetector}
  */
 /* #export */ class FakeBarcodeDetector {
@@ -20,7 +26,7 @@ let shouldBarcodeDetectionFail = false;
     if (shouldBarcodeDetectionFail) {
       return Promise.reject('Failed to detect code');
     }
-    return Promise.resolve([{rawValue: 'testbarcode'}]);
+    return Promise.resolve([{rawValue: detectedBarcode}]);
   }
 
   /** @override */
@@ -34,6 +40,13 @@ let shouldBarcodeDetectionFail = false;
 
   static setShouldFail(shouldFail) {
     shouldBarcodeDetectionFail = shouldFail;
+  }
+
+  /**
+   * @param {string} barcode
+   */
+  static setDetectedBarcode(barcode) {
+    detectedBarcode = barcode;
   }
 }
 

@@ -21,6 +21,9 @@
 // clang-format on
 
 suite('CrComponentsEsimFlowUiTest', function() {
+  /** @type {string} */
+  const ACTIVATION_CODE_VALID = 'LPA:1$ACTIVATION_CODE';
+
   let eSimPage;
   let eSimManagerRemote;
   let ironPages;
@@ -303,7 +306,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*forwardButtonShouldBeEnabled*/ false,
           /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
       // Insert an activation code.
-      activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
+      activationCodePage.$$('#activationCode').value = ACTIVATION_CODE_VALID;
 
       // Forward button should now be enabled.
       assertActivationCodePage(
@@ -417,7 +420,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*forwardButtonShouldBeEnabled*/ true,
           /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
       assertEquals(
-          activationCodePage.$$('#activationCode').value, 'ACTIVATION_CODE');
+          activationCodePage.$$('#activationCode').value,
+          ACTIVATION_CODE_VALID);
 
       endFlowAndVerifyResult(
           ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
@@ -585,7 +589,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       assertFocusDefaultButtonEventFired();
 
       // Insert an activation code.
-      activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
+      activationCodePage.$$('#activationCode').value = ACTIVATION_CODE_VALID;
       assertFalse(focusDefaultButtonEventFired);
 
       assertActivationCodePage(
@@ -638,7 +642,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           assertFocusDefaultButtonEventFired();
           assertEquals(
               activationCodePage.$$('#activationCode').value,
-              'ACTIVATION_CODE');
+              ACTIVATION_CODE_VALID);
 
           eSimPage.navigateBackward();
           await flushAsync();

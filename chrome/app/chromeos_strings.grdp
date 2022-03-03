@@ -319,6 +319,12 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INVALID" desc="Label informing the user that the code used to install an eSIM profile is invalid.">
     Invalid code. Please try again.
   </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INPUT_SUBTITLE" desc="Subtitle for input informing the user that the code used to install an eSIM profile must follow a specific format.">
+    Your entry should have the format LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INPUT_ERROR" desc="Error label for input informing the user that the code used to install an eSIM profile is invalid and must follow a specific format.">
+    Invalid code. Your entry should have the format LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;
+  </message>
   <message name="IDS_CELLULAR_SETUP_ESTABLISH_NETWORK_CONNECTION" desc="Message, informing user that a network connection is being established during cellular setup">
     Establishing network connection ...
   </message>

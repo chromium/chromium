@@ -14,6 +14,12 @@
 // clang-format on
 
 suite('CrComponentsActivationCodePageTest', function() {
+  /** @type {string} */
+  const ACTIVATION_CODE_VALID = 'LPA:1$ACTIVATION_CODE';
+
+  /** @type {string} */
+  const ACTIVATION_CODE_INVALID = 'INVALID';
+
   let activationCodePage;
 
   /** @type {?FakeMediaDevices} */
@@ -310,7 +316,7 @@ suite('CrComponentsActivationCodePageTest', function() {
         assertTrue(!!scanFinishContainer);
         assertFalse(input.invalid);
 
-        input.value = 'ACTIVATION_CODE';
+        input.value = ACTIVATION_CODE_VALID;
         activationCodePage.showError = true;
         assertTrue(input.invalid);
 
@@ -432,4 +438,149 @@ suite('CrComponentsActivationCodePageTest', function() {
 
         assertFalse(!!activationCodePage.getQrCodeDetectorTimerForTest());
       });
+
+  test('Input entered manually is validated', async function() {
+    await flushAsync();
+    const input = activationCodePage.$$('#activationCode');
+    assertTrue(!!input);
+    assertFalse(input.invalid);
+
+    const setInputAndAssert =
+        async (activationCode, isInputInvalid, shouldEventContainCode) => {
+      const activationCodeUpdatedPromise = test_util.eventToPromise(
+          'activation-code-updated', activationCodePage);
+      input.value = activationCode;
+      const activationCodeUpdatedEvent = await activationCodeUpdatedPromise;
+      assertEquals(
+          activationCodeUpdatedEvent.detail.activationCode,
+          shouldEventContainCode ? activationCode : null);
+      assertEquals(input.invalid, isInputInvalid);
+      assertEquals(activationCodePage.$.inputSubtitle.hidden, isInputInvalid);
+      assertEquals(
+          activationCodePage.$.inputSubtitle.innerText.trim(),
+          loadTimeData.getString('scanQrCodeInputSubtitle'));
+    };
+
+    await setInputAndAssert(
+        /*activationCode=*/ 'U', /*isInputValid=*/ true,
+        /*shouldEventContainCode=*/ false);
+    await setInputAndAssert(
+        /*activationCode=*/ 'L', /*isInputInvalid=*/ false,
+        /*shouldEventContainCode=*/ false);
+    await setInputAndAssert(
+        /*activationCode=*/ 'Lp', /*isInputInvalid=*/ true,
+        /*shouldEventContainCode=*/ false);
+    await setInputAndAssert(
+        /*activationCode=*/ 'LP', /*isInputInvalid=*/ false,
+        /*shouldEventContainCode=*/ false);
+    await setInputAndAssert(
+        /*activationCode=*/ 'LPA:1#', /*isInputInvalid=*/ true,
+        /*shouldEventContainCode=*/ false);
+    await setInputAndAssert(
+        /*activationCode=*/ 'LPA:1$', /*isInputInvalid=*/ false,
+        /*shouldEventContainCode=*/ false);
+    await setInputAndAssert(
+        /*activationCode=*/ 'LPA:1#ACTIVATION_CODE', /*isInputInvalid=*/ true,
+        /*shouldEventContainCode=*/ false);
+    await setInputAndAssert(
+        /*activationCode=*/ 'LPA:1$ACTIVATION_CODE', /*isInputInvalid=*/ false,
+        /*shouldEventContainCode=*/ true);
+
+    // Erase the code so that it's incomplete. The event should no longer
+    // contain the code.
+    await setInputAndAssert(
+        /*activationCode=*/ 'LPA:1$', /*isInputInvalid=*/ false,
+        /*doesEventContainCode=*/ false);
+  });
+
+  test('Scanned code is validated', async function() {
+    await flushAsync();
+    const input = activationCodePage.$$('#activationCode');
+    const startScanningContainer =
+        activationCodePage.$$('#startScanningContainer');
+    const startScanningButton = activationCodePage.$$('#startScanningButton');
+    const scanFinishContainer = activationCodePage.$$('#scanFinishContainer');
+    const scanInstallFailureHeader =
+        activationCodePage.$$('#scanInstallFailureHeader');
+    const scanSucessHeader = activationCodePage.$$('#scanSucessHeader');
+    const getUseCameraAgainButton = () => {
+      return activationCodePage.$$('#useCameraAgainButton');
+    };
+    assertTrue(!!input);
+    assertTrue(!!startScanningContainer);
+    assertTrue(!!startScanningButton);
+    assertTrue(!!scanFinishContainer);
+    assertTrue(!!scanInstallFailureHeader);
+    assertTrue(!!scanSucessHeader);
+    assertFalse(!!getUseCameraAgainButton());
+    assertFalse(input.invalid);
+
+    // Click the start scanning button.
+    startScanningButton.click();
+    mediaDevices.resolveGetUserMedia();
+    await waitAfterNextRender(activationCodePage);
+
+    // Mock camera scanning an invalid code.
+    let activationCodeUpdatedPromise =
+        test_util.eventToPromise('activation-code-updated', activationCodePage);
+    FakeBarcodeDetector.setDetectedBarcode(ACTIVATION_CODE_INVALID);
+    await intervalFunction();
+    await flushAsync();
+
+    // The scan install failure UI should be showing.
+    assertTrue(startScanningContainer.hidden);
+    assertFalse(scanFinishContainer.hidden);
+    assertTrue(scanSucessHeader.hidden);
+    assertFalse(scanInstallFailureHeader.hidden);
+    assertTrue(!!getUseCameraAgainButton());
+    assertTrue(input.invalid);
+    let activationCodeUpdatedEvent = await activationCodeUpdatedPromise;
+    assertFalse(!!activationCodeUpdatedEvent.detail.activationCode);
+
+    // Start scanning again.
+    getUseCameraAgainButton().click();
+    mediaDevices.resolveGetUserMedia();
+    await waitAfterNextRender(activationCodePage);
+
+    // Mock camera scanning a valid, incomplete code.
+    activationCodeUpdatedPromise =
+        test_util.eventToPromise('activation-code-updated', activationCodePage);
+    FakeBarcodeDetector.setDetectedBarcode(/*barcode=*/ 'LPA:');
+    await intervalFunction();
+    await flushAsync();
+
+    // The scan install failure UI should be showing.
+    assertTrue(startScanningContainer.hidden);
+    assertFalse(scanFinishContainer.hidden);
+    assertTrue(scanSucessHeader.hidden);
+    assertFalse(scanInstallFailureHeader.hidden);
+    assertTrue(!!getUseCameraAgainButton());
+    assertFalse(input.invalid);
+    activationCodeUpdatedEvent = await activationCodeUpdatedPromise;
+    assertFalse(!!activationCodeUpdatedEvent.detail.activationCode);
+
+    // Start scanning again.
+    getUseCameraAgainButton().click();
+    mediaDevices.resolveGetUserMedia();
+    await waitAfterNextRender(activationCodePage);
+
+    // Mock camera scanning a valid code.
+    activationCodeUpdatedPromise =
+        test_util.eventToPromise('activation-code-updated', activationCodePage);
+    FakeBarcodeDetector.setDetectedBarcode(ACTIVATION_CODE_VALID);
+    await intervalFunction();
+    await flushAsync();
+
+    // The code detected UI should be showing.
+    assertTrue(startScanningContainer.hidden);
+    assertFalse(scanFinishContainer.hidden);
+    assertFalse(scanSucessHeader.hidden);
+    assertTrue(scanInstallFailureHeader.hidden);
+    assertFalse(!!getUseCameraAgainButton());
+    assertFalse(input.invalid);
+    activationCodeUpdatedEvent = await activationCodeUpdatedPromise;
+    assertEquals(
+        activationCodeUpdatedEvent.detail.activationCode,
+        ACTIVATION_CODE_VALID);
+  });
 });

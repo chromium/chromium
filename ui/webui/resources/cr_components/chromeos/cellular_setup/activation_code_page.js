@@ -40,6 +40,12 @@ const UiElement = {
 const QR_CODE_FORMAT = 'qr_code';
 
 /**
+ * The prefix for valid activation codes.
+ * @private {string}
+ */
+const ACTIVATION_CODE_PREFIX = 'LPA:1$';
+
+/**
  * Page in eSIM Setup flow that accepts activation code. User has option for
  * manual entry or scan a QR code.
  */
@@ -126,6 +132,17 @@ Polymer({
     qrCodeCameraA11yString_: {
       type: String,
       value: '',
+    },
+
+    /**
+     * Indicates whether or not |activationCode| matches the correct activation
+     * code format. If there is a partial match (i.e. the code is incomplete but
+     * matches the format so far), this will be false.
+     * @private
+     */
+    isActivationCodeInvalidFormat_: {
+      type: Boolean,
+      value: false,
     }
   },
 
@@ -363,7 +380,14 @@ Polymer({
               this.clearQrCodeDetectorTimer_();
               this.activationCode = activationCode;
               this.stopStream_(this.stream_);
-              this.state_ = PageState.SCANNING_SUCCESS;
+
+              if (this.validateActivationCode_(activationCode)) {
+                this.state_ = PageState.SCANNING_SUCCESS;
+              } else {
+                // If the scanned activation code is invalid or incomplete, show
+                // error.
+                this.state_ = PageState.SCANNING_INSTALL_FAILURE;
+              }
             }
           }).bind(this),
           QR_CODE_DETECTION_INTERVAL_MS);
@@ -394,8 +418,11 @@ Polymer({
 
   /** @private */
   onActivationCodeChanged_() {
-    const activationCode = this.validateActivationCode_(this.activationCode);
-    this.fire('activation-code-updated', {activationCode: activationCode});
+    this.fire('activation-code-updated', {
+      activationCode: this.validateActivationCode_(this.activationCode) ?
+          this.activationCode :
+          null
+    });
   },
 
   /** @private */
@@ -405,19 +432,38 @@ Polymer({
   },
 
   /**
+   * Checks if |activationCode| matches or partially matches the correct format.
+   * Sets |isActivationCodeInvalidFormat_| to true if the format is incorrect.
    * @param {string} activationCode
-   * @return {string|null} The validated activation code or null if it's
-   *     invalid.
+   * @return {boolean} Returns true if |activationCode| is valid and ready to be
+   *     submitted for installation.
    * @private
    */
   validateActivationCode_(activationCode) {
-    // TODO(crbug.com/1093185): Add better validation when we know the
-    // constraints.
-    activationCode = activationCode.trim();
-    if (activationCode.length > 3) {
-      return activationCode;
+    if (activationCode.length <= ACTIVATION_CODE_PREFIX.length) {
+      // If the currently entered activation code is shorter than
+      // |ACTIVATION_CODE_PREFIX|, check if the code matches the format thus
+      // far.
+      this.isActivationCodeInvalidFormat_ = activationCode !==
+          ACTIVATION_CODE_PREFIX.substring(0, activationCode.length);
+
+      // Because the entered activation code is shorter than
+      // |ACTIVATION_CODE_PREFIX| it cannot be submitted yet.
+      return false;
+    } else {
+      // |activationCode| is longer than |ACTIVATION_CODE_PREFIX|. Check if it
+      // begins with the prefix.
+      this.isActivationCodeInvalidFormat_ =
+          activationCode.substring(0, ACTIVATION_CODE_PREFIX.length) !==
+          ACTIVATION_CODE_PREFIX;
     }
-    return null;
+
+    if (this.isActivationCodeInvalidFormat_) {
+      // If the activation code does not match the format, it cannot be
+      // submitted.
+      return false;
+    }
+    return true;
   },
 
   /** @private */
@@ -570,6 +616,34 @@ Polymer({
    * @private
    */
   shouldActivationCodeInputBeInvalid_(state) {
+    if (this.isActivationCodeInvalidFormat_) {
+      return true;
+    }
     return state === PageState.MANUAL_ENTRY_INSTALL_FAILURE;
   },
+
+  /**
+   * @param {boolean} showBusy
+   * @return {string}
+   * @private
+   */
+  getInputSubtitle_(showBusy) {
+    if (showBusy) {
+      return this.i18n('scanQrCodeLoading');
+    }
+
+    // Because this string contains '<' and '>' characters, we cannot use i18n
+    // methods.
+    return loadTimeData.getString('scanQrCodeInputSubtitle');
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getInputErrorMessage_() {
+    // Because this string contains '<' and '>' characters, we cannot use i18n
+    // methods.
+    return loadTimeData.getString('scanQrCodeInputError');
+  }
 });
