@@ -12,7 +12,6 @@
 #include "ash/components/phonehub/camera_roll_thumbnail_decoder_impl.h"
 #include "ash/components/phonehub/message_receiver.h"
 #include "ash/components/phonehub/message_sender.h"
-#include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
@@ -22,8 +21,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -39,21 +36,13 @@ constexpr int kMaxCameraRollItemCount = 4;
 
 }  // namespace
 
-// static
-void CameraRollManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kHasDismissedCameraRollOnboardingUi,
-                                false);
-}
-
 CameraRollManagerImpl::CameraRollManagerImpl(
-    PrefService* pref_service,
     MessageReceiver* message_receiver,
     MessageSender* message_sender,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     secure_channel::ConnectionManager* connection_manager,
     std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager)
-    : pref_service_(pref_service),
-      message_receiver_(message_receiver),
+    : message_receiver_(message_receiver),
       message_sender_(message_sender),
       multidevice_setup_client_(multidevice_setup_client),
       connection_manager_(connection_manager),
@@ -166,7 +155,6 @@ void CameraRollManagerImpl::OnPhoneStatusSnapshotReceived(
   if (!is_android_storage_granted_ || !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
-    resetViewRefreshingFlagIfNeeded();
     return;
   }
 
@@ -180,7 +168,6 @@ void CameraRollManagerImpl::OnPhoneStatusUpdateReceived(
   if (!is_android_storage_granted_ || !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
-    resetViewRefreshingFlagIfNeeded();
     return;
   }
 
@@ -222,7 +209,6 @@ void CameraRollManagerImpl::SendFetchCameraRollItemsRequest() {
 void CameraRollManagerImpl::OnItemThumbnailsDecoded(
     CameraRollThumbnailDecoder::BatchDecodeResult result,
     const std::vector<CameraRollItem>& items) {
-  resetViewRefreshingFlagIfNeeded();
   if (result == CameraRollThumbnailDecoder::BatchDecodeResult::kCompleted) {
     if (fetch_items_request_start_timestamp_) {
       base::UmaHistogramMediumTimes(
@@ -238,28 +224,12 @@ void CameraRollManagerImpl::CancelPendingThumbnailRequests() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void CameraRollManagerImpl::EnableCameraRollFeatureInSystemSetting() {
-  multidevice_setup_client_->SetFeatureEnabledState(
-      chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
-      /*enabled=*/true, /*auth_token=*/absl::nullopt, base::DoNothing());
-  is_refreshing_after_user_opt_in_ = true;
-  // Re-compute and update ui immediately instead of waiting for the callback to
-  // finish would hide the view on user's tap action, giving a indicator for the
-  // user that the action is performed. When camera items are received, camera
-  // roll view would be visible again.
-  ComputeAndUpdateUiState();
-}
-
 bool CameraRollManagerImpl::IsCameraRollSettingEnabled() {
   chromeos::multidevice_setup::mojom::FeatureState camera_roll_feature_state =
       multidevice_setup_client_->GetFeatureState(
           chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
   return camera_roll_feature_state ==
          chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
-}
-
-void CameraRollManagerImpl::resetViewRefreshingFlagIfNeeded() {
-  is_refreshing_after_user_opt_in_ = false;
 }
 
 void CameraRollManagerImpl::OnFeatureStatesChanged(
@@ -294,12 +264,6 @@ void CameraRollManagerImpl::UpdateCameraRollAccessStateAndNotifyIfNeeded(
   }
 }
 
-void CameraRollManagerImpl::OnCameraRollOnboardingUiDismissed() {
-  pref_service_->SetBoolean(prefs::kHasDismissedCameraRollOnboardingUi, true);
-  // Force the observing views to refresh
-  ComputeAndUpdateUiState();
-}
-
 void CameraRollManagerImpl::ComputeAndUpdateUiState() {
   if (!is_android_storage_granted_) {
     ui_state_ = CameraRollUiState::NO_STORAGE_PERMISSION;
@@ -312,15 +276,11 @@ void CameraRollManagerImpl::ComputeAndUpdateUiState() {
           chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
   switch (feature_state) {
     case chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser:
-      ui_state_ =
-          pref_service_->GetBoolean(prefs::kHasDismissedCameraRollOnboardingUi)
-              ? CameraRollUiState::SHOULD_HIDE
-              : CameraRollUiState::CAN_OPT_IN;
+      ui_state_ = CameraRollUiState::SHOULD_HIDE;
+      ;
       break;
     case chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser:
-      if (is_refreshing_after_user_opt_in_) {
-        ui_state_ = CameraRollUiState::LOADING_VIEW;
-      } else if (current_items().empty()) {
+      if (current_items().empty()) {
         ui_state_ = CameraRollUiState::SHOULD_HIDE;
       } else {
         ui_state_ = CameraRollUiState::ITEMS_VISIBLE;

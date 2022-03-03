@@ -14,7 +14,6 @@ extern const char kNotificationAccessStatus[];
 extern const char kNotificationAccessProhibitedReason[];
 extern const char kHideOnboardingUi[];
 extern const char kIsAwaitingVerifiedHost[];
-extern const char kHasDismissedCameraRollOnboardingUi[];
 extern const char kHasDismissedSetupRequiredUi[];
 extern const char kNeedsOneTimeNotificationAccessUpdate[];
 extern const char kScreenLockStatus[];

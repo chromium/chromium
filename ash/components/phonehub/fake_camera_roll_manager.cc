@@ -24,11 +24,6 @@ void FakeCameraRollManager::DownloadItem(
   }
 }
 
-void FakeCameraRollManager::OnCameraRollOnboardingUiDismissed() {
-  has_dismissed_onboarding_dialog_ = true;
-  ComputeAndUpdateUiState();
-}
-
 void FakeCameraRollManager::SetIsCameraRollAvailableToBeEnabled(
     bool can_enable) {
   is_avaiable_to_be_enabled_ = can_enable;
@@ -40,24 +35,8 @@ void FakeCameraRollManager::SetIsCameraRollAccessible(bool accessiable) {
   ComputeAndUpdateUiState();
 }
 
-void FakeCameraRollManager::EnableCameraRollFeatureInSystemSetting() {
-  is_avaiable_to_be_enabled_ = false;
-  is_refreshing_after_user_opt_in_ = true;
-  ComputeAndUpdateUiState();
-}
-
-void FakeCameraRollManager::SetIsCameraRollOnboardingDismissed(bool dismissed) {
-  has_dismissed_onboarding_dialog_ = dismissed;
-  ComputeAndUpdateUiState();
-}
-
 void FakeCameraRollManager::SetIsAndroidStorageGranted(bool granted) {
   is_android_storage_granted_ = granted;
-  ComputeAndUpdateUiState();
-}
-
-void FakeCameraRollManager::SetIsCameraRollLoadingViewShown(bool loading) {
-  is_refreshing_after_user_opt_in_ = loading;
   ComputeAndUpdateUiState();
 }
 
@@ -76,11 +55,7 @@ void FakeCameraRollManager::ComputeAndUpdateUiState() {
   } else if (!is_android_storage_granted_) {
     ui_state_ = CameraRollUiState::NO_STORAGE_PERMISSION;
   } else if (is_avaiable_to_be_enabled_) {
-    ui_state_ = (has_dismissed_onboarding_dialog_)
-                    ? CameraRollUiState::SHOULD_HIDE
-                    : CameraRollUiState::CAN_OPT_IN;
-  } else if (is_refreshing_after_user_opt_in_) {
-    ui_state_ = CameraRollUiState::LOADING_VIEW;
+    ui_state_ = CameraRollUiState::SHOULD_HIDE;
   } else if (current_items().empty()) {
     ui_state_ = CameraRollUiState::SHOULD_HIDE;
   } else {

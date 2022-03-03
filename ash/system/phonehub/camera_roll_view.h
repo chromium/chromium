@@ -36,14 +36,9 @@ class ASH_EXPORT CameraRollView : public views::View,
   // views::View:
   const char* GetClassName() const override;
 
- protected:
-  bool should_disable_annimator_timer_for_test_ = false;
-
  private:
   friend class CameraRollViewTest;
-  FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, DisplayOptInView);
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, OptInAlready);
-  FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, RightAfterOptIn);
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, ViewLayout);
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, ImageThumbnail);
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, VideoThumbnail);
@@ -56,7 +51,6 @@ class ASH_EXPORT CameraRollView : public views::View,
     CameraRollItemsView operator=(CameraRollItemsView&) = delete;
 
     void AddCameraRollItem(views::View* camera_roll_item);
-    void AddLoadingAnimatedItem(bool disable_repeated_animation_for_test);
     void Reset();
 
     // views::View:

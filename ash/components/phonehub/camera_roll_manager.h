@@ -45,11 +45,6 @@ class CameraRollManager {
     // permissions have been rejected on the Android device. In this state the
     // UI is hidden but the settings toggle is shown in a grayed out state.
     NO_STORAGE_PERMISSION,
-    // Feature is supported by the phone but the settings hasn't been enabled on
-    // system settings and not have been dismissed by user
-    CAN_OPT_IN,
-    // Feature is supported and enabled but no item has been loaded yet
-    LOADING_VIEW,
     // We have items that can be displayed
     ITEMS_VISIBLE,
   };
@@ -72,14 +67,6 @@ class CameraRollManager {
   // device specified by the |item_metadata| to the Downloads folder.
   virtual void DownloadItem(
       const proto::CameraRollItemMetadata& item_metadata) = 0;
-  // Attempt to enable camera roll feature; return whether the operation is
-  // succeeded. It can only be changed via this function if the current
-  // state is mojom::FeatureState::kFurtherSetupRequired or
-  // mojom::FeatureState::kDisabledByUser.
-  virtual void EnableCameraRollFeatureInSystemSetting() = 0;
-
-  // Record user have dismissed the onboarding dialog.
-  virtual void OnCameraRollOnboardingUiDismissed() = 0;
 
  protected:
   CameraRollManager();

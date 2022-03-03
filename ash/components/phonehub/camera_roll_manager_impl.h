@@ -22,9 +22,6 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class PrefRegistrySimple;
-class PrefService;
-
 namespace ash {
 namespace phonehub {
 
@@ -39,17 +36,13 @@ class CameraRollManagerImpl
       public multidevice_setup::MultiDeviceSetupClient::Observer,
       public secure_channel::ConnectionManager::Observer {
  public:
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
   CameraRollManagerImpl(
-      PrefService* pref_service,
       MessageReceiver* message_receiver,
       MessageSender* message_sender,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       secure_channel::ConnectionManager* connection_manager,
       std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager);
   ~CameraRollManagerImpl() override;
-  void EnableCameraRollFeatureInSystemSetting() override;
 
  private:
   friend class CameraRollManagerImplTest;
@@ -95,18 +88,14 @@ class CameraRollManagerImpl
       chromeos::secure_channel::mojom::FileTransferUpdatePtr update);
 
   bool IsCameraRollSettingEnabled();
-  void resetViewRefreshingFlagIfNeeded();
   void UpdateCameraRollAccessStateAndNotifyIfNeeded(
       const proto::CameraRollAccessState& access_state);
-  void OnCameraRollOnboardingUiDismissed() override;
   void ComputeAndUpdateUiState() override;
 
   bool is_android_feature_enabled_ = false;
   bool is_android_storage_granted_ = false;
-  bool is_refreshing_after_user_opt_in_ = false;
   absl::optional<base::TimeTicks> fetch_items_request_start_timestamp_;
 
-  PrefService* pref_service_;
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;

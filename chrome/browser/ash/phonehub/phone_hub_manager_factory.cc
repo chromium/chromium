@@ -165,7 +165,6 @@ void PhoneHubManagerFactory::BrowserContextShutdown(
 void PhoneHubManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   MultideviceSetupStateUpdater::RegisterPrefs(registry);
-  CameraRollManagerImpl::RegisterPrefs(registry);
   MultideviceFeatureAccessManagerImpl::RegisterPrefs(registry);
   OnboardingUiTrackerImpl::RegisterPrefs(registry);
   ScreenLockManagerImpl::RegisterPrefs(registry);
