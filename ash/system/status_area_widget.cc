@@ -151,16 +151,16 @@ void StatusAreaWidget::Initialize() {
     AddTrayButton(std::move(media_tray));
   }
 
-  if (chromeos::features::IsPhoneHubEnabled()) {
-    auto phone_hub_tray = std::make_unique<PhoneHubTray>(shelf_);
-    phone_hub_tray_ = phone_hub_tray.get();
-    AddTrayButton(std::move(phone_hub_tray));
-  }
-
   if (chromeos::features::IsEcheCustomWidgetEnabled()) {
     auto eche_tray = std::make_unique<EcheTray>(shelf_);
     eche_tray_ = eche_tray.get();
     AddTrayButton(std::move(eche_tray));
+  }
+
+  if (chromeos::features::IsPhoneHubEnabled()) {
+    auto phone_hub_tray = std::make_unique<PhoneHubTray>(shelf_);
+    phone_hub_tray_ = phone_hub_tray.get();
+    AddTrayButton(std::move(phone_hub_tray));
   }
 
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
