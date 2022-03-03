@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front()->source_event_id, 5UL);
   EXPECT_EQ(source_data.front()->destination,
-            url::Origin::Create(GURL("https://advertiser.example")));
+            url::Origin::Create(GURL("https://d.test")));
   EXPECT_EQ(source_data.front()->priority, 0);
   EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front()->debug_key);
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front()->source_event_id, 5UL);
   EXPECT_EQ(source_data.front()->destination,
-            url::Origin::Create(GURL("https://advertiser.example")));
+            url::Origin::Create(GURL("https://d.test")));
   EXPECT_EQ(source_data.front()->priority, 10);
   EXPECT_EQ(source_data.front()->expiry, base::Seconds(1000));
   EXPECT_EQ(source_data.front()->debug_key,
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front()->source_event_id, 5UL);
   EXPECT_EQ(source_data.front()->destination,
-            url::Origin::Create(GURL("https://advertiser.example")));
+            url::Origin::Create(GURL("https://d.test")));
   EXPECT_EQ(source_data.front()->priority, 0);
   EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front()->debug_key);
@@ -240,10 +240,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 2u);
   EXPECT_EQ(source_data.front()->source_event_id, 1UL);
   EXPECT_EQ(source_data.front()->destination,
-            url::Origin::Create(GURL("https://advertiser.example")));
+            url::Origin::Create(GURL("https://d.test")));
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
-            url::Origin::Create(GURL("https://advertiser.example")));
+            url::Origin::Create(GURL("https://d.test")));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
-            url::Origin::Create(GURL("https://advertiser.example")));
+            url::Origin::Create(GURL("https://d.test")));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
   http_response->AddCustomHeader(
       "Attribution-Reporting-Register-Source",
-      R"({"source_event_id":"5", "destination":"https://advertiser.example"})");
+      R"({"source_event_id":"5", "destination":"https://d.test"})");
   register_response->Send(http_response->ToResponseString());
   register_response->Done();
 
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
-            url::Origin::Create(GURL("https://advertiser.example")));
+            url::Origin::Create(GURL("https://d.test")));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcInvalidFiltersBrowserTest,
   http_response->AddCustomHeader(
       "Attribution-Reporting-Register-Source",
       base::StrCat(
-          {R"({"source_event_id":"9", "destination":"https://advertiser.example", "filter_data":)",
+          {R"({"source_event_id":"9", "destination":"https://d.test", "filter_data":)",
            GetParam(), "}"}));
   http_response->AddCustomHeader("Location", "/register_source_headers.html");
   register_response->Send(http_response->ToResponseString());
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcInvalidFiltersBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
-            url::Origin::Create(GURL("https://advertiser.example")));
+            url::Origin::Create(GURL("https://d.test")));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFilterSizeBrowserTest,
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("source_event_id", "9");
-  dict.SetStringKey("destination", "https://advertiser.example");
+  dict.SetStringKey("destination", "https://d.test");
 
   base::Value filter_data(base::Value::Type::DICTIONARY);
   for (auto [filter, values] : test_case.AsMap()) {
@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFilterSizeBrowserTest,
   EXPECT_EQ(source_data.size(), expected_sources);
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
-            url::Origin::Create(GURL("https://advertiser.example")));
+            url::Origin::Create(GURL("https://d.test")));
 }
 
 INSTANTIATE_TEST_SUITE_P(
