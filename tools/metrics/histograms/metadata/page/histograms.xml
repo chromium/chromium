@@ -875,7 +875,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the largest contentful paint only for pages that load a third party
     font and whose largest contentful resource type is text. See
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint for details.
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 for details.
   </summary>
 </histogram>
 
@@ -2295,9 +2295,18 @@ chromium-metrics-reviews@google.com.
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
-    largest content (text or image) is first painted, across all frames. See
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint for more
-    information. Version 2 includes content that has been removed.
+    largest content (text or image) is first painted, across all frames.
+    Excludes any content painted after user input. Includes content that has
+    been removed from the page. See web.dev/lcp for more details.
+
+    The value is recorded at the end of each page load or the latest time when
+    we can reliably record: when the page is navigated away, the browser is
+    closed, or on Android when the browser is backgrounded.
+
+    Do not modify this metric in any way without contacting
+    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
+
+    Log of major changes: http://bit.ly/chrome-speed-metrics-changelog
   </summary>
 </histogram>
 
@@ -2322,8 +2331,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     largest content (text or image) is first painted, for main frame documents.
-    See PageLoad.PaintTiming.NavigationToLargestContentfulPaint for more
-    information. Version 2 excludes content that has been removed.
+    See PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 for more
+    information.
   </summary>
 </histogram>
 
