@@ -17,7 +17,7 @@ ci.defaults.set(
     # Naturally the runtime will be ~4-8h on average, depending on config.
     # CFI builds will take even longer - around 11h.
     execution_timeout = 14 * time.hour,
-    os = os.LINUX_DEFAULT,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     pool = ci.DEFAULT_POOL,
     properties = {
         "perf_dashboard_machine_group": "ChromiumClang",
@@ -169,7 +169,6 @@ ci.builder(
         category = "ToT Code Coverage",
         short_name = "and",
     ),
-    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.builder(
