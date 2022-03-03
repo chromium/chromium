@@ -2740,8 +2740,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SnapAnimationTargetUpdated) {
   EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
   // Finish the smooth scroll animation for wheel.
   const int scroll_animation_duration_ms =
-      base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 300
-                                                                       : 150;
+      features::IsImpulseScrollAnimationEnabled() ? 300 : 150;
   BeginImplFrameAndAnimate(
       begin_frame_args,
       start_time + base::Milliseconds(scroll_animation_duration_ms));
@@ -14841,10 +14840,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollAnimatedWithDelay) {
   begin_frame_args.frame_id.sequence_number++;
   host_impl_->WillBeginImplFrame(begin_frame_args);
   host_impl_->UpdateAnimationState(true);
-  EXPECT_NEAR(
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 87
-                                                                        : 50),
-      CurrentScrollOffset(scrolling_layer).y(), 1);
+  EXPECT_NEAR((features::IsImpulseScrollAnimationEnabled() ? 87 : 50),
+              CurrentScrollOffset(scrolling_layer).y(), 1);
   host_impl_->DidFinishImplFrame(begin_frame_args);
 
   // Update target.

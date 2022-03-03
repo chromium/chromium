@@ -33,8 +33,7 @@ namespace blink {
 
 namespace {
 const double kScrollAnimationDuration =
-    (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations) ? 1.5
-                                                                        : 0.5);
+    (::features::IsImpulseScrollAnimationEnabled() ? 1.5 : 0.5);
 }
 
 class FractionalScrollSimTest : public SimTest, public PaintTestConfigurations {

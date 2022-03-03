@@ -29,6 +29,10 @@ const base::Feature kImpulseScrollAnimations = {
     "ImpulseScrollAnimations",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+bool IsImpulseScrollAnimationEnabled() {
+  return base::FeatureList::IsEnabled(features::kImpulseScrollAnimations);
+}
+
 // Whether the compositor should attempt to sync with the scroll handlers before
 // submitting a frame.
 const base::Feature kSynchronizedScrolling = {
