@@ -65,6 +65,12 @@ class MODULES_EXPORT MediaStreamTrack
     virtual void TrackChangedState() = 0;
   };
 
+  // Create a MediaStreamTrack of the appropriate type for the display surface
+  // type.
+  static MediaStreamTrack* Create(ExecutionContext* context,
+                                  MediaStreamComponent* component,
+                                  base::OnceClosure callback,
+                                  const String& descriptor_id);
   // TODO(1288839): Implement to recreate MST after transfer
   static MediaStreamTrack* Create(ExecutionContext* context);
 

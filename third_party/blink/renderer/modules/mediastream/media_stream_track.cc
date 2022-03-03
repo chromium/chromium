@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/imagecapture/image_capture.h"
 #include "third_party/blink/renderer/modules/mediastream/apply_constraints_request.h"
+#include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/capture_handle_change_event.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
@@ -218,7 +219,56 @@ void DidCloneMediaStreamTrack(MediaStreamComponent* original,
   }
 }
 
+// Returns the DisplayCaptureSurfaceType for display-capture tracks,
+// absl::nullopt for non-display-capture tracks.
+absl::optional<media::mojom::DisplayCaptureSurfaceType> GetDisplayCaptureType(
+    const MediaStreamComponent* component) {
+  const MediaStreamTrackPlatform* const platform_track =
+      component->GetPlatformTrack();
+  if (!platform_track) {
+    return absl::nullopt;
+  }
+
+  MediaStreamTrackPlatform::Settings settings;
+  component->GetPlatformTrack()->GetSettings(settings);
+  return settings.display_surface;
+}
+
 }  // namespace
+
+MediaStreamTrack* MediaStreamTrack::Create(ExecutionContext* context,
+                                           MediaStreamComponent* component,
+                                           base::OnceClosure callback,
+                                           const String& descriptor_id) {
+  DCHECK(context);
+  DCHECK(component);
+
+  const absl::optional<media::mojom::DisplayCaptureSurfaceType>
+      display_surface_type = GetDisplayCaptureType(component);
+  const bool is_tab_capture =
+      (display_surface_type ==
+       media::mojom::DisplayCaptureSurfaceType::BROWSER);
+  const bool is_window_capture =
+      (display_surface_type == media::mojom::DisplayCaptureSurfaceType::WINDOW);
+
+  if (is_tab_capture && RuntimeEnabledFeatures::RegionCaptureEnabled(context)) {
+    // Note:
+    // * ConditionalFocus is `implied_by` RegionCapture.
+    // * BrowserCaptureMediaStreamTrack a subclass of FocusableMediaStreamTrack.
+    // Therefore, tab-capture with ConditionalFocus/RegionCapture active
+    // instantiates a track on which focus() is exposed - as intended.
+    DCHECK(RuntimeEnabledFeatures::ConditionalFocusEnabled(context));
+    return MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
+        context, component, std::move(callback), descriptor_id);
+  } else if ((is_tab_capture || is_window_capture) &&
+             RuntimeEnabledFeatures::ConditionalFocusEnabled(context)) {
+    return MakeGarbageCollected<FocusableMediaStreamTrack>(
+        context, component, std::move(callback), descriptor_id);
+  } else {
+    return MakeGarbageCollected<MediaStreamTrack>(context, component,
+                                                  std::move(callback));
+  }
+}
 
 MediaStreamTrack* MediaStreamTrack::Create(ExecutionContext* context) {
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
