@@ -20,9 +20,9 @@ extern const char kDeviceAssetId[];
 extern const char kDeviceAnnotatedLocation[];
 
 // Replace the supported "template variables" for the managed configuration of
-// Android apps in ARC++ from the given |managedConfiguration|.
+// Android apps in ARC++ from the given |managedConfiguration| dictionary.
 //
-// Supported template variables are:
+// Supported template variables:
 // * ${USER_EMAIL} - Email address of the primary signed in user.
 // * ${USER_EMAIL_NAME} - Part before "@" of the user email address.
 // * ${USER_EMAIL_DOMAIN} - Domain name of the user email address.
@@ -30,6 +30,17 @@ extern const char kDeviceAnnotatedLocation[];
 // * ${DEVICE_SERIAL_NUMBER} - Device serial number.
 // * ${DEVICE_ASSET_ID} - Asset ID assigned by administrator.
 // * ${DEVICE_ANNOTATED_LOCATION} - Location assigned by administrator.
+//
+// Variables can be chained by ":" to indicate fallback variables to be used
+// when values are absent. In other words, a variable chain is replaced by the
+// first value in the chain that is not empty.
+//
+// For example, given the variable chain "${DEVICE_ASSET_ID:USER_EMAIL}", it
+// resolves to the asset ID if it is present, otherwise it resolves to the email
+// of the current signed in user.
+//
+// Note chains containing unknown variables are considered malformed and will
+// not be processed.
 void RecursivelyReplaceManagedConfigurationVariables(
     const Profile* profile,
     base::Value* managedConfiguration);
