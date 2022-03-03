@@ -92,11 +92,11 @@ bool HTMLResourcePreloader::AllowPreloadRequest(PreloadRequest* preload) const {
     return false;
   }
 
-  switch (preload->Importance()) {
-    case mojom::FetchImportanceMode::kImportanceHigh:
+  switch (preload->FetchPriorityHint()) {
+    case mojom::blink::FetchPriorityHint::kHigh:
       return true;
-    case mojom::FetchImportanceMode::kImportanceLow:
-    case mojom::FetchImportanceMode::kImportanceAuto:
+    case mojom::blink::FetchPriorityHint::kLow:
+    case mojom::blink::FetchPriorityHint::kAuto:
       break;
   }
 

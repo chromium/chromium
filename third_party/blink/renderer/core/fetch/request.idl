@@ -13,7 +13,7 @@ enum RequestCredentials { "omit", "same-origin", "include" };
 enum RequestRedirect { "follow", "error", "manual" };
 enum RequestCache { "default", "no-store", "reload", "no-cache", "force-cache",
                     "only-if-cached" };
-enum RequestImportance {"low", "auto", "high"};
+enum FetchPriority {"low", "auto", "high"};
 
 // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
 

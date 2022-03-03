@@ -3,7 +3,7 @@
 <script src=../resources/testharnessreport.js></script>
 
 <script>
-  const t = async_test('low importance on in-viewport images must be fetched with kLow resource load priority');
+  const t = async_test('low fetchpriority on in-viewport images must be fetched with kLow resource load priority');
   const url = new URL('../resources/slow-image.php?sleep=1000&name=square.png', location);
   const priorityPromise = internals.getInitialResourcePriority(url, document);
 
@@ -18,8 +18,8 @@
 </script>
 
 <!--
-  In-viewport images get re-prioritized if layout is computed mid-flight. With importance=low, re-prioritization should have no effect,
+  In-viewport images get re-prioritized if layout is computed mid-flight. With fetchpriority=low, re-prioritization should have no effect,
   we delay both the image request (will be fetched by preload scanner) by a second, and finish layout mid-flight. As long as the final
   resource load priority is kLow, we know the image was not re-prioritized.
 -->
-<img importance=low src="../resources/slow-image.php?sleep=1000&name=square.png" alt=img>
+<img fetchpriority=low src="../resources/slow-image.php?sleep=1000&name=square.png" alt=img>

@@ -5,26 +5,26 @@
 <script>
   const tests = [
     // Dynamically-inserted <script> tests.
-    {test: async_test('high importance on dynamically-inserted <script>s translates to kHigh resource load priority'), importance: 'high', expected_priority: kHigh},
-    {test: async_test('low importance on dynamically-inserted <script>s has no effect on resource load priority'), importance: 'low', expected_priority: kLow},
-    {test: async_test('auto importance on dynamically-inserted <script>s has no effect on resource load priority'), importance: 'auto', expected_priority: kLow},
-    {test: async_test('invalid importance on dynamically-inserted <script>s has no effect on resource load priority'), importance: 'xyz', expected_priority: kLow},
-    {test: async_test('missing importance on dynamically-inserted <script>s has no effect on resource load priority'), expected_priority: kLow},
+    {test: async_test('high fetchpriority on dynamically-inserted <script>s translates to kHigh resource load priority'), fetchpriority: 'high', expected_priority: kHigh},
+    {test: async_test('low fetchpriority on dynamically-inserted <script>s has no effect on resource load priority'), fetchpriority: 'low', expected_priority: kLow},
+    {test: async_test('auto fetchpriority on dynamically-inserted <script>s has no effect on resource load priority'), fetchpriority: 'auto', expected_priority: kLow},
+    {test: async_test('invalid fetchpriority on dynamically-inserted <script>s has no effect on resource load priority'), fetchpriority: 'xyz', expected_priority: kLow},
+    {test: async_test('missing fetchpriority on dynamically-inserted <script>s has no effect on resource load priority'), expected_priority: kLow},
 
     // Dynamically-inserted <script type=module> tests.
-    {test: async_test('high importance on dynamically-inserted module <script>s has no effect on resource load priority'),
-     importance: 'high', module: true, expected_priority: kHigh},
+    {test: async_test('high fetchpriority on dynamically-inserted module <script>s has no effect on resource load priority'),
+     fetchpriority: 'high', module: true, expected_priority: kHigh},
      // This test below actually fails because ResourceFetcher currently does
      // not make it easy to down-prioritize ResourceRequests whose priority is
      // pre-set, and module scripts have their priority set to kHigh before they
      // reach ResourceFetcher. This is related to crbug.com/882344.
-    {test: async_test('low importance on dynamically-inserted module <script>s translates to kLow resource load priority'),
-     importance: 'low', module: true, expected_priority: kLow},
-    {test: async_test('auto importance on dynamically-inserted module <script>s has no effect on resource load priority'),
-     importance: 'auto', module: true, expected_priority: kHigh},
-    {test: async_test('invalid importance on dynamically-inserted module <script>s has no effect on resource load priority'),
-     importance: 'xyz', module: true, expected_priority: kHigh},
-    {test: async_test('missing importance on dynamically-inserted module <script>s has no effect on resource load priority'),
+    {test: async_test('low fetchpriority on dynamically-inserted module <script>s translates to kLow resource load priority'),
+     fetchpriority: 'low', module: true, expected_priority: kLow},
+    {test: async_test('auto fetchpriority on dynamically-inserted module <script>s has no effect on resource load priority'),
+     fetchpriority: 'auto', module: true, expected_priority: kHigh},
+    {test: async_test('invalid fetchpriority on dynamically-inserted module <script>s has no effect on resource load priority'),
+     fetchpriority: 'xyz', module: true, expected_priority: kHigh},
+    {test: async_test('missing fetchpriority on dynamically-inserted module <script>s has no effect on resource load priority'),
      module: true, expected_priority: kHigh}
 
   ];
@@ -32,7 +32,7 @@
   let iteration = 0;
   for (const test of tests) {
     const script = document.createElement('script');
-    if (test.importance) script.importance = test.importance;
+    if (test.fetchpriority) script.fetchpriority = test.fetchpriority;
     if (test.module) script.type = "module";
     script.src = `../resources/dummy.js?${iteration++}`;
     script.onload = assert_priority_onload(script.src, test.expected_priority, test.test);

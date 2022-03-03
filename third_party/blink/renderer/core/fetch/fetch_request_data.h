@@ -90,18 +90,21 @@ class CORE_EXPORT FetchRequestData final
     credentials_ = credentials;
   }
   network::mojom::CredentialsMode Credentials() const { return credentials_; }
-  void SetCacheMode(mojom::FetchCacheMode cache_mode) {
+  void SetCacheMode(mojom::blink::FetchCacheMode cache_mode) {
     cache_mode_ = cache_mode;
   }
-  mojom::FetchCacheMode CacheMode() const { return cache_mode_; }
+  mojom::blink::FetchCacheMode CacheMode() const { return cache_mode_; }
   void SetRedirect(network::mojom::RedirectMode redirect) {
     redirect_ = redirect;
   }
   network::mojom::RedirectMode Redirect() const { return redirect_; }
-  void SetImportance(mojom::FetchImportanceMode importance) {
-    importance_ = importance;
+  void SetFetchPriorityHint(
+      mojom::blink::FetchPriorityHint fetch_priority_hint) {
+    fetch_priority_hint_ = fetch_priority_hint;
   }
-  mojom::FetchImportanceMode Importance() const { return importance_; }
+  mojom::blink::FetchPriorityHint FetchPriorityHint() const {
+    return fetch_priority_hint_;
+  }
   FetchHeaderList* HeaderList() const { return header_list_.Get(); }
   void SetHeaderList(FetchHeaderList* header_list) {
     header_list_ = header_list;
@@ -162,37 +165,44 @@ class CORE_EXPORT FetchRequestData final
  private:
   FetchRequestData* CloneExceptBody();
 
-  AtomicString method_;
+  AtomicString method_ = http_names::kGET;
   KURL url_;
-  Member<FetchHeaderList> header_list_;
+  Member<FetchHeaderList> header_list_ =
+      MakeGarbageCollected<FetchHeaderList>();
   // FIXME: Support m_skipServiceWorkerFlag;
-  network::mojom::RequestDestination destination_;
+  network::mojom::RequestDestination destination_ =
+      network::mojom::RequestDestination::kEmpty;
   scoped_refptr<const SecurityOrigin> origin_;
   WTF::Vector<KURL> navigation_redirect_chain_;
   scoped_refptr<const SecurityOrigin> isolated_world_origin_;
   // FIXME: Support m_forceOriginHeaderFlag;
   AtomicString referrer_string_;
-  network::mojom::ReferrerPolicy referrer_policy_;
+  network::mojom::ReferrerPolicy referrer_policy_ =
+      network::mojom::ReferrerPolicy::kDefault;
   // FIXME: Support m_authenticationFlag;
   // FIXME: Support m_synchronousFlag;
-  network::mojom::RequestMode mode_;
-  network::mojom::CredentialsMode credentials_;
+  network::mojom::RequestMode mode_ = network::mojom::RequestMode::kNoCors;
+  network::mojom::CredentialsMode credentials_ =
+      network::mojom::CredentialsMode::kOmit;
   // TODO(yiyix): |cache_mode_| is exposed but does not yet affect fetch
   // behavior. We must transfer the mode to the network layer and service
   // worker.
-  mojom::FetchCacheMode cache_mode_;
-  network::mojom::RedirectMode redirect_;
-  mojom::FetchImportanceMode importance_;
+  mojom::blink::FetchCacheMode cache_mode_ =
+      mojom::blink::FetchCacheMode::kDefault;
+  network::mojom::RedirectMode redirect_ =
+      network::mojom::RedirectMode::kFollow;
+  mojom::blink::FetchPriorityHint fetch_priority_hint_ =
+      mojom::blink::FetchPriorityHint::kAuto;
   absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params_;
   // FIXME: Support m_useURLCredentialsFlag;
   // FIXME: Support m_redirectCount;
   Member<BodyStreamBuffer> buffer_;
   String mime_type_;
   String integrity_;
-  ResourceLoadPriority priority_;
+  ResourceLoadPriority priority_ = ResourceLoadPriority::kUnresolved;
   network::mojom::RequestDestination original_destination_ =
       network::mojom::RequestDestination::kEmpty;
-  bool keepalive_;
+  bool keepalive_ = false;
   bool is_history_navigation_ = false;
   // A specific factory that should be used for this request instead of whatever
   // the system would otherwise decide to use to load this request.

@@ -88,10 +88,13 @@ class CORE_EXPORT PreloadRequest {
   }
   CrossOriginAttributeValue CrossOrigin() const { return cross_origin_; }
 
-  void SetImportance(mojom::FetchImportanceMode importance) {
-    importance_ = importance;
+  void SetFetchPriorityHint(
+      mojom::blink::FetchPriorityHint fetch_priority_hint) {
+    fetch_priority_hint_ = fetch_priority_hint;
   }
-  mojom::FetchImportanceMode Importance() const { return importance_; }
+  mojom::blink::FetchPriorityHint FetchPriorityHint() const {
+    return fetch_priority_hint_;
+  }
 
   void SetNonce(const String& nonce) { nonce_ = nonce; }
   const String& Nonce() const { return nonce_; }
@@ -154,17 +157,11 @@ class CORE_EXPORT PreloadRequest {
         resource_url_(resource_url),
         base_url_(base_url),
         resource_type_(resource_type),
-        script_type_(mojom::blink::ScriptType::kClassic),
-        cross_origin_(kCrossOriginAttributeNotSet),
-        importance_(mojom::FetchImportanceMode::kImportanceAuto),
-        defer_(FetchParameters::kNoDefer),
         resource_width_(resource_width),
         client_hints_preferences_(client_hints_preferences),
         request_type_(request_type),
         referrer_policy_(referrer_policy),
-        from_insertion_scanner_(false),
-        is_image_set_(is_image_set),
-        is_lazy_load_image_enabled_(false) {}
+        is_image_set_(is_image_set) {}
 
   KURL CompleteURL(Document*);
 
@@ -174,11 +171,12 @@ class CORE_EXPORT PreloadRequest {
   const KURL base_url_;
   String charset_;
   const ResourceType resource_type_;
-  mojom::blink::ScriptType script_type_;
-  CrossOriginAttributeValue cross_origin_;
-  mojom::FetchImportanceMode importance_;
+  mojom::blink::ScriptType script_type_ = mojom::blink::ScriptType::kClassic;
+  CrossOriginAttributeValue cross_origin_ = kCrossOriginAttributeNotSet;
+  mojom::blink::FetchPriorityHint fetch_priority_hint_ =
+      mojom::blink::FetchPriorityHint::kAuto;
   String nonce_;
-  FetchParameters::DeferOption defer_;
+  FetchParameters::DeferOption defer_ = FetchParameters::kNoDefer;
   const FetchParameters::ResourceWidth resource_width_;
   const ClientHintsPreferences client_hints_preferences_;
   const RequestType request_type_;
@@ -186,9 +184,9 @@ class CORE_EXPORT PreloadRequest {
   IntegrityMetadataSet integrity_metadata_;
   RenderBlockingBehavior render_blocking_behavior_ =
       RenderBlockingBehavior::kUnset;
-  bool from_insertion_scanner_;
+  bool from_insertion_scanner_ = false;
   const ResourceFetcher::IsImageSet is_image_set_;
-  bool is_lazy_load_image_enabled_;
+  bool is_lazy_load_image_enabled_ = false;
 };
 
 typedef Vector<std::unique_ptr<PreloadRequest>> PreloadRequestStream;

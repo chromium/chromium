@@ -345,6 +345,9 @@
     "face": [
       "*"
     ],
+    "fetchpriority": [
+      "*"
+    ],
     "for": [
       "*"
     ],
@@ -406,9 +409,6 @@
       "*"
     ],
     "imagesrcset": [
-      "*"
-    ],
-    "importance": [
       "*"
     ],
     "impressiondata": [

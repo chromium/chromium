@@ -39,7 +39,7 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
       : parser_state_(ParserDisposition::kNotParserInserted),
         credentials_mode_(network::mojom::CredentialsMode::kSameOrigin),
         referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
-        importance_(mojom::FetchImportanceMode::kImportanceAuto) {}
+        fetch_priority_hint_(mojom::blink::FetchPriorityHint::kAuto) {}
 
   ScriptFetchOptions(const String& nonce,
                      const IntegrityMetadataSet& integrity_metadata,
@@ -47,7 +47,7 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
                      ParserDisposition parser_state,
                      network::mojom::CredentialsMode credentials_mode,
                      network::mojom::ReferrerPolicy referrer_policy,
-                     mojom::FetchImportanceMode importance,
+                     mojom::blink::FetchPriorityHint fetch_priority_hint,
                      RenderBlockingBehavior render_blocking_behavior,
                      RejectCoepUnsafeNone reject_coep_unsafe_none =
                          RejectCoepUnsafeNone(false))
@@ -57,7 +57,7 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
         parser_state_(parser_state),
         credentials_mode_(credentials_mode),
         referrer_policy_(referrer_policy),
-        importance_(importance),
+        fetch_priority_hint_(fetch_priority_hint),
         render_blocking_behavior_(render_blocking_behavior),
         reject_coep_unsafe_none_(reject_coep_unsafe_none) {}
   ~ScriptFetchOptions() = default;
@@ -76,7 +76,9 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   network::mojom::ReferrerPolicy GetReferrerPolicy() const {
     return referrer_policy_;
   }
-  mojom::FetchImportanceMode Importance() const { return importance_; }
+  mojom::blink::FetchPriorityHint FetchPriorityHint() const {
+    return fetch_priority_hint_;
+  }
   RejectCoepUnsafeNone GetRejectCoepUnsafeNone() const {
     return reject_coep_unsafe_none_;
   }
@@ -108,11 +110,8 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   // https://html.spec.whatwg.org/C/#concept-script-fetch-options-referrer-policy
   const network::mojom::ReferrerPolicy referrer_policy_;
 
-  // Priority Hints and a request's "importance" mode are currently
-  // non-standard. See https://crbug.com/821464, and the HTML Standard issue
-  // https://github.com/whatwg/html/issues/3670 for some discussion on adding an
-  // "importance" member to the script fetch options struct.
-  const mojom::FetchImportanceMode importance_;
+  // https://wicg.github.io/priority-hints/#script
+  const mojom::blink::FetchPriorityHint fetch_priority_hint_;
 
   const RenderBlockingBehavior render_blocking_behavior_ =
       RenderBlockingBehavior::kUnset;

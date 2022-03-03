@@ -103,7 +103,7 @@ Resource* PreloadRequest::Start(Document* document) {
   resource_request.SetRequestDestination(
       ResourceFetcher::DetermineRequestDestination(resource_type_));
 
-  resource_request.SetFetchImportanceMode(importance_);
+  resource_request.SetFetchPriorityHint(fetch_priority_hint_);
 
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;

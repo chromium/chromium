@@ -3690,9 +3690,9 @@ interface HTMLImageElement : HTMLElement
     getter crossOrigin
     getter currentSrc
     getter decoding
+    getter fetchpriority
     getter height
     getter hspace
-    getter importance
     getter isMap
     getter loading
     getter longDesc
@@ -3717,9 +3717,9 @@ interface HTMLImageElement : HTMLElement
     setter border
     setter crossOrigin
     setter decoding
+    setter fetchpriority
     setter height
     setter hspace
-    setter importance
     setter isMap
     setter loading
     setter longDesc
@@ -3860,11 +3860,11 @@ interface HTMLLinkElement : HTMLElement
     getter charset
     getter crossOrigin
     getter disabled
+    getter fetchpriority
     getter href
     getter hreflang
     getter imageSizes
     getter imageSrcset
-    getter importance
     getter integrity
     getter media
     getter referrerPolicy
@@ -3883,11 +3883,11 @@ interface HTMLLinkElement : HTMLElement
     setter charset
     setter crossOrigin
     setter disabled
+    setter fetchpriority
     setter href
     setter hreflang
     setter imageSizes
     setter imageSrcset
-    setter importance
     setter integrity
     setter media
     setter referrerPolicy
@@ -4216,8 +4216,8 @@ interface HTMLScriptElement : HTMLElement
     getter crossOrigin
     getter defer
     getter event
+    getter fetchpriority
     getter htmlFor
-    getter importance
     getter integrity
     getter noModule
     getter referrerPolicy
@@ -4231,8 +4231,8 @@ interface HTMLScriptElement : HTMLElement
     setter crossOrigin
     setter defer
     setter event
+    setter fetchpriority
     setter htmlFor
-    setter importance
     setter integrity
     setter noModule
     setter referrerPolicy
@@ -4818,9 +4818,9 @@ interface Image
     getter crossOrigin
     getter currentSrc
     getter decoding
+    getter fetchpriority
     getter height
     getter hspace
-    getter importance
     getter isMap
     getter loading
     getter longDesc
@@ -4845,9 +4845,9 @@ interface Image
     setter border
     setter crossOrigin
     setter decoding
+    setter fetchpriority
     setter height
     setter hspace
-    setter importance
     setter isMap
     setter loading
     setter longDesc

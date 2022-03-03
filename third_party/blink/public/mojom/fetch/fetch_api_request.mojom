@@ -100,13 +100,12 @@ enum FetchCacheMode {
   kUnspecifiedForceCacheMiss,
 };
 
-// Corresponds to Fetch request's "importance mode"
-// Currently discussed at: https://github.com/WICG/priority-hints
-// TODO(domfarolino): add a spec link to this once specified.
-enum FetchImportanceMode {
-  kImportanceLow,
-  kImportanceAuto,
-  kImportanceHigh
+// Corresponds to Fetch request's "priority"
+// Spec: https://wicg.github.io/priority-hints/
+enum FetchPriorityHint {
+  kLow,
+  kAuto,
+  kHigh
 };
 
 // Request headers for FetchAPIRequest. This is typemapped to a container with a

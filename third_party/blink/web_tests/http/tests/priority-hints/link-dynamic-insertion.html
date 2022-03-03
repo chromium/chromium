@@ -4,11 +4,11 @@
 
 <script>
   const tests = [
-    {description: 'high importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'high', expected_priority: kVeryHigh},
-    {description: 'low importance on <link rel=stylesheet>s not fetched by the preload scanner must load with kHigh priority', importance: 'low', expected_priority: kHigh},
-    {description: 'auto importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'auto', expected_priority: kVeryHigh},
-    {description: 'invalid importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'xyz', expected_priority: kVeryHigh},
-    {description: 'missing importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', expected_priority: kVeryHigh}
+    {description: 'high fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', fetchpriority: 'high', expected_priority: kVeryHigh},
+    {description: 'low fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must load with kHigh priority', fetchpriority: 'low', expected_priority: kHigh},
+    {description: 'auto fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', fetchpriority: 'auto', expected_priority: kVeryHigh},
+    {description: 'invalid fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', fetchpriority: 'xyz', expected_priority: kVeryHigh},
+    {description: 'missing fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', expected_priority: kVeryHigh}
   ];
 
   let iteration = 0;
@@ -16,14 +16,14 @@
     promise_test(async () => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      if (test.importance) link.importance = test.importance;
+      if (test.fetchpriority) link.fetchpriority = test.fetchpriority;
 
       const url = new URL(`../resources/square.png?${iteration++}`, location);
       const priorityPromise = internals.getInitialResourcePriority(url, document);
       link.href = url;
       document.head.appendChild(link);
-      const priority = await priorityPromise;
-      assert_equals(priority, test.expected_priority, test.description);
+      const load_priority = await priorityPromise;
+      assert_equals(load_priority, test.expected_priority, test.description);
     });
   }
 </script>

@@ -7,36 +7,36 @@ const priority_tests = [
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png', location), document),
     expected_priority: kHigh,
-    description: 'high importance on <img> must translate to kHigh resource load priority'
+    description: 'high fetchpriority on <img> must translate to kHigh resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png?1', location), document),
     expected_priority: kLow,
-    description: 'low importance on <img> must translate to kLow resource load priority'
+    description: 'low fetchpriority on <img> must translate to kLow resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png?2', location), document),
     expected_priority: kLow,
-    description: 'auto importance on <img> must translate to kLow resource load priority'
+    description: 'auto fetchpriority on <img> must translate to kLow resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png?3', location), document),
     expected_priority: kLow,
-    description: 'invalid importance on <img> must translate to kLow resource load priority'
+    description: 'invalid fetchpriority on <img> must translate to kLow resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/square.png?4', location), document),
     expected_priority: kLow,
-    description: 'missing importance on <img> must translate to kLow resource load priority'
+    description: 'missing fetchpriority on <img> must translate to kLow resource load priority'
   }
 ];
 
 </script>
 
-<img id=img1 importance=high src=../resources/square.png alt=img>
-<img id=img2 importance=low src=../resources/square.png?1 alt=img>
-<img id=img3 importance=auto src=../resources/square.png?2 alt=img>
-<img id=img4 importance=xyz src=../resources/square.png?3 alt=img>
+<img id=img1 fetchpriority=high src=../resources/square.png alt=img>
+<img id=img2 fetchpriority=low src=../resources/square.png?1 alt=img>
+<img id=img3 fetchpriority=auto src=../resources/square.png?2 alt=img>
+<img id=img4 fetchpriority=xyz src=../resources/square.png?3 alt=img>
 <img id=img5 src=../resources/square.png?4 alt=img>
 
 <script>

@@ -6,45 +6,46 @@
   test(t => {
     t.add_cleanup(clearUseCounter);
     assert_false(internals.isUseCounted(document, kPriorityHints),
-                 'Priority Hints is not use-counted before the importance ' +
-                 'IDL attribute is set');
+                 'Priority Hints is not use-counted before the ' +
+                 'fetchpriority IDL attribute is set');
     const script = document.createElement('script');
-    script.importance = 'high';
+    script.fetchpriority = 'high';
     assert_true(internals.isUseCounted(document, kPriorityHints),
-                'Priority Hints is use-counted once the importance IDL ' +
+                'Priority Hints is use-counted once the fetchpriority IDL ' +
                 'attribute is set');
-  }, 'Priority Hints use-counter works properly with the <script> importance ' +
-     'IDL attribute');
+  }, 'Priority Hints use-counter works properly with the <script> ' +
+     'fetchpriority IDL attribute');
 
   test(t => {
     t.add_cleanup(clearUseCounter);
     assert_false(internals.isUseCounted(document, kPriorityHints),
-                 'Priority Hints is not use-counted before the importance ' +
-                 'content attribute is set');
+                 'Priority Hints is not use-counted before the ' +
+                 'fetchpriority content attribute is set');
     const script = document.createElement('script');
-    script.setAttribute('importance', 'high');
+    script.setAttribute('fetchpriority', 'high');
     assert_true(internals.isUseCounted(document, kPriorityHints),
-                'Priority Hints is use-counted once the importance content ' +
-                'attribute is set');
-  }, 'Priority Hints use-counter works properly with the <script> importance ' +
-     'content attribute');
+                'Priority Hints is use-counted once the fetchpriority ' +
+                'content attribute is set');
+  }, 'Priority Hints use-counter works properly with the <script> ' +
+     'fetchpriority content attribute');
 
-  const t = async_test('Priority Hints is use-counted when the importance ' +
-                       'content attribute is parsed on the <script> element');
+  const t = async_test('Priority Hints is use-counted when the ' +
+                       'fetchpriority content attribute is parsed on the ' +
+                       '<script> element');
   t.add_cleanup(clearUseCounter);
 
   t.step_func(() => {
     assert_false(internals.isUseCounted(document, kPriorityHints),
-                 'Priority Hints is not use-counted before the importance ' +
-                 'content attribute is parsed');
+                 'Priority Hints is not use-counted before the ' +
+                 'fetchpriority content attribute is parsed');
   });
 
   window.addEventListener('DOMContentLoaded', t.step_func_done(() => {
 
     document.head.innerHTML += "<script src=../resources/dummy.js " +
-                               "importance=high><" + "/script>";
+                               "fetchpriority=high><" + "/script>";
     assert_true(internals.isUseCounted(document, kPriorityHints),
-                'Priority Hints is use-counted once the importance content ' +
-                'attribute is parsed');
+                'Priority Hints is use-counted once the fetchpriority ' +
+                'content attribute is parsed');
   }));
 </script>

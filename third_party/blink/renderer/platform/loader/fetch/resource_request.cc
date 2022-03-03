@@ -95,7 +95,7 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       use_stream_on_response_(false),
       keepalive_(false),
       allow_stale_response_(false),
-      cache_mode_(mojom::FetchCacheMode::kDefault),
+      cache_mode_(mojom::blink::FetchCacheMode::kDefault),
       skip_service_worker_(false),
       download_to_cache_only_(false),
       site_for_cookies_set_(false),
@@ -105,7 +105,7 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       request_context_(mojom::blink::RequestContextType::UNSPECIFIED),
       destination_(network::mojom::RequestDestination::kEmpty),
       mode_(network::mojom::RequestMode::kNoCors),
-      fetch_importance_mode_(mojom::FetchImportanceMode::kImportanceAuto),
+      fetch_priority_hint_(mojom::blink::FetchPriorityHint::kAuto),
       credentials_mode_(network::mojom::CredentialsMode::kInclude),
       redirect_mode_(network::mojom::RedirectMode::kFollow),
       referrer_string_(Referrer::ClientReferrerString()),
@@ -241,11 +241,12 @@ void ResourceRequestHead::RemoveUserAndPassFromURL() {
   url_.SetPass(String());
 }
 
-mojom::FetchCacheMode ResourceRequestHead::GetCacheMode() const {
+mojom::blink::FetchCacheMode ResourceRequestHead::GetCacheMode() const {
   return cache_mode_;
 }
 
-void ResourceRequestHead::SetCacheMode(mojom::FetchCacheMode cache_mode) {
+void ResourceRequestHead::SetCacheMode(
+    mojom::blink::FetchCacheMode cache_mode) {
   cache_mode_ = cache_mode;
 }
 

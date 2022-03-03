@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/loader/importance_attribute.h"
+#include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/loader/link_loader_client.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
@@ -203,11 +203,11 @@ void LinkLoader::LoadStylesheet(
   ResourceRequest resource_request(context->CompleteURL(params.href));
   resource_request.SetReferrerPolicy(params.referrer_policy);
 
-  mojom::FetchImportanceMode importance_mode =
-      GetFetchImportanceAttributeValue(params.importance);
-  DCHECK(importance_mode == mojom::FetchImportanceMode::kImportanceAuto ||
+  mojom::blink::FetchPriorityHint fetch_priority_hint =
+      GetFetchPriorityAttributeValue(params.fetch_priority_hint);
+  DCHECK(fetch_priority_hint == mojom::blink::FetchPriorityHint::kAuto ||
          RuntimeEnabledFeatures::PriorityHintsEnabled(context));
-  resource_request.SetFetchImportanceMode(importance_mode);
+  resource_request.SetFetchPriorityHint(fetch_priority_hint);
 
   ResourceLoaderOptions options(context->GetCurrentWorld());
   options.initiator_info.name = local_name;

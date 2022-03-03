@@ -45,8 +45,8 @@
     "search",
     "send",
 
-    // importance attribute / Priority Hints
-    // https://wicg.github.io/priority-hints/#solution-0
+    // fetchpriority attribute / Priority Hints
+    // https://wicg.github.io/priority-hints/#solution
     "high",
     "low",
     "auto",

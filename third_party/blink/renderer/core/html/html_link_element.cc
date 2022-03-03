@@ -79,7 +79,6 @@ HTMLLinkElement::HTMLLinkElement(Document& document,
     : HTMLElement(html_names::kLinkTag, document),
       link_loader_(
           MakeGarbageCollected<LinkLoader>(this, GetLoadingTaskRunner())),
-      referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
       sizes_(MakeGarbageCollected<DOMTokenList>(*this, html_names::kSizesAttr)),
       rel_list_(MakeGarbageCollected<RelList>(this)),
       blocking_attribute_(MakeGarbageCollected<BlockingAttribute>(this)),
@@ -144,11 +143,11 @@ void HTMLLinkElement::ParseAttribute(
     Process();
   } else if (name == html_names::kIntegrityAttr) {
     integrity_ = value;
-  } else if (name == html_names::kImportanceAttr &&
+  } else if (name == html_names::kFetchpriorityAttr &&
              RuntimeEnabledFeatures::PriorityHintsEnabled(
                  GetExecutionContext())) {
     UseCounter::Count(GetDocument(), WebFeature::kPriorityHints);
-    importance_ = value;
+    fetch_priority_hint_ = value;
   } else if (name == html_names::kResourcesAttr &&
              LinkWebBundle::IsFeatureEnabled(GetExecutionContext())) {
     resources_->DidUpdateAttributeValue(params.old_value, value);

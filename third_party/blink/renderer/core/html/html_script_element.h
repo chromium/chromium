@@ -103,7 +103,7 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   String CrossOriginAttributeValue() const override;
   String IntegrityAttributeValue() const override;
   String ReferrerPolicyAttributeValue() const override;
-  String ImportanceAttributeValue() const override;
+  String FetchPriorityAttributeValue() const override;
   String ChildTextContent() override;
   String ScriptTextInternalSlot() const override;
   bool AsyncAttributeValue() const override;

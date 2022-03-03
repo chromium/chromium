@@ -8,35 +8,35 @@ const priority_tests = [
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css', location), document),
     expected_priority: kHigh,
-    description: 'low importance on <link rel=stylesheet> must load with kHigh priority'
+    description: 'low fetchpriority on <link rel=stylesheet> must load with kHigh priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css?1', location), document),
     expected_priority: kVeryHigh,
-    description: 'high importance on <link rel=stylesheet> must have no effect on resource load priority'
+    description: 'high fetchpriority on <link rel=stylesheet> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css?2', location), document),
     expected_priority: kVeryHigh,
-    description: 'auto importance on <link rel=stylesheet> must have no effect on resource load priority'
+    description: 'auto fetchpriority on <link rel=stylesheet> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css?3', location), document),
     expected_priority: kVeryHigh,
-    description: 'invalid importance on <link rel=stylesheet> must have no effect on resource load priority'
+    description: 'invalid fetchpriority on <link rel=stylesheet> must have no effect on resource load priority'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css?4', location), document),
     expected_priority: kVeryHigh,
-    description: 'missing importance on <link rel=stylesheet> must have no effect on resource load priority'
+    description: 'missing fetchpriority on <link rel=stylesheet> must have no effect on resource load priority'
   }
 ];
 </script>
 
-<link id=link1 importance=low rel=stylesheet href=../resources/dummy.css>
-<link id=link2 importance=high rel=stylesheet href=../resources/dummy.css?1>
-<link id=link3 importance=auto rel=stylesheet href=../resources/dummy.css?2>
-<link id=link4 importance=xyz rel=stylesheet href=../resources/dummy.css?3>
+<link id=link1 fetchpriority=low rel=stylesheet href=../resources/dummy.css>
+<link id=link2 fetchpriority=high rel=stylesheet href=../resources/dummy.css?1>
+<link id=link3 fetchpriority=auto rel=stylesheet href=../resources/dummy.css?2>
+<link id=link4 fetchpriority=xyz rel=stylesheet href=../resources/dummy.css?3>
 <link id=link5 rel=stylesheet href=../resources/dummy.css?4>
 
 <script>
@@ -56,8 +56,8 @@ const priority_tests = [
   // Setup the tests described by |priority_tests|.
   for (const test of priority_tests) {
     promise_test(async () => {
-      const priority = await test.promise;
-      assert_equals(priority, test.expected_priority);
+      const load_priority = await test.promise;
+      assert_equals(load_priority, test.expected_priority);
     }, test.description);
   }
 </script>

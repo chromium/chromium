@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/loader/importance_attribute.h"
+#include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
@@ -322,8 +322,8 @@ Resource* PreloadHelper::PreloadIfNeeded(
 
   resource_request.SetReferrerPolicy(params.referrer_policy);
 
-  resource_request.SetFetchImportanceMode(
-      GetFetchImportanceAttributeValue(params.importance));
+  resource_request.SetFetchPriorityHint(
+      GetFetchPriorityAttributeValue(params.fetch_priority_hint));
 
   ResourceLoaderOptions options(
       document.GetExecutionContext()->GetCurrentWorld());
@@ -500,7 +500,7 @@ void PreloadHelper::ModulePreloadIfNeeded(
       ScriptFetchOptions(params.nonce, integrity_metadata, params.integrity,
                          kNotParserInserted, credentials_mode,
                          params.referrer_policy,
-                         mojom::blink::FetchImportanceMode::kImportanceAuto,
+                         mojom::blink::FetchPriorityHint::kAuto,
                          RenderBlockingBehavior::kNonBlocking),
       Referrer::NoReferrer(), TextPosition::MinimumPosition());
 
@@ -554,8 +554,8 @@ Resource* PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
     resource_request.SetRecursivePrefetchToken(params.recursive_prefetch_token);
 
     resource_request.SetReferrerPolicy(params.referrer_policy);
-    resource_request.SetFetchImportanceMode(
-        GetFetchImportanceAttributeValue(params.importance));
+    resource_request.SetFetchPriorityHint(
+        GetFetchPriorityAttributeValue(params.fetch_priority_hint));
 
     if (base::FeatureList::IsEnabled(features::kPrefetchPrivacyChanges)) {
       resource_request.SetRedirectMode(network::mojom::RedirectMode::kError);

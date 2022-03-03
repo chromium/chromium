@@ -101,8 +101,9 @@ class PLATFORM_EXPORT FetchParameters {
     resource_request_.SetRequestDestination(destination);
   }
 
-  void SetFetchImportanceMode(mojom::FetchImportanceMode importance_mode) {
-    resource_request_.SetFetchImportanceMode(importance_mode);
+  void SetFetchPriorityHint(
+      mojom::blink::FetchPriorityHint fetch_priority_hint) {
+    resource_request_.SetFetchPriorityHint(fetch_priority_hint);
   }
 
   const TextResourceDecoderOptions& DecoderOptions() const {

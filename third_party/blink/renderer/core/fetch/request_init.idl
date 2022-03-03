@@ -21,7 +21,7 @@ dictionary RequestInit {
     RequestRedirect redirect;
     DOMString integrity;
     boolean keepalive;
-    [RuntimeEnabled=PriorityHints] RequestImportance importance;
+    [RuntimeEnabled=PriorityHints] FetchPriority priority;
     AbortSignal? signal;
     // Even though Trust Tokens operations are only available in secure
     // contexts, this has to be enforced after the fact because the

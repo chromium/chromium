@@ -62,7 +62,7 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   String TypeValue() const { return type_; }
   String AsValue() const { return as_; }
   String IntegrityValue() const { return integrity_; }
-  String ImportanceValue() const { return importance_; }
+  String FetchPriorityHintValue() const { return fetch_priority_hint_; }
   network::mojom::ReferrerPolicy GetReferrerPolicy() const {
     return referrer_policy_;
   }
@@ -166,8 +166,9 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   String as_;
   String media_;
   String integrity_;
-  String importance_;
-  network::mojom::ReferrerPolicy referrer_policy_;
+  String fetch_priority_hint_;
+  network::mojom::ReferrerPolicy referrer_policy_ =
+      network::mojom::ReferrerPolicy::kDefault;
   Member<DOMTokenList> sizes_;
   Vector<gfx::Size> icon_sizes_;
   Member<RelList> rel_list_;

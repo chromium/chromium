@@ -10,61 +10,61 @@ const priority_tests = [
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?1', location), document),
     expected_priority: kHigh,
-    description: 'high importance on <script> has no effect'
+    description: 'high fetchpriority on <script> has no effect'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?2', location), document),
     expected_priority: kLow,
-    description: 'low importance on <script> lowers priority to kLow'
+    description: 'low fetchpriority on <script> lowers priority to kLow'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?3', location), document),
     expected_priority: kHigh,
-    description: 'auto importance on <script> has no effect'
+    description: 'auto fetchpriority on <script> has no effect'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?4', location), document),
     expected_priority: kHigh,
-    description: 'invalid importance on <script> has no effect'
+    description: 'invalid fetchpriority on <script> has no effect'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?5', location), document),
     expected_priority: kHigh,
-    description: 'missing importance on <script> has no effect'
+    description: 'missing fetchpriority on <script> has no effect'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?6', location), document),
     expected_priority: kHigh,
-    description: 'high importance on late-body <script> raises priority to kHigh'
+    description: 'high fetchpriority on late-body <script> raises priority to kHigh'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?7', location), document),
     expected_priority: kLow,
-    description: 'low importance on late-body <script> lowers priority to kLow'
+    description: 'low fetchpriority on late-body <script> lowers priority to kLow'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?8', location), document),
     expected_priority: kMedium,
-    description: 'auto importance on late-body <script> has no effect (kMedium)'
+    description: 'auto fetchpriority on late-body <script> has no effect (kMedium)'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?9', location), document),
     expected_priority: kMedium,
-    description: 'invalid importance on late-body <script> has no effect (kMedium)'
+    description: 'invalid fetchpriority on late-body <script> has no effect (kMedium)'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?10', location), document),
     expected_priority: kMedium,
-    description: 'missing importance on late-body <script> has no effect (kMedium)'
+    description: 'missing fetchpriority on late-body <script> has no effect (kMedium)'
   }
 ];
 
 </script>
 
-<script id=script1 importance=high src=../resources/dummy.js?1></script>
-<script id=script2 importance=low src=../resources/dummy.js?2></script>
-<script id=script3 importance=auto src=../resources/dummy.js?3></script>
-<script id=script4 importance=xyz src=../resources/dummy.js?4></script>
+<script id=script1 fetchpriority=high src=../resources/dummy.js?1></script>
+<script id=script2 fetchpriority=low src=../resources/dummy.js?2></script>
+<script id=script3 fetchpriority=auto src=../resources/dummy.js?3></script>
+<script id=script4 fetchpriority=xyz src=../resources/dummy.js?4></script>
 <script id=script5 src=../resources/dummy.js?5></script>
 
 <script>
@@ -84,8 +84,8 @@ const priority_tests = [
   // Setup the tests described by |priority_tests|.
   for (const test of priority_tests) {
     promise_test(async () => {
-      const priority = await test.promise;
-      assert_equals(priority, test.expected_priority);
+      const load_priority = await test.promise;
+      assert_equals(load_priority, test.expected_priority);
     }, test.description);
   }
 </script>
@@ -94,10 +94,10 @@ const priority_tests = [
 <!-- Dummy Image to delineate late-body -->
 <img src="../resources/square.png">
 
-<script id=script6 importance=high src=../resources/dummy.js?6></script>
-<script id=script7 importance=low src=../resources/dummy.js?7></script>
-<script id=script8 importance=auto src=../resources/dummy.js?8></script>
-<script id=script9 importance=xyz src=../resources/dummy.js?9></script>
+<script id=script6 fetchpriority=high src=../resources/dummy.js?6></script>
+<script id=script7 fetchpriority=low src=../resources/dummy.js?7></script>
+<script id=script8 fetchpriority=auto src=../resources/dummy.js?8></script>
+<script id=script9 fetchpriority=xyz src=../resources/dummy.js?9></script>
 <script id=script10 src=../resources/dummy.js?10></script>
 
 </body>

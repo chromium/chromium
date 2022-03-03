@@ -198,22 +198,22 @@ ResourceLoadPriority AdjustPriorityWithPriorityHint(
     const ResourceRequestHead& resource_request,
     FetchParameters::DeferOption defer_option,
     bool is_link_preload) {
-  mojom::FetchImportanceMode importance_mode =
-      resource_request.GetFetchImportanceMode();
+  mojom::blink::FetchPriorityHint fetch_priority_hint =
+      resource_request.GetFetchPriorityHint();
 
   ResourceLoadPriority new_priority = priority_so_far;
 
-  switch (importance_mode) {
-    case mojom::FetchImportanceMode::kImportanceAuto:
+  switch (fetch_priority_hint) {
+    case mojom::blink::FetchPriorityHint::kAuto:
       break;
-    case mojom::FetchImportanceMode::kImportanceHigh:
+    case mojom::blink::FetchPriorityHint::kHigh:
       // Boost priority of any request type that supports priority hints.
       if (new_priority < ResourceLoadPriority::kHigh) {
         new_priority = ResourceLoadPriority::kHigh;
       }
       DCHECK_LE(priority_so_far, new_priority);
       break;
-    case mojom::FetchImportanceMode::kImportanceLow:
+    case mojom::blink::FetchPriorityHint::kLow:
       // Demote priority of any request type that supports priority hints.
       // Most content types go to kLow. The one exception is early
       // render-blocking CSS which defaults to the highest priority but
@@ -861,7 +861,8 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
   resource_request.SetRenderBlockingBehavior(
       params.GetRenderBlockingBehavior());
 
-  if (resource_request.GetCacheMode() == mojom::FetchCacheMode::kDefault) {
+  if (resource_request.GetCacheMode() ==
+      mojom::blink::FetchCacheMode::kDefault) {
     resource_request.SetCacheMode(Context().ResourceRequestCachePolicy(
         resource_request, resource_type, params.Defer()));
   }
@@ -1201,10 +1202,10 @@ void ResourceFetcher::InitializeRevalidation(
   const AtomicString& e_tag =
       resource->GetResponse().HttpHeaderField(http_names::kETag);
   if (!last_modified.IsEmpty() || !e_tag.IsEmpty()) {
-    DCHECK_NE(mojom::FetchCacheMode::kBypassCache,
+    DCHECK_NE(mojom::blink::FetchCacheMode::kBypassCache,
               revalidating_request.GetCacheMode());
     if (revalidating_request.GetCacheMode() ==
-        mojom::FetchCacheMode::kValidateCache) {
+        mojom::blink::FetchCacheMode::kValidateCache) {
       revalidating_request.SetHttpHeaderField(http_names::kCacheControl,
                                               "max-age=0");
     }
@@ -1577,7 +1578,7 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
   }
 
   // FORCE_CACHE uses the cache no matter what.
-  if (request.GetCacheMode() == mojom::FetchCacheMode::kForceCache) {
+  if (request.GetCacheMode() == mojom::blink::FetchCacheMode::kForceCache) {
     return {RevalidationPolicy::kUse,
             "Use the existing resource due to cache-mode: 'force-cache'."};
   }
@@ -1609,7 +1610,7 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
   }
 
   // RELOAD always reloads
-  if (request.GetCacheMode() == mojom::FetchCacheMode::kBypassCache) {
+  if (request.GetCacheMode() == mojom::blink::FetchCacheMode::kBypassCache) {
     return {RevalidationPolicy::kReload, "Reload due to cache-mode: 'reload'."};
   }
 
@@ -1641,7 +1642,7 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
 
   // Check if the cache headers requires us to revalidate (cache expiration for
   // example).
-  if (request.GetCacheMode() == mojom::FetchCacheMode::kValidateCache ||
+  if (request.GetCacheMode() == mojom::blink::FetchCacheMode::kValidateCache ||
       existing_resource.MustRevalidateDueToCacheHeaders(
           request.AllowsStaleResponse()) ||
       request.CacheControlContainsNoCache()) {

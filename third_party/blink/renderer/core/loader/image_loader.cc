@@ -49,7 +49,7 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
-#include "third_party/blink/renderer/core/loader/importance_attribute.h"
+#include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/lazy_image_helper.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -373,10 +373,10 @@ static void ConfigureRequest(
 
   if (RuntimeEnabledFeatures::PriorityHintsEnabled(
           element.GetExecutionContext())) {
-    mojom::FetchImportanceMode importance_mode =
-        GetFetchImportanceAttributeValue(
-            element.FastGetAttribute(html_names::kImportanceAttr));
-    params.SetFetchImportanceMode(importance_mode);
+    mojom::blink::FetchPriorityHint fetch_priority_hint =
+        GetFetchPriorityAttributeValue(
+            element.FastGetAttribute(html_names::kFetchpriorityAttr));
+    params.SetFetchPriorityHint(fetch_priority_hint);
   }
 
   auto* html_image_element = DynamicTo<HTMLImageElement>(element);
@@ -472,7 +472,7 @@ void ImageLoader::DoUpdateFromElement(
     resource_loader_options.initiator_info.name = GetElement()->localName();
     ResourceRequest resource_request(url);
     if (update_behavior == kUpdateForcedReload) {
-      resource_request.SetCacheMode(mojom::FetchCacheMode::kBypassCache);
+      resource_request.SetCacheMode(mojom::blink::FetchCacheMode::kBypassCache);
     }
 
     resource_request.SetReferrerPolicy(referrer_policy);

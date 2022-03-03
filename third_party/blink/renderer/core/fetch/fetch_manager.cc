@@ -799,7 +799,7 @@ void FetchManager::Loader::PerformHTTPFetch() {
   }
   request.SetCacheMode(fetch_request_data_->CacheMode());
   request.SetRedirectMode(fetch_request_data_->Redirect());
-  request.SetFetchImportanceMode(fetch_request_data_->Importance());
+  request.SetFetchPriorityHint(fetch_request_data_->FetchPriorityHint());
   request.SetPriority(fetch_request_data_->Priority());
   request.SetUseStreamOnResponse(true);
   request.SetReferrerString(fetch_request_data_->ReferrerString());
@@ -862,7 +862,7 @@ void FetchManager::Loader::PerformDataFetch() {
   request.SetHttpMethod(fetch_request_data_->Method());
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
   request.SetRedirectMode(RedirectMode::kError);
-  request.SetFetchImportanceMode(fetch_request_data_->Importance());
+  request.SetFetchPriorityHint(fetch_request_data_->FetchPriorityHint());
   request.SetPriority(fetch_request_data_->Priority());
   // We intentionally skip 'setExternalRequestStateFromRequestorAddressSpace',
   // as 'data:' can never be external.

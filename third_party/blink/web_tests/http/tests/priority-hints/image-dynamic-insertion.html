@@ -4,11 +4,11 @@
 
 <script>
   const tests = [
-    {description: 'high importance on <img>s not fetched by the preload scanner must translate to kHigh resource load priority', importance: 'high', expected_priority: kHigh},
-    {description: 'low importance on <img>s not fetched by the preload scanner must translate to kLow resource load priority', importance: 'low', expected_priority: kLow},
-    {description: 'auto importance on <img>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'auto', expected_priority: kLow},
-    {description: 'invalid importance on <img>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'xyz', expected_priority: kLow},
-    {description: 'missing importance on <img>s not fetched by the preload scanner must have no effect on resource load priority', expected_priority: kLow}
+    {description: 'high fetchpriority on <img>s not fetched by the preload scanner must translate to kHigh resource load priority', fetchpriority: 'high', expected_priority: kHigh},
+    {description: 'low fetchpriority on <img>s not fetched by the preload scanner must translate to kLow resource load priority', fetchpriority: 'low', expected_priority: kLow},
+    {description: 'auto fetchpriority on <img>s not fetched by the preload scanner must have no effect on resource load priority', fetchpriority: 'auto', expected_priority: kLow},
+    {description: 'invalid fetchpriority on <img>s not fetched by the preload scanner must have no effect on resource load priority', fetchpriority: 'xyz', expected_priority: kLow},
+    {description: 'missing fetchpriority on <img>s not fetched by the preload scanner must have no effect on resource load priority', expected_priority: kLow}
   ];
 
   let iteration = 0;
@@ -16,7 +16,7 @@
     promise_test(async () => {
       const img = document.createElement('img');
       img.alt = 'img';
-      if (test.importance) img.importance = test.importance;
+      if (test.fetchpriority) img.fetchpriority = test.fetchpriority;
 
       const url = new URL(`../resources/square.png?${iteration++}`, location);
       const priorityPromise = internals.getInitialResourcePriority(url, document);

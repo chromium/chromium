@@ -8,10 +8,10 @@
     assert_false(internals.isUseCounted(document, kPriorityHints),
                  'Priority Hints is not use-counted before Request is ' +
                  'constructed');
-    const request = new Request("", {importance: 'low'});
+    const request = new Request("", {priority: 'low'});
     assert_true(internals.isUseCounted(document, kPriorityHints),
                 'Priority Hints is not use-counted before Request is ' +
                 'constructed');
   }, 'Priority Hints is use-counted when a Request is constructed with ' +
-     'RequestInit containing the importance member');
+     'RequestInit containing the priority member');
 </script>

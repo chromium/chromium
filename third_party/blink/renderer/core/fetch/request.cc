@@ -87,7 +87,7 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetCacheMode(original->CacheMode());
   request->SetRedirect(original->Redirect());
   request->SetIntegrity(original->Integrity());
-  request->SetImportance(original->Importance());
+  request->SetFetchPriorityHint(original->FetchPriorityHint());
   request->SetPriority(original->Priority());
   request->SetKeepalive(original->Keepalive());
   request->SetIsHistoryNavigation(original->IsHistoryNavigation());
@@ -118,8 +118,8 @@ static bool AreAnyMembersPresent(const RequestInit* init) {
   return init->hasMethod() || init->hasHeaders() || init->hasBody() ||
          init->hasReferrer() || init->hasReferrerPolicy() || init->hasMode() ||
          init->hasCredentials() || init->hasCache() || init->hasRedirect() ||
-         init->hasIntegrity() || init->hasKeepalive() ||
-         init->hasImportance() || init->hasSignal() || init->hasTrustToken();
+         init->hasIntegrity() || init->hasKeepalive() || init->hasPriority() ||
+         init->hasSignal() || init->hasTrustToken();
 }
 
 static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
@@ -441,17 +441,15 @@ Request* Request::CreateRequestWithRequestOrString(
       request->SetMode(network::mojom::RequestMode::kCors);
   }
 
-  // This is not yet standardized, but we can assume the following:
-  // "If |init|'s importance member is present, set |request|'s importance
-  // mode to it." For more information see Priority Hints at
-  // https://crbug.com/821464.
-  if (init->hasImportance()) {
+  // "If |init|'s priority member is present, set |request|'s priority
+  // to it." For more information see Priority Hints at
+  // https://wicg.github.io/priority-hints/#fetch-integration
+  if (init->hasPriority()) {
     UseCounter::Count(execution_context, WebFeature::kPriorityHints);
-    if (init->importance() == "low") {
-      request->SetImportance(mojom::blink::FetchImportanceMode::kImportanceLow);
-    } else if (init->importance() == "high") {
-      request->SetImportance(
-          mojom::blink::FetchImportanceMode::kImportanceHigh);
+    if (init->priority() == "low") {
+      request->SetFetchPriorityHint(mojom::blink::FetchPriorityHint::kLow);
+    } else if (init->priority() == "high") {
+      request->SetFetchPriorityHint(mojom::blink::FetchPriorityHint::kHigh);
     }
   }
 
@@ -912,20 +910,20 @@ String Request::credentials() const {
 String Request::cache() const {
   // "The cache attribute's getter must return request's cache mode."
   switch (request_->CacheMode()) {
-    case mojom::FetchCacheMode::kDefault:
+    case mojom::blink::FetchCacheMode::kDefault:
       return "default";
-    case mojom::FetchCacheMode::kNoStore:
+    case mojom::blink::FetchCacheMode::kNoStore:
       return "no-store";
-    case mojom::FetchCacheMode::kBypassCache:
+    case mojom::blink::FetchCacheMode::kBypassCache:
       return "reload";
-    case mojom::FetchCacheMode::kValidateCache:
+    case mojom::blink::FetchCacheMode::kValidateCache:
       return "no-cache";
-    case mojom::FetchCacheMode::kForceCache:
+    case mojom::blink::FetchCacheMode::kForceCache:
       return "force-cache";
-    case mojom::FetchCacheMode::kOnlyIfCached:
+    case mojom::blink::FetchCacheMode::kOnlyIfCached:
       return "only-if-cached";
-    case mojom::FetchCacheMode::kUnspecifiedOnlyIfCachedStrict:
-    case mojom::FetchCacheMode::kUnspecifiedForceCacheMiss:
+    case mojom::blink::FetchCacheMode::kUnspecifiedOnlyIfCachedStrict:
+    case mojom::blink::FetchCacheMode::kUnspecifiedForceCacheMiss:
       NOTREACHED();
       break;
   }

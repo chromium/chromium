@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/loader/importance_attribute.h"
+#include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
@@ -176,33 +176,8 @@ class TokenPreloadScanner::StartTagScanner {
                   bool priority_hints_origin_trial_enabled,
                   const HashSet<String>* disabled_image_types)
       : tag_impl_(tag_impl),
-        link_is_style_sheet_(false),
-        link_is_preconnect_(false),
-        link_is_preload_(false),
-        link_is_modulepreload_(false),
-        link_is_webbundle_(false),
-        matched_(true),
-        input_is_image_(false),
-        nomodule_attribute_value_(false),
-        source_size_(0),
-        source_size_set_(false),
-        defer_(FetchParameters::kNoDefer),
-        cross_origin_(kCrossOriginAttributeNotSet),
-        importance_(mojom::FetchImportanceMode::kImportanceAuto),
-        importance_mode_set_(false),
         media_values_(media_values),
-        referrer_policy_set_(false),
-        referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
-        integrity_attr_set_(false),
-        is_async_(false),
         integrity_features_(features),
-        loading_attr_value_(LoadingAttributeValue::kAuto),
-        width_attr_dimension_type_(
-            HTMLImageElement::LazyLoadDimensionType::kNotAbsolute),
-        height_attr_dimension_type_(
-            HTMLImageElement::LazyLoadDimensionType::kNotAbsolute),
-        inline_style_dimensions_type_(
-            HTMLImageElement::LazyLoadDimensionType::kNotAbsolute),
         scanner_type_(scanner_type),
         priority_hints_origin_trial_enabled_(
             priority_hints_origin_trial_enabled),
@@ -357,7 +332,7 @@ class TokenPreloadScanner::StartTagScanner {
     }
 
     request->SetCrossOrigin(cross_origin_);
-    request->SetImportance(importance_);
+    request->SetFetchPriorityHint(fetch_priority_hint_);
     request->SetNonce(nonce_);
     request->SetCharset(Charset());
     request->SetDefer(defer_);
@@ -434,10 +409,10 @@ class TokenPreloadScanner::StartTagScanner {
                !attribute_value.IsNull()) {
       SetReferrerPolicy(attribute_value,
                         kDoNotSupportReferrerPolicyLegacyKeywords);
-    } else if (!importance_mode_set_ &&
-               Match(attribute_name, html_names::kImportanceAttr) &&
+    } else if (!fetch_priority_hint_set_ &&
+               Match(attribute_name, html_names::kFetchpriorityAttr) &&
                priority_hints_origin_trial_enabled_) {
-      SetImportance(attribute_value);
+      SetFetchPriorityHint(attribute_value);
     }
   }
 
@@ -458,10 +433,10 @@ class TokenPreloadScanner::StartTagScanner {
                Match(attribute_name, html_names::kReferrerpolicyAttr) &&
                !attribute_value.IsNull()) {
       SetReferrerPolicy(attribute_value, kSupportReferrerPolicyLegacyKeywords);
-    } else if (!importance_mode_set_ &&
-               Match(attribute_name, html_names::kImportanceAttr) &&
+    } else if (!fetch_priority_hint_set_ &&
+               Match(attribute_name, html_names::kFetchpriorityAttr) &&
                priority_hints_origin_trial_enabled_) {
-      SetImportance(attribute_value);
+      SetFetchPriorityHint(attribute_value);
     } else if (loading_attr_value_ == LoadingAttributeValue::kAuto &&
                Match(attribute_name, html_names::kLoadingAttr) &&
                RuntimeEnabledFeatures::LazyImageLoadingEnabled()) {
@@ -546,10 +521,10 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (Match(attribute_name, html_names::kImagesizesAttr) &&
                !source_size_set_) {
       ParseSourceSize(attribute_value);
-    } else if (!importance_mode_set_ &&
-               Match(attribute_name, html_names::kImportanceAttr) &&
+    } else if (!fetch_priority_hint_set_ &&
+               Match(attribute_name, html_names::kFetchpriorityAttr) &&
                priority_hints_origin_trial_enabled_) {
-      SetImportance(attribute_value);
+      SetFetchPriorityHint(attribute_value);
     } else if (Match(attribute_name, html_names::kScopesAttr)) {
       scopes_attribute_value_ = AtomicString(attribute_value);
     } else if (Match(attribute_name, html_names::kResourcesAttr)) {
@@ -782,10 +757,10 @@ class TokenPreloadScanner::StartTagScanner {
         attribute_value, legacy_keywords_support, &referrer_policy_);
   }
 
-  void SetImportance(const String& importance) {
+  void SetFetchPriorityHint(const String& fetch_priority_hint) {
     DCHECK(priority_hints_origin_trial_enabled_);
-    importance_mode_set_ = true;
-    importance_ = GetFetchImportanceAttributeValue(importance);
+    fetch_priority_hint_set_ = true;
+    fetch_priority_hint_ = GetFetchPriorityAttributeValue(fetch_priority_hint);
   }
 
   void SetNonce(const String& nonce) { nonce_ = nonce; }
@@ -798,13 +773,13 @@ class TokenPreloadScanner::StartTagScanner {
   String url_to_load_;
   ImageCandidate srcset_image_candidate_;
   String charset_;
-  bool link_is_style_sheet_;
-  bool link_is_preconnect_;
-  bool link_is_preload_;
-  bool link_is_modulepreload_;
-  bool link_is_webbundle_;
-  bool matched_;
-  bool input_is_image_;
+  bool link_is_style_sheet_ = false;
+  bool link_is_preconnect_ = false;
+  bool link_is_preload_ = false;
+  bool link_is_modulepreload_ = false;
+  bool link_is_webbundle_ = false;
+  bool matched_ = true;
+  bool input_is_image_ = false;
   String img_src_url_;
   String srcset_attribute_value_;
   String as_attribute_value_;
@@ -812,25 +787,30 @@ class TokenPreloadScanner::StartTagScanner {
   String language_attribute_value_;
   AtomicString scopes_attribute_value_;
   AtomicString resources_attribute_value_;
-  bool nomodule_attribute_value_;
-  float source_size_;
-  bool source_size_set_;
-  FetchParameters::DeferOption defer_;
-  CrossOriginAttributeValue cross_origin_;
-  mojom::FetchImportanceMode importance_;
-  bool importance_mode_set_;
+  bool nomodule_attribute_value_ = false;
+  float source_size_ = 0;
+  bool source_size_set_ = false;
+  FetchParameters::DeferOption defer_ = FetchParameters::kNoDefer;
+  CrossOriginAttributeValue cross_origin_ = kCrossOriginAttributeNotSet;
+  mojom::blink::FetchPriorityHint fetch_priority_hint_ =
+      mojom::blink::FetchPriorityHint::kAuto;
+  bool fetch_priority_hint_set_ = false;
   String nonce_;
   MediaValuesCached* media_values_;
-  bool referrer_policy_set_;
-  network::mojom::ReferrerPolicy referrer_policy_;
-  bool integrity_attr_set_;
-  bool is_async_;
+  bool referrer_policy_set_ = false;
+  network::mojom::ReferrerPolicy referrer_policy_ =
+      network::mojom::ReferrerPolicy::kDefault;
+  bool integrity_attr_set_ = false;
+  bool is_async_ = false;
   IntegrityMetadataSet integrity_metadata_;
   SubresourceIntegrity::IntegrityFeatures integrity_features_;
-  LoadingAttributeValue loading_attr_value_;
-  HTMLImageElement::LazyLoadDimensionType width_attr_dimension_type_;
-  HTMLImageElement::LazyLoadDimensionType height_attr_dimension_type_;
-  HTMLImageElement::LazyLoadDimensionType inline_style_dimensions_type_;
+  LoadingAttributeValue loading_attr_value_ = LoadingAttributeValue::kAuto;
+  HTMLImageElement::LazyLoadDimensionType width_attr_dimension_type_ =
+      HTMLImageElement::LazyLoadDimensionType::kNotAbsolute;
+  HTMLImageElement::LazyLoadDimensionType height_attr_dimension_type_ =
+      HTMLImageElement::LazyLoadDimensionType::kNotAbsolute;
+  HTMLImageElement::LazyLoadDimensionType inline_style_dimensions_type_ =
+      HTMLImageElement::LazyLoadDimensionType::kNotAbsolute;
   TokenPreloadScanner::ScannerType scanner_type_;
   // For explanation, see TokenPreloadScanner's declaration.
   bool priority_hints_origin_trial_enabled_;

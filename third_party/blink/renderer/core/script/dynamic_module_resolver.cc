@@ -273,18 +273,14 @@ void DynamicModuleResolver::ResolveDynamically(
   // are a new script fetch options whose items all have the same values, except
   // for the integrity metadata, which is instead the empty string.</spec>
   //
-  // TODO(domfarolino): It has not yet been decided how a script's "importance"
-  // should affect its dynamic imports. There is discussion at
-  // https://github.com/whatwg/html/issues/3670, but for now there is no effect,
-  // and dynamic imports get kImportanceAuto. If this changes,
-  // ReferrerScriptInfo will need a mojom::FetchImportanceMode member, that must
-  // be properly set.
-  ScriptFetchOptions options(referrer_info.Nonce(), IntegrityMetadataSet(),
-                             String(), referrer_info.ParserState(),
-                             referrer_info.CredentialsMode(),
-                             referrer_info.GetReferrerPolicy(),
-                             mojom::blink::FetchImportanceMode::kImportanceAuto,
-                             RenderBlockingBehavior::kNonBlocking);
+  // <spec href="https://wicg.github.io/priority-hints/#script">
+  // dynamic imports get kAuto. Only the main script resource is impacted by
+  // Priority Hints.
+  ScriptFetchOptions options(
+      referrer_info.Nonce(), IntegrityMetadataSet(), String(),
+      referrer_info.ParserState(), referrer_info.CredentialsMode(),
+      referrer_info.GetReferrerPolicy(), mojom::blink::FetchPriorityHint::kAuto,
+      RenderBlockingBehavior::kNonBlocking);
 
   // <spec label="fetch-an-import()-module-script-graph" step="3">Fetch a single
   // module script given url, settings object, "script", options, settings

@@ -7,36 +7,36 @@ const priority_tests = [
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js', location), document),
     expected_priority: kHigh,
-    description: 'high importance on async <script> raises the priority to kHigh'
+    description: 'high fetchpriority on async <script> raises the priority to kHigh'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?1', location), document),
     expected_priority: kLow,
-    description: 'low importance on async <script> has no effect'
+    description: 'low fetchpriority on async <script> has no effect'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?2', location), document),
     expected_priority: kLow,
-    description: 'auto importance on async <script> has no effect'
+    description: 'auto fetchpriority on async <script> has no effect'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?3', location), document),
     expected_priority: kLow,
-    description: 'invalid importance on async <script> has no effect'
+    description: 'invalid fetchpriority on async <script> has no effect'
   },
   {
     promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?4', location), document),
     expected_priority: kLow,
-    description: 'missing importance on async <script> has no effect'
+    description: 'missing fetchpriority on async <script> has no effect'
   }
 ];
 
 </script>
 
-<script id=script1 async importance=high src=../resources/dummy.js></script>
-<script id=script2 async importance=low src=../resources/dummy.js?1></script>
-<script id=script3 async importance=auto src=../resources/dummy.js?2></script>
-<script id=script4 async importance=xyz src=../resources/dummy.js?3></script>
+<script id=script1 async fetchpriority=high src=../resources/dummy.js></script>
+<script id=script2 async fetchpriority=low src=../resources/dummy.js?1></script>
+<script id=script3 async fetchpriority=auto src=../resources/dummy.js?2></script>
+<script id=script4 async fetchpriority=xyz src=../resources/dummy.js?3></script>
 <script id=script5 async src=../resources/dummy.js?4></script>
 
 <script>
@@ -56,8 +56,8 @@ const priority_tests = [
   // Setup the tests described by |priority_tests|.
   for (const test of priority_tests) {
     promise_test(async () => {
-      const priority = await test.promise;
-      assert_equals(priority, test.expected_priority);
+      const load_priority = await test.promise;
+      assert_equals(load_priority, test.expected_priority);
     }, test.description);
   }
 </script>

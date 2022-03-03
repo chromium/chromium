@@ -55,7 +55,7 @@ class CORE_EXPORT ScriptElementBase : public GarbageCollectedMixin {
   virtual String SourceAttributeValue() const = 0;
   virtual String TypeAttributeValue() const = 0;
   virtual String ReferrerPolicyAttributeValue() const = 0;
-  virtual String ImportanceAttributeValue() const = 0;
+  virtual String FetchPriorityAttributeValue() const = 0;
 
   // This implements https://dom.spec.whatwg.org/#concept-child-text-content
   virtual String ChildTextContent() = 0;
