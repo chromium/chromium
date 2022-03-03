@@ -29,6 +29,7 @@
 extern const char kManagementLogUploadEnabled[];
 extern const char kManagementReportActivityTimes[];
 extern const char kManagementReportDeviceAudioStatus[];
+extern const char kManagementReportDevicePeripherals[];
 extern const char kManagementReportNetworkData[];
 extern const char kManagementReportHardwareData[];
 extern const char kManagementReportUsers[];

@@ -113,6 +113,9 @@
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_AUDIO_STATUS" desc="Message stating that administrators see attached audio peripherals.">
       Audio peripherals attached
     </message>
+    <message name="IDS_MANAGEMENT_REPORT_DEVICE_PERIPHERALS" desc="Message stating that administrators see attached peripherals when an affiliated user is logged in.">
+      Peripherals attached to this device while you are logged in
+    </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_HARDWARE_STATUS" desc="Message stating that administrators see device hardware status.">
       Device statistics such as CPU/RAM usage
     </message>

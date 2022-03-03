@@ -72,6 +72,8 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
     {kManagementPrinting, IDS_MANAGEMENT_REPORT_PRINTING},
     {kManagementReportDeviceAudioStatus,
      IDS_MANAGEMENT_REPORT_DEVICE_AUDIO_STATUS},
+    {kManagementReportDevicePeripherals,
+     IDS_MANAGEMENT_REPORT_DEVICE_PERIPHERALS},
     {kManagementReportPrintJobs, IDS_MANAGEMENT_REPORT_PRINT_JOBS},
     {kManagementReportLoginLogout, IDS_MANAGEMENT_REPORT_LOGIN_LOGOUT},
     {kManagementReportCRDSessions, IDS_MANAGEMENT_REPORT_CRD_SESSIONS},

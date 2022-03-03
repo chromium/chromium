@@ -164,6 +164,8 @@ const char kManagementLogUploadEnabled[] = "managementLogUploadEnabled";
 const char kManagementReportActivityTimes[] = "managementReportActivityTimes";
 const char kManagementReportDeviceAudioStatus[] =
     "managementReportDeviceAudioStatus";
+const char kManagementReportDevicePeripherals[] =
+    "managementReportDevicePeripherals";
 const char kManagementReportNetworkData[] = "managementReportNetworkData";
 const char kManagementReportHardwareData[] = "managementReportHardwareData";
 const char kManagementReportUsers[] = "managementReportUsers";
@@ -228,6 +230,7 @@ enum class DeviceReportingType {
   kDlpEvents,
   kLoginLogout,
   kCRDSessions,
+  kPeripherals,
 };
 
 // Corresponds to DeviceReportingType in management_browser_proxy.js
@@ -265,6 +268,8 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
       return "login-logout";
     case DeviceReportingType::kCRDSessions:
       return "crd sessions";
+    case DeviceReportingType::kPeripherals:
+      return "peripherals";
     default:
       NOTREACHED() << "Unknown device reporting type";
       return "device";
@@ -594,6 +599,15 @@ void ManagementUIHandler::AddDeviceReportingInfo(
     AddDeviceReportingElement(report_sources,
                               kManagementReportDeviceAudioStatus,
                               DeviceReportingType::kDevice);
+  }
+
+  bool report_device_peripherals = false;
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDevicePeripherals,
+                                            &report_device_peripherals);
+  if (report_device_peripherals) {
+    AddDeviceReportingElement(report_sources,
+                              kManagementReportDevicePeripherals,
+                              DeviceReportingType::kPeripherals);
   }
 
   bool report_print_jobs = false;
