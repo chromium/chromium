@@ -189,7 +189,7 @@ bool IsAdpfEnabled() {
 
 bool IsClipPrewalkDamageEnabled() {
   static constexpr base::Feature kClipPrewalkDamage{
-      "ClipPrewalkDamage", base::FEATURE_DISABLED_BY_DEFAULT};
+      "ClipPrewalkDamage", base::FEATURE_ENABLED_BY_DEFAULT};
 
   return base::FeatureList::IsEnabled(kClipPrewalkDamage);
 }

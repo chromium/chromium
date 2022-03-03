@@ -3168,21 +3168,33 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
         MakeCompositorFrame(CopyRenderPasses(root_passes)));
   }
 
-  // Damage rect for first aggregation should contain entire root surface. The
-  // damage rect reported to the callback is actually 10 pixels taller because
-  // of the 10-pixel vertical translation of the first RenderPass.
   size_t expected_num_passes_after_aggregation = AllowMerge() ? 2u : 4u;
+
+  // Damage rect for first aggregation should contain entire root surface.
   {
+    const gfx::Rect expected_root_damage(kSurfaceSize);
     EXPECT_CALL(
         aggregated_damage_callback,
         OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
-                           gfx::Rect(0, 0, 100, 110), next_display_time()));
+                           expected_root_damage, next_display_time()));
     auto aggregated_frame = AggregateFrame(root_surface_id_);
     testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
     const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
     ASSERT_EQ(expected_num_passes_after_aggregation,
               aggregated_pass_list.size());
-    EXPECT_EQ(gfx::Rect(kSurfaceSize), aggregated_pass_list[1]->damage_rect);
+
+    // The non-root render passes should have the root render pass damage_rect
+    // translated into the appropriate coordinate space. When merging is not
+    // allowed the first two render passes are translated 10px so the 100x100
+    // root damage is only covers an area 100x90.
+    if (AllowMerge()) {
+      EXPECT_EQ(aggregated_pass_list[0]->damage_rect, expected_root_damage);
+    } else {
+      const gfx::Rect expected_clipped_damage(0, 0, 100, 90);
+      EXPECT_EQ(aggregated_pass_list[0]->damage_rect, expected_clipped_damage);
+      EXPECT_EQ(aggregated_pass_list[1]->damage_rect, expected_clipped_damage);
+      EXPECT_EQ(aggregated_pass_list[2]->damage_rect, expected_root_damage);
+    }
   }
 
   {
@@ -3443,15 +3455,13 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
                                     std::move(root_frame));
 
-  // Damage rect for first aggregation should contain entire root surface. The
-  // damage rect reported to the callback is actually 200x200, larger than the
-  // root surface size, because the root's Quad is 200x200.
+  // Damage rect for first aggregation should contain entire root surface.
   size_t expected_num_passes_after_aggregation = AllowMerge() ? 2u : 4u;
   {
     EXPECT_CALL(
         aggregated_damage_callback,
         OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
-                           gfx::Rect(0, 0, 200, 200), next_display_time()));
+                           gfx::Rect(kSurfaceSize), next_display_time()));
     auto aggregated_frame = AggregateFrame(root_surface_id_);
     testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
     const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
@@ -4332,7 +4342,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
       Quad::RenderPassQuad(CompositorRenderPassId{1}, gfx::Transform(),
                            /*intersects_damage_under=*/false),
       Quad::SurfaceQuad(SurfaceRange(absl::nullopt, parent_surface_id),
-                        SK_ColorWHITE, gfx::Rect(parent_surface_size),
+                        SK_ColorWHITE, gfx::Rect(kSurfaceSize),
                         /*stretch_content_to_fill_bounds=*/false,
                         AllowMerge())};
 
@@ -4518,7 +4528,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
 
   // The child surface consists of a single render pass containing a single
   // solid color draw quad.
-  const gfx::Size child_surface_size(kSurfaceSize);
+  const gfx::Size child_surface_size(20, 20);
   std::vector<Quad> child_quads = {
       Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))};
   std::vector<Pass> child_passes = {Pass(child_quads, child_surface_size)};
@@ -4582,13 +4592,11 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
                                       std::move(root_frame));
 
-    // Damage rect for the first aggregation would contain entire root surface
-    // which is union of (0,0 100x100) from RP1, (0,0 200x200) from RP2 and
-    // (0,0 230x250) from RP3, a total of (0,0 230x250).
+    // The first aggregation has full damage.
     EXPECT_CALL(
         aggregated_damage_callback,
         OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
-                           gfx::Rect(0, 0, 230, 250), next_display_time()));
+                           gfx::Rect(kSurfaceSize), next_display_time()));
     // The child surface is embedded twice so the callback is called twice.
     EXPECT_CALL(aggregated_damage_callback,
                 OnAggregatedDamage(
@@ -4801,15 +4809,9 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
         OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
                            gfx::Rect(kSurfaceSize), next_display_time()));
     // In the local space of the root pass of the child frame, the second render
-    // pass (20,30 60x60) has a blur backdrop filter. It expands the damage from
-    // under it. 1) Without merging, the damage for the first aggregation of the
-    // child surface is the entire child surface (0,0 60x60), expanded by the
-    // backdrop filter, to be (0,0 80x90).
-    // 2) With merging, the backdrop filter expands the damage passed from
-    // parent surface and transformed into the root pass local space to (-5,-5
-    // 100x100), so the child surface has a damage rect of (-5,-5 100x100).
-    gfx::Rect expected_child_damage_rect =
-        AllowMerge() ? gfx::Rect(-5, -5, 100, 100) : gfx::Rect(0, 0, 80, 90);
+    // pass (20,30 60x60) has a blur backdrop filter. The entire child root
+    // render pass is damaged which is (0, 0 60x60).
+    gfx::Rect expected_child_damage_rect(0, 0, 60, 60);
     EXPECT_CALL(aggregated_damage_callback,
                 OnAggregatedDamage(
                     child_surface_id.local_surface_id(), child_surface_size,
@@ -4923,15 +4925,9 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   // First aggregation.
   {
     // In the local space of the root pass of the child frame, the second render
-    // pass (20,30 60x60) has a blur backdrop filter. It expands the damage from
-    // under it. 1) Without merging, the damage for the first aggregation of the
-    // child surface is the entire child surface (0,0 60x60), expanded by the
-    // backdrop filter, to be (0,0 80x90).
-    // 2) With merging, the damage from parent surface is transformed into the
-    // root pass local space to (-5,-5 100x100), and scaled by 2/3 to (-4,-4
-    // 68x68). The backdrop filter expands this damage to (-4,-4, 84x94).
-    gfx::Rect expected_child_damage_rect =
-        AllowMerge() ? gfx::Rect(-4, -4, 84, 94) : gfx::Rect(0, 0, 80, 90);
+    // pass (20,30 60x60) has a blur backdrop filter. The entire child root
+    // render pass is damaged which is (0, 0 60x60).
+    gfx::Rect expected_child_damage_rect = gfx::Rect(0, 0, 60, 60);
     EXPECT_CALL(aggregated_damage_callback,
                 OnAggregatedDamage(
                     child_surface_id.local_surface_id(), child_surface_size,
@@ -4942,8 +4938,9 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     // surface damage (0,0 100,100) to (0,0 125x140).
     // 2) With merging, child surface damage (-4,-4 84x94) stretches to (-6,-6
     // 126x141), and transformed to root surface as (-1,-1 126x141).
-    gfx::Rect expected_root_damage_rect =
-        AllowMerge() ? gfx::Rect(-1, -1, 126, 141) : gfx::Rect(0, 0, 125, 140);
+    // In both cases the damage is clipped to the output rect of the root
+    // surface (0,0 100x100).
+    gfx::Rect expected_root_damage_rect = gfx::Rect(kSurfaceSize);
     EXPECT_CALL(
         aggregated_damage_callback,
         OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
@@ -5417,7 +5414,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
                                        CompositorRenderPassId{1})
                     .AddSurfaceQuad(gfx::Rect(5, 5),
                                     SurfaceRange(child_surface_id))
-                    .SetQuadToTargetTranslation(5, 5)
+                    .SetQuadToTargetTranslation(4, 4)
                     .Build())
             .Build();
 
@@ -5443,7 +5440,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     // First render pass draw quad overlaps with damage rect and has background
     // filter, so it should be damaged. SurfaceDrawQuad is after background
     // filter, so corresponding CompositorRenderPassDrawQuad should be drawn.
-    EXPECT_EQ(gfx::Rect(0, 0, 6, 6), aggregated_pass_list[2]->damage_rect);
+    EXPECT_EQ(gfx::Rect(0, 0, 5, 5), aggregated_pass_list[2]->damage_rect);
     EXPECT_EQ(2u, aggregated_pass_list[2]->quad_list.size());
   }
 
@@ -6690,7 +6687,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   CompositorRenderPassId pass_id[] = {CompositorRenderPassId{1},
                                       CompositorRenderPassId{2}};
   std::vector<Quad> child_quads[2] = {
-      {Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))},
+      {Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(kSurfaceSize))},
       {Quad::RenderPassQuad(pass_id[0], gfx::Transform(), true)},
   };
   std::vector<Pass> child_passes = {
@@ -7999,11 +7996,12 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
                                     std::move(root_frame));
 
   // Damage rect for the first aggregation would contain entire root surface
-  // which is union of (0,0 100x100) and (30,50 200x200); i.e. (0,0 230x250).
+  // which is union of (0,0 100x100) and (30,50 200x200); i.e. (0,0 230x250)
+  // which is clipped to the root render pass output rect (0,0 100x100).
   EXPECT_CALL(
       aggregated_damage_callback,
       OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
-                         gfx::Rect(0, 0, 230, 250), next_display_time()));
+                         gfx::Rect(kSurfaceSize), next_display_time()));
   auto aggregated_frame = AggregateFrame(root_surface_id_);
   testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
 
