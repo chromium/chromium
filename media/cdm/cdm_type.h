@@ -5,6 +5,7 @@
 #ifndef MEDIA_CDM_CDM_TYPE_H_
 #define MEDIA_CDM_CDM_TYPE_H_
 
+#include "base/strings/string_piece_forward.h"
 #include "base/token.h"
 
 #include "media/base/media_export.h"  // nogncheck
@@ -29,13 +30,16 @@ struct MEDIA_EXPORT CdmType {
   const char* legacy_file_system_id = "";
 
   bool operator==(const CdmType& other) const {
-    return (this->id == other.id) && (strcmp(this->legacy_file_system_id,
-                                             other.legacy_file_system_id) == 0);
+    return (id == other.id) && (base::StringPiece(legacy_file_system_id) ==
+                                base::StringPiece(other.legacy_file_system_id));
   }
 
   bool operator<(const CdmType& other) const {
-    return (this->id < other.id) || (strcmp(this->legacy_file_system_id,
-                                            other.legacy_file_system_id) < 0);
+    // Create some local variables, since std::tie needs an lvalue. Casting to a
+    // StringPiece allows for string comparison rather than pointer comparison.
+    const base::StringPiece fs_id(legacy_file_system_id);
+    const base::StringPiece other_fs_id(other.legacy_file_system_id);
+    return std::tie(id, fs_id) < std::tie(other.id, other_fs_id);
   }
 };
 
