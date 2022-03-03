@@ -48,7 +48,10 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/web:test_support",
+    "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/public/js_messaging:js_messaging",
     "//ios/web/public/test",
+    "//ios/web/test:js_test_util_internal",
     "//net:test_support",
     "//services/network:test_support",
   ]
