@@ -5,5 +5,10 @@
 # people below.
 # The rules are documented at:
 # https://sites.google.com/a/chromium.org/dev/developers/how-tos/enterprise/adding-new-policies
+
+# Prefer enterprise-policy-review@ to individual owners. Sending code
+# reviews to the alias allows the owners to distribute code review loads.
+enterprise-policy-review@google.com
+
 per-file policy_templates.json=set noparent
 per-file policy_templates.json=file://components/policy/resources/ENTERPRISE_POLICY_OWNERS
