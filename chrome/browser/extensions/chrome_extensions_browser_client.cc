@@ -613,8 +613,11 @@ void ChromeExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled())
+  if (!telemetry_service || !telemetry_service->enabled() ||
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kExtensionTelemetryTabsExecuteScriptSignal)) {
     return;
+  }
 
   auto signal = std::make_unique<safe_browsing::TabsExecuteScriptSignal>(
       extension_id, code);

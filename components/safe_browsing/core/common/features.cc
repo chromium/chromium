@@ -86,10 +86,12 @@ const base::Feature kEnhancedProtection {
 
 const base::Feature kExtensionTelemetry{"SafeBrowsingExtensionTelemetry",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds{
     &kExtensionTelemetry, "UploadIntervalSeconds",
     /*default_value=*/3600};
+const base::Feature kExtensionTelemetryTabsExecuteScriptSignal{
+    "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kExtensionTelemetryReportContactedHosts{
     "SafeBrowsingExtensionTelemetryReportContactedHosts",
