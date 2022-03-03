@@ -131,7 +131,6 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_response.mojom-forward.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -1758,9 +1757,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void BindFederatedAuthRequestReceiver(
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver);
-
-  void BindFederatedAuthResponseReceiver(
-      mojo::PendingReceiver<blink::mojom::FederatedAuthResponse> receiver);
 
   void BindRestrictedCookieManager(
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver);

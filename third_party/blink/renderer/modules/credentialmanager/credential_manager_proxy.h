@@ -11,7 +11,6 @@
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

@@ -111,6 +111,3 @@ platforms](../../../chrome/browser/ui/views/webid/) but not on Android.
    request. It contains most of the business logic and state necessary for FedCM requests.
 - `IdPNetworkRequestManager`: Handles all fetches needed for FedCM. It ensures we use the right
   storage partition and cookie jar for each request. This class is stateless itself.
-- `FederatedAuthResponseImpl`: Concrete implementation of the mojo interface to provide a FedCM
-   response. This is to be used by the IDP login page to complete its process by providing
-   an id token.
