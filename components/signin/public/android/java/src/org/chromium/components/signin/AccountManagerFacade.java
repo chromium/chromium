@@ -18,6 +18,7 @@ import com.google.common.base.Optional;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
+import org.chromium.components.signin.base.AccountCapabilities;
 
 import java.util.List;
 
@@ -101,6 +102,13 @@ public interface AccountManagerFacade {
      */
     @MainThread
     void checkChildAccountStatus(Account account, ChildAccountStatusListener listener);
+
+    /**
+     * @param account The account used to look up capabilities.
+     * @return account capabilities for the given account.
+     */
+    @MainThread
+    Promise<AccountCapabilities> getAccountCapabilities(Account account);
 
     /**
      * Gets the boolean for whether the account can offer extended sync promos.

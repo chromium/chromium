@@ -4,7 +4,10 @@
 
 package org.chromium.components.signin.base;
 
+import static org.mockito.Mockito.spy;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -13,6 +16,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.Tribool;
+import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
+
+import java.util.HashMap;
 
 /**
  * Test class for {@link AccountCapabilities}.
@@ -20,6 +26,13 @@ import org.chromium.components.signin.Tribool;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class AccountCapabilitiesTest {
+    private FakeAccountManagerDelegate mDelegate;
+
+    @Before
+    public void setUp() {
+        mDelegate = spy(new FakeAccountManagerDelegate());
+    }
+
     @Test
     public void testCanOfferExtendedSyncPromosException() {
         AccountCapabilities capabilities = new AccountCapabilities();
@@ -100,5 +113,39 @@ public final class AccountCapabilitiesTest {
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                 AccountManagerDelegate.CapabilityResponse.EXCEPTION);
         Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.FALSE);
+    }
+
+    @Test
+    public void testParseFromCapabilitiesResponseWithSuccessResponse() {
+        AccountCapabilities capabilities =
+                AccountCapabilities.parseFromCapabilitiesResponse(new HashMap<String, Integer>() {
+                    {
+                        put(AccountCapabilitiesConstants
+                                        .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
+                                AccountManagerDelegate.CapabilityResponse.YES);
+                        put(AccountCapabilitiesConstants
+                                        .CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME,
+                                AccountManagerDelegate.CapabilityResponse.NO);
+                    }
+                });
+        Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.FALSE);
+        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.TRUE);
+    }
+
+    @Test
+    public void testParseFromCapabilitiesResponseWithExceptionResponse() {
+        AccountCapabilities capabilities =
+                AccountCapabilities.parseFromCapabilitiesResponse(new HashMap<String, Integer>() {
+                    {
+                        put(AccountCapabilitiesConstants
+                                        .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
+                                AccountManagerDelegate.CapabilityResponse.EXCEPTION);
+                        put(AccountCapabilitiesConstants
+                                        .CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME,
+                                AccountManagerDelegate.CapabilityResponse.EXCEPTION);
+                    }
+                });
+        Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.UNKNOWN);
+        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.UNKNOWN);
     }
 }

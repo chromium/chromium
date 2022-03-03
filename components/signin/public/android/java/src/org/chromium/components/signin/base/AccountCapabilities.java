@@ -31,6 +31,22 @@ public class AccountCapabilities {
     public AccountCapabilities() {}
 
     /**
+     * @param account the given account to retrieve capabilities from.
+     * @param managerDelegate the manager used to query capability responses.
+     * @return the supported account capabilities values.
+     */
+    public static AccountCapabilities parseFromCapabilitiesResponse(
+            Map<String, Integer> capabilityResponses) {
+        AccountCapabilities capabilities = new AccountCapabilities();
+        for (String capabilityName : SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
+            @AccountManagerDelegate.CapabilityResponse
+            int hasCapability = capabilityResponses.get(capabilityName);
+            capabilities.setAccountCapability(capabilityName, hasCapability);
+        }
+        return capabilities;
+    }
+
+    /**
      * Stores the Capability Value for the given capability name.
      * @param capabilityName One of the supported capability names {@link
      *         #SUPPORTED_ACCOUNT_CAPABILITY_NAMES}.
@@ -65,6 +81,10 @@ public class AccountCapabilities {
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME);
     }
 
+    /**
+     * @param capabilityName the name of the capability to lookup.
+     * @return the capability value associated to the name.
+     */
     private @Tribool int getCapabilityByName(@NonNull String capabilityName) {
         if (!mAccountCapabilities.containsKey(capabilityName)) {
             return Tribool.UNKNOWN;

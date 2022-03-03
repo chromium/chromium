@@ -49,6 +49,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
+import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 
@@ -345,6 +346,47 @@ public class AccountManagerFacadeImplTest {
     @Test(expected = IllegalStateException.class)
     public void testAccountManagerFacadeProviderGetNullInstance() {
         AccountManagerFacadeProvider.getInstance();
+    }
+
+    @Test
+    public void testGetAccountCapabilitiesResponseSuccess() {
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        final AccountHolder accountHolder = AccountHolder.createFromEmail("test1@gmail.com");
+        mDelegate.addAccount(accountHolder);
+
+        doReturn(CapabilityResponse.YES)
+                .when(mDelegate)
+                .hasCapability(eq(accountHolder.getAccount()),
+                        eq(AccountManagerFacadeImpl.getAndroidCapabilityName(
+                                org.chromium.components.signin.AccountCapabilitiesConstants
+                                        .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME)));
+        doReturn(CapabilityResponse.NO)
+                .when(mDelegate)
+                .hasCapability(eq(accountHolder.getAccount()),
+                        eq(AccountManagerFacadeImpl.getAndroidCapabilityName(
+                                org.chromium.components.signin.AccountCapabilitiesConstants
+                                        .CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME)));
+
+        AccountCapabilities capabilities =
+                facade.getAccountCapabilities(accountHolder.getAccount()).getResult();
+        Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.FALSE);
+        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.TRUE);
+    }
+
+    @Test
+    public void testGetAccountCapabilitiesResponseException() {
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        final AccountHolder accountHolder = AccountHolder.createFromEmail("test1@gmail.com");
+        mDelegate.addAccount(accountHolder);
+
+        doReturn(CapabilityResponse.EXCEPTION)
+                .when(mDelegate)
+                .hasCapability(eq(accountHolder.getAccount()), any());
+
+        AccountCapabilities capabilities =
+                facade.getAccountCapabilities(accountHolder.getAccount()).getResult();
+        Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.UNKNOWN);
+        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.UNKNOWN);
     }
 
     private Account setFeaturesForAccount(String email, String... features) {
