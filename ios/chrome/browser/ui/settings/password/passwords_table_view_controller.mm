@@ -662,20 +662,28 @@ bool IsFaviconEnabled() {
   self.onDeviceEncryptionStateInModel = newState;
   TableViewModel* model = self.tableViewModel;
 
-  NSInteger passwordCheckSectionIndex =
-      [model sectionForSectionIdentifier:SectionIdentifierPasswordCheck];
+  // Index of the OnDeviceEncryption section if it exists.
+  // Index where it should be added if it does not exists.
+  NSInteger sectionIdentifierOnDeviceEncryptionIndex =
+      [model sectionForSectionIdentifier:SectionIdentifierPasswordCheck] + 1;
+  NSIndexSet* sectionIdentifierOnDeviceEncryptionIndexSet =
+      [NSIndexSet indexSetWithIndex:sectionIdentifierOnDeviceEncryptionIndex];
 
   if (newState == OnDeviceEncryptionStateNotShown) {
     // Previous state was not `OnDeviceEncryptionStateNotShown`, wich mean the
     // section `SectionIdentifierOnDeviceEncryption` exists and must be removed.
+    // It also mean the table view is not yet shown and thus should not be
+    // updated.
+    DCHECK(!updateTableView);
     [self clearSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
-                    withRowAnimation:UITableViewRowAnimationFade];
+                    withRowAnimation:UITableViewRowAnimationAutomatic];
     return;
   }
 
   if (oldState == OnDeviceEncryptionStateNotShown) {
-    [model insertSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
-                               atIndex:(passwordCheckSectionIndex + 1)];
+    [model
+        insertSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
+                            atIndex:sectionIdentifierOnDeviceEncryptionIndex];
   }
 
   [model deleteAllItemsFromSectionWithIdentifier:
@@ -710,20 +718,15 @@ bool IsFaviconEnabled() {
         toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
   }
 
-  if (updateTableView) {
-    if (oldState == OnDeviceEncryptionStateNotShown) {
-      [self.tableView
-            insertSections:[NSIndexSet
-                               indexSetWithIndex:(passwordCheckSectionIndex +
-                                                  1)]
-          withRowAnimation:UITableViewRowAnimationAutomatic];
-    } else {
-      [self.tableView
-            reloadSections:[NSIndexSet
-                               indexSetWithIndex:(passwordCheckSectionIndex +
-                                                  1)]
-          withRowAnimation:UITableViewRowAnimationAutomatic];
-    }
+  if (!updateTableView) {
+    return;
+  }
+  if (oldState == OnDeviceEncryptionStateNotShown) {
+    [self.tableView insertSections:sectionIdentifierOnDeviceEncryptionIndexSet
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+  } else {
+    [self.tableView reloadSections:sectionIdentifierOnDeviceEncryptionIndexSet
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
   }
 }
 
