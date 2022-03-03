@@ -76,7 +76,6 @@
 #include "ppapi/c/private/ppb_ext_crx_file_system_private.h"
 #include "ppapi/c/private/ppb_file_io_private.h"
 #include "ppapi/c/private/ppb_file_ref_private.h"
-#include "ppapi/c/private/ppb_find_private.h"
 #include "ppapi/c/private/ppb_flash_font_file.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
@@ -107,7 +106,6 @@
 #include "ppapi/proxy/ppb_video_decoder_proxy.h"
 #include "ppapi/proxy/ppb_x509_certificate_private_proxy.h"
 #include "ppapi/proxy/ppp_class_proxy.h"
-#include "ppapi/proxy/ppp_find_proxy.h"
 #include "ppapi/proxy/ppp_graphics_3d_proxy.h"
 #include "ppapi/proxy/ppp_input_event_proxy.h"
 #include "ppapi/proxy/ppp_instance_private_proxy.h"
@@ -290,8 +288,6 @@ InterfaceList::InterfaceList() {
 #if !BUILDFLAG(IS_NACL)
   AddProxy(API_ID_PPP_PDF, &ProxyFactory<PPP_Pdf_Proxy>);
   AddPPP(PPP_PDF_INTERFACE, PPP_Pdf_Proxy::GetProxyInterface());
-  AddProxy(API_ID_PPP_FIND_PRIVATE, &ProxyFactory<PPP_Find_Proxy>);
-  AddPPP(PPP_FIND_PRIVATE_INTERFACE, PPP_Find_Proxy::GetProxyInterface());
   AddProxy(API_ID_PPP_VIDEO_DECODER_DEV, &ProxyFactory<PPP_VideoDecoder_Proxy>);
   AddPPP(PPP_VIDEODECODER_DEV_INTERFACE,
          PPP_VideoDecoder_Proxy::GetProxyInterface());

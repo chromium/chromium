@@ -100,8 +100,6 @@ component("proxy") {
     "ppb_testing_proxy.h",
     "ppp_class_proxy.cc",
     "ppp_class_proxy.h",
-    "ppp_find_proxy.cc",
-    "ppp_find_proxy.h",
     "ppp_graphics_3d_proxy.cc",
     "ppp_graphics_3d_proxy.h",
     "ppp_input_event_proxy.cc",

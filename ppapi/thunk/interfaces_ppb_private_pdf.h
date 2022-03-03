@@ -14,7 +14,6 @@
 
 #if !BUILDFLAG(IS_NACL)
 PROXIED_IFACE(PPB_PDF_INTERFACE, PPB_PDF)
-PROXIED_IFACE(PPB_FIND_PRIVATE_INTERFACE_0_3, PPB_Find_Private_0_3)
 #endif  // !BUILDFLAG(IS_NACL)
 
 #include "ppapi/thunk/interfaces_postamble.h"

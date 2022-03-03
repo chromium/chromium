@@ -71,11 +71,6 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   blink::WebURL LinkAtPosition(const gfx::Point& position) const override;
   bool GetPrintPresetOptionsFromDocument(
       blink::WebPrintPresetOptions* preset_options) override;
-  bool StartFind(const blink::WebString& search_text,
-                 bool case_sensitive,
-                 int identifier) override;
-  void SelectFindResult(bool forward, int identifier) override;
-  void StopFind() override;
   bool SupportsPaginatedPrint() override;
 
   int PrintBegin(const blink::WebPrintParams& print_params) override;

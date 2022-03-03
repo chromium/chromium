@@ -812,29 +812,6 @@ IPC_SYNC_MESSAGE_ROUTED3_1(PpapiMsg_PPPPdf_PrintBegin,
                            PP_PdfPrintSettings_Dev /* pdf_print_settings */,
                            int32_t /* result */)
 
-// Find
-IPC_MESSAGE_ROUTED2(PpapiPluginMsg_PPPFind_StartFind,
-                    PP_Instance /* instance */,
-                    std::string /* text */)
-IPC_MESSAGE_ROUTED2(PpapiPluginMsg_PPPFind_SelectFindResult,
-                    PP_Instance /* instance */,
-                    PP_Bool /* forward */)
-IPC_MESSAGE_ROUTED1(PpapiPluginMsg_PPPFind_StopFind,
-                    PP_Instance /* instance */)
-
-IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBInstance_SetPluginToHandleFindRequests,
-                    PP_Instance /* instance */)
-IPC_MESSAGE_ROUTED3(PpapiHostMsg_PPBInstance_NumberOfFindResultsChanged,
-                    PP_Instance /* instance */,
-                    int32_t /* total */,
-                    PP_Bool /* final_result */)
-IPC_MESSAGE_ROUTED2(PpapiHostMsg_PPBInstance_SelectFindResultChanged,
-                    PP_Instance /* instance */,
-                    int32_t /* index */)
-IPC_MESSAGE_ROUTED2(PpapiHostMsg_PPBInstance_SetTickmarks,
-                    PP_Instance /* instance */,
-                    std::vector<PP_Rect> /* tickmarks */)
-
 // PPP_Printing
 IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPrinting_QuerySupportedFormats,
                            PP_Instance /* instance */,

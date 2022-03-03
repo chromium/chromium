@@ -125,14 +125,6 @@ bool PPB_Instance_Proxy::OnMessageReceived(const IPC::Message& msg) {
                         OnHostMsgExecuteScript)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBInstance_GetDefaultCharSet,
                         OnHostMsgGetDefaultCharSet)
-    IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBInstance_SetPluginToHandleFindRequests,
-                        OnHostMsgSetPluginToHandleFindRequests);
-    IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBInstance_NumberOfFindResultsChanged,
-                        OnHostMsgNumberOfFindResultsChanged)
-    IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBInstance_SelectFindResultChanged,
-                        OnHostMsgSelectFindResultChanged)
-    IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBInstance_SetTickmarks,
-                        OnHostMsgSetTickmarks)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBInstance_PostMessage,
                         OnHostMsgPostMessage)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBInstance_SetFullscreen,
@@ -276,32 +268,6 @@ PP_Var PPB_Instance_Proxy::GetDefaultCharSet(PP_Instance instance) {
   dispatcher->Send(new PpapiHostMsg_PPBInstance_GetDefaultCharSet(
       API_ID_PPB_INSTANCE, instance, &result));
   return result.Return(dispatcher);
-}
-
-void PPB_Instance_Proxy::SetPluginToHandleFindRequests(PP_Instance instance) {
-  dispatcher()->Send(new PpapiHostMsg_PPBInstance_SetPluginToHandleFindRequests(
-      API_ID_PPB_INSTANCE, instance));
-}
-
-void PPB_Instance_Proxy::NumberOfFindResultsChanged(PP_Instance instance,
-                                                    int32_t total,
-                                                    PP_Bool final_result) {
-  dispatcher()->Send(new PpapiHostMsg_PPBInstance_NumberOfFindResultsChanged(
-      API_ID_PPB_INSTANCE, instance, total, final_result));
-}
-
-void PPB_Instance_Proxy::SelectedFindResultChanged(PP_Instance instance,
-                                                   int32_t index) {
-  dispatcher()->Send(new PpapiHostMsg_PPBInstance_SelectFindResultChanged(
-      API_ID_PPB_INSTANCE, instance, index));
-}
-
-void PPB_Instance_Proxy::SetTickmarks(PP_Instance instance,
-                                      const PP_Rect* tickmarks,
-                                      uint32_t count) {
-  dispatcher()->Send(new PpapiHostMsg_PPBInstance_SetTickmarks(
-      API_ID_PPB_INSTANCE, instance,
-      std::vector<PP_Rect>(tickmarks, tickmarks + count)));
 }
 
 PP_Bool PPB_Instance_Proxy::IsFullscreen(PP_Instance instance) {
@@ -701,52 +667,6 @@ void PPB_Instance_Proxy::OnHostMsgGetDefaultCharSet(
   EnterInstanceNoLock enter(instance);
   if (enter.succeeded())
     result.Return(dispatcher(), enter.functions()->GetDefaultCharSet(instance));
-}
-
-void PPB_Instance_Proxy::OnHostMsgSetPluginToHandleFindRequests(
-    PP_Instance instance) {
-  if (!dispatcher()->permissions().HasPermission(PERMISSION_PDF))
-    return;
-  EnterInstanceNoLock enter(instance);
-  if (enter.succeeded())
-    enter.functions()->SetPluginToHandleFindRequests(instance);
-}
-
-void PPB_Instance_Proxy::OnHostMsgNumberOfFindResultsChanged(
-    PP_Instance instance,
-    int32_t total,
-    PP_Bool final_result) {
-  if (!dispatcher()->permissions().HasPermission(PERMISSION_PDF))
-    return;
-  EnterInstanceNoLock enter(instance);
-  if (enter.succeeded()) {
-    enter.functions()->NumberOfFindResultsChanged(
-        instance, total, final_result);
-  }
-}
-
-void PPB_Instance_Proxy::OnHostMsgSelectFindResultChanged(
-    PP_Instance instance,
-    int32_t index) {
-  if (!dispatcher()->permissions().HasPermission(PERMISSION_PDF))
-    return;
-  EnterInstanceNoLock enter(instance);
-  if (enter.succeeded())
-    enter.functions()->SelectedFindResultChanged(instance, index);
-}
-
-void PPB_Instance_Proxy::OnHostMsgSetTickmarks(
-    PP_Instance instance,
-    const std::vector<PP_Rect>& tickmarks) {
-  if (!dispatcher()->permissions().HasPermission(PERMISSION_PDF))
-    return;
-  const PP_Rect* array = tickmarks.empty() ? NULL : &tickmarks[0];
-  EnterInstanceNoLock enter(instance);
-  if (enter.succeeded()) {
-    enter.functions()->SetTickmarks(instance,
-                                    array,
-                                    static_cast<uint32_t>(tickmarks.size()));
-  }
 }
 
 void PPB_Instance_Proxy::OnHostMsgSetFullscreen(PP_Instance instance,

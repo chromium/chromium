@@ -73,17 +73,6 @@ class PPB_Instance_API {
                              PP_Var source,
                              PP_Var value) = 0;
 
-  // Find.
-  virtual void SetPluginToHandleFindRequests(PP_Instance instance) = 0;
-  virtual void NumberOfFindResultsChanged(PP_Instance instance,
-                                          int32_t total,
-                                          PP_Bool final_result) = 0;
-  virtual void SelectedFindResultChanged(PP_Instance instance,
-                                         int32_t index) = 0;
-  virtual void SetTickmarks(PP_Instance instance,
-                            const PP_Rect* tickmarks,
-                            uint32_t count) = 0;
-
   // Fullscreen.
   virtual PP_Bool IsFullscreen(PP_Instance instance) = 0;
   virtual PP_Bool SetFullscreen(PP_Instance instance,

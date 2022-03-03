@@ -45,7 +45,6 @@
 #include "ppapi/c/ppp_graphics_3d.h"
 #include "ppapi/c/ppp_input_event.h"
 #include "ppapi/c/ppp_mouse_lock.h"
-#include "ppapi/c/private/ppp_find_private.h"
 #include "ppapi/c/private/ppp_instance_private.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/shared_impl/ppb_instance_shared.h"
@@ -276,11 +275,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   std::u16string GetSelectedText(bool html);
   std::u16string GetLinkAtPosition(const gfx::Point& point);
   void RequestSurroundingText(size_t desired_number_of_characters);
-  bool StartFind(const std::string& search_text,
-                 bool case_sensitive,
-                 int identifier);
-  void SelectFindResult(bool forward, int identifier);
-  void StopFind();
 
   bool SupportsPrintInterface();
   int PrintBegin(const blink::WebPrintParams& print_params);
@@ -404,14 +398,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   uint32_t GetAudioHardwareOutputSampleRate(PP_Instance instance) override;
   uint32_t GetAudioHardwareOutputBufferSize(PP_Instance instance) override;
   PP_Var GetDefaultCharSet(PP_Instance instance) override;
-  void SetPluginToHandleFindRequests(PP_Instance) override;
-  void NumberOfFindResultsChanged(PP_Instance instance,
-                                  int32_t total,
-                                  PP_Bool final_result) override;
-  void SelectedFindResultChanged(PP_Instance instance, int32_t index) override;
-  void SetTickmarks(PP_Instance instance,
-                    const PP_Rect* tickmarks,
-                    uint32_t count) override;
   PP_Bool IsFullscreen(PP_Instance instance) override;
   PP_Bool SetFullscreen(PP_Instance instance, PP_Bool fullscreen) override;
   PP_Bool GetScreenSize(PP_Instance instance, PP_Size* size) override;
@@ -548,7 +534,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
                            blink::WebPluginContainer* container,
                            const GURL& plugin_url);
 
-  bool LoadFindInterface();
   bool LoadInputEventInterface();
   bool LoadMouseLockInterface();
   bool LoadPdfInterface();
@@ -714,7 +699,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // The plugin-provided interfaces.
   // When adding PPP interfaces, make sure to reset them in ResetAsProxied.
-  const PPP_Find_Private* plugin_find_interface_;
   const PPP_InputEvent* plugin_input_event_interface_;
   const PPP_MouseLock* plugin_mouse_lock_interface_;
   const PPP_Pdf* plugin_pdf_interface_;

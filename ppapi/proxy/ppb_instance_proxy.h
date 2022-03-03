@@ -55,14 +55,6 @@ class PPB_Instance_Proxy : public InterfaceProxy,
   uint32_t GetAudioHardwareOutputSampleRate(PP_Instance instance) override;
   uint32_t GetAudioHardwareOutputBufferSize(PP_Instance instance) override;
   PP_Var GetDefaultCharSet(PP_Instance instance) override;
-  void SetPluginToHandleFindRequests(PP_Instance instance) override;
-  void NumberOfFindResultsChanged(PP_Instance instance,
-                                  int32_t total,
-                                  PP_Bool final_result) override;
-  void SelectedFindResultChanged(PP_Instance instance, int32_t index) override;
-  void SetTickmarks(PP_Instance instance,
-                    const PP_Rect* tickmarks,
-                    uint32_t count) override;
   PP_Bool IsFullscreen(PP_Instance instance) override;
   PP_Bool SetFullscreen(PP_Instance instance, PP_Bool fullscreen) override;
   PP_Bool GetScreenSize(PP_Instance instance, PP_Size* size) override;
@@ -133,14 +125,6 @@ class PPB_Instance_Proxy : public InterfaceProxy,
                                                  uint32_t *result);
   void OnHostMsgGetDefaultCharSet(PP_Instance instance,
                                   SerializedVarReturnValue result);
-  void OnHostMsgSetPluginToHandleFindRequests(PP_Instance instance);
-  void OnHostMsgNumberOfFindResultsChanged(PP_Instance instance,
-                                           int32_t total,
-                                           PP_Bool final_result);
-  void OnHostMsgSelectFindResultChanged(PP_Instance instance,
-                                        int32_t index);
-  void OnHostMsgSetTickmarks(PP_Instance instance,
-                             const std::vector<PP_Rect>& tickmarks);
   void OnHostMsgSetFullscreen(PP_Instance instance,
                               PP_Bool fullscreen,
                               PP_Bool* result);

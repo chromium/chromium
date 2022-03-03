@@ -390,30 +390,6 @@ WebURL PepperWebPluginImpl::LinkAtPosition(const gfx::Point& position) const {
   return GURL(instance_->GetLinkAtPosition(position));
 }
 
-bool PepperWebPluginImpl::StartFind(const blink::WebString& search_text,
-                                    bool case_sensitive,
-                                    int identifier) {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (!instance_)
-    return false;
-  return instance_->StartFind(search_text.Utf8(), case_sensitive, identifier);
-}
-
-void PepperWebPluginImpl::SelectFindResult(bool forward, int identifier) {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (instance_)
-    instance_->SelectFindResult(forward, identifier);
-}
-
-void PepperWebPluginImpl::StopFind() {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (instance_)
-    instance_->StopFind();
-}
-
 bool PepperWebPluginImpl::SupportsPaginatedPrint() {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
   // is fully initialized. See: crbug.com/715747.

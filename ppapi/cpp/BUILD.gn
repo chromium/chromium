@@ -203,8 +203,6 @@ source_set("objects") {
     "private/ext_crx_file_system_private.h",
     "private/file_io_private.cc",
     "private/file_io_private.h",
-    "private/find_private.cc",
-    "private/find_private.h",
     "private/flash_font_file.cc",
     "private/flash_font_file.h",
     "private/host_resolver_private.cc",

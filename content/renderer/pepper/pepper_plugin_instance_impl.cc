@@ -60,8 +60,6 @@
 #include "ppapi/c/ppp_instance.h"
 #include "ppapi/c/ppp_messaging.h"
 #include "ppapi/c/ppp_mouse_lock.h"
-#include "ppapi/c/private/ppb_find_private.h"
-#include "ppapi/c/private/ppp_find_private.h"
 #include "ppapi/c/private/ppp_instance_private.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/host/ppapi_host.h"
@@ -369,22 +367,6 @@ bool IsPrintPreviewUrl(const GURL& document_url) {
          url::Origin::Create(GURL(kChromePrint));
 }
 
-WebElement FindPdfViewerScroller(const WebLocalFrame* frame,
-                                 const WebElement& plugin) {
-  if (!plugin.HasAttribute("pdf-viewer-update-enabled"))
-    return WebElement();
-
-  WebElement viewer = frame->GetDocument().GetElementById("viewer");
-  if (viewer.IsNull())
-    return WebElement();
-
-  blink::WebNode shadow_root = viewer.ShadowRoot();
-  if (shadow_root.IsNull())
-    return WebElement();
-
-  return shadow_root.QuerySelector("#scroller");
-}
-
 }  // namespace
 
 // static
@@ -507,7 +489,6 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
       bound_graphics_2d_platform_(nullptr),
       has_webkit_focus_(false),
       find_identifier_(-1),
-      plugin_find_interface_(nullptr),
       plugin_input_event_interface_(nullptr),
       plugin_mouse_lock_interface_(nullptr),
       plugin_pdf_interface_(nullptr),
@@ -1474,47 +1455,6 @@ void PepperPluginInstanceImpl::RequestSurroundingText(
       pp_instance(), desired_number_of_characters);
 }
 
-bool PepperPluginInstanceImpl::StartFind(const std::string& search_text,
-                                         bool case_sensitive,
-                                         int identifier) {
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-  if (!LoadFindInterface())
-    return false;
-  find_identifier_ = identifier;
-  return PP_ToBool(plugin_find_interface_->StartFind(
-      pp_instance(), search_text.c_str(), PP_FromBool(case_sensitive)));
-}
-
-void PepperPluginInstanceImpl::SelectFindResult(bool forward, int identifier) {
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-  if (!LoadFindInterface())
-    return;
-  find_identifier_ = identifier;
-  plugin_find_interface_->SelectFindResult(pp_instance(), PP_FromBool(forward));
-}
-
-void PepperPluginInstanceImpl::StopFind() {
-  // Keep a reference on the stack. See NOTE above.
-  scoped_refptr<PepperPluginInstanceImpl> ref(this);
-  if (!LoadFindInterface())
-    return;
-  find_identifier_ = -1;
-  plugin_find_interface_->StopFind(pp_instance());
-}
-
-bool PepperPluginInstanceImpl::LoadFindInterface() {
-  if (!module_->permissions().HasPermission(ppapi::PERMISSION_PDF))
-    return false;
-  if (!plugin_find_interface_) {
-    plugin_find_interface_ = static_cast<const PPP_Find_Private*>(
-        module_->GetPluginInterface(PPP_FIND_PRIVATE_INTERFACE));
-  }
-
-  return !!plugin_find_interface_;
-}
-
 bool PepperPluginInstanceImpl::LoadInputEventInterface() {
   if (!checked_for_plugin_input_event_interface_) {
     checked_for_plugin_input_event_interface_ = true;
@@ -2354,63 +2294,6 @@ PP_Var PepperPluginInstanceImpl::GetDefaultCharSet(PP_Instance instance) {
                                       .default_encoding);
 }
 
-void PepperPluginInstanceImpl::SetPluginToHandleFindRequests(
-    PP_Instance instance) {
-  if (!LoadFindInterface())
-    return;
-  bool is_main_frame = render_frame_ && render_frame_->IsMainFrame();
-  if (!is_main_frame)
-    return;
-  container_->UsePluginAsFindHandler();
-}
-
-void PepperPluginInstanceImpl::NumberOfFindResultsChanged(
-    PP_Instance instance,
-    int32_t total,
-    PP_Bool final_result) {
-  // After stopping search and setting find_identifier_ to -1 there still may be
-  // a NumberOfFindResultsChanged notification pending from plug-in. Just ignore
-  // them.
-  if (find_identifier_ == -1)
-    return;
-  if (!container_)
-    return;
-  container_->ReportFindInPageMatchCount(find_identifier_, total,
-                                         PP_ToBool(final_result));
-}
-
-void PepperPluginInstanceImpl::SelectedFindResultChanged(PP_Instance instance,
-                                                         int32_t index) {
-  if (find_identifier_ == -1)
-    return;
-  if (!container_)
-    return;
-  container_->ReportFindInPageSelection(find_identifier_, index + 1);
-}
-
-void PepperPluginInstanceImpl::SetTickmarks(PP_Instance instance,
-                                            const PP_Rect* tickmarks,
-                                            uint32_t count) {
-  if (!render_frame_ || !render_frame_->GetWebFrame())
-    return;
-
-  blink::WebVector<gfx::Rect> tickmarks_converted(static_cast<size_t>(count));
-  for (uint32_t i = 0; i < count; ++i) {
-    gfx::RectF tickmark(tickmarks[i].point.x,
-                        tickmarks[i].point.y,
-                        tickmarks[i].size.width,
-                        tickmarks[i].size.height);
-    tickmark.Scale(1 / viewport_to_dip_scale_);
-    tickmarks_converted[i] = gfx::ToEnclosedRect(tickmark);
-  }
-
-  WebLocalFrame* frame = render_frame_->GetWebFrame();
-  WebElement target;
-  if (LoadPdfInterface())
-    target = FindPdfViewerScroller(frame, container_->GetElement());
-  frame->SetTickmarks(target, tickmarks_converted);
-}
-
 PP_Bool PepperPluginInstanceImpl::IsFullscreen(PP_Instance instance) {
   return PP_FromBool(view_data_.is_fullscreen);
 }
@@ -2716,7 +2599,6 @@ PP_ExternalPluginResult PepperPluginInstanceImpl::ResetAsProxied(
 
   instance_interface_.reset(ppp_instance_combined);
   // Clear all PPP interfaces we may have cached.
-  plugin_find_interface_ = nullptr;
   plugin_input_event_interface_ = nullptr;
   checked_for_plugin_input_event_interface_ = false;
   plugin_mouse_lock_interface_ = nullptr;
