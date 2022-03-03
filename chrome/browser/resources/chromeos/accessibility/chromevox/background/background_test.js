@@ -24,6 +24,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'GestureCommandHandler',
         '/chromevox/background/gesture_command_handler.js');
+    await importModule(
+        'PointerHandler', '/chromevox/background/pointer_handler.js');
     await super.setUpDeferred();
   }
 

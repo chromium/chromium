@@ -39,7 +39,6 @@ goog.require('OutputEventType');
 goog.require('PanelCommand');
 goog.require('PhoneticData');
 goog.require('SmartStickyMode');
-goog.require('PointerHandler');
 goog.require('TreeDumper');
 goog.require('constants');
 goog.require('cursors.Cursor');

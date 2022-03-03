@@ -7,17 +7,11 @@
  * either user touch or mouse input.
  */
 
-goog.provide('PointerHandler');
-
-goog.require('constants');
-goog.require('AutomationTreeWalker');
-goog.require('BaseAutomationHandler');
-
 const AutomationEvent = chrome.automation.AutomationEvent;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 
-PointerHandler = class extends BaseAutomationHandler {
+export class PointerHandler extends BaseAutomationHandler {
   constructor() {
     super(null);
 
@@ -197,7 +191,7 @@ PointerHandler = class extends BaseAutomationHandler {
         EventType.HOVER, target,
         {eventFromAction: chrome.automation.ActionType.HIT_TEST}));
   }
-};
+}
 
 /** @const {number} */
 PointerHandler.MIN_NO_POINTER_ANCHOR_SOUND_DELAY_MS = 500;

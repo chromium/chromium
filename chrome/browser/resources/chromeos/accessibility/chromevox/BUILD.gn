@@ -59,7 +59,6 @@ chromevox_modules = [
   "background/logging/output_logger.js",
   "background/logging/tree_dumper.js",
   "background/math_handler.js",
-  "background/pointer_handler.js",
   "background/output/output.js",
   "background/output/output_ancestry_info.js",
   "background/output/output_format_parser.js",
@@ -132,6 +131,7 @@ chromevox_es6_modules = [
   "background/media_automation_handler.js",
   "background/range_automation_handler.js",
   "background/page_load_sound_handler.js",
+  "background/pointer_handler.js",
 ]
 
 # Closure library modules needed by chromevox.
