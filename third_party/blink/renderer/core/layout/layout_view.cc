@@ -663,9 +663,25 @@ void LayoutView::CalculateScrollbarModes(
   if (!frame)
     RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAlwaysOff);
 
-  // ClipsContent() is false for the root printing frame, etc.
-  if (!frame->ClipsContent())
-    RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAlwaysOff);
+  // ClipsContent() is false means that the client wants to paint the whole
+  // contents of the frame without scrollbars, which is for printing etc.
+  if (!frame->ClipsContent()) {
+    bool disable_scrollbars = true;
+#if BUILDFLAG(IS_ANDROID)
+    // However, Android WebView has a setting recordFullDocument. When it's set
+    // to true, ClipsContent() is false here, while WebView still expects blink
+    // to provide scrolling mechanism. The flag can be set through WebView API,
+    // or is forced if the app's target SDK version < LOLLIPOP.
+    // Synchronous compositing indicates Android WebView.
+    if (Platform::Current()
+            ->IsSynchronousCompositingEnabledForAndroidWebView() &&
+        !GetDocument().IsPrintingOrPaintingPreview()) {
+      disable_scrollbars = false;
+    }
+#endif
+    if (disable_scrollbars)
+      RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAlwaysOff);
+  }
 
   if (FrameOwner* owner = frame->Owner()) {
     // Setting scrolling="no" on an iframe element disables scrolling.
