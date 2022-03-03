@@ -471,6 +471,19 @@ class BorealisDiskManagerImpl::SyncDisk
       Expected<std::unique_ptr<std::pair<BorealisDiskInfo, BorealisDiskInfo>>,
                Described<BorealisResizeDiskResult>> disk_info_or_error) {
     if (!disk_info_or_error) {
+      // Sometimes the disk size can get out of sync, so that btrfs reports that
+      // the minimum size of the disk is larger than the actual disk size. In
+      // this case we will get a kViolatesMinimumSize from trying to resize the
+      // disk. We don't want to block the startup process because of this error
+      // so we special case it as a success.
+      if (disk_info_or_error.Error().error() ==
+          BorealisResizeDiskResult::kViolatesMinimumSize) {
+        LOG(WARNING) << "disk was unable to be shrunk due to the disk "
+                        "already being smaller than the minimum size";
+        Succeed(std::make_unique<BorealisSyncDiskSizeResult>(
+            BorealisSyncDiskSizeResult::kDiskSizeSmallerThanMin));
+        return;
+      }
       Fail(Described<BorealisSyncDiskSizeResult>(
           BorealisSyncDiskSizeResult::kResizeFailed,
           "resize failed: " + disk_info_or_error.Error().description()));

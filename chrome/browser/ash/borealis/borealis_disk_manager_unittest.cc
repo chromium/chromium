@@ -1422,6 +1422,39 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeFailsIfResizeAttemptFails) {
       BorealisSyncDiskSizeResult::kResizeFailed, 1);
 }
 
+TEST_F(BorealisDiskManagerTest,
+       SyncDiskSizeSucceedsIfDiskBelowMinSizeDuringShrink) {
+  // This object forces all EXPECT_CALLs to occur in the order they are
+  // declared.
+  testing::InSequence sequence;
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .Times(2)
+      .WillRepeatedly(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/5 * kGiB,
+                /*available_space=*/3 * kGiB);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
+            std::move(callback).Run(5 * kGiB);
+          }));
+
+  SyncDiskCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(_))
+      .WillOnce(testing::Invoke(
+          [](Expected<BorealisSyncDiskSizeResult,
+                      Described<BorealisSyncDiskSizeResult>> result) {
+            EXPECT_TRUE(result);
+            EXPECT_EQ(result.Value(),
+                      BorealisSyncDiskSizeResult::kDiskSizeSmallerThanMin);
+          }));
+  disk_manager_->SyncDiskSize(callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskStartupResultHistogram,
+      BorealisSyncDiskSizeResult::kDiskSizeSmallerThanMin, 1);
+}
+
 TEST_F(BorealisDiskManagerTest, SyncDiskSizePartialResizeSucceeds) {
   // This is considered "partial" as it should log a warning. There is not
   // enough space on the device to fully rebuild the buffer to 2GB, but it will

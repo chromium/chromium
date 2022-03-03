@@ -11176,6 +11176,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="A sync disk process is already in progress"/>
   <int value="6" label="Failed to get disk information"/>
   <int value="7" label="Failed to resize the disk"/>
+  <int value="8"
+      label="Nonfatal error, size of disk was below the minimum when
+             shrinking"/>
 </enum>
 
 <enum name="BoringSSLReasonCode">

@@ -119,7 +119,8 @@ enum class BorealisSyncDiskSizeResult {
   kAlreadyInProgress = 5,
   kFailedToGetDiskInfo = 6,
   kResizeFailed = 7,
-  kMaxValue = kResizeFailed,
+  kDiskSizeSmallerThanMin = 8,
+  kMaxValue = kDiskSizeSmallerThanMin,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
