@@ -25,6 +25,7 @@ source_set("unit_tests") {
     ":webui",
     "//base",
     "//components/strings",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/web:test_support",
     "//ios/web",
     "//ios/web/public/test",

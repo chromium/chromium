@@ -7,11 +7,13 @@
 #import <Foundation/Foundation.h>
 
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
+#import "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,21 +40,31 @@
 @end
 
 // Test fixture for testing NetExportTabHelper.
-class NetExportTabHelperTest : public ChromeWebTest {
+class NetExportTabHelperTest : public PlatformTest {
  public:
   NetExportTabHelperTest()
-      : delegate_([[TestNetExportTabHelperDelegate alloc] init]) {}
+      : delegate_([[TestNetExportTabHelperDelegate alloc] init]) {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+  }
 
   NetExportTabHelperTest(const NetExportTabHelperTest&) = delete;
   NetExportTabHelperTest& operator=(const NetExportTabHelperTest&) = delete;
 
  protected:
   void SetUp() override {
-    ChromeWebTest::SetUp();
+    PlatformTest::SetUp();
     NetExportTabHelper::CreateForWebState(web_state());
     NetExportTabHelper::FromWebState(web_state())->SetDelegate(delegate_);
   }
 
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
   // A delegate that is given to the NetExportTabHelper for testing.
   __strong TestNetExportTabHelperDelegate* delegate_;
 };
