@@ -20,9 +20,16 @@ export class ViewerDocumentOutlineElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!Array<!Bookmark>} */
       bookmarks: Array,
     };
+  }
+
+  bookmarks: Bookmark[];
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-document-outline': ViewerDocumentOutlineElement;
   }
 }
 

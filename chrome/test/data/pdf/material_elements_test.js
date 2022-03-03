@@ -23,7 +23,7 @@ const tests = [
     selector.docLength = 1234;
     document.body.appendChild(selector);
 
-    const input = selector.pageSelector;
+    const input = selector.$.pageSelector;
     // Simulate entering text into `input` and pressing enter.
     function changeInput(newValue) {
       input.value = newValue;

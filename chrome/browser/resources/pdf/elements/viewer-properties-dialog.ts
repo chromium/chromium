@@ -6,9 +6,16 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DocumentMetadata} from '../constants.js';
+
+export interface ViewerPropertiesDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
 export class ViewerPropertiesDialogElement extends PolymerElement {
   static get is() {
@@ -21,47 +28,33 @@ export class ViewerPropertiesDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!DocumentMetadata} */
       documentMetadata: Object,
-
       fileName: String,
-
       pageCount: Number,
     };
   }
 
-  /**
-   * @return {!CrDialogElement}
-   * @private
-   */
-  getDialog_() {
-    return /** @type {!CrDialogElement} */ (
-        this.shadowRoot.querySelector('cr-dialog'));
-  }
+  documentMetadata: DocumentMetadata;
+  fileName: string;
+  pageCount: number;
 
-  /**
-   * @param {string} yesLabel
-   * @param {string} noLabel
-   * @param {boolean} linearized
-   * @return {string}
-   * @private
-   */
-  getFastWebViewValue_(yesLabel, noLabel, linearized) {
+  private getFastWebViewValue_(
+      yesLabel: string, noLabel: string, linearized: boolean): string {
     return linearized ? yesLabel : noLabel;
   }
 
-  /**
-   * @param {string} value
-   * @return {string}
-   * @private
-   */
-  getOrPlaceholder_(value) {
+  private getOrPlaceholder_(value: string): string {
     return value || '-';
   }
 
-  /** @private */
-  onClickClose_() {
-    this.getDialog_().close();
+  private onClickClose_() {
+    this.$.dialog.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-properties-dialog': ViewerPropertiesDialogElement;
   }
 }
 

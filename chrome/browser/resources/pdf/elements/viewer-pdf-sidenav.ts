@@ -29,7 +29,6 @@ export class ViewerPdfSidenavElement extends PolymerElement {
     return {
       activePage: Number,
 
-      /** @type {!Array<!Bookmark>} */
       bookmarks: {
         type: Array,
         value: () => [],
@@ -39,7 +38,6 @@ export class ViewerPdfSidenavElement extends PolymerElement {
 
       docLength: Number,
 
-      /** @private */
       thumbnailView_: {
         type: Boolean,
         value: true,
@@ -47,48 +45,42 @@ export class ViewerPdfSidenavElement extends PolymerElement {
     };
   }
 
-  /** @private */
-  onThumbnailClick_() {
+  activePage: number;
+  bookmarks: Bookmark[];
+  clockwiseRotations: number;
+  docLength: number;
+  private thumbnailView_: boolean;
+
+  private onThumbnailClick_() {
     record(UserAction.SELECT_SIDENAV_THUMBNAILS);
     this.thumbnailView_ = true;
   }
 
-  /** @private */
-  onOutlineClick_() {
+  private onOutlineClick_() {
     record(UserAction.SELECT_SIDENAV_OUTLINE);
     this.thumbnailView_ = false;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  outlineButtonClass_() {
+  private outlineButtonClass_(): string {
     return this.thumbnailView_ ? '' : 'selected';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  thumbnailButtonClass_() {
+  private thumbnailButtonClass_(): string {
     return this.thumbnailView_ ? 'selected' : '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getAriaSelectedThumbnails_() {
+  private getAriaSelectedThumbnails_(): string {
     return this.thumbnailView_ ? 'true' : 'false';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getAriaSelectedOutline_() {
+  private getAriaSelectedOutline_(): string {
     return this.thumbnailView_ ? 'false' : 'true';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-pdf-sidenav': ViewerPdfSidenavElement;
   }
 }
 

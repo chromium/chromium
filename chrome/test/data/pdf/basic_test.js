@@ -44,7 +44,7 @@ const tests = [
 
     // Test case where an <input> field is focused.
     toolbar.shadowRoot.querySelector('viewer-page-selector')
-        .pageSelector.focus();
+        .$.pageSelector.focus();
     chrome.test.assertTrue(shouldIgnoreKeyEvents());
 
     // Test case where another field is focused.

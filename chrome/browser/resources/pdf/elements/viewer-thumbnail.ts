@@ -10,13 +10,17 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 // The maximum widths of thumbnails for each layout (px).
 // These constants should be kept in sync with `kMaxWidthPortraitPx` and
 // `kMaxWidthLandscapePx` in pdf/thumbnail.cc.
-/** @type {number} */
-const PORTRAIT_WIDTH = 108;
-/** @type {number} */
-const LANDSCAPE_WIDTH = 140;
+const PORTRAIT_WIDTH: number = 108;
 
-/** @type {string} */
-export const PAINTED_ATTRIBUTE = 'painted';
+const LANDSCAPE_WIDTH: number = 140;
+
+export const PAINTED_ATTRIBUTE: string = 'painted';
+
+export interface ViewerThumbnailElement {
+  $: {
+    thumbnail: HTMLElement,
+  };
+}
 
 export class ViewerThumbnailElement extends PolymerElement {
   static get is() {
@@ -45,14 +49,17 @@ export class ViewerThumbnailElement extends PolymerElement {
     };
   }
 
+  clockwiseRotations: number;
+  isActive: boolean;
+  pageNumber: number;
+
   constructor() {
     super();
 
     this.addEventListener('keydown', this.onKeydown_);
   }
 
-  /** @param {!ImageData} imageData */
-  set image(imageData) {
+  set image(imageData: ImageData) {
     let canvas = this.getCanvas_();
     if (!canvas) {
       canvas = document.createElement('canvas');
@@ -61,7 +68,7 @@ export class ViewerThumbnailElement extends PolymerElement {
       // has restricted access rights.
       canvas.oncontextmenu = e => e.preventDefault();
 
-      this.shadowRoot.querySelector('#thumbnail').appendChild(canvas);
+      this.$.thumbnail.appendChild(canvas);
     }
 
     canvas.width = imageData.width;
@@ -69,7 +76,7 @@ export class ViewerThumbnailElement extends PolymerElement {
 
     this.styleCanvas_();
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d')!;
     ctx.putImageData(imageData, 0, 0);
   }
 
@@ -87,26 +94,18 @@ export class ViewerThumbnailElement extends PolymerElement {
     this.removeAttribute(PAINTED_ATTRIBUTE);
   }
 
-  /** @return {!HTMLElement} */
-  getClickTarget() {
-    return /** @type {!HTMLElement} */ (
-        this.shadowRoot.querySelector('#thumbnail'));
+  getClickTarget(): HTMLElement {
+    return this.$.thumbnail;
   }
 
-  /** @private */
-  clockwiseRotationsChanged_() {
+  private clockwiseRotationsChanged_() {
     if (this.getCanvas_()) {
       this.styleCanvas_();
     }
   }
 
-  /**
-   * @return {?HTMLCanvasElement}
-   * @private
-   */
-  getCanvas_() {
-    return /** @type {?HTMLCanvasElement} */ (
-        this.shadowRoot.querySelector('canvas'));
+  private getCanvas_(): HTMLCanvasElement|null {
+    return this.shadowRoot!.querySelector('canvas');
   }
 
   /**
@@ -114,12 +113,10 @@ export class ViewerThumbnailElement extends PolymerElement {
    * dimensions of the image data, and the screen resolution. The plugin
    * scales the thumbnail image data by the device to pixel ratio, so that
    * scaling must be taken into account on the UI.
-   * @param {boolean} rotated
-   * @return {!{width: number, height: number}}
-   * @private
    */
-  getThumbnailCssSize_(rotated) {
-    const canvas = this.getCanvas_();
+  private getThumbnailCssSize_(rotated: boolean):
+      {width: number, height: number} {
+    const canvas = this.getCanvas_()!;
     const isPortrait = canvas.width < canvas.height !== rotated;
     const orientedWidth = rotated ? canvas.height : canvas.width;
     const orientedHeight = rotated ? canvas.width : canvas.height;
@@ -129,9 +126,9 @@ export class ViewerThumbnailElement extends PolymerElement {
     // thumbnail.
     const cssWidth = Math.min(
         isPortrait ? PORTRAIT_WIDTH : LANDSCAPE_WIDTH,
-        parseInt(orientedWidth / window.devicePixelRatio, 10));
+        Math.trunc(orientedWidth / window.devicePixelRatio));
     const scale = cssWidth / orientedWidth;
-    const cssHeight = parseInt(orientedHeight * scale, 10);
+    const cssHeight = Math.trunc(orientedHeight * scale);
     return {width: cssWidth, height: cssHeight};
   }
 
@@ -146,8 +143,7 @@ export class ViewerThumbnailElement extends PolymerElement {
     this.focus({preventScroll: true});
   }
 
-  /** @return {boolean} */
-  isPainted() {
+  isPainted(): boolean {
     return this.hasAttribute(PAINTED_ATTRIBUTE);
   }
 
@@ -155,31 +151,27 @@ export class ViewerThumbnailElement extends PolymerElement {
     this.toggleAttribute(PAINTED_ATTRIBUTE, true);
   }
 
-  /** @private */
-  isActiveChanged_() {
+  private isActiveChanged_() {
     if (this.isActive) {
       this.scrollIntoView({block: 'nearest'});
     }
   }
 
-  /** @private */
-  focusThumbnailNext_() {
+  private focusThumbnailNext_() {
     if (this.nextElementSibling &&
         this.nextElementSibling.matches('viewer-thumbnail')) {
-      this.nextElementSibling.focusAndScroll();
+      (this.nextElementSibling as ViewerThumbnailElement).focusAndScroll();
     }
   }
 
-  /** @private */
-  focusThumbnailPrev_() {
+  private focusThumbnailPrev_() {
     if (this.previousElementSibling &&
         this.previousElementSibling.matches('viewer-thumbnail')) {
-      this.previousElementSibling.focusAndScroll();
+      (this.previousElementSibling as ViewerThumbnailElement).focusAndScroll();
     }
   }
 
-  /** @private */
-  onClick_() {
+  private onClick_() {
     this.dispatchEvent(new CustomEvent('change-page', {
       detail: {page: this.pageNumber - 1, origin: 'thumbnail'},
       bubbles: true,
@@ -187,27 +179,22 @@ export class ViewerThumbnailElement extends PolymerElement {
     }));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeydown_(e) {
-    const keyboardEvent = /** @type {!KeyboardEvent} */ (e);
-    switch (keyboardEvent.key) {
+  private onKeydown_(e: KeyboardEvent) {
+    switch (e.key) {
       case 'ArrowDown':
         // Prevent default arrow scroll behavior.
-        keyboardEvent.preventDefault();
+        e.preventDefault();
         this.focusThumbnailNext_();
         break;
       case 'ArrowUp':
-        // Prevent default arrow scroll behavior.
-        keyboardEvent.preventDefault();
+        // e default arrow scroll behavior.
+        e.preventDefault();
         this.focusThumbnailPrev_();
         break;
       case 'Enter':
       case ' ':
         // Prevent default space scroll behavior.
-        keyboardEvent.preventDefault();
+        e.preventDefault();
         this.onClick_();
         break;
     }
@@ -216,13 +203,12 @@ export class ViewerThumbnailElement extends PolymerElement {
   /**
    * Sets the canvas CSS size to maintain the resolution of the thumbnail at any
    * rotation.
-   * @private
    */
-  styleCanvas_() {
+  private styleCanvas_() {
     assert(this.clockwiseRotations >= 0 && this.clockwiseRotations < 4);
 
-    const canvas = this.getCanvas_();
-    const div = this.shadowRoot.querySelector('#thumbnail');
+    const canvas = this.getCanvas_()!;
+    const div = this.shadowRoot!.querySelector<HTMLElement>('#thumbnail')!;
 
     const degreesRotated = this.clockwiseRotations * 90;
     canvas.style.transform = `rotate(${degreesRotated}deg)`;
@@ -238,6 +224,12 @@ export class ViewerThumbnailElement extends PolymerElement {
     // versa.
     canvas.style.width = `${rotated ? cssSize.height : cssSize.width}px`;
     canvas.style.height = `${rotated ? cssSize.width : cssSize.height}px`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-thumbnail': ViewerThumbnailElement;
   }
 }
 

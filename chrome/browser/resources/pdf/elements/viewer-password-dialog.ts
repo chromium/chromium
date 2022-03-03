@@ -8,7 +8,18 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+export interface ViewerPasswordDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    password: CrInputElement,
+    submit: CrButtonElement,
+  };
+}
 
 export class ViewerPasswordDialogElement extends PolymerElement {
   static get is() {
@@ -25,12 +36,14 @@ export class ViewerPasswordDialogElement extends PolymerElement {
     };
   }
 
+  invalid: boolean;
+
   close() {
     this.$.dialog.close();
   }
 
   deny() {
-    const password = /** @type {!CrInputElement} */ (this.$.password);
+    const password = this.$.password;
     password.disabled = false;
     this.$.submit.disabled = false;
     this.invalid = true;
@@ -40,7 +53,7 @@ export class ViewerPasswordDialogElement extends PolymerElement {
   }
 
   submit() {
-    const password = /** @type {!CrInputElement} */ (this.$.password);
+    const password = this.$.password;
     if (password.value.length === 0) {
       return;
     }
@@ -49,6 +62,12 @@ export class ViewerPasswordDialogElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('password-submitted', {
       detail: {password: password.value},
     }));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-password-dialog': ViewerPasswordDialogElement;
   }
 }
 

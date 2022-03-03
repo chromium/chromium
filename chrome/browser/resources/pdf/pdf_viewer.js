@@ -1026,7 +1026,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     this.viewport.goToPage(e.detail.page);
     if (e.detail.origin === 'bookmark') {
       record(UserAction.FOLLOW_BOOKMARK);
-    } else if (e.detail.origin === 'pageselector') {
+    } else if (e.detail.origin === 'pageSelector') {
       record(UserAction.PAGE_SELECTOR_NAVIGATE);
     } else if (e.detail.origin === 'thumbnail') {
       record(UserAction.THUMBNAIL_NAVIGATE);
