@@ -34,6 +34,11 @@
     background-color: transparent;
   }
 
+  a[href] {
+    color: var(--cr-link-color);
+    text-decoration: none;
+  }
+
   cr-dialog::part(dialog) {
     border-radius: 0;
     height: 100%;
@@ -48,7 +53,10 @@
   <div slot="title" class="title-1">$i18n{dialogTitle}</div>
   <div slot="body">
     <div id="codeInputView">
-      <div class="body-1">$i18n{accessCodeMessage}</div>
+      <div class="body-1">
+        $i18n{accessCodeMessage}
+        <a href="$i18n{learnMoreUrl}" target="_blank">$i18n{learnMore}</a>
+      </div>
       <div class="space-2"></div>
       <div class="center-content">
         <c2c-passcode-input

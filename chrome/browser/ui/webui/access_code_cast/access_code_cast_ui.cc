@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/access_code_cast_resources.h"
 #include "chrome/grit/access_code_cast_resources_map.h"
@@ -213,12 +214,14 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
       {"errorTooManyRequests", IDS_ACCESS_CODE_CAST_ERROR_TOO_MANY_REQUESTS},
       {"errorUnknown", IDS_ACCESS_CODE_CAST_ERROR_UNKNOWN},
       {"inputLabel", IDS_ACCESS_CODE_CAST_INPUT_ARIA_LABEL},
+      {"learnMore", IDS_LEARN_MORE},
       {"submit", IDS_ACCESS_CODE_CAST_SUBMIT},
       {"useCamera", IDS_ACCESS_CODE_CAST_USE_CAMERA},
   };
 
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("qrScannerEnabled", false);
+  source->AddString("learnMoreUrl", chrome::kAccessCodeCastLearnMoreURL);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();

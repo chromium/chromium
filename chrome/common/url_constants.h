@@ -27,6 +27,9 @@
 
 namespace chrome {
 
+// "Learn more" URL linked in the dialog to cast using a code.
+extern const char kAccessCodeCastLearnMoreURL[];
+
 // "Learn more" URL for accessibility image labels, linked from the permissions
 // dialog shown when a user enables the feature.
 extern const char kAccessibilityLabelsLearnMoreURL[];

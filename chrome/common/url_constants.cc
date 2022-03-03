@@ -11,6 +11,9 @@
 
 namespace chrome {
 
+const char kAccessCodeCastLearnMoreURL[] =
+    "https://support.google.com/chrome/a/?p=cast_to_class_teacher";
+
 const char kAccessibilityLabelsLearnMoreURL[] =
     "https://support.google.com/chrome/?p=image_descriptions";
 
