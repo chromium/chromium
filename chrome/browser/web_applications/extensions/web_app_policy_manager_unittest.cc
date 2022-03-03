@@ -15,7 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/prefs/browser_prefs.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -310,7 +310,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
       scoped_feature_list_.InitAndEnableFeature(features::kWebAppsCrosapi);
     } else if (GetParam() == TestParam::kLacrosDisabled) {
       scoped_feature_list_.InitWithFeatures(
-          {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+          {}, {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     ChromeRenderViewHostTestHarness::SetUp();

@@ -26,7 +26,6 @@ source_set("extensions") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
@@ -55,7 +54,7 @@ source_set("unit_tests") {
 
   deps = [
     ":extensions",
-    "//chrome/browser",
+    "//build:chromeos_buildflags",
     "//chrome/browser/web_applications:web_app_test_group",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -71,7 +70,14 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser",
+      "//components/policy/core/common:common_constants",
+    ]
+  }
+
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/chromeos:chromeos" ]
+    deps += [ "//ash/constants" ]
   }
 }
