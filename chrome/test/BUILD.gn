@@ -9085,6 +9085,10 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/profiles/profile_bubble_interactive_uitest.cc",
       ]
     }
+
+    if (enable_print_preview) {
+      sources += [ "../browser/window_placement/window_placement_printing_interactive_uitest.cc" ]
+    }
   }
 }
 

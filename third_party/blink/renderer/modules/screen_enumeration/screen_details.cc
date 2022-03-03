@@ -19,7 +19,8 @@ ScreenDetails::ScreenDetails(LocalDOMWindow* window)
     : ExecutionContextLifecycleObserver(window) {
   LocalFrame* frame = window->GetFrame();
   const auto& screen_infos = frame->GetChromeClient().GetScreenInfos(*frame);
-  UpdateScreenInfos(window, screen_infos);
+  // Do not dispatch change events during class initialization.
+  UpdateScreenInfosImpl(window, screen_infos, /*dispatch_events=*/false);
 }
 
 const HeapVector<Member<ScreenDetailed>>& ScreenDetails::screens() const {
@@ -59,16 +60,22 @@ void ScreenDetails::Trace(Visitor* visitor) const {
 
 void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
                                       const display::ScreenInfos& new_infos) {
+  UpdateScreenInfosImpl(window, new_infos, /*dispatch_events=*/true);
+}
+
+void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
+                                          const display::ScreenInfos& new_infos,
+                                          bool dispatch_events) {
   // Expect that all updates contain a non-zero set of screens.
   DCHECK(!new_infos.screen_infos.empty());
 
-  // (1) Detect if the set of screens has changed, and update screens_.
+  // (1) Detect if screens were added or removed and update web exposed data.
   bool added_or_removed = false;
 
   // O(displays) should be small, so O(n^2) check in both directions
   // instead of keeping some more efficient cache of display ids.
 
-  // Check if any screens have been removed and remove them from screens_.
+  // Check if any screens have been removed and remove them from `screens_`.
   for (WTF::wtf_size_t i = 0; i < screens_.size();
        /*conditionally incremented*/) {
     if (base::Contains(new_infos.screen_infos, screens_[i]->DisplayId(),
@@ -82,8 +89,7 @@ void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
     }
   }
 
-  // Check if any screens have been added, and append them to the end of
-  // screens_.
+  // Check if any screens have been added, and append them to `screens_`.
   for (const auto& info : new_infos.screen_infos) {
     if (!base::Contains(screens_, info.display_id,
                         &ScreenDetailed::DisplayId)) {
@@ -94,66 +100,65 @@ void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
     }
   }
 
-  // screens is sorted by dimensions, x first and then y.
+  // Sort `screens_` by position; x first and then y.
   base::ranges::stable_sort(screens_, [](ScreenDetailed* a, ScreenDetailed* b) {
     if (a->left() != b->left())
       return a->left() < b->left();
     return a->top() < b->top();
   });
 
-  // Update current_display_id_ so that currentScreen() is up to date
-  // before we send out any events.
+  // Update current_display_id_ for currentScreen() before event dispatch.
   current_display_id_ = new_infos.current_display_id;
 
-  // (2) At this point, all data structures are up to date.
-  // screens_ has the current set of screens.
-  // current_screen_ has new values pushed to it.
+  // (2) At this point, all web exposed data is updated.
+  // `screens_` has the updated set of screens.
+  // `current_display_id_` has the updated value.
   // (prior to this function) individual ScreenDetailed objects have new values.
-
-  // (3) Send a change event if the current screen has changed.
-  if (prev_screen_infos_.screen_infos.empty() ||
-      prev_screen_infos_.current().display_id !=
-          new_infos.current().display_id ||
-      !ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
-          prev_screen_infos_.current(), new_infos.current())) {
-    DispatchEvent(*Event::Create(event_type_names::kCurrentscreenchange));
-  }
-
-  // (4) Send a change event if the set of screens has changed.
-  if (added_or_removed) {
-    // Allow fullscreen requests shortly after user-generated screens changes.
-    // TODO(enne): consider doing this only when screens have been added.
-    LocalFrame* frame = window->GetFrame();
-    frame->ActivateTransientAllowFullscreen();
-
-    DispatchEvent(*Event::Create(event_type_names::kScreenschange));
-  }
-
-  // (5) Send change events to individual screens if they have changed.
-  // It's not guaranteed that screen_infos are ordered, so for each screen
-  // find the info that corresponds to it in old_info and new_infos.
   //
-  // Note: we cannot use an iterator-based loop here, as iterators may be
-  // invalidated by DispatchEvent(), which may call ContextDestroyed().
-  for (wtf_size_t i = 0; i < screens_.size(); ++i) {
-    const auto& screen = screens_[i];
-    auto id = screen->DisplayId();
-    auto new_it = base::ranges::find(new_infos.screen_infos, id,
-                                     &display::ScreenInfo::display_id);
-    DCHECK(new_it != new_infos.screen_infos.end());
-    auto old_it = base::ranges::find(prev_screen_infos_.screen_infos, id,
-                                     &display::ScreenInfo::display_id);
-    if (old_it != prev_screen_infos_.screen_infos.end() &&
-        !ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(*old_it,
-                                                                    *new_it)) {
-      screen->DispatchEvent(*Event::Create(event_type_names::kChange));
+  // Enqueue events for dispatch if `dispatch_events` is true.
+  // Enqueuing event dispatch avoids recursion if screen changes occur while an
+  // event handler is running a nested event loop, e.g. via window.print().
+  if (dispatch_events) {
+    // Enqueue a change event if the current screen has changed.
+    if (prev_screen_infos_.screen_infos.empty() ||
+        prev_screen_infos_.current().display_id !=
+            new_infos.current().display_id ||
+        !ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
+            prev_screen_infos_.current(), new_infos.current())) {
+      EnqueueEvent(*Event::Create(event_type_names::kCurrentscreenchange),
+                   TaskType::kMiscPlatformAPI);
+    }
 
-      // Note: screen may no longer be valid and screens_ may have been
-      // cleared at this point via DispatchEvent calling ContextDestroyed.
+    // Enqueue a change event if screens were added or removed.
+    if (added_or_removed) {
+      // Allow fullscreen requests shortly after user-generated screens changes.
+      // TODO(enne): consider doing this only when screens have been added.
+      window->GetFrame()->ActivateTransientAllowFullscreen();
+
+      EnqueueEvent(*Event::Create(event_type_names::kScreenschange),
+                   TaskType::kMiscPlatformAPI);
+    }
+
+    // Enqueue change events for any individual screens that changed.
+    // It's not guaranteed that screen_infos are ordered, so for each screen
+    // find the info that corresponds to it in old_info and new_infos.
+    for (Member<ScreenDetailed>& screen : screens_) {
+      auto id = screen->DisplayId();
+      auto new_it = base::ranges::find(new_infos.screen_infos, id,
+                                       &display::ScreenInfo::display_id);
+      DCHECK(new_it != new_infos.screen_infos.end());
+      auto old_it = base::ranges::find(prev_screen_infos_.screen_infos, id,
+                                       &display::ScreenInfo::display_id);
+      if (old_it != prev_screen_infos_.screen_infos.end() &&
+          !ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
+              *old_it, *new_it)) {
+        screen->EnqueueEvent(*Event::Create(event_type_names::kChange),
+                             TaskType::kMiscPlatformAPI);
+      }
     }
   }
 
-  // (6) Store screen infos for change comparison next time.
+  // (3) Store screen infos for change comparison next time.
   //
   // Aside: Because ScreenDetailed is a "live" thin wrapper over the ScreenInfo
   // object owned by WidgetBase, WidgetBase's copy needs to be updated

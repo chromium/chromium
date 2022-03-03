@@ -43,12 +43,18 @@ class MODULES_EXPORT ScreenDetails final
 
   void Trace(Visitor*) const override;
 
-  // Called when there is a visual property update with potentially new
-  // multi-screen information.
+  // Called on visual property updates with potentially new screen information.
+  // Update web-exposed data structures and enqueues events for dispatch.
   void UpdateScreenInfos(LocalDOMWindow* window,
                          const display::ScreenInfos& new_infos);
 
  private:
+  // Update web-exposed data structures on screen information changes.
+  // Enqueues events for dispatch if `dispatch_events` is true.
+  void UpdateScreenInfosImpl(LocalDOMWindow* window,
+                             const display::ScreenInfos& new_infos,
+                             bool dispatch_events);
+
   // Returns the first unused index, starting at one.  Internal and external
   // are numbered separately.  This is used for ScreenDetailed::label strings.
   uint32_t GetNewLabelIdx(bool is_internal);
