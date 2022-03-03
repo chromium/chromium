@@ -6329,6 +6329,12 @@ static_library("browser") {
       "//printing/backend",
     ]
 
+    if (!is_android) {
+      sources += [
+        "printing/print_error_dialog.cc",
+        "printing/print_error_dialog.h",
+      ]
+    }
     if (is_win) {
       sources += [
         "printing/pdf_to_emf_converter.cc",
@@ -6375,8 +6381,6 @@ static_library("browser") {
         "printing/pdf_nup_converter_client.h",
         "printing/prefs_util.cc",
         "printing/prefs_util.h",
-        "printing/print_error_dialog.cc",
-        "printing/print_error_dialog.h",
         "printing/print_preview_context_menu_observer.cc",
         "printing/print_preview_context_menu_observer.h",
         "printing/print_preview_data_service.cc",

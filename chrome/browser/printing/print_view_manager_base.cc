@@ -61,8 +61,11 @@
 #include "printing/printing_features.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/printing/print_error_dialog.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_view_manager.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -687,7 +690,7 @@ void PrintViewManagerBase::PrintingFailed(int32_t cookie) {
 
   PrintManager::PrintingFailed(cookie);
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
   ShowPrintErrorDialog();
 #endif
 
