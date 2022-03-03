@@ -903,6 +903,12 @@ gfx::Rect PagedAppsGridView::GetBackgroundCardBoundsForTesting(
   return gfx::Rect(origin_in_apps_grid, bounds_in_items_container.size());
 }
 
+ui::Layer* PagedAppsGridView::GetBackgroundCardLayerForTesting(
+    size_t card_index) const {
+  DCHECK_LT(card_index, background_cards_.size());
+  return background_cards_[card_index].get();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // private:
 
@@ -1448,6 +1454,12 @@ int PagedAppsGridView::GetTotalTopPaddingOnFirstPage() const {
   // apps.
   return first_page_offset_ +
          (shown_under_recent_apps_ ? 2 * first_page_vertical_tile_padding_ : 0);
+}
+
+void PagedAppsGridView::StackCardsAtBottom() {
+  for (size_t i = 0; i < background_cards_.size(); ++i) {
+    items_container()->layer()->StackAtBottom(background_cards_[i].get());
+  }
 }
 
 }  // namespace ash

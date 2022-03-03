@@ -2843,6 +2843,10 @@ void AppsGridView::CreateGhostImageView() {
   current_ghost_view_ =
       items_container_->AddChildView(std::move(current_ghost_view));
   current_ghost_view_->FadeIn();
+
+  // Adding the ghost view can reorder the child layers of the
+  // |items_container_| so make sure the background cards remain at the bottom.
+  StackCardsAtBottom();
 }
 
 void AppsGridView::BeginHideCurrentGhostImageView() {

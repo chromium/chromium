@@ -159,6 +159,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Returns bounds within the apps grid view for the background card layer
   // with provided card index.
   gfx::Rect GetBackgroundCardBoundsForTesting(size_t card_index);
+  ui::Layer* GetBackgroundCardLayerForTesting(size_t card_index) const;
   void set_page_flip_delay_for_testing(base::TimeDelta page_flip_delay) {
     page_flip_delay_ = page_flip_delay;
   }
@@ -342,6 +343,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // A margin added to the height of the clip rect used for clipping the
   // cardified state's background cards.
   int margin_for_gradient_mask_ = 0;
+
+  void StackCardsAtBottom() override;
 
   // If true, ignore the calls on `UpdateOpacity()`.
   bool lock_opacity_ = false;

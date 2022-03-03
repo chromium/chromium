@@ -452,6 +452,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // that carries a closure to re-enable opacity updates.
   [[nodiscard]] virtual base::ScopedClosureRunner LockAppsGridOpacity() = 0;
 
+  // Makes sure that the background cards render behind everything
+  // else in the items container.
+  virtual void StackCardsAtBottom() {}
+
   // Sets the max number of columns that the grid can have.
   // For root apps grid view, the grid size depends on the space available to
   // apps grid view only, and `cols()` will match `max_columns`. I.e. if the

@@ -33,6 +33,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/expand_arrow_view.h"
+#include "ash/app_list/views/ghost_image_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -504,6 +505,14 @@ class AppsGridViewTest : public AshTestBase {
       ASSERT_NE(items_container->children().cend(), app_iter);
       EXPECT_EQ(view_model->view_at(i), *app_iter);
     }
+  }
+
+  views::View* GetItemsContainer() {
+    return apps_grid_view_->items_container();
+  }
+
+  views::View* GetCurrentGhostImageView() {
+    return apps_grid_view_->current_ghost_view_;
   }
 
   // Calls the private method.
@@ -4662,6 +4671,41 @@ TEST_F(AppsGridViewTest, CreateANewPageByAddingAppLogsMetrics) {
   histogram_tester.ExpectBucketCount("Apps.AppList.AppsGridAddPage",
                                      AppListPageCreationType::kSyncOrInstall,
                                      1);
+}
+
+// Test that the background cards remain stacked as the bottom layer during
+// an item drag. The adding of views to the apps grid during a drag (e.g. ghost
+// image view) can cause a reorder of layers.
+TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardLayerOrderedAtBottom) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+
+  // Create only one page with two apps.
+  model_->PopulateApps(2);
+
+  // Start cardified apps grid.
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
+                                     paged_apps_grid_view_);
+  ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
+  EXPECT_EQ(nullptr, GetCurrentGhostImageView());
+
+  if (features::IsProductivityLauncherEnabled()) {
+    test_api_->FireReorderTimerAndWaitForAnimationDone();
+    // Check that the ghost image view was created.
+    EXPECT_NE(nullptr, GetCurrentGhostImageView());
+  } else {
+    test_api_->LayoutToIdealBounds();
+  }
+
+  const int kExpectedBackgroundCardCount =
+      features::IsProductivityLauncherEnabled() ? 1 : 2;
+  ASSERT_EQ(kExpectedBackgroundCardCount,
+            paged_apps_grid_view_->BackgroundCardCountForTesting());
+
+  // Check that the first background card layer is stacked at the bottom.
+  EXPECT_EQ(paged_apps_grid_view_->GetBackgroundCardLayerForTesting(0),
+            GetItemsContainer()
+                ->layer()
+                ->children()[kExpectedBackgroundCardCount - 1]);
 }
 
 TEST_P(AppsGridViewCardifiedStateTest, PeekingCardOnLastPage) {
