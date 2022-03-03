@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -297,6 +298,13 @@ LoginEventRecorder::LoginEventRecorder()
   DCHECK(base::CurrentUIThread::IsSet());
   login_time_markers_.reserve(30);
   logout_time_markers_.reserve(30);
+
+  // Remember login events for later retrieval by tests.
+  constexpr char kKeepLoginEventsForTesting[] = "keep-login-events-for-testing";
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kKeepLoginEventsForTesting)) {
+    PrepareEventCollectionForTesting();  // IN-TEST
+  }
 }
 
 LoginEventRecorder::~LoginEventRecorder() = default;
