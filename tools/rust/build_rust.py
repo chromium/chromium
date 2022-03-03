@@ -35,12 +35,13 @@ TODO(https://crbug.com/1245714): Do a proper 3-stage build
 
 import argparse
 import collections
+import hashlib
 import os
-import sys
 import pipes
 import shutil
 import string
 import subprocess
+import sys
 
 from pathlib import Path
 
@@ -53,9 +54,15 @@ from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
                     LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
 import build
 
-# Trunk on 2/24/2022
-RUST_REVISION = '4b043fa'
+# Trunk on 2/28/2022
+RUST_REVISION = '6343ed'
 RUST_SUB_REVISION = 1
+
+# Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
+# We trust the Rust build system checks, but to ensure it is not tampered with
+# itself check the hash.
+STAGE0_JSON_SHA256 = (
+    'a38b7ea8b8cbdb592b1a7ae8b97fa31746a2bda309597de111be4893a035070d')
 
 PACKAGE_VERSION = '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION,
                                    CLANG_REVISION, CLANG_SUB_REVISION)
@@ -64,6 +71,7 @@ RUST_GIT_URL = 'https://github.com/rust-lang/rust/'
 
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-src')
+STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0.json')
 # Download crates.io dependencies to rust-src subdir (rather than $HOME/.cargo)
 CARGO_HOME_DIR = os.path.join(RUST_SRC_DIR, 'cargo-home')
 RUST_SRC_VERSION_FILE_PATH = os.path.join(RUST_SRC_DIR, 'src', 'version')
@@ -131,6 +139,21 @@ def CheckoutRust(commit, dir):
   sys.exit(1)
 
 
+def VerifyStage0JsonHash():
+  hasher = hashlib.sha256()
+  with open(STAGE0_JSON_PATH, 'rb') as input:
+    hasher.update(input.read())
+  actual_hash = hasher.hexdigest()
+
+  if actual_hash == STAGE0_JSON_SHA256:
+    return
+
+  print('src/stage0.json hash is different than expected!')
+  print('Expected hash: ' + STAGE0_JSON_SHA256)
+  print('Actual hash:   ' + actual_hash)
+  sys.exit(1)
+
+
 def Configure(llvm_libs_root):
   # Read the config.toml template file...
   with open(RUST_CONFIG_TEMPLATE_PATH, 'r') as input:
@@ -192,6 +215,11 @@ def main():
                       action='count',
                       help='run subcommands with verbosity')
   parser.add_argument(
+      '--verify-stage0-hash',
+      action='store_true',
+      help='checkout Rust, verify the stage0 hash, then immediately quit without '
+      'building. Will print the actual hash if different than expected.')
+  parser.add_argument(
       '--skip-checkout',
       action='store_true',
       help='skip Rust git checkout. Useful for trying local changes')
@@ -216,9 +244,6 @@ def main():
       'with --fetch-llvm-libs for local builds.')
   args = parser.parse_args()
 
-  if args.fetch_llvm_libs:
-    UpdatePackage('clang-libs', GetDefaultHostOs())
-
   # Get the LLVM root for libs. We use LLVM_BUILD_DIR tools either way.
   #
   # TODO(https://crbug.com/1245714): use LTO libs from LLVM_BUILD_DIR for
@@ -228,13 +253,22 @@ def main():
   else:
     llvm_libs_root = build.LLVM_BOOTSTRAP_DIR
 
+  if not args.skip_checkout:
+    CheckoutRust(RUST_REVISION, RUST_SRC_DIR)
+
+  VerifyStage0JsonHash()
+  if args.verify_stage0_hash:
+    # The above function exits and prints the actual hash if verification failed
+    # so we just quit here; if we reach this point, the hash is valid.
+    return 0
+
+  if args.fetch_llvm_libs:
+    UpdatePackage('clang-libs', GetDefaultHostOs())
+
   # Fetch GCC package to build against same libstdc++ as Clang. This function
   # will only download it if necessary.
   args.gcc_toolchain = None
   build.MaybeDownloadHostGcc(args)
-
-  if not args.skip_checkout:
-    CheckoutRust(RUST_REVISION, RUST_SRC_DIR)
 
   # Delete vendored sources and .cargo subdir. Otherwise when updating an
   # existing checkout, vendored sources will not be re-fetched leaving deps out
@@ -281,6 +315,8 @@ def main():
     with open(VERSION_STAMP_PATH, 'w') as stamp:
       stamp.write('rustc %s-dev (%s chromium)\n' %
                   (rust_version, PACKAGE_VERSION))
+
+  return 0
 
 
 if __name__ == '__main__':
