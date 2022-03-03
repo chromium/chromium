@@ -50,7 +50,7 @@ class IntegerToStringConverter {
     // We need to switch to the unsigned type when negating the value since
     // abs(INT_MIN) == INT_MAX + 1.
     bool is_negative = base::IsValueNegative(input);
-    UnsignedIntegerType value = is_negative ? 0u - input : input;
+    UnsignedIntegerType value = is_negative ? 0u - static_cast<UnsignedIntegerType>(input) : input;
 
     do {
       --begin_;
