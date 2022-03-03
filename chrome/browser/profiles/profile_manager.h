@@ -41,6 +41,7 @@ class AccountProfileMapper;
 class ProfileAttributesStorage;
 enum class ProfileKeepAliveOrigin;
 class ProfileManagerObserver;
+class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
 
 // Manages the lifecycle of Profile objects.
@@ -545,15 +546,17 @@ class ProfileManager : public Profile::Delegate {
     raw_ptr<ProfileManager> profile_manager_;
   };
 
-  // If the |loaded_profile| has been loaded successfully (according to
-  // |status|) and isn't already scheduled for deletion, then finishes adding
-  // |profile_to_delete_dir| to the queue of profiles to be deleted, and updates
+  // If the `loaded_profile` has been loaded successfully (according to
+  // `status`) and isn't already scheduled for deletion, then finishes adding
+  // `profile_to_delete_dir` to the queue of profiles to be deleted, and updates
   // the kProfileLastUsed preference based on
-  // |last_non_supervised_profile_path|.
+  // `last_non_supervised_profile_path`. `keep_alive` may be null and is used
+  // to ensure shutdown does not start.
   void OnNewActiveProfileLoaded(
       const base::FilePath& profile_to_delete_path,
       const base::FilePath& last_non_supervised_profile_path,
       ProfileLoadedCallback* callback,
+      ScopedKeepAlive* keep_alive,
       Profile* loaded_profile,
       Profile::CreateStatus status);
 

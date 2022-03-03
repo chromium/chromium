@@ -60,10 +60,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "PANEL";
     case KeepAliveOrigin::PANEL_VIEW:
       return out << "PANEL_VIEW";
-    case KeepAliveOrigin::PROFILE_HELPER:
-      return out << "PROFILE_HELPER";
-    case KeepAliveOrigin::PROFILE_LOADER:
-      return out << "PROFILE_LOADER";
+    case KeepAliveOrigin::PROFILE_MANAGER:
+      return out << "PROFILE_MANAGER";
     case KeepAliveOrigin::USER_MANAGER_VIEW:
       return out << "USER_MANAGER_VIEW";
     case KeepAliveOrigin::CREDENTIAL_PROVIDER_SIGNIN_DIALOG:

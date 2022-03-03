@@ -134,6 +134,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/live_caption/live_caption_controller.h"
 #endif
 
@@ -1973,8 +1975,8 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
     base::FilePath cur_path = profile->GetPath();
     if (cur_path != profile_dir && cur_path != guest_profile_path &&
         !IsProfileDirectoryMarkedForDeletion(cur_path)) {
-      OnNewActiveProfileLoaded(profile_dir, cur_path, &callback, profile,
-                               Profile::CREATE_STATUS_INITIALIZED);
+      OnNewActiveProfileLoaded(profile_dir, cur_path, &callback, nullptr,
+                               profile, Profile::CREATE_STATUS_INITIALIZED);
       return;
     }
   }
@@ -2004,6 +2006,12 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
         ProfileMetrics::ADD_NEW_USER_LAST_DELETED);
   }
 
+  // When this is called all browser windows may be about to be destroyed
+  // (but still exist in BrowserList), which means shutdown may be about to
+  // start. Use a KeepAlive to ensure shutdown doesn't start.
+  std::unique_ptr<ScopedKeepAlive> keep_alive =
+      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::PROFILE_MANAGER,
+                                        KeepAliveRestartOption::DISABLED);
   // Create and/or load fallback profile.
   CreateProfileAsync(
       fallback_profile_path,
@@ -2013,7 +2021,8 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
           // OnNewActiveProfileLoaded may be called several times, but
           // only once with CREATE_STATUS_INITIALIZED.
           base::Owned(
-              std::make_unique<ProfileLoadedCallback>(std::move(callback)))));
+              std::make_unique<ProfileLoadedCallback>(std::move(callback))),
+          base::Owned(std::move(keep_alive))));
 }
 
 void ProfileManager::OnLoadProfileForProfileDeletion(
@@ -2462,6 +2471,7 @@ void ProfileManager::OnNewActiveProfileLoaded(
     const base::FilePath& profile_to_delete_path,
     const base::FilePath& new_active_profile_path,
     ProfileLoadedCallback* callback,
+    ScopedKeepAlive* keep_alive,
     Profile* loaded_profile,
     Profile::CreateStatus status) {
   DCHECK_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);

@@ -17,20 +17,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
 namespace webui {
-namespace {
-
-void DeleteProfileCallback(std::unique_ptr<ScopedKeepAlive> keep_alive,
-                           Profile* profile) {
-  OpenNewWindowForProfile(profile);
-}
-
-}  // namespace
 
 void OpenNewWindowForProfile(Profile* profile) {
   if (profiles::IsProfileLocked(profile->GetPath())) {
@@ -64,12 +54,7 @@ void DeleteProfileAtPath(base::FilePath file_path,
   if (!profiles::IsMultipleProfilesEnabled())
     return;
   g_browser_process->profile_manager()->MaybeScheduleProfileForDeletion(
-      file_path,
-      base::BindOnce(
-          &DeleteProfileCallback,
-          std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::PROFILE_HELPER,
-                                            KeepAliveRestartOption::DISABLED)),
-      deletion_source);
+      file_path, base::BindOnce(&OpenNewWindowForProfile), deletion_source);
 }
 
 }  // namespace webui
