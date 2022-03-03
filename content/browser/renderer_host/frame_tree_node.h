@@ -121,6 +121,9 @@ class CONTENT_EXPORT FrameTreeNode {
   Navigator& navigator() { return frame_tree()->navigator(); }
 
   RenderFrameHostManager* render_manager() { return &render_manager_; }
+  const RenderFrameHostManager* render_manager() const {
+    return &render_manager_;
+  }
   int frame_tree_node_id() const { return frame_tree_node_id_; }
   const std::string& frame_name() const {
     return render_manager_.current_replication_state().name;
@@ -456,7 +459,8 @@ class CONTENT_EXPORT FrameTreeNode {
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
   void WriteIntoTrace(
-      perfetto::TracedProto<perfetto::protos::pbzero::FrameTreeNodeInfo> proto);
+      perfetto::TracedProto<perfetto::protos::pbzero::FrameTreeNodeInfo> proto)
+      const;
 
   // Returns true the node is navigating, i.e. it has an associated
   // NavigationRequest.

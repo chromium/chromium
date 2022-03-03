@@ -782,7 +782,8 @@ void FrameTreeNode::WriteIntoTrace(perfetto::TracedValue context) const {
 }
 
 void FrameTreeNode::WriteIntoTrace(
-    perfetto::TracedProto<perfetto::protos::pbzero::FrameTreeNodeInfo> proto) {
+    perfetto::TracedProto<perfetto::protos::pbzero::FrameTreeNodeInfo> proto)
+    const {
   proto->set_is_main_frame(IsMainFrame());
   proto->set_frame_tree_node_id(frame_tree_node_id());
   proto->set_has_speculative_render_frame_host(
