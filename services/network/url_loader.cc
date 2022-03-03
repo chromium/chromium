@@ -2290,9 +2290,12 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb(
   // Send empty body to the real URLLoaderClient.
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  CHECK_EQ(mojo::CreateDataPipe(kBlockedBodyAllocationSize, producer_handle,
-                                consumer_handle),
-           MOJO_RESULT_OK);
+  MojoResult result = mojo::CreateDataPipe(kBlockedBodyAllocationSize,
+                                           producer_handle, consumer_handle);
+  if (result != MOJO_RESULT_OK) {
+    NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
+    return kWillCancelRequest;
+  }
   producer_handle.reset();
 
   if (base::FeatureList::IsEnabled(features::kCombineResponseBody)) {
