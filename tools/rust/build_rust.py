@@ -64,6 +64,8 @@ RUST_GIT_URL = 'https://github.com/rust-lang/rust/'
 
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-src')
+# Download crates.io dependencies to rust-src subdir (rather than $HOME/.cargo)
+CARGO_HOME_DIR = os.path.join(RUST_SRC_DIR, 'cargo-home')
 RUST_SRC_VERSION_FILE_PATH = os.path.join(RUST_SRC_DIR, 'src', 'version')
 RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
 RUST_TOOLCHAIN_LIB_DIR = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib')
@@ -148,6 +150,8 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
   ''' Run x.py, Rust's build script'''
   clang_path = os.path.join(LLVM_BUILD_DIR, 'bin', 'clang')
   RUSTENV = collections.defaultdict(str, os.environ)
+  # Cargo normally stores files in $HOME. Override this.
+  RUSTENV['CARGO_HOME'] = CARGO_HOME_DIR
   RUSTENV['AR'] = os.path.join(LLVM_BUILD_DIR, 'bin', 'llvm-ar')
   RUSTENV['CC'] = clang_path
   RUSTENV['CXX'] = os.path.join(LLVM_BUILD_DIR, 'bin', 'clang++')
@@ -243,31 +247,33 @@ def main():
   Configure(llvm_libs_root)
 
   if not args.skip_clean:
+    print('Cleaning build artifacts...')
     RunXPy('clean', [], args.gcc_toolchain, args.verbose)
+
+  if not args.skip_test:
+    print('Running stage 2 tests...')
+    # Run a subset of tests. Tell x.py to keep the rustc we already built.
+    RunXPy('test',
+           ['--stage', '2', 'library/std', 'src/test/codegen', 'src/test/ui'],
+           args.gcc_toolchain, args.verbose)
 
   targets = [
       'library/proc_macro', 'library/std', 'src/tools/cargo',
       'src/tools/clippy', 'src/tools/rustfmt'
   ]
 
-  # Build stage 1 compiler and tools.
-  RunXPy('build', ['--stage', '1'] + targets, args.gcc_toolchain, args.verbose)
-
-  if not args.skip_test:
-    # Run a subset of tests. Tell x.py to keep the rustc we already built.
-    RunXPy('test', [
-        '--stage', '1', '--keep-stage', '1', 'library/std', 'src/test/codegen',
-        'src/test/ui'
-    ], args.gcc_toolchain, args.verbose)
+  # Build stage 2 compiler, tools, and libraries. This should reuse earlier
+  # stages from the test command (if run).
+  print('Building stage 2 artifacts...')
+  RunXPy('build', ['--stage', '2'] + targets, args.gcc_toolchain, args.verbose)
 
   if not args.skip_install:
+    print(f'Installing to {RUST_TOOLCHAIN_OUT_DIR} ...')
     # Clean output directory.
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
       shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
 
-    RunXPy('install',
-           ['--stage', '1', '--keep-stage', '1'] + DISTRIBUTION_ARTIFACTS,
-           args.gcc_toolchain, args.verbose)
+    RunXPy('install', DISTRIBUTION_ARTIFACTS, args.gcc_toolchain, args.verbose)
 
     # Write expected `rustc --version` string to our toolchain directory.
     with open(RUST_SRC_VERSION_FILE_PATH) as version_file:
