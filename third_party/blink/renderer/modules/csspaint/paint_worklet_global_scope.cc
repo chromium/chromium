@@ -147,6 +147,12 @@ void PaintWorkletGlobalScope::Dispose() {
         ScriptController()->GetScriptState());
   }
   WorkletGlobalScope::Dispose();
+
+  if (WTF::IsMainThread()) {
+    // For off-the-main-thread paint worklet, this will be called in
+    // WorkerThread::PrepareForShutdownOnWorkerThread().
+    NotifyContextDestroyed();
+  }
 }
 
 void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
