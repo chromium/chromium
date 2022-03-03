@@ -157,6 +157,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void OnReportStored(CreateReportResult result);
 
+  void MaybeSendDebugReport(AttributionReport&&);
+
   void NotifySourcesChanged();
   void NotifyReportsChanged();
   void NotifySourceDeactivated(const DeactivatedSource& source);

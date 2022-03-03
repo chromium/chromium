@@ -25,6 +25,7 @@ class AttributionReportSender {
 
   // Sends `report` and runs `sent_callback` when done.
   virtual void SendReport(AttributionReport report,
+                          bool is_debug_report,
                           ReportSentCallback sent_callback) = 0;
 };
 

@@ -173,8 +173,10 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest,
        GetWithNoMatchingImpressions_NoImpressionsReturned) {
-  EXPECT_EQ(AttributionTrigger::Result::kNoMatchingImpressions,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
+              AllOf(CreateReportStatusIs(
+                        AttributionTrigger::Result::kNoMatchingImpressions),
+                    NewReportIs(absl::nullopt)));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
 
@@ -1791,6 +1793,15 @@ TEST_F(AttributionStorageTest, AttributionAggregatableSources_RoundTrips) {
       SourceBuilder().SetAggregatableSources(*aggregatable_sources).Build());
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(AggregatableSourcesAre(*aggregatable_sources)));
+}
+
+TEST_F(AttributionStorageTest, MaybeCreateAndStoreReport_ReturnsNewReport) {
+  storage()->StoreSource(SourceBuilder(base::Time::Now()).Build());
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          TriggerBuilder().SetTriggerData(123).Build()),
+      AllOf(CreateReportStatusIs(AttributionTrigger::Result::kSuccess),
+            NewReportIs(Optional(EventLevelDataIs(TriggerDataIs(123))))));
 }
 
 // This is tested more thoroughly by the `RateLimitTable` unit tests. Here just

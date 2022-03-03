@@ -27,7 +27,7 @@ namespace content {
 class AttributionReport;
 class StoragePartition;
 
-// Issues POST requests containing attribution reoprts. Maintains a set of all
+// Issues POST requests containing attribution reports. Maintains a set of all
 // ongoing UrlLoaders used for posting reports. Created and owned by
 // `AttributionManagerImpl`.
 class CONTENT_EXPORT AttributionReportNetworkSender
@@ -43,12 +43,9 @@ class CONTENT_EXPORT AttributionReportNetworkSender
       delete;
   ~AttributionReportNetworkSender() override;
 
-  // Generates a resource request for |report| and creates a new UrlLoader to
-  // send it. A report is only attempted to be sent once, with a timeout of 30
-  // seconds.
-  // |sent_callback| is run after the request finishes, whether or not it
-  // succeeded,
+  // AttributionReportSender:
   void SendReport(AttributionReport report,
+                  bool is_debug_report,
                   ReportSentCallback sent_callback) override;
 
   // Tests inject a TestURLLoaderFactory so they can mock the network response.
@@ -62,6 +59,7 @@ class CONTENT_EXPORT AttributionReportNetworkSender
   // Called when headers are available for a sent report.
   void OnReportSent(UrlLoaderList::iterator it,
                     AttributionReport report,
+                    bool is_debug_report,
                     ReportSentCallback sent_callback,
                     scoped_refptr<net::HttpResponseHeaders> headers);
 

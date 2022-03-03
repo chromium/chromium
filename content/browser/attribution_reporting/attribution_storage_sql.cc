@@ -883,7 +883,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
           ? AttributionTrigger::Result::kSuccessDroppedLowerPriority
           : AttributionTrigger::Result::kSuccess,
       std::move(replaced_report),
-      /*dropped_report_source_deactivation_reason=*/absl::nullopt, report_time);
+      /*dropped_report_source_deactivation_reason=*/absl::nullopt,
+      std::move(report));
 }
 
 bool AttributionStorageSql::StoreReport(

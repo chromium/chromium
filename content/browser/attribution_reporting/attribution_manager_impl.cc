@@ -432,7 +432,10 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
   RecordCreateReportStatus(result.status());
 
-  scheduler_.ScheduleSend(result.report_time());
+  if (absl::optional<AttributionReport>& new_report = result.new_report()) {
+    scheduler_.ScheduleSend(new_report->report_time());
+    MaybeSendDebugReport(std::move(*new_report));
+  }
 
   if (result.status() != AttributionTrigger::Result::kInternalError) {
     // Sources are changed here because storing a report can cause sources to be
@@ -448,6 +451,18 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
 
   for (auto& observer : observers_)
     observer.OnTriggerHandled(result);
+}
+
+void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
+  const AttributionInfo& attribution_info = report.attribution_info();
+  if (!attribution_info.debug_key ||
+      !attribution_info.source.common_info().debug_key()) {
+    return;
+  }
+
+  // We don't fire observer callbacks or delete from storage for debug reports.
+  report_sender_->SendReport(std::move(report), /*is_debug_report=*/true,
+                             base::DoNothing());
 }
 
 void AttributionManagerImpl::GetActiveSourcesForWebUI(
@@ -594,6 +609,7 @@ void AttributionManagerImpl::SendReport(AttributionReport report,
                                         base::OnceClosure done) {
   report_sender_->SendReport(
       std::move(report),
+      /*is_debug_report=*/false,
       base::BindOnce(&AttributionManagerImpl::OnReportSent,
                      weak_factory_.GetWeakPtr(), std::move(done)));
 }

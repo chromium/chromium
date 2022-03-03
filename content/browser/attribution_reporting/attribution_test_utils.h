@@ -760,6 +760,10 @@ MATCHER_P(DeactivatedSourceIs, matcher, "") {
                             result_listener);
 }
 
+MATCHER_P(NewReportIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.new_report(), result_listener);
+}
+
 struct AttributionFilterSizeTestCase {
   const char* description;
   bool valid;

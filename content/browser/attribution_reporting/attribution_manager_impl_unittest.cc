@@ -117,12 +117,22 @@ class MockReportSender : public AttributionReportSender {
  public:
   // AttributionReportSender:
   void SendReport(AttributionReport report,
+                  bool is_debug_report,
                   ReportSentCallback callback) override {
-    calls_.push_back(report);
+    if (is_debug_report) {
+      debug_calls_.push_back(report);
+    } else {
+      calls_.push_back(report);
+    }
+
     callbacks_.emplace_back(std::move(report), std::move(callback));
   }
 
   const std::vector<AttributionReport>& calls() const { return calls_; }
+
+  const std::vector<AttributionReport>& debug_calls() const {
+    return debug_calls_;
+  }
 
   void RunCallback(size_t index, SendResult::Status status) {
     std::move(callbacks_[index].second)
@@ -132,6 +142,7 @@ class MockReportSender : public AttributionReportSender {
 
   void Reset() {
     calls_.clear();
+    debug_calls_.clear();
     callbacks_.clear();
   }
 
@@ -153,6 +164,7 @@ class MockReportSender : public AttributionReportSender {
 
  private:
   std::vector<AttributionReport> calls_;
+  std::vector<AttributionReport> debug_calls_;
   std::vector<std::pair<AttributionReport, ReportSentCallback>> callbacks_;
 };
 
@@ -1490,6 +1502,58 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
         ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(absl::nullopt)),
                           TriggerDebugKeyIs(test_case.expected_debug_key))))
         << test_case.name;
+
+    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
+                                    base::NullCallback(), base::DoNothing());
+  }
+}
+
+TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
+  const auto reporting_origin = url::Origin::Create(GURL("https://r1.test"));
+
+  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
+
+  const struct {
+    const char* name;
+    absl::optional<uint64_t> source_debug_key;
+    absl::optional<uint64_t> trigger_debug_key;
+    bool send_expected;
+  } kTestCases[] = {
+      {"neither", absl::nullopt, absl::nullopt, false},
+      {"source", 1, absl::nullopt, false},
+      {"trigger", absl::nullopt, 1, false},
+      {"both", 1, 2, true},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(reporting_origin)
+            .SetExpiry(kImpressionExpiry)
+            .SetDebugKey(test_case.source_debug_key)
+            .Build());
+
+    EXPECT_THAT(StoredSources(), SizeIs(1)) << test_case.name;
+
+    attribution_manager_->HandleTrigger(
+        TriggerBuilder()
+            .SetReportingOrigin(reporting_origin)
+            .SetDebugKey(test_case.trigger_debug_key)
+            .Build());
+    EXPECT_THAT(StoredReports(), SizeIs(1)) << test_case.name;
+
+    EXPECT_THAT(report_sender_->calls(), IsEmpty()) << test_case.name;
+
+    if (test_case.send_expected) {
+      EXPECT_THAT(
+          report_sender_->debug_calls(),
+          ElementsAre(AllOf(
+              ReportSourceIs(SourceDebugKeyIs(test_case.source_debug_key)),
+              TriggerDebugKeyIs(test_case.trigger_debug_key))))
+          << test_case.name;
+    } else {
+      EXPECT_THAT(report_sender_->debug_calls(), IsEmpty());
+    }
 
     attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
                                     base::NullCallback(), base::DoNothing());

@@ -51,6 +51,7 @@ AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
 
 void AttributionReportNetworkSender::SendReport(
     AttributionReport report,
+    bool is_debug_report,
     ReportSentCallback sent_callback) {
   // The browser process URLLoaderFactory is not created by default, so don't
   // create it until it is directly needed.
@@ -60,7 +61,7 @@ void AttributionReportNetworkSender::SendReport(
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = report.ReportURL();
+  resource_request->url = report.ReportURL(is_debug_report);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags =
@@ -123,7 +124,7 @@ void AttributionReportNetworkSender::SendReport(
       url_loader_factory_.get(),
       base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
                      base::Unretained(this), std::move(it), std::move(report),
-                     std::move(sent_callback)));
+                     is_debug_report, std::move(sent_callback)));
 }
 
 void AttributionReportNetworkSender::SetURLLoaderFactoryForTesting(
@@ -134,6 +135,7 @@ void AttributionReportNetworkSender::SetURLLoaderFactoryForTesting(
 void AttributionReportNetworkSender::OnReportSent(
     UrlLoaderList::iterator it,
     AttributionReport report,
+    bool is_debug_report,
     ReportSentCallback sent_callback,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   network::SimpleURLLoader* loader = it->get();
@@ -149,16 +151,20 @@ void AttributionReportNetworkSender::OnReportSent(
       internal_ok && external_ok
           ? Status::kOk
           : !internal_ok ? Status::kInternalError : Status::kExternalError;
-  base::UmaHistogramEnumeration("Conversions.ReportStatus", status);
 
-  // Since net errors are always negative and HTTP errors are always positive,
-  // it is fine to combine these in a single histogram.
-  base::UmaHistogramSparse("Conversions.Report.HttpResponseOrNetErrorCode",
-                           internal_ok ? response_code : net_error);
+  // TODO(apaseltiner): Consider recording separate metrics for debug reports.
+  if (!is_debug_report) {
+    base::UmaHistogramEnumeration("Conversions.ReportStatus", status);
 
-  if (loader->GetNumRetries() > 0) {
-    base::UmaHistogramBoolean("Conversions.ReportRetrySucceed",
-                              status == Status::kOk);
+    // Since net errors are always negative and HTTP errors are always positive,
+    // it is fine to combine these in a single histogram.
+    base::UmaHistogramSparse("Conversions.Report.HttpResponseOrNetErrorCode",
+                             internal_ok ? response_code : net_error);
+
+    if (loader->GetNumRetries() > 0) {
+      base::UmaHistogramBoolean("Conversions.ReportRetrySucceed",
+                                status == Status::kOk);
+    }
   }
 
   loaders_in_progress_.erase(it);

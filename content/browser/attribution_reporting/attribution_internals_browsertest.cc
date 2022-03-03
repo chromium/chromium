@@ -455,7 +455,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::Result::kSuccess, /*dropped_report=*/absl::nullopt,
       /*dropped_report_source_deactivation_reason=*/absl::nullopt,
-      /*report_time=*/base::Time()));
+      /*new_report=*/
+      ReportBuilder(
+          AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+          .Build()));
 
   // These shouldn't result in a row, as `CreateReportResult::dropped_report()`
   // is null.

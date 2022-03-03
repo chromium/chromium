@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -96,22 +97,28 @@ AttributionReport& AttributionReport::operator=(AttributionReport&& other) =
 
 AttributionReport::~AttributionReport() = default;
 
-GURL AttributionReport::ReportURL() const {
+GURL AttributionReport::ReportURL(bool debug) const {
+  static constexpr char kBasePath[] = "/.well-known/attribution-reporting/";
+  static constexpr char kDebugPath[] = "debug/";
+
   struct Visitor {
     const char* operator()(const EventLevelData&) {
-      static constexpr char kEventEndpointPath[] =
-          "/.well-known/attribution-reporting/report-event-attribution";
+      static constexpr char kEventEndpointPath[] = "report-event-attribution";
       return kEventEndpointPath;
     }
 
     const char* operator()(const AggregatableContributionData&) {
       static constexpr char kAggregateEndpointPath[] =
-          "/.well-known/attribution-reporting/report-aggregate-attribution";
+          "report-aggregate-attribution";
       return kAggregateEndpointPath;
     }
   };
 
-  const char* path = absl::visit(Visitor{}, data_);
+  const char* endpoint_path = absl::visit(Visitor{}, data_);
+
+  std::string path =
+      base::StrCat({kBasePath, debug ? kDebugPath : "", endpoint_path});
+
   GURL::Replacements replacements;
   replacements.SetPathStr(path);
   return attribution_info_.source.common_info()

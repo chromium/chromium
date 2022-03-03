@@ -107,7 +107,7 @@ class CONTENT_EXPORT AttributionReport {
   ~AttributionReport();
 
   // Returns the URL to which the report will be sent.
-  GURL ReportURL() const;
+  GURL ReportURL(bool debug = false) const;
 
   base::Value ReportBody() const;
 

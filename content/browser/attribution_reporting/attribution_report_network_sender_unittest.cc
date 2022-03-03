@@ -48,6 +48,9 @@ using Checkpoint = ::testing::MockFunction<void(int)>;
 const char kReportUrl[] =
     "https://report.test/.well-known/attribution-reporting/"
     "report-event-attribution";
+const char kDebugReportUrl[] =
+    "https://report.test/.well-known/attribution-reporting/debug/"
+    "report-event-attribution";
 
 AttributionReport DefaultReport() {
   return ReportBuilder(
@@ -88,7 +91,8 @@ class AttributionReportNetworkSenderTest : public testing::Test {
 TEST_F(AttributionReportNetworkSenderTest,
        ConversionReportReceived_NetworkRequestMade) {
   auto report = DefaultReport();
-  network_sender_->SendReport(report, base::DoNothing());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              base::DoNothing());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));
@@ -96,7 +100,8 @@ TEST_F(AttributionReportNetworkSenderTest,
 
 TEST_F(AttributionReportNetworkSenderTest, LoadFlags) {
   auto report = DefaultReport();
-  network_sender_->SendReport(report, base::DoNothing());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              base::DoNothing());
   int load_flags =
       test_url_loader_factory_.GetPendingRequest(0)->request.load_flags;
   EXPECT_TRUE(load_flags & net::LOAD_BYPASS_CACHE);
@@ -105,8 +110,10 @@ TEST_F(AttributionReportNetworkSenderTest, LoadFlags) {
 
 TEST_F(AttributionReportNetworkSenderTest, Isolation) {
   auto report = DefaultReport();
-  network_sender_->SendReport(report, base::DoNothing());
-  network_sender_->SendReport(report, base::DoNothing());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              base::DoNothing());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              base::DoNothing());
 
   const network::ResourceRequest& request1 =
       test_url_loader_factory_.GetPendingRequest(0)->request;
@@ -158,7 +165,8 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
             .SetTriggerData(5)
             .SetRandomizedTriggerRate(0.2)
             .Build();
-    network_sender_->SendReport(report, base::DoNothing());
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
 
     const network::ResourceRequest* pending_request;
     EXPECT_TRUE(
@@ -168,6 +176,60 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, ""));
   }
+}
+
+TEST_F(AttributionReportNetworkSenderTest,
+       DebugReportSent_ReportUrlAndBodySetCorrectly) {
+  static constexpr char kExpectedReportBody[] =
+      R"({"attribution_destination":"https://conversion.test",)"
+      R"("randomized_trigger_rate":0.2,)"
+      R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+      R"("source_event_id":"100",)"
+      R"("source_type":"navigation",)"
+      R"("trigger_data":"5"})";
+
+  auto source = SourceBuilder().SetSourceEventId(100).BuildStored();
+  const AttributionReport report =
+      ReportBuilder(AttributionInfoBuilder(source).Build())
+          .SetTriggerData(5)
+          .SetRandomizedTriggerRate(0.2)
+          .Build();
+
+  network_sender_->SendReport(report, /*is_debug_report=*/true,
+                              base::DoNothing());
+
+  const network::ResourceRequest* pending_request;
+  EXPECT_TRUE(
+      test_url_loader_factory_.IsPending(kDebugReportUrl, &pending_request));
+  EXPECT_EQ(kExpectedReportBody, network::GetUploadData(*pending_request));
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kDebugReportUrl, ""));
+
+  // Verify that debug and non-debug reports have the same body.
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              base::DoNothing());
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kReportUrl, &pending_request));
+  EXPECT_EQ(kExpectedReportBody, network::GetUploadData(*pending_request));
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kReportUrl, ""));
+}
+
+TEST_F(AttributionReportNetworkSenderTest, DebugReportSent_NoMetricsRecorded) {
+  base::HistogramTester histograms;
+
+  auto source = SourceBuilder().BuildStored();
+  AttributionReport report =
+      ReportBuilder(AttributionInfoBuilder(source).Build())
+          .SetTriggerData(5)
+          .SetRandomizedTriggerRate(0.2)
+          .Build();
+  network_sender_->SendReport(report, /*is_debug_report=*/true,
+                              base::DoNothing());
+
+  histograms.ExpectTotalCount("Conversions.ReportStatus", 0);
+  histograms.ExpectTotalCount("Conversions.Report.HttpResponseOrNetErrorCode",
+                              0);
+  histograms.ExpectTotalCount("Conversions.ReportRetrySucceed", 0);
 }
 
 TEST_F(AttributionReportNetworkSenderTest,
@@ -223,7 +285,8 @@ TEST_F(AttributionReportNetworkSenderTest,
             .SetTriggerData(5)
             .SetRandomizedTriggerRate(0.2)
             .Build();
-    network_sender_->SendReport(report, base::DoNothing());
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
 
     const network::ResourceRequest* pending_request;
     EXPECT_TRUE(
@@ -243,7 +306,8 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_RequestAttributesSet) {
           .BuildStored();
   AttributionReport report =
       ReportBuilder(AttributionInfoBuilder(impression).Build()).Build();
-  network_sender_->SendReport(report, base::DoNothing());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              base::DoNothing());
 
   const network::ResourceRequest* pending_request;
   EXPECT_TRUE(test_url_loader_factory_.IsPending(
@@ -264,7 +328,8 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_CallbackFired) {
   EXPECT_CALL(callback_, Run(report, SendResult(SendResult::Status::kSent,
                                                 net::HttpStatusCode::HTTP_OK)));
 
-  network_sender_->SendReport(report, callback_.Get());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              callback_.Get());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));
@@ -274,7 +339,8 @@ TEST_F(AttributionReportNetworkSenderTest, SenderDeletedDuringRequest_NoCrash) {
   EXPECT_CALL(callback_, Run).Times(0);
 
   auto report = DefaultReport();
-  network_sender_->SendReport(report, callback_.Get());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              callback_.Get());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   network_sender_.reset();
   EXPECT_FALSE(test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -290,7 +356,8 @@ TEST_F(AttributionReportNetworkSenderTest, ReportRequestHangs_TimesOut) {
   EXPECT_CALL(callback_,
               Run(report, SendResult(SendResult::Status::kTransientFailure,
                                      /*http_response_code=*/0)));
-  network_sender_->SendReport(report, callback_.Get());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              callback_.Get());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
   // The request should time out after 30 seconds.
@@ -320,7 +387,8 @@ TEST_F(AttributionReportNetworkSenderTest,
     EXPECT_CALL(callback_, Run(report, Field(&SendResult::status,
                                              test_case.expected_status)));
 
-    network_sender_->SendReport(report, callback_.Get());
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                callback_.Get());
     EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
     // By default, headers are not sent for network errors.
@@ -350,7 +418,8 @@ TEST_F(AttributionReportNetworkSenderTest,
   auto report = DefaultReport();
   EXPECT_CALL(callback_, Run(report, SendResult(SendResult::Status::kFailure,
                                                 net::HttpStatusCode::HTTP_OK)));
-  network_sender_->SendReport(report, callback_.Get());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              callback_.Get());
 
   // Ensure the request was replied to.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
@@ -363,7 +432,8 @@ TEST_F(AttributionReportNetworkSenderTest,
               Run(report, SendResult(SendResult::Status::kFailure,
                                      net::HttpStatusCode::HTTP_BAD_REQUEST)));
 
-  network_sender_->SendReport(report, callback_.Get());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              callback_.Get());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -379,7 +449,8 @@ TEST_F(AttributionReportNetworkSenderTest,
     EXPECT_CALL(callback_, Run);
 
     auto report = DefaultReport();
-    network_sender_->SendReport(report, callback_.Get());
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                callback_.Get());
     EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
     // Simulate the request failing due to network change.
@@ -410,7 +481,8 @@ TEST_F(AttributionReportNetworkSenderTest,
     base::HistogramTester histograms;
 
     auto report = DefaultReport();
-    network_sender_->SendReport(report, base::DoNothing());
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
     EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
     // Simulate the request failing due to network change.
@@ -444,7 +516,8 @@ TEST_F(AttributionReportNetworkSenderTest,
                                        net::HttpStatusCode::HTTP_BAD_REQUEST)));
   }
 
-  network_sender_->SendReport(report, callback_.Get());
+  network_sender_->SendReport(report, /*is_debug_report=*/false,
+                              callback_.Get());
   checkpoint.Call(1);
 
   // We should run the sent callback even if there is an http error.
@@ -457,7 +530,8 @@ TEST_F(AttributionReportNetworkSenderTest, ManyReports_AllSentSuccessfully) {
 
   for (int i = 0; i < 10; i++) {
     auto report = DefaultReport();
-    network_sender_->SendReport(report, callback_.Get());
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                callback_.Get());
   }
   EXPECT_EQ(10, test_url_loader_factory_.NumPending());
 
@@ -475,7 +549,8 @@ TEST_F(AttributionReportNetworkSenderTest, ErrorHistogram) {
   {
     base::HistogramTester histograms;
     auto report = DefaultReport();
-    network_sender_->SendReport(report, base::DoNothing());
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, ""));
     // kOk = 0.
@@ -487,7 +562,8 @@ TEST_F(AttributionReportNetworkSenderTest, ErrorHistogram) {
   {
     base::HistogramTester histograms;
     auto report = DefaultReport();
-    network_sender_->SendReport(report, base::DoNothing());
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
     network::URLLoaderCompletionStatus completion_status(net::ERR_FAILED);
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         GURL(kReportUrl), completion_status,
@@ -500,7 +576,8 @@ TEST_F(AttributionReportNetworkSenderTest, ErrorHistogram) {
   {
     base::HistogramTester histograms;
     auto report = DefaultReport();
-    network_sender_->SendReport(report, base::DoNothing());
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                base::DoNothing());
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, "", net::HTTP_UNAUTHORIZED));
     // kExternalError = 2.
