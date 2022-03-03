@@ -10,9 +10,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/service/mock_access_token_fetcher.h"
@@ -271,49 +273,6 @@ TEST_F(ServiceRequestSenderImplTest,
                              autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);
 }
 
-TEST_F(ServiceRequestSenderImplTest,
-       DoesNotCreateInstanceWhenFeatureNotEnabled) {
-  InitCupFeatures(false, false);
-  auto cup_factory =
-      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
-  auto loader_factory =
-      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
-  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
-  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
-      .WillOnce([&](::network::ResourceRequest* resource_request,
-                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
-        EXPECT_FALSE(resource_request->headers.HasHeader("Authorization"));
-        EXPECT_EQ(resource_request->url,
-                  GURL("https://www.example.com/?key=fake_api_key"));
-        return std::move(loader);
-      });
-  EXPECT_CALL(*loader,
-              AttachStringForUpload(std::string("request"),
-                                    std::string("application/x-protobuffer")))
-      .Times(1);
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(std::make_unique<std::string>("response"));
-      }));
-  EXPECT_CALL(*loader, ResponseInfo)
-      .WillRepeatedly(Return(response_info.get()));
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
-
-  EXPECT_CALL(*cup_factory, CreateInstance(_)).Times(0);
-  ServiceRequestSenderImpl request_sender{
-      &context_,
-      /* access_token_fetcher = */ nullptr,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      std::string("fake_api_key"),
-      /* auth_enabled = */ false,
-      /* disable_auth_if_no_access_token = */ true};
-  request_sender.SendRequest(
-      GURL("https://www.example.com"), std::string("request"),
-      mock_response_callback_.Get(), RpcType::GET_ACTIONS);
-}
-
 TEST_F(ServiceRequestSenderImplTest, SignsGetActionsRequestWhenFeatureEnabled) {
   InitCupFeatures(true, false);
   auto cup_factory =
@@ -413,6 +372,288 @@ TEST_F(ServiceRequestSenderImplTest, ValidatesGetActionsResponsesWhenEnabled) {
   request_sender.SendRequest(
       GURL("https://www.example.com"), std::string("request"),
       mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+}
+
+TEST_F(ServiceRequestSenderImplTest, RecordsCupSigningDisabledEvent) {
+  base::HistogramTester histogram_tester;
+  InitCupFeatures(false, false);
+  auto cup_factory =
+      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader, AttachStringForUpload(_, _));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
+      .WillOnce(RunOnceCallback<0>(true, "access_token"));
+
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  ServiceRequestSenderImpl request_sender{
+      &context_,
+      /* access_token_fetcher = */ &mock_access_token_fetcher_,
+      std::move(cup_factory),
+      std::move(loader_factory),
+      /* api_key = */ std::string(""),
+      /* auth_enabled = */ true,
+      /* disable_auth_if_no_access_token = */ true};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::SIGNING_DISABLED, 1);
+}
+
+TEST_F(ServiceRequestSenderImplTest, RecordsCupVerificationDisabledEvent) {
+  base::HistogramTester histogram_tester;
+  InitCupFeatures(true, false);
+  auto cup_factory =
+      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
+  auto cup = std::make_unique<NiceMock<autofill_assistant::cup::MockCUP>>();
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
+      .WillOnce(WithArgs<1>([&](auto&& callback) {
+        std::move(callback).Run(std::make_unique<std::string>("response"));
+      }));
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+
+  EXPECT_CALL(*cup_factory,
+              CreateInstance(autofill_assistant::RpcType::GET_ACTIONS))
+      .WillOnce([&]() { return std::move(cup); });
+  EXPECT_CALL(*cup, PackAndSignRequest("request"))
+      .WillOnce(Return(std::string("signed_request")));
+  ServiceRequestSenderImpl request_sender{
+      &context_,
+      /* access_token_fetcher = */ nullptr,
+      std::move(cup_factory),
+      std::move(loader_factory),
+      std::string("fake_api_key"),
+      /* auth_enabled = */ false,
+      /* disable_auth_if_no_access_token = */ true};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      mock_response_callback_.Get(), RpcType::GET_ACTIONS);
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::VERIFICATION_DISABLED, 1);
+}
+
+TEST_F(ServiceRequestSenderImplTest, RecordsHttpFailureEventWithCupEnabled) {
+  base::HistogramTester histogram_tester;
+  InitCupFeatures(true, true);
+  auto cup_factory =
+      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
+  auto cup = std::make_unique<NiceMock<autofill_assistant::cup::MockCUP>>();
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto response_info = CreateResponseInfo(net::HTTP_NOT_FOUND, "Not found");
+  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader, AttachStringForUpload(_, _)).Times(1);
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
+      .WillOnce(WithArgs<1>([&](auto&& callback) {
+        std::move(callback).Run(
+            std::make_unique<std::string>("packed_response"));
+      }));
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_NOT_FOUND, ""));
+  EXPECT_CALL(*cup_factory, CreateInstance(_)).WillOnce([&]() {
+    return std::move(cup);
+  });
+  EXPECT_CALL(*cup, PackAndSignRequest("request")).WillOnce([&]() {
+    return "signed_request";
+  });
+
+  ServiceRequestSenderImpl request_sender{
+      &context_,
+      /* access_token_fetcher = */ nullptr,
+      std::move(cup_factory),
+      std::move(loader_factory),
+      std::string("fake_api_key"),
+      /* auth_enabled = */ false,
+      /* disable_auth_if_no_access_token = */ true};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::HTTP_FAILED, 1);
+}
+
+TEST_F(ServiceRequestSenderImplTest, RecordsHttpFailureEventWithCupDisabled) {
+  base::HistogramTester histogram_tester;
+  InitCupFeatures(false, false);
+  auto cup_factory =
+      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
+  auto cup = std::make_unique<NiceMock<autofill_assistant::cup::MockCUP>>();
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto response_info = CreateResponseInfo(net::HTTP_NOT_FOUND, "Not found");
+  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
+      .WillOnce(WithArgs<1>([&](auto&& callback) {
+        std::move(callback).Run(
+            std::make_unique<std::string>("packed_response"));
+      }));
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_NOT_FOUND, ""));
+  EXPECT_CALL(*cup_factory, CreateInstance(_)).WillOnce([&]() {
+    return std::move(cup);
+  });
+
+  ServiceRequestSenderImpl request_sender{
+      &context_,
+      /* access_token_fetcher = */ nullptr,
+      std::move(cup_factory),
+      std::move(loader_factory),
+      std::string("fake_api_key"),
+      /* auth_enabled = */ false,
+      /* disable_auth_if_no_access_token = */ true};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::HTTP_FAILED, 1);
+}
+
+TEST_F(ServiceRequestSenderImplTest,
+       DoesNotRecordCupDisabledEventIfVerificationPerformed) {
+  base::HistogramTester histogram_tester;
+  InitCupFeatures(true, true);
+  auto cup_factory =
+      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
+  auto cup = std::make_unique<NiceMock<autofill_assistant::cup::MockCUP>>();
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader, AttachStringForUpload(_, _));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
+      .WillOnce(WithArgs<1>([&](auto&& callback) {
+        std::move(callback).Run(
+            std::make_unique<std::string>("packed_response"));
+      }));
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(*cup_factory, CreateInstance(_)).WillOnce([&]() {
+    return std::move(cup);
+  });
+  EXPECT_CALL(*cup, PackAndSignRequest("request")).WillOnce([&]() {
+    return "signed_request";
+  });
+  EXPECT_CALL(*cup, UnpackResponse("packed_response")).WillOnce([&]() {
+    return "response";
+  });
+
+  ServiceRequestSenderImpl request_sender{
+      &context_,
+      /* access_token_fetcher = */ nullptr,
+      std::move(cup_factory),
+      std::move(loader_factory),
+      std::string("fake_api_key"),
+      /* auth_enabled = */ false,
+      /* disable_auth_if_no_access_token = */ true};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::SIGNING_DISABLED, 0);
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::HTTP_FAILED, 0);
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::VERIFICATION_DISABLED, 0);
+}
+
+TEST_F(ServiceRequestSenderImplTest, DoesNotRecordCupEventForNonSupportedRpcs) {
+  base::HistogramTester histogram_tester;
+  InitCupFeatures(true, true);
+  auto cup_factory =
+      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader, AttachStringForUpload(_, _));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
+      .WillOnce(WithArgs<1>([&](auto&& callback) {
+        std::move(callback).Run(std::make_unique<std::string>("response"));
+      }));
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
+      .WillOnce(RunOnceCallback<0>(true, "access_token"));
+
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  ServiceRequestSenderImpl request_sender{
+      &context_,
+      /* access_token_fetcher = */ &mock_access_token_fetcher_,
+      std::move(cup_factory),
+      std::move(loader_factory),
+      /* api_key = */ std::string(""),
+      /* auth_enabled = */ true,
+      /* disable_auth_if_no_access_token = */ true};
+  request_sender.SendRequest(GURL("https://www.example.com"),
+                             std::string("request"),
+                             mock_response_callback_.Get(),
+                             autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);
+
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::SIGNING_DISABLED, 0);
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::HTTP_FAILED, 0);
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::VERIFICATION_DISABLED, 0);
 }
 
 // TODO(b/170934170): Add tests for full unit test coverage of

@@ -5760,6 +5760,15 @@ others/histograms.xml -->
   <int value="2" label="Failure"/>
 </enum>
 
+<enum name="AutofillAssistantCupRpcVerificationEvent">
+  <int value="0" label="RPC response verification failure"/>
+  <int value="1" label="RPC response verification success"/>
+  <int value="2" label="Failure parsing the response"/>
+  <int value="3" label="RPC response verification disabled"/>
+  <int value="4" label="RPC request signing disabled"/>
+  <int value="5" label="HTTP error"/>
+</enum>
+
 <enum name="AutofillAssistantDependenciesInvalidated">
   <int value="0" label="Invalidated outside of flow"/>
   <int value="1" label="Invalidated during startup"/>

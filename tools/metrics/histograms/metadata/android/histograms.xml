@@ -224,6 +224,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.AutofillAssistant.CupRpcVerificationEvent"
+    enum="AutofillAssistantCupRpcVerificationEvent" expires_after="2023-02-02">
+  <owner>sergiovila@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    Reports the outcome of the CUP verification process for GetAction RPC calls.
+    CUP verification is used to check whether the actions delivered to the
+    client come from a trusted source. The verification event is recorded after
+    the response is deserialized but before it's actually used in the client.
+  </summary>
+</histogram>
+
 <histogram name="Android.AutofillAssistant.DependenciesInvalidated"
     enum="AutofillAssistantDependenciesInvalidated" expires_after="2022-10-27">
   <owner>fga@google.com</owner>

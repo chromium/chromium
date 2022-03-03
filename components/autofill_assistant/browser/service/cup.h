@@ -22,6 +22,9 @@ bool ShouldSignRequests(RpcType rpc_type);
 // |ShouldSignRequest| returns |false|.
 bool ShouldVerifyResponses(RpcType rpc_type);
 
+// Whether this CUP implementation supports a given |rpc_type|.
+bool IsRpcTypeSupported(RpcType rpc_type);
+
 class CUP {
  public:
   virtual ~CUP() = default;

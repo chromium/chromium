@@ -595,6 +595,39 @@ class Metrics {
     kMaxValue = CHROME_AUTOFILL
   };
 
+  // Outcome of the CUP verification process for GetAction RPC calls. CUP
+  // verification is used to check whether the actions delivered to the client
+  // come from a trusted source, and requires the request from the client to be
+  // signed first. Events are only recorded for RPC calls where we support CUP.
+  //
+  // This verification event is recorded after the response is deserialized but
+  // before it's actually used in the client. This is the case even if the
+  // verification doesn't happen due to the request not being signed in the
+  // first place. HTTP failures are checked before the feature flags for
+  // signing and verification, and therefore a failing HTTP request with
+  // verification disabled will be logged as |HTTP_FAILED|.
+  //
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // CupRpcVerificationEvent enum listing in tools/metrics/histograms/enums.xml.
+  enum class CupRpcVerificationEvent {
+    // Signature doesn't match response or context, message origin cannot be
+    // confirmed.
+    VERIFICATION_FAILED = 0,
+    // Signature correctly matches the response and context.
+    VERIFICATION_SUCCEEDED = 1,
+    // Response parsing failed. Rpc verification won't be performed.
+    PARSING_FAILED = 2,
+    // Response verification is disabled. Rpc verification won't be performed.
+    VERIFICATION_DISABLED = 3,
+    // Request signing is disabled. Rpc verification won't be performed.
+    SIGNING_DISABLED = 4,
+    // HTTP call didn't return "OK" 200. Rpc verification won't be performed.
+    HTTP_FAILED = 5,
+
+    kMaxValue = HTTP_FAILED
+  };
+
   // Used for bitmasks for the InitialContactFieldsStatus,
   // InitialBillingFieldsStatus and InitialShippingFieldsStatus metrics.
   enum AutofillAssistantProfileFields {
@@ -713,6 +746,7 @@ class Metrics {
                                            UserDataSource source);
   static void RecordOnboardingFetcherResult(
       OnboardingFetcherResultStatus status);
+  static void RecordCupRpcVerificationEvent(CupRpcVerificationEvent event);
 
   // Intended for debugging: writes string representation of |reason| to
   // |out|.

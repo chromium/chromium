@@ -3,35 +3,36 @@
 // found in the LICENSE file.
 
 #include "cup_impl.h"
-
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace autofill_assistant {
+
 namespace {
 
 TEST(CUPImplTest, PacksAndSignsGetActionsRequest) {
-  autofill_assistant::cup::CUPImpl cup_{
-      autofill_assistant::cup::CUPImpl::CreateQuerySigner(),
-      autofill_assistant::RpcType::GET_ACTIONS};
-  autofill_assistant::ScriptActionRequestProto user_request;
+  cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(), RpcType::GET_ACTIONS};
+  ScriptActionRequestProto user_request;
   user_request.mutable_client_context()->set_experiment_ids("test");
   std::string user_request_str;
   user_request.SerializeToString(&user_request_str);
 
-  auto packed_request_str = cup_.PackAndSignRequest(user_request_str);
+  auto packed_request_str = cup.PackAndSignRequest(user_request_str);
 
-  autofill_assistant::ScriptActionRequestProto packed_request;
+  ScriptActionRequestProto packed_request;
   EXPECT_TRUE(packed_request.ParseFromString(packed_request_str));
   EXPECT_TRUE(packed_request.client_context().experiment_ids().empty());
   EXPECT_FALSE(packed_request.cup_data().request().empty());
   EXPECT_FALSE(packed_request.cup_data().query_cup2key().empty());
   EXPECT_FALSE(packed_request.cup_data().hash_hex().empty());
 
-  autofill_assistant::ScriptActionRequestProto actual_user_request;
+  ScriptActionRequestProto actual_user_request;
   EXPECT_TRUE(
       actual_user_request.ParseFromString(packed_request.cup_data().request()));
   EXPECT_EQ(actual_user_request.client_context().experiment_ids(), "test");
@@ -39,75 +40,80 @@ TEST(CUPImplTest, PacksAndSignsGetActionsRequest) {
 }
 
 TEST(CUPImplTest, IgnoresNonGetActionsRequest) {
-  autofill_assistant::cup::CUPImpl cup_{
-      autofill_assistant::cup::CUPImpl::CreateQuerySigner(),
-      autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS};
+  cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(),
+                   RpcType::GET_TRIGGER_SCRIPTS};
 
-  EXPECT_EQ(cup_.PackAndSignRequest("a request"), "a request");
+  EXPECT_EQ(cup.PackAndSignRequest("a request"), "a request");
 }
 
-TEST(CUPImplTest, UnpacksTrustedGetActionsResponse) {
-  // TODO(b/203031699): Write test for the successful case.
-}
-
-TEST(CUPImplTest, FailsToUnpackNonTrustedGetActionsResponse) {
-  autofill_assistant::cup::CUPImpl cup_{
-      autofill_assistant::cup::CUPImpl::CreateQuerySigner(),
-      autofill_assistant::RpcType::GET_ACTIONS};
-  autofill_assistant::ScriptActionRequestProto user_request;
-  user_request.mutable_client_context()->set_experiment_ids("123");
+TEST(CUPImplTest, FailsToVerifyNonTrustedGetActionsResponse) {
+  base::HistogramTester histogram_tester;
+  cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(), RpcType::GET_ACTIONS};
+  ScriptActionRequestProto user_request;
   std::string user_request_str;
   user_request.SerializeToString(&user_request_str);
 
-  cup_.PackAndSignRequest(user_request_str);
-  cup_.GetQuerySigner().OverrideNonceForTesting(8, 12345);
+  cup.PackAndSignRequest(user_request_str);
+  cup.GetQuerySigner().OverrideNonceForTesting(8, 12345);
 
-  autofill_assistant::ActionsResponseProto user_response;
-  user_response.set_global_payload("adsf");
-  std::string user_response_str;
-  user_response.SerializeToString(&user_response_str);
   autofill_assistant::ActionsResponseProto packed_response;
-  packed_response.mutable_cup_data()->set_response(user_response_str);
   packed_response.mutable_cup_data()->set_ecdsa_signature("not a signature");
 
-  EXPECT_EQ(cup_.UnpackResponse(user_response_str), absl::nullopt);
+  EXPECT_EQ(cup.UnpackResponse(""), absl::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::VERIFICATION_FAILED, 1);
+}
+
+TEST(CUPImplTest, FailsToParseInvalidProtoResponse) {
+  base::HistogramTester histogram_tester;
+  cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(), RpcType::GET_ACTIONS};
+  ScriptActionRequestProto user_request;
+  std::string user_request_str;
+  user_request.SerializeToString(&user_request_str);
+
+  cup.PackAndSignRequest(user_request_str);
+  cup.GetQuerySigner().OverrideNonceForTesting(8, 12345);
+
+  EXPECT_EQ(cup.UnpackResponse("invalid proto"), absl::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::PARSING_FAILED, 1);
 }
 
 TEST(CUPImplTest, IgnoresNonGetActionsResponse) {
-  autofill_assistant::cup::CUPImpl cup_{
-      autofill_assistant::cup::CUPImpl::CreateQuerySigner(),
-      autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS};
+  cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(),
+                   RpcType::GET_TRIGGER_SCRIPTS};
 
   absl::optional<std::string> unpacked_response =
-      cup_.UnpackResponse("a response");
+      cup.UnpackResponse("a response");
   EXPECT_EQ(*unpacked_response, "a response");
 }
 
 TEST(CUPImplTest, OverridesEcdsaPublicKeyWithCLIValue) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      autofill_assistant::switches::kAutofillAssistantCupPublicKeyBase64,
-      "SGVsbG8=");
-  EXPECT_EQ(autofill_assistant::cup::CUPImpl::GetPublicKey(), "Hello");
+      switches::kAutofillAssistantCupPublicKeyBase64, "SGVsbG8=");
+  EXPECT_EQ(cup::CUPImpl::GetPublicKey(), "Hello");
 }
 
 TEST(CUPImplTest, HasValidEcdsaPublicKeyWithNotValidCLIValue) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      autofill_assistant::switches::kAutofillAssistantCupPublicKeyBase64,
-      "Not valid base64");
-  EXPECT_FALSE(autofill_assistant::cup::CUPImpl::GetPublicKey().empty());
+      switches::kAutofillAssistantCupPublicKeyBase64, "Not valid base64");
+  EXPECT_FALSE(cup::CUPImpl::GetPublicKey().empty());
 }
 
 TEST(CUPImplTest, OverridesEcdsaKeyVersionithCLIValue) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      autofill_assistant::switches::kAutofillAssistantCupKeyVersion, "15");
-  EXPECT_EQ(autofill_assistant::cup::CUPImpl::GetKeyVersion(), 15);
+      switches::kAutofillAssistantCupKeyVersion, "15");
+  EXPECT_EQ(cup::CUPImpl::GetKeyVersion(), 15);
 }
 
 TEST(CUPImplTest, HasValidEcdsaKeyVersionWithNotValidCLIValue) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      autofill_assistant::switches::kAutofillAssistantCupKeyVersion,
-      "Not a number");
-  EXPECT_GT(autofill_assistant::cup::CUPImpl::GetKeyVersion(), -1);
+      switches::kAutofillAssistantCupKeyVersion, "Not a number");
+  EXPECT_GT(cup::CUPImpl::GetKeyVersion(), -1);
 }
 
 }  // namespace
+
+}  // namespace autofill_assistant

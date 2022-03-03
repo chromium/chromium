@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/cup.h"
 #include "components/autofill_assistant/browser/service/cup_impl.h"
@@ -120,11 +121,32 @@ void SendRequestNoAuth(
                   loader_factory, std::move(callback));
 }
 
-void VerifyCupResponse(
+void MaybeVerifyCupResponse(
     std::unique_ptr<autofill_assistant::cup::CUP> cup,
+    autofill_assistant::RpcType rpc_type,
     autofill_assistant::ServiceRequestSender::ResponseCallback callback,
     int http_status,
     const std::string& response) {
+  if (!autofill_assistant::cup::IsRpcTypeSupported(rpc_type)) {
+    return std::move(callback).Run(http_status, response);
+  }
+  if (http_status != net::HTTP_OK) {
+    autofill_assistant::Metrics::RecordCupRpcVerificationEvent(
+        autofill_assistant::Metrics::CupRpcVerificationEvent::HTTP_FAILED);
+    return std::move(callback).Run(http_status, std::string());
+  }
+  if (!autofill_assistant::cup::ShouldSignRequests(rpc_type)) {
+    autofill_assistant::Metrics::RecordCupRpcVerificationEvent(
+        autofill_assistant::Metrics::CupRpcVerificationEvent::SIGNING_DISABLED);
+    return std::move(callback).Run(http_status, response);
+  }
+  if (!autofill_assistant::cup::ShouldVerifyResponses(rpc_type)) {
+    autofill_assistant::Metrics::RecordCupRpcVerificationEvent(
+        autofill_assistant::Metrics::CupRpcVerificationEvent::
+            VERIFICATION_DISABLED);
+    return std::move(callback).Run(http_status, response);
+  }
+
   absl::optional<std::string> unpacked_response = cup->UnpackResponse(response);
   if (!unpacked_response) {
     LOG(ERROR) << "Failed to unpack or verify a response.";
@@ -162,22 +184,21 @@ void ServiceRequestSenderImpl::SendRequest(const GURL& url,
                                            const std::string& request_body,
                                            ResponseCallback callback,
                                            RpcType rpc_type) {
-  if (!cup::ShouldSignRequests(rpc_type)) {
+  if (!cup::IsRpcTypeSupported(rpc_type)) {
     InternalSendRequest(url, request_body, std::move(callback));
     return;
   }
 
-  std::unique_ptr<cup::CUP> cup =
-      cup_factory_->CreateInstance(RpcType::GET_ACTIONS);
-  std::string signed_request = cup->PackAndSignRequest(request_body);
-
-  auto maybe_wrapped_callback = std::move(callback);
-  if (cup::ShouldVerifyResponses(rpc_type)) {
-    maybe_wrapped_callback = base::BindOnce(&VerifyCupResponse, std::move(cup),
-                                            std::move(maybe_wrapped_callback));
+  std::unique_ptr<cup::CUP> cup = cup_factory_->CreateInstance(rpc_type);
+  std::string maybe_signed_request = request_body;
+  if (cup::ShouldSignRequests(rpc_type)) {
+    maybe_signed_request = cup->PackAndSignRequest(request_body);
   }
 
-  InternalSendRequest(url, signed_request, std::move(maybe_wrapped_callback));
+  auto wrapped_callback = base::BindOnce(
+      &MaybeVerifyCupResponse, std::move(cup), rpc_type, std::move(callback));
+
+  InternalSendRequest(url, maybe_signed_request, std::move(wrapped_callback));
 }
 
 void ServiceRequestSenderImpl::InternalSendRequest(

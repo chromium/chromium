@@ -41,6 +41,8 @@ const char kPaymentRequestAutofillInfoChanged[] =
     "Android.AutofillAssistant.PaymentRequest.AutofillChanged";
 const char kPaymentRequestFirstNameOnly[] =
     "Android.AutofillAssistant.PaymentRequest.FirstNameOnly";
+const char kCupRpcVerificationEvent[] =
+    "Android.AutofillAssistant.CupRpcVerificationEvent";
 const char kDependenciesInvalidated[] =
     "Android.AutofillAssistant.DependenciesInvalidated";
 const char kOnboardingFetcherResultStatus[] =
@@ -457,6 +459,12 @@ void Metrics::RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
       .SetTimeTakenMs(time_taken_ms)
       .SetUserDataSource(static_cast<int64_t>(source))
       .Record(ukm_recorder);
+}
+
+// static
+void Metrics::RecordCupRpcVerificationEvent(CupRpcVerificationEvent event) {
+  DCHECK_LE(event, CupRpcVerificationEvent::kMaxValue);
+  base::UmaHistogramEnumeration(kCupRpcVerificationEvent, event);
 }
 
 // static

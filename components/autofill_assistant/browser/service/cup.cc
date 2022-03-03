@@ -12,20 +12,24 @@ namespace autofill_assistant {
 namespace cup {
 
 bool ShouldSignRequests(RpcType rpc_type) {
-  return rpc_type == RpcType::GET_ACTIONS &&
+  return IsRpcTypeSupported(rpc_type) &&
          base::FeatureList::IsEnabled(
              autofill_assistant::features::
                  kAutofillAssistantSignGetActionsRequests);
 }
 
 bool ShouldVerifyResponses(RpcType rpc_type) {
-  return rpc_type == RpcType::GET_ACTIONS &&
+  return IsRpcTypeSupported(rpc_type) &&
          base::FeatureList::IsEnabled(
              autofill_assistant::features::
                  kAutofillAssistantSignGetActionsRequests) &&
          base::FeatureList::IsEnabled(
              autofill_assistant::features::
                  kAutofillAssistantVerifyGetActionsResponses);
+}
+
+bool IsRpcTypeSupported(RpcType rpc_type) {
+  return rpc_type == RpcType::GET_ACTIONS;
 }
 
 }  // namespace cup
