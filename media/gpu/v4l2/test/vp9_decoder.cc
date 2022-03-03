@@ -287,66 +287,6 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
                      std::move(OUTPUT_queue), std::move(CAPTURE_queue)));
 }
 
-bool Vp9Decoder::Initialize() {
-  // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
-  //   after b/193237015 is resolved.
-  if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc()))
-    LOG(ERROR) << "EnumFrameSizes for OUTPUT queue failed.";
-
-  if (!v4l2_ioctl_->SetFmt(OUTPUT_queue_))
-    LOG(ERROR) << "SetFmt for OUTPUT queue failed.";
-
-  gfx::Size coded_size;
-  uint32_t num_planes;
-  if (!v4l2_ioctl_->GetFmt(CAPTURE_queue_->type(), &coded_size, &num_planes))
-    LOG(ERROR) << "GetFmt for CAPTURE queue failed.";
-
-  CAPTURE_queue_->set_coded_size(coded_size);
-  CAPTURE_queue_->set_num_planes(num_planes);
-
-  // VIDIOC_TRY_FMT() ioctl is equivalent to VIDIOC_S_FMT
-  // with one exception that it does not change driver state.
-  // VIDIOC_TRY_FMT may or may not be needed; it's used by the stateful
-  // Chromium V4L2VideoDecoder backend, see b/190733055#comment78.
-  // TODO(b/190733055): try and remove it after landing all the code.
-  if (!v4l2_ioctl_->TryFmt(CAPTURE_queue_))
-    LOG(ERROR) << "TryFmt for CAPTURE queue failed.";
-
-  if (!v4l2_ioctl_->SetFmt(CAPTURE_queue_))
-    LOG(ERROR) << "SetFmt for CAPTURE queue failed.";
-
-  if (!v4l2_ioctl_->ReqBufs(OUTPUT_queue_))
-    LOG(ERROR) << "ReqBufs for OUTPUT queue failed.";
-
-  if (!v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_))
-    LOG(ERROR) << "QueryAndMmapQueueBuffers for OUTPUT queue failed";
-
-  if (!v4l2_ioctl_->ReqBufs(CAPTURE_queue_))
-    LOG(ERROR) << "ReqBufs for CAPTURE queue failed.";
-
-  if (!v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_))
-    LOG(ERROR) << "QueryAndMmapQueueBuffers for CAPTURE queue failed.";
-
-  // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
-  // CAPTURE buffers will be queued after that.
-  if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, 0))
-    LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
-
-  int media_request_fd;
-  if (!v4l2_ioctl_->MediaIocRequestAlloc(&media_request_fd))
-    LOG(ERROR) << "MEDIA_IOC_REQUEST_ALLOC failed";
-
-  OUTPUT_queue_->set_media_request_fd(media_request_fd);
-
-  if (!v4l2_ioctl_->StreamOn(OUTPUT_queue_->type()))
-    LOG(ERROR) << "StreamOn for OUTPUT queue failed.";
-
-  if (!v4l2_ioctl_->StreamOn(CAPTURE_queue_->type()))
-    LOG(ERROR) << "StreamOn for CAPTURE queue failed.";
-
-  return true;
-}
-
 std::set<int> Vp9Decoder::RefreshReferenceSlots(
     uint8_t refresh_frame_flags,
     scoped_refptr<MmapedBuffer> buffer,

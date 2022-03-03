@@ -33,10 +33,6 @@ class Vp9Decoder : public VideoDecoder {
       std::unique_ptr<IvfParser> ivf_parser,
       const media::IvfFileHeader& file_header);
 
-  // Initializes setup needed for decoding.
-  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#initialization
-  bool Initialize() override;
-
   // Parses next frame from IVF stream and decodes the frame. This method will
   // place the Y, U, and V values into the respective vectors and update the
   // size with the display area size of the decoded frame.

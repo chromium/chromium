@@ -35,9 +35,12 @@ class VideoDecoder {
   VideoDecoder(const VideoDecoder&) = delete;
   VideoDecoder& operator=(const VideoDecoder&) = delete;
 
-  // TODO(stevecho): move Initialize() implementation to VideoDecoder class
-  // because this is expected to be the same among different codecs
-  virtual bool Initialize() = 0;
+  // TODO(stevecho): consider void return type instead
+  // This function only ever returns true, even if an error occurs.
+
+  // Initializes setup needed for decoding.
+  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#initialization
+  bool Initialize();
 
   virtual Result DecodeNextFrame(std::vector<char>& y_plane,
                                  std::vector<char>& u_plane,
