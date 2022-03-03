@@ -18,13 +18,12 @@ class Page;
 
 namespace internal {
 extern const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[];
-extern const char kHistogramPrerenderPredictionStatusDirectUrlInput[];
 }  // namespace internal
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class PrerenderPredictionStatus {
-  // The prerender was not started at all for this omnibox interaction.
+  // The prerender was not started.
   kNotStarted = 0,
   // The prerender was cancelled since the prediction is updated.
   kCancelled = 1,
@@ -52,19 +51,22 @@ class PrerenderManager : public content::WebContentsObserver,
   // The entry of prerender.
   // Calling this method will lead to the cancellation of the previous prerender
   // if the given `match`'s search terms differ from the ongoing one's.
-  void StartPrerenderAutocompleteMatch(const AutocompleteMatch& match);
+  base::WeakPtr<content::PrerenderHandle> StartPrerenderAutocompleteMatch(
+      const AutocompleteMatch& match);
 
   // The entry of direct url input prerender.
   // Calling this method will return WeakPtr of the started prerender, and lead
   // to the cancellation of the previous prerender if the given url is different
   // from the on-going one. If the url given is already on-going, this function
-  // will return the weak pointer to the on-going prerender handle.
+  // will return nullptr instead.
   // TODO(https://crbug.com/1278634): Merge the start method with DSE interface
   // using AutocompleteMatch as the parameter instead of GURL.
   base::WeakPtr<content::PrerenderHandle> StartPrerenderDirectUrlInput(
       const GURL& prerendering_url);
 
-  content::PrerenderHandle* search_prerender_handle() {
+  void CancelPrerenderDirectUrlInput();
+
+  content::PrerenderHandle* search_prerender_handle_for_testing() {
     return search_prerender_handle_.get();
   }
 

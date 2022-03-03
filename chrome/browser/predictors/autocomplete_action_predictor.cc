@@ -189,11 +189,32 @@ void AutocompleteActionPredictor::CancelPrerender() {
 }
 
 void AutocompleteActionPredictor::StartPrerendering(
-    const GURL& url,
+    const AutocompleteMatch& match,
     content::WebContents& web_contents,
     const gfx::Size& size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
+  const GURL url = match.destination_url;
+
+  // TODO:(crbug.com/1297441): Refactor this logic.
+  if (AutocompleteMatch::IsSearchType(match.type) &&
+      prerender_utils::IsSearchSuggestionPrerenderEnabled()) {
+    DCHECK(BaseSearchProvider::ShouldPrerender(match));
+    // Check whether preloading is enabled. If users disable this
+    // setting, it means users do not want to preload pages.
+    // TODO(https://crbug.com/1292422): Move this check into
+    // content::PrerenderHostRegistry::CreateAndStartHost().
+    content::WebContentsDelegate* web_contents_delegate =
+        web_contents.GetDelegate();
+    if (!web_contents_delegate ||
+        !web_contents_delegate->IsPrerender2Supported(web_contents)) {
+      return;
+    }
+
+    PrerenderManager::CreateForWebContents(&web_contents);
+    auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
+    search_prerender_handle_ =
+        prerender_manager->StartPrerenderAutocompleteMatch(match);
+  } else if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
     // Check whether preloading is enabled. If users disable this
     // setting, it means users do not want to preload pages.
     // TODO(https://crbug.com/1292422): Move this check into
@@ -211,6 +232,21 @@ void AutocompleteActionPredictor::StartPrerendering(
     // starting a new prerendering.
     PrerenderManager::CreateForWebContents(&web_contents);
     auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
+    if (direct_url_input_prerender_handle_) {
+      // `url` has already been prerendered. Avoid starting new prerendering.
+      if (direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
+          url) {
+        return;
+      }
+      // `url` does not match with previously prerendered url. Reset the
+      // handle to trigger cancellation.
+      base::UmaHistogramEnumeration(
+          "AutocompleteActionPredictor.PrerenderStatus",
+          PrerenderPredictionStatus::kCancelled);
+      prerender_manager->CancelPrerenderDirectUrlInput();
+    }
+
+    DCHECK(!direct_url_input_prerender_handle_);
     direct_url_input_prerender_handle_ =
         prerender_manager->StartPrerenderDirectUrlInput(url);
   } else if (base::FeatureList::IsEnabled(
@@ -329,18 +365,35 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
     no_state_prefetch_handle_->OnNavigateAway();
     // Don't release |no_state_prefetch_handle_| so it is canceled if it
     // survives to the next StartPrerendering call.
+  } else if (direct_url_input_prerender_handle_) {
+    // TODO(crbug.com/1295188): consider to move metric mechanism to
+    // PrerenderManager.
+    if (direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
+        opened_url) {
+      base::UmaHistogramEnumeration(
+          "AutocompleteActionPredictor.PrerenderStatus",
+          PrerenderPredictionStatus::kHitFinished);
+    } else {
+      base::UmaHistogramEnumeration(
+          "AutocompleteActionPredictor.PrerenderStatus",
+          PrerenderPredictionStatus::kUnused);
+    }
   } else {
     base::UmaHistogramEnumeration(
         "AutocompleteActionPredictor.NoStatePrefetchStatus",
         PredictionStatus::kNotStarted);
+    base::UmaHistogramEnumeration("AutocompleteActionPredictor.PrerenderStatus",
+                                  PrerenderPredictionStatus::kNotStarted);
   }
 
-  // Record the value if prerender for direct url input was not started. Other
+  // TODO:(crbug.com/1297441): Move this logic outside
+  // AutocompleteActionPredictor.
+  // Record the value if prerender for search suggestion was not started. Other
   // values (kHitFinished, kUnused, kCancelled) are recorded in
   // PrerenderManager.
-  if (!direct_url_input_prerender_handle_) {
+  if (!search_prerender_handle_) {
     base::UmaHistogramEnumeration(
-        internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
         PrerenderPredictionStatus::kNotStarted);
   }
 

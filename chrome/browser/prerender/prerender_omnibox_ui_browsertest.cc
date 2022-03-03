@@ -231,8 +231,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   WaitForAutocompleteActionPredictorInitialization();
   const GURL kPrerenderingUrl =
       embedded_test_server()->GetURL("/empty.html?prerender");
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+  match.destination_url = kPrerenderingUrl;
   GetAutocompleteActionPredictor()->StartPrerendering(
-      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+      match, *GetActiveWebContents(), gfx::Size(50, 50));
   StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
   EXPECT_EQ(static_cast<int>(GetLastPageTransitionType()),
             static_cast<int>(ui::PAGE_TRANSITION_TYPED |
@@ -241,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   histogram_tester.ExpectUniqueSample(
-      internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+      "AutocompleteActionPredictor.PrerenderStatus",
       PrerenderPredictionStatus::kHitFinished, 1);
   // The prediction result in search suggestion is recorded with kNotStarted.
   histogram_tester.ExpectUniqueSample(
@@ -268,12 +271,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   content::test::PrerenderHostObserver old_prerender_observer(
       *GetActiveWebContents(), kPrerenderingUrl);
   const GURL kNewUrl = embedded_test_server()->GetURL("/empty.html?newUrl");
+  AutocompleteMatch match1;
+  match1.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+  match1.destination_url = kPrerenderingUrl;
   GetAutocompleteActionPredictor()->StartPrerendering(
-      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+      match1, *GetActiveWebContents(), gfx::Size(50, 50));
   EXPECT_NE(prerender_helper().GetHostForUrl(kPrerenderingUrl),
             content::RenderFrameHost::kNoFrameTreeNodeId);
+  AutocompleteMatch match2;
+  match2.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+  match2.destination_url = kNewUrl;
   GetAutocompleteActionPredictor()->StartPrerendering(
-      kNewUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+      match2, *GetActiveWebContents(), gfx::Size(50, 50));
 
   old_prerender_observer.WaitForDestroyed();
   StartOmniboxNavigationAndWaitForActivation(kNewUrl);
@@ -283,10 +292,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
 
   // Prerender was attempted twice and the first one was cancelled.
   histogram_tester.ExpectBucketCount(
-      internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+      "AutocompleteActionPredictor.PrerenderStatus",
       PrerenderPredictionStatus::kCancelled, 1);
   histogram_tester.ExpectBucketCount(
-      internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+      "AutocompleteActionPredictor.PrerenderStatus",
       PrerenderPredictionStatus::kHitFinished, 1);
   // The prediction result in search suggestion is recorded with kNotStarted.
   histogram_tester.ExpectUniqueSample(
@@ -309,10 +318,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   WaitForAutocompleteActionPredictorInitialization();
   const GURL kPrerenderingUrl =
       embedded_test_server()->GetURL("/empty.html?prerender");
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+  match.destination_url = kPrerenderingUrl;
   GetAutocompleteActionPredictor()->StartPrerendering(
-      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+      match, *GetActiveWebContents(), gfx::Size(50, 50));
   GetAutocompleteActionPredictor()->StartPrerendering(
-      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+      match, *GetActiveWebContents(), gfx::Size(50, 50));
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
@@ -324,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   histogram_tester.ExpectUniqueSample(
-      internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+      "AutocompleteActionPredictor.PrerenderStatus",
       PrerenderPredictionStatus::kHitFinished, 1);
   // The prediction result in search suggestion is recorded with kNotStarted.
   histogram_tester.ExpectUniqueSample(
@@ -355,15 +367,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
               EXPECT_FALSE(navigation_handle->IsRendererInitiated());
               run_loop.Quit();
             }));
+    AutocompleteMatch match;
+    match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+    match.destination_url = kPrerenderingUrl;
     GetAutocompleteActionPredictor()->StartPrerendering(
-        kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+        match, *GetActiveWebContents(), gfx::Size(50, 50));
     run_loop.Run();
   }
   StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   histogram_tester.ExpectUniqueSample(
-      internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+      "AutocompleteActionPredictor.PrerenderStatus",
       PrerenderPredictionStatus::kHitFinished, 1);
   // The prediction result in search suggestion is recorded with kNotStarted.
   histogram_tester.ExpectUniqueSample(
@@ -384,15 +399,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   const GURL kPrerenderingUrl =
       embedded_test_server()->GetURL("/empty.html?prerendering");
 
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+  match.destination_url = kPrerenderingUrl;
   GetAutocompleteActionPredictor()->StartPrerendering(
-      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+      match, *GetActiveWebContents(), gfx::Size(50, 50));
   StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
 
   // Test whether same prerendering url can be started successfully again and be
   // activated.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
   GetAutocompleteActionPredictor()->StartPrerendering(
-      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+      match, *GetActiveWebContents(), gfx::Size(50, 50));
   StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
 
   histogram_tester.ExpectUniqueSample(
@@ -401,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
 
   // The prediction result is recorded in each activation.
   histogram_tester.ExpectBucketCount(
-      internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+      "AutocompleteActionPredictor.PrerenderStatus",
       PrerenderPredictionStatus::kHitFinished, 2);
   // The prediction result in search suggestion is recorded with kNotStarted.
   histogram_tester.ExpectBucketCount(
@@ -669,6 +687,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
 
+  ASSERT_TRUE(GetAutocompleteActionPredictor());
+  WaitForAutocompleteActionPredictorInitialization();
   Observe(GetActiveWebContents());
   std::string search_query = "prerender2";
   GURL expected_prerender_url =
@@ -713,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
       PrerenderPredictionStatus::kHitFinished, 1);
   // The prediction result in Direct URL Input is recorded with kNotStarted.
   histogram_tester.ExpectUniqueSample(
-      internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+      "AutocompleteActionPredictor.PrerenderStatus",
       PrerenderPredictionStatus::kNotStarted, 1);
 
   GURL expected_reload_url = GetActiveWebContents()->GetLastCommittedURL();
@@ -734,6 +754,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
 
+  ASSERT_TRUE(GetAutocompleteActionPredictor());
+  WaitForAutocompleteActionPredictorInitialization();
   Observe(GetActiveWebContents());
   std::string search_query_1 = "prerender2";
   GURL expected_prerender_url =
@@ -775,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
       PrerenderPredictionStatus::kHitFinished, 1);
   // The prediction result in Direct URL Input is recorded with kNotStarted.
   histogram_tester.ExpectUniqueSample(
-      internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+      "AutocompleteActionPredictor.PrerenderStatus",
       PrerenderPredictionStatus::kNotStarted, 1);
 }
 
@@ -788,6 +810,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
 
+  ASSERT_TRUE(GetAutocompleteActionPredictor());
+  WaitForAutocompleteActionPredictorInitialization();
   Observe(GetActiveWebContents());
 
   AddNewSuggestionRule("prerender22", {"prerender222", "prerender223"});
@@ -837,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
       PrerenderPredictionStatus::kHitFinished, 1);
   // The prediction result in Direct URL Input is recorded with kNotStarted.
   histogram_tester.ExpectUniqueSample(
-      internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+      "AutocompleteActionPredictor.PrerenderStatus",
       PrerenderPredictionStatus::kNotStarted, 1);
 }
 
@@ -913,8 +937,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxReferrerChainUIBrowserTest,
   ASSERT_TRUE(GetAutocompleteActionPredictor());
   const GURL kPrerenderingUrl =
       embedded_test_server()->GetURL("/empty.html?prerender");
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+  match.destination_url = kPrerenderingUrl;
   GetAutocompleteActionPredictor()->StartPrerendering(
-      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+      match, *GetActiveWebContents(), gfx::Size(50, 50));
 
   registry_observer.WaitForTrigger(kPrerenderingUrl);
   int host_id = prerender_helper().GetHostForUrl(kPrerenderingUrl);

@@ -1363,18 +1363,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
-<histogram name="Prerender.Experimental.PredictionStatus.DirectUrlInput"
-    enum="PrerenderPredictionStatus" expires_after="2022-09-01">
-  <owner>asamidoi@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Records the prediction status started by omnibox. In particular, this
-    records whether they were used or not. It's recorded when omnibox-initiated
-    navigation finishes. Consider it as a success when the prediction is correct
-    and note that the activation of prerendering may fail.
-  </summary>
-</histogram>
-
 <histogram
     name="Prerender.Experimental.PrerenderCancelledInterface{PrerenderTriggerType}"
     enum="PrerenderCancelledInterface" expires_after="2022-06-05">

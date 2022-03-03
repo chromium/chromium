@@ -21,8 +21,6 @@
 namespace internal {
 const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[] =
     "Prerender.Experimental.PredictionStatus.DefaultSearchEngine";
-const char kHistogramPrerenderPredictionStatusDirectUrlInput[] =
-    "Prerender.Experimental.PredictionStatus.DirectUrlInput";
 }  // namespace internal
 
 namespace {
@@ -30,9 +28,8 @@ namespace {
 bool IsJavascriptDisabled(content::WebContents& web_contents, const GURL& url) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents.GetBrowserContext());
-  if (!profile) {
+  if (!profile)
     return true;
-  }
 
   if (!profile->GetPrefs() ||
       !profile->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
@@ -60,9 +57,8 @@ std::u16string ExtractSearchTermsFromURL(content::WebContents& web_contents,
   TemplateURLService* template_url_service =
       GetTemplateURLServiceFromWebContents(web_contents);
   // Can be nullptr in unit tests.
-  if (!template_url_service) {
+  if (!template_url_service)
     return u"";
-  }
   auto* default_search_provider =
       template_url_service->GetDefaultSearchProvider();
   DCHECK(default_search_provider);
@@ -114,66 +110,50 @@ void UpdateVirtualUrlIfNecessary(content::WebContents& web_contents,
 
 PrerenderManager::~PrerenderManager() = default;
 
-// TODO(crbug.com/1300416): Consider the incompatibility of precision/recall
-// between NSP and Prerender2.
 void PrerenderManager::PrimaryPageChanged(content::Page& page) {
-  const GURL& opened_url = page.GetMainDocument().GetLastCommittedURL();
-
-  if (direct_url_input_prerender_handle_) {
-    // Record whether or not the prediction is correct when prerendering for
-    // direct url input was started. The value `kNotStarted` is recorded in
-    // AutocompleteActionPredictor::OnOmniboxOpenedUrl().
-    base::UmaHistogramEnumeration(
-        internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
-        direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
-                opened_url
-            ? PrerenderPredictionStatus::kHitFinished
-            : PrerenderPredictionStatus::kUnused);
-    direct_url_input_prerender_handle_.reset();
+  direct_url_input_prerender_handle_.reset();
+  if (!search_prerender_handle_) {
+    return;
   }
 
-  if (search_prerender_handle_) {
-    // Record whether or not the prediction is correct when prerendering for
-    // search suggestion was started. The value `kNotStarted` is recorded in
-    // AutocompleteControllerAndroid::OnSuggestionSelected() or
-    // ChromeOmniboxClient::OnURLOpenedFromOmnibox().
+  // Record whether or not the prediction is correct when prerendering for
+  // search suggestion was started. The value `kNotStarted` is recorded in
+  // AutocompleteActionPredictor::OnOmniboxOpenedUrl().
+  if (IsSearchDestinationMatch(prerendered_search_terms_args_.search_terms,
+                               *web_contents(),
+                               page.GetMainDocument().GetLastCommittedURL())) {
     base::UmaHistogramEnumeration(
         internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
-        IsSearchDestinationMatch(prerendered_search_terms_args_.search_terms,
-                                 *web_contents(), opened_url)
-            ? PrerenderPredictionStatus::kHitFinished
-            : PrerenderPredictionStatus::kUnused);
-
-    // If `skip_template_url_service_for_testing_` is set for testing, no
-    // TemplateUrlService will be provided for updating the URL, so it needs not
-    // to update the URL.
-    if (prerender_utils::ShouldUpdateVirtualUrlForSearchManually() &&
-        !skip_template_url_service_for_testing_) {
-      GURL search_prerendered_url =
-          search_prerender_handle_->GetInitialPrerenderingUrl();
-      UpdateVirtualUrlIfNecessary(*web_contents(),
-                                  prerendered_search_terms_args_,
-                                  search_prerendered_url);
-    }
-
-    search_prerender_handle_.reset();
-    prerendered_search_terms_args_ = TemplateURLRef::SearchTermsArgs();
+        PrerenderPredictionStatus::kHitFinished);
+  } else {
+    base::UmaHistogramEnumeration(
+        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+        PrerenderPredictionStatus::kUnused);
   }
+
+  // If `skip_template_url_service_for_testing_` is set for testing, no
+  // TemplateUrlService will be provided for updating the URL, so it needs not
+  // to update the URL.
+  if (prerender_utils::ShouldUpdateVirtualUrlForSearchManually() &&
+      !skip_template_url_service_for_testing_) {
+    GURL search_prerendered_url =
+        search_prerender_handle_->GetInitialPrerenderingUrl();
+    UpdateVirtualUrlIfNecessary(*web_contents(), prerendered_search_terms_args_,
+                                search_prerendered_url);
+  }
+
+  search_prerender_handle_.reset();
+  prerendered_search_terms_args_ = TemplateURLRef::SearchTermsArgs();
 }
 
 base::WeakPtr<content::PrerenderHandle>
 PrerenderManager::StartPrerenderDirectUrlInput(const GURL& prerendering_url) {
-  if (direct_url_input_prerender_handle_) {
-    if (direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
-        prerendering_url) {
-      return direct_url_input_prerender_handle_->GetWeakPtr();
-    }
-
-    base::UmaHistogramEnumeration(
-        internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
-        PrerenderPredictionStatus::kCancelled);
-    direct_url_input_prerender_handle_.reset();
+  if (direct_url_input_prerender_handle_ &&
+      direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
+          prerendering_url) {
+    return nullptr;
   }
+  direct_url_input_prerender_handle_.reset();
   direct_url_input_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PrerenderTriggerType::kEmbedder,
       prerender_utils::kDirectUrlInputMetricSuffix,
@@ -185,14 +165,19 @@ PrerenderManager::StartPrerenderDirectUrlInput(const GURL& prerendering_url) {
   return nullptr;
 }
 
-void PrerenderManager::StartPrerenderAutocompleteMatch(
+void PrerenderManager::CancelPrerenderDirectUrlInput() {
+  direct_url_input_prerender_handle_.reset();
+}
+
+base::WeakPtr<content::PrerenderHandle>
+PrerenderManager::StartPrerenderAutocompleteMatch(
     const AutocompleteMatch& match) {
   DCHECK(AutocompleteMatch::IsSearchType(match.type));
 
   // Since search pages require Javascirpt to perform the basic prerender
   // loading logic, do not prerender a search result if Javascript is disabled.
   if (IsJavascriptDisabled(*web_contents(), match.destination_url)) {
-    return;
+    return nullptr;
   }
 
   TemplateURLRef::SearchTermsArgs& search_terms_args =
@@ -201,9 +186,8 @@ void PrerenderManager::StartPrerenderAutocompleteMatch(
 
   // Do not re-prerender the same search result.
   if (search_prerender_handle_) {
-    if (prerendered_search_terms_args_.search_terms == search_terms) {
-      return;
-    }
+    if (prerendered_search_terms_args_.search_terms == search_terms)
+      return search_prerender_handle_->GetWeakPtr();
 
     base::UmaHistogramEnumeration(
         internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
@@ -237,9 +221,8 @@ void PrerenderManager::StartPrerenderAutocompleteMatch(
   if (!skip_template_url_service_for_testing_) {
     TemplateURLService* template_url_service =
         GetTemplateURLServiceFromWebContents(*web_contents());
-    if (!template_url_service) {
-      return;
-    }
+    if (!template_url_service)
+      return nullptr;
 
     prerendered_search_terms_args_.is_prefetch = true;
     prerender_url =
@@ -256,6 +239,10 @@ void PrerenderManager::StartPrerenderAutocompleteMatch(
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       std::move(url_match_predicate));
+  if (search_prerender_handle_) {
+    return search_prerender_handle_->GetWeakPtr();
+  }
+  return nullptr;
 }
 
 PrerenderManager::PrerenderManager(content::WebContents* web_contents)
