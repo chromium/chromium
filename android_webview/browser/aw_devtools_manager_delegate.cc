@@ -29,16 +29,16 @@ std::string AwDevToolsManagerDelegate::GetTargetDescription(
   if (!bvr)
     return "";
   base::DictionaryValue description;
-  description.SetBoolean("attached", bvr->attached_to_window());
-  description.SetBoolean("never_attached", !bvr->was_attached());
-  description.SetBoolean("visible", bvr->IsVisible());
+  description.SetBoolKey("attached", bvr->attached_to_window());
+  description.SetBoolKey("never_attached", !bvr->was_attached());
+  description.SetBoolKey("visible", bvr->IsVisible());
   gfx::Rect screen_rect = bvr->GetScreenRect();
-  description.SetInteger("screenX", screen_rect.x());
-  description.SetInteger("screenY", screen_rect.y());
-  description.SetBoolean("empty", screen_rect.size().IsEmpty());
+  description.SetIntKey("screenX", screen_rect.x());
+  description.SetIntKey("screenY", screen_rect.y());
+  description.SetBoolKey("empty", screen_rect.size().IsEmpty());
   if (!screen_rect.size().IsEmpty()) {
-    description.SetInteger("width", screen_rect.width());
-    description.SetInteger("height", screen_rect.height());
+    description.SetIntKey("width", screen_rect.width());
+    description.SetIntKey("height", screen_rect.height());
   }
   std::string json;
   base::JSONWriter::Write(description, &json);
