@@ -621,7 +621,7 @@ WebContentsAccessibilityAndroid::GenerateAccessibilityNodeInfoString(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null())
-    return nullptr;
+    return {};
 
   return base::android::ConvertJavaStringToUTF16(
       Java_WebContentsAccessibilityImpl_generateAccessibilityNodeInfoString(

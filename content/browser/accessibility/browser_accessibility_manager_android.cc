@@ -600,7 +600,7 @@ BrowserAccessibilityManagerAndroid::GenerateAccessibilityNodeInfoString(
     int32_t unique_id) {
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (!wcax)
-    return nullptr;
+    return {};
 
   return wcax->GenerateAccessibilityNodeInfoString(unique_id);
 }
