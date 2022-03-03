@@ -99,9 +99,9 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
 
   if (image.IsEmpty()) {
     base::scoped_nsobject<NSImage> ns_image;
-    for (const auto& data_pack : data_packs_) {
+    for (const auto& resource_handle : resource_handles_) {
       scoped_refptr<base::RefCountedStaticMemory> data(
-          data_pack->GetStaticMemory(resource_id));
+          resource_handle->GetStaticMemory(resource_id));
       if (!data.get())
         continue;
 

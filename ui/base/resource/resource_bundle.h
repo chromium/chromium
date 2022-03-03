@@ -439,9 +439,9 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
                                    ResourceScaleFactor scale_factor,
                                    bool optional);
 
-  // Inserts |data_pack| to |data_pack_| and updates |max_scale_factor_|
-  // accordingly.
-  void AddDataPack(std::unique_ptr<DataPack> data_pack);
+  // Inserts |resource_handle| to |resource_handle_| and updates
+  // |max_scale_factor_| accordingly.
+  void AddResourceHandle(std::unique_ptr<ResourceHandle> resource_handle);
 
   // Try to load the locale specific strings from an external data module.
   // Returns the locale that is loaded or an empty string if no resources were
@@ -534,7 +534,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Handles for data sources.
   std::unique_ptr<ResourceHandle> locale_resources_data_;
   std::unique_ptr<ResourceHandle> secondary_locale_resources_data_;
-  std::vector<std::unique_ptr<ResourceHandle>> data_packs_;
+  std::vector<std::unique_ptr<ResourceHandle>> resource_handles_;
 
   // The maximum scale factor currently loaded.
   ResourceScaleFactor max_scale_factor_;

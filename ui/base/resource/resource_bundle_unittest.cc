@@ -414,7 +414,7 @@ class ResourceBundleImageTest : public ResourceBundleTest {
   // Returns the number of DataPacks managed by |resource_bundle|.
   size_t NumDataPacksInResourceBundle(ResourceBundle* resource_bundle) {
     DCHECK(resource_bundle);
-    return resource_bundle->data_packs_.size();
+    return resource_bundle->resource_handles_.size();
   }
 
  private:

@@ -57,7 +57,7 @@
 #include "ui/base/resource/resource_bundle_android.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/platform_font_skia.h"
 #endif
 
@@ -387,7 +387,7 @@ void ResourceBundle::AddDataPackFromBuffer(base::span<const uint8_t> buffer,
                                            ResourceScaleFactor scale_factor) {
   std::unique_ptr<DataPack> data_pack(new DataPack(scale_factor));
   if (data_pack->LoadFromBuffer(buffer)) {
-    AddDataPack(std::move(data_pack));
+    AddResourceHandle(std::move(data_pack));
   } else {
     LOG(ERROR) << "Failed to load data pack from buffer";
   }
@@ -399,7 +399,7 @@ void ResourceBundle::AddDataPackFromFileRegion(
     ResourceScaleFactor scale_factor) {
   auto data_pack = std::make_unique<DataPack>(scale_factor);
   if (data_pack->LoadFromFileRegion(std::move(file), region)) {
-    AddDataPack(std::move(data_pack));
+    AddResourceHandle(std::move(data_pack));
   } else {
     LOG(ERROR) << "Failed to load data pack from file."
                << "\nSome features may not be available.";
@@ -481,7 +481,7 @@ void ResourceBundle::LoadTestResources(const base::FilePath& path,
         ui::GetSupportedResourceScaleFactors()[0]);
     auto data_pack = std::make_unique<DataPack>(scale_factor);
     CHECK(data_pack->LoadFromPath(path));
-    AddDataPack(std::move(data_pack));
+    AddResourceHandle(std::move(data_pack));
   }
 
   auto data_pack = std::make_unique<DataPack>(ui::kScaleFactorNone);
@@ -676,10 +676,10 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
   }
 
   if (scale_factor != ui::k100Percent) {
-    for (size_t i = 0; i < data_packs_.size(); i++) {
-      if (data_packs_[i]->GetResourceScaleFactor() == scale_factor &&
-          data_packs_[i]->GetStringPiece(static_cast<uint16_t>(resource_id),
-                                         &data)) {
+    for (const auto& resource_handle : resource_handles_) {
+      if (resource_handle->GetResourceScaleFactor() == scale_factor &&
+          resource_handle->GetStringPiece(static_cast<uint16_t>(resource_id),
+                                          &data)) {
         if (loaded_scale_factor)
           *loaded_scale_factor = scale_factor;
         return data;
@@ -687,15 +687,15 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
     }
   }
 
-  for (size_t i = 0; i < data_packs_.size(); i++) {
-    if ((data_packs_[i]->GetResourceScaleFactor() == ui::k100Percent ||
-         data_packs_[i]->GetResourceScaleFactor() == ui::k200Percent ||
-         data_packs_[i]->GetResourceScaleFactor() == ui::k300Percent ||
-         data_packs_[i]->GetResourceScaleFactor() == ui::kScaleFactorNone) &&
-        data_packs_[i]->GetStringPiece(static_cast<uint16_t>(resource_id),
-                                       &data)) {
+  for (const auto& resource_handle : resource_handles_) {
+    if ((resource_handle->GetResourceScaleFactor() == ui::k100Percent ||
+         resource_handle->GetResourceScaleFactor() == ui::k200Percent ||
+         resource_handle->GetResourceScaleFactor() == ui::k300Percent ||
+         resource_handle->GetResourceScaleFactor() == ui::kScaleFactorNone) &&
+        resource_handle->GetStringPiece(static_cast<uint16_t>(resource_id),
+                                        &data)) {
       if (loaded_scale_factor)
-        *loaded_scale_factor = data_packs_[i]->GetResourceScaleFactor();
+        *loaded_scale_factor = resource_handle->GetResourceScaleFactor();
       return data;
     }
   }
@@ -982,27 +982,29 @@ void ResourceBundle::AddDataPackFromPathInternal(
 
   auto data_pack = std::make_unique<DataPack>(scale_factor);
   if (data_pack->LoadFromPath(pack_path)) {
-    AddDataPack(std::move(data_pack));
+    AddResourceHandle(std::move(data_pack));
   } else if (!optional) {
     LOG(ERROR) << "Failed to load " << pack_path.value()
                << "\nSome features may not be available.";
   }
 }
 
-void ResourceBundle::AddDataPack(std::unique_ptr<DataPack> data_pack) {
+void ResourceBundle::AddResourceHandle(
+    std::unique_ptr<ResourceHandle> resource_handle) {
 #if DCHECK_IS_ON()
-  data_pack->CheckForDuplicateResources(data_packs_);
+  resource_handle->CheckForDuplicateResources(resource_handles_);
 #endif
 
-  if (GetScaleForResourceScaleFactor(data_pack->GetResourceScaleFactor()) >
+  if (GetScaleForResourceScaleFactor(
+          resource_handle->GetResourceScaleFactor()) >
       GetScaleForResourceScaleFactor(max_scale_factor_))
-    max_scale_factor_ = data_pack->GetResourceScaleFactor();
+    max_scale_factor_ = resource_handle->GetResourceScaleFactor();
 
-  data_packs_.push_back(std::move(data_pack));
+  resource_handles_.push_back(std::move(resource_handle));
 }
 
 void ResourceBundle::InitDefaultFontList() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // InitDefaultFontList() is called earlier than overriding the locale strings.
   // So we call the |GetLocalizedStringImpl()| which doesn't set the flag
   // |can_override_locale_string_resources_| to false. This is okay, because the
@@ -1022,7 +1024,7 @@ void ResourceBundle::InitDefaultFontList() {
 }
 
 gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
-  DCHECK(!data_packs_.empty()) << "Missing call to SetResourcesDataDLL?";
+  DCHECK(!resource_handles_.empty()) << "Missing call to SetResourcesDataDLL?";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string lottie_bytes_string;
   if (LoadLottieBytesString(resource_id, &lottie_bytes_string))
@@ -1078,7 +1080,7 @@ bool ResourceBundle::LoadBitmap(int resource_id,
                                 SkBitmap* bitmap,
                                 bool* fell_back_to_1x) const {
   DCHECK(fell_back_to_1x);
-  for (const auto& pack : data_packs_) {
+  for (const auto& pack : resource_handles_) {
     if (pack->GetResourceScaleFactor() == ui::kScaleFactorNone &&
         LoadBitmap(*pack, resource_id, bitmap, fell_back_to_1x)) {
       DCHECK(!*fell_back_to_1x);
@@ -1095,7 +1097,7 @@ bool ResourceBundle::LoadBitmap(int resource_id,
   // Unit tests may only have 1x data pack. Allow them to fallback to 1x
   // resources.
   if (is_test_resources_ && *scale_factor != ui::k100Percent) {
-    for (const auto& pack : data_packs_) {
+    for (const auto& pack : resource_handles_) {
       if (pack->GetResourceScaleFactor() == ui::k100Percent &&
           LoadBitmap(*pack, resource_id, bitmap, fell_back_to_1x)) {
         *fell_back_to_1x = true;

@@ -76,12 +76,11 @@ class UI_DATA_PACK_EXPORT DataPack : public ResourceHandle {
       uint16_t resource_id) const override;
   TextEncodingType GetTextEncodingType() const override;
   ResourceScaleFactor GetResourceScaleFactor() const override;
-
 #if DCHECK_IS_ON()
   // Checks to see if any resource in this DataPack already exists in the list
   // of resources.
   void CheckForDuplicateResources(
-      const std::vector<std::unique_ptr<ResourceHandle>>& packs);
+      const std::vector<std::unique_ptr<ResourceHandle>>& packs) override;
 #endif
 
   // Return the size of the resource and alias tables. Should only be used for

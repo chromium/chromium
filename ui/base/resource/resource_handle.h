@@ -48,6 +48,13 @@ class UI_DATA_PACK_EXPORT ResourceHandle {
   // The scale of images in this resource pack relative to images in the 1x
   // resource pak.
   virtual ResourceScaleFactor GetResourceScaleFactor() const = 0;
+
+#if DCHECK_IS_ON()
+  // Checks to see if any resource in this DataPack already exists in the list
+  // of resources.
+  virtual void CheckForDuplicateResources(
+      const std::vector<std::unique_ptr<ResourceHandle>>& packs) = 0;
+#endif
 };
 
 }  // namespace ui

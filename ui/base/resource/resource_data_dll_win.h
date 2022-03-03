@@ -29,6 +29,10 @@ class ResourceDataDLL : public ResourceHandle {
       uint16_t resource_id) const override;
   TextEncodingType GetTextEncodingType() const override;
   ResourceScaleFactor GetResourceScaleFactor() const override;
+#if DCHECK_IS_ON()
+  void CheckForDuplicateResources(
+      const std::vector<std::unique_ptr<ResourceHandle>>& packs) override {}
+#endif
 
  private:
   const HINSTANCE module_;
