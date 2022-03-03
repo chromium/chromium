@@ -912,7 +912,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
         l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_GAME_DESCRIPTION));
 
     if (EnableAltGameMode()) {
-      result.strings.SetBoolean("enableAltGameMode", true);
+      result.strings.SetBoolKey("enableAltGameMode", true);
       // We don't know yet which scale the page will use, so both 1x and 2x
       // should be loaded.
       result.strings.SetStringPath(
