@@ -11,6 +11,7 @@
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/mojom/media_router.mojom-shared.h"
 #include "components/media_router/common/route_request_result.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "net/base/ip_endpoint.h"
 
 namespace mojo {
@@ -344,15 +345,15 @@ struct StructTraits<media_router::mojom::MediaRouteDataView,
     return route.presentation_id();
   }
 
-  static absl::optional<std::string> media_source(
+  static mojo::OptionalAsPointer<const std::string> media_source(
       const media_router::MediaRoute& route) {
     // TODO(imcheng): If we ever convert from C++ to Mojo outside of unit tests,
     // it would be better to make the |media_source_| field on MediaRoute a
     // absl::optional<MediaSource::Id> instead so it can be returned directly
     // here.
-    return route.media_source().id().empty()
-               ? absl::optional<std::string>()
-               : absl::make_optional(route.media_source().id());
+    return mojo::MakeOptionalAsPointer(route.media_source().id().empty()
+                                           ? nullptr
+                                           : &route.media_source().id());
   }
 
   static const std::string& media_sink_id(

@@ -99,6 +99,7 @@ component("bindings_base") {
     "message.h",
     "message_header_validator.h",
     "message_metadata_helpers.h",
+    "optional_as_pointer.h",
     "scoped_interface_endpoint_handle.h",
     "scoped_message_error_crash_key.cc",
     "scoped_message_error_crash_key.h",

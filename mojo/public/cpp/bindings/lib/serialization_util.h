@@ -98,7 +98,7 @@ struct TraitsFinder<MapDataView<KeyType, ValueType>, UserType> {
 
 template <typename MojomType, typename UserType>
 constexpr bool IsValidUserTypeForOptionalValue() {
-  if constexpr (IsOptionalWrapper<UserType>::value) {
+  if constexpr (IsAbslOptional<UserType>::value) {
     return true;
   } else {
     using Traits = typename TraitsFinder<MojomType, UserType>::Traits;

@@ -66,8 +66,8 @@ class SecurityOriginTest : public testing::Test {
     return origin.nonce_if_opaque_;
   }
 
-  const absl::optional<base::UnguessableToken>
-  GetNonceForSerializationForOrigin(const SecurityOrigin& origin) {
+  const base::UnguessableToken* GetNonceForSerializationForOrigin(
+      const SecurityOrigin& origin) {
     return origin.GetNonceForSerialization();
   }
 };

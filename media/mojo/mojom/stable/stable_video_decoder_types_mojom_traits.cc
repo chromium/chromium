@@ -7,6 +7,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/buffer_validation.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_status.h"
@@ -703,8 +704,8 @@ absl::optional<media::internal::StatusData> StructTraits<
 }
 
 // static
-base::Value StructTraits<media::stable::mojom::StatusDataDataView,
-                         media::internal::StatusData>::
+const base::Value& StructTraits<media::stable::mojom::StatusDataDataView,
+                                media::internal::StatusData>::
     data(const media::internal::StatusData& input) {
   static_assert(
       std::is_same<decltype(input.data.Clone()),
@@ -713,7 +714,7 @@ base::Value StructTraits<media::stable::mojom::StatusDataDataView,
       "need to change this assertion, please contact "
       "chromeos-gfx-video@google.com.");
 
-  return input.data.Clone();
+  return input.data;
 }
 
 // static
@@ -778,7 +779,7 @@ bool StructTraits<media::stable::mojom::StatusDataDataView,
 }
 
 // static
-absl::optional<media::internal::StatusData> StructTraits<
+mojo::OptionalAsPointer<const media::internal::StatusData> StructTraits<
     media::stable::mojom::StatusDataView,
     media::DecoderStatus>::internal(const media::DecoderStatus& input) {
   static_assert(
@@ -791,9 +792,7 @@ absl::optional<media::internal::StatusData> StructTraits<
 
   CHECK(input.data_ || input.is_ok());
 
-  if (input.data_)
-    return *input.data_;
-  return absl::nullopt;
+  return MakeOptionalAsPointer(input.data_.get());
 }
 
 // static

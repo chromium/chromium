@@ -435,7 +435,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // Get the nonce associated with this origin, if it is opaque. This should be
   // used only when trying to send an Origin across an IPC pipe or comparing
   // blob URL's opaque origins in the thread-safe way.
-  absl::optional<base::UnguessableToken> GetNonceForSerialization() const;
+  const base::UnguessableToken* GetNonceForSerialization() const;
 
   const String protocol_ = g_empty_string;
   const String host_ = g_empty_string;

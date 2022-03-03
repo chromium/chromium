@@ -403,9 +403,10 @@ class COMPONENT_EXPORT(URL) Origin {
   // given |nonce|.
   Origin(const Nonce& nonce, SchemeHostPort precursor);
 
-  // Get the nonce associated with this origin, if it is opaque. This should be
-  // used only when trying to send an Origin across an IPC pipe.
-  absl::optional<base::UnguessableToken> GetNonceForSerialization() const;
+  // Get the nonce associated with this origin, if it is opaque, or nullptr
+  // otherwise. This should be used only when trying to send an Origin across an
+  // IPC pipe.
+  const base::UnguessableToken* GetNonceForSerialization() const;
 
   // Serializes this Origin, including its nonce if it is opaque. If an opaque
   // origin's |tuple_| is invalid nullopt is returned. If the nonce is not

@@ -8,19 +8,21 @@
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 
 namespace mojo {
 
 // static
-base::UnguessableToken
+const base::UnguessableToken&
 StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::id(
     const ShareTarget& share_target) {
   return share_target.id;
 }
 
 // static
-std::string StructTraits<nearby_share::mojom::ShareTargetDataView,
-                         ShareTarget>::name(const ShareTarget& share_target) {
+const std::string&
+StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::name(
+    const ShareTarget& share_target) {
   return share_target.device_name;
 }
 
@@ -32,12 +34,13 @@ StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::type(
 }
 
 // static
-absl::optional<GURL>
+mojo::OptionalAsPointer<const GURL>
 StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::image_url(
     const ShareTarget& share_target) {
-  return share_target.image_url && share_target.image_url->is_valid()
-             ? share_target.image_url
-             : absl::nullopt;
+  return mojo::MakeOptionalAsPointer(share_target.image_url &&
+                                             share_target.image_url->is_valid()
+                                         ? &share_target.image_url.value()
+                                         : nullptr);
 }
 
 // static

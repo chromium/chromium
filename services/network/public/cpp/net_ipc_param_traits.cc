@@ -557,7 +557,14 @@ void ParamTraits<url::Origin>::Write(base::Pickle* m, const url::Origin& p) {
   WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().scheme());
   WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().host());
   WriteParam(m, p.GetTupleOrPrecursorTupleIfOpaque().port());
-  WriteParam(m, p.GetNonceForSerialization());
+  // Note: this is somewhat asymmetric with Read() to avoid extra copies during
+  // serialization. The actual serialized wire format matches how absl::optional
+  // values are normally serialized: see `ParamTraits<absl::optional<P>>`.
+  const base::UnguessableToken* nonce = p.GetNonceForSerialization();
+  WriteParam(m, nonce != nullptr);
+  if (nonce) {
+    WriteParam(m, *nonce);
+  }
 }
 
 bool ParamTraits<url::Origin>::Read(const base::Pickle* m,

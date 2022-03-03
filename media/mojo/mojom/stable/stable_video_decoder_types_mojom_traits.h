@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_MOJOM_STABLE_STABLE_VIDEO_DECODER_TYPES_MOJOM_TRAITS_H_
 
 #include "media/mojo/mojom/stable/stable_video_decoder_types.mojom.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 
 namespace mojo {
 
@@ -600,7 +601,7 @@ struct StructTraits<media::stable::mojom::StatusDataDataView,
   static absl::optional<media::internal::StatusData> cause(
       const media::internal::StatusData& input);
 
-  static base::Value data(const media::internal::StatusData& input);
+  static const base::Value& data(const media::internal::StatusData& input);
 
   static bool Read(media::stable::mojom::StatusDataDataView data,
                    media::internal::StatusData* output);
@@ -609,7 +610,7 @@ struct StructTraits<media::stable::mojom::StatusDataDataView,
 template <>
 struct StructTraits<media::stable::mojom::StatusDataView,
                     media::DecoderStatus> {
-  static absl::optional<media::internal::StatusData> internal(
+  static mojo::OptionalAsPointer<const media::internal::StatusData> internal(
       const media::DecoderStatus& input);
 
   static bool Read(media::stable::mojom::StatusDataView data,

@@ -266,9 +266,9 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateFromUrlOrigin(
         CreateFromValidTuple(String::FromUTF8(tuple.scheme()),
                              String::FromUTF8(tuple.host()), tuple.port());
   }
-  absl::optional<base::UnguessableToken> nonce_if_opaque =
+  const base::UnguessableToken* nonce_if_opaque =
       origin.GetNonceForSerialization();
-  DCHECK_EQ(nonce_if_opaque.has_value(), origin.opaque());
+  DCHECK_EQ(!!nonce_if_opaque, origin.opaque());
   if (nonce_if_opaque) {
     return base::AdoptRef(new SecurityOrigin(
         url::Origin::Nonce(*nonce_if_opaque), tuple_origin.get()));
@@ -314,14 +314,10 @@ String SecurityOrigin::RegistrableDomain() const {
   return domain.IsEmpty() ? String() : domain;
 }
 
-absl::optional<base::UnguessableToken>
-SecurityOrigin::GetNonceForSerialization() const {
+const base::UnguessableToken* SecurityOrigin::GetNonceForSerialization() const {
   // The call to token() forces initialization of the |nonce_if_opaque_| if
   // not already initialized.
-  // TODO(nasko): Consider not making a copy here, but return a reference to
-  // the nonce.
-  return nonce_if_opaque_ ? absl::make_optional(nonce_if_opaque_->token())
-                          : absl::nullopt;
+  return nonce_if_opaque_ ? &nonce_if_opaque_->token() : nullptr;
 }
 
 bool SecurityOrigin::CanAccess(const SecurityOrigin* other,
@@ -367,8 +363,8 @@ bool SecurityOrigin::CanRequest(const KURL& url) const {
     // (e.g., top-level worker script loading) because SecurityOrigin and
     // BlobURLNullOriginMap are thread-specific. For the case, check
     // BlobURLOpaqueOriginNonceMap.
-    absl::optional<base::UnguessableToken> nonce = GetNonceForSerialization();
-    if (nonce && BlobURLOpaqueOriginNonceMap::GetInstance().Get(url) == nonce)
+    const base::UnguessableToken* nonce = GetNonceForSerialization();
+    if (nonce && BlobURLOpaqueOriginNonceMap::GetInstance().Get(url) == *nonce)
       return true;
     return false;
   }

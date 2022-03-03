@@ -150,11 +150,8 @@ GURL Origin::GetURL() const {
   return tuple_.GetURL();
 }
 
-absl::optional<base::UnguessableToken> Origin::GetNonceForSerialization()
-    const {
-  // TODO(nasko): Consider not making a copy here, but return a reference to
-  // the nonce.
-  return nonce_ ? absl::make_optional(nonce_->token()) : absl::nullopt;
+const base::UnguessableToken* Origin::GetNonceForSerialization() const {
+  return nonce_ ? &nonce_->token() : nullptr;
 }
 
 bool Origin::IsSameOriginWith(const Origin& other) const {

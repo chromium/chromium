@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_SECURITY_ORIGIN_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "mojo/public/cpp/bindings/string_traits_wtf.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -17,7 +18,7 @@
 namespace mojo {
 
 struct UrlOriginAdapter {
-  static absl::optional<base::UnguessableToken> nonce_if_opaque(
+  static const base::UnguessableToken* nonce_if_opaque(
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
     return origin->GetNonceForSerialization();
   }
@@ -59,9 +60,10 @@ struct StructTraits<url::mojom::OriginDataView,
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
     return UrlOriginAdapter::GetOriginOrPrecursorOriginIfOpaque(origin)->Port();
   }
-  static absl::optional<base::UnguessableToken> nonce_if_opaque(
+  static mojo::OptionalAsPointer<const base::UnguessableToken> nonce_if_opaque(
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
-    return UrlOriginAdapter::nonce_if_opaque(origin);
+    return mojo::MakeOptionalAsPointer(
+        UrlOriginAdapter::nonce_if_opaque(origin));
   }
   static bool Read(url::mojom::OriginDataView data,
                    scoped_refptr<const ::blink::SecurityOrigin>* out) {
