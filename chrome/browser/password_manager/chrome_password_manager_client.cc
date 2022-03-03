@@ -29,7 +29,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
-#include "chrome/browser/password_manager/password_change_success_tracker_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -57,6 +56,7 @@
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
+#include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/content/browser/password_requirements_service_factory.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -651,7 +651,8 @@ ChromePasswordManagerClient::GetPasswordScriptsFetcher() {
 
 password_manager::PasswordChangeSuccessTracker*
 ChromePasswordManagerClient::GetPasswordChangeSuccessTracker() {
-  return PasswordChangeSuccessTrackerFactory::GetForBrowserContext(profile_);
+  return password_manager::PasswordChangeSuccessTrackerFactory::
+      GetForBrowserContext(profile_);
 }
 
 password_manager::SyncState ChromePasswordManagerClient::GetPasswordSyncState()

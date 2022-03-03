@@ -20,7 +20,6 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/android/autofill_assistant/annotate_dom_model_service_factory.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
-#include "chrome/browser/password_manager/password_change_success_tracker_factory.h"
 #include "components/autofill_assistant/android/jni_headers/AutofillAssistantClient_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AutofillAssistantDirectActionImpl_jni.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
@@ -31,6 +30,7 @@
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
+#include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/variations/service/variations_service.h"
@@ -542,8 +542,8 @@ WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {
 
 password_manager::PasswordChangeSuccessTracker*
 ClientAndroid::GetPasswordChangeSuccessTracker() const {
-  return PasswordChangeSuccessTrackerFactory::GetForBrowserContext(
-      GetWebContents()->GetBrowserContext());
+  return password_manager::PasswordChangeSuccessTrackerFactory::
+      GetForBrowserContext(GetWebContents()->GetBrowserContext());
 }
 
 std::string ClientAndroid::GetLocale() const {

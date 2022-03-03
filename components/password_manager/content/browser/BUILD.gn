@@ -16,6 +16,8 @@ static_library("browser") {
     "form_meta_data.h",
     "form_submission_tracker_util.cc",
     "form_submission_tracker_util.h",
+    "password_change_success_tracker_factory.cc",
+    "password_change_success_tracker_factory.h",
     "password_manager_log_router_factory.cc",
     "password_manager_log_router_factory.h",
     "password_requirements_service_factory.cc",
