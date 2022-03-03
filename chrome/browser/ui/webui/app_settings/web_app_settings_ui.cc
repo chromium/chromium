@@ -15,6 +15,7 @@
 #include "chrome/grit/app_settings_resources.h"
 #include "chrome/grit/app_settings_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -26,6 +27,7 @@ namespace {
 
 void AddAppManagementStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"close", IDS_CLOSE},
       {"title", IDS_WEB_APP_SETTINGS_TITLE},
       {"appManagementAppInstalledByPolicyLabel",
        IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING},
@@ -42,6 +44,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementRunOnOsLoginModeLabel",
        IDS_APP_MANAGEMENT_RUN_ON_OS_LOGIN},
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
+      {"fileHandlingOverflowDialogTitle",
+       IDS_APP_MANAGEMENT_FILE_HANDLING_OVERFLOW_DIALOG_TITLE},
       {"fileHandlingSetDefaults",
        IDS_APP_MANAGEMENT_FILE_HANDLING_SET_DEFAULTS_LINK},
   };
