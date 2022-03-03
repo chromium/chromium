@@ -13,12 +13,12 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
@@ -46,8 +46,7 @@ class VIZ_SERVICE_EXPORT CALayerOverlaySharedState
   // The opacity property for the CAayer.
   float opacity = 1;
   // The transform to apply to the CALayer.
-  skia::Matrix44 transform =
-      skia::Matrix44(skia::Matrix44::kIdentity_Constructor);
+  gfx::Transform transform;
 
  private:
   friend class base::RefCountedThreadSafe<CALayerOverlaySharedState>;

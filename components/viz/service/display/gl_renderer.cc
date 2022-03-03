@@ -3913,7 +3913,7 @@ void GLRenderer::ScheduleCALayers() {
     GLint sorting_context_id =
         ca_layer_overlay.shared_state->sorting_context_id;
     GLfloat transform[16];
-    ca_layer_overlay.shared_state->transform.asColMajorf(transform);
+    ca_layer_overlay.shared_state->transform.matrix().asColMajorf(transform);
     unsigned filter = ca_layer_overlay.filter;
 
     if (ca_layer_overlay.shared_state != shared_state) {
@@ -3954,7 +3954,7 @@ void GLRenderer::ScheduleDCLayers() {
     const gfx::Rect& content_rect = dc_layer_overlay.content_rect;
     const gfx::Rect& quad_rect = dc_layer_overlay.quad_rect;
     DCHECK(dc_layer_overlay.transform.IsFlat());
-    const skia::Matrix44& transform = dc_layer_overlay.transform.matrix();
+    const auto& matrix = dc_layer_overlay.transform.matrix();
     bool is_clipped = dc_layer_overlay.clip_rect.has_value();
     const gfx::Rect& clip_rect =
         dc_layer_overlay.clip_rect.value_or(gfx::Rect());
@@ -3965,9 +3965,9 @@ void GLRenderer::ScheduleDCLayers() {
         texture_ids[0], texture_ids[1], z_order, content_rect.x(),
         content_rect.y(), content_rect.width(), content_rect.height(),
         quad_rect.x(), quad_rect.y(), quad_rect.width(), quad_rect.height(),
-        transform.rc(0, 0), transform.rc(0, 1), transform.rc(1, 0),
-        transform.rc(1, 1), transform.rc(0, 3), transform.rc(1, 3), is_clipped,
-        clip_rect.x(), clip_rect.y(), clip_rect.width(), clip_rect.height(),
+        matrix.rc(0, 0), matrix.rc(0, 1), matrix.rc(1, 0), matrix.rc(1, 1),
+        matrix.rc(0, 3), matrix.rc(1, 3), is_clipped, clip_rect.x(),
+        clip_rect.y(), clip_rect.width(), clip_rect.height(),
         protected_video_type);
   }
 }
@@ -4270,9 +4270,8 @@ GLRenderer::ScheduleRenderPassDrawQuad(const CALayerOverlay* ca_layer_overlay) {
       ca_layer_overlay->shared_state->rounded_corner_bounds.GetSimpleRadius()};
 
   GLint sorting_context_id = ca_layer_overlay->shared_state->sorting_context_id;
-  skia::Matrix44 transform = ca_layer_overlay->shared_state->transform;
   GLfloat gl_transform[16];
-  transform.asColMajorf(gl_transform);
+  ca_layer_overlay->shared_state->transform.matrix().asColMajorf(gl_transform);
   unsigned filter = ca_layer_overlay->filter;
 
   // The alpha has already been applied when copying the RPDQ to an IOSurface.

@@ -144,9 +144,9 @@ gfx::CALayerResult FromTextureQuad(DisplayResourceProvider* resource_provider,
     // transformation that flips the contents of the layer without changing its
     // frame is the composition of a vertical flip about the anchor point, and a
     // translation by the height of the layer.
-    ca_layer_overlay->shared_state->transform.preTranslate(
-        0, ca_layer_overlay->bounds_rect.height(), 0);
-    ca_layer_overlay->shared_state->transform.preScale(1, -1, 1);
+    ca_layer_overlay->shared_state->transform.Translate(
+        0, ca_layer_overlay->bounds_rect.height());
+    ca_layer_overlay->shared_state->transform.Scale(1, -1);
   }
   ca_layer_overlay->contents_resource_id = resource_id;
   ca_layer_overlay->contents_rect =
@@ -273,7 +273,7 @@ class CALayerOverlayProcessorInternal {
       most_recent_overlay_shared_state_->opacity =
           quad->shared_quad_state->opacity;
       most_recent_overlay_shared_state_->transform =
-          quad->shared_quad_state->quad_to_target_transform.matrix();
+          quad->shared_quad_state->quad_to_target_transform;
     }
     ca_layer_overlay->shared_state = most_recent_overlay_shared_state_;
 
