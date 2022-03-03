@@ -253,9 +253,9 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
   CHECK(mount_path.AppendRelativePath(path, &some_other_file));
 
   fake->SetMetadata(some_file, "text/plain", some_file.BaseName().value(),
-                    false, false, {}, {}, "abc123");
+                    false, false, {}, {}, "abc123", "");
   fake->SetMetadata(some_other_file, "text/plain", some_file.BaseName().value(),
-                    false, false, {}, {}, "qwertyqwerty");
+                    false, false, {}, {}, "qwertyqwerty", "");
 
   {
     base::RunLoop run_loop;

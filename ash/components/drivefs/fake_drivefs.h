@@ -62,7 +62,8 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
                    bool shared,
                    const mojom::Capabilities& capabilities,
                    const mojom::FolderFeature& folder_feature,
-                   const std::string& doc_id);
+                   const std::string& doc_id,
+                   const std::string& alternate_url);
 
   void DisplayConfirmDialog(
       drivefs::mojom::DialogReasonPtr reason,

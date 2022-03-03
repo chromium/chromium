@@ -1608,8 +1608,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openOfficeFile").EnableWebDriveOffice().FilesSwa(),
         TestCase("openOfficeFromMyFiles").EnableWebDriveOffice(),
         TestCase("openOfficeFromMyFiles").EnableWebDriveOffice().FilesSwa(),
+        TestCase("openMultipleOfficeFromDrive").EnableWebDriveOffice(),
+        TestCase("openMultipleOfficeFromDrive")
+            .EnableWebDriveOffice()
+            .FilesSwa(),
         TestCase("openOfficeFromDrive").EnableWebDriveOffice(),
         TestCase("openOfficeFromDrive").EnableWebDriveOffice().FilesSwa(),
+        TestCase("openOfficeFromDriveNotSynced").EnableWebDriveOffice(),
+        TestCase("openOfficeFromDriveNotSynced")
+            .EnableWebDriveOffice()
+            .FilesSwa(),
         TestCase("openOfficeFromDriveOffline").EnableWebDriveOffice().Offline(),
         TestCase("openOfficeFromDriveOffline")
             .EnableWebDriveOffice()

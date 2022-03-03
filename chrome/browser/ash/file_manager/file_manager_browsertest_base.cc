@@ -397,6 +397,7 @@ struct AddEntriesMessage {
     EntryCapabilities capabilities;   // Entry permissions.
     EntryFolderFeature folder_feature;  // Entry folder feature.
     bool pinned = false;                // Whether the file should be pinned.
+    std::string alternate_url;          // Entry's alternate URL on Drive.
 
     TestEntryInfo& SetSharedOption(SharedOption option) {
       shared_option = option;
@@ -445,6 +446,11 @@ struct AddEntriesMessage {
       return *this;
     }
 
+    TestEntryInfo& SetAlternateUrl(const std::string& new_alternate_url) {
+      alternate_url = new_alternate_url;
+      return *this;
+    }
+
     // Registers the member information to the given converter.
     static void RegisterJSONConverter(
         base::JSONValueConverter<TestEntryInfo>* converter) {
@@ -472,6 +478,8 @@ struct AddEntriesMessage {
       converter->RegisterNestedField("folderFeature",
                                      &TestEntryInfo::folder_feature);
       converter->RegisterBoolField("pinned", &TestEntryInfo::pinned);
+      converter->RegisterStringField("alternateUrl",
+                                     &TestEntryInfo::alternate_url);
     }
 
     // Maps |value| to an EntryType. Returns true on success.
@@ -1238,7 +1246,7 @@ class DriveFsTestVolume : public TestVolume {
         {entry.folder_feature.is_machine_root,
          entry.folder_feature.is_arbitrary_sync_folder,
          entry.folder_feature.is_external_media},
-        "");
+        "", entry.alternate_url);
 
     ASSERT_TRUE(UpdateModifiedTime(entry));
   }

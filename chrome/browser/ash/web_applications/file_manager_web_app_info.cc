@@ -11,6 +11,7 @@
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -92,7 +93,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   AppendFileHandler(*info, "open-hosted-gslides", {"gslides"});
 
   // Drive & Office Docs:
-  AppendFileHandler(*info, "open-web-drive-office",
+  AppendFileHandler(*info, ::file_manager::file_tasks::kActionIdWebDriveOffice,
                     {"doc", "docx", "xls", "xlsx", "ppt", "pptx"});
 
   // View in the browser (with mime-type):

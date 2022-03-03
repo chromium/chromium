@@ -16,6 +16,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
@@ -166,7 +167,7 @@ bool OpenFileWithBrowser(Profile* profile,
     return true;
   }
 
-  if (action_id == "open-web-drive-office") {
+  if (action_id == ::file_manager::file_tasks::kActionIdWebDriveOffice) {
     drive::DriveIntegrationService* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile);
     base::FilePath path;
