@@ -9,6 +9,13 @@ from . import model, parts, signing, test_common, test_config
 mock = test_common.import_mock()
 
 
+def _get_identity_hash(i):
+    if i == '[IDENTITY]':
+        return 'identity'
+
+    raise
+
+
 class TestGetParts(unittest.TestCase):
 
     def test_get_parts_no_base(self):
@@ -127,6 +134,7 @@ def _get_plist_read(other_version):
     m: mock.DEFAULT
     for m in ('copy_files', 'move_file', 'make_dir', 'run_command')
 })
+@mock.patch('signing.model._get_identity_hash', _get_identity_hash)
 class TestSignChrome(unittest.TestCase):
 
     def setUp(self):
@@ -149,7 +157,7 @@ class TestSignChrome(unittest.TestCase):
         # Test that the provisioning profile is copied.
         self.assertEqual(kwargs['copy_files'].mock_calls, [
             mock.call.copy_files(
-                '/$I/Product Packaging/provisiontest.provisionprofile',
+                '/$I/Product Packaging/provisiontest.identity.provisionprofile',
                 '/$W/App Product.app/Contents/embedded.provisionprofile')
         ])
 
@@ -230,7 +238,7 @@ class TestSignChrome(unittest.TestCase):
         # Test that the provisioning profile is copied.
         self.assertEqual(kwargs['copy_files'].mock_calls, [
             mock.call.copy_files(
-                '/$I/Product Packaging/provisiontest.provisionprofile',
+                '/$I/Product Packaging/provisiontest.identity.provisionprofile',
                 '/$W/App Product.app/Contents/embedded.provisionprofile')
         ])
 
