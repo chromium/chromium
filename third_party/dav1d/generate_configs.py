@@ -53,7 +53,7 @@ def SetupWindowsCrossCompileToolchain(target_arch):
   output = subprocess.check_output([
       os.path.join(CHROMIUM_ROOT_DIR, 'build', 'vs_toolchain.py'),
       'get_toolchain_dir'
-  ])
+  ], universal_newlines=True)
 
   # Turn this into a dictionary.
   win_dirs = gn_helpers.FromGNArgs(output)
@@ -65,7 +65,7 @@ def SetupWindowsCrossCompileToolchain(target_arch):
       os.path.join(CHROMIUM_ROOT_DIR, 'build', 'toolchain', 'win',
                    'setup_toolchain.py'), win_dirs['vs_path'],
       win_dirs['sdk_path'], win_dirs['runtime_dirs'], 'win', target_arch, 'none'
-  ])
+  ], universal_newlines=True)
 
   flags = gn_helpers.FromGNArgs(output)
   cwd = os.getcwd()

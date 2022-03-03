@@ -75,7 +75,7 @@ def _WriteGn(fd):
 
 
 def main():
-  with open("dav1d_generated.gni", "wb") as fd:
+  with open("dav1d_generated.gni", "w") as fd:
     _WriteGn(fd)
 
 
