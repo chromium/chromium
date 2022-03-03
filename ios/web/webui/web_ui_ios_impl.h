@@ -37,6 +37,8 @@ class WebUIIOSImpl : public web::WebUIIOS,
   void SetController(std::unique_ptr<WebUIIOSController> controller) override;
   void AddMessageHandler(
       std::unique_ptr<WebUIIOSMessageHandler> handler) override;
+  void RegisterMessageCallback(const std::string& message,
+                               MessageCallback callback) override;
   void RegisterDeprecatedMessageCallback2(
       const std::string& message,
       DeprecatedMessageCallback2 callback) override;
@@ -66,11 +68,19 @@ class WebUIIOSImpl : public web::WebUIIOS,
   void ExecuteJavascript(const std::u16string& javascript);
 
   // A map of message name -> message handling callback.
+  using MessageCallbackMap = std::map<std::string, MessageCallback>;
+  MessageCallbackMap message_callbacks_;
+
+  // A map of message name -> message handling callback.
+  // TODO(crbug.com/1300095): Remove once RegisterDeprecatedMessageCallback2()
+  // instances are migrated to RegisterMessageCallback().
   using DeprecatedMessageCallback2Map =
       std::map<std::string, DeprecatedMessageCallback2>;
   DeprecatedMessageCallback2Map deprecated_message_callbacks_2_;
 
   // A map of message name -> message handling callback.
+  // TODO(crbug.com/1300095): Remove once RegisterDeprecatedMessageCallback()
+  // instances are migrated to RegisterMessageCallback().
   using DeprecatedMessageCallbackMap =
       std::map<std::string, DeprecatedMessageCallback>;
   DeprecatedMessageCallbackMap deprecated_message_callbacks_;

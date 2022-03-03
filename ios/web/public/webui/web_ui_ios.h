@@ -42,10 +42,15 @@ class WebUIIOS {
   virtual void AddMessageHandler(
       std::unique_ptr<WebUIIOSMessageHandler> handler) = 0;
 
-  // TODO(crbug.com/1300095): new version of DeprecatedMessageCallback2 that
-  // takes base::Value::List as a parameter needs to be introduced. Afterwards
-  // existing callers of RegisterDeprecatedMessageCallback2() should be migrated
-  // to the new RegisterMessageCallback() (not yet introduced) version.
+  // Used by WebUIMessageHandlers. If the given message is already registered,
+  // the call has no effect.
+  using MessageCallback =
+      base::RepeatingCallback<void(const base::Value::List&)>;
+  virtual void RegisterMessageCallback(const std::string& message,
+                                       MessageCallback callback) = 0;
+
+  // TODO(crbug.com/1300095): Instances of RegisterDeprecatedMessageCallback2()
+  // should be migrated to RegisterMessageCallback().
   //
   // Used by WebUIIOSMessageHandlers. If the given message is already
   // registered, the call has no effect.
@@ -55,10 +60,8 @@ class WebUIIOS {
       const std::string& message,
       DeprecatedMessageCallback2 callback) = 0;
 
-  // TODO(crbug.com/1300095): new version of DeprecatedMessageCallback that
-  // takes base::Value::List as a parameter needs to be introduced. Afterwards
-  // existing callers of RegisterDeprecatedMessageCallback() should be migrated
-  // to the new RegisterMessageCallback() (not yet introduced) version.
+  // TODO(crbug.com/1300095): Instances of RegisterDeprecatedMessageCallback()
+  // should be migrated to RegisterMessageCallback().
   //
   // Used by WebUIIOSMessageHandlers. If the given message is already
   // registered, the call has no effect.

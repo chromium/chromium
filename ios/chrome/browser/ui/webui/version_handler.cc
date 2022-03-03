@@ -16,14 +16,13 @@ VersionHandler::VersionHandler() {}
 VersionHandler::~VersionHandler() {}
 
 void VersionHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       version_ui::kRequestVariationInfo,
       base::BindRepeating(&VersionHandler::HandleRequestVariationInfo,
                           base::Unretained(this)));
 }
 
-void VersionHandler::HandleRequestVariationInfo(
-    base::Value::ConstListView args) {
+void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
   // Respond with the variations info immediately.
   CHECK_EQ(2U, args.size());
   std::string callback_id = args[0].GetString();
