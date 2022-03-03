@@ -42,6 +42,7 @@
 #include "url/origin.h"
 
 namespace {
+using browsing_topics::Topic;
 using privacy_sandbox::CanonicalTopic;
 using testing::ElementsAre;
 
@@ -1570,10 +1571,10 @@ TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoMetricsRecorded) {
 }
 
 TEST_F(PrivacySandboxServiceTestNonRegularProfile, TestFakeTopics) {
-  CanonicalTopic topic1(1, CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic2(2, CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic3(3, CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic4(4, CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic1(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic2(Topic(2), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic3(Topic(3), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic4(Topic(4), CanonicalTopic::AVAILABLE_TAXONOMY);
 
   auto* service = privacy_sandbox_service();
   EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic1, topic2));

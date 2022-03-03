@@ -21,6 +21,8 @@
 
 namespace {
 
+using Topic = browsing_topics::Topic;
+
 constexpr char kCallbackId1[] = "test-callback-id";
 constexpr char kCallbackId2[] = "test-callback-id-2";
 
@@ -114,7 +116,8 @@ void ValidateTopicsInfo(
     const auto& actual_topic = actual_topics[i];
     const auto& expected_topic = expected_topics[i];
     ASSERT_TRUE(actual_topic.is_dict());
-    ASSERT_EQ(expected_topic.topic_id(), actual_topic.FindIntKey("topicId"));
+    ASSERT_EQ(expected_topic.topic_id().value(),
+              actual_topic.FindIntKey("topicId"));
     ASSERT_EQ(expected_topic.taxonomy_version(),
               actual_topic.FindIntKey("taxonomyVersion"));
     ASSERT_EQ(expected_topic.GetLocalizedRepresentation(),
@@ -262,12 +265,12 @@ TEST_F(PrivacySandboxHandlerTestMockService, SetTopicAllowed) {
   // Confirm that the handler correctly constructs the CanonicalTopic and
   // passes it to the PrivacySandboxService.
   const privacy_sandbox::CanonicalTopic kTestTopic(
-      1, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+      Topic(1), privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               SetTopicAllowed(kTestTopic, false))
       .Times(1);
   base::Value args(base::Value::Type::LIST);
-  args.Append(kTestTopic.topic_id());
+  args.Append(kTestTopic.topic_id().value());
   args.Append(kTestTopic.taxonomy_version());
   args.Append(false);
   handler()->HandleSetTopicAllowed(args.GetList());
@@ -276,14 +279,14 @@ TEST_F(PrivacySandboxHandlerTestMockService, SetTopicAllowed) {
 TEST_F(PrivacySandboxHandlerTestMockService, GetTopicsState) {
   const std::vector<privacy_sandbox::CanonicalTopic> kBlockedTopics = {
       privacy_sandbox::CanonicalTopic(
-          1, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY),
+          Topic(1), privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY),
       privacy_sandbox::CanonicalTopic(
-          2, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY)};
+          Topic(2), privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY)};
   const std::vector<privacy_sandbox::CanonicalTopic> kTopTopics = {
       privacy_sandbox::CanonicalTopic(
-          3, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY),
+          Topic(3), privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY),
       privacy_sandbox::CanonicalTopic(
-          4, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY)};
+          Topic(4), privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY)};
 
   EXPECT_CALL(*mock_privacy_sandbox_service(), GetCurrentTopTopics())
       .Times(1)

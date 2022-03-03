@@ -7,10 +7,11 @@
 
 #include <string>
 
+#include "base/types/strong_alias.h"
 #include "base/values.h"
 
 namespace browsing_topics {
-using Topic = int;
+using Topic = base::StrongAlias<class TopicTag, int>;
 }
 
 namespace privacy_sandbox {

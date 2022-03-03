@@ -15,8 +15,9 @@ namespace {
 constexpr char kTopicId[] = "topicId";
 constexpr char kTaxonomyVersion[] = "taxonomyVersion";
 
-std::u16string GetLocalizedRepresentationInternal(int topic_id,
-                                                  int taxonomy_version) {
+std::u16string GetLocalizedRepresentationInternal(
+    browsing_topics::Topic topic_id,
+    int taxonomy_version) {
   // The available Taxonomy versions are included in the Chrome binary, and
   // so can be CHECK'd against here.
   CHECK_EQ(privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY,
@@ -29,9 +30,9 @@ std::u16string GetLocalizedRepresentationInternal(int topic_id,
   // ensure we are made aware of any issues, UMA metrics are logged in this
   // failure case.
   constexpr int kTaxonomyV1Size = 349;
-  if (topic_id < 1 || topic_id > kTaxonomyV1Size) {
+  if (topic_id.value() < 1 || topic_id.value() > kTaxonomyV1Size) {
     base::UmaHistogramSparse("Settings.PrivacySandbox.InvalidTopicIdLocalized",
-                             topic_id);
+                             topic_id.value());
     return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_TOPICS_INVALID_TOPIC);
   }
 
@@ -387,14 +388,15 @@ std::u16string GetLocalizedRepresentationInternal(int topic_id,
       IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_349,
   };
 
-  return l10n_util::GetStringUTF16(kLocalizedTaxononmyV1[topic_id - 1]);
+  return l10n_util::GetStringUTF16(kLocalizedTaxononmyV1[topic_id.value() - 1]);
 }
 
 }  // namespace
 
 namespace privacy_sandbox {
 
-CanonicalTopic::CanonicalTopic(int topic_id, int taxonomy_version)
+CanonicalTopic::CanonicalTopic(browsing_topics::Topic topic_id,
+                               int taxonomy_version)
     : topic_id_(topic_id), taxonomy_version_(taxonomy_version) {}
 
 std::u16string CanonicalTopic::GetLocalizedRepresentation() const {
@@ -403,7 +405,7 @@ std::u16string CanonicalTopic::GetLocalizedRepresentation() const {
 
 base::Value CanonicalTopic::ToValue() const {
   base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey(kTopicId, base::Value(topic_id_));
+  value.SetKey(kTopicId, base::Value(topic_id_.value()));
   value.SetKey(kTaxonomyVersion, base::Value(taxonomy_version_));
   return value;
 }
@@ -421,13 +423,13 @@ base::Value CanonicalTopic::ToValue() const {
   if (!taxonomy_version)
     return absl::nullopt;
 
-  return CanonicalTopic(*topic_id, *taxonomy_version);
+  return CanonicalTopic(browsing_topics::Topic(*topic_id), *taxonomy_version);
 }
 
 bool CanonicalTopic::operator<(const CanonicalTopic& other) const {
   if (taxonomy_version_ != other.taxonomy_version_)
     return taxonomy_version_ < other.taxonomy_version_;
-  return topic_id_ < other.topic_id_;
+  return topic_id_.value() < other.topic_id_.value();
 }
 
 bool CanonicalTopic::operator==(const CanonicalTopic& other) const {

@@ -339,11 +339,15 @@ class PrivacySandboxService : public KeyedService,
 
   // Fake implementation for current and blocked topics.
   std::set<privacy_sandbox::CanonicalTopic> fake_current_topics_ = {
-      {1, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY},
-      {2, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY}};
+      {browsing_topics::Topic(1),
+       privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY},
+      {browsing_topics::Topic(2),
+       privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY}};
   std::set<privacy_sandbox::CanonicalTopic> fake_blocked_topics_ = {
-      {3, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY},
-      {4, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY}};
+      {browsing_topics::Topic(3),
+       privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY},
+      {browsing_topics::Topic(4),
+       privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY}};
 
   base::WeakPtrFactory<PrivacySandboxService> weak_factory_{this};
 };

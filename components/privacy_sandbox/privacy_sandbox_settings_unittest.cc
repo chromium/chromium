@@ -22,6 +22,8 @@
 
 namespace privacy_sandbox {
 
+using Topic = browsing_topics::Topic;
+
 class MockPrivacySandboxDelegate : public PrivacySandboxSettings::Delegate {
  public:
   void SetupDefaultResponse() {
@@ -690,8 +692,8 @@ TEST_P(PrivacySandboxSettingsTest, TrustTokensAllowed) {
 TEST_P(PrivacySandboxSettingsTest, IsTopicAllowed) {
   // Confirm that allowing / blocking topics is correctly reflected by
   // IsTopicsAllowed().
-  CanonicalTopic topic_one(1, CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic_two(2, CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_one(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_two(Topic(2), CanonicalTopic::AVAILABLE_TAXONOMY);
 
   privacy_sandbox_settings()->SetTopicAllowed(topic_one, false);
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
@@ -712,9 +714,9 @@ TEST_P(PrivacySandboxSettingsTest, IsTopicAllowed) {
 
 TEST_P(PrivacySandboxSettingsTest, ClearingTopicSettings) {
   // Confirm that time range deletions affect the correct settings.
-  CanonicalTopic topic_one(1, CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic_two(2, CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic_three(3, CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_one(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_two(Topic(2), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_three(Topic(3), CanonicalTopic::AVAILABLE_TAXONOMY);
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_three));

@@ -34,7 +34,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaTopicsArray(
   std::vector<ScopedJavaLocalRef<jobject>> j_topics;
   for (const auto& topic : topics) {
     j_topics.push_back(Java_PrivacySandboxBridge_createTopic(
-        env, topic.topic_id(), topic.taxonomy_version(),
+        env, topic.topic_id().value(), topic.taxonomy_version(),
         ConvertUTF16ToJavaString(env, topic.GetLocalizedRepresentation())));
   }
   return base::android::ToJavaArrayOfObjects(
@@ -127,7 +127,9 @@ static void JNI_PrivacySandboxBridge_SetTopicAllowed(JNIEnv* env,
                                                      jint taxonomy_version,
                                                      jboolean allowed) {
   GetPrivacySandboxService()->SetTopicAllowed(
-      privacy_sandbox::CanonicalTopic(topic_id, taxonomy_version), allowed);
+      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
+                                      taxonomy_version),
+      allowed);
 }
 
 static jint JNI_PrivacySandboxBridge_GetRequiredDialogType(JNIEnv* env) {

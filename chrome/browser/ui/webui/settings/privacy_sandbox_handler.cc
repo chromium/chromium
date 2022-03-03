@@ -54,7 +54,7 @@ base::Value GetFlocIdInformation(Profile* profile) {
 
 base::Value ConvertTopicToValue(const privacy_sandbox::CanonicalTopic& topic) {
   base::Value topic_value(base::Value::Type::DICTIONARY);
-  topic_value.SetKey(kTopicId, base::Value(topic.topic_id()));
+  topic_value.SetKey(kTopicId, base::Value(topic.topic_id().value()));
   topic_value.SetKey(kTaxonomyVersion, base::Value(topic.taxonomy_version()));
   topic_value.SetKey(kDisplayString,
                      base::Value(topic.GetLocalizedRepresentation()));
@@ -142,7 +142,9 @@ void PrivacySandboxHandler::HandleSetTopicAllowed(
   const int taxonomy_version = args[1].GetInt();
   const bool allowed = args[2].GetBool();
   GetPrivacySandboxService()->SetTopicAllowed(
-      privacy_sandbox::CanonicalTopic(topic_id, taxonomy_version), allowed);
+      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
+                                      taxonomy_version),
+      allowed);
 }
 
 void PrivacySandboxHandler::HandleGetTopicsState(
