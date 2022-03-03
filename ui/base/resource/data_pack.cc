@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "net/filter/gzip_header.h"
 #include "third_party/zlib/google/compression_utils.h"
+#include "ui/base/resource/scoped_file_writer.h"
 
 // For details of the file layout, see
 // http://dev.chromium.org/developers/design-documents/linuxresourcesandlocalizedstrings
@@ -92,78 +93,6 @@ void MaybePrintResourceId(uint16_t resource_id) {
     resource_ids_logged->insert(resource_id);
   }
 }
-
-// Convenience class to write data to a file. Usage is the following:
-// 1) Create a new instance, passing a base::FilePath.
-// 2) Call Write() repeatedly to write all desired data to the file.
-// 3) Call valid() whenever you want to know if something failed.
-// 4) The file is closed automatically on destruction. Though it is possible
-//    to call the Close() method before that.
-//
-// If an I/O error happens, a PLOG(ERROR) message will be generated, and
-// a flag will be set in the writer, telling it to ignore future Write()
-// requests. This allows the caller to ignore error handling until the
-// very end, as in:
-//
-//   {
-//     base::ScopedFileWriter  writer(<some-path>);
-//     writer.Write(&foo, sizeof(foo));
-//     writer.Write(&bar, sizeof(bar));
-//     ....
-//     writer.Write(&zoo, sizeof(zoo));
-//     if (!writer.valid()) {
-//        // An error happened.
-//     }
-//   }   // closes the file.
-//
-class ScopedFileWriter {
- public:
-  // Constructor takes a |path| parameter and tries to open the file.
-  // Call valid() to check if the operation was successful.
-  explicit ScopedFileWriter(const base::FilePath& path)
-      : valid_(true), file_(base::OpenFile(path, "wb")) {
-    if (!file_) {
-      PLOG(ERROR) << "Could not open pak file for writing";
-      valid_ = false;
-    }
-  }
-
-  ScopedFileWriter(const ScopedFileWriter&) = delete;
-  ScopedFileWriter& operator=(const ScopedFileWriter&) = delete;
-
-  // Destructor.
-  ~ScopedFileWriter() { Close(); }
-
-  // Return true if the last i/o operation was successful.
-  bool valid() const { return valid_; }
-
-  // Try to write |data_size| bytes from |data| into the file, if a previous
-  // operation didn't already failed.
-  void Write(const void* data, size_t data_size) {
-    if (valid_ && fwrite(data, data_size, 1, file_) != 1) {
-      PLOG(ERROR) << "Could not write to pak file";
-      valid_ = false;
-    }
-  }
-
-  // Close the file explicitly. Return true if all previous operations
-  // succeeded, including the close, or false otherwise.
-  bool Close() {
-    if (file_) {
-      valid_ = (fclose(file_) == 0);
-      file_ = nullptr;
-      if (!valid_) {
-        PLOG(ERROR) << "Could not close pak file";
-      }
-    }
-    return valid_;
-  }
-
- private:
-  bool valid_ = false;
-  raw_ptr<FILE> file_ =
-      nullptr;  // base::ScopedFILE doesn't check errors on close.
-};
 
 bool MmapHasGzipHeader(const base::MemoryMappedFile* mmap) {
   net::GZipHeader header;

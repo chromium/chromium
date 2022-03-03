@@ -44,6 +44,8 @@ component("ui_data_pack") {
     "resource/resource_handle.h",
     "resource/resource_scale_factor.cc",
     "resource/resource_scale_factor.h",
+    "resource/scoped_file_writer.cc",
+    "resource/scoped_file_writer.h",
   ]
 
   deps = [
