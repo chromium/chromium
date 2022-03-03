@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
 class QuickAnswersView;
@@ -100,6 +101,8 @@ class QuickAnswersUiController {
   QuickAnswersView* quick_answers_view_ = nullptr;
   quick_answers::UserConsentView* user_consent_view_ = nullptr;
   std::string query_;
+
+  base::WeakPtrFactory<QuickAnswersUiController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_UI_CONTROLLER_H_
