@@ -30,6 +30,16 @@ using MigrationFinishedCallback =
 constexpr char kMoveMigrationResumeStepPref[] =
     "ash.browser_data_migrator.move_migration_resume_step";
 
+// Dictionary pref storing user id hash as key and number of resumes in int as
+// value.
+constexpr char kMoveMigrationResumeCountPref[] =
+    "ash.browser_data_migrator.move_migration_resume_count";
+
+// The number of maximum resume tries for `MoveMigrator`. If the limit is
+// reached then move migration is marked as completed without actually
+// completing the migration.
+constexpr int kMoveMigrationResumeCountLimit = 5;
+
 // This class "moves" Lacros data from Ash to Lacros. It migrates user data from
 // `original_profile_dir` (/home/user/<hash>/), denoted as <Ash PDD> from here
 // forward, to the new profile data directory
@@ -81,11 +91,15 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // BrowserDataMigratorImpl::MigratorDelegate override.
   void Migrate() override;
 
-  // Returns true if the `ResumeStep` stored in `local_state` for the user
-  // indicates that the migration had been left unfinished in the previous
-  // attempt and that it must be resumed before user profile is created.
+  // Gets the `ResumeStep` for the user stored in `local_state` and checks if
+  // move migration has to be resumed by calling `IsResumeStep()`.
   static bool ResumeRequired(PrefService* local_state,
                              const std::string& user_id_hash);
+
+  // Resets the number of resume attempts for the user stored in
+  // `kMoveMigrationResumeCountPref.
+  static void ClearResumeAttemptCountForUser(PrefService* local_state,
+                                             const std::string& user_id_hash);
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -113,6 +127,17 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   static void SetResumeStep(PrefService* local_state,
                             const std::string& user_id_hash,
                             const ResumeStep step);
+
+  // Returns true if `resume_step` indicates that the migration had been left
+  // unfinished in the previous attempt and that it must be resumed before user
+  // profile is created.
+  static bool IsResumeStep(ResumeStep resume_step);
+
+  //  Increments the resume attempt count stored in
+  // `kMoveMigrationResumeCountPref` by 1 for the user identified by
+  // `user_id_hash`. Returns the updated resume count.
+  int UpdateResumeAttemptCountForUser(PrefService* local_state,
+                                      const std::string& user_id_hash);
 
   // Deletes lacros user directory and `kMoveTmpDir` if they exist. Set
   // `PreMigrationCleanUpResult::success` to true if the deletion of those

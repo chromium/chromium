@@ -53,9 +53,6 @@ bool BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
     const AccountId& account_id,
     const std::string& user_id_hash) {
   LOG(WARNING) << "MaybeForceResumeMoveMigration() is called.";
-  // TODO(crbug.com/1261730): Set a max number of force resume and if that
-  // number is reached, do not attempt a resume and simply mark move migration
-  // && migration as completed.
   if (!MoveMigrator::ResumeRequired(local_state, user_id_hash))
     return false;
 
@@ -145,6 +142,9 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
     ClearMigrationAttemptCountForUser(g_browser_process->local_state(),
                                       user_id_hash);
     crosapi::browser_util::ClearProfileMigrationCompletedForUser(
+        g_browser_process->local_state(), user_id_hash);
+    // TODO(ythjkt): Also clear move migration resume step here.
+    MoveMigrator::ClearResumeAttemptCountForUser(
         g_browser_process->local_state(), user_id_hash);
     return false;
   }

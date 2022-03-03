@@ -49,6 +49,17 @@ MoveMigrator::~MoveMigrator() = default;
 void MoveMigrator::Migrate() {
   ResumeStep resume_step = GetResumeStep(local_state_, user_id_hash_);
 
+  if (IsResumeStep(resume_step)) {
+    const int resume_count =
+        UpdateResumeAttemptCountForUser(local_state_, user_id_hash_);
+    if (resume_count > kMoveMigrationResumeCountLimit) {
+      LOG(ERROR) << "The number of resume attempt limit has reached. Marking "
+                    "move migration as completed.";
+      SetResumeStep(local_state_, user_id_hash_, ResumeStep::kCompleted);
+      resume_step = ResumeStep::kCompleted;
+    }
+  }
+
   // Start or resume migration.
   switch (resume_step) {
     case ResumeStep::kStart:
@@ -101,6 +112,10 @@ bool MoveMigrator::ResumeRequired(PrefService* local_state,
                                   const std::string& user_id_hash) {
   ResumeStep resume_step = GetResumeStep(local_state, user_id_hash);
 
+  return IsResumeStep(resume_step);
+}
+
+bool MoveMigrator::IsResumeStep(ResumeStep resume_step) {
   switch (resume_step) {
     case ResumeStep::kStart:
       return false;
@@ -116,6 +131,8 @@ bool MoveMigrator::ResumeRequired(PrefService* local_state,
 // static
 void MoveMigrator::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kMoveMigrationResumeStepPref,
+                                   base::DictionaryValue());
+  registry->RegisterDictionaryPref(kMoveMigrationResumeCountPref,
                                    base::DictionaryValue());
 }
 
@@ -137,6 +154,27 @@ void MoveMigrator::SetResumeStep(PrefService* local_state,
   base::Value* dict = update.Get();
   dict->SetKey(user_id_hash, base::Value(static_cast<int>(step)));
   local_state->CommitPendingWrite();
+}
+
+int MoveMigrator::UpdateResumeAttemptCountForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash) {
+  int count = local_state->GetDictionary(kMoveMigrationResumeCountPref)
+                  ->FindIntPath(user_id_hash)
+                  .value_or(0);
+  count += 1;
+  DictionaryPrefUpdate update(local_state, kMoveMigrationResumeCountPref);
+  base::Value* dict = update.Get();
+  dict->SetIntKey(user_id_hash, count);
+  return count;
+}
+
+void MoveMigrator::ClearResumeAttemptCountForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash) {
+  DictionaryPrefUpdate update(local_state, kMoveMigrationResumeCountPref);
+  base::Value* dict = update.Get();
+  dict->RemoveKey(user_id_hash);
 }
 
 // static
