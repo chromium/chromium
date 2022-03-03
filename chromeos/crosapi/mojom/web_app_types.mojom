@@ -30,4 +30,5 @@ enum WebAppInstallResultCode {
   kSuccessOfflineFallbackInstall,
   kInstallTaskDestroyed,
   kUpdateTaskFailed,
+  [MinVersion=1] kAppNotInRegistrarAfterCommit,
 };

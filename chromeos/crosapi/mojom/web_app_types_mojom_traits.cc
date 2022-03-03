@@ -65,6 +65,9 @@ crosapi::mojom::WebAppInstallResultCode EnumTraits<
       return crosapi::mojom::WebAppInstallResultCode::kInstallTaskDestroyed;
     case webapps::InstallResultCode::kUpdateTaskFailed:
       return crosapi::mojom::WebAppInstallResultCode::kUpdateTaskFailed;
+    case webapps::InstallResultCode::kAppNotInRegistrarAfterCommit:
+      return crosapi::mojom::WebAppInstallResultCode::
+          kAppNotInRegistrarAfterCommit;
   };
 }
 
@@ -144,6 +147,9 @@ bool EnumTraits<crosapi::mojom::WebAppInstallResultCode,
       return true;
     case crosapi::mojom::WebAppInstallResultCode::kUpdateTaskFailed:
       *output = webapps::InstallResultCode::kUpdateTaskFailed;
+      return true;
+    case crosapi::mojom::WebAppInstallResultCode::kAppNotInRegistrarAfterCommit:
+      *output = webapps::InstallResultCode::kAppNotInRegistrarAfterCommit;
       return true;
   };
 
