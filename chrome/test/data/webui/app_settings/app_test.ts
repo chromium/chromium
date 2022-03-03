@@ -6,9 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://app-settings/web_app_settings.js';
 
 import {App, AppManagementPermissionItemElement, AppManagementToggleRowElement, AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, OptionalBool, PermissionType, PermissionTypeIndex, RunOnOsLoginMode, TriState, WebAppSettingsAppElement, WindowMode} from 'chrome://app-settings/web_app_settings.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy.js';
@@ -16,7 +14,6 @@ import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy
 suite('AppSettingsAppTest', () => {
   let appSettingsApp: WebAppSettingsAppElement;
   let app: App;
-  let testProxy: TestAppManagementBrowserProxy;
 
   setup(async () => {
     app = {
@@ -62,7 +59,7 @@ suite('AppSettingsAppTest', () => {
           createTriStatePermission(permissionType, permissionValue, isManaged);
     }
 
-    testProxy = new TestAppManagementBrowserProxy(app);
+    const testProxy = new TestAppManagementBrowserProxy(app);
     BrowserProxy.setInstance(testProxy);
 
     document.body.innerHTML = '';
@@ -117,39 +114,6 @@ suite('AppSettingsAppTest', () => {
 
     toggleRow.click();
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
-  });
-
-  test('File Handling overflow', async function() {
-    const fileHandlingItem = appSettingsApp.shadowRoot!.querySelector(
-        'app-management-file-handling-item')!;
-    assertTrue(!!fileHandlingItem);
-
-    // No overflow link because it's not in `userVisibleTypes`.
-    const typeList = fileHandlingItem.shadowRoot!.querySelector('#type-list')!;
-    assertTrue(!!typeList);
-    let link = typeList.shadowRoot!.querySelector<HTMLElement>('a');
-    assertTrue(!link);
-
-    // Overflow link present.
-    app.fileHandlingState!.userVisibleTypesLabel =
-        'TXT, CSV, MD, DOC (<a href="#">and 1 more</a>)';
-    testProxy.callbackRouterRemote.onAppChanged(app);
-    await flushTasks();
-    link = typeList.shadowRoot!.querySelector<HTMLElement>('a');
-    assertTrue(!!link);
-
-    // Dialog starts hidden.
-    let dialog =
-        fileHandlingItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
-    assertTrue(!dialog);
-    const originalUrl = location.href;
-    link.click();
-    flush();
-
-    // Clicking the link doesn't change the URL, and does open the dialog.
-    assertEquals(originalUrl, location.href);
-    dialog = fileHandlingItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
-    assertTrue(!!dialog);
   });
 
   test('Toggle window mode', function() {

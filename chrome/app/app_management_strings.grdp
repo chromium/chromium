@@ -127,10 +127,6 @@
     Suggest app when opening files on your computer
   </message>
 
-  <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_OVERFLOW_DIALOG_TITLE" desc="Title for a dialog that shows all the supported file types (file extensions) that are handled by an app. Only shown when there are 5 or more file types.">
-    Supported file types
-  </message>
-
   <if expr="is_win">
     <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_SET_DEFAULTS_LINK" desc="Further explanation of the File Handling API, including text describing the purpose of the toggle (referencing the Windows File Explorer) and a link to change Windows' default filetype associations.">
       You can open and edit supported files with this app from the File Explorer or other apps. To control which files open in this app by default, go to <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Windows settings<ph name="END_LINK">&lt;/a&gt;</ph>.

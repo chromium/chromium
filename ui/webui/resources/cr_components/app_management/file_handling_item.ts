@@ -6,11 +6,7 @@ import './shared_style.js';
 import './toggle_row.js';
 
 import {assert} from '//resources/js/assert.m.js';
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
-import {I18nMixin} from '../../js/i18n_mixin.js';
 
 import {App} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
@@ -18,10 +14,7 @@ import {AppManagementUserAction} from './constants.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
 import {recordAppManagementUserAction} from './util.js';
 
-const AppManagementFileHandlingItemBase = I18nMixin(PolymerElement);
-
-export class AppManagementFileHandlingItemElement extends
-    AppManagementFileHandlingItemBase {
+export class AppManagementFileHandlingItemElement extends PolymerElement {
   static get is() {
     return 'app-management-file-handling-item';
   }
@@ -32,15 +25,10 @@ export class AppManagementFileHandlingItemElement extends
 
   static get properties() {
     return {
-      app: Object,
+      fileHandlingHeader: String,
+      fileHandlingSetDefaults: String,
 
-      /**
-       * @type {boolean}
-       */
-      showOverflowDialog: {
-        type: Boolean,
-        value: false,
-      },
+      app: Object,
 
       /**
        * @type {boolean}
@@ -54,7 +42,8 @@ export class AppManagementFileHandlingItemElement extends
   }
 
   app: App;
-  showOverflowDialog: boolean;
+  fileHandlingHeader: String;
+  fileHandlingSetDefaults: String;
 
   ready() {
     super.ready();
@@ -75,13 +64,6 @@ export class AppManagementFileHandlingItemElement extends
     return false;
   }
 
-  private userVisibleTypes_(app: App): string {
-    if (app && app.fileHandlingState) {
-      return app.fileHandlingState.userVisibleTypes;
-    }
-    return '';
-  }
-
   private userVisibleTypesLabel_(app: App): string {
     if (app && app.fileHandlingState) {
       return app.fileHandlingState.userVisibleTypesLabel;
@@ -94,26 +76,6 @@ export class AppManagementFileHandlingItemElement extends
       return app.fileHandlingState.learnMoreUrl.url;
     }
     return '';
-  }
-
-  private launchDialog_(e: CustomEvent): void {
-    // A place holder href with the value "#" is used to have a compliant link.
-    // This prevents the browser from navigating the window to "#"
-    e.detail.event.preventDefault();
-    e.stopPropagation();
-    this.showOverflowDialog = true;
-
-    recordAppManagementUserAction(
-        this.app.type, AppManagementUserAction.FileHandlingOverflowShown);
-  }
-
-  private onCloseButtonClicked_() {
-    this.shadowRoot!.querySelector<CrDialogElement>('#dialog')!.close();
-  }
-
-  private onDialogClose_(): void {
-    this.showOverflowDialog = false;
-    focusWithoutInk(assert(this.shadowRoot!.querySelector('#type-list')!));
   }
 
   private getValue_(app: App): boolean {

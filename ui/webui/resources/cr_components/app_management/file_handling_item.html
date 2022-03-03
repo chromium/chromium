@@ -11,40 +11,19 @@
   #toggle-row:not([disabled_]) {
     cursor: pointer;
   }
-
-  #dialog-body {
-    user-select: text;
-  }
 </style>
 
 <div id="file-handling-item">
   <app-management-toggle-row
      id="toggle-row"
-     label="[[i18n('appManagementFileHandlingHeader')]]"
+     label="[[fileHandlingHeader]]"
      managed="[[isManaged_(app)]]"
      value="[[getValue_(app)]]">
   </app-management-toggle-row>
   <p>
-    <localized-link id="type-list"
-      localized-string="[[userVisibleTypesLabel_(app)]]"
-      on-link-clicked="launchDialog_">
+    <localized-link localized-string="[[userVisibleTypesLabel_(app)]]">
     </localized-link>
   </p>
-  <localized-link localized-string="[[i18nAdvanced('fileHandlingSetDefaults')]]"
-    link-url="[[getLearnMoreLinkUrl_(app)]]">
+  <localized-link localized-string="[[fileHandlingSetDefaults]]" link-url="[[getLearnMoreLinkUrl_(app)]]">
   </localized-link>
 </div>
-<template is="dom-if" if="[[showOverflowDialog]]" restamp>
-  <cr-dialog id="dialog" show-on-attach
-      on-close="onDialogClose_">
-    <div slot="title">[[i18n('fileHandlingOverflowDialogTitle')]]</div>
-    <div id="dialog-body" slot="body">
-      [[userVisibleTypes_(app)]]
-    </div>
-    <div slot="button-container">
-      <cr-button class="action-button" on-click="onCloseButtonClicked_">
-        [[i18n('close')]]
-      </cr-button>
-    </div>
-  </cr-dialog>
-</template>
