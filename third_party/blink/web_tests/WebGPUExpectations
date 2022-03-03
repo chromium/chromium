@@ -41,7 +41,7 @@ wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:co
 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:* [ Slow ]
 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,draw:arguments:* [ Slow ]
 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,render_pass,storeOp:render_pass_store_op,color_attachment_only:* [ Slow ]
-[ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:* [ Slow ]
+# [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:* [ Slow ]
 # Intel only. Really slow and killed by the GPU watchdog?
 crbug.com/dawn/1046 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=false;indirect=true;drawCallTestParameter="firstVertex";type="float32x4";* [ Slow Crash ]
 crbug.com/dawn/1046 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=false;indirect=true;drawCallTestParameter="instanceCount";type="float32x4";* [ Slow Crash ]
@@ -54,6 +54,10 @@ crbug.com/dawn/1046 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,e
 crbug.com/dawn/1111 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:* [ Crash Slow ]
 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:* [ Slow ]
 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:* [ Slow ]
+
+# Slow on Linux Intel only
+crbug.com/tint/1464 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,atomicity:atomicity:* [ Slow ]
+crbug.com/tint/1464 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,coherence:corr:* [ Slow ]
 
 ###
 ### Untriaged failures. Please prefer to triage thoroughly and file a bug!
@@ -159,6 +163,15 @@ crbug.com/dawn/1025 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,r
 ###
 ### Platform-independent failures
 ###
+
+# Replace depth-clamp feature with depth-clip
+crbug.com/dawn/1178 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:* [ Failure ]
+
+# Temporary. Failing a loadOp/storeOp validation error in Dawn.
+# https://dawn-review.googlesource.com/c/dawn/+/82540
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,attachment_compatibility:render_pass_and_bundle,depth_format:* [ Failure ]
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:* [ Skip ] # Skipped because it conflicted with a Slow expectation.
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:* [ Failure ]
 
 # Test is being updated in https://github.com/gpuweb/cts/pull/1027
 crbug.com/1243842 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,buffers,map_ArrayBuffer:postMessage:transfer=true;* [ Failure ]
@@ -407,6 +420,8 @@ crbug.com/1299319 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platfo
 
 # Only on Mac Intel, baseVertex is always 0 for drawIndirect.
 crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;base_vertex=9;* [ Failure ]
+
+crbug.com/tint/1467 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan2:* [ Failure ]
 
 # Only Mac Intel
 crbug.com/dawn/704 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_with_stencil_aspect:* [ Failure ]

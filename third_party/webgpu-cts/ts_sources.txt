@@ -255,6 +255,7 @@ src/webgpu/shader/execution/builtin/abs.spec.ts
 src/webgpu/shader/execution/builtin/all.spec.ts
 src/webgpu/shader/execution/builtin/any.spec.ts
 src/webgpu/shader/execution/builtin/atan.spec.ts
+src/webgpu/shader/execution/builtin/atan2.spec.ts
 src/webgpu/shader/execution/builtin/ceil.spec.ts
 src/webgpu/shader/execution/builtin/clamp.spec.ts
 src/webgpu/shader/execution/builtin/cos.spec.ts
@@ -273,6 +274,7 @@ src/webgpu/shader/execution/builtin/logical_built_in_functions.spec.ts
 src/webgpu/shader/execution/builtin/max.spec.ts
 src/webgpu/shader/execution/builtin/min.spec.ts
 src/webgpu/shader/execution/builtin/select.spec.ts
+src/webgpu/shader/execution/builtin/sin.spec.ts
 src/webgpu/shader/execution/builtin/value_testing_built_in_functions.spec.ts
 src/webgpu/shader/execution/memory_model/memory_model_setup.ts
 src/webgpu/shader/execution/memory_model/atomicity.spec.ts
