@@ -77,9 +77,6 @@ crbug.com/dawn/1002 wpt_internal/webgpu/cts.https.html?worker=1&q=webgpu:api,val
 # Dawn implements validation of the limit at createShaderModule time, while the CTS checks at createRenderPipeline time.
 crbug.com/dawn/986 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,vertex_state:vertex_shader_input_location_limit:* [ Failure ]
 
-# WebGPU allows copy from webgpu context in CopyExternalImageToTexture(). Disable related cts temporarily.
-crbug.com/1282838 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:source_canvas,contexts:* [ Failure ]
-
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Mac: mostly works
 # Linux: Crashes
@@ -322,7 +319,6 @@ crbug.com/dawn/685 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,cr
 crbug.com/dawn/685 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,uncompressed_format:size=[1,1,2049];* [ Failure ]
 
 crbug.com/1197369 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:source_image,crossOrigin:* [ Failure ]
-crbug.com/1197369 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="premultiply";orientation="flipY";* [ Skip ]
 
 crbug.com/dawn/995 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,buffer,create:createBuffer_invalid_and_oom:* [ Failure ]
 
@@ -398,6 +394,16 @@ crbug.com/tint/993 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,ex
 # Timeout + compilation failure
 crbug.com/tint/993 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="function";* [ Skip ]
 crbug.com/tint/993 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="private";access="write";* [ Skip ]
+
+# CopyExernalImageToTexture fails with dest format rgb10a2unorm when input resource is ImageBitmap created with ImageData
+crbug.com/1299319 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="none";orientation="flipY";srcDoFlipYDuringCopy=false;dstColorFormat="rgb10a2unorm";* [ Failure ]
+crbug.com/1299319 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="none";orientation="flipY";srcDoFlipYDuringCopy=true;dstColorFormat="rgb10a2unorm";* [ Failure ]
+crbug.com/1299319 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="none";orientation="none";srcDoFlipYDuringCopy=false;dstColorFormat="rgb10a2unorm";* [ Failure ]
+crbug.com/1299319 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="none";orientation="none";srcDoFlipYDuringCopy=true;dstColorFormat="rgb10a2unorm";* [ Failure ]
+crbug.com/1299319 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="premultiply";orientation="flipY";srcDoFlipYDuringCopy=false;dstColorFormat="rgb10a2unorm";* [ Failure ]
+crbug.com/1299319 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="premultiply";orientation="flipY";srcDoFlipYDuringCopy=true;dstColorFormat="rgb10a2unorm";* [ Failure ]
+crbug.com/1299319 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="premultiply";orientation="none";srcDoFlipYDuringCopy=false;dstColorFormat="rgb10a2unorm";* [ Failure ]
+crbug.com/1299319 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="premultiply";orientation="none";srcDoFlipYDuringCopy=true;dstColorFormat="rgb10a2unorm";* [ Failure ]
 
 # Only on Mac Intel, baseVertex is always 0 for drawIndirect.
 crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;base_vertex=9;* [ Failure ]
@@ -530,11 +536,6 @@ crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,opera
 # Device lost is triggered unexpectedly.
 crbug.com/dawn/1278 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="WriteTexture";depthOrArrayLayers=32;dimension="3d";format="r8unorm";mipLevel=2;copyWidthModifier=-1;copyHeightModifier=-1;copyDepthModifier=0;* [ Failure ]
 
-# (Intel-only) Wrong results in copyToTexture.
-crbug.com/dawn/1279 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="none";orientation="flipY";srcDoFlipYDuringCopy=false;dstColorFormat="rg32float";width=256;height=255;* [ Failure ]
-crbug.com/dawn/1279 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="none";orientation="none";srcDoFlipYDuringCopy=true;dstColorFormat="rg32float";width=256;height=255;* [ Failure ]
-crbug.com/dawn/1279 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="premultiply";orientation="none";srcDoFlipYDuringCopy=true;dstColorFormat="rg32float";width=256;height=255;* [ Failure ]
-
 # (Intel-only) StoreOpClear handling is overclearing resources that should be preserved
 crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="rg32float";uninitializeMethod="StoreOpClear";canaryOnCreation=true;* [ Failure ]
 crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="rgba32float";uninitializeMethod="StoreOpClear";canaryOnCreation=true;* [ Failure ]
@@ -547,20 +548,6 @@ crbug.com/tint/1287 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,e
 
 # (Intel-only) Unexpected result. Possibly due to using dst-alpha on an attachment with no alpha channel.
 crbug.com/dawn/1063 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,render_pipeline,pipeline_output_targets:color,component_count,blend:* [ Failure ]
-
-# (Intel-HD630/UHD630-only) CopyExternalImageToTexture test failures with CPU uploading path on Windows.
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:canvasType="offscreen";dstColorFormat="rg32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:canvasType="offscreen";dstColorFormat="rgba32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:canvasType="onscreen";dstColorFormat="rg32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:canvasType="onscreen";dstColorFormat="rgba32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="offscreen";contextName="webgl";dstColorFormat="rg32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="offscreen";contextName="webgl";dstColorFormat="rgba32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="offscreen";contextName="webgl2";dstColorFormat="rg32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="offscreen";contextName="webgl2";dstColorFormat="rgba32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="onscreen";contextName="webgl";dstColorFormat="rg32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="onscreen";contextName="webgl";dstColorFormat="rgba32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="onscreen";contextName="webgl2";dstColorFormat="rg32float";* [ Failure ]
-crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="onscreen";contextName="webgl2";dstColorFormat="rgba32float";* [ Failure ]
 
 # KI due to support in Tint being rolled back
 crbug.com/tint/1322 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,sampling,gradients_in_varying_loop:derivative_in_varying_loop:* [ Failure ]
