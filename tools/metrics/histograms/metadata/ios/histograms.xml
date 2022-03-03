@@ -636,6 +636,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.IPH.DefaultSite.Presented" units="BooleanHit"
+    expires_after="2023-02-28">
+  <owner>gambard@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <summary>
+    Recorded when the InProductHelp about the DefaultSite is presented to the
+    user. Can be used as a base number to evaluate the impact of IPH.
+  </summary>
+</histogram>
+
 <histogram name="IOS.IsDefaultBrowser" enum="Boolean" expires_after="never">
 <!-- expires-never: used internally for filtering -->
 

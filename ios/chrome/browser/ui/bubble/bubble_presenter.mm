@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -246,6 +247,7 @@ const CGFloat kBubblePresentationDelay = 1;
   self.defaultPageModeTipBubblePresenter = presenter;
   feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
       ->NotifyEvent(feature_engagement::events::kDefaultSiteViewShown);
+  base::UmaHistogramBoolean("IOS.IPH.DefaultSite.Presented", true);
 }
 
 #pragma mark - Private
