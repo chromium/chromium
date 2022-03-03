@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -12,6 +13,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
@@ -451,6 +453,68 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   EXPECT_EQ(1, tabs->count());
   EXPECT_TRUE(content::WaitForLoadStop(tabs->GetActiveWebContents()));
   EXPECT_EQ(url::kAboutBlankURL, GetActiveUrl(browser()));
+}
+
+// Used for tests that only make sense with a background page.
+using BackgroundPageOnlyRuntimeApiTest = RuntimeApiTest;
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackgroundPageOnlyRuntimeApiTest,
+                         testing::Values(ContextType::kPersistentBackground));
+
+// Regression test for https://crbug.com/1298195 - whether a tab opened
+// from the background page (via `window.open(...)`) will be correctly
+// marked as `mojom::ViewType::kTabContents`.
+//
+// This test is a BackgroundPageOnlyRuntimeApiTest, because service workers
+// can call neither 1) window.open nor 2) chrome.extension.getViews.
+IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
+                       GetViewsOfWindowOpenedFromBackgroundPage) {
+  ASSERT_EQ(GetParam(), ContextType::kPersistentBackground);
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "test",
+        "version": "1.0",
+        "background": {"scripts": ["background.js"]},
+        "manifest_version": 2
+      })";
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  dir.WriteFile(FILE_PATH_LITERAL("index.htm"), "");
+
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  GURL new_tab_url = extension->GetResourceURL("/index.htm");
+  {
+    content::TestNavigationObserver nav_observer(new_tab_url);
+    nav_observer.StartWatchingNewWebContents();
+    ASSERT_TRUE(browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        browser()->profile(), extension->id(),
+        R"(  window.open('/index.htm', '');  )"));
+    nav_observer.Wait();
+  }
+
+  {
+    content::DOMMessageQueue message_queue;
+    static constexpr char kScript[] = R"(
+        const foundWindows = chrome.extension.getViews({type: 'tab'});
+        domAutomationController.send(foundWindows.length);
+        domAutomationController.send(foundWindows[0].location.href);
+    )";
+    ASSERT_TRUE(browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        browser()->profile(), extension->id(), kScript));
+
+    std::string json;
+    ASSERT_TRUE(message_queue.WaitForMessage(&json));
+    ASSERT_EQ("1", json);
+
+    ASSERT_TRUE(message_queue.WaitForMessage(&json));
+    absl::optional<base::Value> url =
+        base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
+    ASSERT_TRUE(url->is_string());
+    ASSERT_EQ(new_tab_url.spec(), url->GetString());
+  }
 }
 
 }  // namespace extensions
