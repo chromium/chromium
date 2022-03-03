@@ -6,11 +6,8 @@
 #define ASH_SERVICES_SECURE_CHANNEL_REGISTER_PAYLOAD_FILE_REQUEST_H_
 
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Captures arguments of RegisterPayloadFile() calls to help verification in
 // tests.
@@ -28,13 +25,6 @@ struct RegisterPayloadFileRequest {
   FileTransferUpdateCallback file_transfer_update_callback;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::RegisterPayloadFileRequest;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_REGISTER_PAYLOAD_FILE_REQUEST_H_

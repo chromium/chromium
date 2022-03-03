@@ -9,12 +9,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Base SecureChannel implementation.
-class SecureChannelBase : public mojom::SecureChannel {
+class SecureChannelBase
+    : public chromeos::secure_channel::mojom::SecureChannel {
  public:
   SecureChannelBase(const SecureChannelBase&) = delete;
   SecureChannelBase& operator=(const SecureChannelBase&) = delete;
@@ -23,25 +22,22 @@ class SecureChannelBase : public mojom::SecureChannel {
 
   // Binds a receiver to this implementation. Should be called each time that
   // the service receives a receiver.
-  void BindReceiver(mojo::PendingReceiver<mojom::SecureChannel> receiver);
+  void BindReceiver(
+      mojo::PendingReceiver<chromeos::secure_channel::mojom::SecureChannel>
+          receiver);
 
  protected:
   SecureChannelBase();
 
  private:
-  mojo::ReceiverSet<mojom::SecureChannel> receivers_;
+  mojo::ReceiverSet<chromeos::secure_channel::mojom::SecureChannel> receivers_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::SecureChannelBase;
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::SecureChannelBase;
 }
-}  // namespace ash
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_BASE_H_

@@ -11,34 +11,26 @@
 #include <vector>
 
 #include "ash/services/secure_channel/active_connection_manager.h"
-// TODO(https://crbug.com/1164001): remove.
-#include "ash/services/secure_channel/authenticated_channel.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/ble_connection_manager.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/ble_scanner.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/ble_synchronizer_base.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/bluetooth_helper.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/nearby_connection_manager.h"
 #include "ash/services/secure_channel/pending_connection_manager.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/containers/flat_map.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace device {
 class BluetoothAdapter;
-}  // namespace device
+}
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
-
+class BleConnectionManager;
+class BleScanner;
+class BleSynchronizerBase;
+class BluetoothHelper;
+class NearbyConnectionManager;
 class SecureChannelDisconnector;
 class TimerFactory;
 
@@ -48,19 +40,20 @@ class TimerFactory;
 // (2) ActiveConnectionManager: Maintains connections to remote devices, sharing
 //     a single connection with multiple clients when appropriate.
 // (3) RemoteDeviceCache: Caches devices within this service.
-class SecureChannelImpl : public mojom::SecureChannel,
+class SecureChannelImpl : public chromeos::secure_channel::mojom::SecureChannel,
                           public ActiveConnectionManager::Delegate,
                           public PendingConnectionManager::Delegate {
  public:
   class Factory {
    public:
-    static std::unique_ptr<mojom::SecureChannel> Create(
-        scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+    static std::unique_ptr<chromeos::secure_channel::mojom::SecureChannel>
+    Create(scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
     virtual ~Factory();
-    virtual std::unique_ptr<mojom::SecureChannel> CreateInstance(
+    virtual std::unique_ptr<chromeos::secure_channel::mojom::SecureChannel>
+    CreateInstance(
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
 
    private:
@@ -115,16 +108,19 @@ class SecureChannelImpl : public mojom::SecureChannel,
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
+      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
+          delegate) override;
   void InitiateConnectionToDevice(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
+      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
+          delegate) override;
   void SetNearbyConnector(
-      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override;
+      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyConnector>
+          nearby_connector) override;
 
   // ActiveConnectionManager::Delegate:
   void OnDisconnected(const ConnectionDetails& connection_details) override;
@@ -145,7 +141,7 @@ class SecureChannelImpl : public mojom::SecureChannel,
       ConnectionMedium connection_medium);
   void RejectRequestForReason(
       ApiFunctionName api_fn_name,
-      mojom::ConnectionAttemptFailureReason reason,
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason,
       ClientConnectionParameters* client_connection_parameters);
 
   // Checks if |client_connection_parameters| is invalid. Returns whether
@@ -204,8 +200,6 @@ class SecureChannelImpl : public mojom::SecureChannel,
 std::ostream& operator<<(std::ostream& stream,
                          const SecureChannelImpl::ApiFunctionName& role);
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_IMPL_H_

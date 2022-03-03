@@ -8,14 +8,12 @@
 #include <string>
 
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom-forward.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 #include "base/callback.h"
 #include "base/unguessable_token.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Proxies the communication channel between clients and remote devices.
 //
@@ -35,11 +33,13 @@ class SingleClientProxy {
                                         base::OnceClosure on_sent_callback) = 0;
     virtual void RegisterPayloadFile(
         int64_t payload_id,
-        mojom::PayloadFilesPtr payload_files,
+        chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
         FileTransferUpdateCallback file_transfer_update_callback,
         base::OnceCallback<void(bool)> registration_result_callback) = 0;
     virtual void GetConnectionMetadata(
-        base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) = 0;
+        base::OnceCallback<
+            void(chromeos::secure_channel::mojom::ConnectionMetadataPtr)>
+            callback) = 0;
     virtual void OnClientDisconnected(
         const base::UnguessableToken& proxy_id) = 0;
   };
@@ -69,23 +69,17 @@ class SingleClientProxy {
   void NotifyClientDisconnected();
   void RegisterPayloadFileWithDelegate(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback);
   void GetConnectionMetadataFromDelegate(
-      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback);
+      base::OnceCallback<void(
+          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback);
 
  private:
   Delegate* delegate_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::SingleClientProxy;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_PROXY_H_

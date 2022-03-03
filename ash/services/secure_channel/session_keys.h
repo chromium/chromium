@@ -7,9 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // This class contains the secure channel (secure context) session keys. This
 // class derives (from the session symmetric key) different keys for encryption
@@ -36,13 +34,6 @@ class SessionKeys {
   std::string responder_encode_key_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::SessionKeys;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SESSION_KEYS_H_

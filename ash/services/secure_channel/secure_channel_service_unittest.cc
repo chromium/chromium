@@ -47,11 +47,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 const size_t kNumTestDevices = 6;
 
@@ -1547,6 +1548,4 @@ TEST_F(SecureChannelServiceTest, ThreeDevices) {
                                          ConnectionMedium::kBluetoothLowEnergy);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

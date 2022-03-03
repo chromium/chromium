@@ -8,9 +8,7 @@
 #include <memory>
 #include <string>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Message sent over the wire via SecureChannel. Each message sent using the
 // SecureChannel protocol has a feature name (a unique identifier for the client
@@ -94,13 +92,6 @@ class WireMessage {
   int sequence_number_ = -1;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::WireMessage;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_WIRE_MESSAGE_H_

@@ -19,9 +19,7 @@
 #include "base/values.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -259,6 +257,4 @@ WireMessage::WireMessage(const WireMessage& other)
 
 WireMessage& WireMessage::operator=(const WireMessage& other) = default;
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

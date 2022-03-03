@@ -11,11 +11,9 @@
 
 namespace base {
 class OneShotTimer;
-}  // namespace base
+}
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Concrete TimerFactory implementation, which returns base::OneShotTimer
 // objects.
@@ -46,8 +44,6 @@ class TimerFactoryImpl : public TimerFactory {
   std::unique_ptr<base::OneShotTimer> CreateOneShotTimer() override;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_TIMER_FACTORY_IMPL_H_

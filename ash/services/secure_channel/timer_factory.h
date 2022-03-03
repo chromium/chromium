@@ -9,11 +9,9 @@
 
 namespace base {
 class OneShotTimer;
-}  // namespace base
+}
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Creates timers. This class is needed so that tests can inject test doubles
 // for timers.
@@ -29,13 +27,6 @@ class TimerFactory {
   TimerFactory() = default;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::TimerFactory;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_TIMER_FACTORY_H_

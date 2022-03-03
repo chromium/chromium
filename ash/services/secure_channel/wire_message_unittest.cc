@@ -9,9 +9,7 @@
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class SecureChannelWireMessageTest : public testing::Test {
  public:
@@ -348,6 +346,4 @@ TEST(SecureChannelWireMessageTest, Serialize_FailsWithoutPayload) {
   EXPECT_TRUE(bytes.empty());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

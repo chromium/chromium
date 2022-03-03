@@ -23,11 +23,12 @@
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 struct SecureChannelStatusChange {
   SecureChannelStatusChange(const SecureChannel::Status& old_status,
@@ -616,6 +617,4 @@ TEST_F(SecureChannelConnectionTest, GetChannelBindingData) {
   EXPECT_EQ("channel_binding_data", secure_channel_->GetChannelBindingData());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

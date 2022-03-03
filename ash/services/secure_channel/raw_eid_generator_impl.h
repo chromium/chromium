@@ -9,9 +9,7 @@
 
 #include "ash/services/secure_channel/raw_eid_generator.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Generates raw ephemeral ID (EID) values that are used by the
 // ForegroundEidGenerator and BackgroundEidGenerator classes.
@@ -30,13 +28,6 @@ class RawEidGeneratorImpl : public RawEidGenerator {
                           std::string const* extra_entropy) override;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::RawEidGeneratorImpl;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_RAW_EID_GENERATOR_IMPL_H_

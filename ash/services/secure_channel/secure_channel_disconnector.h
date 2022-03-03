@@ -7,9 +7,7 @@
 
 #include <memory>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class SecureChannel;
 
@@ -33,13 +31,6 @@ class SecureChannelDisconnector {
   SecureChannelDisconnector() = default;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::SecureChannelDisconnector;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_DISCONNECTOR_H_

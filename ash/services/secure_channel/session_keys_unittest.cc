@@ -10,9 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -51,6 +49,4 @@ TEST_F(SecureChannelSessionKeysTest, GenerateKeys) {
   EXPECT_EQ(responder_key, session_keys.responder_encode_key());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

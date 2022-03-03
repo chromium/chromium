@@ -15,9 +15,7 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class SecureChannelSecureChannelDisconnectorImplTest : public testing::Test {
  public:
@@ -98,6 +96,4 @@ TEST_F(SecureChannelSecureChannelDisconnectorImplTest,
   EXPECT_TRUE(HasChannelBeenDeleted(id_and_channel_pair_2.first));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

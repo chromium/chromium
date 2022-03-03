@@ -11,9 +11,10 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 // static
 SecureChannelInitializer::Factory*
@@ -159,6 +160,4 @@ void SecureChannelInitializer::OnBluetoothAdapterReceived(
   }
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

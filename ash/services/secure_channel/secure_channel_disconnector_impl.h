@@ -11,9 +11,7 @@
 #include "ash/services/secure_channel/secure_channel_disconnector.h"
 #include "base/containers/flat_set.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Concrete SecureChannelDisconnector implementation.
 class SecureChannelDisconnectorImpl : public SecureChannelDisconnector,
@@ -54,8 +52,6 @@ class SecureChannelDisconnectorImpl : public SecureChannelDisconnector,
   base::flat_set<std::unique_ptr<SecureChannel>> disconnecting_channels_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_DISCONNECTOR_IMPL_H_

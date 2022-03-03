@@ -5,12 +5,14 @@
 #include "ash/services/secure_channel/single_client_proxy.h"
 
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 SingleClientProxy::SingleClientProxy(Delegate* delegate)
     : delegate_(delegate) {}
@@ -44,6 +46,4 @@ void SingleClientProxy::GetConnectionMetadataFromDelegate(
   delegate_->GetConnectionMetadata(std::move(callback));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

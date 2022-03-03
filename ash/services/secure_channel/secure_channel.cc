@@ -15,9 +15,10 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 // static
 SecureChannel::Factory* SecureChannel::Factory::factory_instance_ = nullptr;
@@ -328,6 +329,4 @@ void SecureChannel::OnAuthenticationResult(
   TransitionToStatus(Status::AUTHENTICATED);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

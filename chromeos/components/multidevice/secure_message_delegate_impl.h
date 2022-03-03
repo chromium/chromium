@@ -80,4 +80,9 @@ class SecureMessageDelegateImpl : public SecureMessageDelegate {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::multidevice {
+using ::chromeos::multidevice::SecureMessageDelegateImpl;
+}
+
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_SECURE_MESSAGE_DELEGATE_IMPL_H_

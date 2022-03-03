@@ -7,11 +7,10 @@
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
 const int32_t kNumBytesInEidValue = 2;
 
 // Midnight on 1/1/2020.
@@ -138,6 +137,4 @@ TEST_F(SecureChannelRawEidGeneratorImplTest, EnsureTestVectorsPass) {
   EXPECT_EQ("\xee\xcc", test_eid_with_entropy2);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

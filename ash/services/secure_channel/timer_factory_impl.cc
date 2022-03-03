@@ -7,9 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // static
 TimerFactoryImpl::Factory* TimerFactoryImpl::Factory::test_factory_ = nullptr;
@@ -37,6 +35,4 @@ std::unique_ptr<base::OneShotTimer> TimerFactoryImpl::CreateOneShotTimer() {
   return std::make_unique<base::OneShotTimer>();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

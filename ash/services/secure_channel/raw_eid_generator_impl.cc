@@ -7,15 +7,13 @@
 #include "base/sys_byteorder.h"
 #include "crypto/sha2.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 const int32_t RawEidGenerator::kNumBytesInEidValue = 2;
 
-RawEidGeneratorImpl::RawEidGeneratorImpl() {}
+RawEidGeneratorImpl::RawEidGeneratorImpl() = default;
 
-RawEidGeneratorImpl::~RawEidGeneratorImpl() {}
+RawEidGeneratorImpl::~RawEidGeneratorImpl() = default;
 
 std::string RawEidGeneratorImpl::GenerateEid(
     const std::string& eid_seed,
@@ -36,6 +34,4 @@ std::string RawEidGeneratorImpl::GenerateEid(
   return result;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

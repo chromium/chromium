@@ -9,9 +9,7 @@
 
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Represents an attribute in the peripheral (service or characteristic).
 struct RemoteAttribute {
@@ -19,13 +17,6 @@ struct RemoteAttribute {
   std::string id;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::RemoteAttribute;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_REMOTE_ATTRIBUTE_H_

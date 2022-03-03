@@ -7,9 +7,7 @@
 
 #include "base/callback_forward.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // An interface used to decode and encode messages.
 class SecureContext {
@@ -48,13 +46,6 @@ class SecureContext {
   virtual std::string GetChannelBindingData() const = 0;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::SecureContext;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SECURE_CONTEXT_H_

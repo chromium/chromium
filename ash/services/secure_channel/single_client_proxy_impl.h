@@ -11,14 +11,11 @@
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/single_client_proxy.h"
 #include "base/callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Concrete SingleClientProxy implementation, which forwards client requests to
 // its delegate, and utilizes a mojo::Remote<MessageReceiver> to receive
@@ -69,28 +66,24 @@ class SingleClientProxyImpl : public SingleClientProxy,
                               base::OnceClosure on_sent_callback) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
   void GetConnectionMetadata(
-      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
+      base::OnceCallback<void(
+          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback)
+      override;
   void OnClientDisconnected() override;
 
   void FlushForTesting();
 
   std::unique_ptr<ClientConnectionParameters> client_connection_parameters_;
   std::unique_ptr<ChannelImpl> channel_;
-  mojo::Remote<mojom::MessageReceiver> message_receiver_remote_;
+  mojo::Remote<chromeos::secure_channel::mojom::MessageReceiver>
+      message_receiver_remote_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::SingleClientProxyImpl;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SINGLE_CLIENT_PROXY_IMPL_H_

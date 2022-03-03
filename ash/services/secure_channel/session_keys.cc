@@ -7,9 +7,7 @@
 #include "base/strings/string_piece.h"
 #include "crypto/hkdf.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -51,6 +49,4 @@ std::string SessionKeys::responder_encode_key() const {
   return responder_encode_key_;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -9,9 +9,10 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 // static
 SingleClientProxyImpl::Factory* SingleClientProxyImpl::Factory::test_factory_ =
@@ -99,6 +100,4 @@ void SingleClientProxyImpl::FlushForTesting() {
   message_receiver_remote_.FlushForTesting();  // IN-TEST
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
