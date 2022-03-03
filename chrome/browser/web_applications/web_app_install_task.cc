@@ -748,7 +748,7 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStore(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   data_retriever_->GetIcons(
-      web_contents(), icon_urls, skip_page_favicons,
+      web_contents(), std::move(icon_urls), skip_page_favicons,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrievedShowDialog,
                      GetWeakPtr(), std::move(web_app_info),
                      for_installable_site));
@@ -775,7 +775,8 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
 
   // Skip downloading the page favicons as everything in is the URL list.
   data_retriever_->GetIcons(
-      web_contents, icon_urls, /*skip_page_favicons=*/true,
+      web_contents, std::move(icon_urls),
+      /*skip_page_favicons=*/true,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrieved, GetWeakPtr(),
                      std::move(web_application_info),
                      std::move(finalize_options)));

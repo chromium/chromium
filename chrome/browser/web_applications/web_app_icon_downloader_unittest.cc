@@ -80,7 +80,7 @@ class TestWebAppIconDownloader : public WebAppIconDownloader {
                            std::vector<GURL> extra_favicon_urls)
       : WebAppIconDownloader(
             web_contents,
-            extra_favicon_urls,
+            std::move(extra_favicon_urls),
             base::BindOnce(&TestWebAppIconDownloader::DownloadsComplete,
                            base::Unretained(this))) {}
   TestWebAppIconDownloader(const TestWebAppIconDownloader&) = delete;

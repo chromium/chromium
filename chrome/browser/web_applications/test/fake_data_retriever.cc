@@ -41,7 +41,7 @@ void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
 }
 
 void FakeDataRetriever::GetIcons(content::WebContents* web_contents,
-                                 const std::vector<GURL>& icon_urls,
+                                 std::vector<GURL> icon_urls,
                                  bool skip_page_favicons,
                                  GetIconsCallback callback) {
   if (get_icons_delegate_) {

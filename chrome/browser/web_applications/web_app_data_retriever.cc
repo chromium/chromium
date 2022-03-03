@@ -112,7 +112,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
 }
 
 void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
-                                   const std::vector<GURL>& icon_urls,
+                                   std::vector<GURL> icon_urls,
                                    bool skip_page_favicons,
                                    GetIconsCallback callback) {
   Observe(web_contents);
@@ -123,7 +123,7 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
 
   // TODO(loyso): Refactor WebAppIconDownloader: crbug.com/907296.
   icon_downloader_ = std::make_unique<WebAppIconDownloader>(
-      web_contents, icon_urls,
+      web_contents, std::move(icon_urls),
       base::BindOnce(&WebAppDataRetriever::OnIconsDownloaded,
                      weak_ptr_factory_.GetWeakPtr()));
 

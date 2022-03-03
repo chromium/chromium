@@ -325,12 +325,12 @@ TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
-  const std::vector<GURL> icon_urls;
   bool skip_page_favicons = true;
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
-  retriever.GetIcons(web_contents(), icon_urls, skip_page_favicons,
+  retriever.GetIcons(web_contents(), /*icon_urls=*/std::vector<GURL>(),
+                     skip_page_favicons,
                      base::BindLambdaForTesting(
                          [&](IconsDownloadedResult result, IconsMap icons_map,
                              DownloadedIconsHttpResults icons_http_results) {

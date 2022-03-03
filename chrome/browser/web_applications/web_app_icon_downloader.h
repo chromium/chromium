@@ -38,7 +38,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   // |extra_favicon_urls| allows callers to provide icon urls that aren't
   // provided by the renderer (e.g touch icons on non-android environments).
   WebAppIconDownloader(content::WebContents* web_contents,
-                       const std::vector<GURL>& extra_favicon_urls,
+                       std::vector<GURL> extra_favicon_urls,
                        WebAppIconDownloaderCallback callback);
   WebAppIconDownloader(const WebAppIconDownloader&) = delete;
   WebAppIconDownloader& operator=(const WebAppIconDownloader&) = delete;

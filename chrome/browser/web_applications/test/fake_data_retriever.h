@@ -35,7 +35,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
       bool bypass_service_worker_check,
       CheckInstallabilityCallback callback) override;
   void GetIcons(content::WebContents* web_contents,
-                const std::vector<GURL>& icon_urls,
+                std::vector<GURL> icon_urls,
                 bool skip_page_favicons,
                 GetIconsCallback callback) override;
 
