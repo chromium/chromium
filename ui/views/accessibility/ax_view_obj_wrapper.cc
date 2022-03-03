@@ -69,13 +69,15 @@ void AXViewObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   if (view_accessibility.GetNextFocus()) {
     out_node_data->AddIntAttribute(
         ax::mojom::IntAttribute::kNextFocusId,
-        aura_obj_cache_->GetID(view_accessibility.GetNextFocus()));
+        aura_obj_cache_->GetOrCreate(view_accessibility.GetNextFocus())
+            ->GetUniqueId());
   }
 
   if (view_accessibility.GetPreviousFocus()) {
     out_node_data->AddIntAttribute(
         ax::mojom::IntAttribute::kPreviousFocusId,
-        aura_obj_cache_->GetID(view_accessibility.GetPreviousFocus()));
+        aura_obj_cache_->GetOrCreate(view_accessibility.GetPreviousFocus())
+            ->GetUniqueId());
   }
 }
 

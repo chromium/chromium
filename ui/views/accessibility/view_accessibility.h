@@ -276,8 +276,8 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
-  raw_ptr<Widget> next_focus_ = nullptr;
-  raw_ptr<Widget> previous_focus_ = nullptr;
+  base::WeakPtr<Widget> next_focus_ = nullptr;
+  base::WeakPtr<Widget> previous_focus_ = nullptr;
 
   // This view's child tree id.
   absl::optional<ui::AXTreeID> child_tree_id_;
