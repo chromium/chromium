@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/page_info/page_info_permissions_mediator.h"
 
 #include "ios/chrome/browser/ui/permissions/permission_info.h"
+#import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
 #import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -68,9 +69,12 @@
 #pragma mark - PermissionsDelegate
 
 - (void)updateStateForPermission:(PermissionInfo*)permissionDescription {
-  // TODO(crbug.com/1289645): Record some metrics.
+  RecordPermissionToogled();
   self.webState->SetStateForPermission(permissionDescription.state,
                                        permissionDescription.permission);
+  RecordPermissionEventFromOrigin(
+      permissionDescription,
+      PermissionEventOrigin::PermissionEventOriginPageInfo);
 }
 
 #pragma mark - Private
