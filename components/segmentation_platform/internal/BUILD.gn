@@ -37,6 +37,8 @@ static_library("internal") {
     "database/signal_storage_config.h",
     "database/ukm_database.cc",
     "database/ukm_database.h",
+    "database/ukm_metrics_table.cc",
+    "database/ukm_metrics_table.h",
     "database/ukm_types.h",
     "dummy_segmentation_platform_service.cc",
     "dummy_segmentation_platform_service.h",
@@ -112,6 +114,7 @@ static_library("internal") {
     "//components/segmentation_platform/public",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
+    "//sql:sql",
   ]
 
   public_deps = [
@@ -167,6 +170,7 @@ source_set("unit_tests") {
     "database/signal_storage_config_unittest.cc",
     "database/test_segment_info_database.cc",
     "database/test_segment_info_database.h",
+    "database/ukm_metrics_table_unittest.cc",
     "dummy_segmentation_platform_service_unittest.cc",
     "execution/dummy_model_execution_manager_unittest.cc",
     "execution/feature_aggregator_impl_unittest.cc",
@@ -209,6 +213,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/public",
     "//components/ukm:test_support",
     "//services/metrics/public/cpp:ukm_builders",
+    "//sql:sql",
     "//testing/gmock",
     "//testing/gtest",
   ]

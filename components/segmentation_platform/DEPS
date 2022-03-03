@@ -6,6 +6,7 @@ include_rules = [
   "-components/optimization_guide/content",
   "+components/prefs",
   "+services/metrics/public",
+  "+sql",
   "+third_party/perfetto",
   "+third_party/tflite",
   "+third_party/tflite_support",
