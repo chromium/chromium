@@ -30,7 +30,6 @@ install_policy_app_windowed_no_shortcut,               🌓, 🌓,  🌓,   🌓
 install_policy_app_windowed_shortcut,                  🌓, 🌓,  🌓,   🌓,
 launch_from_chrome_apps,                               🌓, 🌓,  🌓,   🌓,
 launch_from_launch_icon,                               🌕, 🌕,  🌕,   🌕,
-launch_from_menu_option,                               🌕, 🌕,  🌕,   🌕,
 manifest_update_display_browser,                       🌕, 🌕,  🌕,   🌕,
 manifest_update_display_minimal,                       🌕, 🌕,  🌕,   🌕,
 navigate_browser,                                      🌕, 🌕,  🌕,   🌕,
