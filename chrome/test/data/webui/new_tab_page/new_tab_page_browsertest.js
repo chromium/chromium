@@ -321,8 +321,7 @@ var NewTabPageModulesChromeCartModuleTest =
   }
 };
 
-// https://crbug.com/1287294: Flaky
-TEST_F('NewTabPageModulesChromeCartModuleTest', 'DISABLED_All', function() {
+TEST_F('NewTabPageModulesChromeCartModuleTest', 'All', function() {
   mocha.run();
 });
 

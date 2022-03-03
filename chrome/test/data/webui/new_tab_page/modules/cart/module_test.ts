@@ -804,7 +804,8 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
     test('scroll with consent card', async () => testScrollWithConsent());
 
-    test('click on cart item', async () => {
+    // https://crbug.com/1287294: Flaky
+    test.skip('click on cart item', async () => {
       const carts = [
         {
           merchant: 'Amazon',
@@ -988,7 +989,8 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
     });
 
-    test('click on cart item with rule-based discount', async () => {
+    // https://crbug.com/1287294: Flaky
+    test.skip('click on cart item with rule-based discount', async () => {
       const carts = [
         {
           merchant: 'Amazon',
@@ -1177,8 +1179,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       await flushTasks();
 
       // Assert.
-      assertEquals(false, isVisible(consentCard));
-      assertEquals(true, consentToast.open);
+      assertEquals(
+          false, isVisible(consentCard), 'consent cart should not be visible');
+      assertEquals(true, consentToast.open, 'consentToast should open');
       assertEquals(
           'Accept confirmation!',
           moduleElement.$.confirmDiscountConsentMessage.innerText);
