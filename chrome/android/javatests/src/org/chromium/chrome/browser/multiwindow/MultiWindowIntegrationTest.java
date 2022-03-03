@@ -146,6 +146,7 @@ public class MultiWindowIntegrationTest {
     @MediumTest
     @Feature("MultiWindow")
     @RequiresApi(Build.VERSION_CODES.N)
+    @DisabledTest(message = "Flaky on test-n-phone https://crbug/1197125")
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
             ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
     // TODO(1298242): Enable this test for tablet once the tab switcher is supported.
