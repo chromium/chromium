@@ -1183,8 +1183,8 @@ void Shell::Init(
   tray_action_ =
       std::make_unique<TrayAction>(backlights_forced_off_setter_.get());
 
-  lock_state_controller_ =
-      std::make_unique<LockStateController>(shutdown_controller_.get());
+  lock_state_controller_ = std::make_unique<LockStateController>(
+      shutdown_controller_.get(), local_state_);
   power_button_controller_ = std::make_unique<PowerButtonController>(
       backlights_forced_off_setter_.get());
   // Pass the initial display state to PowerButtonController.

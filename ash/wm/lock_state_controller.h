@@ -17,6 +17,8 @@
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_tree_host_observer.h"
 
@@ -51,12 +53,15 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // pre-lock hiding animation.
   static const int kPreLockContainersMask;
 
-  explicit LockStateController(ShutdownController* shutdown_controller);
+  LockStateController(ShutdownController* shutdown_controller,
+                      PrefService* local_state);
 
   LockStateController(const LockStateController&) = delete;
   LockStateController& operator=(const LockStateController&) = delete;
 
   ~LockStateController() override;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   void AddObserver(LockStateObserver* observer);
   void RemoveObserver(LockStateObserver* observer);
@@ -216,6 +221,9 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   float saved_blur_;
 
   base::ObserverList<LockStateObserver>::Unchecked observers_;
+
+  // To access the pref kLoginShutdownTimestampPrefName
+  PrefService* local_state_;
 
   base::WeakPtrFactory<LockStateController> weak_ptr_factory_{this};
 };

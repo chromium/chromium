@@ -416,6 +416,12 @@ const char kLaunchPaletteOnEjectEvent[] =
 const char kLocalStateDevicePeripheralDataAccessEnabled[] =
     "settings.local_state_device_pci_data_access_enabled";
 
+// The timestamps (in milliseconds since UNIX Epoch, aka JavaTime) of the user
+// pressed the shutdown button from shelf.
+// static
+const char kLoginShutdownTimestampPrefName[] =
+    "ash.shelf.login_shutdown_timestamp";
+
 // A boolean pref that specifies if the cellular setup notification can be
 // shown or not. This notification should be shown post-OOBE if the user has a
 // cellular-capable device but no available cellular networks. It should only be

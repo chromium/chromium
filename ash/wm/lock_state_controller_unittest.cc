@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shutdown_controller.h"
 #include "ash/root_window_controller.h"
@@ -29,6 +30,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "ui/display/fake/fake_display_snapshot.h"
@@ -38,6 +40,10 @@
 
 namespace ash {
 namespace {
+
+constexpr char kShelfShutdownConfirmationHistogramName[] =
+    "Ash.Shelf.ShutdownConfirmationBubble.TimeToNextBoot."
+    "LoginShutdownToPowerUpDuration";
 
 // Shorthand for some long constants.
 constexpr power_manager::BacklightBrightnessChange_Cause kUserCause =
@@ -100,6 +106,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
     test_shutdown_controller_ = std::make_unique<TestShutdownController>();
     lock_state_test_api_->set_shutdown_controller(
         test_shutdown_controller_.get());
+
+    local_state_ = Shell::Get()->local_state();
   }
   void TearDown() override {
     test_shutdown_controller_.reset();
@@ -305,10 +313,36 @@ class LockStateControllerTest : public PowerButtonTestBase {
     lock_state_controller_->OnLockScreenHide(std::move(closure));
   }
 
+  bool IsDefaultValueLoginShutdownTimestamp() {
+    auto* login_shutdown_timestamp_pref =
+        local_state_->FindPreference(prefs::kLoginShutdownTimestampPrefName);
+
+    return login_shutdown_timestamp_pref->IsDefaultValue();
+  }
+
+  // To check if histogram of LockStateController is recorded correctly, we need
+  // to simulate the restart of a device as the metrics measures the time delta
+  // between a shutdown from login/lock screen and a following restart. By
+  // calling the constructor of LockStateController, the restart of a device is
+  // simulated and the call of UmaHistogramLongTimes is triggered if a previous
+  // shutdown was initiated with ShutdownReason::LOGIN_SHUT_DOWN_BUTTON.
+  void RestartDevice() {
+    LockStateController(test_shutdown_controller_.get(), local_state_);
+  }
+
+  base::HistogramTester& histograms() { return histograms_; }
+
   std::unique_ptr<ShutdownController::ScopedResetterForTest>
       shutdown_controller_resetter_;
   std::unique_ptr<TestShutdownController> test_shutdown_controller_;
   TestSessionStateAnimator* test_animator_ = nullptr;   // not owned
+
+ private:
+  // Histogram value verifier.
+  base::HistogramTester histograms_;
+
+  // To access the pref kLoginShutdownTimestampPrefName
+  PrefService* local_state_ = nullptr;
 };
 
 // Test the show menu and shutdown flow for non-Chrome-OS hardware that doesn't
@@ -344,6 +378,8 @@ TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDown) {
   EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
   lock_state_test_api_->trigger_real_shutdown_timeout();
   EXPECT_EQ(1, NumShutdownRequests());
+  // Shutdown was not initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 }
 
 // Test that we ignore power button presses when the screen is turned off on an
@@ -521,16 +557,21 @@ TEST_F(LockStateControllerTest, ShutdownWithoutButton) {
       SessionStateAnimator::ANIMATION_HIDE_IMMEDIATELY));
   GenerateMouseMoveEvent();
   EXPECT_FALSE(cursor_visible());
+  // Shutdown was not initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 }
 
 // Test that we display the fast-close animation and shut down when we get an
 // outside request to shut down (e.g. from the login or lock screen).
 TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLoginScreen) {
   Initialize(ButtonType::NORMAL, LoginStatus::NOT_LOGGED_IN);
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 
   lock_state_controller_->RequestShutdown(
       ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
 
+  // Shutdown was initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_FALSE(IsDefaultValueLoginShutdownTimestamp());
   ExpectShutdownAnimationStarted("1");
   AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
 
@@ -550,10 +591,13 @@ TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLockScreen) {
 
   AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
   ExpectPostLockAnimationFinished("1");
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 
   lock_state_controller_->RequestShutdown(
       ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
 
+  // Shutdown was initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_FALSE(IsDefaultValueLoginShutdownTimestamp());
   ExpectShutdownAnimationStarted("2");
   AdvanceOrAbort(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
 
@@ -566,6 +610,95 @@ TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLockScreen) {
   EXPECT_EQ(1, NumShutdownRequests());
 }
 
+// Test that historgram of time delta was recorded if a previous shutdown was
+// initiated from login/lock screen.
+TEST_F(LockStateControllerTest, RequestShutdownFromLoginScreenThenRestart) {
+  Initialize(ButtonType::NORMAL, LoginStatus::NOT_LOGGED_IN);
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
+
+  lock_state_controller_->RequestShutdown(
+      ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
+
+  // Shutdown was initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_FALSE(IsDefaultValueLoginShutdownTimestamp());
+
+  GenerateMouseMoveEvent();
+  EXPECT_FALSE(cursor_visible());
+
+  EXPECT_EQ(0, NumShutdownRequests());
+  EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
+  lock_state_test_api_->trigger_real_shutdown_timeout();
+  EXPECT_EQ(1, NumShutdownRequests());
+
+  // Simulate restarting device
+  RestartDevice();
+  histograms().ExpectTotalCount(kShelfShutdownConfirmationHistogramName, 1);
+}
+
+TEST_F(LockStateControllerTest, RequestShutdownFromLockScreenThenRestart) {
+  Initialize(ButtonType::NORMAL, LoginStatus::USER);
+
+  LockScreen();
+
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
+
+  lock_state_controller_->RequestShutdown(
+      ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
+
+  // Shutdown was initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_FALSE(IsDefaultValueLoginShutdownTimestamp());
+
+  GenerateMouseMoveEvent();
+  EXPECT_FALSE(cursor_visible());
+
+  EXPECT_EQ(0, NumShutdownRequests());
+  EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
+  lock_state_test_api_->trigger_real_shutdown_timeout();
+  EXPECT_EQ(1, NumShutdownRequests());
+
+  // Simulate restarting device
+  RestartDevice();
+  histograms().ExpectTotalCount(kShelfShutdownConfirmationHistogramName, 1);
+}
+
+// Test that historgram of time delta was not recorded if a previous shutdown
+// was not initiated from login/lock screen.
+TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDownThenRestart) {
+  Initialize(ButtonType::LEGACY, LoginStatus::USER);
+
+  ExpectUnlockedState("1");
+
+  // We should request that the screen be locked immediately after seeing the
+  // power button get pressed.
+  PressPowerButton();
+
+  EXPECT_TRUE(power_button_test_api_->IsMenuOpened());
+
+  // We shouldn't progress towards the shutdown state, however.
+  EXPECT_FALSE(lock_state_test_api_->shutdown_timer_is_running());
+
+  ReleasePowerButton();
+
+  // Hold the button again and check that we start shutting down.
+  PressPowerButton();
+
+  ExpectShutdownAnimationStarted("2");
+
+  EXPECT_EQ(0, NumShutdownRequests());
+  // Make sure a mouse move event won't show the cursor.
+  GenerateMouseMoveEvent();
+  EXPECT_FALSE(cursor_visible());
+
+  EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
+  lock_state_test_api_->trigger_real_shutdown_timeout();
+  EXPECT_EQ(1, NumShutdownRequests());
+  // Shutdown was not initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
+
+  // Simulate restarting device
+  RestartDevice();
+  histograms().ExpectTotalCount(kShelfShutdownConfirmationHistogramName, 0);
+}
 // Test that hidden wallpaper appears and reverts correctly on lock/cancel.
 TEST_P(LockStateControllerAnimationTest, TestHiddenWallpaperLockCancel) {
   Initialize(ButtonType::NORMAL, LoginStatus::USER);
@@ -720,6 +853,8 @@ TEST_F(LockStateControllerTest, ShutDownAfterShowPowerMenu) {
   // When the timeout fires, we should request a shutdown.
   lock_state_test_api_->trigger_real_shutdown_timeout();
   EXPECT_EQ(1, NumShutdownRequests());
+  // Shutdown was not initiated with reason LOGIN_SHUT_DOWN_BUTTON
+  EXPECT_TRUE(IsDefaultValueLoginShutdownTimestamp());
 }
 
 TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {

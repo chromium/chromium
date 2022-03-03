@@ -206,6 +206,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLocalStateDevicePeripheralDataAccessEnabled[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kLoginShutdownTimestampPrefName[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCanCellularSetupNotificationBeShown[];
 
 // Managed-guest session privacy warning.

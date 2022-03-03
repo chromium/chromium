@@ -3048,6 +3048,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Shelf.ShutdownConfirmationBubble.TimeToNextBoot"
+    units="seconds" expires_after="2022-12-31">
+  <owner>sherrilin@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Emitted at device start-up if a shut-down was previously initiated from the
+    shelf shutdown button. In other words this metric is only recorded if a
+    shelf shutdown button was pressed and the device was powered up again soon
+    after that.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Shelf.TimeBetweenNavigateToTaskSwitches" units="seconds"
     expires_after="M81">
   <owner>tbuckley@chromium.org</owner>
