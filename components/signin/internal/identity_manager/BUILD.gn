@@ -13,6 +13,8 @@ source_set("identity_manager") {
     "account_capabilities_constants.h",
     "account_capabilities_fetcher.cc",
     "account_capabilities_fetcher.h",
+    "account_capabilities_fetcher_gaia.cc",
+    "account_capabilities_fetcher_gaia.h",
     "account_fetcher_service.cc",
     "account_fetcher_service.h",
     "account_info_fetcher.cc",

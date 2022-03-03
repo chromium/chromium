@@ -20,6 +20,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/account_info_fetcher.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -259,9 +260,11 @@ void AccountFetcherService::StartFetchingAccountCapabilities(
   std::unique_ptr<AccountCapabilitiesFetcher>& request =
       account_capabilities_requests_[account_id];
   if (!request) {
-    request = std::make_unique<AccountCapabilitiesFetcher>(
-        token_service_, signin_client_->GetURLLoaderFactory(), this,
-        account_id);
+    request = std::make_unique<AccountCapabilitiesFetcherGaia>(
+        token_service_, signin_client_->GetURLLoaderFactory(), account_id,
+        base::BindOnce(
+            &AccountFetcherService::OnAccountCapabilitiesFetchComplete,
+            base::Unretained(this)));
     request->Start();
   }
 }
@@ -383,17 +386,13 @@ void AccountFetcherService::OnUserInfoFetchFailure(
   user_info_requests_.erase(account_id);
 }
 
-void AccountFetcherService::OnAccountCapabilitiesFetchSuccess(
+void AccountFetcherService::OnAccountCapabilitiesFetchComplete(
     const CoreAccountId& account_id,
-    const AccountCapabilities& account_capabilities) {
-  account_tracker_service_->SetAccountCapabilities(account_id,
-                                                   account_capabilities);
-  account_capabilities_requests_.erase(account_id);
-}
-
-void AccountFetcherService::OnAccountCapabilitiesFetchFailure(
-    const CoreAccountId& account_id) {
-  VLOG(1) << "Failed to get AccountCapabilities for " << account_id;
+    const absl::optional<AccountCapabilities>& account_capabilities) {
+  if (account_capabilities.has_value()) {
+    account_tracker_service_->SetAccountCapabilities(account_id,
+                                                     *account_capabilities);
+  }
   // |account_id| is owned by the request. Cannot be used after this line.
   account_capabilities_requests_.erase(account_id);
 }

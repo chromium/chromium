@@ -22,6 +22,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
@@ -619,9 +620,9 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesSuccess) {
                           1);
   tester.ExpectTotalCount("Signin.AccountCapabilities.FetchDuration.Failure",
                           0);
-  tester.ExpectUniqueSample("Signin.AccountCapabilities.FetchResult",
-                            AccountCapabilitiesFetcher::FetchResult::kSuccess,
-                            1);
+  tester.ExpectUniqueSample(
+      "Signin.AccountCapabilities.FetchResult",
+      AccountCapabilitiesFetcherGaia::FetchResult::kSuccess, 1);
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesFailed) {
@@ -645,7 +646,7 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesFailed) {
                           1);
   tester.ExpectUniqueSample(
       "Signin.AccountCapabilities.FetchResult",
-      AccountCapabilitiesFetcher::FetchResult::kOAuthError, 1);
+      AccountCapabilitiesFetcherGaia::FetchResult::kOAuthError, 1);
 }
 
 TEST_F(AccountTrackerServiceTest,
@@ -668,7 +669,7 @@ TEST_F(AccountTrackerServiceTest,
                           1);
   tester.ExpectUniqueSample(
       "Signin.AccountCapabilities.FetchResult",
-      AccountCapabilitiesFetcher::FetchResult::kGetTokenFailure, 1);
+      AccountCapabilitiesFetcherGaia::FetchResult::kGetTokenFailure, 1);
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesCancelled) {
@@ -691,9 +692,9 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesCancelled) {
                           0);
   tester.ExpectTotalCount("Signin.AccountCapabilities.FetchDuration.Failure",
                           1);
-  tester.ExpectUniqueSample("Signin.AccountCapabilities.FetchResult",
-                            AccountCapabilitiesFetcher::FetchResult::kCancelled,
-                            1);
+  tester.ExpectUniqueSample(
+      "Signin.AccountCapabilities.FetchResult",
+      AccountCapabilitiesFetcherGaia::FetchResult::kCancelled, 1);
 }
 
 TEST_F(AccountTrackerServiceTest,
