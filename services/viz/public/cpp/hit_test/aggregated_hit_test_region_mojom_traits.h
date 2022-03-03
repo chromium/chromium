@@ -38,8 +38,10 @@ struct StructTraits<viz::mojom::AggregatedHitTestRegionDataView,
     return region.child_count;
   }
 
-  static gfx::Transform transform(const viz::AggregatedHitTestRegion& region) {
-    return region.transform();
+  // NOLINTNEXTLINE(build/include_what_you_use). See crbug.com/1301129.
+  static const gfx::Transform& transform(
+      const viz::AggregatedHitTestRegion& region) {
+    return region.transform;
   }
 
   static bool Read(viz::mojom::AggregatedHitTestRegionDataView data,

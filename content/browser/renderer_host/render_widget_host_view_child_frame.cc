@@ -692,7 +692,7 @@ const viz::LocalSurfaceId& RenderWidgetHostViewChildFrame::GetLocalSurfaceId()
 void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
     const viz::AggregatedHitTestRegion& region) {
   gfx::RectF screen_rect(region.rect);
-  if (!region.transform().TransformRectReverse(&screen_rect)) {
+  if (!region.transform.TransformRectReverse(&screen_rect)) {
     last_stable_screen_rect_ = gfx::RectF();
     screen_rect_stable_since_ = base::TimeTicks::Now();
     return;

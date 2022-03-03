@@ -15,10 +15,6 @@
 
 namespace viz {
 
-namespace mojom {
-class AggregatedHitTestRegionDataView;
-}
-
 // A AggregatedHitTestRegion element with child_count of kEndOfList indicates
 // the last element and end of the list.
 constexpr int32_t kEndOfList = -1;
@@ -44,7 +40,8 @@ struct AggregatedHitTestRegion {
         async_hit_test_reasons(async_hit_test_reasons),
         rect(rect),
         child_count(child_count),
-        transform_(transform) {
+        // NOLINTNEXTLINE(build/include_what_you_use). See crbug.com/1301129.
+        transform(transform) {
     DCHECK_EQ(!!(flags & HitTestRegionFlags::kHitTestAsk),
               !!async_hit_test_reasons);
   }
@@ -67,39 +64,18 @@ struct AggregatedHitTestRegion {
   // to move to the next entry.
   int32_t child_count = 0;
 
-  // gfx::Transform is backed by skia::Matrix44. skia::Matrix44 has a mutable
-  // attribute which can be changed even during a const function call (e.g.
-  // skia::Matrix44::getType()). This means that when HitTestQuery reads the
-  // transform in the read-only shared memory segment created (and populated) by
-  // HitTestAggregator, if it attempts to perform any operation on the
-  // transform (e.g. use Transform::IsIdentity()), skia will attempt to write to
-  // the read-only shared memory segment, causing exception in HitTestQuery.
-  // For this reason, it is necessary for the HitTestQuery to make a copy of the
-  // transform before using it. To enforce this, the |transform_| attribute is
-  // made private here, and exposed through an accessor which always makes a
-  // copy.
-  gfx::Transform transform() const { return transform_; }
-  void set_transform(const gfx::Transform& transform) {
-    transform_ = transform;
-  }
+  gfx::Transform transform;
 
   bool operator==(const AggregatedHitTestRegion& rhs) const {
     return (frame_sink_id == rhs.frame_sink_id && flags == rhs.flags &&
             async_hit_test_reasons == rhs.async_hit_test_reasons &&
             rect == rhs.rect && child_count == rhs.child_count &&
-            transform_ == rhs.transform());
+            transform == rhs.transform);
   }
 
   bool operator!=(const AggregatedHitTestRegion& other) const {
     return !(*this == other);
   }
-
- private:
-  friend struct mojo::StructTraits<mojom::AggregatedHitTestRegionDataView,
-                                   AggregatedHitTestRegion>;
-
-  // The transform applied to the rect in parent region's coordinate space.
-  gfx::Transform transform_;
 };
 
 }  // namespace viz

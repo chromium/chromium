@@ -190,7 +190,7 @@ bool HitTestQuery::FindTargetInRegionForLocation(
     // HasPerspective() is checked for the transform because the point will not
     // be transformed correctly for a plane with a different normal.
     // See https://crbug.com/854247.
-    if (hit_test_data_[region_index].transform().HasPerspective()) {
+    if (hit_test_data_[region_index].transform.HasPerspective()) {
       target->frame_sink_id = hit_test_data_[region_index].frame_sink_id;
       target->location_in_target = gfx::PointF();
       target->flags = HitTestRegionFlags::kHitTestAsk;
@@ -200,7 +200,7 @@ bool HitTestQuery::FindTargetInRegionForLocation(
       return true;
     }
 
-    hit_test_data_[region_index].transform().TransformPoint(
+    hit_test_data_[region_index].transform.TransformPoint(
         &location_transformed);
     if (!gfx::RectF(hit_test_data_[region_index].rect)
              .Contains(location_transformed)) {
@@ -295,7 +295,7 @@ bool HitTestQuery::TransformLocationForTargetRecursively(
     size_t target_ancestor,
     size_t region_index,
     gfx::PointF* location_in_target) const {
-  hit_test_data_[region_index].transform().TransformPoint(location_in_target);
+  hit_test_data_[region_index].transform.TransformPoint(location_in_target);
   if (!target_ancestor)
     return true;
 
@@ -333,7 +333,7 @@ bool HitTestQuery::GetTransformToTargetRecursively(
   // TODO(crbug.com/966944): Cache the matrix product such that the transform
   // can be found immediately.
   if (hit_test_data_[region_index].frame_sink_id == target) {
-    *transform = hit_test_data_[region_index].transform();
+    *transform = hit_test_data_[region_index].transform;
     return true;
   }
 
@@ -349,7 +349,7 @@ bool HitTestQuery::GetTransformToTargetRecursively(
     gfx::Transform transform_to_child;
     if (GetTransformToTargetRecursively(target, child_region,
                                         &transform_to_child)) {
-      gfx::Transform region_transform(hit_test_data_[region_index].transform());
+      gfx::Transform region_transform(hit_test_data_[region_index].transform);
       *transform = transform_to_child * region_transform;
       return true;
     }
@@ -409,7 +409,7 @@ std::string HitTestQuery::PrintHitTestData() const {
       std::string s;
       std::stringstream transform_ss;
 
-      transform_ss << htr.transform().ToString() << '\n';
+      transform_ss << htr.transform.ToString() << '\n';
 
       while (getline(transform_ss, s)) {
         oss << tabs << s << '\n';
