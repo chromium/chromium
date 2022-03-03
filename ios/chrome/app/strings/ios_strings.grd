@@ -1656,13 +1656,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Camera
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_ACCESSIBLE" desc="Message shown in the infobar when camera access is enabled.">
-        Camera access allowed
+        Camera Access allowed
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_AND_MICROPHONE_ACCESSIBLE" desc="Message shown in the infobar when both camera and microphone access are enabled.">
-        Camera and Microphone access allowed
+        Camera and Microphone Access allowed
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_BANNER_MICROPHONE_ACCESSIBLE" desc="Message shown in the infobar when microphone access is enabled.">
-        Microphone access allowed
+        Microphone Access allowed
       </message>
       <message name="IDS_IOS_PERMISSIONS_MICROPHONE" desc="Usually used to show whether user has enabled a site's permission to use the device microphone.">
         Microphone
@@ -1671,10 +1671,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>"<ph name="SITE_NAME">$1</ph>"<ph name="END_BOLD">END_BOLD</ph> permissions will reset to off when you leave this site.
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_MODAL_TITLE" desc="Title of the permissions infobar used to update site permissions.">
-        Access
+        Permissions
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE" desc="Title of the infobar modal shown when the user taps Camera/Microphone access.">
-        Edit Access
+        Edit Permissions
       </message>
       <message name="IDS_IOS_PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION" desc="Specifies the reason for writing to the user's photo library while the app is in use [Length: unlimited] [iOS only].">
         This lets you save photos to your photo library.
