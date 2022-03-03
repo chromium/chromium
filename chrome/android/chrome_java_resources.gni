@@ -523,6 +523,7 @@ chrome_java_resources = [
   "java/res/layout/clear_browsing_data_button.xml",
   "java/res/layout/clear_browsing_data_tabs.xml",
   "java/res/layout/clear_browsing_important_dialog_listview.xml",
+  "java/res/layout/compact_price_drop_view.xml",
   "java/res/layout/compositor_view_holder.xml",
   "java/res/layout/confirm_important_sites_list_row.xml",
   "java/res/layout/context_menu.xml",

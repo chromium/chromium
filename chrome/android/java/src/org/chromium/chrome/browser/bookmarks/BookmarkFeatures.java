@@ -32,7 +32,8 @@ public class BookmarkFeatures {
      * <li>{@code bookmarks_improved_save_flow_min_version} - {@link
      * ChromeFeatureList#BOOKMARKS_IMPROVED_SAVE_FLOW}
      * <li>{@code bookmarks_refresh_min_version} - {@link ChromeFeatureList#BOOKMARKS_REFRESH}
-     * <li>{@code read_later_min_version} - {@link ChromeFeatureList#READ_LATER}
+     * <li>{@code bookmark_compact_visuals_enabled} - {@link ChromeFeatureList#BOOKMARKS_REFRESH}
+     * <li>{@code bookmark_visuals_enabled} - {@link ChromeFeatureList#BOOKMARKS_REFRESH}
      * </ul>
      *
      * <p>These parameters allow to control for cases where a significant bug fix or change of param
@@ -43,10 +44,12 @@ public class BookmarkFeatures {
     static final int VERSION = 0;
 
     private static final boolean BOOKMARK_VISUALS_ENABLED_DEFAULT = false;
+    private static final boolean BOOKMARK_COMPACT_VISUALS_ENABLED_DEFAULT = false;
     private static final boolean IMPROVED_SAVE_FLOW_AUTODISMISS_ENABLED_DEFAULT = true;
     private static final int IMPROVED_SAVE_FLOW_AUTODISMISS_TIME_MS_DEFAULT = 6000;
 
     static final String BOOKMARK_VISUALS_ENABLED = "bookmark_visuals_enabled";
+    static final String BOOKMARK_COMPACT_VISUALS_ENABLED = "bookmark_compact_visuals_enabled";
     static final String AUTODISMISS_ENABLED_PARAM_NAME = "autodismiss_enabled";
     static final String AUTODISMISS_LENGTH_PARAM_NAME = "autodismiss_length_ms";
 
@@ -83,6 +86,12 @@ public class BookmarkFeatures {
                 <= VERSION;
     }
 
+    public static boolean isBookmarkMenuItemAsDedicatedRowEnabled() {
+        return isBookmarksRefreshEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.BOOKMARKS_REFRESH, "bookmark_in_app_menu", false);
+    }
+
     public static boolean isBookmarksVisualRefreshEnabled() {
         return isBookmarksRefreshEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -90,9 +99,11 @@ public class BookmarkFeatures {
                         BOOKMARK_VISUALS_ENABLED_DEFAULT);
     }
 
-    public static boolean isBookmarkMenuItemAsDedicatedRowEnabled() {
-        return isBookmarksRefreshEnabled()
+    /** The compact visual refresh is built on top of the base one. */
+    public static boolean isCompactBookmarksVisualRefreshEnabled() {
+        return isBookmarksVisualRefreshEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.BOOKMARKS_REFRESH, "bookmark_in_app_menu", false);
+                        ChromeFeatureList.BOOKMARKS_REFRESH, BOOKMARK_COMPACT_VISUALS_ENABLED,
+                        BOOKMARK_COMPACT_VISUALS_ENABLED_DEFAULT);
     }
 }
