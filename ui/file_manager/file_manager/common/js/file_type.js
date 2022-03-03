@@ -23,7 +23,7 @@ export {FileExtensionType};
  * @const
  */
 FileType.DIRECTORY = {
-  name: 'FOLDER',
+  translationKey: 'FOLDER',
   type: '.folder',
   icon: 'folder',
   subtype: ''
@@ -35,7 +35,7 @@ FileType.DIRECTORY = {
  * @const
  */
 FileType.PLACEHOLDER = {
-  name: 'NO_EXTENSION_FILE_TYPE',
+  translationKey: 'NO_EXTENSION_FILE_TYPE',
   type: 'UNKNOWN',
   icon: '',
   subtype: ''
@@ -109,7 +109,7 @@ FileType.getTypeForName = name => {
 
   // subtype is the extension excluding the first dot.
   return {
-    name: 'GENERIC_FILE_TYPE',
+    translationKey: 'GENERIC_FILE_TYPE',
     type: 'UNKNOWN',
     subtype: extension.substr(1).toUpperCase(),
     icon: ''
@@ -130,10 +130,10 @@ FileType.getType = (entry, opt_mimeType) => {
     if (/** @type {VolumeEntry}*/ (entry).volumeInfo &&
         /** @type {VolumeEntry}*/ (entry).volumeInfo.diskFileSystemType) {
       return {
-        name: '',
+        translationKey: '',
         type: 'partition',
-        subtype:
-            assert(/** @type {VolumeEntry}*/ (entry).volumeInfo.diskFileSystemType),
+        subtype: assert(
+            /** @type {VolumeEntry}*/ (entry).volumeInfo.diskFileSystemType),
         icon: '',
       };
     }

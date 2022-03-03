@@ -92,9 +92,9 @@ export class FileListModel extends ArrayDataModel {
       return fileType.subtype;
     }
     if (fileType.subtype) {
-      return strf(fileType.name, fileType.subtype);
+      return strf(fileType.translationKey, fileType.subtype);
     } else {
-      return str(fileType.name);
+      return str(fileType.translationKey);
     }
   }
 

@@ -5,8 +5,8 @@
 /**
  * Known file extension and mime type mapping.
  *
- * 1. Fields "type/name/subtype/extensions" are mandatory, "mime/icon" are
- * optional, if "mime" is missing, we won't generate a mapping for that type
+ * 1. Fields "type/translationKey/subtype/extensions" are mandatory, "mime/icon"
+ * are optional, if "mime" is missing, we won't generate a mapping for that type
  * in backend.
  * 2. The extensions must be an array where each extension starts with a dot.
  * 3. One extension can be mapped to multiple mime types, this is mainly used
@@ -25,77 +25,77 @@
   // Images
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "JPEG",
     "extensions": [".jpeg", ".jpg", ".jfif", ".pjpeg", ".pjp"],
     "mime": "image/jpeg"
   },
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "BMP",
     "extensions": [".bmp"],
     "mime": "image/bmp"
   },
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "GIF",
     "extensions": [".gif"],
     "mime": "image/gif"
   },
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "ICO",
     "extensions": [".ico"],
     "mime": "image/x-icon"
   },
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "PNG",
     "extensions": [".png"],
     "mime": "image/png"
   },
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "WebP",
     "extensions": [".webp"],
     "mime": "image/webp"
   },
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "TIFF",
     "extensions": [".tif", ".tiff"],
     "mime": "image/tiff"
   },
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "SVG",
     "extensions": [".svg", ".svgz"],
     "mime": "image/svg+xml"
   },
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "AVIF",
     "extensions": [".avif"],
     "mime": "image/avif"
   },
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "JXL",
     "extensions": [".jxl"],
     "mime": "image/jxl"
   },
   {
     "type": "image",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "XBM",
     "extensions": [".xbm"],
     "mime": "image/x-xbitmap"
@@ -104,7 +104,7 @@
   // Raw
   {
     "type": "raw",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "ARW",
     "extensions": [".arw"],
     "icon": "image",
@@ -112,7 +112,7 @@
   },
   {
     "type": "raw",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "CR2",
     "extensions": [".cr2"],
     "icon": "image",
@@ -120,7 +120,7 @@
   },
   {
     "type": "raw",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "DNG",
     "extensions": [".dng"],
     "icon": "image",
@@ -128,7 +128,7 @@
   },
   {
     "type": "raw",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "NEF",
     "extensions": [".nef"],
     "icon": "image",
@@ -136,7 +136,7 @@
   },
   {
     "type": "raw",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "NRW",
     "extensions": [".nrw"],
     "icon": "image",
@@ -144,7 +144,7 @@
   },
   {
     "type": "raw",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "ORF",
     "extensions": [".orf"],
     "icon": "image",
@@ -152,7 +152,7 @@
   },
   {
     "type": "raw",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "RAF",
     "extensions": [".raf"],
     "icon": "image",
@@ -160,7 +160,7 @@
   },
   {
     "type": "raw",
-    "name": "IMAGE_FILE_TYPE",
+    "translationKey": "IMAGE_FILE_TYPE",
     "subtype": "RW2",
     "extensions": [".rw2"],
     "icon": "image",
@@ -170,63 +170,63 @@
   // Video
   {
     "type": "video",
-    "name": "VIDEO_FILE_TYPE",
+    "translationKey": "VIDEO_FILE_TYPE",
     "subtype": "3GP",
     "extensions": [".3gp", ".3gpp"],
     "mime": "video/3gpp"
   },
   {
     "type": "video",
-    "name": "VIDEO_FILE_TYPE",
+    "translationKey": "VIDEO_FILE_TYPE",
     "subtype": "AVI",
     "extensions": [".avi"],
     "mime": "video/x-msvideo"
   },
   {
     "type": "video",
-    "name": "VIDEO_FILE_TYPE",
+    "translationKey": "VIDEO_FILE_TYPE",
     "subtype": "QuickTime",
     "extensions": [".mov"],
     "mime": "video/quicktime"
   },
   {
     "type": "video",
-    "name": "VIDEO_FILE_TYPE",
+    "translationKey": "VIDEO_FILE_TYPE",
     "subtype": "MKV",
     "extensions": [".mkv"],
     "mime": "video/x-matroska"
   },
   {
     "type": "video",
-    "name": "VIDEO_FILE_TYPE",
+    "translationKey": "VIDEO_FILE_TYPE",
     "subtype": "MPEG",
     "extensions": [".mp4", ".m4v", ".mpg4", ".mpeg4"],
     "mime": "video/mp4"
   },
   {
     "type": "video",
-    "name": "VIDEO_FILE_TYPE",
+    "translationKey": "VIDEO_FILE_TYPE",
     "subtype": "MPEG",
     "extensions": [".mpg", ".mpeg"],
     "mime": "video/mpeg"
   },
   {
     "type": "video",
-    "name": "VIDEO_FILE_TYPE",
+    "translationKey": "VIDEO_FILE_TYPE",
     "subtype": "OGG",
     "extensions": [".ogm", ".ogv", ".ogx"],
     "mime": "video/ogg"
   },
   {
     "type": "video",
-    "name": "VIDEO_FILE_TYPE",
+    "translationKey": "VIDEO_FILE_TYPE",
     "subtype": "OGG",
     "extensions": [".ogm", ".ogv", ".ogx"],
     "mime": "application/ogg"
   },
   {
     "type": "video",
-    "name": "VIDEO_FILE_TYPE",
+    "translationKey": "VIDEO_FILE_TYPE",
     "subtype": "WebM",
     "extensions": [".webm"],
     "mime": "video/webm"
@@ -235,49 +235,49 @@
   // Audio
   {
     "type": "audio",
-    "name": "AUDIO_FILE_TYPE",
+    "translationKey": "AUDIO_FILE_TYPE",
     "subtype": "AMR",
     "extensions": [".amr"],
     "mime": "audio/amr"
   },
   {
     "type": "audio",
-    "name": "AUDIO_FILE_TYPE",
+    "translationKey": "AUDIO_FILE_TYPE",
     "subtype": "FLAC",
     "extensions": [".flac"],
     "mime": "audio/flac"
   },
   {
     "type": "audio",
-    "name": "AUDIO_FILE_TYPE",
+    "translationKey": "AUDIO_FILE_TYPE",
     "subtype": "MP3",
     "extensions": [".mp3"],
     "mime": "audio/mpeg"
   },
   {
     "type": "audio",
-    "name": "AUDIO_FILE_TYPE",
+    "translationKey": "AUDIO_FILE_TYPE",
     "subtype": "MPEG",
     "extensions": [".m4a"],
     "mime": "audio/mp4a-latm"
   },
   {
     "type": "audio",
-    "name": "AUDIO_FILE_TYPE",
+    "translationKey": "AUDIO_FILE_TYPE",
     "subtype": "OGG",
     "extensions": [".oga", ".ogg", ".opus"],
     "mime": "audio/ogg"
   },
   {
     "type": "audio",
-    "name": "AUDIO_FILE_TYPE",
+    "translationKey": "AUDIO_FILE_TYPE",
     "subtype": "WAV",
     "extensions": [".wav"],
     "mime": "audio/x-wav"
   },
   {
     "type": "audio",
-    "name": "AUDIO_FILE_TYPE",
+    "translationKey": "AUDIO_FILE_TYPE",
     "subtype": "WEBA",
     "extensions": [".weba"],
     "mime": "audio/webm"
@@ -286,7 +286,7 @@
   // Text
   {
     "type": "text",
-    "name": "PLAIN_TEXT_FILE_TYPE",
+    "translationKey": "PLAIN_TEXT_FILE_TYPE",
     "subtype": "TXT",
     "extensions": [".txt"],
     "mime": "text/plain"
@@ -295,77 +295,77 @@
   // Archive
   {
     "type": "archive",
-    "name": "ZIP_ARCHIVE_FILE_TYPE",
+    "translationKey": "ZIP_ARCHIVE_FILE_TYPE",
     "subtype": "ZIP",
     "extensions": [".zip"],
     "mime": "application/zip"
   },
   {
     "type": "archive",
-    "name": "RAR_ARCHIVE_FILE_TYPE",
+    "translationKey": "RAR_ARCHIVE_FILE_TYPE",
     "subtype": "RAR",
     "extensions": [".rar"],
     "mime": "application/x-rar-compressed"
   },
   {
     "type": "archive",
-    "name": "TAR_ARCHIVE_FILE_TYPE",
+    "translationKey": "TAR_ARCHIVE_FILE_TYPE",
     "subtype": "TAR",
     "extensions": [".tar"],
     "mime": "application/x-tar"
   },
   {
     "type": "archive",
-    "name": "TAR_BZIP2_ARCHIVE_FILE_TYPE",
+    "translationKey": "TAR_BZIP2_ARCHIVE_FILE_TYPE",
     "subtype": "TBZ2",
     "extensions": [".tar.bz2", ".tbz", ".tbz2"],
     "mime": "application/x-bzip2"
   },
   {
     "type": "archive",
-    "name": "BZIP2_ARCHIVE_FILE_TYPE",
+    "translationKey": "BZIP2_ARCHIVE_FILE_TYPE",
     "subtype": "BZ2",
     "extensions": [".bz2"],
     "mime": "application/x-bzip2"
   },
   {
     "type": "archive",
-    "name": "TAR_GZIP_ARCHIVE_FILE_TYPE",
+    "translationKey": "TAR_GZIP_ARCHIVE_FILE_TYPE",
     "subtype": "TGZ",
     "extensions": [".tar.gz", ".tgz"],
     "mime": "application/x-gzip"
   },
   {
     "type": "archive",
-    "name": "GZIP_ARCHIVE_FILE_TYPE",
+    "translationKey": "GZIP_ARCHIVE_FILE_TYPE",
     "subtype": "GZ",
     "extensions": [".gz"],
     "mime": "application/x-gzip"
   },
   {
     "type": "archive",
-    "name": "TAR_LZMA_ARCHIVE_FILE_TYPE",
+    "translationKey": "TAR_LZMA_ARCHIVE_FILE_TYPE",
     "subtype": "TLZMA",
     "extensions": [".tar.lzma", ".tlzma"],
     "mime": "application/x-lzma"
   },
   {
     "type": "archive",
-    "name": "LZMA_ARCHIVE_FILE_TYPE",
+    "translationKey": "LZMA_ARCHIVE_FILE_TYPE",
     "subtype": "LZMA",
     "extensions": [".lzma"],
     "mime": "application/x-lzma"
   },
   {
     "type": "archive",
-    "name": "TAR_XZ_ARCHIVE_FILE_TYPE",
+    "translationKey": "TAR_XZ_ARCHIVE_FILE_TYPE",
     "subtype": "TXZ",
     "extensions": [".tar.xz", ".txz"],
     "mime": "application/x-xz"
   },
   {
     "type": "archive",
-    "name": "XZ_ARCHIVE_FILE_TYPE",
+    "translationKey": "XZ_ARCHIVE_FILE_TYPE",
     "subtype": "XZ",
     "extensions": [".xz"],
     "mime": "application/x-xz"
@@ -375,7 +375,7 @@
   {
     "type": "hosted",
     "icon": "gdoc",
-    "name": "GDOC_DOCUMENT_FILE_TYPE",
+    "translationKey": "GDOC_DOCUMENT_FILE_TYPE",
     "subtype": "doc",
     "extensions": [".gdoc"],
     // "mime": "application/vnd.google-apps.document"
@@ -383,7 +383,7 @@
   {
     "type": "hosted",
     "icon": "gsheet",
-    "name": "GSHEET_DOCUMENT_FILE_TYPE",
+    "translationKey": "GSHEET_DOCUMENT_FILE_TYPE",
     "subtype": "sheet",
     "extensions": [".gsheet"],
     // "mime": "application/vnd.google-apps.spreadsheet"
@@ -391,7 +391,7 @@
   {
     "type": "hosted",
     "icon": "gslides",
-    "name": "GSLIDES_DOCUMENT_FILE_TYPE",
+    "translationKey": "GSLIDES_DOCUMENT_FILE_TYPE",
     "subtype": "slides",
     "extensions": [".gslides"],
     // "mime": "application/vnd.google-apps.presentation"
@@ -399,7 +399,7 @@
   {
     "type": "hosted",
     "icon": "gdraw",
-    "name": "GDRAW_DOCUMENT_FILE_TYPE",
+    "translationKey": "GDRAW_DOCUMENT_FILE_TYPE",
     "subtype": "draw",
     "extensions": [".gdraw"],
     // "mime": "application/vnd.google-apps.drawing"
@@ -407,7 +407,7 @@
   {
     "type": "hosted",
     "icon": "gtable",
-    "name": "GTABLE_DOCUMENT_FILE_TYPE",
+    "translationKey": "GTABLE_DOCUMENT_FILE_TYPE",
     "subtype": "table",
     "extensions": [".gtable"],
     // "mime": "application/vnd.google-apps.fusiontable"
@@ -415,7 +415,7 @@
   {
     "type": "hosted",
     "icon": "glink",
-    "name": "GLINK_DOCUMENT_FILE_TYPE",
+    "translationKey": "GLINK_DOCUMENT_FILE_TYPE",
     "subtype": "glink",
     "extensions": [".glink"],
     // "mime": "application/vnd.google-apps.shortcut"
@@ -423,7 +423,7 @@
   {
     "type": "hosted",
     "icon": "gform",
-    "name": "GFORM_DOCUMENT_FILE_TYPE",
+    "translationKey": "GFORM_DOCUMENT_FILE_TYPE",
     "subtype": "form",
     "extensions": [".gform"],
     // "mime": "application/vnd.google-apps.form"
@@ -431,7 +431,7 @@
   {
     "type": "hosted",
     "icon": "gmap",
-    "name": "GMAP_DOCUMENT_FILE_TYPE",
+    "translationKey": "GMAP_DOCUMENT_FILE_TYPE",
     "subtype": "map",
     "extensions": [".gmap"],
     // "mime": "application/vnd.google-apps.map"
@@ -439,7 +439,7 @@
   {
     "type": "hosted",
     "icon": "gsite",
-    "name": "GSITE_DOCUMENT_FILE_TYPE",
+    "translationKey": "GSITE_DOCUMENT_FILE_TYPE",
     "subtype": "site",
     "extensions": [".gsite"],
     // "mime": "application/vnd.google-apps.site"
@@ -449,14 +449,14 @@
   {
     "type": "document",
     "icon": "pdf",
-    "name": "PDF_DOCUMENT_FILE_TYPE",
+    "translationKey": "PDF_DOCUMENT_FILE_TYPE",
     "subtype": "PDF",
     "extensions": [".pdf"],
     "mime": "application/pdf"
   },
   {
     "type": "document",
-    "name": "HTML_DOCUMENT_FILE_TYPE",
+    "translationKey": "HTML_DOCUMENT_FILE_TYPE",
     "subtype": "HTML",
     "extensions": [".htm", ".html", ".mht", ".mhtml", ".shtml", ".xht", ".xhtml"],
     "mime": "text/html"
@@ -464,7 +464,7 @@
   {
     "type": "document",
     "icon": "word",
-    "name": "WORD_DOCUMENT_FILE_TYPE",
+    "translationKey": "WORD_DOCUMENT_FILE_TYPE",
     "subtype": "Word",
     "extensions": [".doc"],
     "mime": "application/msword"
@@ -472,7 +472,7 @@
   {
     "type": "document",
     "icon": "word",
-    "name": "WORD_DOCUMENT_FILE_TYPE",
+    "translationKey": "WORD_DOCUMENT_FILE_TYPE",
     "subtype": "Word",
     "extensions": [".docx"],
     "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -480,7 +480,7 @@
   {
     "type": "document",
     "icon": "ppt",
-    "name": "POWERPOINT_PRESENTATION_FILE_TYPE",
+    "translationKey": "POWERPOINT_PRESENTATION_FILE_TYPE",
     "subtype": "PPT",
     "extensions": [".ppt"],
     "mime": "application/vnd.ms-powerpoint"
@@ -488,7 +488,7 @@
   {
     "type": "document",
     "icon": "ppt",
-    "name": "POWERPOINT_PRESENTATION_FILE_TYPE",
+    "translationKey": "POWERPOINT_PRESENTATION_FILE_TYPE",
     "subtype": "PPT",
     "extensions": [".pptx"],
     "mime": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
@@ -496,7 +496,7 @@
   {
     "type": "document",
     "icon": "excel",
-    "name": "EXCEL_FILE_TYPE",
+    "translationKey": "EXCEL_FILE_TYPE",
     "subtype": "Excel",
     "extensions": [".xls"],
     "mime": "application/vnd.ms-excel"
@@ -504,7 +504,7 @@
   {
     "type": "document",
     "icon": "excel",
-    "name": "EXCEL_FILE_TYPE",
+    "translationKey": "EXCEL_FILE_TYPE",
     "subtype": "Excel",
     "extensions": [".xlsx"],
     "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -512,7 +512,7 @@
   {
     "type": "archive",
     "icon": "tini",
-    "name": "TINI_FILE_TYPE",
+    "translationKey": "TINI_FILE_TYPE",
     "subtype": "TGZ",
     "extensions": [".tini"]
   }

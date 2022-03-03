@@ -49,7 +49,7 @@ def _validate_json_schema(json_data, file_path, output_api):
         validation_results.append(
             output_api.PresubmitError(f'{file_path}: must be a json array.'))
     else:
-        required_str_fields = ['name', 'type', 'subtype']
+        required_str_fields = ['translationKey', 'type', 'subtype']
         for item in json_data:
             for field in required_str_fields:
                 if not isinstance(item.get(field), str):
