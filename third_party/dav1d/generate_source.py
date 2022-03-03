@@ -52,9 +52,12 @@ def _WriteGn(fd):
   _WriteArray(fd, "x86_asm_sources", _Glob("libdav1d/src/x86/*.asm"))
   _WriteArray(fd, "x86_template_sources", _Glob("libdav1d/src/x86/*_tmpl.c"))
 
-  # TODO(dalecurtis): May want to exclude "util.S" here.
-  _WriteArray(fd, "arm32_asm_sources", _Glob("libdav1d/src/arm/32/*.S"))
-  _WriteArray(fd, "arm64_asm_sources", _Glob("libdav1d/src/arm/64/*.S"))
+  _WriteArray(fd, "arm32_asm_sources", _Glob("libdav1d/src/arm/32/*.S"),
+              _Glob("libdav1d/src/arm/32/*_tmpl.S") +
+              ["libdav1d/src/arm/32/util.S"])
+  _WriteArray(fd, "arm64_asm_sources", _Glob("libdav1d/src/arm/64/*.S"),
+              _Glob("libdav1d/src/arm/64/*_tmpl.S") +
+              ["libdav1d/src/arm/64/util.S"])
   _WriteArray(fd, "arm_template_sources", _Glob("libdav1d/src/arm/*_tmpl.c"))
 
   template_sources = _Glob("libdav1d/src/*_tmpl.c")
