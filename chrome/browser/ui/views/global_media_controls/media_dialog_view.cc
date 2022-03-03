@@ -109,8 +109,10 @@ views::Widget* MediaDialogView::ShowDialog(
     Profile* profile,
     content::WebContents* contents,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
-  DCHECK(!instance_);
   DCHECK(service);
+  // Hide the previous instance if it exists, since there can only be one dialog
+  // instance at a time.
+  HideDialog();
   instance_ = new MediaDialogView(anchor_view, anchor_position, service,
                                   profile, contents, entry_point);
   if (!anchor_view) {

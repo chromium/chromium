@@ -201,8 +201,10 @@ void CastDialogView::ShowDialog(
     Profile* profile,
     const base::Time& start_time,
     MediaRouterDialogOpenOrigin activation_location) {
-  DCHECK(!instance_);
   DCHECK(!start_time.is_null());
+  // Hide the previous dialog instance if it exists, since there can only be one
+  // instance at a time.
+  HideDialog();
   instance_ = new CastDialogView(anchor_view, anchor_position, controller,
                                  profile, start_time, activation_location);
   views::Widget* widget =
@@ -292,8 +294,7 @@ void CastDialogView::MaybeShowAccessCodeCastButton() {
   auto callback = base::BindRepeating(&CastDialogView::ShowAccessCodeCastDialog,
                                       base::Unretained(this));
 
-  access_code_cast_button_ =
-      new CastDialogAccessCodeCastButton(callback);
+  access_code_cast_button_ = new CastDialogAccessCodeCastButton(callback);
   AddChildView(access_code_cast_button_.get());
 }
 
