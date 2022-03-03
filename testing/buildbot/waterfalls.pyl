@@ -3015,7 +3015,7 @@
           ],
         },
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
           'gtest_tests': 'fuchsia_experimental_gtests',
         },
       },
@@ -3036,7 +3036,7 @@
           ],
         },
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
           'gtest_tests': 'fuchsia_experimental_gtests',
         },
       },
@@ -4939,6 +4939,7 @@
           ],
         },
         'test_suites': {
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
           'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_isolated_scripts',
         },

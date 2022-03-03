@@ -2671,6 +2671,9 @@
         ],
       },
     },
+    'remove_from': [
+      'Fuchsia x64',  # https://crbug.com/1302427
+    ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -2790,6 +2793,9 @@
         ],
       },
     },
+    'remove_from': [
+      'Fuchsia x64',  # https://crbug.com/1302427
+    ],
   },
   'services_unittests': {
     'remove_from': [

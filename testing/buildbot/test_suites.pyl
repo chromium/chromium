@@ -2683,6 +2683,31 @@
           'has_native_resultdb_integration',
         ],
       },
+      'pixel_skia_validating': {
+        'name': 'pixel_skia_gold_validating_test',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--test-machine-name',
+          '${buildername}',
+          '--extra-browser-args=--use-cmd-decoder=validating',
+        ],
+        'mixins': [
+          'skia_gold_test',
+          'has_native_resultdb_integration',
+        ],
+        'telemetry_test_name': 'pixel',
+      },
+      'screenshot_sync_validating': {
+        'name': 'screenshot_sync_validating_tests',
+        'telemetry_test_name': 'screenshot_sync',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--extra-browser-args=--use-cmd-decoder=validating',
+         ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
       'trace_test': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -6056,9 +6081,12 @@
       'rendering_desktop_representative_perf_tests_isolated_scripts',
     ],
 
-    'gpu_fuchsia_telemetry_tests': [
+    'gpu_fuchsia_telemetry_experimental_tests': [
       'gpu_fuchsia_common_telemetry_tests',
       'gpu_mediapipe_validating_telemetry_tests',
+    ],
+
+    'gpu_fuchsia_telemetry_tests': [
       'gpu_validating_telemetry_tests',
     ],
 
