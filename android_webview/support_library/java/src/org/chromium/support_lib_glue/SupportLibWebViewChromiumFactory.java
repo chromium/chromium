@@ -84,6 +84,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.SET_SUPPORT_LIBRARY_VERSION + Features.DEV_SUFFIX,
                     Features.DOCUMENT_START_SCRIPT,
                     Features.PROXY_OVERRIDE_REVERSE_BYPASS,
+                    Features.GET_VARIATIONS_HEADER + Features.DEV_SUFFIX
             };
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -143,7 +144,12 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.ADD_DOCUMENT_START_SCRIPT,
             ApiCall.REMOVE_DOCUMENT_START_SCRIPT,
             ApiCall.SET_SAFE_BROWSING_ALLOWLIST,
-            ApiCall.SET_PROXY_OVERRIDE_REVERSE_BYPASS})
+            ApiCall.SET_PROXY_OVERRIDE_REVERSE_BYPASS,
+            ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE,
+            ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE,
+            ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE,
+            ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE,
+            ApiCall.GET_VARIATIONS_HEADER})
     public @interface ApiCall {
         int ADD_WEB_MESSAGE_LISTENER = 0;
         int CLEAR_PROXY_OVERRIDE = 1;
@@ -201,7 +207,13 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int REMOVE_DOCUMENT_START_SCRIPT = 53;
         int SET_SAFE_BROWSING_ALLOWLIST = 54;
         int SET_PROXY_OVERRIDE_REVERSE_BYPASS = 55;
-        int COUNT = 56;
+        int WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE = 56;
+        int WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE = 57;
+        int SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE = 58;
+        int SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE = 59;
+        int GET_VARIATIONS_HEADER = 60;
+        // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
+        int COUNT = 61;
     }
     // clang-format on
 
@@ -270,6 +282,12 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         public boolean isMultiProcessEnabled() {
             recordApiCall(ApiCall.IS_MULTI_PROCESS_ENABLED);
             return mSharedStatics.isMultiProcessEnabled();
+        }
+
+        @Override
+        public String getVariationsHeader() {
+            recordApiCall(ApiCall.GET_VARIATIONS_HEADER);
+            return mSharedStatics.getVariationsHeader();
         }
     }
 

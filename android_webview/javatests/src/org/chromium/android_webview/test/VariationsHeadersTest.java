@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -75,6 +76,14 @@ public class VariationsHeadersTest {
     public void testSendsHeaderWithFeatureEnabled() throws Throwable {
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), mUrl);
         Assert.assertFalse(mTestServer.getLastRequest(PATH).headerValue(HEADER_NAME).isEmpty());
+    }
+
+    @MediumTest
+    @Test
+    public void testMatchesApiValue() throws Throwable {
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), mUrl);
+        String serverHeaderValue = mTestServer.getLastRequest(PATH).headerValue(HEADER_NAME);
+        Assert.assertEquals(serverHeaderValue, AwContentsStatics.getVariationsHeader());
     }
 
     @CommandLineFlags.Add({"disable-features=WebViewSendVariationsHeaders"})

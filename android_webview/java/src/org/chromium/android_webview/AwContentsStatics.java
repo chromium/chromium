@@ -179,6 +179,13 @@ public class AwContentsStatics {
         return AwContentsStaticsJni.get().isMultiProcessEnabled();
     }
 
+    /**
+     * Returns the variations header used with the X-Client-Data header.
+     */
+    public static String getVariationsHeader() {
+        return AwContentsStaticsJni.get().getVariationsHeader();
+    }
+
     @NativeMethods
     interface Natives {
         void logCommandLineForDebugging();
@@ -193,5 +200,6 @@ public class AwContentsStatics {
         void setSafeBrowsingAllowlist(String[] urls, Callback<Boolean> callback);
         void setCheckClearTextPermitted(boolean permitted);
         boolean isMultiProcessEnabled();
+        String getVariationsHeader();
     }
 }

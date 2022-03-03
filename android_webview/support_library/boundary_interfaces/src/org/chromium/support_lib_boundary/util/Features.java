@@ -189,4 +189,7 @@ public class Features {
     // WebSettingsCompat.setWebAuthnSupport
     // WebSettingsCompat.getWebAuthnSupport
     public static final String WEB_AUTHENTICATION = "WEB_AUTHENTICATION";
+
+    // WebViewCompat.getVariationsHeader
+    public static final String GET_VARIATIONS_HEADER = "GET_VARIATIONS_HEADER";
 }
