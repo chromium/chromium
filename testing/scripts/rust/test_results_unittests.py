@@ -40,14 +40,14 @@ class TestResultTests(unittest.TestCase):
 
 class BuildJsonDataTests(unittest.TestCase):
     def test_grouping_of_tests(self):
-        t1 = TestResult('group1/foo', 'PASS')
-        t2 = TestResult('group1/bar', 'FAILED')
-        t3 = TestResult('group2/baz', 'FAILED')
+        t1 = TestResult('group1//foo', 'PASS')
+        t2 = TestResult('group1//bar', 'FAIL')
+        t3 = TestResult('group2//baz', 'FAIL')
         actual_result = _build_json_data([t1, t2, t3], 123)
         # yapf: disable
         expected_result = {
             'interrupted': False,
-            'path_delimiter': '/',
+            'path_delimiter': '//',
             'seconds_since_epoch': 123,
             'version': 3,
             'tests': {
@@ -58,16 +58,16 @@ class BuildJsonDataTests(unittest.TestCase):
                     },
                     'bar': {
                         'expected': 'PASS',
-                        'actual': 'FAILED'
+                        'actual': 'FAIL'
                     }},
                 'group2': {
                     'baz': {
                         'expected': 'PASS',
-                        'actual': 'FAILED'
+                        'actual': 'FAIL'
                     }}},
             'num_failures_by_type': {
                 'PASS': 1,
-                'FAILED': 2
+                'FAIL': 2
             }
         }
         # yapf: enable

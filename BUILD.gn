@@ -862,7 +862,7 @@ group("gn_all") {
   if (toolchain_has_rust) {
     deps += [
       "//mojo/public/rust",
-      "//mojo/public/rust:tests",
+      "//mojo/public/rust:mojo_rust_tests",
     ]
   }
   if (enable_rust) {

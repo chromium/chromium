@@ -82,8 +82,7 @@
   "linux-rust-intree-x64-rel": {
     "additional_compile_targets": [
       "mojo_rust",
-      "mojo_rust_extra_tests",
-      "mojo_rust_unittests",
+      "mojo_rust_tests",
       "rust_build_tests"
     ],
     "gtest_tests": [
@@ -152,14 +151,27 @@
         },
         "test": "build_rust_tests",
         "test_id_prefix": "ninja://build/rust/tests:build_rust_tests/"
+      },
+      {
+        "isolate_name": "mojo_rust_tests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "mojo_rust_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "mojo_rust_tests",
+        "test_id_prefix": "ninja://mojo/public/rust:mojo_rust_tests/"
       }
     ]
   },
   "linux-rust-x64-rel": {
     "additional_compile_targets": [
       "mojo_rust",
-      "mojo_rust_extra_tests",
-      "mojo_rust_unittests",
+      "mojo_rust_tests",
       "rust_build_tests"
     ],
     "gtest_tests": [
@@ -228,6 +240,20 @@
         },
         "test": "build_rust_tests",
         "test_id_prefix": "ninja://build/rust/tests:build_rust_tests/"
+      },
+      {
+        "isolate_name": "mojo_rust_tests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "mojo_rust_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "mojo_rust_tests",
+        "test_id_prefix": "ninja://mojo/public/rust:mojo_rust_tests/"
       }
     ]
   }

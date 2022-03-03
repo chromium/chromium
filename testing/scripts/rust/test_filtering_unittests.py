@@ -21,6 +21,7 @@ class FilterTests(fake_filesystem_unittest.TestCase):
         t = _TestFilter('foo')
         self.assertTrue(t.is_match('foo'))
         self.assertFalse(t.is_match('foobar'))
+        self.assertFalse(t.is_match('foo/bar'))
         self.assertFalse(t.is_match('fo'))
         self.assertFalse(t.is_exclusion_filter())
 
@@ -28,6 +29,7 @@ class FilterTests(fake_filesystem_unittest.TestCase):
         t = _TestFilter('foo*')
         self.assertTrue(t.is_match('foo'))
         self.assertTrue(t.is_match('foobar'))
+        self.assertTrue(t.is_match('foo/bar'))
         self.assertFalse(t.is_match('fo'))
         self.assertFalse(t.is_exclusion_filter())
 
@@ -35,6 +37,7 @@ class FilterTests(fake_filesystem_unittest.TestCase):
         t = _TestFilter('-foo')
         self.assertTrue(t.is_match('foo'))
         self.assertFalse(t.is_match('foobar'))
+        self.assertFalse(t.is_match('foo/bar'))
         self.assertFalse(t.is_match('fo'))
         self.assertTrue(t.is_exclusion_filter())
 
@@ -42,6 +45,7 @@ class FilterTests(fake_filesystem_unittest.TestCase):
         t = _TestFilter('-foo*')
         self.assertTrue(t.is_match('foo'))
         self.assertTrue(t.is_match('foobar'))
+        self.assertTrue(t.is_match('foo/bar'))
         self.assertFalse(t.is_match('fo'))
         self.assertTrue(t.is_exclusion_filter())
 

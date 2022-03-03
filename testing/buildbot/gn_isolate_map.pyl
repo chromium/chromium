@@ -1283,17 +1283,9 @@
     # coverage.
     "type": "additional_compile_target",
   },
-  "mojo_rust_unittests": {
-    "label": "//mojo/public/rust:mojo_rust_unittests",
-    # We don't yet support running Rust test binaries. For now, at least build
-    # the target. TODO(https://crbug.com/1260120): make this a test.
-    "type": "additional_compile_target",
-  },
-  "mojo_rust_extra_tests": {
-    "label": "//mojo/public/rust:mojo_rust",
-    # We don't yet support running Rust test binaries. For now, at least build
-    # the target. TODO(https://crbug.com/1260120): make this a test.
-    "type": "additional_compile_target",
+  "mojo_rust_tests": {
+    "label": "//mojo/public/rust:mojo_rust_tests",
+    "type": "generated_script",
   },
   "mojo_test_apk": {
     "label": "//mojo/public/java/system:mojo_test_apk",

@@ -35,3 +35,10 @@ pub fn add_two_ints_via_rust(x: i32, y: i32) -> i32 {
 pub fn allocate_via_rust() -> Box<ffi::SomeStruct> {
     Box::new(ffi::SomeStruct { a: 43 })
 }
+
+mod tests {
+    #[test]
+    fn test_in_mod() {
+        // Always passes; just to see if tests in modules are handled correctly.
+    }
+}

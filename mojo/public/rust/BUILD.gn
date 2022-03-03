@@ -5,6 +5,7 @@
 import("//build/config/rust.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/rust/rust_unit_test.gni")
+import("//build/rust/rust_unit_tests_group.gni")
 
 # Meta target to build everything
 group("rust") {
@@ -12,8 +13,7 @@ group("rust") {
 }
 
 # Meta target to build test binaries, if supported.
-group("tests") {
-  testonly = true
+rust_unit_tests_group("mojo_rust_tests") {
   deps = []
   if (build_rust_unit_tests) {
     deps += [ ":mojo_rust_unittests" ]

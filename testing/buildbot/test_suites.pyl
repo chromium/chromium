@@ -4438,6 +4438,10 @@
         'swarming': {},
         'test': 'build_rust_tests',
       },
+      'mojo_rust_tests': {
+        'swarming': {},
+        'test': 'mojo_rust_tests',
+      },
     },
 
     'site_isolation_android_fyi_gtests': {

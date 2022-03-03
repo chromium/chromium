@@ -37,11 +37,14 @@ class EndToEndTests(fake_filesystem_unittest.TestCase):
     def test_basic_scenario(self):
         with tempfile.TemporaryDirectory() as tmpdirname:
             # Prepare simulated inputs.
-            test_list = ['test_foo', 'test_bar', 'test_foobar']
+            test_list = [
+                'test_foo', 'test_bar', 'test_foobar', 'module/test_foo'
+            ]
             test_results = [
                 TestResult('test_foo', 'PASS'),
                 TestResult('test_bar', 'PASS'),
-                TestResult('test_foobar', 'FAILED')
+                TestResult('test_foobar', 'FAILED'),
+                TestResult('module/test_foo', 'PASS')
             ]
             fake_executable_wrapper = FakeTestExecutableWrapper(
                 test_list, test_results)
@@ -62,7 +65,7 @@ class EndToEndTests(fake_filesystem_unittest.TestCase):
             # yapf: disable
             expected_json_output = {
                 'interrupted': False,
-                'path_delimiter': '/',
+                'path_delimiter': '//',
                 #'seconds_since_epoch': 1635974313.8388052,
                 'version': 3,
                 'tests': {
@@ -77,9 +80,13 @@ class EndToEndTests(fake_filesystem_unittest.TestCase):
                     'test_foobar': {
                         'expected': 'PASS',
                         'actual': 'FAILED'
+                    },
+                    'module/test_foo': {
+                        'expected': 'PASS',
+                        'actual': 'PASS'
                     }},
                 'num_failures_by_type': {
-                    'PASS': 2,
+                    'PASS': 3,
                     'FAILED': 1
                 }
             }

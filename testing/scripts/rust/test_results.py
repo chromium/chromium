@@ -100,7 +100,7 @@ def _build_json_data(list_of_test_results, seconds_since_epoch):
         old_count = num_failures_by_type.get(res.actual_test_result, 0)
         num_failures_by_type[res.actual_test_result] = old_count + 1
 
-        path = res.test_name.split('/')
+        path = res.test_name.split('//')
         group = tests
         for group_name in path[:-1]:
             if not group_name in group:
@@ -114,7 +114,7 @@ def _build_json_data(list_of_test_results, seconds_since_epoch):
 
     return {
         'interrupted': False,
-        'path_delimiter': '/',
+        'path_delimiter': '//',
         'seconds_since_epoch': seconds_since_epoch,
         'version': 3,
         'tests': tests,
