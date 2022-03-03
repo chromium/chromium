@@ -15,8 +15,8 @@ class WebappsHelper {
     private WebappsHelper() {}
 
     @CalledByNative
-    public static void addShortcut(String id, String url, String userTitle, Bitmap icon,
-            boolean isIconAdaptive, int source, String iconUrl) {
+    public static void addShortcutToHomescreen(
+            String id, String url, String userTitle, Bitmap icon, boolean isIconAdaptive) {
         Intent shortcutIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         WebappsUtils.addShortcutToHomescreen(id, userTitle, icon, isIconAdaptive, shortcutIntent);
     }

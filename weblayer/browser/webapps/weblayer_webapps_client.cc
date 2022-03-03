@@ -6,24 +6,21 @@
 
 #include <string>
 
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "base/guid.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/security_state/content/content_utils.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
-#include "weblayer/browser/java/jni/WebappsHelper_jni.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "base/guid.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
-#endif
+#include "weblayer/browser/webapps/webapps_utils.h"
 
 namespace weblayer {
 
@@ -66,7 +63,6 @@ webapps::AppBannerManager* WebLayerWebappsClient::GetAppBannerManager(
   return nullptr;
 }
 
-#if BUILDFLAG(IS_ANDROID)
 bool WebLayerWebappsClient::IsInstallationInProgress(
     content::WebContents* web_contents,
     const GURL& manifest_url) {
@@ -93,22 +89,10 @@ void WebLayerWebappsClient::InstallShortcut(
     content::WebContents* web_contents,
     const webapps::AddToHomescreenParams& params) {
   const webapps::ShortcutInfo& info = *params.shortcut_info;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> java_id =
-      ConvertUTF8ToJavaString(env, base::GenerateGUID());
-  ScopedJavaLocalRef<jstring> java_url =
-      ConvertUTF8ToJavaString(env, info.url.spec());
-  ScopedJavaLocalRef<jstring> java_user_title =
-      ConvertUTF16ToJavaString(env, info.user_title);
-  ScopedJavaLocalRef<jstring> java_best_primary_icon_url =
-      ConvertUTF8ToJavaString(env, info.best_primary_icon_url.spec());
-  ScopedJavaLocalRef<jobject> java_bitmap;
-  if (!params.primary_icon.drawsNothing())
-    java_bitmap = gfx::ConvertToJavaBitmap(params.primary_icon);
-  Java_WebappsHelper_addShortcut(env, java_id, java_url, java_user_title,
-                                 java_bitmap, params.has_maskable_primary_icon,
-                                 info.source, java_best_primary_icon_url);
+
+  webapps::addShortcutToHomescreen(base::GenerateGUID(), info.url,
+                                   info.user_title, params.primary_icon,
+                                   params.has_maskable_primary_icon);
 }
-#endif
 
 }  // namespace weblayer
