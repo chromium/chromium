@@ -4,9 +4,9 @@
 
 /*
  * A mock text-to-speech engine for tests.
- * This class has functions and callbacks necessary for Select-to-Speak
- * to function. It keeps track of the utterances currently being spoken,
- * and whether TTS should be speaking or is stopped.
+ * This class has functions and callbacks necessary for accessibility extensions
+ * (Select-to-Speak, ChromeVox) to function. It keeps track of the utterances
+ * currently being spoken, and whether TTS should be speaking or is stopped.
  * @constructor
  */
 var MockTts = function() {
