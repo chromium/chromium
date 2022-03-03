@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,8 @@ class LayerAnimator;
 
 namespace ash {
 
-// A class capable of waiting until a layer has stopped animating.
+// A class capable of waiting until a layer has stopped animating. Supports
+// animations that delete the layer on completion.
 class LayerAnimationStoppedWaiter : public ui::LayerAnimationObserver {
  public:
   LayerAnimationStoppedWaiter();
