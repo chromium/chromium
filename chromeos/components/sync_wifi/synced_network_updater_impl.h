@@ -56,6 +56,7 @@ class SyncedNetworkUpdaterImpl
   void OnDeviceStateListChanged() override {}
   void OnVpnProvidersChanged() override {}
   void OnNetworkCertificatesChanged() override {}
+  void OnPoliciesApplied(const std::string& userhash) override {}
 
  private:
   void StartAddOrUpdateOperation(

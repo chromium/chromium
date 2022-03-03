@@ -161,10 +161,6 @@ void NetworkHealth::OnNetworkStateChanged(
   RequestNetworkStateList();
 }
 
-void NetworkHealth::OnVpnProvidersChanged() {}
-
-void NetworkHealth::OnNetworkCertificatesChanged() {}
-
 void NetworkHealth::OnNetworkStateListReceived(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> props) {
   network_properties_.swap(props);

@@ -21,7 +21,12 @@ CrosNetworkConfigTestHelper::CrosNetworkConfigTestHelper(bool initialize) {
 }
 
 CrosNetworkConfigTestHelper::~CrosNetworkConfigTestHelper() {
+  Shutdown();
+}
+
+void CrosNetworkConfigTestHelper::Shutdown() {
   OverrideInProcessInstanceForTesting(nullptr);
+  cros_network_config_impl_.reset();
 }
 
 network_config::mojom::NetworkStatePropertiesPtr

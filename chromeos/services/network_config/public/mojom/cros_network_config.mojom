@@ -1195,4 +1195,7 @@ interface CrosNetworkConfigObserver {
   // Fired when the server CA or user certificate lists change. Use
   // GetNetworkCertificates if the updated certificate lists are required.
   OnNetworkCertificatesChanged();
+
+  // Fired when managed policies for |userhash| are applied to networks.
+  OnPoliciesApplied(string userhash);
 };

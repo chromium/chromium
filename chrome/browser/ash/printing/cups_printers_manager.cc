@@ -310,6 +310,7 @@ class CupsPrintersManagerImpl
   void OnDeviceStateListChanged() override {}
   void OnVpnProvidersChanged() override {}
   void OnNetworkCertificatesChanged() override {}
+  void OnPoliciesApplied(const std::string& userhash) override {}
 
   // Callback for PrinterDetectors.
   void OnPrintersFound(

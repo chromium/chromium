@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TrafficCountersHandler
       override {}
   void OnVpnProvidersChanged() override {}
   void OnNetworkCertificatesChanged() override {}
+  void OnPoliciesApplied(const std::string& userhash) override {}
 
   void SetTimeGetterForTest(TimeGetter time_getter);
   void RunForTesting();

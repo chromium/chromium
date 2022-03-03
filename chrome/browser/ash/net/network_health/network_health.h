@@ -55,8 +55,9 @@ class NetworkHealth
   void OnNetworkStateChanged(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state)
       override;
-  void OnVpnProvidersChanged() override;
-  void OnNetworkCertificatesChanged() override;
+  void OnVpnProvidersChanged() override {}
+  void OnNetworkCertificatesChanged() override {}
+  void OnPoliciesApplied(const std::string& userhash) override {}
 
   // Signal strength changes larger than
   // |kMaxSignalStrengthFluctuationTolerance| trigger a signal strength change

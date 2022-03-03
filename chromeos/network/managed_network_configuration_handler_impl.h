@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   // ManagedNetworkConfigurationHandler overrides
   void AddObserver(NetworkPolicyObserver* observer) override;
   void RemoveObserver(NetworkPolicyObserver* observer) override;
+  bool HasObserver(NetworkPolicyObserver* observer) const override;
 
   void GetProperties(const std::string& userhash,
                      const std::string& service_path,
@@ -138,6 +139,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       base::OnceClosure callback) override;
 
   void OnPoliciesApplied(const NetworkProfile& profile) override;
+
+  void Shutdown() override;
 
  private:
   friend class AutoConnectHandlerTest;
@@ -266,6 +269,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
 
   bool user_policy_applied_ = false;
   bool device_policy_applied_ = false;
+  // Ensure that Shutdown() gets called exactly once.
+  bool did_shutdown_ = false;
 
   // For Shill client callbacks
   base::WeakPtrFactory<ManagedNetworkConfigurationHandlerImpl>

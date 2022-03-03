@@ -67,6 +67,7 @@ NetworkTestHelper::NetworkTestHelper()
 }
 
 NetworkTestHelper::~NetworkTestHelper() {
+  Shutdown();
   network_handler_test_helper_.reset();
   LoginState::Shutdown();
   ui_proxy_config_service_.reset();

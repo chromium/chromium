@@ -57,11 +57,11 @@ class VersionUpdaterTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
     version_updater_.reset();
     NetworkHandler::Shutdown();
+    cros_network_config_test_helper_.reset();
     managed_network_configuration_handler_.reset();
     network_configuration_handler_.reset();
     network_profile_handler_.reset();
     ui_proxy_config_service_.reset();
-    cros_network_config_test_helper_.reset();
     // This will delete `fake_update_engine_client_`.
     chromeos::DBusThreadManager::Shutdown();
   }

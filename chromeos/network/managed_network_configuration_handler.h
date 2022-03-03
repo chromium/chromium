@@ -61,6 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
 
   virtual void AddObserver(NetworkPolicyObserver* observer) = 0;
   virtual void RemoveObserver(NetworkPolicyObserver* observer) = 0;
+  virtual bool HasObserver(NetworkPolicyObserver* observer) const = 0;
 
   // Provides the properties of the network with |service_path| to |callback|.
   // |userhash| is used to set the "Source" property. If not provided then
@@ -202,6 +203,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
 
   // Return the list of blocked WiFi networks (identified by HexSSIDs).
   virtual std::vector<std::string> GetBlockedHexSSIDs() const = 0;
+
+  // Called just before destruction to give observers a chance to remove
+  // themselves and disable any networking.
+  virtual void Shutdown() = 0;
 
   static std::unique_ptr<ManagedNetworkConfigurationHandler>
   InitializeForTesting(

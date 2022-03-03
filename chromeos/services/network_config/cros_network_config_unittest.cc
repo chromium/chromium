@@ -1808,6 +1808,29 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
   EXPECT_EQ("blocked_ssid2", policy->blocked_hex_ssids[1]);
 }
 
+TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
+  SetupObserver();
+  EXPECT_EQ(0, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
+
+  base::DictionaryValue global_config;
+  global_config.SetBoolKey(
+      ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks, true);
+  global_config.SetBoolKey(
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect, false);
+  managed_network_configuration_handler()->SetPolicy(
+      ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
+      base::ListValue(), global_config);
+  base::RunLoop().RunUntilIdle();
+  mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
+  ASSERT_TRUE(policy);
+  EXPECT_EQ(true, policy->allow_only_policy_cellular_networks);
+  EXPECT_EQ(false, policy->allow_only_policy_networks_to_autoconnect);
+  EXPECT_EQ(false, policy->allow_only_policy_wifi_networks_to_connect);
+  EXPECT_EQ(false,
+            policy->allow_only_policy_wifi_networks_to_connect_if_available);
+  EXPECT_EQ(1, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
+}
+
 TEST_F(CrosNetworkConfigTest, StartConnect) {
   // wifi1 is already connected, StartConnect should fail.
   mojom::StartConnectResult result = StartConnect("wifi1_guid");
@@ -2186,6 +2209,16 @@ TEST_F(CrosNetworkConfigTest, SetAutoReset) {
       "wifi1_guid", /*auto_reset=*/true,
       /*day=*/nullptr,
       /*expected_success=*/false, &expected_auto_reset, &expected_reset_day);
+}
+
+// Make sure calling shutdown before cros_network_config destruction doesn't
+// cause a crash.
+TEST_F(CrosNetworkConfigTest, Shutdown) {
+  SetupObserver();
+  base::RunLoop().RunUntilIdle();
+
+  NetworkHandler::Get()->network_state_handler()->Shutdown();
+  NetworkHandler::Get()->managed_network_configuration_handler()->Shutdown();
 }
 
 }  // namespace network_config

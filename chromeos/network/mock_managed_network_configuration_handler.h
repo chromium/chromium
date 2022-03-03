@@ -29,6 +29,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   // ManagedNetworkConfigurationHandler overrides
   MOCK_METHOD1(AddObserver, void(NetworkPolicyObserver* observer));
   MOCK_METHOD1(RemoveObserver, void(NetworkPolicyObserver* observer));
+  MOCK_CONST_METHOD1(HasObserver, bool(NetworkPolicyObserver* observer));
+  MOCK_METHOD0(Shutdown, void());
   MOCK_METHOD3(GetProperties,
                void(const std::string& userhash,
                     const std::string& service_path,

@@ -2179,7 +2179,7 @@ CrosNetworkConfig::CrosNetworkConfig(
 }
 
 CrosNetworkConfig::~CrosNetworkConfig() {
-  if (network_state_handler_->HasObserver(this))
+  if (network_state_handler_ && network_state_handler_->HasObserver(this))
     network_state_handler_->RemoveObserver(this, FROM_HERE);
   if (network_certificate_handler_ &&
       network_certificate_handler_->HasObserver(this)) {
@@ -2187,6 +2187,10 @@ CrosNetworkConfig::~CrosNetworkConfig() {
   }
   if (cellular_inhibitor_ && cellular_inhibitor_->HasObserver(this))
     cellular_inhibitor_->RemoveObserver(this);
+  if (network_configuration_handler_ &&
+      network_configuration_handler_->HasObserver(this)) {
+    network_configuration_handler_->RemoveObserver(this);
+  }
 }
 
 void CrosNetworkConfig::BindReceiver(
@@ -2205,6 +2209,10 @@ void CrosNetworkConfig::AddObserver(
   }
   if (cellular_inhibitor_ && !cellular_inhibitor_->HasObserver(this))
     cellular_inhibitor_->AddObserver(this);
+  if (network_configuration_handler_ &&
+      !network_configuration_handler_->HasObserver(this)) {
+    network_configuration_handler_->AddObserver(this);
+  }
   observers_.Add(std::move(observer));
 }
 
@@ -3342,6 +3350,19 @@ void CrosNetworkConfig::OnCertificatesChanged() {
 
 void CrosNetworkConfig::OnInhibitStateChanged() {
   DeviceListChanged();
+}
+
+void CrosNetworkConfig::PoliciesApplied(const std::string& userhash) {
+  for (auto& observer : observers_)
+    observer->OnPoliciesApplied(userhash);
+}
+
+void CrosNetworkConfig::OnManagedNetworkConfigurationHandlerShuttingDown() {
+  if (network_configuration_handler_ &&
+      network_configuration_handler_->HasObserver(this)) {
+    network_configuration_handler_->RemoveObserver(this);
+  }
+  network_configuration_handler_ = nullptr;
 }
 
 const std::string& CrosNetworkConfig::GetServicePathFromGuid(

@@ -198,6 +198,24 @@ void ManagedNetworkConfigurationHandlerImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+bool ManagedNetworkConfigurationHandlerImpl::HasObserver(
+    NetworkPolicyObserver* observer) const {
+  return observers_.HasObserver(observer);
+}
+
+void ManagedNetworkConfigurationHandlerImpl::Shutdown() {
+  if (did_shutdown_)
+    return;  // May get called twice in tests.
+
+  did_shutdown_ = true;
+  if (network_profile_handler_ && network_profile_handler_->HasObserver(this))
+    network_profile_handler_->RemoveObserver(this);
+  network_profile_handler_ = nullptr;
+
+  for (auto& observer : observers_)
+    observer.OnManagedNetworkConfigurationHandlerShuttingDown();
+}
+
 void ManagedNetworkConfigurationHandlerImpl::GetManagedProperties(
     const std::string& userhash,
     const std::string& service_path,
@@ -918,8 +936,10 @@ ManagedNetworkConfigurationHandlerImpl::
 
 ManagedNetworkConfigurationHandlerImpl::
     ~ManagedNetworkConfigurationHandlerImpl() {
-  if (network_profile_handler_)
+  if (network_profile_handler_ && network_profile_handler_->HasObserver(this))
     network_profile_handler_->RemoveObserver(this);
+
+  Shutdown();
 }
 
 void ManagedNetworkConfigurationHandlerImpl::Init(

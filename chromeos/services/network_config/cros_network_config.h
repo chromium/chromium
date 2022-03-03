@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_certificate_handler.h"
+#include "chromeos/network/network_policy_observer.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -30,7 +31,8 @@ namespace network_config {
 class CrosNetworkConfig : public mojom::CrosNetworkConfig,
                           public NetworkStateHandlerObserver,
                           public NetworkCertificateHandler::Observer,
-                          public CellularInhibitor::Observer {
+                          public CellularInhibitor::Observer,
+                          public NetworkPolicyObserver {
  public:
   // Constructs an instance of CrosNetworkConfig with default network subsystem
   // dependencies appropriate for a production environment.
@@ -169,11 +171,15 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void ScanCompleted(const DeviceState* device) override;
   void NetworkConnectionStateChanged(const NetworkState* network) override;
 
-  // NetworkCertificateHandler::Observer
+  // NetworkCertificateHandler::Observer:
   void OnCertificatesChanged() override;
 
   // CellularInhibitor::Observer:
   void OnInhibitStateChanged() override;
+
+  // NetworkPolicyObserver:
+  void PoliciesApplied(const std::string& userhash) override;
+  void OnManagedNetworkConfigurationHandlerShuttingDown() override;
 
   const std::string& GetServicePathFromGuid(const std::string& guid);
 

@@ -20,8 +20,16 @@ CrosNetworkConfigTestObserver::GenerateRemote() {
 
 int CrosNetworkConfigTestObserver::GetNetworkChangedCount(
     const std::string& guid) const {
-  const auto iter = networks_changed_.find(guid);
-  if (iter == networks_changed_.end())
+  const auto iter = guid_to_networks_changed_count_map_.find(guid);
+  if (iter == guid_to_networks_changed_count_map_.end())
+    return 0;
+  return iter->second;
+}
+
+int CrosNetworkConfigTestObserver::GetPolicyAppliedCount(
+    const std::string& userhash) const {
+  const auto iter = userhash_to_policies_applied_count_map_.find(userhash);
+  if (iter == userhash_to_policies_applied_count_map_.end())
     return 0;
   return iter->second;
 }
@@ -33,7 +41,7 @@ void CrosNetworkConfigTestObserver::OnActiveNetworksChanged(
 
 void CrosNetworkConfigTestObserver::OnNetworkStateChanged(
     chromeos::network_config::mojom::NetworkStatePropertiesPtr network) {
-  networks_changed_[network->guid]++;
+  guid_to_networks_changed_count_map_[network->guid]++;
 }
 
 void CrosNetworkConfigTestObserver::OnNetworkStateListChanged() {
@@ -52,9 +60,15 @@ void CrosNetworkConfigTestObserver::OnNetworkCertificatesChanged() {
   network_certificates_changed_++;
 }
 
+void CrosNetworkConfigTestObserver::OnPoliciesApplied(
+    const std::string& userhash) {
+  userhash_to_policies_applied_count_map_[userhash]++;
+}
+
 void CrosNetworkConfigTestObserver::ResetNetworkChanges() {
   active_networks_changed_ = 0;
-  networks_changed_.clear();
+  guid_to_networks_changed_count_map_.clear();
+  userhash_to_policies_applied_count_map_.clear();
   network_state_list_changed_ = 0;
   device_state_list_changed_ = 0;
   vpn_providers_changed_ = 0;
