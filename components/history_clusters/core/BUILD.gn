@@ -33,6 +33,8 @@ static_library("core") {
     "history_clusters_types.h",
     "history_clusters_util.cc",
     "history_clusters_util.h",
+    "on_device_clustering_features.cc",
+    "on_device_clustering_features.h",
     "query_clusters_state.cc",
     "query_clusters_state.h",
   ]
@@ -53,8 +55,6 @@ static_library("core") {
       "noisy_cluster_finalizer.h",
       "on_device_clustering_backend.cc",
       "on_device_clustering_backend.h",
-      "on_device_clustering_features.cc",
-      "on_device_clustering_features.h",
       "on_device_clustering_util.cc",
       "on_device_clustering_util.h",
       "ranking_cluster_finalizer.cc",

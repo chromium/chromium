@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_RANKING_CLUSTER_FINALIZER_H_
 
 #include "components/history_clusters/core/cluster_finalizer.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 
 namespace history_clusters {
@@ -21,12 +22,12 @@ class VisitScores {
   // weightings between each. Note, this score is not between [0, 1] as
   // normalization will consider all visits within a cluster.
   float GetTotalScore() const {
-    return visit_duration_score_ * features::VisitDurationRankingWeight() +
+    return visit_duration_score_ * GetConfig().visit_duration_ranking_weight +
            foreground_duration_score_ *
-               features::ForegroundDurationRankingWeight() +
-           bookmark_score_ * features::BookmarkRankingWeight() +
-           srp_score_ * features::SearchResultsPageRankingWeight() +
-           page_title_score_ * features::HasPageTitleRankingWeight();
+               GetConfig().foreground_duration_ranking_weight +
+           bookmark_score_ * GetConfig().bookmark_ranking_weight +
+           srp_score_ * GetConfig().search_results_page_ranking_weight +
+           page_title_score_ * GetConfig().has_page_title_ranking_weight;
   }
 
   void set_visit_duration_score(float score) { visit_duration_score_ = score; }

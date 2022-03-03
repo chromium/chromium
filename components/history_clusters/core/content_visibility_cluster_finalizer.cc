@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
 
 #include "components/history_clusters/core/cluster_metrics_utils.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
@@ -26,7 +27,7 @@ void ContentVisibilityClusterFinalizer::FinalizeCluster(
       // visit wasn't evaluated for visibility.
       continue;
     }
-    if (visibility_score < features::ContentVisibilityThreshold()) {
+    if (visibility_score < GetConfig().content_visibility_threshold) {
       cluster.should_show_on_prominent_ui_surfaces = false;
       metrics_recorder.set_was_filtered(true);
     }

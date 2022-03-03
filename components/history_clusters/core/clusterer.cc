@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/clusterer.h"
 
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 
 namespace history_clusters {
@@ -17,10 +18,10 @@ bool ShouldAddVisitToCluster(const history::ClusterVisit& visit,
   auto last_visit = cluster.visits.back();
   if ((visit.annotated_visit.visit_row.visit_time -
        last_visit.annotated_visit.visit_row.visit_time) >
-      features::ClusterNavigationTimeCutoff()) {
+      GetConfig().cluster_navigation_time_cutoff) {
     return false;
   }
-  if (features::ShouldSplitClustersAtSearchVisits() &&
+  if (GetConfig().split_clusters_at_search_visits &&
       !visit.search_terms.empty()) {
     // If we want to split the clusters at search visits and we are at a search
     // visit, only add the visit to the cluster if the last visit was also a

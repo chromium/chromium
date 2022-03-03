@@ -18,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
 #include "components/history_clusters/core/features.h"
@@ -223,7 +224,7 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
   // Entries in |annotated_visits| that have index greater than or equal to
   // |index_stop_batch_processing| should not be processed in this task loop.
   size_t index_stop_batch_processing =
-      index_to_process + features::GetClusteringTasksBatchSize();
+      index_to_process + GetConfig().clustering_tasks_batch_size;
 
   // Process all entries in one go in certain cases. e.g., if
   // |clustering_request_source| is user blocking.
@@ -322,7 +323,8 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
       }
       if (visit.content_annotations.model_annotations
               .page_topics_model_version <
-          features::GetMinPageTopicsModelVersionToUseContentVisibilityFrom()) {
+          GetConfig()
+              .min_page_topics_model_version_to_use_content_visibility_from) {
         // Override the visibility score to be as if the model was not evaluated
         // if the version of the model being used does not exceed the min
         // version that was not a random model.
@@ -418,14 +420,14 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   // The cluster finalizers to be run.
   std::vector<std::unique_ptr<ClusterFinalizer>> cluster_finalizers;
 
-  if (features::ContentClusteringEnabled()) {
+  if (GetConfig().content_clustering_enabled) {
     cluster_processors.push_back(
         std::make_unique<ContentAnnotationsClusterProcessor>());
   }
 
   cluster_finalizers.push_back(
       std::make_unique<ContentVisibilityClusterFinalizer>());
-  if (features::ShouldDedupeSimilarVisits()) {
+  if (GetConfig().should_dedupe_similar_visits) {
     cluster_finalizers.push_back(
         std::make_unique<SimilarVisitDeduperClusterFinalizer>());
   } else {
@@ -434,13 +436,13 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
         std::make_unique<UrlDeduperClusterFinalizer>());
   }
   cluster_finalizers.push_back(std::make_unique<RankingClusterFinalizer>());
-  if (features::ShouldHideSingleVisitClustersOnProminentUISurfaces()) {
+  if (GetConfig().should_hide_single_visit_clusters_on_prominent_ui_surfaces) {
     cluster_finalizers.push_back(
         std::make_unique<SingleVisitClusterFinalizer>());
   }
   // Add feature to turn on/off site engagement score filter.
   if (engagement_score_provider_is_valid &&
-      features::ShouldFilterNoisyClusters()) {
+      GetConfig().should_filter_noisy_clusters) {
     cluster_finalizers.push_back(std::make_unique<NoisyClusterFinalizer>());
   }
   cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>());

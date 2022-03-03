@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/noisy_cluster_finalizer.h"
 
 #include "components/history_clusters/core/cluster_metrics_utils.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
@@ -22,7 +23,7 @@ void NoisyClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
       interesting_visit_cnt += 1 + visit.duplicate_visits.size();
     }
     if (interesting_visit_cnt >=
-        features::NumberInterestingVisitsFilterThreshold()) {
+        GetConfig().number_interesting_visits_filter_threshold) {
       return;
     }
   }

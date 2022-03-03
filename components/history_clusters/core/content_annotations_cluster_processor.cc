@@ -7,6 +7,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 
 namespace history_clusters {
@@ -82,14 +83,14 @@ float CalculateIntersectionSimilarity(
       intersection_size++;
     }
   }
-  return intersection_size >= features::ClusterIntersectionThreshold() ? 1.0
-                                                                       : 0.0;
+  return intersection_size >= GetConfig().cluster_interaction_threshold ? 1.0
+                                                                        : 0.0;
 }
 
 // Returns the similarity score based on the configured similarity metric.
 float CalculateSimilarityScore(const base::flat_set<std::u16string>& cluster1,
                                const base::flat_set<std::u16string>& cluster2) {
-  if (features::ContentClusterOnIntersectionSimilarity())
+  if (GetConfig().content_cluster_on_intersection_similarity)
     return CalculateIntersectionSimilarity(cluster1, cluster2);
   return CalculateJaccardSimilarity(cluster1, cluster2);
 }
@@ -98,19 +99,20 @@ float CalculateSimilarityScore(const base::flat_set<std::u16string>& cluster1,
 // |entity_similarity| and |category_similarity|. Both |entity_similarity| and
 // |category_similarity| are expected to be between 0 and 1, inclusive.
 bool ShouldMergeClusters(float entity_similarity, float category_similarity) {
-  float max_score = features::ContentClusteringEntitySimilarityWeight() +
-                    features::ContentClusteringEntitySimilarityWeight();
+  float max_score = GetConfig().content_clustering_entity_similarity_weight +
+                    GetConfig().content_clustering_category_similarity_weight;
   if (max_score == 0)
     return 0.0;
 
   float cluster_similarity_score =
-      (features::ContentClusteringEntitySimilarityWeight() * entity_similarity +
-       features::ContentClusteringCategorySimilarityWeight() *
+      (GetConfig().content_clustering_entity_similarity_weight *
+           entity_similarity +
+       GetConfig().content_clustering_category_similarity_weight *
            category_similarity) /
       max_score;
   float normalized_similarity_score =
       cluster_similarity_score >
-      features::ContentClusteringSimilarityThreshold();
+      GetConfig().content_clustering_similarity_threshold;
   DCHECK(normalized_similarity_score >= 0 && normalized_similarity_score <= 1);
   return normalized_similarity_score;
 }

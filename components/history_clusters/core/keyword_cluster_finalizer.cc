@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
@@ -18,7 +19,7 @@ KeywordClusterFinalizer::~KeywordClusterFinalizer() = default;
 void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   base::flat_set<std::u16string> keywords_set;
   for (const auto& visit : cluster.visits) {
-    if (features::ShouldExcludeKeywordsFromNoisyVisits() &&
+    if (GetConfig().should_exclude_keywords_from_noisy_visits &&
         IsNoisyVisit(visit)) {
       // Do not put keywords if user visits the page a lot and it's not a
       // search-like visit.
@@ -29,7 +30,7 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
          visit.annotated_visit.content_annotations.model_annotations.entities) {
       keywords_set.insert(base::UTF8ToUTF16(entity.id));
     }
-    if (features::ShouldIncludeCategoriesInKeywords()) {
+    if (GetConfig().should_include_categories_in_keywords) {
       for (const auto& category : visit.annotated_visit.content_annotations
                                       .model_annotations.categories) {
         keywords_set.insert(base::UTF8ToUTF16(category.id));

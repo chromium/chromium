@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/time/time.h"
+
 namespace history_clusters {
 
 // The default configuration. Always use |GetConfig()| to get the current
@@ -82,6 +84,100 @@ struct Config {
 
   // Enables the history clusters internals page.
   bool history_clusters_internals_page = false;
+
+  // Returns the maximum duration between navigations that
+  // a visit can be considered for the same cluster.
+  base::TimeDelta cluster_navigation_time_cutoff = base::Minutes(60);
+
+  // Returns whether content clustering is enabled and
+  // should be performed by the clustering backend.
+  bool content_clustering_enabled = true;
+
+  // Returns the weight that should be placed on entity similarity for
+  // determining if two clusters are similar enough to be combined into one.
+  float content_clustering_entity_similarity_weight = 1.0;
+
+  // Returns the weight that should be placed on category similarity for
+  // determining if two clusters are similar enough to be combined into one.
+  float content_clustering_category_similarity_weight = 1.0;
+
+  // Returns the similarity threshold, between 0 and 1, used to determine if
+  // two clusters are similar enough to be combined into
+  // a single cluster.
+  float content_clustering_similarity_threshold = 0.2;
+
+  // Returns the threshold for which we should mark a cluster as being able to
+  // show on prominent UI surfaces.
+  float content_visibility_threshold = 0.7;
+
+  // Returns the min page topics model version to honor the visibility score
+  // for.
+  int64_t min_page_topics_model_version_to_use_content_visibility_from =
+      INT64_MAX;
+
+  // Whether to hide single-visit clusters on prominent UI surfaces.
+  bool should_hide_single_visit_clusters_on_prominent_ui_surfaces = true;
+
+  // Whether to collapse visits within a cluster that will show on the UI in the
+  // same way.
+  bool should_dedupe_similar_visits = true;
+
+  // Whether to filter clusters that are noisy from the UI. This will
+  // heuristically remove clusters that are unlikely to be "interesting".
+  bool should_filter_noisy_clusters = true;
+
+  // Returns the threshold used to determine if a cluster, and its visits, has
+  // too high site engagement to be likely useful.
+  float noisy_cluster_visits_engagement_threshold = 15.0;
+
+  // Returns the number of visits considered interesting, or not noisy, required
+  // to prevent the cluster from being filtered out (i.e., marked as not visible
+  // on the zero state UI).
+  size_t number_interesting_visits_filter_threshold = 1;
+
+  // Returns the weight to use for the visit duration when ranking visits within
+  // a cluster. Will always be greater than or equal to 0.
+  float visit_duration_ranking_weight = 1.0;
+
+  // Returns the weight to use for the foreground duration when ranking visits
+  // within a cluster. Will always be greater than or equal to 0.
+  float foreground_duration_ranking_weight = 1.5;
+
+  // Returns the weight to use for bookmarked visits when ranking visits within
+  // a cluster. Will always be greater than or equal to 0.
+  float bookmark_ranking_weight = 1.0;
+
+  // Returns the weight to use for visits that are search results pages ranking
+  // visits within a cluster. Will always be greater than or equal to 0.
+  float search_results_page_ranking_weight = 2.0;
+
+  // Returns the weight to use for visits that have page titles ranking visits
+  // within a cluster. Will always be greater than or equal to 0.
+  float has_page_title_ranking_weight = 2.0;
+
+  // Returns true if content clustering should use the intersection similarity
+  // score. Note, if this is used, the threshold used for clustering by content
+  // score should be < .5 (see ContentClusteringSimilarityThreshold above) or
+  // the weightings between entity and category content similarity scores should
+  // be adjusted.
+  bool content_cluster_on_intersection_similarity = true;
+
+  // Returns the threshold, in terms of the number of overlapping keywords, to
+  // use when clustering based on intersection score.
+  int cluster_interaction_threshold = 2;
+
+  // Whether to include category names in the keywords for a cluster.
+  bool should_include_categories_in_keywords = true;
+
+  // Whether to exclude keywords from visits that may be considered "noisy" to
+  // the user (i.e. highly engaged, non-SRP).
+  bool should_exclude_keywords_from_noisy_visits = false;
+
+  // Returns the default batch size for annotating visits when clustering.
+  size_t clustering_tasks_batch_size = 250;
+
+  // Whether to split the clusters when a search visit is encountered.
+  bool split_clusters_at_search_visits = true;
 
   Config();
   Config(const Config& other);
