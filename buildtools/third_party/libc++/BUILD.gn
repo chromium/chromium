@@ -14,17 +14,17 @@ config("config") {
       # libc++ wants to redefine the macros WIN32_LEAN_AND_MEAN and _CRT_RAND_S
       # in its implementation.
       "-Wno-macro-redefined",
+    ]
 
+    cflags_cc = [
       # We want to use a uniform C++ version across all of chromium, but
       # upstream libc++ requires C++20 so we have to make an exception here.
       # No other target should override the default -std= flag.
       "-std:c++20",
     ]
   } else {
-    cflags += [
-      "-fPIC",
-      "-std=c++20",
-    ]
+    cflags += [ "-fPIC" ]
+    cflags_cc = [ "-std=c++20" ]
   }
 
   defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
@@ -130,11 +130,13 @@ target(_libcxx_target_type, "libc++") {
     "//build/config/compiler:no_rtti",
     "//build/config/coverage:default_coverage",
   ]
-  if (is_android && libcxx_is_shared) {
+  if ((is_android || is_apple) && libcxx_is_shared) {
     # Use libc++_chrome to avoid conflicting with system libc++
-    # See crbug.com/1076244#c11 for more detail.
     output_name = "libc++_chrome"
-    configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+    if (is_android) {
+      # See crbug.com/1076244#c11 for more detail.
+      configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+    }
   }
   configs += [
     ":config",
