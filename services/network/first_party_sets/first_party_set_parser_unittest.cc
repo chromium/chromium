@@ -16,6 +16,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
@@ -383,5 +385,427 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(true,
                         R"({"https://member1.test":"https://example1.test",
             "https://example1.test":"https://example2.test"})")));
+
+TEST(ParseFromEnterpriseSetsTest, Accepts_MissingSetLists) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              Eq(absl::nullopt));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, Accepts_EmptyLists) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+                "replacements": [],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              Eq(absl::nullopt));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_MissingOwner) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+                "replacements": [
+                  {
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidType,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_MissingMembers) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test"
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidType,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongOwnerType) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+                "replacements": [
+                  {
+                    "owner": 123,
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidType,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongMembersFieldType) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": 123
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidType,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongMemberType) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+          "replacements": [
+            {
+              "owner": "https://owner1.test",
+              "members": ["https://member1.test", 123,
+              "https://member2.test"]
+            }
+          ],
+          "additions": []
+        }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidType,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerOpaque) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "",
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidOrigin,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_MemberOpaque) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+               {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": [""]
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidOrigin,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerNonHttps) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+                 {
+                "replacements": [
+                  {
+                    "owner": "http://owner1.test",
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidOrigin,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_MemberNonHttps) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+               {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["http://member1.test"]
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidOrigin,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerNonRegisteredDomain) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+                {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test..",
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidOrigin,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest,
+     InvalidOriginError_MemberNonRegisteredDomain) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test.."]
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kInvalidOrigin,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, SingletonSetError_EmptyMembers) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+             {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": []
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kSingletonSet,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, NonDisjointError_WithinReplacements) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+                   {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  },
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": []
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kNonDisjointSets,
+                   FirstPartySetParser::PolicySetType::kReplacement, 1}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, NonDisjointError_WithinAdditions) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+                   {
+                "replacements": [],
+                "additions": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  },
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member1.test"]
+                  }
+                ]
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kNonDisjointSets,
+                   FirstPartySetParser::PolicySetType::kAddition, 1}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, NonDisjointError_AcrossBothLists) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+               {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": [
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member1.test"]
+                  }
+                ]
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kNonDisjointSets,
+                   FirstPartySetParser::PolicySetType::kAddition, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
+TEST(ParseFromEnterpriseSetsTest, SuccessfulMapping_SameList) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+             {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  },
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member2.test"]
+                  }
+                ]
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              Eq(absl::nullopt));
+  EXPECT_THAT(
+      out_sets.replacements,
+      ElementsAre(
+          Pair(SerializesTo("https://owner1.test"),
+               UnorderedElementsAre(SerializesTo("https://member1.test"))),
+          Pair(SerializesTo("https://owner2.test"),
+               UnorderedElementsAre(SerializesTo("https://member2.test")))));
+  EXPECT_THAT(out_sets.additions, IsEmpty());
+}
+
+TEST(ParseFromEnterpriseSetsTest, SuccessfulMapping_CrossList) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+                {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  },
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member2.test"]
+                  }
+                ],
+                "additions": [
+                  {
+                    "owner": "https://owner3.test",
+                    "members": ["https://member3.test"]
+                  }
+                ]
+              }
+            )").value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              Eq(absl::nullopt));
+  EXPECT_THAT(
+      out_sets.replacements,
+      ElementsAre(
+          Pair(SerializesTo("https://owner1.test"),
+               UnorderedElementsAre(SerializesTo("https://member1.test"))),
+          Pair(SerializesTo("https://owner2.test"),
+               UnorderedElementsAre(SerializesTo("https://member2.test")))));
+
+  EXPECT_THAT(out_sets.additions,
+              ElementsAre(Pair(
+                  SerializesTo("https://owner3.test"),
+                  UnorderedElementsAre(SerializesTo("https://member3.test")))));
+}
 
 }  // namespace network
