@@ -69,6 +69,7 @@ cast_source_set("output_stream_connection") {
     "//base",
     "//chromecast/media/audio/net:common",
     "//chromecast/media/audio/net:proto",
+    "//chromecast/metrics:metrics_recorder",
     "//chromecast/net:io_buffer_pool",
     "//net",
   ]

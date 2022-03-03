@@ -12,6 +12,7 @@
 #include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/net/common.pb.h"
 #include "chromecast/media/audio/net/conversions.h"
+#include "chromecast/metrics/metrics_recorder.h"
 #include "chromecast/net/io_buffer_pool.h"
 
 namespace chromecast {
@@ -236,6 +237,12 @@ bool OutputStreamConnection::HandleMetadata(const Generic& message) {
   }
 
   if (message.has_mixer_underrun()) {
+    std::string metric_name =
+        (message.mixer_underrun().type() == MixerUnderrun::INPUT_UNDERRUN
+             ? "Platform.Audio.Mixer.StreamUnderrun"
+             : "Platform.Audio.Mixer.OutputUnderrun");
+    RecordCastEvent(metric_name, CreateCastEvent(metric_name),
+                    /* verbose_log_level = */ 0);
     delegate_->OnMixerUnderrun(static_cast<Delegate::MixerUnderrunType>(
         message.mixer_underrun().type()));
   }
