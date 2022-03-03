@@ -21,6 +21,7 @@ import androidx.core.provider.FontsContractCompat.FontInfo;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.StreamUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
@@ -82,6 +83,14 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      */
     private final Set<String> mExpectedFonts;
 
+    /**
+     * Map from ICU case folded full font names to file descriptor for that font. This cache allows
+     * us to skip calling GMS Core for fonts that have already been fetched. This map just caches
+     * the file descriptors, so the OS shouldn't need to keep the file in memory if we are no longer
+     * using it.
+     */
+    private final Map<String, ParcelFileDescriptor> mFetchedFontCache = new HashMap<>();
+
     private final SequencedTaskRunner mTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING_MAY_BLOCK);
 
@@ -118,7 +127,8 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     @IntDef({FetchFontResult.SUCCESS, FetchFontResult.FAILED_UNEXPECTED_NAME,
             FetchFontResult.FAILED_STATUS_CODE, FetchFontResult.FAILED_NON_UNIQUE_RESULT,
             FetchFontResult.FAILED_RESULT_CODE, FetchFontResult.FAILED_FILE_OPEN,
-            FetchFontResult.FAILED_EXCEPTION, FetchFontResult.FAILED_AVOID_RETRY})
+            FetchFontResult.FAILED_EXCEPTION, FetchFontResult.FAILED_AVOID_RETRY,
+            FetchFontResult.SUCCESS_CACHED})
     @interface FetchFontResult {
         int SUCCESS = 0;
         int FAILED_UNEXPECTED_NAME = 1;
@@ -128,7 +138,8 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         int FAILED_FILE_OPEN = 5;
         int FAILED_EXCEPTION = 6;
         int FAILED_AVOID_RETRY = 7;
-        int COUNT = 8;
+        int SUCCESS_CACHED = 8;
+        int COUNT = 9;
     }
 
     /**
@@ -233,6 +244,17 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      * @return An opened font file descriptor, or null if the font file is not available.
      */
     private ParcelFileDescriptor tryFetchFont(String fontUniqueName) {
+        ParcelFileDescriptor cachedFd = mFetchedFontCache.get(fontUniqueName);
+        if (cachedFd != null) {
+            try {
+                logFetchFontResult(FetchFontResult.SUCCESS_CACHED);
+                return cachedFd.dup();
+            } catch (IOException e) {
+                StreamUtil.closeQuietly(cachedFd);
+                mFetchedFontCache.remove(fontUniqueName);
+            }
+        }
+
         String query = mFullFontNameToQuery.get(fontUniqueName);
         if (query == null) {
             Log.d(TAG, "Query format not found for full font name: %s", fontUniqueName);
@@ -288,6 +310,10 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
             }
 
             logFetchFontResult(FetchFontResult.SUCCESS);
+            mFetchedFontCache.put(fontUniqueName, fileDescriptor.dup());
+            // The size of the font cache should be at maximum the size of the font name to query
+            // map, since there is a limited number of fonts we fetch from GMS Core.
+            assert mFetchedFontCache.size() <= mFullFontNameToQuery.size();
             return fileDescriptor;
         } catch (NameNotFoundException | IOException | OutOfMemoryError | RuntimeException e) {
             // We sometimes get CursorWindowAllocationException, but it's a hidden class. So, we
