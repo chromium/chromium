@@ -163,6 +163,7 @@ public class WebXrVrInputTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1302610")
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
@@ -279,6 +280,7 @@ public class WebXrVrInputTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1302610")
     @Restriction(RESTRICTION_TYPE_VIEWER_NON_DAYDREAM)
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
@@ -339,6 +341,7 @@ public class WebXrVrInputTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1302610")
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testPresentationLocksFocus_WebXr() {
@@ -450,6 +453,7 @@ public class WebXrVrInputTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/1302610")
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
