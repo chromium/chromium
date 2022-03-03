@@ -926,7 +926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Patchpanel.ArcService"
-    enum="NetworkPatchpanelArcEvent" expires_after="2022-04-01">
+    enum="NetworkPatchpanelArcEvent" expires_after="2022-12-31">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -941,7 +941,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Patchpanel.Dbus" enum="NetworkPatchpanelDbusEvent"
-    expires_after="2022-04-01">
+    expires_after="2022-12-31">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
