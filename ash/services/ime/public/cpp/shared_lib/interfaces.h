@@ -62,7 +62,7 @@
 // copy of the MojoSystemThunks struct definition.
 struct MojoSystemThunks;
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 // A simple downloading callback with the downloading URL as return.
@@ -174,7 +174,7 @@ class ImeClientDelegate {
 };
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
 
 // ============================================================================
 // [Proto + Mojo modes] [IME service container --> IME shared lib]
@@ -206,7 +206,7 @@ extern "C" {
 // once. Client must call this function before any others. `platform` must
 // remain valid during the whole life of the IME shared lib.
 __attribute__((visibility("default"))) void ImeDecoderInitOnce(
-    chromeos::ime::ImeCrosPlatform* platform);
+    ash::ime::ImeCrosPlatform* platform);
 
 // Closes the IME shared lib and releases resources used by it.
 __attribute__((visibility("default"))) void ImeDecoderClose();
@@ -214,7 +214,7 @@ __attribute__((visibility("default"))) void ImeDecoderClose();
 // Sets logger for the shared library. Releases the previous logger if there
 // was one. If the new logger is null, then no logger will be used.
 __attribute__((visibility("default"))) void SetImeEngineLogger(
-    chromeos::ime::ChromeLoggerFunc logger_func);
+    ash::ime::ChromeLoggerFunc logger_func);
 
 // ****************************************************************************
 // ***************************** PROTO MODE ***********************************
@@ -230,7 +230,7 @@ __attribute__((visibility("default"))) bool ImeDecoderSupports(
 // TODO(googleo): Remove this and pass `delegate` upon ImeDecoderInitOnce.
 __attribute__((visibility("default"))) bool ImeDecoderActivateIme(
     const char* ime_spec,
-    chromeos::ime::ImeClientDelegate* delegate);
+    ash::ime::ImeClientDelegate* delegate);
 
 // Processes IME events sent from client in serialised protobuf `data` which
 // should be invalidated by this IME shared lib soon after it's consumed.
@@ -265,5 +265,14 @@ __attribute__((visibility("default"))) bool InitializeConnectionFactory(
 __attribute__((visibility("default"))) bool IsInputMethodConnected();
 
 }  // extern "C"
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::ime {
+using ::ash::ime::ChromeLoggerFunc;
+using ::ash::ime::ImeClientDelegate;
+using ::ash::ime::ImeCrosPlatform;
+using ::ash::ime::ImeSequencedTask;
+using ::ash::ime::SimpleDownloadCallbackV2;
+}  // namespace chromeos::ime
 
 #endif  // ASH_SERVICES_IME_PUBLIC_CPP_SHARED_LIB_INTERFACES_H_

@@ -28,9 +28,9 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using ::chromeos::ime::TextSuggestion;
-using ::chromeos::ime::TextSuggestionMode;
-using ::chromeos::ime::TextSuggestionType;
+using ime::TextSuggestion;
+using ime::TextSuggestionMode;
+using ime::TextSuggestionType;
 
 // TODO(crbug/1201529): Update this unit test to use `FakeSuggestionHandler`
 // instead.

@@ -203,8 +203,8 @@ class ImeServiceAssociatedTest : public testing::Test,
   void HandleAutocorrect(mojom::AutocorrectSpanPtr autocorrect_span) override {}
   void RequestSuggestions(mojom::SuggestionsRequestPtr request,
                           RequestSuggestionsCallback callback) override {}
-  void DisplaySuggestions(const std::vector<::chromeos::ime::TextSuggestion>&
-                              suggestions) override {}
+  void DisplaySuggestions(
+      const std::vector<TextSuggestion>& suggestions) override {}
   void UpdateCandidatesWindow(mojom::CandidatesWindowPtr window) override {}
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
   void ReportKoreanAction(mojom::KoreanAction action) override {}

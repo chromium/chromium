@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 enum class TextSuggestionMode {
@@ -46,16 +46,11 @@ struct TextCompletionCandidate {
 };
 
 }  // namespace ime
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace ime {
-using ::chromeos::ime::TextCompletionCandidate;
-using ::chromeos::ime::TextSuggestion;
-using ::chromeos::ime::TextSuggestionMode;
-using ::chromeos::ime::TextSuggestionType;
-}  // namespace ime
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::ime {
+using ::ash::ime::TextSuggestion;
+}
 
 #endif  // ASH_SERVICES_IME_PUBLIC_CPP_SUGGESTIONS_H_

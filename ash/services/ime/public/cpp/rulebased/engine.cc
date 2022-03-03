@@ -7,12 +7,9 @@
 #include "ash/services/ime/public/cpp/rulebased/rules_data.h"
 #include "base/strings/utf_string_conversions.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 namespace rulebased {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::ime::mojom;
 
 Engine::Engine() = default;
 Engine::~Engine() = default;
@@ -151,4 +148,4 @@ ProcessKeyResult Engine::ProcessBackspace() {
 
 }  // namespace rulebased
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

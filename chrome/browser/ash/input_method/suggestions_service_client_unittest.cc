@@ -18,10 +18,10 @@ namespace {
 
 namespace machine_learning = ::chromeos::machine_learning;
 
-using ::chromeos::ime::TextCompletionCandidate;
-using ::chromeos::ime::TextSuggestion;
-using ::chromeos::ime::TextSuggestionMode;
-using ::chromeos::ime::TextSuggestionType;
+using ime::TextCompletionCandidate;
+using ime::TextSuggestion;
+using ime::TextSuggestionMode;
+using ime::TextSuggestionType;
 
 class SuggestionsServiceClientTest : public testing::Test {
  public:

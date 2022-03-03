@@ -11,7 +11,7 @@
 #include "ash/services/ime/public/cpp/rulebased/rules_data.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
-namespace rulebased = chromeos::ime::rulebased;
+namespace rulebased = ::ash::ime::rulebased;
 namespace mojom = ::ash::ime::mojom;
 
 namespace {

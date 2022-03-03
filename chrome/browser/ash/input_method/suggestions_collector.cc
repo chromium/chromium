@@ -12,8 +12,8 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using ::chromeos::ime::TextSuggestion;
-using ::chromeos::ime::TextSuggestionMode;
+using ime::TextSuggestion;
+using ime::TextSuggestionMode;
 
 std::vector<TextSuggestion> CombineResults(
     const std::vector<TextSuggestion>& first,

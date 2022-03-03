@@ -15,15 +15,15 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using ::chromeos::ime::TextSuggestion;
-using ::chromeos::ime::TextSuggestionMode;
-using ::chromeos::ime::TextSuggestionType;
 using ::chromeos::machine_learning::mojom::MultiWordExperimentGroup;
 using ::chromeos::machine_learning::mojom::NextWordCompletionCandidate;
 using ::chromeos::machine_learning::mojom::TextSuggesterQuery;
 using ::chromeos::machine_learning::mojom::TextSuggesterResultPtr;
 using ::chromeos::machine_learning::mojom::TextSuggesterSpec;
 using ::chromeos::machine_learning::mojom::TextSuggestionCandidatePtr;
+using ime::TextSuggestion;
+using ime::TextSuggestionMode;
+using ime::TextSuggestionType;
 
 constexpr size_t kMaxNumberCharsSent = 100;
 

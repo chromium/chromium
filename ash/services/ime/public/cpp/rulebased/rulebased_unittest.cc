@@ -10,11 +10,8 @@
 #include "ash/services/ime/public/mojom/input_method.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::ime::mojom;
 
 namespace {
 
@@ -244,4 +241,4 @@ TEST_F(RulebasedImeTest, Transforms_deva_phone) {
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

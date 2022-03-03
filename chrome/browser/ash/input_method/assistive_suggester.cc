@@ -31,9 +31,9 @@ namespace input_method {
 
 namespace {
 
-using ::chromeos::ime::TextSuggestion;
-using ::chromeos::ime::TextSuggestionMode;
-using ::chromeos::ime::TextSuggestionType;
+using ime::TextSuggestion;
+using ime::TextSuggestionMode;
+using ime::TextSuggestionType;
 
 const char kMaxTextBeforeCursorLength = 50;
 
