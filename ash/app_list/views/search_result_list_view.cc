@@ -62,6 +62,8 @@ constexpr static base::TimeDelta kFadeInDuration = base::Milliseconds(100);
 constexpr static base::TimeDelta kIdentityTranslationDuration =
     base::Milliseconds(200);
 
+constexpr static base::TimeDelta kFastFadeInDuration = base::Milliseconds(0);
+
 // TODO(crbug.com/1199206): Move this into SharedAppListConfig once the UI for
 // categories is more developed.
 constexpr size_t kMaxResultsWithCategoricalSearch = 3;
@@ -314,8 +316,10 @@ SearchResultListView::ScheduleResultAnimations(
 
   auto schedule_animation = [this, &current_animation_info,
                              &aggregate_animation_info](views::View* view) {
-    ShowViewWithAnimation(view, current_animation_info.total_views +
-                                    aggregate_animation_info.total_views);
+    ShowViewWithAnimation(view,
+                          current_animation_info.total_views +
+                              aggregate_animation_info.total_views,
+                          current_animation_info.use_short_animations);
     ++current_animation_info.animating_views;
   };
 
@@ -344,10 +348,29 @@ SearchResultListView::ScheduleResultAnimations(
   return current_animation_info;
 }
 
+bool SearchResultListView::HasAnimatingChildView() {
+  auto is_animating = [](views::View* view) {
+    return (view->GetVisible() && view->layer() &&
+            view->layer()->GetAnimator() &&
+            view->layer()->GetAnimator()->is_animating());
+  };
+
+  if (is_animating(title_label_))
+    return true;
+
+  for (size_t i = 0; i < search_result_views_.size(); ++i) {
+    if (is_animating(GetResultViewAt(i)))
+      return true;
+  }
+  return false;
+}
+
 void SearchResultListView::ShowViewWithAnimation(views::View* view,
-                                                 int position) {
-  // Abort any in-progress layer animation.
+                                                 int position,
+                                                 bool use_short_animations) {
   DCHECK(view->layer()->GetAnimator());
+
+  // Abort any in-progress layer animation.
   view->layer()->GetAnimator()->AbortAllAnimations();
 
   // Animation spec:
@@ -372,9 +395,12 @@ void SearchResultListView::ShowViewWithAnimation(views::View* view,
       .SetTransform(view, translate_down)
       .Then()
       .SetOpacity(view, 1.0f, gfx::Tween::LINEAR)
-      .SetDuration(kFadeInDuration)
+      .SetDuration(use_short_animations ? kFastFadeInDuration : kFadeInDuration)
       .At(base::TimeDelta())
-      .SetDuration(kIdentityTranslationDuration)
+      .SetDuration(
+          use_short_animations
+              ? app_list_features::DynamicSearchUpdateAnimationDuration()
+              : kIdentityTranslationDuration)
       .SetTransform(view, gfx::Transform(), gfx::Tween::LINEAR_OUT_SLOW_IN);
 }
 

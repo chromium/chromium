@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/time/time.h"
 
 namespace base {
 struct Feature;
@@ -69,6 +70,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kForceShowContinueSection;
 // Enables iconified text and inline icons in launcher search.
 ASH_PUBLIC_EXPORT extern const base::Feature kSearchResultInlineIcon;
 
+// Enable shortened search result update animations when in progress animations
+// are interrupted by search model updates.
+ASH_PUBLIC_EXPORT extern const base::Feature kDynamicSearchUpdateAnimation;
+
 ASH_PUBLIC_EXPORT bool IsAppRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsZeroStateAppsRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsQueryBasedMixedTypesRankerEnabled();
@@ -85,6 +90,8 @@ ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
 ASH_PUBLIC_EXPORT bool IsCategoricalSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsSearchResultInlineIconEnabled();
+ASH_PUBLIC_EXPORT bool IsDynamicSearchUpdateAnimationEnabled();
+ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
 
 ASH_PUBLIC_EXPORT std::string AnswerServerUrl();
 ASH_PUBLIC_EXPORT std::string AnswerServerQuerySuffix();

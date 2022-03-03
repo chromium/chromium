@@ -64,6 +64,9 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
 
     // The number of views that are animating (either title or result views).
     int animating_views = 0;
+
+    // Whether fast search result update animations should be used.
+    bool use_short_animations = false;
   };
 
   // Schedules animations for result list updates. Expected to be implemented
@@ -74,6 +77,9 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   // Returns the animation info for this container.
   virtual absl::optional<ResultsAnimationInfo> ScheduleResultAnimations(
       const ResultsAnimationInfo& aggregate_animation_info);
+
+  // Returns whether the container view has any animating child views.
+  virtual bool HasAnimatingChildView();
 
   bool horizontally_traversable() const { return horizontally_traversable_; }
 

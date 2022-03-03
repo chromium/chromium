@@ -2260,6 +2260,13 @@ extern const char kSearchResultInlineIconDescription[] =
     "Show iconified text and vector icons "
     "in launcher search results.";
 
+extern const char kDynamicSearchUpdateAnimationName[] =
+    "Dynamic Search Result Update Animation";
+extern const char kDynamicSearchUpdateAnimationDescription[] =
+    "Dynamically adjust the search result update animation when those update "
+    "animations are preempted. Shortened animation durations configurable "
+    "(unit: milliseconds).";
+
 const char kSecurePaymentConfirmationDebugName[] =
     "Secure Payment Confirmation Debug Mode";
 const char kSecurePaymentConfirmationDebugDescription[] =

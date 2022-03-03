@@ -125,6 +125,9 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // Timer used to delay calls to NotifyA11yResultsChanged().
   base::OneShotTimer notify_a11y_results_changed_timer_;
 
+  // Stores the last time fast search result update animations were used.
+  absl::optional<base::TimeTicks> search_result_fast_update_time_;
+
   // The last reported number of search results shown by all containers.
   int last_search_result_count_ = 0;
 };

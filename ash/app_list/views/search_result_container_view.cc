@@ -41,6 +41,11 @@ SearchResultContainerView::ScheduleResultAnimations(
   return absl::nullopt;
 }
 
+bool SearchResultContainerView::HasAnimatingChildView() {
+  NOTREACHED();
+  return false;
+}
+
 void SearchResultContainerView::Update() {
   update_factory_.InvalidateWeakPtrs();
   num_results_ = DoUpdate();

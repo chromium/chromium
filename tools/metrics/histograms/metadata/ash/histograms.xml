@@ -2804,6 +2804,19 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.SearchResultUpdateAnimationShortened" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>yulunwu@google.com</owner>
+  <owner>tbarzic@google.com</owner>
+  <owner>tby@google.com</owner>
+  <summary>
+    Records whether search result animation times were shorted for recent search
+    result update animation preemptions. Recorded when productivity launcher
+    search containers' results change while result containers are still
+    animating.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Shelf.Menu.NumItemsEnabledUponSelection" units="Count"
     expires_after="2023-02-01">
   <owner>anasalazar@chromium.org</owner>

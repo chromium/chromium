@@ -780,6 +780,23 @@ const FeatureEntry::Choice kSchedulerConfigurationChoices[] = {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::FeatureParam kDynamicSearchUpdateAnimationDuration_50[] = {
+    {"search_result_translation_duration", "50"}};
+const FeatureEntry::FeatureParam kDynamicSearchUpdateAnimationDuration_100[] = {
+    {"search_result_translation_duration", "100"}};
+const FeatureEntry::FeatureParam kDynamicSearchUpdateAnimationDuration_150[] = {
+    {"search_result_translation_duration", "150"}};
+
+const FeatureEntry::FeatureVariation kDynamicSearchUpdateAnimationVariations[] =
+    {{"50ms", kDynamicSearchUpdateAnimationDuration_50,
+      std::size(kDynamicSearchUpdateAnimationDuration_50), nullptr},
+     {"100ms", kDynamicSearchUpdateAnimationDuration_100,
+      std::size(kDynamicSearchUpdateAnimationDuration_100), nullptr},
+     {"150ms", kDynamicSearchUpdateAnimationDuration_150,
+      std::size(kDynamicSearchUpdateAnimationDuration_150), nullptr}};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(ENABLE_NACL)
 // Note: This needs to be kept in sync with parsing in
 // content/common/zygote/zygote_communication_linux.cc
@@ -6892,6 +6909,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSearchResultInlineIconName,
      flag_descriptions::kSearchResultInlineIconDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kSearchResultInlineIcon)},
+
+    {"dynamic-search-update-animation",
+     flag_descriptions::kDynamicSearchUpdateAnimationName,
+     flag_descriptions::kDynamicSearchUpdateAnimationDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         app_list_features::kDynamicSearchUpdateAnimation,
+         kDynamicSearchUpdateAnimationVariations,
+         "LauncherDynamicAnimations")},
 
     {"app-discovery-remote-url-search",
      flag_descriptions::kAppDiscoveryRemoteUrlSearchName,

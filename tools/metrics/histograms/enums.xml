@@ -55685,6 +55685,7 @@ from previous Chrome versions.
   <int value="841098208" label="ThrottleForegroundTimers:enabled"/>
   <int value="841276069" label="ChromeHomeDoodle:disabled"/>
   <int value="841343322" label="disable-new-korean-ime"/>
+  <int value="841434560" label="DynamicSearchUpdateAnimation:disabled"/>
   <int value="841779535" label="password-export:enabled"/>
   <int value="842158411" label="PdfViewerDocumentProperties:enabled"/>
   <int value="842432903" label="CaptureThumbnailOnNavigatingAway:enabled"/>
@@ -56973,6 +56974,7 @@ from previous Chrome versions.
   <int value="1752168018" label="enable-stale-while-revalidate"/>
   <int value="1753732236" label="SignInProfileCreationEnterprise:enabled"/>
   <int value="1755024316" label="HostWindowsInAppShimProcess:disabled"/>
+  <int value="1756736642" label="DynamicSearchUpdateAnimation:enabled"/>
   <int value="1757894817" label="PrinterStatusDialog:disabled"/>
   <int value="1758262950"
       label="OmniboxUIExperimentVerticalMarginLimitToNonTouchOnly:disabled"/>

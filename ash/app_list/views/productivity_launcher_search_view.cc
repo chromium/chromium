@@ -18,9 +18,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,6 +48,11 @@ constexpr base::TimeDelta kNotifyA11yDelay = base::Milliseconds(1500);
 
 // Insets for the vertical scroll bar.
 constexpr gfx::Insets kVerticalScrollInsets(1, 0, 1, 1);
+
+// The amount of time after search result animations are preempted during which
+// result animations should be sped up.
+constexpr base::TimeDelta kForcedFastAnimationInterval =
+    base::Milliseconds(500);
 
 }  // namespace
 
@@ -169,6 +176,28 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
   if (search_box_view_->HasSearch()) {
     using AnimationInfo = SearchResultContainerView::ResultsAnimationInfo;
     AnimationInfo aggregate_animation_info;
+    // Search result changes within `kForcedFastAnimationInterval` of
+    // `search_result_fast_update_time_` should also use fast animations and
+    // refresh the timestamp.
+    if (search_result_fast_update_time_.has_value() &&
+        app_list_features::IsDynamicSearchUpdateAnimationEnabled()) {
+      const base::TimeDelta time_since_last_update =
+          base::TimeTicks::Now() - search_result_fast_update_time_.value();
+      if (time_since_last_update < kForcedFastAnimationInterval) {
+        aggregate_animation_info.use_short_animations = true;
+      }
+    }
+    if (!aggregate_animation_info.use_short_animations &&
+        app_list_features::IsDynamicSearchUpdateAnimationEnabled()) {
+      // Scan result_container_views_ to see if there are any in progress
+      // animations that would be preempted.
+      for (SearchResultContainerView* view : result_container_views_) {
+        if (view->HasAnimatingChildView()) {
+          aggregate_animation_info.use_short_animations = true;
+        }
+      }
+    }
+
     for (SearchResultContainerView* view : result_container_views_) {
       absl::optional<AnimationInfo> container_animation_info =
           view->ScheduleResultAnimations(aggregate_animation_info);
@@ -182,6 +211,14 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
         first_result_view = view->GetFirstResultView();
       }
     }
+    // Update the `search_result_fast_update_time_` if fast animations were
+    // used.
+    if (aggregate_animation_info.use_short_animations)
+      search_result_fast_update_time_ = base::TimeTicks::Now();
+
+    // Records metrics on whether shortened search animations were used.
+    base::UmaHistogramBoolean("Ash.SearchResultUpdateAnimationShortened",
+                              aggregate_animation_info.use_short_animations);
   }
   Layout();
 
