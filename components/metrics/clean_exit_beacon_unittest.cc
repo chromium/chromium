@@ -617,46 +617,6 @@ TEST_P(MonitoringStageWritingTest, CheckMonitoringStage) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(crbug/1248239): Remove this test once the Extended Variations Safe Mode
-// experiment is enabled on Android Chrome stable.
-//
-// Verify that the beacon file, if any, is ignored on Android.
-TEST_F(CleanExitBeaconTest, FileIgnoredOnAndroid) {
-  SetUpExtendedSafeModeExperiment(variations::kSignalAndWriteViaFileUtilGroup);
-
-  // Set up the beacon file such that the previous session did not exit cleanly
-  // and the running crash streak is 2. The file (and thus these values) are
-  // expected to be ignored.
-  const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
-  const base::FilePath temp_beacon_file_path =
-      user_data_dir_path.Append(variations::kVariationsFilename);
-  const int last_session_num_crashes = 2;
-  ASSERT_LT(0, base::WriteFile(temp_beacon_file_path,
-                               CreateWellFormedBeaconFileContents(
-                                   /*exited_cleanly=*/false,
-                                   /*crash_streak=*/last_session_num_crashes)
-                                   .data()));
-
-  // Set up the PrefService such that the previous session exited cleanly and
-  // the running crash streak is 0. The PrefService (and thus these values) are
-  // expected to be used.
-  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_,
-                                                       /*exited_cleanly=*/true);
-  const int expected_num_crashes = 0;
-  prefs_.SetInteger(variations::prefs::kVariationsCrashStreak,
-                    expected_num_crashes);
-
-  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path,
-                                        version_info::Channel::STABLE);
-
-  // Verify that the Local State beacon was used (not the beacon file beacon).
-  EXPECT_TRUE(clean_exit_beacon.exited_cleanly());
-  histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
-                                       expected_num_crashes, 1);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Verify that attempting to write synchronously DCHECKs for clients that do not
 // belong to the SignalAndWriteViaFileUtil experiment group.
 TEST_F(CleanExitBeaconTest,
