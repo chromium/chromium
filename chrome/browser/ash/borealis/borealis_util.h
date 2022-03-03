@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/strings/string_piece.h"
+#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
@@ -79,6 +80,10 @@ bool GetProtonVersionInfo(const std::string& owner_id, std::string* output);
 // Parses the output returned by GetProtonVersionInfo.
 ProtonVersionInfo ParseProtonVersionInfo(absl::optional<int> game_id,
                                          const std::string& output);
+
+// Used in the splash screen to get the dlc path as dlcservice could not be
+// imported directly.
+void GetDlcPath(base::OnceCallback<void(const std::string& path)> callback);
 
 }  // namespace borealis
 
