@@ -305,7 +305,7 @@ class AndroidOverlaySyncHelper {
 
 static void JNI_DialogOverlayImpl_NotifyDestroyedSynchronously(
     JNIEnv* env,
-    jlong message_pipe_handle) {
+    int message_pipe_handle) {
   mojo::MessagePipeHandle handle(message_pipe_handle);
   mojo::ScopedMessagePipeHandle scoped_handle(handle);
   mojo::Remote<media::mojom::AndroidOverlayClient> remote(

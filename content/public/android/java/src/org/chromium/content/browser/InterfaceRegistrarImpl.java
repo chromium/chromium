@@ -23,7 +23,7 @@ class InterfaceRegistrarImpl {
     private static boolean sHasRegisteredRegistrars;
 
     @CalledByNative
-    static void createInterfaceRegistry(long nativeHandle) {
+    static void createInterfaceRegistry(int nativeHandle) {
         ensureSingletonRegistrarsAreRegistered();
 
         InterfaceRegistry registry = InterfaceRegistry.create(
@@ -32,14 +32,14 @@ class InterfaceRegistrarImpl {
     }
 
     @CalledByNative
-    static void createInterfaceRegistryOnIOThread(long nativeHandle) {
+    static void createInterfaceRegistryOnIOThread(int nativeHandle) {
         InterfaceRegistry registry = InterfaceRegistry.create(
                 CoreImpl.getInstance().acquireNativeHandle(nativeHandle).toMessagePipeHandle());
         registerInterfacesOnIOThread(registry);
     }
 
     @CalledByNative
-    static void createInterfaceRegistryForWebContents(long nativeHandle, WebContents webContents) {
+    static void createInterfaceRegistryForWebContents(int nativeHandle, WebContents webContents) {
         ensureSingletonRegistrarsAreRegistered();
 
         InterfaceRegistry registry = InterfaceRegistry.create(
@@ -49,7 +49,7 @@ class InterfaceRegistrarImpl {
 
     @CalledByNative
     static void createInterfaceRegistryForRenderFrameHost(
-            long nativeHandle, RenderFrameHost renderFrameHost) {
+            int nativeHandle, RenderFrameHost renderFrameHost) {
         ensureSingletonRegistrarsAreRegistered();
 
         InterfaceRegistry registry = InterfaceRegistry.create(

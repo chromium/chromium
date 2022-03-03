@@ -82,7 +82,7 @@ class MOJO_SYSTEM_IMPL_EXPORT HandleTable
   HandleMap handles_;
   base::Lock lock_;
 
-  uint64_t next_available_handle_ = 1;
+  uint32_t next_available_handle_ = 1;
 };
 
 }  // namespace core

@@ -125,7 +125,7 @@ public interface MessagePipeHandle extends Handle {
         /**
          * If a message was read, this contains the raw handle values.
          */
-        public long[] mRawHandles;
+        public int[] mRawHandles;
         /**
          * If a message was read, the handles contained in the message, undefined otherwise.
          */

@@ -19,7 +19,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
-mojo::ScopedMessagePipeHandle WrapNativeHandle(jlong native_handle) {
+mojo::ScopedMessagePipeHandle WrapNativeHandle(jint native_handle) {
   MojoHandle raw_handle = static_cast<MojoHandle>(native_handle);
   DCHECK_NE(MOJO_HANDLE_INVALID, raw_handle);
   return mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(raw_handle));
@@ -45,7 +45,7 @@ JNI_AppWebMessagePortDescriptor_CreatePair(JNIEnv* env) {
 }
 
 JNI_EXPORT jlong JNI_AppWebMessagePortDescriptor_Create(JNIEnv* env,
-                                                        jlong native_handle,
+                                                        jint native_handle,
                                                         jlong id_low,
                                                         jlong id_high,
                                                         jlong sequence_number) {
@@ -61,7 +61,7 @@ JNI_EXPORT jlong JNI_AppWebMessagePortDescriptor_Create(JNIEnv* env,
   return reinterpret_cast<jlong>(port);
 }
 
-JNI_EXPORT jlong JNI_AppWebMessagePortDescriptor_TakeHandleToEntangle(
+JNI_EXPORT jint JNI_AppWebMessagePortDescriptor_TakeHandleToEntangle(
     JNIEnv* env,
     jlong native_message_port_decriptor) {
   blink::MessagePortDescriptor* message_port_descriptor =
@@ -82,7 +82,7 @@ JNI_EXPORT jlong JNI_AppWebMessagePortDescriptor_TakeHandleToEntangle(
 JNI_EXPORT void JNI_AppWebMessagePortDescriptor_GiveDisentangledHandle(
     JNIEnv* env,
     jlong native_message_port_decriptor,
-    jlong native_handle) {
+    jint native_handle) {
   blink::MessagePortDescriptor* message_port_descriptor =
       reinterpret_cast<blink::MessagePortDescriptor*>(
           native_message_port_decriptor);

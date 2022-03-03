@@ -15,9 +15,9 @@ import org.chromium.mojo.system.UntypedHandle;
  */
 class UntypedHandleImpl extends HandleBase implements UntypedHandle {
     /**
-     * @see HandleBase#HandleBase(CoreImpl, long)
+     * @see HandleBase#HandleBase(CoreImpl, int)
      */
-    UntypedHandleImpl(CoreImpl core, long mojoHandle) {
+    UntypedHandleImpl(CoreImpl core, int mojoHandle) {
         super(core, mojoHandle);
     }
 

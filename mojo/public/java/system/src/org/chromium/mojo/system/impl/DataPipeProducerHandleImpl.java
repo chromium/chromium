@@ -15,9 +15,9 @@ import java.nio.ByteBuffer;
  */
 class DataPipeProducerHandleImpl extends HandleBase implements ProducerHandle {
     /**
-     * @see HandleBase#HandleBase(CoreImpl, long)
+     * @see HandleBase#HandleBase(CoreImpl, int)
      */
-    DataPipeProducerHandleImpl(CoreImpl core, long mojoHandle) {
+    DataPipeProducerHandleImpl(CoreImpl core, int mojoHandle) {
         super(core, mojoHandle);
     }
 

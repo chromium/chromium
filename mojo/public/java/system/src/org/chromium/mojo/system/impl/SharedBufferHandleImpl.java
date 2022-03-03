@@ -13,9 +13,9 @@ import java.nio.ByteBuffer;
  */
 class SharedBufferHandleImpl extends HandleBase implements SharedBufferHandle {
     /**
-     * @see HandleBase#HandleBase(CoreImpl, long)
+     * @see HandleBase#HandleBase(CoreImpl, int)
      */
-    SharedBufferHandleImpl(CoreImpl core, long mojoHandle) {
+    SharedBufferHandleImpl(CoreImpl core, int mojoHandle) {
         super(core, mojoHandle);
     }
 
