@@ -81,24 +81,15 @@ crbug.com/dawn/1002 wpt_internal/webgpu/cts.https.html?worker=1&q=webgpu:api,val
 # Dawn implements validation of the limit at createShaderModule time, while the CTS checks at createRenderPipeline time.
 crbug.com/dawn/986 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,vertex_state:vertex_shader_input_location_limit:* [ Failure ]
 
-# These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
-# Mac: mostly works
-# Linux: Crashes
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_copy.https.html [ Skip ]
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_draw.https.html [ Skip ]
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque.https.html [ Skip ]
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied.https.html [ Skip ]
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_size_different_with_back_buffer_size.https.html [ Skip ]
+# VVL failure
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_size_different_with_back_buffer_size.https.html [ Crash ]
 
-# Mac/Win: Shifted by about half a pixel
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque.https.html [ Failure ]
-crbug.com/1083478 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque.https.html [ Failure ]
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_copy.https.html [ Failure ]
-crbug.com/1083478 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_copy.https.html [ Failure ]
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_draw.https.html [ Failure ]
-crbug.com/1083478 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_draw.https.html [ Failure ]
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied.https.html [ Failure ]
-crbug.com/1083478 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied.https.html [ Failure ]
+# These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
+# Shifted by about half a pixel
+crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque.https.html [ Failure ]
+crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_copy.https.html [ Failure ]
+crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_draw.https.html [ Failure ]
+crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied.https.html [ Failure ]
 
 # Spec was changed so BGLs should eagerly apply per-pipeline limits. Tests need fixing, then Dawn
 # needs to pass them. https://github.com/gpuweb/cts/issues/230
