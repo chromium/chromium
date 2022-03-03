@@ -30,7 +30,6 @@ bool MassageRotationIfMultipleOfNinetyDegrees(gfx::Transform* rotation,
     return false;
 
   gfx::Transform transform;
-  skia::Matrix44& m = transform.matrix();
   float degrees_by_ninety = degrees / 90.0f;
 
   int n = base::ClampRound(degrees_by_ninety);
@@ -40,19 +39,21 @@ bool MassageRotationIfMultipleOfNinetyDegrees(gfx::Transform* rotation,
     n += 4;
 
   // n should now be in the range [0, 3]
+  // clang-format off
   if (n == 1) {
-    m.set3x3( 0,  1,  0,
-             -1,  0,  0,
-              0,  0,  1);
+    transform.matrix().set3x3( 0,  1,  0,
+                              -1,  0,  0,
+                               0,  0,  1);
   } else if (n == 2) {
-    m.set3x3(-1,  0,  0,
-              0, -1,  0,
-              0,  0,  1);
+    transform.matrix().set3x3(-1,  0,  0,
+                               0, -1,  0,
+                               0,  0,  1);
   } else if (n == 3) {
-    m.set3x3( 0, -1,  0,
-              1,  0,  0,
-              0,  0,  1);
+    transform.matrix().set3x3( 0, -1,  0,
+                               1,  0,  0,
+                               0,  0,  1);
   }
+  // clang-format on
 
   *rotation = transform;
   return true;

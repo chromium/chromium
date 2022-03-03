@@ -176,11 +176,10 @@ TEST(InterpolatedTransformTest, ScreenRotationEndsCleanly) {
       std::unique_ptr<ui::InterpolatedTransform> screen_rotation(
           GetScreenRotation(degrees, reversed));
       gfx::Transform interpolated = screen_rotation->Interpolate(1.0f);
-      skia::Matrix44& m = interpolated.matrix();
       // Upper-left 3x3 matrix should all be 0, 1 or -1.
       for (int row = 0; row < 3; ++row) {
         for (int col = 0; col < 3; ++col) {
-          float entry = m.rc(row, col);
+          float entry = interpolated.matrix().rc(row, col);
           EXPECT_TRUE(entry == 0 || entry == 1 || entry == -1);
         }
       }
@@ -226,11 +225,10 @@ ui::InterpolatedTransform* GetMaximize() {
 TEST(InterpolatedTransformTest, MaximizeEndsCleanly) {
   std::unique_ptr<ui::InterpolatedTransform> maximize(GetMaximize());
   gfx::Transform interpolated = maximize->Interpolate(1.0f);
-  skia::Matrix44& m = interpolated.matrix();
   // Upper-left 3x3 matrix should all be 0, 1 or -1.
   for (int row = 0; row < 3; ++row) {
     for (int col = 0; col < 3; ++col) {
-      float entry = m.rc(row, col);
+      float entry = interpolated.matrix().rc(row, col);
       EXPECT_TRUE(entry == 0 || entry == 1 || entry == -1);
     }
   }
