@@ -1,8 +1,6 @@
 <template>
   <style>
-    /* There is a corresponding media query for iframe grids because media
-     * queries inside iframes reference width of the frame, not the entire
-     * window. Use !important to make sure there are no css ordering issues.
+    /* Use !important to make sure there are no css ordering issues.
      * Subtract 0.25px to fix subpixel rounding issues with iron-list. This
      * makes sure all photo containers on a row add up to at least 1px smaller
      * than the parent width.*/
@@ -12,17 +10,13 @@
         width: calc(25% - 0.25px) !important;
       }
     }
-    main,
-    iframe {
+    main {
       height: 100%;
       width: 100%;
     }
     main:focus,
     main:focus-visible,
-    main:focus-within,
-    iframe:focus,
-    iframe:focus-visible,
-    iframe:focus-within {
+    main:focus-within {
       outline: none;
     }
   </style>

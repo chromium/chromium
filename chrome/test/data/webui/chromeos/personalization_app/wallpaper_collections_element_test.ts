@@ -6,12 +6,13 @@ import {kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from 'chrome:/
 import {IFrameApi} from 'chrome://personalization/trusted/iframe_api.js';
 import {GooglePhotosPhoto} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
+import {WallpaperActionName} from 'chrome://personalization/trusted/wallpaper/wallpaper_actions.js';
 import {WallpaperCollections} from 'chrome://personalization/trusted/wallpaper/wallpaper_collections_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {assertWindowObjectsEqual, baseSetup, initElement, setupTestIFrameApi, teardownElement} from './personalization_app_test_utils.js';
+import {baseSetup, initElement, setupTestIFrameApi, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
@@ -50,11 +51,12 @@ export function WallpaperCollectionsTest() {
         Parameters<IFrameApi['sendCollections']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    const iframe =
-        wallpaperCollectionsElement.shadowRoot!.querySelector('iframe');
-    assertFalse(iframe!.hidden);
+    const main = wallpaperCollectionsElement.shadowRoot!.querySelector('main');
+    assertFalse(main!.hidden);
 
-    assertWindowObjectsEqual(iframe!.contentWindow, target);
+    assertEquals(
+        wallpaperCollectionsElement.$.collectionsGrid, target,
+        'collections data is sent to collections-grid');
     assertDeepEquals(wallpaperProvider!.collections, data);
   });
 
@@ -73,11 +75,12 @@ export function WallpaperCollectionsTest() {
         Parameters<IFrameApi['sendGooglePhotosCount']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    const iframe =
-        wallpaperCollectionsElement.shadowRoot!.querySelector('iframe');
-    assertFalse(iframe!.hidden);
+    const main = wallpaperCollectionsElement.shadowRoot!.querySelector('main');
+    assertFalse(main!.hidden);
 
-    assertWindowObjectsEqual(iframe!.contentWindow, target);
+    assertEquals(
+        wallpaperCollectionsElement.$.collectionsGrid, target,
+        'google photos count is sent to collections-grid');
     assertDeepEquals(
         personalizationStore.data.wallpaper.googlePhotos.count, data);
   });
@@ -99,11 +102,12 @@ export function WallpaperCollectionsTest() {
         Parameters<IFrameApi['sendGooglePhotosPhotos']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    const iframe =
-        wallpaperCollectionsElement.shadowRoot!.querySelector('iframe');
-    assertFalse(iframe!.hidden);
+    const main = wallpaperCollectionsElement.shadowRoot!.querySelector('main');
+    assertFalse(main!.hidden);
 
-    assertWindowObjectsEqual(iframe!.contentWindow, target);
+    assertEquals(
+        wallpaperCollectionsElement.$.collectionsGrid, target,
+        'google photos urls are sent to collections-grid');
     assertDeepEquals(
         personalizationStore.data.wallpaper.googlePhotos.photos
             .slice(0, kMaximumGooglePhotosPreviews)
@@ -122,9 +126,8 @@ export function WallpaperCollectionsTest() {
       images: {},
     };
 
-    wallpaperCollectionsElement = initElement(WallpaperCollections);
-    // Wait for initial load to complete.
     const testProxy = setupTestIFrameApi();
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
     await testProxy.whenCalled('sendImageCounts');
 
     testProxy.resetResolver('sendImageCounts');
@@ -186,11 +189,12 @@ export function WallpaperCollectionsTest() {
         Parameters<IFrameApi['sendLocalImages']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    const iframe =
-        wallpaperCollectionsElement.shadowRoot!.querySelector('iframe');
-    assertFalse(iframe!.hidden);
+    const main = wallpaperCollectionsElement.shadowRoot!.querySelector('main');
+    assertFalse(main!.hidden);
 
-    assertWindowObjectsEqual(iframe!.contentWindow, target);
+    assertEquals(
+        wallpaperCollectionsElement.$.collectionsGrid, target,
+        'local image urls are sent to collections-grid');
     assertDeepEquals(wallpaperProvider.localImages, data);
   });
 
@@ -215,11 +219,12 @@ export function WallpaperCollectionsTest() {
         Parameters<IFrameApi['sendCollections']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    const iframe =
-        wallpaperCollectionsElement.shadowRoot!.querySelector('iframe');
-    assertFalse(iframe!.hidden);
+    const main = wallpaperCollectionsElement.shadowRoot!.querySelector('main');
+    assertFalse(main!.hidden);
 
-    assertWindowObjectsEqual(iframe!.contentWindow, target);
+    assertEquals(
+        wallpaperCollectionsElement.$.collectionsGrid, target,
+        'null sent to collections-grid when failed to fetch data');
     assertEquals(null, data);
 
     // Wait for |sendLocalImages| to be called.
@@ -228,9 +233,11 @@ export function WallpaperCollectionsTest() {
         Parameters<IFrameApi['sendLocalImages']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    assertFalse(iframe!.hidden);
+    assertFalse(main!.hidden);
 
-    assertWindowObjectsEqual(iframe!.contentWindow, imageTarget);
+    assertEquals(
+        wallpaperCollectionsElement.$.collectionsGrid, imageTarget,
+        'local images still sent to collections-grid when offline');
     assertDeepEquals(wallpaperProvider.localImages, imageData);
   });
 
@@ -256,9 +263,9 @@ export function WallpaperCollectionsTest() {
         'wallpaper-error');
     assertTrue(!!error);
 
-    // Iframe should be hidden if there is an error.
-    assertTrue(wallpaperCollectionsElement.shadowRoot!.querySelector(
-                                                          'iframe')!.hidden);
+    assertTrue(
+        wallpaperCollectionsElement.shadowRoot!.querySelector('main')!.hidden,
+        'main should be hidden if there is an error');
   });
 
   test('loads backdrop data and saves to store', async () => {
@@ -266,14 +273,15 @@ export function WallpaperCollectionsTest() {
     assertDeepEquals(emptyState(), personalizationStore.data);
     // Actually run the reducers.
     personalizationStore.setReducersEnabled(true);
-
-    const testProxy = setupTestIFrameApi();
+    personalizationStore.expectAction(
+        WallpaperActionName.SET_IMAGES_FOR_COLLECTION);
+    setupTestIFrameApi();
 
     wallpaperCollectionsElement = initElement(WallpaperCollections);
 
-    const [_, collections] = await testProxy.whenCalled('sendCollections') as
-        Parameters<IFrameApi['sendCollections']>;
-    assertDeepEquals(wallpaperProvider.collections, collections);
+    await personalizationStore.waitForAction(
+        WallpaperActionName.SET_IMAGES_FOR_COLLECTION);
+
 
     assertDeepEquals(
         {
@@ -284,6 +292,7 @@ export function WallpaperCollectionsTest() {
           },
         },
         personalizationStore.data.wallpaper.backdrop,
+        'expected backdrop data is set',
     );
     assertDeepEquals(
         {
@@ -295,6 +304,7 @@ export function WallpaperCollectionsTest() {
           },
         },
         personalizationStore.data.wallpaper.loading,
+        'expected loading state is set',
     );
   });
 
@@ -333,7 +343,6 @@ export function WallpaperCollectionsTest() {
         };
         personalizationStore.notifyObservers();
 
-        await wallpaperCollectionsElement['iframePromise_'];
         await waitAfterNextRender(wallpaperCollectionsElement);
 
         // Should not have sent any image data since more thumbnails are still
@@ -369,14 +378,13 @@ export function WallpaperCollectionsTest() {
             sentData);
       });
 
-  test('sets aria label on collections-iframe', async () => {
+  test('sets aria label on main', async () => {
     wallpaperCollectionsElement = initElement(WallpaperCollections);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     assertEquals(
         loadTimeData.getString('wallpaperCollections'),
-        wallpaperCollectionsElement.shadowRoot
-            ?.getElementById('collections-iframe')
+        wallpaperCollectionsElement.shadowRoot?.querySelector('main')
             ?.getAttribute('aria-label'),
         'aria label equals expected value');
   });

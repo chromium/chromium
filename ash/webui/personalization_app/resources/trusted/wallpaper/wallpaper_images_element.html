@@ -1,10 +1,8 @@
-<style include="trusted-style">
-</style>
+<style include="trusted-style"></style>
 <main id="main" tabindex="-1"
     aria-label$="[[getMainAriaLabel_(collectionId, collections_)]]">
   <iron-media-query query="(prefers-color-scheme: dark)"
     query-matches="{{isDarkModeActive_}}">
   </iron-media-query>
-  <iframe frameBorder="0" id="images-iframe"
-      src="chrome-untrusted://personalization/untrusted/images.html"></iframe>
+  <images-grid id="imagesGrid"></images-grid>
 </main>

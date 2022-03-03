@@ -4,10 +4,10 @@
 
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
-import './styles.js';
+import '../trusted/wallpaper/styles.js';
 
 import {assertNotReached} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Events, EventType, ImageTile} from '../common/constants.js';
 import {isSelectionEvent} from '../common/utils.js';
@@ -18,7 +18,7 @@ import {selectImage, validateReceivedData} from '../untrusted/iframe_api.js';
  * input and responds with |SelectImageEvent| when an image is selected.
  */
 
-class ImagesGrid extends PolymerElement {
+export class ImagesGrid extends PolymerElement {
   static get is() {
     return 'images-grid';
   }
@@ -50,49 +50,31 @@ class ImagesGrid extends PolymerElement {
   private selectedAssetId_: bigint|undefined;
   private pendingSelectedAssetId_: bigint|undefined;
 
-  constructor() {
-    super();
-    this.onMessageReceived_ = this.onMessageReceived_.bind(this);
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener('message', this.onMessageReceived_);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    window.removeEventListener('message', this.onMessageReceived_);
-  }
-
   /**
    * Handler for messages from trusted code. Expects only SendImagesEvent and
    * will error on any other event.
    */
-  private onMessageReceived_(message: MessageEvent) {
-    const event: Events = message.data;
+  onMessageReceived(event: Events) {
     switch (event.type) {
       case EventType.SEND_IMAGE_TILES:
-        this.tiles_ =
-            validateReceivedData(event, message.origin) ? event.tiles : [];
+        this.tiles_ = validateReceivedData(event) ? event.tiles : [];
         return;
       case EventType.SEND_CURRENT_WALLPAPER_ASSET_ID:
-        this.selectedAssetId_ = validateReceivedData(event, message.origin) ?
-            event.assetId :
-            undefined;
+        this.selectedAssetId_ =
+            validateReceivedData(event) ? event.assetId : undefined;
         return;
       case EventType.SEND_PENDING_WALLPAPER_ASSET_ID:
         this.pendingSelectedAssetId_ =
-            validateReceivedData(event, message.origin) ? event.assetId :
-                                                          undefined;
+            validateReceivedData(event) ? event.assetId : undefined;
         return;
       case EventType.SEND_VISIBLE:
         let visible = false;
-        if (validateReceivedData(event, message.origin)) {
+        if (validateReceivedData(event)) {
           visible = event.visible;
         }
         if (!visible) {
-          // When the iframe is hidden, do some dom magic to hide old image
+          // TODO(b/219799872) revisit if this is necessary.
+          // When the grid is hidden, do some dom magic to hide old image
           // content. This is in preparation for a user switching to a new
           // wallpaper collection and loading a new set of images.
           const ironList = this.shadowRoot!.querySelector('iron-list');
@@ -102,6 +84,16 @@ class ImagesGrid extends PolymerElement {
             image.src = '';
           }
           this.tiles_ = [];
+        }
+        if (visible) {
+          // If iron-list items were updated while this iron-list was hidden,
+          // the layout will be incorrect. Trigger another layout when iron-list
+          // becomes visible again. Wait until |afterNextRender| completes
+          // otherwise iron-list width may still be 0.
+          afterNextRender(this, () => {
+            // Trigger a layout now that iron-list has the correct width.
+            this.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
+          });
         }
         return;
       default:
@@ -147,7 +139,7 @@ class ImagesGrid extends PolymerElement {
       assertNotReached('assetId not found');
       return;
     }
-    selectImage(window.parent, BigInt(assetId));
+    selectImage(BigInt(assetId));
   }
 
   private getAriaLabel_(tile: ImageTile): string {

@@ -13,10 +13,11 @@ import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './styles.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ImageTile} from '../../common/constants.js';
-import {isNonEmptyArray, promisifyOnload} from '../../common/utils.js';
+import {isNonEmptyArray} from '../../common/utils.js';
+import {ImagesGrid} from '../../untrusted/images_grid.js';
 import {IFrameApi} from '../iframe_api.js';
 import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {DisplayableImage} from '../personalization_reducers.js';
@@ -87,6 +88,10 @@ export function getDarkLightImageTiles(
     return result;
   }, new Map() as Map<bigint, ImageTile>);
   return [...tileMap.values()];
+}
+
+export interface WallpaperImages {
+  $: {imagesGrid: ImagesGrid;}
 }
 
 export class WallpaperImages extends WithPersonalizationStore {
@@ -181,19 +186,10 @@ export class WallpaperImages extends WithPersonalizationStore {
   private hasImages_: boolean;
   private isDarkModeActive_: boolean;
 
-  private iframePromise_: Promise<HTMLIFrameElement>;
-
   static get observers() {
     return [
       'onImagesUpdated_(hasImages_, hasError_, collectionId, isDarkModeActive_)',
     ];
-  }
-
-  constructor() {
-    super();
-    this.iframePromise_ =
-        promisifyOnload(this, 'images-iframe', afterNextRender) as
-        Promise<HTMLIFrameElement>;
   }
 
   connectedCallback() {
@@ -216,26 +212,22 @@ export class WallpaperImages extends WithPersonalizationStore {
   /**
    * Notify iframe that this element visibility has changed.
    */
-  private async onHiddenChanged_(hidden: boolean) {
+  private onHiddenChanged_(hidden: boolean) {
     if (!hidden) {
       this.shadowRoot!.getElementById('main')!.focus();
     }
-    const iframe = await this.iframePromise_;
-    IFrameApi.getInstance().sendVisible(iframe.contentWindow!, !hidden);
+    IFrameApi.getInstance().sendVisible(this.$.imagesGrid, !hidden);
   }
 
-  private async onCurrentSelectedChanged_(selected: CurrentWallpaper|null) {
+  private onCurrentSelectedChanged_(selected: CurrentWallpaper|null) {
     const assetId = getAssetId(selected);
-    const iframe = await this.iframePromise_;
     IFrameApi.getInstance().sendCurrentWallpaperAssetId(
-        iframe.contentWindow!, assetId);
+        this.$.imagesGrid, assetId);
   }
 
-  private async onPendingSelectedChanged_(pendingSelected: DisplayableImage|
-                                          null) {
-    const iframe = await this.iframePromise_;
+  private onPendingSelectedChanged_(pendingSelected: DisplayableImage|null) {
     IFrameApi.getInstance().sendPendingWallpaperAssetId(
-        iframe.contentWindow!,
+        this.$.imagesGrid,
         isWallpaperImage(pendingSelected) ? pendingSelected.assetId :
                                             undefined);
   }
@@ -280,7 +272,7 @@ export class WallpaperImages extends WithPersonalizationStore {
    * Send images if loading is ready and we have some images. Punt back to
    * main page if there is an error viewing this collection.
    */
-  private async onImagesUpdated_(
+  private onImagesUpdated_(
       hasImages: boolean, hasError: boolean, collectionId: string,
       isDarkModeActive: boolean) {
     if (hasError) {
@@ -291,17 +283,16 @@ export class WallpaperImages extends WithPersonalizationStore {
     }
 
     if (hasImages && collectionId) {
-      const iframe = await this.iframePromise_;
       const imageArr = this.images_[collectionId];
       const isDarkLightModeEnabled =
           loadTimeData.getBoolean('isDarkLightModeEnabled');
       if (isDarkLightModeEnabled) {
         IFrameApi.getInstance().sendImageTiles(
-            iframe.contentWindow!,
+            this.$.imagesGrid,
             getDarkLightImageTiles(isDarkModeActive, imageArr!));
       } else {
         IFrameApi.getInstance().sendImageTiles(
-            iframe.contentWindow!, getRegularImageTiles(imageArr!));
+            this.$.imagesGrid, getRegularImageTiles(imageArr!));
       }
     }
   }

@@ -34,7 +34,6 @@
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
-#include "ash/webui/personalization_app/untrusted_personalization_app_ui_config.h"
 #include "chrome/browser/ash/web_applications/camera_app/camera_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/web_applications/crosh_ui.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_untrusted_ui_config.h"
@@ -84,7 +83,6 @@ WebUIConfigList CreateConfigs() {
   register_config(std::make_unique<TerminalUIConfig>());
   register_config(std::make_unique<ash::eche_app::UntrustedEcheAppUIConfig>());
   register_config(std::make_unique<MediaAppGuestUIConfig>());
-  register_config(std::make_unique<ash::UntrustedPersonalizationAppUIConfig>());
   register_config(std::make_unique<ash::HelpAppUntrustedUIConfig>());
   register_config(std::make_unique<ash::CameraAppUntrustedUIConfig>());
   register_config(

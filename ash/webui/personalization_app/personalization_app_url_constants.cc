@@ -14,7 +14,5 @@ const char kChromeUIPersonalizationAppUserSubpageURL[] =
     "chrome://personalization/user";
 const char kChromeUIPersonalizationAppWallpaperSubpageURL[] =
     "chrome://personalization/wallpaper";
-const char kChromeUIUntrustedPersonalizationAppURL[] =
-    "chrome-untrusted://personalization/";
 
 }  // namespace ash

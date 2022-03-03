@@ -11,16 +11,21 @@
 import './styles.js';
 
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../../common/constants.js';
-import {isNonEmptyArray, isNullOrArray, isNullOrNumber, promisifyOnload} from '../../common/utils.js';
+import {isNonEmptyArray, isNullOrArray, isNullOrNumber} from '../../common/utils.js';
+import {CollectionsGrid} from '../../untrusted/collections_grid.js';
 import {IFrameApi} from '../iframe_api.js';
 import {GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {initializeBackdropData} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+
+export interface WallpaperCollections {
+  $: {collectionsGrid: CollectionsGrid;}
+}
 
 export class WallpaperCollections extends WithPersonalizationStore {
   static get is() {
@@ -33,10 +38,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      /**
-       * Hidden state of this element. Used to notify iframe of visibility
-       * changes.
-       */
+      /** Hidden state of this element. Used to notify of visibility changes. */
       hidden: {
         type: Boolean,
         reflectToAttribute: true,
@@ -120,7 +122,6 @@ export class WallpaperCollections extends WithPersonalizationStore {
   private hasError_: boolean;
 
   private wallpaperProvider_: WallpaperProviderInterface;
-  private iframePromise_: Promise<HTMLIFrameElement>;
   private didSendLocalImageData_: boolean;
 
 
@@ -138,9 +139,6 @@ export class WallpaperCollections extends WithPersonalizationStore {
   constructor() {
     super();
     this.wallpaperProvider_ = getWallpaperProvider();
-    this.iframePromise_ =
-        promisifyOnload(this, 'collections-iframe', afterNextRender) as
-        Promise<HTMLIFrameElement>;
     this.didSendLocalImageData_ = false;
   }
 
@@ -171,14 +169,13 @@ export class WallpaperCollections extends WithPersonalizationStore {
   }
 
   /**
-   * Notify iframe that this element visibility has changed.
+   * Notify that this element visibility has changed.
    */
   private async onHiddenChanged_(hidden: boolean) {
     if (!hidden) {
       document.title = this.i18n('wallpaperLabel');
     }
-    const iframe = await this.iframePromise_;
-    IFrameApi.getInstance().sendVisible(iframe.contentWindow!, !hidden);
+    IFrameApi.getInstance().sendVisible(this.$.collectionsGrid, !hidden);
   }
 
   private computeHasError_(
@@ -199,14 +196,13 @@ export class WallpaperCollections extends WithPersonalizationStore {
     return !localImagesLoading && !isNonEmptyArray(localImages);
   }
 
-  private async onCollectionsChanged_(
+  private onCollectionsChanged_(
       collections: WallpaperCollection[], collectionsLoading: boolean) {
-    // Check whether collections are loaded before sending to
-    // the iframe. Collections could be null/empty array.
+    // Check whether collections are loaded before sending. Collections could be
+    // null/empty array.
     if (!collectionsLoading) {
-      const iframe = await this.iframePromise_;
       IFrameApi.getInstance().sendCollections(
-          iframe.contentWindow!, collections);
+          this.$.collectionsGrid, collections);
     }
   }
 
@@ -214,7 +210,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
    * Send count of image units in each collection when a new collection is
    * fetched. D/L variants of the same image represent a count of 1.
    */
-  private async onCollectionImagesChanged_(
+  private onCollectionImagesChanged_(
       images: Record<string, WallpaperImage[]>,
       imagesLoading: Record<string, boolean>) {
     if (!images || !imagesLoading) {
@@ -242,52 +238,48 @@ export class WallpaperCollections extends WithPersonalizationStore {
                          result[key!] = value;
                          return result;
                        }, {} as Record<string, number|null>);
-    const iframe = await this.iframePromise_;
-    IFrameApi.getInstance().sendImageCounts(iframe.contentWindow!, counts);
+    IFrameApi.getInstance().sendImageCounts(this.$.collectionsGrid, counts);
   }
 
   /** Invoked on changes to the list of Google Photos photos. */
-  private async onGooglePhotosChanged_(
+  private onGooglePhotosChanged_(
       googlePhotos: GooglePhotosPhoto[]|null, googlePhotosLoading: boolean) {
     if (googlePhotosLoading || !isNullOrArray(googlePhotos)) {
       return;
     }
-    const iframe = await this.iframePromise_;
     IFrameApi.getInstance().sendGooglePhotosPhotos(
-        iframe.contentWindow!,
+        this.$.collectionsGrid,
         googlePhotos?.slice(0, kMaximumGooglePhotosPreviews)
                 ?.map(googlePhoto => googlePhoto.url) ??
             null);
   }
 
   /** Invoked on changes to the count of Google Photos photos. */
-  private async onGooglePhotosCountChanged_(
+  private onGooglePhotosCountChanged_(
       googlePhotosCount: number|null, googlePhotosCountLoading: boolean) {
     if (googlePhotosCountLoading || !isNullOrNumber(googlePhotosCount)) {
       return;
     }
-    const iframe = await this.iframePromise_;
     IFrameApi.getInstance().sendGooglePhotosCount(
-        iframe.contentWindow!, googlePhotosCount);
+        this.$.collectionsGrid, googlePhotosCount);
   }
 
   /**
-   * Send updated local images list to the iframe.
+   * Send updated local images list.
    */
-  private async onLocalImagesChanged_(
+  private onLocalImagesChanged_(
       localImages: FilePath[]|null, localImagesLoading: boolean) {
     this.didSendLocalImageData_ = false;
     if (!localImagesLoading && Array.isArray(localImages)) {
-      const iframe = await this.iframePromise_;
       IFrameApi.getInstance().sendLocalImages(
-          iframe.contentWindow!, localImages);
+          this.$.collectionsGrid, localImages);
     }
   }
 
   /**
-   * Send up to |maximumImageThumbnailsCount| image thumbnails to untrusted.
+   * Send up to |maximumImageThumbnailsCount| image thumbnails.
    */
-  private async onLocalImageDataChanged_(
+  private onLocalImageDataChanged_(
       images: FilePath[]|null, imageData: Record<string, string>,
       imageDataLoading: Record<string, boolean>) {
     if (!Array.isArray(images) || !imageData || !imageDataLoading ||
@@ -344,8 +336,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
       this.didSendLocalImageData_ = true;
 
-      const iframe = await this.iframePromise_;
-      IFrameApi.getInstance().sendLocalImageData(iframe.contentWindow!, data);
+      IFrameApi.getInstance().sendLocalImageData(this.$.collectionsGrid, data);
     }
   }
 }

@@ -17,8 +17,6 @@ static_library("personalization_app") {
     "personalization_app_url_constants.h",
     "personalization_app_user_provider.h",
     "personalization_app_wallpaper_provider.h",
-    "untrusted_personalization_app_ui_config.cc",
-    "untrusted_personalization_app_ui_config.h",
   ]
 
   deps = [

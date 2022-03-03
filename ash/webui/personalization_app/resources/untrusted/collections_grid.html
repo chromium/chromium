@@ -1,9 +1,9 @@
-<style include="common-style untrusted-style">
+<style include="common-style trusted-style">
   :host {
     margin: 12px 0;
   }
 </style>
-<iron-list items="[[tiles_]]" grid scroll-target="document">
+<iron-list items="[[tiles_]]" grid>
   <template>
     <div class="photo-container">
       <template is="dom-if" if="[[isLoadingTile_(item)]]">
@@ -18,7 +18,8 @@
             class="photo-inner-container photo-loading-failure">
           <div class$="[[getClassForImagesContainer_(item)]]">
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
-              <img src$="[[preview.url]]" aria-hidden="true">
+              <img is="cr-auto-img" auto-src="[[preview.url]]"
+                  aria-hidden="true">
             </template>
           </div>
           <div class="photo-text-container">
@@ -35,7 +36,8 @@
             class$="[[getClassForEmptyTile_(item)]]" selectable$="[[isSelectableTile_(item)]]"
             on-click="onCollectionSelected_" on-keypress="onCollectionSelected_">
           <div class$="[[getClassForImagesContainer_(item)]]">
-            <img src$="[[getImageUrlForEmptyTile_(item)]]" aria-hidden="true">
+            <img is="cr-auto-img" auto-src="[[getImageUrlForEmptyTile_(item)]]"
+                aria-hidden="true">
           </div>
           <div class="photo-text-container">
             <p title$="[[item.name]]">[[item.name]]</p>
@@ -49,8 +51,8 @@
             on-keypress="onCollectionSelected_" tabindex$="[[tabIndex]]" role="button">
           <div class$="[[getClassForImagesContainer_(item)]]">
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
-              <img src="[[preview.url]]" aria-hidden="true"
-                  on-load="onImgLoad_" on-error="onImgLoad_">
+              <img is="cr-auto-img" auto-src="[[preview.url]]"
+                  aria-hidden="true" on-load="onImgLoad_" on-error="onImgLoad_">
             </template>
           </div>
           <div class="photo-text-container" hidden>

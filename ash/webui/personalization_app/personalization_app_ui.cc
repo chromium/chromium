@@ -33,22 +33,10 @@ GURL GetGooglePhotosURL() {
   return GURL(kGooglePhotosURL);
 }
 
-bool ShouldIncludeResource(const webui::ResourcePath& resource) {
-  return base::StartsWith(resource.path, "trusted") ||
-         base::StartsWith(resource.path, "common") ||
-         resource.id == IDR_ASH_PERSONALIZATION_APP_ICON_192_PNG;
-}
-
 void AddResources(content::WebUIDataSource* source) {
   source->AddResourcePath("", IDR_ASH_PERSONALIZATION_APP_TRUSTED_INDEX_HTML);
-
-  const auto resources = base::make_span(kAshPersonalizationAppResources,
-                                         kAshPersonalizationAppResourcesSize);
-
-  for (const auto& resource : resources) {
-    if (ShouldIncludeResource(resource))
-      source->AddResourcePath(resource.path, resource.id);
-  }
+  source->AddResourcePaths(base::make_span(
+      kAshPersonalizationAppResources, kAshPersonalizationAppResourcesSize));
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
@@ -209,13 +197,6 @@ PersonalizationAppUI::PersonalizationAppUI(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test chrome://webui-test "
       "'self';");
-
-  // Allow requesting a chrome-untrusted://personalization/ iframe.
-  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::FrameSrc,
-      base::StrCat(
-          {"frame-src ", kChromeUIUntrustedPersonalizationAppURL, ";"}));
 
   // TODO(crbug.com/1098690): Trusted Type Polymer
   source->DisableTrustedTypesCSP();

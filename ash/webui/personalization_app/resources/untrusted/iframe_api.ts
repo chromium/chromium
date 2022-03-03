@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert.m.js';
 import * as constants from '../common/constants.js';
 import {isNullOrArray, isNullOrNumber} from '../common/utils.js';
+import {onMessageReceived} from '../trusted/wallpaper/untrusted_message_handler.js';
 
 /**
  * @fileoverview Helper functions for communicating between trusted and
@@ -15,55 +15,50 @@ import {isNullOrArray, isNullOrNumber} from '../common/utils.js';
 /**
  * Select a collection. Sent from untrusted to trusted.
  */
-export function selectCollection(target: Window, collectionId: string) {
+export function selectCollection(collectionId: string) {
   const event: constants.SelectCollectionEvent = {
     type: constants.EventType.SELECT_COLLECTION,
     collectionId
   };
-  target.postMessage(event, constants.trustedOrigin);
+  onMessageReceived(event);
 }
 
 /**
  * Select the Google Photos collection. Sent from untrusted to trusted.
  */
-export function selectGooglePhotosCollection(target: Window) {
+export function selectGooglePhotosCollection() {
   const event: constants.SelectGooglePhotosCollectionEvent = {
     type: constants.EventType.SELECT_GOOGLE_PHOTOS_COLLECTION
   };
-  target.postMessage(event, constants.trustedOrigin);
+  onMessageReceived(event);
 }
 
 /**
  * Select the local collection. Sent from untrusted to trusted.
  */
-export function selectLocalCollection(target: Window) {
+export function selectLocalCollection() {
   const event: constants.SelectLocalCollectionEvent = {
     type: constants.EventType.SELECT_LOCAL_COLLECTION
   };
-  target.postMessage(event, constants.trustedOrigin);
+  onMessageReceived(event);
 }
 
 /**
  * Select an image. Sent from untrusted to trusted.
  */
-export function selectImage(target: Window, assetId: bigint) {
+export function selectImage(assetId: bigint) {
   const event: constants.SelectImageEvent = {
     type: constants.EventType.SELECT_IMAGE,
     assetId
   };
-  target.postMessage(event, constants.trustedOrigin);
+  onMessageReceived(event);
 }
 
 /**
  * Called from untrusted code to validate that a received event is of an
  * expected type and contains the expected data.
  */
-export function validateReceivedData(
-    event: constants.Events, origin: string): boolean {
-  assert(
-      origin === constants.trustedOrigin,
-      'Message is not from the correct origin');
-
+export function validateReceivedData(event: constants.Events): boolean {
   switch (event.type) {
     case constants.EventType.SEND_COLLECTIONS: {
       return isNullOrArray(event.collections);

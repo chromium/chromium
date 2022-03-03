@@ -14,41 +14,48 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import * as constants from '../common/constants.js';
 import {isNonEmptyArray} from '../common/utils.js';
+import {CollectionsGrid} from '../untrusted/collections_grid.js';
+import {ImagesGrid} from '../untrusted/images_grid.js';
 
 import {WallpaperCollection, WallpaperImage} from './personalization_app.mojom-webui.js';
 
+/**
+ * TODO(b:197023872) this class is deprecated and should be removed by more
+ * post-iframe cleanup.
+ */
 export class IFrameApi {
   /**
    * Send an array of wallpaper collections to untrusted.
    */
-  sendCollections(target: Window, collections: Array<WallpaperCollection>) {
+  sendCollections(
+      target: CollectionsGrid, collections: Array<WallpaperCollection>) {
     const event: constants.SendCollectionsEvent = {
       type: constants.EventType.SEND_COLLECTIONS,
       collections
     };
-    target.postMessage(event, constants.untrustedOrigin);
+    target.onMessageReceived(event);
   }
 
   /**
    * Sends the count of Google Photos photos to untrusted.
    */
-  sendGooglePhotosCount(target: Window, count: number|null) {
+  sendGooglePhotosCount(target: CollectionsGrid, count: number|null) {
     const event: constants.SendGooglePhotosCountEvent = {
       type: constants.EventType.SEND_GOOGLE_PHOTOS_COUNT,
       count
     };
-    target.postMessage(event, constants.untrustedOrigin);
+    target.onMessageReceived(event);
   }
 
   /**
    * Sends the list of Google Photos photos to untrusted.
    */
-  sendGooglePhotosPhotos(target: Window, photos: Array<Url>|null) {
+  sendGooglePhotosPhotos(target: CollectionsGrid, photos: Array<Url>|null) {
     const event: constants.SendGooglePhotosPhotosEvent = {
       type: constants.EventType.SEND_GOOGLE_PHOTOS_PHOTOS,
       photos
     };
-    target.postMessage(event, constants.untrustedOrigin);
+    target.onMessageReceived(event);
   }
 
   /**
@@ -56,12 +63,13 @@ export class IFrameApi {
    * A value of null for a given collection id represents that the collection
    * failed to load.
    */
-  sendImageCounts(target: Window, counts: {[key: string]: number|null}) {
+  sendImageCounts(
+      target: CollectionsGrid, counts: {[key: string]: number|null}) {
     const event: constants.SendImageCountsEvent = {
       type: constants.EventType.SEND_IMAGE_COUNTS,
       counts
     };
-    target.postMessage(event, constants.untrustedOrigin);
+    target.onMessageReceived(event);
   }
 
   /**
@@ -69,89 +77,88 @@ export class IFrameApi {
    * resize event on iron-list when an iframe becomes visible again so that
    * iron-list will run layout with the current size.
    */
-  sendVisible(target: Window, visible: boolean) {
+  sendVisible(target: CollectionsGrid|ImagesGrid, visible: boolean) {
     const event: constants.SendVisibleEvent = {
       type: constants.EventType.SEND_VISIBLE,
       visible
     };
-    target.postMessage(event, constants.untrustedOrigin);
+    target.onMessageReceived(event);
   }
 
   /**
    * Send an array of wallpaper images to chrome-untrusted://.
    * Will clear the page if images is empty array.
    */
-  sendImageTiles(target: Window, tiles: constants.ImageTile[]) {
+  sendImageTiles(target: ImagesGrid, tiles: constants.ImageTile[]) {
     const event: constants.SendImageTilesEvent = {
       type: constants.EventType.SEND_IMAGE_TILES,
       tiles
     };
-    target.postMessage(event, constants.untrustedOrigin);
+    target.onMessageReceived(event);
   }
 
   /**
    * Send an array of local images to chrome-untrusted://.
    */
-  sendLocalImages(target: Window, images: FilePath[]) {
+  sendLocalImages(target: CollectionsGrid, images: FilePath[]) {
     const event: constants.SendLocalImagesEvent = {
       type: constants.EventType.SEND_LOCAL_IMAGES,
       images
     };
-    target.postMessage(event, constants.untrustedOrigin);
+    target.onMessageReceived(event);
   }
 
   /**
    * Sends image data keyed by stringified image id.
    */
-  sendLocalImageData(target: Window, data: Record<string, string>) {
+  sendLocalImageData(target: CollectionsGrid, data: Record<string, string>) {
     const event: constants.SendLocalImageDataEvent = {
       type: constants.EventType.SEND_LOCAL_IMAGE_DATA,
       data
     };
-    target.postMessage(event, constants.untrustedOrigin);
+    target.onMessageReceived(event);
   }
 
   /**
-   * Send the |assetId| of the currently selected wallpaper to |target| iframe
-   * window. Sending null indicates that no image is selected.
+   * Send the |assetId| of the currently selected wallpaper to |target|.
+   * Sending null indicates that no image is selected.
    */
-  sendCurrentWallpaperAssetId(target: Window, assetId: bigint|undefined) {
+  sendCurrentWallpaperAssetId(target: ImagesGrid, assetId: bigint|undefined) {
     const event: constants.SendCurrentWallpaperAssetIdEvent = {
       type: constants.EventType.SEND_CURRENT_WALLPAPER_ASSET_ID,
       assetId
     };
-    target.postMessage(event, constants.untrustedOrigin);
+    target.onMessageReceived(event);
   }
 
   /**
-   * Send the |assetId| to the |target| iframe when the user clicks on online
-   * wallpaper image.
+   * Send the |assetId| to the |target| when the user clicks on online wallpaper
+   * image.
    */
-  sendPendingWallpaperAssetId(target: Window, assetId: bigint|undefined) {
+  sendPendingWallpaperAssetId(target: ImagesGrid, assetId: bigint|undefined) {
     const event: constants.SendPendingWallpaperAssetIdEvent = {
       type: constants.EventType.SEND_PENDING_WALLPAPER_ASSET_ID,
       assetId
     };
-    target.postMessage(event, constants.untrustedOrigin);
+    target.onMessageReceived(event);
   }
 
 
   /**
-   * Called from trusted code to validate that a received postMessage event
-   * contains valid data. Ignores messages that are not of the expected type.
+   * Called from trusted code to validate that a received event contains valid
+   * data. Ignores messages that are not of the expected type.
    */
   validateReceivedSelection(
-      event: MessageEvent,
+      data: constants.Events,
       choices: WallpaperCollection[]|null): WallpaperCollection;
   validateReceivedSelection(
-      event: MessageEvent, choices: WallpaperImage[]|null): WallpaperImage;
+      data: constants.Events, choices: WallpaperImage[]|null): WallpaperImage;
   validateReceivedSelection(
-      event: MessageEvent,
+      data: constants.Events,
       choices: (WallpaperCollection|WallpaperImage)[]|null): WallpaperCollection
       |WallpaperImage {
     assert(isNonEmptyArray(choices), 'choices must be a non-empty array');
 
-    const data: constants.Events = event.data;
     let selected: WallpaperCollection|WallpaperImage|undefined = undefined;
     switch (data.type) {
       case constants.EventType.SELECT_COLLECTION: {

@@ -4,13 +4,16 @@
 
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
-import './styles.js';
+import '../trusted/wallpaper/styles.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {Events, EventType, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {getCountText, getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
+import {WallpaperCollection} from '../trusted/personalization_app.mojom-webui.js';
 import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../untrusted/iframe_api.js';
 
 /**
@@ -29,23 +32,6 @@ enum TileType {
   IMAGE = 'image',
   FAILURE = 'failure',
 }
-
-/** mirror from mojom type, cannot use mojom type directly from untrusted. */
-type Url = {
-  url: string
-};
-
-/** mirror from mojom type, cannot use mojom type directly from untrusted. */
-type FilePath = {
-  path: string
-};
-
-/** mirror from mojom type, cannot use mojom type directly from untrusted. */
-type WallpaperCollection = {
-  id: string,
-  name: string,
-  preview?: Url,
-};
 
 type LoadingTile = {
   type: TileType.LOADING
@@ -215,20 +201,6 @@ export class CollectionsGrid extends PolymerElement {
     ];
   }
 
-  constructor() {
-    super();
-    this.onMessageReceived_ = this.onMessageReceived_.bind(this);
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener('message', this.onMessageReceived_);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    window.removeEventListener('message', this.onMessageReceived_);
-  }
 
   getLoadingPlaceholderAnimationDelay(index: number): string {
     return getLoadingPlaceholderAnimationDelay(index);
@@ -313,12 +285,11 @@ export class CollectionsGrid extends PolymerElement {
   }
 
   /**
-   * Handler for messages from trusted code. Expects only SendImagesEvent and
-   * will error on any other event.
+   * Handler for messages from trusted code.
+   * TODO(cowmoo) move this up beneath static properties because it is public.
    */
-  private onMessageReceived_(message: MessageEvent) {
-    const event = message.data as Events;
-    const isValid = validateReceivedData(event, message.origin);
+  onMessageReceived(event: Events) {
+    const isValid = validateReceivedData(event);
     if (!isValid) {
       console.warn('Invalid event message received, event type: ' + event.type);
     }
@@ -380,7 +351,7 @@ export class CollectionsGrid extends PolymerElement {
         }
         return;
       default:
-        console.error(`Unexpected event type ${message.data.type}`);
+        console.error(`Unexpected event type ${event.type}`);
         break;
     }
   }
@@ -413,13 +384,13 @@ export class CollectionsGrid extends PolymerElement {
     }
     switch (tile.id) {
       case kGooglePhotosCollectionId:
-        selectGooglePhotosCollection(window.parent);
+        selectGooglePhotosCollection();
         return;
       case kLocalCollectionId:
-        selectLocalCollection(window.parent);
+        selectLocalCollection();
         return;
       default:
-        selectCollection(window.parent, tile.id);
+        selectCollection(tile.id);
         return;
     }
   }

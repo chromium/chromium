@@ -7,10 +7,10 @@ import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/p
 import {PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {getDarkLightImageTiles, getRegularImageTiles, WallpaperImages} from 'chrome://personalization/trusted/wallpaper/wallpaper_images_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {assertWindowObjectsEqual, baseSetup, initElement, setupTestIFrameApi, teardownElement} from './personalization_app_test_utils.js';
+import {baseSetup, initElement, setupTestIFrameApi, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
@@ -42,15 +42,14 @@ export function WallpaperImagesTest() {
     wallpaperImagesElement =
         initElement(WallpaperImages, {collectionId: 'id_0'});
 
-    const iframe = wallpaperImagesElement.shadowRoot!.getElementById(
-                       'images-iframe') as HTMLIFrameElement;
+    const imagesGrid = wallpaperImagesElement.$.imagesGrid;
 
     // Wait for iframe to receive data.
-    let [targetWindow, data] =
+    let [target, data] =
         await testProxy.whenCalled('sendCurrentWallpaperAssetId') as
         Parameters<IFrameApi['sendCurrentWallpaperAssetId']>;
 
-    assertEquals(iframe.contentWindow, targetWindow);
+    assertEquals(imagesGrid, target);
     assertDeepEquals(
         BigInt(personalizationStore.data.wallpaper.currentSelected.key), data);
 
@@ -68,10 +67,10 @@ export function WallpaperImagesTest() {
     personalizationStore.notifyObservers();
 
     // Wait for iframe to receive data.
-    [targetWindow, data] =
+    [target, data] =
         await testProxy.whenCalled('sendCurrentWallpaperAssetId') as
         Parameters<IFrameApi['sendCurrentWallpaperAssetId']>;
-    assertEquals(iframe.contentWindow, targetWindow);
+    assertEquals(imagesGrid, target);
     assertDeepEquals(
         BigInt(personalizationStore.data.wallpaper.currentSelected.key), data);
 
@@ -89,10 +88,10 @@ export function WallpaperImagesTest() {
     personalizationStore.notifyObservers();
 
     // Wait for iframe to receive data.
-    [targetWindow, data] =
+    [target, data] =
         await testProxy.whenCalled('sendCurrentWallpaperAssetId') as
         Parameters<IFrameApi['sendCurrentWallpaperAssetId']>;
-    assertEquals(iframe.contentWindow, targetWindow);
+    assertEquals(imagesGrid, target);
     assertEquals(undefined, data);
   });
 
@@ -116,33 +115,29 @@ export function WallpaperImagesTest() {
     wallpaperImagesElement =
         initElement(WallpaperImages, {collectionId: 'id_0'});
 
-    const iframe = wallpaperImagesElement.shadowRoot!.getElementById(
-                       'images-iframe') as HTMLIFrameElement;
+    const imagesGrid = wallpaperImagesElement.$.imagesGrid;
 
     // Wait for iframe to receive data.
-    let [targetWindow, data] = await testProxy.whenCalled('sendImageTiles') as
+    let [target, data] = await testProxy.whenCalled('sendImageTiles') as
         Parameters<IFrameApi['sendImageTiles']>;
-    assertEquals(iframe.contentWindow, targetWindow);
+    assertEquals(imagesGrid, target);
     assertDeepEquals(
         getRegularImageTiles(
             personalizationStore.data.wallpaper.backdrop.images['id_0']),
         data);
     // Wait for a render to happen.
     await waitAfterNextRender(wallpaperImagesElement);
-    assertFalse(iframe.hidden);
 
     testProxy.resetResolver('sendImageTiles');
     wallpaperImagesElement.collectionId = 'id_1';
 
     // Wait for iframe to receive new data.
-    [targetWindow, data] = await testProxy.whenCalled('sendImageTiles') as
+    [target, data] = await testProxy.whenCalled('sendImageTiles') as
         Parameters<IFrameApi['sendImageTiles']>;
 
     await waitAfterNextRender(wallpaperImagesElement);
 
-    assertFalse(iframe.hidden);
-
-    assertWindowObjectsEqual(iframe.contentWindow, targetWindow);
+    assertEquals(imagesGrid, target);
     assertDeepEquals(
         getRegularImageTiles(
             personalizationStore.data.wallpaper.backdrop.images['id_1']),
@@ -170,13 +165,12 @@ export function WallpaperImagesTest() {
     wallpaperImagesElement =
         initElement(WallpaperImages, {collectionId: 'id_0'});
 
-    const iframe = wallpaperImagesElement.shadowRoot!.getElementById(
-                       'images-iframe') as HTMLIFrameElement;
+    const imagesGrid = wallpaperImagesElement.$.imagesGrid;
 
-    // Wait for iframe to receive data.
-    let [targetWindow, data] = await testProxy.whenCalled('sendImageTiles') as
+    // Wait for images-grid to receive data.
+    let [target, data] = await testProxy.whenCalled('sendImageTiles') as
         Parameters<IFrameApi['sendImageTiles']>;
-    assertEquals(iframe.contentWindow, targetWindow);
+    assertEquals(imagesGrid, target);
     const tiles = getDarkLightImageTiles(
         false, personalizationStore.data.wallpaper.backdrop.images['id_0']);
     assertDeepEquals(tiles, data);
@@ -188,20 +182,17 @@ export function WallpaperImagesTest() {
         data[0]!.preview[1]!.url, 'https://images.googleusercontent.com/0');
     // Wait for a render to happen.
     await waitAfterNextRender(wallpaperImagesElement);
-    assertFalse(iframe.hidden);
 
     testProxy.resetResolver('sendImageTiles');
     wallpaperImagesElement.collectionId = 'id_1';
 
     // Wait for iframe to receive new data.
-    [targetWindow, data] = await testProxy.whenCalled('sendImageTiles') as
+    [target, data] = await testProxy.whenCalled('sendImageTiles') as
         Parameters<IFrameApi['sendImageTiles']>;
 
     await waitAfterNextRender(wallpaperImagesElement);
 
-    assertFalse(iframe.hidden);
-
-    assertWindowObjectsEqual(iframe.contentWindow, targetWindow);
+    assertEquals(imagesGrid, target);
     assertDeepEquals(
         getDarkLightImageTiles(
             false, personalizationStore.data.wallpaper.backdrop.images['id_1']),

@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-
-import {Events, EventType, untrustedOrigin} from '../../common/constants.js';
+import {Events, EventType} from '../../common/constants.js';
 import {IFrameApi} from '../iframe_api.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
@@ -16,19 +14,15 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
  * @fileoverview message handler that receives data from untrusted.
  */
 
-export function onMessageReceived(event: MessageEvent) {
-  assert(
-      event.origin === untrustedOrigin, 'Message not from the correct origin');
-
+export function onMessageReceived(data: Events) {
   const store = PersonalizationStore.getInstance();
 
-  const data = event.data as Events;
   switch (data.type) {
     case EventType.SELECT_COLLECTION:
       const collections = store.data.wallpaper.backdrop.collections;
 
       const selectedCollection =
-          IFrameApi.getInstance().validateReceivedSelection(event, collections);
+          IFrameApi.getInstance().validateReceivedSelection(data, collections);
       PersonalizationRouter.instance().selectCollection(selectedCollection);
       break;
     case EventType.SELECT_GOOGLE_PHOTOS_COLLECTION:
@@ -45,7 +39,7 @@ export function onMessageReceived(event: MessageEvent) {
       }
       const images = store.data.wallpaper.backdrop.images[collectionId];
       const selectedImage =
-          IFrameApi.getInstance().validateReceivedSelection(event, images);
+          IFrameApi.getInstance().validateReceivedSelection(data, images);
       selectWallpaper(selectedImage, getWallpaperProvider(), store);
       break;
   }

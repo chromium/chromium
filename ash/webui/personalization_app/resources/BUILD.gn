@@ -101,7 +101,6 @@ polymer_js_files = [
 
   "untrusted/collections_grid.ts",
   "untrusted/images_grid.ts",
-  "untrusted/styles.ts",
 ]
 
 static_resource_files = [
@@ -112,9 +111,6 @@ static_resource_files = [
   "common/no_images.svg",
 
   "trusted/index.html",
-
-  "untrusted/collections.html",
-  "untrusted/images.html",
 ]
 
 html_to_js("web_components") {
