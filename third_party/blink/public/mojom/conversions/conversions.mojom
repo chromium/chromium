@@ -83,10 +83,8 @@ interface ConversionHost {
   // browsing context.
   RegisterConversion(Conversion conversion);
 
-  // Registers an impression. Triggered by the registerattributionsource
-  // attribute being added to an anchor element alongside other API attributes,
-  // or by the registerAttributionSource JS method. These impressions are not
-  // associated with a browser navigation.
+  // Registers an impression. Triggered by the registerAttributionSource JS
+  // method. These impressions are not associated with a browser navigation.
   RegisterImpression(Impression impression);
 
   // Registers a new data host which can register a source or trigger.

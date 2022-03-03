@@ -27,7 +27,6 @@ function createImpressionTag({
   reportOrigin,
   expiry,
   priority,
-  registerAttributionSource = false,
   left,
   top,
 } = {}) {
@@ -48,9 +47,6 @@ function createImpressionTag({
 
   if (priority !== undefined)
     anchor.setAttribute('attributionsourcepriority', priority);
-
-  if (registerAttributionSource)
-    anchor.setAttribute('registerattributionsource', '');
 
   if (left !== undefined && top !== undefined) {
     const style = 'position: absolute; left: ' + (left - 10) +

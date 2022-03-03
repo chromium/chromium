@@ -29,9 +29,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   enum class SourceType {
     // An impression which was associated with a top-level navigation.
     kNavigation = 0,
-    // An impression which was not associated with a navigation, such as an
-    // impression for an anchor element with the registerattributionsource
-    // attribute set.
+    // An impression which was not associated with a navigation.
     kEvent = 1,
     kMaxValue = kEvent,
   };

@@ -26,14 +26,10 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -228,19 +224,6 @@ void HTMLAnchorElement::SetActive(bool active) {
 void HTMLAnchorElement::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);
-  if (params.name == html_names::kRegisterattributionsourceAttr &&
-      !params.new_value.IsNull() && HasImpression()) {
-    absl::optional<WebImpression> impression = GetImpressionForAnchor(this);
-    if (impression) {
-      mojo::AssociatedRemote<mojom::blink::ConversionHost> conversion_host;
-      GetDocument()
-          .GetFrame()
-          ->GetRemoteNavigationAssociatedInterfaces()
-          ->GetInterface(&conversion_host);
-      conversion_host->RegisterImpression(
-          ConvertWebImpressionToImpression(*impression));
-    }
-  }
 
   if (params.reason != AttributeModificationReason::kDirectly)
     return;

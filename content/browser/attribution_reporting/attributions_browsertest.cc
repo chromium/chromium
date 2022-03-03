@@ -648,48 +648,6 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
-                       EventSourceImpressionConversion_ReportSent) {
-  // Expected reports must be registered before the server starts.
-  // 123 in the `registerConversion` call below is sanitized to 1 in
-  // the report's `trigger_data`.
-  ExpectedReportWaiter expected_report(
-      GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-event-attribution"),
-      /*attribution_destination=*/"https://b.test",
-      /*source_event_id=*/"7", /*source_type=*/"event", /*trigger_data=*/"1",
-      https_server());
-  ASSERT_TRUE(https_server()->Start());
-
-  GURL impression_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
-
-  // Create an anchor tag with impression attributes.
-  GURL conversion_url = https_server()->GetURL(
-      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace(R"(
-    createImpressionTag({id: 'link',
-                        url: $1,
-                        data: '7',
-                        destination: $2,
-                        registerAttributionSource: true});)",
-                       conversion_url, url::Origin::Create(conversion_url))));
-
-  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
-
-  // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(
-      ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 0,
-                                       origin: $1,
-                                       eventSourceTriggerData: 123});)",
-                                       url::Origin::Create(impression_url))));
-
-  expected_report.WaitForReport();
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        EventSourceImpressionWithDebugKeyConversion_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
@@ -728,64 +686,6 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                                        url::Origin::Create(impression_url))));
 
   expected_report.WaitForReport();
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
-                       EventSourceImpressionTwoConversions_OneReportSent) {
-  // Expected reports must be registered before the server starts.
-  // 123 in the `registerConversion` call below is sanitized to 1 in
-  // the report's `trigger_data`.
-  ExpectedReportWaiter expected_report(
-      GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-event-attribution"),
-      /*attribution_destination=*/"https://b.test",
-      /*source_event_id=*/"7", /*source_type=*/"event", /*trigger_data=*/"1",
-      https_server());
-  ExpectedReportWaiter expected_report_not_sent(
-      GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-event-attribution"),
-      /*body=*/base::Value(), https_server());
-  ASSERT_TRUE(https_server()->Start());
-
-  GURL impression_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
-
-  // Create an anchor tag with impression attributes.
-  GURL conversion_url = https_server()->GetURL(
-      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace(R"(
-    createImpressionTag({id: 'link',
-                        url: $1,
-                        data: '7',
-                        destination: $2,
-                        registerAttributionSource: true});)",
-                       conversion_url, url::Origin::Create(conversion_url))));
-
-  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
-
-  // Register two conversions with the original page as the reporting origin.
-  for (int i = 0; i < 2; i++) {
-    EXPECT_TRUE(
-        ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 0,
-                                       origin: $1,
-                                       eventSourceTriggerData: 123});)",
-                                         url::Origin::Create(impression_url))));
-  }
-
-  expected_report.WaitForReport();
-
-  // Since we want to verify that a report _isn't_ sent, we can't really wait on
-  // any event here. The best thing we can do is just impose a short delay and
-  // verify the browser didn't send anything. Worst case, this should start
-  // flakily failing if the logic breaks.
-  base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
-  run_loop.Run();
-  EXPECT_FALSE(expected_report_not_sent.HasRequest());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
