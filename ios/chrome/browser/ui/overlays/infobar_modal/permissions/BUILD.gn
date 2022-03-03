@@ -24,6 +24,7 @@ source_set("permissions") {
     "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
     "//ios/chrome/browser/ui/permissions",
+    "//ios/chrome/browser/ui/permissions:permission_info",
     "//ios/chrome/browser/ui/util",
     "//ios/web/public",
     "//ios/web/public/permissions",

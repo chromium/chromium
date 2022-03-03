@@ -5,8 +5,6 @@
 source_set("permissions") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "infobar_permissions_modal_consumer.h",
-    "infobar_permissions_modal_delegate.h",
     "infobar_permissions_table_view_controller.h",
     "infobar_permissions_table_view_controller.mm",
   ]
@@ -18,6 +16,7 @@ source_set("permissions") {
     "//ios/chrome/browser/ui/infobars/modals:public",
     "//ios/chrome/browser/ui/infobars/presentation",
     "//ios/chrome/browser/ui/permissions",
+    "//ios/chrome/browser/ui/permissions:permission_info",
     "//ios/chrome/browser/ui/settings/cells:cells",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:styler",

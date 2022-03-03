@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/page_info/page_info_permissions_mediator.h"
 
 #include "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/ui/permissions/permission_info.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -20,6 +21,12 @@ class PageInfoPermissionsTest : public PlatformTest {
  protected:
   PageInfoPermissionsTest() {
     feature_list_.InitAndEnableFeature(web::features::kMediaPermissionsControl);
+  }
+
+  ~PageInfoPermissionsTest() override {
+    if (@available(iOS 15.0, *)) {
+      [mediator_ disconnect];
+    }
   }
 
   void SetUp() override {
@@ -53,43 +60,15 @@ class PageInfoPermissionsTest : public PlatformTest {
   PageInfoPermissionsMediator* mediator_ API_AVAILABLE(ios(15.0));
 };
 
-// Verifies that |shouldShowPermissionsSection| returns YES if any permission is
-// accessible, and returns NO if no permission is.
-TEST_F(PageInfoPermissionsTest, TestShouldShowPermissionsSection) {
+// Verifies that |updateStateForPermission:| updates correctly the web state
+// permission.
+TEST_F(PageInfoPermissionsTest, TestUpdateStateForPermission) {
   if (@available(iOS 15.0, *)) {
-    ASSERT_TRUE([mediator() shouldShowPermissionsSection]);
+    PermissionInfo* permissionDescription = [[PermissionInfo alloc] init];
+    permissionDescription.permission = web::PermissionCamera;
+    permissionDescription.state = web::PermissionStateBlocked;
 
-    // Initialize another web state with no accessible permissions.
-    auto web_state_no_permission = std::make_unique<web::FakeWebState>();
-    PageInfoPermissionsMediator* mediator_no_permission =
-        [[PageInfoPermissionsMediator alloc]
-            initWithWebState:web_state_no_permission.get()];
-    ASSERT_FALSE([mediator_no_permission shouldShowPermissionsSection]);
-  }
-}
-
-// Verifies that |isPermissionAccessible| returns the right result.
-TEST_F(PageInfoPermissionsTest, TestIsPermissionAccessible) {
-  if (@available(iOS 15.0, *)) {
-    ASSERT_TRUE([mediator() isPermissionAccessible:web::PermissionCamera]);
-    ASSERT_FALSE([mediator() isPermissionAccessible:web::PermissionMicrophone]);
-  }
-}
-
-// Verifies that |stateForAccessiblePermission:| returns the right result.
-TEST_F(PageInfoPermissionsTest, TestStateForAccessiblePermission) {
-  if (@available(iOS 15.0, *)) {
-    ASSERT_TRUE(
-        [mediator() stateForAccessiblePermission:web::PermissionCamera]);
-  }
-}
-
-// Verifies that |toggleStateForPermission:| toggles the web state permission.
-TEST_F(PageInfoPermissionsTest, TestToggleStateForPermission) {
-  if (@available(iOS 15.0, *)) {
-    [mediator() toggleStateForPermission:web::PermissionCamera];
-    ASSERT_FALSE(
-        [mediator() stateForAccessiblePermission:web::PermissionCamera]);
+    [mediator() updateStateForPermission:permissionDescription];
     ASSERT_EQ(web_state()->GetStateForPermission(web::PermissionCamera),
               web::PermissionStateBlocked);
   }

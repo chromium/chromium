@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/page_info/page_info_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -61,9 +62,12 @@
       static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
 
   if (@available(iOS 15.0, *)) {
-    self.permissionsMediator =
-        [[PageInfoPermissionsMediator alloc] initWithWebState:webState];
-    self.viewController.permissionsDelegate = self.permissionsMediator;
+    if (web::features::IsMediaPermissionsControlEnabled()) {
+      self.permissionsMediator =
+          [[PageInfoPermissionsMediator alloc] initWithWebState:webState];
+      self.viewController.permissionsDelegate = self.permissionsMediator;
+      self.permissionsMediator.consumer = self.viewController;
+    }
   }
 
   [self.baseViewController presentViewController:self.navigationController
@@ -72,6 +76,10 @@
 }
 
 - (void)stop {
+  if (@available(iOS 15.0, *)) {
+    [self.permissionsMediator disconnect];
+  }
+
   [self.baseViewController.presentedViewController
       dismissViewControllerAnimated:YES
                          completion:nil];

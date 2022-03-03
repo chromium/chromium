@@ -11,7 +11,8 @@
 #include "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
-#import "ios/chrome/browser/ui/page_info/page_info_view_controller_permissions_delegate.h"
+#include "ios/chrome/browser/ui/permissions/permission_info.h"
+#import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
@@ -56,8 +57,12 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
 @interface PageInfoViewController () <TableViewLinkHeaderFooterItemDelegate>
 
+// The page info security description.
 @property(nonatomic, strong)
     PageInfoSiteSecurityDescription* pageInfoSecurityDescription;
+
+// The list of permissions info used to create switches.
+@property(nonatomic, copy) NSArray<PermissionInfo*>* permissionsInfo;
 
 @end
 
@@ -131,7 +136,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
   // Permissions section.
   if (@available(iOS 15.0, *)) {
-    if ([self.permissionsDelegate shouldShowPermissionsSection]) {
+    if ([self.permissionsInfo count]) {
       [self loadPermissionsModel];
     }
   }
@@ -149,14 +154,9 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   [self.tableViewModel setHeader:permissionsHeaderItem
         forSectionWithIdentifier:SectionIdentifierPermissions];
 
-  [self addSwitchIfAccessibleForPermission:web::PermissionCamera
-                                 withLabel:l10n_util::GetNSString(
-                                               IDS_IOS_PERMISSIONS_CAMERA)
-                                    toItem:ItemTypePermissionsCamera];
-  [self addSwitchIfAccessibleForPermission:web::PermissionMicrophone
-                                 withLabel:l10n_util::GetNSString(
-                                               IDS_IOS_PERMISSIONS_MICROPHONE)
-                                    toItem:ItemTypePermissionsMicrophone];
+  for (id permission in self.permissionsInfo) {
+    [self updateSwitchForPermission:permission tableViewLoaded:NO];
+  }
 
   TableViewLinkHeaderFooterItem* permissionsDescription =
       [[TableViewLinkHeaderFooterItem alloc]
@@ -249,41 +249,132 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   return labelURL;
 }
 
-// Invoked when a permission switch is toggled.
-- (void)permissionSwitchToggled:(UISwitch*)sender API_AVAILABLE(ios(15.0)) {
-  web::Permission permission;
-  switch (sender.tag) {
-    case ItemTypePermissionsCamera:
-      permission = web::PermissionCamera;
+// Updates the switch of the given permission.
+- (void)updateSwitchForPermission:(PermissionInfo*)permissionInfo
+                  tableViewLoaded:(BOOL)tableViewLoaded {
+  switch (permissionInfo.permission) {
+    case web::PermissionCamera:
+      [self updateSwitchForPermissionState:permissionInfo.state
+                                 withLabel:l10n_util::GetNSString(
+                                               IDS_IOS_PERMISSIONS_CAMERA)
+                                    toItem:ItemTypePermissionsCamera
+                           tableViewLoaded:tableViewLoaded];
       break;
-    case ItemTypePermissionsMicrophone:
-      permission = web::PermissionMicrophone;
+    case web::PermissionMicrophone:
+      [self updateSwitchForPermissionState:permissionInfo.state
+                                 withLabel:l10n_util::GetNSString(
+                                               IDS_IOS_PERMISSIONS_MICROPHONE)
+                                    toItem:ItemTypePermissionsMicrophone
+                           tableViewLoaded:tableViewLoaded];
       break;
-    case ItemTypeSecurityHeader:
-    case ItemTypeSecurityDescription:
-    case ItemTypePermissionsHeader:
-    case ItemTypePermissionsDescription: {
-      NOTREACHED();
-      return;
-    }
   }
-  [self.permissionsDelegate toggleStateForPermission:permission];
 }
 
-// If |permission| is accessible, adds a switch for it to the Permissions
-// section of the table.
-- (void)addSwitchIfAccessibleForPermission:(web::Permission)permission
-                                 withLabel:(NSString*)label
-                                    toItem:(ItemType)item
-    API_AVAILABLE(ios(15.0)) {
-  if ([self.permissionsDelegate isPermissionAccessible:permission]) {
-    TableViewSwitchItem* switchItem =
-        [[TableViewSwitchItem alloc] initWithType:item];
-    switchItem.text = label;
-    switchItem.on =
-        [self.permissionsDelegate stateForAccessiblePermission:permission];
+// Invoked when a permission switch is toggled.
+- (void)permissionSwitchToggled:(UISwitch*)sender {
+  if (@available(iOS 15.0, *)) {
+    web::Permission permission;
+    switch (sender.tag) {
+      case ItemTypePermissionsCamera:
+        permission = web::PermissionCamera;
+        break;
+      case ItemTypePermissionsMicrophone:
+        permission = web::PermissionMicrophone;
+        break;
+      case ItemTypePermissionsDescription:
+        NOTREACHED();
+        return;
+    }
+    PermissionInfo* permissionsDescription = [[PermissionInfo alloc] init];
+    permissionsDescription.permission = permission;
+    permissionsDescription.state =
+        sender.isOn ? web::PermissionStateAllowed : web::PermissionStateBlocked;
+    [self.permissionsDelegate updateStateForPermission:permissionsDescription];
+  }
+}
+
+// Adds or removes a switch depending on the value of the PermissionState.
+- (void)updateSwitchForPermissionState:(web::PermissionState)state
+                             withLabel:(NSString*)label
+                                toItem:(ItemType)itemType
+                       tableViewLoaded:(BOOL)tableViewLoaded {
+  if ([self.tableViewModel hasItemForItemType:itemType
+                            sectionIdentifier:SectionIdentifierPermissions]) {
+    // Remove the switch item if the permission is not accessible.
+    if (state == web::PermissionStateNotAccessible) {
+      [self.tableViewModel removeItemWithType:itemType
+                    fromSectionWithIdentifier:SectionIdentifierPermissions];
+      return;
+    }
+
+    NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
+    TableViewSwitchItem* currentItem =
+        base::mac::ObjCCastStrict<TableViewSwitchItem>(
+            [self.tableViewModel itemAtIndexPath:index]);
+    TableViewSwitchCell* currentCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(
+            [self.tableView cellForRowAtIndexPath:index]);
+    currentItem.on = state == web::PermissionStateAllowed;
+
+    // Reload the switch cell if its value is outdated.
+    if (currentItem.isOn != currentCell.switchView.isOn) {
+      [self.tableView reloadRowsAtIndexPaths:@[ index ]
+                            withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    return;
+  }
+
+  // Don't add a switch item if the permission is not accessible.
+  if (state == web::PermissionStateNotAccessible) {
+    return;
+  }
+
+  TableViewSwitchItem* switchItem =
+      [[TableViewSwitchItem alloc] initWithType:itemType];
+  switchItem.text = label;
+  switchItem.on = state == web::PermissionStateAllowed;
+
+  // If ItemTypePermissionsMicrophone is already added, insert the
+  // ItemTypePermissionsCamera before the ItemTypePermissionsMicrophone.
+  if (itemType == ItemTypePermissionsCamera &&
+      [self.tableViewModel hasItemForItemType:ItemTypePermissionsMicrophone
+                            sectionIdentifier:SectionIdentifierPermissions]) {
+    NSIndexPath* index = [self.tableViewModel
+        indexPathForItemType:ItemTypePermissionsMicrophone];
+    [self.tableViewModel insertItem:switchItem
+            inSectionWithIdentifier:SectionIdentifierPermissions
+                            atIndex:index.row];
+  } else {
     [self.tableViewModel addItem:switchItem
          toSectionWithIdentifier:SectionIdentifierPermissions];
+  }
+
+  if (tableViewLoaded) {
+    NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
+    [self.tableView insertRowsAtIndexPaths:@[ index ]
+                          withRowAnimation:UITableViewRowAnimationAutomatic];
+  }
+}
+
+#pragma mark - PermissionsConsumer
+
+- (void)setPermissionsInfo:(NSArray<PermissionInfo*>*)permissionsInfo {
+  _permissionsInfo = permissionsInfo;
+}
+
+- (void)permissionStateChanged:(PermissionInfo*)permissionInfo {
+  if (@available(iOS 15.0, *)) {
+    // Add the Permissions section if it doesn't exist.
+    if (![self.tableViewModel
+            hasSectionForSectionIdentifier:SectionIdentifierPermissions]) {
+      [self loadPermissionsModel];
+      NSUInteger index = [self.tableViewModel
+          sectionForSectionIdentifier:SectionIdentifierPermissions];
+      [self.tableView insertSections:[NSIndexSet indexSetWithIndex:index]
+                    withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+
+    [self updateSwitchForPermission:permissionInfo tableViewLoaded:YES];
   }
 }
 

@@ -7,6 +7,7 @@
 
 #include "components/strings/grit/components_chromium_strings.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
+#import "ios/chrome/browser/ui/permissions/permission_info.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -88,7 +89,7 @@
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
     [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
     [ChromeEarlGreyUI openPageInfo];
-    // Checks that permission header is visible.
+    // Checks that permission header is not visible.
     [[EarlGrey
         selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                      IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER))]
@@ -101,9 +102,14 @@
   if (@available(iOS 15.0, *)) {
     // Mock the scenario that microphone permission is on while camera
     // permission is not accessible.
+
+    PermissionInfo* permissionDescription = [[PermissionInfo alloc] init];
+    permissionDescription.permission = web::PermissionMicrophone;
+    permissionDescription.state = web::PermissionStateAllowed;
+
     EarlGreyScopedBlockSwizzler microphonePermissionAllowed(
-        @"PageInfoPermissionsMediator", @"accessiblePermissionStates", ^{
-          return @{@(web::PermissionMicrophone) : @YES};
+        @"PageInfoViewController", @"permissionsInfo", ^{
+          return @[ permissionDescription ];
         });
 
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");

@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/permissions/permissions_infobar_modal_overlay_mediator.h"
 
 #import "ios/chrome/browser/overlays/public/infobar_modal/permissions/permissions_modal_overlay_request_config.h"
-#import "ios/chrome/browser/ui/infobars/modals/permissions/infobar_permissions_modal_consumer.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
+#import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -33,7 +33,7 @@
 
 #pragma mark - Public
 
-- (void)setConsumer:(id<InfobarPermissionsModalConsumer>)consumer {
+- (void)setConsumer:(id<PermissionsConsumer>)consumer {
   if (_consumer == consumer)
     return;
 
@@ -47,8 +47,10 @@
   _observer = std::make_unique<web::WebStateObserverBridge>(self);
   self.webState->AddObserver(_observer.get());
 
-  [_consumer
-      setPermissionsDescription:self.config->GetPermissionsDescription()];
+  if ([_consumer respondsToSelector:@selector(setPermissionsDescription:)]) {
+    [_consumer
+        setPermissionsDescription:self.config->GetPermissionsDescription()];
+  }
   [self dispatchPermissionsInfo];
 }
 
@@ -86,7 +88,7 @@
   [self.consumer permissionStateChanged:permissionsDescription];
 }
 
-#pragma mark - InfobarPermissionsModalDelegate
+#pragma mark - PermissionsDelegate
 
 - (void)updateStateForPermission:(PermissionInfo*)permissionDescription {
   RecordPermissionToogled();

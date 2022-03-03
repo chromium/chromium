@@ -9,7 +9,6 @@ source_set("page_info") {
     "page_info_site_security_description.mm",
     "page_info_view_controller.h",
     "page_info_view_controller.mm",
-    "page_info_view_controller_permissions_delegate.h",
   ]
   deps = [
     "resources:security_icon_dangerous",
@@ -30,6 +29,8 @@ source_set("page_info") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/fancy_ui",
     "//ios/chrome/browser/ui/page_info/requirements",
+    "//ios/chrome/browser/ui/permissions",
+    "//ios/chrome/browser/ui/permissions:permission_info",
     "//ios/chrome/browser/ui/popup_menu",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
@@ -90,6 +91,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/fullscreen:coordinators",
     "//ios/chrome/browser/ui/page_info/requirements",
+    "//ios/chrome/browser/ui/permissions",
+    "//ios/chrome/browser/ui/permissions:permission_info",
     "//ios/chrome/browser/ui/settings/privacy",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/table_view",
@@ -113,11 +116,14 @@ source_set("unit_tests") {
     ":coordinator",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/ui/permissions",
+    "//ios/chrome/browser/ui/permissions:permission_info",
     "//ios/chrome/test:test_support",
     "//ios/web/common",
     "//ios/web/public/permissions",
     "//ios/web/public/test/fakes",
     "//testing/gtest:gtest",
+    "//third_party/ocmock",
   ]
 }
 
@@ -132,6 +138,7 @@ source_set("eg2_tests") {
     ":constants",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/permissions:permission_info",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing:block_swizzler",
     "//ios/testing/earl_grey:eg_test_support+eg2",

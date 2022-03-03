@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_PERMISSIONS_INFOBAR_PERMISSIONS_MODAL_CONSUMER_H_
-#define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_PERMISSIONS_INFOBAR_PERMISSIONS_MODAL_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_UI_PERMISSIONS_PERMISSIONS_CONSUMER_H_
+#define IOS_CHROME_BROWSER_UI_PERMISSIONS_PERMISSIONS_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -15,17 +15,19 @@ enum PermissionState : NSUInteger;
 }  // namespace web
 
 // Consumer for model to push configurations to the permissions UI.
-@protocol InfobarPermissionsModalConsumer <NSObject>
+@protocol PermissionsConsumer <NSObject>
 
-// The permissions description being displayed in the InfobarModal.
-- (void)setPermissionsDescription:(NSString*)permissionsDescription;
-
-// The list of permission being displayed in the InfobarModal.
+// The list of permission being displayed.
 - (void)setPermissionsInfo:(NSArray<PermissionInfo*>*)permissionsInfo;
 
 // Called when the state of given permission changed.
 - (void)permissionStateChanged:(PermissionInfo*)info;
 
+@optional
+
+// The permissions description being displayed.
+- (void)setPermissionsDescription:(NSString*)permissionsDescription;
+
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_PERMISSIONS_INFOBAR_PERMISSIONS_MODAL_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_UI_PERMISSIONS_PERMISSIONS_CONSUMER_H_

@@ -10,10 +10,10 @@
 #include "base/notreached.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
-#import "ios/chrome/browser/ui/infobars/modals/permissions/infobar_permissions_modal_delegate.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_presentation_handler.h"
 #include "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
+#import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
@@ -41,8 +41,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @interface InfobarPermissionsTableViewController ()
 
-// InfobarPermissionsModalDelegate for this ViewController.
-@property(nonatomic, weak) id<InfobarPermissionsModalDelegate>
+// Delegate for this ViewController.
+@property(nonatomic, weak) id<InfobarModalDelegate, PermissionsDelegate>
     infobarModalDelegate;
 // Used to build and record metrics.
 @property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
@@ -58,7 +58,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @implementation InfobarPermissionsTableViewController
 
 - (instancetype)initWithDelegate:
-    (id<InfobarPermissionsModalDelegate>)modalDelegate {
+    (id<InfobarModalDelegate, PermissionsDelegate>)modalDelegate {
   self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
     _metricsRecorder = [[InfobarMetricsRecorder alloc]
@@ -139,7 +139,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
-#pragma mark - InfobarPermissionsModalConsumer
+#pragma mark - PermissionsConsumer
 
 - (void)setPermissionsDescription:(NSString*)permissionsDescription {
   _permissionsDescription = permissionsDescription;
