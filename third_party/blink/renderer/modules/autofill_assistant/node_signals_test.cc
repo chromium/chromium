@@ -231,43 +231,186 @@ TEST_F(NodeSignalsTest, GetLabelByAriaElements) {
   EXPECT_EQ(results[0].label_features.text[1], "Name");  // From Aria
 }
 
-TEST_F(NodeSignalsTest, GetLabelFromGeometry) {
+TEST_F(NodeSignalsTest, GetLabelFromGeometryWithNestedElements) {
   // Make sure nested elements don't get added multiple times.
   // Make sure elements that are not "pure text" get added.
   SetBodyContent(R"(
     <div><div>Label <i class="icon"></i></div></div>
     <div><input></div>)");
 
-  WebVector<AutofillAssistantNodeSignals> results_1 =
+  WebVector<AutofillAssistantNodeSignals> results =
       GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
-  ASSERT_EQ(results_1.size(), 1u);
+  ASSERT_EQ(results.size(), 1u);
 
-  ASSERT_EQ(results_1[0].label_features.text.size(), 1u);
-  EXPECT_EQ(results_1[0].label_features.text[0], "Label");
+  ASSERT_EQ(results[0].label_features.text.size(), 1u);
+  EXPECT_EQ(results[0].label_features.text[0], "Label");
+}
 
+TEST_F(NodeSignalsTest,
+       GetLabelFromGeometryWithNestedElementsClosestLabelOnly) {
   // Make sure for nested elements only the "closest" gets added.
   SetBodyContent(R"(
     <div>Label <div>Sublabel</div></div>
     <div><input></div>)");
 
-  WebVector<AutofillAssistantNodeSignals> results_2 =
+  WebVector<AutofillAssistantNodeSignals> results =
       GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
-  ASSERT_EQ(results_2.size(), 1u);
+  ASSERT_EQ(results.size(), 1u);
 
-  ASSERT_EQ(results_2[0].label_features.text.size(), 1u);
-  EXPECT_EQ(results_2[0].label_features.text[0], "Sublabel");
+  ASSERT_EQ(results[0].label_features.text.size(), 1u);
+  EXPECT_EQ(results[0].label_features.text[0], "Sublabel");
+}
 
-  // Make sure for all inline elements get added.
+TEST_F(NodeSignalsTest, GetLabelFromGeometryAddInlineElements) {
   SetBodyContent(R"(
     <div>Name <i>First</i></div>
     <div><input></div>)");
 
-  WebVector<AutofillAssistantNodeSignals> results_3 =
+  WebVector<AutofillAssistantNodeSignals> results =
       GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
-  ASSERT_EQ(results_3.size(), 1u);
+  ASSERT_EQ(results.size(), 1u);
 
-  ASSERT_EQ(results_3[0].label_features.text.size(), 1u);
-  EXPECT_EQ(results_3[0].label_features.text[0], "Name  First");
+  ASSERT_EQ(results[0].label_features.text.size(), 1u);
+  EXPECT_EQ(results[0].label_features.text[0], "Name  First");
+}
+
+TEST_F(NodeSignalsTest, AddFieldsetLegendInsideForm) {
+  SetBodyContent(R"(
+    <fieldset>
+      <legend>Outside</legend>
+      <form>
+        <fieldset>
+          <legend>Inside</legend>
+          <input>
+        </fieldset>
+      </form>
+    </fieldset>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  ASSERT_EQ(results[0].context_features.header_text.size(), 1u);
+  EXPECT_EQ(results[0].context_features.header_text[0], "Inside");
+}
+
+TEST_F(NodeSignalsTest, AddFieldsetLegendFromParentNodesOnly) {
+  SetBodyContent(R"(
+    <fieldset>
+      <legend>Unrelated</legend>
+    </fieldset>
+    <fieldset>
+      <legend>Related</legend>
+      <input>
+    </fieldset>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  ASSERT_EQ(results[0].context_features.header_text.size(), 1u);
+  EXPECT_EQ(results[0].context_features.header_text[0], "Related");
+}
+
+TEST_F(NodeSignalsTest, AddFieldsetLegendFromAllParentalFieldsets) {
+  SetBodyContent(R"(
+    <fieldset>
+      <legend>Outer</legend>
+      <fieldset>
+        <legend>Inner</legend>
+        <input>
+      </fieldset>
+    </fieldset>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  ASSERT_EQ(results[0].context_features.header_text.size(), 2u);
+  EXPECT_EQ(results[0].context_features.header_text[0], "Inner");
+  EXPECT_EQ(results[0].context_features.header_text[1], "Outer");
+}
+
+TEST_F(NodeSignalsTest, AddFieldsetLegendFirstLabelOnly) {
+  SetBodyContent(R"(
+    <fieldset>
+      <legend>A</legend>
+      <legend>B</legend>
+      <input>
+    </fieldset>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  ASSERT_EQ(results[0].context_features.header_text.size(), 1u);
+  EXPECT_EQ(results[0].context_features.header_text[0], "A");
+}
+
+TEST_F(NodeSignalsTest, AddHeadersDeepestOnly) {
+  SetBodyContent(R"(
+    <div>
+      <h1>A</h1>
+      <div>
+        <h2>B</h2>
+        <div>
+          <input>
+        </div>
+      </div>
+    </div>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  ASSERT_EQ(results[0].context_features.header_text.size(), 1u);
+  EXPECT_EQ(results[0].context_features.header_text[0], "B");
+}
+
+TEST_F(NodeSignalsTest, AddHeadersOnlyIfAboveInHierarchy) {
+  SetBodyContent(R"(
+    <h1>A</h1>
+    <input style="position: absolute; top: 200px;">
+    <h1>B</h1>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  ASSERT_EQ(results[0].context_features.header_text.size(), 1u);
+  EXPECT_EQ(results[0].context_features.header_text[0], "A");
+}
+
+TEST_F(NodeSignalsTest, DoNotAddEmptyHeaders) {
+  SetBodyContent(R"(
+    <h1></h1>
+    <input>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_TRUE(results[0].context_features.header_text.empty());
+}
+
+TEST_F(NodeSignalsTest, AddHeadersOnlyIfAboveVisually) {
+  SetBodyContent(R"(
+    <h1 style="position: absolute; top: 100px;">Header</h1>
+    <input>
+  )");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_TRUE(results[0].context_features.header_text.empty());
 }
 
 }  // namespace blink

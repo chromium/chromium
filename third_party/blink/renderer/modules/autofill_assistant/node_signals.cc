@@ -319,9 +319,83 @@ void CollectLabelFeatures(Element& element,
   AddStringIfNotNullOrEmpty(GetLabelFromGeometry(element), &features->text);
 }
 
+void AddFirstLegendOfFieldset(Node* node, WebVector<WebString>* header_text) {
+  Element* fieldset = DynamicTo<Element>(node);
+  if (!IsVisible(*fieldset)) {
+    return;
+  }
+  for (Element& legend : ElementTraversal::DescendantsOf(*fieldset)) {
+    // Add the first legend only.
+    if (legend.HasTagName(html_names::kLegendTag) &&
+        AddStringIfNotNullOrEmpty(legend.innerText(), header_text)) {
+      return;
+    }
+  }
+}
+
+// Add text signals when the |element| is a descendant of one or more
+// fieldset(s).
+// Example: <fieldset><legend>Legend</legend><input/><fieldset>
+void GetFieldsetLegends(const Element& element,
+                        AutofillAssistantContextFeatures* features) {
+  Node* document = element.ownerDocument();
+  Node* node = element.parentNode();
+  while (node != document) {
+    if (!node) {
+      break;
+    }
+    if (node->IsElementNode() && node->HasTagName(html_names::kFormTag)) {
+      break;
+    }
+    if (node->IsElementNode() && node->HasTagName(html_names::kFieldsetTag)) {
+      AddFirstLegendOfFieldset(node, &features->header_text);
+    }
+    node = node->parentNode();
+  }
+}
+
+bool IsHeader(const Element& element) {
+  return element.HasTagName(html_names::kH1Tag) ||
+         element.HasTagName(html_names::kH2Tag) ||
+         element.HasTagName(html_names::kH3Tag) ||
+         element.HasTagName(html_names::kH4Tag) ||
+         element.HasTagName(html_names::kH4Tag) ||
+         element.HasTagName(html_names::kH5Tag);
+}
+
+void AddHeaders(const Element& element,
+                AutofillAssistantContextFeatures* features) {
+  WebVector<Element*> headers_before;
+  for (Element& node :
+       ElementTraversal::DescendantsOf(*element.ownerDocument())) {
+    if (&node == &element) {
+      break;
+    }
+    if (IsHeader(node) && IsVisible(node)) {
+      headers_before.emplace_back(&node);
+    }
+  }
+  for (int i = static_cast<int>(headers_before.size()) - 1; i >= 0; --i) {
+    Element* header = headers_before[i];
+    // Demand header to be above the element or to have an overlap in
+    // y-coordinates. I.e. top (Y) of header must be higher (<) than bottom
+    // of element.
+    if (header->BoundingBox().Y() >= element.BoundingBox().Bottom()) {
+      continue;
+    }
+    // Only use the header which is the lowest in hierarchy.
+    if (AddStringIfNotNullOrEmpty(header->innerText(),
+                                  &features->header_text)) {
+      break;
+    }
+  }
+}
+
 void CollectContextFeatures(const Element& element,
                             AutofillAssistantContextFeatures* features) {
-  // TODO(b/204839535): Implement
+  GetFieldsetLegends(element, features);
+  AddHeaders(element, features);
+  // TODO(b/204839535): Implement form type.
 }
 
 void CollectSignalsForNode(
