@@ -451,7 +451,10 @@ suite('NewTabPageDiscountConsentCartTest', () => {
 
   suite('Enable the Dialog Variation', () => {
     suiteSetup(() => {
-      loadTimeData.overrideValues({modulesCartDiscountConsentVariation: 3});
+      loadTimeData.overrideValues({
+        modulesCartDiscountConsentVariation: 3,
+        modulesCartSentence: 'Dialog title'
+      });
     });
 
     test('Verify DOM has one step', async () => {
@@ -476,5 +479,32 @@ suite('NewTabPageDiscountConsentCartTest', () => {
           'step1', contentSteps[0]!.getAttribute('id'),
           'First content step should have id as step1');
     });
+
+    test(
+        'Verify clicking continue in one step shows DiscountConsentDialog',
+        async () => {
+          assertEquals(
+              0,
+              discountConsentCard.shadowRoot!
+                  .querySelectorAll('#discountConsentDialog')
+                  .length);
+
+          var contentSelectedPage =
+              discountConsentCard.shadowRoot!.querySelectorAll(
+                  '#contentSteps .iron-selected');
+          assertEquals(contentSelectedPage.length, 1);
+          assertEquals(
+              'step1', contentSelectedPage[0]!.getAttribute('id'),
+              'Selected content step should have id as step1');
+
+          contentSelectedPage[0]!.querySelector<HTMLElement>(
+                                     '.action-button')!.click();
+          await flushTasks();
+          assertEquals(
+              1,
+              discountConsentCard.shadowRoot!
+                  .querySelectorAll('#discountConsentDialog')
+                  .length);
+        });
   });
 });

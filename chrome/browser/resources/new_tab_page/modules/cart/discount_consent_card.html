@@ -133,3 +133,7 @@
         on-click="onCloseClick_"></cr-icon-button>
   </template>
 </div>
+<template is="dom-if" if="[[showDiscountConsentDialog_]]" restamp>
+  <discount-consent-dialog id="discountConsentDialog"
+      on-close="onDiscountConsentDialogClose_"]></discount-consent-dialog>
+</template>

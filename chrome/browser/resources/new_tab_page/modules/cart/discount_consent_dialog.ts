@@ -7,10 +7,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../../i18n_setup.js';
 
 import {getTemplate} from './discount_consent_dialog.html.js';
 
@@ -30,12 +27,6 @@ export class DiscountConsentDialog extends PolymerElement {
   static get template() {
     return getTemplate();
   }
-
-  static get properties() {
-    return {dialogTitle: String};
-  }
-
-  dialogTitle: string;
 
   private onRejectClick_() {
     this.$.dialog.close();
