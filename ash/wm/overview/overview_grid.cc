@@ -1739,8 +1739,6 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   desks_templates_grid_widget_->Show();
 
   // Fade in the widget from its current opacity.
-  // TODO(crbug.com/1277160): Consider adding animate flag to determine whether
-  // to disable animations.
   PerformFadeInLayer(desks_templates_grid_widget_->GetLayer(),
                      /*animate=*/true);
 
@@ -1751,6 +1749,7 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
                                         /*expanded_desks_bar_button=*/true);
   }
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
+  overview_session_->UpdateAccessibilityFocus();
 }
 
 void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
@@ -1796,6 +1795,7 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
       /*animate=*/true,
       base::BindOnce(&OverviewGrid::OnDesksTemplatesGridFadedOut,
                      weak_ptr_factory_.GetWeakPtr()));
+  overview_session_->UpdateAccessibilityFocus();
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
