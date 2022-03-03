@@ -46,8 +46,6 @@ class DiscoverFeedProvider {
   virtual void CreateFeedModels();
   // Clears all existing feed models.
   virtual void ClearFeedModels();
-  // Returns true if the Discover Feed is enabled.
-  virtual bool IsDiscoverFeedEnabled();
   // Returns the FeedMetricsRecorder to be used by the feed. There only exists a
   // single instance of the metrics recorder per browser state.
   virtual FeedMetricsRecorder* GetFeedMetricsRecorder();

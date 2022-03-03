@@ -44,6 +44,7 @@ source_set("content_suggestions") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/discover_feed",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main:public",
@@ -89,8 +90,6 @@ source_set("content_suggestions") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/discover_feed",
     "//ui/base",
     "//ui/strings",
   ]

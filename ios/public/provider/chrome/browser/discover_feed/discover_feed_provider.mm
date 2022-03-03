@@ -17,10 +17,6 @@ void DiscoverFeedProvider::CreateFeedModels() {}
 
 void DiscoverFeedProvider::ClearFeedModels() {}
 
-bool DiscoverFeedProvider::IsDiscoverFeedEnabled() {
-  return false;
-}
-
 FeedMetricsRecorder* DiscoverFeedProvider::GetFeedMetricsRecorder() {
   return nil;
 }

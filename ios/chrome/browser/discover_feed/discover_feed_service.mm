@@ -21,6 +21,9 @@ DiscoverFeedService::DiscoverFeedService(
   if (identity_manager)
     identity_manager_observation_.Observe(identity_manager);
 
+  discover_feed_provider_observation_.Observe(
+      ios::GetChromeBrowserProvider().GetDiscoverFeedProvider());
+
   feed_metrics_recorder_ = [[FeedMetricsRecorder alloc] init];
 
   DiscoverFeedConfiguration* discover_config =
@@ -28,6 +31,7 @@ DiscoverFeedService::DiscoverFeedService(
   discover_config.authService = authentication_service;
   discover_config.prefService = pref_service;
   discover_config.metricsRecorder = feed_metrics_recorder_;
+
   ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StartFeedService(
       discover_config);
 }
@@ -35,12 +39,72 @@ DiscoverFeedService::DiscoverFeedService(
 DiscoverFeedService::~DiscoverFeedService() {}
 
 void DiscoverFeedService::Shutdown() {
-  identity_manager_observation_.Reset();
-
   // Stop the Discover feed to disconnects its services.
   ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StopFeedService();
 
+  discover_feed_provider_observation_.Reset();
+  identity_manager_observation_.Reset();
+
   feed_metrics_recorder_ = nil;
+}
+
+void DiscoverFeedService::CreateFeedModels() {
+  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->CreateFeedModels();
+}
+
+void DiscoverFeedService::ClearFeedModels() {
+  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->ClearFeedModels();
+}
+
+FeedMetricsRecorder* DiscoverFeedService::GetFeedMetricsRecorder() {
+  return ios::GetChromeBrowserProvider()
+      .GetDiscoverFeedProvider()
+      ->GetFeedMetricsRecorder();
+}
+
+UIViewController*
+DiscoverFeedService::NewDiscoverFeedViewControllerWithConfiguration(
+    DiscoverFeedViewControllerConfiguration* configuration) {
+  return ios::GetChromeBrowserProvider()
+      .GetDiscoverFeedProvider()
+      ->NewDiscoverFeedViewControllerWithConfiguration(configuration);
+}
+
+UIViewController*
+DiscoverFeedService::NewFollowingFeedViewControllerWithConfiguration(
+    DiscoverFeedViewControllerConfiguration* configuration) {
+  return ios::GetChromeBrowserProvider()
+      .GetDiscoverFeedProvider()
+      ->NewFollowingFeedViewControllerWithConfiguration(configuration);
+}
+
+void DiscoverFeedService::RemoveFeedViewController(
+    UIViewController* feed_view_controller) {
+  ios::GetChromeBrowserProvider()
+      .GetDiscoverFeedProvider()
+      ->RemoveFeedViewController(feed_view_controller);
+}
+
+void DiscoverFeedService::UpdateTheme() {
+  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->UpdateTheme();
+}
+
+void DiscoverFeedService::RefreshFeedIfNeeded() {
+  ios::GetChromeBrowserProvider()
+      .GetDiscoverFeedProvider()
+      ->RefreshFeedIfNeeded();
+}
+
+void DiscoverFeedService::RefreshFeed() {
+  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
+}
+
+void DiscoverFeedService::AddObserver(DiscoverFeedObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void DiscoverFeedService::RemoveObserver(DiscoverFeedObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 void DiscoverFeedService::OnPrimaryAccountChanged(
@@ -48,4 +112,10 @@ void DiscoverFeedService::OnPrimaryAccountChanged(
   ios::GetChromeBrowserProvider()
       .GetDiscoverFeedProvider()
       ->UpdateFeedForAccountChange();
+}
+
+void DiscoverFeedService::OnDiscoverFeedModelRecreated() {
+  for (auto& observer : observer_list_) {
+    observer.OnDiscoverFeedModelRecreated();
+  }
 }

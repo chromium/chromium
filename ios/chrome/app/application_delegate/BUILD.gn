@@ -246,7 +246,6 @@ source_set("application_delegate_internal") {
     "//ios/net",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
-    "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web",

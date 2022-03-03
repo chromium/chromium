@@ -56,7 +56,6 @@
 #include "ios/net/cookies/cookie_store_ios.h"
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"

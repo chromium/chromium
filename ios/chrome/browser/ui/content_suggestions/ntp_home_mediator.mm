@@ -17,6 +17,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -57,8 +59,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -611,9 +611,13 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     // NTP is opened. Since the same NTP is being shared across tabs, this
     // ensures that new content is being fetched.
     [self.suggestionsMediator refreshMostVisitedTiles];
-    ios::GetChromeBrowserProvider()
-        .GetDiscoverFeedProvider()
-        ->RefreshFeedIfNeeded();
+
+    // Refresh DiscoverFeed unless in off-the-record NTP.
+    if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+      DiscoverFeedServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState())
+          ->RefreshFeedIfNeeded();
+    }
   }
 }
 

@@ -7,6 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+// Delegate for DiscoverFeedWrapperViewController.
+@protocol DiscoverFeedWrapperViewControllerDelegate <NSObject>
+
+// Called when the theme for DiscoverFeed should be synchronized
+// with the system theme (light/dark).
+- (void)updateTheme;
+
+@end
+
 // View controller wrapping a Discover feed view controller
 // (|self.discoverFeed|) originating from the provider.
 @interface DiscoverFeedWrapperViewController : UIViewController
@@ -21,8 +30,10 @@
 
 // Initializes view controller with the Discover feed view controller
 // originating from the Discover feed provider.
-- (instancetype)initWithDiscoverFeedViewController:
-    (UIViewController*)discoverFeed NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDelegate:
+                    (id<DiscoverFeedWrapperViewControllerDelegate>)delegate
+      discoverFeedViewController:(UIViewController*)discoverFeed
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;

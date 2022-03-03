@@ -19,8 +19,11 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -69,10 +72,6 @@
 #import "ios/chrome/browser/voice/voice_search_availability.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_view_controller_configuration.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -94,6 +93,7 @@ namespace {
                                      DiscoverFeedDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
                                      DiscoverFeedPreviewDelegate,
+                                     DiscoverFeedWrapperViewControllerDelegate,
                                      FeedControlDelegate,
                                      FeedMenuCommands,
                                      NewTabPageCommands,
@@ -110,8 +110,7 @@ namespace {
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
 
   // Observes changes in the DiscoverFeed.
-  std::unique_ptr<DiscoverFeedObserverBridge>
-      _discoverFeedProviderObserverBridge;
+  std::unique_ptr<DiscoverFeedObserverBridge> _discoverFeedObserverBridge;
 }
 
 // Coordinator for the ContentSuggestions.
@@ -188,6 +187,9 @@ namespace {
 // TemplateURL used to get the search engine.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
 
+// DiscoverFeed Service to display the Feed.
+@property(nonatomic, assign) DiscoverFeedService* discoverFeedService;
+
 // Metrics recorder for actions relating to the feed.
 @property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 
@@ -231,8 +233,6 @@ namespace {
         initWithPrefService:_prefService
                    prefName:feed::prefs::kArticlesListVisible];
     [_feedExpandedPref setObserver:self];
-    _discoverFeedProviderObserverBridge =
-        std::make_unique<DiscoverFeedObserverBridge>(self);
 
     // TODO(crbug.com/1277974): Make sure that we always want the Discover feed
     // as default.
@@ -266,19 +266,18 @@ namespace {
       self.browser->GetBrowserState());
   self.templateURLService = ios::TemplateURLServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
+  self.discoverFeedService = DiscoverFeedServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
 
   self.ntpViewController = [[NewTabPageViewController alloc] init];
 
   self.ntpMediator = [self createNTPMediator];
 
-  // Creating the DiscoverFeedService will start the Discover feed.
-  // TODO(crbug.com/1264872): Move this to Chrome launch code.
-  DiscoverFeedServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  // Start observing DiscoverFeedService.
+  _discoverFeedObserverBridge = std::make_unique<DiscoverFeedObserverBridge>(
+      self, self.discoverFeedService);
 
-  self.feedMetricsRecorder = ios::GetChromeBrowserProvider()
-                                 .GetDiscoverFeedProvider()
-                                 ->GetFeedMetricsRecorder();
+  self.feedMetricsRecorder = self.discoverFeedService->GetFeedMetricsRecorder();
 
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
     self.headerController =
@@ -369,9 +368,10 @@ namespace {
   [self.ntpMediator shutdown];
   self.ntpMediator = nil;
 
-  ios::GetChromeBrowserProvider()
-      .GetDiscoverFeedProvider()
-      ->RemoveFeedViewController(self.discoverFeedViewController);
+  if (self.discoverFeedViewController) {
+    self.discoverFeedService->RemoveFeedViewController(
+        self.discoverFeedViewController);
+  }
   self.discoverFeedWrapperViewController = nil;
   self.discoverFeedViewController = nil;
   self.feedMetricsRecorder = nil;
@@ -385,7 +385,7 @@ namespace {
 
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
-  _discoverFeedProviderObserverBridge.reset();
+  _discoverFeedObserverBridge.reset();
 
   self.started = NO;
 }
@@ -437,7 +437,8 @@ namespace {
 
   self.discoverFeedWrapperViewController =
       [[DiscoverFeedWrapperViewController alloc]
-          initWithDiscoverFeedViewController:self.discoverFeedViewController];
+                    initWithDelegate:self
+          discoverFeedViewController:self.discoverFeedViewController];
 
   self.headerSynchronizer = [[ContentSuggestionsHeaderSynchronizer alloc]
       initWithCollectionController:self.ntpViewController
@@ -532,7 +533,7 @@ namespace {
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
-  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
+  self.discoverFeedService->RefreshFeed();
   [self reloadContentSuggestions];
 }
 
@@ -662,9 +663,8 @@ namespace {
   [self.ntpViewController resetViewHierarchy];
 
   if (self.discoverFeedViewController) {
-    ios::GetChromeBrowserProvider()
-        .GetDiscoverFeedProvider()
-        ->RemoveFeedViewController(self.discoverFeedViewController);
+    self.discoverFeedService->RemoveFeedViewController(
+        self.discoverFeedViewController);
   }
 
   self.ntpViewController.discoverFeedWrapperViewController = nil;
@@ -684,7 +684,8 @@ namespace {
 
   self.discoverFeedWrapperViewController =
       [[DiscoverFeedWrapperViewController alloc]
-          initWithDiscoverFeedViewController:self.discoverFeedViewController];
+                    initWithDelegate:self
+          discoverFeedViewController:self.discoverFeedViewController];
 
   self.ntpViewController.discoverFeedWrapperViewController =
       self.discoverFeedWrapperViewController;
@@ -763,7 +764,7 @@ namespace {
     // If the NTP hasn't been completely configured (which happens by the time
     // its view has appeared) just refresh the feed instead of updating the
     // whole NTP.
-    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
+    self.discoverFeedService->RefreshFeed();
   }
 }
 
@@ -893,9 +894,7 @@ namespace {
 
   // Requests a Discover feed here if the correct flags and prefs are enabled.
   if ([self shouldFeedBeFetched]) {
-    ios::GetChromeBrowserProvider()
-        .GetDiscoverFeedProvider()
-        ->CreateFeedModels();
+    self.discoverFeedService->CreateFeedModels();
 
     if (IsWebChannelsEnabled()) {
       // TODO(crbug.com/1277504): Use unique property for Following feed.
@@ -946,10 +945,8 @@ namespace {
     return nil;
 
   UIViewController* discoverFeed =
-      ios::GetChromeBrowserProvider()
-          .GetDiscoverFeedProvider()
-          ->NewDiscoverFeedViewControllerWithConfiguration(
-              [self feedViewControllerConfiguration]);
+      self.discoverFeedService->NewDiscoverFeedViewControllerWithConfiguration(
+          [self feedViewControllerConfiguration]);
   return discoverFeed;
 }
 
@@ -959,10 +956,8 @@ namespace {
     return nil;
 
   UIViewController* followingFeed =
-      ios::GetChromeBrowserProvider()
-          .GetDiscoverFeedProvider()
-          ->NewFollowingFeedViewControllerWithConfiguration(
-              [self feedViewControllerConfiguration]);
+      self.discoverFeedService->NewFollowingFeedViewControllerWithConfiguration(
+          [self feedViewControllerConfiguration]);
   return followingFeed;
 }
 
@@ -1092,6 +1087,12 @@ namespace {
         forControlEvents:UIControlEventTouchUpInside];
   }
   return _feedHeaderViewController;
+}
+
+#pragma mark - DiscoverFeedWrapperViewControllerDelegate
+
+- (void)updateTheme {
+  self.discoverFeedService->UpdateTheme();
 }
 
 @end

@@ -8,7 +8,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

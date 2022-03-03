@@ -7,8 +7,6 @@ source_set("discover_feed") {
   sources = [
     "discover_feed_configuration.h",
     "discover_feed_configuration.mm",
-    "discover_feed_observer_bridge.h",
-    "discover_feed_observer_bridge.mm",
     "discover_feed_provider.h",
     "discover_feed_provider.mm",
     "discover_feed_view_controller_configuration.h",
