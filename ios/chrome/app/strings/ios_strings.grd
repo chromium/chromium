@@ -544,7 +544,7 @@ locale.  The strings in this file are specific to iOS.
         This allows you to easily create calendar events using Google Lens.
       </message>
       <message name="IDS_IOS_CAMERA_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's camera while the app is in use [Length: unlimited] [iOS only].">
-        This lets you take and upload photos, as well as scan QR codes.
+        This lets you take and upload photos, as well as scan QR codes
       </message>
       <message name="IDS_IOS_CARD_STACK_SCROLLED_NOTIFICATION" desc="The accessibility description for page scrolled notification [iOS only]">
         <ph name="INCOGNITO">$1<ex>Incognito</ex></ph> Tabs <ph name="FIRST_VISIBLE_TAB">$2<ex>3</ex></ph> through <ph name="LAST_VISIBLE_TAB">$3<ex>5</ex></ph> of <ph name="NUMBER_OF_OPEN_TABS">$4<ex>12</ex></ph>
@@ -1331,7 +1331,7 @@ See your search engine’s instructions for deleting your search history, if app
         Passwords
       </message>
       <message name="IDS_IOS_MICROPHONE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's microphone while the app is in use [Length: unlimited] [iOS only].">
-        This lets you search faster using your voice.
+        This lets you search using your voice
       </message>
       <message name="IDS_IOS_NAVIGATION_BAR_CANCEL_BUTTON" desc="Label of the cancel button displayed on the navigation bar  [Length: 7em] [iOS only].">
         Cancel
