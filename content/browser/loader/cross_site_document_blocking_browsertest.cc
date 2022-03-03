@@ -53,7 +53,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,8 +65,6 @@ using testing::Not;
 using testing::HasSubstr;
 using Action = network::corb::CrossOriginReadBlocking::Action;
 using CorbMimeType = network::corb::CrossOriginReadBlocking::MimeType;
-using RequestInitiatorOriginLockCompatibility =
-    network::InitiatorLockCompatibility;
 
 namespace {
 
@@ -102,10 +99,6 @@ void InspectHistograms(const base::HistogramTester& histograms,
                        const CorbExpectations& expectations,
                        const std::string& resource_name) {
   FetchHistogramsFromChildProcesses();
-
-  histograms.ExpectUniqueSample(
-      "NetworkService.URLLoader.RequestInitiatorOriginLockCompatibility",
-      network::InitiatorLockCompatibility::kCompatibleLock, 1);
 
   // No ORB-specific UMA at this point.
   if (base::FeatureList::IsEnabled(

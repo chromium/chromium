@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
@@ -477,9 +476,6 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
   InitiatorLockCompatibility initiator_lock_compatibility =
       VerifyRequestInitiatorLockWithPluginCheck(
           process_id_, request_initiator_origin_lock_, origin_to_validate);
-  UMA_HISTOGRAM_ENUMERATION(
-      "NetworkService.URLLoader.RequestInitiatorOriginLockCompatibility",
-      initiator_lock_compatibility);
   switch (initiator_lock_compatibility) {
     case InitiatorLockCompatibility::kCompatibleLock:
     case InitiatorLockCompatibility::kBrowserProcess:

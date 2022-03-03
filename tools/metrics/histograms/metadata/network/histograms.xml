@@ -3170,6 +3170,12 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="NetworkService.URLLoader.RequestInitiatorOriginLockCompatibility"
     enum="RequestInitiatorOriginLockCompatibility" expires_after="2022-04-10">
+  <obsolete>
+    Removed in March 2022 / M101.
+
+    Old results are preserved in
+    https://docs.google.com/document/d/15j6AKzZ-HgyRQVrKpdGHfGf8D_fcUILmcQ34RAWD1TM/edit?resourcekey=0-wwIJsGSoWmhvFMwMTWdAOw
+  </obsolete>
   <owner>lukasza@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>jam@chromium.org</owner>
