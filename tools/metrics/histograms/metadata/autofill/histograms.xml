@@ -2256,7 +2256,24 @@ chromium-metrics-reviews@google.com.
     Logs the user's decision for storing a new address profile observed in a
     form submission, which had it's country complemented based on the predicted
     country on import. This metric is emitted at the end of an import process
-    once the user-provided import decision is final.
+    once the user-provided import decision is final. It is collected in addition
+    to Autofill.ProfileImport.NewProfileDecision and only if
+    kAutofillComplementCountryCodeOnImport is enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.ProfileImport.NewProfileWithRemovedPhoneNumberDecision"
+    enum="AutofillProfileImportDecision" expires_after="2022-05-01">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Logs the user's decision for storing a new address profile observed in a
+    form submission. The profile was only considered an import candidate, after
+    an invalid phone number was removed. This metric is emitted at the end of an
+    import process once the user-provided import decision is final. It is
+    collected in addition to Autofill.ProfileImport.NewProfileDecision and only
+    if kAutofillRemoveInvalidPhoneNumberOnImport is enabled.
   </summary>
 </histogram>
 
@@ -2279,6 +2296,21 @@ chromium-metrics-reviews@google.com.
     The type of an import of an address that is observed in a form submission
     when the form does not satisfy profile import requirements. This metric is
     emitted once the import decision is final.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.ProfileImport.SilentUpdatesWithRemovedPhoneNumberProfileImportType"
+    enum="AutofillSilentUpdatesProfileImportType" expires_after="2022-05-01">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    The type of an import of an address that is observed in a form submission
+    when the form does not satisfy profile import requirements. It was only
+    considered for a silent update after an invalid phone number was removed.
+    This metric is emitted once the import decision is final. It is collected in
+    addition to Autofill.ProfileImport.SilentUpdatesProfileImportType and only
+    if kAutofillRemoveInvalidPhoneNumberOnImport is enabled.
   </summary>
 </histogram>
 
@@ -2449,7 +2481,25 @@ chromium-metrics-reviews@google.com.
     similar profile was observed in a form submission. The new profile had it's
     country complemented based on the predicted country on import. This metric
     is emitted at the end of an import process once the user-provided import
-    decision is final.
+    decision is final. It is collected in addition to
+    Autofill.ProfileImport.UpdateProfileDecision and only if
+    kAutofillComplementCountryCodeOnImport is enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.ProfileImport.UpdateProfileWithRemovedPhoneNumberDecision"
+    enum="AutofillProfileImportDecision" expires_after="2022-05-01">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Logs the user's decision for editing an already existing address after a
+    similar profile was observed in a form submission. The profile was only
+    considered an import candidate, after an invalid phone number was removed.
+    This metric is emitted at the end of an import process once the user-
+    provided import decision is final. It is collected in addition to
+    Autofill.ProfileImport.UpdateProfileDecision and only if
+    kAutofillRemoveInvalidPhoneNumberOnImport is enabled.
   </summary>
 </histogram>
 

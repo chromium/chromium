@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -127,9 +128,9 @@ class FormDataImporter {
     GURL url;
     // Indicates if all import requirements have been fulfilled.
     bool all_requirements_fulfilled;
-    // Whether the profile's country was complemented automatically.
-    // TODO(crbug.com/1297032): Cleanup when launched.
-    bool did_complement_country;
+    // Metadata about the import, used for metric collection in
+    // ProfileImportProcess after the user's decision.
+    ProfileImportMetadata import_metadata;
     AddressProfileImportCandidate(AddressProfileImportCandidate&& other) =
         default;
     AddressProfileImportCandidate& operator=(

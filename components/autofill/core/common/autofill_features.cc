@@ -370,6 +370,13 @@ const base::Feature kAutofillRemoveInaccessibleProfileValues{
     "AutofillRemoveInaccessibleProfileValues",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, invalid phone numbers are removed on profile import, rather than
+// invalidating the entire profile.
+// TODO(crbug.com/1298424): Cleanup when launched.
+const base::Feature kAutofillRemoveInvalidPhoneNumberOnImport{
+    "AutofillRemoveInvalidPhoneNumberOnImport",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether or not overall prediction are retrieved from the cache.
 const base::Feature kAutofillRetrieveOverallPredictionsFromCache{
     "AutofillRetrieveOverallPredictionsFromCache",

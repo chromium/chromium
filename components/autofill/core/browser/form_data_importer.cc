@@ -549,6 +549,9 @@ bool FormDataImporter::ImportAddressProfileForSection(
   // since they do not belong to the first phone number in the form.
   bool ignore_phone_number_fields = false;
 
+  // Metadata about the way we construct candidate_profile.
+  ProfileImportMetadata import_metadata;
+
   // Go through each |form| field and attempt to constitute a valid profile.
   for (const auto& field : form) {
     // Reject fields that are not within the specified |section|.
@@ -675,7 +678,6 @@ bool FormDataImporter::ImportAddressProfileForSection(
   const std::string predicted_country_code = GetPredictedCountryCode(
       candidate_profile, client_->GetVariationConfigCountryCode(), app_locale_,
       import_log_buffer);
-  bool did_complement_country = false;
   // If the form doesn't contain a country field, complement the profile using
   // |predicted_country_code|. To give users the opportunity to edit, this is
   // only done with explicit save prompts enabled.
@@ -691,11 +693,11 @@ bool FormDataImporter::ImportAddressProfileForSection(
         AutofillType(ADDRESS_HOME_COUNTRY),
         base::ASCIIToUTF16(predicted_country_code), app_locale_,
         VerificationStatus::kObserved);
-    did_complement_country = true;
+    import_metadata.did_complement_country = true;
   }
 
   // Construct the phone number. Reject the whole profile if the number is
-  // invalid.
+  // invalid, unless |kAutofillRemoveInvalidPhoneNumberOnImport| is enabled.
   if (!combined_phone.IsEmpty()) {
     const std::string predicted_country_code_without_variation =
         GetPredictedCountryCode(candidate_profile, "", app_locale_, nullptr);
@@ -721,11 +723,17 @@ bool FormDataImporter::ImportAddressProfileForSection(
         !candidate_profile.SetInfoWithVerificationStatus(
             AutofillType(PHONE_HOME_WHOLE_NUMBER), constructed_number,
             phone_number_region, VerificationStatus::kObserved)) {
-      if (import_log_buffer) {
-        *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
-                           << "Invalid phone number." << CTag{};
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillRemoveInvalidPhoneNumberOnImport)) {
+        DCHECK(candidate_profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER).empty());
+        import_metadata.did_remove_invalid_phone_number = true;
+      } else {
+        if (import_log_buffer) {
+          *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
+                             << "Invalid phone number." << CTag{};
+        }
+        has_invalid_phone_number = true;
       }
-      has_invalid_phone_number = true;
     }
   }
 
@@ -794,11 +802,11 @@ bool FormDataImporter::ImportAddressProfileForSection(
   // incognito mode.
   DCHECK(!personal_data_manager_->IsOffTheRecord());
 
-  import_candidates.push_back(AddressProfileImportCandidate{
-      .profile = candidate_profile,
-      .url = form.source_url(),
-      .all_requirements_fulfilled = all_fulfilled,
-      .did_complement_country = did_complement_country});
+  import_candidates.push_back(
+      AddressProfileImportCandidate{.profile = candidate_profile,
+                                    .url = form.source_url(),
+                                    .all_requirements_fulfilled = all_fulfilled,
+                                    .import_metadata = import_metadata});
 
   // Return true if a compelete importable profile was found.
   return all_fulfilled;
@@ -818,8 +826,7 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
         continue;
       address_profile_save_manager_->ImportProfileFromForm(
           candidate.profile, app_locale_, candidate.url,
-          /*allow_only_silent_updates=*/false,
-          candidate.did_complement_country);
+          /*allow_only_silent_updates=*/false, candidate.import_metadata);
       // Limit the number of importable profiles to 2.
       if (++imported_profiles >= 2)
         return true;
@@ -834,7 +841,7 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
     // First try to import a single complete profile.
     address_profile_save_manager_->ImportProfileFromForm(
         candidate.profile, app_locale_, candidate.url,
-        /*allow_only_silent_updates=*/true);
+        /*allow_only_silent_updates=*/true, candidate.import_metadata);
   }
   return false;
 }

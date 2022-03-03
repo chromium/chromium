@@ -30,14 +30,14 @@ ProfileImportProcess::ProfileImportProcess(
     const GURL& form_source_url,
     const PersonalDataManager* personal_data_manager,
     bool allow_only_silent_updates,
-    bool did_complement_country)
+    ProfileImportMetadata import_metadata)
     : import_id_(GetImportId()),
       observed_profile_(observed_profile),
       app_locale_(app_locale),
       form_source_url_(form_source_url),
       personal_data_manager_(personal_data_manager),
       allow_only_silent_updates_(allow_only_silent_updates),
-      did_complement_country_(did_complement_country) {
+      import_metadata_(import_metadata) {
   DetermineProfileImportType();
 }
 
@@ -346,6 +346,10 @@ void ProfileImportProcess::CollectMetrics() const {
   if (allow_only_silent_updates_) {
     // Record the import type for the silent updates.
     AutofillMetrics::LogSilentUpdatesProfileImportType(import_type_);
+    if (import_metadata_.did_remove_invalid_phone_number) {
+      AutofillMetrics::LogSilentUpdatesWithRemovedPhoneNumberProfileImportType(
+          import_type_);
+    }
     return;
   }
 
@@ -356,16 +360,24 @@ void ProfileImportProcess::CollectMetrics() const {
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     AutofillMetrics::LogNewProfileImportDecision(user_decision_);
-    if (did_complement_country_) {
+    if (import_metadata_.did_complement_country) {
       AutofillMetrics::LogNewProfileWithComplementedCountryImportDecision(
+          user_decision_);
+    }
+    if (import_metadata_.did_remove_invalid_phone_number) {
+      AutofillMetrics::LogNewProfileWithRemovedPhoneNumberImportDecision(
           user_decision_);
     }
   } else if (import_type_ == AutofillProfileImportType::kConfirmableMerge ||
              import_type_ ==
                  AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
     AutofillMetrics::LogProfileUpdateImportDecision(user_decision_);
-    if (did_complement_country_) {
+    if (import_metadata_.did_complement_country) {
       AutofillMetrics::LogProfileUpdateWithComplementedCountryImportDecision(
+          user_decision_);
+    }
+    if (import_metadata_.did_remove_invalid_phone_number) {
+      AutofillMetrics::LogProfileUpdateWithRemovedPhoneNumberImportDecision(
           user_decision_);
     }
 
@@ -397,13 +409,13 @@ void ProfileImportProcess::CollectMetrics() const {
     for (const auto& difference : edit_difference) {
       if (import_type_ == AutofillProfileImportType::kNewProfile) {
         AutofillMetrics::LogNewProfileEditedType(difference.type);
-        if (did_complement_country_ &&
+        if (import_metadata_.did_complement_country &&
             difference.type == ServerFieldType::ADDRESS_HOME_COUNTRY) {
           AutofillMetrics::LogNewProfileEditedComplementedCountry();
         }
       } else {
         AutofillMetrics::LogProfileUpdateEditedType(difference.type);
-        if (did_complement_country_ &&
+        if (import_metadata_.did_complement_country &&
             difference.type == ServerFieldType::ADDRESS_HOME_COUNTRY) {
           AutofillMetrics::LogProfileUpdateEditedComplementedCountry();
         }

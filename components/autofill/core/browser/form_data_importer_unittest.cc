@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/ranges.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -697,6 +698,42 @@ TEST_P(FormDataImporterTest, ComplementCountry) {
   // Prefer variation config country code over locale
   autofill_client_->SetVariationConfigCountryCode("DE");
   import_with_country("", {ConstructDefaultProfileWithCountry("DE")});
+}
+
+TEST_P(FormDataImporterTest, InvalidPhoneNumber) {
+  std::vector<std::pair<ServerFieldType, std::string>>
+      profile_with_invalid_phone_number = GetDefaultProfileTypeValuePairs();
+  auto phone_number_it =
+      base::ranges::find(profile_with_invalid_phone_number,
+                         std::pair<ServerFieldType, std::string>(
+                             PHONE_HOME_WHOLE_NUMBER, kDefaultPhone));
+  phone_number_it->second = "invalid";
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          profile_with_invalid_phone_number);
+
+  // With |kAutofillRemoveInvalidPhoneNumberOnImport| disabled, profiles with
+  // invalid phone numbers are rejected.
+  {
+    base::test::ScopedFeatureList remove_invalid_phone_number_feature;
+    remove_invalid_phone_number_feature.InitAndDisableFeature(
+        features::kAutofillRemoveInvalidPhoneNumberOnImport);
+
+    ImportAddressProfilesAndVerifyExpectation(*form_structure, {});
+  }
+
+  // With the feature enabled, the phone number is removed and the profile
+  // imported.
+  {
+    base::test::ScopedFeatureList remove_invalid_phone_number_feature;
+    remove_invalid_phone_number_feature.InitAndEnableFeature(
+        features::kAutofillRemoveInvalidPhoneNumberOnImport);
+
+    profile_with_invalid_phone_number.erase(phone_number_it);
+    ImportAddressProfilesAndVerifyExpectation(
+        *form_structure, {ConstructProfileFromTypeValuePairs(
+                             profile_with_invalid_phone_number)});
+  }
 }
 
 // ImportAddressProfiles tests.
