@@ -269,13 +269,6 @@ void BaseRenderingContext2D::PopAndRestore() {
     return;
   }
 
-  state_stack_.pop_back();
-  state_stack_.back()->ClearResolvedFilter();
-
-  SetIsTransformInvertible(GetState().IsTransformInvertible());
-  if (IsTransformInvertible())
-    path_.Transform(GetState().GetTransform().Inverse());
-
   cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
 
   if (!canvas)
@@ -285,13 +278,26 @@ void BaseRenderingContext2D::PopAndRestore() {
       CanvasRenderingContext2DState::SaveType::kInternalLayer) {
     // If this is a ExtraState state, it means we have to restore twice, as we
     // added an extra state while doing a beginLayer.
-    canvas->restore();
     state_stack_.pop_back();
     DCHECK(state_stack_.back());
     state_stack_.back()->ClearResolvedFilter();
+
+    SetIsTransformInvertible(GetState().IsTransformInvertible());
+    if (IsTransformInvertible())
+      path_.Transform(GetState().GetTransform().Inverse());
+
     DCHECK(state_stack_.back()->GetSaveType() ==
            CanvasRenderingContext2DState::SaveType::kBeginEndLayer);
+    canvas->restore();
   }
+
+  state_stack_.pop_back();
+  state_stack_.back()->ClearResolvedFilter();
+
+  SetIsTransformInvertible(GetState().IsTransformInvertible());
+  if (IsTransformInvertible())
+    path_.Transform(GetState().GetTransform().Inverse());
+
   canvas->restore();
 
   ValidateStateStack();
