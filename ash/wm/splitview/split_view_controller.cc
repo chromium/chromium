@@ -1906,8 +1906,12 @@ void SplitViewController::OnKeyboardOccludedBoundsChanged(
     return;
   }
 
-  // Get caret bounds.
+  // Get current active input field.
   auto* text_input_client = GetCurrentInputMethod()->GetTextInputClient();
+  if (!text_input_client)
+    return;
+
+  // Get caret bounds.
   const gfx::Rect caret_bounds = text_input_client->GetCaretBounds();
   if (caret_bounds == gfx::Rect())
     return;

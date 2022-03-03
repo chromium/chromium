@@ -5836,4 +5836,47 @@ TEST_F(SplitViewKeyboardTest, RestoreByActivatingTopWindow) {
   EXPECT_TRUE(split_view_controller()->split_view_divider()->IsAdjustable());
 }
 
+// Tests that when there is no activated input field in the bottom window,
+// showing keyboard (on-screen keyboard) will not change the split view layout.
+TEST_F(SplitViewKeyboardTest, NoInputField) {
+  UpdateDisplay("1200x800");
+  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  display::test::ScopedSetInternalDisplayId set_internal(display_manager,
+                                                         display_id);
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+  ASSERT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            test_api.GetCurrentOrientation());
+
+  gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> bottom_window(CreateWindow(bounds));
+
+  split_view_controller()->SnapWindow(bottom_window.get(),
+                                      SplitViewController::RIGHT);
+
+  test_api.SetDisplayRotation(display::Display::ROTATE_270,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
+            test_api.GetCurrentOrientation());
+  EXPECT_FALSE(split_view_controller()->IsPhysicalLeftOrTop(
+      SplitViewController::RIGHT, bottom_window.get()));
+
+  const gfx::Rect orig_bottom_bounds = bottom_window->GetBoundsInScreen();
+  const gfx::Rect orig_divider_bounds = split_view_controller()
+                                            ->split_view_divider()
+                                            ->divider_widget()
+                                            ->GetWindowBoundsInScreen();
+  // Enable keyboard. The bottom window and divider will not move since there is
+  // no input field.
+  keyboard_controller()->ShowKeyboard(/*lock=*/false);
+  EXPECT_TRUE(keyboard_controller()->IsKeyboardVisible());
+  EXPECT_EQ(orig_bottom_bounds, bottom_window->GetBoundsInScreen());
+  EXPECT_EQ(orig_divider_bounds, split_view_controller()
+                                     ->split_view_divider()
+                                     ->divider_widget()
+                                     ->GetWindowBoundsInScreen());
+  EXPECT_TRUE(split_view_controller()->split_view_divider()->IsAdjustable());
+}
+
 }  // namespace ash
