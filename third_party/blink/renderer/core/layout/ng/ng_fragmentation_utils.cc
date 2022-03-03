@@ -1007,6 +1007,11 @@ NGConstraintSpace CreateConstraintSpaceForMulticol(
   NGConstraintSpaceBuilder space_builder(
       writing_direction_mode.GetWritingMode(), writing_direction_mode,
       /* is_new_fc */ true);
+  // This constraint space isn't going to be used for actual sizing. Yet,
+  // someone will use it for initial geometry calculation, and if the multicol
+  // has percentage sizes, DCHECKs will fail if we don't set any available size
+  // at all.
+  space_builder.SetAvailableSize(LogicalSize());
   return space_builder.ToConstraintSpace();
 }
 
