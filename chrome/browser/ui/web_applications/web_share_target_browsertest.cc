@@ -46,7 +46,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet_mojom_traits.h"

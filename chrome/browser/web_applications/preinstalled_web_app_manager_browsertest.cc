@@ -49,12 +49,6 @@
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touchscreen_device.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"

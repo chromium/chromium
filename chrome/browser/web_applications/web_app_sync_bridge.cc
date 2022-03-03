@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_sync_install_delegate.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/channel_info.h"
