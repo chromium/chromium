@@ -121,6 +121,11 @@ bool FederatedCredential::IsFederatedCredential() const {
   return true;
 }
 
+ScriptPromise FederatedCredential::logout() {
+  // TODO(https://crbug.com/1266054): Implement.
+  return ScriptPromise();
+}
+
 ScriptPromise FederatedCredential::logoutRps(
     ScriptState* script_state,
     const HeapVector<Member<FederatedCredentialLogoutRpsRequest>>&

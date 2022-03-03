@@ -67,6 +67,8 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
     return g_empty_string;
   }
 
+  ScriptPromise logout();
+
   static ScriptPromise logoutRps(
       ScriptState*,
       const HeapVector<Member<FederatedCredentialLogoutRpsRequest>>&);
