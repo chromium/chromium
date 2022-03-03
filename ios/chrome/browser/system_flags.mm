@@ -8,10 +8,6 @@
 #include "ios/chrome/browser/system_flags.h"
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-#include <dispatch/dispatch.h>
-
-#include <string>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -52,9 +48,11 @@ bool AlwaysDisplayFirstRun() {
 }
 
 std::string GetOriginServerHost() {
-  NSString* alternateHost =
-      [[NSUserDefaults standardUserDefaults] stringForKey:kOriginServerHost];
-  return base::SysNSStringToUTF8(alternateHost);
+  return base::SysNSStringToUTF8(GetOriginServerHostNSString());
+}
+
+NSString* GetOriginServerHostNSString() {
+  return [[NSUserDefaults standardUserDefaults] stringForKey:kOriginServerHost];
 }
 
 WhatsNewPromoStatus GetWhatsNewPromoStatus() {
@@ -72,9 +70,12 @@ WhatsNewPromoStatus GetWhatsNewPromoStatus() {
 }
 
 std::string getAlternateDiscoverFeedServerURL() {
-  NSString* alternateServerURL = [[NSUserDefaults standardUserDefaults]
+  return base::SysNSStringToUTF8(GetAlternateDiscoverFeedServerURL());
+}
+
+NSString* GetAlternateDiscoverFeedServerURL() {
+  return [[NSUserDefaults standardUserDefaults]
       stringForKey:kAlternateDiscoverFeedServerURL];
-  return base::SysNSStringToUTF8(alternateServerURL);
 }
 
 bool ShouldResetNoticeCardOnFeedStart() {

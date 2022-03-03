@@ -7,6 +7,8 @@
 
 #include <string>
 
+#import <Foundation/Foundation.h>
+
 #include "base/feature_list.h"
 
 // This file can be empty. Its purpose is to contain the flags living in the
@@ -31,6 +33,7 @@ bool AlwaysDisplayFirstRun();
 // |BrandCode| startup ping. Returns empty string if there is no alternative
 // host specified.
 std::string GetOriginServerHost();
+NSString* GetOriginServerHostNSString();
 
 // Returns the promo force enabled, as determined by the experimental flags.
 // If |WHATS_NEW_DEFAULT| is returned, no promo is force enabled.
@@ -38,6 +41,7 @@ WhatsNewPromoStatus GetWhatsNewPromoStatus();
 
 // Returns the URL for the alternative Discover Feed server.
 std::string getAlternateDiscoverFeedServerURL();
+NSString* GetAlternateDiscoverFeedServerURL();
 
 // Returns true if the prefs for the notice card views count and clicks count
 // should be reset to zero on feed start.
