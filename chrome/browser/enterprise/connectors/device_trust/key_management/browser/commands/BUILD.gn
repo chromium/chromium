@@ -37,7 +37,6 @@ source_set("commands") {
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/common:constants",
-      "//mojo/core:shared_library",
       "//services/device/public/mojom",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
