@@ -253,8 +253,6 @@ class CORE_EXPORT InspectorCSSAgent final
                                                             MediaListSource,
                                                             const String&,
                                                             CSSStyleSheet*);
-  std::unique_ptr<protocol::Array<protocol::CSS::CSSMedia>> BuildMediaListChain(
-      CSSRule*);
 
   CSSStyleDeclaration* FindEffectiveDeclaration(
       const CSSPropertyName&,
@@ -351,16 +349,12 @@ class CORE_EXPORT InspectorCSSAgent final
   void CollectContainerQueriesFromRule(
       CSSRule*,
       protocol::Array<protocol::CSS::CSSContainerQuery>*);
-  std::unique_ptr<protocol::Array<protocol::CSS::CSSContainerQuery>>
-  BuildContainerQueries(CSSRule*);
 
   // Supports at-rule implementation
   std::unique_ptr<protocol::CSS::CSSSupports> BuildSupportsObject(
       CSSSupportsRule*);
   void CollectSupportsFromRule(CSSRule*,
                                protocol::Array<protocol::CSS::CSSSupports>*);
-  std::unique_ptr<protocol::Array<protocol::CSS::CSSSupports>>
-  BuildSupportsList(CSSRule*);
 
   std::unique_ptr<protocol::CSS::CSSLayerData> BuildLayerDataObject(
       const CascadeLayer* layer,
@@ -373,8 +367,8 @@ class CORE_EXPORT InspectorCSSAgent final
       CSSImportRule* rule);
   void CollectLayersFromRule(CSSRule*,
                              protocol::Array<protocol::CSS::CSSLayer>*);
-  std::unique_ptr<protocol::Array<protocol::CSS::CSSLayer>> BuildLayersList(
-      CSSRule*);
+
+  void FillAncestorData(CSSRule* rule, protocol::CSS::CSSRule* result);
 
   // InspectorDOMAgent::DOMListener implementation
   void DidAddDocument(Document*) override;

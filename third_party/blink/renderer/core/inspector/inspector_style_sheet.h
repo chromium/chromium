@@ -184,7 +184,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
 
   std::unique_ptr<protocol::CSS::CSSStyleSheetHeader>
   BuildObjectForStyleSheetInfo();
-  std::unique_ptr<protocol::CSS::CSSRule> BuildObjectForRuleWithoutMedia(
+  std::unique_ptr<protocol::CSS::CSSRule> BuildObjectForRuleWithoutAncestorData(
       CSSStyleRule*);
   std::unique_ptr<protocol::CSS::RuleUsage> BuildObjectForRuleUsage(CSSRule*,
                                                                     bool);
