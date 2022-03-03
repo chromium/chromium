@@ -524,9 +524,7 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
   }
 
   void ReadMoreFileData() {
-    int64_t bytes_to_read = std::min(
-        static_cast<int64_t>(kDefaultFileSystemUrlPipeSize), remaining_bytes_);
-    if (bytes_to_read == 0) {
+    if (remaining_bytes_ == 0) {
       if (consumer_handle_.is_valid()) {
         // This was an empty file; make sure to call OnReceiveResponse and
         // OnStartLoadingResponseBody regardless.
@@ -534,9 +532,11 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
                                    mojo::ScopedDataPipeConsumerHandle());
         client_->OnStartLoadingResponseBody(std::move(consumer_handle_));
       }
-      OnFileWritten(MOJO_RESULT_OK);
+      OnFileWritten(net::OK);
       return;
     }
+    const int64_t bytes_to_read = std::min(
+        static_cast<int64_t>(kDefaultFileSystemUrlPipeSize), remaining_bytes_);
     net::CompletionRepeatingCallback read_callback = base::BindRepeating(
         &FileSystemFileURLLoader::DidReadMoreFileData, base::AsWeakPtr(this));
     const int rv =
@@ -549,8 +549,15 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
   }
 
   void DidReadMoreFileData(int result) {
-    if (result <= 0) {
-      OnFileWritten(result);
+    if (result < 0) {
+      OnFileWritten(static_cast<net::Error>(result));
+      return;
+    }
+    if (result == 0) {
+      // If `remaining_bytes_` is 0, then we should've called OnFileWritten in
+      // ReadMoreFileData.
+      DCHECK_NE(remaining_bytes_, 0);
+      OnFileWritten(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
       return;
     }
 
@@ -587,20 +594,20 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
   }
 
   void OnFileDataWritten(MojoResult result) {
-    if (result != MOJO_RESULT_OK || remaining_bytes_ == 0) {
-      OnFileWritten(result);
+    if (result != MOJO_RESULT_OK) {
+      OnFileWritten(net::ERR_FAILED);
       return;
     }
     ReadMoreFileData();
   }
 
-  void OnFileWritten(MojoResult result) {
+  void OnFileWritten(net::Error net_error) {
     // All the data has been written now. Close the data pipe. The consumer will
     // be notified that there will be no more data to read from now.
     data_producer_.reset();
     file_data_ = nullptr;
 
-    OnClientComplete(result == MOJO_RESULT_OK ? net::OK : net::ERR_FAILED);
+    OnClientComplete(net_error);
   }
 
   int64_t remaining_bytes_ = 0;
