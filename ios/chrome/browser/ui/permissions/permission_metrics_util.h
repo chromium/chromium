@@ -30,7 +30,7 @@ enum class PermissionEvent {
 void RecordPermissionEventFromOrigin(PermissionInfo* permissionInfo,
                                      PermissionEventOrigin permissionOrigin);
 
-// Records a metric when the user toogles a media permission.
+// Records a metric when the user toggles a media permission.
 void RecordPermissionToogled();
 
 #endif  // IOS_CHROME_BROWSER_UI_PERMISSIONS_PERMISSION_METRICS_UTIL_H_
