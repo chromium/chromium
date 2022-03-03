@@ -2412,12 +2412,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // should be sandboxed / should have an opaque origin instead).
   void SetOriginDependentStateOfNewFrame(const url::Origin& new_frame_creator);
 
-  // Returns the "top_level_site" that should be used to calculate storage key.
-  // It correspond to the top-level document's origin, unless its is an
-  // extension with host permissions to its direct child. In this case, this
-  // returns the child's origin.
-  url::Origin CalculateTopLevelOriginForStorageKey(
-      const url::Origin& new_rfh_origin);
+  // Calculates the storage key for this RenderFrameHostImpl using the passed
+  // `new_rfh_origin`, and `nonce` and calculating the storage key's
+  // top_level_site` and `ancestor_bit` parameters. This takes into account
+  // possible host permissions of the top_level RenderFrameHostImpl.
+  blink::StorageKey CalculateStorageKey(const url::Origin& new_rfh_origin,
+                                        const base::UnguessableToken* nonce);
 
   // Returns the BrowsingContextState associated with this RenderFrameHostImpl.
   // See class comments in BrowsingContextState for a more detailed description.

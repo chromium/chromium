@@ -3680,21 +3680,27 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
   return nonce;
 }
 
-url::Origin RenderFrameHostImpl::CalculateTopLevelOriginForStorageKey(
-    const url::Origin& new_rfh_origin) {
-  if (is_main_frame())
-    return new_rfh_origin;
-
-  // Find among the ancestors, the one at the top and its child.
-  RenderFrameHostImpl* ancestor_below_top = nullptr;
-  RenderFrameHostImpl* ancestor_top = nullptr;
-  RenderFrameHostImpl* ancestor_current = this;
-  while (ancestor_current) {
-    ancestor_below_top = ancestor_top;
-    ancestor_top = ancestor_current;
-    ancestor_current = ancestor_current->parent_;
+blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
+    const url::Origin& new_rfh_origin,
+    const base::UnguessableToken* nonce) {
+  std::vector<RenderFrameHostImpl*> ancestor_chain;
+  RenderFrameHostImpl* current = this;
+  while (current) {
+    ancestor_chain.push_back(current);
+    current = current->parent_;
   }
 
+  // Make sure to always use the |new_rfh_origin| when referring to the current
+  // RenderFrameHost. The origin might differ when the RenderFrameHost is reused
+  // when SiteIsolation is off.
+  auto origin = [&](RenderFrameHostImpl* rfh) {
+    return rfh == this ? new_rfh_origin : rfh->GetLastCommittedOrigin();
+  };
+
+  // When the top level RenderFrameHost is a Chrome extension, with host
+  // permissions to its child in the ancestor chain, then behave "as-if" the
+  // child was the top-level one computing the StorageKey.
+  //
   // Sites with host permissions are saved in
   // `browser_context->GetSharedCorsOriginAccessList()` because they are also
   // used to bypass CORS restrictions. We can reuse this permissions list here
@@ -3702,15 +3708,31 @@ url::Origin RenderFrameHostImpl::CalculateTopLevelOriginForStorageKey(
   // able to access partitioned storage based not partitioned by the top level
   // extension URL. A origin will only have access to another origin via
   // OriginAccessList if the origin is an extension.
-  return GetBrowserContext()
-                     ->GetSharedCorsOriginAccessList()
-                     ->GetOriginAccessList()
-                     .CheckAccessState(
-                         ancestor_top->GetLastCommittedOrigin(),
-                         ancestor_below_top->GetLastCommittedURL()) ==
-                 network::cors::OriginAccessList::AccessState::kAllowed
-             ? ancestor_below_top->GetLastCommittedOrigin()
-             : ancestor_top->GetLastCommittedOrigin();
+  bool ignore_top_level_extension =
+      !is_main_frame() &&
+      GetBrowserContext()
+              ->GetSharedCorsOriginAccessList()
+              ->GetOriginAccessList()
+              .CheckAccessState(origin(ancestor_chain.end()[-1]),
+                                origin(ancestor_chain.end()[-2]).GetURL()) ==
+          network::cors::OriginAccessList::AccessState::kAllowed;
+  if (ignore_top_level_extension) {
+    ancestor_chain.pop_back();
+  }
+
+  // Compute the AncestorChainBit. It represents whether every ancestors are all
+  // same-site or not.
+  auto site_for_cookies = net::SiteForCookies::FromOrigin(new_rfh_origin);
+  blink::mojom::AncestorChainBit ancestor_chain_bit =
+      blink::mojom::AncestorChainBit::kSameSite;
+  for (auto* ancestor : ancestor_chain) {
+    if (!site_for_cookies.IsFirstParty(origin(ancestor).GetURL()))
+      ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
+  }
+
+  return blink::StorageKey::CreateWithOptionalNonce(
+      new_rfh_origin, net::SchemefulSite(origin(ancestor_chain.back())), nonce,
+      ancestor_chain_bit);
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
@@ -3732,15 +3754,8 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
       new_frame_origin, net::IsolationInfo::RequestType::kOther, anonymous());
   SetLastCommittedOrigin(new_frame_origin);
 
-  url::Origin top_frame_origin =
-      CalculateTopLevelOriginForStorageKey(new_frame_origin);
-
-  SetStorageKey(blink::StorageKey::CreateWithOptionalNonce(
-      new_frame_origin, net::SchemefulSite(top_frame_origin),
-      base::OptionalOrNullptr(isolation_info_.nonce()),
-      ComputeSiteForCookies().IsNull()
-          ? blink::mojom::AncestorChainBit::kCrossSite
-          : blink::mojom::AncestorChainBit::kSameSite));
+  SetStorageKey(CalculateStorageKey(
+      new_frame_origin, base::OptionalOrNullptr(isolation_info_.nonce())));
 
   // Apply private network request policy according to our new origin.
   if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
@@ -10921,16 +10936,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
       navigation_request->commit_params().storage_key;
 
   url::Origin origin = GetLastCommittedOrigin();
-  net::SchemefulSite top_level_site =
-      net::SchemefulSite(CalculateTopLevelOriginForStorageKey(origin));
-
-  blink::StorageKey storage_key_to_commit =
-      blink::StorageKey::CreateWithOptionalNonce(
-          origin, top_level_site,
-          base::OptionalOrNullptr(provisional_storage_key.nonce()),
-          ComputeSiteForCookies().IsNull()
-              ? blink::mojom::AncestorChainBit::kCrossSite
-              : blink::mojom::AncestorChainBit::kSameSite);
+  blink::StorageKey storage_key_to_commit = CalculateStorageKey(
+      origin, base::OptionalOrNullptr(provisional_storage_key.nonce()));
   SetStorageKey(storage_key_to_commit);
 
   coep_reporter_ = navigation_request->TakeCoepReporter();

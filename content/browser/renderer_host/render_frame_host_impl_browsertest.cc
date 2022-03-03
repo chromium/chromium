@@ -6701,7 +6701,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowserTestWithStoragePartitioning,
     EXPECT_EQ(blink::StorageKey(blink::StorageKey::CreateWithOptionalNonce(
                   url::Origin::Create(child_rfh_url),
                   net::SchemefulSite(url::Origin::Create(child_rfh_url)),
-                  nullptr, blink::mojom::AncestorChainBit::kCrossSite)),
+                  nullptr, blink::mojom::AncestorChainBit::kSameSite)),
               child_rfh_2->storage_key());
 
     // The grandchild document should create a StorageKey using the child
