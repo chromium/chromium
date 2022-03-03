@@ -4,8 +4,10 @@
 
 #import "ios/web_view/internal/web_view_web_main_delegate.h"
 
+#include "base/base_paths.h"
 #include "base/logging.h"
 #import "base/mac/bundle_locations.h"
+#include "components/component_updater/component_updater_paths.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,6 +32,9 @@ void WebViewWebMainDelegate::BasicStartupComplete() {
 
   // Sets up logging so logging levels can be controlled.
   logging::InitLogging(logging::LoggingSettings());
+
+  component_updater::RegisterPathProvider(
+      base::DIR_APP_DATA, base::DIR_APP_DATA, base::DIR_APP_DATA);
 }
 
 }  // namespace ios_web_view
