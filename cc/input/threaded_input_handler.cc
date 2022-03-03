@@ -371,11 +371,8 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
   TRACE_EVENT2("cc", "ThreadedInputHandler::ScrollUpdate", "dx",
                scroll_state->delta_x(), "dy", scroll_state->delta_y());
 
-  if (!CurrentlyScrollingNode()) {
-    InputHandlerScrollResult result;
-    result.currently_scrolling_node_lost = true;
-    return result;
-  }
+  if (!CurrentlyScrollingNode())
+    return InputHandlerScrollResult();
 
   last_scroll_update_state_ = *scroll_state;
 

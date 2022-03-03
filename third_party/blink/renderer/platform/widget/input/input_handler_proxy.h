@@ -143,12 +143,6 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
     // scroll node to handle the event and requires a second try with an
     // ElementId provided by a hit test in Blink.
     REQUIRES_MAIN_THREAD_HIT_TEST,
-
-    // Used only in scroll unification; during handling a GSU event, the
-    // compositor found that the currently scrolling node had been lost,
-    // and then the compositor could not handle the event, as a result we will
-    // synthesize a GSB event and try to relatch to a new node.
-    LOST_LATCHED_NODE,
   };
   using EventDispositionCallback = base::OnceCallback<void(
       EventDisposition,
@@ -254,8 +248,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   // Helper functions for handling more complicated input events.
   EventDisposition HandleMouseWheel(const blink::WebMouseWheelEvent& event);
-  EventDisposition HandleGestureScrollBegin(const blink::WebGestureEvent& event,
-                                            bool trying_to_relatch = false);
+  EventDisposition HandleGestureScrollBegin(
+      const blink::WebGestureEvent& event);
   EventDisposition HandleGestureScrollUpdate(
       const blink::WebGestureEvent& event,
       const blink::WebInputEventAttribution& original_attribution,

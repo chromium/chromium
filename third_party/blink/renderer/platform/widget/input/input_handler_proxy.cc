@@ -209,21 +209,6 @@ bool IsGestureScrollOrPinch(WebInputEvent::Type type) {
   }
 }
 
-WebGestureEvent SynthesizeGestureScrollBegin(
-    const WebGestureEvent& update_event) {
-  DCHECK_EQ(update_event.GetType(), WebInputEvent::Type::kGestureScrollUpdate);
-  WebGestureEvent scroll_begin(update_event);
-  scroll_begin.SetType(WebInputEvent::Type::kGestureScrollBegin);
-  scroll_begin.data.scroll_begin.delta_x_hint =
-      update_event.data.scroll_update.delta_x;
-  scroll_begin.data.scroll_begin.delta_y_hint =
-      update_event.data.scroll_update.delta_y;
-  scroll_begin.data.scroll_begin.delta_hint_units =
-      update_event.data.scroll_update.delta_units;
-  scroll_begin.data.scroll_begin.scrollable_area_element_id = 0;
-  return scroll_begin;
-}
-
 }  // namespace
 
 InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
@@ -706,22 +691,10 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
       return HandleGestureScrollBegin(
           static_cast<const WebGestureEvent&>(event));
 
-    case WebInputEvent::Type::kGestureScrollUpdate: {
-      auto event_disposition = HandleGestureScrollUpdate(
+    case WebInputEvent::Type::kGestureScrollUpdate:
+      return HandleGestureScrollUpdate(
           static_cast<const WebGestureEvent&>(event), original_attribution,
           event_with_callback->metrics());
-
-      if (event_disposition == LOST_LATCHED_NODE) {
-        WebGestureEvent scroll_begin_event = SynthesizeGestureScrollBegin(
-            static_cast<const WebGestureEvent&>(event_with_callback->event()));
-        HandleGestureScrollBegin(
-            static_cast<const WebGestureEvent&>(scroll_begin_event), true);
-        return HandleGestureScrollUpdate(
-            static_cast<const WebGestureEvent&>(event), original_attribution,
-            event_with_callback->metrics());
-      }
-      return event_disposition;
-    }
 
     case WebInputEvent::Type::kGestureScrollEnd:
       return HandleGestureScrollEnd(static_cast<const WebGestureEvent&>(event));
@@ -1005,8 +978,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
 }
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
-    const WebGestureEvent& gesture_event,
-    bool trying_to_relatch) {
+    const WebGestureEvent& gesture_event) {
   TRACE_EVENT0("input", "InputHandlerProxy::HandleGestureScrollBegin");
 
   if (scroll_predictor_)
@@ -1014,15 +986,13 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
 
   // When a GSB is being handled, end any pre-existing gesture scrolls that are
   // in progress.
-  if (!trying_to_relatch) {
-    if (currently_active_gesture_device_.has_value() &&
-        handling_gesture_on_impl_thread_) {
-      // TODO(arakeri): Once crbug.com/1074209 is fixed, delete calls to
-      // RecordScrollEnd.
-      input_handler_->RecordScrollEnd(
-          GestureScrollInputType(*currently_active_gesture_device_));
-      InputHandlerScrollEnd();
-    }
+  if (currently_active_gesture_device_.has_value() &&
+      handling_gesture_on_impl_thread_) {
+    // TODO(arakeri): Once crbug.com/1074209 is fixed, delete calls to
+    // RecordScrollEnd.
+    input_handler_->RecordScrollEnd(
+        GestureScrollInputType(*currently_active_gesture_device_));
+    InputHandlerScrollEnd();
   }
 
   cc::ScrollState scroll_state = CreateScrollStateForGesture(gesture_event);
@@ -1144,10 +1114,6 @@ InputHandlerProxy::HandleGestureScrollUpdate(
 
   cc::InputHandlerScrollResult scroll_result =
       input_handler_->ScrollUpdate(&scroll_state, delay);
-
-  if (scroll_result.currently_scrolling_node_lost) {
-    return LOST_LATCHED_NODE;
-  }
 
   HandleOverscroll(gesture_event.PositionInWidget(), scroll_result);
 

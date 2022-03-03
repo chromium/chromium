@@ -94,9 +94,6 @@ struct CC_EXPORT InputHandlerScrollResult {
   // scrolling node is the viewport, this would be the sum of the scroll offsets
   // of the inner and outer node, representing the visual scroll offset.
   gfx::PointF current_visual_offset;
-  // Indicates whether the currently scrolling node is lost, in that case the
-  // delta is not used for this ScrollUpdate call and we return immediately
-  bool currently_scrolling_node_lost = false;
 };
 
 class CC_EXPORT InputHandlerClient {
