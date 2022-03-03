@@ -326,8 +326,7 @@ TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
 //   bool: is domain joined
 //   bool: is registered with MDM
 //   bool: is Windows 10 home edition
-//   bool: is Azure Active Directory joined
-using AddUpdateBrandCodeWorkItemTestParams = std::tuple<bool, bool, bool, bool>;
+using AddUpdateBrandCodeWorkItemTestParams = std::tuple<bool, bool, bool>;
 
 // These tests run at system level.
 static const bool kSystemLevel = true;
@@ -339,7 +338,6 @@ class AddUpdateBrandCodeWorkItemTest
       : is_domain_joined_(std::get<0>(GetParam())),
         is_registered_(std::get<1>(GetParam())),
         is_home_edition_(std::get<2>(GetParam())),
-        is_aad_joined_(std::get<3>(GetParam())),
         scoped_install_details_(kSystemLevel),
         current_version_(new base::Version("1.0.0.0")),
         installation_state_(
@@ -353,8 +351,7 @@ class AddUpdateBrandCodeWorkItemTest
         scoped_os_info_override_(
             is_home_edition_
                 ? base::test::ScopedOSInfoOverride::Type::kWin10Home
-                : base::test::ScopedOSInfoOverride::Type::kWin10Pro),
-        scoped_aad_state_(is_aad_joined_) {}
+                : base::test::ScopedOSInfoOverride::Type::kWin10Pro) {}
 
   void SetUp() override {
     // Override registry so that tests don't mess up the machine's state.
@@ -374,8 +371,7 @@ class AddUpdateBrandCodeWorkItemTest
     }
 
     if (!installer::GetUpdatedBrandCode(brand).empty() &&
-        (is_domain_joined_ || is_aad_joined_ ||
-         (is_registered_ && !is_home_edition_))) {
+        (is_domain_joined_ || (is_registered_ && !is_home_edition_))) {
       EXPECT_CALL(*work_item_list,
                   AddSetRegStringValueWorkItem(_, _, _, _, _, _))
           .WillOnce(Return(nullptr));  // Return value ignored.
@@ -388,7 +384,6 @@ class AddUpdateBrandCodeWorkItemTest
   const bool is_domain_joined_;
   const bool is_registered_;
   const bool is_home_edition_;
-  const bool is_aad_joined_;
 
   install_static::ScopedInstallDetails scoped_install_details_;
   std::unique_ptr<base::Version> current_version_;
@@ -400,7 +395,6 @@ class AddUpdateBrandCodeWorkItemTest
   base::win::ScopedDeviceRegisteredWithManagementForTesting
       scoped_registration_state_;
   base::test::ScopedOSInfoOverride scoped_os_info_override_;
-  base::win::ScopedAzureADJoinStateForTesting scoped_aad_state_;
 };
 
 TEST_P(AddUpdateBrandCodeWorkItemTest, NoBrand) {
@@ -434,14 +428,11 @@ struct AddUpdateBrandCodeWorkItemTestParamToString {
     const char* registered =
         std::get<1>(info.param) ? "registered" : "notregistered";
     const char* home = std::get<2>(info.param) ? "home" : "nothome";
-    const char* aad_joined =
-        std::get<3>(info.param) ? "aadjoined" : "notaadjoined";
-    return base::StringPrintf("%s_%s_%s_%s", joined, registered, home,
-                              aad_joined);
+    return base::StringPrintf("%s_%s_%s", joined, registered, home);
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(AddUpdateBrandCodeWorkItemTest,
                          AddUpdateBrandCodeWorkItemTest,
-                         Combine(Bool(), Bool(), Bool(), Bool()),
+                         Combine(Bool(), Bool(), Bool()),
                          AddUpdateBrandCodeWorkItemTestParamToString());
