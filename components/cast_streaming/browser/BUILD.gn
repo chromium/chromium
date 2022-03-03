@@ -67,9 +67,11 @@ source_set("streaming_session") {
   deps = [
     ":core",
     ":receiver_session_public",
+    ":renderer_controls",
     "//base",
     "//components/cast_streaming/public",
     "//components/cast_streaming/public:config_conversions",
+    "//components/cast_streaming/public/mojom",
     "//components/openscreen_platform",
     "//media",
     "//media/mojo/common",
@@ -84,6 +86,8 @@ source_set("streaming_session") {
   sources = [
     "cast_streaming_session.cc",
     "cast_streaming_session.h",
+    "renderer_controller_config.cc",
+    "renderer_controller_config.h",
     "stream_consumer.cc",
     "stream_consumer.h",
   ]
@@ -115,6 +119,8 @@ source_set("renderer_controls") {
     "playback_command_dispatcher.cc",
     "playback_command_dispatcher.h",
     "remoting_session_client.h",
+    "renderer_control_multiplexer.cc",
+    "renderer_control_multiplexer.h",
     "rpc_call_translator.cc",
     "rpc_call_translator.h",
   ]

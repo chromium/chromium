@@ -46,10 +46,7 @@ source_set("remoting_utils") {
   public_configs =
       [ "//third_party/openscreen/src/build:openscreen_include_dirs" ]
 
-  deps = [
-    "//components/openscreen_platform:openscreen_platform",
-    "//components/openscreen_platform:openscreen_platform_network_service",
-  ]
+  deps = [ "//components/openscreen_platform:openscreen_platform" ]
 
   public_deps = [
     "//base",
@@ -66,6 +63,7 @@ source_set("unit_tests") {
     ":public",
     ":remoting_utils",
     "//base/test:test_support",
+    "//components/openscreen_platform:openscreen_platform_network_service",
     "//media:test_support",
     "//media/mojo:test_support",
     "//testing/gmock",

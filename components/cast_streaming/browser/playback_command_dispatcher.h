@@ -11,7 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/browser/remoting_session_client.h"
+#include "components/cast_streaming/browser/renderer_control_multiplexer.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
@@ -41,12 +43,15 @@ class PlaybackCommandDispatcher : public remoting::RemotingSessionClient {
       mojo::AssociatedRemote<mojom::RendererController> control_configuration);
   ~PlaybackCommandDispatcher() override;
 
- private:
+  void RegisterCommandSource(
+      mojo::PendingReceiver<media::mojom::Renderer> controls);
+
   // remoting::RemotingSessionClient overrides.
   void OnRemotingSessionNegotiated(
       openscreen::cast::RpcMessenger* messenger) override;
   void OnRemotingSessionEnded() override;
 
+ private:
   void SendRemotingRpcMessageToRemote(
       openscreen::cast::RpcMessenger::Handle handle,
       std::unique_ptr<openscreen::cast::RpcMessage> message);
@@ -56,7 +61,13 @@ class PlaybackCommandDispatcher : public remoting::RemotingSessionClient {
   openscreen::cast::RpcMessenger* messenger_;
   openscreen::cast::RpcMessenger::Handle handle_;
 
+  // Multiplexes Renderer commands from a number of senders.
+  std::unique_ptr<RendererControlMultiplexer> muxer_;
+
+  // Handles translating between Remoting commands (in proto form) and mojo
+  // commands.
   std::unique_ptr<remoting::RpcCallTranslator> call_translator_;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<PlaybackCommandDispatcher> weak_factory_;
 };

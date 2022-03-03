@@ -39,7 +39,10 @@ source_set("remoting_sender") {
 
     # Consumers of the CourierRenderer implicitly take a dependency on the
     # generated remoting.pb.h file.
-    public_deps += [ "//components/cast_streaming/public:remoting_utils" ]
+    public_deps += [
+      "//components/cast_streaming/public:remoting_utils",
+      "//components/openscreen_platform:openscreen_platform_network_service",
+    ]
   }
 }
 
@@ -61,7 +64,7 @@ source_set("remoting_renderer") {
 
   deps = [
     ":remoting_constants",
-    "//components/cast_streaming/public:remoting_utils",
+    "//components/openscreen_platform:openscreen_platform_network_service",
     "//media/mojo/common:common",
     "//media/mojo/mojom:remoting",
   ]
@@ -91,6 +94,7 @@ source_set("media_remoting_tests") {
     "//base",
     "//base/test:test_support",
     "//components/cast_streaming/public:remoting_utils",
+    "//components/openscreen_platform:openscreen_platform_network_service",
     "//media:test_support",
     "//media/mojo/common",
     "//media/mojo/mojom:remoting",
@@ -112,7 +116,6 @@ source_set("media_remoting_tests") {
     ]
 
     deps += [
-      "//components/cast_streaming/public:remoting_utils",
       "//media/test:pipeline_integration_test_base",
       "//services/service_manager/public/cpp:cpp",
       "//ui/gfx:test_support",

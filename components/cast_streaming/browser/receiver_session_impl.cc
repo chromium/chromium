@@ -8,7 +8,6 @@
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
-#include "media/mojo/mojom/media_types.mojom.h"
 
 namespace cast_streaming {
 
@@ -35,7 +34,7 @@ ReceiverSessionImpl::ReceiverSessionImpl(
 
 ReceiverSessionImpl::~ReceiverSessionImpl() = default;
 
-void ReceiverSessionImpl::SetCastStreamingReceiver(
+void ReceiverSessionImpl::StartStreamingAsync(
     mojo::AssociatedRemote<mojom::CastStreamingReceiver>
         cast_streaming_receiver) {
   DCHECK(HasNetworkContextGetter());
@@ -52,10 +51,29 @@ void ReceiverSessionImpl::SetCastStreamingReceiver(
       &ReceiverSessionImpl::OnMojoDisconnect, base::Unretained(this)));
 }
 
+void ReceiverSessionImpl::StartStreamingAsync(
+    mojo::AssociatedRemote<mojom::CastStreamingReceiver>
+        cast_streaming_receiver,
+    mojo::AssociatedRemote<mojom::RendererController> renderer_controller) {
+  DCHECK(!renderer_control_config_);
+  external_renderer_controls_ = std::make_unique<RendererControllerImpl>();
+  renderer_control_config_.emplace(std::move(renderer_controller),
+                                   external_renderer_controls_->Bind());
+
+  StartStreamingAsync(std::move(cast_streaming_receiver));
+}
+
+ReceiverSession::RendererController*
+ReceiverSessionImpl::GetRendererControls() {
+  DCHECK(external_renderer_controls_);
+  return external_renderer_controls_.get();
+}
+
 void ReceiverSessionImpl::OnReceiverEnabled() {
   DVLOG(1) << __func__;
   DCHECK(message_port_provider_);
-  cast_streaming_session_.Start(this, std::move(av_constraints_),
+  cast_streaming_session_.Start(this, std::move(renderer_control_config_),
+                                std::move(av_constraints_),
                                 std::move(message_port_provider_).Run(),
                                 base::SequencedTaskRunnerHandle::Get());
 }
@@ -169,6 +187,36 @@ void ReceiverSessionImpl::OnMojoDisconnect() {
   // Tear down all remaining Mojo objects.
   audio_remote_.reset();
   video_remote_.reset();
+}
+
+ReceiverSessionImpl::RendererControllerImpl::RendererControllerImpl() = default;
+ReceiverSessionImpl::RendererControllerImpl::~RendererControllerImpl() =
+    default;
+
+bool ReceiverSessionImpl::RendererControllerImpl::IsValid() const {
+  return renderer_controls_.is_bound() && renderer_controls_.is_connected();
+}
+
+void ReceiverSessionImpl::RendererControllerImpl::StartPlayingFrom(
+    base::TimeDelta time) {
+  DCHECK(IsValid());
+  renderer_controls_->StartPlayingFrom(time);
+}
+
+void ReceiverSessionImpl::RendererControllerImpl::SetPlaybackRate(
+    double playback_rate) {
+  DCHECK(IsValid());
+  renderer_controls_->SetPlaybackRate(playback_rate);
+}
+
+void ReceiverSessionImpl::RendererControllerImpl::SetVolume(float volume) {
+  DCHECK(IsValid());
+  renderer_controls_->SetVolume(volume);
+}
+
+mojo::PendingReceiver<media::mojom::Renderer>
+ReceiverSessionImpl::RendererControllerImpl::Bind() {
+  return renderer_controls_.BindNewPipeAndPassReceiver();
 }
 
 }  // namespace cast_streaming

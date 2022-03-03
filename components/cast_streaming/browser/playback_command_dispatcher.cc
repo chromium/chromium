@@ -17,15 +17,28 @@ PlaybackCommandDispatcher::PlaybackCommandDispatcher(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::AssociatedRemote<mojom::RendererController> control_configuration)
     : task_runner_(std::move(task_runner)), weak_factory_(this) {
+  // Create a muxer using the "real" media::mojom::Renderer instance that
+  // connects to the remote media::Renderer.
   mojo::Remote<media::mojom::Renderer> renderer;
   control_configuration->SetPlaybackController(
       renderer.BindNewPipeAndPassReceiver());
-  call_translator_ =
-      std::make_unique<remoting::RpcCallTranslator>(std::move(renderer));
+  muxer_ = std::make_unique<RendererControlMultiplexer>(std::move(renderer));
+
+  // Create a "fake" media::mojom::Renderer so that the RpcCallTranslator can
+  // pass commands to the |muxer_|.
+  mojo::Remote<media::mojom::Renderer> translators_renderer;
+  RegisterCommandSource(translators_renderer.BindNewPipeAndPassReceiver());
+  call_translator_ = std::make_unique<remoting::RpcCallTranslator>(
+      std::move(translators_renderer));
 }
 
 PlaybackCommandDispatcher::~PlaybackCommandDispatcher() {
   OnRemotingSessionEnded();
+}
+
+void PlaybackCommandDispatcher::RegisterCommandSource(
+    mojo::PendingReceiver<media::mojom::Renderer> controls) {
+  muxer_->RegisterController(std::move(controls));
 }
 
 void PlaybackCommandDispatcher::OnRemotingSessionNegotiated(

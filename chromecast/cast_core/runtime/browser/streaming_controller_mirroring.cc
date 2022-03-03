@@ -22,8 +22,7 @@ void StreamingControllerMirroring::StartPlayback(
         cast_streaming_receiver,
     mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
         renderer_connection) {
-  receiver_session->SetCastStreamingReceiver(
-      std::move(cast_streaming_receiver));
+  receiver_session->StartStreamingAsync(std::move(cast_streaming_receiver));
 
   renderer_connection_ = std::move(renderer_connection);
   renderer_connection_->SetPlaybackController(

@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/openscreen/src/cast/streaming/receiver_session.h"
 
@@ -43,6 +45,27 @@ class ReceiverSession {
         const media::VideoDecoderConfig& video_config) = 0;
   };
 
+  // Provides controls for a media::Renderer instance. Methods are a subset of
+  // those provided by a media::Renderer.
+  class RendererController {
+   public:
+    virtual ~RendererController() = default;
+
+    // Returns true if calls may be made to this object.
+    virtual bool IsValid() const = 0;
+
+    // Starts rendering from |time|. May only be called if this object is valid.
+    virtual void StartPlayingFrom(base::TimeDelta time) = 0;
+
+    // Updates the current playback rate. The default playback rate should be 0.
+    // May only be called if this object is valid.
+    virtual void SetPlaybackRate(double playback_rate) = 0;
+
+    // Sets the output volume. The default volume should be 1. May only be
+    // called if this object is valid.
+    virtual void SetVolume(float volume) = 0;
+  };
+
   using MessagePortProvider =
       base::OnceCallback<std::unique_ptr<cast_api_bindings::MessagePort>()>;
   using AVConstraints = openscreen::cast::ReceiverSession::Preferences;
@@ -61,13 +84,29 @@ class ReceiverSession {
       MessagePortProvider message_port_provider,
       Client* client = nullptr);
 
-  // Sets up the CastStreamingReceiver mojo remote. This will immediately call
-  // CastStreamingReceiver::EnableReceiver(). Upon receiving the callback for
-  // this method, the Cast Streaming Receiver Session will be started and audio
+  // Schedules a call to begin streaming, following initial internal
+  // initialization of the component. Following this initialization, audio
   // and/or video frames will be sent over a Mojo channel.
-  virtual void SetCastStreamingReceiver(
+  // NOTE: Depending on the media::Renderer currently being used for media
+  // playback, additional steps may be required to begin playback. If the
+  // |PlaybackCommandForwardingRenderer| is being used, the below overload is
+  // recommended instead.
+  virtual void StartStreamingAsync(
       mojo::AssociatedRemote<mojom::CastStreamingReceiver>
           cast_streaming_receiver) = 0;
+
+  // As above, but also sets the |renderer_controller| to be used to control a
+  // renderer-process |PlaybackCommandForwardingRenderer|. This control may then
+  // be done through the RenderControls returned by GetRendererControls() below.
+  virtual void StartStreamingAsync(
+      mojo::AssociatedRemote<mojom::CastStreamingReceiver>
+          cast_streaming_receiver,
+      mojo::AssociatedRemote<mojom::RendererController>
+          renderer_controller) = 0;
+
+  // Returns a RendererController through which commands may be injected into
+  // the renderer-process PlaybackCommandForwardingRenderer.
+  virtual RendererController* GetRendererControls() = 0;
 };
 
 }  // namespace cast_streaming

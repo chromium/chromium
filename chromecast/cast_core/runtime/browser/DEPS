@@ -27,5 +27,5 @@ include_rules = [
   "+third_party/grpc",
   "+third_party/metrics_proto",
   "+third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h",
-  "+third_party/openscreen/src/cast/streaming/constants.h",
+  "+third_party/openscreen/src/cast/streaming",
 ]

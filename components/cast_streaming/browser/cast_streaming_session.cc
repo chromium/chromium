@@ -38,6 +38,7 @@ namespace cast_streaming {
 
 CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
     CastStreamingSession::Client* client,
+    absl::optional<RendererControllerConfig> renderer_controls,
     std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
@@ -55,6 +56,14 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
   receiver_session_ = std::make_unique<openscreen::cast::ReceiverSession>(
       this, &environment_, &cast_message_port_impl_,
       std::move(*av_constraints));
+
+  if (renderer_controls) {
+    playback_command_dispatcher_ = std::make_unique<PlaybackCommandDispatcher>(
+        task_runner,
+        std::move(renderer_controls.value().control_configuration));
+    playback_command_dispatcher_->RegisterCommandSource(
+        std::move(renderer_controls.value().external_renderer_controls));
+  }
 
   init_timeout_timer_.Start(
       FROM_HERE, kInitTimeout,
@@ -213,12 +222,24 @@ void CastStreamingSession::ReceiverSessionClient::OnNegotiated(
   }
 }
 
+void CastStreamingSession::ReceiverSessionClient::OnRemotingNegotiated(
+    const openscreen::cast::ReceiverSession* session,
+    openscreen::cast::ReceiverSession::RemotingNegotiation negotiation) {
+  DCHECK(playback_command_dispatcher_);
+  OnNegotiated(session, std::move(negotiation.receivers));
+  playback_command_dispatcher_->OnRemotingSessionNegotiated(
+      negotiation.messenger);
+}
+
 void CastStreamingSession::ReceiverSessionClient::OnReceiversDestroying(
     const openscreen::cast::ReceiverSession* session,
     ReceiversDestroyingReason reason) {
   // This can be called when |receiver_session_| is being destroyed, so we
   // do not sanity-check |session| here.
   DVLOG(1) << __func__;
+  if (playback_command_dispatcher_) {
+    playback_command_dispatcher_->OnRemotingSessionEnded();
+  }
 
   switch (reason) {
     case ReceiversDestroyingReason::kEndOfSession:
@@ -258,6 +279,7 @@ CastStreamingSession::~CastStreamingSession() = default;
 
 void CastStreamingSession::Start(
     Client* client,
+    absl::optional<RendererControllerConfig> renderer_controls,
     std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
@@ -265,7 +287,8 @@ void CastStreamingSession::Start(
   DCHECK(client);
   DCHECK(!receiver_session_);
   receiver_session_ = std::make_unique<ReceiverSessionClient>(
-      client, std::move(av_constraints), std::move(message_port), task_runner);
+      client, std::move(renderer_controls), std::move(av_constraints),
+      std::move(message_port), task_runner);
 }
 
 void CastStreamingSession::Stop() {

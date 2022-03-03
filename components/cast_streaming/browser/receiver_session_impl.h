@@ -8,6 +8,8 @@
 #include "components/cast_streaming/browser/cast_streaming_session.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,11 +34,32 @@ class ReceiverSessionImpl final
   ReceiverSessionImpl& operator=(const ReceiverSessionImpl&) = delete;
 
   // ReceiverSession implementation.
-  void SetCastStreamingReceiver(
-      mojo::AssociatedRemote<mojom::CastStreamingReceiver>
-          cast_streaming_receiver) override;
+  void StartStreamingAsync(mojo::AssociatedRemote<mojom::CastStreamingReceiver>
+                               cast_streaming_receiver) override;
+  void StartStreamingAsync(mojo::AssociatedRemote<mojom::CastStreamingReceiver>
+                               cast_streaming_receiver,
+                           mojo::AssociatedRemote<mojom::RendererController>
+                               renderer_controller) override;
+  RendererController* GetRendererControls() override;
 
  private:
+  class RendererControllerImpl : public ReceiverSession::RendererController {
+   public:
+    RendererControllerImpl();
+    ~RendererControllerImpl() override;
+
+    mojo::PendingReceiver<media::mojom::Renderer> Bind();
+
+    // ReceiverSession::RendererController overrides.
+    bool IsValid() const override;
+    void StartPlayingFrom(base::TimeDelta time) override;
+    void SetPlaybackRate(double playback_rate) override;
+    void SetVolume(float volume) override;
+
+   private:
+    mojo::Remote<media::mojom::Renderer> renderer_controls_;
+  };
+
   // Handler for |cast_streaming_receiver_| disconnect.
   void OnMojoDisconnect();
 
@@ -70,6 +93,8 @@ class ReceiverSessionImpl final
   mojo::Remote<mojom::CastStreamingBufferReceiver> video_remote_;
 
   ReceiverSession::Client* const client_;
+  std::unique_ptr<RendererControllerImpl> external_renderer_controls_;
+  absl::optional<RendererControllerConfig> renderer_control_config_;
 };
 
 }  // namespace cast_streaming

@@ -158,7 +158,18 @@ cast_source_set("streaming_receiver_session_client") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common:headers",
+    "//third_party/openscreen/src/cast/streaming:receiver",
   ]
+
+  # TODO: Move this block up once the parent CL merges in. Without keeping it
+  # separate, rebasing wouldn't work
+  sources += [
+    "streaming_controller_remoting.cc",
+    "streaming_controller_remoting.h",
+  ]
+  if (enable_remoting_for_cwr) {
+    sources += [ "streaming_controller_factory_mirroring.cc" ]
+  }
 }
 
 cast_source_set("runtime_application_watcher") {

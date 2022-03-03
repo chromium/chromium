@@ -23,7 +23,7 @@ void CastStreamingTestReceiver::Start(
                                      media::VideoCodec::kVP8),
           ToAudioCaptureConfigCodecs(media::AudioCodec::kAAC,
                                      media::AudioCodec::kOpus));
-  receiver_session_.Start(this, std::move(stream_config),
+  receiver_session_.Start(this, absl::nullopt, std::move(stream_config),
                           std::move(message_port),
                           base::SequencedTaskRunnerHandle::Get());
 }

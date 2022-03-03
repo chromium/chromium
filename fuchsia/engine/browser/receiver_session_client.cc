@@ -47,6 +47,5 @@ void ReceiverSessionClient::SetCastStreamingReceiver(
                 std::move(port));
           },
           std::move(message_port_request_)));
-  receiver_session_->SetCastStreamingReceiver(
-      std::move(cast_streaming_receiver));
+  receiver_session_->StartStreamingAsync(std::move(cast_streaming_receiver));
 }
