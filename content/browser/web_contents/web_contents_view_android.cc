@@ -426,9 +426,9 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
   return true;
 }
 
-// TODO(paulmeyer): The drag-and-drop calls on GetRenderViewHost()->GetWidget()
-// in the following functions will need to be targeted to specific
-// RenderWidgetHosts in order to work with OOPIFs. See crbug.com/647249.
+// TODO(crbug.com/1301905): does not work for OOPIFs. The drag-and-drop calls
+// on GetRenderViewHost()->GetWidget() in the following functions will need to
+// be targeted to specific RenderWidgetHosts.
 
 void WebContentsViewAndroid::OnDragEntered(
     const std::vector<DropData::Metadata>& metadata,
