@@ -34,7 +34,6 @@
 #endif
 
 namespace metrics {
-
 namespace {
 
 enum RendererType {

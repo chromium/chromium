@@ -12,7 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
-
 namespace {
 
 const char kTestPrefName[] = "TestPref";

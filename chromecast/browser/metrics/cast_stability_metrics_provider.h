@@ -41,7 +41,7 @@ class CastStabilityMetricsProvider : public ::metrics::MetricsProvider,
 
   ~CastStabilityMetricsProvider() override = default;
 
-  // metrics::MetricsDataProvider implementation:
+  // metrics::MetricsProvider implementation:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
   void ProvideStabilityMetrics(

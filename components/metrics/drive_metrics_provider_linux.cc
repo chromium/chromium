@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 
 namespace metrics {
-
 namespace {
 
 // See http://www.kernel.org/doc/Documentation/devices.txt for more info.

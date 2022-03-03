@@ -21,7 +21,7 @@ class OmniboxMetricsProvider : public metrics::MetricsProvider {
   OmniboxMetricsProvider(const OmniboxMetricsProvider&) = delete;
   OmniboxMetricsProvider& operator=(const OmniboxMetricsProvider&) = delete;
 
-  // metrics::MetricsDataProvider:
+  // metrics::MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
   void ProvideCurrentSessionData(

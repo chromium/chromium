@@ -20,7 +20,6 @@
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
 namespace metrics {
-
 namespace {
 
 // Name prefix of the histogram that counts the number of reports uploaded by a

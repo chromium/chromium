@@ -12,7 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
-
 namespace {
 
 class MetricsServiceClientTest : public testing::Test {

@@ -16,7 +16,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace metrics {
-
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

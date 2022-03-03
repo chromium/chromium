@@ -167,7 +167,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace metrics {
-
 namespace {
 
 // Used to mark histogram samples as reported so that they are not included in

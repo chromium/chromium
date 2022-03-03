@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace metrics {
-
 namespace {
 
 class MojoSingleSampleMetric : public mojom::SingleSampleMetric {

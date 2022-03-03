@@ -30,7 +30,7 @@ class DriveMetricsProvider : public metrics::MetricsProvider {
 
   ~DriveMetricsProvider() override;
 
-  // metrics::MetricsDataProvider:
+  // metrics::MetricsProvider:
   void AsyncInit(base::OnceClosure done_callback) override;
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;

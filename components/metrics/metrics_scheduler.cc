@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 
 namespace metrics {
-
 namespace {
 
 // The delay, in seconds, after startup before sending the first log message.

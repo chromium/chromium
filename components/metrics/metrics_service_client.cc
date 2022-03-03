@@ -16,7 +16,6 @@
 #include "components/metrics/url_constants.h"
 
 namespace metrics {
-
 namespace {
 
 // The minimum time in seconds between consecutive metrics report uploads.

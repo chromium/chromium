@@ -49,7 +49,7 @@ class IOSChromeStabilityMetricsProvider : public metrics::MetricsProvider,
 
   ~IOSChromeStabilityMetricsProvider() override;
 
-  // metrics::MetricsDataProvider:
+  // metrics::MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
   void ProvideStabilityMetrics(

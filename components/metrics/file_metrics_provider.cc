@@ -37,7 +37,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace metrics {
-
 namespace {
 
 // These structures provide values used to define how files are opened and

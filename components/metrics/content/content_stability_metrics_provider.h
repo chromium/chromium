@@ -53,7 +53,7 @@ class ContentStabilityMetricsProvider
       const ContentStabilityMetricsProvider&) = delete;
   ~ContentStabilityMetricsProvider() override;
 
-  // MetricsDataProvider:
+  // MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
   void ProvideStabilityMetrics(

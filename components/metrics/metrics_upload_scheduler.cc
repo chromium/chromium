@@ -14,7 +14,6 @@
 #include "components/metrics/metrics_scheduler.h"
 
 namespace metrics {
-
 namespace {
 
 // When uploading metrics to the server fails, we progressively wait longer and

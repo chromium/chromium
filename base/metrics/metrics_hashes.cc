@@ -11,7 +11,6 @@
 #include "base/sys_byteorder.h"
 
 namespace base {
-
 namespace {
 
 // Converts the 8-byte prefix of an MD5 hash into a uint64_t value.
@@ -50,4 +49,4 @@ uint32_t HashMetricNameAs32Bits(base::StringPiece name) {
   return DigestToUInt32(digest);
 }
 
-}  // namespace metrics
+}  // namespace base

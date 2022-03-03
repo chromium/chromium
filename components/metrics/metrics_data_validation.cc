@@ -9,7 +9,6 @@
 #include "base/numerics/safe_conversions.h"
 
 namespace metrics {
-
 namespace internal {
 
 // Used to assess the reliability of field trial data by injecting different

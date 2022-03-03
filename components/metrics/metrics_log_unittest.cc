@@ -47,7 +47,6 @@
 #endif
 
 namespace metrics {
-
 namespace {
 
 const char kClientId[] = "bogus client ID";
