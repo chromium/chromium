@@ -21,6 +21,7 @@
 namespace ash {
 
 namespace {
+
 // Projector network traffic annotation tags.
 constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("projector_xhr_loader", R"(
@@ -50,6 +51,11 @@ bool IsUrlAllowlisted(const std::string& url) {
   }
   return false;
 }
+
+// The maximum number of retries for the SimpleURLLoader requests. Three times
+// is an arbitrary number to start with.
+const int kMaxRetries = 3;
+
 }  // namespace
 
 ProjectorXhrSender::ProjectorXhrSender(
@@ -133,7 +139,10 @@ void ProjectorXhrSender::SendRequest(const GURL& url,
 
   if (!request_body.empty())
     loader->AttachStringForUpload(request_body, "application/json");
-
+  loader->SetRetryOptions(
+      kMaxRetries,
+      network::SimpleURLLoader::RETRY_ON_5XX |
+          network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_,
       base::BindOnce(&ProjectorXhrSender::OnSimpleURLLoaderComplete,
