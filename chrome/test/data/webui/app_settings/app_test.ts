@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://app-settings/web_app_settings.js';
 
-import {App, AppManagementPermissionItemElement, AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, OptionalBool, PermissionType, PermissionTypeIndex, RunOnOsLoginMode, TriState, WebAppSettingsAppElement, WindowMode} from 'chrome://app-settings/web_app_settings.js';
+import {App, AppManagementPermissionItemElement, AppManagementToggleRowElement, AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, OptionalBool, PermissionType, PermissionTypeIndex, RunOnOsLoginMode, TriState, WebAppSettingsAppElement, WindowMode} from 'chrome://app-settings/web_app_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -35,9 +35,14 @@ suite('AppSettingsAppTest', () => {
       hideResizeLocked: true,
       supportedLinks: [],
       runOnOsLogin: {loginMode: RunOnOsLoginMode.kNotRun, isManaged: false},
-      fileHandlingState:
-          {enabled: false, isManaged: false, userVisibleTypes: 'TXT'},
-      installSource: InstallSource.kUnknown
+      fileHandlingState: {
+        enabled: false,
+        isManaged: false,
+        userVisibleTypes: 'TXT',
+        userVisibleTypesLabel: 'Supported type: TXT',
+        learnMoreUrl: {url: 'https://google.com/'},
+      },
+      installSource: InstallSource.kUnknown,
     };
 
     const permissionTypes = [
@@ -100,10 +105,14 @@ suite('AppSettingsAppTest', () => {
     assertTrue(!!fileHandlingItem);
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
 
-    fileHandlingItem.click();
+    const toggleRow =
+        fileHandlingItem.shadowRoot!
+            .querySelector<AppManagementToggleRowElement>('#toggle-row')!;
+    assertTrue(!!toggleRow);
+    toggleRow.click();
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, true);
 
-    fileHandlingItem.click();
+    toggleRow.click();
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
   });
 

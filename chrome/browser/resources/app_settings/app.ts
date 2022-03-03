@@ -11,6 +11,7 @@ import 'chrome://resources/cr_components/app_management/permission_item.js';
 import 'chrome://resources/cr_components/app_management/window_mode_item.js';
 import 'chrome://resources/cr_components/app_management/icons.js';
 import 'chrome://resources/cr_components/app_management/uninstall_button.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';

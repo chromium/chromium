@@ -5,6 +5,7 @@
 module app_management.mojom;
 
 import "components/services/app_service/public/mojom/types.mojom";
+import "url/mojom/url.mojom";
 
 struct App {
   string id;
@@ -86,5 +87,11 @@ interface Page {
 struct FileHandlingState {
   bool enabled;
   bool is_managed;
+  // A list of all file type associations, such as "MD, TXT, CSV".
   string user_visible_types;
+  // A label that displays a possibly truncated list of file type associations
+  // and may be linkified to display overflow.
+  string user_visible_types_label;
+  // The URL for the learn more link. If empty, the link defaults to "#".
+  url.mojom.Url learn_more_url;
 };

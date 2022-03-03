@@ -1,6 +1,29 @@
-<app-management-toggle-row
-   id="toggle-row"
-   label="[[fileHandlingHeader]]"
-   managed="[[isManaged_(app)]]"
-   value="[[getValue_(app)]]">
-</app-management-toggle-row>
+<style include="app-management-shared-css">
+  :host(:not([available_])) {
+    display: none;
+  }
+
+  #file-handling-item {
+    margin: var(--row-item-vertical-padding) 0;
+    width: 100%;
+  }
+
+  #toggle-row:not([disabled_]) {
+    cursor: pointer;
+  }
+</style>
+
+<div id="file-handling-item">
+  <app-management-toggle-row
+     id="toggle-row"
+     label="[[fileHandlingHeader]]"
+     managed="[[isManaged_(app)]]"
+     value="[[getValue_(app)]]">
+  </app-management-toggle-row>
+  <p>
+    <localized-link localized-string="[[userVisibleTypesLabel_(app)]]">
+    </localized-link>
+  </p>
+  <localized-link localized-string="[[fileHandlingSetDefaults]]" link-url="[[getLearnMoreLinkUrl_(app)]]">
+  </localized-link>
+</div>

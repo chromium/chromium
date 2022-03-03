@@ -26,6 +26,7 @@ export class AppManagementFileHandlingItemElement extends PolymerElement {
   static get properties() {
     return {
       fileHandlingHeader: String,
+      fileHandlingSetDefaults: String,
 
       app: Object,
 
@@ -42,10 +43,10 @@ export class AppManagementFileHandlingItemElement extends PolymerElement {
 
   app: App;
   fileHandlingHeader: String;
+  fileHandlingSetDefaults: String;
 
   ready() {
     super.ready();
-    this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.onChanged_);
   }
 
@@ -63,16 +64,25 @@ export class AppManagementFileHandlingItemElement extends PolymerElement {
     return false;
   }
 
+  private userVisibleTypesLabel_(app: App): string {
+    if (app && app.fileHandlingState) {
+      return app.fileHandlingState.userVisibleTypesLabel;
+    }
+    return '';
+  }
+
+  private getLearnMoreLinkUrl_(app: App): string {
+    if (app && app.fileHandlingState) {
+      return app.fileHandlingState.learnMoreUrl.url;
+    }
+    return '';
+  }
+
   private getValue_(app: App): boolean {
     if (app && app.fileHandlingState) {
       return app.fileHandlingState.enabled;
     }
     return false;
-  }
-
-  private onClick_() {
-    this.shadowRoot!
-        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
   }
 
   private onChanged_() {

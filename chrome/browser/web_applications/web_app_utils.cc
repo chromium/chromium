@@ -288,6 +288,17 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
 std::tuple<std::u16string, size_t>
 GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
                                                  const AppId& app_id) {
+  auto extensions =
+      GetFileTypeAssociationsHandledByWebAppForDisplayAsList(profile, app_id);
+  return {base::UTF8ToUTF16(base::JoinString(
+              extensions, l10n_util::GetStringUTF8(
+                              IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR))),
+          extensions.size()};
+}
+
+std::vector<std::string> GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
+    Profile* profile,
+    const AppId& app_id) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return {};
@@ -306,12 +317,7 @@ GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
                  [](const std::string& extension) {
                    return base::ToUpperASCII(extension.substr(1));
                  });
-
-  return {
-      base::UTF8ToUTF16(base::JoinString(
-          extensions_for_display,
-          l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR))),
-      extensions_for_display.size()};
+  return extensions_for_display;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

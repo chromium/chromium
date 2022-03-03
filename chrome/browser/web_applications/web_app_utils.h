@@ -118,6 +118,12 @@ std::tuple<std::u16string, size_t /*count*/>
 GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
                                                  const AppId& app_id);
 
+// As above, but returns the extensions handled by the app as a vector of
+// strings.
+std::vector<std::string> GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
+    Profile* profile,
+    const AppId& app_id);
+
 // Updates the approved or disallowed protocol list for the given app. If
 // necessary, it also updates the protocol registration with the OS.
 void PersistProtocolHandlersUserChoice(

@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -37,7 +39,9 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/session/connection_holder.h"
@@ -57,6 +61,13 @@ const char* kAppIdsWithHiddenPinToShelf[] = {
     app_constants::kChromeAppId,
     app_constants::kLacrosAppId,
 };
+
+#if BUILDFLAG(IS_WIN)
+const char kFileHandlingLearnMore[] = "";
+#elif !BUILDFLAG(IS_CHROMEOS)
+const char kFileHandlingLearnMore[] =
+    "https://support.google.com/chrome/?p=pwa_default_associations";
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char const* kAppIdsWithHiddenStoragePermission[] = {
@@ -393,18 +404,36 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const bool fh_enabled =
         !provider->registrar().IsAppFileHandlerPermissionBlocked(app->id);
     std::string file_handling_types;
+    std::string file_handling_types_label;
     if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
             app->id) &&
         !provider->registrar().GetAppFileHandlers(app->id)->empty()) {
-      // TODO(crbug/1245293): elide types and add clickable link.
       auto [file_handling_types16, count] =
           web_app::GetFileTypeAssociationsHandledByWebAppForDisplay(profile_,
                                                                     app->id);
       file_handling_types = base::UTF16ToUTF8(file_handling_types16);
+
+      const std::vector<std::string> all_extensions =
+          web_app::GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
+              profile_, app->id);
+      std::vector<std::string> truncated_extensions = all_extensions;
+      // Only show at most 4 extensions.
+      truncated_extensions.resize(4);
+      file_handling_types_label =
+          base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
+              l10n_util::GetStringUTF16(IDS_APP_MANAGEMENT_FILE_HANDLING_TYPES),
+              "FILE_TYPE_COUNT", static_cast<int>(all_extensions.size()),
+              "FILE_TYPE1", truncated_extensions[0], "FILE_TYPE2",
+              truncated_extensions[1], "FILE_TYPE3", truncated_extensions[2],
+              "FILE_TYPE4", truncated_extensions[3], "OVERFLOW_COUNT",
+              static_cast<int>(all_extensions.size()) -
+                  static_cast<int>(truncated_extensions.size()),
+              "LINK", "#"));
     }
     // TODO(crbug/1252505): add file handling policy support.
     app->file_handling_state = app_management::mojom::FileHandlingState::New(
-        fh_enabled, /*is_managed=*/false, file_handling_types);
+        fh_enabled, /*is_managed=*/false, file_handling_types,
+        file_handling_types_label, GURL(kFileHandlingLearnMore));
   }
 #endif
 
