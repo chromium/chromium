@@ -59,4 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
   renderEvictionStats();
   document.body.querySelector('#trigger-notification')!.addEventListener(
       'click', () => getProxy().simulateStoragePressure());
+
+  document.body.querySelector('#summary-tab')!.addEventListener('click', () => {
+    document.body.querySelector('#usage-tabpanel')!.removeAttribute('selected');
+    document.body.querySelector('#summary-tabpanel')!.setAttribute(
+        'selected', 'selected');
+  });
+
+  document.querySelector('#usage-tab')!.addEventListener('click', () => {
+    document.querySelector('#summary-tabpanel')!.removeAttribute('selected');
+    document.querySelector('#usage-tabpanel')!.setAttribute(
+        'selected', 'selected');
+  });
 });

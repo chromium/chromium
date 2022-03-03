@@ -2,62 +2,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-* {
-  box-sizing: border-box;
-}
-
-html {
-  height: 100%;
-}
-
-body {
-  color: rgb(48, 57, 66);
-  display: flex;
-  flex-direction: column;
-  font-family: Roboto, sans-serif;
-  font-size: 13px;
-  height: 100%;
-  margin: 15px;
-  overflow: auto;
-}
-
-#listeners-tbody {
-  margin: auto;
-  text-align: center;
-}
-
-#eviction-tbody {
-  margin: auto;
-  text-align: center;
-}
-
-hr {
-  border-top: 1px solid rgb(48, 57, 66);
-  width: 100%;
-}
-
-.content {
-  background-color: #fbfbfb;
-  border: 1px solid #cecece;
-  border-radius: 3px;
-  line-height: 1.5;
-  overflow-x: scroll;
-  padding: 19px;
-}
-
-table {
-  border: 0;
-  border-collapse: collapse;
-}
-
-table tr {
-  border-top-color: rgba(0,0,0,.12);
-  border-top-style: solid;
-  border-top-width: 1px;
-}
-
-table td,
-table th {
-  padding-inline-end: 16px;
-  padding-inline-start: 16px;
-}
+ th,
+ td {
+   padding-inline-end: 0.5em;
+   padding-inline-start: 0.5em;
+   text-align: center;
+ }

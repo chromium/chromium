@@ -101,6 +101,21 @@ bool IsSupportedIncognitoType(StorageType type) {
   return type == StorageType::kTemporary || type == StorageType::kPersistent;
 }
 
+std::string StorageTypeEnumToString(StorageType type) {
+  switch (type) {
+    case StorageType::kTemporary:
+      return "temporary";
+    case StorageType::kPersistent:
+      return "persistent";
+    case StorageType::kSyncable:
+      return "syncable";
+    case StorageType::kQuotaNotManaged:
+      return "quota-not-managed";
+    case StorageType::kUnknown:
+      return "unknown";
+  }
+}
+
 QuotaErrorOr<BucketInfo> GetOrCreateBucketOnDBThread(
     const StorageKey& storage_key,
     const std::string& bucket_name,
@@ -1991,6 +2006,42 @@ void QuotaManagerImpl::DumpBucketTable(DumpBucketTableCallback callback) {
       base::BindOnce(&DumpBucketTableHelper::DidDumpBucketTable,
                      base::Owned(helper), weak_factory_.GetWeakPtr(),
                      std::move(callback)));
+}
+void QuotaManagerImpl::DidRetrieveBucketsTable(
+    RetrieveBucketsTableCallback callback,
+    const BucketTableEntries& entries) {
+  std::vector<storage::mojom::BucketTableEntryPtr> mojo_entries;
+
+  for (auto& n : entries) {
+    DCHECK(IsSupportedType(n.type));
+    storage::mojom::BucketTableEntryPtr entry =
+        storage::mojom::BucketTableEntry::New();
+    entry->bucket_id = n.bucket_id.value();
+    entry->storage_key = n.storage_key.Serialize();
+    entry->host = n.storage_key.origin().host();
+    entry->type = StorageTypeEnumToString(n.type);
+    entry->name = n.name;
+    entry->use_count = n.use_count;
+    entry->last_accessed = n.last_accessed;
+    entry->last_modified = n.last_modified;
+    mojo_entries.push_back(std::move(entry));
+  }
+  std::move(callback).Run(std::move(mojo_entries));
+}
+
+void QuotaManagerImpl::RetrieveBucketsTable(
+    RetrieveBucketsTableCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+
+  if (db_disabled_) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  DumpBucketTable(base::BindOnce(&QuotaManagerImpl::DidRetrieveBucketsTable,
+                                 weak_factory_.GetWeakPtr(),
+                                 std::move(callback)));
 }
 
 void QuotaManagerImpl::StartEviction() {

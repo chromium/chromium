@@ -39,6 +39,7 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
 #include "storage/browser/quota/quota_features.h"
+#include "storage/browser/quota/quota_internals.mojom.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
@@ -108,6 +109,19 @@ std::tuple<int64_t, int64_t> GetVolumeInfoForTests(
 
 StorageKey ToStorageKey(const std::string& url) {
   return StorageKey::CreateFromStringForTesting(url);
+}
+
+const storage::mojom::BucketTableEntry* FindBucketTableEntry(
+    const std::vector<storage::mojom::BucketTableEntryPtr>& bucket_entries,
+    BucketId& id) {
+  auto it = base::ranges::find_if(
+      bucket_entries, [id](const storage::mojom::BucketTableEntryPtr& entry) {
+        return entry->bucket_id == id.value();
+      });
+  if (it == bucket_entries.end()) {
+    return nullptr;
+  }
+  return it->get();
 }
 
 MATCHER_P3(MatchesBucketTableEntry, storage_key, type, use_count, "") {
@@ -434,6 +448,13 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_->DumpBucketTable(
         future.GetCallback<const BucketTableEntries&>());
     return future.Get();
+  }
+
+  std::vector<storage::mojom::BucketTableEntryPtr> RetrieveBucketsTable() {
+    base::test::TestFuture<std::vector<storage::mojom::BucketTableEntryPtr>>
+        future;
+    quota_manager_impl_->RetrieveBucketsTable(future.GetCallback());
+    return future.Take();
   }
 
   void DidGetUsageAndQuotaWithBreakdown(
@@ -2667,6 +2688,64 @@ TEST_F(QuotaManagerImplTest, DumpBucketTable) {
   EXPECT_THAT(entries, testing::UnorderedElementsAre(
                            MatchesBucketTableEntry(kStorageKey, kTemp, 1),
                            MatchesBucketTableEntry(kStorageKey, kPerm, 2)));
+}
+
+TEST_F(QuotaManagerImplTest, RetrieveBucketsTable) {
+  const StorageKey kStorageKey = ToStorageKey("http://example.com/");
+  const std::string kSerializedStorageKey = kStorageKey.Serialize();
+  const base::Time kAccessTime = base::Time::Now();
+
+  static const ClientBucketData kData[] = {
+      {"http://example.com/", kDefaultBucketName, kTemp, 0},
+      {"http://example.com/", kDefaultBucketName, kPerm, 0},
+  };
+
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(client, kData);
+
+  quota_manager_impl()->NotifyStorageAccessed(kStorageKey, kTemp, kAccessTime);
+  quota_manager_impl()->NotifyStorageAccessed(kStorageKey, kPerm, kAccessTime);
+
+  base::Time time1 = client->IncrementMockTime();
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://example.com/"), kTemp,
+                                    10);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://example.com/"), kPerm,
+                                    10);
+  base::Time time2 = client->IncrementMockTime();
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://example.com/"), kTemp,
+                                    10);
+  base::Time time3 = client->IncrementMockTime();
+
+  auto temp_bucket = GetBucket(kStorageKey, kDefaultBucketName, kTemp);
+  auto perm_bucket = GetBucket(kStorageKey, kDefaultBucketName, kPerm);
+
+  const std::vector<storage::mojom::BucketTableEntryPtr> bucket_table_entries =
+      RetrieveBucketsTable();
+
+  auto* temp_entry =
+      FindBucketTableEntry(bucket_table_entries, temp_bucket->id);
+  EXPECT_TRUE(temp_entry);
+  EXPECT_EQ(temp_entry->storage_key, kSerializedStorageKey);
+  EXPECT_EQ(temp_entry->host, "example.com");
+  EXPECT_EQ(temp_entry->type, "temporary");
+  EXPECT_EQ(temp_entry->name, kDefaultBucketName);
+  EXPECT_EQ(temp_entry->use_count, 1);
+  EXPECT_EQ(temp_entry->last_accessed, kAccessTime);
+  EXPECT_GE(temp_entry->last_modified, time2);
+  EXPECT_LE(temp_entry->last_modified, time3);
+
+  auto* perm_entry =
+      FindBucketTableEntry(bucket_table_entries, perm_bucket->id);
+  EXPECT_TRUE(perm_entry);
+  EXPECT_EQ(perm_entry->storage_key, kSerializedStorageKey);
+  EXPECT_EQ(perm_entry->host, "example.com");
+  EXPECT_EQ(perm_entry->type, "persistent");
+  EXPECT_EQ(perm_entry->name, kDefaultBucketName);
+  EXPECT_EQ(perm_entry->use_count, 1);
+  EXPECT_EQ(perm_entry->last_accessed, kAccessTime);
+  EXPECT_GE(perm_entry->last_modified, time1);
+  EXPECT_LE(perm_entry->last_modified, time2);
 }
 
 TEST_F(QuotaManagerImplTest, QuotaForEmptyHost) {

@@ -4,7 +4,20 @@
 
 module storage.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
+
+// Represents a single Storage Bucket entry.
+struct BucketTableEntry {
+    int64 bucket_id;
+    string storage_key;
+    string host;
+    string type;
+    string name;
+    int64 use_count;
+    mojo_base.mojom.Time last_accessed;
+    mojo_base.mojom.Time last_modified;
+};
 
 // Interface for controlling Quota Internals.
 // Hosted on chrome://quota-internals" for WebUI content::QuotaInternalsUI.
@@ -21,4 +34,7 @@ interface QuotaInternalsHandler {
     // Used by the quota-internals page to test behavior of the storage pressure
     // callback and trigger a storage pressure notification.
     SimulateStoragePressure(url.mojom.Origin origin_url);
+
+    // Returns an array of Storage Bucket entries stored in the QuotaDatabase.
+    RetrieveBucketsTable() => (array<BucketTableEntry> entries);
 };

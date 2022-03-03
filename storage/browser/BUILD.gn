@@ -347,6 +347,7 @@ source_set("unittests") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//sql:test_support",
+    "//storage/browser/quota:mojo_bindings",
     "//testing/gtest",
     "//third_party/blink/public/common",
     "//third_party/leveldatabase",
