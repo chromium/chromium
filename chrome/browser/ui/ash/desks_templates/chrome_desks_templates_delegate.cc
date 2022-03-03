@@ -367,3 +367,16 @@ void ChromeDesksTemplatesDelegate::OpenFeedbackDialog(
       /*description_placeholder_text=*/std::string(),
       /*category_tag=*/std::string(), extra_diagnostics);
 }
+
+std::string ChromeDesksTemplatesDelegate::GetAppShortName(
+    const std::string& app_id) {
+  std::string name;
+  auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
+      ProfileManager::GetActiveUserProfile());
+  DCHECK(app_service_proxy);
+
+  app_service_proxy->AppRegistryCache().ForOneApp(
+      app_id,
+      [&name](const apps::AppUpdate& update) { name = update.ShortName(); });
+  return name;
+}

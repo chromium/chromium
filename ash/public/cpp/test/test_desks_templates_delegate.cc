@@ -61,4 +61,9 @@ bool TestDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
 void TestDesksTemplatesDelegate::OpenFeedbackDialog(
     const std::string& extra_diagnostics) {}
 
+std::string TestDesksTemplatesDelegate::GetAppShortName(
+    const std::string& app_id) {
+  return std::string();
+}
+
 }  // namespace ash

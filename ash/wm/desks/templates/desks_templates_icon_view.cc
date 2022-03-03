@@ -21,6 +21,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "url/gurl.h"
@@ -104,10 +105,22 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
       delegate->MaybeRetrieveIconForSpecialIdentifier(
           icon_identifier_, static_cast<DesksTemplatesIconContainer*>(parent())
                                 ->incognito_window_color_provider());
+
+  icon_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
+
+  // PWAs (e.g. Messages) should use icon identifier as they share the same app
+  // id as Chrome and would return short name for app id as "Chromium" (see
+  // https://crbug.com/1281394). This is unlike Chrome browser apps which should
+  // use `app_id` as their icon identifiers have been stripped to avoid
+  // duplicate favicons (see https://crbug.com/1281391).
   if (chrome_icon.has_value()) {
     icon_view_->SetImage(CreateResizedImageToIconSize(chrome_icon.value()));
+    icon_view_->GetViewAccessibility().OverrideName(
+        delegate->GetAppShortName(app_id));
     return;
   }
+  icon_view_->GetViewAccessibility().OverrideName(
+      delegate->GetAppShortName(icon_identifier_));
 
   // It's not a special value so `icon_identifier_` is either a favicon or an
   // app id. If `icon_identifier_` is not a valid url then it's an app id.

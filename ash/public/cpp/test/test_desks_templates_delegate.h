@@ -61,6 +61,7 @@ class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
                               base::TimeDelta delay) override;
   bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
   void OpenFeedbackDialog(const std::string& extra_diagnostics) override;
+  std::string GetAppShortName(const std::string& app_id) override;
 
  private:
   desks_storage::DeskModel* desk_model_ = nullptr;

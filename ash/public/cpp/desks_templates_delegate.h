@@ -96,6 +96,10 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
 
   // Called when the feedback button is pressed.
   virtual void OpenFeedbackDialog(const std::string& extra_diagnostics) = 0;
+
+  // Return the readable app name for this app id (i.e. "madfksjfasdfkjasdkf" ->
+  // "Chrome").
+  virtual std::string GetAppShortName(const std::string& app_id) = 0;
 };
 
 }  // namespace ash
