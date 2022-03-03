@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
@@ -249,6 +251,9 @@ class PerUserStateManagerChromeOS
 
   // Current state for |this|.
   State state_ = State::CONSTRUCTED;
+
+  // Task runner. Used to persist state to daemon-store.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
 
   base::WeakPtrFactory<PerUserStateManagerChromeOS> weak_ptr_factory_{this};
 };

@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 
 #include "base/callback_list.h"
+#include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -27,14 +28,24 @@ namespace metrics {
 
 namespace {
 
+constexpr char kDaemonStorePath[] = "/run/daemon-store/uma-consent/";
+constexpr char kDaemonStoreFileName[] = "consent-enabled";
+
 absl::optional<bool> g_is_managed_for_testing;
 
 std::string GenerateUserId() {
   return base::GenerateGUID();
 }
 
+// Keep in sync with PerUserDaemonStoreFail enum.
+enum class DaemonStoreFailType {
+  kFailedDisabling = 0,
+  kFailedEnabling = 1,
+  kMaxValue = kFailedEnabling,
+};
+
 // Keep in sync with PerUserIdType enum.
-enum IdResetType {
+enum class IdResetType {
   kClientId = 0,
   kUserId = 1,
   kMaxValue = kUserId,
@@ -43,6 +54,18 @@ enum IdResetType {
 // Keep in sync with enum PerUserIdType.
 void RecordIdReset(IdResetType id_type) {
   base::UmaHistogramEnumeration("UMA.CrosPerUser.IdReset", id_type);
+}
+
+void WriteDaemonStore(base::FilePath path, bool metrics_consent) {
+  const std::string file_contents = metrics_consent ? "1" : "0";
+  if (!base::WriteFile(path, file_contents)) {
+    LOG(ERROR) << "Failed to persist consent change " << file_contents
+               << " to daemon-store. State on disk will be inaccurate!";
+    base::UmaHistogramEnumeration("UMA.CrosPerUser.DaemonStoreWriteFailed",
+                                  metrics_consent
+                                      ? DaemonStoreFailType::kFailedEnabling
+                                      : DaemonStoreFailType::kFailedDisabling);
+  }
 }
 
 }  // namespace
@@ -60,6 +83,9 @@ PerUserStateManagerChromeOS::PerUserStateManagerChromeOS(
       signing_key_(signing_key) {
   user_manager_->AddSessionStateObserver(this);
   user_manager_->AddObserver(this);
+
+  task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 }
 
 PerUserStateManagerChromeOS::PerUserStateManagerChromeOS(
@@ -236,6 +262,16 @@ void PerUserStateManagerChromeOS::SetReportingState(bool metrics_consent) {
 
   GetCurrentUserPrefs()->SetBoolean(prefs::kMetricsUserConsent,
                                     metrics_consent);
+
+  std::string hash = user_manager_->GetActiveUser()->username_hash();
+  base::FilePath daemon_store_consent = base::FilePath(kDaemonStorePath)
+                                            .Append(hash)
+                                            .Append(kDaemonStoreFileName);
+  // Do this asynchronously so we don't block in a potentially non-blocking
+  // context.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(WriteDaemonStore, daemon_store_consent, metrics_consent));
   NotifyObservers(metrics_consent);
 }
 
@@ -325,7 +361,7 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState() {
   if (user_id.has_value()) {
     local_state_->SetString(prefs::kMetricsCurrentUserId, user_id.value());
   } else {
-    RecordIdReset(kUserId);
+    RecordIdReset(IdResetType::kUserId);
     local_state_->ClearPref(prefs::kMetricsCurrentUserId);
   }
 
@@ -416,7 +452,7 @@ void PerUserStateManagerChromeOS::UpdateLocalStatePrefs(bool metrics_enabled) {
   // to on, this will cause the client ID to be reset each time, which is not
   // necessary. Look for a way to allow resetting client id less eager.
   if (user_prefs->GetBoolean(prefs::kMetricsRequiresClientIdResetOnConsent)) {
-    RecordIdReset(kClientId);
+    RecordIdReset(IdResetType::kClientId);
     ForceClientIdReset();
   } else {
     user_prefs->SetBoolean(prefs::kMetricsRequiresClientIdResetOnConsent, true);

@@ -71262,6 +71262,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Serialization error"/>
 </enum>
 
+<enum name="PerUserDaemonStoreFail">
+  <int value="0" label="Failed disabling consent"/>
+  <int value="1" label="Failed enabling consent"/>
+</enum>
+
 <enum name="PerUserIdType">
   <int value="0" label="Client ID"/>
   <int value="1" label="User ID"/>
