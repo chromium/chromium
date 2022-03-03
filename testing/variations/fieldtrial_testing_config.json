@@ -1351,6 +1351,28 @@
     "CPSS-Geolocation": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210817",
+                    "params": {
+                        "holdback_chance": "0.3"
+                    },
+                    "enable_features": [
+                        "PermissionGeolocationPredictions"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CPSS-OnDeviceNotificationPredictions": [
+        {
+            "platforms": [
                 "android",
                 "chromeos",
                 "chromeos_lacros",
@@ -1360,12 +1382,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled__20210817",
+                    "name": "Enabled_20220221",
                     "params": {
                         "holdback_chance": "0.3"
                     },
                     "enable_features": [
-                        "PermissionGeolocationPredictions"
+                        "OptimizationHints",
+                        "PermissionOnDeviceNotificationPredictions"
                     ]
                 }
             ]
