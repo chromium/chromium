@@ -15,12 +15,6 @@
 
 namespace experimental_flags {
 
-enum GaiaEnvironment {
-  GAIA_ENVIRONMENT_PROD,
-  GAIA_ENVIRONMENT_STAGING,
-  GAIA_ENVIRONMENT_TEST,
-};
-
 enum WhatsNewPromoStatus {
   WHATS_NEW_DEFAULT = 0,          // Not forced to enable a promo.
   WHATS_NEW_TEST_COMMAND_TIP,     // Test Tip that runs a command.
@@ -32,8 +26,6 @@ enum WhatsNewPromoStatus {
 
 // Whether the First Run UI will be always be displayed.
 bool AlwaysDisplayFirstRun();
-
-GaiaEnvironment GetGaiaEnvironment();
 
 // Returns the host name for an alternative Origin Server host for use by
 // |BrandCode| startup ping. Returns empty string if there is no alternative

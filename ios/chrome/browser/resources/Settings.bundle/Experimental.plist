@@ -282,28 +282,6 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Gaia Environment</string>
-			<key>Key</key>
-			<string>GAIAEnvironment</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Values</key>
-			<array>
-				<string></string>
-				<string>Staging</string>
-				<string>Test</string>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Prod</string>
-				<string>Staging</string>
-				<string>Test</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
 			<string>Clear Application Group sandbox</string>

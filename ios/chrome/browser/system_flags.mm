@@ -37,7 +37,6 @@ NSString* const kAlternateDiscoverFeedServerURL =
 NSString* const kDisableDCHECKCrashes = @"DisableDCHECKCrashes";
 NSString* const kEnableStartupCrash = @"EnableStartupCrash";
 NSString* const kFirstRunForceEnabled = @"FirstRunForceEnabled";
-NSString* const kGaiaEnvironment = @"GAIAEnvironment";
 NSString* const kOriginServerHost = @"AlternateOriginServerHost";
 NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
 NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
@@ -50,16 +49,6 @@ namespace experimental_flags {
 bool AlwaysDisplayFirstRun() {
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:kFirstRunForceEnabled];
-}
-
-GaiaEnvironment GetGaiaEnvironment() {
-  NSString* gaia_environment =
-      [[NSUserDefaults standardUserDefaults] objectForKey:kGaiaEnvironment];
-  if ([gaia_environment isEqualToString:@"Staging"])
-    return GAIA_ENVIRONMENT_STAGING;
-  if ([gaia_environment isEqualToString:@"Test"])
-    return GAIA_ENVIRONMENT_TEST;
-  return GAIA_ENVIRONMENT_PROD;
 }
 
 std::string GetOriginServerHost() {
