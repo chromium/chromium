@@ -718,11 +718,11 @@ TEST_F(ListModelTest, Footers) {
       [model sectionForSectionIdentifier:SectionIdentifierWeasley];
 
   EXPECT_FALSE([model footerForSectionWithIdentifier:SectionIdentifierCheese]);
-  EXPECT_FALSE([model footerForSection:cheeseSection]);
+  EXPECT_FALSE([model footerForSectionIndex:cheeseSection]);
 
   EXPECT_EQ(weasleyFooter,
             [model footerForSectionWithIdentifier:SectionIdentifierWeasley]);
-  EXPECT_EQ(weasleyFooter, [model footerForSection:weasleySection]);
+  EXPECT_EQ(weasleyFooter, [model footerForSectionIndex:weasleySection]);
 }
 
 // Tests -[ListModel indexPathForItemType:].

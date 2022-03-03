@@ -196,8 +196,9 @@ typedef NSMutableArray<ListItem*> SectionItems;
   return [_headers objectForKey:key];
 }
 
-- (ListItem*)footerForSection:(NSInteger)section {
-  NSInteger sectionIdentifier = [self sectionIdentifierForSectionIndex:section];
+- (ListItem*)footerForSectionIndex:(NSInteger)sectionIndex {
+  NSInteger sectionIdentifier =
+      [self sectionIdentifierForSectionIndex:sectionIndex];
   NSNumber* key = [NSNumber numberWithInteger:sectionIdentifier];
   return [_footers objectForKey:key];
 }

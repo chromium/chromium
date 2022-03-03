@@ -82,7 +82,7 @@ TEST_F(BandwidthManagementTableViewControllerTest, TestModel) {
       currentLabelForPreference:chrome_browser_state_->GetPrefs()
                     settingPref:prefs::kNetworkPredictionSetting];
   CheckTextCellTextAndDetailText(expected_title, expected_subtitle, 0, 0);
-  EXPECT_NE(nil, [controller().tableViewModel footerForSection:0]);
+  EXPECT_NE(nil, [controller().tableViewModel footerForSectionIndex:0]);
 }
 
 }  // namespace

@@ -104,7 +104,7 @@ void ChromeTableViewControllerTest::CheckSectionHeaderWithId(
 void ChromeTableViewControllerTest::CheckSectionFooter(NSString* expected_text,
                                                        int section) {
   TableViewHeaderFooterItem* footer =
-      [[controller_ tableViewModel] footerForSection:section];
+      [[controller_ tableViewModel] footerForSectionIndex:section];
   ASSERT_TRUE([footer respondsToSelector:@selector(text)]);
   EXPECT_NSEQ(expected_text, [(id)footer text]);
 }

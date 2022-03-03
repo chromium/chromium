@@ -28,7 +28,7 @@ TEST_F(AboutChromeTableViewControllerTest, TestModel) {
 
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(3, NumberOfItemsInSection(0));
-  EXPECT_NE(nil, [controller().tableViewModel footerForSection:0]);
+  EXPECT_NE(nil, [controller().tableViewModel footerForSectionIndex:0]);
   CheckTextCellTextWithId(IDS_IOS_OPEN_SOURCE_LICENSES, 0, 0);
   CheckTextCellTextWithId(IDS_IOS_TERMS_OF_SERVICE, 0, 1);
   CheckTextCellTextWithId(IDS_IOS_PRIVACY_POLICY, 0, 2);

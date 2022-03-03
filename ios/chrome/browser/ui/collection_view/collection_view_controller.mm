@@ -196,7 +196,7 @@
     item = [self.collectionViewModel headerForSectionIndex:indexPath.section];
     traits = UIAccessibilityTraitHeader;
   } else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
-    item = [self.collectionViewModel footerForSection:indexPath.section];
+    item = [self.collectionViewModel footerForSectionIndex:indexPath.section];
   } else {
     return [super collectionView:collectionView
         viewForSupplementaryElementOfKind:kind
@@ -238,7 +238,7 @@
                                  (UICollectionViewLayout*)collectionViewLayout
     referenceSizeForFooterInSection:(NSInteger)section {
   CollectionViewItem* item =
-      [self.collectionViewModel footerForSection:section];
+      [self.collectionViewModel footerForSectionIndex:section];
 
   if (item) {
     // TODO(crbug.com/635604): Support arbitrary sized footers.

@@ -102,7 +102,7 @@ CGFloat kSectionFooterHeight = 8.;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
-  if ([self.tableViewModel footerForSection:section])
+  if ([self.tableViewModel footerForSectionIndex:section])
     return UITableViewAutomaticDimension;
   return kSectionFooterHeight;
 }

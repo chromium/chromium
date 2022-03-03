@@ -144,8 +144,8 @@ const NSInteger kItemTypeEnumZero = 100;
 // Returns the header for the given |sectionIndex|.
 - (SupplementalType)headerForSectionIndex:(NSInteger)sectionIndex;
 
-// Returns the footer for the given |section|.
-- (SupplementalType)footerForSection:(NSInteger)section;
+// Returns the footer for the given |sectionIndex|.
+- (SupplementalType)footerForSectionIndex:(NSInteger)sectionIndex;
 
 // Returns an array of items in the section with the given identifier.
 - (NSArray<ObjectType>*)itemsInSectionWithIdentifier:

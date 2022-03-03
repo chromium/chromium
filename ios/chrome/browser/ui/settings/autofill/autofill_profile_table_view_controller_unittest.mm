@@ -80,7 +80,7 @@ TEST_F(AutofillProfileTableViewControllerTest, TestInitialization) {
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   // Expect subtitle section to contain one row (the address Autofill toggle
   // subtitle).
-  EXPECT_NE(nil, [controller.tableViewModel footerForSection:0]);
+  EXPECT_NE(nil, [controller.tableViewModel footerForSectionIndex:0]);
 
   // Check the footer of the first section.
   CheckSectionFooterWithId(IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_SUBLABEL, 0);
