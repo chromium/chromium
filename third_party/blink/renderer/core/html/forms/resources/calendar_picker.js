@@ -3778,59 +3778,55 @@ function DayCell() {
   };
 }
 
-/**
- * @constructor
- * @extends ListCell
- */
-function WeekNumberCell() {
-  ListCell.call(this);
-  this.element.classList.add(WeekNumberCell.ClassNameWeekNumberCell);
-  this.element.style.width =
-      (WeekNumberCell.Width - WeekNumberCell.SeparatorWidth) + 'px';
-  this.element.style.height = WeekNumberCell.GetHeight() + 'px';
-  this.element.style.lineHeight =
-      (WeekNumberCell.GetHeight() - WeekNumberCell.PaddingSize * 2) + 'px';
-  /**
-   * @type {?Week}
-   */
-  this.week = null;
-};
+// ----------------------------------------------------------------
 
-{
-  WeekNumberCell.prototype = Object.create(ListCell.prototype);
+class WeekNumberCell extends ListCell {
+  constructor() {
+    super();
+    this.element.classList.add(WeekNumberCell.ClassNameWeekNumberCell);
+    this.element.style.width =
+        (WeekNumberCell.Width - WeekNumberCell.SeparatorWidth) + 'px';
+    this.element.style.height = WeekNumberCell.GetHeight() + 'px';
+    this.element.style.lineHeight =
+        (WeekNumberCell.GetHeight() - WeekNumberCell.PaddingSize * 2) + 'px';
+    /**
+     * @type {?Week}
+     */
+    this.week = null;
+  }
 
-  WeekNumberCell.Width = 48;
-  WeekNumberCell._Height = DayCell._Height;
-  WeekNumberCell.GetHeight = function() {
+  static Width = 48;
+  static _Height = DayCell._Height;
+  static GetHeight() {
     return WeekNumberCell._Height;
-  };
-  WeekNumberCell.SeparatorWidth = 1;
-  WeekNumberCell.PaddingSize = 1;
-  WeekNumberCell.ClassNameWeekNumberCell = 'week-number-cell';
-  WeekNumberCell.ClassNameHighlighted = 'highlighted';
-  WeekNumberCell.ClassNameDisabled = 'disabled';
+  }
+  static SeparatorWidth = 1;
+  static PaddingSize = 1;
+  static ClassNameWeekNumberCell = 'week-number-cell';
+  static ClassNameHighlighted = 'highlighted';
+  static ClassNameDisabled = 'disabled';
 
-  WeekNumberCell._recycleBin = [];
+  static _recycleBin = [];
 
   /**
    * @return {!Array}
    * @override
    */
-  WeekNumberCell.prototype._recycleBin = function() {
+  _recycleBin() {
     return WeekNumberCell._recycleBin;
-  };
+  }
 
   /**
    * @return {!WeekNumberCell}
    */
-  WeekNumberCell.recycleOrCreate = function() {
+  static recycleOrCreate() {
     return WeekNumberCell._recycleBin.pop() || new WeekNumberCell();
-  };
+  }
 
   /**
    * @param {!Week} week
    */
-  WeekNumberCell.prototype.reset = function(week) {
+  reset(week) {
     this.week = week;
     this.element.id = week.toString();
     this.element.setAttribute('role', 'gridcell');
@@ -3840,17 +3836,17 @@ function WeekNumberCell() {
             week.year, week.week, week.firstDay().format()));
     this.element.textContent = localizeNumber(this.week.week.toString());
     this.show();
-  };
+  }
 
   /**
    * @override
    */
-  WeekNumberCell.prototype.throwAway = function() {
-    ListCell.prototype.throwAway.call(this);
+  throwAway() {
+    super.throwAway();
     this.week = null;
-  };
+  }
 
-  WeekNumberCell.prototype.setHighlighted = function(highlighted) {
+  setHighlighted(highlighted) {
     if (highlighted) {
       this.element.classList.add(WeekNumberCell.ClassNameHighlighted);
       this.element.setAttribute('aria-selected', 'true');
@@ -3858,15 +3854,17 @@ function WeekNumberCell() {
       this.element.classList.remove(WeekNumberCell.ClassNameHighlighted);
       this.element.setAttribute('aria-selected', 'false');
     }
-  };
+  }
 
-  WeekNumberCell.prototype.setDisabled = function(disabled) {
+  setDisabled(disabled) {
     if (disabled)
       this.element.classList.add(WeekNumberCell.ClassNameDisabled);
     else
       this.element.classList.remove(WeekNumberCell.ClassNameDisabled);
-  };
+  }
 }
+
+// ----------------------------------------------------------------
 
 /**
  * @constructor
@@ -3905,60 +3903,56 @@ function CalendarTableHeaderView(hasWeekNumberColumn) {
   };
 }
 
-/**
- * @constructor
- * @extends ListCell
- */
-function CalendarRowCell() {
-  ListCell.call(this);
+// ----------------------------------------------------------------
 
-  this.element.classList.add(CalendarRowCell.ClassNameCalendarRowCell);
-  if (global.params.weekStartDay === WeekDay.Sunday) {
-    this.element.classList.add(CalendarRowCell.ClassNameWeekStartsOnSunday);
+class CalendarRowCell extends ListCell {
+  constructor() {
+    super();
+
+    this.element.classList.add(CalendarRowCell.ClassNameCalendarRowCell);
+    if (global.params.weekStartDay === WeekDay.Sunday) {
+      this.element.classList.add(CalendarRowCell.ClassNameWeekStartsOnSunday);
+    }
+    this.element.style.height = CalendarRowCell.GetHeight() + 'px';
+    this.element.setAttribute('role', 'row');
+
+    /**
+     * @type {!Array}
+     * @protected
+     */
+    this._dayCells = [];
+    /**
+     * @type {!number}
+     */
+    this.row = 0;
+    /**
+     * @type {?CalendarTableView}
+     */
+    this.calendarTableView = null;
   }
-  this.element.style.height = CalendarRowCell.GetHeight() + 'px';
-  this.element.setAttribute('role', 'row');
 
-  /**
-   * @type {!Array}
-   * @protected
-   */
-  this._dayCells = [];
-  /**
-   * @type {!number}
-   */
-  this.row = 0;
-  /**
-   * @type {?CalendarTableView}
-   */
-  this.calendarTableView = null;
-}
-
-{
-  CalendarRowCell.prototype = Object.create(ListCell.prototype);
-
-  CalendarRowCell._Height = DayCell._Height;
-  CalendarRowCell.GetHeight = function() {
+  static _Height = DayCell._Height;
+  static GetHeight() {
     return CalendarRowCell._Height;
-  };
-  CalendarRowCell.ClassNameCalendarRowCell = 'calendar-row-cell';
-  CalendarRowCell.ClassNameWeekStartsOnSunday = 'week-starts-on-sunday';
+  }
+  static ClassNameCalendarRowCell = 'calendar-row-cell';
+  static ClassNameWeekStartsOnSunday = 'week-starts-on-sunday';
 
-  CalendarRowCell._recycleBin = [];
+  static _recycleBin = [];
 
   /**
    * @return {!Array}
    * @override
    */
-  CalendarRowCell.prototype._recycleBin = function() {
+  _recycleBin() {
     return CalendarRowCell._recycleBin;
-  };
+  }
 
   /**
    * @param {!number} row
    * @param {!CalendarTableView} calendarTableView
    */
-  CalendarRowCell.prototype.reset = function(row, calendarTableView) {
+  reset(row, calendarTableView) {
     this.row = row;
     this.calendarTableView = calendarTableView;
     if (this.calendarTableView.hasWeekNumberColumn) {
@@ -3976,19 +3970,19 @@ function CalendarRowCell() {
       day = day.next();
     }
     this.show();
-  };
+  }
 
   /**
    * @override
    */
-  CalendarRowCell.prototype.throwAway = function() {
-    ListCell.prototype.throwAway.call(this);
+  throwAway() {
+    super.throwAway();
     if (this.weekNumberCell)
       this.calendarTableView.throwAwayWeekNumberCell(this.weekNumberCell);
     this._dayCells.forEach(
         this.calendarTableView.throwAwayDayCell, this.calendarTableView);
     this._dayCells.length = 0;
-  };
+  }
 }
 
 // ----------------------------------------------------------------
@@ -5031,3 +5025,4 @@ window.CalendarPicker = CalendarPicker;
 window.Day = Day;
 window.Month = Month;
 window.Week = Week;
+window.WeekNumberCell = WeekNumberCell;
