@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/randomized_encoder.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/common/signatures.h"
@@ -319,9 +320,11 @@ TEST_P(RandomizedDecoderTest, Decode) {
         TestRandomizedEncoder(
             "secret", autofill::AutofillRandomizedValue_EncodingType_ALL_BITS,
             true)
-            .GetChunkCount(
-                base::StringPrintf("%s%zu", common_prefix.data(), num_votes),
-                data_type);
+            .GetChunkCount(base::StringPrintf("%.*s%zu",
+                                              base::saturated_cast<int>(
+                                                  common_prefix.length()),
+                                              common_prefix.data(), num_votes),
+                           data_type);
     SCOPED_TRACE(testing::Message() << "chunk_count=" << chunk_count);
 
     // This vector represents the aggregate counts of the number of times a
@@ -339,9 +342,11 @@ TEST_P(RandomizedDecoderTest, Decode) {
           autofill::AutofillRandomizedValue_EncodingType_ALL_BITS, true);
 
       // Encode the common prefix plus some non-constant data.
-      std::string encoded =
-          encoder.Encode(form_signature, field_signature, data_type,
-                         base::StringPrintf("%s%zu", common_prefix.data(), i));
+      std::string encoded = encoder.Encode(
+          form_signature, field_signature, data_type,
+          base::StringPrintf("%.*s%zu",
+                             base::saturated_cast<int>(common_prefix.length()),
+                             common_prefix.data(), i));
 
       // Update |num_times_bit_is_1| for each bit in the encoded string.
       for (size_t b = 0; b < kEncodedChunkLengthInBits * chunk_count; ++b) {

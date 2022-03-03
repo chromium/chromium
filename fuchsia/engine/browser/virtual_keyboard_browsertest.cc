@@ -11,6 +11,7 @@
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_test.h"
@@ -109,7 +110,8 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
 
     absl::optional<base::Value> result = cr_fuchsia::ExecuteJavaScript(
         frame_for_test_.ptr().get(),
-        base::StringPrintf("getPointInsideText('%s')", id.data()));
+        base::StringPrintf("getPointInsideText('%.*s')",
+                           base::saturated_cast<int>(id.length()), id.data()));
     CHECK(result);
 
     // Note that coordinates are floating point and must be retrieved as such

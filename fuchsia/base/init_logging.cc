@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "components/version_info/version_info.h"
@@ -46,9 +47,9 @@ bool InitLoggingFromCommandLineDefaultingToStderrForTest(
 }
 
 void LogComponentStartWithVersion(base::StringPiece component_name) {
-  std::string version_string =
-      base::StringPrintf("Starting %s %s", component_name.data(),
-                         version_info::GetVersionNumber().c_str());
+  std::string version_string = base::StringPrintf(
+      "Starting %.*s %s", base::saturated_cast<int>(component_name.length()),
+      component_name.data(), version_info::GetVersionNumber().c_str());
 #if !defined(OFFICIAL_BUILD)
   version_string += " (built at " + version_info::GetLastChange() + ")";
 #endif  // !defined(OFFICIAL_BUILD)

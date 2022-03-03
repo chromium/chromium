@@ -14,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -440,8 +439,7 @@ bool URLPattern::MatchesURL(const GURL& test) const {
 
   std::string path_for_request = test.PathForRequest();
   if (has_inner_url) {
-    path_for_request = base::StringPrintf("%s%s", test_url->path_piece().data(),
-                                          path_for_request.c_str());
+    path_for_request = base::StrCat({test_url->path_piece(), path_for_request});
   }
 
   return MatchesSecurityOriginHelper(*test_url) &&
@@ -479,9 +477,8 @@ bool URLPattern::MatchesHost(base::StringPiece host) const {
   // important that we do this conversion to a GURL in order to canonicalize the
   // host (the pattern's host_ already is canonicalized from Parse()). We can't
   // just do string comparison.
-  return MatchesHost(
-      GURL(base::StringPrintf("%s%s%s/", url::kHttpScheme,
-                              url::kStandardSchemeSeparator, host.data())));
+  return MatchesHost(GURL(base::StrCat(
+      {url::kHttpScheme, url::kStandardSchemeSeparator, host, "/"})));
 }
 
 bool URLPattern::MatchesHost(const GURL& test) const {
