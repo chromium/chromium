@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -625,11 +626,11 @@ void TabStripPageHandler::GetThemeColors(GetThemeColorsCallback callback) {
   colors["--tabstrip-focus-outline-color"] = color_utils::SkColorToRgbaString(
       embedder_->GetColorProviderColor(ui::kColorFocusableBorderFocused));
   colors["--tabstrip-tab-active-title-background-color"] =
-      color_utils::SkColorToRgbaString(embedder_->GetColor(
-          ThemeProperties::COLOR_THUMBNAIL_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE));
+      color_utils::SkColorToRgbaString(
+          embedder_->GetColorProviderColor(kColorThumbnailTabBackground));
   colors["--tabstrip-tab-active-title-content-color"] =
-      color_utils::SkColorToRgbaString(embedder_->GetColor(
-          ThemeProperties::COLOR_THUMBNAIL_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE));
+      color_utils::SkColorToRgbaString(
+          embedder_->GetColorProviderColor(kColorThumbnailTabForeground));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   colors["--tabstrip-scrollbar-thumb-color-rgb"] =
@@ -927,16 +928,9 @@ gfx::ImageSkia TabStripPageHandler::ThemeFavicon(const gfx::ImageSkia& source,
                                                  bool active_tab_icon) {
   if (active_tab_icon) {
     return favicon::ThemeFavicon(
-        source,
-        embedder_->GetColor(
-            ThemeProperties::
-                COLOR_THUMBNAIL_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE),
-        embedder_->GetColor(
-            ThemeProperties::
-                COLOR_THUMBNAIL_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE),
-        embedder_->GetColor(
-            ThemeProperties::
-                COLOR_THUMBNAIL_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE));
+        source, embedder_->GetColorProviderColor(kColorThumbnailTabForeground),
+        embedder_->GetColorProviderColor(kColorThumbnailTabBackground),
+        embedder_->GetColorProviderColor(kColorThumbnailTabBackground));
   }
 
   return favicon::ThemeFavicon(

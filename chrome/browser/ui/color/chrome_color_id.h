@@ -211,6 +211,9 @@
     ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN) \
   E(kColorTabGroupBookmarkBarOrange, \
     ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_ORANGE) \
+  /* Thumbnail tab colors. */ \
+  E_CPONLY(kColorThumbnailTabBackground) \
+  E_CPONLY(kColorThumbnailTabForeground) \
   /* Toolbar colors. */ \
   E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR) \
   E(kColorToolbarButtonBackground, \
