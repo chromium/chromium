@@ -1732,7 +1732,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + 'cf04aebdf9b53bb2853f22a81465688daf879ec6',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'afed9f68f68ec30374db2631654d48bf855e630e',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '08f9efb510710548a7bc7d6ccb6c8596a9770002',
 
   'src/third_party/webrtc':
     Var('webrtc_git') + '/src.git' + '@' + 'c4752d00357ff5013b7e7fe8962d2ddff4799139',
