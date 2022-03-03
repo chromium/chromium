@@ -153,7 +153,6 @@ script_test("mac_signing_tests") {
            "signing/pipeline_test.py",
            "signing/run_mac_signing_tests.py",
            "signing/signing_test.py",
-           "signing/test_common.py",
            "signing/test_config.py",
            "//third_party/catapult/third_party/typ/",
          ]

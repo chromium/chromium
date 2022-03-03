@@ -3,16 +3,9 @@
 # found in the LICENSE file.
 
 import unittest
+from unittest import mock
 
-from . import model, signing, test_common, test_config
-
-mock = test_common.import_mock()
-
-# python2 support.
-try:
-    FileNotFoundError
-except NameError:
-    FileNotFoundError = IOError
+from . import model, signing, test_config
 
 
 @mock.patch('signing.commands.lenient_run_command_output')

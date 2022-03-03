@@ -13,10 +13,6 @@ import time
 
 from . import commands, logger
 
-# python2 support.
-if not hasattr(plistlib, 'loads'):
-    plistlib.loads = lambda s: plistlib.readPlistFromString(str(s))
-
 _LOG_FILE_URL = 'LogFileURL'
 
 _NOTARY_SERVICE_MAX_RETRIES = 3

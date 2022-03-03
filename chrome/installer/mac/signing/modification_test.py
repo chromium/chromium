@@ -3,10 +3,9 @@
 # found in the LICENSE file.
 
 import unittest
+from unittest import mock
 
-from . import model, modification, test_common, test_config
-
-mock = test_common.import_mock()
+from . import model, modification, test_config
 
 
 def plist_read(*args):

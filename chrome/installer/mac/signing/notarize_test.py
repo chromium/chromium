@@ -5,27 +5,17 @@
 import plistlib
 import subprocess
 import unittest
+from unittest import mock
 
-from . import notarize, test_common, test_config
+from . import notarize, test_config
 from .model import CodeSignedProduct, Paths
-
-mock = test_common.import_mock()
-
-
-# python2 support.
-def _make_plist(d):
-    if hasattr(plistlib, 'dumps'):
-        return plistlib.dumps(d)
-    else:
-        as_str = plistlib.writePlistToString(d)
-        return bytes(as_str)
 
 
 class TestSubmit(unittest.TestCase):
 
     @mock.patch('signing.commands.run_command_output')
     def test_valid_upload(self, run_command_output):
-        run_command_output.return_value = _make_plist({
+        run_command_output.return_value = plistlib.dumps({
             'notarization-upload': {
                 'RequestUUID': '0c652bb4-7d44-4904-8c59-1ee86a376ece'
             },
@@ -43,7 +33,7 @@ class TestSubmit(unittest.TestCase):
 
     @mock.patch('signing.commands.run_command_output')
     def test_valid_upload_with_asc_provider(self, run_command_output):
-        run_command_output.return_value = _make_plist({
+        run_command_output.return_value = plistlib.dumps({
             'notarization-upload': {
                 'RequestUUID': '746f1537-0613-4e49-a9a0-869f2c9dc8e5'
             },
@@ -66,7 +56,7 @@ class TestSubmit(unittest.TestCase):
             subprocess.CalledProcessError(
                 176, 'altool',
                 'Unable to find requested file(s): metadata.xml (1057)'),
-            _make_plist({
+            plistlib.dumps({
                 'notarization-upload': {
                     'RequestUUID': '600b24b7-8fa2-4fdb-adf9-dff1f8b7858e'
                 }
@@ -146,7 +136,7 @@ class TestWaitForResults(unittest.TestCase):
 
     @mock.patch('signing.commands.run_command_output')
     def test_success(self, run_command_output):
-        run_command_output.return_value = _make_plist({
+        run_command_output.return_value = plistlib.dumps({
             'notarization-info': {
                 'Date': '2019-05-20T13:18:35Z',
                 'LogFileURL': 'https://example.com/log.json',
@@ -168,7 +158,7 @@ class TestWaitForResults(unittest.TestCase):
 
     @mock.patch('signing.commands.run_command_output')
     def test_success_with_asc_provider(self, run_command_output):
-        run_command_output.return_value = _make_plist({
+        run_command_output.return_value = plistlib.dumps({
             'notarization-info': {
                 'Date': '2019-07-08T20:11:24Z',
                 'LogFileURL': 'https://example.com/log.json',
@@ -194,7 +184,7 @@ class TestWaitForResults(unittest.TestCase):
 
     @mock.patch('signing.commands.run_command_output')
     def test_failure(self, run_command_output):
-        run_command_output.return_value = _make_plist({
+        run_command_output.return_value = plistlib.dumps({
             'notarization-info': {
                 'Date': '2019-05-20T13:18:35Z',
                 'LogFileURL': 'https://example.com/log.json',
@@ -220,7 +210,7 @@ class TestWaitForResults(unittest.TestCase):
         run_command_output.side_effect = [
             subprocess.CalledProcessError(
                 239, 'altool',
-                _make_plist({
+                plistlib.dumps({
                     'product-errors': [{
                         'code': 1519,
                         'message': 'Could not find the RequestUUID.',
@@ -234,7 +224,7 @@ class TestWaitForResults(unittest.TestCase):
                         }
                     }]
                 })),
-            _make_plist({
+            plistlib.dumps({
                 'notarization-info': {
                     'Date': '2019-05-20T13:18:35Z',
                     'LogFileURL': 'https://example.com/log.json',
@@ -260,7 +250,7 @@ class TestWaitForResults(unittest.TestCase):
     @mock.patch('signing.commands.run_command_output')
     def test_bad_notarization_info(self, run_command_output, **kwargs):
         run_command_output.side_effect = subprocess.CalledProcessError(
-            239, 'altool', _make_plist({'product-errors': [{
+            239, 'altool', plistlib.dumps({'product-errors': [{
                 'code': 9595
             }]}))
 
@@ -276,7 +266,7 @@ class TestWaitForResults(unittest.TestCase):
             subprocess.CalledProcessError(
                 13, 'altool', '*** Error: Connection failed! Error Message'
                 '- The network connection was lost.'),
-            _make_plist({
+            plistlib.dumps({
                 'notarization-info': {
                     'Date': '2019-05-20T13:18:35Z',
                     'LogFileURL': 'https://example.com/log.json',
@@ -304,7 +294,7 @@ class TestWaitForResults(unittest.TestCase):
     def test_notarization_info_exit_1(self, run_command_output, **kwargs):
         run_command_output.side_effect = [
             subprocess.CalledProcessError(1, 'altool', ''),
-            _make_plist({
+            plistlib.dumps({
                 'notarization-info': {
                     'Date': '2021-08-24T19:28:21Z',
                     'LogFileURL': 'https://example.com/log.json',
@@ -331,7 +321,7 @@ class TestWaitForResults(unittest.TestCase):
     @mock.patch.multiple('signing.commands',
                          **{'run_command_output': mock.DEFAULT})
     def test_timeout(self, **kwargs):
-        kwargs['run_command_output'].return_value = _make_plist(
+        kwargs['run_command_output'].return_value = plistlib.dumps(
             {'notarization-info': {
                 'Status': 'in progress'
             }})
