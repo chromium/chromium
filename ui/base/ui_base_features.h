@@ -142,7 +142,7 @@ extern const base::Feature kShortcutCustomizationApp;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsShortcutCustomizationAppEnabled();
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -211,6 +211,11 @@ extern const base::Feature kUiCompositorReleaseTileResourcesForHiddenLayers;
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kUiCompositorRequiredTilesOnly;
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kEnableVariableRefreshRate;
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsVariableRefreshRateEnabled();
 
 }  // namespace features
 

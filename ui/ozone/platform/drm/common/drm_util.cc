@@ -25,6 +25,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
@@ -136,12 +137,13 @@ display::DisplayConnectionType GetDisplayType(drmModeConnector* connector) {
   }
 }
 
+template <typename T>
 int GetDrmProperty(int fd,
-                   drmModeConnector* connector,
+                   T* object,
                    const std::string& name,
                    ScopedDrmPropertyPtr* property) {
-  for (int i = 0; i < connector->count_props; ++i) {
-    ScopedDrmPropertyPtr tmp(drmModeGetProperty(fd, connector->props[i]));
+  for (uint32_t i = 0; i < static_cast<uint32_t>(object->count_props); ++i) {
+    ScopedDrmPropertyPtr tmp(drmModeGetProperty(fd, object->props[i]));
     if (!tmp)
       continue;
 
@@ -339,6 +341,30 @@ gfx::Size GetMaximumCursorSize(int fd) {
     return gfx::Size(kDefaultCursorWidth, kDefaultCursorHeight);
   }
   return gfx::Size(width, height);
+}
+
+bool IsVrrCapable(int fd, drmModeConnector* connector) {
+  if (!features::IsVariableRefreshRateEnabled()) {
+    return false;
+  }
+
+  ScopedDrmPropertyPtr vrr_capable_property;
+  const int vrr_capable_index = GetDrmProperty(
+      fd, connector, kVrrCapablePropertyName, &vrr_capable_property);
+  return vrr_capable_index >= 0 && connector->prop_values[vrr_capable_index];
+}
+
+bool IsVrrEnabled(int fd, drmModeCrtc* crtc) {
+  if (!features::IsVariableRefreshRateEnabled()) {
+    return false;
+  }
+
+  ScopedDrmObjectPropertyPtr crtc_props(
+      drmModeObjectGetProperties(fd, crtc->crtc_id, DRM_MODE_OBJECT_CRTC));
+  ScopedDrmPropertyPtr vrr_enabled_property;
+  const int vrr_enabled_index = GetDrmProperty(
+      fd, crtc_props.get(), kVrrEnabledPropertyName, &vrr_enabled_property);
+  return vrr_enabled_index >= 0 && crtc_props->prop_values[vrr_enabled_index];
 }
 
 HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(

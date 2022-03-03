@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -372,5 +373,11 @@ const base::Feature kUiCompositorReleaseTileResourcesForHiddenLayers{
 
 const base::Feature kUiCompositorRequiredTilesOnly{
     "UiCompositorRequiredTilesOnly", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableVariableRefreshRate = {
+    "EnableVariableRefreshRate", base::FEATURE_DISABLED_BY_DEFAULT};
+bool IsVariableRefreshRateEnabled() {
+  return base::FeatureList::IsEnabled(kEnableVariableRefreshRate);
+}
 
 }  // namespace features

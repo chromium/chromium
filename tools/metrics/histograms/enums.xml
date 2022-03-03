@@ -54944,6 +54944,7 @@ from previous Chrome versions.
   <int value="327045548" label="SafeSearchUrlReporting:enabled"/>
   <int value="328722396" label="NTPCondensedLayout:disabled"/>
   <int value="330138076" label="enable-clear-browsing-data-counters"/>
+  <int value="330319312" label="EnableVariableRefreshRate:enabled"/>
   <int value="330439654" label="SyncPseudoUSSExtensions:enabled"/>
   <int value="330627288" label="ArcTouchModeMouse:disabled"/>
   <int value="330653520" label="ChromeShareHighlightsAndroid:enabled"/>
@@ -57383,6 +57384,7 @@ from previous Chrome versions.
   <int value="2015335629" label="shelf-hover-previews"/>
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
   <int value="2018956925" label="UseAAudioDriver:disabled"/>
+  <int value="2019319052" label="EnableVariableRefreshRate:disabled"/>
   <int value="2020107447" label="AndroidPayIntegrationV1:enabled"/>
   <int value="2020898714" label="HudDisplayForPerformanceMetrics:enabled"/>
   <int value="2021142866" label="FeedbackReportQuestionnaire:disabled"/>

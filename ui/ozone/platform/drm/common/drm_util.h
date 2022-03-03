@@ -49,6 +49,9 @@ constexpr char kPrivacyScreenPropertyNameLegacy[] = "privacy-screen";
 constexpr char kPrivacyScreenHwStatePropertyName[] = "privacy-screen hw-state";
 constexpr char kPrivacyScreenSwStatePropertyName[] = "privacy-screen sw-state";
 
+constexpr char kVrrCapablePropertyName[] = "vrr_capable";
+constexpr char kVrrEnabledPropertyName[] = "VRR_ENABLED";
+
 // DRM property enum to internal type mappings.
 template <typename InternalType>
 struct DrmPropertyEnumToInternalTypeMapping {
@@ -155,6 +158,10 @@ const gfx::Size ModeSize(const drmModeModeInfo& mode);
 float ModeRefreshRate(const drmModeModeInfo& mode);
 
 bool ModeIsInterlaced(const drmModeModeInfo& mode);
+
+bool IsVrrCapable(int fd, drmModeConnector* connector);
+
+bool IsVrrEnabled(int fd, drmModeCrtc* crtc);
 
 uint64_t GetEnumValueForName(int fd, int property_id, const char* str);
 

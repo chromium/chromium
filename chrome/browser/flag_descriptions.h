@@ -2742,6 +2742,9 @@ extern const char kEnableSuggestedFilesDescription[];
 extern const char kEnableSuggestedLocalFilesName[];
 extern const char kEnableSuggestedLocalFilesDescription[];
 
+extern const char kEnableVariableRefreshRateName[];
+extern const char kEnableVariableRefreshRateDescription[];
+
 extern const char kEnableWireGuardName[];
 extern const char kEnableWireGuardDescription[];
 
