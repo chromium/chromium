@@ -424,4 +424,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         assert mModalDialogManagerSupplier.hasValue();
         return mModalDialogManagerSupplier.get();
     }
+
+    @VisibleForTesting
+    public void stopAutocompleteForTest(boolean clearResults) {
+        mMediator.stopAutocomplete(clearResults);
+    }
 }

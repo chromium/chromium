@@ -42,6 +42,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -207,6 +208,33 @@ public class OmniboxTestUtils {
             Criteria.checkThat("suggestion list has no entries",
                     suggestionsDropdown.getDropdownItemViewCountForTest(), Matchers.greaterThan(0));
         }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
+    }
+
+    /**
+     * Stops any subsequent AutocompleteResults from being generated.
+     * Ensures that no subsequent asynchronous AutocompleteResults could tamper with test execution.
+     */
+    public void waitForAutocomplete() {
+        AtomicLong previousId = new AtomicLong(-1);
+        AtomicLong count = new AtomicLong();
+
+        CriteriaHelper.pollUiThread(() -> {
+            long currentId = mAutocomplete.getCurrentNativeAutocompleteResult();
+            // Suggestions have changed as a result of a recent push.
+            // Reset the counter and monitor for possible updates.
+            if (currentId != previousId.get()) {
+                previousId.set(currentId);
+                count.set(0);
+                return false;
+            }
+
+            // Check that nothing has changed 3 times in a row, rejecting everything that
+            // arrives late. This guarantees that the suggestions will not change and the list
+            // can be used for testing purposes.
+            if (count.incrementAndGet() < 3) return false;
+            mAutocomplete.stopAutocompleteForTest(false);
+            return true;
+        });
     }
 
     /**

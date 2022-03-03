@@ -888,7 +888,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      *
      * @param clear Whether to clear the most recent autocomplete results.
      */
-    private void stopAutocomplete(boolean clear) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void stopAutocomplete(boolean clear) {
         if (mNativeInitialized && mAutocomplete != null) mAutocomplete.stop(clear);
         cancelAutocompleteRequests();
     }
