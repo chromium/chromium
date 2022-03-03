@@ -2734,25 +2734,28 @@ const FeatureEntry::Choice kDocumentTransitionSlowdownFactorChoices[] = {
 // sample.
 
 const FeatureEntry::FeatureParam kSnoopingProtectionPrecision[] = {
-    {"SnoopingProtection_filter_config_case", "3"},
-    {"SnoopingProtection_average_window_size", "3"},
-    {"SnoopingProtection_positive_score_threshold", "-30"},
-    {"SnoopingProtection_negative_score_threshold", "-30"},
-    {"SnoopingProtection_default_uncertain_score", "-128"}};
+    {"SnoopingProtection_filter_config_case", "2"},
+    {"SnoopingProtection_positive_count_threshold", "1"},
+    {"SnoopingProtection_negative_count_threshold", "1"},
+    {"SnoopingProtection_uncertain_count_threshold", "1"},
+    {"SnoopingProtection_positive_score_threshold", "-50"},
+    {"SnoopingProtection_negative_score_threshold", "-50"}};
 
 const FeatureEntry::FeatureParam kSnoopingProtectionConfidence[] = {
-    {"SnoopingProtection_filter_config_case", "3"},
-    {"SnoopingProtection_average_window_size", "5"},
-    {"SnoopingProtection_positive_score_threshold", "-30"},
-    {"SnoopingProtection_negative_score_threshold", "-30"},
-    {"SnoopingProtection_default_uncertain_score", "-128"}};
+    {"SnoopingProtection_filter_config_case", "2"},
+    {"SnoopingProtection_positive_count_threshold", "2"},
+    {"SnoopingProtection_negative_count_threshold", "2"},
+    {"SnoopingProtection_uncertain_count_threshold", "2"},
+    {"SnoopingProtection_positive_score_threshold", "-50"},
+    {"SnoopingProtection_negative_score_threshold", "-50"}};
 
 const FeatureEntry::FeatureParam kSnoopingProtectionRecall[] = {
-    {"SnoopingProtection_filter_config_case", "3"},
-    {"SnoopingProtection_average_window_size", "3"},
+    {"SnoopingProtection_filter_config_case", "2"},
+    {"SnoopingProtection_positive_count_threshold", "1"},
+    {"SnoopingProtection_negative_count_threshold", "1"},
+    {"SnoopingProtection_uncertain_count_threshold", "1"},
     {"SnoopingProtection_positive_score_threshold", "-70"},
-    {"SnoopingProtection_negative_score_threshold", "-70"},
-    {"SnoopingProtection_default_uncertain_score", "-128"}};
+    {"SnoopingProtection_negative_score_threshold", "-70"}};
 
 const FeatureEntry::FeatureVariation kSnoopingProtectionVariations[] = {
     {"Precise", kSnoopingProtectionPrecision,
