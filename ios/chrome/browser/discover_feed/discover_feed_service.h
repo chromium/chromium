@@ -9,7 +9,7 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_observer.h"
-#include "ios/public/provider/chrome/browser/discover_feed/discover_feed_view_controller_configuration.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_view_controller_configuration.h"
 
 @class FeedMetricsRecorder;
 

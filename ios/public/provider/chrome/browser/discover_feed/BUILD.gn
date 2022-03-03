@@ -5,12 +5,12 @@
 source_set("discover_feed") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "discover_feed_configuration.h",
-    "discover_feed_configuration.mm",
     "discover_feed_provider.h",
     "discover_feed_provider.mm",
+
+    # Remove once internal code has been converted to use the new path.
+    "discover_feed_configuration.h",
     "discover_feed_view_controller_configuration.h",
-    "discover_feed_view_controller_configuration.mm",
   ]
   deps = [
     "//base",

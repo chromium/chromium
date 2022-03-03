@@ -8,8 +8,8 @@
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_view_controller_configuration.h"
 #include "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
-#include "ios/public/provider/chrome/browser/discover_feed/discover_feed_view_controller_configuration.h"
 
 class AuthenticationService;
 class PrefService;

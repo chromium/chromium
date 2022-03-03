@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/discover_feed/discover_feed_service_deprecated.h"
 
+#import "ios/chrome/browser/discover_feed/discover_feed_configuration.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_configuration.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

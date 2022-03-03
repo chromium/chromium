@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_VIEW_CONTROLLER_CONFIGURATION_H_
+#define IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_VIEW_CONTROLLER_CONFIGURATION_H_
+
+#import <Foundation/Foundation.h>
+
+class Browser;
+@protocol DiscoverFeedPreviewDelegate;
+@protocol UIScrollViewDelegate;
+
+// Configuration object used to create and configure a
+// Discover Feed ViewController.
+@interface DiscoverFeedViewControllerConfiguration : NSObject
+
+// Browser used by Discover Feed ViewController.
+@property(nonatomic, assign) Browser* browser;
+
+// UIScrollViewDelegate used by Discover Feed ViewController.
+@property(nonatomic, weak) id<UIScrollViewDelegate> scrollDelegate;
+
+// DiscoverFeedPreviewDelegate used by Discover Feed ViewController.
+@property(nonatomic, weak) id<DiscoverFeedPreviewDelegate> previewDelegate;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_VIEW_CONTROLLER_CONFIGURATION_H_
