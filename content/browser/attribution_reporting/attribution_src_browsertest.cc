@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
   http_response->AddCustomHeader(
       "Attribution-Reporting-Register-Source",
-      R"({"source_event_id":"9", "destination":"https://advertiser.example"})");
+      R"({"source_event_id":"9", "destination":"https://d.test"})");
   http_response->AddCustomHeader(
       "Attribution-Reporting-Register-Aggregatable-Source", "");
   http_response->AddCustomHeader("Location",
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
-            url::Origin::Create(GURL("https://advertiser.example")));
+            url::Origin::Create(GURL("https://d.test")));
   EXPECT_THAT(source_data.back()->aggregatable_sources->sources, SizeIs(2));
 }
 
