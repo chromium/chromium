@@ -434,7 +434,9 @@ int32_t RTCVideoDecoderAdapter::Release() {
 webrtc::VideoDecoder::DecoderInfo RTCVideoDecoderAdapter::GetDecoderInfo()
     const {
   DecoderInfo info;
-  info.implementation_name = "ExternalDecoder";
+  std::string implementation_name_suffix =
+      " (" + media::GetDecoderName(video_decoder_->GetDecoderType()) + ")";
+  info.implementation_name = "ExternalDecoder" + implementation_name_suffix;
   info.is_hardware_accelerated = true;
   return info;
 }

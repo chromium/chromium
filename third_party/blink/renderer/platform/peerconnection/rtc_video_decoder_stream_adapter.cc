@@ -1071,10 +1071,14 @@ void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
   decoder_info_.is_hardware_accelerated = decoder->IsPlatformDecoder();
   video_decoder_type_ = decoder->GetDecoderType();
 
-  // In order not to break RTC statistics collection, name these in a way that
-  // third_party/webrtc/video/receive_statistics_proxy2.cc understands.
+  // In order not to break the RTC statistics collection, name these
+  // software(libvpx and FFmpeg) decoders in a way that
+  // third_party/webrtc/video/receive_statistics_proxy2.cc can understand.
   if (decoder->IsPlatformDecoder()) {
-    decoder_info_.implementation_name = kExternalDecoderName;
+    std::string implementation_name_suffix =
+        " (" + media::GetDecoderName(decoder->GetDecoderType()) + ")";
+    decoder_info_.implementation_name =
+        kExternalDecoderName + implementation_name_suffix;
     return;
   }
 
