@@ -291,6 +291,8 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableToolbarStatusChip) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillCreditCardUploadFeedback) &&
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
           VirtualCardEnrollmentSource::kUpstream &&
       !avatar_animation_complete_) {
