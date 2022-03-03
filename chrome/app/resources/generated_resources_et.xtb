@@ -3255,7 +3255,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4194570336751258953">Luba klõpsamine</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4195814663415092787">Jätka sealt, kus pooleli jäin</translation>
-<translation id="4197917636330710075">Hankige kaupmeeste <ph name="MERCHANT_NAME" /> ja <ph name="MERCHANT_NAME" /> juures allahindlusi</translation>
 <translation id="4198268995694216131">Täiendavad saidid</translation>
 <translation id="4200689466366162458">Kohandatud sõnad</translation>
 <translation id="4200983522494130825">Uus &amp;vaheleht</translation>
@@ -6926,7 +6925,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7956373551960864128">Teie salvestatud printerid</translation>
 <translation id="7957074856830851026">Seadme teabe (nt seerianumbri või vara ID) vaatamine</translation>
 <translation id="7957615753207896812">Klaviatuuriseadme seadete avamine</translation>
-<translation id="7958437133377816580">Hankige kaupmeeste <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> ja teiste juures allahindlusi</translation>
 <translation id="7959074893852789871">Fail sisaldas mitut sertifikaati, mõnda neist ei imporditud:</translation>
 <translation id="7959665254555683862">Uus inkognito &amp;vaheleht</translation>
 <translation id="7961015016161918242">Mitte kunagi</translation>

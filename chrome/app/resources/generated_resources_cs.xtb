@@ -3249,7 +3249,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4194570336751258953">Aktivovat kliknutí klepnutím</translation>
 <translation id="4195643157523330669">Otevřít na nové kartě</translation>
 <translation id="4195814663415092787">Pokračovat tam, kde jste přestali</translation>
-<translation id="4197917636330710075">Získat slevy u obchodníka <ph name="MERCHANT_NAME" /> a <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Další weby</translation>
 <translation id="4200689466366162458">Vlastní slova</translation>
 <translation id="4200983522494130825">Nová karta</translation>
@@ -6919,7 +6918,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7956373551960864128">Vaše uložené tiskárny</translation>
 <translation id="7957074856830851026">Zobrazit informace o zařízení, například sériové či evidenční číslo</translation>
 <translation id="7957615753207896812">Otevřít nastavení klávesnice</translation>
-<translation id="7958437133377816580">Získat slevy u obchodníka <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> a dalších</translation>
 <translation id="7959074893852789871">Soubor obsahoval více certifikátů, z nichž některé nebyly importovány:</translation>
 <translation id="7959665254555683862">Nová anonymní kar&amp;ta</translation>
 <translation id="7961015016161918242">Nikdy</translation>

@@ -2497,6 +2497,7 @@
 <translation id="346298925039590474">ეს მობილური ქსელი ამ მოწყობილობის ყველა მომხმარებლისთვის ხელმისაწვდომი იქნება</translation>
 <translation id="3464145797867108663">სამსახურის პროფილის დამატება</translation>
 <translation id="346431825526753">ეს არის ანგარიში ბავშვებისათვის, რომელიც იმართება <ph name="CUSTODIAN_EMAIL" />-ს მიერ.</translation>
+<translation id="346546413339447252">მიიღეთ ფასდაკლებები <ph name="MERCHANT_NAME_1" />-ისთვის, <ph name="MERCHANT_NAME_2" />-ისა და სხვა დაწესებულებებისთვის</translation>
 <translation id="3468298837301810372">ლეიბლი</translation>
 <translation id="3468999815377931311">Android ტელეფონი</translation>
 <translation id="3469583217479686109">ამომრჩევი ხელსაწყო</translation>
@@ -2941,6 +2942,7 @@
 <translation id="3879748587602334249">ჩამოტვირთვის მენეჯერი</translation>
 <translation id="3882165008614329320">არსებული ვიდეო კამერიდან ან ფაილიდან</translation>
 <translation id="3883306461188700142">აკრიფეთ ხმის მეშვეობით. დააჭირეთ კლავიშთა კომბინაციას Search+D, შემდეგ კი დაიწყეთ საუბარი.</translation>
+<translation id="3883482240657453056">მიიღეთ ფასდაკლებები <ph name="MERCHANT_NAME_1" />-ისა და <ph name="MERCHANT_NAME_2" />-ისთვის</translation>
 <translation id="3884152383786131369">რამდენიმე ენაზე ხელმისაწვდომი ვებკონტენტი ამ სიიდან პირველ მხარდაჭერილ ენას გამოიყენებს. ეს პარამეტრები სინქრონიზდება თქვენი ბრაუზერის პარამეტრებთან. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">განახლებებს მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="3886446263141354045">ამ საიტზე წვდომის მოთხოვნა გაეგზავნა <ph name="NAME" />-ს</translation>
@@ -3249,7 +3251,6 @@
 <translation id="4194570336751258953">ჩართე დაჭერა, რათა დააწკაპუნო</translation>
 <translation id="4195643157523330669">ახალ ჩანართში გახსნა</translation>
 <translation id="4195814663415092787">გააგრძელეთ იქიდან, სადაც შეჩერდით</translation>
-<translation id="4197917636330710075">მიიღეთ ფასდაკლებები <ph name="MERCHANT_NAME" />-ისა და <ph name="MERCHANT_NAME" />-ისთვის</translation>
 <translation id="4198268995694216131">დამატებითი საიტები</translation>
 <translation id="4200689466366162458">მორგებული სიტყვები</translation>
 <translation id="4200983522494130825">ახალი &amp;ჩანართი</translation>
@@ -6919,7 +6920,6 @@
 <translation id="7956373551960864128">თქვენი შენახული პრინტერები</translation>
 <translation id="7957074856830851026">მოწყობილობის ინფორმაციის (მაგ., მისი სერიული ნომრის ან აქტივის ID-ს) ნახვა</translation>
 <translation id="7957615753207896812">კლავიატურის პარამეტრების გახსნა</translation>
-<translation id="7958437133377816580">მიიღეთ ფასდაკლებები <ph name="MERCHANT_NAME" />-ისთვის, <ph name="MERCHANT_NAME" />-ისა და სხვა დაწესებულებებისთვის</translation>
 <translation id="7959074893852789871">ფაილი შეიცავდა რამოდენიმე სერტიფიკატს. რამოდენიმე სერტიფიკატი არ იქნა იმპორტირებული:</translation>
 <translation id="7959665254555683862">ახალი ინკოგნიტო ჩან&amp;ართი</translation>
 <translation id="7961015016161918242">არასოდეს</translation>

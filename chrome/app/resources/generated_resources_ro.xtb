@@ -3250,7 +3250,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4194570336751258953">Activează funcția „atinge pentru clic”</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4195814663415092787">Continuați de unde ați rămas</translation>
-<translation id="4197917636330710075">Primește reduceri pentru <ph name="MERCHANT_NAME" /> și <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Site-uri suplimentare</translation>
 <translation id="4200689466366162458">Cuvinte personalizate</translation>
 <translation id="4200983522494130825">Filă &amp;nouă</translation>
@@ -6920,7 +6919,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7956373551960864128">Imprimante salvate</translation>
 <translation id="7957074856830851026">Vezi informații despre dispozitiv, cum ar fi numărul de serie sau ID-ul de material</translation>
 <translation id="7957615753207896812">Deschide setările dispozitivului privind tastatura</translation>
-<translation id="7958437133377816580">Primește reduceri pentru <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> și alți comercianți</translation>
 <translation id="7959074893852789871">Fișierul a conținut mai multe certificate, unele dintre acestea nefiind importate:</translation>
 <translation id="7959665254555683862">Filă incognito &amp;nouă</translation>
 <translation id="7961015016161918242">Niciodată</translation>

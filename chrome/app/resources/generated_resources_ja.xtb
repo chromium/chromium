@@ -3244,7 +3244,6 @@
 <translation id="4194570336751258953">タップによるクリックを有効にする</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
-<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> と <ph name="MERCHANT_NAME" /> の割引情報を取得しますか？</translation>
 <translation id="4198268995694216131">追加のサイト</translation>
 <translation id="4200689466366162458">カスタムの単語</translation>
 <translation id="4200983522494130825">新しいタブ(&amp;T)</translation>
@@ -6902,7 +6901,6 @@
 <translation id="7956373551960864128">保存されているプリンタ</translation>
 <translation id="7957074856830851026">シリアル番号やアセット ID などのデバイス情報を読み取る</translation>
 <translation id="7957615753207896812">キーボードのデバイス設定を開く</translation>
-<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />、<ph name="MERCHANT_NAME" /> などの割引情報を取得しますか？</translation>
 <translation id="7959074893852789871">ファイルに含まれる複数の証明書のうち、一部をインポートできませんでした:</translation>
 <translation id="7959665254555683862">新しいシークレット タブ(&amp;T)</translation>
 <translation id="7961015016161918242">使用しない</translation>

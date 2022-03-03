@@ -2512,6 +2512,7 @@
 <translation id="346298925039590474">អ្នកប្រើប្រាស់ទាំងអស់នៅលើឧបករណ៍នេះនឹងអាចប្រើបណ្ដាញ​ទូរសព្ទ​ចល័តនេះបាន</translation>
 <translation id="3464145797867108663">បញ្ចូលកម្រងព័ត៌មានការងារ</translation>
 <translation id="346431825526753">នេះគឺជាគណនីសម្រាប់កុមារដែលគ្រប់គ្រងដោយ <ph name="CUSTODIAN_EMAIL" />។</translation>
+<translation id="346546413339447252">ទទួលបានការបញ្ចុះតម្លៃសម្រាប់ <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> និងអ្វីៗ​ជាច្រើនទៀត</translation>
 <translation id="3468298837301810372">ស្លាក</translation>
 <translation id="3468999815377931311">ទូរសព្ទ Android</translation>
 <translation id="3469583217479686109">ឧបករណ៍ជ្រើសរើស</translation>
@@ -2956,6 +2957,7 @@
 <translation id="3879748587602334249">កម្មវិធីគ្រប់គ្រងការ​ទាញ​យក</translation>
 <translation id="3882165008614329320">វីដេអូដែល​មានស្រាប់​ពីកាមេរ៉ា ឬឯកសារ</translation>
 <translation id="3883306461188700142">វាយបញ្ចូលដោយប្រើសំឡេងរបស់អ្នក។ ចុច "ស្វែងរក + D" បន្ទាប់មកចាប់ផ្ដើមនិយាយ។</translation>
+<translation id="3883482240657453056">ទទួលបាន​ការបញ្ចុះតម្លៃ​សម្រាប់ <ph name="MERCHANT_NAME_1" /> និង <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">ខ្លឹមសារបណ្ដាញ​ដែលមានជាច្រើន​ភាសា នឹងប្រើភាសាដែល​អាចប្រើបាន​ទីមួយនៅក្នុង​បញ្ជីនេះ។ ចំណូលចិត្តទាំងនេះ​ត្រូវបានធ្វើសមកាលកម្ម​ជាមួយការកំណត់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">កំណែថ្មីៗ​ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់អ្នកគ្រប់គ្រង​អ្នក</translation>
 <translation id="3886446263141354045">សំណើរបស់អ្នកដើម្បីចូលទៅកាន់ទំព័រនេះត្រូវបានផ្ញើទៅ <ph name="NAME" /></translation>
@@ -3264,7 +3266,6 @@
 <translation id="4194570336751258953">បើកដំណើរការ ប៉ះ ដើម្បី ចុច</translation>
 <translation id="4195643157523330669">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="4195814663415092787">បន្តកន្លែងដែលអ្នកបានចាកចេញ</translation>
-<translation id="4197917636330710075">ទទួលបាន​ការបញ្ចុះតម្លៃ​សម្រាប់ <ph name="MERCHANT_NAME" /> និង <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">គេហទំព័របន្ថែម</translation>
 <translation id="4200689466366162458">ពាក្យផ្ទាល់ខ្លួន</translation>
 <translation id="4200983522494130825">ផ្ទាំងថ្មី</translation>
@@ -6937,7 +6938,6 @@
 <translation id="7956373551960864128">ម៉ាស៊ីនបោះពុម្ព​ដែលអ្នកបាន​រក្សាទុក</translation>
 <translation id="7957074856830851026">មើលព័ត៌មានឧបករណ៍ ដូចជាលេខស៊េរី ឬលេខ​សម្គាល់​ទ្រព្យរបស់វាជាដើម</translation>
 <translation id="7957615753207896812">បើកការកំណត់ឧបករណ៍ក្តារចុច</translation>
-<translation id="7958437133377816580">ទទួលបានការបញ្ចុះតម្លៃសម្រាប់ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> និងអ្វីៗ​ជាច្រើនទៀត</translation>
 <translation id="7959074893852789871">ឯកសារបានផ្ទុកវិញ្ញាបនប័ត្រច្រើន ហើយពួកវាមួយចំនួនមិនត្រូវបាននាំចូលទេ៖</translation>
 <translation id="7959665254555683862">ផ្ទាំងឯកជនថ្មី</translation>
 <translation id="7961015016161918242">មិនដែល</translation>

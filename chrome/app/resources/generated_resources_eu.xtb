@@ -3248,7 +3248,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4194570336751258953">Gaitu sakatuta klik egiteko aukera</translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
 <translation id="4195814663415092787">Jarraitu utzi zenuen tokitik</translation>
-<translation id="4197917636330710075">Lortu <ph name="MERCHANT_NAME" /> eta <ph name="MERCHANT_NAME" /> saltzaileen deskontuak</translation>
 <translation id="4198268995694216131">Webgune gehigarriak</translation>
 <translation id="4200689466366162458">Hitz pertsonalizatuak</translation>
 <translation id="4200983522494130825">Fi&amp;txa berria</translation>
@@ -6918,7 +6917,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7956373551960864128">Gordetako inprimagailuak</translation>
 <translation id="7957074856830851026">Ikusi gailuaren informazioa, hala nola serie-zenbakia edo baliabidearen IDa</translation>
 <translation id="7957615753207896812">Ireki teklatuaren ezarpenak</translation>
-<translation id="7958437133377816580">Lortu <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> eta saltzaile gehiagoren deskontuak</translation>
 <translation id="7959074893852789871">Fitxategiak ziurtagiri bat baino gehiago ditu eta horietako batzuk inportatu dira:</translation>
 <translation id="7959665254555683862">Ezkutuko moduko beste fitxa bat</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>

@@ -1730,6 +1730,11 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
 <translation id="2905984450136807296">Kimlik doğrulama verisi önbellek ömrü</translation>
 <translation id="2906874737073861391">AppPack uzantılarının listesi</translation>
 <translation id="2908277604670530363">Proxy sunucusuyla yapılabilecek maksimum eşzamanlı bağlantı sayısı</translation>
+<translation id="2909068176249499360">Bu politika ayarlandığında, Hızlı Eşleme'yi etkinleştirmeye veya devre dışı bırakmaya zorlar.
+      Hızlı Eşleme, eşlenmiş çevre birimlerini GAIA hesabıyla bağlayan yeni bir Bluetooth eşleme akışıdır.
+      Bu şekilde aynı GAIA hesabıyla oturum açmış diğer Chrome OS (ve Android) cihazlar otomatik olarak eşlenebilir.
+      Politik ayarlanmazsa kurumsal kullanıcılar için varsayılan değer devre dışı iken yönetilmeyen
+      hesapların varsayılan değeri etkin olur.</translation>
 <translation id="2912366658685903301">Tarayıcı temasının rengini yapılandır</translation>
 <translation id="291853569864365550">Yeni Sekme sayfasında içerik önerileri gösterme</translation>
 <translation id="2920795918401557243">Bu ayar, sistem izleme hizmeti kullanılarak sistem genelinde performans izleme verileri toplanmasına olanak tanır.

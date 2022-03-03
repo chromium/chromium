@@ -2512,6 +2512,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="346298925039590474">This mobile network will be available to all users on this device</translation>
 <translation id="3464145797867108663">Add work profile</translation>
 <translation id="346431825526753">This is an account for kids managed by <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Get discounts for <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> and more</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android phone</translation>
 <translation id="3469583217479686109">Selection tool</translation>
@@ -2956,6 +2957,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3882165008614329320">Existing video from camera or file</translation>
 <translation id="3883306461188700142">Type with your voice. Press Search + D, then start speaking.</translation>
+<translation id="3883482240657453056">Get discounts for <ph name="MERCHANT_NAME_1" /> and <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Web content available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates are managed by your administrator</translation>
 <translation id="3886446263141354045">Your request to access this site has been sent to <ph name="NAME" /></translation>
@@ -3264,7 +3266,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4194570336751258953">Enable tap-to-click</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4195814663415092787">Continue where you left off</translation>
-<translation id="4197917636330710075">Get discounts for <ph name="MERCHANT_NAME" /> and <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Additional sites</translation>
 <translation id="4200689466366162458">Customised words</translation>
 <translation id="4200983522494130825">New &amp;tab</translation>
@@ -6936,7 +6937,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7956373551960864128">Your saved printers</translation>
 <translation id="7957074856830851026">See device information, such as its serial number or asset ID</translation>
 <translation id="7957615753207896812">Open keyboard device settings</translation>
-<translation id="7958437133377816580">Get discounts for <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> and more</translation>
 <translation id="7959074893852789871">The file contained multiple certificates, some of which were not imported:</translation>
 <translation id="7959665254555683862">New incognito tab</translation>
 <translation id="7961015016161918242">Never</translation>
