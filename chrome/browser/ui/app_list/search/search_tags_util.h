@@ -15,12 +15,16 @@ void ACMatchClassificationsToTags(const std::u16string& text,
                                   const ACMatchClassifications& text_classes,
                                   ChromeSearchResult::Tags* tags);
 
-// TODO(crbug.com/1258415): Remove references to this from individual providers
-// once the productivity launcher is enabled.
-// Calculates ChromeSearchResult tags for highlighting occurrences of |query| in
-// |text|.
+// TODO(crbug.com/1258415): Remove this and its references once the productivity
+// launcher is enabled.
 ChromeSearchResult::Tags CalculateTags(const std::u16string& query,
                                        const std::u16string& text);
+
+// Calculates ChromeSearchResult tags for highlighting occurrences of |query| in
+// |text|, and appends them to supplied Tags.
+void AppendMatchTags(const std::u16string& query,
+                     const std::u16string& text,
+                     ChromeSearchResult::Tags* tags);
 
 }  // namespace app_list
 

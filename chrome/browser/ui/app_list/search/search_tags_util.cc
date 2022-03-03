@@ -54,15 +54,21 @@ void ACMatchClassificationsToTags(const std::u16string& text,
 
 ChromeSearchResult::Tags CalculateTags(const std::u16string& query,
                                        const std::u16string& text) {
+  ChromeSearchResult::Tags tags;
+  AppendMatchTags(query, text, &tags);
+  return tags;
+}
+
+void AppendMatchTags(const std::u16string& query,
+                     const std::u16string& text,
+                     ChromeSearchResult::Tags* tags) {
   const auto matches = FindTermMatches(query, text);
   const auto classes =
       ClassifyTermMatches(matches, text.length(),
                           /*match_style=*/ACMatchClassification::MATCH,
                           /*non_match_style=*/ACMatchClassification::NONE);
 
-  ChromeSearchResult::Tags tags;
-  ACMatchClassificationsToTags(text, classes, &tags);
-  return tags;
+  ACMatchClassificationsToTags(text, classes, tags);
 }
 
 }  // namespace app_list

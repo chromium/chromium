@@ -8,6 +8,26 @@
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 
 namespace app_list {
+namespace {
+
+using TextVector = std::vector<ash::SearchResultTextItem>;
+
+void SetMatchTags(const std::u16string& query, TextVector& text_vector) {
+  for (auto& item : text_vector) {
+    if (item.GetType() != ash::SearchResultTextItemType::kString)
+      continue;
+
+    ash::SearchResultTags tags = item.GetTextTags();
+    // Remove any existing match tags before re-calculating them.
+    for (auto& tag : tags) {
+      tag.styles &= ~ash::SearchResultTag::MATCH;
+    }
+    AppendMatchTags(query, item.GetText(), &tags);
+    item.SetTextTags(tags);
+  }
+}
+
+}  // namespace
 
 QueryHighlighter::QueryHighlighter() = default;
 QueryHighlighter::~QueryHighlighter() = default;
@@ -28,8 +48,13 @@ void QueryHighlighter::UpdateResultRanks(ResultsMap& results,
     if (result->display_type() == ChromeSearchResult::DisplayType::kAnswerCard)
       continue;
 
-    result->SetTitleTags(CalculateTags(last_query_, result->title()));
-    result->SetDetailsTags(CalculateTags(last_query_, result->details()));
+    TextVector title_vector = result->title_text_vector();
+    SetMatchTags(last_query_, title_vector);
+    result->SetTitleTextVector(title_vector);
+
+    TextVector details_vector = result->details_text_vector();
+    SetMatchTags(last_query_, details_vector);
+    result->SetDetailsTextVector(details_vector);
   }
 }
 
