@@ -169,6 +169,13 @@ class UserDataDowngradeBrowserCopyAndCleanTest
 
       // Prepare to check histograms during the restart.
       histogram_tester_ = std::make_unique<base::HistogramTester>();
+    } else {
+      // Verify the contents of the renamed user data directory.
+      ASSERT_TRUE(base::DirectoryExists(moved_user_data_dir()));
+      EXPECT_TRUE(base::PathExists(
+          moved_user_data_dir().Append(other_file().BaseName())));
+      EXPECT_EQ(GetNextChromeVersion(),
+                GetLastVersion(moved_user_data_dir())->GetString());
     }
   }
 
@@ -183,15 +190,9 @@ class UserDataDowngradeBrowserCopyAndCleanTest
     }
   }
 
-  // Verify the contents of the renamed user data directory.
   void SetUpOnMainThread() override {
     // This is never reached in the pre test due to the relaunch.
     ASSERT_FALSE(ParentClass::IsPreTest());
-    ASSERT_TRUE(base::DirectoryExists(moved_user_data_dir()));
-    EXPECT_TRUE(base::PathExists(
-        moved_user_data_dir().Append(other_file().BaseName())));
-    EXPECT_EQ(GetNextChromeVersion(),
-              GetLastVersion(moved_user_data_dir())->GetString());
     ParentClass::SetUpOnMainThread();
   }
 
@@ -240,14 +241,7 @@ class UserDataDowngradeBrowserCopyAndCleanTest
 // downgrade.
 IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserCopyAndCleanTest, PRE_Test) {}
 
-// TODO(crbug.com/1299325): UserDataDowngradeBrowserCopyAndCleanTest and
-// UserDataDowngradeBrowserNoResetTest test has been flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Test DISABLED_Test
-#else
-#define MAYBE_Test Test
-#endif
-IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserCopyAndCleanTest, MAYBE_Test) {
+IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserCopyAndCleanTest, Test) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ThreadPoolInstance::Get()->FlushForTesting();
   EXPECT_EQ(chrome::kChromeVersion,
@@ -272,7 +266,7 @@ class UserDataDowngradeBrowserNoResetTest
 // Verify the user data directory will not be reset without downgrade.
 IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserNoResetTest, PRE_Test) {}
 
-IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserNoResetTest, MAYBE_Test) {
+IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserNoResetTest, Test) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_EQ(chrome::kChromeVersion,
             GetLastVersion(user_data_dir())->GetString());
