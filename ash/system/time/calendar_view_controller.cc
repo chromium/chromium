@@ -187,11 +187,9 @@ int CalendarViewController::GetTodayRowBottomHeight() const {
 }
 
 void CalendarViewController::FetchEvents() {
-  std::set<base::Time> months;
-  calendar_utils::GetSurroundingMonthsUTC(
-      GetOnScreenMonthFirstDayUTC().UTCMidnight(),
-      CalendarModel::kNumSurroundingMonthsCached, months);
-  Shell::Get()->system_tray_model()->calendar_model()->FetchEvents(months);
+  Shell::Get()->system_tray_model()->calendar_model()->FetchEventsSurrounding(
+      CalendarModel::kNumSurroundingMonthsCached,
+      GetOnScreenMonthFirstDayUTC().UTCMidnight());
 }
 
 SingleDayEventList CalendarViewController::SelectedDateEvents() {

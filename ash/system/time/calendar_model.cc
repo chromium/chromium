@@ -150,10 +150,7 @@ class CalendarEventFetch {
   base::WeakPtrFactory<CalendarEventFetch> weak_factory_{this};
 };
 
-// The calendar model itself.
-CalendarModel::CalendarModel(const std::set<base::Time>& base_months) {
-  FetchEvents(base_months);
-}
+CalendarModel::CalendarModel() = default;
 
 CalendarModel::~CalendarModel() = default;
 
@@ -233,6 +230,13 @@ void CalendarModel::QueuePrunableMonth(base::Time start_of_month) {
 void CalendarModel::FetchEvents(const std::set<base::Time>& months) {
   for (auto& month : months)
     MaybeFetchMonth(month.UTCMidnight());
+}
+
+void CalendarModel::FetchEventsSurrounding(int num_months,
+                                           const base::Time day) {
+  std::set<base::Time> months =
+      calendar_utils::GetSurroundingMonthsUTC(day, num_months);
+  FetchEvents(months);
 }
 
 int CalendarModel::EventsNumberOfDayInternal(base::Time day,

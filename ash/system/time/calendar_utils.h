@@ -54,9 +54,8 @@ bool IsTheSameDay(absl::optional<base::Time> date_a,
 
 // Returns the set of months that includes |selected_date| and
 // |num_months_out| before and after.
-void GetSurroundingMonthsUTC(const base::Time& selected_date,
-                             unsigned int num_months_out,
-                             std::set<base::Time>& months_);
+std::set<base::Time> GetSurroundingMonthsUTC(const base::Time& selected_date,
+                                             int num_months_out);
 
 // Gets the given `date`'s `Exploded` instance, in local time.
 base::Time::Exploded GetExplodedLocal(const base::Time& date);

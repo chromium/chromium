@@ -33,30 +33,28 @@ bool IsTheSameDay(absl::optional<base::Time> date_a,
          base::TimeFormatWithPattern(date_b.value(), "dd MM YYYY");
 }
 
-ASH_EXPORT void GetSurroundingMonthsUTC(const base::Time& selected_date,
-                                        unsigned int num_months_out,
-                                        std::set<base::Time>& months_) {
-  // Make the output is empty before we start.
-  months_.clear();
+ASH_EXPORT std::set<base::Time> GetSurroundingMonthsUTC(
+    const base::Time& selected_date,
+    int num_months_out) {
+  std::set<base::Time> months;
 
   // First month is the one that contains |selected_date|.
   base::Time selected_date_start =
       calendar_utils::GetStartOfMonthUTC(selected_date);
-  months_.emplace(selected_date_start);
+  months.emplace(selected_date_start);
 
-  // Add |num_months_out| before.
-  base::Time current = selected_date_start;
-  for (unsigned int i = 0; i < num_months_out; ++i) {
-    current = calendar_utils::GetStartOfPreviousMonthUTC(current);
-    months_.emplace(current);
+  // Add |num_months_out| before and after.
+  base::Time current_forward = selected_date_start;
+  base::Time current_backward = selected_date_start;
+  for (int i = 0; i < num_months_out; ++i) {
+    current_forward = calendar_utils::GetStartOfNextMonthUTC(current_forward);
+    months.emplace(current_forward);
+    current_backward =
+        calendar_utils::GetStartOfPreviousMonthUTC(current_backward);
+    months.emplace(current_backward);
   }
 
-  // Add |num_months_out| after.
-  current = selected_date_start;
-  for (unsigned int i = 0; i < num_months_out; ++i) {
-    current = calendar_utils::GetStartOfNextMonthUTC(current);
-    months_.emplace(current);
-  }
+  return months;
 }
 
 base::Time::Exploded GetExplodedLocal(const base::Time& date) {

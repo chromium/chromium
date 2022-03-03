@@ -38,12 +38,10 @@ SystemTrayModel::SystemTrayModel()
       virtual_keyboard_(std::make_unique<VirtualKeyboardModel>()),
       network_state_model_(std::make_unique<TrayNetworkStateModel>()),
       active_network_icon_(
-          std::make_unique<ActiveNetworkIcon>(network_state_model_.get())) {
-  std::set<base::Time> prunable_months;
-  calendar_utils::GetSurroundingMonthsUTC(
-      base::Time::Now(), CalendarModel::kNumSurroundingMonthsCached,
-      prunable_months);
-  calendar_model_ = std::make_unique<CalendarModel>(prunable_months);
+          std::make_unique<ActiveNetworkIcon>(network_state_model_.get())),
+      calendar_model_(std::make_unique<CalendarModel>()) {
+  calendar_model_->FetchEventsSurrounding(
+      CalendarModel::kNumSurroundingMonthsCached, base::Time::Now());
 }
 
 SystemTrayModel::~SystemTrayModel() = default;

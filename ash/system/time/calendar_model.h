@@ -42,7 +42,7 @@ enum class FetchInternalErrorCode {
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarModel {
  public:
-  explicit CalendarModel(const std::set<base::Time>& base_months);
+  CalendarModel();
   CalendarModel(const CalendarModel& other) = delete;
   CalendarModel& operator=(const CalendarModel& other) = delete;
   virtual ~CalendarModel();
@@ -71,6 +71,9 @@ class ASH_EXPORT CalendarModel {
 
   // Requests events that fall in |months|.
   void FetchEvents(const std::set<base::Time>& months);
+
+  // Requests events that fall in |num_months| months surrounding |day|.
+  void FetchEventsSurrounding(int num_months, const base::Time day);
 
   // Same as `FindEvents`, except that return of any events on `day` constitutes
   // "use" in the most-recently-used sense, so the month that includes day will
