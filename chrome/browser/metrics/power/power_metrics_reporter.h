@@ -52,6 +52,11 @@ class PowerMetricsReporter
 
   static constexpr base::TimeDelta kShortIntervalDuration = base::Seconds(10);
 
+  // Used to calculate the duration of a short interval. Set from at the
+  // beginning of a short interval (OnShortIntervalBegin()) and reset at the end
+  // (ReportShortIntervalHistograms()).
+  base::TimeTicks short_interval_begin_time_;
+
   // Use the default arguments in production. In tests, use arguments to provide
   // mocks. |(short|long)_usage_scenario_data_store| are queried to determine
   // the scenario for short and long reporting intervals. They must outlive the
@@ -127,6 +132,11 @@ class PowerMetricsReporter
   static void ReportShortIntervalHistograms(
       const UsageScenarioDataStore::IntervalData& short_interval_data,
       const UsageScenarioDataStore::IntervalData& long_interval_data,
+      absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate);
+
+  // Emit trace event when CPU usage is high for 10 secondes or more.
+  void MaybeEmitHighCPUTraceEvent(
+      const UsageScenarioDataStore::IntervalData& short_interval_data,
       absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate);
 #endif  // BUILDFLAG(IS_MAC)
 

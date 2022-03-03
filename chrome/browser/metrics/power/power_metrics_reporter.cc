@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
@@ -317,6 +318,33 @@ void PowerMetricsReporter::ReportShortIntervalHistograms(
         coalition_resource_usage_rate->cpu_time_per_second, kMaxCPUProportion);
   }
 }
+
+void PowerMetricsReporter::MaybeEmitHighCPUTraceEvent(
+    const UsageScenarioDataStore::IntervalData& short_interval_data,
+    absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate) {
+  if (!coalition_resource_usage_rate.has_value())
+    return;
+  // A trace event is emitted when CPU usage exceeds the 95th percentile.
+  // 7 day aggregation ending on February 22nd 2022 from "PerformanceMonitor
+  // .ResourceCoalition.CPUTime2_10sec.AllTabsHidden_NoVideoCaptureOrAudio"
+  constexpr double kHighCPUUsageThreshold_AllTabsHidden = 0.1433;
+
+  if (short_interval_data.max_visible_window_count == 0 &&
+      short_interval_data.time_playing_audio.is_zero() &&
+      short_interval_data.time_capturing_video.is_zero() &&
+      coalition_resource_usage_rate->cpu_time_per_second >=
+          kHighCPUUsageThreshold_AllTabsHidden) {
+    const base::TimeTicks now = base::TimeTicks::Now();
+    constexpr char kEventTitle[] = "High CPU - All tabs Hidden";
+
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+        "browser", kEventTitle, TRACE_ID_LOCAL(this),
+        short_interval_begin_time_);
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("browser", kEventTitle,
+                                                   TRACE_ID_LOCAL(this), now);
+  }
+  short_interval_begin_time_ = base::TimeTicks();
+}
 #endif  // BUILDFLAG(IS_MAC)
 
 void PowerMetricsReporter::ReportBatteryHistograms(
@@ -419,6 +447,8 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
       short_usage_scenario_data_store_->ResetIntervalData();
   ReportShortIntervalHistograms(short_interval_data, long_interval_data,
                                 short_interval_resource_usage_rate);
+  MaybeEmitHighCPUTraceEvent(short_interval_data,
+                             short_interval_resource_usage_rate);
 #endif  // BUILDFLAG(IS_MAC)
 
   if (on_battery_sampled_for_testing_)
@@ -655,6 +685,7 @@ PowerMetricsReporter::GetBatteryDischargeDuringInterval(
 
 #if BUILDFLAG(IS_MAC)
 void PowerMetricsReporter::OnShortIntervalBegin() {
+  short_interval_begin_time_ = base::TimeTicks::Now();
   short_usage_scenario_data_store_->ResetIntervalData();
   coalition_resource_usage_provider_->StartShortInterval();
 }
