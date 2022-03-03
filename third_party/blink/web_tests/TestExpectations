@@ -391,6 +391,9 @@ crbug.com/730267 virtual/gpu-rasterization/images/yuv-decode-eligible/color-prof
 crbug.com/730267 virtual/gpu-rasterization/images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure Pass Skip Timeout ]
 crbug.com/730267 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-layer.html [ Failure Pass Timeout ]
 crbug.com/730267 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure Pass Skip Timeout ]
+crbug.com/730267 [ Mac11 ] virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/webp-color-profile-lossy.html [ Failure Pass Timeout ]
+crbug.com/730267 [ Mac11 ] virtual/gpu-rasterization/images/yuv-decode-eligible/jpeg-missing-eoi.html [ Failure Pass Timeout ]
+crbug.com/730267 [ Mac11 ] virtual/gpu-rasterization/images/yuv-decode-eligible/webp-no-color-profile-lossy.html [ Failure Pass Timeout ]
 
 # Flaky virtual/threaded/fast/scrolling tests
 crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/absolute-position-behind-scrollbar.html [ Failure Pass ]
