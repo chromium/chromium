@@ -218,7 +218,8 @@ class OopPixelTest : public testing::Test,
       raster_implementation->BeginRasterCHROMIUM(
           options.preclear_color, /*needs_clear=*/options.preclear,
           options.msaa_sample_count, msaa_mode, options.use_lcd_text,
-          options.target_color_params.color_space, mailbox.name);
+          /*visible=*/true, options.target_color_params.color_space,
+          mailbox.name);
       raster_implementation->EndRasterCHROMIUM();
     }
 
@@ -229,7 +230,8 @@ class OopPixelTest : public testing::Test,
     raster_implementation->BeginRasterCHROMIUM(
         options.background_color, /*needs_clear=*/!options.preclear,
         options.msaa_sample_count, msaa_mode, options.use_lcd_text,
-        options.target_color_params.color_space, mailbox.name);
+        /*visible=*/true, options.target_color_params.color_space,
+        mailbox.name);
     size_t max_op_size_limit =
         gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
     raster_implementation->RasterCHROMIUM(

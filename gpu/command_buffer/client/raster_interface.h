@@ -89,6 +89,7 @@ class RasterInterface : public InterfaceBase {
                                    GLuint msaa_sample_count,
                                    MsaaMode msaa_mode,
                                    GLboolean can_use_lcd_text,
+                                   GLboolean visible,
                                    const gfx::ColorSpace& color_space,
                                    const GLbyte* mailbox) = 0;
 

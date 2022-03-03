@@ -782,6 +782,7 @@ class RasterDecoderImpl final : public RasterDecoder,
                              GLuint msaa_sample_count,
                              MsaaMode msaa_mode,
                              GLboolean can_use_lcd_text,
+                             GLboolean visible,
                              const volatile GLbyte* key);
   void DoRasterCHROMIUM(GLuint raster_shm_id,
                         GLuint raster_shm_offset,
@@ -3505,6 +3506,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
                                               GLuint msaa_sample_count,
                                               MsaaMode msaa_mode,
                                               GLboolean can_use_lcd_text,
+                                              GLboolean visible,
                                               const volatile GLbyte* key) {
   // Workaround for https://crbug.com/906453: Flush before BeginRaster (the
   // commands between BeginRaster and EndRaster will not flush).
@@ -3597,7 +3599,8 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
       clear_color.emplace(sk_color);
     scoped_shared_image_raster_write_ =
         shared_image_raster_->BeginScopedWriteAccess(
-            final_msaa_count, surface_props, clear_color);
+            shared_context_state_, final_msaa_count, surface_props, clear_color,
+            visible);
     if (!scoped_shared_image_raster_write_) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glBeginRasterCHROMIUM",
                          "failed to create surface");

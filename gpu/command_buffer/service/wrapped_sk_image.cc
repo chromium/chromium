@@ -165,6 +165,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
       SkImageInfo info = MakeSkImageInfo(size(), format());
       SkPixmap pixmap(info, shared_memory_wrapper_.GetMemory(),
                       shared_memory_wrapper_.GetStride());
+
       if (!context_state_->gr_context()->updateBackendTexture(
               backend_texture_, &pixmap, /*numLevels=*/1, nullptr, nullptr)) {
         DLOG(ERROR) << "Failed to update WrappedSkImage texture";

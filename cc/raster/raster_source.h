@@ -52,6 +52,9 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
     // Specifies the sample count if MSAA is enabled for this tile.
     int msaa_sample_count = 0;
 
+    // Visible hint, GPU may use it as a hint to schedule raster tasks.
+    bool visible = false;
+
     raw_ptr<ImageProvider> image_provider = nullptr;
   };
 

@@ -1459,7 +1459,8 @@ void CanvasResourceProvider::RasterRecordOOP(
                           /*msaa_sample_count=*/oopr_uses_dmsaa_ ? 1 : 0,
                           oopr_uses_dmsaa_ ? gpu::raster::MsaaMode::kDMSAA
                                            : gpu::raster::MsaaMode::kNoMSAA,
-                          can_use_lcd_text, GetColorSpace(), mailbox.name);
+                          can_use_lcd_text, /*visible=*/true, GetColorSpace(),
+                          mailbox.name);
 
   ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
                      full_raster_rect, playback_rect, post_translate,

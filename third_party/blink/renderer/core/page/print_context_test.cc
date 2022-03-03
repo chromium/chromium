@@ -114,6 +114,7 @@ class FakeRasterInterface : public gpu::raster::RasterImplementationGLES {
                            GLuint msaa_sample_count,
                            gpu::raster::MsaaMode msaa_mode,
                            GLboolean can_use_lcd_text,
+                           GLboolean visible,
                            const gfx::ColorSpace& color_space,
                            const GLbyte* mailbox) override {}
   void RasterCHROMIUM(const cc::DisplayItemList* list,

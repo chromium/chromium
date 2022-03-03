@@ -161,7 +161,7 @@ TEST_F(RasterFormatTest, BeginRasterCHROMIUMImmediate) {
   void* next_cmd =
       cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLboolean>(12),
               static_cast<GLuint>(13), static_cast<gpu::raster::MsaaMode>(14),
-              static_cast<GLboolean>(15), data);
+              static_cast<GLboolean>(15), static_cast<GLboolean>(16), data);
   EXPECT_EQ(static_cast<uint32_t>(cmds::BeginRasterCHROMIUMImmediate::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
@@ -171,6 +171,7 @@ TEST_F(RasterFormatTest, BeginRasterCHROMIUMImmediate) {
   EXPECT_EQ(static_cast<GLuint>(13), cmd.msaa_sample_count);
   EXPECT_EQ(static_cast<gpu::raster::MsaaMode>(14), cmd.msaa_mode);
   EXPECT_EQ(static_cast<GLboolean>(15), cmd.can_use_lcd_text);
+  EXPECT_EQ(static_cast<GLboolean>(16), cmd.visible);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
