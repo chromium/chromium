@@ -1680,17 +1680,15 @@ bool PictureLayerImpl::CalculateRasterTranslation(
   // a layer of size 10000px does not exceed 0.001px.
   static constexpr float kPixelErrorThreshold = 0.001f;
   static constexpr float kScaleErrorThreshold = kPixelErrorThreshold / 10000;
-  auto is_raster_scale = [this](const skia::Matrix44& matrix) -> bool {
+  auto is_raster_scale = [this](const gfx::Transform& transform) -> bool {
     // The matrix has the X scale at (0,0), and the Y scale at (1,1).
-    return std::abs(matrix.rc(0, 0) - raster_contents_scale_.x()) <=
+    return std::abs(transform.matrix().rc(0, 0) - raster_contents_scale_.x()) <=
                kScaleErrorThreshold &&
-           std::abs(matrix.rc(1, 1) - raster_contents_scale_.y()) <=
+           std::abs(transform.matrix().rc(1, 1) - raster_contents_scale_.y()) <=
                kScaleErrorThreshold;
   };
-  if (!is_raster_scale(screen_transform.matrix()) ||
-      !is_raster_scale(draw_transform.matrix())) {
+  if (!is_raster_scale(screen_transform) || !is_raster_scale(draw_transform))
     return false;
-  }
 
   // Extract the fractional part of layer origin in the screen space and in the
   // target space.

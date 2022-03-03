@@ -953,10 +953,9 @@ void MathUtil::AddToTracedValue(const char* name,
                                 const gfx::Transform& transform,
                                 base::trace_event::TracedValue* res) {
   res->BeginArray(name);
-  const skia::Matrix44& m = transform.matrix();
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col)
-      res->AppendDouble(m.rc(row, col));
+      res->AppendDouble(transform.matrix().rc(row, col));
   }
   res->EndArray();
 }
