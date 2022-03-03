@@ -90,6 +90,7 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
   SetFocusPainter(nullptr);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnHover(false);
   SetHasInkDropActionOnClick(true);
   SetShowInkDropWhenHotTracked(false);
 
