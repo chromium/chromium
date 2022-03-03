@@ -301,8 +301,12 @@ AppListItem* AppListModel::AddItemToFolderListAndNotify(
     std::unique_ptr<AppListItem> item_ptr,
     ReparentItemReason reason) {
   CHECK_NE(folder->id(), item_ptr->folder_id());
+
+  // Calling `AppListItemList::AddItem()` could trigger
+  // `AppListModel::SetItemMetadata()` so set the folder id before addition.
+  item_ptr->set_folder_id(folder->id());
+
   AppListItem* item = folder->item_list()->AddItem(std::move(item_ptr));
-  item->set_folder_id(folder->id());
   NotifyItemParentChange(item, reason);
   return item;
 }
