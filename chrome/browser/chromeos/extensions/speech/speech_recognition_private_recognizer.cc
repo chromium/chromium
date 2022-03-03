@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
 
+#include "base/debug/crash_logging.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/network_speech_recognizer.h"
@@ -49,6 +50,9 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechResult(
 
 void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
+  // Crash keys for https://crbug.com/1296304.
+  SCOPED_CRASH_KEY_NUMBER("Accessibility", "Speech recognition state",
+                          new_state);
   SpeechRecognizerStatus next_state = new_state;
   if (new_state == SPEECH_RECOGNIZER_READY) {
     if (current_state_ == SPEECH_RECOGNIZER_OFF && speech_recognizer_) {
@@ -62,9 +66,15 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
       delegate_->HandleSpeechRecognitionStopped(id_);
     }
   } else if (new_state == SPEECH_RECOGNIZER_RECOGNIZING) {
-    DCHECK(!on_start_callback_.is_null());
-    std::move(on_start_callback_)
-        .Run(/*type=*/type_, /*error=*/absl::optional<std::string>());
+    if (!on_start_callback_.is_null()) {
+      std::move(on_start_callback_)
+          .Run(/*type=*/type_, /*error=*/absl::optional<std::string>());
+    } else {
+      // If we get here, we are unintentionally recognizing speech. Turn off
+      // the recognizer.
+      next_state = SPEECH_RECOGNIZER_OFF;
+      RecognizerOff();
+    }
   } else if (new_state == SPEECH_RECOGNIZER_ERROR) {
     // When a speech recognition error occurs, ask the delegate to handle both
     // error and stop events.
@@ -118,9 +128,7 @@ void SpeechRecognitionPrivateRecognizer::HandleStop(OnStopCallback callback) {
   }
 
   RecognizerOff();
-
   delegate_->HandleSpeechRecognitionStopped(id_);
-
   DCHECK(!callback.is_null());
   std::move(callback).Run(/*error=*/absl::optional<std::string>());
 }

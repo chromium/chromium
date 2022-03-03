@@ -349,4 +349,17 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, OnSpeechResult) {
   ASSERT_TRUE(last_is_final());
 }
 
+// Verifies that the speech recognizer can handle transitions between states.
+// Some of the below states are intentionally erroneous to ensure the recognizer
+// can handle unexpected input.
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest, SetState) {
+  FakeSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_READY);
+  FakeSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_RECOGNIZING);
+  FakeSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_ERROR);
+  // Erroneously change the state to 'recognizing'. The recognizer should
+  // intelligently handle this case.
+  FakeSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_RECOGNIZING);
+  ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
+}
+
 }  // namespace extensions
