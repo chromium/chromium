@@ -105,13 +105,6 @@
 <translation id="7931842119211730154">Bloquear pestanas do modo de incógnito ao pechar Chromium</translation>
 <translation id="7980860476903281594">Chromium comparte a localización cos sitios que queiras.</translation>
 <translation id="8013573822802650211">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión en todos eles</translation>
-<translation id="80599830191519229">Cando esta opción está activada:
-<ph name="BEGIN_INDENT" />  • Axuda a mellorar Chromium para as persoas que o usan igual ca ti<ph name="END_INDENT" />
-
-Cuestións que se deben ter en conta:
-<ph name="BEGIN_INDENT" />  • Envíaselle a Google información sobre o uso que fas de Chromium, pero estes datos non están vinculados contigo
-  • Se se produce un erro en Chromium, entre os datos sobre o fallo podería incluírse algunha información persoal
-  • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Queres borrar os teus datos de Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Consello: <ph name="BEGIN_LINK" />Engade Chromium á barra de aplicacións<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium non puido buscar actualizacións. Téntao máis tarde.</translation>

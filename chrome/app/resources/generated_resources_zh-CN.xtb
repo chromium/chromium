@@ -903,6 +903,7 @@
 <translation id="1869433484041798909">书签按钮</translation>
 <translation id="1871098866036088250">在 Chrome 浏览器中打开</translation>
 <translation id="187145082678092583">收起部分应用</translation>
+<translation id="1871463148436682760">太棒了，大功告成！</translation>
 <translation id="1871534214638631766">在您右键点击或长按内容时显示相关信息</translation>
 <translation id="1871569928317311284">关闭深色主题</translation>
 <translation id="1871615898038944731">您的 <ph name="DEVICE_TYPE" /> 使用的操作系统已为最新版本</translation>
@@ -2330,6 +2331,7 @@
 <translation id="3304212451103136496">直降 <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">格式化过程可能需要几秒钟的时间，请稍候。</translation>
 <translation id="3305661444342691068">使用预览程序打开 PDF</translation>
+<translation id="3306992216458434072">为您的分组命名并选择一种颜色</translation>
 <translation id="3307176291962384345">获取<ph name="MERCHANT_NAME" />的折扣</translation>
 <translation id="3308116878371095290">系统已禁止设置此网页的 Cookie。</translation>
 <translation id="3308134619352333507">隐藏按钮</translation>
@@ -3740,6 +3742,7 @@
 <translation id="4708794300267213770">从休眠状态唤醒时显示锁定屏幕</translation>
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">恢复设置</translation>
+<translation id="47158868804223727">点击相应的分组名称以展开或收起该分组</translation>
 <translation id="4716483597559580346">执行 Powerwash 操作以提高安全性</translation>
 <translation id="471880041731876836">您无权访问此网站</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> 的密码</translation>
@@ -3804,6 +3807,7 @@
 <translation id="4794810983896241342">更新由<ph name="BEGIN_LINK" />您的管理员<ph name="END_LINK" />管理</translation>
 <translation id="479536056609751218">网页，仅 HTML</translation>
 <translation id="4796142525425001238">一律恢复</translation>
+<translation id="4797314204379834752">尝试使用标签页分组来整理任务，以达成在线购物等目的</translation>
 <translation id="4798236378408895261">附加<ph name="BEGIN_LINK" />蓝牙日志<ph name="END_LINK" />（Google 内部使用）</translation>
 <translation id="479863874072008121">管理设备</translation>
 <translation id="4800839971935185386">查看名称和图标的新变化</translation>
@@ -4044,6 +4048,7 @@
 <translation id="5039696241953571917">查看和管理您的 Google 帐号中保存的密码</translation>
 <translation id="5039804452771397117">允许</translation>
 <translation id="5040823038948176460">更多内容设置</translation>
+<translation id="5041509233170835229">Chrome 应用</translation>
 <translation id="5043440033854483429">名称可以使用字母、数字和连字符 (-)，长度必须介于 1-15（含端点值）个字符之间。</translation>
 <translation id="5043913660911154449">或指定您的打印机 PPD <ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">密码不正确</translation>
@@ -5371,6 +5376,7 @@
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6393550101331051049">允许显示不安全内容</translation>
 <translation id="6395423953133416962">发送<ph name="BEGIN_LINK1" />系统信息<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">系统应用</translation>
 <translation id="6396988158856674517">禁止网站使用移动传感器</translation>
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
@@ -5440,6 +5446,7 @@
 <translation id="6460566145397380451">允许连接到 MIDI 设备</translation>
 <translation id="6460601847208524483">查找下一个</translation>
 <translation id="6461170143930046705">正在搜索网络…</translation>
+<translation id="6462204616987156669">右键点击某个标签页，然后选择“向新组添加标签页”</translation>
 <translation id="6463795194797719782">修改(&amp;E)</translation>
 <translation id="6464825623202322042">此设备</translation>
 <translation id="6465841119675156448">不使用互联网</translation>
@@ -5856,6 +5863,7 @@
 <translation id="6885771755599377173">系统信息预览</translation>
 <translation id="6886871292305414135">在新标签页中打开链接(&amp;T)</translation>
 <translation id="6889957081990109136">尚未分配开关</translation>
+<translation id="689007770043972343">尝试将其他已打开的标签页拖到您的分组中</translation>
 <translation id="6892812721183419409">以 <ph name="USER" /> 身份打开链接</translation>
 <translation id="6895032998810961280">向 Google 报告在此次清理期间在您计算机中发现的有害软件、系统设置和进程的相关详情</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" /> 由 <ph name="MANAGER" /> 管理，管理员已禁止将其用作辅助帐号登录</translation>
@@ -6434,6 +6442,7 @@
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 个 Cookie}other{{NUM_COOKIES} 个 Cookie}}</translation>
 <translation id="7493386493263658176">扩展程序“<ph name="EXTENSION_NAME" />”可能会收集您输入的所有内容（包括密码和信用卡号等个人数据）。要使用此扩展程序吗？</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android 应用</translation>
 <translation id="7495778526395737099">忘了旧密码？</translation>
 <translation id="7497981768003291373">您最近未记录 WebRTC 文本日志。</translation>
 <translation id="7501957181231305652">或</translation>

@@ -105,13 +105,6 @@
 <translation id="7931842119211730154">Blocca le schede di navigazione in incognito quando chiudi Chromium</translation>
 <translation id="7980860476903281594">Chromium condivide la tua posizione con i siti autorizzati da te.</translation>
 <translation id="8013573822802650211">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chromium per visualizzare le tue schede</translation>
-<translation id="80599830191519229">Quando l'opzione è attiva:
-<ph name="BEGIN_INDENT" />  • Contribuisci a migliorare Chromium per le persone che lo usano come fai tu<ph name="END_INDENT" />
-
-Aspetti da considerare:
-<ph name="BEGIN_INDENT" />  • Google riceve delle informazioni relative al tuo utilizzo di Chromium, ma che non sono riconducibili a te
-  • Se Chromium si arresta in modo anomalo, i dettagli relativi a questo evento potrebbero includere alcune informazioni personali
-  • Se attivi la sincronizzazione, le metriche potrebbero includere anche informazioni relative agli URL che visiti<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Eliminare i dati di Chromium dal dispositivo?</translation>
 <translation id="8175055321229419309">Suggerimento. <ph name="BEGIN_LINK" />Sposta Chromium nel dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>

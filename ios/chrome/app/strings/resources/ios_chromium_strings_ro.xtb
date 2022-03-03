@@ -105,13 +105,6 @@
 <translation id="7931842119211730154">Blochează filele incognito când închizi Chromium</translation>
 <translation id="7980860476903281594">Chromium trimite locația ta către site-urile pe care le permiți.</translation>
 <translation id="8013573822802650211">Conectează-te pe toate dispozitivele ca să vezi toate filele tale deschise în Chromium</translation>
-<translation id="80599830191519229">Când opțiunea este activă
-<ph name="BEGIN_INDENT" />  • Contribui la îmbunătățirea Chromium pentru cei care-l folosesc în mod similar cu tine<ph name="END_INDENT" />
-
-De reținut
-<ph name="BEGIN_INDENT" />  • Google primește informații despre modul în care folosești Chromium, dar acestea nu pot fi asociate cu tine
-  • Dacă Chromium se blochează, detaliile despre blocare pot include unele informații cu caracter personal
-  • Dacă activezi sincronizarea, valorile pot să includă și informații despre adresele URL pe care le accesezi<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Ștergi datele tale Chromium de pe dispozitiv?</translation>
 <translation id="8175055321229419309">Sfat: <ph name="BEGIN_LINK" />mută Chromium în bara de andocare<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>

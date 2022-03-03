@@ -105,13 +105,6 @@
 <translation id="7931842119211730154">Lås inkognitofaner, når du lukker Chromium</translation>
 <translation id="7980860476903281594">Chromium deler din lokation med godkendte websites.</translation>
 <translation id="8013573822802650211">Log ind på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
-<translation id="80599830191519229">Ved aktivering:
-<ph name="BEGIN_INDENT" />  • Hjælp med at gøre Chromium bedre for andre, der bruger Chromium på samme måde som dig<ph name="END_INDENT" />
-
-Ting, du skal overveje:
-<ph name="BEGIN_INDENT" />  • Der sendes oplysninger til Google om din brug af Chromium, men oplysningerne er ikke tilknyttet dig
-  • Hvis Chromium oplever nedbrud, kan oplysningerne om nedbruddet omfatte visse personlige oplysninger
-  • Hvis du aktiverer synkronisering, vil metrics også omfatte oplysninger om de webadresser, du besøger<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Vil du rydde dine Chromium-data på denne enhed?</translation>
 <translation id="8175055321229419309">Tip! <ph name="BEGIN_LINK" />Flyt Chromium til din dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium kunne ikke søge efter opdateringer. Prøv igen senere.</translation>

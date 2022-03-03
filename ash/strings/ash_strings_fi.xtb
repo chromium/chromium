@@ -336,7 +336,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3120421559657122717">Sammutetaanko laite?</translation>
 <translation id="3126069444801937830">Päivitä käynnistämällä uudelleen</translation>
 <translation id="3139942575505304791">Pöytä 1</translation>
-<translation id="315116470104423982">Mobiilitiedonsiirto</translation>
+<translation id="315116470104423982">Mobiilidata</translation>
 <translation id="3151786313568798007">Suunta</translation>
 <translation id="3153444934357957346">Voit lisätä enintään <ph name="MULTI_PROFILE_USER_LIMIT" /> tiliä useille tileille kirjautumista varten.</translation>
 <translation id="3154351730702813399">Laitteen järjestelmänvalvoja saattaa seurata selaustoimintaasi.</translation>
@@ -964,6 +964,7 @@ Uusi asennus</translation>
 <translation id="7076293881109082629">Kirjautuminen</translation>
 <translation id="7086931198345821656">Päivitys edellyttää laitteen (<ph name="DEVICE_TYPE" />) powerwashia. Kaikki data poistetaan. Lue lisää uusimmasta päivityksestä: <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Kytkimen käyttö</translation>
+<translation id="7098053464892629930">Lataa sovellus (<ph name="NAME" />) Google Playsta, niin näet kaikki saatavilla olevat ominaisuudet</translation>
 <translation id="7098389117866926363">C-tyypin USB-laite (vasemmanpuoleinen takaportti)</translation>
 <translation id="7106330611027933926">Piilota työpöytäpalkki</translation>
 <translation id="7118268675952955085">kuvakaappaus</translation>
@@ -1208,6 +1209,7 @@ Uusi asennus</translation>
 <translation id="8660331759611631213">71:n neliöjuuri</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Näytä verkkoluettelo. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Avaa <ph name="NAME" /> ottaaksesi laitteen käyttöön</translation>
 <translation id="8676770494376880701">Pienitehoinen laturi kytketty</translation>
 <translation id="8683506306463609433">Tehokkuuden seuranta aktiivinen</translation>
 <translation id="8685326675965865247">Hae laitteelta, sovelluksista, asetuksista ja verkosta. Siirry sovellusten välillä nuolinäppäimillä.</translation>

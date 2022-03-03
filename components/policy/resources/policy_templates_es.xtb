@@ -1762,6 +1762,11 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2905984450136807296">Duración de la caché de datos de autenticación</translation>
 <translation id="2906874737073861391">Lista de extensiones AppPack</translation>
 <translation id="2908277604670530363">Número máximo de conexiones simultáneas con el servidor proxy</translation>
+<translation id="2909068176249499360">Si se establece esta política, se forzará a que se habilite o se inhabilite Emparejamiento rápido.
+      Emparejamiento rápido es un nuevo flujo de emparejamiento por Bluetooth que vincula periféricos emparejados con una cuenta de GAIA.
+      Esto permite que otros dispositivos Chrome OS (o Android) que hayan iniciado sesión con la misma cuenta de GAIA se emparejen automáticamente.
+      Si no se establece esta política, el valor predeterminado hará que la función se inhabilite en el caso de los usuarios de empresa y se habilite en el caso de las
+      cuentas no gestionadas.</translation>
 <translation id="2912366658685903301">Configurar el color del tema del navegador</translation>
 <translation id="291853569864365550">No mostrar sugerencias de contenido en la página Nueva pestaña</translation>
 <translation id="2920795918401557243">Esta opción permite recoger trazas de rendimiento del sistema usando el servicio de trazado del sistema.
@@ -5942,6 +5947,13 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si se le asigna el valor False o no se define, desactivará los informes.
       Las reglas definidas con restricciones de nivel ALLOW en DataLeakPreventionRulesList no informarán de los eventos en ambos casos.</translation>
 <translation id="7648907905084499629">Usar el comportamiento de cookies de <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> en todos los sitios web</translation>
+<translation id="765347139142030086">Si se habilita esta política, las políticas asociadas a una cuenta de <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tendrán preferencia si entran en conflicto con las políticas de <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Solo las políticas procedentes de usuarios seguros pueden tener preferencia. Los usuarios seguros son aquellos que están afiliados a la organización que gestiona su navegador mediante <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. El resto de las políticas a nivel de usuario tendrán el nivel de preferencia predeterminado.
+
+      Esta política se puede combinar con <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Si se habilitan ambas políticas, las políticas basadas en la nube a nivel de usuario también tendrán preferencia si entran en conflicto con las políticas de plataforma.
+
+      Si no se establece esta política o se inhabilita, las políticas basadas en la nube a nivel de usuario tendrán el nivel de prioridad predeterminado.</translation>
 <translation id="7657261947024629645">Optimizar para un mejor rendimiento.</translation>
 <translation id="7666228839913571182">Permitir cookies de terceros</translation>
 <translation id="7668830462800981702">Si se habilita esta política, se realiza una búsqueda predeterminada cuando un usuario introduce en la barra de direcciones texto que no es una URL. Para especificar el proveedor de búsqueda predeterminado, configura el resto de las políticas de búsqueda predeterminadas. Si no configuras esas políticas, el usuario podrá elegir el proveedor predeterminado. Si se inhabilita esta política, no se realizará ninguna búsqueda cuando el usuario introduzca texto que no es una URL en la barra de direcciones.

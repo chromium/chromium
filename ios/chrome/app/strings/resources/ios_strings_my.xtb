@@ -316,6 +316,7 @@
 <translation id="3789841737615482174">တပ်ဆင်ရန်</translation>
 <translation id="380329542618494757">အမည်</translation>
 <translation id="3803696231112616155">ဤဝဘ်ဆိုက်ကို ဘာသာပြန်ရန် ကမ်းလှမ်းချက်</translation>
+<translation id="3810973564298564668">စီမံရန်</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3858860766373142691">အမည်</translation>
 <translation id="3861486700625780712">လိုက်မကြည့်တော့ရန်</translation>
@@ -454,6 +455,7 @@
 <translation id="5090832849094901128">ဤစကားဝှက်ကို ဖျက်ခြင်းဖြင့် <ph name="WEBSITE" /> ရှိ သင့်အကောင့်ကို ဖျက်မည်မဟုတ်ပါ။</translation>
 <translation id="5092117651143801290">စာမျက်နှာများကို နောက်မှဖတ်ရန် (သို့) အော့ဖ်လိုင်းဖတ်ရန် သိမ်းနိုင်သည်။ စာမျက်နှာအရှည်များ သိမ်းလိုခြင်း ရှိ၊ မရှိကို Chrome က မေးပါမည်။</translation>
 <translation id="5094827893301452931">Tweet ပြီးစီးပါပြီ။</translation>
+<translation id="5118713593561876160">စိတ်ဝင်စားမှုများ</translation>
 <translation id="5118764316110575523">ပိတ်ထားသည်</translation>
 <translation id="5127805178023152808">စင့် ပိတ်ထား၏</translation>
 <translation id="5132942445612118989">စက်ပစ္စည်းအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်ပါ</translation>
@@ -766,6 +768,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7791543448312431591">ထည့်ရန်</translation>
 <translation id="7839985698273989086">အော့ဖ်လိုင်း စာမျက်နှာ</translation>
 <translation id="7840771868269352570">သင်ရွေးထားသည့် အရာများကို ဖယ်ရှားလိုက်ပါမည်။</translation>
+<translation id="7853202427316060426">လုပ်ဆောင်ချက်</translation>
 <translation id="7856733331829174190">ဒေါင်းလုဒ် လုပ်၍မရပါ</translation>
 <translation id="7859704718976024901">ရှာဖွေမှု မှတ်တမ်း</translation>
 <translation id="7884694604461143138">ရှာဖွေမှတ်တမ်း (<ph name="COUNT" /> ခု တွေ့သည်)</translation>
@@ -800,6 +803,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8076014560081431679">သိမ်းဆည်းထားသည့် ဆိုက်ဆက်တင်များကိုတော့ ဖျက်လိုက်မည် မဟုတ်ဘဲ သင်အင်တာနက် အသုံးပြုမှု အမူအကျင့်များကို ဖော်ပြပါလိမ့်မည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">ဤဆက်တင်ကို စီမံခန့်ခွဲထားသည်၊ နောက်ထပ်အချက်အလက်အတွက် နှစ်ချက်တို့ပါ</translation>
 <translation id="8080028325999236607">တဘ်အားလုံး ပိတ်မည်</translation>
+<translation id="8084285576995584326">သင့် Google Account ဒေတာကို ထိန်းချုပ်နိုင်သည်</translation>
 <translation id="809543534949702122">ရှာဖွေမှတ်တမ်း</translation>
 <translation id="8101409298456377967">ဝဘ်ဆိုက်နှင့် အက်ပ်များသို့ လွယ်ကူစွာလက်မှတ်ထိုးဝင်နိုင်ရန် စကားဝှက်များ ပြုလုပ်ပြီး သိမ်းကာစီမံပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">ပိတ်ပါ</translation>
@@ -876,6 +880,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8820817407110198400">စာညှပ်များ</translation>
 <translation id="8840513115188359703">Google အကောင့်မှ သင်ထွက်သွားမည် မဟုတ်ပါ။</translation>
 <translation id="8843129975935593190">စင့်ခ်လုပ်နိုင်သည်များကို သင့်အဖွဲ့အစည်းက ကန့်သတ်ထားသည်။</translation>
+<translation id="8849001918648564819">ဖျောက်ထားသည်</translation>
 <translation id="8868471676553493380">{count,plural, =1{တဘ် {count} ခု}other{တဘ် {count} ခု}}</translation>
 <translation id="8870413625673593573">မကြာမီက ပိတ်ခဲ့</translation>
 <translation id="8876882697946675716">သင့်စက်များကို စင့်ခ်လုပ်ထားခြင်း</translation>

@@ -105,13 +105,6 @@
 <translation id="7931842119211730154">Užrakinti inkognito skirtukus uždarius „Chromium“</translation>
 <translation id="7980860476903281594">„Chromium“ bendrina jūsų vietovę su svetainėmis, kurioms leidžiate gauti tokius duomenis.</translation>
 <translation id="8013573822802650211">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chromium“, prisijunkite visuose įrenginiuose</translation>
-<translation id="80599830191519229">Kai įjungta
-<ph name="BEGIN_INDENT" />  • Padėkite tobulinti „Chromium“ žmonėms, naudojantiems jį kaip jūs<ph name="END_INDENT" />
-
-Į ką reikėtų atsižvelgti
-<ph name="BEGIN_INDENT" />  • Sistemai „Google“ siunčiama informacija apie „Chromium“ naudojimą, tačiau ji su jumis nesusiejama.
-  • Jei „Chromium“ užstringa, į ataskaitą gali būti įtraukta tam tikros asmens informacijos.
-  • Jei įjungsite sinchronizavimą, į metriką gali būti įtraukta informacijos apie URL, kuriuose lankėtės.<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Išvalyti jūsų „Chromium“ duomenis iš šio įrenginio?</translation>
 <translation id="8175055321229419309">Patarimas: <ph name="BEGIN_LINK" />perkelkite „Chromium“ į doką<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">„Chromium“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>

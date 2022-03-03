@@ -105,13 +105,6 @@
 <translation id="7931842119211730154">Lock incognito tabs when you close Chromium</translation>
 <translation id="7980860476903281594">Chromium shares your location with sites that you allow.</translation>
 <translation id="8013573822802650211">To see your tabs from wherever you use Chromium, sign in on all your devices</translation>
-<translation id="80599830191519229">When on:
-<ph name="BEGIN_INDENT" />  • Help make Chromium better for people who use it the way that you do<ph name="END_INDENT" />
-
-Things to consider:
-<ph name="BEGIN_INDENT" />  • Info is sent to Google about your Chromium usage, but it isn't tied to you
-  • If Chromium crashes, details about the crash may include some personal info
-  • If you turn on sync, metrics may also include info about URLs that you visit<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Clear your Chromium data from this device?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Move Chromium to your dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium couldn't check for updates. Try again later.</translation>

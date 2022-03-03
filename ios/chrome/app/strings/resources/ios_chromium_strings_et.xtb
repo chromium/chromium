@@ -105,13 +105,6 @@
 <translation id="7931842119211730154">Lukusta Chromiumi sulgemisel inkognito vahelehed</translation>
 <translation id="7980860476903281594">Chromium jagab teie asukohateavet saitidega, millele olete loa andnud.</translation>
 <translation id="8013573822802650211">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, logige kõigisse oma seadmetesse sisse</translation>
-<translation id="80599830191519229">Kui see on sisse lülitatud
-<ph name="BEGIN_INDENT" />  • Aitate täiustada Chromiumi inimeste jaoks, kes kasutavad seda nagu teie<ph name="END_INDENT" />
-
-Olulised aspektid
-<ph name="BEGIN_INDENT" />  • Google'ile saadetakse teavet teie Chromiumi kasutuse kohta, kuid see teave pole teiega seotud
-  • Kui Chromium jookseb kokku, võivad krahhi üksikasjad isiklikku teavet sisaldada
-  • Kui lülitate sünkroonimise sisse, võivad mõõdikud sisaldada ka teavet teie külastatavate URL-ide kohta<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Kas kustutada sellest seadmest Chromiumi andmed?</translation>
 <translation id="8175055321229419309">Nõuanne: <ph name="BEGIN_LINK" />lisage Chromium dokki<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>

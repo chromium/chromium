@@ -766,6 +766,7 @@
 <translation id="1744060673522309905">यन्त्रलाई उक्त डोमेनसँग जोड्न सकिँदैन। तपाईंले थप्न सक्ने यन्त्रको सङ्ख्या त नाघ्नु भएको छैन भन्ने सुनिश्चित गर्नुहोस्।</translation>
 <translation id="1744108098763830590">पृष्ठभूमि पृष्ठ</translation>
 <translation id="1745732479023874451">सम्पर्क सूची व्यवस्थापन गर्नुहोस्</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# वटा फाइल यो वेब एपमा खोलेर सम्पादन गर्ने हो?}}</translation>
 <translation id="1748563609363301860">तपाईं आफ्नो Google खाता वा यस यन्त्रमा मात्र यो पासवर्ड सुरक्षित गर्न सक्नुहुन्छ।</translation>
 <translation id="1750048572964661931">अरूले तपाईंको फोनमा भएका एपहरू चलाउन नसकून् भन्नाका खातिर यो Chromebook मा PIN वा पासवर्ड सेट गर्नुहोस्।</translation>
 <translation id="1750172676754093297">तपाईंको सुरक्षा साँचोले फिंगरप्रिन्टहरू भण्डारण गर्न सक्दैन</translation>
@@ -2248,6 +2249,7 @@
 <translation id="3201422919974259695">उपलब्ध USB यन्त्रहरू यहाँ देखिने छन्।</translation>
 <translation id="3202131003361292969">पथ</translation>
 <translation id="3202173864863109533">यस ट्याबको अडियो म्युट गरिएको छ।</translation>
+<translation id="3204648577100496185">यो डिभाइसबाट यस एपसँग सम्बन्धित डेटा हटाइन सक्छ</translation>
 <translation id="3208321278970793882">एप</translation>
 <translation id="3208584281581115441">अहिले नै जाँच्नुहोस्</translation>
 <translation id="3208703785962634733">प्रमाणित नगरिएको</translation>
@@ -2394,6 +2396,7 @@
 <translation id="337286756654493126">तपाईंले एप्लिकेसनमा खोल्ने फोल्डरहरू पढ्नुहोस्</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' सारेर '<ph name="NEW_FOLDER_TITLE" />' मा लगियो।</translation>
 <translation id="3378572629723696641">यो विस्तार दुषित भएको हुन सक्छ।</translation>
+<translation id="3378627645871606983">Steam लाई दिइएका अनुमति Steam मार्फत इन्स्टल गरिएका सबै गेम तथा एपहरूमा पनि लागू हुन्छन्।</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> स्थापना हुनेछ।</translation>
 <translation id="3380365263193509176">अज्ञात त्रुटि</translation>
 <translation id="3382073616108123819">ओहो! यस यन्त्रको लागि प्रणालीले यन्त्र परिचयकर्ताहरू ठम्याउन असफल भयो।</translation>
@@ -2500,9 +2503,11 @@
 <translation id="346298925039590474">यो डिभाइस चलाउने सबै प्रयोगकर्ताहरू यो मोबाइल नेटवर्क प्रयोग गर्न सक्ने छन्</translation>
 <translation id="3464145797867108663">कार्य प्रोफाइल हाल्नुहोस्</translation>
 <translation id="346431825526753">यो <ph name="CUSTODIAN_EMAIL" /> द्वारा व्यवस्थित बच्चाहरुको लागि एक खाता हो।</translation>
+<translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> र अन्य व्यापारीको छुट प्राप्त गर्नुहोस्</translation>
 <translation id="3468298837301810372">लेबल</translation>
 <translation id="3468999815377931311">Android फोन</translation>
 <translation id="3469583217479686109">चयन गर्ने टुल</translation>
+<translation id="3470392222765168737">साइट फलो गर्नुहोस्</translation>
 <translation id="3471876058939596279">भिडियोसम्बन्धी प्रयोजनका लागि HDMI र USB Type-C पोर्टहरू एकै समयमा प्रयोग गर्न मिल्दैन। कुनै अर्को भिडियो पोर्ट प्रयोग गर्नुहोस्।</translation>
 <translation id="3473241910002674503">ट्याब्लेट मोडमा हुँदा बटनहरूको प्रयोग गरी गृह स्क्रिनमा जानुहोस्, पछाडि फर्कनुहोस् र एउटा अनुप्रयोगबाट अर्को एपमा जानुहोस्।</translation>
 <translation id="3473479545200714844">स्क्रिन म्याग्निफायर</translation>
@@ -2886,6 +2891,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{एउटा एक्स्टेन्सन स्वीकार गरिएको छ}other{# वटा एक्स्टेन्सन स्वीकार गरिएको छ}}</translation>
 <translation id="3823310065043511710">Linux प्रयोग गर्न कम्तीमा पनि <ph name="INSTALL_SIZE" /> ठाउँ खाली राख्न सिफारिस गरिन्छ।</translation>
 <translation id="3824621460022590830">यन्त्र दर्ता गर्न प्रयोग गरिने टोकन अवैध छ। कृपया आफ्नो डिभाइसका मालिक वा एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{यो प्रकारको फाइलका हकमा मेरो रोजाइ याद राखियोस्: <ph name="FILE_TYPES" />}other{यी प्रकारका फाइलका हकमा मेरो रोजाइ याद राखियोस्: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">मोसन सेन्सरहरू प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="3826440694796503677">तपाईंका व्यवस्थापकले योभन्दा बढी Google खाताहरू थप्ने सुविधा असक्षम पार्नुभएको छ</translation>
 <translation id="3827774300009121996">&amp;पूर्ण स्क्रिन</translation>
@@ -2943,6 +2949,7 @@
 <translation id="3879748587602334249">डाउनलोड म्यानेजर</translation>
 <translation id="3882165008614329320">क्यामेरा वा फाइलको विद्यमान भिडियो</translation>
 <translation id="3883306461188700142">बोलेर टाइप गर्नुहोस्। Search + D थिच्नुहोस् अनि बोल्न थाल्नुहोस्।</translation>
+<translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> र <ph name="MERCHANT_NAME_2" /> को छुट प्राप्त गर्नुहोस्</translation>
 <translation id="3884152383786131369">एकभन्दा बढी भाषामा उपलब्ध वेब सामग्री यो सूचीको प्रयोग गर्न मिल्ने पहिलो भाषामा देखाइने छ। यी प्राथमिकताहरू तपाईंको ब्राउजरका सेटिङसँग सिंक गरिन्छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">तपाईंका एड्मिनले अपडेटसम्बन्धी काम गर्नुहुन्छ</translation>
 <translation id="3886446263141354045">यो साइटमाथि पहुँच राख्ने तपाईंको अनुरोध <ph name="NAME" /> लाई पठाइएको छ</translation>
@@ -3904,6 +3911,7 @@
 <translation id="4880827082731008257">खोज इतिहास</translation>
 <translation id="4881685975363383806">मलाई फेरि स्मरण नगराइयोस्</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
+<translation id="488211015466188466">साइट फलो गर्नुहोस्</translation>
 <translation id="4882312758060467256">यो साइटमाथि पहुँच राख्न सक्छ</translation>
 <translation id="4882919381756638075">साइटहरूले भिडियो च्याट जस्ता सञ्चार सुविधाहरू प्रदान गर्न सामान्यतया तपाईंको माइक्रोफोन प्रयोग गर्छन्</translation>
 <translation id="4883436287898674711">सबै <ph name="WEBSITE_1" /> साइटहरू</translation>
@@ -5160,6 +5168,7 @@
 <translation id="6166185671393271715">पासवर्डहरूलाई Chrome मा आयात गर्नुहोस्</translation>
 <translation id="6169040057125497443">कृपया आफ्नो माइक्रोफोनको जाँच गर्नुहोस्।</translation>
 <translation id="6169666352732958425">डेस्कटपलाई cast गर्न सकिएन।</translation>
+<translation id="6169967265765719844"><ph name="LINK_BEGIN" />Steam एपका सेटिङ<ph name="LINK_END" />मा गई Steam मार्फत इन्स्टल गरिएका गेम तथा एपहरूका हकमा अनुमतिहरू व्यवस्थापन गर्न सकिन्छ।</translation>
 <translation id="6170470584681422115">स्यान्डविच</translation>
 <translation id="6170498031581934115">ADB डिबग प्रक्रिया सक्षम पार्न सकिएन। सेटिङमा गएर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="617213288191670920">कुनै पनि भाषा थपिएको छैन</translation>
@@ -5861,6 +5870,7 @@
 <translation id="6876469544038980967">उपयोगी लागेन</translation>
 <translation id="6878422606530379992">सेन्सरलाई अनुमति दिइएको छ</translation>
 <translation id="6880587130513028875">यस पृष्ठमा फोटो रोकिएका थिए।</translation>
+<translation id="688312408602122936">यो डिभाइसबाट Steam मार्फत इन्स्टल गरिएका सबै गेम तथा एपहरू पनि हटाइने छन्</translation>
 <translation id="6883319974225028188">हत्तेरिका! प्रणालीले यन्त्रको कन्फिगुरेसन सुरक्षित गर्न सकेन।</translation>
 <translation id="6884474387073389421">तपाईंले चयन गरिएका साइन इन डेटा मेटाउन खोज्नुभएकै हो?</translation>
 <translation id="6885771755599377173">प्रणाली जानकारीको पूर्वावलोकन</translation>

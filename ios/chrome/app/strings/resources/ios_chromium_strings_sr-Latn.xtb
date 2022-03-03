@@ -105,13 +105,6 @@
 <translation id="7931842119211730154">Zaključajte kartice bez arhiviranja posle zatvaranja Chromium-a</translation>
 <translation id="7980860476903281594">Chromium deli lokaciju sa sajtovima koje dozvolite.</translation>
 <translation id="8013573822802650211">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, prijavite se na svim uređajima</translation>
-<translation id="80599830191519229">Kada je ovo uključeno:
-<ph name="BEGIN_INDENT" />  • Pomozite da poboljšamo Chromium za ljude koji ga koriste kao vi<ph name="END_INDENT" />
-
-Šta treba da imate na umu:
-<ph name="BEGIN_INDENT" />  • Informacije o vašem korišćenju Chromium-a se šalju Google-u, ali nisu povezane sa vama
-  • Ako Chromium otkaže, detalji o otkazivanju mogu da sadrže neke lične podatke
-  • Ako uključite sinhronizaciju, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Želite li da obrišete Chromium podatke sa ovog uređaja?</translation>
 <translation id="8175055321229419309">Savet: <ph name="BEGIN_LINK" />Premestite Chromium na dok<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>

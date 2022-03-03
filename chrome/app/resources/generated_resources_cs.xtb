@@ -910,6 +910,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1869433484041798909">Tlačítko záložky</translation>
 <translation id="1871098866036088250">Otevřít v prohlížeči Chrome</translation>
 <translation id="187145082678092583">Méně aplikací</translation>
+<translation id="1871463148436682760">Výborně!</translation>
 <translation id="1871534214638631766">Zobrazovat související informace, když na obsah kliknete pravým tlačítkem nebo ho dlouze stisknete</translation>
 <translation id="1871569928317311284">Vypnout tmavý motiv</translation>
 <translation id="1871615898038944731">Vaše zařízení <ph name="DEVICE_TYPE" /> je aktuální</translation>
@@ -2337,6 +2338,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3304212451103136496">Sleva <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Proces formátování může trvat několik sekund. Čekejte prosím.</translation>
 <translation id="3305661444342691068">Otevřít soubor PDF v náhledu</translation>
+<translation id="3306992216458434072">Pojmenujte skupinu a vyberte barvu</translation>
 <translation id="3307176291962384345">Získat slevy u obchodníka <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Této stránce bylo zabráněno v nastavení souborů cookie.</translation>
 <translation id="3308134619352333507">Skrýt tlačítko</translation>
@@ -3747,6 +3749,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4708794300267213770">Při probuzení z režimu spánku zobrazit obrazovku uzamčení</translation>
 <translation id="4708849949179781599">Ukončit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Obnovit nastavení</translation>
+<translation id="47158868804223727">Kliknutím na název skupiny ji rozbalíte nebo sbalíte</translation>
 <translation id="4716483597559580346">Kvůli lepšímu zabezpečení zařízení vyčistěte pomocí funkce Powerwash</translation>
 <translation id="471880041731876836">K návštěvě tohoto webu nemáte povolení</translation>
 <translation id="4722735765955348426">Heslo uživatele <ph name="USERNAME" /></translation>
@@ -3811,6 +3814,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4794810983896241342">Aktualizace spravuje <ph name="BEGIN_LINK" />administrátor<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Webová stránka, pouze HTML</translation>
 <translation id="4796142525425001238">Vždy obnovit</translation>
+<translation id="4797314204379834752">Zkuste si uspořádat úkoly pomocí skupin karet, například k online nakupování apod.</translation>
 <translation id="4798236378408895261">Připojit <ph name="BEGIN_LINK" />Protokoly rozhraní Bluetooth<ph name="END_LINK" /> (interní funkce Google)</translation>
 <translation id="479863874072008121">Spravovat zařízení</translation>
 <translation id="4800839971935185386">Zkontrolujte změny ikon a názvů</translation>
@@ -4051,6 +4055,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5039696241953571917">Zobrazit a spravovat uložená hesla v účtu Google</translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5040823038948176460">Další nastavení obsahu</translation>
+<translation id="5041509233170835229">Aplikace pro Chrome</translation>
 <translation id="5043440033854483429">Název může obsahovat písmena, čísla a spojovníky (-) a musí mít 1–15 znaků.</translation>
 <translation id="5043913660911154449">Případně zadejte PPD tiskárny <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Nesprávné heslo</translation>
@@ -5378,6 +5383,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6393156038355142111">Navrhnout silné heslo</translation>
 <translation id="6393550101331051049">Povolení zobrazovat nezabezpečený obsah</translation>
 <translation id="6395423953133416962">Odesílat <ph name="BEGIN_LINK1" />informace o systému<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">Systémová aplikace</translation>
 <translation id="6396988158856674517">Blokovat webům používání senzorů pohybu</translation>
 <translation id="6398715114293939307">Odstranit Obchod Google Play</translation>
 <translation id="6398765197997659313">Ukončit režim celé obrazovky</translation>
@@ -5447,6 +5453,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6460566145397380451">Povolení připojovat se k zařízením MIDI</translation>
 <translation id="6460601847208524483">Najít další</translation>
 <translation id="6461170143930046705">Vyhledávání sítí...</translation>
+<translation id="6462204616987156669">Klikněte pravým tlačítkem myši na kartu a vyberte „Přidat kartu do nové skupiny“</translation>
 <translation id="6463795194797719782">&amp;Upravit</translation>
 <translation id="6464825623202322042">Toto zařízení</translation>
 <translation id="6465841119675156448">Bez internetu</translation>
@@ -5863,6 +5870,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6885771755599377173">Náhled informací o systému</translation>
 <translation id="6886871292305414135">Otevřít odkaz na nové kar&amp;tě</translation>
 <translation id="6889957081990109136">Přepínač ještě nebyl přiřazen</translation>
+<translation id="689007770043972343">Zkuste do skupiny přetáhnout jiné otevřené karty</translation>
 <translation id="6892812721183419409">Otevřít odkaz jako <ph name="USER" /></translation>
 <translation id="6895032998810961280">Hlásit do Googlu podrobnosti o škodlivém softwaru, nastavení systému a procesech, které v počítači během tohoto čištění byly nalezeny</translation>
 <translation id="6895902329218596456">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="MANAGER" /> a váš administrátor zablokoval přihlašování do sekundárního účtu</translation>
@@ -6441,6 +6449,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{Jeden soubor cookie}few{{NUM_COOKIES} soubory cookie}many{{NUM_COOKIES} souboru cookie}other{{NUM_COOKIES} soubory cookie}}</translation>
 <translation id="7493386493263658176">Rozšíření <ph name="EXTENSION_NAME" /> může shromažďovat veškerý text, který napíšete, včetně osobních údajů, jako jsou hesla nebo čísla platebních karet. Chcete toto rozšíření použít?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Aplikace pro Android</translation>
 <translation id="7495778526395737099">Zapomněli jste své staré heslo?</translation>
 <translation id="7497981768003291373">Nemáte žádné nedávno zaznamenané textové protokoly WebRTC.</translation>
 <translation id="7501957181231305652">nebo</translation>

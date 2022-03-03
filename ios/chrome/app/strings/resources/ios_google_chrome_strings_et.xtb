@@ -21,13 +21,6 @@
 <translation id="2347208864470321755">Kui see funktsioon on sisse lülitatud, pakub Chrome võimalust tõlkida teistes keeltes kirjutatud lehti Google'i tõlke abil. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome'il on funktsioone, mis aitavad teil hallata oma internetiandmeid ja seda, kui kiiresti saate veebilehti laadida.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
-<translation id="245827422401250729">Kui see on sisse lülitatud
-<ph name="BEGIN_INDENT" />  • Aitate täiustada Chrome'i inimeste jaoks, kes kasutavad seda nagu teie<ph name="END_INDENT" />
-
-Olulised aspektid
-<ph name="BEGIN_INDENT" />  • Google'ile saadetakse teavet teie Chrome'i kasutuse kohta, kuid see teave pole teiega seotud
-  • Kui Chrome jookseb kokku, võivad krahhi üksikasjad isiklikku teavet sisaldada
-  • Kui lülitate sünkroonimise sisse, võivad mõõdikud sisaldada ka teavet teie külastatavate URL-ide kohta<ph name="END_INDENT" /></translation>
 <translation id="2561231791489583059">Kasutage Chrome'i vaikebrauserina, et ohtlike saitide eest kaitstud olla ja oma paroole turvalisena hoida</translation>
 <translation id="2574249610672786438">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, logige kõigisse oma seadmetesse sisse</translation>
 <translation id="2576431527583832481">Chrome muutus just veelgi paremaks! Saadaval on uus versioon.</translation>

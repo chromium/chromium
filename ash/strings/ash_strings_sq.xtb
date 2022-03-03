@@ -965,6 +965,7 @@ Instalim i ri</translation>
 <translation id="7076293881109082629">Po identifikohesh</translation>
 <translation id="7086931198345821656">Ky përditësim kërkon që të kryesh Powerwash të <ph name="DEVICE_TYPE" />. Të gjitha të dhënat do të fshihen. Mëso më shumë rreth përditësimit të fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Qasja me çelës</translation>
+<translation id="7098053464892629930">Shkarko aplikacionin për <ph name="NAME" /> në Google Play për të parë të gjitha veçoritë që ofrohen</translation>
 <translation id="7098389117866926363">Pajisja USB-C (porta majtas, prapa)</translation>
 <translation id="7106330611027933926">Shfaq panelin e fushës</translation>
 <translation id="7118268675952955085">pamja e ekranit</translation>
@@ -1209,6 +1210,7 @@ Instalim i ri</translation>
 <translation id="8660331759611631213">Rrënja katrore e 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Shfaq listën e njoftimeve. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Hap <ph name="NAME" /> për të konfiguruar pajisjen tënde</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>
 <translation id="8683506306463609433">Gjurmimi i cilësisë së funksionimit është aktiv</translation>
 <translation id="8685326675965865247">Kërko në pajisjen tënde, aplikacione, cilësime dhe ueb. Përdor tastet e shigjetave për të naviguar nëpër aplikacione.</translation>

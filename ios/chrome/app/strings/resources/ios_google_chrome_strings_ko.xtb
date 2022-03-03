@@ -21,13 +21,6 @@
 <translation id="2347208864470321755">이 기능을 사용하면 Chrome에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome에는 사용자가 간편하게 인터넷 데이터를 관리하고 웹페이지 로드 시간을 제어할 수 있도록 돕는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="245827422401250729">사용 설정되어 있을 때:
-<ph name="BEGIN_INDENT" />  • 나와 비슷한 사용자를 위한 Chrome 개선에 도움이 됩니다.<ph name="END_INDENT" />
-
-알아야 할 것:
-<ph name="BEGIN_INDENT" />  • Chrome 사용에 관한 정보가 Google로 전송되지만 나와 연결되지는 않습니다.
-  • Chrome이 다운되면 관련 세부정보에 일부 개인 정보가 포함될 수 있습니다.
-  • 동기화를 사용 설정하면 측정항목에 내가 방문한 URL에 관한 정보도 포함될 수 있습니다.<ph name="END_INDENT" /></translation>
 <translation id="2561231791489583059">Chrome을 기본 브라우저로 사용하여 위험한 사이트를 차단하고 비밀번호를 안전하게 보호합니다.</translation>
 <translation id="2574249610672786438">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 모든 기기에서 로그인하세요.</translation>
 <translation id="2576431527583832481">한층 개선된 Chrome의 최신 버전이 출시되었습니다.</translation>

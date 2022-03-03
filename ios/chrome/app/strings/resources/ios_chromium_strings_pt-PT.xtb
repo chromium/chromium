@@ -105,13 +105,6 @@
 <translation id="7931842119211730154">Bloquear os separadores de navegação anónima quando fecha o Chromium</translation>
 <translation id="7980860476903281594">O Chromium partilha a sua localização com os sites que permite.</translation>
 <translation id="8013573822802650211">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, inicie sessão em todos os seus dispositivos.</translation>
-<translation id="80599830191519229">Quando a opção está ativada:
-<ph name="BEGIN_INDENT" />  • Ajude a melhorar o Chromium para as pessoas que o utilizam de forma semelhante à sua<ph name="END_INDENT" />
-
-Aspetos a considerar:
-<ph name="BEGIN_INDENT" />  • São enviadas à Google informações sobre a sua utilização do Chromium, mas estas não são associadas a si
-  • Se o Chromium falhar, os detalhes sobre a falha podem incluir algumas informações pessoais
-  • Se ativar a sincronização, as métricas também podem incluir informações sobre os URLs que visita<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Pretende limpar os dados do Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Sugestão: <ph name="BEGIN_LINK" />mova o Chromium para a Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">O Chromium não conseguiu verificar se existem atualizações. Tente novamente mais tarde.</translation>

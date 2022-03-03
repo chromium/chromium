@@ -5929,6 +5929,13 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si la estableces como falsa o no la estableces, se desactivará la generación de informes.
       Las reglas definidas con las restricciones de nivel ALLOW en la política DataLeakPreventionRulesList no informará eventos en ninguno de los dos casos.</translation>
 <translation id="7648907905084499629">Usar el atributo <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para el comportamiento de las cookies en todos los sitios</translation>
+<translation id="765347139142030086">Si habilitas la política, prevalecerán las políticas asociadas a una cuenta de <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> si entran en conflicto con <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Solo pueden prevalecer políticas que hayan originado usuarios seguros. Un usuario seguro es aquél que está afiliado a la organización que administra su navegador mediante <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Todas las demás políticas destinadas a los usuarios tendrán la prioridad predeterminada.
+
+      La política puede combinarse con <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Si se habilitan ambas políticas, las políticas de nube destinadas a los usuarios también prevalecerán sobre las políticas de la plataforma que estén en conflicto.
+
+      Si no estableces la política o la inhabilitas, las políticas de nube destinadas a los usuarios tendrán la prioridad predeterminada.</translation>
 <translation id="7657261947024629645">Optimiza el rendimiento.</translation>
 <translation id="7666228839913571182">Permite cookies de terceros</translation>
 <translation id="7668830462800981702">Si habilitas la política, se realizará una búsqueda predeterminada cuando el usuario ingrese texto que no sea una URL en la barra de direcciones. Para especificar el proveedor de búsqueda predeterminado, establece el resto de las políticas para la búsqueda predeterminada. Si no configuras esas políticas, el usuario podrá elegir el proveedor predeterminado. Si inhabilitas la política, no se realizará ninguna búsqueda cuando el usuario ingrese texto que no sea una URL en la barra de direcciones.

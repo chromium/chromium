@@ -916,6 +916,7 @@
 <translation id="1869433484041798909">புக்மார்க் பட்டன்</translation>
 <translation id="1871098866036088250">Chrome உலாவியில் திற</translation>
 <translation id="187145082678092583">சில ஆப்ஸ்</translation>
+<translation id="1871463148436682760">முடிந்தது!</translation>
 <translation id="1871534214638631766">உள்ளடக்கத்தில் வலது கிளிக் செய்யும்போதோ நீண்ட நேரம் அழுத்தும்போதோ தொடர்புடைய தகவலைக் காட்டும்</translation>
 <translation id="1871569928317311284">டார்க் தீமினை முடக்குதல்</translation>
 <translation id="1871615898038944731">உங்கள் <ph name="DEVICE_TYPE" /> புதுப்பித்த நிலையில் உள்ளது</translation>
@@ -2339,6 +2340,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> தள்ளுபடி</translation>
 <translation id="3305389145870741612">வடிவமைப்பு செயலாக்கத்திற்கு சில வினாடிகள் ஆகும். காத்திருக்கவும்.</translation>
 <translation id="3305661444342691068">PDF ஐ மாதிரிக்காட்சியில் திறக்கவும்</translation>
+<translation id="3306992216458434072">குழுவிற்குப் பெயரிடவும், ஒரு நிறத்தைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> வழங்கும் தள்ளுபடிகளைப் பெறுங்கள்</translation>
 <translation id="3308116878371095290">இந்தப் பக்கம் குக்கீகளை அமைப்பதிலிருந்து தடுக்கப்பட்டது.</translation>
 <translation id="3308134619352333507">பொத்தானை மறை</translation>
@@ -3721,6 +3723,7 @@
 <translation id="4708794300267213770">உறக்கநிலையிலிருந்து விழிக்கும் போது, லாக் ஸ்கிரீனைக் காட்டு</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> இலிருந்து வெளியேறு</translation>
 <translation id="4711638718396952945">அமைப்புகளை மீட்டெடு</translation>
+<translation id="47158868804223727">விரிவாக்கவோ சுருக்கவோ குழுவின் பெயரைக் கிளிக் செய்யவும்</translation>
 <translation id="4716483597559580346">கூடுதல் பாதுகாப்பிற்கு, பவர்வாஷ் செய்யவும்</translation>
 <translation id="471880041731876836">இந்தத் தளத்தைப் பார்ப்பதற்கான அனுமதி உங்களிடம் இல்லை</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> இன் கடவுச்சொல்</translation>
@@ -3784,6 +3787,7 @@
 <translation id="4794810983896241342">புதுப்பிப்புகள் <ph name="BEGIN_LINK" />உங்கள் நிர்வாகியால்<ph name="END_LINK" /> நிர்வகிக்கப்படுகின்றன</translation>
 <translation id="479536056609751218">வலைப்பக்கம், HTML மட்டும்</translation>
 <translation id="4796142525425001238">எப்போதும் மீட்டெடு</translation>
+<translation id="4797314204379834752">ஆன்லைன் ஷாப்பிங் போன்ற பல பணிகளை ஒழுங்கமைக்க பக்கங்களின் குழுக்களைப் பயன்படுத்திப் பாருங்கள்</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />புளூடூத் பதிவுகளை<ph name="END_LINK" /> இணை (Google அகப் பயன்பாட்டிற்காக)</translation>
 <translation id="479863874072008121">சாதனங்களை நிர்வகிக்கவும்</translation>
 <translation id="4800839971935185386">பெயர் &amp; ஐகான் மாற்றங்களைப் பாருங்கள்</translation>
@@ -4022,6 +4026,7 @@
 <translation id="5039696241953571917">உங்கள் Google கணக்கில் சேமிக்கப்பட்டுள்ள கடவுச்சொற்களைப் பார்த்து நிர்வகியுங்கள்</translation>
 <translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5040823038948176460">கூடுதல் உள்ளடக்க அமைப்புகள்</translation>
+<translation id="5041509233170835229">Chrome ஆப்ஸ்</translation>
 <translation id="5043440033854483429">பெயரில் எழுத்துகள், எண்கள், இடைக்கோடுகள் (-) ஆகியவை இருக்கலாம், அத்துடன் அது 1 முதல் 15 எழுத்துகளுக்குள் இருக்க வேண்டும்.</translation>
 <translation id="5043913660911154449">அல்லது உங்கள் பிரிண்டரின் PPDயைக் குறிப்பிடுங்கள் <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">தவறான கடவுச்சொல்</translation>
@@ -5322,6 +5327,7 @@
 <translation id="6393156038355142111">வலுவான கடவுச்சொல்லைப் பரிந்துரை</translation>
 <translation id="6393550101331051049">பாதுகாப்பற்ற உள்ளடக்கத்தைக் காட்டுவதற்கு அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />கணினியின் தகவல்<ph name="END_LINK1" /> மற்றும் <ph name="BEGIN_LINK2" />அளவீடுகளை<ph name="END_LINK2" /> அனுப்பு</translation>
+<translation id="6396175271241405634">சிஸ்டம் ஆப்ஸ்</translation>
 <translation id="6396988158856674517">தளங்கள் மோஷன் சென்சார்களைப் பயன்படுத்துவதைத் தடுக்கும்</translation>
 <translation id="6398715114293939307">Google Play Storeரை அகற்று</translation>
 <translation id="6398765197997659313">முழுத்திரையிலிருந்து வெளியேறு</translation>
@@ -5391,6 +5397,7 @@
 <translation id="6460566145397380451">MIDI சாதனங்களுடன் இணைப்பதற்கு அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="6460601847208524483">அடுத்ததைக் கண்டுபிடி</translation>
 <translation id="6461170143930046705">நெட்வொர்க்குகளைத் தேடுகிறது...</translation>
+<translation id="6462204616987156669">பக்கத்தின் மீது வலது கிளிக் செய்து “புதிய குழுவில் தாவலைச் சேர்” என்பதைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6463795194797719782">&amp;திருத்து</translation>
 <translation id="6464825623202322042">இந்தச் சாதனத்தில்</translation>
 <translation id="6465841119675156448">இணைய இணைப்பு இல்லாமல்</translation>
@@ -5803,6 +5810,7 @@
 <translation id="6885771755599377173">முறைமைத் தகவலின் மாதிரிக்காட்சி</translation>
 <translation id="6886871292305414135">இணைப்பைப் புதிய &amp;தாவலில் திற</translation>
 <translation id="6889957081990109136">ஸ்விட்ச் இன்னும் ஒதுக்கப்படவில்லை</translation>
+<translation id="689007770043972343">இந்தக் குழுவில் பிற பக்கங்களைச் சேர்க்க அவற்றை இங்கே இழுத்துவிடவும்</translation>
 <translation id="6892812721183419409"><ph name="USER" /> உடையதாக இணைப்பைத் திற</translation>
 <translation id="6895032998810961280">இந்தச் சுத்தப்படுத்தும் செயல்பாட்டின்போது கண்டறியப்படும் உங்கள் கம்ப்யூட்டரில் உள்ள தீங்கிழைக்கும் மென்பொருள், சாதன அமைப்புகள், செயல்முறைகள் ஆகியவற்றின் விவரங்களை Googleளுக்கு அனுப்பும்</translation>
 <translation id="6896758677409633944">நகலெடு</translation>
@@ -6378,6 +6386,7 @@
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 குக்கீ}other{{NUM_COOKIES} குக்கீகள்}}</translation>
 <translation id="7493386493263658176">கடவுச்சொற்கள், கிரெடிட் கார்டு எண்கள் போன்ற தனிப்பட்ட தரவு உட்பட, நீங்கள் உள்ளிடும் எல்லா உரையையும் <ph name="EXTENSION_NAME" /> நீட்டிப்பு சேகரிக்கக்கூடும். இந்த நீட்டிப்பைப் பயன்படுத்த விரும்புகிறீர்களா?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android ஆப்ஸ்</translation>
 <translation id="7495778526395737099">பழைய கடவுச்சொல் மறந்துவிட்டதா?</translation>
 <translation id="7497981768003291373">சமீபத்தில் எடுக்கப்பட்ட WebRTC உரைப் பதிவுகள் எதுவும் இல்லை.</translation>
 <translation id="7501957181231305652">அல்லது</translation>

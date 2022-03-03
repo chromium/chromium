@@ -21,13 +21,6 @@
 <translation id="2347208864470321755">開啟這項功能後，Chrome 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome 擁有多項功能，助您管理互聯網的資料及網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="245827422401250729">開啟時：
-<ph name="BEGIN_INDENT" />  • 可協助 Chrome 為使用者提供更優質的使用體驗<ph name="END_INDENT" />
-
-注意事項：
-<ph name="BEGIN_INDENT" />  • 系統會將 Chrome 使用情況傳送給 Google，但不會與您有任何關聯
-  • Chromium 當機時，有關當機詳情可能會包括部分個人資料
-  • 開啟同步處理功能後，數據可能亦會包括先前瀏覽網址的資料<ph name="END_INDENT" /></translation>
 <translation id="2561231791489583059">使用 Chrome 作為預設瀏覽器可保護您免受危險網站威脅，同時確保密碼安全</translation>
 <translation id="2574249610672786438">如要在任何使用 Chrome 的裝置上查看分頁，請在所有裝置上登入</translation>
 <translation id="2576431527583832481">Chrome 現在更進一步！歡迎您升級使用新版本。</translation>
@@ -90,6 +83,15 @@
 <translation id="6709398533399187136">您的密碼因資料外洩而被洩露。Google 密碼管理工具建議您立即變更密碼。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼。請稍後再試。</translation>
 <translation id="6964931465519938134">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
+<translation id="7046845777663074840">開啟時：
+<ph name="BEGIN_INDENT" />  • 可協助 Chrome 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />
+
+注意事項：
+<ph name="BEGIN_INDENT" />  • 系統會將 Chrome 使用資訊傳送給 Google，但不會與你有所關聯。
+
+  • Chrome 當機時，有關當機的詳細資料可能會包含一些個人資訊。
+
+  • 開啟同步功能後，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">自訂屬於您的 Chrome</translation>
 <translation id="7124339256045485976">取得 Chrome 最新更新</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>

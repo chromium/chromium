@@ -316,6 +316,7 @@
 <translation id="3789841737615482174">តំឡើង</translation>
 <translation id="380329542618494757">ឈ្មោះ</translation>
 <translation id="3803696231112616155">ផ្ដល់ការបកប្រែ​គេហទំព័រនេះ</translation>
+<translation id="3810973564298564668">គ្រប់គ្រង</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
 <translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3861486700625780712">ឈប់​តាមដាន</translation>
@@ -454,6 +455,7 @@
 <translation id="5090832849094901128">ការលុបពាក្យសម្ងាត់នេះ​នឹងមិន​លុបគណនីរបស់អ្នក​នៅលើ <ph name="WEBSITE" />​ ទេ។</translation>
 <translation id="5092117651143801290">អ្នកអាច​រក្សាទុក​ទំព័រ ដើម្បីអាន​នៅពេលក្រោយ ឬពេលគ្មាន​អ៊ីនធឺណិត​។ Chrome នឹងសួរ​ថាតើអ្នក​ចង់រក្សាទុក​ទំព័រវែងៗ​ឬអត់​។</translation>
 <translation id="5094827893301452931">ការបង្ហោះតាម Twitter រួចរាល់។</translation>
+<translation id="5118713593561876160">ចំណាប់អារម្មណ៍</translation>
 <translation id="5118764316110575523">បិទ</translation>
 <translation id="5127805178023152808">សមកម្មបានបិទ</translation>
 <translation id="5132942445612118989">ធ្វើសម​កាល​កម្មពាក្យសម្ងាត់ ប្រវត្តិ និងអ្វីៗ​ជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>
@@ -490,6 +492,7 @@
 <translation id="5490005495580364134">ទប់ស្កាត់​ខូគី​ទាំងអស់ (មិនណែនាំ)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ម៉ោង​មុន</translation>
 <translation id="5525269841082836315">បង្កើតឃ្លាសម្ងាត់</translation>
+<translation id="5542540507657872337">បានរកឃើញ <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff អនុញ្ញាតឲ្យអ្នកចាប់ផ្តើមរុករកគេហទំព័រលើឧបករណ៍នេះ ហើយបន្តប្រើប្រាស់យ៉ាងងាយស្រួលនៅលើឧបករណ៍ Mac របស់អ្នក។ គេហទំព័រដែលបើកពេលបច្ចុប្បន្ននឹងបង្ហាញលើរបារកម្មវិធីនៃឧបករណ៍ Mac របស់អ្នក។
 
 Handoff ត្រូវបើកដំណើរការនៅក្នុងផ្នែកទូទៅនៃការកំណត់ ហើយឧបករណ៍របស់អ្នកត្រួវតែប្រើគណនី iCloud តែមួយ។</translation>
@@ -766,6 +769,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="7839985698273989086">ទំព័រ​គ្មានអ៊ីនធឺណិត</translation>
 <translation id="7840771868269352570">ធាតុ​ដែលអ្នក​បាន​ជ្រើសរើស​នឹង​ត្រូវ​បាន​លុបចេញ។</translation>
+<translation id="7853202427316060426">សកម្មភាព</translation>
 <translation id="7856733331829174190">មិន​អាច​ទាញ​យកបាន​ទេ</translation>
 <translation id="7859704718976024901">ប្រវត្តិរុករក</translation>
 <translation id="7884694604461143138">ប្រវត្តិ​ស្វែងរក (បានរកឃើញ <ph name="COUNT" />)</translation>
@@ -800,6 +804,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8076014560081431679">ការកំណត់គេហទំព័រដែលបានរក្សាទុកនឹងមិនត្រូវបានលុបនោះទេ ហើយវាអាចនឹងឆ្លុះបញ្ចាំងពីទម្លាប់រុករករបស់អ្នក។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែំម<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">ការកំណត់នេះ​ត្រូវបានគ្រប់គ្រង សូមចុចពីរដង​ ដើម្បីទទួលបាន​ព័ត៌មានបន្ថែម</translation>
 <translation id="8080028325999236607">បិទផ្ទាំងទាំងអស់</translation>
+<translation id="8084285576995584326">គ្រប់គ្រងទិន្នន័យគណនី Google របស់អ្នក</translation>
 <translation id="809543534949702122">ប្រវត្តិ​ស្វែងរក</translation>
 <translation id="8101409298456377967">បង្កើត រក្សាទុក និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នក ដើម្បីឱ្យអ្នកអាចចូលគេហទំព័រ និងកម្មវិធីបានយ៉ាងងាយស្រួល។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">បិទ</translation>
@@ -876,6 +881,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8820817407110198400">ចំណាំ</translation>
 <translation id="8840513115188359703">អ្នកនឹងមិនត្រូវបាននាំចេញពីគណនី Google របស់អ្នកទេ។</translation>
 <translation id="8843129975935593190">ស្ថាប័ន​របស់អ្នក​ដាក់កំហិត​លើអ្វីដែលអ្នកអាច​ធ្វើសមកាលកម្មបាន។</translation>
+<translation id="8849001918648564819">លាក់</translation>
 <translation id="8868471676553493380">{count,plural, =1{ផ្ទាំង {count}}other{ផ្ទាំង {count}}}</translation>
 <translation id="8870413625673593573">បានបិទកន្លងទៅថ្មីៗ</translation>
 <translation id="8876882697946675716">បន្តឱ្យ​ឧបករណ៍​របស់អ្នក​ធ្វើសមកាលកម្ម</translation>

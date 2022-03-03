@@ -965,6 +965,7 @@ Nová instalace</translation>
 <translation id="7076293881109082629">Přihlášení</translation>
 <translation id="7086931198345821656">Tato aktualizace vyžaduje vymazání zařízení <ph name="DEVICE_TYPE" /> metodou Powerwash. Všechna data budou smazána. Další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Přístup pomocí přepínačů</translation>
+<translation id="7098053464892629930">Pokud chcete vidět všechny dostupné funkce, stáhněte si na Google Play aplikaci pro <ph name="NAME" /></translation>
 <translation id="7098389117866926363">Zařízení USB Type-C (levý zadní port)</translation>
 <translation id="7106330611027933926">Zobrazit plochu</translation>
 <translation id="7118268675952955085">snímek obrazovky</translation>
@@ -1209,6 +1210,7 @@ Nová instalace</translation>
 <translation id="8660331759611631213">Druhá odmocnina ze 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Zobrazit seznam sítí. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Pokud chcete nastavit zařízení, otevřete aplikaci <ph name="NAME" /></translation>
 <translation id="8676770494376880701">Byla připojena nabíječka s nízkým napětím</translation>
 <translation id="8683506306463609433">Trasování výkonu je aktivní</translation>
 <translation id="8685326675965865247">Prohledejte zařízení, aplikace, nastavení a internet. Mezi aplikacemi se můžete pohybovat pomocí kláves.</translation>

@@ -911,6 +911,7 @@
 <translation id="1869433484041798909">Кнопка закладкі</translation>
 <translation id="1871098866036088250">Адкрываць у браўзеры Chrome</translation>
 <translation id="187145082678092583">Менш праграм</translation>
+<translation id="1871463148436682760">Выдатна!</translation>
 <translation id="1871534214638631766">Паказваць інфармацыю пра змесціва пры доўгім націсканні на яго або націсканні правай кнопкай мышы</translation>
 <translation id="1871569928317311284">Выключыць цёмную тэму</translation>
 <translation id="1871615898038944731">Абнаўленне прылады <ph name="DEVICE_TYPE" /> не патрабуецца</translation>
@@ -2336,6 +2337,7 @@
 <translation id="3304212451103136496">Скідка <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Фармаціраванне можа заняць некалькі секунд. Пачакайце.</translation>
 <translation id="3305661444342691068">Адкрыць PDF у рэжыме перадпрагляду</translation>
+<translation id="3306992216458434072">Дайце назву групе і выберыце колер</translation>
 <translation id="3307176291962384345">Атрымлівайце скідкі ў краме "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="3308116878371095290">Быў прадухілены запіс файлаў cookie гэтай старонкай.</translation>
 <translation id="3308134619352333507">Кнопка "Схаваць"</translation>
@@ -3747,6 +3749,7 @@
 <translation id="4708794300267213770">Паказваць экран блакіроўкі пры абуджэнні ад сну</translation>
 <translation id="4708849949179781599">Выйсці з браўзера <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Аднавіць налады</translation>
+<translation id="47158868804223727">Каб разгарнуць або згарнуць групу, націсніце на яе назву</translation>
 <translation id="4716483597559580346">Выканаць Powerwash для павышэння бяспекі</translation>
 <translation id="471880041731876836">Вам забаронены доступ да гэтага сайта</translation>
 <translation id="4722735765955348426">Пароль карыстальніка <ph name="USERNAME" /></translation>
@@ -3811,6 +3814,7 @@
 <translation id="4794810983896241342">Абнаўленнямі кіруе <ph name="BEGIN_LINK" />адміністратар<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Вэб-старонка, толькі HTML</translation>
 <translation id="4796142525425001238">Заўсёды аднаўляць</translation>
+<translation id="4797314204379834752">Выкарыстоўвайце групы ўкладак для ўпарадкоўвання задач, купляў у інтэрнэце і не толькі</translation>
 <translation id="4798236378408895261">Далучыць <ph name="BEGIN_LINK" />журналы Bluetooth<ph name="END_LINK" /> (для ўнутранага выкарыстання ў Google)</translation>
 <translation id="479863874072008121">Кіраваць прыладамі</translation>
 <translation id="4800839971935185386">Праверце новы значок і імя</translation>
@@ -4049,6 +4053,7 @@
 <translation id="5039696241953571917">Праглядайце захаваныя паролі і кіруйце імі праз Уліковы запіс Google</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5040823038948176460">Дадатковыя налады змесціва</translation>
+<translation id="5041509233170835229">Праграма Chrome</translation>
 <translation id="5043440033854483429">У назве можна выкарыстоўваць літары, лічбы і злучкі (-). Сімвалаў у назве можа быць ад 1 да 15 (уключна).</translation>
 <translation id="5043913660911154449">Або ўкажыце файл PPD прынтара <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Няправільны пароль</translation>
@@ -5376,6 +5381,7 @@
 <translation id="6393156038355142111">Прапанаваць надзейны пароль</translation>
 <translation id="6393550101331051049">Дазволена паказваць небяспечнае змесціва</translation>
 <translation id="6395423953133416962">Адпраўляць <ph name="BEGIN_LINK1" />звесткі пра сістэму<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />значэнні паказчыкаў<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">Сістэмная праграма</translation>
 <translation id="6396988158856674517">Заблакіраваць сайтам выкарыстанне датчыкаў руху</translation>
 <translation id="6398715114293939307">Выдаліць Краму Google Play</translation>
 <translation id="6398765197997659313">Выключыць поўнаэкранны рэжым</translation>
@@ -5445,6 +5451,7 @@
 <translation id="6460566145397380451">Дазволена падключацца да прылад MIDI</translation>
 <translation id="6460601847208524483">Знайсці далей</translation>
 <translation id="6461170143930046705">Ідзе пошук сетак...</translation>
+<translation id="6462204616987156669">Націсніце правай кнопкай мышы на ўкладку і выберыце "Дадаць укладку ў новую групу"</translation>
 <translation id="6463795194797719782">&amp;Змяніць</translation>
 <translation id="6464825623202322042">Гэта прылада</translation>
 <translation id="6465841119675156448">Без інтэрнэту</translation>
@@ -5861,6 +5868,7 @@
 <translation id="6885771755599377173">Перадпрагляд інфармацыі пра сістэму</translation>
 <translation id="6886871292305414135">Адкрыць спасылку ў новай &amp;укладцы</translation>
 <translation id="6889957081990109136">Пераключальнік яшчэ не прызначаны</translation>
+<translation id="689007770043972343">Перацягніце ў групу іншыя адкрытыя ўкладкі</translation>
 <translation id="6892812721183419409">Адкрыць спасылку як <ph name="USER" /></translation>
 <translation id="6895032998810961280">Паведаміць у Google звесткі аб шкодных праграмах, наладах сістэмы і працэсах, выяўленых на вашым камп'ютары падчас ачысткі</translation>
 <translation id="6895902329218596456">Уліковым запісам <ph name="USER_EMAIL" /> кіруе <ph name="MANAGER" />, а ваш адміністратар забараніў уваход праз дадатковы ўліковы запіс</translation>
@@ -6438,6 +6446,7 @@
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 файл cookie}one{{NUM_COOKIES} файл cookie}few{{NUM_COOKIES} файлы cookie}many{{NUM_COOKIES} файлаў cookie}other{{NUM_COOKIES} файла cookie}}</translation>
 <translation id="7493386493263658176">Пашырэнне "<ph name="EXTENSION_NAME" />" можа збіраць увесь уведзены вамі тэкст, у тым ліку асабістыя даныя, такія як паролі і нумары крэдытных карт. Сапраўды выкарыстоўваць гэта пашырэнне?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Праграма для Android</translation>
 <translation id="7495778526395737099">Забылі стары пароль?</translation>
 <translation id="7497981768003291373">У вас няма апошніх тэкставых журналаў WebRTC.</translation>
 <translation id="7501957181231305652">або</translation>
@@ -6516,6 +6525,7 @@
 <translation id="7573172247376861652">Зарадка акумулятара</translation>
 <translation id="7573594921350120855">Сайты звычайна выкарыстоўваюць відэакамеру для работы функцый сувязі (напрыклад, для відэачата)</translation>
 <translation id="7574650250151586813">Каб набіраць тэкст, абнавіце клавіятуру Daydream</translation>
+<translation id="7574676002608048667">Адправіць пароль</translation>
 <translation id="7576690715254076113">Разабраць па копіях</translation>
 <translation id="7576976045740938453">Узнікла праблема з уліковым запісам у дэманстрацыйным рэжыме.</translation>
 <translation id="7578137152457315135">Налады аўтэнтыфікацыі з дапамогай адбіткаў пальцаў</translation>

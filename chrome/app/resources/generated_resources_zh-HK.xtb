@@ -671,6 +671,7 @@
 <translation id="1640235262200048077">Linux 應用程式目前不支援<ph name="IME_NAME" /></translation>
 <translation id="1640283014264083726">PKCS #1 MD4 (使用 RSA 加密)</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
+<translation id="1641496881756082050">可對 <ph name="NETWORK_NAME" /> 執行的其他動作</translation>
 <translation id="1642492862748815878">已連線至「<ph name="DEVICE" />」和另外 <ph name="NUMBER_OF_DEVICES" /> 部藍牙裝置</translation>
 <translation id="1642494467033190216">如要啟用其他偵錯功能，您必須先移除 rootfs 保護並重新啟動。</translation>
 <translation id="1643072738649235303">使用 SHA-1 的 X9.62 ECDSA 簽名</translation>
@@ -1457,6 +1458,7 @@
 <translation id="2381499968174336913">共用分頁嘅預覽畫面</translation>
 <translation id="2381756643783702095">傳送前先詢問 (建議)</translation>
 <translation id="2387052489799050037">前往主畫面</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (目前)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">無法連線至 Proxy，請重新登入</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
