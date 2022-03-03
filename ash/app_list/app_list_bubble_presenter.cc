@@ -195,6 +195,10 @@ void AppListBubblePresenter::Show(int64_t display_id) {
 
 void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   DVLOG(1) << __PRETTY_FUNCTION__;
+  // Dismiss() might have been called while waiting for zero-state results.
+  if (!is_target_visibility_show_)
+    return;
+
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
   // Display might have disconnected during zero state refresh.
   if (!root_window)

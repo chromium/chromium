@@ -8,6 +8,7 @@
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -27,8 +28,13 @@ void TestAppListClient::StartZeroStateSearch(base::OnceClosure on_done,
     std::move(on_done).Run();
   } else {
     // Simulate production behavior, which collects the results asynchronously.
+    // Bounce through OnZeroStateSearchDone() to count calls, so that tests can
+    // assert that the callback happened.
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, std::move(on_done), base::Milliseconds(1));
+        FROM_HERE,
+        base::BindOnce(&TestAppListClient::OnZeroStateSearchDone,
+                       weak_factory_.GetWeakPtr(), std::move(on_done)),
+        base::Milliseconds(1));
   }
 }
 
@@ -90,6 +96,11 @@ TestAppListClient::GetAndClearInvokedResultActions() {
 ash::AppListSortOrder TestAppListClient::GetPermanentSortingOrder() const {
   NOTIMPLEMENTED();
   return ash::AppListSortOrder::kCustom;
+}
+
+void TestAppListClient::OnZeroStateSearchDone(base::OnceClosure on_done) {
+  zero_state_search_done_count_++;
+  std::move(on_done).Run();
 }
 
 }  // namespace ash

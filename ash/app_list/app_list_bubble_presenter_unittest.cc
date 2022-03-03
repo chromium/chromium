@@ -308,6 +308,7 @@ TEST_F(AppListBubblePresenterTest, CanShowWhileAnimatingClosed) {
   EXPECT_TRUE(presenter->IsShowing());
 }
 
+// Regression test for https://crbug.com/1302026
 TEST_F(AppListBubblePresenterTest, DismissWhileWaitingForZeroStateSearch) {
   // Simulate production behavior for animations and zero-state search results.
   ui::ScopedAnimationDurationScaleMode duration(
@@ -317,18 +318,33 @@ TEST_F(AppListBubblePresenterTest, DismissWhileWaitingForZeroStateSearch) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
   EXPECT_EQ(1, GetTestAppListClient()->start_zero_state_search_count());
+  EXPECT_EQ(0, GetTestAppListClient()->zero_state_search_done_count());
 
-  // Dismiss while the code is waiting for the zero-state results. The widget
-  // is not created.
-  presenter->Dismiss();
+  // Toggle while the code is waiting for the zero-state results. This results
+  // in a Dismiss(), and the widget is not created.
+  presenter->Toggle(GetPrimaryDisplay().id());
   EXPECT_FALSE(presenter->IsShowing());
   EXPECT_FALSE(presenter->bubble_widget_for_test());
 
-  // Show and wait for the show to finish.
-  presenter->Show(GetPrimaryDisplay().id());
+  // Wait for the zero-state search callback to run. Widget is not created.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetTestAppListClient()->zero_state_search_done_count());
+  EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_FALSE(presenter->bubble_widget_for_test());
+
+  // Toggle again should Show() and create the widget.
+  presenter->Toggle(GetPrimaryDisplay().id());
   AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
   EXPECT_TRUE(presenter->IsShowing());
-  EXPECT_TRUE(presenter->bubble_widget_for_test());
+  ASSERT_TRUE(presenter->bubble_widget_for_test());
+  EXPECT_TRUE(presenter->bubble_widget_for_test()->IsVisible());
+
+  // Toggle one last time should Dismiss() and hide the widget.
+  presenter->Toggle(GetPrimaryDisplay().id());
+  LayerAnimationStoppedWaiter().Wait(
+      presenter->bubble_view_for_test()->layer());
+  EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_FALSE(presenter->bubble_widget_for_test()->IsVisible());
 }
 
 // Regression test for https://crbug.com/1275755
