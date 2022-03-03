@@ -161,6 +161,9 @@ static const MockClientIdConfiguration kClientMetadataNoResponse{
 static const MockClientIdConfiguration kClientMetadataInvalidResponse{
     FetchStatus::kInvalidResponseError, "", ""};
 
+static const MockClientIdConfiguration kClientMetadataNoPrivacyPolicyUrl{
+    FetchStatus::kSuccess, "", ""};
+
 static const AuthRequestTestCase kMediatedTestCases[]{
     {"Error parsing FedCM manifest for Mediated mode missing token endpoint",
      {kIdpTestOrigin, kClientId, kNonce},
@@ -249,6 +252,15 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       FederatedAuthRequestResult::kErrorFetchingClientMetadataInvalidResponse,
       kEmptyToken},
      {kToken, FetchStatus::kSuccess, kClientMetadataInvalidResponse,
+      kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+      kMediatedNoop}},
+
+    {"Client metadata has no privacy policy url",
+     {kIdpTestOrigin, kClientId, kNonce},
+     {RequestIdTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorClientMetadataMissingPrivacyPolicyUrl,
+      kEmptyToken},
+     {kToken, FetchStatus::kSuccess, kClientMetadataNoPrivacyPolicyUrl, "",
       kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
       kMediatedNoop}},
 };
@@ -750,7 +762,11 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
            "metadata."},
           {FederatedAuthRequestResult::
                kErrorFetchingClientMetadataInvalidResponse,
-           "Provider's client metadata is invalid."}};
+           "Provider's client metadata is invalid."},
+          {FederatedAuthRequestResult::
+               kErrorClientMetadataMissingPrivacyPolicyUrl,
+           "Provider's client metadata is missing or has an invalid privacy "
+           "policy url."}};
   std::vector<std::string> messages =
       RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
   absl::optional<std::string> expected_message =

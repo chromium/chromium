@@ -191,6 +191,7 @@ enum FederatedAuthRequestResult {
   kErrorFetchingClientMetadataHttpNotFound,
   kErrorFetchingClientMetadataNoResponse,
   kErrorFetchingClientMetadataInvalidResponse,
+  kErrorClientMetadataMissingPrivacyPolicyUrl,
   kErrorFetchingAccountsHttpNotFound,
   kErrorFetchingAccountsNoResponse,
   kErrorFetchingAccountsInvalidResponse,
