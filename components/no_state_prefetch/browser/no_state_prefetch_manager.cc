@@ -378,13 +378,13 @@ std::unique_ptr<base::DictionaryValue> NoStatePrefetchManager::CopyAsValue()
                                     prerender_history_->CopyEntriesAsValue()));
   dict_value->SetKey(
       "active", base::Value::FromUniquePtrValue(GetActivePrerendersAsValue()));
-  dict_value->SetBoolean("enabled",
+  dict_value->SetBoolKey("enabled",
                          delegate_->IsNetworkPredictionPreferenceEnabled());
-  dict_value->SetString("disabled_note",
-                        delegate_->GetReasonForDisablingPrediction());
+  dict_value->SetStringKey("disabled_note",
+                           delegate_->GetReasonForDisablingPrediction());
   // If prerender is disabled via a flag this method is not even called.
   std::string enabled_note;
-  dict_value->SetString("enabled_note", enabled_note);
+  dict_value->SetStringKey("enabled_note", enabled_note);
   return dict_value;
 }
 

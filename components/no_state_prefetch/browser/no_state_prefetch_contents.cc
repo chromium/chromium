@@ -505,11 +505,11 @@ std::unique_ptr<base::DictionaryValue> NoStatePrefetchContents::GetAsValue()
   if (!no_state_prefetch_contents_)
     return nullptr;
   auto dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetString("url", prerender_url_.spec());
+  dict_value->SetStringKey("url", prerender_url_.spec());
   base::TimeTicks current_time = base::TimeTicks::Now();
   base::TimeDelta duration = current_time - load_start_time_;
-  dict_value->SetInteger("duration", duration.InSeconds());
-  dict_value->SetBoolean(
+  dict_value->SetIntKey("duration", duration.InSeconds());
+  dict_value->SetBoolKey(
       "is_loaded",
       no_state_prefetch_contents_ && !no_state_prefetch_contents_->IsLoading());
   return dict_value;
