@@ -19,7 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
@@ -1292,8 +1292,8 @@ void CameraDeviceDelegate::ProcessCaptureRequest(
     base::OnceCallback<void(int32_t)> callback) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   for (const auto& output_buffer : request->output_buffers) {
-    TRACE_EVENT2("camera", "Capture Request", "frame_number",
-                 request->frame_number, "stream_id", output_buffer->stream_id);
+    TRACE_EVENT("camera", "Capture Request", "frame_number",
+                request->frame_number, "stream_id", output_buffer->stream_id);
   }
   current_request_frame_number_ = request->frame_number;
 

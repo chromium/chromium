@@ -17,7 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
@@ -700,7 +700,7 @@ void RequestManager::ProcessCaptureResult(
     }
   }
 
-  TRACE_EVENT1("camera", "Capture Result", "frame_number", frame_number);
+  TRACE_EVENT("camera", "Capture Result", "frame_number", frame_number);
   TrySubmitPendingBuffers(frame_number);
 }
 

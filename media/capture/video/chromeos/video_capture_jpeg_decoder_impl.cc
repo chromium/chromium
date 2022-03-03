@@ -9,9 +9,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/chromeos_camera/mojo_mjpeg_decode_accelerator.h"
 #include "media/base/media_switches.h"
+#include "media/capture/video/chromeos/camera_trace_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -61,11 +64,10 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
     media::VideoCaptureDevice::Client::Buffer out_buffer) {
   DCHECK(decoder_);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+  TRACE_EVENT_BEGIN(
       "jpeg", "VideoCaptureJpegDecoderImpl decoding",
-      TRACE_ID_WITH_SCOPE("VideoCaptureJpegDecoderImpl decoding",
-                          next_task_id_));
-  TRACE_EVENT0("jpeg", "VideoCaptureJpegDecoderImpl::DecodeCapturedData");
+      GetTraceTrack(CameraTraceEvent::kJpegDecoding, next_task_id_));
+  TRACE_EVENT("jpeg", "VideoCaptureJpegDecoderImpl::DecodeCapturedData");
 
   // TODO(kcwu): enqueue decode requests in case decoding is not fast enough
   // (say, if decoding time is longer than 16ms for 60fps 4k image)
@@ -170,7 +172,7 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
 
 void VideoCaptureJpegDecoderImpl::VideoFrameReady(int32_t task_id) {
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("jpeg", "VideoCaptureJpegDecoderImpl::VideoFrameReady");
+  TRACE_EVENT("jpeg", "VideoCaptureJpegDecoderImpl::VideoFrameReady");
   if (!has_received_decoded_frame_) {
     send_log_message_cb_.Run("Received decoded frame from Gpu Jpeg decoder");
     has_received_decoded_frame_ = true;
@@ -190,9 +192,8 @@ void VideoCaptureJpegDecoderImpl::VideoFrameReady(int32_t task_id) {
 
   std::move(decode_done_closure_).Run();
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "jpeg", "VideoCaptureJpegDecoderImpl decoding",
-      TRACE_ID_WITH_SCOPE("VideoCaptureJpegDecoderImpl decoding", task_id));
+  TRACE_EVENT_END("jpeg",
+                  GetTraceTrack(CameraTraceEvent::kJpegDecoding, task_id));
 }
 
 void VideoCaptureJpegDecoderImpl::NotifyError(
@@ -207,7 +208,7 @@ void VideoCaptureJpegDecoderImpl::NotifyError(
 }
 
 void VideoCaptureJpegDecoderImpl::FinishInitialization() {
-  TRACE_EVENT0("gpu", "VideoCaptureJpegDecoderImpl::FinishInitialization");
+  TRACE_EVENT("gpu", "VideoCaptureJpegDecoderImpl::FinishInitialization");
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
 
   mojo::PendingRemote<chromeos_camera::mojom::MjpegDecodeAccelerator>
@@ -224,7 +225,7 @@ void VideoCaptureJpegDecoderImpl::FinishInitialization() {
 }
 
 void VideoCaptureJpegDecoderImpl::OnInitializationDone(bool success) {
-  TRACE_EVENT0("gpu", "VideoCaptureJpegDecoderImpl::OnInitializationDone");
+  TRACE_EVENT("gpu", "VideoCaptureJpegDecoderImpl::OnInitializationDone");
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock lock(lock_);

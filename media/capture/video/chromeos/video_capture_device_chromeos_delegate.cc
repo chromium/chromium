@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
@@ -154,7 +154,7 @@ void VideoCaptureDeviceChromeOSDelegate::AllocateAndStart(
     ClientType client_type) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   if (!HasDeviceClient()) {
-    TRACE_EVENT0("camera", "Start Device");
+    TRACE_EVENT("camera", "Start Device");
     if (!camera_device_ipc_thread_.Start()) {
       std::string error_msg = "Failed to start device thread";
       LOG(ERROR) << error_msg;
