@@ -300,8 +300,7 @@ TEST_F(ProtocolHandlerRegistryTest, Encode) {
   ProtocolHandler handler("news", GURL("https://example.com"), "app_id", now,
                           blink::ProtocolHandlerSecurityLevel::kStrict);
   auto value = handler.Encode();
-  ProtocolHandler recreated =
-      ProtocolHandler::CreateProtocolHandler(value.get());
+  ProtocolHandler recreated = ProtocolHandler::CreateProtocolHandler(value);
   EXPECT_EQ("news", recreated.protocol());
   EXPECT_EQ(GURL("https://example.com"), recreated.url());
   EXPECT_EQ(now, recreated.last_modified());

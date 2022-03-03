@@ -66,10 +66,10 @@ ProtocolHandler ProtocolHandler::CreateWebAppProtocolHandler(
 
 ProtocolHandler::ProtocolHandler() = default;
 
-bool ProtocolHandler::IsValidDict(const base::DictionaryValue* value) {
+bool ProtocolHandler::IsValidDict(const base::Value::Dict& value) {
   // Note that "title" parameter is ignored.
   // The |last_modified| field is optional as it was introduced in M68.
-  return value->FindKey("protocol") && value->FindKey("url");
+  return value.FindString("protocol") && value.FindString("url");
 }
 
 bool ProtocolHandler::IsValid() const {
@@ -106,7 +106,7 @@ const ProtocolHandler& ProtocolHandler::EmptyProtocolHandler() {
 }
 
 ProtocolHandler ProtocolHandler::CreateProtocolHandler(
-    const base::DictionaryValue* value) {
+    const base::Value::Dict& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsValidDict(value)) {
     return EmptyProtocolHandler();
@@ -116,23 +116,22 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
   base::Time time;
   blink::ProtocolHandlerSecurityLevel security_level =
       blink::ProtocolHandlerSecurityLevel::kStrict;
-  if (const std::string* protocol_in = value->FindStringKey("protocol"))
+  if (const std::string* protocol_in = value.FindString("protocol"))
     protocol = *protocol_in;
-  if (const std::string* url_in = value->FindStringKey("url"))
+  if (const std::string* url_in = value.FindString("url"))
     url = *url_in;
   absl::optional<base::Time> time_value =
-      base::ValueToTime(value->FindKey("last_modified"));
+      base::ValueToTime(value.Find("last_modified"));
   // Treat invalid times as the default value.
   if (time_value)
     time = *time_value;
-  absl::optional<int> security_level_value =
-      value->FindIntKey("security_level");
+  absl::optional<int> security_level_value = value.FindInt("security_level");
   if (security_level_value) {
     security_level =
         blink::ProtocolHandlerSecurityLevelFrom(*security_level_value);
   }
 
-  if (const base::Value* app_id_val = value->FindKey("app_id")) {
+  if (const base::Value* app_id_val = value.Find("app_id")) {
     std::string app_id;
     if (app_id_val->is_string())
       app_id = app_id_val->GetString();
@@ -151,16 +150,16 @@ GURL ProtocolHandler::TranslateUrl(const GURL& url) const {
   return GURL(translatedUrlSpec);
 }
 
-std::unique_ptr<base::DictionaryValue> ProtocolHandler::Encode() const {
+base::Value::Dict ProtocolHandler::Encode() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto d = std::make_unique<base::DictionaryValue>();
-  d->SetString("protocol", protocol_);
-  d->SetString("url", url_.spec());
-  d->SetKey("last_modified", base::TimeToValue(last_modified_));
-  d->SetIntPath("security_level", static_cast<int>(security_level_));
+  base::Value::Dict d;
+  d.Set("protocol", protocol_);
+  d.Set("url", url_.spec());
+  d.Set("last_modified", base::TimeToValue(last_modified_));
+  d.Set("security_level", static_cast<int>(security_level_));
 
   if (web_app_id_.has_value())
-    d->SetString("app_id", web_app_id_.value());
+    d.Set("app_id", web_app_id_.value());
 
   return d;
 }

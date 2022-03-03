@@ -118,8 +118,8 @@ bool ProtocolHandlerRegistry::AttemptReplace(const ProtocolHandler& handler) {
   ProtocolHandlerList to_replace(GetReplacedHandlers(handler));
   if (to_replace.empty())
     return false;
-  for (auto p = to_replace.begin(); p != to_replace.end(); ++p) {
-    RemoveHandler(*p);
+  for (const auto& replaced_handler : to_replace) {
+    RemoveHandler(replaced_handler);
   }
   if (make_new_handler_default) {
     OnAcceptRegisterProtocolHandler(handler);
@@ -137,9 +137,9 @@ ProtocolHandlerRegistry::GetReplacedHandlers(
   const ProtocolHandlerList* handlers = GetHandlerList(handler.protocol());
   if (!handlers)
     return replaced_handlers;
-  for (auto p = handlers->begin(); p != handlers->end(); ++p) {
-    if (handler.IsSameOrigin(*p)) {
-      replaced_handlers.push_back(*p);
+  for (const auto& old_handler : *handlers) {
+    if (handler.IsSameOrigin(old_handler)) {
+      replaced_handlers.push_back(old_handler);
     }
   }
   return replaced_handlers;
@@ -201,9 +201,7 @@ void ProtocolHandlerRegistry::InitProtocolSettings() {
   // For each default protocol handler, check that we are still registered
   // with the OS as the default application.
   if (delegate_->ShouldRemoveHandlersNotInOS()) {
-    for (ProtocolHandlerMap::const_iterator p = default_handlers_.begin();
-         p != default_handlers_.end(); ++p) {
-      const std::string& protocol = p->second.protocol();
+    for (const auto& [protocol, handler] : default_handlers_) {
       delegate_->CheckDefaultClientWithOS(
           protocol, GetDefaultWebClientCallback(protocol));
     }
@@ -212,18 +210,18 @@ void ProtocolHandlerRegistry::InitProtocolSettings() {
 
 int ProtocolHandlerRegistry::GetHandlerIndex(base::StringPiece scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const ProtocolHandler& handler = GetHandlerFor(scheme);
-  if (handler.IsEmpty())
+  const ProtocolHandler& candidate = GetHandlerFor(scheme);
+  if (candidate.IsEmpty())
     return -1;
   const ProtocolHandlerList* handlers = GetHandlerList(scheme);
   if (!handlers)
     return -1;
 
-  ProtocolHandlerList::const_iterator p;
-  int i;
-  for (i = 0, p = handlers->begin(); p != handlers->end(); ++p, ++i) {
-    if (*p == handler)
+  int i = 0;
+  for (const auto& handler : *handlers) {
+    if (handler == candidate)
       return i;
+    i++;
   }
   return -1;
 }
@@ -242,8 +240,8 @@ ProtocolHandlerRegistry::ProtocolHandlerList
 ProtocolHandlerRegistry::GetUserDefinedHandlers(base::Time begin,
                                                 base::Time end) const {
   ProtocolHandlerRegistry::ProtocolHandlerList result;
-  for (const auto& entry : user_protocol_handlers_) {
-    for (const ProtocolHandler& handler : entry.second) {
+  for (const auto& [protocol, handlers_list] : user_protocol_handlers_) {
+    for (const ProtocolHandler& handler : handlers_list) {
       if (base::Contains(predefined_protocol_handlers_, handler))
         continue;
       if (begin <= handler.last_modified() && handler.last_modified() < end)
@@ -281,10 +279,9 @@ ProtocolHandlerRegistry::GetIgnoredHandlers() {
 void ProtocolHandlerRegistry::GetRegisteredProtocols(
     std::vector<std::string>* output) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ProtocolHandlerMultiMap::const_iterator p;
-  for (p = protocol_handlers_.begin(); p != protocol_handlers_.end(); ++p) {
-    if (!p->second.empty())
-      output->push_back(p->first);
+  for (const auto& [protocol, handlers_list] : protocol_handlers_) {
+    if (!handlers_list.empty())
+      output->push_back(protocol);
   }
 }
 
@@ -323,10 +320,8 @@ bool ProtocolHandlerRegistry::HasPolicyRegisteredHandler(
 
 bool ProtocolHandlerRegistry::IsIgnored(const ProtocolHandler& handler) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ProtocolHandlerList::const_iterator i;
-  for (i = ignored_protocol_handlers_.begin();
-       i != ignored_protocol_handlers_.end(); ++i) {
-    if (*i == handler) {
+  for (const auto& ignored_handler : ignored_protocol_handlers_) {
+    if (ignored_handler == handler) {
       return true;
     }
   }
@@ -340,9 +335,8 @@ bool ProtocolHandlerRegistry::HasRegisteredEquivalent(
   if (!handlers) {
     return false;
   }
-  ProtocolHandlerList::const_iterator i;
-  for (i = handlers->begin(); i != handlers->end(); ++i) {
-    if (handler.IsEquivalent(*i)) {
+  for (const auto& registered_handler : *handlers) {
+    if (handler.IsEquivalent(registered_handler)) {
       return true;
     }
   }
@@ -352,10 +346,8 @@ bool ProtocolHandlerRegistry::HasRegisteredEquivalent(
 bool ProtocolHandlerRegistry::HasIgnoredEquivalent(
     const ProtocolHandler& handler) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ProtocolHandlerList::const_iterator i;
-  for (i = ignored_protocol_handlers_.begin();
-       i != ignored_protocol_handlers_.end(); ++i) {
-    if (handler.IsEquivalent(*i)) {
+  for (const auto& ignored_handler : ignored_protocol_handlers_) {
+    if (handler.IsEquivalent(ignored_handler)) {
       return true;
     }
   }
@@ -444,9 +436,8 @@ void ProtocolHandlerRegistry::Enable() {
     return;
   }
   enabled_ = true;
-  ProtocolHandlerMap::const_iterator p;
-  for (p = default_handlers_.begin(); p != default_handlers_.end(); ++p) {
-    delegate_->RegisterExternalHandler(p->first);
+  for (const auto& [protocol, handler] : default_handlers_) {
+    delegate_->RegisterExternalHandler(protocol);
   }
   Save();
   NotifyChanged();
@@ -459,9 +450,8 @@ void ProtocolHandlerRegistry::Disable() {
   }
   enabled_ = false;
 
-  ProtocolHandlerMap::const_iterator p;
-  for (p = default_handlers_.begin(); p != default_handlers_.end(); ++p) {
-    delegate_->DeregisterExternalHandler(p->first);
+  for (const auto& [protocol, handler] : default_handlers_) {
+    delegate_->DeregisterExternalHandler(protocol);
   }
   Save();
   NotifyChanged();
@@ -510,14 +500,12 @@ void ProtocolHandlerRegistry::Save() {
   if (is_loading_) {
     return;
   }
-  std::unique_ptr<base::Value> registered_protocol_handlers(
-      EncodeRegisteredHandlers());
-  std::unique_ptr<base::Value> ignored_protocol_handlers(
-      EncodeIgnoredHandlers());
+  base::Value registered_protocol_handlers(EncodeRegisteredHandlers());
+  base::Value ignored_protocol_handlers(EncodeIgnoredHandlers());
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
 
-  prefs->Set(prefs::kRegisteredProtocolHandlers, *registered_protocol_handlers);
-  prefs->Set(prefs::kIgnoredProtocolHandlers, *ignored_protocol_handlers);
+  prefs->Set(prefs::kRegisteredProtocolHandlers, registered_protocol_handlers);
+  prefs->Set(prefs::kIgnoredProtocolHandlers, ignored_protocol_handlers);
   prefs->SetBoolean(prefs::kCustomHandlersEnabled, enabled_);
 }
 
@@ -561,30 +549,28 @@ void ProtocolHandlerRegistry::InsertHandler(const ProtocolHandler& handler) {
   protocol_handlers_[handler.protocol()] = new_list;
 }
 
-base::Value* ProtocolHandlerRegistry::EncodeRegisteredHandlers() {
+base::Value::List ProtocolHandlerRegistry::EncodeRegisteredHandlers() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::ListValue* protocol_handlers = new base::ListValue();
-  for (auto i = user_protocol_handlers_.begin();
-       i != user_protocol_handlers_.end(); ++i) {
-    for (auto j = i->second.begin(); j != i->second.end(); ++j) {
-      std::unique_ptr<base::DictionaryValue> encoded = j->Encode();
-      if (IsDefault(*j)) {
-        encoded->Set("default", std::make_unique<base::Value>(true));
+  auto encoded_handlers = base::Value::List();
+  for (const auto& [protocol, handlers_list] : user_protocol_handlers_) {
+    for (const auto& handler : handlers_list) {
+      base::Value::Dict encoded = handler.Encode();
+      if (IsDefault(handler)) {
+        encoded.Set("default", true);
       }
-      protocol_handlers->Append(std::move(encoded));
+      encoded_handlers.Append(std::move(encoded));
     }
   }
-  return protocol_handlers;
+  return encoded_handlers;
 }
 
-base::Value* ProtocolHandlerRegistry::EncodeIgnoredHandlers() {
+base::Value::List ProtocolHandlerRegistry::EncodeIgnoredHandlers() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::ListValue* handlers = new base::ListValue();
-  for (auto i = user_ignored_protocol_handlers_.begin();
-       i != user_ignored_protocol_handlers_.end(); ++i) {
-    handlers->Append(i->Encode());
+  base::Value::List encoded_handlers = base::Value::List();
+  for (const auto& handler : user_ignored_protocol_handlers_) {
+    encoded_handlers.Append(handler.Encode());
   }
-  return handlers;
+  return encoded_handlers;
 }
 
 void ProtocolHandlerRegistry::NotifyChanged() {
@@ -617,10 +603,10 @@ bool ProtocolHandlerRegistry::RegisterProtocolHandler(
   return true;
 }
 
-std::vector<const base::DictionaryValue*>
+std::vector<const base::Value::Dict*>
 ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<const base::DictionaryValue*> result;
+  std::vector<const base::Value::Dict*> result;
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
   if (!prefs->HasPrefPath(pref_name)) {
     return result;
@@ -628,13 +614,11 @@ ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
 
   const base::Value* handlers = prefs->GetList(pref_name);
   if (handlers) {
-    for (const auto& dict : handlers->GetListDeprecated()) {
-      if (!dict.is_dict())
-        continue;
-      const base::DictionaryValue* dict_value =
-          static_cast<const base::DictionaryValue*>(&dict);
-      if (ProtocolHandler::IsValidDict(dict_value)) {
-        result.push_back(dict_value);
+    for (const auto& list_item : handlers->GetList()) {
+      if (const base::Value::Dict* encoded_handler = list_item.GetIfDict()) {
+        if (ProtocolHandler::IsValidDict(*encoded_handler)) {
+          result.push_back(encoded_handler);
+        }
       }
     }
   }
@@ -644,15 +628,14 @@ ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
 void ProtocolHandlerRegistry::RegisterProtocolHandlersFromPref(
     const char* pref_name,
     const HandlerSource source) {
-  std::vector<const base::DictionaryValue*> registered_handlers =
+  std::vector<const base::Value::Dict*> registered_handlers =
       GetHandlersFromPref(pref_name);
-  for (std::vector<const base::DictionaryValue*>::const_iterator p =
-           registered_handlers.begin();
-       p != registered_handlers.end(); ++p) {
-    ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(*p);
+  for (const auto* encoded_handler : registered_handlers) {
+    ProtocolHandler handler =
+        ProtocolHandler::CreateProtocolHandler(*encoded_handler);
     if (!RegisterProtocolHandler(handler, source))
       continue;
-    if ((*p)->FindBoolKey("default").value_or(false)) {
+    if (encoded_handler->FindBool("default").value_or(false)) {
       SetDefault(handler);
     }
   }
@@ -675,13 +658,11 @@ void ProtocolHandlerRegistry::IgnoreProtocolHandler(
 void ProtocolHandlerRegistry::IgnoreProtocolHandlersFromPref(
     const char* pref_name,
     const HandlerSource source) {
-  std::vector<const base::DictionaryValue*> ignored_handlers =
+  std::vector<const base::Value::Dict*> ignored_handlers =
       GetHandlersFromPref(pref_name);
-  for (std::vector<const base::DictionaryValue*>::const_iterator p =
-           ignored_handlers.begin();
-       p != ignored_handlers.end(); ++p) {
-    IgnoreProtocolHandler(ProtocolHandler::CreateProtocolHandler(*p), source);
-  }
+  for (const auto* encoded_handler : ignored_handlers)
+    IgnoreProtocolHandler(
+        ProtocolHandler::CreateProtocolHandler(*encoded_handler), source);
 }
 
 bool ProtocolHandlerRegistry::HandlerExists(const ProtocolHandler& handler,
