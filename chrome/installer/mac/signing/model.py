@@ -6,6 +6,7 @@
 This module contains classes that encapsulate data about the signing process.
 """
 
+from enum import Enum
 import os.path
 import re
 import string
@@ -189,6 +190,45 @@ CodeSignOptions = make_enum(
 CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS = (
     CodeSignOptions.HARDENED_RUNTIME + CodeSignOptions.RESTRICT +
     CodeSignOptions.LIBRARY_VALIDATION + CodeSignOptions.KILL)
+
+
+class NotarizeAndStapleLevel(Enum):
+    """An enum specifying the level of notarization and stapling to do.
+
+    `NONE` means no notarization tasks should be performed.
+
+    `NOWAIT` means to submit the signed application and packaging to Apple for
+    notarization, but not to wait for a reply.
+
+    `WAIT_NOSTAPLE` means to submit the signed application and packaging to
+    Apple for notarization, and wait for a reply, but not to staple the
+    resulting notarization ticket.
+
+    `STAPLE` means to submit the signed application and packaging to Apple for
+    notarization, wait for a reply, and staple the resulting notarization
+    ticket.
+    """
+    NONE = 0
+    NOWAIT = 1
+    WAIT_NOSTAPLE = 2
+    STAPLE = 3
+
+    def should_notarize(self):
+        return self.value > self.NONE.value
+
+    def should_wait(self):
+        return self.value > self.NOWAIT.value
+
+    def should_staple(self):
+        return self.value > self.WAIT_NOSTAPLE.value
+
+    @classmethod
+    def valid_strings(cls):
+        return tuple(level.name.lower().replace('_', '-') for level in cls)
+
+    @classmethod
+    def from_string(cls, str):
+        return cls[str.upper().replace('-', '_')]
 
 
 class Distribution(object):
