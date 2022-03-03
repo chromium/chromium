@@ -32,6 +32,7 @@ COMPONENT_EXPORT(HERMES_CLIENT) void Shutdown();
 namespace ash {
 namespace hermes_clients {
 using ::chromeos::hermes_clients::Initialize;
+using ::chromeos::hermes_clients::InitializeFakes;
 using ::chromeos::hermes_clients::Shutdown;
 }  // namespace hermes_clients
 }  // namespace ash

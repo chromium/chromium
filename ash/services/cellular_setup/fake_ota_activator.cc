@@ -6,9 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 FakeOtaActivator::FakeOtaActivator(base::OnceClosure on_finished_callback)
     : OtaActivator(std::move(on_finished_callback)) {}
@@ -20,6 +18,4 @@ void FakeOtaActivator::OnCarrierPortalStatusChange(
   fake_carrier_portal_handler_.OnCarrierPortalStatusChange(status);
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

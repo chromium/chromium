@@ -13,9 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 class FakeCarrierPortalHandler;
 
@@ -73,8 +71,6 @@ class FakeCellularSetup : public CellularSetupBase {
       start_activation_invocations_;
 };
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_PUBLIC_CPP_FAKE_CELLULAR_SETUP_H_

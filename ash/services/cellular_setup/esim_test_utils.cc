@@ -7,8 +7,7 @@
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "base/run_loop.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 mojom::EuiccPropertiesPtr GetEuiccProperties(
     const mojo::Remote<mojom::Euicc>& euicc) {
@@ -56,5 +55,4 @@ std::vector<mojo::PendingRemote<mojom::ESimProfile>> GetProfileList(
   return result;
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

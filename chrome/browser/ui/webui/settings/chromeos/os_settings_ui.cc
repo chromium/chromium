@@ -102,13 +102,13 @@ OSSettingsUI::~OSSettingsUI() {
 }
 
 void OSSettingsUI::BindInterface(
-    mojo::PendingReceiver<cellular_setup::mojom::CellularSetup> receiver) {
-  cellular_setup::CellularSetupImpl::CreateAndBindToReciever(
+    mojo::PendingReceiver<ash::cellular_setup::mojom::CellularSetup> receiver) {
+  ash::cellular_setup::CellularSetupImpl::CreateAndBindToReciever(
       std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(
-    mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver) {
+    mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver) {
   ash::GetESimManager(std::move(receiver));
 }
 

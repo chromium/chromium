@@ -24,7 +24,7 @@ suite('InternetSubpage', function() {
   /** @type {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   let mojoApi_ = null;
 
-  /** @type {?chromeos.cellularSetup.mojom.CellularSetupRemote} */
+  /** @type {?ash.cellularSetup.mojom.CellularSetupRemote} */
   let eSimManagerRemote;
 
   suiteSetup(function() {

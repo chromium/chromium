@@ -11,7 +11,7 @@
 
 /** @polymerBehavior */
 /* #export */ const ESimManagerListenerBehavior = {
-  /** @private {?chromeos.cellularSetup.mojom.ESimManagerObserver} */
+  /** @private {?ash.cellularSetup.mojom.ESimManagerObserver} */
   observer_: null,
 
   /** @override */
@@ -24,17 +24,17 @@
   onAvailableEuiccListChanged() {},
 
   /**
-   * @param {!chromeos.cellularSetup.mojom.EuiccRemote} euicc
+   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
    */
   onProfileListChanged(euicc) {},
 
   /**
-   * @param {!chromeos.cellularSetup.mojom.EuiccRemote} euicc
+   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
    */
   onEuiccChanged(euicc) {},
 
   /**
-   * @param {!chromeos.cellularSetup.mojom.ESimProfileRemote} profile
+   * @param {!ash.cellularSetup.mojom.ESimProfileRemote} profile
    */
   onProfileChanged(profile) {},
 };

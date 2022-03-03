@@ -5,7 +5,7 @@
 
 cr.define('cellular_setup', function() {
   /**
-   * @implements {chromeos.cellularSetup.mojom.CarrierPortalHandlerInterface}
+   * @implements {ash.cellularSetup.mojom.CarrierPortalHandlerInterface}
    */
   /* #export */ class FakeCarrierPortalHandlerRemote {
     constructor() {}
@@ -16,7 +16,7 @@ cr.define('cellular_setup', function() {
     }
   }
 
-  /** @implements {chromeos.cellularSetup.mojom.CellularSetupInterface} */
+  /** @implements {ash.cellularSetup.mojom.CellularSetupInterface} */
   /* #export */ class FakeCellularSetupRemote {
     /**
      * @param {!FakeCarrierPortalHandlerRemote} handler
@@ -36,7 +36,7 @@ cr.define('cellular_setup', function() {
     }
 
     /**
-     * @returns {!chromeos.cellularSetup.mojom.ActivationDelegateRemote}
+     * @returns {!ash.cellularSetup.mojom.ActivationDelegateRemote}
      */
     getLastActivationDelegate() {
       return this.delegate_;

@@ -20,13 +20,13 @@
 suite('CrComponentsPsimFlowUiTest', function() {
   let pSimPage;
 
-  /** @type {?chromeos.cellularSetup.mojom.CellularSetupRemote} */
+  /** @type {?ash.cellularSetup.mojom.CellularSetupRemote} */
   let cellularSetupRemote = null;
 
   /** @type {?FakeCarrierPortalHandlerRemote} */
   let cellularCarrierHandler = null;
 
-  /** @type {?chromeos.cellularSetup.mojom.ActivationDelegateReceiver} */
+  /** @type {?ash.cellularSetup.mojom.ActivationDelegateReceiver} */
   let cellularActivationDelegate = null;
 
   /** @type {function(Function, number)} */
@@ -106,7 +106,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
         cellularSetup.PSimPageName.provisioningPage);
 
     cellularActivationDelegate.onActivationFinished(
-        chromeos.cellularSetup.mojom.ActivationResult
+        ash.cellularSetup.mojom.ActivationResult
             .kSuccessfullyStartedActivation);
 
     await flushAsync();
@@ -180,7 +180,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
     });
 
     cellularCarrierHandler.onCarrierPortalStatusChange(
-        chromeos.cellularSetup.mojom.CarrierPortalStatus
+        ash.cellularSetup.mojom.CarrierPortalStatus
             .kPortalLoadedWithoutPaidUser);
 
     await flushAsync();
@@ -216,7 +216,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
     cellularActivationDelegate =
         cellularSetupRemote.getLastActivationDelegate();
     cellularActivationDelegate.onActivationFinished(
-        chromeos.cellularSetup.mojom.ActivationResult.kAlreadyActivated);
+        ash.cellularSetup.mojom.ActivationResult.kAlreadyActivated);
 
     await flushAsync();
 
@@ -244,7 +244,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
         cellularSetup.PSimPageName.provisioningPage);
 
     cellularActivationDelegate.onActivationFinished(
-        chromeos.cellularSetup.mojom.ActivationResult.kFailedToActivate);
+        ash.cellularSetup.mojom.ActivationResult.kFailedToActivate);
 
     await flushAsync();
     endFlowAndVerifyResult(PSimSetupFlowResult.NETWORK_ERROR);

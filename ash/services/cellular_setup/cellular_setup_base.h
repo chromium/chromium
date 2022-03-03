@@ -9,9 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // mojom::CellularSetup implementation which accepts receivers to bind to it.
 // This class does not implement any of mojom::CellularSetup's functions, so
@@ -32,8 +30,6 @@ class CellularSetupBase : public mojom::CellularSetup {
   mojo::ReceiverSet<mojom::CellularSetup> receivers_;
 };
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_CELLULAR_SETUP_BASE_H_

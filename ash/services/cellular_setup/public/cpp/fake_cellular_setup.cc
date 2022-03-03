@@ -8,9 +8,7 @@
 
 #include <utility>
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 FakeCellularSetup::StartActivationInvocation::StartActivationInvocation(
     mojo::PendingRemote<mojom::ActivationDelegate> activation_delegate,
@@ -47,6 +45,4 @@ void FakeCellularSetup::StartActivation(
           std::move(activation_delegate), std::move(callback)));
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

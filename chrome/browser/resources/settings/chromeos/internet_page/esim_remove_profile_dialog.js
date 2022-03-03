@@ -47,7 +47,7 @@ Polymer({
     },
   },
 
-  /** @private {?chromeos.cellularSetup.mojom.ESimProfileRemote} */
+  /** @private {?ash.cellularSetup.mojom.ESimProfileRemote} */
   esimProfileRemote_: null,
 
   /** @override */
@@ -102,7 +102,7 @@ Polymer({
   onRemoveProfileTap_(event) {
     this.esimProfileRemote_.uninstallProfile().then((response) => {
       if (response.result ===
-          chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
+          ash.cellularSetup.mojom.ESimOperationResult.kFailure) {
         this.fire(
             'show-error-toast', this.i18n('eSimRemoveProfileDialogError'));
       }

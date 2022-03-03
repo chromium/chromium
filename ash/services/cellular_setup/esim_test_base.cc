@@ -25,8 +25,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 const char* ESimTestBase::kTestEuiccPath = "/org/chromium/Hermes/Euicc/0";
 const char* ESimTestBase::kTestEid = "12345678901234567890123456789012";
@@ -139,5 +138,4 @@ void ESimTestBase::FastForwardProfileRefreshDelay() {
   task_environment()->FastForwardBy(2 * kProfileRefreshCallbackDelay);
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

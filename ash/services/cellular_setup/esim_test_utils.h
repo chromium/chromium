@@ -8,8 +8,7 @@
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // Calls GetProperties on a remote euicc object and waits for
 // result. Returns the resulting EuiccProperties structure.
@@ -27,7 +26,6 @@ mojom::ESimProfilePropertiesPtr GetESimProfileProperties(
 std::vector<mojo::PendingRemote<mojom::ESimProfile>> GetProfileList(
     const mojo::Remote<mojom::Euicc>& euicc);
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_ESIM_TEST_UTILS_H_

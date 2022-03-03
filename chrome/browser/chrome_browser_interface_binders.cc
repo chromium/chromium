@@ -919,13 +919,12 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::cellular_setup::mojom::CellularSetup,
+      ash::cellular_setup::mojom::CellularSetup,
       chromeos::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::cellular_setup::mojom::ESimManager,
-      chromeos::settings::OSSettingsUI, chromeos::NetworkUI, chromeos::OobeUI>(
-      map);
+      ash::cellular_setup::mojom::ESimManager, chromeos::settings::OSSettingsUI,
+      chromeos::NetworkUI, chromeos::OobeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::crostini_installer::mojom::PageHandlerFactory,

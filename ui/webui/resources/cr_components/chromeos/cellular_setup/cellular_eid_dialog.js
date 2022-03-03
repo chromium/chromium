@@ -53,7 +53,7 @@ Polymer({
 
   /**
    * @private
-   * @param {{qrCode: chromeos.cellularSetup.mojom.QRCode} | null} response
+   * @param {{qrCode: ash.cellularSetup.mojom.QRCode} | null} response
    */
   updateQRCode_(response) {
     if (!response || !response.qrCode) {
@@ -80,8 +80,7 @@ Polymer({
 
   /**
    * @private
-   * @param {{properties: chromeos.cellularSetup.mojom.EuiccProperties}}
-   *     response
+   * @param {{properties: ash.cellularSetup.mojom.EuiccProperties}} response
    */
   updateEid_(response) {
     if (!response || !response.properties) {

@@ -172,7 +172,7 @@ suite('EsimRenameDialog', function() {
       const profile = (await euicc.getProfileList()).profiles[0];
 
       profile.setEsimOperationResultForTest(
-          chromeos.cellularSetup.mojom.ESimOperationResult.kFailure);
+          ash.cellularSetup.mojom.ESimOperationResult.kFailure);
 
       inputBox.value = 'new profile nickname';
       await flushAsync();

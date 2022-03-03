@@ -31,7 +31,7 @@ Polymer({
     showPowerwashDialog_: Boolean,
 
     /**
-     * @type {!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>}
+     * @type {!Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
      * @private
      */
     installedESimProfiles_: {

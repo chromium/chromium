@@ -32,4 +32,10 @@ void COMPONENT_EXPORT(CHROMEOS_NETWORK)
 }  // namespace hermes_metrics
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::hermes_metrics {
+using ::chromeos::hermes_metrics::LogInstallPendingProfileResult;
+using ::chromeos::hermes_metrics::LogRequestPendingProfilesResult;
+}  // namespace ash::hermes_metrics
+
 #endif  // CHROMEOS_NETWORK_HERMES_METRICS_UTIL_H_

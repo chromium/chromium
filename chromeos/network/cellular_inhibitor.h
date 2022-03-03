@@ -196,4 +196,9 @@ std::ostream& operator<<(
     std::ostream& stream,
     const chromeos::CellularInhibitor::InhibitReason& inhibit_reason);
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::CellularInhibitor;
+}
+
 #endif  // CHROMEOS_NETWORK_CELLULAR_INHIBITOR_H_

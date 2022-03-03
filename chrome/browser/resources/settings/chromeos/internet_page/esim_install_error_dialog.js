@@ -27,14 +27,14 @@ Polymer({
     /**
      * The error code returned when profile install attempt was made in networks
      * list.
-     * @type {?chromeos.cellularSetup.mojom.ProfileInstallResult}
+     * @type {?ash.cellularSetup.mojom.ProfileInstallResult}
      */
     errorCode: {
       type: Object,
       value: null,
     },
 
-    /** @type {?chromeos.cellularSetup.mojom.ESimProfileRemote} */
+    /** @type {?ash.cellularSetup.mojom.ESimProfileRemote} */
     profile: {
       type: Object,
       value: null,
@@ -80,7 +80,7 @@ Polymer({
     this.profile.installProfile(this.confirmationCode_).then((response) => {
       this.isInstallInProgress_ = false;
       if (response.result ===
-          chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess) {
+          ash.cellularSetup.mojom.ESimOperationResult.kSuccess) {
         this.$.installErrorDialog.close();
         return;
       }
@@ -105,7 +105,7 @@ Polymer({
   /** @private */
   isConfirmationCodeError_() {
     return this.errorCode ===
-        chromeos.cellularSetup.mojom.ProfileInstallResult
+        ash.cellularSetup.mojom.ProfileInstallResult
             .kErrorNeedsConfirmationCode;
   },
 

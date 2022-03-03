@@ -4,9 +4,7 @@
 
 #include "ash/services/cellular_setup/cellular_setup_base.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 CellularSetupBase::CellularSetupBase() = default;
 
@@ -17,6 +15,4 @@ void CellularSetupBase::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

@@ -4,7 +4,7 @@
 
 
 cr.define('cellular_setup', function() {
-  /** @implements {chromeos.cellularSetup.mojom.ESimProfile} */
+  /** @implements {ash.cellularSetup.mojom.ESimProfile} */
   class FakeProfile {
     constructor(eid, iccid, fakeEuicc) {
       this.properties = {
@@ -20,7 +20,7 @@ cr.define('cellular_setup', function() {
         serviceProvider: {
           data: this.stringToCharCodeArray_('provider' + iccid),
         },
-        state: chromeos.cellularSetup.mojom.ProfileState.kPending,
+        state: ash.cellularSetup.mojom.ProfileState.kPending,
       };
 
       this.deferGetProperties_ = false;
@@ -31,7 +31,7 @@ cr.define('cellular_setup', function() {
     /**
      * @override
      * @return {!Promise<{properties:
-     *     chromeos.cellularSetup.mojom.ESimProfileProperties},}>}
+     *     ash.cellularSetup.mojom.ESimProfileProperties},}>}
      */
     getProperties() {
       if (this.deferGetProperties_) {
@@ -64,14 +64,13 @@ cr.define('cellular_setup', function() {
      * @override
      * @param {string} confirmationCode
      * @return {!Promise<{result:
-     *     chromeos.cellularSetup.mojom.ProfileInstallResult},}>}
+     *     ash.cellularSetup.mojom.ProfileInstallResult},}>}
      */
     installProfile(confirmationCode) {
       if (!this.profileInstallResult_ ||
           this.profileInstallResult_ ===
-              chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess) {
-        this.properties.state =
-            chromeos.cellularSetup.mojom.ProfileState.kActive;
+              ash.cellularSetup.mojom.ProfileInstallResult.kSuccess) {
+        this.properties.state = ash.cellularSetup.mojom.ProfileState.kActive;
       }
       this.fakeEuicc_.notifyProfileChangedForTest(this);
       this.fakeEuicc_.notifyProfileListChangedForTest();
@@ -82,20 +81,20 @@ cr.define('cellular_setup', function() {
               () => resolve({
                 result: this.profileInstallResult_ ?
                     this.profileInstallResult_ :
-                    chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess
+                    ash.cellularSetup.mojom.ProfileInstallResult.kSuccess
               }),
               0));
     }
 
     /**
-     * @param {chromeos.cellularSetup.mojom.ProfileInstallResult} result
+     * @param {ash.cellularSetup.mojom.ProfileInstallResult} result
      */
     setProfileInstallResultForTest(result) {
       this.profileInstallResult_ = result;
     }
 
     /**
-     * @param {chromeos.cellularSetup.mojom.ESimOperationResult} result
+     * @param {ash.cellularSetup.mojom.ESimOperationResult} result
      */
     setEsimOperationResultForTest(result) {
       this.esimOperationResult_ = result;
@@ -131,12 +130,12 @@ cr.define('cellular_setup', function() {
      * @override
      * @param {?mojoBase.mojom.String16} nickname
      * @return {!Promise<{result:
-     *     chromeos.cellularSetup.mojom.ESimOperationResult},}>}
+     *     ash.cellularSetup.mojom.ESimOperationResult},}>}
      */
     setProfileNickname(nickname) {
       if (!this.esimOperationResult_ ||
           this.esimOperationResult_ ===
-              chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess) {
+              ash.cellularSetup.mojom.ESimOperationResult.kSuccess) {
         this.properties.nickname = nickname;
       }
 
@@ -149,7 +148,7 @@ cr.define('cellular_setup', function() {
       this.deferredSetProfileNicknamePromise_.resolve({
         result: this.esimOperationResult_ ?
             this.esimOperationResult_ :
-            chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
+            ash.cellularSetup.mojom.ESimOperationResult.kSuccess
       });
     }
 
@@ -164,7 +163,7 @@ cr.define('cellular_setup', function() {
     async resolveUninstallProfilePromise() {
       if (!this.esimOperationResult_ ||
           this.esimOperationResult_ ===
-              chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess) {
+              ash.cellularSetup.mojom.ESimOperationResult.kSuccess) {
         const removeProfileResult =
             await this.fakeEuicc_.removeProfileForTest(this.properties.iccid);
         this.defferedUninstallProfilePromise_.resolve(removeProfileResult);
@@ -174,12 +173,12 @@ cr.define('cellular_setup', function() {
       this.defferedUninstallProfilePromise_.resolve({
         result: this.esimOperationResult_ ?
             this.esimOperationResult_ :
-            chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
+            ash.cellularSetup.mojom.ESimOperationResult.kSuccess
       });
     }
   }
 
-  /** @implements {chromeos.cellularSetup.mojom.Euicc} */
+  /** @implements {ash.cellularSetup.mojom.Euicc} */
   class FakeEuicc {
     constructor(eid, numProfiles, fakeESimManager) {
       this.fakeESimManager_ = fakeESimManager;
@@ -189,13 +188,13 @@ cr.define('cellular_setup', function() {
         this.addProfile();
       }
       this.requestPendingProfilesResult_ =
-          chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess;
+          ash.cellularSetup.mojom.ESimOperationResult.kSuccess;
     }
 
     /**
      * @override
      * @return {!Promise<{properties:
-     *     chromeos.cellularSetup.mojom.EuiccProperties},}>}
+     *     ash.cellularSetup.mojom.EuiccProperties},}>}
      */
     getProperties() {
       return Promise.resolve({properties: this.properties});
@@ -204,7 +203,7 @@ cr.define('cellular_setup', function() {
     /**
      * @override
      * @return {!Promise<{result:
-     *     chromeos.cellularSetup.mojom.ESimOperationResult},}>}
+     *     ash.cellularSetup.mojom.ESimOperationResult},}>}
      */
     requestPendingProfiles() {
       return Promise.resolve({
@@ -224,7 +223,7 @@ cr.define('cellular_setup', function() {
 
     /**
      * @override
-     * @return {!Promise<{qrCode: chromeos.cellularSetup.mojom.QRCode} | null>}
+     * @return {!Promise<{qrCode: ash.cellularSetup.mojom.QRCode} | null>}
      */
     getEidQRCode() {
       if (this.eidQRCode_) {
@@ -239,33 +238,33 @@ cr.define('cellular_setup', function() {
      * @param {string} activationCode
      * @param {string} confirmationCode
      * @return {!Promise<{result:
-     *     chromeos.cellularSetup.mojom.ProfileInstallResult},}>}
+     *     ash.cellularSetup.mojom.ProfileInstallResult},}>}
      */
     installProfileFromActivationCode(activationCode, confirmationCode) {
       this.notifyProfileListChangedForTest();
       return Promise.resolve({
         result: this.profileInstallResult_ ?
             this.profileInstallResult_ :
-            chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess,
+            ash.cellularSetup.mojom.ProfileInstallResult.kSuccess,
       });
     }
 
     /**
-     * @param {chromeos.cellularSetup.mojom.ESimOperationResult} result
+     * @param {ash.cellularSetup.mojom.ESimOperationResult} result
      */
     setRequestPendingProfilesResult(result) {
       this.requestPendingProfilesResult_ = result;
     }
 
     /**
-     * @param {chromeos.cellularSetup.mojom.ProfileInstallResult} result
+     * @param {ash.cellularSetup.mojom.ProfileInstallResult} result
      */
     setProfileInstallResultForTest(result) {
       this.profileInstallResult_ = result;
     }
 
     /**
-     * @param {chromeos.cellularSetup.mojom.QRCode} qrcode
+     * @param {ash.cellularSetup.mojom.QRCode} qrcode
      */
     setEidQRCodeForTest(qrcode) {
       this.eidQRCode_ = qrcode;
@@ -289,13 +288,9 @@ cr.define('cellular_setup', function() {
 
       if (profileRemoved) {
         this.notifyProfileListChangedForTest();
-        return {
-          result: chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess
-        };
+        return {result: ash.cellularSetup.mojom.ESimOperationResult.kSuccess};
       }
-      return {
-        result: chromeos.cellularSetup.mojom.ESimOperationResult.kFailure
-      };
+      return {result: ash.cellularSetup.mojom.ESimOperationResult.kFailure};
     }
 
     /**
@@ -316,7 +311,7 @@ cr.define('cellular_setup', function() {
     }
   }
 
-  /** @implements {chromeos.cellularSetup.mojom.ESimManagerInterface} */
+  /** @implements {ash.cellularSetup.mojom.ESimManagerInterface} */
   /* #export */ class FakeESimManagerRemote {
     constructor() {
       this.euiccs_ = [];
@@ -346,8 +341,7 @@ cr.define('cellular_setup', function() {
     }
 
     /**
-     * @param {!chromeos.cellularSetup.mojom.ESimManagerObserverInterface}
-     *     observer
+     * @param {!ash.cellularSetup.mojom.ESimManagerObserverInterface} observer
      */
     addObserver(observer) {
       this.observers_.push(observer);

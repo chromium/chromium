@@ -4,9 +4,7 @@
 
 #include "ash/services/cellular_setup/public/cpp/fake_activation_delegate.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 FakeActivationDelegate::FakeActivationDelegate() = default;
 
@@ -33,6 +31,4 @@ void FakeActivationDelegate::OnActivationFinished(
   activation_results_.push_back(activation_result);
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

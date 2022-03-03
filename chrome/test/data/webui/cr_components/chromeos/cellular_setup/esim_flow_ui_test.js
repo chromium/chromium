@@ -94,7 +94,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
     const euicc = availableEuiccs.euiccs[0];
 
     euicc.setRequestPendingProfilesResult(
-        chromeos.cellularSetup.mojom.ESimOperationResult.kFailure);
+        ash.cellularSetup.mojom.ESimOperationResult.kFailure);
     eSimPage.initSubflow();
 
     await flushAsync();
@@ -313,7 +313,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     test('Invalid activation code', async function() {
       euicc.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult
+          ash.cellularSetup.mojom.ProfileInstallResult
               .kErrorInvalidActivationCode);
 
       await navigateForwardForInstall(
@@ -343,7 +343,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     test('Valid confirmation code', async function() {
       euicc.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult
+          ash.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode);
 
       await navigateForwardForInstall(
@@ -356,7 +356,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
 
       euicc.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess);
+          ash.cellularSetup.mojom.ProfileInstallResult.kSuccess);
       await enterConfirmationCode(
           /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
 
@@ -368,7 +368,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     test('Invalid confirmation code', async function() {
       euicc.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult
+          ash.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode);
 
       await navigateForwardForInstall(
@@ -381,7 +381,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
 
       euicc.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure);
+          ash.cellularSetup.mojom.ProfileInstallResult.kFailure);
       const confirmationCodeInput = await enterConfirmationCode(
           /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
 
@@ -396,7 +396,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     test('Navigate backwards from confirmation code', async function() {
       euicc.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult
+          ash.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode);
 
       await navigateForwardForInstall(
@@ -458,7 +458,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     test('Unsuccessful install', async function() {
       profile.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure);
+          ash.cellularSetup.mojom.ProfileInstallResult.kFailure);
 
       await assertProfileLoadingPageAndContinue();
       await flushAsync();
@@ -470,7 +470,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     test('Valid confirmation code', async function() {
       profile.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult
+          ash.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode);
 
       await assertProfileLoadingPageAndContinue();
@@ -481,7 +481,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
 
       profile.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess);
+          ash.cellularSetup.mojom.ProfileInstallResult.kSuccess);
       await enterConfirmationCode(
           /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
 
@@ -493,7 +493,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     test('Invalid confirmation code', async function() {
       profile.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult
+          ash.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode);
 
       await assertProfileLoadingPageAndContinue();
@@ -504,7 +504,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
 
       profile.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure);
+          ash.cellularSetup.mojom.ProfileInstallResult.kFailure);
       const confirmationCodeInput =
           await enterConfirmationCode(cellularSetup.ButtonState.HIDDEN);
 
@@ -519,7 +519,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     test('Navigate backwards from confirmation code', async function() {
       profile.setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult
+          ash.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode);
 
       await assertProfileLoadingPageAndContinue();
@@ -612,7 +612,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           skipDiscovery();
 
           euicc.setProfileInstallResultForTest(
-              chromeos.cellularSetup.mojom.ProfileInstallResult
+              ash.cellularSetup.mojom.ProfileInstallResult
                   .kErrorNeedsConfirmationCode);
 
           await navigateForwardForInstall(
@@ -682,7 +682,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
       const profileList = await availableEuiccs.euiccs[0].getProfileList();
       profileList.profiles[0].setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult
+          ash.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode);
 
       await selectProfile();
@@ -694,7 +694,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       assertFocusDefaultButtonEventFired();
 
       profileList.profiles[0].setProfileInstallResultForTest(
-          chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess);
+          ash.cellularSetup.mojom.ProfileInstallResult.kSuccess);
       await enterConfirmationCode(
           /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
 
@@ -711,7 +711,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
           const profileList = await availableEuiccs.euiccs[0].getProfileList();
           profileList.profiles[0].setProfileInstallResultForTest(
-              chromeos.cellularSetup.mojom.ProfileInstallResult
+              ash.cellularSetup.mojom.ProfileInstallResult
                   .kErrorNeedsConfirmationCode);
 
           await selectProfile();

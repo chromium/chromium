@@ -11,8 +11,7 @@
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 class ESimManagerTest : public ESimTestBase {
  public:
@@ -95,5 +94,4 @@ TEST_F(ESimManagerTest, ESimProfileChangeNotification) {
   EXPECT_EQ(dbus_properties->iccid().value(), mojo_properties->iccid);
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

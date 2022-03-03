@@ -19,8 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 namespace {
 
@@ -291,5 +290,4 @@ TEST_F(EuiccTest, GetEidQRCode) {
   EXPECT_LT(0, qr_code_result->size);
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

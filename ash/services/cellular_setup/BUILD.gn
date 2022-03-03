@@ -84,9 +84,12 @@ static_library("test_support") {
     "fake_ota_activator.h",
   ]
 
+  public_deps = [ "//ash/services/cellular_setup/public/mojom:mojom_headers" ]
+
   deps = [
     ":cellular_setup",
     "//ash/services/cellular_setup/public/cpp:test_support",
+    "//ash/services/cellular_setup/public/mojom",
     "//base",
   ]
 }

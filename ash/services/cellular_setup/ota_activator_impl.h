@@ -14,18 +14,19 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_activation_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_connection_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_state.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-class NetworkActivationHandler;
-class NetworkConnectionHandler;
-class NetworkState;
-class NetworkStateHandler;
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // Concrete OtaActivator implementation. This class activates a SIM using the
 // following steps:
@@ -145,8 +146,6 @@ class OtaActivatorImpl : public OtaActivator,
 std::ostream& operator<<(std::ostream& stream,
                          const OtaActivatorImpl::State& state);
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_OTA_ACTIVATOR_IMPL_H_

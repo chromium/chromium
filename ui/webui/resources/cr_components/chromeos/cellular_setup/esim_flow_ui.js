@@ -114,7 +114,7 @@ cr.define('cellular_setup', function() {
 
       /**
        * Profiles fetched that have status kPending.
-       * @type {!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>}
+       * @type {!Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
        * @private
        */
       pendingProfiles_: {
@@ -123,7 +123,7 @@ cr.define('cellular_setup', function() {
 
       /**
        * Profile selected to be installed.
-       * @type {?chromeos.cellularSetup.mojom.ESimProfileRemote}
+       * @type {?ash.cellularSetup.mojom.ESimProfileRemote}
        * @private
        */
       selectedProfile_: {
@@ -152,17 +152,17 @@ cr.define('cellular_setup', function() {
 
     /**
      * Provides an interface to the ESimManager Mojo service.
-     * @private {?chromeos.cellularSetup.mojom.ESimManagerRemote}
+     * @private {?ash.cellularSetup.mojom.ESimManagerRemote}
      */
     eSimManagerRemote_: null,
 
-    /** @private {?chromeos.cellularSetup.mojom.EuiccRemote} */
+    /** @private {?ash.cellularSetup.mojom.EuiccRemote} */
     euicc_: null,
 
     /** @private {boolean} */
     hasFailedFetchingProfiles_: false,
 
-    /** @private {?chromeos.cellularSetup.mojom.ProfileInstallResult} */
+    /** @private {?ash.cellularSetup.mojom.ProfileInstallResult} */
     lastProfileInstallResult_: null,
 
     /**
@@ -210,8 +210,7 @@ cr.define('cellular_setup', function() {
     detached() {
       let resultCode = null;
 
-      const ProfileInstallResult =
-          chromeos.cellularSetup.mojom.ProfileInstallResult;
+      const ProfileInstallResult = ash.cellularSetup.mojom.ProfileInstallResult;
 
       switch (this.lastProfileInstallResult_) {
         case ProfileInstallResult.kSuccess:
@@ -289,7 +288,7 @@ cr.define('cellular_setup', function() {
       const requestPendingProfilesResponse =
           await euicc.requestPendingProfiles();
       if (requestPendingProfilesResponse.result ===
-          chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
+          ash.cellularSetup.mojom.ESimOperationResult.kFailure) {
         this.hasFailedFetchingProfiles_ = true;
         console.warn(
             'Error requesting pending profiles: ',
@@ -316,35 +315,34 @@ cr.define('cellular_setup', function() {
 
     /**
      * @private
-     * @param {{result: chromeos.cellularSetup.mojom.ProfileInstallResult}}
-     *     response
+     * @param {{result: ash.cellularSetup.mojom.ProfileInstallResult}} response
      */
     handleProfileInstallResponse_(response) {
       this.lastProfileInstallResult_ = response.result;
       if (response.result ===
-          chromeos.cellularSetup.mojom.ProfileInstallResult
+          ash.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode) {
         this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY;
         return;
       }
       this.showError_ = response.result !==
-          chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess;
+          ash.cellularSetup.mojom.ProfileInstallResult.kSuccess;
       if (response.result ===
-              chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure &&
+              ash.cellularSetup.mojom.ProfileInstallResult.kFailure &&
           this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING) {
         this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY_READY;
         return;
       }
       if (response.result ===
-          chromeos.cellularSetup.mojom.ProfileInstallResult
+          ash.cellularSetup.mojom.ProfileInstallResult
               .kErrorInvalidActivationCode) {
         this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY_READY;
         return;
       }
       if (response.result ===
-              chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess ||
+              ash.cellularSetup.mojom.ProfileInstallResult.kSuccess ||
           response.result ===
-              chromeos.cellularSetup.mojom.ProfileInstallResult.kFailure) {
+              ash.cellularSetup.mojom.ProfileInstallResult.kFailure) {
         this.state_ = ESimUiState.SETUP_FINISH;
       }
     },

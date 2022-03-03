@@ -17,7 +17,7 @@ cr.define('cellular_setup', function() {
   let isTesting = false;
 
   /**
-   * @param {?chromeos.cellularSetup.mojom.CellularSetupRemote}
+   * @param {?ash.cellularSetup.mojom.CellularSetupRemote}
    *        testCellularRemote A test cellular remote
    */
   /* #export */ function setCellularSetupRemoteForTesting(testCellularRemote) {
@@ -26,20 +26,20 @@ cr.define('cellular_setup', function() {
   }
 
   /**
-   * @returns {!chromeos.cellularSetup.mojom.CellularSetupRemote}
+   * @returns {!ash.cellularSetup.mojom.CellularSetupRemote}
    */
   /* #export */ function getCellularSetupRemote() {
     if (cellularRemote) {
       return cellularRemote;
     }
 
-    cellularRemote = chromeos.cellularSetup.mojom.CellularSetup.getRemote();
+    cellularRemote = ash.cellularSetup.mojom.CellularSetup.getRemote();
 
     return cellularRemote;
   }
 
   /**
-   * @param {?chromeos.cellularSetup.mojom.ESimManagerRemote}
+   * @param {?ash.cellularSetup.mojom.ESimManagerRemote}
    *        testESimManagerRemote A test eSimManager remote
    */
   /* #export */ function setESimManagerRemoteForTesting(testESimManagerRemote) {
@@ -48,33 +48,32 @@ cr.define('cellular_setup', function() {
   }
 
   /**
-   * @returns {!chromeos.cellularSetup.mojom.ESimManagerRemote}
+   * @returns {!ash.cellularSetup.mojom.ESimManagerRemote}
    */
   /* #export */ function getESimManagerRemote() {
     if (eSimManagerRemote) {
       return eSimManagerRemote;
     }
 
-    eSimManagerRemote = chromeos.cellularSetup.mojom.ESimManager.getRemote();
+    eSimManagerRemote = ash.cellularSetup.mojom.ESimManager.getRemote();
 
     return eSimManagerRemote;
   }
 
   /**
-   * @param {!chromeos.cellularSetup.mojom.ESimManagerObserverInterface}
-   *     observer
-   * @returns {?chromeos.cellularSetup.mojom.ESimManagerObserverReceiver}
+   * @param {!ash.cellularSetup.mojom.ESimManagerObserverInterface} observer
+   * @returns {?ash.cellularSetup.mojom.ESimManagerObserverReceiver}
    */
   /* #export */ function observeESimManager(observer) {
     if (isTesting) {
       getESimManagerRemote().addObserver(
-          /** @type {!chromeos.cellularSetup.mojom.ESimManagerObserverRemote} */
+          /** @type {!ash.cellularSetup.mojom.ESimManagerObserverRemote} */
           (observer));
       return null;
     }
 
     const receiver =
-        new chromeos.cellularSetup.mojom.ESimManagerObserverReceiver(observer);
+        new ash.cellularSetup.mojom.ESimManagerObserverReceiver(observer);
     getESimManagerRemote().addObserver(receiver.$.bindNewPipeAndPassRemote());
     return receiver;
   }

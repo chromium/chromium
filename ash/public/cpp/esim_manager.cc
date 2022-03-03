@@ -9,9 +9,8 @@
 namespace ash {
 
 void GetESimManager(
-    mojo::PendingReceiver<chromeos::cellular_setup::mojom::ESimManager>
-        receiver) {
-  chromeos::cellular_setup::BindToInProcessESimManager(std::move(receiver));
+    mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver) {
+  cellular_setup::BindToInProcessESimManager(std::move(receiver));
 }
 
 }  // namespace ash

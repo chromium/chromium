@@ -38,4 +38,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandler {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::NetworkActivationHandler;
+}
+
 #endif  // CHROMEOS_NETWORK_NETWORK_ACTIVATION_HANDLER_H_

@@ -21,7 +21,7 @@ Polymer({
   ],
 
   properties: {
-    /** @type {?chromeos.cellularSetup.mojom.ESimProfileRemote} */
+    /** @type {?ash.cellularSetup.mojom.ESimProfileRemote} */
     profile: {
       type: Object,
       value: null,
@@ -29,7 +29,7 @@ Polymer({
     },
 
     /**
-     * @type {?chromeos.cellularSetup.mojom.ESimProfileProperties}
+     * @type {?ash.cellularSetup.mojom.ESimProfileProperties}
      * @private
      */
     profileProperties_: {
@@ -69,8 +69,7 @@ Polymer({
   },
 
   /**
-   * @param {chromeos.cellularSetup.mojom.ESimProfileProperties}
-   *     profileProperties
+   * @param {ash.cellularSetup.mojom.ESimProfileProperties} profileProperties
    * @return {string}
    * @private
    */

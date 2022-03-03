@@ -43,4 +43,9 @@ HermesResponseStatus HermesResponseStatusFromErrorName(
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::HermesResponseStatus;
+}
+
 #endif  // CHROMEOS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_

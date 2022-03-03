@@ -34,7 +34,7 @@ cr.define('settings_reset_page', function() {
     /** @type {!settings.LifetimeBrowserProxy} */
     let lifetimeBrowserProxy = null;
 
-    /** @type {!chromeos.cellularSetup.mojom.ESimManagerRemote|undefined} */
+    /** @type {!ash.cellularSetup.mojom.ESimManagerRemote|undefined} */
     let eSimManagerRemote;
 
     setup(function() {
@@ -97,8 +97,7 @@ cr.define('settings_reset_page', function() {
       // Set the first profile's state to kActive.
       const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
       const profile = (await euicc.getProfileList()).profiles[0];
-      profile.properties.state =
-          chromeos.cellularSetup.mojom.ProfileState.kActive;
+      profile.properties.state = ash.cellularSetup.mojom.ProfileState.kActive;
 
       // Click the powerwash button.
       resetPage.$$('#powerwash').click();

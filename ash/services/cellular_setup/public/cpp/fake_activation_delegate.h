@@ -11,9 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // Fake mojom::ActivationDelegate implementation.
 class FakeActivationDelegate : public mojom::ActivationDelegate {
@@ -49,8 +47,6 @@ class FakeActivationDelegate : public mojom::ActivationDelegate {
   mojo::ReceiverSet<mojom::ActivationDelegate> receivers_;
 };
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_PUBLIC_CPP_FAKE_ACTIVATION_DELEGATE_H_

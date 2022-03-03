@@ -63,4 +63,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkActivationHandler
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::FakeNetworkActivationHandler;
+}
+
 #endif  // CHROMEOS_NETWORK_FAKE_NETWORK_ACTIVATION_HANDLER_H_

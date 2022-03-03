@@ -141,4 +141,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesProfileClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::HermesProfileClient;
+}
+
 #endif  // CHROMEOS_DBUS_HERMES_HERMES_PROFILE_CLIENT_H_

@@ -105,7 +105,7 @@ Polymer({
 
     /**
      * Dictionary mapping pending eSIM profile iccids to pending eSIM profiles.
-     * @type {!Map<string, chromeos.cellularSetup.mojom.ESimProfileRemote>}
+     * @type {!Map<string, ash.cellularSetup.mojom.ESimProfileRemote>}
      * @private
      */
     profilesMap_: {
@@ -166,7 +166,7 @@ Polymer({
 
     /**
      * Euicc object representing the active euicc_ module on the device
-     * @private {?chromeos.cellularSetup.mojom.EuiccRemote}
+     * @private {?ash.cellularSetup.mojom.EuiccRemote}
      */
     euicc_: {
       type: Object,
@@ -175,7 +175,7 @@ Polymer({
 
     /**
      * The current eSIM profile being installed.
-     * @type {?chromeos.cellularSetup.mojom.ESimProfileRemote}
+     * @type {?ash.cellularSetup.mojom.ESimProfileRemote}
      * @private
      */
     installingESimProfile_: {
@@ -185,7 +185,7 @@ Polymer({
 
     /**
      * The error code returned when eSIM profile install attempt was made.
-     * @type {?chromeos.cellularSetup.mojom.ProfileInstallResult}
+     * @type {?ash.cellularSetup.mojom.ProfileInstallResult}
      * @private
      */
     eSimProfileInstallError_: {
@@ -247,7 +247,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.cellularSetup.mojom.EuiccRemote} euicc
+   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
    * ESimManagerListenerBehavior override
    */
   onProfileListChanged(euicc) {
@@ -262,7 +262,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.cellularSetup.mojom.ESimProfileRemote} profile
+   * @param {!ash.cellularSetup.mojom.ESimProfileRemote} profile
    * ESimManagerListenerBehavior override
    */
   onProfileChanged(profile) {
@@ -275,7 +275,7 @@ Polymer({
         return;
       }
       eSimPendingProfileItem.customItemType = response.properties.state ===
-              chromeos.cellularSetup.mojom.ProfileState.kInstalling ?
+              ash.cellularSetup.mojom.ProfileState.kInstalling ?
           NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
           NetworkList.CustomItemType.ESIM_PENDING_PROFILE;
     });
@@ -318,7 +318,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.cellularSetup.mojom.EuiccRemote} euicc
+   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
    * @private
    */
   fetchESimPendingProfileListForEuicc_(euicc) {
@@ -327,7 +327,7 @@ Polymer({
   },
 
   /**
-   * @param {Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>} profiles
+   * @param {Array<!ash.cellularSetup.mojom.ESimProfileRemote>} profiles
    * @private
    */
   processESimPendingProfiles_(profiles) {
@@ -340,7 +340,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.cellularSetup.mojom.ESimProfileRemote} profile
+   * @param {!ash.cellularSetup.mojom.ESimProfileRemote} profile
    * @return {!Promise<NetworkList.CustomItemState>}
    * @private
    */
@@ -352,13 +352,13 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.cellularSetup.mojom.ESimProfileProperties} properties
+   * @param {!ash.cellularSetup.mojom.ESimProfileProperties} properties
    * @return {NetworkList.CustomItemState}
    */
   createESimPendingProfileItem_(properties) {
     return {
       customItemType: properties.state ===
-              chromeos.cellularSetup.mojom.ProfileState.kInstalling ?
+              ash.cellularSetup.mojom.ProfileState.kInstalling ?
           NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
           NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
       customItemName: String.fromCharCode(...properties.name.data),
@@ -488,7 +488,7 @@ Polymer({
     this.installingESimProfile_ = this.profilesMap_.get(event.detail.iccid);
     this.installingESimProfile_.installProfile('').then((response) => {
       if (response.result ===
-          chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess) {
+          ash.cellularSetup.mojom.ProfileInstallResult.kSuccess) {
         this.eSimProfileInstallError_ = null;
         this.installingESimProfile_ = null;
       } else {

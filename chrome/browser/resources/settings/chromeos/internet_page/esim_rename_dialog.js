@@ -78,7 +78,7 @@ Polymer({
     },
   },
 
-  /** @private {?chromeos.cellularSetup.mojom.ESimProfileRemote} */
+  /** @private {?ash.cellularSetup.mojom.ESimProfileRemote} */
   esimProfileRemote_: null,
 
   /** @override */
@@ -138,12 +138,12 @@ Polymer({
   },
 
   /**
-   * @param {chromeos.cellularSetup.mojom.ESimOperationResult} result
+   * @param {ash.cellularSetup.mojom.ESimOperationResult} result
    * @private
    */
   handleSetProfileNicknameResponse_(result) {
     this.isRenameInProgress_ = false;
-    if (result === chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
+    if (result === ash.cellularSetup.mojom.ESimOperationResult.kFailure) {
       this.fire(
           'show-error-toast', this.i18n('eSimRenameProfileDialogErrorToast'));
     }

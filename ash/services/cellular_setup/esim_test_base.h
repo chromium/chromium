@@ -8,23 +8,30 @@
 #include "ash/services/cellular_setup/public/cpp/esim_manager_test_observer.h"
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "base/test/task_environment.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/cellular_inhibitor.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/cellular_connection_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/cellular_esim_installer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/cellular_esim_uninstall_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/fake_network_connection_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/test_cellular_esim_profile_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_configuration_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_device_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_profile_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_state_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-class CellularConnectionHandler;
-class CellularESimInstaller;
-class CellularESimUninstallHandler;
-class CellularInhibitor;
-class FakeNetworkConnectionHandler;
-class NetworkConfigurationHandler;
-class NetworkDeviceHandler;
-class NetworkProfileHandler;
-class NetworkStateHandler;
-class TestCellularESimProfileHandler;
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 class ESimManager;
 
@@ -90,7 +97,6 @@ class ESimTestBase : public testing::Test {
   std::unique_ptr<ESimManagerTestObserver> observer_;
 };
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_ESIM_TEST_BASE_H_

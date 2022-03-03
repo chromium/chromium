@@ -9,9 +9,7 @@
 #include "ash/services/cellular_setup/public/cpp/fake_carrier_portal_handler.h"
 #include "base/callback_forward.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // Test OtaActivator implementation.
 class FakeOtaActivator : public OtaActivator {
@@ -36,8 +34,6 @@ class FakeOtaActivator : public OtaActivator {
   FakeCarrierPortalHandler fake_carrier_portal_handler_;
 };
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_FAKE_OTA_ACTIVATOR_H_

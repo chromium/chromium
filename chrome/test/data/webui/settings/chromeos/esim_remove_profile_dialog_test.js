@@ -115,7 +115,7 @@ suite('EsimRemoveProfileDialog', function() {
     let foundProfile = await getProfileForIccid(profiles, '1');
     assertTrue(!!foundProfile);
     foundProfile.setEsimOperationResultForTest(
-        chromeos.cellularSetup.mojom.ESimOperationResult.kFailure);
+        ash.cellularSetup.mojom.ESimOperationResult.kFailure);
 
     const showErrorToastPromise =
         test_util.eventToPromise('show-error-toast', esimRemoveProfileDialog);

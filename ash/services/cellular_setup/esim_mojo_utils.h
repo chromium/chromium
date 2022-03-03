@@ -10,8 +10,7 @@
 #include "chromeos/network/cellular_esim_profile.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // Returns the mojo ProfileInstallResult status corresponding to
 // HermesResponseStatus from D-Bus clients.
@@ -26,7 +25,6 @@ mojom::ProfileState ProfileStateToMojo(CellularESimProfile::State state);
 mojom::ESimOperationResult OperationResultFromStatus(
     HermesResponseStatus status);
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_ESIM_MOJO_UTILS_H_

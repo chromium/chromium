@@ -22,9 +22,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 namespace {
 
@@ -439,6 +437,4 @@ TEST_F(CellularSetupOtaActivatorImplTest, DelegateBecomesDisconnected) {
   EXPECT_TRUE(is_finished());
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

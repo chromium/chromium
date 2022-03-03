@@ -12,8 +12,7 @@
 namespace ash {
 
 ASH_PUBLIC_EXPORT void GetESimManager(
-    mojo::PendingReceiver<chromeos::cellular_setup::mojom::ESimManager>
-        receiver);
+    mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver);
 
 }  // namespace ash
 

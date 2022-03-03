@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.cellular_setup.mojom;
+module ash.cellular_setup.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 

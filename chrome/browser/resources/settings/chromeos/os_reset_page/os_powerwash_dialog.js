@@ -36,7 +36,7 @@ Polymer({
     },
 
     /**
-     * @type {!Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>}
+     * @type {!Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
      * @private
      */
     installedESimProfiles: {

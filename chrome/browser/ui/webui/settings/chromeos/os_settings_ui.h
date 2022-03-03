@@ -50,12 +50,13 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // Instantiates implementor of the mojom::CellularSetup mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<cellular_setup::mojom::CellularSetup> receiver);
+      mojo::PendingReceiver<ash::cellular_setup::mojom::CellularSetup>
+          receiver);
 
   // Instantiates implementor of the mojom::ESimManager mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver);
+      mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver);
 
   // Instantiates implementor of the mojom::CrosNetworkConfig mojo interface
   // passing the pending receiver that will be internally bound.

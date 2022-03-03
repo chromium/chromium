@@ -159,6 +159,7 @@ std::string TranslateShillTypeToONC(const std::string& type);
 namespace ash {
 using ::chromeos::CellTower;
 using ::chromeos::CellTowerVector;
+using ::chromeos::CellularSIMSlotInfo;
 using ::chromeos::WifiAccessPoint;
 using ::chromeos::WifiAccessPointVector;
 }  // namespace ash

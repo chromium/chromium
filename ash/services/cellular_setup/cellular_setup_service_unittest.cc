@@ -19,9 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 namespace {
 
@@ -223,6 +221,4 @@ TEST_F(CellularSetupServiceTest, StartActivation_ErrorDuringPayment) {
       fake_activation_delegate.get());
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

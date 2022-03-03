@@ -16,8 +16,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 namespace {
 
@@ -452,5 +451,4 @@ TEST_F(ESimProfileTest, CannotSetProfileNickNameAsGuest) {
   EXPECT_EQ(mojom::ESimOperationResult::kFailure, result);
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

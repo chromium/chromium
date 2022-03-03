@@ -14,7 +14,7 @@ Polymer({
 
   properties: {
     /**
-     * @type {Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>}
+     * @type {Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
      * @private
      */
     pendingProfiles: {
@@ -22,7 +22,7 @@ Polymer({
     },
 
     /**
-     * @type {?chromeos.cellularSetup.mojom.ESimProfileRemote}
+     * @type {?ash.cellularSetup.mojom.ESimProfileRemote}
      * @private
      */
     selectedProfile: {
@@ -40,7 +40,7 @@ Polymer({
   },
 
   /**
-   * @param {chromeos.cellularSetup.mojom.ESimProfileRemote} profile
+   * @param {ash.cellularSetup.mojom.ESimProfileRemote} profile
    * @private
    */
   isProfileSelected_(profile) {

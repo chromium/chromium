@@ -18,8 +18,8 @@
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
+
 namespace {
 
 // The Stork SM-DS Prod server used to fetch pending ESim profiles.
@@ -202,5 +202,4 @@ Euicc* ESimManager::GetEuiccFromPath(const dbus::ObjectPath& path) {
   return nullptr;
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

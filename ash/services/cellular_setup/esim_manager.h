@@ -11,24 +11,27 @@
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/cellular_connection_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/cellular_esim_installer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/cellular_esim_uninstall_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/cellular_inhibitor.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_connection_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_state_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace dbus {
 class ObjectPath;
-}  // namespace dbus
+}
 
-namespace chromeos {
-
-class CellularConnectionHandler;
-class CellularESimInstaller;
-class CellularESimUninstallHandler;
-class CellularInhibitor;
-class NetworkConnectionHandler;
-class NetworkStateHandler;
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 class Euicc;
 class ESimProfile;
@@ -132,7 +135,11 @@ class ESimManager : public mojom::ESimManager,
   base::WeakPtrFactory<ESimManager> weak_ptr_factory_{this};
 };
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::cellular_setup {
+using ::ash::cellular_setup::ESimManager;
+}
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_ESIM_MANAGER_H_

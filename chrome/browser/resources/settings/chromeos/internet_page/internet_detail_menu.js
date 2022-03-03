@@ -154,7 +154,7 @@ Polymer({
 
   /**
    * ESimManagerListenerBehavior override
-   * @param {!chromeos.cellularSetup.mojom.ESimProfileRemote} profile
+   * @param {!ash.cellularSetup.mojom.ESimProfileRemote} profile
    */
   onProfileChanged(profile) {
     this.setESimNetworkState_();

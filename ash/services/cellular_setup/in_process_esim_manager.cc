@@ -7,8 +7,7 @@
 #include "ash/services/cellular_setup/esim_manager.h"
 #include "base/no_destructor.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 void BindToInProcessESimManager(
     mojo::PendingReceiver<mojom::ESimManager> receiver) {
@@ -16,5 +15,4 @@ void BindToInProcessESimManager(
   instance->BindReceiver(std::move(receiver));
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

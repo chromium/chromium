@@ -156,7 +156,7 @@ cr.define('cellularSetup', function() {
       /**
        * Cellular metadata received via the onActivationStarted() callback. If
        * that callback has not occurred, this field is null.
-       * @private {?chromeos.cellularSetup.mojom.CellularMetadata}
+       * @private {?ash.cellularSetup.mojom.CellularMetadata}
        */
       cellularMetadata_: {
         type: Object,
@@ -182,13 +182,13 @@ cr.define('cellularSetup', function() {
 
     /**
      * Provides an interface to the CellularSetup Mojo service.
-     * @private {?chromeos.cellularSetup.mojom.CellularSetupRemote}
+     * @private {?ash.cellularSetup.mojom.CellularSetupRemote}
      */
     cellularSetupRemote_: null,
 
     /**
      * Delegate responsible for routing activation started/finished events.
-     * @private {?chromeos.cellularSetup.mojom.ActivationDelegateReceiver}
+     * @private {?ash.cellularSetup.mojom.ActivationDelegateReceiver}
      */
     activationDelegateReceiver_: null,
 
@@ -202,7 +202,7 @@ cr.define('cellularSetup', function() {
     /**
      * Handler used to communicate state updates back to the CellularSetup
      * service.
-     * @private {?chromeos.cellularSetup.mojom.CarrierPortalHandlerRemote}
+     * @private {?ash.cellularSetup.mojom.CarrierPortalHandlerRemote}
      */
     carrierPortalHandler_: null,
 
@@ -290,8 +290,8 @@ cr.define('cellularSetup', function() {
     },
 
     /**
-     * Overrides chromeos.cellularSetup.mojom.ActivationDelegateInterface.
-     * @param {!chromeos.cellularSetup.mojom.CellularMetadata} metadata
+     * Overrides ash.cellularSetup.mojom.ActivationDelegateInterface.
+     * @param {!ash.cellularSetup.mojom.CellularMetadata} metadata
      * @private
      */
     onActivationStarted(metadata) {
@@ -398,14 +398,14 @@ cr.define('cellularSetup', function() {
     },
 
     /**
-     * Overrides chromeos.cellularSetup.mojom.ActivationDelegateInterface.
-     * @param {!chromeos.cellularSetup.mojom.ActivationResult} result
+     * Overrides ash.cellularSetup.mojom.ActivationDelegateInterface.
+     * @param {!ash.cellularSetup.mojom.ActivationResult} result
      * @private
      */
     onActivationFinished(result) {
       this.closeActivationConnection_();
 
-      const ActivationResult = chromeos.cellularSetup.mojom.ActivationResult;
+      const ActivationResult = ash.cellularSetup.mojom.ActivationResult;
       switch (result) {
         case ActivationResult.kSuccessfullyStartedActivation:
           this.state_ = PSimUIState.ACTIVATION_SUCCESS;
@@ -520,9 +520,9 @@ cr.define('cellularSetup', function() {
     startActivation_() {
       assert(!this.activationDelegateReceiver_);
       this.activationDelegateReceiver_ =
-          new chromeos.cellularSetup.mojom.ActivationDelegateReceiver(
+          new ash.cellularSetup.mojom.ActivationDelegateReceiver(
               /**
-               * @type {!chromeos.cellularSetup.mojom.ActivationDelegateInterface}
+               * @type {!ash.cellularSetup.mojom.ActivationDelegateInterface}
                */
               (this));
 
@@ -531,7 +531,7 @@ cr.define('cellularSetup', function() {
               this.activationDelegateReceiver_.$.bindNewPipeAndPassRemote())
           .then(
               /**
-               * @param {!chromeos.cellularSetup.
+               * @param {!ash.cellularSetup.
                *             mojom.CellularSetup_StartActivation_ResponseParams}
                *                 params
                */
@@ -561,7 +561,7 @@ cr.define('cellularSetup', function() {
     onCarrierPortalLoaded_() {
       this.state_ = PSimUIState.WAITING_FOR_USER_PAYMENT;
       this.carrierPortalHandler_.onCarrierPortalStatusChange(
-          chromeos.cellularSetup.mojom.CarrierPortalStatus
+          ash.cellularSetup.mojom.CarrierPortalStatus
               .kPortalLoadedWithoutPaidUser);
     },
 

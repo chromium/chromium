@@ -19,9 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 namespace {
 
@@ -134,6 +132,4 @@ TEST_F(CellularSetupImplTest, StartActivation_MultipleAttempts) {
   CallStartActivation(fake_activation_delegate_2.get());
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

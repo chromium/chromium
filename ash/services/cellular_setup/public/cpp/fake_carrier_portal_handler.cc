@@ -4,9 +4,7 @@
 
 #include "ash/services/cellular_setup/public/cpp/fake_carrier_portal_handler.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 FakeCarrierPortalHandler::FakeCarrierPortalHandler() = default;
 
@@ -24,6 +22,4 @@ void FakeCarrierPortalHandler::OnCarrierPortalStatusChange(
   status_updates_.push_back(carrier_portal_status);
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

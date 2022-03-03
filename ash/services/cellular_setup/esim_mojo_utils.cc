@@ -6,8 +6,7 @@
 
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 mojom::ProfileInstallResult InstallResultFromStatus(
     HermesResponseStatus status) {
@@ -51,5 +50,4 @@ mojom::ESimOperationResult OperationResultFromStatus(
   }
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

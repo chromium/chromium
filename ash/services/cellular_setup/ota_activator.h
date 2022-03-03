@@ -10,9 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // Activates a cellular SIM using the OTA mechanism. This class makes a single
 // attempt at activation, then fires a callback on completion, regardless of
@@ -40,8 +38,6 @@ class OtaActivator : public mojom::CarrierPortalHandler {
   mojo::Receiver<mojom::CarrierPortalHandler> receiver_{this};
 };
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_OTA_ACTIVATOR_H_

@@ -6,9 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 OtaActivator::OtaActivator(base::OnceClosure on_finished_callback)
     : on_finished_callback_(std::move(on_finished_callback)) {}
@@ -27,6 +25,4 @@ void OtaActivator::InvokeOnFinishedCallback() {
   std::move(on_finished_callback_).Run();
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

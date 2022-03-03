@@ -29,8 +29,7 @@
 #include "components/user_manager/user_manager.h"
 #include "dbus/object_path.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 namespace {
 
@@ -473,5 +472,4 @@ bool ESimProfile::IsProfileManaged() {
   return false;
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

@@ -9,18 +9,16 @@
 #include "base/gtest_prod_util.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace dbus {
 class ObjectPath;
-}  // namespace dbus
+}
 
-namespace chromeos {
-
-class CellularESimProfile;
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 class ESimProfile;
 class ESimManager;
@@ -115,7 +113,6 @@ class Euicc : public mojom::Euicc {
   base::WeakPtrFactory<Euicc> weak_ptr_factory_{this};
 };
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_EUICC_H_

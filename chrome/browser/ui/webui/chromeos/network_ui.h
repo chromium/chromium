@@ -50,7 +50,7 @@ class NetworkUI : public ui::MojoWebUIController {
   // Instantiates implementor of the mojom::ESimManager mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver);
+      mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();

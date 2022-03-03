@@ -26,4 +26,9 @@ COMPONENT_EXPORT(SHILL_CLIENT) void Shutdown();
 }  // namespace shill_clients
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::shill_clients {
+using ::chromeos::shill_clients::InitializeFakes;
+}
+
 #endif  // CHROMEOS_DBUS_SHILL_SHILL_CLIENTS_H_

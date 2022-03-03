@@ -11,9 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // Fake mojom::CarrierPortalHandler implementation.
 class FakeCarrierPortalHandler : public mojom::CarrierPortalHandler {
@@ -40,8 +38,6 @@ class FakeCarrierPortalHandler : public mojom::CarrierPortalHandler {
   mojo::ReceiverSet<mojom::CarrierPortalHandler> receivers_;
 };
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_PUBLIC_CPP_FAKE_CARRIER_PORTAL_HANDLER_H_

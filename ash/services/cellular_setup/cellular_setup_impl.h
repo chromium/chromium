@@ -12,9 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 class OtaActivator;
 
@@ -50,8 +48,6 @@ class CellularSetupImpl : public CellularSetupBase {
   base::WeakPtrFactory<CellularSetupImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_CELLULAR_SETUP_IMPL_H_

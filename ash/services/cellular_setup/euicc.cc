@@ -29,8 +29,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
+
 namespace {
 
 // Delay before pending profile refresh callback is called. This ensures that
@@ -58,6 +58,7 @@ Euicc::RequestPendingProfilesCallback CreateTimedRequestPendingProfilesCallback(
       },
       std::move(callback), base::Time::Now());
 }
+
 }  // namespace
 
 // static
@@ -355,5 +356,4 @@ bool Euicc::RemoveUntrackedProfiles(
   return removed;
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

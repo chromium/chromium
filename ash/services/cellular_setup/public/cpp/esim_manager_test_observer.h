@@ -8,8 +8,7 @@
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // Fake observer for testing ESimManager.
 class ESimManagerTestObserver : public mojom::ESimManagerObserver {
@@ -61,7 +60,6 @@ class ESimManagerTestObserver : public mojom::ESimManagerObserver {
   mojo::Receiver<mojom::ESimManagerObserver> receiver_{this};
 };
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_PUBLIC_CPP_ESIM_MANAGER_TEST_OBSERVER_H_

@@ -9,14 +9,12 @@
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 COMPONENT_EXPORT(IN_PROCESS_ESIM_MANAGER)
 void BindToInProcessESimManager(
     mojo::PendingReceiver<mojom::ESimManager> receiver);
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_IN_PROCESS_ESIM_MANAGER_H_

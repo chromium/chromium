@@ -30,7 +30,7 @@ Polymer({
     /**
      * Metadata used to open carrier provisioning portal. Expected to start as
      * null, then change to a valid object.
-     * @type {?chromeos.cellularSetup.mojom.CellularMetadata}
+     * @type {?ash.cellularSetup.mojom.CellularMetadata}
      */
     cellularMetadata: {
       type: Object,

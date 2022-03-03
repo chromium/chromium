@@ -12,9 +12,7 @@
 #include "chromeos/network/network_handler.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // static
 void CellularSetupImpl::CreateAndBindToReciever(
@@ -55,6 +53,4 @@ void CellularSetupImpl::OnActivationAttemptFinished(size_t request_id) {
   ota_activator_map_.Remove(request_id);
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

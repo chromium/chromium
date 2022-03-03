@@ -716,7 +716,7 @@ void NetworkUI::BindInterface(
 }
 
 void NetworkUI::BindInterface(
-    mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver) {
+    mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver) {
   ash::GetESimManager(std::move(receiver));
 }
 

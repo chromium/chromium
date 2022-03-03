@@ -4,8 +4,7 @@
 
 #include "ash/services/cellular_setup/public/cpp/esim_manager_test_observer.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 ESimManagerTestObserver::ESimManagerTestObserver() = default;
 ESimManagerTestObserver::~ESimManagerTestObserver() = default;
@@ -57,5 +56,4 @@ ESimManagerTestObserver::PopLastChangedESimProfile() {
   return esim_profile;
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
