@@ -25,8 +25,4 @@ void ClientCertIdentityMac::AcquirePrivateKey(
       .Run(CreateSSLPrivateKeyForSecIdentity(certificate(), identity_.get()));
 }
 
-SecIdentityRef ClientCertIdentityMac::sec_identity_ref() const {
-  return identity_.get();
-}
-
 }  // namespace net

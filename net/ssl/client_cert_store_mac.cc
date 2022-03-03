@@ -45,6 +45,9 @@ namespace net {
 
 namespace {
 
+using ClientCertIdentityMacList =
+    std::vector<std::unique_ptr<ClientCertIdentityMac>>;
+
 // Gets the issuer for a given cert, starting with the cert itself and
 // including the intermediate and finally root certificates (if any).
 // This function calls SecTrust but doesn't actually pay attention to the trust
@@ -96,7 +99,7 @@ OSStatus CopyCertChain(SecCertificateRef cert_handle,
 // according to Keychain Services, rather than using |identity|'s intermediate
 // certificates. If it is, |*identity| is updated to include the intermediates.
 bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
-                          ClientCertIdentity* identity) {
+                          ClientCertIdentityMac* identity) {
   DCHECK(identity);
   DCHECK(identity->sec_identity_ref());
 
@@ -203,13 +206,14 @@ bool SupportsSSLClientAuth(SecCertificateRef cert) {
 // full certificate chains. If it is false, only the the certificates and their
 // intermediates (available via X509Certificate::intermediate_buffers())
 // will be considered.
-void GetClientCertsImpl(std::unique_ptr<ClientCertIdentity> preferred_identity,
-                        ClientCertIdentityList regular_identities,
-                        const SSLCertRequestInfo& request,
-                        bool query_keychain,
-                        ClientCertIdentityList* selected_identities) {
+void GetClientCertsImpl(
+    std::unique_ptr<ClientCertIdentityMac> preferred_identity,
+    ClientCertIdentityMacList regular_identities,
+    const SSLCertRequestInfo& request,
+    bool query_keychain,
+    ClientCertIdentityList* selected_identities) {
   scoped_refptr<X509Certificate> preferred_cert_orig;
-  ClientCertIdentityList preliminary_list(std::move(regular_identities));
+  ClientCertIdentityMacList preliminary_list = std::move(regular_identities);
   if (preferred_identity) {
     preferred_cert_orig = preferred_identity->certificate();
     preliminary_list.insert(preliminary_list.begin(),
@@ -218,7 +222,7 @@ void GetClientCertsImpl(std::unique_ptr<ClientCertIdentity> preferred_identity,
 
   selected_identities->clear();
   for (size_t i = 0; i < preliminary_list.size(); ++i) {
-    std::unique_ptr<ClientCertIdentity>& cert = preliminary_list[i];
+    std::unique_ptr<ClientCertIdentityMac>& cert = preliminary_list[i];
     if (cert->certificate()->HasExpired())
       continue;
 
@@ -262,8 +266,8 @@ void GetClientCertsImpl(std::unique_ptr<ClientCertIdentity> preferred_identity,
 // |sec_identity| matches the |preferred_sec_identity|.
 void AddIdentity(ScopedCFTypeRef<SecIdentityRef> sec_identity,
                  SecIdentityRef preferred_sec_identity,
-                 ClientCertIdentityList* regular_identities,
-                 std::unique_ptr<ClientCertIdentity>* preferred_identity) {
+                 ClientCertIdentityMacList* regular_identities,
+                 std::unique_ptr<ClientCertIdentityMac>* preferred_identity) {
   OSStatus err;
   ScopedCFTypeRef<SecCertificateRef> cert_handle;
   err = SecIdentityCopyCertificate(sec_identity.get(),
@@ -318,8 +322,8 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
   }
 
   // Now enumerate the identities in the available keychains.
-  std::unique_ptr<ClientCertIdentity> preferred_identity;
-  ClientCertIdentityList regular_identities;
+  std::unique_ptr<ClientCertIdentityMac> preferred_identity;
+  ClientCertIdentityMacList regular_identities;
 
   SecIdentitySearchRef search = NULL;
   OSStatus err;
@@ -404,7 +408,7 @@ void ClientCertStoreMac::GetClientCerts(const SSLCertRequestInfo& request,
 }
 
 bool ClientCertStoreMac::SelectClientCertsForTesting(
-    ClientCertIdentityList input_identities,
+    ClientCertIdentityMacList input_identities,
     const SSLCertRequestInfo& request,
     ClientCertIdentityList* selected_identities) {
   GetClientCertsImpl(NULL, std::move(input_identities), request, false,
@@ -413,8 +417,8 @@ bool ClientCertStoreMac::SelectClientCertsForTesting(
 }
 
 bool ClientCertStoreMac::SelectClientCertsGivenPreferredForTesting(
-    std::unique_ptr<ClientCertIdentity> preferred_identity,
-    ClientCertIdentityList regular_identities,
+    std::unique_ptr<ClientCertIdentityMac> preferred_identity,
+    ClientCertIdentityMacList regular_identities,
     const SSLCertRequestInfo& request,
     ClientCertIdentityList* selected_identities) {
   GetClientCertsImpl(std::move(preferred_identity),

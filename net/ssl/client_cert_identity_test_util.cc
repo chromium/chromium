@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "build/build_config.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/test_ssl_private_key.h"
 #include "net/test/cert_test_util.h"
@@ -77,15 +76,6 @@ void FakeClientCertIdentity::AcquirePrivateKey(
         private_key_callback) {
   std::move(private_key_callback).Run(key_);
 }
-
-#if BUILDFLAG(IS_APPLE)
-SecIdentityRef FakeClientCertIdentity::sec_identity_ref() const {
-  // Any tests that depend on having a real SecIdentityRef should use a real
-  // ClientCertIdentityMac.
-  NOTREACHED();
-  return nullptr;
-}
-#endif
 
 ClientCertIdentityList FakeClientCertIdentityListFromCertificateList(
     const CertificateList& certs) {

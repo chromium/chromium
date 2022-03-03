@@ -12,6 +12,8 @@
 
 namespace net {
 
+class ClientCertIdentityMac;
+
 class NET_EXPORT ClientCertStoreMac : public ClientCertStore {
  public:
   ClientCertStoreMac();
@@ -34,17 +36,18 @@ class NET_EXPORT ClientCertStoreMac : public ClientCertStore {
   // creating a list of certificates that otherwise would be extracted from the
   // system store and filtering it using the common logic (less adequate than
   // the approach used on Windows).
-  bool SelectClientCertsForTesting(ClientCertIdentityList input_identities,
-                                   const SSLCertRequestInfo& cert_request_info,
-                                   ClientCertIdentityList* selected_identities);
+  bool SelectClientCertsForTesting(
+      std::vector<std::unique_ptr<ClientCertIdentityMac>> input_identities,
+      const SSLCertRequestInfo& cert_request_info,
+      ClientCertIdentityList* selected_identities);
 
   // Testing hook specific to Mac, where the internal logic recognizes preferred
   // certificates for particular domains. If the preferred certificate is
   // present in the output list (i.e. it doesn't get filtered out), it should
   // always come first.
   bool SelectClientCertsGivenPreferredForTesting(
-      std::unique_ptr<ClientCertIdentity> preferred_identity,
-      ClientCertIdentityList regular_identities,
+      std::unique_ptr<ClientCertIdentityMac> preferred_identity,
+      std::vector<std::unique_ptr<ClientCertIdentityMac>> regular_identities,
       const SSLCertRequestInfo& request,
       ClientCertIdentityList* selected_identities);
 };

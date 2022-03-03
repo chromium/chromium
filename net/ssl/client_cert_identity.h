@@ -6,13 +6,8 @@
 #define NET_SSL_CLIENT_CERT_IDENTITY_H_
 
 #include "base/callback.h"
-#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
-
-#if BUILDFLAG(IS_APPLE)
-#include <Security/SecBase.h>
-#endif
 
 namespace base {
 class Time;
@@ -39,11 +34,6 @@ class NET_EXPORT ClientCertIdentity {
   virtual void AcquirePrivateKey(
       base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
           private_key_callback) = 0;
-
-#if BUILDFLAG(IS_APPLE)
-  // Returns the SecIdentityRef for this identity.
-  virtual SecIdentityRef sec_identity_ref() const = 0;
-#endif
 
   // Acquires the private key for |identity|, taking ownership of |identity| so
   // that the caller does not need to manage its lifetime. The other semantics

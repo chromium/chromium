@@ -6,11 +6,28 @@
 
 #include <memory>
 
+#include "net/ssl/client_cert_identity_mac.h"
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/ssl/client_cert_store_unittest-inl.h"
 #include "net/ssl/ssl_private_key.h"
 
 namespace net {
+
+std::vector<std::unique_ptr<ClientCertIdentityMac>>
+ClientCertIdentityMacListFromCertificateList(const CertificateList& certs) {
+  // This doesn't quite construct a real `ClientCertIdentityMac` the
+  // `SecIdentityRef` is null. This means `SelectClientCertsForTesting` must
+  // turn off the KeyChain query. If this becomes an issue, change
+  // client_cert_store_unittest-inl.h to pass in the key data and use
+  // `ScopedTestKeychain` with `ImportCertAndKeyToKeychain`.
+  std::vector<std::unique_ptr<ClientCertIdentityMac>> identities;
+  identities.reserve(certs.size());
+  for (const auto& cert : certs) {
+    identities.push_back(std::make_unique<ClientCertIdentityMac>(
+        cert, base::ScopedCFTypeRef<SecIdentityRef>()));
+  }
+  return identities;
+}
 
 class ClientCertStoreMacTestDelegate {
  public:
@@ -18,7 +35,7 @@ class ClientCertStoreMacTestDelegate {
                          const SSLCertRequestInfo& cert_request_info,
                          ClientCertIdentityList* selected_certs) {
     return store_.SelectClientCertsForTesting(
-        FakeClientCertIdentityListFromCertificateList(input_certs),
+        ClientCertIdentityMacListFromCertificateList(input_certs),
         cert_request_info, selected_certs);
   }
 
@@ -37,12 +54,12 @@ class ClientCertStoreMacTest : public ::testing::Test {
       const CertificateList& regular_certs,
       const SSLCertRequestInfo& request,
       ClientCertIdentityList* selected_certs) {
-    std::unique_ptr<ClientCertIdentity> preferred_identity(
-        std::make_unique<FakeClientCertIdentity>(preferred_cert, nullptr));
+    auto preferred_identity = std::make_unique<ClientCertIdentityMac>(
+        preferred_cert, base::ScopedCFTypeRef<SecIdentityRef>());
 
     return store_.SelectClientCertsGivenPreferredForTesting(
         std::move(preferred_identity),
-        FakeClientCertIdentityListFromCertificateList(regular_certs), request,
+        ClientCertIdentityMacListFromCertificateList(regular_certs), request,
         selected_certs);
   }
 
