@@ -327,10 +327,9 @@ AshNotificationView::AshNotificationView(
   message_center_observer_.Observe(message_center::MessageCenter::Get());
   // TODO(crbug/1232197): fix views and layout to match spec.
   // Instantiate view instances and define layout and view hierarchy.
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(notification.group_child() ? gfx::Insets()
-                                                    : kNotificationViewPadding);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      notification.group_child() ? gfx::Insets() : kNotificationViewPadding));
 
   auto content_row_layout = std::make_unique<views::FlexLayout>();
   content_row_layout->SetInteriorMargin(kMainRightViewChildPadding);

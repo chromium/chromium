@@ -26,7 +26,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
@@ -38,8 +38,8 @@ END_METADATA
 AshNotificationExpandButton::AshNotificationExpandButton(
     PressedCallback callback)
     : Button(std::move(callback)) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
 
   auto label = std::make_unique<views::Label>();
   label->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
@@ -59,7 +59,8 @@ AshNotificationExpandButton::AshNotificationExpandButton(
   image_ = AddChildView(std::move(image));
 
   views::InstallRoundRectHighlightPathGenerator(
-      this, gfx::Insets(), kNotificationExpandButtonCornerRadius);
+      this, kNotificationExpandButtonFocusInsets,
+      kNotificationExpandButtonCornerRadius);
 
   SetAccessibleName(l10n_util::GetStringUTF16(
       expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
