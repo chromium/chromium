@@ -505,7 +505,10 @@ public class ToolbarTablet extends ToolbarLayout
             MenuButtonCoordinator menuButtonCoordinator) {
         boolean isInTabSwitcherMode = mShowTabStack && inTabSwitcherMode;
         mIsInTabSwitcherMode = isInTabSwitcherMode;
-        if (isGridTabSwitcherEnabled()) {
+        if (isTabletGridTabSwitcherPolishEnabled()) {
+            // No impact to tablet toolbar.
+            return;
+        } else if (isGridTabSwitcherEnabled()) {
             setTabSwitcherModeWithAnimation(delayAnimation);
         } else {
             if (mIsInTabSwitcherMode) {
@@ -818,5 +821,10 @@ public class ToolbarTablet extends ToolbarLayout
 
     private boolean isGridTabSwitcherEnabled() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
+    }
+
+    private boolean isTabletGridTabSwitcherPolishEnabled() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, "enable_launch_polish", false);
     }
 }
