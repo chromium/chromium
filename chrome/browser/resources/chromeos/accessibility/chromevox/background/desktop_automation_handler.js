@@ -6,17 +6,6 @@
  * @fileoverview Handles automation from a desktop automation node.
  */
 
-goog.provide('DesktopAutomationHandler');
-
-goog.require('AutoScrollHandler');
-goog.require('AutomationObjectConstructorInstaller');
-goog.require('BaseAutomationHandler');
-goog.require('ChromeVoxState');
-goog.require('CommandHandlerInterface');
-goog.require('CustomAutomationEvent');
-goog.require('editing.TextEditHandler');
-
-goog.scope(function() {
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
@@ -24,7 +13,7 @@ const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
-DesktopAutomationHandler = class extends BaseAutomationHandler {
+export class DesktopAutomationHandler extends DesktopAutomationInterface {
   /**
    * @param {!AutomationNode} node
    */
@@ -429,6 +418,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
   /**
    * Sets whether document selections from actions should be ignored.
    * @param {boolean} val
+   * @override
    */
   ignoreDocumentSelectionFromAction(val) {
     this.shouldIgnoreDocumentSelectionFromAction_ = val;
@@ -861,15 +851,16 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    * Initializes global state for DesktopAutomationHandler.
    */
   static init() {
-    if (DesktopAutomationHandler.instance) {
-      throw new Error('DesktopAutomationHandler.instance already exists.');
+    if (DesktopAutomationInterface.instance) {
+      throw new Error('DesktopAutomationInterface.instance already exists.');
     }
 
     chrome.automation.getDesktop(function(desktop) {
-      DesktopAutomationHandler.instance = new DesktopAutomationHandler(desktop);
+      DesktopAutomationInterface.instance =
+          new DesktopAutomationHandler(desktop);
     });
   }
-};
+}
 
 /**
  * Time to wait until processing more value changed events.
@@ -896,16 +887,3 @@ DesktopAutomationHandler.LIVE_REGION_DELAY_MS = 100;
  * @const {number}
  */
 DesktopAutomationHandler.ATTRIBUTE_DELAY_MS = 1500;
-
-/**
- * Controls announcement of non-user-initiated events.
- * @type {boolean}
- */
-DesktopAutomationHandler.announceActions = false;
-
-/**
- * Global instance.
- * @type {DesktopAutomationHandler}
- */
-DesktopAutomationHandler.instance;
-});  // goog.scope

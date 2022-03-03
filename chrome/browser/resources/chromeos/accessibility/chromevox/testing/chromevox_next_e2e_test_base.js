@@ -26,7 +26,7 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     }
 
     // For tests, enable announcement of events we trigger via automation.
-    DesktopAutomationHandler.announceActions = true;
+    BaseAutomationHandler.announceActions = true;
 
     this.originalOutputContextValues_ = {};
     for (const role in OutputRoleInfo) {

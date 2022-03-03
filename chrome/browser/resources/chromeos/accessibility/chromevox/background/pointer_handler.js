@@ -187,9 +187,10 @@ export class PointerHandler extends BaseAutomationHandler {
     }
 
     Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
-    DesktopAutomationHandler.instance.onEventDefault(new CustomAutomationEvent(
-        EventType.HOVER, target,
-        {eventFromAction: chrome.automation.ActionType.HIT_TEST}));
+    DesktopAutomationInterface.instance.onEventDefault(
+        new CustomAutomationEvent(
+            EventType.HOVER, target,
+            {eventFromAction: chrome.automation.ActionType.HIT_TEST}));
   }
 }
 

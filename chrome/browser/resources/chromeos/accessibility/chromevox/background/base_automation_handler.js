@@ -128,10 +128,16 @@ BaseAutomationHandler = class {
    * @return {boolean}
    */
   static disallowEventFromAction(evt) {
-    return !DesktopAutomationHandler.announceActions &&
+    return !BaseAutomationHandler.announceActions &&
         evt.eventFrom === 'action' &&
         evt.eventFromAction !== ActionType.DO_DEFAULT &&
         evt.eventFromAction !== ActionType.SHOW_CONTEXT_MENU;
   }
 };
+
+/**
+ * Controls announcement of non-user-initiated events.
+ * @type {boolean}
+ */
+BaseAutomationHandler.announceActions = false;
 });  // goog.scope

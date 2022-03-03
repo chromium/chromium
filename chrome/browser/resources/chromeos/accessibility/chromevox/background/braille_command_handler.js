@@ -167,7 +167,7 @@ BrailleCommandHandler.onEditCommand_ = function(command) {
     return true;
   }
 
-  const textEditHandler = DesktopAutomationHandler.instance.textEditHandler;
+  const textEditHandler = DesktopAutomationInterface.instance.textEditHandler;
   if (!textEditHandler || current.start.node !== textEditHandler.node) {
     return true;
   }

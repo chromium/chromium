@@ -23,7 +23,7 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
 
   waitForEditableEvent() {
     return new Promise(resolve => {
-      DesktopAutomationHandler.instance.textEditHandler_.onEvent = (e) =>
+      DesktopAutomationInterface.instance.textEditHandler_.onEvent = (e) =>
           resolve(e);
     });
   }
@@ -1907,7 +1907,7 @@ TEST_F(
         // The initial real input is a simple non-rich text field.
         assertEquals(
             'AutomationEditableText',
-            DesktopAutomationHandler.instance.textEditHandler.editableText_
+            DesktopAutomationInterface.instance.textEditHandler.editableText_
                 .constructor.name,
             'Real text field was not a non-rich text.');
 

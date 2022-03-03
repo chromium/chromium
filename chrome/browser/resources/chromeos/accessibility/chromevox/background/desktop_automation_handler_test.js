@@ -16,9 +16,12 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxNextE2ETest {
 
     window.press = this.press;
 
+    await importModule(
+        'DesktopAutomationHandler',
+        '/chromevox/background/desktop_automation_handler.js');
     await new Promise(r => {
       chrome.automation.getDesktop(desktop => {
-        this.handler_ = new DesktopAutomationHandler(desktop);
+        this.handler_ = DesktopAutomationInterface.instance;
         r();
       });
     });

@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation from ChromeVox's current range.
  */
+import {DesktopAutomationHandler} from './desktop_automation_handler.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
