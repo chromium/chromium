@@ -33,20 +33,23 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
   complete_callback_ = std::move(complete_callback);
 
   VLOG(1) << "Executing EXTRACT_ARCHIVE IO task";
-  // TODO(crbug.com/953256) Generalize for multiple files.
-  if (source_urls_.size() == 1) {
-    if (!chromeos::FileSystemBackend::CanHandleURL(source_urls_[0])) {
-      progress_.state = State::kError;
-    } else {
-      base::FilePath source_file = source_urls_[0].path();
-      if (chromeos::FileSystemBackend::CanHandleURL(parent_folder_)) {
-        base::FilePath destination_directory = parent_folder_.path();
-        unzip::Unzip(unzip::LaunchUnzipper(), source_file,
-                     destination_directory,
-                     base::BindOnce(&ExtractIOTask::ZipExtractCallback,
-                                    weak_ptr_factory_.GetWeakPtr()));
-      } else {
+  for (const auto& source_url : source_urls_) {
+    base::FilePath source_file = source_url.path();
+    if (source_file.MatchesExtension(".zip")) {
+      if (!chromeos::FileSystemBackend::CanHandleURL(source_url)) {
         progress_.state = State::kError;
+        // TODO(crbug.com/953256) Report progress error.
+      } else {
+        // TODO(crbug.com/953256) Perform this check only once.
+        if (chromeos::FileSystemBackend::CanHandleURL(parent_folder_)) {
+          base::FilePath destination_directory = parent_folder_.path();
+          unzip::Unzip(unzip::LaunchUnzipper(), source_file,
+                       destination_directory,
+                       base::BindOnce(&ExtractIOTask::ZipExtractCallback,
+                                      weak_ptr_factory_.GetWeakPtr()));
+        } else {
+          progress_.state = State::kError;
+        }
       }
     }
   }
