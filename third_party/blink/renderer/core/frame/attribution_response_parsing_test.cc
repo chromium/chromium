@@ -47,7 +47,9 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSources) {
     ResponseParseStatus status;
     mojom::blink::AttributionAggregatableSourcesPtr value;
   } kTestCases[] = {
-      {"Empty header", "", ResponseParseStatus::kNotFound,
+      {"No header", AtomicString(), ResponseParseStatus::kNotFound,
+       mojom::blink::AttributionAggregatableSources::New()},
+      {"Empty header", "", ResponseParseStatus::kParseError,
        mojom::blink::AttributionAggregatableSources::New()},
       {"Invalid JSON", "{", ResponseParseStatus::kParseError,
        mojom::blink::AttributionAggregatableSources::New()},

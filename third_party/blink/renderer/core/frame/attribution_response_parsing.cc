@@ -121,7 +121,7 @@ bool ParseAttributionFilterData(
 
 ResponseParseResult<mojom::blink::AttributionAggregatableSources>
 ParseAttributionAggregatableSources(const AtomicString& json_string) {
-  if (json_string.IsEmpty()) {
+  if (json_string.IsNull()) {
     return ResponseParseResult<mojom::blink::AttributionAggregatableSources>(
         ResponseParseStatus::kNotFound);
   }

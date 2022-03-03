@@ -33,6 +33,7 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pair;
+using ::testing::SizeIs;
 
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
@@ -161,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     AttributionSrcBrowserTest,
-    AttributionSrcImg_SourceRegisteredWithAttributionAggregatableSources) {
+    AttributionSrcImg_SourceRegisteredWithAggregatableSources) {
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
@@ -485,6 +486,68 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Middle redirect source should be ignored.
   EXPECT_EQ(data_host->source_data().size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       AttributionSrcImg_InvalidAggregatableSourcesDropped) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  SetupCrossSiteRedirector(https_server.get());
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_source");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  MockAttributionHost host(web_contents());
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(host, RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  GURL register_url = https_server->GetURL("d.test", "/register_source");
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader(
+      "Attribution-Reporting-Register-Source",
+      R"({"source_event_id":"9", "destination":"https://advertiser.example"})");
+  http_response->AddCustomHeader(
+      "Attribution-Reporting-Register-Aggregatable-Source", "");
+  http_response->AddCustomHeader("Location",
+                                 "/register_aggregatable_source_headers.html");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  if (!data_host)
+    loop.Run();
+  data_host->WaitForSourceData(/*num_source_data=*/1);
+  const auto& source_data = data_host->source_data();
+
+  // Only the second source is registered.
+  EXPECT_EQ(source_data.size(), 1u);
+  EXPECT_EQ(source_data.back()->source_event_id, 5UL);
+  EXPECT_EQ(source_data.back()->destination,
+            url::Origin::Create(GURL("https://advertiser.example")));
+  EXPECT_THAT(source_data.back()->aggregatable_sources->sources, SizeIs(2));
 }
 
 class AttributionSrcInvalidFiltersBrowserTest

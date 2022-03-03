@@ -36,6 +36,22 @@
 
 namespace blink {
 
+namespace {
+
+bool IsResponseParseError(
+    attribution_response_parsing::ResponseParseStatus status) {
+  switch (status) {
+    case attribution_response_parsing::ResponseParseStatus::kSuccess:
+    case attribution_response_parsing::ResponseParseStatus::kNotFound:
+      return false;
+    case attribution_response_parsing::ResponseParseStatus::kParseError:
+    case attribution_response_parsing::ResponseParseStatus::kInvalidFormat:
+      return true;
+  }
+}
+
+}  // namespace
+
 AttributionSrcLoader::AttributionSrcLoader(LocalFrame* frame)
     : local_frame_(frame) {}
 
@@ -197,6 +213,9 @@ void AttributionSrcLoader::HandleSourceRegistration(
   auto aggregatable_sources =
       attribution_response_parsing::ParseAttributionAggregatableSources(
           aggregatable_sources_json);
+  if (IsResponseParseError(aggregatable_sources.status))
+    return;
+
   source_data->aggregatable_sources = std::move(aggregatable_sources.value);
 
   context.data_host->SourceDataAvailable(std::move(source_data));
