@@ -621,9 +621,10 @@ ChromeUserPopulation::PageLoadToken VerdictCacheManager::GetPageLoadToken(
   }
 
   ChromeUserPopulation::PageLoadToken token = page_load_token_map_[hostname];
-  return HasPageLoadTokenExpired(token.token_time_msec())
-             ? ChromeUserPopulation::PageLoadToken()
-             : token;
+  bool has_expired = HasPageLoadTokenExpired(token.token_time_msec());
+  base::UmaHistogramBoolean("SafeBrowsing.PageLoadToken.HasExpired",
+                            has_expired);
+  return has_expired ? ChromeUserPopulation::PageLoadToken() : token;
 }
 
 void VerdictCacheManager::ScheduleNextCleanUpAfterInterval(
