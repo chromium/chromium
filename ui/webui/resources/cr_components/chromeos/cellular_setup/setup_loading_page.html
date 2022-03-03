@@ -7,6 +7,7 @@
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
 
 <dom-module id="setup-loading-page">
   <template>
@@ -48,9 +49,14 @@
     </style>
     <base-page title="[[loadingTitle]]" message="[[loadingMessage]]">
       <div slot="page-body" id="pageBody" class="layout vertical center-center">
+        <iron-media-query query="(prefers-color-scheme: dark)"
+            query-matches="{{isDarkModeActive_}}">
+        </iron-media-query>
         <template is="dom-if" if="[[!isSimDetectError]]" restamp>
           <div id="animationContainer">
-            <cr-lottie id="spinner" animation-url="spinner.json" autoplay>
+            <cr-lottie id="spinner"
+                animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+                autoplay>
             </cr-lottie>
           </div>
         </template>

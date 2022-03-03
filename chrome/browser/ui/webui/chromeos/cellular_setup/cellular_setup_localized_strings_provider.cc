@@ -109,7 +109,9 @@ const std::vector<const NamedBoolean>& GetBooleanValues() {
 
 const std::vector<const NamedResourceId>& GetResourceIdValues() {
   static const base::NoDestructor<std::vector<const NamedResourceId>>
-      named_resource_ids({{"spinner.json", IDR_LOGIN_SPINNER_ANIMATION}});
+      named_resource_ids(
+          {{"spinner.json", IDR_LOGIN_SPINNER_ANIMATION},
+           {"spinner_dark.json", IDR_LOGIN_SPINNER_DARK_ANIMATION}});
   return *named_resource_ids;
 }
 
