@@ -201,13 +201,6 @@ crbug.com/v8/12227 external/wpt/wasm/jsapi/exception/toString.tentative.any.work
 
 # --- Skia roll test suppressions
 
-# TODO(michaelludwig) - crbug.com/1298194 remove after
-# https://skia-review.googlesource.com/c/skia/+/502059 lands and rolls into chromium
-crbug.com/1298194 virtual/oopr-canvas2d/fast/canvas/canvas-arc-circumference.html [ Failure Pass ]
-crbug.com/1298194 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-circumference.html [ Failure Pass ]
-crbug.com/1298194 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-connecting-line.html [ Failure Pass ]
-crbug.com/1298194 virtual/oopr-canvas2d/fast/canvas/canvas-zero-length-lineCap.html [ Failure Pass ]
-
 # --- END Skia roll test suppresions
 
 
