@@ -24,6 +24,7 @@
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/keyword_cluster_finalizer.h"
+#include "components/history_clusters/core/label_cluster_finalizer.h"
 #include "components/history_clusters/core/noisy_cluster_finalizer.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
@@ -446,6 +447,9 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     cluster_finalizers.push_back(std::make_unique<NoisyClusterFinalizer>());
   }
   cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>());
+  if (GetConfig().should_label_clusters) {
+    cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>());
+  }
 
   // Group visits into clusters.
   std::vector<history::Cluster> clusters =

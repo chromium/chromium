@@ -92,6 +92,7 @@ std::string GetDebugJSONForClusters(
   for (const auto& cluster : clusters) {
     base::DictionaryValue debug_cluster;
 
+    debug_cluster.SetStringKey("label", cluster.label.value_or(u""));
     base::ListValue debug_keywords;
     for (const auto& keyword : cluster.keywords) {
       debug_keywords.Append(keyword);

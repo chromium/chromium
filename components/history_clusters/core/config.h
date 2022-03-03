@@ -179,6 +179,9 @@ struct Config {
   // Whether to split the clusters when a search visit is encountered.
   bool split_clusters_at_search_visits = true;
 
+  // Whether to assign labels to clusters.
+  bool should_label_clusters = false;
+
   Config();
   Config(const Config& other);
   ~Config();

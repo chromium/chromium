@@ -97,6 +97,7 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
     config_.should_include_categories_in_keywords = true;
     config_.should_exclude_keywords_from_noisy_visits = false;
     config_.split_clusters_at_search_visits = false;
+    config_.should_label_clusters = false;
     SetConfigForTesting(config_);
   }
 
@@ -191,6 +192,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
               UnorderedElementsAre(std::u16string(u"google-category"),
                                    std::u16string(u"com"),
                                    std::u16string(u"google-entity")));
+  EXPECT_FALSE(result_clusters[0].label.has_value());
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 2, 1);
   histogram_tester.ExpectUniqueSample(

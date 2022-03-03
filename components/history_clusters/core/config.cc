@@ -191,6 +191,10 @@ Config::Config() {
   split_clusters_at_search_visits = GetFieldTrialParamByFeatureAsBool(
       features::kOnDeviceClustering, "split_clusters_at_search_visits",
       split_clusters_at_search_visits);
+
+  should_label_clusters = GetFieldTrialParamByFeatureAsBool(
+      features::kOnDeviceClustering, "should_label_clusters",
+      should_label_clusters);
 }
 
 Config::Config(const Config& other) = default;
