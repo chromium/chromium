@@ -380,7 +380,10 @@
       'mac-upload-perfetto': 'release_bot_perfetto_zlib',
       'Win ASan Release Media (reclient shadow)': 'asan_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient',
       'Win ASan Release (reclient shadow)': 'asan_fuzzer_v8_heap_release_bot_reclient',
+      'Win x64 Builder (dbg) (reclient shadow)': 'gpu_tests_debug_bot_reclient',
       'win-annotator-rel': 'release_bot',
+      'win-archive-rel (reclient shadow)': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
+      'win-archive-dbg (reclient shadow)': 'debug_bot_reclient',
       'win-celab-builder-rel': 'release_bot_minimal_symbols',
       'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86',
       'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
@@ -3083,6 +3086,10 @@
 
     'release_bot_minimal_symbols_enable_archive_compression': [
       'release_bot', 'minimal_symbols', 'enable_archive_compression'
+    ],
+
+    'release_bot_minimal_symbols_enable_archive_compression_reclient': [
+      'release_bot_reclient', 'minimal_symbols', 'enable_archive_compression'
     ],
 
     'release_bot_x86_minimal_symbols_enable_archive_compression': [

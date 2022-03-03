@@ -730,6 +730,46 @@ ci.builder(
 )
 
 ci.builder(
+    name = "Win x64 Builder (dbg) (reclient shadow)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|builder",
+        short_name = "64",
+    ),
+    cores = 32,
+    os = os.WINDOWS_ANY,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.builder(
+    name = "win-archive-dbg (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "win|dbg",
+        short_name = "64",
+    ),
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.builder(
+    name = "win-archive-rel (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "win|rel",
+        short_name = "64",
+    ),
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
+ci.builder(
     name = "Win x64 Builder (reclient)",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
