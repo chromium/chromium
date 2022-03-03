@@ -185,7 +185,7 @@ std::string VerifyProcTypeToName(
       return "CertVerifyProcBuiltinChromeRoots";
   }
 
-  return nullptr;
+  return "";
 }
 
 scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
