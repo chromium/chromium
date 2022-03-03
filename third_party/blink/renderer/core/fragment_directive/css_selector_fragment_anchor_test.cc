@@ -323,7 +323,7 @@ TEST_F(CssSelectorFragmentAnchorTest, ParsedCorrectlyButElementNotFound) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  EXPECT_EQ(nullptr, *GetDocument().CssTarget());
+  EXPECT_EQ(nullptr, GetDocument().CssTarget());
   EXPECT_EQ(nullptr, GetDocument().View()->GetFragmentAnchor());
 }
 
@@ -379,7 +379,7 @@ TEST_F(CssSelectorFragmentAnchorTest, ValuePartHasCommaButIsNotEncoded) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  EXPECT_EQ(nullptr, *GetDocument().CssTarget());
+  EXPECT_EQ(nullptr, GetDocument().CssTarget());
   EXPECT_EQ(nullptr, GetDocument().View()->GetFragmentAnchor());
 }
 
