@@ -31,6 +31,25 @@
 #endif
 
 namespace gfx {
+
+void FontDiagnostic(const char* format, ...) {
+  static bool enabled = getenv("FONT_DIAGNOSTICS");
+  if (!enabled) {
+    return;
+  }
+
+  char buf[1024];
+
+  va_list ap;
+  va_start(ap, format);
+  vsnprintf(buf, sizeof(buf), format, ap);
+  va_end(ap);
+
+  buf[sizeof(buf) - 1] = 0;
+
+  fprintf(stderr, "[FontDiagnostic %d] %s\n", getpid(), buf);
+}
+
 namespace {
 
 // The font family name which is used when a user's application font for
@@ -58,6 +77,8 @@ sk_sp<SkTypeface> CreateSkTypeface(bool italic,
   DCHECK(family);
   TRACE_EVENT0("fonts", "gfx::CreateSkTypeface");
 
+  FontDiagnostic("CreateSkTypeface Start");
+
   const int font_weight = (weight == Font::Weight::INVALID)
                               ? static_cast<int>(Font::Weight::NORMAL)
                               : static_cast<int>(weight);
@@ -69,6 +90,7 @@ sk_sp<SkTypeface> CreateSkTypeface(bool italic,
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("fonts"), "SkTypeface::MakeFromName",
                  "family", *family);
     typeface = SkTypeface::MakeFromName(family->c_str(), sk_style);
+    FontDiagnostic("CreateSkTypeface HaveTypeFace #1 %d", !!typeface);
   }
   if (!typeface) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("fonts"), "SkTypeface::MakeFromName",
@@ -77,6 +99,7 @@ sk_sp<SkTypeface> CreateSkTypeface(bool italic,
     // scalable font.
     typeface = sk_sp<SkTypeface>(
         SkTypeface::MakeFromName(kFallbackFontFamilyName, sk_style));
+    FontDiagnostic("CreateSkTypeface HaveTypeFace #2 %d", !!typeface);
     if (!typeface) {
       *out_success = false;
       return nullptr;
@@ -146,6 +169,8 @@ bool PlatformFontSkia::InitDefaultFont() {
   if (g_default_font.Get())
     return true;
 
+  FontDiagnostic("PlatformFontSkia::InitDefaultFont Start");
+
   bool success = false;
   std::string family = kFallbackFontFamilyName;
   int size_pixels = PlatformFont::kDefaultBaseFontSize;
@@ -168,6 +193,7 @@ bool PlatformFontSkia::InitDefaultFont() {
   // On Linux, SkiaFontDelegate is used to query the native toolkit (e.g.
   // GTK+) for the default UI font.
   const SkiaFontDelegate* delegate = SkiaFontDelegate::instance();
+  FontDiagnostic("PlatformFontSkia::InitDefaultFont HasDelegate %p", delegate);
   if (delegate) {
     delegate->GetDefaultFontDescription(&family, &size_pixels, &style, &weight,
                                         &params);
@@ -193,8 +219,11 @@ bool PlatformFontSkia::InitDefaultFont() {
 
   sk_sp<SkTypeface> typeface =
       CreateSkTypeface(style & Font::ITALIC, weight, &family, &success);
-  if (!success)
+  if (!success) {
+    FontDiagnostic("PlatformFontSkia::InitDefaultFont CreateSkTypeface failed");
     return false;
+  }
+  FontDiagnostic("PlatformFontSkia::InitDefaultFont CreateSkTypeface succeeded");
   g_default_font.Get() = new PlatformFontSkia(
       std::move(typeface), family, size_pixels, style, weight, params);
   return true;
