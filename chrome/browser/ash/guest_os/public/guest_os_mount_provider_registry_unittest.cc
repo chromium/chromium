@@ -43,14 +43,14 @@ TEST_F(GuestOsMountProviderRegistryTest, TestGetting) {
   auto provider2 = std::make_unique<MockProvider>();
   auto* p2 = provider2.get();
   GuestOsMountProviderRegistry registry;
-  registry.Register(std::move(provider1));
-  registry.Register(std::move(provider2));
+  auto id1 = registry.Register(std::move(provider1));
+  auto id2 = registry.Register(std::move(provider2));
 
   std::vector<Id> expected = std::vector<Id>{0, 1};
   ASSERT_EQ(registry.List(), expected);
 
-  ASSERT_EQ(p1, registry.Get(0));
-  ASSERT_EQ(p2, registry.Get(1));
+  ASSERT_EQ(p1, registry.Get(id1));
+  ASSERT_EQ(p2, registry.Get(id2));
 }
 
 // Test that we can register, list and get providers

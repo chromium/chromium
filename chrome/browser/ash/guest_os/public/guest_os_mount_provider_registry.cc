@@ -35,15 +35,17 @@ GuestOsMountProvider* GuestOsMountProviderRegistry::Get(Id id) const {
   return pos->second.get();
 }
 
-void GuestOsMountProviderRegistry::Register(
+GuestOsMountProviderRegistry::Id GuestOsMountProviderRegistry::Register(
     std::unique_ptr<GuestOsMountProvider> provider) {
-  // We use the rang 0->INT_MAX because these IDs can get serialised into
+  // We use the range 0->INT_MAX because these IDs can get serialised into
   // base::Value, and that's the range they support.
   CHECK(next_id_ < INT_MAX);
-  providers_[next_id_++] = std::move(provider);
+  Id id = next_id_++;
+  providers_[id] = std::move(provider);
   for (auto& observer : observers_) {
-    observer.OnRegistered(next_id_ - 1, provider.get());
+    observer.OnRegistered(id, provider.get());
   }
+  return id;
 }
 
 std::unique_ptr<GuestOsMountProvider> GuestOsMountProviderRegistry::Unregister(

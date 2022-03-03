@@ -179,6 +179,12 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
                  const base::DictionaryValue& value,
                  std::string* output);
 
+  // Checks if the command is a GuestOs one. If so, handles it and returns
+  // true, otherwise it returns false.
+  bool HandleGuestOsCommands(const std::string& name,
+                             const base::DictionaryValue& value,
+                             std::string* output);
+
   // Called during setup if needed, to create a drive integration service for
   // the given |profile|. Caller owns the return result.
   drive::DriveIntegrationService* CreateDriveIntegrationService(

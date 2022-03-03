@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ENTRIES, RootPath} from '../test_util.js';
+import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -12,6 +12,12 @@ import {IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './backgroun
  * files app integration is disabled.
  */
 testcase.notListedWithoutFlag = async () => {
+  // Prepopulate the list with a bunch of guests.
+  const names = ['Electra', 'Etcetera', 'Jemima'];
+  for (const name of names) {
+    await sendTestMessage({name: 'registerMountableGuest', displayName: name});
+  }
+
   // Open the files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -25,14 +31,19 @@ testcase.notListedWithoutFlag = async () => {
  * Tests that Guest OS entries show up in the sidebar at files app launch.
  */
 testcase.fakesListed = async () => {
+  // Prepopulate the list with a bunch of guests.
+  const names = ['Electra', 'Etcetera', 'Jemima'];
+  for (const name of names) {
+    await sendTestMessage({name: 'registerMountableGuest', displayName: name});
+  }
+
   // Open the files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
-  // Browsertest base registers two mock Guest OSs, check that they're both
-  // listed.
+  // Check that our guests are listed.
   const query = '#directory-tree [root-type-icon=guest_os]';
-  await remoteCall.waitForElementsCount(appId, [query], 2);
+  await remoteCall.waitForElementsCount(appId, [query], names.length);
 };
 
 /**
@@ -42,21 +53,23 @@ testcase.fakesListed = async () => {
  * Need to fix that, then update this test to check for the expected error.
  */
 testcase.mountGuestError = async () => {
+  const guestName = 'Jellylorum';
+  // Start off with one guest.
+  const id = await sendTestMessage(
+      {name: 'registerMountableGuest', displayName: guestName});
   // Open the files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
-  // Browsertest base registers some mock Guest OSs, wait for one to appear and
-  // click it.
+  // Wait for our guest to appear and click it.
   const query = '#directory-tree [root-type-icon=guest_os]';
   await remoteCall.waitAndClickElement(appId, query);
 
-  // Check that the Guest is selected. Guests are listed alphabetically so
-  // Electra should be first.
+  // Check that the Guest is selected.
   // TODO(crbug/1293229): It looks like scan errors are no longer surfaced in
   // the UI, I remember they used to be? Need to figure out surfacing errors and
   // then we check that instead.
-  await remoteCall.waitForElement(appId, '#breadcrumbs[path=Electra]');
+  await remoteCall.waitForElement(appId, `#breadcrumbs[path=${guestName}]`);
 
   // We expect there to be an error, from the mount failure.
   return IGNORE_APP_ERRORS;

@@ -44,8 +44,9 @@ class GuestOsMountProviderRegistry {
   GuestOsMountProvider* Get(Id id) const;
 
   // Registers a new provider with the registry. The registry takes ownership of
-  // the provider, holding on to it until it's unregistered.
-  void Register(std::unique_ptr<GuestOsMountProvider> provider);
+  // the provider, holding on to it until it's unregistered. Returns the id of
+  // the newly-registered provider.
+  Id Register(std::unique_ptr<GuestOsMountProvider> provider);
 
   // Removes a provider from the registry, returning the provider. The specified
   // provider must be in the registry.
