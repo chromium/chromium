@@ -25,6 +25,9 @@ NSString* const kBubbleViewCloseButtonIdentifier =
 // Accessibility identifier for the title label.
 NSString* const kBubbleViewTitleLabelIdentifier =
     @"BubbleViewTitleLabelIdentifier";
+// Accessibility identifier for the image view.
+NSString* const kBubbleViewImageViewIdentifier =
+    @"BubbleViewImageViewIdentifier";
 
 namespace {
 // The color of the bubble (both circular background and arrow).
@@ -34,7 +37,7 @@ UIColor* BubbleColor() {
 
 // The corner radius of the bubble's background, which causes the ends of the
 // badge to be circular.
-const CGFloat kBubbleCornerRadius = 13.0f;
+const CGFloat kBubbleCornerRadius = 15.0f;
 // The maximum label width preserves readability, ensuring that long labels do
 // not span across wide screens.
 const CGFloat kMaxLabelWidth = 359.0f;
@@ -69,6 +72,16 @@ const CGFloat kCloseButtonSize = 48.0f;
 // The padding for the top and trailing edges of the close button.
 const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
 
+// Margin between the imageView its leading and trailing sides.
+const CGFloat kImageViewLeadingMargin = 16.0f;
+const CGFloat kImageViewTrailingMargin = 12.0f;
+// Height and Width of imageView.
+const CGFloat kImageViewSize = 60.0f;
+// Alpha of imageView background.
+const CGFloat kImageViewAlpha = 0.3f;
+// Corner radius of imageView.
+const CGFloat kImageViewCornerRadius = 13.0f;
+
 }  // namespace
 
 @interface BubbleView ()
@@ -82,6 +95,8 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
 @property(nonatomic, strong, readonly) UIView* arrow;
 // Optional close button displayed at the trailing top corner of the bubble.
 @property(nonatomic, strong, readonly) UIButton* closeButton;
+// Optional image displayed at the leading edge of the bubble.
+@property(nonatomic, strong) UIImageView* imageView;
 // Triangular shape, the backing layer for the arrow.
 @property(nonatomic, weak) CAShapeLayer* arrowLayer;
 @property(nonatomic, assign, readonly) BubbleArrowDirection direction;
@@ -135,6 +150,15 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
 - (void)setTextAlignment:(NSTextAlignment)textAlignment {
   [self.label setTextAlignment:textAlignment];
   [self.titleLabel setTextAlignment:textAlignment];
+}
+
+- (void)setImage:(UIImage*)image {
+  if (image) {
+    self.imageView = [BubbleView imageViewWithImage:image];
+  } else {
+    self.imageView = nil;
+  }
+  _image = image;
 }
 
 #pragma mark - Private property accessors
@@ -281,6 +305,19 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
   return label;
 }
 
+// Returns a image view used for the BubbleViews's imageView.
++ (UIImageView*)imageViewWithImage:(UIImage*)image {
+  UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
+  [imageView setBackgroundColor:UIColor.blackColor];
+  [imageView setAlpha:kImageViewAlpha];
+  [imageView.layer setCornerRadius:kImageViewCornerRadius];
+  [imageView.layer setMasksToBounds:YES];
+  [imageView setContentMode:UIViewContentModeCenter];
+  [imageView setAccessibilityIdentifier:kBubbleViewImageViewIdentifier];
+  imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  return imageView;
+}
+
 #pragma mark - Private instance methods
 
 // Handles taps on the close button.
@@ -299,6 +336,8 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
   [self.layer setShadowOpacity:kShadowOpacity];
 }
 
+#pragma mark - View's constraints
+
 // Activate Autolayout constraints to properly position the bubble's subviews.
 - (void)activateConstraints {
   // Add constraints that do not depend on the bubble's direction or alignment.
@@ -316,6 +355,10 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
   if (self.titleLabel) {
     [constraints addObjectsFromArray:[self titleLabelConstraints]];
   }
+  // Add constraints for image view.
+  if (self.imageView) {
+    [constraints addObjectsFromArray:[self imageViewConstraints]];
+  }
   [NSLayoutConstraint activateConstraints:constraints];
 }
 
@@ -324,6 +367,11 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
 - (NSArray<NSLayoutConstraint*>*)generalConstraints {
   UIView* background = self.background;
   UIView* label = self.label;
+  // Ensure that the label is aligned to the top of the background.
+  NSLayoutConstraint* alignLabelToTop =
+      [label.topAnchor constraintEqualToAnchor:background.topAnchor
+                                      constant:kBubbleVerticalPadding];
+  alignLabelToTop.priority = UILayoutPriorityDefaultHigh;
   NSArray<NSLayoutConstraint*>* constraints = @[
     // Center the background view on the bubble view.
     [background.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
@@ -347,6 +395,7 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
     [background.trailingAnchor
         constraintGreaterThanOrEqualToAnchor:label.trailingAnchor
                                     constant:kBubbleHorizontalPadding],
+    alignLabelToTop,
     // Enforce the arrow's size, scaling by |kArrowScaleFactor| to prevent gaps
     // between the arrow and the background view.
     [self.arrow.widthAnchor constraintEqualToConstant:kArrowSize.width],
@@ -381,6 +430,26 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
     [titleLabel.bottomAnchor constraintEqualToAnchor:label.topAnchor],
     [titleLabel.leadingAnchor constraintEqualToAnchor:label.leadingAnchor],
     [titleLabel.trailingAnchor constraintEqualToAnchor:label.trailingAnchor],
+  ];
+  return constraints;
+}
+
+// Returns the constraint for the image view.
+- (NSArray<NSLayoutConstraint*>*)imageViewConstraints {
+  UIView* imageView = self.imageView;
+  UIView* background = self.background;
+  NSArray<NSLayoutConstraint*>* constraints = @[
+    [imageView.widthAnchor constraintEqualToConstant:kImageViewSize],
+    [imageView.heightAnchor constraintEqualToConstant:kImageViewSize],
+    [imageView.topAnchor constraintEqualToAnchor:background.topAnchor
+                                        constant:kBubbleVerticalPadding],
+    [background.bottomAnchor
+        constraintGreaterThanOrEqualToAnchor:imageView.bottomAnchor
+                                    constant:kBubbleVerticalPadding],
+    [imageView.leadingAnchor constraintEqualToAnchor:background.leadingAnchor
+                                            constant:kImageViewLeadingMargin],
+    [self.label.leadingAnchor constraintEqualToAnchor:imageView.trailingAnchor
+                                             constant:kImageViewTrailingMargin],
   ];
   return constraints;
 }
@@ -465,6 +534,9 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
     if (self.titleLabel) {
       [self addSubview:self.titleLabel];
     }
+    if (self.imageView) {
+      [self addSubview:self.imageView];
+    }
     // Set |needsAddSubviews| to NO to ensure that the subviews are only added
     // to the view hierarchy once.
     self.needsAddSubviews = NO;
@@ -503,10 +575,17 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
 - (CGSize)sizeThatFits:(CGSize)size {
   // The combined horizontal inset distance of the label and title with respect
   // to the bubble.
-  CGFloat textHorizontalInset = kBubbleMargin * 2 + kBubbleHorizontalPadding;
+  CGFloat textHorizontalInset = kBubbleMargin * 2;
   // Add close button size, which is on the trailing edge of the labels.
   if (self.showsCloseButton) {
     textHorizontalInset += MAX(kCloseButtonSize, kBubbleHorizontalPadding);
+  } else {
+    textHorizontalInset += kBubbleHorizontalPadding;
+  }
+  // Add image view size, which is on the leading edge of the labels.
+  if (self.imageView) {
+    textHorizontalInset +=
+        kImageViewLeadingMargin + kImageViewSize + kImageViewTrailingMargin;
   } else {
     textHorizontalInset += kBubbleHorizontalPadding;
   }
@@ -518,8 +597,15 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
   CGFloat bubbleWidth =
       MAX(optimalTextSize.width + textHorizontalInset, [self minBubbleWidth]);
   // Calculate the height needed to display the bubble.
-  CGFloat bubbleHeight = 2 * (kBubbleMargin + kBubbleVerticalPadding) +
-                         kArrowSize.height + optimalTextSize.height;
+  // Combined height of title and label including all margins.
+  CGFloat textContentHeight =
+      2 * kBubbleVerticalPadding + optimalTextSize.height;
+  // Height of image including all margins.
+  CGFloat imageContentHeight =
+      self.imageView ? 2 * kBubbleVerticalPadding + kImageViewSize : 0.0f;
+  // Calculates the height needed to display the bubble.
+  CGFloat bubbleHeight = 2 * kBubbleMargin + kArrowSize.height +
+                         MAX(imageContentHeight, textContentHeight);
   CGSize bubbleSize = CGSizeMake(bubbleWidth, bubbleHeight);
   return bubbleSize;
 }

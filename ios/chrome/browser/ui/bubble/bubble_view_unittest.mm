@@ -84,6 +84,11 @@ class BubbleViewTest : public PlatformTest {
     return base::mac::ObjCCastStrict<UILabel>(GetViewOfClassWithIdentifier(
         [UILabel class], kBubbleViewTitleLabelIdentifier, bubbleView));
   }
+
+  UIImageView* GetImageView(BubbleView* bubbleView) {
+    return base::mac::ObjCCastStrict<UIImageView>(GetViewOfClassWithIdentifier(
+        [UIImageView class], kBubbleViewImageViewIdentifier, bubbleView));
+  }
 };
 
 // Test |sizeThatFits| given short text.
@@ -174,4 +179,30 @@ TEST_F(BubbleViewTest, TitleIsPresentAndCorrect) {
   UILabel* titleLabel = GetTitleLabel(bubble);
   ASSERT_TRUE(titleLabel);
   ASSERT_EQ(titleLabel.text, shortText_);
+}
+
+// Tests that the image is not showed when the image is empty.
+TEST_F(BubbleViewTest, ImageIsNotPresent) {
+  BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
+                                         arrowDirection:arrowDirection_
+                                              alignment:alignment_];
+  [bubble setImage:nil];
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [superview addSubview:bubble];
+  UIImageView* imageView = GetImageView(bubble);
+  ASSERT_FALSE(imageView);
+}
+
+// Tests that the image is present and correct.
+TEST_F(BubbleViewTest, ImageIsPresentAndCorrect) {
+  BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
+                                         arrowDirection:arrowDirection_
+                                              alignment:alignment_];
+  UIImage* testImage = [[UIImage alloc] init];
+  [bubble setImage:testImage];
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [superview addSubview:bubble];
+  UIImageView* imageView = GetImageView(bubble);
+  ASSERT_TRUE(imageView);
+  EXPECT_EQ(imageView.image, testImage);
 }
