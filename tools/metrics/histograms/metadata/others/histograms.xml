@@ -903,6 +903,10 @@ chromium-metrics-reviews@google.com.
 <histogram name="AutocompleteActionPredictor.PrerenderStatus"
     enum="AutocompleteActionPredictorPredictionStatus"
     expires_after="2022-08-07">
+  <obsolete>
+    Removed in M101. Use Prerender.Experimental.PredictionStatus.DirectUrlInput
+    instead.
+  </obsolete>
   <owner>asamidoi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

@@ -119,9 +119,9 @@ TEST_F(PrerenderManagerTest, StartNewSuggestionPrerender) {
   prerender_manager()->StartPrerenderAutocompleteMatch(match);
   host_observer.WaitForDestroyed();
   registry_observer.WaitForTrigger(prerendering_url2);
-  EXPECT_TRUE(prerender_manager()->search_prerender_handle_for_testing());
+  EXPECT_TRUE(prerender_manager()->search_prerender_handle());
   EXPECT_EQ(prerendering_url2, prerender_manager()
-                                   ->search_prerender_handle_for_testing()
+                                   ->search_prerender_handle()
                                    ->GetInitialPrerenderingUrl());
 }
 
@@ -140,7 +140,7 @@ TEST_F(PrerenderManagerTest, StartSameSuggestionPrerender) {
   EXPECT_NE(prerender_host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
   match = CreateSearchSuggestionMatch("/title1.html", "prer", "prerender");
   prerender_manager()->StartPrerenderAutocompleteMatch(match);
-  EXPECT_TRUE(prerender_manager()->search_prerender_handle_for_testing());
+  EXPECT_TRUE(prerender_manager()->search_prerender_handle());
 
   // The created prerender for `prerendering_url` still exists, so the
   // prerender_host_id should be the same.
@@ -165,7 +165,7 @@ TEST_F(PrerenderManagerTest, DestroyedOnNavigateAway) {
                                                      prerender_host_id);
   web_contents_tester()->NavigateAndCommit(GetUrl("/empty.html"));
   host_observer.WaitForDestroyed();
-  EXPECT_FALSE(prerender_manager()->search_prerender_handle_for_testing());
+  EXPECT_FALSE(prerender_manager()->search_prerender_handle());
 }
 
 }  // namespace

@@ -103,7 +103,7 @@ class AutocompleteActionPredictor
   // example, the OmniboxEditModel is reverted.
   void ClearTransitionalMatches();
 
-  // Return the recommended action given |user_text|, the text the user has
+  // Returns the recommended action given |user_text|, the text the user has
   // entered in the Omnibox, and |match|, the suggestion from Autocomplete.
   // This method uses information from the ShortcutsBackend including how much
   // of the matching entry the user typed, and how long it's been since the user
@@ -112,18 +112,18 @@ class AutocompleteActionPredictor
   Action RecommendAction(const std::u16string& user_text,
                          const AutocompleteMatch& match) const;
 
-  // Begin prerendering or prefetch with `match`. The `size` gives the initial
+  // Begins prerendering or prefetch with `url`. The `size` gives the initial
   // size for the target prefetch. The predictor will run at most one prerender
   // at a time, so launching a prerender will cancel our previous prerenders (if
   // any).
-  void StartPrerendering(const AutocompleteMatch& match,
+  void StartPrerendering(const GURL& url,
                          content::WebContents& web_contents,
                          const gfx::Size& size);
 
   // Cancels the current prerender, unless it has already been abandoned.
   void CancelPrerender();
 
-  // Return true if the suggestion type warrants a TCP/IP preconnection.
+  // Returns true if the suggestion type warrants a TCP/IP preconnection.
   // i.e., it is now quite likely that the user will select the related domain.
   static bool IsPreconnectable(const AutocompleteMatch& match);
 
