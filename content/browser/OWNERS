@@ -44,9 +44,7 @@ per-file ppapi_plugin_sandboxed_process_launcher_delegate.*=set noparent
 per-file ppapi_plugin_sandboxed_process_launcher_delegate.*=file://sandbox/OWNERS
 
 # BackForwardCache
-per-file back_forward_cache*=arthursonzogni@chromium.org
-per-file back_forward_cache*=altimin@chromium.org
-per-file back_forward_cache*=rakina@chromium.org
+per-file back_forward_cache*=file://content/browser/BACK_FORWARD_CACHE_OWNERS
 
 # Storage API dependencies.
 per-file storage_partition*=file://storage/OWNERS
