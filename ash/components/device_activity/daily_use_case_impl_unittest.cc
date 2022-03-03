@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
@@ -22,6 +23,9 @@ namespace {
 
 // Initialize fake values used by the |DailyUseCaseImpl|.
 constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
+
+const version_info::Channel kFakeChromeOSChannel =
+    version_info::Channel::STABLE;
 
 }  // namespace
 
@@ -37,7 +41,7 @@ class DailyUseCaseImplTest : public testing::Test {
   void SetUp() override {
     DeviceActivityController::RegisterPrefs(local_state_.registry());
     daily_use_case_impl_ = std::make_unique<DailyUseCaseImpl>(
-        &local_state_, kFakePsmDeviceActiveSecret);
+        kFakePsmDeviceActiveSecret, kFakeChromeOSChannel, &local_state_);
   }
 
   void TearDown() override { daily_use_case_impl_.reset(); }

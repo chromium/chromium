@@ -13,6 +13,16 @@ option optimize_for = LITE_RUNTIME;
 // This proto represents the data transmitted over network
 // requests while reporting Device Actives to Fresnel server.
 
+// The possible channels for ChromeOS installations.
+// See details in //components/version_info/channel.h
+enum Channel {
+  CHANNEL_UNKNOWN = 0;
+  CHANNEL_CANARY = 1;
+  CHANNEL_DEV = 2;
+  CHANNEL_BETA = 3;
+  CHANNEL_STABLE = 4;
+}
+
 // The Chrome OS device metadata which is sent in PSM import requests.
 // Each new field to this message requires privacy approval.
 // Next ID: 6
@@ -29,7 +39,16 @@ message DeviceMetadata {
 
   // Country code is represented by a 2-letter string (aka ISO 3166-1).
   // i.e. US for United States of America, CA for Canada.
-  optional string country_code = 4;
+  optional string country_code = 3;
+
+  // Reserved for market segment.
+  reserved 4;
+
+  // ChromeOS channel is used to determine the breakdown of devices that are
+  // coming from canary, dev, beta, stable, or unknown channels.
+  // This can be used with the ChromeOS version in order to determine
+  // questions like, what percentage of devices are in the M100 stable channel.
+  optional Channel chromeos_channel = 5;
 }
 
 // This proto will represent the data sent to Fresnel used to generate a PSM

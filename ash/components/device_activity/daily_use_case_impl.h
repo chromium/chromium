@@ -11,6 +11,10 @@
 
 class PrefService;
 
+namespace version_info {
+enum class Channel;
+}  // namespace version_info
+
 namespace ash {
 namespace device_activity {
 
@@ -21,8 +25,9 @@ class ImportDataRequest;
 class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DailyUseCaseImpl
     : public DeviceActiveUseCase {
  public:
-  DailyUseCaseImpl(PrefService* local_state,
-                   const std::string& psm_device_active_secret);
+  DailyUseCaseImpl(const std::string& psm_device_active_secret,
+                   version_info::Channel chromeos_channel,
+                   PrefService* local_state);
   DailyUseCaseImpl(const DailyUseCaseImpl&) = delete;
   DailyUseCaseImpl& operator=(const DailyUseCaseImpl&) = delete;
   ~DailyUseCaseImpl() override;

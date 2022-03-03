@@ -15,6 +15,10 @@
 class PrefRegistrySimple;
 class PrefService;
 
+namespace version_info {
+enum class Channel;
+}  // namespace version_info
+
 namespace ash {
 namespace device_activity {
 
@@ -36,6 +40,7 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
 
   // Start Device Activity reporting for a trigger.
   void Start(Trigger trigger,
+             version_info::Channel chromeos_channel,
              PrefService* local_state,
              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
@@ -45,12 +50,14 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
  private:
   void OnPsmDeviceActiveSecretFetched(
       Trigger trigger,
+      version_info::Channel chromeos_channel,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& psm_device_active_secret);
 
   void OnMachineStatisticsLoaded(
       Trigger trigger,
+      version_info::Channel chromeos_channel,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& psm_device_active_secret);

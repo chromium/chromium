@@ -20,6 +20,7 @@
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/version_info/channel.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -59,6 +60,9 @@ const char kPsmImportRequestEndpoint[] = "/v1/fresnel/psmRlweImport";
 // Create fake secrets used by the |DeviceActivityClient|.
 constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
 constexpr char kFakeFresnelApiKey[] = "FAKE_FRESNEL_API_KEY";
+
+const version_info::Channel kFakeChromeOSChannel =
+    version_info::Channel::STABLE;
 
 // Number of test cases exist in cros_test_data.binarypb file, which is part of
 // private_membership third_party library.
@@ -122,9 +126,12 @@ class FakePsmDelegate : public PsmDelegate {
 
 class FakeDailyUseCaseImpl : public DailyUseCaseImpl {
  public:
-  FakeDailyUseCaseImpl(PrefService* local_state,
-                       const std::string& psm_device_active_secret)
-      : DailyUseCaseImpl(local_state, psm_device_active_secret) {}
+  FakeDailyUseCaseImpl(const std::string& psm_device_active_secret,
+                       version_info::Channel chromeos_channel,
+                       PrefService* local_state)
+      : DailyUseCaseImpl(psm_device_active_secret,
+                         chromeos_channel,
+                         local_state) {}
   FakeDailyUseCaseImpl(const FakeDailyUseCaseImpl&) = delete;
   FakeDailyUseCaseImpl& operator=(const FakeDailyUseCaseImpl&) = delete;
   ~FakeDailyUseCaseImpl() override = default;
@@ -212,7 +219,7 @@ class DeviceActivityClientTest : public testing::Test {
     // should maintain ownership of.
     std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
     use_cases.push_back(std::make_unique<FakeDailyUseCaseImpl>(
-        &local_state_, kFakePsmDeviceActiveSecret));
+        kFakePsmDeviceActiveSecret, kFakeChromeOSChannel, &local_state_));
 
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
         network_state_test_helper_->network_state_handler(),

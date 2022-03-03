@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_DEVICE_ACTIVITY_USE_CASE_H_
 #define ASH_COMPONENTS_DEVICE_ACTIVITY_USE_CASE_H_
 
+#include "ash/components/device_activity/fresnel_service.pb.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
@@ -17,19 +18,21 @@ class StatisticsProvider;
 }  // namespace system
 }  // namespace chromeos
 
+namespace version_info {
+enum class Channel;
+}  // namespace version_info
+
 namespace ash {
 namespace device_activity {
-
-// Forward declaration from fresnel_service.proto.
-class ImportDataRequest;
 
 // Base class for device active use cases.
 class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActiveUseCase {
  public:
-  DeviceActiveUseCase(PrefService* local_state,
-                      const std::string& psm_device_active_secret,
+  DeviceActiveUseCase(const std::string& psm_device_active_secret,
+                      version_info::Channel chromeos_channel,
                       const std::string& use_case_pref_key,
-                      private_membership::rlwe::RlweUseCase psm_use_case);
+                      private_membership::rlwe::RlweUseCase psm_use_case,
+                      PrefService* local_state);
   DeviceActiveUseCase(const DeviceActiveUseCase&) = delete;
   DeviceActiveUseCase& operator=(const DeviceActiveUseCase&) = delete;
   virtual ~DeviceActiveUseCase();
@@ -98,6 +101,9 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActiveUseCase {
   // Retrieve the ChromeOS major version number.
   std::string GetChromeOSVersion() const;
 
+  // Retrieve the ChromeOS release channel.
+  Channel GetChromeOSChannel() const;
+
  private:
   // Field is used to identify a fixed window of time for device active
   // counting. Privacy compliance is guaranteed by retrieving the
@@ -110,18 +116,15 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActiveUseCase {
   absl::optional<private_membership::rlwe::RlwePlaintextId>
   GeneratePsmIdentifier() const;
 
-  // Update last stored device active ping timestamps for PSM use cases.
-  // On powerwash/recovery update |local_state_| to the most recent timestamp
-  // |CheckMembership| was performed, as |local_state_| gets deleted.
-  // |local_state_| outlives the lifetime of this class.
-  // Used local state prefs are initialized by |DeviceActivityController|.
-  PrefService* const local_state_;
-
   // The ChromeOS platform code will provide a derived PSM device active secret
   // via callback.
   //
   // This secret is used to generate a PSM identifier for the reporting window.
   const std::string psm_device_active_secret_;
+
+  // |ChromeBrowserMainPartsAsh| passes the ChromeOS channel through the class
+  // constructor.
+  const version_info::Channel chromeos_channel_;
 
   // Key used to query the local state pref for the last ping timestamp by use
   // case.
@@ -131,6 +134,13 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActiveUseCase {
 
   // The PSM dataset on the serverside is segmented by the PSM use case.
   const private_membership::rlwe::RlweUseCase psm_use_case_;
+
+  // Update last stored device active ping timestamps for PSM use cases.
+  // On powerwash/recovery update |local_state_| to the most recent timestamp
+  // |CheckMembership| was performed, as |local_state_| gets deleted.
+  // |local_state_| outlives the lifetime of this class.
+  // Used local state prefs are initialized by |DeviceActivityController|.
+  PrefService* const local_state_;
 
   // Singleton lives throughout class lifetime.
   chromeos::system::StatisticsProvider* const statistics_provider_;

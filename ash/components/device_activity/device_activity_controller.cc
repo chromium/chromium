@@ -16,6 +16,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/version_info/channel.h"
 #include "google_apis/google_api_keys.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
@@ -80,6 +81,7 @@ DeviceActivityController::~DeviceActivityController() {
 
 void DeviceActivityController::Start(
     Trigger trigger,
+    version_info::Channel chromeos_channel,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   // Wrap with callback from |psm_device_active_secret_| retrieval using
@@ -87,24 +89,26 @@ void DeviceActivityController::Start(
   chromeos::SessionManagerClient::Get()->GetPsmDeviceActiveSecret(
       base::BindOnce(&device_activity::DeviceActivityController::
                          OnPsmDeviceActiveSecretFetched,
-                     weak_factory_.GetWeakPtr(), trigger, local_state,
-                     url_loader_factory));
+                     weak_factory_.GetWeakPtr(), trigger, chromeos_channel,
+                     local_state, url_loader_factory));
 }
 
 void DeviceActivityController::OnPsmDeviceActiveSecretFetched(
     Trigger trigger,
+    version_info::Channel chromeos_channel,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& psm_device_active_secret) {
   // Continue when machine statistics are loaded, to avoid blocking.
   statistics_provider_->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
       &device_activity::DeviceActivityController::OnMachineStatisticsLoaded,
-      weak_factory_.GetWeakPtr(), trigger, local_state, url_loader_factory,
-      psm_device_active_secret));
+      weak_factory_.GetWeakPtr(), trigger, chromeos_channel, local_state,
+      url_loader_factory, psm_device_active_secret));
 }
 
 void DeviceActivityController::OnMachineStatisticsLoaded(
     Trigger trigger,
+    version_info::Channel chromeos_channel,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& psm_device_active_secret) {
@@ -114,7 +118,7 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
   // monthly use case.
   std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
   use_cases.push_back(std::make_unique<DailyUseCaseImpl>(
-      local_state, psm_device_active_secret));
+      psm_device_active_secret, chromeos_channel, local_state));
 
   if (trigger == Trigger::kNetwork) {
     da_client_network_ = std::make_unique<DeviceActivityClient>(

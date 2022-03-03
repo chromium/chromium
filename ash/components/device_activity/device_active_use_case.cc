@@ -25,14 +25,16 @@ const char kHardwareClassKeyNotFound[] = "HARDWARE_CLASS_KEY_NOT_FOUND";
 }  // namespace
 
 DeviceActiveUseCase::DeviceActiveUseCase(
-    PrefService* local_state,
     const std::string& psm_device_active_secret,
+    version_info::Channel chromeos_channel,
     const std::string& use_case_pref_key,
-    psm_rlwe::RlweUseCase psm_use_case)
-    : local_state_(local_state),
-      psm_device_active_secret_(psm_device_active_secret),
+    psm_rlwe::RlweUseCase psm_use_case,
+    PrefService* local_state)
+    : psm_device_active_secret_(psm_device_active_secret),
+      chromeos_channel_(chromeos_channel),
       use_case_pref_key_(use_case_pref_key),
       psm_use_case_(psm_use_case),
+      local_state_(local_state),
       statistics_provider_(
           chromeos::system::StatisticsProvider::GetInstance()) {}
 
@@ -135,6 +137,22 @@ std::string DeviceActiveUseCase::GetFullHardwareClass() const {
 
 std::string DeviceActiveUseCase::GetChromeOSVersion() const {
   return version_info::GetMajorVersionNumber();
+}
+
+Channel DeviceActiveUseCase::GetChromeOSChannel() const {
+  switch (chromeos_channel_) {
+    case version_info::Channel::CANARY:
+      return Channel::CHANNEL_CANARY;
+    case version_info::Channel::DEV:
+      return Channel::CHANNEL_DEV;
+    case version_info::Channel::BETA:
+      return Channel::CHANNEL_BETA;
+    case version_info::Channel::STABLE:
+      return Channel::CHANNEL_STABLE;
+    case version_info::Channel::UNKNOWN:
+    default:
+      return Channel::CHANNEL_UNKNOWN;
+  }
 }
 
 absl::optional<psm_rlwe::RlwePlaintextId>

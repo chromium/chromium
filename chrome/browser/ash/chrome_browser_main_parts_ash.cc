@@ -1216,7 +1216,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
         std::make_unique<device_activity::DeviceActivityController>();
 
     device_activity_controller_->Start(
-        device_activity::Trigger::kNetwork, g_browser_process->local_state(),
+        device_activity::Trigger::kNetwork, chrome::GetChannel(),
+        g_browser_process->local_state(),
         g_browser_process->system_network_context_manager()
             ->GetSharedURLLoaderFactory());
   }
