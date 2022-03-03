@@ -117,6 +117,9 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     await super.setUpDeferred();
     await importModule(
         'CommandHandler', '/chromevox/background/command_handler.js');
+    await importModule(
+        'GestureCommandHandler',
+        '/chromevox/background/gesture_command_handler.js');
   }
 
   /** @override */

@@ -12,8 +12,7 @@ GEN_INCLUDE(['../testing/fake_objects.js']);
  */
 ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
   /** @override */
-  setUp() {
-    super.setUp();
+  async setUpDeferred() {
     window.doGesture = this.doGesture;
     window.simulateHitTestResult = this.simulateHitTestResult;
     window.press = this.press;
@@ -21,6 +20,11 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     window.ActionType = chrome.automation.ActionType;
 
     this.forceContextualLastOutput();
+
+    await importModule(
+        'GestureCommandHandler',
+        '/chromevox/background/gesture_command_handler.js');
+    await super.setUpDeferred();
   }
 
   simulateHitTestResult(node) {

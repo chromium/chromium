@@ -306,15 +306,15 @@ export class CommandHandler extends CommandHandlerInterface {
       case 'nextGranularity':
       case 'previousGranularity': {
         const backwards = command === 'previousGranularity';
-        let gran = GestureCommandHandler.granularity;
+        let gran = GestureInterface.getGranularity();
         const next = backwards ?
             (--gran >= 0 ? gran : GestureGranularity.COUNT - 1) :
             ++gran % GestureGranularity.COUNT;
-        GestureCommandHandler.granularity =
-            /** @type {GestureGranularity} */ (next);
+        GestureInterface.setGranularity(
+            /** @type {GestureGranularity} */ (next));
 
         let announce = '';
-        switch (GestureCommandHandler.granularity) {
+        switch (GestureInterface.getGranularity()) {
           case GestureGranularity.CHARACTER:
             announce = Msgs.getMsg('character_granularity');
             break;
@@ -1042,7 +1042,7 @@ export class CommandHandler extends CommandHandlerInterface {
       case 'nextAtGranularity':
       case 'previousAtGranularity':
         const backwards = command === 'previousAtGranularity';
-        switch (GestureCommandHandler.granularity) {
+        switch (GestureInterface.getGranularity()) {
           case GestureGranularity.CHARACTER:
             command = backwards ? 'previousCharacter' : 'nextCharacter';
             break;
