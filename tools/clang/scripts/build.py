@@ -671,6 +671,8 @@ def main():
       '-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
       # Don't use curl.
       '-DLLVM_ENABLE_CURL=OFF',
+      # Build libclang.a as well as libclang.so
+      '-DLIBCLANG_BUILD_STATIC=ON',
   ]
 
   if args.gcc_toolchain:
