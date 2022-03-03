@@ -17,8 +17,10 @@
 #include "base/strings/stringprintf.h"
 #include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
+#include "media/gpu/v4l2/test/video_decoder.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
+using media::v4l2_test::VideoDecoder;
 using media::v4l2_test::Vp9Decoder;
 
 namespace {
@@ -83,7 +85,7 @@ void ComputeAndPrintMd5hash(const std::vector<char>& yuv_plane) {
 
 // Creates the appropriate decoder for |stream|, which points to IVF data.
 // Returns nullptr on failure.
-std::unique_ptr<Vp9Decoder> CreateDecoder(
+std::unique_ptr<VideoDecoder> CreateVp9Decoder(
     const base::MemoryMappedFile& stream) {
   CHECK(stream.IsValid());
 
@@ -150,7 +152,7 @@ int main(int argc, char** argv) {
   if (!stream.Initialize(video_path))
     LOG(FATAL) << "Couldn't open file: " << video_path;
 
-  const std::unique_ptr<Vp9Decoder> dec = CreateDecoder(stream);
+  const std::unique_ptr<VideoDecoder> dec = CreateVp9Decoder(stream);
   if (!dec)
     LOG(FATAL) << "Failed to create decoder for file: " << video_path;
 
@@ -164,9 +166,9 @@ int main(int argc, char** argv) {
     std::vector<char> u_plane;
     std::vector<char> v_plane;
     gfx::Size size;
-    Vp9Decoder::Result res =
+    const VideoDecoder::Result res =
         dec->DecodeNextFrame(y_plane, u_plane, v_plane, size, i);
-    if (res == Vp9Decoder::kEOStream) {
+    if (res == VideoDecoder::kEOStream) {
       LOG(INFO) << "End of stream.";
       break;
     }

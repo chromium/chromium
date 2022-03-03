@@ -236,12 +236,12 @@ Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                        std::unique_ptr<V4L2Queue> OUTPUT_queue,
                        std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : ivf_parser_(std::move(ivf_parser)),
+    : VideoDecoder::VideoDecoder(std::move(ivf_parser),
+                                 std::move(v4l2_ioctl),
+                                 std::move(OUTPUT_queue),
+                                 std::move(CAPTURE_queue)),
       vp9_parser_(
-          std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false)),
-      v4l2_ioctl_(std::move(v4l2_ioctl)),
-      OUTPUT_queue_(std::move(OUTPUT_queue)),
-      CAPTURE_queue_(std::move(CAPTURE_queue)) {}
+          std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false)) {}
 
 Vp9Decoder::~Vp9Decoder() = default;
 
@@ -565,11 +565,11 @@ bool Vp9Decoder::CopyFrameData(const Vp9FrameHeader& frame_hdr,
                 frame_hdr.data, frame_hdr.frame_size);
 }
 
-Vp9Decoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
-                                               std::vector<char>& u_plane,
-                                               std::vector<char>& v_plane,
-                                               gfx::Size& size,
-                                               const int frame_number) {
+VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
+                                                 std::vector<char>& u_plane,
+                                                 std::vector<char>& v_plane,
+                                                 gfx::Size& size,
+                                                 const int frame_number) {
   Vp9FrameHeader frame_hdr{};
 
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);

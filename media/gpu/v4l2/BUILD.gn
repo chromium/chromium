@@ -148,6 +148,8 @@ executable("v4l2_stateless_decoder") {
     "test/v4l2_ioctl_shim.cc",
     "test/v4l2_ioctl_shim.h",
     "test/v4l2_stateless_decoder.cc",
+    "test/video_decoder.cc",
+    "test/video_decoder.h",
     "test/vp9_decoder.cc",
     "test/vp9_decoder.h",
   ]
