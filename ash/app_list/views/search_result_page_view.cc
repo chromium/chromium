@@ -27,6 +27,7 @@
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/system_shadow.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -37,7 +38,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -75,8 +75,9 @@ constexpr int kSearchBoxBottomSpacing = 1;
 // Minimum spacing between shelf and bottom of search box.
 constexpr int kSearchResultPageMinimumBottomMargin = 24;
 
-// The shadow elevation value for the shadow of the expanded search box.
-constexpr int kSearchBoxSearchResultShadowElevation = 12;
+// The shadow type for the shadow of the expanded search box.
+constexpr SystemShadow::Type kSearchBoxSearchResultShadowType =
+    SystemShadow::Type::kElevation12;
 
 // The amount of time by which notifications to accessibility framework about
 // result page changes are delayed.
@@ -192,8 +193,10 @@ SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
   contents_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  view_shadow_ =
-      std::make_unique<ViewShadow>(this, kSearchBoxSearchResultShadowElevation);
+  view_shadow_ = std::make_unique<ViewShadow>(
+      this,
+      SystemShadow::GetElevationFromType(kSearchBoxSearchResultShadowType));
+  view_shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
   view_shadow_->SetRoundedCornerRadius(
       kSearchBoxBorderCornerRadiusSearchResult);
 
@@ -611,8 +614,10 @@ void SearchResultPageView::AnimateBetweenBounds(const gfx::Rect& from_rect,
 }
 
 void SearchResultPageView::OnAnimationBetweenBoundsEnded() {
-  view_shadow_ =
-      std::make_unique<ViewShadow>(this, kSearchBoxSearchResultShadowElevation);
+  view_shadow_ = std::make_unique<ViewShadow>(
+      this,
+      SystemShadow::GetElevationFromType(kSearchBoxSearchResultShadowType));
+  view_shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
   view_shadow_->SetRoundedCornerRadius(
       GetCornerRadiusForSearchResultsState(current_search_results_state_));
 
