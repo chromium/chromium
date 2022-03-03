@@ -314,13 +314,13 @@ chromium_strings.grd. -->
       <if expr="chromeos">
         <if expr="reven">
           <message name="IDS_PRODUCT_OS_NAME" desc="The CloudReady 2.0 application name">
-            Google CloudReady 2.0
+            Google Chrome OS Flex
           </message>
           <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The CloudReady 2.0 application short name">
-            CloudReady 2.0
+            Chrome OS Flex
           </message>
           <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
-            CloudReady 2.0
+            Chrome OS Flex
           </message>
         </if>
         <if expr="not reven">
@@ -331,7 +331,7 @@ chromium_strings.grd. -->
             Chrome OS
           </message>
           <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
-            CloudReady 2.0
+            Chrome OS Flex
           </message>
         </if>
       </if>
