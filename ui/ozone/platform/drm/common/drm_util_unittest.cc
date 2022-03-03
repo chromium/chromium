@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "skia/ext/skia_matrix_44.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/types/display_snapshot.h"
