@@ -22,6 +22,7 @@ class DarkModeColorClassifier;
 class DarkModeImageClassifier;
 class DarkModeColorFilter;
 class DarkModeInvertedColorCache;
+class Image;
 
 class PLATFORM_EXPORT DarkModeFilter {
  public:
@@ -32,9 +33,8 @@ class PLATFORM_EXPORT DarkModeFilter {
 
   enum class ElementRole { kForeground, kListSymbol, kBackground, kSVG };
 
-  DarkModeImagePolicy GetDarkModeImagePolicy() const;
-
   SkColor InvertColorIfNeeded(SkColor color, ElementRole element_role);
+
   absl::optional<cc::PaintFlags> ApplyToFlagsIfNeeded(
       const cc::PaintFlags& flags,
       ElementRole element_role);
@@ -51,15 +51,12 @@ class PLATFORM_EXPORT DarkModeFilter {
   // deciding appropriate function call. This function should be called only if
   // image policy is set to DarkModeImagePolicy::kFilterSmart. This API is
   // thread-safe.
-  sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
-                                    const SkIRect& src) const;
+  sk_sp<SkColorFilter> GenerateImageFilter(const SkPixmap& pixmap,
+                                           const SkIRect& src) const;
 
-  // Returns dark mode color filter for images. Before calling this function
-  // ImageShouldHaveFilterAppliedBasedOnSizes() must be called for early out or
-  // deciding appropriate function call. This function should be called only if
-  // image policy is set to DarkModeImagePolicy::kFilterAll. This API is
-  // thread-safe.
-  sk_sp<SkColorFilter> GetImageFilter() const;
+  void ApplyFilterToImage(Image* image,
+                          cc::PaintFlags* flags,
+                          const SkRect& src);
 
  private:
   struct ImmutableData {
@@ -78,6 +75,15 @@ class PLATFORM_EXPORT DarkModeFilter {
                                                 const SkIRect& src) const;
 
   bool ShouldApplyToColor(SkColor color, ElementRole role);
+
+  // Returns dark mode color filter for images. Before calling this function
+  // ImageShouldHaveFilterAppliedBasedOnSizes() must be called for early out or
+  // deciding appropriate function call. This function should be called only if
+  // image policy is set to DarkModeImagePolicy::kFilterAll. This API is
+  // thread-safe.
+  sk_sp<SkColorFilter> GetImageFilter() const;
+
+  DarkModeImagePolicy GetDarkModeImagePolicy() const;
 
   // This is read-only data and is thread-safe.
   const ImmutableData immutable_;

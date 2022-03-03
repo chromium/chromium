@@ -38,7 +38,6 @@
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
@@ -292,9 +291,9 @@ void Image::DrawPattern(GraphicsContext& context,
   cc::PaintFlags flags(base_flags);
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setShader(std::move(tile_shader));
-  if (auto* dark_mode_filter = draw_options.dark_mode_filter) {
-    DarkModeFilterHelper::ApplyFilterToImage(*dark_mode_filter, this, &flags,
-                                             gfx::RectToSkRect(subset_rect));
+  if (draw_options.dark_mode_filter) {
+    draw_options.dark_mode_filter->ApplyFilterToImage(
+        this, &flags, gfx::RectToSkRect(subset_rect));
   }
 
   context.DrawRect(gfx::RectFToSkRect(dest_rect), flags,
@@ -330,7 +329,6 @@ PaintImageBuilder Image::CreatePaintImageBuilder() {
 
 bool Image::ApplyShader(cc::PaintFlags& flags,
                         const SkMatrix& local_matrix,
-                        const gfx::RectF& dst_rect,
                         const gfx::RectF& src_rect,
                         const ImageDrawOptions& draw_options) {
   // Default shader impl: attempt to build a shader based on the current frame
@@ -339,9 +337,9 @@ bool Image::ApplyShader(cc::PaintFlags& flags,
   if (!image)
     return false;
 
-  if (auto* dark_mode_filter = draw_options.dark_mode_filter) {
-    DarkModeFilterHelper::ApplyFilterToImage(*dark_mode_filter, this, &flags,
-                                             gfx::RectFToSkRect(src_rect));
+  if (draw_options.dark_mode_filter) {
+    draw_options.dark_mode_filter->ApplyFilterToImage(
+        this, &flags, gfx::RectFToSkRect(src_rect));
   }
   flags.setShader(PaintShader::MakeImage(image, SkTileMode::kClamp,
                                          SkTileMode::kClamp, &local_matrix));

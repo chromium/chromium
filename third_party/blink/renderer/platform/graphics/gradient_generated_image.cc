@@ -64,7 +64,6 @@ void GradientGeneratedImage::DrawTile(GraphicsContext& context,
 
 bool GradientGeneratedImage::ApplyShader(cc::PaintFlags& flags,
                                          const SkMatrix& local_matrix,
-                                         const gfx::RectF& dst_rect,
                                          const gfx::RectF& src_rect,
                                          const ImageDrawOptions& draw_options) {
   DCHECK(gradient_);

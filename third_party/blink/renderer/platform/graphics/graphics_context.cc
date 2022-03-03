@@ -817,8 +817,8 @@ void GraphicsContext::DrawImageRRect(
   if (use_shader) {
     const SkMatrix local_matrix = SkMatrix::RectToRect(
         gfx::RectFToSkRect(visible_src), gfx::RectFToSkRect(dest.Rect()));
-    use_shader = image->ApplyShader(image_flags, local_matrix, dest.Rect(),
-                                    src_rect, draw_options);
+    use_shader =
+        image->ApplyShader(image_flags, local_matrix, src_rect, draw_options);
   }
 
   if (use_shader) {

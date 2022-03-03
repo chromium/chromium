@@ -17,7 +17,7 @@ RasterDarkModeFilterImpl::RasterDarkModeFilterImpl(
 sk_sp<SkColorFilter> RasterDarkModeFilterImpl::ApplyToImage(
     const SkPixmap& pixmap,
     const SkIRect& src) const {
-  return dark_mode_filter_->ApplyToImage(pixmap, src);
+  return dark_mode_filter_->GenerateImageFilter(pixmap, src);
 }
 
 }  // namespace blink

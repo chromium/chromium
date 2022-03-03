@@ -839,8 +839,6 @@ component("platform") {
     "graphics/dark_mode_color_filter.h",
     "graphics/dark_mode_filter.cc",
     "graphics/dark_mode_filter.h",
-    "graphics/dark_mode_filter_helper.cc",
-    "graphics/dark_mode_filter_helper.h",
     "graphics/dark_mode_image_cache.h",
     "graphics/dark_mode_image_classifier.cc",
     "graphics/dark_mode_image_classifier.h",

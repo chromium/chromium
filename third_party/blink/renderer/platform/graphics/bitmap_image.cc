@@ -34,7 +34,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
@@ -311,11 +310,10 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
 
   const cc::PaintFlags* image_flags = &flags;
   absl::optional<cc::PaintFlags> dark_mode_flags;
-  if (auto* dark_mode_filter = draw_options.dark_mode_filter) {
+  if (draw_options.dark_mode_filter) {
     dark_mode_flags = flags;
-    DarkModeFilterHelper::ApplyFilterToImage(*dark_mode_filter, this,
-                                             &dark_mode_flags.value(),
-                                             gfx::RectFToSkRect(src_rect));
+    draw_options.dark_mode_filter->ApplyFilterToImage(
+        this, &dark_mode_flags.value(), gfx::RectFToSkRect(src_rect));
     image_flags = &dark_mode_flags.value();
   }
   canvas->drawImageRect(

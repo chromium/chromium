@@ -7,22 +7,77 @@
 #include <cmath>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_filter.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/lru_cache.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 
 namespace blink {
+
 namespace {
 
 const size_t kMaxCacheSize = 1024u;
 const int kMinImageLength = 8;
 const int kMaxImageLength = 100;
+
+bool IsRasterSideDarkModeForImagesEnabled() {
+  static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableRasterSideDarkModeForImages);
+  return enabled;
+}
+
+bool ShouldUseRasterSidePath(Image* image) {
+  DCHECK(image);
+
+  // Raster-side path is not enabled.
+  if (!IsRasterSideDarkModeForImagesEnabled())
+    return false;
+
+  // Raster-side path is only supported for bitmap images.
+  return image->IsBitmapImage();
+}
+
+sk_sp<SkColorFilter> GetDarkModeFilterForImageOnMainThread(
+    DarkModeFilter* filter,
+    Image* image,
+    const SkIRect& rounded_src) {
+  SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Blink.DarkMode.ApplyToImageOnMainThread");
+
+  sk_sp<SkColorFilter> color_filter;
+  DarkModeImageCache* cache = image->GetDarkModeImageCache();
+  DCHECK(cache);
+  if (cache->Exists(rounded_src)) {
+    color_filter = cache->Get(rounded_src);
+  } else {
+    // Performance warning: Calling AsSkBitmapForCurrentFrame() will
+    // synchronously decode image.
+    SkBitmap bitmap =
+        image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
+    SkPixmap pixmap;
+    bitmap.peekPixels(&pixmap);
+    color_filter = filter->GenerateImageFilter(pixmap, rounded_src);
+
+    // Using blink side dark mode for images, it is hard to implement
+    // caching mechanism for partially loaded bitmap image content, as
+    // content id for the image frame being rendered gets decided during
+    // rastering only. So caching of dark mode result will be deferred until
+    // default frame is completely received. This will help get correct
+    // classification results for incremental content received for the given
+    // image.
+    if (!image->IsBitmapImage() || image->CurrentFrameIsComplete())
+      cache->Add(rounded_src, color_filter);
+  }
+  return color_filter;
+}
 
 }  // namespace
 
@@ -93,6 +148,34 @@ SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color, ElementRole role) {
   return color;
 }
 
+void DarkModeFilter::ApplyFilterToImage(Image* image,
+                                        cc::PaintFlags* flags,
+                                        const SkRect& src) {
+  DCHECK(image);
+  DCHECK(flags);
+  DCHECK_NE(GetDarkModeImagePolicy(), DarkModeImagePolicy::kFilterNone);
+
+  if (GetDarkModeImagePolicy() == DarkModeImagePolicy::kFilterAll) {
+    flags->setColorFilter(GetImageFilter());
+    return;
+  }
+
+  // Raster-side dark mode path - Just set the dark mode on flags and dark
+  // mode will be applied at compositor side during rasterization.
+  if (ShouldUseRasterSidePath(image)) {
+    flags->setUseDarkModeForImage(true);
+    return;
+  }
+
+  // Blink-side dark mode path - Apply dark mode to images in main thread
+  // only. If the result is not cached, calling this path is expensive and
+  // will block main thread.
+  sk_sp<SkColorFilter> color_filter =
+      GetDarkModeFilterForImageOnMainThread(this, image, src.roundOut());
+  if (color_filter)
+    flags->setColorFilter(std::move(color_filter));
+}
+
 bool DarkModeFilter::ShouldApplyFilterToImage(const SkIRect& dst,
                                               const SkIRect& src) const {
   DarkModeImagePolicy image_policy = GetDarkModeImagePolicy();
@@ -119,8 +202,9 @@ bool DarkModeFilter::ImageShouldHaveFilterAppliedBasedOnSizes(
   return dst.width() <= kMaxImageLength && dst.height() <= kMaxImageLength;
 }
 
-sk_sp<SkColorFilter> DarkModeFilter::ApplyToImage(const SkPixmap& pixmap,
-                                                  const SkIRect& src) const {
+sk_sp<SkColorFilter> DarkModeFilter::GenerateImageFilter(
+    const SkPixmap& pixmap,
+    const SkIRect& src) const {
   DCHECK(immutable_.settings.image_policy == DarkModeImagePolicy::kFilterSmart);
   DCHECK(immutable_.image_filter);
 

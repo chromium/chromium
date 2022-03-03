@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/crossfade_generated_image.h"
 
-#include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "ui/gfx/geometry/rect_f.h"

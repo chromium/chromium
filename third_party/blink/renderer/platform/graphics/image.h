@@ -303,7 +303,6 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   // of that function the shader should use a clamping tile mode if possible.
   virtual bool ApplyShader(cc::PaintFlags&,
                            const SkMatrix& local_matrix,
-                           const gfx::RectF& dst_rect,
                            const gfx::RectF& src_rect,
                            const ImageDrawOptions& draw_options);
 

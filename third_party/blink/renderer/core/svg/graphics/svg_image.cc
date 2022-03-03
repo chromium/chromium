@@ -514,7 +514,6 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
 
 bool SVGImage::ApplyShader(cc::PaintFlags& flags,
                            const SkMatrix& local_matrix,
-                           const gfx::RectF& dst_rect,
                            const gfx::RectF& src_rect,
                            const ImageDrawOptions& draw_options) {
   const DrawInfo draw_info(gfx::SizeF(intrinsic_size_), 1, NullURL(),

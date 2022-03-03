@@ -32,7 +32,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -50,6 +49,7 @@ class PointF;
 namespace blink {
 
 struct ImageDrawOptions;
+class DarkModeFilter;
 
 class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   USING_FAST_MALLOC(Gradient);
