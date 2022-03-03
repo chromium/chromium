@@ -31,9 +31,6 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
   void PopulateInterstitialStrings(base::Value* load_time_data) override;
 
  private:
-  // Adds values required for shared interstitial HTML to |load_time_data|.
-  void PopulateValuesForSharedHTML(base::Value* load_time_data);
-
   bool user_made_decision_ = false;
 };
 
