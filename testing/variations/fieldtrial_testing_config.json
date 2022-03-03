@@ -5228,6 +5228,33 @@
                     ]
                 },
                 {
+                    "name": "EightSecondWindow",
+                    "params": {
+                        "seconds": "8"
+                    },
+                    "enable_features": [
+                        "SlidingWindowForDroppedFrameCounter"
+                    ]
+                },
+                {
+                    "name": "TenSecondWindow",
+                    "params": {
+                        "seconds": "10"
+                    },
+                    "enable_features": [
+                        "SlidingWindowForDroppedFrameCounter"
+                    ]
+                },
+                {
+                    "name": "FifteenSecondWindow",
+                    "params": {
+                        "seconds": "15"
+                    },
+                    "enable_features": [
+                        "SlidingWindowForDroppedFrameCounter"
+                    ]
+                },
+                {
                     "name": "TwentySecondWindow",
                     "params": {
                         "seconds": "20"
