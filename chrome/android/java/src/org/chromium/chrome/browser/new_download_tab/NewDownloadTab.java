@@ -1,21 +1,20 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 package org.chromium.chrome.browser.new_download_tab;
+
 import static org.chromium.chrome.browser.tab.TabViewProvider.Type.NEW_DOWNLOAD_TAB;
 
-import android.content.Context;
 import android.os.Build;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabViewProvider;
@@ -96,12 +95,8 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
     }
 
     private View createView() {
-        Context context = mTab.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View newDownloadTabView = inflater.inflate(R.layout.new_download_tab, null);
-        newDownloadTabView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        return newDownloadTabView;
+        TextView view = new TextView(mTab.getContext());
+        return view;
     }
 
     private void attachView() {

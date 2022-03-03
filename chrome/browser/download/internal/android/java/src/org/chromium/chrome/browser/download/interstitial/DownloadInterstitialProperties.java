@@ -1,0 +1,51 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.download.interstitial;
+
+import androidx.annotation.IntDef;
+
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.download.home.list.ListProperties;
+import org.chromium.components.offline_items_collection.OfflineItem;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+
+/**
+ * Extends the properties defined in {@link ListProperties} to facilitate the logic for an entire
+ * UI containing a download ListItem.
+ */
+interface DownloadInterstitialProperties extends ListProperties {
+    @IntDef({State.UNKNOWN, State.IN_PROGRESS, State.SUCCESSFUL, State.CANCELLED, State.PAUSED})
+    /**
+     * Keeps track of the state of the DownloadInterstitial. This may be different to the state of
+     * the offline item displayed within the UI.
+     */
+    @interface State {
+        int UNKNOWN = 0;
+        int IN_PROGRESS = 1;
+        int SUCCESSFUL = 2;
+        int CANCELLED = 3;
+        int PAUSED = 4;
+    }
+
+    WritableObjectPropertyKey<OfflineItem> DOWNLOAD_ITEM = new WritableObjectPropertyKey<>();
+
+    WritableIntPropertyKey STATE = new WritableIntPropertyKey();
+
+    WritableBooleanPropertyKey PRIMARY_BUTTON_IS_VISIBLE = new WritableBooleanPropertyKey();
+
+    WritableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT = new WritableObjectPropertyKey<>();
+
+    WritableObjectPropertyKey<Callback<OfflineItem>> PRIMARY_BUTTON_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
+    WritableBooleanPropertyKey SECONDARY_BUTTON_IS_VISIBLE = new WritableBooleanPropertyKey();
+
+    WritableObjectPropertyKey<String> SECONDARY_BUTTON_TEXT = new WritableObjectPropertyKey<>();
+
+    WritableObjectPropertyKey<Callback<OfflineItem>> SECONDARY_BUTTON_CALLBACK =
+            new WritableObjectPropertyKey<>();
+}

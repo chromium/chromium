@@ -95,6 +95,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/home/toolbar/ToolbarCoordinator.java",
     "java/src/org/chromium/chrome/browser/download/home/toolbar/ToolbarUtils.java",
     "java/src/org/chromium/chrome/browser/download/home/view/SelectionView.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialProperties.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialView.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialViewBinder.java",
   ]
 
   deps = [
@@ -146,11 +149,13 @@ android_resources("java_resources") {
     "java/res/drawable/circular_progress_bar_pause_tiny.xml",
     "java/res/drawable/circular_progress_bar_resume_tiny.xml",
     "java/res/drawable/circular_progress_bar_retry_tiny.xml",
+    "java/res/drawable/download_interstitial_icon.xml",
     "java/res/drawable/group_card_footer_curved_border.xml",
     "java/res/drawable/group_card_header_curved_border.xml",
     "java/res/drawable/group_card_item_border.xml",
     "java/res/layout/download_home_tabs.xml",
     "java/res/layout/download_home_toolbar.xml",
+    "java/res/layout/download_interstitial.xml",
     "java/res/layout/download_manager_audio.xml",
     "java/res/layout/download_manager_card_divider_bottom.xml",
     "java/res/layout/download_manager_card_divider_middle.xml",

@@ -18,36 +18,48 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- TODO: Add contentDescription. -->
+        <!-- TODO(alexmitra): Add contentDescription. -->
         <ImageView
-            android:id="@+id/cct_download_animation"
+            android:id="@+id/icon"
             android:layout_width="324dp"
             android:layout_height="322dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/new_download_tab_animation"
+            android:src="@drawable/download_interstitial_icon"
             tools:ignore="ContentDescription" />
 
         <TextView
-            android:id="@+id/cct_download_heading"
+            android:id="@+id/heading"
             android:layout_width="324dp"
             android:layout_height="wrap_content"
+            android:text="@string/menu_download"
             android:textAppearance="@style/TextAppearance.DownloadDialogTitle"
             android:layout_gravity="center_horizontal"/>
 
         <FrameLayout
-            android:id="@+id/cct_download_file_info"
+            android:id="@+id/file_info"
             android:layout_width="match_parent"
             android:layout_height="75dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginHorizontal="16dp"/>
+            android:layout_marginHorizontal="16dp">
+            <!-- TODO(alexmitra): Replace text with @string resource once UX have given a new design. -->
+            <TextView
+                android:id="@+id/loading_message"
+                android:layout_width="324dp"
+                android:layout_height="wrap_content"
+                android:text="Preparing your Download..."
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:layout_gravity="center_horizontal"
+                tools:ignore="HardcodedText" />
+        </FrameLayout>
     </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
 
         <org.chromium.components.browser_ui.widget.DualControlLayout
-            android:id="@+id/cct_download_button_bar"
+            android:id="@+id/button_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="4dp"
