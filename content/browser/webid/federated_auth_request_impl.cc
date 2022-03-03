@@ -104,11 +104,6 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
         kErrorFetchingClientMetadataInvalidResponse: {
       return "Provider's client metadata is invalid.";
     }
-    case FederatedAuthRequestResult::
-        kErrorClientMetadataMissingPrivacyPolicyUrl: {
-      return "Provider's client metadata is missing or has an invalid privacy "
-             "policy url.";
-    }
     case FederatedAuthRequestResult::kErrorFetchingSignin: {
       return "Error attempting to reach the provider's sign-in endpoint.";
     }
@@ -179,8 +174,6 @@ RequestIdTokenStatus FederatedAuthRequestResultToRequestIdTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse:
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse:
-    case FederatedAuthRequestResult::
-        kErrorClientMetadataMissingPrivacyPolicyUrl:
     case FederatedAuthRequestResult::
         kErrorFetchingClientMetadataInvalidResponse:
     case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound:
@@ -618,19 +611,6 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
-      // Since the |privacy_policy_url| is required, consider the result an
-      // invalid response in the case where the parser returns an empty value
-      // for it or an invalid url.
-      GURL pp_url(data.privacy_policy_url);
-      if (!pp_url.is_valid()) {
-        RecordRequestIdTokenStatus(
-            IdTokenStatus::kClientMetadataMissingPrivacyPolicyUrl,
-            render_frame_host_->GetPageUkmSourceId());
-        CompleteRequest(FederatedAuthRequestResult::
-                            kErrorClientMetadataMissingPrivacyPolicyUrl,
-                        "", /*should_call_callback=*/false);
-        return;
-      }
       client_metadata_ = data;
 
       network_manager_->SendAccountsRequest(
