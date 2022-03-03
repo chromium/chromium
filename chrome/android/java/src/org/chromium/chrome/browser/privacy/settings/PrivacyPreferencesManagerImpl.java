@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -104,12 +103,9 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
     @Override
     public boolean isUsageAndCrashReportingPermittedByPolicy() {
-        // Skip if native browser process is not yet fully initialized.
-        if (!LibraryLoader.getInstance().isInitialized()) {
-            return true;
-        }
-
-        return !PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy();
+        // TODO(https://crbug.com/1301701) This function is being called from an invalid thread.
+        // This constant return value is set while figuring out the problem.
+        return true;
     }
 
     @Override
