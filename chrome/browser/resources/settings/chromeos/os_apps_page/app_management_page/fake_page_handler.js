@@ -110,6 +110,7 @@ export class FakePageHandler {
       supportedLinks: [],
       runOnOsLogin: null,
       fileHandlingState: null,
+      installSource: apps.mojom.InstallSource.kUnknown,
     };
 
     if (optConfig) {

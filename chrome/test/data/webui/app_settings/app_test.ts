@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://app-settings/web_app_settings.js';
 
-import {App, AppManagementPermissionItemElement, AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, OptionalBool, PermissionType, PermissionTypeIndex, RunOnOsLoginMode, TriState, WebAppSettingsAppElement, WindowMode} from 'chrome://app-settings/web_app_settings.js';
+import {App, AppManagementPermissionItemElement, AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, OptionalBool, PermissionType, PermissionTypeIndex, RunOnOsLoginMode, TriState, WebAppSettingsAppElement, WindowMode} from 'chrome://app-settings/web_app_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -37,6 +37,7 @@ suite('AppSettingsAppTest', () => {
       runOnOsLogin: {loginMode: RunOnOsLoginMode.kNotRun, isManaged: false},
       fileHandlingState:
           {enabled: false, isManaged: false, userVisibleTypes: 'TXT'},
+      installSource: InstallSource.kUnknown
     };
 
     const permissionTypes = [
