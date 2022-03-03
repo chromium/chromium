@@ -549,9 +549,6 @@ PDFiumEngine::PDFiumEngine(PDFEngine::Client* client,
   IFSDK_PAUSE::version = 1;
   IFSDK_PAUSE::user = nullptr;
   IFSDK_PAUSE::NeedToPauseNow = Pause_NeedToPauseNow;
-
-  // PreviewModeClient does not know its pp::Instance.
-  SetLastInstance();
 }
 
 PDFiumEngine::~PDFiumEngine() {
@@ -1012,8 +1009,6 @@ std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
     return std::vector<uint8_t>();
 
   KillFormFocus();
-
-  SetLastInstance();
 
   return print_.PrintPagesAsPdf(page_numbers, print_params);
 }
@@ -3145,7 +3140,6 @@ bool PDFiumEngine::ContinuePaint(int progressive_index, SkBitmap& image_data) {
   DCHECK_LT(static_cast<size_t>(progressive_index), progressive_paints_.size());
 
   last_progressive_start_time_ = base::Time::Now();
-  SetLastInstance();
 
   int page_index = progressive_paints_[progressive_index].page_index();
   DCHECK(PageIndexInBounds(page_index));
@@ -3643,7 +3637,6 @@ void PDFiumEngine::SetCurrentPage(int index) {
     FORM_DoPageAAction(old_page, form(), FPDFPAGE_AACTION_CLOSE);
   }
   most_visible_page_ = index;
-  SetLastInstance();
   if (most_visible_page_ != -1 && called_do_document_action_) {
     FPDF_PAGE new_page = pages_[most_visible_page_]->GetPage();
     FORM_DoPageAAction(new_page, form(), FPDFPAGE_AACTION_OPEN);
@@ -4310,10 +4303,6 @@ void PDFiumEngine::MaybeRequestPendingThumbnail(int page_index) {
       pending_thumbnail.device_pixel_ratio,
       std::move(pending_thumbnail.send_callback));
   pending_thumbnails_.erase(it);
-}
-
-void PDFiumEngine::SetLastInstance() {
-  client_->SetLastPluginInstance();
 }
 
 PDFiumEngine::ProgressivePaint::ProgressivePaint(int index,

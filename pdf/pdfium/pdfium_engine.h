@@ -651,10 +651,6 @@ class PDFiumEngine : public PDFEngine,
   // requests the thumbnail for that page.
   void MaybeRequestPendingThumbnail(int page_index);
 
-  // Keeps track of the most recently used plugin instance.
-  // TODO(crbug.com/702993): Remove when PPAPI is gone.
-  void SetLastInstance();
-
   const raw_ptr<PDFEngine::Client> client_;
 
   // The current document layout.

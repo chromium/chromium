@@ -239,10 +239,6 @@ class PDFEngine {
     // Notifies the client that the document has failed to load.
     virtual void DocumentLoadFailed() {}
 
-    // Asks the client to set the last plugin instance when applicable.
-    // TODO(crbug.com/702993): Remove after migrating away from PPAPI.
-    virtual void SetLastPluginInstance() {}
-
     // Notifies that an unsupported feature in the PDF was encountered.
     virtual void DocumentHasUnsupportedFeature(const std::string& feature) {}
 
