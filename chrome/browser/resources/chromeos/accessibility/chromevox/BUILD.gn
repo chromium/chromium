@@ -111,6 +111,7 @@ chromevox_modules = [
   "panel/panel.js",
   "panel/panel_menu.js",
   "panel/panel_menu_item.js",
+  "panel/panel_mode.js",
   "third_party/tamachiyomi/ja_phonetic_data.js",
   "third_party/tamachiyomi/ja_phonetic_map.js",
 ]
