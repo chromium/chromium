@@ -100,7 +100,7 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/credential_provider:buildflags",
     "//ios/chrome/browser/device_sharing",
-    "//ios/chrome/browser/discover_feed",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/dom_distiller",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/download/background_service",

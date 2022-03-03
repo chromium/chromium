@@ -7,7 +7,7 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service_deprecated.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 
@@ -43,7 +43,7 @@ DiscoverFeedServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<DiscoverFeedService>(
+  return std::make_unique<DiscoverFeedServiceDeprecated>(
       browser_state->GetPrefs(),
       AuthenticationServiceFactory::GetForBrowserState(browser_state),
       IdentityManagerFactory::GetForBrowserState(browser_state));

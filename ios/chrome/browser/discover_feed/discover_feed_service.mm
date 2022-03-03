@@ -4,100 +4,13 @@
 
 #include "ios/chrome/browser/discover_feed/discover_feed_service.h"
 
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_configuration.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
-
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-DiscoverFeedService::DiscoverFeedService(
-    PrefService* pref_service,
-    AuthenticationService* authentication_service,
-    signin::IdentityManager* identity_manager) {
-  if (identity_manager)
-    identity_manager_observation_.Observe(identity_manager);
+DiscoverFeedService::DiscoverFeedService() = default;
 
-  discover_feed_provider_observation_.Observe(
-      ios::GetChromeBrowserProvider().GetDiscoverFeedProvider());
-
-  feed_metrics_recorder_ = [[FeedMetricsRecorder alloc] init];
-
-  DiscoverFeedConfiguration* discover_config =
-      [[DiscoverFeedConfiguration alloc] init];
-  discover_config.authService = authentication_service;
-  discover_config.prefService = pref_service;
-  discover_config.metricsRecorder = feed_metrics_recorder_;
-
-  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StartFeedService(
-      discover_config);
-}
-
-DiscoverFeedService::~DiscoverFeedService() {}
-
-void DiscoverFeedService::Shutdown() {
-  // Stop the Discover feed to disconnects its services.
-  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StopFeedService();
-
-  discover_feed_provider_observation_.Reset();
-  identity_manager_observation_.Reset();
-
-  feed_metrics_recorder_ = nil;
-}
-
-void DiscoverFeedService::CreateFeedModels() {
-  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->CreateFeedModels();
-}
-
-void DiscoverFeedService::ClearFeedModels() {
-  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->ClearFeedModels();
-}
-
-FeedMetricsRecorder* DiscoverFeedService::GetFeedMetricsRecorder() {
-  return ios::GetChromeBrowserProvider()
-      .GetDiscoverFeedProvider()
-      ->GetFeedMetricsRecorder();
-}
-
-UIViewController*
-DiscoverFeedService::NewDiscoverFeedViewControllerWithConfiguration(
-    DiscoverFeedViewControllerConfiguration* configuration) {
-  return ios::GetChromeBrowserProvider()
-      .GetDiscoverFeedProvider()
-      ->NewDiscoverFeedViewControllerWithConfiguration(configuration);
-}
-
-UIViewController*
-DiscoverFeedService::NewFollowingFeedViewControllerWithConfiguration(
-    DiscoverFeedViewControllerConfiguration* configuration) {
-  return ios::GetChromeBrowserProvider()
-      .GetDiscoverFeedProvider()
-      ->NewFollowingFeedViewControllerWithConfiguration(configuration);
-}
-
-void DiscoverFeedService::RemoveFeedViewController(
-    UIViewController* feed_view_controller) {
-  ios::GetChromeBrowserProvider()
-      .GetDiscoverFeedProvider()
-      ->RemoveFeedViewController(feed_view_controller);
-}
-
-void DiscoverFeedService::UpdateTheme() {
-  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->UpdateTheme();
-}
-
-void DiscoverFeedService::RefreshFeedIfNeeded() {
-  ios::GetChromeBrowserProvider()
-      .GetDiscoverFeedProvider()
-      ->RefreshFeedIfNeeded();
-}
-
-void DiscoverFeedService::RefreshFeed() {
-  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
-}
+DiscoverFeedService::~DiscoverFeedService() = default;
 
 void DiscoverFeedService::AddObserver(DiscoverFeedObserver* observer) {
   observer_list_.AddObserver(observer);
@@ -107,14 +20,7 @@ void DiscoverFeedService::RemoveObserver(DiscoverFeedObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void DiscoverFeedService::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event) {
-  ios::GetChromeBrowserProvider()
-      .GetDiscoverFeedProvider()
-      ->UpdateFeedForAccountChange();
-}
-
-void DiscoverFeedService::OnDiscoverFeedModelRecreated() {
+void DiscoverFeedService::NotifyDiscoverFeedModelRecreated() {
   for (auto& observer : observer_list_) {
     observer.OnDiscoverFeedModelRecreated();
   }

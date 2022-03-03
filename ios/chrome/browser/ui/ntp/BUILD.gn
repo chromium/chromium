@@ -63,6 +63,7 @@ source_set("coordinator") {
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/discover_feed",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
