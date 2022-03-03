@@ -8,7 +8,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:dist="http://schemas.android.com/apk/distribution"
           package="com.google.android.apps.mediashell"
-          featureSplit="cast_browser" >
+          featureSplit="cast_browser"
+          {% set architecture_digit = {
+            'arm': 1,
+            'x86': 2,
+            'arm64': 3,
+            'x64': 4,
+            }[cast_build_architecture] %}
+          android:versionCode="{{ cast_build_incremental }}{{ architecture_digit }}" >
     <dist:module
         dist:onDemand="false"
         dist:title="cast_browser">

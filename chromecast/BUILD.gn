@@ -732,10 +732,15 @@ if (is_android) {
       min_sdk_version = 23
       target_sdk_version = 31
 
+      package_name = "cast_browser"
+
+      # |package_id| is required because the default one conflicts with the base
+      # modules' ID (0x7f).
+      package_id = 125
+
       shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
       product_config_java_packages = [ "org.chromium.chromecast.shell" ]
       deps = [
-        ":cast_shell_apk_assets",
         "//base:base_java",
         "//chromecast/android:libcast_browser_android",
         "//chromecast/browser/android:cast_browser_java",
@@ -745,6 +750,7 @@ if (is_android) {
       loadable_modules = [ "$root_out_dir/libchrome_crashpad_handler.so" ]
 
       enable_multidex = true
+      proguard_enabled = !is_java_debug
     }
   }
 }

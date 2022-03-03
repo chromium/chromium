@@ -22,6 +22,11 @@ cast_browser_android_manifest =
 jinja_template("cast_browser_manifest") {
   input = "apk/CastBrowserAndroidManifest.xml.jinja2"
   output = cast_browser_android_manifest
+
+  variables = [
+    "cast_build_architecture=$target_cpu",
+    "cast_build_incremental=$cast_build_incremental",
+  ]
 }
 
 java_cpp_template("cast_shell_build_config_gen") {
@@ -70,7 +75,7 @@ android_resources("cast_shell_android_resources") {
 android_resources("cast_browser_android_resources") {
   android_manifest = cast_browser_android_manifest
   android_manifest_dep = ":cast_browser_manifest"
-  sources = common_resources + extra_resources
+  sources = extra_resources
 }
 
 android_resources("cast_shell_android_stub_resources") {
