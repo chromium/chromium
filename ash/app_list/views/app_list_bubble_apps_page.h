@@ -168,9 +168,8 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   void OnAppsGridViewFadeInAnimationEnded(bool aborted);
 
   // Called when the animation to fade in the reorder undo toast is completed.
-  // `aborted` is true if the animation is aborted; `clean_layer` is true if the
-  // undo toast's layer should be cleaned after animation.
-  void OnReorderUndoToastFadeInAnimationEnded(bool aborted, bool clean_layer);
+  // `aborted` is true if the animation is aborted.
+  void OnReorderUndoToastFadeInAnimationEnded(bool aborted);
 
   // Animates `view` using a layer animation. Creates the layer if needed. The
   // layer is pushed down by `vertical_offset` at the start of the animation and

@@ -631,13 +631,11 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
   if (!should_fade_in_toast)
     return;
 
-  // If the undo toast does not have its layer before fade in animation,
-  // create one.
-  bool has_layer_before_animation = toast_container_->layer();
-  if (!has_layer_before_animation) {
-    toast_container_->SetPaintToLayer();
-    toast_container_->layer()->SetFillsBoundsOpaquely(false);
-  }
+  // Because `toast_container_` does not have a layer before the fade in
+  // animation, create one.
+  DCHECK(!toast_container_->layer());
+  toast_container_->SetPaintToLayer();
+  toast_container_->layer()->SetFillsBoundsOpaquely(false);
 
   // Hide the undo toast instantly before starting the toast fade in animation.
   toast_container_->layer()->SetOpacity(0.f);
@@ -648,11 +646,11 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
       .OnEnded(base::BindOnce(
           &AppListBubbleAppsPage::OnReorderUndoToastFadeInAnimationEnded,
           weak_factory_.GetWeakPtr(),
-          /*aborted=*/false, has_layer_before_animation))
+          /*aborted=*/false))
       .OnAborted(base::BindOnce(
           &AppListBubbleAppsPage::OnReorderUndoToastFadeInAnimationEnded,
           weak_factory_.GetWeakPtr(),
-          /*aborted=*/true, has_layer_before_animation))
+          /*aborted=*/true))
       .Once()
       .SetDuration(kToastFadeInAnimationDuration)
       .SetOpacity(toast_container_->layer(), 1.f);
@@ -668,20 +666,9 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeInAnimationEnded(bool aborted) {
 }
 
 void AppListBubbleAppsPage::OnReorderUndoToastFadeInAnimationEnded(
-    bool aborted,
-    bool clean_layer) {
+    bool aborted) {
   toast_fade_in_abort_handle_.reset();
-
-  if (aborted && !clean_layer) {
-    // Ensure that the toast shows when the animation is aborted.
-    toast_container_->layer()->SetOpacity(1.f);
-    return;
-  }
-
-  if (clean_layer) {
-    toast_container_->DestroyLayer();
-    return;
-  }
+  toast_container_->DestroyLayer();
 }
 
 void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
