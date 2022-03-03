@@ -391,7 +391,7 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
     if (!IsLargeMemoryDevice()) {
       LOG(WARNING)
           << "Skipping test on this device because of crbug.com/678782";
-      LOG(FATAL) << "DoReturnNullTest";
+      LOG(FATAL) << "Passed DoReturnNullTest";
     }
 
     ASSERT_TRUE(SetAddressSpaceLimit());
@@ -452,7 +452,7 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
     allocator.root()->Free(ptrs);
 
     EXPECT_TRUE(ClearAddressSpaceLimit());
-    LOG(FATAL) << "DoReturnNullTest";
+    LOG(FATAL) << "Passed DoReturnNullTest";
   }
 
   void RunRefCountReallocSubtest(size_t orig_size, size_t new_size);
@@ -1952,7 +1952,7 @@ TEST_P(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
   size_t direct_map_size = 32 * 1024 * 1024;
   ASSERT_GT(direct_map_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionAllocFlags),
-               "DoReturnNullTest");
+               "Passed DoReturnNullTest");
 }
 
 // Repeating above test with Realloc
@@ -1960,7 +1960,7 @@ TEST_P(PartitionAllocDeathTest, RepeatedReallocReturnNullDirect) {
   size_t direct_map_size = 32 * 1024 * 1024;
   ASSERT_GT(direct_map_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionReallocFlags),
-               "DoReturnNullTest");
+               "Passed DoReturnNullTest");
 }
 
 // Repeating above test with TryRealloc
@@ -1968,7 +1968,7 @@ TEST_P(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
   size_t direct_map_size = 32 * 1024 * 1024;
   ASSERT_GT(direct_map_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionRootTryRealloc),
-               "DoReturnNullTest");
+               "Passed DoReturnNullTest");
 }
 
 // See crbug.com/1187404 to re-enable the tests below.
@@ -1979,7 +1979,7 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
   ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
   ASSERT_LE(single_slot_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionAllocFlags),
-               "DoReturnNullTest");
+               "Passed DoReturnNullTest");
 }
 
 // Repeating above test with Realloc.
@@ -1988,7 +1988,7 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNull) {
   ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
   ASSERT_LE(single_slot_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionReallocFlags),
-               "DoReturnNullTest");
+               "Passed DoReturnNullTest");
 }
 
 // Repeating above test with TryRealloc.
@@ -1997,7 +1997,7 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
   ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
   ASSERT_LE(single_slot_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionRootTryRealloc),
-               "DoReturnNullTest");
+               "Passed DoReturnNullTest");
 }
 
 #endif  // !defined(ARCH_CPU_64_BITS) || (BUILDFLAG(IS_POSIX) &&
