@@ -87,7 +87,7 @@ void CollectionViewControllerTest::CheckTitleWithId(int expected_title_id) {
 void CollectionViewControllerTest::CheckSectionHeader(NSString* expected_title,
                                                       int section) {
   CollectionViewItem* header =
-      [[controller_ collectionViewModel] headerForSection:section];
+      [[controller_ collectionViewModel] headerForSectionIndex:section];
   ASSERT_TRUE([header respondsToSelector:@selector(text)]);
   EXPECT_NSEQ(expected_title, [(id)header text]);
 }

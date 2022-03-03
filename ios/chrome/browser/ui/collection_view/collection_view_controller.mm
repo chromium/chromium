@@ -193,7 +193,7 @@
   CollectionViewItem* item = nil;
   UIAccessibilityTraits traits = UIAccessibilityTraitNone;
   if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
-    item = [self.collectionViewModel headerForSection:indexPath.section];
+    item = [self.collectionViewModel headerForSectionIndex:indexPath.section];
     traits = UIAccessibilityTraitHeader;
   } else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
     item = [self.collectionViewModel footerForSection:indexPath.section];
@@ -224,7 +224,7 @@
                                  (UICollectionViewLayout*)collectionViewLayout
     referenceSizeForHeaderInSection:(NSInteger)section {
   CollectionViewItem* item =
-      [self.collectionViewModel headerForSection:section];
+      [self.collectionViewModel headerForSectionIndex:section];
 
   if (item) {
     // TODO(crbug.com/635604): Support arbitrary sized headers.

@@ -233,7 +233,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
-  if ([self.tableViewModel headerForSection:section])
+  if ([self.tableViewModel headerForSectionIndex:section])
     return UITableViewAutomaticDimension;
   return ChromeTableViewHeightForHeaderInSection(section);
 }

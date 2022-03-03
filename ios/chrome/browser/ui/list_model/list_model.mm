@@ -189,8 +189,9 @@ typedef NSMutableArray<ListItem*> SectionItems;
   return [items objectAtIndex:indexPath.item];
 }
 
-- (ListItem*)headerForSection:(NSInteger)section {
-  NSInteger sectionIdentifier = [self sectionIdentifierForSectionIndex:section];
+- (ListItem*)headerForSectionIndex:(NSInteger)sectionIndex {
+  NSInteger sectionIdentifier =
+      [self sectionIdentifierForSectionIndex:sectionIndex];
   NSNumber* key = [NSNumber numberWithInteger:sectionIdentifier];
   return [_headers objectForKey:key];
 }

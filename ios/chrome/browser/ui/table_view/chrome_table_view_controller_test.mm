@@ -90,7 +90,7 @@ void ChromeTableViewControllerTest::CheckTitleWithId(int expected_title_id) {
 void ChromeTableViewControllerTest::CheckSectionHeader(NSString* expected_text,
                                                        int section) {
   TableViewHeaderFooterItem* header =
-      [[controller_ tableViewModel] headerForSection:section];
+      [[controller_ tableViewModel] headerForSectionIndex:section];
   ASSERT_TRUE([header respondsToSelector:@selector(text)]);
   EXPECT_NSEQ(expected_text, [(id)header text]);
 }

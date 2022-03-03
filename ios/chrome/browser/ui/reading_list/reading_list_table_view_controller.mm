@@ -756,7 +756,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:sectionID];
-  [model setHeader:[self headerForSection:sectionID]
+  [model setHeader:[self headerForSectionIndex:sectionID]
       forSectionWithIdentifier:sectionID];
   for (TableViewItem<ReadingListListItem>* item in items) {
     item.type = ItemTypeItem;
@@ -767,7 +767,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 // Returns a TableViewTextItem that displays the title for the section
 // designated by |sectionID|.
-- (TableViewHeaderFooterItem*)headerForSection:(SectionIdentifier)sectionID {
+- (TableViewHeaderFooterItem*)headerForSectionIndex:
+    (SectionIdentifier)sectionID {
   TableViewTextHeaderFooterItem* header =
       [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
 
@@ -952,7 +953,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
   void (^updates)(void) = ^{
     [model insertSectionWithIdentifier:sectionID atIndex:sectionIndex];
-    [model setHeader:[self headerForSection:sectionID]
+    [model setHeader:[self headerForSectionIndex:sectionID]
         forSectionWithIdentifier:sectionID];
     [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                   withRowAnimation:UITableViewRowAnimationMiddle];

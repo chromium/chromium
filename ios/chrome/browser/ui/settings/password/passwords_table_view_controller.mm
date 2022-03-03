@@ -1254,9 +1254,9 @@ bool IsFaviconEnabled() {
 //      expected heights are [20, 10, 20].
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
-  if ([self.tableViewModel headerForSection:section]) {
+  if ([self.tableViewModel headerForSectionIndex:section]) {
     TableViewHeaderFooterItem* item =
-        [self.tableViewModel headerForSection:section];
+        [self.tableViewModel headerForSectionIndex:section];
     Class headerClass = item.cellClass;
     if (!self.exampleHeaders[headerClass]) {
       UITableViewHeaderFooterView* view =

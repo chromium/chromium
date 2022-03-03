@@ -141,8 +141,8 @@ const NSInteger kItemTypeEnumZero = 100;
 // Returns the item at the given index path.
 - (ObjectType)itemAtIndexPath:(NSIndexPath*)indexPath;
 
-// Returns the header for the given |section|.
-- (SupplementalType)headerForSection:(NSInteger)section;
+// Returns the header for the given |sectionIndex|.
+- (SupplementalType)headerForSectionIndex:(NSInteger)sectionIndex;
 
 // Returns the footer for the given |section|.
 - (SupplementalType)footerForSection:(NSInteger)section;

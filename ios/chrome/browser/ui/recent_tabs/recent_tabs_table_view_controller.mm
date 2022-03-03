@@ -1609,7 +1609,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if (sender.state == UIGestureRecognizerStateEnded) {
     NSInteger section = [self.tableViewModel
         sectionForSectionIdentifier:tappedHeaderSectionIdentifier];
-    ListItem* headerItem = [self.tableViewModel headerForSection:section];
+    ListItem* headerItem = [self.tableViewModel headerForSectionIndex:section];
     // Suggested actions header is not interactable.
     if (headerItem.type == ItemTypeSuggestedActionsHeader) {
       return;
@@ -1689,7 +1689,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // Highlight the section header being long pressed.
   NSInteger section = [self.tableViewModel
       sectionForSectionIdentifier:tappedHeaderSectionIdentifier];
-  ListItem* headerItem = [self.tableViewModel headerForSection:section];
+  ListItem* headerItem = [self.tableViewModel headerForSectionIndex:section];
   UITableViewHeaderFooterView* headerView =
       [self.tableView headerViewForSection:section];
   if (headerItem.type == ItemTypeRecentlyClosedHeader ||

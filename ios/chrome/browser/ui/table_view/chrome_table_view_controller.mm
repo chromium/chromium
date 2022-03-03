@@ -271,7 +271,7 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
   TableViewHeaderFooterItem* item =
-      [self.tableViewModel headerForSection:section];
+      [self.tableViewModel headerForSectionIndex:section];
   if (!item)
     return [[UIView alloc] initWithFrame:CGRectZero];
   Class headerFooterClass = [item cellClass];

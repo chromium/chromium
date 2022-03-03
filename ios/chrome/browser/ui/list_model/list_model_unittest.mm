@@ -688,10 +688,10 @@ TEST_F(ListModelTest, Headers) {
 
   EXPECT_EQ(cheeseHeader,
             [model headerForSectionWithIdentifier:SectionIdentifierCheese]);
-  EXPECT_EQ(cheeseHeader, [model headerForSection:cheeseSection]);
+  EXPECT_EQ(cheeseHeader, [model headerForSectionIndex:cheeseSection]);
 
   EXPECT_FALSE([model headerForSectionWithIdentifier:SectionIdentifierWeasley]);
-  EXPECT_FALSE([model headerForSection:weasleySection]);
+  EXPECT_FALSE([model headerForSectionIndex:weasleySection]);
 }
 
 TEST_F(ListModelTest, Footers) {
