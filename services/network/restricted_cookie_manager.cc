@@ -356,8 +356,6 @@ RestrictedCookieManager::RestrictedCookieManager(
               cookie_partition_key_)),
       first_party_sets_enabled_(first_party_sets_enabled) {
   DCHECK(cookie_store);
-  CHECK(origin_ == isolation_info_.frame_origin().value() ||
-        role_ != mojom::RestrictedCookieManagerRole::SCRIPT);
 }
 
 RestrictedCookieManager::~RestrictedCookieManager() {

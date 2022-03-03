@@ -199,7 +199,13 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     // in the case of V1 reporting endpoints, and will be null for V0 reports.
     upload->request->set_site_for_cookies(
         upload->isolation_info.site_for_cookies());
-    upload->request->set_initiator(upload->isolation_info.frame_origin());
+    // Prior to using `isolation_info` directly here we built the
+    // `upload->network_isolation_key` to create the set the `isolation_info`.
+    // As experiments roll out to determine whether network partitions should be
+    // double or triple keyed the isolation_info might have a null value for
+    // `frame_origin`. Thus we should again get it from `network_isolation_key`
+    // until we can trust `isolation_info::frame_origin`.
+    upload->request->set_initiator(upload->report_origin);
     upload->request->set_isolation_info(upload->isolation_info);
 
     upload->request->SetExtraRequestHeaderByName(

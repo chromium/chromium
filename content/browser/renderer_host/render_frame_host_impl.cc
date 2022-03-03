@@ -3483,14 +3483,9 @@ void RenderFrameHostImpl::DidNavigate(
        navigation_request->GetWebBundleURL().is_valid())
           ? url::Origin::Create(navigation_request->GetWebBundleURL())
           : GetLastCommittedOrigin();
-  // TODO(https://crbug.com/1164508): Remove this check once origin is computed
-  // correctly by the browser side.
-  if (!origin.IsSameOriginWith(
-          GetIsolationInfoForSubresources().frame_origin().value())) {
-    isolation_info_ =
-        ComputeIsolationInfoInternal(origin, isolation_info_.request_type(),
-                                     navigation_request->anonymous());
-  }
+
+  isolation_info_ = ComputeIsolationInfoInternal(
+      origin, isolation_info_.request_type(), navigation_request->anonymous());
 
   // Separately, update the frame's last successful URL except for net error
   // pages, since those do not end up in the correct process after transfers
