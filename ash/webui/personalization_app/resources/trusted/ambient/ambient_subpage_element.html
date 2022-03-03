@@ -33,7 +33,8 @@
     </toggle-row>
     <!-- TODO(b/202853013) placeholder string -->
     <ambient-preview>Image Preview</ambient-preview>
-    <topic-source-list selected-topic-source="[[topicSource_]]"
+    <topic-source-list hidden="[[!shouldShowMainSettings_(path)]]"
+        selected-topic-source="[[topicSource_]]"
         has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]">
     </topic-source-list>
     <ambient-weather-unit
