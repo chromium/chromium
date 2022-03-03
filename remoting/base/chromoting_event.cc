@@ -160,19 +160,19 @@ ChromotingEvent& ChromotingEvent::operator=(ChromotingEvent&& other) {
 
 void ChromotingEvent::SetString(const std::string& key,
                                 const std::string& value) {
-  values_map_->SetString(key, value);
+  values_map_->SetStringKey(key, value);
 }
 
 void ChromotingEvent::SetInteger(const std::string& key, int value) {
-  values_map_->SetInteger(key, value);
+  values_map_->SetIntKey(key, value);
 }
 
 void ChromotingEvent::SetBoolean(const std::string& key, bool value) {
-  values_map_->SetBoolean(key, value);
+  values_map_->SetBoolKey(key, value);
 }
 
 void ChromotingEvent::SetDouble(const std::string& key, double value) {
-  values_map_->SetDouble(key, value);
+  values_map_->SetDoubleKey(key, value);
 }
 
 bool ChromotingEvent::IsDataValid() {
