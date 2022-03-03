@@ -827,6 +827,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           delete_begin_, delete_end_,
           CreateTaskCompletionClosure(TracingDataType::kWebAuthnCredentials));
     }
+
+    browsing_data::RemoveFederatedSiteSettingsData(delete_begin_, delete_end_,
+                                                   host_content_settings_map_);
   }
 
   if (remove_mask & constants::DATA_TYPE_ACCOUNT_PASSWORDS) {
