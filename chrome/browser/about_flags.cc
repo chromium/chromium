@@ -100,6 +100,7 @@
 #include "components/flags_ui/flags_ui_switches.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/lens/lens_features.h"
@@ -989,6 +990,41 @@ const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
     {"All Annotations and Persistence on Title",
      kPageContentAnnotationsTitleParams,
      std::size(kPageContentAnnotationsTitleParams), nullptr},
+};
+const FeatureEntry::FeatureParam
+    kJourneysOnDeviceClusteringLabelingNoContentClusteringParams[] = {
+        {"should_label_clusters", "true"},
+        {"content_clustering_enabled", "false"},
+};
+const FeatureEntry::FeatureParam
+    kJourneysOnDeviceClusteringNoContentClusteringParams[] = {
+        {"should_label_clusters", "false"},
+        {"content_clustering_enabled", "false"},
+};
+const FeatureEntry::FeatureParam
+    kJourneysOnDeviceClusteringLabelingWithContentClusteringParams[] = {
+        {"should_label_clusters", "true"},
+        {"content_clustering_enabled", "true"},
+};
+const FeatureEntry::FeatureParam
+    kJourneysOnDeviceClusteringContentClusteringParams[] = {
+        {"should_label_clusters", "false"},
+        {"content_clustering_enabled", "true"},
+};
+const FeatureEntry::FeatureVariation kJourneysOnDeviceClusteringVariations[] = {
+    {"Label Clusters and No Content Clustering",
+     kJourneysOnDeviceClusteringLabelingNoContentClusteringParams,
+     std::size(kJourneysOnDeviceClusteringLabelingNoContentClusteringParams),
+     nullptr},
+    {"No Content Clustering",
+     kJourneysOnDeviceClusteringNoContentClusteringParams,
+     std::size(kJourneysOnDeviceClusteringNoContentClusteringParams), nullptr},
+    {"Label Clusters and Content Clustering",
+     kJourneysOnDeviceClusteringLabelingWithContentClusteringParams,
+     std::size(kJourneysOnDeviceClusteringLabelingWithContentClusteringParams),
+     nullptr},
+    {"Content Clustering", kJourneysOnDeviceClusteringContentClusteringParams,
+     std::size(kJourneysOnDeviceClusteringContentClusteringParams), nullptr},
 };
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
@@ -5002,6 +5038,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kJourneysOmniboxActionName,
      flag_descriptions::kJourneysOmniboxActionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(history_clusters::internal::kOmniboxAction)},
+
+    {"history-journeys-on-device-clustering",
+     flag_descriptions::kJourneysOnDeviceClusteringBackendName,
+     flag_descriptions::kJourneysOnDeviceClusteringBackendDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         history_clusters::features::kOnDeviceClustering,
+         kJourneysOnDeviceClusteringVariations,
+         "HistoryJourneysOnDeviceClusteringBackend")},
 
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription, kOsDesktop,

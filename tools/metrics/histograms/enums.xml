@@ -53201,6 +53201,7 @@ from previous Chrome versions.
   <int value="-926039080" label="VaapiVp9kSVCHWEncoding:disabled"/>
   <int value="-920204598" label="ScrollAnchorSerialization:enabled"/>
   <int value="-918900957" label="AutofillCreditCardAssist:disabled"/>
+  <int value="-918899240" label="HistoryClustersOnDeviceClustering:disabled"/>
   <int value="-918618075" label="enable-service-worker"/>
   <int value="-916780902" label="ExternalPciDevicesAllowed:enabled"/>
   <int value="-915328316" label="CupsIppPrintingBackend:disabled"/>
@@ -55381,6 +55382,7 @@ from previous Chrome versions.
   <int value="632324382"
       label="ExperimentalAccessibilityDictationListening:disabled"/>
   <int value="632340413" label="network-settings-config"/>
+  <int value="632456816" label="HistoryClustersOnDeviceClustering:enabled"/>
   <int value="633442161" label="ExperimentalUi:disabled"/>
   <int value="634789085" label="LayeredAPI:disabled"/>
   <int value="635076832" label="MarkHttpAs:disabled"/>

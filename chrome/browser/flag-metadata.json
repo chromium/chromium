@@ -3624,12 +3624,17 @@
   },
   {
     "name": "history-journeys",
-    "owners": [ "tommycli", "chrome-memories@google.com", "chrome-omnibox-team@google.com" ],
+    "owners": [ "tommycli", "chrome-journeys@google.com", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 105
   },
   {
     "name": "history-journeys-omnibox-action",
-    "owners": [ "tommycli", "chrome-memories@google.com", "chrome-omnibox-team@google.com" ],
+    "owners": [ "tommycli", "chrome-journeys@google.com", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
+    "name": "history-journeys-on-device-clustering",
+    "owners": [ "sophiechang", "chrome-journeys@google.com", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 105
   },
   {

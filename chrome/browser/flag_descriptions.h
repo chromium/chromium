@@ -919,6 +919,9 @@ extern const char kJourneysDescription[];
 extern const char kJourneysOmniboxActionName[];
 extern const char kJourneysOmniboxActionDescription[];
 
+extern const char kJourneysOnDeviceClusteringBackendName[];
+extern const char kJourneysOnDeviceClusteringBackendDescription[];
+
 extern const char kLargeFaviconFromGoogleName[];
 extern const char kLargeFaviconFromGoogleDescription[];
 
