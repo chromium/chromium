@@ -3,11 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cStringIO
 import json
 import logging
 import os
 import shutil
+import six
 import sys
 import tempfile
 import unittest
@@ -428,10 +428,12 @@ class LoadShardJsonTest(_StandardGtestMergeTest):
 class MergeShardResultsTest(_StandardGtestMergeTest):
   """Tests for merge_shard_results function."""
 
+  # pylint: disable=super-with-arguments
   def setUp(self):
     super(MergeShardResultsTest, self).setUp()
     self.summary = None
     self.test_files = []
+  # pylint: enable=super-with-arguments
 
   def stage(self, summary, files):
     self.summary = self._write_temp_file('summary.json', summary)
@@ -440,7 +442,7 @@ class MergeShardResultsTest(_StandardGtestMergeTest):
       self.test_files.append(abs_path)
 
   def call(self):
-    stdout = cStringIO.StringIO()
+    stdout = six.StringIO()
     with mock.patch('sys.stdout', stdout):
       merged = standard_gtest_merge.merge_shard_results(
           self.summary, self.test_files)
@@ -600,8 +602,10 @@ class MergeShardResultsTest(_StandardGtestMergeTest):
 
 class CommandLineTest(common_merge_script_tests.CommandLineTest):
 
+  # pylint: disable=super-with-arguments
   def __init__(self, methodName='runTest'):
     super(CommandLineTest, self).__init__(methodName, standard_gtest_merge)
+  # pylint: enable=super-with-arguments
 
 
 if __name__ == '__main__':

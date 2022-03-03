@@ -19,9 +19,11 @@ import merge_lib as merger
 
 class MergeProfilesTest(unittest.TestCase):
 
+  # pylint: disable=super-with-arguments
   def __init__(self, *args, **kwargs):
     super(MergeProfilesTest, self).__init__(*args, **kwargs)
     self.maxDiff = None
+  # pylint: enable=super-with-arguments
 
   def test_merge_script_api_parameters(self):
     """Test the step-level merge front-end."""
