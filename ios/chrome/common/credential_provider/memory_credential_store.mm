@@ -78,7 +78,7 @@
   DCHECK(recordIdentifier.length) << "Invalid |recordIdentifier| was passed.";
   dispatch_barrier_async(self.workingQueue, ^{
     DCHECK(self.memoryStorage[recordIdentifier])
-        << "Credential doesn't exist in the storage";
+        << "Credential doesn't exist in the storage, " << recordIdentifier;
     self.memoryStorage[recordIdentifier] = nil;
   });
 }
