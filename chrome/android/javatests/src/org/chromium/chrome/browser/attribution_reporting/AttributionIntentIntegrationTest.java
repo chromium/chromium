@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.attribution_reporting;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,6 +44,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -225,6 +228,7 @@ public class AttributionIntentIntegrationTest {
     @LargeTest
     @Feature({"ConversionMeasurement"})
     @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testConversionIntentEnabled_CCT_preload_sameUrl() {
         AttributionReporter.setInstanceForTesting(mAttributionReporter);
         CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
@@ -255,6 +259,7 @@ public class AttributionIntentIntegrationTest {
     @LargeTest
     @Feature({"ConversionMeasurement"})
     @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testConversionIntentEnabled_CCT_preload_differentUrl() {
         AttributionReporter.setInstanceForTesting(mAttributionReporter);
         CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
