@@ -745,6 +745,7 @@ ci.builder(
 
 ci.builder(
     name = "win-archive-dbg (reclient shadow)",
+    builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "win|dbg",
         short_name = "64",
@@ -758,6 +759,7 @@ ci.builder(
 
 ci.builder(
     name = "win-archive-rel (reclient shadow)",
+    builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "win|rel",
         short_name = "64",
