@@ -3,7 +3,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 async_test(t => {
-  window.onload = t.step_timeout(() => {
+  window.onload = () => t.step_timeout(() => {
     let start_length = history.length;
     let target_key = appHistory.current.key;
     let target_id = appHistory.current.id;
