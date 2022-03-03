@@ -26,6 +26,8 @@ const char MediaEngagementScore::kHighScoreLowerThresholdParamName[] =
 const char MediaEngagementScore::kHighScoreUpperThresholdParamName[] =
     "upper_threshold";
 
+base::TimeDelta kScoreExpirationDuration = base::Days(30);
+
 namespace {
 
 const int kScoreMinVisitsParamDefault = 20;
@@ -156,9 +158,12 @@ void MediaEngagementScore::Commit() {
   if (!UpdateScoreDict())
     return;
 
+  content_settings::ContentSettingConstraints constraints = {
+      base::Time::Now() + kScoreExpirationDuration};
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-      content_settings::FromNullableUniquePtrValue(std::move(score_dict_)));
+      content_settings::FromNullableUniquePtrValue(std::move(score_dict_)),
+      constraints);
 }
 
 void MediaEngagementScore::IncrementMediaPlaybacks() {
