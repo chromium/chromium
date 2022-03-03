@@ -18,6 +18,9 @@
     height: 62px;
     width: 62px;
   }
+  .image-container img:focus-visible {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
   .image-container img:hover {
     background-color: var(--cros-highlight-color-focus);
   }
@@ -39,9 +42,20 @@
     display: inline-block;
     height: 64px;
     line-height: 64px;
+    position: relative;
     text-align: center;
     vertical-align: middle;
     width: 64px;
+  }
+  .folder-container:hover {
+    background-color: var(--cros-text-highlight-color);
+  }
+  .folder-container:focus-visible {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+  .folder-container paper-ripple {
+    color: rgba(var(--cros-ripple-color-prominent-rgb), 1);
+    --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
   }
   #folderIcon {
     line-height: inherit;
@@ -73,6 +87,7 @@
     </div>
   </template>
   <div class="folder-container">
+    <paper-ripple class="circle"></paper-ripple>
     <iron-icon id="folderIcon" icon="personalization:folder"
         on-click="onSelectImageFromDisk_" on-keypress="onSelectImageFromDisk_">
     </iron-icon>
