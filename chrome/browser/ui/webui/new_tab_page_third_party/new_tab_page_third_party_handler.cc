@@ -50,23 +50,25 @@ void NewTabPageThirdPartyHandler::OnNativeThemeUpdated(
 void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
   auto theme = new_tab_page_third_party::mojom::Theme::New();
   auto most_visited = most_visited::mojom::MostVisitedTheme::New();
-  const ui::ThemeProvider& theme_provider =
-      ThemeService::GetThemeProviderForProfile(profile_);
+  const ui::ThemeProvider* theme_provider =
+      webui::GetThemeProvider(web_contents_);
+  DCHECK(theme_provider);
   most_visited->background_color =
-      theme_provider.GetColor(ThemeProperties::COLOR_NTP_SHORTCUT);
+      theme_provider->GetColor(ThemeProperties::COLOR_NTP_SHORTCUT);
   most_visited->use_white_tile_icon =
       color_utils::IsDark(most_visited->background_color);
   most_visited->use_title_pill = false;
-  theme->text_color = theme_provider.GetColor(ThemeProperties::COLOR_NTP_TEXT);
+  theme->text_color = theme_provider->GetColor(ThemeProperties::COLOR_NTP_TEXT);
   most_visited->is_dark = !color_utils::IsDark(theme->text_color);
   theme->color_background = color_utils::SkColorToRgbaString(
-      GetThemeColor(webui::GetNativeTheme(web_contents_), theme_provider,
+      GetThemeColor(webui::GetNativeTheme(web_contents_), *theme_provider,
                     ThemeProperties::COLOR_NTP_BACKGROUND));
-  if (theme_provider.HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
-    theme->background_tiling = GetNewTabBackgroundTilingCSS(theme_provider);
-    theme->background_position = GetNewTabBackgroundPositionCSS(theme_provider);
+  if (theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
+    theme->background_tiling = GetNewTabBackgroundTilingCSS(*theme_provider);
+    theme->background_position =
+        GetNewTabBackgroundPositionCSS(*theme_provider);
     theme->has_custom_background =
-        theme_provider.HasCustomImage(IDR_THEME_NTP_BACKGROUND);
+        theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND);
     theme->id = profile_->GetPrefs()->GetString(prefs::kCurrentThemeID);
     most_visited->use_title_pill = true;
   }
