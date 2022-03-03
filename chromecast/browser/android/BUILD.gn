@@ -163,6 +163,7 @@ common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastApplication.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserHelper.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastCommandLineHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastCrashHandler.java",
