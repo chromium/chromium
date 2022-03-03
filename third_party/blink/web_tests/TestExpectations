@@ -7629,4 +7629,4 @@ crbug.com/1300487 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/hid.http
 crbug.com/1302043 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Pass Timeout ]
 
 # Sheriff 2022-03-03
-crbug.com/1302571 http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Skip ]
+crbug.com/1302571 virtual/threaded/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Skip ]
