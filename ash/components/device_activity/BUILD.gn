@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/network",
     "//chromeos/network:test_support",
+    "//chromeos/system:system",
     "//components/prefs:test_support",
     "//dbus",
     "//services/device/public/cpp:test_support",

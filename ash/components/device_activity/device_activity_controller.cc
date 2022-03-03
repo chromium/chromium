@@ -4,8 +4,11 @@
 
 #include "ash/components/device_activity/device_activity_controller.h"
 
+#include "ash/components/device_activity/daily_use_case_impl.h"
+#include "ash/components/device_activity/device_active_use_case.h"
 #include "ash/components/device_activity/device_activity_client.h"
 #include "ash/components/device_activity/fresnel_pref_names.h"
+#include "ash/components/device_activity/monthly_use_case_impl.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -27,9 +30,6 @@ DeviceActivityController* g_ash_device_activity_controller = nullptr;
 // Production edge server for reporting device actives.
 // TODO(https://crbug.com/1267432): Enable passing base url as a runtime flag.
 const char kFresnelBaseUrl[] = "https://crosfresnel-pa.googleapis.com";
-
-// Default value for devices that are missing the hardware class.
-const char kHardwareClassKeyNotFound[] = "HARDWARE_CLASS_KEY_NOT_FOUND";
 
 class PsmDelegateImpl : public PsmDelegate {
  public:
@@ -108,23 +108,20 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& psm_device_active_secret) {
-  // Retrieve full hardware class from machine statistics object.
-  // Default |full_hardware_class| to kHardwareClassKeyNotFound if retrieval
-  // from machine statistics fails.
-  //
-  // TODO(hirthanan): This is used for debugging purposes until crbug/1289722
-  // has launched.
-  std::string full_hardware_class = kHardwareClassKeyNotFound;
-  statistics_provider_->GetMachineStatistic(chromeos::system::kHardwareClassKey,
-                                            &full_hardware_class);
+  // Initialize all device active use cases, sorted by
+  // smallest to largest window. i.e. Daily > Monthly> First Active.
+  // TODO(hirthanan): Add |MonthlyUseCaseImpl| to vector when ready to support
+  // monthly use case.
+  std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
+  use_cases.push_back(std::make_unique<DailyUseCaseImpl>(
+      local_state, psm_device_active_secret));
 
   if (trigger == Trigger::kNetwork) {
     da_client_network_ = std::make_unique<DeviceActivityClient>(
-        chromeos::NetworkHandler::Get()->network_state_handler(), local_state,
+        chromeos::NetworkHandler::Get()->network_state_handler(),
         url_loader_factory, std::make_unique<PsmDelegateImpl>(),
         std::make_unique<base::RepeatingTimer>(), kFresnelBaseUrl,
-        google_apis::GetFresnelAPIKey(), psm_device_active_secret,
-        full_hardware_class);
+        google_apis::GetFresnelAPIKey(), std::move(use_cases));
   }
 }
 

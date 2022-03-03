@@ -4,9 +4,11 @@
 
 #include "ash/components/device_activity/device_activity_client.h"
 
+#include "ash/components/device_activity/daily_use_case_impl.h"
 #include "ash/components/device_activity/device_activity_controller.h"
 #include "ash/components/device_activity/fresnel_pref_names.h"
 #include "ash/components/device_activity/fresnel_service.pb.h"
+#include "ash/components/device_activity/monthly_use_case_impl.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
@@ -16,6 +18,7 @@
 #include "base/timer/mock_timer.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
@@ -56,7 +59,6 @@ const char kPsmImportRequestEndpoint[] = "/v1/fresnel/psmRlweImport";
 // Create fake secrets used by the |DeviceActivityClient|.
 constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
 constexpr char kFakeFresnelApiKey[] = "FAKE_FRESNEL_API_KEY";
-constexpr char kFakeFullHardwareClass[] = "FAKE_FULL_HARDWARE_CLASS";
 
 // Number of test cases exist in cros_test_data.binarypb file, which is part of
 // private_membership third_party library.
@@ -116,6 +118,16 @@ class FakePsmDelegate : public PsmDelegate {
   std::string ec_cipher_key_;
   std::string seed_;
   std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids_;
+};
+
+class FakeDailyUseCaseImpl : public DailyUseCaseImpl {
+ public:
+  FakeDailyUseCaseImpl(PrefService* local_state,
+                       const std::string& psm_device_active_secret)
+      : DailyUseCaseImpl(local_state, psm_device_active_secret) {}
+  FakeDailyUseCaseImpl(const FakeDailyUseCaseImpl&) = delete;
+  FakeDailyUseCaseImpl& operator=(const FakeDailyUseCaseImpl&) = delete;
+  ~FakeDailyUseCaseImpl() override = default;
 };
 
 class DeviceActivityClientTest : public testing::Test {
@@ -185,7 +197,6 @@ class DeviceActivityClientTest : public testing::Test {
 
     network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
         /*use_default_devices_and_services=*/false);
-
     CreateWifiNetworkConfig();
 
     // Initialize |local_state_| prefs used by device_activity_client class.
@@ -194,15 +205,24 @@ class DeviceActivityClientTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
+    chromeos::system::StatisticsProvider::SetTestProvider(
+        &statistics_provider_);
+
+    // Create vector of device active use cases, which device activity client
+    // should maintain ownership of.
+    std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases;
+    use_cases.push_back(std::make_unique<FakeDailyUseCaseImpl>(
+        &local_state_, kFakePsmDeviceActiveSecret));
+
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
-        network_state_test_helper_->network_state_handler(), &local_state_,
+        network_state_test_helper_->network_state_handler(),
         test_shared_loader_factory_,
         std::make_unique<FakePsmDelegate>(
             psm_test_data_->test_case.ec_cipher_key(),
             psm_test_data_->test_case.seed(),
             std::move(psm_test_data_->plaintext_ids)),
         std::make_unique<base::MockRepeatingTimer>(), kTestFresnelBaseUrl,
-        kFakeFresnelApiKey, kFakePsmDeviceActiveSecret, kFakeFullHardwareClass);
+        kFakeFresnelApiKey, std::move(use_cases));
   }
 
   void TearDown() override {}
@@ -253,6 +273,7 @@ class DeviceActivityClientTest : public testing::Test {
   std::unique_ptr<DeviceActivityClient> device_activity_client_;
   std::string wifi_network_service_path_;
   base::HistogramTester histogram_tester_;
+  chromeos::system::FakeStatisticsProvider statistics_provider_;
 };
 
 TEST_F(DeviceActivityClientTest, DefaultStatesAreInitializedProperly) {

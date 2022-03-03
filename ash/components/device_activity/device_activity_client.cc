@@ -4,19 +4,12 @@
 
 #include "ash/components/device_activity/device_activity_client.h"
 
-#include "ash/components/device_activity/fresnel_pref_names.h"
+#include "ash/components/device_activity/device_active_use_case.h"
 #include "ash/components/device_activity/fresnel_service.pb.h"
-#include "base/i18n/time_formatting.h"
 // TODO(https://crbug.com/1269900): Migrate to use SFUL library.
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/prefs/pref_service.h"
-#include "components/version_info/version_info.h"
-#include "crypto/hmac.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -141,110 +134,31 @@ std::unique_ptr<network::ResourceRequest> GenerateResourceRequest(
   return resource_request;
 }
 
-// TODO(https://crbug.com/1262177): currently the PSM use cases are not synced
-// with google3. Update to retrieve from synced RlweUseCase in file:
-// third_party/private_membership/src/private_membership_rlwe.proto.
-constexpr psm_rlwe::RlweUseCase kDailyPsmUseCase =
-    psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY;
-
-// Generate the window identifier for the kCrosDaily use case.
-// For example, the daily use case should generate a window identifier
-// formatted: yyyyMMdd.
-// TODO(https://crbug.com/1262187): This window identifier will need to support
-// more use cases in the future. Currently it only supports the kCrosDaily use
-// case.
-std::string GenerateUTCWindowIdentifier(base::Time ts) {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d%02d%02d", exploded.year, exploded.month,
-                            exploded.day_of_month);
-}
-
-// Calculates an HMAC of |message| using |key|, encoded as a hexadecimal string.
-// Return empty string if HMAC fails.
-std::string GetDigestString(const std::string& key,
-                            const std::string& message) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  std::vector<uint8_t> digest(hmac.DigestLength());
-  if (!hmac.Init(key) || !hmac.Sign(message, &digest[0], digest.size())) {
-    return std::string();
-  }
-  return base::HexEncode(&digest[0], digest.size());
-}
-
-// Generate the PSM identifier, used to identify a fixed
-// window of time for device active counting. Privacy compliance is guaranteed
-// by retrieving the |psm_device_active_secret_| from chromeos, and
-// performing an additional HMAC-SHA256 hash on generated plaintext string.
-absl::optional<psm_rlwe::RlwePlaintextId> GeneratePsmIdentifier(
-    const std::string& psm_device_active_secret,
-    const std::string& psm_use_case,
-    const std::string& window_id) {
-  if (psm_device_active_secret.empty() || psm_use_case.empty() ||
-      window_id.empty())
-    return absl::nullopt;
-
-  std::string unhashed_psm_id =
-      base::JoinString({psm_use_case, window_id}, "|");
-
-  // Convert bytes to hex to avoid encoding/decoding proto issues across
-  // client/server.
-  std::string psm_id_hex =
-      GetDigestString(psm_device_active_secret, unhashed_psm_id);
-
-  if (!psm_id_hex.empty()) {
-    psm_rlwe::RlwePlaintextId psm_rlwe_id;
-    psm_rlwe_id.set_sensitive_id(psm_id_hex);
-    return psm_rlwe_id;
-  }
-
-  // Failed HMAC-SHA256 hash on PSM id.
-  return absl::nullopt;
-}
-
-// Determines if |prev_ping_ts| occurred in a different daily active window then
-// |new_ping_ts| for a given device. Performing this check helps reduce QPS to
-// the |CheckingMembership| network requests.
-// TODO(https://crbug.com/1262187): This function will need to get modified to
-// support kCrosMonthly and kCrosAllTime use cases.
-bool IsDailyDeviceActivePingRequired(base::Time prev_ping_ts,
-                                     base::Time new_ping_ts) {
-  std::string prev_ping_ts_period = GenerateUTCWindowIdentifier(prev_ping_ts);
-  std::string new_ping_ts_period = GenerateUTCWindowIdentifier(new_ping_ts);
-
-  return prev_ping_ts < new_ping_ts &&
-         prev_ping_ts_period != new_ping_ts_period;
-}
-
 }  // namespace
 
 DeviceActivityClient::DeviceActivityClient(
     NetworkStateHandler* handler,
-    PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<PsmDelegate> psm_delegate,
     std::unique_ptr<base::RepeatingTimer> report_timer,
     const std::string& fresnel_base_url,
     const std::string& api_key,
-    const std::string& psm_device_active_secret,
-    const std::string& full_hardware_class)
+    std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases)
     : network_state_handler_(handler),
-      local_state_(local_state),
       url_loader_factory_(url_loader_factory),
       psm_delegate_(std::move(psm_delegate)),
       report_timer_(std::move(report_timer)),
       fresnel_base_url_(fresnel_base_url),
       api_key_(api_key),
-      psm_device_active_secret_(psm_device_active_secret),
-      full_hardware_class_(full_hardware_class) {
+      use_cases_(std::move(use_cases)) {
   DCHECK(network_state_handler_);
-  DCHECK(local_state_);
   DCHECK(url_loader_factory_);
   DCHECK(psm_delegate_);
   DCHECK(report_timer_);
+  DCHECK(!use_cases_.empty());
 
   report_timer_->Start(FROM_HERE, kTimeToRepeat, this,
-                       &DeviceActivityClient::TransitionOutOfIdle);
+                       &DeviceActivityClient::ReportUseCases);
 
   network_state_handler_->AddObserver(this, FROM_HERE);
   DefaultNetworkChanged(network_state_handler_->DefaultNetwork());
@@ -275,7 +189,7 @@ DeviceActivityClient::State DeviceActivityClient::GetState() const {
 }
 
 void DeviceActivityClient::OnNetworkOnline() {
-  TransitionOutOfIdle();
+  ReportUseCases();
 }
 
 GURL DeviceActivityClient::GetFresnelURL() const {
@@ -305,62 +219,70 @@ GURL DeviceActivityClient::GetFresnelURL() const {
   return base_url.ReplaceComponents(replacements);
 }
 
-void DeviceActivityClient::InitializeDeviceMetadata(
-    DeviceMetadata* device_metadata) {
-  device_metadata->set_chromeos_version(version_info::GetMajorVersionNumber());
-  device_metadata->set_hardware_id(full_hardware_class_);
-}
-
 // TODO(https://crbug.com/1262189): Add callback to report actives only after
 // synchronizing the system clock.
-void DeviceActivityClient::TransitionOutOfIdle() {
+void DeviceActivityClient::ReportUseCases() {
+  DCHECK(!use_cases_.empty());
+
   if (!network_connected_ || state_ != State::kIdle) {
-    TransitionToIdle();
+    TransitionToIdle(nullptr);
     return;
   }
 
-  // Check the last recorded daily ping timestamp in local state prefs.
-  // This variable has the default Unix Epoch value if the device is
-  // new, powerwashed, recovered, or a RMA device.
-  base::Time last_recorded_daily_ping_time =
-      local_state_->GetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp);
-
   // The network is connected and the client |state_| is kIdle.
   last_transition_out_of_idle_time_ = base::Time::Now();
+
+  for (auto& use_case : use_cases_) {
+    // Ownership of the use cases will be maintained by the |use_cases_| vector.
+    pending_use_cases_.push(use_case.get());
+  }
+
+  DeviceActiveUseCase* current_use_case = pending_use_cases_.front();
+  pending_use_cases_.pop();
+
+  TransitionOutOfIdle(current_use_case);
+}
+
+void DeviceActivityClient::TransitionOutOfIdle(
+    DeviceActiveUseCase* current_use_case) {
+  DCHECK(current_use_case);
 
   // Begin phase one of checking membership if the device has not pinged yet
   // within the given use case window.
   // TODO(https://crbug.com/1262187): Remove hardcoded use case when adding
   // support for additional use cases (i.e MONTHLY, ALL_TIME, etc.).
-  if (IsDailyDeviceActivePingRequired(last_recorded_daily_ping_time,
-                                      last_transition_out_of_idle_time_)) {
-    current_day_window_id_ =
-        GenerateUTCWindowIdentifier(last_transition_out_of_idle_time_);
-    current_day_psm_id_ = GeneratePsmIdentifier(
-        psm_device_active_secret_, psm_rlwe::RlweUseCase_Name(kDailyPsmUseCase),
-        current_day_window_id_.value());
+  if (current_use_case->IsDevicePingRequired(
+          last_transition_out_of_idle_time_)) {
+    current_use_case->SetWindowIdentifier(
+        current_use_case->GenerateUTCWindowIdentifier(
+            last_transition_out_of_idle_time_));
+    auto current_psm_id = current_use_case->GetPsmIdentifier();
 
     // Check if the PSM id is generated.
-    if (!current_day_psm_id_.has_value()) {
-      TransitionToIdle();
+    if (!current_psm_id.has_value()) {
+      TransitionToIdle(current_use_case);
       return;
     }
 
     std::vector<psm_rlwe::RlwePlaintextId> psm_rlwe_ids = {
-        current_day_psm_id_.value()};
+        current_psm_id.value()};
     auto status_or_client = psm_delegate_->CreatePsmClient(
-        psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY, psm_rlwe_ids);
+        current_use_case->GetPsmUseCase(), psm_rlwe_ids);
 
     if (!status_or_client.ok()) {
-      TransitionToIdle();
+      TransitionToIdle(current_use_case);
       return;
     }
-    psm_rlwe_client_ = std::move(status_or_client.value());
 
-    // During rollout, we perform CheckIn without CheckMembership for powerwash,
-    // recovery, or RMA devices.
-    TransitionToCheckIn();
+    current_use_case->SetPsmRlweClient(std::move(status_or_client.value()));
+
+    // During rollout, we perform CheckIn without CheckMembership for
+    // powerwash, recovery, or RMA devices.
+    TransitionToCheckIn(current_use_case);
+    return;
   }
+
+  TransitionToIdle(current_use_case);
 }
 
 void DeviceActivityClient::TransitionToHealthCheck() {
@@ -406,10 +328,11 @@ void DeviceActivityClient::OnHealthCheckDone(
   RecordDurationStateMetric(state_, state_timer_.Elapsed());
 
   // Transition back to kIdle state after performing a health check on servers.
-  TransitionToIdle();
+  TransitionToIdle(nullptr);
 }
 
-void DeviceActivityClient::TransitionToCheckMembershipOprf() {
+void DeviceActivityClient::TransitionToCheckMembershipOprf(
+    DeviceActiveUseCase* current_use_case) {
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!url_loader_);
 
@@ -422,10 +345,11 @@ void DeviceActivityClient::TransitionToCheckMembershipOprf() {
   RecordStateCountMetric(state_);
 
   // Generate PSM Oprf request body.
-  const auto status_or_oprf_request = psm_rlwe_client_->CreateOprfRequest();
+  const auto status_or_oprf_request =
+      current_use_case->GetPsmRlweClient()->CreateOprfRequest();
   if (!status_or_oprf_request.ok()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    TransitionToIdle();
+    TransitionToIdle(current_use_case);
     return;
   }
 
@@ -452,11 +376,12 @@ void DeviceActivityClient::TransitionToCheckMembershipOprf() {
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&DeviceActivityClient::OnCheckMembershipOprfDone,
-                     weak_factory_.GetWeakPtr()),
+                     weak_factory_.GetWeakPtr(), current_use_case),
       kMaxFresnelResponseSizeBytes);
 }
 
 void DeviceActivityClient::OnCheckMembershipOprfDone(
+    DeviceActiveUseCase* current_use_case,
     std::unique_ptr<std::string> response_body) {
   DCHECK_EQ(state_, State::kCheckingMembershipOprf);
 
@@ -471,14 +396,14 @@ void DeviceActivityClient::OnCheckMembershipOprfDone(
   FresnelPsmRlweOprfResponse psm_oprf_response;
   if (!response_body || !psm_oprf_response.ParseFromString(*response_body)) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    TransitionToIdle();
+    TransitionToIdle(current_use_case);
     return;
   }
 
   // Parse |fresnel_oprf_response| for oprf_response.
   if (!psm_oprf_response.has_rlwe_oprf_response()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    TransitionToIdle();
+    TransitionToIdle(current_use_case);
     return;
   }
 
@@ -486,11 +411,12 @@ void DeviceActivityClient::OnCheckMembershipOprfDone(
       psm_oprf_response.rlwe_oprf_response();
 
   RecordDurationStateMetric(state_, state_timer_.Elapsed());
-  TransitionToCheckMembershipQuery(oprf_response);
+  TransitionToCheckMembershipQuery(oprf_response, current_use_case);
 }
 
 void DeviceActivityClient::TransitionToCheckMembershipQuery(
-    const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response) {
+    const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response,
+    DeviceActiveUseCase* current_use_case) {
   DCHECK_EQ(state_, State::kCheckingMembershipOprf);
   DCHECK(!url_loader_);
 
@@ -504,10 +430,10 @@ void DeviceActivityClient::TransitionToCheckMembershipQuery(
 
   // Generate PSM Query request body.
   const auto status_or_query_request =
-      psm_rlwe_client_->CreateQueryRequest(oprf_response);
+      current_use_case->GetPsmRlweClient()->CreateQueryRequest(oprf_response);
   if (!status_or_query_request.ok()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    TransitionToIdle();
+    TransitionToIdle(current_use_case);
     return;
   }
 
@@ -534,11 +460,12 @@ void DeviceActivityClient::TransitionToCheckMembershipQuery(
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&DeviceActivityClient::OnCheckMembershipQueryDone,
-                     weak_factory_.GetWeakPtr()),
+                     weak_factory_.GetWeakPtr(), current_use_case),
       kMaxFresnelResponseSizeBytes);
 }
 
 void DeviceActivityClient::OnCheckMembershipQueryDone(
+    DeviceActiveUseCase* current_use_case,
     std::unique_ptr<std::string> response_body) {
   DCHECK_EQ(state_, State::kCheckingMembershipQuery);
 
@@ -553,31 +480,32 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
   FresnelPsmRlweQueryResponse psm_query_response;
   if (!response_body || !psm_query_response.ParseFromString(*response_body)) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    TransitionToIdle();
+    TransitionToIdle(current_use_case);
     return;
   }
 
   // Parse |fresnel_query_response| for psm query_response.
   if (!psm_query_response.has_rlwe_query_response()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    TransitionToIdle();
+    TransitionToIdle(current_use_case);
     return;
   }
 
   psm_rlwe::PrivateMembershipRlweQueryResponse query_response =
       psm_query_response.rlwe_query_response();
 
-  auto status_or_response = psm_rlwe_client_->ProcessResponse(query_response);
+  auto status_or_response =
+      current_use_case->GetPsmRlweClient()->ProcessResponse(query_response);
   if (!status_or_response.ok()) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    TransitionToIdle();
+    TransitionToIdle(current_use_case);
     return;
   }
 
   psm_rlwe::MembershipResponseMap membership_response_map =
       status_or_response.value();
   private_membership::MembershipResponse membership_response =
-      membership_response_map.Get(current_day_psm_id_.value());
+      membership_response_map.Get(current_use_case->GetPsmIdentifier().value());
 
   bool is_psm_id_member = membership_response.is_member();
 
@@ -586,17 +514,19 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
 
   if (!is_psm_id_member) {
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    TransitionToCheckIn();
+    TransitionToCheckIn(current_use_case);
   } else {
-    // Update local state to signal ping has already been sent for current day.
-    local_state_->SetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp,
-                          last_transition_out_of_idle_time_);
+    // Update local state to signal ping has already been sent for use case
+    // window.
+    current_use_case->SetLastKnownPingTimestamp(
+        last_transition_out_of_idle_time_);
     RecordDurationStateMetric(state_, state_timer_.Elapsed());
-    TransitionToIdle();
+    TransitionToIdle(current_use_case);
   }
 }
 
-void DeviceActivityClient::TransitionToCheckIn() {
+void DeviceActivityClient::TransitionToCheckIn(
+    DeviceActiveUseCase* current_use_case) {
   DCHECK(!url_loader_);
 
   state_timer_ = base::ElapsedTimer();
@@ -607,18 +537,9 @@ void DeviceActivityClient::TransitionToCheckIn() {
   // Report UMA histogram for transitioning state to |kCheckingIn|.
   RecordStateCountMetric(state_);
 
-  std::string current_psm_id_str = current_day_psm_id_.value().sensitive_id();
-
   // Generate Fresnel PSM import request body.
-  device_activity::ImportDataRequest import_request;
-  import_request.set_window_identifier(current_day_window_id_.value());
-  import_request.set_plaintext_identifier(current_psm_id_str);
-  import_request.set_use_case(kDailyPsmUseCase);
-
-  // Important: Each new dimension added to metadata will need to be approved by
-  // privacy.
-  DeviceMetadata* device_metadata = import_request.mutable_device_metadata();
-  InitializeDeviceMetadata(device_metadata);
+  device_activity::ImportDataRequest import_request =
+      current_use_case->GenerateImportRequestBody();
 
   std::string request_body;
   import_request.SerializeToString(&request_body);
@@ -632,14 +553,16 @@ void DeviceActivityClient::TransitionToCheckIn() {
                                                  MISSING_TRAFFIC_ANNOTATION);
   url_loader_->AttachStringForUpload(request_body, "application/x-protobuf");
   url_loader_->SetTimeoutDuration(kImportRequestTimeout);
+
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&DeviceActivityClient::OnCheckInDone,
-                     weak_factory_.GetWeakPtr()),
+                     weak_factory_.GetWeakPtr(), current_use_case),
       kMaxFresnelResponseSizeBytes);
 }
 
 void DeviceActivityClient::OnCheckInDone(
+    DeviceActiveUseCase* current_use_case,
     std::unique_ptr<std::string> response_body) {
   DCHECK_EQ(state_, State::kCheckingIn);
 
@@ -653,20 +576,33 @@ void DeviceActivityClient::OnCheckInDone(
   // Successful import request - PSM ID was imported successfully.
   if (net_code == net::OK) {
     // Update local state pref to record reporting device active.
-    local_state_->SetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp,
-                          last_transition_out_of_idle_time_);
+    current_use_case->SetLastKnownPingTimestamp(
+        last_transition_out_of_idle_time_);
   }
 
   RecordDurationStateMetric(state_, state_timer_.Elapsed());
-  TransitionToIdle();
+  TransitionToIdle(current_use_case);
 }
 
-void DeviceActivityClient::TransitionToIdle() {
+void DeviceActivityClient::TransitionToIdle(
+    DeviceActiveUseCase* current_use_case) {
   DCHECK(!url_loader_);
   state_ = State::kIdle;
 
-  current_day_window_id_ = absl::nullopt;
-  current_day_psm_id_ = absl::nullopt;
+  if (current_use_case) {
+    // This will also reset the |current_use_case| psm_id field.
+    current_use_case->SetWindowIdentifier(absl::nullopt);
+
+    current_use_case = nullptr;
+  }
+
+  if (!pending_use_cases_.empty()) {
+    DeviceActiveUseCase* current_use_case = pending_use_cases_.front();
+    pending_use_cases_.pop();
+
+    TransitionOutOfIdle(current_use_case);
+    return;
+  }
 
   // Report UMA histogram for transitioning state back to |kIdle|.
   RecordStateCountMetric(state_);

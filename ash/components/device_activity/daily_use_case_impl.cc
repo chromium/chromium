@@ -46,8 +46,11 @@ ImportDataRequest DailyUseCaseImpl::GenerateImportRequestBody() {
   // Create fresh |DeviceMetadata| object.
   // Note every dimension added to this proto must be approved by privacy.
   DeviceMetadata* device_metadata = import_request.mutable_device_metadata();
-  device_metadata->set_hardware_id(GetFullHardwareClass());
   device_metadata->set_chromeos_version(GetChromeOSVersion());
+
+  // TODO(hirthanan): This is used for debugging purposes until crbug/1289722
+  // has launched.
+  device_metadata->set_hardware_id(GetFullHardwareClass());
 
   return import_request;
 }

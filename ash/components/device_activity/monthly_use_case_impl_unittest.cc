@@ -118,11 +118,12 @@ TEST_F(MonthlyUseCaseImplTest, PingRequiredInNonOverlappingUTCWindows) {
 
   EXPECT_TRUE(
       base::Time::FromString("01 Jan 2022 00:00:00 GMT", &last_monthly_ts));
+  monthly_use_case_impl_->SetLastKnownPingTimestamp(last_monthly_ts);
+
   EXPECT_TRUE(
       base::Time::FromString("25 Feb 2022 00:00:00 GMT", &current_monthly_ts));
 
-  EXPECT_TRUE(monthly_use_case_impl_->IsDevicePingRequired(last_monthly_ts,
-                                                           current_monthly_ts));
+  EXPECT_TRUE(monthly_use_case_impl_->IsDevicePingRequired(current_monthly_ts));
 }
 
 TEST_F(MonthlyUseCaseImplTest, PingNotRequiredInOverlappingUTCWindows) {
@@ -131,11 +132,13 @@ TEST_F(MonthlyUseCaseImplTest, PingNotRequiredInOverlappingUTCWindows) {
 
   EXPECT_TRUE(
       base::Time::FromString("01 Jan 2022 12:59:59 GMT", &last_monthly_ts));
+  monthly_use_case_impl_->SetLastKnownPingTimestamp(last_monthly_ts);
+
   EXPECT_TRUE(
       base::Time::FromString("25 Jan 2022 15:59:59 GMT", &current_monthly_ts));
 
-  EXPECT_FALSE(monthly_use_case_impl_->IsDevicePingRequired(
-      last_monthly_ts, current_monthly_ts));
+  EXPECT_FALSE(
+      monthly_use_case_impl_->IsDevicePingRequired(current_monthly_ts));
 }
 
 TEST_F(MonthlyUseCaseImplTest, CheckIfPingRequiredInUTCBoundaryCases) {
@@ -144,22 +147,25 @@ TEST_F(MonthlyUseCaseImplTest, CheckIfPingRequiredInUTCBoundaryCases) {
 
   EXPECT_TRUE(
       base::Time::FromString("31 Jan 2022 23:59:59 GMT", &last_monthly_ts));
+  monthly_use_case_impl_->SetLastKnownPingTimestamp(last_monthly_ts);
+
   EXPECT_TRUE(
       base::Time::FromString("01 Feb 2022 00:00:00 GMT", &current_monthly_ts));
 
-  EXPECT_TRUE(monthly_use_case_impl_->IsDevicePingRequired(last_monthly_ts,
-                                                           current_monthly_ts));
+  EXPECT_TRUE(monthly_use_case_impl_->IsDevicePingRequired(current_monthly_ts));
 
   // Set last_monthly_ts as a date after current_monthly_ts.
   EXPECT_TRUE(
       base::Time::FromString("01 Feb 2022 00:00:00 GMT", &last_monthly_ts));
+  monthly_use_case_impl_->SetLastKnownPingTimestamp(last_monthly_ts);
+
   EXPECT_TRUE(
       base::Time::FromString("31 Jan 2022 23:59:59 GMT", &current_monthly_ts));
 
   // Since the current_monthly_ts is prior to the last_monthly_ts, the function
   // should return false.
-  EXPECT_FALSE(monthly_use_case_impl_->IsDevicePingRequired(
-      last_monthly_ts, current_monthly_ts));
+  EXPECT_FALSE(
+      monthly_use_case_impl_->IsDevicePingRequired(current_monthly_ts));
 }
 
 TEST_F(MonthlyUseCaseImplTest, SameMonthTimestampsHaveSameWindowId) {

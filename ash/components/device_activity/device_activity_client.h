@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -25,13 +26,11 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-class PrefService;
-
 namespace ash {
 namespace device_activity {
 
-// Forward declaration from fresnel_service.proto.
-class DeviceMetadata;
+// Forward declaration from device_active_use_case.h
+class DeviceActiveUseCase;
 
 // Create a delegate which can be used to create fakes in unit tests.
 // Fake via. delegate is required for creating deterministic unit tests.
@@ -50,6 +49,9 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) PsmDelegate {
 // State Transition flow:
 // kIdle -> kCheckingMembershipOprf -> kCheckingMembershipQuery
 // -> kIdle or (kCheckingIn -> kIdle)
+//
+// TODO(https://crbug.com/1302175): Move methods passing DeviceActiveUseCase* to
+// methods of DeviceActiveUseCase class.
 class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
     : public chromeos::NetworkStateHandlerObserver {
  public:
@@ -82,14 +84,12 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // Fires device active pings while the device network is connected.
   DeviceActivityClient(
       NetworkStateHandler* handler,
-      PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<PsmDelegate> psm_delegate,
       std::unique_ptr<base::RepeatingTimer> report_timer,
       const std::string& fresnel_server_url,
       const std::string& api_key,
-      const std::string& psm_device_active_secret,
-      const std::string& full_hardware_class);
+      std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases);
   DeviceActivityClient(const DeviceActivityClient&) = delete;
   DeviceActivityClient& operator=(const DeviceActivityClient&) = delete;
   ~DeviceActivityClient() override;
@@ -109,11 +109,13 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // Return Fresnel server network request endpoints determined by the |state_|.
   GURL GetFresnelURL() const;
 
-  // Collect device metadata dimensions sent by PSM import.
-  void InitializeDeviceMetadata(DeviceMetadata* device_metadata);
+  // Called when device network comes online or |report_timer_| executing.
+  // Reports each use case in a sequenced order.
+  void ReportUseCases();
 
-  // Called when device network comes online as well as by |report_timer_|.
-  void TransitionOutOfIdle();
+  // Callback from |ReportUseCases()| handling whether a use case needs
+  // to be reported for the time window.
+  void TransitionOutOfIdle(DeviceActiveUseCase* current_use_case);
 
   // Send Health Check network request and update |state_|.
   // Before calling this method: |state_| is expected to be |kIdle|.
@@ -126,10 +128,11 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // Send Oprf network request and update |state_|.
   // Before calling this method: |state_| is expected to be |kIdle|.
   // After calling this method:  |state_| set to |kCheckingMembershipOprf|.
-  void TransitionToCheckMembershipOprf();
+  void TransitionToCheckMembershipOprf(DeviceActiveUseCase* current_use_case);
 
   // Callback from asynchronous method |TransitionToCheckMembershipOprf|.
-  void OnCheckMembershipOprfDone(std::unique_ptr<std::string> response_body);
+  void OnCheckMembershipOprfDone(DeviceActiveUseCase* current_use_case,
+                                 std::unique_ptr<std::string> response_body);
 
   // Send Query network request and update |state_|.
   // Before calling this method: |state_| is expected to be
@@ -137,39 +140,32 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // After calling this method:  |state_| set to |kCheckingMembershipQuery|.
   void TransitionToCheckMembershipQuery(
       const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
-          oprf_response);
+          oprf_response,
+      DeviceActiveUseCase* current_use_case);
 
   // Callback from asynchronous method |TransitionToCheckMembershipQuery|.
   // Check in PSM id based on |response_body| from CheckMembershipQuery.
-  void OnCheckMembershipQueryDone(std::unique_ptr<std::string> response_body);
+  void OnCheckMembershipQueryDone(DeviceActiveUseCase* current_use_case,
+                                  std::unique_ptr<std::string> response_body);
 
   // Send Import network request and update |state_|.
   // Before calling this method: |state_| is expected to be either
   // |kCheckingMembershipQuery| or |kIdle|.
   // After calling this method:  |state_| set to |kCheckingIn|.
-  void TransitionToCheckIn();
+  void TransitionToCheckIn(DeviceActiveUseCase* current_use_case);
 
   // Callback from asynchronous method |TransitionToCheckIn|.
-  void OnCheckInDone(std::unique_ptr<std::string> response_body);
+  void OnCheckInDone(DeviceActiveUseCase* current_use_case,
+                     std::unique_ptr<std::string> response_body);
 
   // Updates |state_| to |kIdle| and resets state based member variables.
-  void TransitionToIdle();
+  void TransitionToIdle(DeviceActiveUseCase* current_use_case);
 
   // Tracks the current state of the DeviceActivityClient.
   State state_ = State::kIdle;
 
   // Keep track of whether the device is connected to the network.
   bool network_connected_ = false;
-
-  // Generated on demand each time the state machine leaves the idle state.
-  // It is reused by several states. It is reset to nullopt.
-  // This field is used apart of PSM Import request.
-  absl::optional<std::string> current_day_window_id_;
-
-  // Generated on demand each time the state machine leaves the idle state.
-  // It is reused by several states. It is reset to nullopt.
-  // This field is used apart of PSM Oprf, Query, and Import requests.
-  absl::optional<private_membership::rlwe::RlwePlaintextId> current_day_psm_id_;
 
   // Time the device last transitioned out of idle state.
   base::Time last_transition_out_of_idle_time_;
@@ -179,24 +175,12 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // reported to UMA via. histograms.
   base::ElapsedTimer state_timer_;
 
-  // Generated on demand each time the state machine leaves the idle state.
-  // Client Generates protos used in request body of Oprf and Query requests.
-  std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
-      psm_rlwe_client_;
-
   // Tracks the visible networks and their properties.
   // |network_state_handler_| outlives the lifetime of this class.
   // |ChromeBrowserMainPartsAsh| initializes the network_state object as
   // part of the |dbus_services_|, before |DeviceActivityClient| is initialized.
   // Similarly, |DeviceActivityClient| is destructed before |dbus_services_|.
   NetworkStateHandler* const network_state_handler_;
-
-  // Update last stored device active ping timestamps for PSM use cases.
-  // On powerwash/recovery update |local_state_| to the most recent timestamp
-  // |CheckMembership| was performed, as |local_state_| gets deleted.
-  // |local_state_| outlives the lifetime of this class.
-  // Used local state prefs are initialized by |DeviceActivityController|.
-  PrefService* const local_state_;
 
   // Shared |url_loader_| object used to handle ongoing network requests.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
@@ -220,15 +204,14 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // the chrome-internal repository and is not publicly exposed in Chromium.
   const std::string api_key_;
 
-  // The ChromeOS platform code will provide a derived PSM device active secret
-  // via callback.
-  //
-  // This secret is used to generate a PSM identifier for the reporting window.
-  const std::string psm_device_active_secret_;
+  // Vector of supported use cases containing the methods and metadata required
+  // to counting device actives.
+  const std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases_;
 
-  // The ChromeOS statistics provider class provides the full hardware class
-  // information of a ChromeOS device.
-  const std::string full_hardware_class_;
+  // Contains the use cases to report active for.
+  // |ReportUseCases| initializes this field using the |use_cases_|.
+  // |TransitionToIdle| pops from this field to report each pending use case.
+  std::queue<DeviceActiveUseCase*> pending_use_cases_;
 
   // Automatically cancels callbacks when the referent of weakptr gets
   // destroyed.

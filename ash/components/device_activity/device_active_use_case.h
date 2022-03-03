@@ -71,21 +71,23 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActiveUseCase {
 
   absl::optional<private_membership::rlwe::RlwePlaintextId> GetPsmIdentifier();
 
-  void SetPsmIdentifier(private_membership::rlwe::RlwePlaintextId psm_id);
+  void SetPsmIdentifier(
+      absl::optional<private_membership::rlwe::RlwePlaintextId> psm_id);
 
   // Returns memory address to the |psm_rlwe_client_| unique pointer, or null if
   // not set.
   private_membership::rlwe::PrivateMembershipRlweClient* GetPsmRlweClient();
 
+  // Generated on demand each time the state machine leaves the idle state.
+  // Client Generates protos used in request body of Oprf and Query requests.
   void SetPsmRlweClient(
       std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
           psm_rlwe_client);
 
-  // Determines if |prev_ping_ts| occurred in a different active window then
-  // |new_ping_ts| for a given device. Performing this check helps reduce QPS to
-  // the |CheckingMembership| network requests.
-  bool IsDevicePingRequired(base::Time prev_ping_ts,
-                            base::Time new_ping_ts) const;
+  // Determine if a device ping is needed for a given device window.
+  // Performing this check helps reduce QPS to the |CheckingMembership|
+  // network requests.
+  bool IsDevicePingRequired(base::Time new_ping_ts) const;
 
  protected:
   // Retrieve full hardware class from MachineStatistics.
@@ -97,10 +99,14 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActiveUseCase {
   std::string GetChromeOSVersion() const;
 
  private:
-  // Generate the PSM identifier, used to identify a fixed
-  // window of time for device active counting. Privacy compliance is guaranteed
-  // by retrieving the |psm_device_active_secret_| from chromeos, and
-  // performing an additional HMAC-SHA256 hash on generated plaintext string.
+  // Field is used to identify a fixed window of time for device active
+  // counting. Privacy compliance is guaranteed by retrieving the
+  // |psm_device_active_secret_| from chromeos, and performing an additional
+  // HMAC-SHA256 hash on generated plaintext string.
+  //
+  // Generated on demand each time the state machine leaves the idle state.
+  // It is reused by several states. It is reset to nullopt.
+  // This field is used apart of PSM Oprf, Query, and Import requests.
   absl::optional<private_membership::rlwe::RlwePlaintextId>
   GeneratePsmIdentifier() const;
 

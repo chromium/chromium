@@ -30,6 +30,10 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DailyUseCaseImpl
   // Generate the window identifier for the kCrosDaily use case.
   // For example, the daily use case should generate a window identifier
   // formatted: yyyyMMdd.
+  //
+  // It is generated on demand each time the state machine leaves the idle
+  // state. It is reused by several states. It is reset to nullopt. This field
+  // is used apart of PSM Import request.
   std::string GenerateUTCWindowIdentifier(base::Time ts) const override;
 
   // Generate Fresnel PSM import request body.
