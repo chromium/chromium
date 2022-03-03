@@ -76,33 +76,6 @@ class GPUMappedDOMArrayBuffer : public DOMArrayBuffer {
 
   GPUMappedDOMArrayBuffer(GPUBuffer* owner, ArrayBufferContents contents)
       : DOMArrayBuffer(std::move(contents)), owner_(owner) {}
-  ~GPUMappedDOMArrayBuffer() override = default;
-
-  // Override Transfer such that a copy of the contents is always made. The
-  // backing store will still be detached for this ArrayBuffer, but the
-  // result will be a copy of the contents, not a reference to
-  // the same backing store. This is required by the WebGPU specification so
-  // that the mapped backing store may not be shared cross-thread.
-  bool Transfer(v8::Isolate* isolate, ArrayBufferContents& result) override {
-    // Transfer into |contents| which will detach |this| and all views of
-    // |this|.
-    ArrayBufferContents contents;
-    bool did_detach = DOMArrayBuffer::Transfer(isolate, contents);
-    if (!did_detach) {
-      return false;
-    }
-
-    // Copy the contents into the result.
-    contents.CopyTo(result);
-    return true;
-  }
-
-  bool DetachContents(v8::Isolate* isolate) {
-    // Detach the array buffer by transferring the contents out and dropping
-    // them.
-    ArrayBufferContents contents;
-    return DOMArrayBuffer::Transfer(isolate, contents);
-  }
 
   void Trace(Visitor* visitor) const override {
     DOMArrayBuffer::Trace(visitor);
@@ -392,7 +365,23 @@ void GPUBuffer::DetachMappedArrayBuffers(v8::Isolate* isolate) {
     GPUMappedDOMArrayBuffer* array_buffer = mapped_array_buffer.Release();
     DCHECK(array_buffer->IsDetachable(isolate));
 
-    array_buffer->DetachContents(isolate);
+    // Detach the array buffer by transferring the contents out and dropping
+    // them.
+    ArrayBufferContents contents;
+    bool did_detach = array_buffer->Transfer(isolate, contents);
+
+    // |did_detach| would be false if the buffer were already detached.
+    //   Crash if it was, as this indicates that unmapping could alias the
+    //   backing store, or possibly even free it out from under the
+    //   ArrayBuffer. It might be difficult to be 100% certain about this
+    //   invariant, so we CHECK, even in release builds. (Actually, it would be
+    //   fine if the ArrayBuffer was detached without being transferred, but
+    //   this isn't a common case, so it can be revisited if needed.)
+    // TODO(crbug.com/1243842): This CHECK can currently be hit easily by JS
+    //   code. We need to validate against this case by preventing the
+    //   ArrayBuffer from being transferred/detached by outside code.
+    CHECK(did_detach)
+        << "An ArrayBuffer from getMappedRange() was detached before unmap()";
     DCHECK(array_buffer->IsDetached());
   }
   mapped_array_buffers_.clear();
