@@ -8,6 +8,7 @@
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "base/scoped_observation.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -29,7 +30,9 @@ class GlanceableInfoView : public views::View,
  public:
   METADATA_HEADER(GlanceableInfoView);
 
-  GlanceableInfoView(AmbientViewDelegate* delegate, int time_font_size_dip);
+  GlanceableInfoView(AmbientViewDelegate* delegate,
+                     int time_font_size_dip,
+                     SkColor time_temperature_font_color);
   GlanceableInfoView(const GlanceableInfoView&) = delete;
   GlanceableInfoView& operator=(const GlanceableInfoView&) = delete;
   ~GlanceableInfoView() override;
@@ -58,6 +61,7 @@ class GlanceableInfoView : public views::View,
   AmbientViewDelegate* const delegate_ = nullptr;
 
   const int time_font_size_dip_;
+  const SkColor time_temperature_font_color_;
 
   base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
       scoped_backend_model_observer_{this};

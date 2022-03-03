@@ -96,8 +96,10 @@ void AmbientInfoView::InitLayout() {
   layout->set_between_child_spacing(kSpacingDip + shadow_insets.top() +
                                     shadow_insets.bottom());
 
-  glanceable_info_view_ = AddChildView(
-      std::make_unique<GlanceableInfoView>(delegate_, kTimeFontSizeDip));
+  glanceable_info_view_ = AddChildView(std::make_unique<GlanceableInfoView>(
+      delegate_, kTimeFontSizeDip, /*time_temperature_font_color=*/
+      ambient::util::GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary)));
   glanceable_info_view_->SetPaintToLayer();
 
   details_label_ = AddLabel(this);

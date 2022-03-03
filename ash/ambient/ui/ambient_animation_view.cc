@@ -29,6 +29,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/border.h"
@@ -181,8 +182,9 @@ void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
   glanceable_info_container_->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   glanceable_info_container_->SetBorder(CreateGlanceableInfoBorder());
-  glanceable_info_container_->AddChildView(
-      std::make_unique<GlanceableInfoView>(view_delegate, kTimeFontSizeDip));
+  glanceable_info_container_->AddChildView(std::make_unique<GlanceableInfoView>(
+      view_delegate, kTimeFontSizeDip,
+      /*time_temperature_font_color=*/gfx::kGoogleGrey900));
 }
 
 void AmbientAnimationView::AnimationWillStartPlaying(
