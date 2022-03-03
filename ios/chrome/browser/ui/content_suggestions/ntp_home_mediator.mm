@@ -198,13 +198,59 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   [self.consumer locationBarResignsFirstResponder];
 }
 
+- (void)saveContentOffsetForWebState:(web::WebState*)webState {
+  if (!IsSingleNtpEnabled() &&
+      webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+          kChromeUINewTabURL) {
+    return;
+  }
+  if (IsSingleNtpEnabled() &&
+      (webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+           kChromeUINewTabURL &&
+       webState->GetVisibleURL().DeprecatedGetOriginAsURL() !=
+           kChromeUINewTabURL)) {
+    // Do nothing if the current page is not the NTP.
+    return;
+  }
+
+  web::NavigationManager* manager = webState->GetNavigationManager();
+  web::NavigationItem* item =
+      webState->GetLastCommittedURL() == kChromeUINewTabURL
+          ? manager->GetLastCommittedItem()
+          : manager->GetVisibleItem();
+  web::PageDisplayState displayState;
+
+  // TODO(crbug.com/1114792): Create a protocol to stop having references to
+  // both of these ViewControllers directly.
+  UICollectionView* collectionView =
+      self.ntpViewController.discoverFeedWrapperViewController
+          .contentCollectionView;
+  UIEdgeInsets contentInset = collectionView.contentInset;
+  CGPoint contentOffset = collectionView.contentOffset;
+  if ([self.suggestionsMediator mostRecentTabStartSurfaceTileIsShowing]) {
+    // Return to Recent tab tile is only shown one time, so subtract it's
+    // vertical space to preserve relative scroll position from top.
+    CGFloat tileSectionHeight =
+        [ContentSuggestionsReturnToRecentTabCell defaultSize].height +
+        content_suggestions::kReturnToRecentTabSectionBottomMargin;
+    if (contentOffset.y >
+        tileSectionHeight +
+            [self.headerCollectionInteractionHandler pinnedOffsetY]) {
+      contentOffset.y -= tileSectionHeight;
+    }
+  }
+
+  contentOffset.y -=
+      self.headerCollectionInteractionHandler.collectionShiftingOffset;
+  displayState.scroll_state() =
+      web::PageScrollState(contentOffset, contentInset);
+  item->SetPageDisplayState(displayState);
+}
+
 #pragma mark - Properties.
 
 - (void)setWebState:(web::WebState*)webState {
   if (_webState && _webStateObserver) {
-    if (IsSingleNtpEnabled()) {
-      [self saveContentOffsetForWebState:_webState];
-    }
     _webState->RemoveObserver(_webStateObserver.get());
   }
   _webState = webState;
@@ -538,57 +584,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   message.action = action;
   message.category = @"MostVisitedUndo";
   [self.dispatcher showSnackbarMessage:message];
-}
-
-// Save the NTP scroll offset into the last committed navigation item for the
-// before we navigate away.
-- (void)saveContentOffsetForWebState:(web::WebState*)webState {
-  if (!IsSingleNtpEnabled() &&
-      webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-          kChromeUINewTabURL) {
-    return;
-  }
-  if (IsSingleNtpEnabled() &&
-      (webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-           kChromeUINewTabURL &&
-       webState->GetVisibleURL().DeprecatedGetOriginAsURL() !=
-           kChromeUINewTabURL)) {
-    // Do nothing if the current page is not the NTP.
-    return;
-  }
-
-  web::NavigationManager* manager = webState->GetNavigationManager();
-  web::NavigationItem* item =
-      webState->GetLastCommittedURL() == kChromeUINewTabURL
-          ? manager->GetLastCommittedItem()
-          : manager->GetVisibleItem();
-  web::PageDisplayState displayState;
-
-  // TODO(crbug.com/1114792): Create a protocol to stop having references to
-  // both of these ViewControllers directly.
-  UICollectionView* collectionView =
-      self.ntpViewController.discoverFeedWrapperViewController
-          .contentCollectionView;
-  UIEdgeInsets contentInset = collectionView.contentInset;
-  CGPoint contentOffset = collectionView.contentOffset;
-  if ([self.suggestionsMediator mostRecentTabStartSurfaceTileIsShowing]) {
-    // Return to Recent tab tile is only shown one time, so subtract it's
-    // vertical space to preserve relative scroll position from top.
-    CGFloat tileSectionHeight =
-        [ContentSuggestionsReturnToRecentTabCell defaultSize].height +
-        content_suggestions::kReturnToRecentTabSectionBottomMargin;
-    if (contentOffset.y >
-        tileSectionHeight +
-            [self.headerCollectionInteractionHandler pinnedOffsetY]) {
-      contentOffset.y -= tileSectionHeight;
-    }
-  }
-
-  contentOffset.y -=
-      self.headerCollectionInteractionHandler.collectionShiftingOffset;
-  displayState.scroll_state() =
-      web::PageScrollState(contentOffset, contentInset);
-  item->SetPageDisplayState(displayState);
 }
 
 // Set the NTP scroll offset for the current navigation item.

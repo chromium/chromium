@@ -101,6 +101,10 @@ class VoiceSearchAvailability;
 // Tell location bar has taken focus.
 - (void)locationBarDidBecomeFirstResponder;
 
+// Save the NTP scroll offset into the last committed navigation item for the
+// before navigating away.
+- (void)saveContentOffsetForWebState:(web::WebState*)webState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NTP_HOME_MEDIATOR_H_

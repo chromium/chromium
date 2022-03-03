@@ -556,6 +556,8 @@ namespace {
 - (void)ntpDidChangeVisibility:(BOOL)visible {
   if (visible) {
     [self.contentSuggestionsCoordinator configureStartSurfaceIfNeeded];
+  } else if (IsSingleNtpEnabled()) {
+    [self.ntpMediator saveContentOffsetForWebState:self.webState];
   }
   self.viewPresented = visible;
   [self updateVisible];

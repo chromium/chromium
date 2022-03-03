@@ -4007,10 +4007,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
-  // TODO(crbug.com/1272513): Move this update to NTPCoordinator.
-  if (IsSingleNtpEnabled()) {
-    self.ntpCoordinator.webState = newWebState;
-  }
   if (oldWebState) {
     // TODO(crbug.com/1272514): Move webstate lifecycle updates to a browser
     // agent.
@@ -4023,6 +4019,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       [[self ntpCoordinatorForWebState:oldWebState] ntpDidChangeVisibility:NO];
     }
     [self dismissPopups];
+  }
+  // TODO(crbug.com/1272513): Move this update to NTPCoordinator.
+  if (IsSingleNtpEnabled()) {
+    self.ntpCoordinator.webState = newWebState;
   }
   // NOTE: webStateSelected expects to always be called with a
   // non-null WebState.
@@ -4583,9 +4583,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       return;
     }
     if (NTPHelper->IsActive()) {
+      [self.ntpCoordinator ntpDidChangeVisibility:YES];
       self.ntpCoordinator.webState = webState;
     } else {
-      // Set to nullptr to save NTP scroll offset before navigation.
+      [self.ntpCoordinator ntpDidChangeVisibility:NO];
       self.ntpCoordinator.webState = nullptr;
       [self stopNTPIfNeeded];
     }
