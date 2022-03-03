@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
@@ -47,6 +48,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/test/test_extension_dir.h"
@@ -464,12 +466,20 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         browser(), std::move(web_app_info), start_url);
   }
 
-  void ToggleWindowControlsOverlayAndWait() {
-    auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+  void ToggleWindowControlsOverlayAndWaitHelper(
+      content::WebContents* web_contents,
+      BrowserView* browser_view) {
     helper()->SetupGeometryChangeCallback(web_contents);
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
-    helper()->browser_view()->ToggleWindowControlsOverlayEnabled();
+    browser_view->ToggleWindowControlsOverlayEnabled();
     std::ignore = title_watcher.WaitAndGetTitle();
+  }
+
+  // When toggling the WCO app initialized by the helper class.
+  void ToggleWindowControlsOverlayAndWait() {
+    ToggleWindowControlsOverlayAndWaitHelper(
+        helper()->browser_view()->GetActiveWebContents(),
+        helper()->browser_view());
   }
 
   bool GetWindowControlOverlayVisibility() {
@@ -547,6 +557,24 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     return helper()->GetXYWidthHeightRect(
         helper()->browser_view()->GetActiveWebContents(), kRectValueList,
         "rect");
+  }
+
+  // Opens a new popup window from |web_contents| on |target_url| and returns
+  // the Browser it opened in.
+  Browser* OpenPopup(content::WebContents* web_contents,
+                     const std::string& target_url) {
+    GURL target_gurl(target_url);
+    content::TestNavigationObserver nav_observer(target_gurl);
+    nav_observer.StartWatchingNewWebContents();
+
+    std::string script =
+        "window.open('" + target_url + "', '_blank', 'popup');";
+    EXPECT_TRUE(content::ExecuteScript(web_contents, script));
+    nav_observer.Wait();
+
+    Browser* popup = chrome::FindLastActive();
+    EXPECT_TRUE(popup);
+    return popup;
   }
 
  protected:
@@ -655,6 +683,64 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   helper()->browser_view()->GetWidget()->SetBounds(new_bounds);
   title_watcher2.AlsoWaitForTitle(u"ongeometrychange");
   EXPECT_EQ(u"onresize", title_watcher2.WaitAndGetTitle());
+}
+
+// Test to ensure crbug.com/1298226 won't reproduce.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       PopupFromWcoAppToItself) {
+  InstallAndLaunchWebApp();
+  auto* wco_web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  Browser* popup = OpenPopup(
+      wco_web_contents,
+      EvalJs(wco_web_contents, "window.location.href").ExtractString());
+
+  BrowserView* popup_browser_view =
+      BrowserView::GetBrowserViewForBrowser(popup);
+  content::WebContents* popup_web_contents =
+      popup_browser_view->GetActiveWebContents();
+
+  EXPECT_TRUE(
+      content::WaitForRenderFrameReady(popup_web_contents->GetMainFrame()));
+  EXPECT_FALSE(popup_browser_view->IsWindowControlsOverlayEnabled());
+  EXPECT_FALSE(EvalJs(popup_web_contents,
+                      "window.navigator.windowControlsOverlay.visible")
+                   .ExtractBool());
+
+  // When popup is opened (from a WCO app) pointing to itself, the popup also
+  // has WCO which can be toggled.
+  ToggleWindowControlsOverlayAndWaitHelper(popup_web_contents,
+                                           popup_browser_view);
+  EXPECT_TRUE(popup_browser_view->IsWindowControlsOverlayEnabled());
+  EXPECT_TRUE(EvalJs(popup_web_contents,
+                     "window.navigator.windowControlsOverlay.visible")
+                  .ExtractBool());
+}
+
+// Test to ensure crbug.com/1298237 won't reproduce.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       PopupFromWcoAppToAnyOtherWebsite) {
+  InstallAndLaunchWebApp();
+  // The initial WCO state doesn't matter, but to highlight that it's different,
+  // the script is run with the WCO initially toggled on.
+  ToggleWindowControlsOverlayAndWait();
+  EXPECT_TRUE(GetWindowControlOverlayVisibility());
+
+  Browser* popup = OpenPopup(helper()->browser_view()->GetActiveWebContents(),
+                             "https://google.com");
+  BrowserView* popup_browser_view =
+      BrowserView::GetBrowserViewForBrowser(popup);
+  content::WebContents* popup_web_contents =
+      popup_browser_view->GetActiveWebContents();
+  EXPECT_TRUE(
+      content::WaitForRenderFrameReady(popup_web_contents->GetMainFrame()));
+
+  // When popup is opened pointing to any other site, it will not know whether
+  // the popup app uses WCO or not. This test also ensures it does not crash.
+  EXPECT_FALSE(popup_browser_view->IsWindowControlsOverlayEnabled());
+  EXPECT_FALSE(EvalJs(popup_web_contents,
+                      "window.navigator.windowControlsOverlay.visible")
+                   .ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
