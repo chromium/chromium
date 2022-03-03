@@ -85,28 +85,23 @@ void DynamicsCompressorHandler::Process(uint32_t frames_to_process) {
   AudioBus* output_bus = Output(0).Bus();
   DCHECK(output_bus);
 
-  float threshold = threshold_->FinalValue();
-  float knee = knee_->FinalValue();
-  float ratio = ratio_->FinalValue();
-  float attack = attack_->FinalValue();
-  float release = release_->FinalValue();
-
   dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamThreshold,
-                                          threshold);
-  dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamKnee, knee);
+                                          threshold_->FinalValue());
+  dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamKnee,
+                                          knee_->FinalValue());
   dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamRatio,
-                                          ratio);
+                                          ratio_->FinalValue());
   dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamAttack,
-                                          attack);
+                                          attack_->FinalValue());
   dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamRelease,
-                                          release);
+                                          release_->FinalValue());
 
   scoped_refptr<AudioBus> input_bus = Input(0).Bus();
   dynamics_compressor_->Process(input_bus.get(), output_bus, frames_to_process);
 
-  float reduction =
-      dynamics_compressor_->ParameterValue(DynamicsCompressor::kParamReduction);
-  reduction_.store(reduction, std::memory_order_relaxed);
+  reduction_.store(
+      dynamics_compressor_->ParameterValue(DynamicsCompressor::kParamReduction),
+      std::memory_order_relaxed);
 }
 
 void DynamicsCompressorHandler::ProcessOnlyAudioParams(
