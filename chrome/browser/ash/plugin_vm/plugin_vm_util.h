@@ -26,6 +26,9 @@ namespace plugin_vm {
 
 class PluginVmPolicySubscription;
 
+// Name of the pita DLC.
+extern const char kPitaDlc[];
+
 // This is used by both the Plugin VM app and its installer.
 // Generated as crx_file::id_util::GenerateId("org.chromium.plugin_vm");
 extern const char kPluginVmShelfAppId[];
