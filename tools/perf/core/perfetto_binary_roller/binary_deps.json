@@ -13,8 +13,8 @@
             "remote_path": "perfetto_binaries/trace_processor_shell/linux_arm/49b4b5dcbc312d8d2c3751cf29238b8efeb4e494/trace_processor_shell"
         },
         "mac": {
-            "hash": "7a0537d3de52201517a41585dde901aafc74a998",
-            "remote_path": "perfetto_binaries/trace_processor_shell/mac/a930f3799c34bedb97a76b2292ac02b3bc053ccb/trace_processor_shell"
+            "hash": "943dfeca2624f9764f118626aa22c8d1b086e6fd",
+            "remote_path": "perfetto_binaries/trace_processor_shell/mac/11de3dcf8b4e4c727906a0fb055b5493e9d2de82/trace_processor_shell"
         },
         "mac_arm64": {
             "hash": "c0397e87456ad6c6a7aa0133e5b81c97adbab4ab",
