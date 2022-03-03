@@ -243,6 +243,12 @@ class ChromiumDepGraph {
             cipdSuffix: 'cr1'),
     ]
 
+    private static final Set<String> ALLOWED_EMPTY_DEPS = [
+        // Bill of materials (BOM) deps are used to specify versions for other dependencies and don't have children or
+        // artifacts of their own. Add other such empty deps here when we encounter them.
+        'org_jetbrains_kotlinx_kotlinx_coroutines_bom',
+    ] as Set
+
     // Local text versions of HTML licenses. This cannot replace PROPERTY_OVERRIDES because some libraries refer to
     // license templates such as https://opensource.org/licenses/MIT.
     // Keys should be 'https', since customizeLicenses() will normalize URLs to https.
@@ -424,7 +430,6 @@ class ChromiumDepGraph {
         List<ResolvedDependency> childDependenciesWithArtifacts = []
         List<String> childModules = []
         if (recurse) {
-
             dependency.children.each { childDependency ->
                 // Replace dependency which acts as a redirect (ex: org.jetbrains.kotlinx:kotlinx-coroutines-core) with
                 // dependencies it redirects to.
@@ -434,7 +439,18 @@ class ChromiumDepGraph {
                     if (childDependency.children) {
                         childDependenciesWithArtifacts += childDependency.children
                     } else {
-                        throw new IllegalStateException("The dependency ${id} has no children and no artifacts.")
+                        String childDepId = makeModuleId(childDependency.module)
+                        if (childDepId !in ALLOWED_EMPTY_DEPS) {
+                            // BOM dependencies are deps that only specify other deps as dependencies but have no
+                            // artifact of their own. These typically have _bom at the end of their names but may also
+                            // be identified by looking at their pom.xml file. For more context see maven's doc:
+                            /* groovylint-disable-next-line LineLength */
+                            // https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#bill-of-materials-bom-poms
+                            throw new IllegalStateException(
+                                    "The dependency ${childDepId} has no children and no artifacts. If this is " +
+                                    'expected (e.g. for BOM dependencies), then please add it to the ' +
+                                    '|ALLOWED_EMPTY_DEPS| set.')
+                        }
                     }
                 }
             }
