@@ -14,12 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "pdf/paint_aggregator.h"
-#include "pdf/ppapi_migration/callback.h"
 #include "ui/gfx/geometry/size.h"
-
-namespace base {
-class Location;
-}  // namespace base
 
 namespace gfx {
 class Point;
@@ -72,17 +67,6 @@ class PaintManager {
     virtual void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                          std::vector<PaintReadyRect>& ready,
                          std::vector<gfx::Rect>& pending) = 0;
-
-    // Schedules work to be executed on a main thread after a specific delay.
-    // The `result` parameter will be passed as the argument to the `callback`.
-    // `result` is needed sometimes to emulate calls of some callbacks, but it's
-    // not always needed. `delay` should be no longer than `INT32_MAX`
-    // milliseconds for the Pepper plugin implementation to prevent integer
-    // overflow.
-    virtual void ScheduleTaskOnMainThread(const base::Location& from_here,
-                                          ResultCallback callback,
-                                          int32_t result,
-                                          base::TimeDelta delay) = 0;
 
    protected:
     // You shouldn't be doing deleting through this interface.
@@ -164,7 +148,7 @@ class PaintManager {
 
   // Callback for manual scheduling of paints when there is no flush callback
   // pending.
-  void OnManualCallbackComplete(int32_t);
+  void OnManualCallbackComplete();
 
   // Non-owning pointer. See the constructor.
   const raw_ptr<Client> client_;

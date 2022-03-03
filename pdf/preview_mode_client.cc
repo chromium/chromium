@@ -173,12 +173,4 @@ bool PreviewModeClient::IsValidLink(const std::string& url) {
   return false;
 }
 
-void PreviewModeClient::ScheduleTaskOnMainThread(
-    const base::Location& from_here,
-    ResultCallback callback,
-    int32_t result,
-    base::TimeDelta delay) {
-  NOTREACHED();
-}
-
 }  // namespace chrome_pdf

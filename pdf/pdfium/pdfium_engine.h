@@ -294,7 +294,7 @@ class PDFiumEngine : public PDFEngine,
   // This should only be called after `doc_` has been loaded and the document is
   // fully downloaded.
   // If this has been run once, it will not notify the client again.
-  void FinishLoadingDocument(int32_t /*unused_but_required*/);
+  void FinishLoadingDocument();
 
   // Loads information about the pages in the document and performs layout.
   void LoadPageInfo();

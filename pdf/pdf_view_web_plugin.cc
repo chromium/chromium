@@ -775,14 +775,6 @@ bool PdfViewWebPlugin::BindPaintGraphics(Graphics& graphics) {
   return false;
 }
 
-void PdfViewWebPlugin::ScheduleTaskOnMainThread(const base::Location& from_here,
-                                                ResultCallback callback,
-                                                int32_t result,
-                                                base::TimeDelta delay) {
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      from_here, base::BindOnce(std::move(callback), result), delay);
-}
-
 void PdfViewWebPlugin::SetCaretPosition(const gfx::PointF& position) {
   PdfViewPluginBase::SetCaretPosition(position);
 }
@@ -981,11 +973,9 @@ void PdfViewWebPlugin::PluginDidStopLoading() {
 }
 
 void PdfViewWebPlugin::InvokePrintDialog() {
-  ScheduleTaskOnMainThread(
-      FROM_HERE,
-      base::BindOnce(&PdfViewWebPlugin::OnInvokePrintDialog,
-                     weak_factory_.GetWeakPtr()),
-      /*result=*/0, base::TimeDelta());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&PdfViewWebPlugin::OnInvokePrintDialog,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void PdfViewWebPlugin::NotifySelectionChanged(const gfx::PointF& left,
@@ -1096,7 +1086,7 @@ void PdfViewWebPlugin::HandleImeCommit(const blink::WebString& text) {
   }
 }
 
-void PdfViewWebPlugin::OnInvokePrintDialog(int32_t /*result*/) {
+void PdfViewWebPlugin::OnInvokePrintDialog() {
   client_->Print(Container()->GetElement());
 }
 

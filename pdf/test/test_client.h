@@ -40,10 +40,6 @@ class TestClient : public PDFEngine::Client {
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
-  void ScheduleTaskOnMainThread(const base::Location& from_here,
-                                ResultCallback callback,
-                                int32_t result,
-                                base::TimeDelta delay) override;
 
  private:
   // Not owned. Expected to dangle briefly, as the engine usually is destroyed

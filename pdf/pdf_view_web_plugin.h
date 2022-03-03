@@ -250,10 +250,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool IsValidLink(const std::string& url) override;
   std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
   bool BindPaintGraphics(Graphics& graphics) override;
-  void ScheduleTaskOnMainThread(const base::Location& from_here,
-                                ResultCallback callback,
-                                int32_t result,
-                                base::TimeDelta delay) override;
 
   // pdf::mojom::PdfListener:
   void SetCaretPosition(const gfx::PointF& position) override;
@@ -359,7 +355,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // see crbug.com/66334.
   // TODO(crbug.com/1217012): Re-evaluate the need for a callback when parts of
   // the plugin are moved off the main thread.
-  void OnInvokePrintDialog(int32_t /*result*/);
+  void OnInvokePrintDialog();
 
   // Callback to set the document information in the accessibility tree
   // asynchronously.

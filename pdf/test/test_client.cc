@@ -65,9 +65,4 @@ bool TestClient::IsValidLink(const std::string& url) {
   return !url.empty();
 }
 
-void TestClient::ScheduleTaskOnMainThread(const base::Location& from_here,
-                                          ResultCallback callback,
-                                          int32_t result,
-                                          base::TimeDelta delay) {}
-
 }  // namespace chrome_pdf

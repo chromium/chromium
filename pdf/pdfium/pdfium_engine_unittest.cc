@@ -10,11 +10,13 @@
 
 #include "base/callback.h"
 #include "base/hash/md5.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "pdf/document_attachment_info.h"
@@ -73,13 +75,6 @@ class MockTestClient : public TestClient {
               (const DocumentLayout& layout),
               (override));
   MOCK_METHOD(void, ScrollToPage, (int page), (override));
-  MOCK_METHOD(void,
-              ScheduleTaskOnMainThread,
-              (const base::Location& from_here,
-               ResultCallback callback,
-               int32_t result,
-               base::TimeDelta delay),
-              (override));
   MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
 };
@@ -134,15 +129,13 @@ class PDFiumEngineTest : public PDFiumTestBase {
     return loaded_incrementally;
   }
 
-  void FinishWithPluginSizeUpdated(MockTestClient& client,
-                                   PDFiumEngine& engine) {
-    ResultCallback callback;
-    EXPECT_CALL(client, ScheduleTaskOnMainThread)
-        .WillOnce(MoveArg<1>(&callback));
+  void FinishWithPluginSizeUpdated(PDFiumEngine& engine) {
     engine.PluginSizeUpdated({});
 
-    ASSERT_TRUE(callback);
-    std::move(callback).Run(0);
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   // Counts the number of available pages. Returns `int` instead of `size_t` for
@@ -279,7 +272,7 @@ TEST_F(PDFiumEngineTest, ApplyDocumentLayoutBeforePluginSizeUpdated) {
   EXPECT_EQ(gfx::Size(343, 1664), engine.ApplyDocumentLayout(options));
 
   EXPECT_CALL(client, ScrollToPage(-1)).Times(1);
-  ASSERT_NO_FATAL_FAILURE(FinishWithPluginSizeUpdated(client, engine));
+  FinishWithPluginSizeUpdated(engine);
 }
 
 TEST_F(PDFiumEngineTest, ApplyDocumentLayoutAvoidsInfiniteLoop) {
@@ -511,7 +504,7 @@ TEST_F(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
   PDFiumEngine& engine = *initialize_result.engine;
 
   initialize_result.FinishLoading();
-  ASSERT_NO_FATAL_FAILURE(FinishWithPluginSizeUpdated(client, engine));
+  FinishWithPluginSizeUpdated(engine);
 
   EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
 }

@@ -201,11 +201,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(bool, BindPaintGraphics, (Graphics&), (override));
 
-  MOCK_METHOD(void,
-              ScheduleTaskOnMainThread,
-              (const base::Location&, ResultCallback, int32_t, base::TimeDelta),
-              (override));
-
   MOCK_METHOD(std::unique_ptr<PDFiumEngine>,
               CreateEngine,
               (PDFEngine::Client*, PDFiumFormFiller::ScriptOption),

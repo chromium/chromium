@@ -592,11 +592,9 @@ void PDFiumEngine::PluginSizeUpdated(const gfx::Size& size) {
     // asynchronously to avoid observable differences between this path and the
     // normal loading path.
     document_pending_ = false;
-    client_->ScheduleTaskOnMainThread(
-        FROM_HERE,
-        base::BindOnce(&PDFiumEngine::FinishLoadingDocument,
-                       weak_factory_.GetWeakPtr()),
-        /*result=*/0, base::TimeDelta());
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&PDFiumEngine::FinishLoadingDocument,
+                                  weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -823,7 +821,7 @@ void PDFiumEngine::OnNewDataReceived() {
 
 void PDFiumEngine::OnDocumentComplete() {
   if (doc())
-    return FinishLoadingDocument(0);
+    return FinishLoadingDocument();
 
   document_->file_access().m_FileLen = doc_loader_->GetDocumentSize();
   if (!fpdf_availability()) {
@@ -840,7 +838,7 @@ void PDFiumEngine::OnDocumentCanceled() {
     OnDocumentComplete();
 }
 
-void PDFiumEngine::FinishLoadingDocument(int32_t /*unused_but_required*/) {
+void PDFiumEngine::FinishLoadingDocument() {
   // Note that doc_loader_->IsDocumentComplete() may not be true here if
   // called via `OnDocumentCanceled()`.
   DCHECK(doc());
@@ -1819,11 +1817,10 @@ void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
   if (doc_loader_set_for_testing_) {
     ContinueFind(case_sensitive ? 1 : 0);
   } else {
-    client_->ScheduleTaskOnMainThread(
-        FROM_HERE,
-        base::BindOnce(&PDFiumEngine::ContinueFind,
-                       find_weak_factory_.GetWeakPtr()),
-        case_sensitive ? 1 : 0, base::TimeDelta());
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&PDFiumEngine::ContinueFind,
+                                  find_weak_factory_.GetWeakPtr(),
+                                  case_sensitive ? 1 : 0));
   }
 }
 
@@ -2793,7 +2790,7 @@ void PDFiumEngine::ContinueLoadingDocument(const std::string& password) {
   LoadBody();
 
   if (doc_loader_->IsDocumentComplete())
-    FinishLoadingDocument(0);
+    FinishLoadingDocument();
 }
 
 void PDFiumEngine::LoadPageInfo() {

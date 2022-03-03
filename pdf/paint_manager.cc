@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -160,11 +161,9 @@ void PaintManager::EnsureCallbackPending() {
   if (manual_callback_pending_)
     return;
 
-  client_->ScheduleTaskOnMainThread(
-      FROM_HERE,
-      base::BindOnce(&PaintManager::OnManualCallbackComplete,
-                     weak_factory_.GetWeakPtr()),
-      /*result=*/0, base::TimeDelta());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&PaintManager::OnManualCallbackComplete,
+                                weak_factory_.GetWeakPtr()));
   manual_callback_pending_ = true;
 }
 
@@ -290,7 +289,7 @@ void PaintManager::OnFlushComplete(int32_t) {
   }
 }
 
-void PaintManager::OnManualCallbackComplete(int32_t) {
+void PaintManager::OnManualCallbackComplete() {
   DCHECK(manual_callback_pending_);
   manual_callback_pending_ = false;
 
