@@ -122,7 +122,7 @@ constexpr CGFloat preferredCornerRadius = 20;
 
 #pragma mark - Notification callback
 
-- (void)applicationDidEnterBackground {
+- (void)applicationDidEnterBackground:(NSNotification*)notification {
   [self confirmationAlertSecondaryAction];
 }
 
