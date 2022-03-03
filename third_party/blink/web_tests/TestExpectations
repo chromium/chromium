@@ -7314,10 +7314,6 @@ crbug.com/1272801 http/tests/permissions/chromium/test-request-sharedworker.html
 crbug.com/1272955 http/tests/devtools/extensions/extensions-timeline-api.js [ Failure Pass ]
 crbug.com/1302309 external/wpt/streams/transferable/writable-stream.html [ Failure Pass ]
 
-# Flaky as depends upon order of execution.
-crbug.com/1274917 external/wpt/content-security-policy/inheritance/history.sub.html [ Failure Pass Timeout ]
-crbug.com/1274917 external/wpt/content-security-policy/inheritance/history-iframe.sub.html [ Failure Pass Timeout ]
-
 # Test is very flaky (score of 223).
 crbug.com/1274919 http/tests/inspector-protocol/page/consecutive-navigate.js [ Failure Pass Timeout ]
 
