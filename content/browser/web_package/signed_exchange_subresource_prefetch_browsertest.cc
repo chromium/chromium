@@ -1896,6 +1896,19 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest, CORS) {
 
   RegisterRequestHandler(embedded_test_server());
   RegisterRequestHandler(data_server.get());
+
+  // Prefetch requests for alternate SXG should be made with no-cors,
+  // regardless of the crossorigin attribute of Link:rel=preload header that
+  // triggered the prefetch.
+  embedded_test_server()->RegisterRequestMonitor(
+      base::BindRepeating([](const net::test_server::HttpRequest& request) {
+        if (!base::EndsWith(request.relative_url, "_data.sxg"))
+          return;
+        auto it = request.headers.find("Sec-Fetch-Mode");
+        ASSERT_TRUE(it != request.headers.end());
+        EXPECT_EQ(it->second, "no-cors");
+      }));
+
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(data_server->Start());
 
