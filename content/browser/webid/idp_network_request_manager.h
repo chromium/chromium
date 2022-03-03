@@ -92,7 +92,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     ~Endpoints();
     Endpoints(const Endpoints&);
 
-    std::string idp;
     std::string token;
     std::string accounts;
     std::string client_metadata;

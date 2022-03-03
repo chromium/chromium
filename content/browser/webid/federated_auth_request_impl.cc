@@ -427,7 +427,6 @@ void FederatedAuthRequestImpl::OnManifestFetched(
     }
   }
 
-  endpoints_.idp = ResolveManifestUrl(endpoints.idp);
   endpoints_.token = ResolveManifestUrl(endpoints.token);
   endpoints_.accounts = ResolveManifestUrl(endpoints.accounts);
   endpoints_.client_metadata = ResolveManifestUrl(endpoints.client_metadata);

@@ -68,7 +68,7 @@ constexpr bool kPreferAutoSignIn = true;
 constexpr bool kNotPreferAutoSignIn = false;
 constexpr char kRpTestOrigin[] = "https://rp.example";
 constexpr char kIdpTestOrigin[] = "https://idp.example";
-constexpr char kIdpEndpoint[] = "https://idp.example/webid";
+constexpr char kProviderUrl[] = "https://idp.example";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
@@ -125,7 +125,6 @@ typedef struct {
   const char* token;
   absl::optional<FetchStatus> manifest_fetch_status;
   absl::optional<MockClientIdConfiguration> client_metadata;
-  const char* idp_endpoint;
   const char* accounts_endpoint;
   const char* token_endpoint;
   const char* client_metadata_endpoint;
@@ -168,7 +167,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       kEmptyToken},
-     {kToken, FetchStatus::kInvalidResponseError, absl::nullopt, kIdpEndpoint,
+     {kToken, FetchStatus::kInvalidResponseError, absl::nullopt,
       kAccountsEndpoint, "", kClientMetadataEndpoint, kMediatedNoop}},
 
     {"Error parsing FedCM manifest for Mediated mode missing accounts endpoint",
@@ -176,15 +175,15 @@ static const AuthRequestTestCase kMediatedTestCases[]{
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       kEmptyToken},
-     {kToken, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint, "",
-      kTokenEndpoint, kClientMetadataEndpoint, kMediatedNoop}},
+     {kToken, FetchStatus::kSuccess, absl::nullopt, "", kTokenEndpoint,
+      kClientMetadataEndpoint, kMediatedNoop}},
     {"Error due to accounts endpoint in different origin than identity "
      "provider",
      {kIdpTestOrigin, kClientId, kNonce},
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
       kEmptyToken},
-     {kToken, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint,
+     {kToken, FetchStatus::kSuccess, absl::nullopt,
       kCrossOriginAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
       kMediatedNoop}},
 
@@ -196,7 +195,6 @@ static const AuthRequestTestCase kMediatedTestCases[]{
      {kEmptyToken,
       FetchStatus::kSuccess,
       kSuccessfulClientId,
-      "",
       kAccountsEndpoint,
       kTokenEndpoint,
       kClientMetadataEndpoint,
@@ -210,7 +208,6 @@ static const AuthRequestTestCase kMediatedTestCases[]{
      {kToken,
       FetchStatus::kSuccess,
       kSuccessfulClientId,
-      "",
       kAccountsEndpoint,
       kTokenEndpoint,
       kClientMetadataEndpoint,
@@ -223,7 +220,6 @@ static const AuthRequestTestCase kMediatedTestCases[]{
      {kToken,
       FetchStatus::kSuccess,
       kSuccessfulClientId,
-      "",
       kAccountsEndpoint,
       kTokenEndpoint,
       kClientMetadataEndpoint,
@@ -234,7 +230,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
       kEmptyToken},
-     {kToken, FetchStatus::kSuccess, kClientMetadataHttpNotFound, "",
+     {kToken, FetchStatus::kSuccess, kClientMetadataHttpNotFound,
       kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
       kMediatedNoop}},
 
@@ -243,7 +239,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
       kEmptyToken},
-     {kToken, FetchStatus::kSuccess, kClientMetadataNoResponse, "",
+     {kToken, FetchStatus::kSuccess, kClientMetadataNoResponse,
       kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
       kMediatedNoop}},
 
@@ -252,7 +248,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
      {RequestIdTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingClientMetadataInvalidResponse,
       kEmptyToken},
-     {kToken, FetchStatus::kSuccess, kClientMetadataInvalidResponse, "",
+     {kToken, FetchStatus::kSuccess, kClientMetadataInvalidResponse,
       kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
       kMediatedNoop}},
 };
@@ -449,7 +445,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   RevokeStatus PerformRevokeRequest(const char* account_id) {
     RevokeRequestCallbackHelper revoke_helper;
-    request_remote_->Revoke(GURL(kIdpEndpoint), kClientId, account_id,
+    request_remote_->Revoke(GURL(kProviderUrl), kClientId, account_id,
                             revoke_helper.callback());
     revoke_helper.WaitForCallback();
     return revoke_helper.status();
@@ -523,7 +519,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
               [&](absl::optional<int>, absl::optional<int>,
                   IdpNetworkRequestManager::FetchManifestCallback callback) {
                 IdpNetworkRequestManager::Endpoints endpoints;
-                endpoints.idp = test_case.config.idp_endpoint;
                 endpoints.accounts = test_case.config.accounts_endpoint;
                 endpoints.token = test_case.config.token_endpoint;
                 endpoints.client_metadata =
@@ -822,7 +817,6 @@ static const AuthRequestTestCase kSuccessfulMediatedSignUpTestCase{
     {kToken,
      FetchStatus::kSuccess,
      kSuccessfulClientId,
-     "",
      kAccountsEndpoint,
      kTokenEndpoint,
      kClientMetadataEndpoint,
@@ -836,7 +830,6 @@ static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
     {kToken,
      FetchStatus::kSuccess,
      kSuccessfulClientId,
-     "",
      kAccountsEndpoint,
      kTokenEndpoint,
      kClientMetadataEndpoint,
@@ -850,7 +843,6 @@ static const AuthRequestTestCase kSuccessfulMediatedAutoSignInTestCase{
     {kToken,
      FetchStatus::kSuccess,
      kSuccessfulClientId,
-     "",
      kAccountsEndpoint,
      kTokenEndpoint,
      kClientMetadataEndpoint,
@@ -1080,7 +1072,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
 TEST_F(FederatedAuthRequestImplTest, Revoke) {
   constexpr char kAccountId[] = "foo@bar.com";
 
-  auto& auth_request = CreateAuthRequest(GURL(kIdpEndpoint));
+  auto& auth_request = CreateAuthRequest(GURL(kProviderUrl));
   auth_request.SetRequestPermissionDelegateForTests(
       mock_request_permission_delegate_.get());
 
@@ -1131,7 +1123,7 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
 TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
   constexpr char kAccountId[] = "foo@bar.com";
 
-  auto& auth_request = CreateAuthRequest(GURL(kIdpEndpoint));
+  auto& auth_request = CreateAuthRequest(GURL(kProviderUrl));
   auth_request.SetRequestPermissionDelegateForTests(
       mock_request_permission_delegate_.get());
 
@@ -1261,7 +1253,6 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
       {kToken,
        FetchStatus::kSuccess,
        kSuccessfulClientId,
-       "",
        kAccountsEndpoint,
        kTokenEndpoint,
        kClientMetadataEndpoint,
@@ -1369,7 +1360,6 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
       {kToken,
        FetchStatus::kSuccess,
        kSuccessfulClientId,
-       "",
        kAccountsEndpoint,
        kTokenEndpoint,
        kClientMetadataEndpoint,

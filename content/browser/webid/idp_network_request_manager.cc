@@ -39,7 +39,6 @@ using LoginState = IdentityRequestAccount::LoginState;
 // referenced here.
 
 // fedcm.json configuration keys.
-constexpr char kIdpEndpointKey[] = "idp_endpoint";
 constexpr char kTokenEndpointKey[] = "id_token_endpoint";
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
@@ -623,7 +622,6 @@ void IdpNetworkRequestManager::OnManifestParsed(
   };
 
   Endpoints endpoints;
-  endpoints.idp = ExtractEndpoint(kIdpEndpointKey);
   endpoints.token = ExtractEndpoint(kTokenEndpointKey);
   endpoints.accounts = ExtractEndpoint(kAccountsEndpointKey);
   endpoints.client_metadata = ExtractEndpoint(kClientMetadataEndpointKey);
