@@ -287,7 +287,8 @@ bool SharedContextState::InitializeGrContext(
   if (gpu_preferences.force_max_texture_size)
     options.fMaxTextureSizeOverride = gpu_preferences.force_max_texture_size;
 
-  if (base::FeatureList::IsEnabled(features::kReduceOpsTaskSplitting)) {
+  if (base::FeatureList::IsEnabled(features::kReduceOpsTaskSplitting) &&
+      !workarounds.disable_skia_reduce_ops_task_splitting) {
     options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kYes;
   } else {
     options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kNo;
