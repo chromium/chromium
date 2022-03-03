@@ -131,17 +131,15 @@ void ImportCaCert(Profile* profile) {
 // as a DER-encoded certificate.
 [[nodiscard]] std::vector<uint8_t> GenerateClientCertForPublicKey(
     const std::vector<uint8_t>& public_key_spki) {
-  auto cert_builder = net::CertBuilder::FromSubjectPublicKeyInfo(
-      public_key_spki,
-      /*issuer=*/new net::CertBuilder(/*orig_cert=*/nullptr,
-                                      /*issuer=*/nullptr));
+  net::CertBuilder issuer(/*orig_cert=*/nullptr, /*issuer=*/nullptr);
+  auto cert_builder =
+      net::CertBuilder::FromSubjectPublicKeyInfo(public_key_spki, &issuer);
   cert_builder->SetSignatureAlgorithmRsaPkca1(net::DigestAlgorithm::Sha256);
   cert_builder->SetValidity(base::Time::Now(),
                             base::Time::Now() + base::Days(30));
 
-  auto scoped_cert = cert_builder->GetX509Certificate();
   auto cert_span =
-      net::x509_util::CryptoBufferAsSpan(scoped_cert->cert_buffer());
+      net::x509_util::CryptoBufferAsSpan(cert_builder->GetCertBuffer());
   return std::vector<uint8_t>(cert_span.begin(), cert_span.end());
 }
 
