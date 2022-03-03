@@ -96,25 +96,28 @@
               property="[[managedProperties_.typeProperties.vpn.host]]">
           </network-config-input>
         </template>
-        <template is="dom-if" if="[[showVpn_.L2TPIPsec]]" restamp>
+        <template is="dom-if" if="[[showVpn_.IPsec]]" restamp>
           <network-config-select label="[[i18n('OncVPN-IPsec-AuthType')]]"
-              id="vpn-ipsec-auth-type" value="{{ipsecAuthType_}}"
+              id="ipsec-auth-type" value="{{ipsecAuthType_}}"
               items="[[ipsecAuthTypeItems_]]" onc-prefix="VPN.IPsec.AuthType"
               disabled="[[hasGuid_(guid)]]">
           </network-config-select>
-          <network-config-input label="[[i18n('OncVPN-L2TP-Username')]]"
-              value="{{configProperties_.typeConfig.vpn.l2tp.username}}"
-              property="[[managedProperties_.typeProperties.vpn.l2tp.username]]">
-          </network-config-input>
-          <network-password-input label="[[i18n('OncVPN-L2TP-Password')]]"
-              value="{{configProperties_.typeConfig.vpn.l2tp.password}}"
-              property="[[managedProperties_.typeProperties.vpn.l2tp.password]]">
-          </network-password-input>
-          <network-config-input label="[[i18n('OncVPN-IPsec-Group')]]"
-              value="{{configProperties_.typeConfig.vpn.ipSec.group}}"
-              property="[[managedProperties_.typeProperties.vpn.ipSec.group]]">
-          </network-config-input>
-          <template is="dom-if" if="[[!showVpn_.Cert]]" restamp>
+          <template is="dom-if" if="[[!showVpn_.IKEv2]]" restamp>
+            <network-config-input label="[[i18n('OncVPN-L2TP-Username')]]"
+                id="l2tp-username-input"
+                value="{{configProperties_.typeConfig.vpn.l2tp.username}}"
+                property="[[managedProperties_.typeProperties.vpn.l2tp.username]]">
+            </network-config-input>
+            <network-password-input label="[[i18n('OncVPN-L2TP-Password')]]"
+                value="{{configProperties_.typeConfig.vpn.l2tp.password}}"
+                property="[[managedProperties_.typeProperties.vpn.l2tp.password]]">
+            </network-password-input>
+            <network-config-input label="[[i18n('OncVPN-IPsec-Group')]]"
+                value="{{configProperties_.typeConfig.vpn.ipSec.group}}"
+                property="[[managedProperties_.typeProperties.vpn.ipSec.group]]">
+            </network-config-input>
+          </template>
+          <template is="dom-if" if="[[showVpn_.IPsecPSK]]" restamp>
             <network-password-input label="[[i18n('OncVPN-IPsec-PSK')]]"
                 id="ipsec-psk-input"
                 value="{{configProperties_.typeConfig.vpn.ipSec.psk}}"
@@ -122,8 +125,9 @@
             </network-password-input>
           </template>
         </template>
-        <template is="dom-if" if="[[showVpn_.OpenVPN]]">
+        <template is="dom-if" if="[[showVpn_.OpenVPN]]" restamp>
           <network-config-input label="[[i18n('OncVPN-OpenVPN-Username')]]"
+              id="openvpn-username-input"
               value="{{configProperties_.typeConfig.vpn.openVpn.username}}"
               property="[[managedProperties_.typeProperties.vpn.openVpn.username]]">
           </network-config-input>
@@ -136,13 +140,15 @@
               property="[[managedProperties_.typeProperties.vpn.openVpn.otp]]">
           </network-config-input>
         </template>
-        <template is="dom-if" if="[[showVpn_.Cert]]" restamp>
+        <template is="dom-if" if="[[showVpn_.ServerCA]]" restamp>
           <network-config-select id="vpnServerCa"
               label="[[i18n('OncEAP-ServerCA')]]"
               value="{{selectedServerCaHash_}}" items="[[serverCaCerts_]]"
               cert-list
               property="[[getManagedVpnServerCaRefs_(managedProperties_)]]">
           </network-config-select>
+        </template>
+        <template is="dom-if" if="[[showVpn_.UserCert]]" restamp>
           <network-config-select id="vpnUserCert"
               label="[[i18n('OncEAP-UserCert')]]"
               value="{{selectedUserCertHash_}}" items="[[userCerts_]]"

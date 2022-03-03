@@ -528,6 +528,7 @@ Polymer({
       networkStates.forEach(state => {
         assert(state.type === mojom.NetworkType.kVPN);
         switch (state.typeState.vpn.type) {
+          case mojom.VpnType.kIKEv2:
           case mojom.VpnType.kL2TPIPsec:
           case mojom.VpnType.kOpenVPN:
           case mojom.VpnType.kWireGuard:

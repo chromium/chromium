@@ -645,8 +645,10 @@
     return new Promise(resolve => {
       this.methodCalled('getSupportedVpnTypes');
       resolve({
-        vpnTypes:
-            ['l2tpipsec', 'openvpn', 'thirdpartyvpn', 'arcvpn', 'wireguard']
+        vpnTypes: [
+          'ikev2', 'l2tpipsec', 'openvpn', 'thirdpartyvpn', 'arcvpn',
+          'wireguard'
+        ]
       });
     });
   }

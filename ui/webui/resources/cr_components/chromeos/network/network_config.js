@@ -13,6 +13,7 @@
  * @enum {string}
  */
 const VPNConfigType = {
+  IKEV2: 'IKEv2',
   L2TP_IPSEC: 'L2TP_IPsec',
   OPEN_VPN: 'OpenVPN',
   WIREGUARD: 'WireGuard',
@@ -284,10 +285,13 @@ Polymer({
      * Dictionary of boolean values determining which VPN properties to show,
      * or null to hide all VPN settings.
      * @private {?{
-     *   L2TPIPsec:  (boolean|undefined),
+     *   IPsec: (boolean|undefined),
+     *   IPsecPSK: (boolean|undefined),
+     *   IKEv2: (boolean|undefined),
      *   OpenVPN: (boolean|undefined),
      *   WireGuard: (boolean|undefined),
-     *   Cert: (boolean|undefined),
+     *   ServerCA: (boolean|undefined),
+     *   UserCert: (boolean|undefined),
      * }}
      */
     showVpn_: {
@@ -627,6 +631,14 @@ Polymer({
    * @return {boolean}
    * @private
    */
+  isIkev2Supported_() {
+    return this.vpnTypeItems_.includes(VPNConfigType.IKEV2);
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
   isWireGuardSupported_() {
     return this.vpnTypeItems_.includes(VPNConfigType.WIREGUARD);
   },
@@ -640,6 +652,9 @@ Polymer({
       VPNConfigType.L2TP_IPSEC,
       VPNConfigType.OPEN_VPN,
     ];
+    if (responseTypes.includes('ikev2')) {
+      this.vpnTypeItems_.unshift(VPNConfigType.IKEV2);
+    }
     if (responseTypes.includes('wireguard')) {
       this.vpnTypeItems_.push(VPNConfigType.WIREGUARD);
     }
@@ -703,6 +718,18 @@ Polymer({
   },
 
   /**
+   * @param {?mojom.ManagedInt32|undefined} property
+   * @return {number}
+   * @private
+   */
+  getActiveInt32_(property) {
+    if (!property) {
+      return 0;
+    }
+    return property.activeValue;
+  },
+
+  /**
    * @param {?mojom.ManagedStringList|undefined} property
    * @return {!Array<string>|undefined}
    * @private
@@ -735,6 +762,8 @@ Polymer({
       const vpn = managedProperties.typeProperties.vpn;
       if (vpn.type === mojom.VpnType.kOpenVPN) {
         saveCredentials = this.getActiveBoolean_(vpn.openVpn.saveCredentials);
+      } else if (vpn.type === mojom.VpnType.kIKEv2) {
+        saveCredentials = this.getActiveBoolean_(vpn.ipSec.saveCredentials);
       } else if (vpn.type === mojom.VpnType.kL2TPIPsec) {
         saveCredentials = this.getActiveBoolean_(vpn.ipSec.saveCredentials) ||
             this.getActiveBoolean_(vpn.l2tp.saveCredentials);
@@ -841,7 +870,7 @@ Polymer({
       clientCertPkcs11Id: OncMojo.getActiveString(ipSec.clientCertPkcs11Id),
       clientCertType: OncMojo.getActiveString(ipSec.clientCertType),
       group: OncMojo.getActiveString(ipSec.group),
-      ikeVersion: 1,
+      ikeVersion: this.getActiveInt32_(ipSec.ikeVersion),
       psk: OncMojo.getActiveString(ipSec.psk),
       saveCredentials: this.getActiveBoolean_(ipSec.saveCredentials),
       serverCaPems: this.getActiveStringList_(ipSec.serverCaPems),
@@ -959,7 +988,13 @@ Polymer({
         const configVpn = configProperties.typeConfig.vpn;
         configVpn.host = OncMojo.getActiveString(vpn.host);
         configVpn.type = {value: vpnType};
-        if (vpnType === mojom.VpnType.kL2TPIPsec) {
+        if (vpnType === mojom.VpnType.kIKEv2) {
+          if (!this.isIkev2Supported_()) {
+            break;
+          }
+          assert(vpn.ipSec);
+          configVpn.ipSec = this.getIPSecConfigProperties_(vpn.ipSec);
+        } else if (vpnType === mojom.VpnType.kL2TPIPsec) {
           assert(vpn.ipSec);
           configVpn.ipSec = this.getIPSecConfigProperties_(vpn.ipSec);
           assert(vpn.l2tp);
@@ -1173,7 +1208,9 @@ Polymer({
   getVpnTypeFromProperties_(properties) {
     const vpn = properties.typeConfig.vpn;
     assert(vpn);
-    if (!!vpn.type && vpn.type.value === mojom.VpnType.kL2TPIPsec) {
+    if (!!vpn.type && vpn.type.value === mojom.VpnType.kIKEv2) {
+      return VPNConfigType.IKEV2;
+    } else if (!!vpn.type && vpn.type.value === mojom.VpnType.kL2TPIPsec) {
       return VPNConfigType.L2TP_IPSEC;
     } else if (!!vpn.type && vpn.type.value === mojom.VpnType.kWireGuard) {
       return VPNConfigType.WIREGUARD;
@@ -1189,8 +1226,10 @@ Polymer({
   getIpsecAuthTypeFromProperties_(properties) {
     const vpn = properties.typeConfig.vpn;
     assert(vpn);
-    if (!vpn.type || vpn.type.value !== mojom.VpnType.kL2TPIPsec) {
-      // This field will not be used by services other than L2TP/IPsec VPN.
+    if (!vpn.type ||
+        !(vpn.type.value === mojom.VpnType.kL2TPIPsec ||
+          vpn.type.value === mojom.VpnType.kIKEv2)) {
+      // This field will not be used by services other than IPsec-based VPN.
       // Initiate it to "PSK" for simplicity.
       return IpsecAuthType.PSK;
     }
@@ -1212,7 +1251,8 @@ Polymer({
     }
 
     const isOpenVpn = this.vpnType_ === VPNConfigType.OPEN_VPN;
-    const isIpsec = this.vpnType_ === VPNConfigType.L2TP_IPSEC;
+    const isIpsec = this.vpnType_ === VPNConfigType.L2TP_IPSEC ||
+        this.vpnType_ === VPNConfigType.IKEV2;
     let caCerts = this.cachedServerCaCerts_.slice();
     if (!isOpenVpn && !isIpsec) {
       // 'Default' is the same as 'Do not check' except that 'Default' sets
@@ -1272,48 +1312,53 @@ Polymer({
       return;
     }
     switch (this.vpnType_) {
+      case VPNConfigType.IKEV2:
+        vpn.type = {value: mojom.VpnType.kIKEv2};
+        if (!vpn.ipSec) {
+          vpn.ipSec = {
+            authenticationType: this.ipsecAuthType_,
+            ikeVersion: 2,
+            saveCredentials: false,
+          };
+        }
+        break;
       case VPNConfigType.L2TP_IPSEC:
         vpn.type = {value: mojom.VpnType.kL2TPIPsec};
         if (!vpn.ipSec) {
           vpn.ipSec = {
-            authenticationType: 'PSK',
+            authenticationType: this.ipsecAuthType_,
             ikeVersion: 1,
             saveCredentials: false,
           };
-        }
-        switch (this.ipsecAuthType_) {
-          case IpsecAuthType.PSK:
-            this.showVpn_ = {
-              Cert: false,
-              L2TPIPsec: true,
-              OpenVPN: false,
-              WireGuard: false
-            };
-            break;
-          case IpsecAuthType.CERT:
-            vpn.ipSec.authenticationType = 'Cert';
-            this.showVpn_ =
-                {Cert: true, L2TPIPsec: true, OpenVPN: false, WireGuard: false};
-            break;
-          default:
-            assertNotReached();
         }
         break;
       case VPNConfigType.OPEN_VPN:
         vpn.type = {value: mojom.VpnType.kOpenVPN};
         vpn.openVpn = vpn.openVpn || {saveCredentials: false};
-        this.showVpn_ =
-            {Cert: true, L2TPIPsec: false, OpenVPN: true, WireGuard: false};
         break;
       case VPNConfigType.WIREGUARD:
         vpn.type = {value: mojom.VpnType.kWireGuard};
         vpn.wireguard = vpn.wireguard || {peers: [{}]};
-        this.showVpn_ =
-            {Cert: false, L2TPIPsec: false, OpenVPN: false, WireGuard: true};
         break;
       default:
         assertNotReached();
     }
+
+    const isIpsec = this.vpnType_ === VPNConfigType.L2TP_IPSEC ||
+        this.vpnType_ === VPNConfigType.IKEV2;
+    const ipsecAuthIsPsk = this.ipsecAuthType_ === IpsecAuthType.PSK;
+    const ipsecAuthIsCert = this.ipsecAuthType_ === IpsecAuthType.CERT;
+    const isOpenvpn = this.vpnType_ === VPNConfigType.OPEN_VPN;
+    this.showVpn_ = {
+      IPsec: isIpsec,
+      IPsecPSK: isIpsec && ipsecAuthIsPsk,
+      IKEv2: this.vpnType_ === VPNConfigType.IKEV2,
+      OpenVPN: isOpenvpn,
+      WireGuard: this.vpnType_ === VPNConfigType.WIREGUARD,
+      ServerCA: (isIpsec && !ipsecAuthIsPsk) || isOpenvpn,
+      UserCert: (isIpsec && ipsecAuthIsCert) || isOpenvpn,
+    };
+
     if (vpn.type.value === mojom.VpnType.kL2TPIPsec && !vpn.l2tp) {
       vpn.l2tp = {
         lcpEchoDisabled: false,
@@ -1322,9 +1367,12 @@ Polymer({
         username: '',
       };
     }
+    if (vpn.type.value !== mojom.VpnType.kL2TPIPsec &&
+        vpn.type.value !== mojom.VpnType.kIKEv2) {
+      delete vpn.ipSec;
+    }
     if (vpn.type.value !== mojom.VpnType.kL2TPIPsec) {
       delete vpn.l2tp;
-      delete vpn.ipSec;
     }
     if (vpn.type.value !== mojom.VpnType.kOpenVPN) {
       delete vpn.openVpn;
@@ -1337,8 +1385,11 @@ Polymer({
 
   /** @private */
   updateVpnIPsecCerts_() {
-    if (this.vpnType_ !== VPNConfigType.L2TP_IPSEC ||
-        this.ipsecAuthType_ !== IpsecAuthType.CERT) {
+    if (this.vpnType_ !== VPNConfigType.L2TP_IPSEC &&
+        this.vpnType_ !== VPNConfigType.IKEV2) {
+      return;
+    }
+    if (this.ipsecAuthType_ !== IpsecAuthType.CERT) {
       return;
     }
     const ipSec = this.configProperties_.typeConfig.vpn.ipSec;
@@ -1526,6 +1577,9 @@ Polymer({
 
     const typeConfig = this.configProperties_.typeConfig;
     if (typeConfig.vpn) {
+      if (this.vpnType_ === VPNConfigType.IKEV2 && !this.isIkev2Supported_()) {
+        return false;
+      }
       return this.vpnIsConfigured_();
     }
 
@@ -1718,6 +1772,26 @@ Polymer({
    * @return {boolean}
    * @private
    */
+  ikev2IsConfigured_() {
+    const vpn = this.configProperties_.typeConfig.vpn;
+    switch (this.ipsecAuthType_) {
+      case IpsecAuthType.PSK:
+        return !!vpn.ipSec.psk;
+      case IpsecAuthType.CERT:
+        // TODO(b/206722135): Show proper error message in the UI if server CA
+        // is invalid.
+        return this.selectedServerCaHashIsValid_() &&
+            this.selectedUserCertHashIsValid_();
+      default:
+        assertNotReached();
+    }
+  },
+
+
+  /**
+   * @return {boolean}
+   * @private
+   */
   l2tpIpsecIsConfigured_() {
     const vpn = this.configProperties_.typeConfig.vpn;
     switch (this.ipsecAuthType_) {
@@ -1796,6 +1870,8 @@ Polymer({
     }
 
     switch (this.vpnType_) {
+      case VPNConfigType.IKEV2:
+        return this.ikev2IsConfigured_();
       case VPNConfigType.L2TP_IPSEC:
         return this.l2tpIpsecIsConfigured_();
       case VPNConfigType.OPEN_VPN:
@@ -1838,8 +1914,10 @@ Polymer({
       } else {
         delete propertiesToSet.typeConfig.vpn.openVpn;
       }
-      if (vpnType === mojom.VpnType.kL2TPIPsec) {
-        this.setVpnIPsecProperties_(propertiesToSet);
+      if (vpnType === mojom.VpnType.kIKEv2) {
+        this.setVpnIkev2Properties_(propertiesToSet);
+      } else if (vpnType === mojom.VpnType.kL2TPIPsec) {
+        this.setVpnL2tpIpsecProperties_(propertiesToSet);
       } else {
         delete propertiesToSet.typeConfig.vpn.ipSec;
         delete propertiesToSet.typeConfig.vpn.l2tp;
@@ -1892,6 +1970,33 @@ Polymer({
     const pkcs11Id = this.getUserCertPkcs11Id_();
     eap.clientCertType = pkcs11Id ? 'PKCS11Id' : 'None';
     eap.clientCertPkcs11Id = pkcs11Id || '';
+  },
+
+  /**
+   * @param {!mojom.ConfigProperties} propertiesToSet
+   * @private
+   */
+  setVpnIkev2Properties_(propertiesToSet) {
+    const ipsec = propertiesToSet.typeConfig.vpn.ipSec;
+    assert(!!ipsec);
+
+    ipsec.authenticationType = this.ipsecAuthType_;
+    if (ipsec.authenticationType !== IpsecAuthType.PSK) {
+      // Set psk to empty string to make sure the value is cleared.
+      ipsec.psk = '';
+      // For non-PSK auth method, server CA is mandatory.
+      ipsec.serverCaPems = this.getServerCaPems_();
+    }
+
+    if (ipsec.authenticationType === IpsecAuthType.CERT) {
+      ipsec.clientCertType = 'PKCS11Id';
+      ipsec.clientCertPkcs11Id = this.getUserCertPkcs11Id_();
+    } else {
+      delete ipsec.clientCertType;
+    }
+
+    ipsec.ikeVersion = 2;
+    ipsec.saveCredentials = this.vpnSaveCredentials_;
   },
 
   /**
@@ -1960,12 +2065,12 @@ Polymer({
    * @param {!mojom.ConfigProperties} propertiesToSet
    * @private
    */
-  setVpnIPsecProperties_(propertiesToSet) {
+  setVpnL2tpIpsecProperties_(propertiesToSet) {
     const vpn = propertiesToSet.typeConfig.vpn;
     assert(vpn.ipSec);
     assert(vpn.l2tp);
 
-    if (vpn.ipSec.authenticationType === 'Cert') {
+    if (vpn.ipSec.authenticationType === IpsecAuthType.CERT) {
       vpn.ipSec.clientCertType = 'PKCS11Id';
       vpn.ipSec.clientCertPkcs11Id = this.getUserCertPkcs11Id_();
       vpn.ipSec.serverCaPems = this.getServerCaPems_();
@@ -2124,6 +2229,8 @@ Polymer({
   getManagedVpnSaveCredentials_(managedProperties) {
     const vpn = managedProperties.typeProperties.vpn;
     switch (vpn.type) {
+      case mojom.VpnType.kIKEv2:
+        return vpn.ipSec.saveCredentials || OncMojo.createManagedBool(false);
       case mojom.VpnType.kOpenVPN:
         return vpn.openVpn.saveCredentials || OncMojo.createManagedBool(false);
       case mojom.VpnType.kL2TPIPsec:
@@ -2146,6 +2253,7 @@ Polymer({
     switch (vpn.type) {
       case mojom.VpnType.kOpenVPN:
         return vpn.openVpn.serverCaRefs;
+      case mojom.VpnType.kIKEv2:
       case mojom.VpnType.kL2TPIPsec:
         return vpn.ipSec.serverCaRefs;
     }
@@ -2163,6 +2271,7 @@ Polymer({
     switch (vpn.type) {
       case mojom.VpnType.kOpenVPN:
         return vpn.openVpn.clientCertType || OncMojo.createManagedString('');
+      case mojom.VpnType.kIKEv2:
       case mojom.VpnType.kL2TPIPsec:
         return vpn.ipSec.clientCertType || OncMojo.createManagedString('');
     }

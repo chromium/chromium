@@ -250,6 +250,7 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncVPN-OpenVPN-Username", IDS_ONC_VPN_USERNAME},
       {"OncVPN-ProviderName", IDS_ONC_VPN_THIRD_PARTY_VPN_PROVIDER_NAME},
       {"OncVPN-Type", IDS_ONC_VPN_TYPE},
+      {"OncVPN-Type_IKEv2", IDS_ONC_VPN_TYPE_IKEV2},
       {"OncVPN-Type_L2TP_IPsec", IDS_ONC_VPN_TYPE_L2TP_IPSEC},
       {"OncVPN-Type_OpenVPN", IDS_ONC_VPN_TYPE_OPENVPN},
       {"OncVPN-Type_WireGuard", IDS_ONC_VPN_TYPE_WIREGUARD},
