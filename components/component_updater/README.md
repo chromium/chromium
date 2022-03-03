@@ -67,7 +67,7 @@ is a good example to work from.
 Components need to be registered with the component updater. This is done in
 [RegisterComponentsForUpdate](https://cs.chromium.org/chromium/src/chrome/browser/chrome_browser_main.cc).
 
-### Bundle with the Chrome Installer (Optional)
+### Bundle with the Chrome Installer (Optional, not recommended)
 If you need the guarantee that some implementation of your component is always
 available, you must bundle a component implementation with the browser itself.
 If you are using `ComponentInstaller`, you simply need to make sure that
@@ -77,6 +77,15 @@ state the version of this component implementation, and the files must be
 bitwise identical to the contents of any update CRX with that version for that
 platform, as the system will attempt to apply differential updates over these
 files.
+
+This option is not recommended, because:
+* the browser should generally not depend on any particular component's
+existence
+* bundling increases the installer's size
+* the actual gap between install and receipt of updates should be < 5 minutes
+* bundling increases the complexity of the solution
+
+Note that you can always start simple and bundle later, if it becomes required.
 
 ### Implement On-Demand or Just-In-Time Updates (Optional)
 Contact the component\_updater OWNERS.
