@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/url_database.h"
@@ -79,6 +80,14 @@ class LocalHistoryZeroSuggestProviderTest
 
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
     client_->set_identity_manager(identity_env_->identity_manager());
+    CHECK(history_dir_.CreateUniqueTempDir());
+    client_->set_history_service(
+        history::CreateHistoryService(history_dir_.GetPath(), true));
+    client_->set_bookmark_model(bookmarks::TestBookmarkClient::CreateModel());
+    client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
+        client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
+        history_dir_.GetPath(), SchemeSet()));
+    client_->GetInMemoryURLIndex()->Init();
 
     provider_ = base::WrapRefCounted(
         LocalHistoryZeroSuggestProvider::Create(client_.get(), this));
@@ -137,6 +146,7 @@ class LocalHistoryZeroSuggestProviderTest
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir history_dir_;
   // Used to spin the message loop until |provider_| is done with its async ops.
   std::unique_ptr<base::RunLoop> provider_run_loop_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

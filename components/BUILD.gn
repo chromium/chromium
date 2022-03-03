@@ -926,6 +926,7 @@ if (!is_ios) {
 
     deps = [
       "//base",
+      "//components/bookmarks/test",
       "//components/discardable_memory/common",
       "//components/history/core/test",
       "//components/leveldb_proto",

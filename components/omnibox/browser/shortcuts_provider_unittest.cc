@@ -248,6 +248,12 @@ ShortcutsDatabase::Shortcut MakeShortcut(
 
 }  // namespace
 
+class MockHistoryService : public history::HistoryService {
+ public:
+  MockHistoryService() = default;
+  MOCK_METHOD1(DeleteURLs, void(const std::vector<GURL>&));
+};
+
 // ShortcutsProviderTest ------------------------------------------------------
 
 class ShortcutsProviderTest : public testing::Test {
@@ -283,6 +289,12 @@ ShortcutsProviderTest::ShortcutsProviderTest() {
 
 void ShortcutsProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
+  client_->set_history_service(std::make_unique<MockHistoryService>());
+  auto shortcuts_backend = base::MakeRefCounted<ShortcutsBackend>(
+      client_->GetTemplateURLService(), std::make_unique<SearchTermsData>(),
+      client_->GetHistoryService(), base::FilePath(), true);
+  shortcuts_backend->Init();
+  client_->set_shortcuts_backend(std::move(shortcuts_backend));
 
   ASSERT_TRUE(client_->GetShortcutsBackend());
   provider_ = base::MakeRefCounted<ShortcutsProvider>(client_.get());

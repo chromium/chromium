@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
@@ -36,7 +37,7 @@ class TestingPrefServiceSimple;
 // task_environment_.RunUntilIdle().
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
-  explicit FakeAutocompleteProviderClient(bool create_history_db = true);
+  FakeAutocompleteProviderClient();
   ~FakeAutocompleteProviderClient() override;
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
       delete;
@@ -61,6 +62,14 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   ntp_tiles::MostVisitedSites* GetNtpMostVisitedSites() override;
 
   // Test-only setters
+  void set_bookmark_model(std::unique_ptr<bookmarks::BookmarkModel> model) {
+    bookmark_model_ = std::move(model);
+  }
+
+  void set_history_service(std::unique_ptr<history::HistoryService> service) {
+    history_service_ = std::move(service);
+  }
+
   void set_in_memory_url_index(std::unique_ptr<InMemoryURLIndex> index) {
     in_memory_url_index_ = std::move(index);
   }
@@ -71,6 +80,10 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
   void set_ntp_most_visited_sites(ntp_tiles::MostVisitedSites* ntp_mv_sites) {
     ntp_most_visited_sites_ = ntp_mv_sites;
+  }
+
+  void set_shortcuts_backend(scoped_refptr<ShortcutsBackend> backend) {
+    shortcuts_backend_ = std::move(backend);
   }
 
  private:

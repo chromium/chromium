@@ -136,7 +136,7 @@ class MostVisitedSitesProviderTest : public testing::Test,
   // AutocompleteProviderListener:
   void OnProviderUpdate(bool updated_matches) override;
 
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   scoped_refptr<FakeTopSites> top_sites_;
   scoped_refptr<FakeTopSites> top_sites_for_start_surface_;
   scoped_refptr<MostVisitedSitesProvider> provider_;
@@ -216,7 +216,8 @@ void MostVisitedSitesProviderTest::CheckMatchesEquivalentTo(
 }
 
 void MostVisitedSitesProviderTest::SetUp() {
-  task_environment_ = std::make_unique<base::test::TaskEnvironment>();
+  task_environment_ =
+      std::make_unique<base::test::SingleThreadTaskEnvironment>();
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(pref_service_.registry());
   top_sites_ = new FakeTopSites();
   top_sites_for_start_surface_ = new FakeTopSites();

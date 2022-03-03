@@ -187,6 +187,7 @@ class HistoryQuickProviderTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir history_dir_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
 
   ACMatches ac_matches_;  // The resulting matches after running RunTest.
@@ -196,6 +197,14 @@ class HistoryQuickProviderTest : public testing::Test {
 
 void HistoryQuickProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
+  CHECK(history_dir_.CreateUniqueTempDir());
+  client_->set_history_service(
+      history::CreateHistoryService(history_dir_.GetPath(), true));
+  client_->set_bookmark_model(bookmarks::TestBookmarkClient::CreateModel());
+  client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
+      client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
+      history_dir_.GetPath(), SchemeSet()));
+  client_->GetInMemoryURLIndex()->Init();
   ASSERT_TRUE(client_->GetHistoryService());
 
   // First make sure the automatic initialization completes to avoid a race

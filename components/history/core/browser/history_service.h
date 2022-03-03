@@ -412,7 +412,7 @@ class HistoryService : public KeyedService {
 
   // Delete all the information related to a list of urls.  (Deleting
   // URLs one by one is slow as it has to flush to disk each time.)
-  void DeleteURLs(const std::vector<GURL>& urls);
+  virtual void DeleteURLs(const std::vector<GURL>& urls);
 
   // Removes all visits in the selected time range (including the
   // start time), updating the URLs accordingly. This deletes any
