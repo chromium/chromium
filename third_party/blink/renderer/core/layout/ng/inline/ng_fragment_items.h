@@ -27,17 +27,17 @@ class CORE_EXPORT NGFragmentItems final {
   explicit NGFragmentItems(NGFragmentItemsBuilder* builder);
   ~NGFragmentItems();
 
-  wtf_size_t Size() const { return const_size_; }
+  wtf_size_t Size() const { return size_; }
 
   using Span = base::span<const NGFragmentItem>;
-  Span Items() const { return base::make_span(ItemsData(), const_size_); }
+  Span Items() const { return base::make_span(ItemsData(), size_); }
   bool Equals(const Span& span) const {
     return ItemsData() == span.data() && Size() == span.size();
   }
   bool IsSubSpan(const Span& span) const;
 
   const NGFragmentItem& front() const {
-    CHECK_GE(const_size_, 1u);
+    CHECK_GE(size_, 1u);
     return items_[0];
   }
 
@@ -59,9 +59,7 @@ class CORE_EXPORT NGFragmentItems final {
   wtf_size_t SizeOfEarlierFragments() const {
     return size_of_earlier_fragments_;
   }
-  wtf_size_t EndItemIndex() const {
-    return size_of_earlier_fragments_ + const_size_;
-  }
+  wtf_size_t EndItemIndex() const { return size_of_earlier_fragments_ + size_; }
   bool HasItemIndex(wtf_size_t index) const {
     return index >= SizeOfEarlierFragments() && index < EndItemIndex();
   }
@@ -123,7 +121,9 @@ class CORE_EXPORT NGFragmentItems final {
   String text_content_;
   String first_line_text_content_;
 
-  const wtf_size_t const_size_;
+  // Note: To make |Trace()| handles flexible array |items_| correctly, |size_|
+  // must be an immutable.
+  const wtf_size_t size_;
 
   // Total size of |NGFragmentItem| in earlier fragments when block fragmented.
   // 0 for the first |NGFragmentItems|.
