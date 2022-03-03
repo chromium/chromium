@@ -205,7 +205,8 @@ ResultExpr RestrictPrctl() {
 #endif  // BUILDFLAG(IS_ANDROID)
               ),
              Allow())
-      .Default(CrashSIGSYSPrctl());
+      .Default(
+          If(option == PR_SET_PTRACER, Error(EPERM)).Else(CrashSIGSYSPrctl()));
 }
 
 ResultExpr RestrictIoctl() {

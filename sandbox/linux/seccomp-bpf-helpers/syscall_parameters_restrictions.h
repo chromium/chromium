@@ -23,7 +23,10 @@ namespace sandbox {
 // Crash if anything else is attempted.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictCloneToThreadsAndEPERMFork();
 
-// Allow PR_SET_NAME, PR_SET_DUMPABLE, PR_GET_DUMPABLE.
+// Allow PR_GET_NAME, PR_SET_NAME, PR_SET_DUMPABLE, PR_GET_DUMPABLE.
+// On Android allows a few other options.
+// Returns EPERM for PR_SET_PTRACER to allow crashpad to try to set itself as
+// ptracer at crash time, if it hasn't yet been able to.
 // Crash if anything else is attempted.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPrctl();
 
