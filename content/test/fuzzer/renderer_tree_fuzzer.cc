@@ -153,12 +153,11 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
   AttrPosition PickRandomAttribute(Random* rnd);
 
   void ParseJson(const base::Value& value) {
-    const base::ListValue* list;
-    if (!value.GetAsList(&list)) {
+    if (!value.is_list()) {
       return;
     }
 
-    for (const auto& listItem : list->GetListDeprecated()) {
+    for (const auto& listItem : value.GetList()) {
       std::unique_ptr<Node> node(Node::ParseJson(listItem));
       if (node) {
         push_back(std::move(node));
