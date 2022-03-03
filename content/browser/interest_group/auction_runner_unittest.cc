@@ -360,7 +360,12 @@ std::string MakeDecisionScript(
       if (debugWinReportUrl)
         forDebuggingOnly.reportAdAuctionWin(debugWinReportUrl + bid);
 
-      return computeScore(bid);
+      return {desirability: computeScore(bid),
+              // Only allow a component auction when the passed in ad is from
+              // one.
+              allowComponentAuction:
+                  browserSignals.topLevelSeller !== undefined ||
+                  browserSignals.componentSeller !== undefined}
     }
 
     function reportResult(auctionConfig, browserSignals) {
@@ -2324,8 +2329,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
       if (auctionConfig.seller == "https://adstuff.publisher1.com")
-        return 20 + bid;
-      return 10 + bid;
+        return {desirability: 20 + bid, allowComponentAuction: true};
+      return {desirability: 10 + bid, allowComponentAuction: true};
     }
 
     function reportResult(auctionConfig, browserSignals) {
@@ -5572,7 +5577,10 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
       "https://top-seller-loss-reporting.test/" + bid);
   forDebuggingOnly.reportAdAuctionWin(
       "https://top-seller-win-reporting.test/" + bid);
-  return 0;
+  // While not setting `allowComponentAuction` will also reject the ad, it
+  // also prevents loss reports and adds an error message, so need to set
+  // it to true.
+  return {desirability: 0, allowComponentAuction: true};
 }
   )");
 

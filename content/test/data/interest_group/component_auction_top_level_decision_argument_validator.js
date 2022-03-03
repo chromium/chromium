@@ -13,7 +13,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
   if (browserSignals.biddingDurationMsec < 0)
     throw 'Wrong biddingDurationMsec ' + browserSignals.biddingDurationMsec;
 
-  return 37;
+  return {desirability: 37, allowComponentAuction: true};
 }
 
 function reportResult(auctionConfig, browserSignals) {

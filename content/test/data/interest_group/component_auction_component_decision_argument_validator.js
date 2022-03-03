@@ -9,7 +9,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
   validateAuctionConfig(auctionConfig);
   validateTrustedScoringSignals(trustedScoringSignals);
   validateBrowserSignals(browserSignals, /*isScoreAd=*/true);
-  return 13;
+  return {desirability: 13, allowComponentAuction: true};
 }
 
 function reportResult(auctionConfig, browserSignals) {

@@ -395,15 +395,12 @@ class SellerWorkletTest : public testing::Test {
   }
 
   // Loads and runs a report_result() script, expecting the supplied result.
-  // Runs ScoreAd() first, expecting a score of 1, since that's required before
-  // calling ReportResult.
   void RunReportResultExpectingResult(
       const absl::optional<std::string>& expected_signals_for_winner,
       const absl::optional<GURL>& expected_report_url,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     auto seller_worklet = CreateWorklet();
-    RunScoreAdExpectingResultOnWorklet(seller_worklet.get(), 1);
     ASSERT_TRUE(seller_worklet);
 
     base::RunLoop run_loop;
@@ -603,6 +600,70 @@ TEST_F(SellerWorkletTest, ScoreAd) {
       {"https://url.test/:5 Uncaught ReferenceError: shrimp is not defined."});
 }
 
+TEST_F(SellerWorkletTest, ScoreAdAllowComponentAuction) {
+  // Expected errors vector on failure.
+  const std::vector<std::string> kExpectedErrorsOnFailure{
+      R"(https://url.test/ scoreAd() return value does not have )"
+      R"(allowComponentAuction set to true. Ad dropped from component )"
+      R"(auction.)"};
+
+  // With a null `browser_signals_other_seller_`, returning a raw score is
+  // allowed, and if returning an object, `allowComponentAuction` doesn't
+  // matter.
+  browser_signals_other_seller_.reset();
+  RunScoreAdWithReturnValueExpectingResult("1", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:true}", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:false}", 1);
+  RunScoreAdWithReturnValueExpectingResult("{desirability:1}", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:1}", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:0}", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:[32]}", 1);
+
+  // With a non-null `browser_signals_other_seller_`, an object must be
+  // returned, and `allowComponentAuction` must be true.
+
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
+          url::Origin::Create(GURL("https://top.seller.test")));
+  RunScoreAdWithReturnValueExpectingResult("1", 0, kExpectedErrorsOnFailure);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:true}", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:false}", 0,
+      kExpectedErrorsOnFailure);
+  RunScoreAdWithReturnValueExpectingResult("{desirability:1}", 0,
+                                           kExpectedErrorsOnFailure);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:1}", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:0}", 0, kExpectedErrorsOnFailure);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:[32]}", 1);
+
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewComponentSeller(
+          url::Origin::Create(GURL("https://component.seller.test")));
+  RunScoreAdWithReturnValueExpectingResult("1", 0, kExpectedErrorsOnFailure);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:true}", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:false}", 0,
+      kExpectedErrorsOnFailure);
+  RunScoreAdWithReturnValueExpectingResult("{desirability:1}", 0,
+                                           kExpectedErrorsOnFailure);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:1}", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:0}", 0, kExpectedErrorsOnFailure);
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1, allowComponentAuction:[32]}", 1);
+}
+
 TEST_F(SellerWorkletTest, ScoreAdDateNotAvailable) {
   RunScoreAdWithReturnValueExpectingResult(
       "Date.parse(Date().toString())", 0,
@@ -633,40 +694,60 @@ TEST_F(SellerWorkletTest, ScoreAdTopWindowOrigin) {
 }
 
 TEST_F(SellerWorkletTest, ScoreAdTopLevelSeller) {
+  // `topLevelSeller` should be empty when a top-level seller is scoring a bid
+  // from its own auction.
   browser_signals_other_seller_.reset();
   RunScoreAdWithReturnValueExpectingResult(
       R"("topLevelSeller" in browserSignals ? 0 : 1)", 1);
 
+  // `topLevelSeller` should be set when a top-level seller is scoring a bid
+  // from a component auction. Must set `allowComponentAuction` to true for any
+  // value to be returned.
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
           url::Origin::Create(GURL("https://top.seller.test")));
   RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.topLevelSeller === "https://top.seller.test" ? 2 : 0)",
+      R"(browserSignals.topLevelSeller === "https://top.seller.test" ?
+             {desirability: 2, allowComponentAuction: true} : 0)",
       2);
 
+  // `topLevelSeller` should be empty when a component seller is scoring a bid.
+  // Must set `allowComponentAuction` to true for any value to be returned.
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewComponentSeller(
           url::Origin::Create(GURL("https://component.test")));
   RunScoreAdWithReturnValueExpectingResult(
-      R"("topLevelSeller" in browserSignals ? 0 : 3)", 3);
+      R"("topLevelSeller" in browserSignals ?
+             0 : {desirability: 3, allowComponentAuction: true})",
+      3);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdComponentSeller) {
+  // `componentSeller` should be empty when a top-level seller is scoring a bid
+  // from its own auction.
   browser_signals_other_seller_.reset();
   RunScoreAdWithReturnValueExpectingResult(
       R"("componentSeller" in browserSignals ? 0 : 1)", 1);
 
+  // `componentSeller` should be empty when a top-level seller is scoring a bid
+  // from a component auction. Must set `allowComponentAuction` to true for any
+  // value to be returned.
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
           url::Origin::Create(GURL("https://top.seller.test")));
   RunScoreAdWithReturnValueExpectingResult(
-      R"("componentSeller" in browserSignals ? 0 : 2)", 2);
+      R"("componentSeller" in browserSignals ?
+             0 : {desirability: 2, allowComponentAuction: true})",
+      2);
 
+  // `componentSeller` should be set when a component seller is scoring a bid.
+  // Must set `allowComponentAuction` to true for any value to be returned.
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewComponentSeller(
           url::Origin::Create(GURL("https://component.test")));
   RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.componentSeller === "https://component.test" ? 3 : 0)",
+      R"(browserSignals.componentSeller === "https://component.test" ?
+             {desirability: 3, allowComponentAuction: true} : 0)",
       3);
 }
 

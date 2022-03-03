@@ -455,7 +455,6 @@ void SellerWorklet::V8State::ScoreAd(
   args.push_back(browser_signals);
 
   v8::Local<v8::Value> score_ad_result;
-  double score;
   std::vector<std::string> errors_out;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeSellerWorkletScoringStart");
@@ -471,6 +470,8 @@ void SellerWorklet::V8State::ScoreAd(
     return;
   }
 
+  double score;
+  bool allow_component_auction = false;
   // Try to parse the result as a number. On success, it's the desirability
   // score.
   if (!gin::ConvertFromV8(isolate, score_ad_result, &score)) {
@@ -500,6 +501,25 @@ void SellerWorklet::V8State::ScoreAd(
           /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
       return;
     }
+
+    if (!result_dict.Get("allowComponentAuction", &allow_component_auction))
+      allow_component_auction = false;
+  }
+
+  // Fail if `allow_component_auction` is false and this is a component seller
+  // or a top-level seller scoring a bid from a component auction -
+  // `browser_signals_other_seller` is non-null in only those two cases.
+  if (browser_signals_other_seller && !allow_component_auction) {
+    errors_out.push_back(base::StrCat(
+        {decision_logic_url_.spec(),
+         " scoreAd() return value does not have allowComponentAuction set to "
+         "true. Ad dropped from component auction."}));
+    PostScoreAdCallbackToUserThread(
+        std::move(callback), /*score=*/0,
+        /*scoring_signals_data_version=*/absl::nullopt,
+        /*debug_loss_report_url=*/absl::nullopt,
+        /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
+    return;
   }
 
   // Fail if the score is invalid.
