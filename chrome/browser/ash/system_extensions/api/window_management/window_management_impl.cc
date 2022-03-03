@@ -66,11 +66,9 @@ aura::Window* WindowManagementImpl::GetWindow(
   aura::Window* target = nullptr;
   apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));
-  proxy->InstanceRegistry().ForEachInstance(
-      [&target, &id](const apps::InstanceUpdate& update) {
-        if (id == update.InstanceId()) {
-          target = update.Window();
-        }
+  proxy->InstanceRegistry().ForOneInstance(
+      id, [&target](const apps::InstanceUpdate& update) {
+        target = update.Window();
       });
 
   return target;
