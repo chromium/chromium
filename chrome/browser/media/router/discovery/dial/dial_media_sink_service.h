@@ -24,9 +24,9 @@ class DialMediaSinkServiceImpl;
 using OnDialSinkAddedCallback =
     base::RepeatingCallback<void(const MediaSinkInternal&)>;
 
-// Service to discover DIAL media sinks.  All public methods must be invoked on
-// the UI thread.  Delegates to DialMediaSinkServiceImpl by posting tasks to its
-// SequencedTaskRunner.
+// Service to discover DIAL media sinks. All public methods must be invoked on
+// the UI thread. Delegates to DialMediaSinkServiceImpl by posting tasks to its
+// SequencedTaskRunner. It is owned by a singleton that is never freed.
 // TODO(imcheng): Remove this class and moving the logic into a part
 // of DialMediaSinkServiceImpl that runs on the UI thread, and renaming
 // DialMediaSinkServiceImpl to DialMediaSinkService.

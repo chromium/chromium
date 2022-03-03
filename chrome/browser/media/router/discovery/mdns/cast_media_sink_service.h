@@ -26,7 +26,7 @@
 namespace media_router {
 
 // A service which can be used to start background discovery and resolution of
-// Cast devices.
+// Cast devices. It is owned by a singleton that is never freed.
 // This class is not thread safe. All methods must be invoked on the UI thread.
 // TODO(imcheng): Consider removing this class and moving the logic into a part
 // of CastMediaSinkServiceImpl that runs on the UI thread, and renaming

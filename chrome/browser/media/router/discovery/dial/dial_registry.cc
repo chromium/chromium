@@ -68,6 +68,8 @@ void DialRegistry::SetNetLog(net::NetLog* net_log) {
 
 void DialRegistry::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // base::Unretained() is safe here because DialRegistry is (indirectly) owned
+  // by a singleton and is never freed.
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&content::GetNetworkConnectionTracker),
       base::BindOnce(&DialRegistry::SetNetworkConnectionTracker,
@@ -105,6 +107,8 @@ void DialRegistry::SetClockForTest(base::Clock* clock) {
 
 bool DialRegistry::ReadyToDiscover() {
   network::mojom::ConnectionType type;
+  // base::Unretained() is safe here because DialRegistry is (indirectly) owned
+  // by a singleton and is never freed.
   if (!network_connection_tracker_ ||
       !network_connection_tracker_->GetConnectionType(
           &type, base::BindOnce(&DialRegistry::OnConnectionChanged,

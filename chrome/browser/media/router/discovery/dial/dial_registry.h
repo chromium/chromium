@@ -33,8 +33,9 @@ class NetLog;
 namespace media_router {
 
 // Keeps track of devices that have responded to discovery requests and notifies
-// the client with the current device list.  All APIs should be called on the
-// sequence bound to |task_runner_|.
+// the client with the current device list. It is indirectly owned by a
+// singleton that is never freed. All APIs should be called on the sequence
+// bound to |task_runner_|.
 class DialRegistry
     : public DialService::Client,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {

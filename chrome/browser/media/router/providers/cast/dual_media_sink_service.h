@@ -32,8 +32,9 @@ class MediaSinkServiceBase;
 
 // This class uses DialMediaSinkService and CastMediaSinkService to discover
 // sinks used by the Cast MediaRouteProvider. It also encapsulates the setup
-// necessary to enable dual discovery on Dial/CastMediaSinkService.
-// All methods must be called on the UI thread.
+// necessary to enable dual discovery on Dial/CastMediaSinkService. It is used
+// as a singleton that is never freed. All methods must be called on the UI
+// thread.
 class DualMediaSinkService {
  public:
   // Arg 0: Provider name ("dial" or "cast").
