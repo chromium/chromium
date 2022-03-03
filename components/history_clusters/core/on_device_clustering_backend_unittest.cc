@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/search_engines/template_url_service.h"
@@ -90,14 +91,13 @@ const char16_t kDefaultTemplateURLKeyword[] = u"default-engine.com";
 class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
  public:
   OnDeviceClusteringWithoutContentBackendTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOnDeviceClustering,
-        {{"content_clustering_enabled", "false"},
-         {"dedupe_similar_visits", "false"},
-         {"min_page_topics_model_version_for_visibility", "125"},
-         {"include_categories_in_keywords", "true"},
-         {"exclude_keywords_from_noisy_visits", "false"},
-         {"split_clusters_at_search_visits", "false"}});
+    config_.content_clustering_enabled = false;
+    config_.should_dedupe_similar_visits = false;
+    config_.min_page_topics_model_version_to_use_content_visibility_from = 125;
+    config_.should_include_categories_in_keywords = true;
+    config_.should_exclude_keywords_from_noisy_visits = false;
+    config_.split_clusters_at_search_visits = false;
+    SetConfigForTesting(config_);
   }
 
   void SetUp() override {
@@ -139,7 +139,7 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  Config config_;
   TestSiteEngagementScoreProvider test_site_engagement_provider_;
 };
 
@@ -397,16 +397,15 @@ class OnDeviceClusteringWithContentBackendTest
     : public OnDeviceClusteringWithoutContentBackendTest {
  public:
   OnDeviceClusteringWithContentBackendTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOnDeviceClustering,
-        {{"content_clustering_enabled", "true"},
-         {"dedupe_similar_visits", "false"},
-         {"include_categories_in_keywords", "true"},
-         {"exclude_keywords_from_noisy_visits", "false"}});
+    config_.content_clustering_enabled = true;
+    config_.should_dedupe_similar_visits = false;
+    config_.should_include_categories_in_keywords = true;
+    config_.should_exclude_keywords_from_noisy_visits = false;
+    SetConfigForTesting(config_);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  Config config_;
 };
 
 TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
@@ -646,24 +645,19 @@ class EngagementCacheOnDeviceClusteringWithoutContentBackendTest
       public ::testing::WithParamInterface<bool> {
  public:
   EngagementCacheOnDeviceClusteringWithoutContentBackendTest() {
-    const base::FieldTrialParams on_device_clustering_feature_parameters = {
-        {"content_clustering_enabled", "false"},
-        {"dedupe_similar_visits", "false"},
-        {"min_page_topics_model_version_for_visibility", "125"},
-        {"include_categories_in_keywords", "true"},
-        {"exclude_keywords_from_noisy_visits", "false"}};
+    config_.content_clustering_enabled = false;
+    config_.should_dedupe_similar_visits = false;
+    config_.min_page_topics_model_version_to_use_content_visibility_from = 125;
+    config_.should_include_categories_in_keywords = true;
+    config_.should_exclude_keywords_from_noisy_visits = false;
+    SetConfigForTesting(config_);
 
     if (GetParam()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kOnDeviceClustering,
-            on_device_clustering_feature_parameters},
-           {{features::kUseEngagementScoreCache}, {}}},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kUseEngagementScoreCache);
     } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kOnDeviceClustering,
-            on_device_clustering_feature_parameters}},
-          {features::kUseEngagementScoreCache});
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kUseEngagementScoreCache);
     }
   }
 
@@ -671,6 +665,7 @@ class EngagementCacheOnDeviceClusteringWithoutContentBackendTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  Config config_;
 };
 
 TEST_P(EngagementCacheOnDeviceClusteringWithoutContentBackendTest,
@@ -722,15 +717,13 @@ class BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest
           std::tuple<bool, ClusteringRequestSource>> {
  public:
   BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest() {
-    const base::FieldTrialParams on_device_clustering_feature_parameters = {
-        {"content_clustering_enabled", "false"},
-        {"dedupe_similar_visits", "false"},
-        {"min_page_topics_model_version_for_visibility", "125"},
-        {"include_categories_in_keywords", "true"},
-        {"exclude_keywords_from_noisy_visits", "false"}};
-
-    base::test::ScopedFeatureList::FeatureAndParams on_device_clustering(
-        features::kOnDeviceClustering, on_device_clustering_feature_parameters);
+    config_.content_clustering_enabled = false;
+    config_.should_dedupe_similar_visits = false;
+    config_.min_page_topics_model_version_to_use_content_visibility_from = 125;
+    config_.should_include_categories_in_keywords = true;
+    config_.should_exclude_keywords_from_noisy_visits = false;
+    config_.clustering_tasks_batch_size = 1;
+    SetConfigForTesting(config_);
 
     // expected_size_of_batches is 1.
     const base::FieldTrialParams batched_clustering_feature_parameters = {
@@ -740,13 +733,11 @@ class BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest
         batched_clustering_feature_parameters);
 
     if (IsBatchingEnabled()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{on_device_clustering, batched_clustering}}, {});
+      scoped_feature_list_.InitWithFeaturesAndParameters({{batched_clustering}},
+                                                         {});
     } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kOnDeviceClustering,
-            on_device_clustering_feature_parameters}},
-          {features::kSplitClusteringTasksToSmallerBatches});
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kSplitClusteringTasksToSmallerBatches);
     }
   }
 
@@ -758,6 +749,7 @@ class BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  Config config_;
 };
 
 TEST_P(BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest,
