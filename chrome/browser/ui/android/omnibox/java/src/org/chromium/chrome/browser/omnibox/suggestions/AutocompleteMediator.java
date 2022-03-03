@@ -435,33 +435,36 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
     @Override
     public void onSwitchToTab(AutocompleteMatch suggestion, int matchIndex) {
-        Tab tab = mAutocomplete.getMatchingTabForSuggestion(matchIndex);
-        if (tab == null || !mTabWindowManagerSupplier.hasValue()) {
+        if (maybeSwitchToTab(matchIndex)) {
+            recordMetrics(matchIndex, WindowOpenDisposition.SWITCH_TO_TAB, suggestion);
+        } else {
             onSuggestionClicked(suggestion, matchIndex, suggestion.getUrl());
-            return;
         }
+    }
+
+    @VisibleForTesting
+    public boolean maybeSwitchToTab(int matchIndex) {
+        Tab tab = mAutocomplete.getMatchingTabForSuggestion(matchIndex);
+        if (tab == null || !mTabWindowManagerSupplier.hasValue()) return false;
 
         // When invoked directly from a browser, we want to trigger switch to tab animation.
         // If invoked from other activities, ex. searchActivity, we do not need to trigger the
         // animation since Android will show the animation for switching apps.
-        if (tab.getWindowAndroid().getActivityState() != ActivityState.STOPPED
-                && tab.getWindowAndroid().getActivityState() != ActivityState.DESTROYED) {
-            TabModel tabModel = mTabWindowManagerSupplier.get().getTabModelForTab(tab);
-            assert tabModel != null;
-
-            int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
-            // In the event the user deleted the tab as part during the interaction with the
-            // Omnibox, reject the switch to tab action.
-            if (tabIndex < 0) {
-                onSuggestionClicked(suggestion, matchIndex, suggestion.getUrl());
-                return;
-            }
-
-            tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX, false);
-        } else {
+        if (tab.getWindowAndroid().getActivityState() == ActivityState.STOPPED
+                || tab.getWindowAndroid().getActivityState() == ActivityState.DESTROYED) {
             mBringTabToFrontCallback.onResult(tab);
+            return true;
         }
-        recordMetrics(matchIndex, WindowOpenDisposition.SWITCH_TO_TAB, suggestion);
+
+        TabModel tabModel = mTabWindowManagerSupplier.get().getTabModelForTab(tab);
+        if (tabModel == null) return false;
+
+        int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
+        // In the event the user deleted the tab as part during the interaction with the
+        // Omnibox, reject the switch to tab action.
+        if (tabIndex == TabModel.INVALID_TAB_INDEX) return false;
+        tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX, false);
+        return true;
     }
 
     @Override

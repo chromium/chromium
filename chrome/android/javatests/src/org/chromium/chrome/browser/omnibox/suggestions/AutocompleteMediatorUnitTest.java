@@ -35,8 +35,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
@@ -48,6 +50,10 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -56,6 +62,7 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -187,6 +194,18 @@ public class AutocompleteMediatorUnitTest {
     Profile mProfile;
 
     @Mock
+    Tab mTab;
+
+    @Mock
+    TabModel mTabModel;
+
+    @Mock
+    TabWindowManager mTabManager;
+
+    @Mock
+    WindowAndroid mMockWindowAndroid;
+
+    @Mock
     OmniboxPedalDelegate mPedalDelegate;
 
     private ImmediatePostingHandler mHandler;
@@ -194,6 +213,7 @@ public class AutocompleteMediatorUnitTest {
     private AutocompleteMediator mMediator;
     private List<AutocompleteMatch> mSuggestionsList;
     private ModelList mSuggestionModels;
+    private ObservableSupplierImpl<TabWindowManager> mTabWindowManagerSupplier;
 
     @Before
     public void setUp() {
@@ -211,10 +231,12 @@ public class AutocompleteMediatorUnitTest {
             mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
             mListModel.set(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels);
 
+            mTabWindowManagerSupplier = new ObservableSupplierImpl<>();
+
             mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
                     mAutocompleteDelegate, mTextStateProvider, mListModel,
                     mHandler, () -> mModalDialogManager, null, null,
-                    mLocationBarDataProvider, tab -> {}, null, url -> false, new DummyJankTracker(),
+                    mLocationBarDataProvider, tab -> {}, mTabWindowManagerSupplier, url -> false, new DummyJankTracker(),
                     (pixelSize, callback) -> {}, mPedalDelegate);
             mMediator.setAutocompleteProfile(mProfile);
         });
@@ -716,5 +738,85 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onUrlFocusChange(false);
         Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void switchToTab_noTargetTab() {
+        // There is no Tab to switch to.
+        doReturn(null).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
+        Assert.assertFalse(mMediator.maybeSwitchToTab(0));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void switchToTab_noTabManager() {
+        // We have a tab, but no tab manager.
+        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
+        Assert.assertFalse(mMediator.maybeSwitchToTab(0));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void switchToTab_tabAttachedToStoppedActivity() {
+        // We have a tab, and tab manager. The tab is part of the stopped activity.
+        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
+        mTabWindowManagerSupplier.set(mTabManager);
+        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
+        doReturn(ActivityState.STOPPED).when(mMockWindowAndroid).getActivityState();
+        Assert.assertTrue(mMediator.maybeSwitchToTab(0));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void switchToTab_noTabModelForTab() {
+        // We have a tab, and tab manager. The tab is part of the running activity.
+        // The tab is not a part of the model though (eg. it has just been closed).
+        // https://crbug.com/1300447
+        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
+        mTabWindowManagerSupplier.set(mTabManager);
+        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
+        doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
+        doReturn(null).when(mTabManager).getTabModelForTab(any());
+        Assert.assertFalse(mMediator.maybeSwitchToTab(0));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void switchToTab_invalidTabModelAssociation() {
+        // We have a tab, and tab manager. The tab is part of the running activity.
+        // The tab reports association with an existing model, but the model thinks otherwise.
+        // https://crbug.com/1300447
+        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
+        mTabWindowManagerSupplier.set(mTabManager);
+        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
+        doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
+        doReturn(mTabModel).when(mTabManager).getTabModelForTab(any());
+
+        // Make sure that this indeed returns no association.
+        Assert.assertEquals(
+                TabModel.INVALID_TAB_INDEX, TabModelUtils.getTabIndexById(mTabModel, mTab.getId()));
+        Assert.assertFalse(mMediator.maybeSwitchToTab(0));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void switchToTab_validTabModelAssociation() {
+        // We have a tab, and tab manager. The tab is part of the running activity.
+        // The tab reports association with an existing model; the model confirms this.
+        doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
+        mTabWindowManagerSupplier.set(mTabManager);
+        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
+        doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
+        doReturn(mTabModel).when(mTabManager).getTabModelForTab(any());
+        doReturn(1).when(mTabModel).getCount();
+        doReturn(mTab).when(mTabModel).getTabAt(anyInt());
+        Assert.assertTrue(mMediator.maybeSwitchToTab(0));
     }
 }
