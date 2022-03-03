@@ -22090,50 +22090,43 @@ Called by update_debug_scenarios.py.-->
   <int value="12"
       label="CrossOriginEmbedderPolicyIssue::CorpNotSameOriginAfterDefaultedToSameOriginByCoep"/>
   <int value="13" label="CrossOriginEmbedderPolicyIssue::CorpNotSameSite"/>
-  <int value="14"
-      label="SameSiteCookieIssue::ExcludeSameSiteNoneInsecure::ReadCookie"/>
-  <int value="15"
-      label="SameSiteCookieIssue::ExcludeSameSiteNoneInsecure::SetCookie"/>
-  <int value="16"
-      label="SameSiteCookieIssue::WarnSameSiteNoneInsecure::ReadCookie"/>
-  <int value="17"
-      label="SameSiteCookieIssue::WarnSameSiteNoneInsecure::SetCookie"/>
+  <int value="14" label="CookieIssue::ExcludeSameSiteNoneInsecure::ReadCookie"/>
+  <int value="15" label="CookieIssue::ExcludeSameSiteNoneInsecure::SetCookie"/>
+  <int value="16" label="CookieIssue::WarnSameSiteNoneInsecure::ReadCookie"/>
+  <int value="17" label="CookieIssue::WarnSameSiteNoneInsecure::SetCookie"/>
   <int value="18"
-      label="SameSiteCookieIssue::WarnSameSiteStrictLaxDowngradeStrict::Secure"/>
+      label="CookieIssue::WarnSameSiteStrictLaxDowngradeStrict::Secure"/>
   <int value="19"
-      label="SameSiteCookieIssue::WarnSameSiteStrictLaxDowngradeStrict::Insecure"/>
-  <int value="20"
-      label="SameSiteCookieIssue::WarnCrossDowngrade::ReadCookie::Secure"/>
+      label="CookieIssue::WarnSameSiteStrictLaxDowngradeStrict::Insecure"/>
+  <int value="20" label="CookieIssue::WarnCrossDowngrade::ReadCookie::Secure"/>
   <int value="21"
-      label="SameSiteCookieIssue::WarnCrossDowngrade::ReadCookie::Insecure"/>
-  <int value="22"
-      label="SameSiteCookieIssue::WarnCrossDowngrade::SetCookie::Secure"/>
-  <int value="23"
-      label="SameSiteCookieIssue::WarnCrossDowngrade::SetCookie::Insecure"/>
+      label="CookieIssue::WarnCrossDowngrade::ReadCookie::Insecure"/>
+  <int value="22" label="CookieIssue::WarnCrossDowngrade::SetCookie::Secure"/>
+  <int value="23" label="CookieIssue::WarnCrossDowngrade::SetCookie::Insecure"/>
   <int value="24"
-      label="SameSiteCookieIssue::ExcludeNavigationContextDowngrade::Secure"/>
+      label="CookieIssue::ExcludeNavigationContextDowngrade::Secure"/>
   <int value="25"
-      label="SameSiteCookieIssue::ExcludeNavigationContextDowngrade::Insecure"/>
+      label="CookieIssue::ExcludeNavigationContextDowngrade::Insecure"/>
   <int value="26"
-      label="SameSiteCookieIssue::ExcludeContextDowngrade::ReadCookie::Secure"/>
+      label="CookieIssue::ExcludeContextDowngrade::ReadCookie::Secure"/>
   <int value="27"
-      label="SameSiteCookieIssue::ExcludeContextDowngrade::ReadCookie::Insecure"/>
+      label="CookieIssue::ExcludeContextDowngrade::ReadCookie::Insecure"/>
   <int value="28"
-      label="SameSiteCookieIssue::ExcludeContextDowngrade::SetCookie::Secure"/>
+      label="CookieIssue::ExcludeContextDowngrade::SetCookie::Secure"/>
   <int value="29"
-      label="SameSiteCookieIssue::ExcludeContextDowngrade::SetCookie::Insecure"/>
+      label="CookieIssue::ExcludeContextDowngrade::SetCookie::Insecure"/>
   <int value="30"
-      label="SameSiteCookieIssue::ExcludeSameSiteUnspecifiedTreatedAsLax::ReadCookie"/>
+      label="CookieIssue::ExcludeSameSiteUnspecifiedTreatedAsLax::ReadCookie"/>
   <int value="31"
-      label="SameSiteCookieIssue::ExcludeSameSiteUnspecifiedTreatedAsLax::SetCookie"/>
+      label="CookieIssue::ExcludeSameSiteUnspecifiedTreatedAsLax::SetCookie"/>
   <int value="32"
-      label="SameSiteCookieIssue::WarnSameSiteUnspecifiedLaxAllowUnsafe::ReadCookie"/>
+      label="CookieIssue::WarnSameSiteUnspecifiedLaxAllowUnsafe::ReadCookie"/>
   <int value="33"
-      label="SameSiteCookieIssue::WarnSameSiteUnspecifiedLaxAllowUnsafe::SetCookie"/>
+      label="CookieIssue::WarnSameSiteUnspecifiedLaxAllowUnsafe::SetCookie"/>
   <int value="34"
-      label="SameSiteCookieIssue::WarnSameSiteUnspecifiedCrossSiteContext::ReadCookie"/>
+      label="CookieIssue::WarnSameSiteUnspecifiedCrossSiteContext::ReadCookie"/>
   <int value="35"
-      label="SameSiteCookieIssue::WarnSameSiteUnspecifiedCrossSiteContext::SetCookie"/>
+      label="CookieIssue::WarnSameSiteUnspecifiedCrossSiteContext::SetCookie"/>
   <int value="36" label="SharedArrayBufferIssue::TransferIssue"/>
   <int value="37" label="SharedArrayBufferIssue::CreationIssue"/>
   <int value="38" label="TrustedWebActivityIssue::kHttpError"/>
