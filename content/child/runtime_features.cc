@@ -68,7 +68,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
     WebRuntimeFeatures::EnableWebBluetooth(true);
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
   const bool enable_canvas_2d_image_chromium =
       command_line.HasSwitch(
           blink::switches::kEnableGpuMemoryBufferCompositorResources) &&

@@ -191,7 +191,7 @@ const base::Feature kCacheInlineScriptCode{"CacheInlineScriptCode",
 // enabled.
 const base::Feature kCanvas2DImageChromium {
   "Canvas2DImageChromium",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
