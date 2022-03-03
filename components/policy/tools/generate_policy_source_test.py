@@ -93,6 +93,17 @@ class PolicyGenerationTest(unittest.TestCase):
           "caption": "CloudOnlyPolicy caption",
           "desc": "CloudOnlyPolicy desc",
       }, {
+          "name": "CloudManagementEnrollmentToken",
+          "type": "string",
+          "schema": {
+              "type": "string"
+          },
+          "supported_on": ["chrome_os:1-", "android:1-"],
+          "id": 6,
+          "tags": [],
+          "caption": "CloudManagementEnrollmentToken caption",
+          "desc": "CloudManagementEnrollmentToken desc"
+      }, {
           "name": "ChunkZeroLastFieldBooleanPolicy",
           "type": "main",
           "schema": {

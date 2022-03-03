@@ -24,6 +24,7 @@ message CloudPolicySettings {
   optional BooleanPolicyProto ExampleBoolMergeMetapolicy = 5;
   optional BooleanPolicyProto ExampleBoolPrecedenceMetapolicy = 6;
   optional BooleanPolicyProto CloudOnlyPolicy = 7;
+  optional StringPolicyProto CloudManagementEnrollmentToken = 8;
 }
 '''
 
@@ -89,6 +90,16 @@ message ExampleBoolPrecedenceMetapolicyProto {
 message CloudOnlyPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool CloudOnlyPolicy = 2;
+}
+
+// CloudManagementEnrollmentToken caption
+//
+// CloudManagementEnrollmentToken desc
+//
+// Supported on: android, chrome_os
+message CloudManagementEnrollmentTokenProto {
+  optional PolicyOptions policy_options = 1;
+  optional string CloudManagementEnrollmentToken = 2;
 }
 
 // ChunkZeroLastFieldBooleanPolicy caption
@@ -163,6 +174,7 @@ message ChromeSettingsProto {
   optional ExampleBoolMergeMetapolicyProto ExampleBoolMergeMetapolicy = 5;
   optional ExampleBoolPrecedenceMetapolicyProto ExampleBoolPrecedenceMetapolicy = 6;
   optional CloudOnlyPolicyProto CloudOnlyPolicy = 7;
+  optional CloudManagementEnrollmentTokenProto CloudManagementEnrollmentToken = 8;
   optional ChunkZeroLastFieldBooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 981;
   optional ChromeSettingsSubProto1 subProto1 = 982;
   optional ChromeSettingsSubProto2 subProto2 = 983;
@@ -232,6 +244,7 @@ extern const char kExampleBoolPolicy[];
 extern const char kExampleBoolMergeMetapolicy[];
 extern const char kExampleBoolPrecedenceMetapolicy[];
 extern const char kCloudOnlyPolicy[];
+extern const char kCloudManagementEnrollmentToken[];
 extern const char kChunkZeroLastFieldBooleanPolicy[];
 extern const char kChunkOneFirstFieldBooleanPolicy[];
 extern const char kChunkOneLastFieldBooleanPolicy[];
@@ -299,7 +312,7 @@ struct StringPolicyAccess {
       const em::CloudPolicySettings& policy);
   const StringPolicyType type;
 };
-extern const std::array<StringPolicyAccess, 1> kStringPolicyAccess;
+extern const std::array<StringPolicyAccess, 2> kStringPolicyAccess;
 
 // Read access to the protobufs of all supported stringlist user policies.
 struct StringListPolicyAccess {
@@ -352,27 +365,30 @@ namespace policy {
   { false,        false,    false,              4,                     0, {  } },
   // CloudOnlyPolicy
   { false,        false,    false,              5,                     0, {  } },
+  // CloudManagementEnrollmentToken
+  { false,        false,    false,              6,                     0, {  } },
 };
 
 const internal::SchemaNode kSchemas[] = {
 //  Type                           Extra  IsSensitiveValue HasSensitiveChildren
   { base::Value::Type::DICTIONARY,     0, false,           false },  // root node
-  { base::Value::Type::BOOLEAN,       -1, false,           false },  // simple type: boolean
   { base::Value::Type::STRING,        -1, false,           false },  // simple type: string
+  { base::Value::Type::BOOLEAN,       -1, false,           false },  // simple type: boolean
 };
 
 const internal::PropertyNode kPropertyNodes[] = {
 //  Property                                                             Schema
-  { key::kCloudOnlyPolicy,                                                1 },
-  { key::kExampleBoolMergeMetapolicy,                                     1 },
-  { key::kExampleBoolPolicy,                                              1 },
-  { key::kExampleBoolPrecedenceMetapolicy,                                1 },
-  { key::kExampleStringPolicy,                                            2 },
+  { key::kCloudManagementEnrollmentToken,                                 1 },
+  { key::kCloudOnlyPolicy,                                                2 },
+  { key::kExampleBoolMergeMetapolicy,                                     2 },
+  { key::kExampleBoolPolicy,                                              2 },
+  { key::kExampleBoolPrecedenceMetapolicy,                                2 },
+  { key::kExampleStringPolicy,                                            1 },
 };
 
 const internal::PropertiesNode kProperties[] = {
 //  Begin    End  PatternEnd  RequiredBegin  RequiredEnd  Additional Properties
-  {     0,     5,     5,     0,          0,    -1 },  // root node
+  {     0,     6,     6,     0,          0,    -1 },  // root node
 };
 
 const internal::SchemaData* GetChromeSchemaData() {
@@ -418,7 +434,7 @@ const PolicyDetails* GetChromePolicyDetails(const std::string& policy) {
   // First index in kPropertyNodes of the Chrome policies.
   static const int begin_index = 0;
   // One-past-the-end of the Chrome policies in kPropertyNodes.
-  static const int end_index = 5;
+  static const int end_index = 6;
   const internal::PropertyNode* begin =
      kPropertyNodes + begin_index;
   const internal::PropertyNode* end = kPropertyNodes + end_index;
@@ -448,6 +464,7 @@ const char kExampleBoolPolicy[] = "ExampleBoolPolicy";
 const char kExampleBoolMergeMetapolicy[] = "ExampleBoolMergeMetapolicy";
 const char kExampleBoolPrecedenceMetapolicy[] = "ExampleBoolPrecedenceMetapolicy";
 const char kCloudOnlyPolicy[] = "CloudOnlyPolicy";
+const char kCloudManagementEnrollmentToken[] = "CloudManagementEnrollmentToken";
 const char kChunkZeroLastFieldBooleanPolicy[] = "ChunkZeroLastFieldBooleanPolicy";
 const char kChunkOneFirstFieldBooleanPolicy[] = "ChunkOneFirstFieldBooleanPolicy";
 const char kChunkOneLastFieldBooleanPolicy[] = "ChunkOneLastFieldBooleanPolicy";
@@ -529,7 +546,7 @@ const std::array<BooleanPolicyAccess, 4> kBooleanPolicyAccess {{
 const std::array<IntegerPolicyAccess, 0> kIntegerPolicyAccess {{
 }};
 
-const std::array<StringPolicyAccess, 1> kStringPolicyAccess {{
+const std::array<StringPolicyAccess, 2> kStringPolicyAccess {{
   {key::kExampleStringPolicy,
    false,
    [](const em::CloudPolicySettings& policy) {
@@ -538,6 +555,17 @@ const std::array<StringPolicyAccess, 1> kStringPolicyAccess {{
    [](const em::CloudPolicySettings& policy)
        -> const em::StringPolicyProto& {
      return policy.examplestringpolicy();
+   },
+   StringPolicyType::STRING
+  },
+  {key::kCloudManagementEnrollmentToken,
+   false,
+   [](const em::CloudPolicySettings& policy) {
+     return policy.has_cloudmanagementenrollmenttoken();
+   },
+   [](const em::CloudPolicySettings& policy)
+       -> const em::StringPolicyProto& {
+     return policy.cloudmanagementenrollmenttoken();
    },
    StringPolicyType::STRING
   },
@@ -580,6 +608,7 @@ extern const char kExampleBoolPolicy[];
 extern const char kExampleBoolMergeMetapolicy[];
 extern const char kExampleBoolPrecedenceMetapolicy[];
 extern const char kCloudOnlyPolicy[];
+extern const char kCloudManagementEnrollmentToken[];
 
 }  // namespace key
 
@@ -646,6 +675,7 @@ const char kExampleBoolPolicy[] = "ExampleBoolPolicy";
 const char kExampleBoolMergeMetapolicy[] = "ExampleBoolMergeMetapolicy";
 const char kExampleBoolPrecedenceMetapolicy[] = "ExampleBoolPrecedenceMetapolicy";
 const char kCloudOnlyPolicy[] = "CloudOnlyPolicy";
+const char kCloudManagementEnrollmentToken[] = "CloudManagementEnrollmentToken";
 
 }  // namespace key
 
@@ -677,6 +707,9 @@ constexpr StringPolicyAccess kStringPolicyAccess[] = {
   {key::kExampleStringPolicy,
    false,
    &em::CloudPolicySettings::mutable_examplestringpolicy},
+  {key::kCloudManagementEnrollmentToken,
+   false,
+   &em::CloudPolicySettings::mutable_cloudmanagementenrollmenttoken},
   {nullptr, false, nullptr},
 };
 
@@ -691,16 +724,10 @@ EXPECTED_APP_RESTRICTIONS_XML = '''
 <restrictions xmlns:android="http://schemas.android.com/apk/res/android">
 
     <restriction
-        android:key="ExampleStringPolicy"
-        android:title="@string/ExampleStringPolicyTitle"
-        android:description="@string/ExampleStringPolicyDesc"
+        android:key="CloudManagementEnrollmentToken"
+        android:title="@string/CloudManagementEnrollmentTokenTitle"
+        android:description="@string/CloudManagementEnrollmentTokenDesc"
         android:restrictionType="string"/>
-
-    <restriction
-        android:key="ExampleBoolPolicy"
-        android:title="@string/ExampleBoolPolicyTitle"
-        android:description="@string/ExampleBoolPolicyDesc"
-        android:restrictionType="bool"/>
 
     <restriction
         android:key="ExampleBoolMergeMetapolicy"
@@ -709,9 +736,21 @@ EXPECTED_APP_RESTRICTIONS_XML = '''
         android:restrictionType="bool"/>
 
     <restriction
+        android:key="ExampleBoolPolicy"
+        android:title="@string/ExampleBoolPolicyTitle"
+        android:description="@string/ExampleBoolPolicyDesc"
+        android:restrictionType="bool"/>
+
+    <restriction
         android:key="ExampleBoolPrecedenceMetapolicy"
         android:title="@string/ExampleBoolPrecedenceMetapolicyTitle"
         android:description="@string/ExampleBoolPrecedenceMetapolicyDesc"
         android:restrictionType="bool"/>
+
+    <restriction
+        android:key="ExampleStringPolicy"
+        android:title="@string/ExampleStringPolicyTitle"
+        android:description="@string/ExampleStringPolicyDesc"
+        android:restrictionType="string"/>
 
 </restrictions>'''

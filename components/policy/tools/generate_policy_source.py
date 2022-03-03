@@ -15,6 +15,7 @@ from argparse import ArgumentParser
 from collections import defaultdict
 from collections import namedtuple
 from collections import OrderedDict
+from functools import cmp_to_key
 from functools import partial
 import ast
 import codecs
@@ -1816,6 +1817,9 @@ def _WriteChromeOSPolicyConstantsSource(policies, policy_atomic_groups,
 #------------------ app restrictions -------------------------------#
 
 
+ENROLLMENT_TOKEN_POLICY_NAME = 'CloudManagementEnrollmentToken'
+
+
 def _WriteAppRestrictions(policies, policy_atomic_groups, target_platform, f,
                           risk_tags):
 
@@ -1838,13 +1842,29 @@ def _WriteAppRestrictions(policies, policy_atomic_groups, target_platform, f,
     f.write('        android:restrictionType="%s"/>' % policy.restriction_type)
     f.write('\n\n')
 
+  def ShouldWriteAppRestriction(policy):
+    return (policy.is_supported and policy.restriction_type != 'invalid'
+            and not policy.is_deprecated and not policy.is_future
+            and not policy.internal_only and not policy.cloud_only)
+
+  # Compare policies by name, considering that `ENROLLMENT_TOKEN_POLICY_NAME`
+  # should come before all other policies in the generate app restrictions file.
+  def Compare(policy1, policy2):
+    if policy1.name == policy2.name:
+      return 0
+    if policy1.name == ENROLLMENT_TOKEN_POLICY_NAME:
+      return -1
+    if policy2.name == ENROLLMENT_TOKEN_POLICY_NAME:
+      return 1
+    if policy1.name < policy2.name:
+      return -1
+    return 1
+
   # _WriteAppRestrictions body
   f.write('<restrictions xmlns:android="'
           'http://schemas.android.com/apk/res/android">\n\n')
-  for policy in policies:
-    if (policy.is_supported and policy.restriction_type != 'invalid'
-        and not policy.is_deprecated and not policy.is_future
-        and not policy.internal_only and not policy.cloud_only):
+  for policy in sorted(policies, key=cmp_to_key(Compare)):
+    if ShouldWriteAppRestriction(policy):
       WriteAppRestriction(policy)
   f.write('</restrictions>')
 
