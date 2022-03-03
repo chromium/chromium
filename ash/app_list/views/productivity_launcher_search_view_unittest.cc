@@ -20,6 +20,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -37,18 +38,6 @@ int kDefaultSearchItems = 3;
 const int kResultContainersCount = static_cast<int>(
     ash::SearchResultListView::SearchResultListType::kMaxValue);
 
-// Waits for a layer animation to complete.
-void WaitForLayerAnimation(ui::Layer* layer) {
-  auto* compositor = layer->GetCompositor();
-  while (layer->GetAnimator()->is_animating()) {
-    EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
-  }
-
-  // Ensure there is one more frame presented after animation finishes
-  // to allow animation throughput data is passed from cc to ui.
-  std::ignore =
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
-}
 }  // namespace
 
 namespace ash {
@@ -202,8 +191,10 @@ TEST_P(ProductivityLauncherSearchViewTest, AnimateSearchResultView) {
   EXPECT_LT(result_containers[2]->GetResultViewAt(0)->layer()->opacity(), 1.0f);
   EXPECT_TRUE(result_containers[3]->GetVisible());
   EXPECT_LT(result_containers[3]->GetResultViewAt(0)->layer()->opacity(), 1.0f);
-  WaitForLayerAnimation(result_containers[2]->GetResultViewAt(0)->layer());
-  WaitForLayerAnimation(result_containers[3]->GetResultViewAt(0)->layer());
+  LayerAnimationStoppedWaiter().Wait(
+      result_containers[2]->GetResultViewAt(0)->layer());
+  LayerAnimationStoppedWaiter().Wait(
+      result_containers[3]->GetResultViewAt(0)->layer());
   EXPECT_EQ(result_containers[3]->GetResultViewAt(0)->layer()->opacity(), 1.0f);
   EXPECT_EQ(result_containers[3]->GetResultViewAt(0)->layer()->opacity(), 1.0f);
 }

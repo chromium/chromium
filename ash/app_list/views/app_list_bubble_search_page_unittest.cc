@@ -8,6 +8,7 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -83,7 +84,7 @@ TEST_F(AppListBubbleSearchPageTest, AnimateHidePage) {
       ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
 
   // Search page visibility updates at the end of the animation.
-  helper->WaitForLayerAnimation(layer);
+  LayerAnimationStoppedWaiter().Wait(layer);
   EXPECT_FALSE(search_page->GetVisible());
 }
 

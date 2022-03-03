@@ -13,6 +13,7 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -103,7 +104,7 @@ TEST_F(AppListBubbleAppsPageTest, AppsPageVisibleAfterQuicklyClearingSearch) {
   // Before the animation completes, delete the search. This should abort
   // animations, animate back to the apps page, and leave the apps page visible.
   PressAndReleaseKey(ui::VKEY_BACK);
-  helper->WaitForLayerAnimation(apps_page->GetPageAnimationLayerForTest());
+  LayerAnimationStoppedWaiter().Wait(apps_page->GetPageAnimationLayerForTest());
   EXPECT_TRUE(apps_page->GetVisible());
   EXPECT_EQ(1.0f, apps_page->scroll_view()->contents()->layer()->opacity());
 }
@@ -126,7 +127,13 @@ TEST_F(AppListBubbleAppsPageTest, AnimateHidePage) {
 
   // Type a key to trigger the animation to transition to the search page.
   PressAndReleaseKey(ui::VKEY_A);
-  helper->WaitForLayerAnimation(apps_page->GetPageAnimationLayerForTest());
+  ui::Layer* layer = apps_page->GetPageAnimationLayerForTest();
+  LayerAnimationStoppedWaiter().Wait(layer);
+
+  // Ensure there is one more frame presented after animation finishes to allow
+  // animation throughput data to be passed from cc to ui.
+  layer->GetCompositor()->ScheduleFullRedraw();
+  EXPECT_TRUE(ui::WaitForNextFrameToBePresented(layer->GetCompositor()));
 
   // Apps page is not visible.
   EXPECT_FALSE(apps_page->GetVisible());
@@ -159,7 +166,13 @@ TEST_F(AppListBubbleAppsPageTest, AnimateShowPage) {
 
   // Press escape to trigger animation back to the apps page.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
-  helper->WaitForLayerAnimation(apps_page->GetPageAnimationLayerForTest());
+  ui::Layer* layer = apps_page->GetPageAnimationLayerForTest();
+  LayerAnimationStoppedWaiter().Wait(layer);
+
+  // Ensure there is one more frame presented after animation finishes to allow
+  // animation throughput data to be passed from cc to ui.
+  layer->GetCompositor()->ScheduleFullRedraw();
+  EXPECT_TRUE(ui::WaitForNextFrameToBePresented(layer->GetCompositor()));
 
   // Apps page is visible.
   EXPECT_TRUE(apps_page->GetVisible());
