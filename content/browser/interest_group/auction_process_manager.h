@@ -68,9 +68,7 @@ class CONTENT_EXPORT AuctionProcessManager {
     ~ProcessHandle();
 
     // Returns a non-null pointer once a ProcessHandle has been assigned a
-    // process. Null otherwise. Consumers should not retain the returned raw
-    // pointer, as on process crash, a new process may automatically be created,
-    // invalidating all pointers.
+    // process. The pipe, however, may get broken if the process exits.
     auction_worklet::mojom::AuctionWorkletService* GetService();
 
    private:
@@ -192,9 +190,11 @@ class CONTENT_EXPORT AuctionProcessManager {
   // of those maps.
   void RemovePendingProcessHandle(ProcessHandle* process_handle);
 
-  // Invoked on WorkletProcess destruction. Updates the corresponding
-  // ProcessMap, and checks if a new bidder process should be started.
-  void OnWorkletProcessDestroyed(WorkletProcess* worklet_process);
+  // Invoked when WorkletProcess can no longer handle new requests, either
+  // because it was destroyed or because the underlying process died. Updates
+  // the corresponding ProcessMap, and checks if a new bidder process should be
+  // started.
+  void OnWorkletProcessUnusable(WorkletProcess* worklet_process);
 
   // Helpers to access the maps of the corresponding worklet type.
   PendingRequestQueue* GetPendingRequestQueue(WorkletType worklet_type);

@@ -28,38 +28,48 @@ constexpr size_t AuctionProcessManager::kMaxSellerProcesses = 3;
 class AuctionProcessManager::WorkletProcess
     : public base::RefCounted<WorkletProcess> {
  public:
-  WorkletProcess(AuctionProcessManager* auction_process_manager,
-                 WorkletType worklet_type,
-                 const url::Origin& origin)
+  WorkletProcess(
+      AuctionProcessManager* auction_process_manager,
+      mojo::Remote<auction_worklet::mojom::AuctionWorkletService> service,
+      WorkletType worklet_type,
+      const url::Origin& origin)
       : worklet_type_(worklet_type),
         origin_(origin),
-        auction_process_manager_(auction_process_manager) {
+        auction_process_manager_(auction_process_manager),
+        service_(std::move(service)) {
     DCHECK(auction_process_manager);
+    service_.set_disconnect_handler(base::BindOnce(
+        &WorkletProcess::NotifyUnusableOnce, base::Unretained(this)));
   }
 
   auction_worklet::mojom::AuctionWorkletService* GetService() {
-    if (!service_.is_bound() || !service_.is_connected()) {
-      service_.reset();
-      auction_process_manager_->LaunchProcess(
-          service_.BindNewPipeAndPassReceiver(),
-          ComputeDisplayName(worklet_type_, origin_));
-    }
+    DCHECK(service_.is_connected());
     return service_.get();
   }
 
   WorkletType worklet_type() const { return worklet_type_; }
-  const url::Origin origin() const { return origin_; }
+  const url::Origin& origin() const { return origin_; }
 
  private:
   friend class base::RefCounted<WorkletProcess>;
 
-  ~WorkletProcess() {
-    auction_process_manager_->OnWorkletProcessDestroyed(this);
+  void NotifyUnusableOnce() {
+    AuctionProcessManager* maybe_apm = auction_process_manager_;
+    // Clear `auction_process_manager_` to make sure OnWorkletProcessUnusable()
+    // is called once.  Clear it before call to ensure this is the case even
+    // if this method is re-entered somehow.
+    auction_process_manager_ = nullptr;
+    if (maybe_apm)
+      maybe_apm->OnWorkletProcessUnusable(this);
   }
+
+  ~WorkletProcess() { NotifyUnusableOnce(); }
 
   const WorkletType worklet_type_;
   const url::Origin origin_;
-  const raw_ptr<AuctionProcessManager> auction_process_manager_;
+
+  // nulled out once OnWorkletProcessUnusable() called.
+  raw_ptr<AuctionProcessManager> auction_process_manager_;
 
   mojo::Remote<auction_worklet::mojom::AuctionWorkletService> service_;
 };
@@ -158,11 +168,17 @@ bool AuctionProcessManager::TryCreateOrGetProcessForHandle(
   if (!HasAvailableProcessSlot(process_handle->worklet_type_))
     return false;
 
-  // Create WorkletProcess object. It will lazily create the actual process on
-  // the first GetService() call.
+  // Launch the process and create WorkletProcess object bound to it.
+  mojo::Remote<auction_worklet::mojom::AuctionWorkletService> service;
+  LaunchProcess(service.BindNewPipeAndPassReceiver(),
+                ComputeDisplayName(process_handle->worklet_type_,
+                                   process_handle->origin_));
+
   scoped_refptr<WorkletProcess> worklet_process =
-      base::MakeRefCounted<WorkletProcess>(this, process_handle->worklet_type_,
+      base::MakeRefCounted<WorkletProcess>(this, std::move(service),
+                                           process_handle->worklet_type_,
                                            process_handle->origin_);
+
   (*processes)[process_handle->origin_] = worklet_process.get();
   process_handle->AssignProcess(std::move(worklet_process));
   return true;
@@ -225,7 +241,7 @@ void AuctionProcessManager::RemovePendingProcessHandle(
     pending_request_map->erase(it);
 }
 
-void AuctionProcessManager::OnWorkletProcessDestroyed(
+void AuctionProcessManager::OnWorkletProcessUnusable(
     WorkletProcess* worklet_process) {
   ProcessMap* processes = Processes(worklet_process->worklet_type());
   auto it = processes->find(worklet_process->origin());

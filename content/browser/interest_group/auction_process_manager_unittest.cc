@@ -568,22 +568,25 @@ TEST_P(AuctionProcessManagerTest, DestroyHandlesWithPendingRequests) {
   EXPECT_EQ(0u, auction_process_manager_.GetPendingSellerRequestsForTesting());
 }
 
-// Check that process is automatically re-created on crash. Likely not the most
-// important behavior in the world, as auctions aren't restarted on crash, and
-// worklet handles should be freed on process crash fairly promptly, but best to
-// be safe.
+// Check that process crash is handled properly, by creating a new process.
 TEST_P(AuctionProcessManagerTest, ProcessCrash) {
   auto process = GetServiceExpectSuccess(kOriginA);
-  EXPECT_TRUE(process->GetService());
+  auction_worklet::mojom::AuctionWorkletService* service =
+      process->GetService();
+  EXPECT_TRUE(service);
   EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
 
   // Close pipes. No new pipe should be created.
   auction_process_manager_.ClosePipes();
   EXPECT_EQ(0u, auction_process_manager_.NumReceivers());
 
-  // Request the worklet's service again. A new pipe will automatically be
-  // created.
-  EXPECT_TRUE(process->GetService());
+  // Requesting a new process will create a new pipe.
+  auto process2 = GetServiceExpectSuccess(kOriginA);
+  auction_worklet::mojom::AuctionWorkletService* service2 =
+      process2->GetService();
+  EXPECT_TRUE(service2);
+  EXPECT_NE(service, service2);
+  EXPECT_NE(process, process2);
   EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
 }
 
