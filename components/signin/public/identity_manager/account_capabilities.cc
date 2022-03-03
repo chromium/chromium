@@ -22,8 +22,8 @@ AccountCapabilities& AccountCapabilities::operator=(
 // static
 const std::vector<std::string>&
 AccountCapabilities::GetSupportedAccountCapabilityNames() {
-  static base::NoDestructor<std::vector<std::string>> kCapabilityNames(
-      {kCanOfferExtendedChromeSyncPromosCapabilityName});
+  static base::NoDestructor<std::vector<std::string>> kCapabilityNames{
+      {kCanOfferExtendedChromeSyncPromosCapabilityName}};
   return *kCapabilityNames;
 }
 
