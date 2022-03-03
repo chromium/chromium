@@ -6166,7 +6166,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 // On Mac and Android, the reported menu coordinates are relative to the
 // OOPIF, and its screen position is computed later, so this test isn't
 // relevant on those platforms.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMECAST)
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                        ScrolledNestedPopupMenuTest) {
   GURL main_url(embedded_test_server()->GetURL(
