@@ -39,7 +39,8 @@ void DirectUDPSocketImpl::Send(base::span<const uint8_t> data,
     std::move(callback).Run(net::ERR_FAILED);
     return;
   }
-  remote_->Send(std::move(data), DirectSocketsServiceImpl::TrafficAnnotation(),
+  remote_->Send(std::move(data),
+                DirectSocketsServiceImpl::MutableTrafficAnnotation(),
                 std::move(callback));
 }
 

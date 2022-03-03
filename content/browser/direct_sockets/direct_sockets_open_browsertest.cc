@@ -5,7 +5,10 @@
 #include <map>
 #include <vector>
 
+#include "base/bind.h"
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -15,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
+#include "content/browser/direct_sockets/resolve_host_and_open_socket.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -32,10 +36,14 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
+#include "net/http/http_request_headers.h"
 #include "net/net_buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -407,9 +415,6 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
     command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
                                     origin_list);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {
@@ -449,25 +454,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
       "openTcp failed: NotAllowedError: Failed to execute 'openTCPSocket' on "
       "'Navigator': Must be handling a user gesture to open a socket.",
       EvalJs(shell(), script));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_CannotEvadeCors) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kCORS, 0);
-
-  // HTTPS uses port 443.
-  const std::string script =
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: 443})";
-
-  EXPECT_EQ("openTcp failed: NetworkError: Network error.",
-            EvalJs(shell(), script));
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kCORS, 1);
 }
 
 // Remote address should be provided or TEST will fail with NotAllowedError. In
@@ -746,25 +732,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_NotAllowedError) {
             EvalJs(shell(), script));
 }
 
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_CannotEvadeCors) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kCORS, 0);
-
-  // QUIC uses port 443.
-  const std::string script =
-      "openUdp({remoteAddress: '127.0.0.1', remotePort: 443})";
-
-  EXPECT_EQ("openUdp failed: NetworkError: Network error.",
-            EvalJs(shell(), script));
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kCORS, 1);
-}
-
 // Remote address should be provided or TEST will fail with NotAllowedError. In
 // actual use scenario, it can be obtained from the user's input in connection
 // dialog.
@@ -905,5 +872,135 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {
   EXPECT_EQ(0, call.send_buffer_size);
   EXPECT_EQ(1234, call.receive_buffer_size);
 }
+
+class DirectSocketsOpenCorsBrowserTest
+    : public DirectSocketsOpenBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DirectSocketsOpenCorsBrowserTest()
+      : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUp() override {
+    https_server()->RegisterDefaultHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest, "/",
+        base::BindRepeating(
+            &DirectSocketsOpenCorsBrowserTest::HandleCORSRequest,
+            base::Unretained(this), GetParam())));
+    ASSERT_TRUE(https_server()->Start(4344));
+    DirectSocketsOpenBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
+                                    GetTestOpenPageURL().spec());
+  }
+
+ protected:
+  std::unique_ptr<net::test_server::HttpResponse> HandleCORSRequest(
+      bool cors_success,
+      const net::test_server::HttpRequest& request) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+    if (request.method == net::test_server::METHOD_OPTIONS) {
+      if (cors_success) {
+        response->AddCustomHeader(
+            network::cors::header_names::kAccessControlAllowOrigin, "*");
+
+        response->AddCustomHeader(
+            network::cors::header_names::kAccessControlAllowHeaders, "*");
+      }
+    } else {
+      response->AddCustomHeader(
+          network::cors::header_names::kAccessControlAllowOrigin, "*");
+      response->set_content("OK");
+    }
+
+    return response;
+  }
+
+  net::test_server::EmbeddedTestServer* https_server() {
+    return &https_server_;
+  }
+
+ private:
+  net::test_server::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenTcp) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  MockNetworkContext mock_network_context(net::OK);
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+  // HTTPS uses port 443. We cannot really start a server on port 443, therefore
+  // we mock the behavior.
+  ResolveHostAndOpenSocket::SetHttpsPortForTesting(https_server()->port());
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      blink::mojom::DirectSocketFailureType::kCORS, 0);
+
+  const std::string script =
+      base::StringPrintf("openTcp({remoteAddress: '%s', remotePort: %d})",
+                         "127.0.0.1", https_server()->port());
+
+  bool cors_success = GetParam();
+
+  const std::string expected_verdict =
+      cors_success
+          ? base::StringPrintf(
+                "openTcp succeeded: {remoteAddress: \"127.0.0.1\", remotePort: "
+                "%d}",
+                https_server()->port())
+          : "openTcp failed: NetworkError: Network error.";
+
+  EXPECT_EQ(expected_verdict, EvalJs(shell(), script));
+
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      blink::mojom::DirectSocketFailureType::kCORS, cors_success ? 0 : 1);
+}
+
+IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenUdp) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  MockNetworkContext mock_network_context(net::OK);
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  // HTTPS uses port 443. We cannot really start a server on port 443, therefore
+  // we mock the behavior.
+  ResolveHostAndOpenSocket::SetHttpsPortForTesting(https_server()->port());
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      blink::mojom::DirectSocketFailureType::kCORS, 0);
+
+  const std::string script =
+      base::StringPrintf("openUdp({remoteAddress: '%s', remotePort: %d})",
+                         "127.0.0.1", https_server()->port());
+
+  bool cors_success = GetParam();
+
+  const std::string expected_verdict =
+      cors_success
+          ? base::StringPrintf(
+                "openUdp succeeded: {remoteAddress: \"127.0.0.1\", remotePort: "
+                "%d}",
+                https_server()->port())
+          : "openUdp failed: NetworkError: Network error.";
+
+  EXPECT_EQ(expected_verdict, EvalJs(shell(), script));
+
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      blink::mojom::DirectSocketFailureType::kCORS, cors_success ? 0 : 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         DirectSocketsOpenCorsBrowserTest,
+                         testing::Bool());
 
 }  // namespace content

@@ -2895,6 +2895,8 @@ source_set("browser") {
       "direct_sockets/direct_sockets_service_impl.h",
       "direct_sockets/direct_udp_socket_impl.cc",
       "direct_sockets/direct_udp_socket_impl.h",
+      "direct_sockets/resolve_host_and_open_socket.cc",
+      "direct_sockets/resolve_host_and_open_socket.h",
 
       # The Serial API is not implemented on Android.
       "serial/serial_service.cc",
