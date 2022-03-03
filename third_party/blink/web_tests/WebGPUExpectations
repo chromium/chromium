@@ -163,8 +163,8 @@ crbug.com/dawn/1025 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,r
 ### Platform-independent failures
 ###
 
-# Intentionally hits a CHECK.
-crbug.com/1243842 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,buffers,map_ArrayBuffer:postMessage:transfer=true;* [ Crash ]
+# Test is being updated in https://github.com/gpuweb/cts/pull/1027
+crbug.com/1243842 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,buffers,map_ArrayBuffer:postMessage:transfer=true;* [ Failure ]
 
 # Our automated build does not support mp4 currently (fails on Linux, Mac, and Win Intel)
 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:videoSource="red-green.mp4" [ Failure ]
