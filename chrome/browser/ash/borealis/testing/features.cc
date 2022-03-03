@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/borealis/testing/features.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -11,11 +12,12 @@
 
 namespace borealis {
 
-void AllowBorealis(TestingProfile* profile,
+void AllowBorealis(Profile* profile,
                    base::test::ScopedFeatureList* features,
                    ash::FakeChromeUserManager* user_manager,
                    bool also_enable) {
-  features->InitAndEnableFeature(features::kBorealis);
+  features->InitWithFeatures(
+      {features::kBorealis, chromeos::features::kBorealisPermitted}, {});
   AccountId account_id =
       AccountId::FromUserEmail(profile->GetProfileUserName());
   user_manager->AddUserWithAffiliation(account_id, /*is_affiliated=*/false);
@@ -24,8 +26,7 @@ void AllowBorealis(TestingProfile* profile,
                                   also_enable);
 }
 
-ScopedAllowBorealis::ScopedAllowBorealis(TestingProfile* profile,
-                                         bool also_enable)
+ScopedAllowBorealis::ScopedAllowBorealis(Profile* profile, bool also_enable)
     : profile_(profile),
       user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
   AllowBorealis(profile_, &features_,

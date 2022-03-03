@@ -7,8 +7,10 @@
 #include <string>
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/constants/ash_features.h"
 #include "base/callback.h"
 #include "base/cpu.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -185,6 +187,9 @@ AllowStatus BorealisFeatures::MightBeAllowed() {
   if (c == version_info::Channel::STABLE || c == version_info::Channel::BETA)
     return AllowStatus::kBlockedOnBetaStable;
 
+  if (!base::FeatureList::IsEnabled(chromeos::features::kBorealisPermitted))
+    return AllowStatus::kBlockedByFlag;
+
   return AllowStatus::kAllowed;
 }
 
@@ -219,6 +224,9 @@ std::ostream& operator<<(std::ostream& os, const AllowStatus& reason) {
     case AllowStatus::kBlockedOnBetaStable:
       return os << "Your ChromeOS channel must be set to Dev or Canary "
                    "to run Borealis";
+    case AllowStatus::kBlockedByFlag:
+      return os << "Borealis is still being worked on. You must set the "
+                   "#borealis-enabled feature flag.";
     case AllowStatus::kUnsupportedModel:
       return os << "Borealis is not supported on this model hardware";
     case AllowStatus::kHardwareChecksFailed:

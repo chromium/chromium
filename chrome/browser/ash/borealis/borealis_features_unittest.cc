@@ -28,11 +28,7 @@ class BorealisFeaturesTest : public testing::Test {
   BorealisFeaturesTest()
       : user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(user_manager_)) {
-    features_.InitAndEnableFeature(features::kBorealis);
-    AccountId account_id =
-        AccountId::FromUserEmail(profile_.GetProfileUserName());
-    user_manager_->AddUserWithAffiliation(account_id, /*is_affiliated=*/false);
-    user_manager_->LoginUser(account_id);
+    AllowBorealis(&profile_, &features_, user_manager_, /*also_enable=*/false);
   }
 
  protected:

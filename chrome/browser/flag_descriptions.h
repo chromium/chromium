@@ -283,6 +283,9 @@ extern const char kBorealisForceBetaClientDescription[];
 extern const char kBorealisLinuxModeName[];
 extern const char kBorealisLinuxModeDescription[];
 
+extern const char kBorealisPermittedName[];
+extern const char kBorealisPermittedDescription[];
+
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 

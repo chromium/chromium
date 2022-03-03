@@ -506,6 +506,15 @@ const char kBorealisLinuxModeName[] = "Borealis Linux Mode";
 const char kBorealisLinuxModeDescription[] =
     "Do not run ChromeOS-specific code in the client.";
 
+// For UX reasons we prefer "enabled", but that is used internally to refer to
+// whether borealis is installed or not, so the name of the variable is a bit
+// different to the user-facing name.
+const char kBorealisPermittedName[] = "Borealis Enabled";
+const char kBorealisPermittedDescription[] =
+    "Allows Borealis to run on your device. Borealis may still be blocked for "
+    "other reasons, including: administrator settings, device hardware "
+    "capabilities, or other security measures.";
+
 const char kBypassAppBannerEngagementChecksName[] =
     "Bypass user engagement checks";
 const char kBypassAppBannerEngagementChecksDescription[] =

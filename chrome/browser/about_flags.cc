@@ -2630,6 +2630,9 @@ constexpr char kBorealisDiskManagementInternalName[] =
 constexpr char kBorealisForceBetaClientInternalName[] =
     "borealis-force-beta-client";
 constexpr char kBorealisLinuxModeInternalName[] = "borealis-linux-mode";
+// This differs slightly from its symbol's name since "enabled" is used
+// internally to refer to whether borealis is installed or not.
+constexpr char kBorealisPermittedInternalName[] = "borealis-enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -7758,6 +7761,9 @@ const FeatureEntry kFeatureEntries[] = {
     {kBorealisLinuxModeInternalName, flag_descriptions::kBorealisLinuxModeName,
      flag_descriptions::kBorealisLinuxModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisLinuxMode)},
+    {kBorealisPermittedInternalName, flag_descriptions::kBorealisPermittedName,
+     flag_descriptions::kBorealisPermittedDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBorealisPermitted)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"https-only-mode-setting", flag_descriptions::kHttpsOnlyModeName,
@@ -8376,6 +8382,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   if (!strcmp(kBorealisLinuxModeInternalName, entry.internal_name)) {
+    return !base::FeatureList::IsEnabled(features::kBorealis);
+  }
+
+  if (!strcmp(kBorealisPermittedInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 

@@ -12,22 +12,22 @@ namespace ash {
 class FakeChromeUserManager;
 }
 
-class TestingProfile;
+class Profile;
 
 namespace borealis {
 
-void AllowBorealis(TestingProfile* profile,
+void AllowBorealis(Profile* profile,
                    base::test::ScopedFeatureList* features,
                    ash::FakeChromeUserManager* user_manager,
                    bool also_enable);
 
 class ScopedAllowBorealis {
  public:
-  ScopedAllowBorealis(TestingProfile* profile, bool also_enable);
+  ScopedAllowBorealis(Profile* profile, bool also_enable);
   ~ScopedAllowBorealis();
 
  private:
-  TestingProfile* profile_;
+  Profile* profile_;
   base::test::ScopedFeatureList features_;
   user_manager::ScopedUserManager user_manager_;
 };

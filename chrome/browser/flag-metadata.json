@@ -621,7 +621,7 @@
   {
     "name": "borealis-big-gl",
     "owners": [ "danielng" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "borealis-disk-management",
@@ -629,14 +629,19 @@
     "expiry_milestone": 103
   },
   {
+    "name": "borealis-enabled",
+    "owners": [ "hollingum" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "borealis-force-beta-client",
     "owners": [ "hollingum" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "borealis-linux-mode",
     "owners": [ "hollingum" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "bruschetta",

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
@@ -55,7 +56,8 @@ class BorealisInstallerMock : public borealis::BorealisInstaller {
 class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
  public:
   BorealisInstallerViewBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kBorealis);
+    feature_list_.InitWithFeatures(
+        {features::kBorealis, chromeos::features::kBorealisPermitted}, {});
   }
 
   // DialogBrowserTest:

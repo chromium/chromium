@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
@@ -57,7 +58,8 @@ class CallbackFactory
 class BorealisSplashScreenViewBrowserTest : public DialogBrowserTest {
  public:
   BorealisSplashScreenViewBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kBorealis);
+    feature_list_.InitWithFeatures(
+        {features::kBorealis, chromeos::features::kBorealisPermitted}, {});
   }
 
   // DialogBrowserTest:
