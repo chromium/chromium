@@ -49,7 +49,7 @@
       "use_goma": true
     }
   },
-  "android-12-x64-fyi-rel": {
+  "android-12-x64-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,

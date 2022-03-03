@@ -147,7 +147,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
           '--gtest_filter=-ModuleCacheTest.CheckAgainstProcMaps',  # crbug.com/1260521
@@ -811,7 +811,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         # https://crbug.com/1039860
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter',
@@ -934,11 +934,15 @@
         'ci_only': True,
         'experiment_percentage': 100,
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_test_apk.filter',
           '--timeout-scale=2.0',
         ],
+        # TODO(crbug.com/1225851): Remove experiment and ci_only
+        # once the test suite is stable.
+        'ci_only': True,
+        'experiment_percentage': 100,
       },
       'android-arm64-proguard-rel': {
         'swarming': {
@@ -1005,7 +1009,7 @@
           ],
         },
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--avd-config=../../tools/android/avd/proto/generic_playstore_android31.textpb',
         ],
@@ -1156,7 +1160,7 @@
           '--gtest_filter=-FieldFormatterTest.DifferentLocales',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           # TODO(crbug.com/1192348): Fix the test failure
           '--gtest_filter=-FieldFormatterTest.DifferentLocales',
@@ -1299,7 +1303,7 @@
           ],
         },
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter',
         ],
@@ -1435,7 +1439,7 @@
           '--timeout-scale=2.0',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter',
         ],
@@ -1507,7 +1511,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.crashpad_tests.filter',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.crashpad_tests.filter',
         ],
@@ -1535,7 +1539,7 @@
   },
   'device_unittests': {
     'modifications': {
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.device_unittests.filter',
         ],
@@ -1751,7 +1755,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.gl_tests.filter',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.gl_tests.filter',
         ],
@@ -1783,7 +1787,7 @@
       'Linux MSan Tests',
     ],
     'modifications': {
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.gl_unittests.filter',
         ],
@@ -2138,7 +2142,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.media_unittests.filter',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.media_unittests.filter',
         ],
@@ -2369,7 +2373,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.net_unittests.filter',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           # TODO(crbug.com/1191793): Fix the test failure
           '--gtest_filter=-MimeUtilTest.ExtensionTest',
@@ -2531,7 +2535,7 @@
   },
   'perfetto_unittests': {
     'modifications': {
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           # TODO(crbug.com/1260440): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
@@ -2727,7 +2731,7 @@
   },
   'sandbox_linux_unittests': {
     'modifications': {
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.sandbox_linux_unittests.filter',
         ]
@@ -2815,7 +2819,7 @@
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           # TODO(crbug.com/1264654): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
@@ -3547,7 +3551,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter',
         ],
@@ -3567,7 +3571,7 @@
           '--gtest_filter=-DownloadBrowserTest.OverrideDownloadDirectory',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           # TODO(crbug.com/1191784): Fix the test failure
           '--gtest_filter=-DownloadBrowserTest.OverrideDownloadDirectory',
@@ -3634,7 +3638,7 @@
           '--gtest_filter=-org.chromium.weblayer.test.MediaCaptureTest.*',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           # crbug.com/1275200
           '--gtest_filter=-org.chromium.weblayer.test.BrowserControlsTest.testTopExpandedOnLoadWhenOnlyExpandAtTop',
@@ -3657,7 +3661,7 @@
   },
   'webview_64_cts_tests': {
     'remove_from': [
-      'android-12-x64-fyi-rel', # crbug.com/1260194
+      'android-12-x64-rel', # crbug.com/1260194
     ],
     'modifications': {
       'android-pie-arm64-rel': {
@@ -3727,7 +3731,7 @@
           '--gtest_filter=-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers',
         ],
       },
-      'android-12-x64-fyi-rel': {
+      'android-12-x64-rel': {
         'args': [
           # crbug.com/1292197
           '--gtest_filter=-org.chromium.android_webview.test.devui.HomeFragmentTest.testLongPressCopy*',

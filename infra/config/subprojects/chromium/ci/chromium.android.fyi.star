@@ -170,14 +170,10 @@ ci.builder(
         category = "emulator|12|x64",
         short_name = "rel",
     ),
-    # Bump to 6h for now since compile on x64 seems slower than x86. It could
-    # take 3h on Android-12 (For example ci.chromium.org/b/8841892751541698720)
-    # vs 1h on Android-11 (For example ci.chromium.org/b/8841899947736889024)
-    # TODO(crbug.com/1229245): Look into ways to improve the compile time.
-    execution_timeout = 6 * time.hour,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
+    # builds. Also we don't set any `schedule` since this builder is for
+    # reference only and should not run any new builds.
+    triggered_by = [],
 )
 
 ci.builder(

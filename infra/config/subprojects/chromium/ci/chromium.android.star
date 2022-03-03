@@ -578,6 +578,18 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-12-x64-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "builder_tester|x64",
+        short_name = "12",
+    ),
+    execution_timeout = 4 * time.hour,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.builder(
     name = "android-weblayer-10-x86-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
