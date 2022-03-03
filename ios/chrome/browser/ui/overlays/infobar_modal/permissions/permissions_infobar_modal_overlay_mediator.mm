@@ -51,7 +51,7 @@
     [_consumer
         setPermissionsDescription:self.config->GetPermissionsDescription()];
   }
-  [self dispatchPermissionsInfo];
+  [self dispatchInitialPermissionsInfo];
 }
 
 - (void)disconnect {
@@ -101,9 +101,9 @@
 
 #pragma mark - Private
 
-// Helper that creates and dispatches permissions information to the
+// Helper that creates and dispatches initial permissions information to the
 // InfobarModal.
-- (void)dispatchPermissionsInfo {
+- (void)dispatchInitialPermissionsInfo {
   NSMutableArray<PermissionInfo*>* permissionsinfo =
       [[NSMutableArray alloc] init];
 
@@ -112,10 +112,12 @@
   for (NSNumber* key in statesForAllPermissions) {
     web::PermissionState state =
         (web::PermissionState)statesForAllPermissions[key].unsignedIntValue;
-    PermissionInfo* permissionInfo = [[PermissionInfo alloc] init];
-    permissionInfo.permission = (web::Permission)key.unsignedIntValue;
-    permissionInfo.state = state;
-    [permissionsinfo addObject:permissionInfo];
+    if (state != web::PermissionStateNotAccessible) {
+      PermissionInfo* permissionInfo = [[PermissionInfo alloc] init];
+      permissionInfo.permission = (web::Permission)key.unsignedIntValue;
+      permissionInfo.state = state;
+      [permissionsinfo addObject:permissionInfo];
+    }
   }
   [self.consumer setPermissionsInfo:permissionsinfo];
 }
