@@ -12,6 +12,8 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/constants.h"
@@ -20,11 +22,34 @@
 
 namespace content {
 
+namespace {
+
+// Creates a task runner suitable for running SQLite database operations.
+scoped_refptr<base::SequencedTaskRunner> CreateDatabaseTaskRunner() {
+  // We use a SequencedTaskRunner so that there is a global ordering to a
+  // storage key's directory operations.
+  return base::ThreadPool::CreateSequencedTaskRunner({
+      // Needed for file I/O.
+      base::MayBlock(),
+
+      // Reasonable compromise, given that a few database operations are
+      // blocking, while most operations are not. We should be able to do better
+      // when we get scheduling APIs on the Web Platform.
+      base::TaskPriority::USER_VISIBLE,
+
+      // Needed to allow for clearing site data on shutdown.
+      base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+  });
+}
+
+}  // namespace
+
 MediaLicenseManager::MediaLicenseManager(
     const base::FilePath& bucket_base_path,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
-    : bucket_base_path_(bucket_base_path),
+    : db_runner_(CreateDatabaseTaskRunner()),
+      bucket_base_path_(bucket_base_path),
       special_storage_policy_(std::move(special_storage_policy)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       // Using a raw pointer is safe since `quota_client_` is owned by

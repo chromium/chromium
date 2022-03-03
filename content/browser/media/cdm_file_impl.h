@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "url/origin.h"
 
@@ -26,6 +27,7 @@ class FileSystemURL;
 }  // namespace storage
 
 namespace content {
+class MediaLicenseStorageHost;
 
 // This class implements the media::mojom::CdmFile interface. It uses the same
 // mojo pipe as CdmStorageImpl, to enforce message dispatch order.
@@ -34,6 +36,15 @@ class CdmFileImpl final : public media::mojom::CdmFile {
   // Check whether |name| is valid as a usable file name. Returns true if it is,
   // false otherwise.
   static bool IsValidName(const std::string& name);
+
+  // This "file" is actually just an entry in a custom backend for CDM, uniquely
+  // identified by a storage key, CDM type, and file name. File operations are
+  // routed through `host` which is owned by the storage partition.
+  CdmFileImpl(
+      MediaLicenseStorageHost* host,
+      const media::CdmType& cdm_type,
+      const std::string& file_name,
+      mojo::PendingAssociatedReceiver<media::mojom::CdmFile> pending_receiver);
 
   CdmFileImpl(const std::string& file_name,
               const url::Origin& origin,
@@ -91,6 +102,19 @@ class CdmFileImpl final : public media::mojom::CdmFile {
   // Report operation time to UMA.
   void ReportFileOperationTimeUMA(const std::string& uma_name);
 
+  void ReadUsingMediaLicenseStorageDelegate();
+  void DidReadUsingMediaLicenseStorageDelegate(
+      absl::optional<std::vector<uint8_t>> data);
+  void WriteUsingMediaLicenseStorageDelegate(const std::vector<uint8_t>& data);
+  void DidWriteUsingMediaLicenseStorageDelegate(bool success);
+  void DeleteUsingMediaLicenseStorageDelegate();
+  void DidDeleteUsingMediaLicenseStorageDelegate(bool success);
+
+  void OnReceiverDisconnect();
+
+  // This receiver is associated with the CdmStorage receiver which creates it.
+  mojo::AssociatedReceiver<media::mojom::CdmFile> receiver_{this};
+
   // Names of the files this class represents.
   const std::string file_name_;
   const std::string temp_file_name_;
@@ -122,6 +146,10 @@ class CdmFileImpl final : public media::mojom::CdmFile {
 
   // Time when the read or write operation starts.
   base::TimeTicks start_time_;
+
+  // Backing store which CDM file operations are routed through.
+  // Owned by MediaLicenseManager.
+  const raw_ptr<MediaLicenseStorageHost> host_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<CdmFileImpl> weak_factory_{this};

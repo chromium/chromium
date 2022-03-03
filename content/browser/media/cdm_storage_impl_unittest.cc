@@ -310,11 +310,6 @@ TEST_P(CdmStorageTest, MultipleFiles) {
 }
 
 TEST_P(CdmStorageTest, WriteThenReadFile) {
-  if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
-    // TODO(crbug.com/1231162): Implement read and write for the new backend.
-    return;
-  }
-
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
@@ -330,11 +325,6 @@ TEST_P(CdmStorageTest, WriteThenReadFile) {
 }
 
 TEST_P(CdmStorageTest, ReadThenWriteEmptyFile) {
-  if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
-    // TODO(crbug.com/1231162): Implement read and write for the new backend.
-    return;
-  }
-
   const char kFileName[] = "empty_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
@@ -354,11 +344,6 @@ TEST_P(CdmStorageTest, ReadThenWriteEmptyFile) {
 }
 
 TEST_P(CdmStorageTest, ParallelRead) {
-  if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
-    // TODO(crbug.com/1231162): Implement read and write for the new backend.
-    return;
-  }
-
   const char kFileName[] = "duplicate_read_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));
@@ -376,11 +361,6 @@ TEST_P(CdmStorageTest, ParallelRead) {
 }
 
 TEST_P(CdmStorageTest, ParallelWrite) {
-  if (base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
-    // TODO(crbug.com/1231162): Implement read and write for the new backend.
-    return;
-  }
-
   const char kFileName[] = "duplicate_write_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
   EXPECT_TRUE(Open(kFileName, cdm_file));

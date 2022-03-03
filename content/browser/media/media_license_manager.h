@@ -10,6 +10,8 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "content/browser/media/media_license_quota_client.h"
 #include "content/common/content_export.h"
@@ -65,11 +67,29 @@ class CONTENT_EXPORT MediaLicenseManager {
       MediaLicenseStorageHost* host,
       base::PassKey<MediaLicenseStorageHost> pass_key);
 
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return quota_manager_proxy_;
+  }
+
+  const scoped_refptr<base::SequencedTaskRunner>& db_runner() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return db_runner_;
+  }
+
+  bool in_memory() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return bucket_base_path_.empty();
+  }
+
  private:
   void DidGetBucket(const blink::StorageKey& storage_key,
                     storage::QuotaErrorOr<storage::BucketInfo> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Task runner which all database operations are routed through.
+  const scoped_refptr<base::SequencedTaskRunner> db_runner_;
 
   // Root path of the storage bucket associated with the StoragePartition which
   // owns this class. If `bucket_base_path_` is empty, the profile is in-memory.

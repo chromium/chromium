@@ -9,14 +9,21 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "content/browser/media/media_license_storage_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/cdm/cdm_type.h"
+#include "media/mojo/mojom/cdm_storage.mojom.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -391,6 +398,25 @@ bool CdmFileImpl::IsValidName(const std::string& name) {
 }
 
 CdmFileImpl::CdmFileImpl(
+    MediaLicenseStorageHost* host,
+    const media::CdmType& cdm_type,
+    const std::string& file_name,
+    mojo::PendingAssociatedReceiver<media::mojom::CdmFile> pending_receiver)
+    : file_name_(file_name), cdm_type_(cdm_type), host_(host) {
+  DVLOG(3) << __func__ << " " << file_name_;
+  DCHECK(IsValidName(file_name_));
+  DCHECK(host_);
+  DCHECK(base::FeatureList::IsEnabled(features::kMediaLicenseBackend));
+
+  receiver_.Bind(std::move(pending_receiver));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &CdmFileImpl::OnReceiverDisconnect, weak_factory_.GetWeakPtr()));
+
+  // The MediaLicenseStorageHost handles file locking.
+  file_locked_ = true;
+}
+
+CdmFileImpl::CdmFileImpl(
     const std::string& file_name,
     const url::Origin& origin,
     const media::CdmType& cdm_type,
@@ -404,6 +430,7 @@ CdmFileImpl::CdmFileImpl(
       file_system_context_(file_system_context) {
   DVLOG(3) << __func__ << " " << file_name_;
   DCHECK(IsValidName(file_name_));
+  DCHECK(!base::FeatureList::IsEnabled(features::kMediaLicenseBackend));
 }
 
 CdmFileImpl::~CdmFileImpl() {
@@ -452,6 +479,11 @@ void CdmFileImpl::Read(ReadCallback callback) {
   // Save |callback| for later use.
   read_callback_ = std::move(callback);
   start_time_ = base::TimeTicks::Now();
+
+  if (host_) {
+    ReadUsingMediaLicenseStorageDelegate();
+    return;
+  }
 
   // As reading is done on the IO thread, when it's done ReadDone() needs to be
   // called back on this thread.
@@ -520,6 +552,11 @@ void CdmFileImpl::Write(const std::vector<uint8_t>& data,
   // |write_callback_| will be called after the file is deleted.
   if (data.empty()) {
     DeleteFile();
+    return;
+  }
+
+  if (host_) {
+    WriteUsingMediaLicenseStorageDelegate(data);
     return;
   }
 
@@ -679,6 +716,11 @@ void CdmFileImpl::DeleteFile() {
   DCHECK(!file_writer_);
   DCHECK(write_callback_);
 
+  if (host_) {
+    DeleteUsingMediaLicenseStorageDelegate();
+    return;
+  }
+
   storage::FileSystemURL file_url = CreateFileSystemURL(file_name_);
   storage::AsyncFileUtil* file_util = file_system_context_->GetAsyncFileUtil(
       storage::kFileSystemTypePluginPrivate);
@@ -724,11 +766,23 @@ storage::FileSystemURL CdmFileImpl::CreateFileSystemURL(
 }
 
 bool CdmFileImpl::AcquireFileLock(const std::string& file_name) {
+  if (host_) {
+    // The MediaLicenseStorageHost handles file locking and will not call the
+    // `Initialize()` method which acquires file locks.
+    NOTREACHED();
+    return true;
+  }
+
   FileLockKey file_lock_key(origin_, cdm_type_, file_name);
   return GetFileLockMap()->AcquireFileLock(file_lock_key);
 }
 
 void CdmFileImpl::ReleaseFileLock(const std::string& file_name) {
+  if (host_) {
+    // The MediaLicenseStorageHost handles file locking.
+    return;
+  }
+
   FileLockKey file_lock_key(origin_, cdm_type_, file_name);
   GetFileLockMap()->ReleaseFileLock(file_lock_key);
 }
@@ -737,14 +791,119 @@ void CdmFileImpl::ReportFileOperationTimeUMA(const std::string& uma_name) {
   static const char kIncognito[] = ".Incognito";
   static const char kNormal[] = ".Normal";
 
+  bool is_incognito =
+      host_ ? host_->in_memory() : file_system_context_->is_incognito();
+
   // This records the time taken to the base histogram as well as splitting it
   // out by incognito or normal mode.
   auto time_taken = base::TimeTicks::Now() - start_time_;
   base::UmaHistogramTimes(uma_name, time_taken);
   base::UmaHistogramTimes(
-      base::StrCat({uma_name, file_system_context_->is_incognito() ? kIncognito
-                                                                   : kNormal}),
+      base::StrCat({uma_name, is_incognito ? kIncognito : kNormal}),
       time_taken);
+}
+
+void CdmFileImpl::ReadUsingMediaLicenseStorageDelegate() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  DCHECK(file_locked_);
+  DCHECK(read_callback_);
+  DCHECK(host_);
+
+  host_->ReadFile(
+      cdm_type_, file_name_,
+      base::BindOnce(&CdmFileImpl::DidReadUsingMediaLicenseStorageDelegate,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void CdmFileImpl::DidReadUsingMediaLicenseStorageDelegate(
+    absl::optional<std::vector<uint8_t>> data) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(file_locked_);
+  DCHECK(read_callback_);
+  DCHECK(host_);
+
+  if (!data.has_value()) {
+    std::move(read_callback_).Run(Status::kFailure, {});
+    return;
+  }
+
+  // Only report reading time for successful reads.
+  ReportFileOperationTimeUMA(kReadTimeUmaName);
+  std::move(read_callback_).Run(Status::kSuccess, std::move(data.value()));
+}
+
+void CdmFileImpl::WriteUsingMediaLicenseStorageDelegate(
+    const std::vector<uint8_t>& data) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(file_locked_);
+  DCHECK(write_callback_);
+  DCHECK(host_);
+
+  host_->WriteFile(
+      cdm_type_, file_name_, data,
+      base::BindOnce(&CdmFileImpl::DidWriteUsingMediaLicenseStorageDelegate,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void CdmFileImpl::DidWriteUsingMediaLicenseStorageDelegate(bool success) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(file_locked_);
+  DCHECK(write_callback_);
+  DCHECK(host_);
+
+  if (!success) {
+    DLOG(WARNING) << "Unable to write to file " << file_name_;
+    std::move(write_callback_).Run(Status::kFailure);
+    return;
+  }
+
+  // Only report writing time for successful writes.
+  ReportFileOperationTimeUMA(kWriteTimeUmaName);
+  std::move(write_callback_).Run(Status::kSuccess);
+}
+
+void CdmFileImpl::DeleteUsingMediaLicenseStorageDelegate() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(file_locked_);
+  DCHECK(write_callback_);
+  DCHECK(host_);
+
+  if (!host_) {
+    std::move(write_callback_).Run(Status::kFailure);
+    return;
+  }
+
+  host_->DeleteFile(
+      cdm_type_, file_name_,
+      base::BindOnce(&CdmFileImpl::DidDeleteUsingMediaLicenseStorageDelegate,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void CdmFileImpl::DidDeleteUsingMediaLicenseStorageDelegate(bool success) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(file_locked_);
+  DCHECK(write_callback_);
+  DCHECK(host_);
+
+  if (!success) {
+    DLOG(WARNING) << "Unable to delete file " << file_name_;
+    std::move(write_callback_).Run(Status::kFailure);
+    return;
+  }
+
+  // Only report writing time for successful deletions.
+  ReportFileOperationTimeUMA(kDeleteTimeUmaName);
+  std::move(write_callback_).Run(Status::kSuccess);
+}
+
+void CdmFileImpl::OnReceiverDisconnect() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(host_);
+
+  // May delete `this`.
+  host_->OnFileReceiverDisconnect(file_name_, cdm_type_,
+                                  base::PassKey<CdmFileImpl>());
 }
 
 }  // namespace content

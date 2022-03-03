@@ -4,21 +4,39 @@
 
 #include "content/browser/media/media_license_storage_host.h"
 
+#include <algorithm>
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/media/cdm_file_impl.h"
+#include "content/browser/media/media_license_database.h"
 #include "content/browser/media/media_license_manager.h"
+#include "media/cdm/cdm_type.h"
+#include "media/mojo/mojom/cdm_storage.mojom.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
+MediaLicenseStorageHost::CdmFileId::CdmFileId(const std::string& name,
+                                              const media::CdmType& cdm_type)
+    : name(name), cdm_type(cdm_type) {}
+MediaLicenseStorageHost::CdmFileId::~CdmFileId() = default;
+
 MediaLicenseStorageHost::MediaLicenseStorageHost(
     MediaLicenseManager* manager,
     const storage::BucketLocator& bucket_locator)
-    : manager_(manager), bucket_locator_(bucket_locator) {
+    : manager_(manager),
+      bucket_locator_(bucket_locator),
+      db_(manager_->db_runner(), manager_->GetDatabasePath(bucket_locator_)) {
   DCHECK(manager_);
 
   // base::Unretained is safe here because this MediaLicenseStorageHost owns
@@ -28,7 +46,9 @@ MediaLicenseStorageHost::MediaLicenseStorageHost(
       &MediaLicenseStorageHost::OnReceiverDisconnect, base::Unretained(this)));
 }
 
-MediaLicenseStorageHost::~MediaLicenseStorageHost() = default;
+MediaLicenseStorageHost::~MediaLicenseStorageHost() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void MediaLicenseStorageHost::Open(const std::string& file_name,
                                    OpenCallback callback) {
@@ -45,24 +65,14 @@ void MediaLicenseStorageHost::Open(const std::string& file_name,
     return;
   }
 
-  // TODO(crbug.com/1231162): Modify CdmFileImpl to route operations through
-  // this class.
+  // TODO(crbug.com/1231162): Notify the quota system of a write.
+
   const BindingContext& binding_context = receivers_.current_context();
-  auto cdm_file_impl = std::make_unique<CdmFileImpl>(
-      file_name, binding_context.storage_key.origin(), binding_context.cdm_type,
-      /*file_system_root_uri_=*/"", nullptr);
-
-  if (!cdm_file_impl->Initialize()) {
-    // Unable to initialize with the file requested.
-    std::move(callback).Run(Status::kInUse, mojo::NullAssociatedRemote());
-    return;
-  }
-
-  // File was opened successfully, so create the binding and return success.
-  mojo::PendingAssociatedRemote<media::mojom::CdmFile> cdm_file;
-  cdm_file_receivers_.Add(std::move(cdm_file_impl),
-                          cdm_file.InitWithNewEndpointAndPassReceiver());
-  std::move(callback).Run(Status::kSuccess, std::move(cdm_file));
+  db_.AsyncCall(&MediaLicenseDatabase::OpenFile)
+      .WithArgs(binding_context.cdm_type, file_name)
+      .Then(base::BindOnce(&MediaLicenseStorageHost::DidOpenFile,
+                           weak_factory_.GetWeakPtr(), file_name,
+                           binding_context, std::move(callback)));
 }
 
 void MediaLicenseStorageHost::BindReceiver(
@@ -74,12 +84,92 @@ void MediaLicenseStorageHost::BindReceiver(
   receivers_.Add(this, std::move(receiver), binding_context);
 }
 
+void MediaLicenseStorageHost::DidOpenFile(const std::string& file_name,
+                                          BindingContext binding_context,
+                                          OpenCallback callback,
+                                          bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!success) {
+    std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());
+    return;
+  }
+
+  // Check whether this CDM file is in-use.
+  CdmFileId id(file_name, binding_context.cdm_type);
+  if (base::Contains(cdm_files_, id)) {
+    std::move(callback).Run(Status::kInUse, mojo::NullAssociatedRemote());
+    return;
+  }
+
+  // File was opened successfully, so create the binding and return success.
+  mojo::PendingAssociatedRemote<media::mojom::CdmFile> cdm_file;
+
+  // `this` is safe here since `cdm_file_impl` is owned by this instance.
+  cdm_files_.emplace(id, std::make_unique<CdmFileImpl>(
+                             this, binding_context.cdm_type, file_name,
+                             cdm_file.InitWithNewEndpointAndPassReceiver()));
+
+  // TODO(crbug.com/1231162): Notify the quota system of a write.
+  // We don't actually touch the database here, but notify the quota system
+  // anyways since conceptually we're creating an empty file.
+
+  std::move(callback).Run(Status::kSuccess, std::move(cdm_file));
+}
+
+void MediaLicenseStorageHost::ReadFile(const media::CdmType& cdm_type,
+                                       const std::string& file_name,
+                                       ReadFileCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1231162): Notify the quota system of a read.
+
+  db_.AsyncCall(&MediaLicenseDatabase::ReadFile)
+      .WithArgs(cdm_type, file_name)
+      .Then(std::move(callback));
+}
+
+void MediaLicenseStorageHost::WriteFile(const media::CdmType& cdm_type,
+                                        const std::string& file_name,
+                                        const std::vector<uint8_t>& data,
+                                        WriteFileCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1231162): Notify the quota system of a write.
+
+  db_.AsyncCall(&MediaLicenseDatabase::WriteFile)
+      .WithArgs(cdm_type, file_name, data)
+      .Then(std::move(callback));
+}
+
+void MediaLicenseStorageHost::DeleteFile(const media::CdmType& cdm_type,
+                                         const std::string& file_name,
+                                         DeleteFileCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1231162): Notify the quota system of a write.
+
+  db_.AsyncCall(&MediaLicenseDatabase::DeleteFile)
+      .WithArgs(cdm_type, file_name)
+      .Then(std::move(callback));
+}
+
 void MediaLicenseStorageHost::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // May delete `this`.
   manager_->OnHostReceiverDisconnect(this,
                                      base::PassKey<MediaLicenseStorageHost>());
+}
+
+void MediaLicenseStorageHost::OnFileReceiverDisconnect(
+    const std::string& name,
+    const media::CdmType& cdm_type,
+    base::PassKey<CdmFileImpl> /*pass_key*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto count = cdm_files_.erase(CdmFileId(name, cdm_type));
+  DCHECK_GT(count, 0u);
 }
 
 }  // namespace content
