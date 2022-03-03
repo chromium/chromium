@@ -39,7 +39,7 @@ class MODULES_EXPORT ManifestParser {
   ManifestParser(const String& data,
                  const KURL& manifest_url,
                  const KURL& document_url,
-                 const ExecutionContext* execution_context);
+                 ExecutionContext* execution_context);
 
   ManifestParser(const ManifestParser&) = delete;
   ManifestParser& operator=(const ManifestParser&) = delete;
@@ -474,7 +474,7 @@ class MODULES_EXPORT ManifestParser {
   const String data_;
   KURL manifest_url_;
   KURL document_url_;
-  const ExecutionContext* execution_context_;
+  ExecutionContext* execution_context_;
 
   // The total number of file extensions seen so far while parsing
   // `file_handlers` `accept` entries.

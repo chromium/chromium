@@ -98,7 +98,7 @@ static bool IsCrLfOrTabChar(UChar c) {
 ManifestParser::ManifestParser(const String& data,
                                const KURL& manifest_url,
                                const KURL& document_url,
-                               const ExecutionContext* execution_context)
+                               ExecutionContext* execution_context)
     : data_(data),
       manifest_url_(manifest_url),
       document_url_(document_url),
