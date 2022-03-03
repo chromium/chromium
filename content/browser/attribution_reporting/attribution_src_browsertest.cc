@@ -371,8 +371,15 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_EQ(trigger_data.front()->reporting_origin,
             url::Origin::Create(register_url));
+  EXPECT_THAT(trigger_data.front()->filters->filter_values, IsEmpty());
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
   EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 10u);
+  EXPECT_THAT(
+      trigger_data.front()->event_triggers.front()->filters->filter_values,
+      IsEmpty());
+  EXPECT_THAT(
+      trigger_data.front()->event_triggers.front()->not_filters->filter_values,
+      IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -404,6 +411,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_EQ(trigger_data.front()->reporting_origin,
             url::Origin::Create(register_url));
+  EXPECT_THAT(
+      trigger_data.front()->filters->filter_values,
+      ElementsAre(Pair("w", IsEmpty()), Pair("x", ElementsAre("y", "z"))));
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 2u);
 
   // Verify first trigger.
@@ -411,10 +421,19 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(event_trigger_datas.front()->data, 1u);
   EXPECT_EQ(event_trigger_datas.front()->priority, 5);
   EXPECT_EQ(event_trigger_datas.front()->dedup_key->value, 1024u);
+  EXPECT_THAT(event_trigger_datas.front()->filters->filter_values,
+              ElementsAre(Pair("a", ElementsAre("b"))));
+  EXPECT_THAT(event_trigger_datas.front()->not_filters->filter_values,
+              ElementsAre(Pair("c", IsEmpty())));
 
+  // Verify second trigger.
   EXPECT_EQ(event_trigger_datas.back()->data, 2u);
   EXPECT_EQ(event_trigger_datas.back()->priority, 10);
   EXPECT_FALSE(event_trigger_datas.back()->dedup_key);
+  EXPECT_THAT(event_trigger_datas.back()->filters->filter_values, IsEmpty());
+  EXPECT_THAT(
+      event_trigger_datas.back()->not_filters->filter_values,
+      ElementsAre(Pair("d", ElementsAre("e", "f")), Pair("g", IsEmpty())));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -614,6 +633,63 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcInvalidFiltersBrowserTest,
             url::Origin::Create(GURL("https://d.test")));
 }
 
+IN_PROC_BROWSER_TEST_P(AttributionSrcInvalidFiltersBrowserTest,
+                       AttributionSrcImgFiltersInvalid_TriggerDropped) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  SetupCrossSiteRedirector(https_server.get());
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_trigger");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  MockAttributionHost host(web_contents());
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(host, RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  GURL register_url = https_server->GetURL("d.test", "/register_trigger");
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader(
+      "Attribution-Reporting-Register-Event-Trigger",
+      base::StrCat({R"([{"trigger_data":"9","filters":)", GetParam(), "}]"}));
+  http_response->AddCustomHeader("Location", "/register_trigger_headers.html");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  if (!data_host)
+    loop.Run();
+  data_host->WaitForTriggerData(/*num_trigger_data=*/1);
+  const auto& trigger_data = data_host->trigger_data();
+
+  // Only the second trigger is registered.
+  EXPECT_EQ(trigger_data.size(), 1u);
+  EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
+  EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 10u);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     AttributionSrcInvalidFilters,
     AttributionSrcInvalidFiltersBrowserTest,
@@ -702,6 +778,85 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFilterSizeBrowserTest,
   EXPECT_EQ(source_data.back()->source_event_id, 5UL);
   EXPECT_EQ(source_data.back()->destination,
             url::Origin::Create(GURL("https://d.test")));
+}
+
+IN_PROC_BROWSER_TEST_P(AttributionSrcFilterSizeBrowserTest,
+                       AttributionSrcImgExcessiveFilterSize_TriggerDropped) {
+  const AttributionFilterSizeTestCase& test_case = GetParam();
+
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  SetupCrossSiteRedirector(https_server.get());
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_trigger");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  MockAttributionHost host(web_contents());
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(host, RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  GURL register_url = https_server->GetURL("d.test", "/register_trigger");
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("trigger_data", "9");
+
+  base::Value filter_data(base::Value::Type::DICTIONARY);
+  for (auto [filter, values] : test_case.AsMap()) {
+    base::Value list(base::Value::Type::LIST);
+    for (auto value : values) {
+      list.Append(std::move(value));
+    }
+    filter_data.SetKey(std::move(filter), std::move(list));
+  }
+  dict.SetKey("filters", std::move(filter_data));
+
+  base::Value list(base::Value::Type::LIST);
+  list.Append(std::move(dict));
+
+  std::string json;
+  EXPECT_TRUE(base::JSONWriter::Write(list, &json));
+
+  http_response->AddCustomHeader("Attribution-Reporting-Register-Event-Trigger",
+                                 std::move(json));
+  http_response->AddCustomHeader("Location", "/register_trigger_headers.html");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  if (!data_host)
+    loop.Run();
+
+  const size_t expected_triggers = test_case.valid ? 2 : 1;
+  data_host->WaitForTriggerData(/*num_trigger_data=*/expected_triggers);
+  const auto& trigger_data = data_host->trigger_data();
+
+  EXPECT_EQ(trigger_data.size(), expected_triggers);
+  EXPECT_EQ(trigger_data.back()->event_triggers.size(), 1u);
+  EXPECT_EQ(trigger_data.back()->event_triggers.front()->data, 10u);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -244,6 +244,15 @@ void AttributionSrcLoader::HandleTriggerRegistration(
   if (!success)
     return;
 
+  trigger_data->filters = mojom::blink::AttributionFilterData::New();
+
+  const AtomicString& filter_json =
+      response.HttpHeaderField(http_names::kAttributionReportingFilters);
+  if (!filter_json.IsNull() && !attribution_response_parsing::ParseFilters(
+                                   filter_json, *trigger_data->filters)) {
+    return;
+  }
+
   context.data_host->TriggerDataAvailable(std::move(trigger_data));
 }
 

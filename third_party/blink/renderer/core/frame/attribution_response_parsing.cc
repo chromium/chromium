@@ -305,10 +305,32 @@ bool ParseEventTriggerData(
       }
     }
 
+    event_trigger->filters = mojom::blink::AttributionFilterData::New();
+    if (!ParseAttributionFilterData(object_val->Get("filters"),
+                                    *event_trigger->filters)) {
+      return false;
+    }
+
+    event_trigger->not_filters = mojom::blink::AttributionFilterData::New();
+    if (!ParseAttributionFilterData(object_val->Get("not_filters"),
+                                    *event_trigger->not_filters)) {
+      return false;
+    }
+
     event_trigger_data.push_back(std::move(event_trigger));
   }
 
   return true;
+}
+
+bool ParseFilters(const AtomicString& json_string,
+                  mojom::blink::AttributionFilterData& filter_data) {
+  // TODO(apaseltiner): Consider applying a max stack depth to this.
+  std::unique_ptr<JSONValue> json = ParseJSON(json_string);
+  if (!json)
+    return false;
+
+  return ParseAttributionFilterData(json.get(), filter_data);
 }
 
 }  // namespace blink::attribution_response_parsing

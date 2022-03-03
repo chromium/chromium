@@ -84,6 +84,14 @@ struct EventTriggerData {
   // Key which allows deduplication against existing attributions for the same
   // source.
   AttributionTriggerDedupKey? dedup_key;
+
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data matches.
+  AttributionFilterData filters;
+
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data does *NOT* match.
+  AttributionFilterData not_filters;
 };
 
 // Represents a request from a reporting origin to trigger attribution on a
@@ -97,6 +105,10 @@ struct AttributionTriggerData {
   // List of all event trigger data objects declared by the event trigger
   // header. This data is arbitrarily set by the reporting_origin.
   array<EventTriggerData> event_triggers;
+
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data matches.
+  AttributionFilterData filters;
 };
 
 // Browser-process interface responsible for processing attribution
