@@ -11,6 +11,7 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -96,7 +97,11 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       "registration_config": {
         "source_event_id": "789",
         "destination": "https://c.d.test",
-        "expiry": "864000001"
+        "expiry": "864000001",
+        "filter_data": {
+          "a": [],
+          "b": ["c", "d"]
+        }
       }
     }
   ]})json";
@@ -148,6 +153,10 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                   .SetExpiry(base::Days(10))  // rounded to whole number of days
                   .SetPriority(0)             // default
                   .SetDebugKey(absl::nullopt)  // default
+                  .SetFilterData(*AttributionFilterData::FromFilterValues({
+                      {"a", {}},
+                      {"b", {"c", "d"}},
+                  }))
                   .Build(),
               _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
@@ -403,6 +412,52 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
           "registration_config": {
             "source_event_id": "x",
             "destination": "https://a.d.test",
+          }
+        }]})json",
+    },
+    {
+        "sources[0]: filter_data must be a dictionary",
+        R"json({"sources": [{
+          "source_type": "navigation",
+          "source_time": 1643235574,
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test",
+          "registration_config": {
+            "source_event_id": "123",
+            "destination": "https://a.d.test",
+            "filter_data": ""
+          }
+        }]})json",
+    },
+    {
+        "sources[0]: filter_data[\"a\"] must be a list",
+        R"json({"sources": [{
+          "source_type": "navigation",
+          "source_time": 1643235574,
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test",
+          "registration_config": {
+            "source_event_id": "123",
+            "destination": "https://a.d.test",
+            "filter_data": {
+              "a": "x"
+            }
+          }
+        }]})json",
+    },
+    {
+        "sources[0]: filter_data[\"a\"][0] must be a string",
+        R"json({"sources": [{
+          "source_type": "navigation",
+          "source_time": 1643235574,
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test",
+          "registration_config": {
+            "source_event_id": "123",
+            "destination": "https://a.d.test",
+            "filter_data": {
+              "a": [5]
+            }
           }
         }]})json",
     },

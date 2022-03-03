@@ -125,20 +125,20 @@ class AttributionSimulatorInputParser {
     absl::optional<uint64_t> debug_key = ParseOptionalUint64(*cfg, "debug_key");
     int64_t priority = ParseOptionalInt64(*cfg, "priority").value_or(0);
     base::TimeDelta expiry = ParseSourceExpiry(*cfg).value_or(base::Days(30));
+    AttributionFilterData filter_data = ParseFilterData(*cfg, "filter_data");
 
     // TODO(linnan): Support aggregatable reports in the simulator.
 
     if (has_error_)
       return;
 
-    // TODO(apaseltiner): Parse filter data from `cfg`.
     events_.emplace_back(
         StorableSource(CommonSourceInfo(
             source_event_id, std::move(source_origin),
             std::move(destination_origin), std::move(reporting_origin),
             source_time,
             CommonSourceInfo::GetExpiryTime(expiry, source_time, *source_type),
-            *source_type, priority, AttributionFilterData(), debug_key,
+            *source_type, priority, std::move(filter_data), debug_key,
             AttributionAggregatableSources())),
         std::move(source));
   }
@@ -278,6 +278,49 @@ class AttributionSimulatorInputParser {
       Error() << kKey << " must be a dictionary" << std::endl;
 
     return cfg;
+  }
+
+  AttributionFilterData ParseFilterData(const base::Value& dict,
+                                        base::StringPiece key) {
+    const base::Value* value = dict.FindKey(key);
+    if (!value)
+      return AttributionFilterData();
+
+    if (!value->is_dict()) {
+      Error() << key << " must be a dictionary";
+      return AttributionFilterData();
+    }
+
+    AttributionFilterData::FilterValues::container_type container;
+    for (auto [filter, values_list] : value->DictItems()) {
+      if (!values_list.is_list()) {
+        Error() << key << "[\"" << filter << "\"] must be a list" << std::endl;
+        continue;
+      }
+
+      size_t index = 0;
+      std::vector<std::string> values;
+      for (const auto& value : values_list.GetList()) {
+        if (!value.is_string()) {
+          Error() << key << "[\"" << filter << "\"][" << index
+                  << "] must be a string" << std::endl;
+        } else {
+          values.emplace_back(value.GetString());
+        }
+
+        index++;
+      }
+
+      container.emplace_back(filter, std::move(values));
+    }
+
+    absl::optional<AttributionFilterData> filter_data =
+        AttributionFilterData::FromFilterValues(std::move(container));
+    // TODO(apaseltiner): Provide more detailed information.
+    if (!filter_data)
+      Error() << key << " is too big" << std::endl;
+
+    return std::move(filter_data).value_or(AttributionFilterData());
   }
 
   absl::optional<base::TimeDelta> ParseSourceExpiry(const base::Value& dict) {
