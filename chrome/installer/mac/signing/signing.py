@@ -83,7 +83,7 @@ def sign_part(paths, config, part):
     if reqs:
         command.extend(['--requirements', '=' + reqs])
     if part.options:
-        command.extend(['--options', ','.join(part.options)])
+        command.extend(['--options', part.options.to_comma_delimited_string()])
     if part.entitlements:
         command.extend(
             ['--entitlements',
@@ -100,7 +100,8 @@ def verify_part(paths, part):
         part: The |model.CodeSignedProduct| to verify. The product's |path|
             must be in |paths.work|.
     """
-    verify_options = list(part.verify_options) if part.verify_options else []
+    verify_options = part.verify_options.to_list(
+    ) if part.verify_options else []
     part_path = os.path.join(paths.work, part.path)
     commands.run_command([
         'codesign', '--display', '--verbose=5', '--requirements', '-', part_path

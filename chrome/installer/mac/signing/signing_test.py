@@ -161,13 +161,13 @@ class TestSignPart(unittest.TestCase):
         part = model.CodeSignedProduct(
             'Test.app',
             'test.signing.app',
-            options=model.CodeSignOptions.RESTRICT +
-            model.CodeSignOptions.LIBRARY_VALIDATION)
+            options=model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.LIBRARY_VALIDATION)
         signing.sign_part(self.paths, self.config, part)
         run_command.assert_called_once_with([
             'codesign', '--sign', '[IDENTITY]', '--timestamp', '--requirements',
             '=designated => identifier "test.signing.app"', '--options',
-            'restrict,library', '/$W/Test.app'
+            'library,restrict', '/$W/Test.app'
         ])
 
     def test_sign_part_with_entitlements(self, run_command,
@@ -199,8 +199,8 @@ class TestSignPart(unittest.TestCase):
         part = model.CodeSignedProduct(
             'Test.app',
             'test.signing.app',
-            verify_options=model.VerifyOptions.DEEP +
-            model.VerifyOptions.IGNORE_RESOURCES)
+            verify_options=model.VerifyOptions.DEEP
+            | model.VerifyOptions.IGNORE_RESOURCES)
         signing.verify_part(self.paths, part)
         self.assertEqual(run_command.mock_calls, [
             mock.call([

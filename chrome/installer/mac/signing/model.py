@@ -6,7 +6,7 @@
 This module contains classes that encapsulate data about the signing process.
 """
 
-from enum import Enum
+import enum
 import os.path
 import re
 import string
@@ -60,8 +60,7 @@ class CodeSignedProduct(object):
             identifier: The unique identifier set when code signing. This is
                 only explicitly passed with the `--identifier` flag if
                 |sign_with_identifier| is True.
-            options: Options flags to pass to `codesign --options`, from
-                |CodeSignOptions|.
+            options: |CodeSignOptions| flags to pass to `codesign --options`.
             requirements: String for additional `--requirements` to pass to the
                 `codesign` command. These are joined with a space to the
                 |config.CodeSignConfig.codesign_requirements_basic| string. See
@@ -75,20 +74,20 @@ class CodeSignedProduct(object):
                 infer the identifier itself.
             entitlements: File name of the entitlements file to sign the product
                 with. The file should reside in the |Paths.packaging_dir|.
-            verify_options: Flags to pass to `codesign --verify`, from
-                |VerifyOptions|.
+            verify_options: |VerifyOptions| flags to pass to `codesign
+                --verify`.
         """
         self.path = path
         self.identifier = identifier
-        if not CodeSignOptions.valid(options):
-            raise ValueError('Invalid CodeSignOptions: {}'.format(options))
+        if options and not isinstance(options, CodeSignOptions):
+            raise ValueError('Must be a CodeSignOptions')
         self.options = options
         self.requirements = requirements
         self.identifier_requirement = identifier_requirement
         self.sign_with_identifier = sign_with_identifier
         self.entitlements = entitlements
-        if not VerifyOptions.valid(verify_options):
-            raise ValueError('Invalid VerifyOptions: {}'.format(verify_options))
+        if verify_options and not isinstance(verify_options, VerifyOptions):
+            raise ValueError('Must be a VerifyOptions')
         self.verify_options = verify_options
 
     def requirements_string(self, config):
@@ -124,75 +123,65 @@ class CodeSignedProduct(object):
                 'options={0.options}, path={0.path})'.format(self)
 
 
-def make_enum(class_name, options):
-    """Makes a new class type for an enum.
+class VerifyOptions(enum.Flag):
+    """Enum for the options that can be specified when validating the results of
+    code signing.
 
-    Args:
-        class_name: Name of the new type to make.
-        options: A dictionary of enum options to use. The keys will become
-            attributes on the class, and the values will be wrapped in a tuple
-            so that the options can be joined together.
-
-    Returns:
-        A new class for the enum.
+    These options are passed to `codesign --verify` after the
+    |CodeSignedProduct| has been signed.
     """
-    attrs = {}
+    DEEP = enum.auto()
+    STRICT = enum.auto()
+    NO_STRICT = enum.auto()
+    IGNORE_RESOURCES = enum.auto()
 
-    @classmethod
-    def valid(cls, opts_to_check):
-        """Tests if the specified |opts_to_check| are valid.
+    def to_list(self):
+        result = []
+        values = {
+            self.DEEP: '--deep',
+            self.STRICT: '--strict',
+            self.NO_STRICT: '--no-strict',
+            self.IGNORE_RESOURCES: '--ignore-resources',
+        }
 
-        Args:
-            options: Iterable of option strings.
+        for key, value in values.items():
+            if key & self:
+                result.append(value)
 
-        Returns:
-            True if all the options are valid, False if otherwise.
-        """
-        if opts_to_check is None:
-            return True
-        valid_values = options.values()
-        return all([option in valid_values for option in opts_to_check])
-
-    attrs['valid'] = valid
-
-    for name, value in options.items():
-        assert type(name) is str
-        assert type(value) is str
-        attrs[name] = (value,)
-
-    return type(class_name, (object,), attrs)
+        return sorted(result)
 
 
-"""Enum for the options that can be specified when validating the results of
-code signing.
+class CodeSignOptions(enum.Flag):
+    """Enum for the options that can be specified when signing the code.
 
-These options are passed to `codesign --verify` after the
-|CodeSignedProduct| has been signed.
-"""
-VerifyOptions = make_enum(
-    'signing.model.VerifyOptions', {
-        'DEEP': '--deep',
-        'STRICT': '--strict',
-        'NO_STRICT': '--no-strict',
-        'IGNORE_RESOURCES': '--ignore-resources',
-    })
+    These options are passed to `codesign --sign --options`.
+    """
+    RESTRICT = enum.auto()
+    LIBRARY_VALIDATION = enum.auto()
+    HARDENED_RUNTIME = enum.auto()
+    KILL = enum.auto()
+    # Specify the components of HARDENED_RUNTIME that are also available on
+    # older macOS versions.
+    FULL_HARDENED_RUNTIME_OPTIONS = (
+        RESTRICT | LIBRARY_VALIDATION | HARDENED_RUNTIME | KILL)
 
-CodeSignOptions = make_enum(
-    'signing.model.CodeSignOptions', {
-        'RESTRICT': 'restrict',
-        'LIBRARY_VALIDATION': 'library',
-        'HARDENED_RUNTIME': 'runtime',
-        'KILL': 'kill',
-    })
+    def to_comma_delimited_string(self):
+        result = []
+        values = {
+            self.RESTRICT: 'restrict',
+            self.LIBRARY_VALIDATION: 'library',
+            self.HARDENED_RUNTIME: 'runtime',
+            self.KILL: 'kill',
+        }
 
-# Specify the components of HARDENED_RUNTIME that are also available on
-# older macOS versions.
-CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS = (
-    CodeSignOptions.HARDENED_RUNTIME + CodeSignOptions.RESTRICT +
-    CodeSignOptions.LIBRARY_VALIDATION + CodeSignOptions.KILL)
+        for key, value in values.items():
+            if key & self:
+                result.append(value)
+
+        return ','.join(sorted(result))
 
 
-class NotarizeAndStapleLevel(Enum):
+class NotarizeAndStapleLevel(enum.Enum):
     """An enum specifying the level of notarization and stapling to do.
 
     `NONE` means no notarization tasks should be performed.

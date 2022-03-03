@@ -63,47 +63,46 @@ class TestGetParts(unittest.TestCase):
     def test_part_options(self):
         all_parts = parts.get_parts(test_config.TestConfig())
         self.assertEqual(
-            set(model.CodeSignOptions.RESTRICT +
-                model.CodeSignOptions.LIBRARY_VALIDATION +
-                model.CodeSignOptions.KILL +
-                model.CodeSignOptions.HARDENED_RUNTIME),
-            set(all_parts['app'].options))
+            model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.LIBRARY_VALIDATION
+            | model.CodeSignOptions.KILL
+            | model.CodeSignOptions.HARDENED_RUNTIME, all_parts['app'].options)
         self.assertEqual(
-            set(model.CodeSignOptions.RESTRICT +
-                model.CodeSignOptions.LIBRARY_VALIDATION +
-                model.CodeSignOptions.KILL +
-                model.CodeSignOptions.HARDENED_RUNTIME),
-            set(all_parts['helper-app'].options))
+            model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.LIBRARY_VALIDATION
+            | model.CodeSignOptions.KILL
+            | model.CodeSignOptions.HARDENED_RUNTIME,
+            all_parts['helper-app'].options)
         self.assertEqual(
-            set(model.CodeSignOptions.RESTRICT + model.CodeSignOptions.KILL +
-                model.CodeSignOptions.HARDENED_RUNTIME),
-            set(all_parts['helper-renderer-app'].options))
+            model.CodeSignOptions.RESTRICT | model.CodeSignOptions.KILL
+            | model.CodeSignOptions.HARDENED_RUNTIME,
+            all_parts['helper-renderer-app'].options)
         self.assertEqual(
-            set(model.CodeSignOptions.RESTRICT + model.CodeSignOptions.KILL +
-                model.CodeSignOptions.HARDENED_RUNTIME),
-            set(all_parts['helper-gpu-app'].options))
+            model.CodeSignOptions.RESTRICT | model.CodeSignOptions.KILL
+            | model.CodeSignOptions.HARDENED_RUNTIME,
+            all_parts['helper-gpu-app'].options)
         self.assertEqual(
-            set(model.CodeSignOptions.RESTRICT + model.CodeSignOptions.KILL +
-                model.CodeSignOptions.HARDENED_RUNTIME),
-            set(all_parts['helper-plugin-app'].options))
+            model.CodeSignOptions.RESTRICT | model.CodeSignOptions.KILL
+            | model.CodeSignOptions.HARDENED_RUNTIME,
+            all_parts['helper-plugin-app'].options)
         self.assertEqual(
-            set(model.CodeSignOptions.RESTRICT +
-                model.CodeSignOptions.LIBRARY_VALIDATION +
-                model.CodeSignOptions.KILL +
-                model.CodeSignOptions.HARDENED_RUNTIME),
-            set(all_parts['crashpad'].options))
+            model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.LIBRARY_VALIDATION
+            | model.CodeSignOptions.KILL
+            | model.CodeSignOptions.HARDENED_RUNTIME,
+            all_parts['crashpad'].options)
         self.assertEqual(
-            set(model.CodeSignOptions.RESTRICT +
-                model.CodeSignOptions.LIBRARY_VALIDATION +
-                model.CodeSignOptions.KILL +
-                model.CodeSignOptions.HARDENED_RUNTIME),
-            set(all_parts['helper-alerts'].options))
+            model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.LIBRARY_VALIDATION
+            | model.CodeSignOptions.KILL
+            | model.CodeSignOptions.HARDENED_RUNTIME,
+            all_parts['helper-alerts'].options)
         self.assertEqual(
-            set(model.CodeSignOptions.RESTRICT +
-                model.CodeSignOptions.LIBRARY_VALIDATION +
-                model.CodeSignOptions.KILL +
-                model.CodeSignOptions.HARDENED_RUNTIME),
-            set(all_parts['app-mode-app'].options))
+            model.CodeSignOptions.RESTRICT
+            | model.CodeSignOptions.LIBRARY_VALIDATION
+            | model.CodeSignOptions.KILL
+            | model.CodeSignOptions.HARDENED_RUNTIME,
+            all_parts['app-mode-app'].options)
 
 
 def _get_plist_read(other_version):

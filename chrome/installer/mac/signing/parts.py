@@ -33,7 +33,7 @@ def get_parts(config):
     else:
         uncustomized_bundle_id = config.base_bundle_id
 
-    verify_options = VerifyOptions.DEEP + VerifyOptions.STRICT
+    verify_options = VerifyOptions.DEEP | VerifyOptions.STRICT
 
     parts = {
         'app':
@@ -73,8 +73,8 @@ def get_parts(config):
                 # Do not use |CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS|
                 # because library validation is incompatible with the JIT
                 # entitlement.
-                options=CodeSignOptions.RESTRICT + CodeSignOptions.KILL +
-                CodeSignOptions.HARDENED_RUNTIME,
+                options=CodeSignOptions.RESTRICT | CodeSignOptions.KILL
+                | CodeSignOptions.HARDENED_RUNTIME,
                 entitlements='helper-renderer-entitlements.plist',
                 verify_options=verify_options),
         'helper-gpu-app':
@@ -85,8 +85,8 @@ def get_parts(config):
                 # Do not use |CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS|
                 # because library validation is incompatible with more
                 # permissive code signing entitlements.
-                options=CodeSignOptions.RESTRICT + CodeSignOptions.KILL +
-                CodeSignOptions.HARDENED_RUNTIME,
+                options=CodeSignOptions.RESTRICT | CodeSignOptions.KILL
+                | CodeSignOptions.HARDENED_RUNTIME,
                 entitlements='helper-gpu-entitlements.plist',
                 verify_options=verify_options),
         'helper-plugin-app':
@@ -97,8 +97,8 @@ def get_parts(config):
                 # Do not use |CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS|
                 # because library validation is incompatible with the
                 # disable-library-validation entitlement.
-                options=CodeSignOptions.RESTRICT + CodeSignOptions.KILL +
-                CodeSignOptions.HARDENED_RUNTIME,
+                options=CodeSignOptions.RESTRICT | CodeSignOptions.KILL
+                | CodeSignOptions.HARDENED_RUNTIME,
                 entitlements='helper-plugin-entitlements.plist',
                 verify_options=verify_options),
         'helper-alerts':
@@ -158,13 +158,13 @@ def get_installer_tools(config):
     )
     for binary in binaries:
         options = (
-            CodeSignOptions.HARDENED_RUNTIME + CodeSignOptions.RESTRICT +
-            CodeSignOptions.LIBRARY_VALIDATION + CodeSignOptions.KILL)
+            CodeSignOptions.HARDENED_RUNTIME | CodeSignOptions.RESTRICT
+            | CodeSignOptions.LIBRARY_VALIDATION | CodeSignOptions.KILL)
         tools[binary] = CodeSignedProduct(
             '{.packaging_dir}/{binary}'.format(config, binary=binary),
             binary.replace('.dylib', ''),
             options=options if not binary.endswith('dylib') else None,
-            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT)
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT)
 
     return tools
 
