@@ -86,8 +86,6 @@ public class CastWebContentsActivity extends Activity {
     private final Controller<Unit> mIsTestingState = new Controller<>();
     // Set at creation. Handles destroying SurfaceHelper.
     private final Controller<CastWebContentsSurfaceHelper> mSurfaceHelperState = new Controller<>();
-    // Detects if the Activity is being destroyed & finished
-    private final Controller<Intent> mDestroyedForFinishingState = new Controller<>();
 
     @Nullable
     private CastWebContentsSurfaceHelper mSurfaceHelper;
@@ -176,16 +174,6 @@ public class CastWebContentsActivity extends Activity {
             intent.setFlags(flags);
             startActivity(intent);
         }));
-
-        // If the Activity is being destroyed and finished, but the mIsFinishingState is not set,
-        // then we should call onComponentClosed to end the Cast session. An example of this
-        // happening is when the back button is pressed.
-        Observable.not(mIsFinishingState)
-                .andThen(mDestroyedForFinishingState)
-                .map(Both::getSecond)
-                .map(Intent::getExtras)
-                .map(CastWebContentsIntentUtils::getSessionId)
-                .subscribe(Observers.onEnter(CastWebContentsComponent::onComponentClosed));
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -232,9 +220,6 @@ public class CastWebContentsActivity extends Activity {
         if (DEBUG) Log.d(TAG, "onDestroy");
 
         mCreatedState.reset();
-        if (isFinishing()) {
-            mDestroyedForFinishingState.set(getIntent());
-        }
         super.onDestroy();
     }
 
