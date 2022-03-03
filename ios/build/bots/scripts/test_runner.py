@@ -594,9 +594,7 @@ class TestRunner(object):
           retry_out_dir = os.path.join(
               self.out_dir, 'retry_after_crash_%d' % int(time.time()))
           result = self._run(
-              self.get_launch_command(
-                  test_app, os.path.join(retry_out_dir, str(int(time.time()))),
-                  destination))
+              self.get_launch_command(test_app, retry_out_dir, destination))
           result.report_to_result_sink()
           # Only keep the last crash status in crash retries in overall crash
           # status.
@@ -619,8 +617,8 @@ class TestRunner(object):
           for test in tests_to_retry:
             LOGGER.info('Retry #%s for %s.\n', i + 1, test)
             test_app.included_tests = [test]
-            retry_out_dir = os.path.join(self.out_dir, test + '_failed',
-                                         'retry_%d' % i)
+            test_retry_sub_dir = '%s_retry_%d' % (test.replace('/', '_'), i)
+            retry_out_dir = os.path.join(self.out_dir, test_retry_sub_dir)
             retry_result = self._run(
                 self.get_launch_command(test_app, retry_out_dir, destination))
 
