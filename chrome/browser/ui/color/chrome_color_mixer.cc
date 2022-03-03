@@ -84,8 +84,9 @@ ui::ColorTransform IncreaseLightness(ui::ColorTransform input_transform,
     const SkColor result_color =
         color_utils::HSLToSkColor(result, SkColorGetA(color));
     DVLOG(2) << "ColorTransform IncreaseLightness:"
-             << " Input: " << ui::SkColorName(color)
-             << " Result: " << ui::SkColorName(result_color);
+             << " Percent: " << percent
+             << " Transform Color: " << ui::SkColorName(color)
+             << " Result Color: " << ui::SkColorName(result_color);
     return result_color;
   };
   return base::BindRepeating(generator, std::move(input_transform), percent);
