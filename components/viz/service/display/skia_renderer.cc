@@ -2064,6 +2064,15 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   if (needs_color_conversion_filter)
     override_color_space = CurrentRenderPassColorSpace();
 
+  // TODO(b/221643955): Some Chrome OS tests rely on the old GLRenderer
+  // behavior of skipping color space conversions if the quad's color space is
+  // invalid. Once these tests are migrated, we can remove the override here
+  // and revert to Skia's default behavior of assuming sRGB on invalid.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!src_color_space.IsValid())
+    override_color_space = CurrentRenderPassColorSpace();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   ScopedSkImageBuilder builder(
       this, quad->resource_id(), /*maybe_concurrent_reads=*/true,
       quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
