@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Fetching modulepreload should not block the window's load event assert_equals: resources/dummy.js?pipe=trickle(d5) expected 0 but got 1
+Harness: the test ran to completion.
+

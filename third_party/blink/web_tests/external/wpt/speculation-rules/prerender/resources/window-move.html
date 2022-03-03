@@ -15,7 +15,7 @@ function tryRun(func) {
   try {
     func();
   } catch (e) {
-    const testChannel = new BroadcastChannel('test-channel');
+    const testChannel = new PrerenderChannel('test-channel');
     testChannel.postMessage({status: 'FAIL: ' + e});
   }
 }
@@ -50,7 +50,7 @@ if (!isPrerendering) {
       }
   );
 
-  const bc = new BroadcastChannel('test-channel');
+  const bc = new PrerenderChannel('test-channel');
   bc.postMessage({
     'status': 'PASS',
     'prevPosition': prevPosition,

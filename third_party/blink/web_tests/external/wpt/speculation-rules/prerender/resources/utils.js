@@ -22,6 +22,41 @@ function startPrerendering(url) {
   document.head.appendChild(script);
 }
 
+class PrerenderChannel extends EventTarget {
+  #ids = new Set();
+  #url;
+  #active = true;
+
+  constructor(name, uid = new URLSearchParams(location.search).get('uid')) {
+    super();
+    this.#url = `/speculation-rules/prerender/resources/deprecated-broadcast-channel.py?name=${name}&uid=${uid}`;
+    (async() => {
+      while (this.#active) {
+        const messages = await (await fetch(this.#url)).json();
+        for (const {data, id} of messages) {
+          if (!this.#ids.has(id))
+            this.dispatchEvent(new MessageEvent('message', {data}));
+          this.#ids.add(id);
+        }
+      }
+    })();
+  }
+
+  close() {
+    this.#active = false;
+  }
+
+  set onmessage(m) {
+    this.addEventListener('message', m)
+  }
+
+  async postMessage(data) {
+    const id = new Date().valueOf();
+    this.#ids.add(id);
+    await fetch(this.#url, {method: 'POST', body: JSON.stringify({data, id})});
+  }
+}
+
 // Reads the value specified by `key` from the key-value store on the server.
 async function readValueFromServer(key) {
   const serverUrl = `${STORE_URL}?key=${key}`;
@@ -63,7 +98,7 @@ async function writeValueToServer(key, value) {
 // receives the 'readyToActivate' message.
 function loadInitiatorPage() {
   // Used to communicate with the prerendering page.
-  const prerenderChannel = new BroadcastChannel('prerender-channel');
+  const prerenderChannel = new PrerenderChannel('prerender-channel');
   window.addEventListener('unload', () => {
     prerenderChannel.close();
   });
@@ -90,7 +125,7 @@ function loadInitiatorPage() {
   readyToActivate.then(() => {
     window.location = url.toString();
   }).catch(e => {
-    const testChannel = new BroadcastChannel('test-channel');
+    const testChannel = new PrerenderChannel('test-channel');
     testChannel.postMessage(
         `Failed to navigate the prerendered page: ${e.toString()}`);
     testChannel.close();
@@ -98,21 +133,21 @@ function loadInitiatorPage() {
   });
 }
 
-// Returns messages received from the given BroadcastChannel
+// Returns messages received from the given PrerenderChannel
 // so that callers do not need to add their own event listeners.
 // nextMessage() returns a promise which resolves with the next message.
 //
 // Usage:
-//   const channel = new BroadcastChannel('channel-name');
+//   const channel = new PrerenderChannel('channel-name');
 //   const messageQueue = new BroadcastMessageQueue(channel);
 //   const message1 = await messageQueue.nextMessage();
 //   const message2 = await messageQueue.nextMessage();
 //   message1 and message2 are the messages received.
 class BroadcastMessageQueue {
-  constructor(broadcastChannel) {
+  constructor(c) {
     this.messages = [];
     this.resolveFunctions = [];
-    this.channel = broadcastChannel;
+    this.channel = c;
     this.channel.addEventListener('message', e => {
       if (this.resolveFunctions.length > 0) {
         const fn = this.resolveFunctions.shift();

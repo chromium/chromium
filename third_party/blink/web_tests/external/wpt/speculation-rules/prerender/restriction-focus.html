@@ -13,8 +13,6 @@
 setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
-  const bc = new BroadcastChannel('prerender-channel');
-
   document.getElementById('prerenderTextField').focus();
   assert_true(
       document.hasFocus(),
