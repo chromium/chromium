@@ -638,7 +638,8 @@ TEST_F('CrSettingsSiteDataDetailsSubpageTest', 'All', function() {
  ['SiteSettingsPage', 'site_settings_page_test.js'],
  ['Slider', 'settings_slider_tests.js'],
  ['StartupUrlsPage', 'startup_urls_page_test.js'],
- ['Subpage', 'settings_subpage_test.js'],
+ // Flaky on all OSes. TODO(crbug.com/1302405): Enable the test.
+ ['Subpage', 'settings_subpage_test.js', 'DISABLED_All'],
  ['SyncAccountControl', 'sync_account_control_test.js'],
  ['Textarea', 'settings_textarea_tests.js'],
  ['ToggleButton', 'settings_toggle_button_tests.js'],
