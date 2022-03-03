@@ -28,7 +28,10 @@ CONTENT_EXPORT extern const base::Feature kAudioProcessHighPriorityWin;
 CONTENT_EXPORT extern const base::Feature kAudioServiceLaunchOnStartup;
 CONTENT_EXPORT extern const base::Feature kAudioServiceOutOfProcess;
 CONTENT_EXPORT extern const base::Feature kAudioServiceSandbox;
-CONTENT_EXPORT extern const base::Feature kAvoidUnnecessaryBeforeUnloadCheck;
+CONTENT_EXPORT extern const base::Feature
+    kAvoidUnnecessaryBeforeUnloadCheckPostTask;
+CONTENT_EXPORT extern const base::Feature
+    kAvoidUnnecessaryBeforeUnloadCheckSync;
 CONTENT_EXPORT extern const base::Feature kBackgroundFetch;
 CONTENT_EXPORT extern const base::Feature kBackForwardCache;
 CONTENT_EXPORT extern const base::Feature kBackForwardCacheSameSiteForBots;

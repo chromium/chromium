@@ -441,7 +441,7 @@ class FakeLocalFrameWithBeforeUnload : public content::FakeLocalFrame {
 TEST_F(RenderFrameHostImplTest, BeforeUnloadNotSentToRenderer) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kAvoidUnnecessaryBeforeUnloadCheck);
+      features::kAvoidUnnecessaryBeforeUnloadCheckPostTask);
   FakeLocalFrameWithBeforeUnload local_frame(contents()->GetMainFrame());
   auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL("https://example.com/simple.html"), contents());
@@ -466,7 +466,7 @@ TEST_F(RenderFrameHostImplTest, BeforeUnloadNotSentToRenderer) {
 TEST_F(RenderFrameHostImplTest, BeforeUnloadSentToRenderer) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      features::kAvoidUnnecessaryBeforeUnloadCheck);
+      features::kAvoidUnnecessaryBeforeUnloadCheckPostTask);
   FakeLocalFrameWithBeforeUnload local_frame(contents()->GetMainFrame());
   auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL("https://example.com/simple.html"), contents());
@@ -689,6 +689,28 @@ TEST_F(RenderFrameHostImplTest,
   EXPECT_EQ(expected_storage_key_no_permissions,
             child_frame->CalculateStorageKey(
                 url::Origin::Create(no_host_permissions_url), nullptr));
+}
+
+TEST_F(RenderFrameHostImplTest, NoBeforeUnloadCheckForBrowserInitiated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAvoidUnnecessaryBeforeUnloadCheckSync);
+  contents()->GetController().LoadURLWithParams(
+      NavigationController::LoadURLParams(
+          GURL("https://example.com/navigation.html")));
+  EXPECT_FALSE(
+      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+}
+
+TEST_F(RenderFrameHostImplTest, BeforeUnloadCheckForBrowserInitiated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAvoidUnnecessaryBeforeUnloadCheckSync);
+  contents()->GetController().LoadURLWithParams(
+      NavigationController::LoadURLParams(
+          GURL("https://example.com/navigation.html")));
+  EXPECT_TRUE(
+      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
 }
 
 class RenderFrameHostImplThirdPartyStorageTest

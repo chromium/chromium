@@ -53,6 +53,7 @@ KNOWN_MISTAKES = {
     'CompositeBgColorAnimation': 'CompositeBGColorAnimation',
     'RtcDisallowPlanBOutsideDeprecationTrial': 'RTCDisallowPlanBOutsideDeprecationTrial',  # pylint: disable=line-too-long
     'enable-http2-grease-settings': 'http2-grease-settings',
+    'AvoidUnnecessaryBeforeUnloadCheckPostTask': 'AvoidUnnecessaryBeforeUnloadCheck',  # pylint: disable=line-too-long
 }
 
 

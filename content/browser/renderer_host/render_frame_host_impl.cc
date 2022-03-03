@@ -1000,6 +1000,19 @@ GURL GetLastDocumentURL(
   return params.url;
 }
 
+bool IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kAvoidUnnecessaryBeforeUnloadCheckPostTask);
+}
+
+bool IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled() {
+  // Only one of sync or posttask should be used. If both are set, use posttask
+  // as the sync variant is not safe for android webview.
+  return base::FeatureList::IsEnabled(
+             features::kAvoidUnnecessaryBeforeUnloadCheckSync) &&
+         !IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled();
+}
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -7669,9 +7682,13 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
 
     // Only run beforeunload in frames that have registered a beforeunload
     // handler. See description of SendBeforeUnload() for details on simulating
-    // beforeunload for legacy reasons.
+    // beforeunload for legacy reasons. If
+    // `kAvoidUnnecessaryBeforeUnloadCheckSync` is true and there is no
+    // beforeunload handler for the navigating frame, then do not simulate a
+    // beforeunload handler, and navigation can continue.
     const bool run_beforeunload_for_legacy_frame =
-        rfh == this && !rfh->has_before_unload_handler_;
+        rfh == this && !rfh->has_before_unload_handler_ &&
+        !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled();
     const bool should_run_beforeunload =
         rfh->has_before_unload_handler_ || run_beforeunload_for_legacy_frame;
 
@@ -7714,11 +7731,11 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
       continue;
 
     if (run_beforeunload_for_legacy_frame &&
-        base::FeatureList::IsEnabled(
-            features::kAvoidUnnecessaryBeforeUnloadCheck)) {
+        IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled()) {
       // Wait to schedule until all frames have been processed. The legacy
       // beforeunload is not needed if another frame has a beforeunload
-      // handler.
+      // handler. Note that for `kAvoidUnnecessaryBeforeUnloadCheckSync`
+      // `run_beforeunload_for_legacy_frame` is never true.
       run_beforeunload_for_legacy = true;
       continue;
     }

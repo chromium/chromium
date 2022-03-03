@@ -69,10 +69,25 @@ const base::Feature kAudioServiceSandbox {
 #endif
 };
 
-// When enabled, the browser process will only ask the renderer process to run
-// beforeunload handlers if it knows such handlers are registered.
-const base::Feature kAvoidUnnecessaryBeforeUnloadCheck{
+// The following two features, when enabled, result in the browser process only
+// asking the renderer process to run beforeunload handlers if it knows such
+// handlers are registered. The two slightly differ in what they do and how
+// they behave:
+// . `kAvoidUnnecessaryBeforeUnloadCheckPostTask` in this case content continues
+//   to report a beforeunload handler is present (even though it isn't). When
+//   asked to dispatch the beforeunload handler, a post task is used (rather
+//   than going to the renderer).
+// . `kAvoidUnnecessaryBeforeUnloadCheckSync` in this case content does not
+//   report a beforeunload handler is present. A ramification of this is
+//   navigations that would normally check beforeunload handlers before
+//   continuing will not, and navigation will synchronously continue.
+// Only one should be used (if both are set, the first takes precedence). The
+// second is unsafe for Android webview, as the embedder may trigger
+// reentrancy which can not be changed.
+const base::Feature kAvoidUnnecessaryBeforeUnloadCheckPostTask{
     "AvoidUnnecessaryBeforeUnloadCheck", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAvoidUnnecessaryBeforeUnloadCheckSync{
+    "AvoidUnnecessaryBeforeUnloadCheckSync", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Kill switch for Background Fetch.
 const base::Feature kBackgroundFetch{"BackgroundFetch",

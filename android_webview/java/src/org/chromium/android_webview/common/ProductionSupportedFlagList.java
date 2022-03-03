@@ -268,7 +268,7 @@ public final class ProductionSupportedFlagList {
                     "Whether WebView will send variations headers on URLs where applicable."),
             Flag.baseFeature(ContentFeatures.INCLUDE_IPC_OVERHEAD_IN_NAVIGATION_START,
                     "Whether navigation metrics include ipc overhead."),
-            Flag.baseFeature(ContentFeatures.AVOID_UNNECESSARY_BEFORE_UNLOAD_CHECK,
+            Flag.baseFeature(ContentFeatures.AVOID_UNNECESSARY_BEFORE_UNLOAD_CHECK_POST_TASK,
                     "Avoids an unnecessary renderer ipc during navigation for before-unload "
                             + "handlers."),
             Flag.baseFeature(AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER,
