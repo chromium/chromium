@@ -98,11 +98,11 @@ static bool IsCrLfOrTabChar(UChar c) {
 ManifestParser::ManifestParser(const String& data,
                                const KURL& manifest_url,
                                const KURL& document_url,
-                               const FeatureContext* feature_context)
+                               const ExecutionContext* execution_context)
     : data_(data),
       manifest_url_(manifest_url),
       document_url_(document_url),
-      feature_context_(feature_context),
+      execution_context_(execution_context),
       failed_(false) {}
 
 ManifestParser::~ManifestParser() {}
@@ -179,11 +179,11 @@ bool ManifestParser::Parse() {
 
   manifest_->launch_handler = ParseLaunchHandler(root_object.get());
 
-  if (RuntimeEnabledFeatures::WebAppTranslationsEnabled(feature_context_)) {
+  if (RuntimeEnabledFeatures::WebAppTranslationsEnabled(execution_context_)) {
     manifest_->translations = ParseTranslations(root_object.get());
   }
 
-  if (RuntimeEnabledFeatures::WebAppDarkModeEnabled(feature_context_)) {
+  if (RuntimeEnabledFeatures::WebAppDarkModeEnabled(execution_context_)) {
     manifest_->user_preferences = ParseUserPreferences(root_object.get());
   }
 
@@ -519,12 +519,12 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
         DisplayModeFromString(display_enum_string.Utf8());
 
     if (!RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
-            feature_context_) &&
+            execution_context_) &&
         display_enum == mojom::blink::DisplayMode::kWindowControlsOverlay) {
       display_enum = mojom::blink::DisplayMode::kUndefined;
     }
 
-    if (!RuntimeEnabledFeatures::WebAppTabStripEnabled(feature_context_) &&
+    if (!RuntimeEnabledFeatures::WebAppTabStripEnabled(execution_context_) &&
         display_enum == mojom::blink::DisplayMode::kTabbed) {
       display_enum = mojom::blink::DisplayMode::kUndefined;
     }
@@ -1041,7 +1041,7 @@ ManifestParser::ParseFileHandler(const JSONObject* file_handler) {
   entry->name = ParseString(file_handler, "name", Trim(true)).value_or("");
   const bool feature_enabled =
       base::FeatureList::IsEnabled(blink::features::kFileHandlingIcons) ||
-      RuntimeEnabledFeatures::FileHandlingIconsEnabled(feature_context_);
+      RuntimeEnabledFeatures::FileHandlingIconsEnabled(execution_context_);
   if (feature_enabled) {
     entry->icons = ParseIcons(file_handler);
   }
@@ -1244,7 +1244,7 @@ Vector<mojom::blink::ManifestUrlHandlerPtr> ManifestParser::ParseUrlHandlers(
   Vector<mojom::blink::ManifestUrlHandlerPtr> url_handlers;
   const bool feature_enabled =
       base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) ||
-      RuntimeEnabledFeatures::WebAppUrlHandlingEnabled(feature_context_);
+      RuntimeEnabledFeatures::WebAppUrlHandlingEnabled(execution_context_);
   if (!feature_enabled || !from->Get("url_handlers")) {
     return url_handlers;
   }
@@ -1282,7 +1282,7 @@ absl::optional<mojom::blink::ManifestUrlHandlerPtr>
 ManifestParser::ParseUrlHandler(const JSONObject* object) {
   DCHECK(
       base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) ||
-      RuntimeEnabledFeatures::WebAppUrlHandlingEnabled(feature_context_));
+      RuntimeEnabledFeatures::WebAppUrlHandlingEnabled(execution_context_));
   if (!object->Get("origin")) {
     AddErrorInfo(
         "url_handlers entry ignored, required property 'origin' is missing.");
@@ -1478,7 +1478,7 @@ String ManifestParser::ParseGCMSenderID(const JSONObject* object) {
 
 mojom::blink::CaptureLinks ManifestParser::ParseCaptureLinks(
     const JSONObject* object) {
-  if (!RuntimeEnabledFeatures::WebAppLinkCapturingEnabled(feature_context_))
+  if (!RuntimeEnabledFeatures::WebAppLinkCapturingEnabled(execution_context_))
     return mojom::blink::CaptureLinks::kUndefined;
 
   return ParseFirstValidEnum<mojom::blink::CaptureLinks>(
@@ -1579,7 +1579,7 @@ mojom::blink::ManifestLaunchHandlerPtr ManifestParser::ParseLaunchHandler(
   using NavigateExistingClient =
       mojom::blink::ManifestLaunchHandler::NavigateExistingClient;
 
-  if (!RuntimeEnabledFeatures::WebAppLaunchHandlerEnabled(feature_context_))
+  if (!RuntimeEnabledFeatures::WebAppLaunchHandlerEnabled(execution_context_))
     return nullptr;
 
   const JSONValue* launch_handler_value = object->Get("launch_handler");

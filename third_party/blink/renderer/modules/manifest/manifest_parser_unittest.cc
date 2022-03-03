@@ -35,7 +35,7 @@ class ManifestParserTest : public testing::Test {
                                                    const KURL& manifest_url,
                                                    const KURL& document_url) {
     ManifestParser parser(data, manifest_url, document_url,
-                          /*feature_context=*/nullptr);
+                          /*execution_context=*/nullptr);
     parser.Parse();
     Vector<mojom::blink::ManifestErrorPtr> errors;
     parser.TakeErrors(&errors);
@@ -71,7 +71,7 @@ TEST_F(ManifestParserTest, CrashTest) {
   // Passing temporary variables should not crash.
   const String json = R"({"start_url": "/"})";
   KURL url("http://example.com");
-  ManifestParser parser(json, url, url, /*feature_context=*/nullptr);
+  ManifestParser parser(json, url, url, /*execution_context=*/nullptr);
 
   bool has_comments = parser.Parse();
   EXPECT_FALSE(has_comments);
@@ -90,7 +90,7 @@ TEST_F(ManifestParserTest, HasComments) {
         "start_url": "/"
       })";
   KURL url("http://example.com");
-  ManifestParser parser(json, url, url, /*feature_context=*/nullptr);
+  ManifestParser parser(json, url, url, /*execution_context=*/nullptr);
 
   bool has_comments = parser.Parse();
   EXPECT_TRUE(has_comments);

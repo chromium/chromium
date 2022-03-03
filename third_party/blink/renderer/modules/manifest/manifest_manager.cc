@@ -178,9 +178,8 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
   // We are using the document as our FeatureContext for checking origin trials.
   // Note that any origin trials delivered in the manifest HTTP headers will be
   // ignored, only ones associated with the page will be used.
-  const FeatureContext* feature_context = GetExecutionContext();
   ManifestParser parser(data, response.CurrentRequestUrl(), document_url,
-                        feature_context);
+                        GetExecutionContext());
 
   // Monitoring whether the manifest has comments is temporary. Once
   // warning/deprecation period is over, we should remove this as it's
