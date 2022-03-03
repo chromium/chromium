@@ -885,7 +885,7 @@ class CC_PAINT_EXPORT DrawTextBlobOp final : public PaintOpWithFlags {
   HAS_SERIALIZATION_FUNCTIONS();
 
   sk_sp<SkTextBlob> blob;
-  sk_sp<GrSlug> slug;
+  std::vector<sk_sp<GrSlug>> slugs;
   SkScalar x;
   SkScalar y;
   // This field isn't serialized.

@@ -783,9 +783,12 @@ size_t DrawTextBlobOp::Serialize(const PaintOp* base_op,
   helper.AlignMemory(alignof(SkScalar));
   helper.Write(op->x);
   helper.Write(op->y);
-  helper.Write(options.raw_draw);
+  int count = options.raw_draw ? op->slugs.size() : -1;
+  helper.Write(count);
   if (options.raw_draw) {
-    helper.Write(op->slug);
+    for (const auto& slug : op->slugs) {
+      helper.Write(slug);
+    }
   } else {
     helper.Write(op->blob);
   }
@@ -1353,10 +1356,13 @@ PaintOp* DrawTextBlobOp::Deserialize(const volatile void* input,
   deserializer.AlignMemory(alignof(SkScalar));
   deserializer.Read(&deserializer->x);
   deserializer.Read(&deserializer->y);
-  bool raw_draw = false;
-  deserializer.Read(&raw_draw);
-  if (raw_draw) {
-    deserializer.Read(&deserializer->slug);
+  int count = -1;
+  deserializer.Read(&count);
+  if (count >= 0) {
+    deserializer->slugs.resize(count);
+    for (auto& slug : deserializer->slugs) {
+      deserializer.Read(&slug);
+    }
   } else {
     deserializer.Read(&deserializer->blob);
   }
@@ -1808,17 +1814,24 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
                                      const PlaybackParams& params) {
   if (op->node_id)
     SkPDF::SetNodeId(canvas, op->node_id);
-  flags->DrawToSk(canvas, [op, &params](SkCanvas* c, const SkPaint& p) {
+
+  bool analysis = params.raw_draw_analysis && op->slugs.empty();
+  size_t i = 0;
+  // flags may contain SkDrawLooper for shadow effect, so we need to convert
+  // SkTextBlob to slug for each run.
+  flags->DrawToSk(canvas, [op, analysis, &i](SkCanvas* c, const SkPaint& p) {
     if (op->blob) {
       c->drawTextBlob(op->blob.get(), op->x, op->y, p);
-      if (params.raw_draw_analysis) {
-        const_cast<DrawTextBlobOp*>(op)->slug =
-            GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
+      if (analysis) {
+        const_cast<DrawTextBlobOp*>(op)->slugs.push_back(
+            GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p));
       }
-    } else if (op->slug) {
-      op->slug->draw(c);
+    } else if (i < op->slugs.size() && op->slugs[i]) {
+      op->slugs[i]->draw(c);
+      ++i;
     }
   });
+
   if (op->node_id)
     SkPDF::SetNodeId(canvas, 0);
 }
