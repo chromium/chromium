@@ -40,13 +40,8 @@ if (optimize_webui) {
 
 generate_grd("build_grd") {
   input_files = [ "print_preview.html" ]
-  input_files_base_dir =
-      rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-  deps = [
-    ":preprocess_html",
-    "../pdf:build_print_preview_grdp",
-  ]
-
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ "../pdf:build_print_preview_grdp" ]
   grdp_files = [ "$root_gen_dir/chrome/browser/resources/pdf/print_preview_pdf_resources.grdp" ]
   if (optimize_webui) {
     deps += [ ":build" ]
@@ -62,12 +57,6 @@ generate_grd("build_grd") {
 
 html_to_js("web_components") {
   js_files = web_component_files
-}
-
-preprocess_if_expr("preprocess_html") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "print_preview.html" ]
 }
 
 preprocess_if_expr("preprocess") {
