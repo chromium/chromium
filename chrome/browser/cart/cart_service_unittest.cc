@@ -2116,3 +2116,121 @@ TEST_F(CartServiceModulesRedesignedTest, TestIgnoresHidden) {
   service_->Hide();
   ASSERT_FALSE(service_->IsHidden());
 }
+
+class CartServiceDiscountConsentV2Test : public CartServiceTest {
+ public:
+  // Features need to be initialized before CartServiceTest::SetUp runs, in
+  // order to avoid tsan data race error on FeatureList.
+  CartServiceDiscountConsentV2Test() {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features;
+    base::FieldTrialParams consent_v2_params, cart_params;
+    cart_params["NtpChromeCartModuleAbandonedCartDiscountParam"] = "true";
+    cart_params["partner-merchant-pattern"] = "(foo.com)";
+    enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
+                                  cart_params);
+    consent_v2_params["discount-consent-ntp-reshow-time"] = "1m";
+    consent_v2_params["discount-consent-ntp-max-dismiss-count"] = "2";
+    enabled_features.emplace_back(commerce::kDiscountConsentV2,
+                                  consent_v2_params);
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            /*disabled_features*/ {});
+  }
+
+  void SetUp() override {
+    CartServiceTest::SetUp();
+
+    // Add a partner merchant cart.
+    service_->AddCart(kMockMerchantA, absl::nullopt, kMockProtoA);
+    task_environment_.RunUntilIdle();
+    // Simulate that the welcome surface is not showing, the discount feature is
+    // disabled and there is no partner merchant carts.
+    profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                     CartService::kWelcomSurfaceShowLimit);
+  }
+
+  void TearDown() override {
+    profile_->GetPrefs()->SetInteger(prefs::kDiscountConsentPastDismissedCount,
+                                     0);
+    profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                     0);
+  }
+};
+
+// Tests discount consent doesn't show after dismiss count reach the max
+// allowance.
+TEST_F(CartServiceDiscountConsentV2Test, TestNoConsentAfterDimissAllowance) {
+  // Simulate that use has dismissed the consent once.
+  profile_->GetPrefs()->SetInteger(prefs::kDiscountConsentPastDismissedCount,
+                                   1);
+  {
+    base::RunLoop run_loop;
+
+    service_->ShouldShowDiscountConsent(
+        base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                       base::Unretained(this), run_loop.QuitClosure(), true));
+    run_loop.Run();
+  }
+
+  service_->DismissedDiscountConsent();
+  {
+    base::RunLoop run_loop;
+    service_->ShouldShowDiscountConsent(
+        base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                       base::Unretained(this), run_loop.QuitClosure(), false));
+    run_loop.Run();
+  }
+}
+
+// Tests discount consent doesn't show if reshow time threshold does not meet.
+TEST_F(CartServiceDiscountConsentV2Test,
+       TestNoConsentBeforeReshowTimeThreshold) {
+  {
+    base::RunLoop run_loop;
+    service_->ShouldShowDiscountConsent(
+        base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                       base::Unretained(this), run_loop.QuitClosure(), true));
+    run_loop.Run();
+  }
+
+  service_->DismissedDiscountConsent();
+  {
+    base::RunLoop run_loop;
+    service_->ShouldShowDiscountConsent(
+        base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                       base::Unretained(this), run_loop.QuitClosure(), false));
+    run_loop.Run();
+  }
+}
+
+// Tests discount consent reshow after the reshow time threshold.
+TEST_F(CartServiceDiscountConsentV2Test,
+       TestReshowConsentAfterReshowTimeThreshold) {
+  {
+    base::RunLoop run_loop;
+    service_->ShouldShowDiscountConsent(
+        base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                       base::Unretained(this), run_loop.QuitClosure(), true));
+    run_loop.Run();
+  }
+
+  service_->DismissedDiscountConsent();
+
+  {
+    base::RunLoop run_loop;
+    service_->ShouldShowDiscountConsent(
+        base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                       base::Unretained(this), run_loop.QuitClosure(), false));
+    run_loop.Run();
+  }
+
+  task_environment_.FastForwardBy(base::Minutes(2));
+
+  {
+    base::RunLoop run_loop;
+    service_->ShouldShowDiscountConsent(
+        base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                       base::Unretained(this), run_loop.QuitClosure(), true));
+    run_loop.Run();
+  }
+}

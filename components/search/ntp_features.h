@@ -124,6 +124,14 @@ enum class DiscountConsentNtpVariation {
 extern const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[];
 extern const base::FeatureParam<int>
     kNtpChromeCartModuleDiscountConsentNtpVariation;
+// The time interval, after the last dismissal, before reshowing the consent.
+extern const char kNtpChromeCartModuleDiscountConsentReshowTimeParam[];
+extern const base::FeatureParam<base::TimeDelta>
+    kNtpChromeCartModuleDiscountConsentReshowTime;
+// The max number of dismisses allowed.
+extern const char kNtpChromeCartModuleDiscountConsentMaxDismissalCountParam[];
+extern const base::FeatureParam<int>
+    kNtpChromeCartModuleDiscountConsentMaxDismissalCount;
 
 // String change variation params. This string is replacing the content string
 // of the v1 consent.

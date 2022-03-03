@@ -3326,6 +3326,14 @@ const char kCartDiscountLastFetchedTime[] = "cart_discount_last_fetched_time";
 // Boolean pref indicating whether the consent for discount has ever shown or
 // not.
 const char kCartDiscountConsentShown[] = "cart_discount_consent_shown";
+// A time pref indicating the timestamp of when user last explicitly dismissed
+// the discount consent.
+const char kDiscountConsentLastDimissedTime[] =
+    "discount_consent_last_dimissed_time";
+// An integer pref that keeps track of how many times user has explicitly
+// dismissed the disount consent.
+const char kDiscountConsentPastDismissedCount[] =
+    "discount_consent_dismissed_count";
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

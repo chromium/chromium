@@ -94,6 +94,8 @@ class CartService : public history::HistoryServiceObserver,
   // shouldEnable indicates whether user has chosen to opt-in or opt-out the
   // feature.
   void AcknowledgeDiscountConsent(bool should_enable);
+  // Gets called when user has dismissed the discount consent in cart module.
+  void DismissedDiscountConsent();
   // Decides whether to show the consent card in module for rule-based discount,
   // and returns it in the callback.
   void ShouldShowDiscountConsent(base::OnceCallback<void(bool)> callback);
