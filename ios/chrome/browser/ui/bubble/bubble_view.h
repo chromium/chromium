@@ -9,6 +9,8 @@
 
 // Accessibility identifier for the close button.
 extern NSString* const kBubbleViewCloseButtonIdentifier;
+// Accessibility identifier for the title label.
+extern NSString* const kBubbleViewTitleLabelIdentifier;
 
 // Direction for the bubble to point.
 typedef NS_ENUM(NSInteger, BubbleArrowDirection) {
@@ -57,6 +59,13 @@ typedef NS_ENUM(NSInteger, BubbleAlignment) {
 // Controls if there is a close button in the view. Must be set before the view
 // is added to a superview.
 @property(nonatomic) BOOL showsCloseButton;
+
+// The headline of the bubble. If set, makes the body's font smaller. Must be
+// set before the view is added to a superview.
+@property(nonatomic, copy) NSString* titleString;
+
+// Text alignment used in this View. Default is NSTextAlignmentCenter.
+@property(nonatomic) NSTextAlignment textAlignment;
 
 // The delegate for interactions in this View.
 @property(nonatomic, weak) id<BubbleViewDelegate> delegate;

@@ -22,6 +22,9 @@
 // Accessibility identifier for the close button.
 NSString* const kBubbleViewCloseButtonIdentifier =
     @"BubbleViewCloseButtonIdentifier";
+// Accessibility identifier for the title label.
+NSString* const kBubbleViewTitleLabelIdentifier =
+    @"BubbleViewTitleLabelIdentifier";
 
 namespace {
 // The color of the bubble (both circular background and arrow).
@@ -40,11 +43,11 @@ const CGFloat kMaxLabelWidth = 359.0f;
 // all sides of the bubble.
 const CGFloat kBubbleMargin = 4.0f;
 // Padding between the top and bottom the bubble's background and the top and
-// bottom of the label.
-const CGFloat kLabelVerticalPadding = 15.0f;
-// Padding between the sides of the bubble's background and the sides of the
-// label.
-const CGFloat kLabelHorizontalPadding = 20.0f;
+// bottom of its content.
+const CGFloat kBubbleVerticalPadding = 15.0f;
+// Padding between the sides of the bubble's background and the sides of its
+// content.
+const CGFloat kBubbleHorizontalPadding = 20.0f;
 
 // The size that the arrow will appear to have.
 const CGSize kArrowSize = {32, 9};
@@ -71,6 +74,8 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
 @interface BubbleView ()
 // Label containing the text displayed on the bubble.
 @property(nonatomic, strong) UILabel* label;
+// Label containing the title displayed on the bubble.
+@property(nonatomic, strong) UILabel* titleLabel;
 // Pill-shaped view in the background of the bubble.
 @property(nonatomic, strong, readonly) UIView* background;
 // Triangular arrow that points to the target UI element.
@@ -108,7 +113,31 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
   return self;
 }
 
-#pragma mark - Property accessors
+#pragma mark - Public
+
+- (void)setTitleString:(NSString*)titleString {
+  _titleString = [titleString copy];
+  if (titleString.length > 0) {
+    _titleLabel = [BubbleView titleLabelWithText:_titleString];
+    [self.label
+        setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
+  } else {
+    _titleLabel = nil;
+    [self.label
+        setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
+  }
+}
+
+- (NSTextAlignment)textAlignment {
+  return self.label.textAlignment;
+}
+
+- (void)setTextAlignment:(NSTextAlignment)textAlignment {
+  [self.label setTextAlignment:textAlignment];
+  [self.titleLabel setTextAlignment:textAlignment];
+}
+
+#pragma mark - Private property accessors
 
 // Lazily load the background view.
 - (UIView*)background {
@@ -229,7 +258,7 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
 
 #pragma mark - Private class methods
 
-// Return a label to be used for a BubbleView that displays white text.
+// Returns a label to be used for a BubbleView that displays white text.
 + (UILabel*)labelWithText:(NSString*)text {
   DCHECK(text.length);
   UILabel* label = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -240,6 +269,15 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
   [label setNumberOfLines:0];
   [label setLineBreakMode:NSLineBreakByWordWrapping];
   [label setTranslatesAutoresizingMaskIntoConstraints:NO];
+  return label;
+}
+
+// Returns a label to be used for the BubbleView's title.
++ (UILabel*)titleLabelWithText:(NSString*)text {
+  DCHECK(text.length);
+  UILabel* label = [BubbleView labelWithText:text];
+  [label setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
+  [label setAccessibilityIdentifier:kBubbleViewTitleLabelIdentifier];
   return label;
 }
 
@@ -274,6 +312,10 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
   if (self.showsCloseButton) {
     [constraints addObjectsFromArray:[self closeButtonConstraints]];
   }
+  // Add constraints for title label.
+  if (self.titleLabel) {
+    [constraints addObjectsFromArray:[self titleLabelConstraints]];
+  }
   [NSLayoutConstraint activateConstraints:constraints];
 }
 
@@ -295,16 +337,16 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
     // padding on the sides of the label.
     [label.topAnchor
         constraintGreaterThanOrEqualToAnchor:background.topAnchor
-                                    constant:kLabelVerticalPadding],
+                                    constant:kBubbleVerticalPadding],
     [background.bottomAnchor
         constraintGreaterThanOrEqualToAnchor:label.bottomAnchor
-                                    constant:kLabelVerticalPadding],
+                                    constant:kBubbleVerticalPadding],
     [label.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:background.leadingAnchor
-                                    constant:kLabelHorizontalPadding],
+                                    constant:kBubbleHorizontalPadding],
     [background.trailingAnchor
         constraintGreaterThanOrEqualToAnchor:label.trailingAnchor
-                                    constant:kLabelHorizontalPadding],
+                                    constant:kBubbleHorizontalPadding],
     // Enforce the arrow's size, scaling by |kArrowScaleFactor| to prevent gaps
     // between the arrow and the background view.
     [self.arrow.widthAnchor constraintEqualToConstant:kArrowSize.width],
@@ -325,6 +367,20 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
     [closeButton.topAnchor constraintEqualToAnchor:self.background.topAnchor],
     [closeButton.trailingAnchor
         constraintEqualToAnchor:self.background.trailingAnchor],
+  ];
+  return constraints;
+}
+
+// Returns the constraint for the title label.
+- (NSArray<NSLayoutConstraint*>*)titleLabelConstraints {
+  UIView* titleLabel = self.titleLabel;
+  UIView* label = self.label;
+  NSArray<NSLayoutConstraint*>* constraints = @[
+    [titleLabel.topAnchor constraintEqualToAnchor:self.background.topAnchor
+                                         constant:kBubbleVerticalPadding],
+    [titleLabel.bottomAnchor constraintEqualToAnchor:label.topAnchor],
+    [titleLabel.leadingAnchor constraintEqualToAnchor:label.leadingAnchor],
+    [titleLabel.trailingAnchor constraintEqualToAnchor:label.trailingAnchor],
   ];
   return constraints;
 }
@@ -406,6 +462,9 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
     if (self.showsCloseButton) {
       [self addSubview:self.closeButton];
     }
+    if (self.titleLabel) {
+      [self addSubview:self.titleLabel];
+    }
     // Set |needsAddSubviews| to NO to ensure that the subviews are only added
     // to the view hierarchy once.
     self.needsAddSubviews = NO;
@@ -418,38 +477,51 @@ const CGFloat kCloseButtonTopTrailingPadding = 15.0f;
   [super willMoveToSuperview:newSuperview];
 }
 
+// Calculates the optimal size of the text (label and title) with the available
+// size to minimize whitespace.
+- (CGSize)optimalTextSize:(CGSize)size {
+  // Calculate the maximum width the text is allowed to use, and ensure that
+  // the text does not exceed the maximum line width.
+  CGFloat textMaxWidth = MIN(size.width, kMaxLabelWidth);
+  CGSize textMaxSize = CGSizeMake(textMaxWidth, size.height);
+  CGSize labelSize = [self.label sizeThatFits:textMaxSize];
+  CGSize titleSize = CGSizeZero;
+  if (self.titleLabel) {
+    titleSize = [self.titleLabel sizeThatFits:textMaxSize];
+  }
+  CGFloat textWidth = MAX(labelSize.width, titleSize.width);
+  CGFloat textHeight = labelSize.height + titleSize.height;
+  CGSize textSize = CGSizeMake(textWidth, textHeight);
+  return textSize;
+}
+
 // Override |sizeThatFits| to return the bubble's optimal size. Calculate
-// optimal size by finding the label's optimal size, and adding inset distances
-// to the label's dimensions. This method also enforces minimum bubble width to
-// prevent strange, undesired behaviors, and maximum label width to preserve
+// optimal size by finding the labels' optimal size, and adding inset distances
+// to the labels' dimensions. This method also enforces minimum bubble width to
+// prevent strange, undesired behaviors, and maximum labels width to preserve
 // readability.
 - (CGSize)sizeThatFits:(CGSize)size {
-  // The combined horizontal inset distance of the label with respect to the
-  // bubble.
-  CGFloat labelHorizontalInset = kBubbleMargin * 2 + kLabelHorizontalPadding;
+  // The combined horizontal inset distance of the label and title with respect
+  // to the bubble.
+  CGFloat textHorizontalInset = kBubbleMargin * 2 + kBubbleHorizontalPadding;
   // Add close button size, which is on the trailing edge of the labels.
   if (self.showsCloseButton) {
-    labelHorizontalInset += MAX(kCloseButtonSize, kLabelHorizontalPadding);
+    textHorizontalInset += MAX(kCloseButtonSize, kBubbleHorizontalPadding);
   } else {
-    labelHorizontalInset += kLabelHorizontalPadding;
+    textHorizontalInset += kBubbleHorizontalPadding;
   }
-  // The combined vertical inset distance of the label with respect to the
-  // bubble.
-  CGFloat labelVerticalInset =
-      (kBubbleMargin + kLabelVerticalPadding) * 2 + kArrowSize.height;
-  // Calculate the maximum width the label is allowed to use, and ensure that
-  // the label does not exceed the maximum line width.
-  CGFloat labelMaxWidth =
-      MIN(size.width - labelHorizontalInset, kMaxLabelWidth);
-  CGSize labelMaxSize =
-      CGSizeMake(labelMaxWidth, size.height - labelVerticalInset);
-  CGSize labelSize = [self.label sizeThatFits:labelMaxSize];
+  CGFloat textMaxWidth = size.width - textHorizontalInset;
+  CGSize optimalTextSize =
+      [self optimalTextSize:CGSizeMake(textMaxWidth, size.height)];
+
   // Ensure that the bubble is at least as wide as the minimum bubble width.
-  CGFloat optimalWidth =
-      MAX(labelSize.width + labelHorizontalInset, [self minBubbleWidth]);
-  CGSize optimalSize =
-      CGSizeMake(optimalWidth, labelSize.height + labelVerticalInset);
-  return optimalSize;
+  CGFloat bubbleWidth =
+      MAX(optimalTextSize.width + textHorizontalInset, [self minBubbleWidth]);
+  // Calculate the height needed to display the bubble.
+  CGFloat bubbleHeight = 2 * (kBubbleMargin + kBubbleVerticalPadding) +
+                         kArrowSize.height + optimalTextSize.height;
+  CGSize bubbleSize = CGSizeMake(bubbleWidth, bubbleHeight);
+  return bubbleSize;
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {

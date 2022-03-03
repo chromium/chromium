@@ -63,14 +63,26 @@ class BubbleViewTest : public PlatformTest {
   // multiple lines.
   NSString* longText_;
 
-  UIButton* GetCloseButton(BubbleView* bubbleView) {
+  UIView* GetViewOfClassWithIdentifier(Class uiClass,
+                                       NSString* accessibilityIdentifier,
+                                       BubbleView* bubbleView) {
     for (UIView* subview in bubbleView.subviews) {
-      if ([subview isKindOfClass:[UIButton class]] &&
-          subview.accessibilityIdentifier == kBubbleViewCloseButtonIdentifier) {
-        return base::mac::ObjCCastStrict<UIButton>(subview);
+      if ([subview isKindOfClass:uiClass] &&
+          subview.accessibilityIdentifier == accessibilityIdentifier) {
+        return subview;
       }
     }
     return nil;
+  }
+
+  UIButton* GetCloseButton(BubbleView* bubbleView) {
+    return base::mac::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
+        [UIButton class], kBubbleViewCloseButtonIdentifier, bubbleView));
+  }
+
+  UILabel* GetTitleLabel(BubbleView* bubbleView) {
+    return base::mac::ObjCCastStrict<UILabel>(GetViewOfClassWithIdentifier(
+        [UILabel class], kBubbleViewTitleLabelIdentifier, bubbleView));
   }
 };
 
@@ -137,4 +149,29 @@ TEST_F(BubbleViewTest, CloseButtonActionAndPresent) {
   // Tests close button action.
   [closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
   EXPECT_EQ(delegate.tapCounter, 1);
+}
+
+// Tests that the title is not showed when the option is set to hidden.
+TEST_F(BubbleViewTest, TitleIsNotPresent) {
+  BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
+                                         arrowDirection:arrowDirection_
+                                              alignment:alignment_];
+  [bubble setTitleString:nil];
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [superview addSubview:bubble];
+  UILabel* titleLabel = GetTitleLabel(bubble);
+  ASSERT_FALSE(titleLabel);
+}
+
+// Tests that the title is present and correct.
+TEST_F(BubbleViewTest, TitleIsPresentAndCorrect) {
+  BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
+                                         arrowDirection:arrowDirection_
+                                              alignment:alignment_];
+  [bubble setTitleString:shortText_];
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [superview addSubview:bubble];
+  UILabel* titleLabel = GetTitleLabel(bubble);
+  ASSERT_TRUE(titleLabel);
+  ASSERT_EQ(titleLabel.text, shortText_);
 }
