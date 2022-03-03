@@ -150,7 +150,7 @@ TEST_F(ServiceWorkerContextWrapperTest, HasRegistration) {
   InitWrapper();
 
   // Now test that registrations are recognized.
-  wrapper_->WaitForRegistrationsInitializedForTest();
+  wrapper_->context()->WaitForRegistrationsInitializedForTest();
   EXPECT_TRUE(wrapper_->MaybeHasRegistrationForStorageKey(key));
   EXPECT_FALSE(wrapper_->MaybeHasRegistrationForStorageKey(
       blink::StorageKey(url::Origin::Create(GURL("https://example.org")))));
@@ -162,7 +162,7 @@ TEST_F(ServiceWorkerContextWrapperTest, HasRegistration) {
 // key, and should only return FALSE when ALL registrations for that key
 // have been deleted from storage.
 TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForSameKey) {
-  wrapper_->WaitForRegistrationsInitializedForTest();
+  wrapper_->context()->WaitForRegistrationsInitializedForTest();
 
   // Make two registrations for same origin.
   GURL scope1("https://example1.com/abc/");
@@ -216,7 +216,7 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForPartitionedKeys) {
   scope_feature_list_.InitAndEnableFeature(
       blink::features::kThirdPartyStoragePartitioning);
 
-  wrapper_->WaitForRegistrationsInitializedForTest();
+  wrapper_->context()->WaitForRegistrationsInitializedForTest();
 
   // Make two registrations for same origin, but different top-level site.
   GURL scope("https://example1.com/abc/");
@@ -270,7 +270,7 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForPartitionedKeys) {
 // registrations may exist, MaybeHasRegistrationForStorageKey correctly returns
 // FALSE since the registrations do not exist in storage.
 TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistration) {
-  wrapper_->WaitForRegistrationsInitializedForTest();
+  wrapper_->context()->WaitForRegistrationsInitializedForTest();
 
   // Make registration.
   GURL scope1("https://example2.com/");

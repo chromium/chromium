@@ -300,6 +300,10 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
         storage::QuotaClientType::kServiceWorker,
         {blink::mojom::StorageType::kTemporary});
   }
+
+  registry_->GetRegisteredStorageKeys(
+      base::BindOnce(&ServiceWorkerContextCore::DidGetRegisteredStorageKeys,
+                     AsWeakPtr(), base::TimeTicks::Now()));
 }
 
 ServiceWorkerContextCore::ServiceWorkerContextCore(
@@ -326,6 +330,13 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
       &ServiceWorkerContextCore::OnContainerHostReceiverDisconnected,
       base::Unretained(this)));
   quota_client_->ResetContext(*this);
+
+  // Uma (ServiceWorker.Storage.RegisteredStorageKeyCacheInitialization.Time)
+  // shouldn't be recorded when ServiceWorkerContextCore is recreated. Hence we
+  // specify a null TimeTicks here.
+  registry_->GetRegisteredStorageKeys(
+      base::BindOnce(&ServiceWorkerContextCore::DidGetRegisteredStorageKeys,
+                     AsWeakPtr(), base::TimeTicks()));
 }
 
 ServiceWorkerContextCore::~ServiceWorkerContextCore() {
@@ -635,6 +646,27 @@ void ServiceWorkerContextCore::NotifyClientIsExecutionReady(
       container_host.GetClientType());
 }
 
+bool ServiceWorkerContextCore::MaybeHasRegistrationForStorageKey(
+    const blink::StorageKey& key) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!registrations_initialized_) {
+    return true;
+  }
+  if (registered_storage_keys_.find(key) != registered_storage_keys_.end()) {
+    return true;
+  }
+  return false;
+}
+
+void ServiceWorkerContextCore::WaitForRegistrationsInitializedForTest() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (registrations_initialized_)
+    return;
+  base::RunLoop loop;
+  on_registrations_initialized_for_test_ = loop.QuitClosure();
+  loop.Run();
+}
+
 void ServiceWorkerContextCore::RegistrationComplete(
     const GURL& scope,
     const blink::StorageKey& key,
@@ -916,6 +948,7 @@ void ServiceWorkerContextCore::NotifyRegistrationStored(
     const GURL& scope,
     const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  registered_storage_keys_.insert(key);
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnRegistrationStored,
       registration_id, scope, key);
@@ -924,6 +957,7 @@ void ServiceWorkerContextCore::NotifyRegistrationStored(
 void ServiceWorkerContextCore::NotifyAllRegistrationsDeletedForStorageKey(
     const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  registered_storage_keys_.erase(key);
   observer_list_->Notify(
       FROM_HERE,
       &ServiceWorkerContextCoreObserver::OnAllRegistrationsDeletedForStorageKey,
@@ -1120,6 +1154,27 @@ void ServiceWorkerContextCore::OnRegistrationFinishedForCheckHasServiceWorker(
   }
 
   CheckFetchHandlerOfInstalledServiceWorker(std::move(callback), registration);
+}
+
+void ServiceWorkerContextCore::DidGetRegisteredStorageKeys(
+    base::TimeTicks start_time,
+    const std::vector<blink::StorageKey>& storage_keys) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (const blink::StorageKey& storage_key : storage_keys)
+    registered_storage_keys_.insert(storage_key);
+
+  DCHECK(!registrations_initialized_);
+  registrations_initialized_ = true;
+
+  if (on_registrations_initialized_for_test_)
+    std::move(on_registrations_initialized_for_test_).Run();
+
+  if (!start_time.is_null()) {
+    base::UmaHistogramMediumTimes(
+        "ServiceWorker.Storage.RegisteredStorageKeyCacheInitialization.Time",
+        base::TimeTicks::Now() - start_time);
+  }
 }
 
 }  // namespace content

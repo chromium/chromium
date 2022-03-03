@@ -259,10 +259,6 @@ void ServiceWorkerContextWrapper::InitInternal(
       quota_manager_proxy, special_storage_policy,
       std::move(non_network_pending_loader_factory_bundle_for_update_check),
       core_observer_list_.get(), this);
-
-  context()->registry()->GetRegisteredStorageKeys(
-      base::BindOnce(&ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys,
-                     this, base::TimeTicks::Now()));
 }
 
 void ServiceWorkerContextWrapper::Shutdown() {
@@ -319,9 +315,6 @@ void ServiceWorkerContextWrapper::OnRegistrationStored(
     const GURL& scope,
     const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  registered_storage_keys_.insert(key);
-
   for (auto& observer : observer_list_)
     observer.OnRegistrationStored(registration_id, scope);
 }
@@ -329,7 +322,6 @@ void ServiceWorkerContextWrapper::OnRegistrationStored(
 void ServiceWorkerContextWrapper::OnAllRegistrationsDeletedForStorageKey(
     const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  registered_storage_keys_.erase(key);
 }
 
 void ServiceWorkerContextWrapper::OnErrorReported(
@@ -575,13 +567,7 @@ size_t ServiceWorkerContextWrapper::CountExternalRequestsForTest(
 bool ServiceWorkerContextWrapper::MaybeHasRegistrationForStorageKey(
     const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!registrations_initialized_) {
-    return true;
-  }
-  if (registered_storage_keys_.find(key) != registered_storage_keys_.end()) {
-    return true;
-  }
-  return false;
+  return context() ? context()->MaybeHasRegistrationForStorageKey(key) : true;
 }
 
 void ServiceWorkerContextWrapper::GetAllOriginsInfo(
@@ -1608,30 +1594,6 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
       ->set_bypass_redirect_checks(bypass_redirect_checks);
   return network::SharedURLLoaderFactory::Create(
       std::move(loader_factory_bundle_info));
-}
-
-void ServiceWorkerContextWrapper::WaitForRegistrationsInitializedForTest() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (registrations_initialized_)
-    return;
-  base::RunLoop loop;
-  on_registrations_initialized_for_test_ = loop.QuitClosure();
-  loop.Run();
-}
-
-void ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys(
-    base::TimeTicks start_time,
-    const std::vector<blink::StorageKey>& storage_keys) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (const blink::StorageKey& storage_key : storage_keys)
-    registered_storage_keys_.insert(storage_key);
-  registrations_initialized_ = true;
-  if (on_registrations_initialized_for_test_)
-    std::move(on_registrations_initialized_for_test_).Run();
-
-  base::UmaHistogramMediumTimes(
-      "ServiceWorker.Storage.RegisteredStorageKeyCacheInitialization.Time",
-      base::TimeTicks::Now() - start_time);
 }
 
 void ServiceWorkerContextWrapper::ClearRunningServiceWorkers() {

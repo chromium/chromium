@@ -362,11 +362,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // DeleteAndStartOver fails.
   ServiceWorkerContextCore* context();
 
-  // This method waits for service worker registrations to be initialized, and
-  // depends on |on_registrations_initialized_| and |registrations_initialized_|
-  // which are called in InitializeRegisteredOrigins().
-  void WaitForRegistrationsInitializedForTest();
-
   void SetLoaderFactoryForUpdateCheckForTest(
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
   // Returns nullptr on failure.
@@ -469,12 +464,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   CreateNonNetworkPendingURLLoaderFactoryBundleForUpdateCheck(
       BrowserContext* browser_context);
 
-  // This is used as a callback of GetRegisteredStorageKeys when initialising to
-  // store a list of storage keys that have registered service workers.
-  void DidGetRegisteredStorageKeys(
-      base::TimeTicks start_time,
-      const std::vector<blink::StorageKey>& storage_keys);
-
   // TODO(https://crbug.com/1295029): Remove. Temporary workaround.
   void StartServiceWorkerAndDispatchMessageOnUIThread(
       const GURL& scope,
@@ -516,13 +505,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // to dispatch OnVersionStartedRunning()/OnVersionStoppedRunning() events.
   base::flat_map<int64_t /* version_id */, ServiceWorkerRunningInfo>
       running_service_workers_;
-
-  // A set of StorageKeys that have at least one registration.
-  // TODO(http://crbug.com/824858): This can be removed when service workers are
-  // fully converted to running on the UI thread.
-  std::set<blink::StorageKey> registered_storage_keys_;
-  bool registrations_initialized_ = false;
-  base::OnceClosure on_registrations_initialized_for_test_;
 
   std::unique_ptr<ServiceWorkerIdentifiabilityMetrics> identifiability_metrics_;
 
