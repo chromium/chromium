@@ -1106,7 +1106,7 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
       delegate->GetAppContainerId(&appcontainer_id)) {
     result = AddAppContainerProfileToPolicy(cmd_line, sandbox_type,
                                             appcontainer_id, policy.get());
-    DCHECK(result == SBOX_ALL_OK);
+    DCHECK_EQ(result, SBOX_ALL_OK);
     if (result != SBOX_ALL_OK)
       return result;
   }
