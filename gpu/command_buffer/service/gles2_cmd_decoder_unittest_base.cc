@@ -2444,7 +2444,11 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
 
   gl::init::InitializeStaticGLBindingsImplementation(
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE), false);
-  gl::init::InitializeGLOneOffPlatformImplementation(false, false, true);
+  gl::init::InitializeGLOneOffPlatformImplementation(
+      /*fallback_to_software_gl=*/false,
+      /*disable_gl_drawing=*/false,
+      /*init_extensions=*/true,
+      /*system_device_id=*/0);
 
   scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
   group_ = new gles2::ContextGroup(

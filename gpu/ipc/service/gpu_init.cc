@@ -185,7 +185,14 @@ bool MatchGLRenderer(const GPUInfo& gpu_info, const std::string& patterns) {
   }
   return false;
 }
-#endif  // !BUILDFLAG(ENABLE_VULKAN)
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+
+#if BUILDFLAG(IS_WIN)
+uint64_t CHROME_LUID_to_uint64_t(const CHROME_LUID& luid) {
+  uint64_t id64 = static_cast<uint32_t>(luid.HighPart);
+  return (id64 << 32) | (luid.LowPart & 0xFFFFFFFF);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -202,6 +209,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // need more context based GPUInfo. In such situations, switching to
   // SwiftShader needs to wait until creating a context.
   bool needs_more_info = true;
+  uint64_t system_device_id = 0;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
   needs_more_info = false;
   if (!PopGPUInfoCache(&gpu_info_)) {
@@ -237,6 +245,33 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     // info.
     gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                               command_line, &needs_more_info);
+  }
+
+  // GPU picking is only effective with ANGLE/Metal backend on Mac and
+  // on Windows.
+  GPUInfo::GPUDevice preferred_gpu;
+  bool force_integrated_gpu =
+      gpu_feature_info_.IsWorkaroundEnabled(FORCE_LOW_POWER_GPU);
+  bool force_discrete_gpu =
+      gpu_feature_info_.IsWorkaroundEnabled(FORCE_HIGH_PERFORMANCE_GPU);
+#if BUILDFLAG(IS_MAC)
+  // Default to the integrated gpu on a multi-gpu Mac.
+  if (!force_discrete_gpu)
+    force_integrated_gpu = true;
+#endif  // BUILDFLAG(IS_MAC)
+  if (force_discrete_gpu && gpu_info_.GetDiscreteGpu(&preferred_gpu)) {
+#if BUILDFLAG(IS_MAC)
+    system_device_id = preferred_gpu.register_id;
+#elif BUILDFLAG(IS_WIN)
+    system_device_id = CHROME_LUID_to_uint64_t(preferred_gpu.luid);
+#endif
+  } else if (force_integrated_gpu &&
+             gpu_info_.GetIntegratedGpu(&preferred_gpu)) {
+#if BUILDFLAG(IS_MAC)
+    system_device_id = preferred_gpu.register_id;
+#elif BUILDFLAG(IS_WIN)
+    system_device_id = CHROME_LUID_to_uint64_t(preferred_gpu.luid);
+#endif
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
 
@@ -401,8 +436,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     if (watchdog_thread_)
       watchdog_thread_->ResumeWatchdog();
     if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
-      gl_initialized =
-          gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ false);
+      gl_initialized = gl::init::InitializeGLNoExtensionsOneOff(
+          /*init_bindings*/ false, system_device_id);
       if (!gl_initialized) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
         return false;
@@ -478,7 +513,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         gl::init::ShutdownGL(true);
         watchdog_thread_ = nullptr;
         watchdog_init.SetGpuWatchdogPtr(nullptr);
-        if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true)) {
+        if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true,
+                                                      system_device_id)) {
           VLOG(1)
               << "gl::init::InitializeGLNoExtensionsOneOff with SwiftShader "
               << "failed";
@@ -766,7 +802,8 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
       command_line, gpu_feature_info_,
       gpu_preferences_.disable_software_rasterizer, needs_more_info);
-  if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true)) {
+  if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
+                                                /*system_device_id=*/0)) {
     VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
     return;
   }
@@ -782,7 +819,8 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     if (gl_use_swiftshader_) {
       SaveHardwareGpuInfoAndGpuFeatureInfo();
       gl::init::ShutdownGL(true);
-      if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true)) {
+      if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
+                                                    /*system_device_id=*/0)) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
                 << "with SwiftShader";
         return;
@@ -836,7 +874,8 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     if (gl_use_swiftshader_) {
       SaveHardwareGpuInfoAndGpuFeatureInfo();
       gl::init::ShutdownGL(true);
-      if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true)) {
+      if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
+                                                    /*system_device_id=*/0)) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
                 << "with SwiftShader";
         return;

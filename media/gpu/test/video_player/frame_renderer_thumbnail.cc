@@ -307,7 +307,7 @@ void FrameRendererThumbnail::Initialize() {
 
   // Initialize GL rendering and create GL context.
   if (!gl_initialized_) {
-    if (!gl::init::InitializeGLOneOff())
+    if (!gl::init::InitializeGLOneOff(/*system_device_id=*/0))
       LOG(FATAL) << "Could not initialize GL";
     gl_initialized_ = true;
   }

@@ -438,7 +438,7 @@ bool ArCoreGl::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
   gl::init::DisableANGLE();
 
   if (gl::GetGLImplementation() == gl::kGLImplementationNone &&
-      !gl::init::InitializeGLOneOff()) {
+      !gl::init::InitializeGLOneOff(/*system_device_id=*/0)) {
     DLOG(ERROR) << "gl::init::InitializeGLOneOff failed";
     return false;
   }

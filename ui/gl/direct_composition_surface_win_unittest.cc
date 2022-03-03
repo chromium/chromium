@@ -123,7 +123,8 @@ class DirectCompositionSurfaceTest : public testing::Test {
     fake_power_monitor_source_.SetOnBatteryPower(true);
 
     // Without this, the following check always fails.
-    gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true);
+    gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
+                                             /*system_device_id=*/0);
     if (!DirectCompositionSurfaceWin::GetDirectCompositionDevice()) {
       LOG(WARNING) << "DirectComposition not supported, skipping test.";
       return;

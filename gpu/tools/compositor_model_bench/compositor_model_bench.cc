@@ -187,7 +187,7 @@ class Simulator {
 
   // Initialize the OpenGL context.
   bool InitGLContext() {
-    if (!gl::init::InitializeGLOneOff()) {
+    if (!gl::init::InitializeGLOneOff(/*system_device_id=*/0)) {
       LOG(FATAL) << "gl::init::InitializeGLOneOff failed";
       return false;
     }

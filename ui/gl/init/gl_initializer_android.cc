@@ -76,12 +76,12 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 
 }  // namespace
 
-bool InitializeGLOneOffPlatform() {
+bool InitializeGLOneOffPlatform(uint64_t system_device_id) {
   switch (GetGLImplementation()) {
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
       if (!GLSurfaceEGL::InitializeOneOff(
-              EGLDisplayPlatform(EGL_DEFAULT_DISPLAY))) {
+              EGLDisplayPlatform(EGL_DEFAULT_DISPLAY), system_device_id)) {
         LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
         return false;
       }

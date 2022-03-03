@@ -184,7 +184,7 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 
 }  // namespace
 
-bool InitializeGLOneOffPlatform() {
+bool InitializeGLOneOffPlatform(uint64_t system_device_id) {
   switch (GetGLImplementation()) {
     case kGLImplementationDesktopGL:
     case kGLImplementationDesktopGLCoreProfile:
@@ -198,7 +198,8 @@ bool InitializeGLOneOffPlatform() {
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
     case kGLImplementationSwiftShaderGL:
-      if (!GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(0))) {
+      if (!GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(0),
+                                          system_device_id)) {
         LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
         return false;
       }

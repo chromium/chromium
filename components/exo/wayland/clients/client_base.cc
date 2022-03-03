@@ -553,7 +553,7 @@ bool ClientBase::Init(const InitParams& params) {
     ui::OzonePlatform::InitParams ozone_params;
     ozone_params.single_process = true;
     ui::OzonePlatform::InitializeForGPU(ozone_params);
-    bool gl_initialized = gl::init::InitializeGLOneOff();
+    bool gl_initialized = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
     DCHECK(gl_initialized);
     gl_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
     gl_context_ =

@@ -37,19 +37,20 @@ const uint8_t GLTestHelper::kCheckClearValue;
 
 bool GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
   if (gl_impl == gl::GLImplementation::kGLImplementationNone) {
-    if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true))
+    if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
+                                                  /*system_device_id=*/0))
       return false;
   } else {
     if (!gl::init::InitializeStaticGLBindingsImplementation(
             gl::GLImplementationParts(gl_impl),
-            /*fallback_to_software_gl*/ false))
+            /*fallback_to_software_gl=*/false))
       return false;
 
     if (!gl::init::InitializeGLOneOffPlatformImplementation(
-            false,  // fallback_to_software_gl
-            false,  // disable_gl_drawing
-            false   // init_extensions
-            )) {
+            /*fallback_to_software_gl=*/false,
+            /*disable_gl_drawing=*/false,
+            /*init_extensions=*/false,
+            /*system_device_id=*/0)) {
       return false;
     }
   }

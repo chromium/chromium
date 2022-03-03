@@ -169,7 +169,7 @@ int DemoMain() {
   ui::OzonePlatform::InitializeForUI(params);
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
-  gl::init::InitializeGLOneOff();
+  gl::init::InitializeGLOneOff(/*system_device_id=*/0);
 
 #if BUILDFLAG(IS_WIN)
   display::win::SetDefaultDeviceScaleFactor(1.0f);

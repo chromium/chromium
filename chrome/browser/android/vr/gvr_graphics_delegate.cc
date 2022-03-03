@@ -168,7 +168,7 @@ void GvrGraphicsDelegate::InitializeGl(gfx::AcceleratedWidget window,
   gl::init::DisableANGLE();
 
   if (gl::GetGLImplementation() == gl::kGLImplementationNone &&
-      !gl::init::InitializeGLOneOff()) {
+      !gl::init::InitializeGLOneOff(/*system_device_id=*/0)) {
     LOG(ERROR) << "gl::init::InitializeGLOneOff failed";
     browser_->ForceExitVr();
     return;

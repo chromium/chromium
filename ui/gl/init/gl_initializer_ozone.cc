@@ -19,7 +19,7 @@
 namespace gl {
 namespace init {
 
-bool InitializeGLOneOffPlatform() {
+bool InitializeGLOneOffPlatform(uint64_t) {
   if (HasGLOzone()) {
     gl::GLDisplayEglUtil::SetInstance(gl::GLDisplayEglUtilOzone::GetInstance());
     return GetGLOzone()->InitializeGLOneOffPlatform();

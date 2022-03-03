@@ -30,7 +30,7 @@ static int RunHelper(base::TestSuite* test_suite) {
       base::MessagePumpType::IO);
 #endif
 
-  CHECK(gl::init::InitializeGLOneOff());
+  CHECK(gl::init::InitializeGLOneOff(/*system_device_id=*/0));
   return test_suite->Run();
 }
 

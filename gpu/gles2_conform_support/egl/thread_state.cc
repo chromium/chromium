@@ -88,7 +88,8 @@ egl::ThreadState* ThreadState::Get() {
 #if defined(USE_OZONE)
       ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
 #endif
-      gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true);
+      gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
+                                               /*system_device_id=*/0);
       gpu::GpuFeatureInfo gpu_feature_info;
       if (!command_line->HasSwitch(switches::kDisableGpuDriverBugWorkarounds)) {
         gpu::GPUInfo gpu_info;

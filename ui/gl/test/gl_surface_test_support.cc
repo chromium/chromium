@@ -70,7 +70,8 @@ void InitializeOneOffHelper(bool init_extensions) {
   CHECK(gl::init::InitializeStaticGLBindingsImplementation(
       impl, fallback_to_software_gl));
   CHECK(gl::init::InitializeGLOneOffPlatformImplementation(
-      fallback_to_software_gl, disable_gl_drawing, init_extensions));
+      fallback_to_software_gl, disable_gl_drawing, init_extensions,
+      /*system_device_id=*/0));
 }
 }  // namespace
 
@@ -96,11 +97,13 @@ void GLSurfaceTestSupport::InitializeOneOffImplementation(
   init::ShutdownGL(false);
 
   bool disable_gl_drawing = false;
+  bool init_extensions = true;
 
   CHECK(gl::init::InitializeStaticGLBindingsImplementation(
       impl, fallback_to_software_gl));
   CHECK(gl::init::InitializeGLOneOffPlatformImplementation(
-      fallback_to_software_gl, disable_gl_drawing, true));
+      fallback_to_software_gl, disable_gl_drawing, init_extensions,
+      /*system_device_id=*/0));
 }
 
 // static

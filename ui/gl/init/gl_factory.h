@@ -33,10 +33,15 @@ namespace init {
 GL_INIT_EXPORT std::vector<GLImplementationParts> GetAllowedGLImplementations();
 
 // Initializes GL bindings and extension settings.
-GL_INIT_EXPORT bool InitializeGLOneOff();
+// |system_device_id| specifies which GPU to use on a multi-GPU system.
+// If its value is 0, use the default GPU of the system.
+GL_INIT_EXPORT bool InitializeGLOneOff(uint64_t system_device_id);
 
 // Initializes GL bindings without initializing extension settings.
-GL_INIT_EXPORT bool InitializeGLNoExtensionsOneOff(bool init_bindings);
+// |system_device_id| specifies which GPU to use on a multi-GPU system.
+// If its value is 0, use the default GPU of the system.
+GL_INIT_EXPORT bool InitializeGLNoExtensionsOneOff(bool init_bindings,
+                                                   uint64_t system_device_id);
 
 // Initializes GL bindings - load dlls and get proc address according to gl
 // command line switch.
@@ -55,10 +60,13 @@ GL_INIT_EXPORT bool InitializeStaticGLBindingsImplementation(
 // Initializes GL platform using the provided parameters. This might be required
 // for use in tests. This should be called only after GL bindings are initilzed
 // successfully.
+// |system_device_id| specifies which GPU to use on a multi-GPU system.
+// If its value is 0, use the default GPU of the system.
 GL_INIT_EXPORT bool InitializeGLOneOffPlatformImplementation(
     bool fallback_to_software_gl,
     bool disable_gl_drawing,
-    bool init_extensions);
+    bool init_extensions,
+    uint64_t system_device_id);
 
 // Clears GL bindings and resets GL implementation.
 GL_INIT_EXPORT void ShutdownGL(bool due_to_fallback);

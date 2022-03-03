@@ -98,12 +98,18 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   EGLConfig GetConfig() override;
   GLSurfaceFormat GetFormat() override;
 
-  static bool InitializeOneOff(EGLDisplayPlatform native_display);
+  // |system_device_id| specifies which GPU to use on a multi-GPU system.
+  // If its value is 0, use the default GPU of the system.
+  static bool InitializeOneOff(EGLDisplayPlatform native_display,
+                               uint64_t system_device_id);
   static bool InitializeOneOffForTesting();
   static bool InitializeExtensionSettingsOneOff();
   static void ShutdownOneOff();
   static EGLDisplay GetHardwareDisplay();
-  static EGLDisplay InitializeDisplay(EGLDisplayPlatform native_display);
+  // |system_device_id| specifies which GPU to use on a multi-GPU system.
+  // If its value is 0, use the default GPU of the system.
+  static EGLDisplay InitializeDisplay(EGLDisplayPlatform native_display,
+                                      uint64_t system_device_id);
   static EGLNativeDisplayType GetNativeDisplay();
   static DisplayType GetDisplayType();
 
@@ -130,10 +136,10 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static bool IsANGLEFeatureControlSupported();
   static bool IsANGLEPowerPreferenceSupported();
   static bool IsANGLEDisplayPowerPreferenceSupported();
+  static bool IsANGLEPlatformANGLEDeviceIdSupported();
   static bool IsANGLEExternalContextAndSurfaceSupported();
   static bool IsANGLEContextVirtualizationSupported();
   static bool IsANGLEVulkanImageSupported();
-
   static bool IsEGLQueryDeviceSupported();
 
  protected:

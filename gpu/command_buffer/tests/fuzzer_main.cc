@@ -342,8 +342,11 @@ class CommandBufferSetup {
 
     CHECK(gl::init::InitializeStaticGLBindingsImplementation(
         gl::GLImplementationParts(gl::kGLImplementationEGLANGLE), false));
-    CHECK(
-        gl::init::InitializeGLOneOffPlatformImplementation(false, false, true));
+    CHECK(gl::init::InitializeGLOneOffPlatformImplementation(
+        /*fallback_to_software_gl=*/false,
+        /*disable_gl_drawing=*/false,
+        /*init_extensions=*/true,
+        /*system_device_id=*/0));
 #elif defined(GPU_FUZZER_USE_STUB)
     gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();
     // Because the context depends on configuration bits, we want to recreate

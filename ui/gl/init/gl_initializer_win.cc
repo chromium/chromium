@@ -132,13 +132,14 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 
 }  // namespace
 
-bool InitializeGLOneOffPlatform() {
+bool InitializeGLOneOffPlatform(uint64_t system_device_id) {
   VSyncProviderWin::InitializeOneOff();
 
   switch (GetGLImplementation()) {
     case kGLImplementationSwiftShaderGL:
     case kGLImplementationEGLANGLE:
-      if (!GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(GetDC(nullptr)))) {
+      if (!GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(GetDC(nullptr)),
+                                          system_device_id)) {
         LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
         return false;
       }

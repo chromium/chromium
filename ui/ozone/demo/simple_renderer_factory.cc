@@ -65,7 +65,8 @@ bool SimpleRendererFactory::Initialize() {
     }
   }
 #endif
-  if (!command_line->HasSwitch(kDisableGpu) && gl::init::InitializeGLOneOff()) {
+  if (!command_line->HasSwitch(kDisableGpu) &&
+      gl::init::InitializeGLOneOff(/*system_device_id=*/0)) {
     type_ = GL;
   } else {
     type_ = SOFTWARE;

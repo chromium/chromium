@@ -38,7 +38,7 @@ SkiaRendererFactory::SkiaRendererFactory() {}
 SkiaRendererFactory::~SkiaRendererFactory() {}
 
 bool SkiaRendererFactory::Initialize() {
-  if (!gl::init::InitializeGLOneOff()) {
+  if (!gl::init::InitializeGLOneOff(/*system_device_id=*/0)) {
     LOG(FATAL) << "Failed to initialize GL";
   }
 

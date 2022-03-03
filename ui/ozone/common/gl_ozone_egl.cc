@@ -16,7 +16,8 @@
 namespace ui {
 
 bool GLOzoneEGL::InitializeGLOneOffPlatform() {
-  if (!gl::GLSurfaceEGL::InitializeOneOff(GetNativeDisplay())) {
+  if (!gl::GLSurfaceEGL::InitializeOneOff(GetNativeDisplay(),
+                                          /*system_device_id=*/0)) {
     LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
     return false;
   }

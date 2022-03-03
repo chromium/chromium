@@ -303,6 +303,13 @@ struct GPU_EXPORT GPUInfo {
 
   unsigned int GpuCount() const;
 
+  // Return true if it's a multi-gpu system and there is a single integrated
+  // GPU identified.
+  bool GetIntegratedGpu(GPUDevice* output_integrated_gpu) const;
+  // Return true if it's a multi-gpu system and there is a discrete GPU.
+  // |output_discrete_gpu| is the first non-Intel GPU.
+  bool GetDiscreteGpu(GPUDevice* output_discrete_gpu) const;
+
   // The amount of time taken to get from the process starting to the message
   // loop being pumped.
   base::TimeDelta initialization_time;
