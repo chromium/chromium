@@ -378,15 +378,12 @@ void FirstPartySets::SetCompleteSets(FirstPartySets::FlattenedSets sets) {
   InvokePendingQueries();
 }
 
-void FirstPartySets::SetPersistedSets(base::StringPiece raw_sets) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  raw_persisted_sets_ = static_cast<std::string>(raw_sets);
-  ClearSiteDataOnChangedSetsIfReady();
-}
-
-void FirstPartySets::SetOnSiteDataCleared(
+void FirstPartySets::SetPersistedSetsAndOnSiteDataCleared(
+    base::StringPiece raw_sets,
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!callback.is_null());
+  raw_persisted_sets_ = static_cast<std::string>(raw_sets);
   on_site_data_cleared_ = std::move(callback);
   ClearSiteDataOnChangedSetsIfReady();
 }

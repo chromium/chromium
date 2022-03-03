@@ -93,13 +93,18 @@ class FirstPartySets {
   // Receives the completed First-Party Sets from `sets_loader_` and stores it
   // in the `sets_`.
   void SetCompleteSets(FlattenedSets sets);
-  // Sets the `raw_persisted_sets_`, which is a JSON-encoded
-  // string representation of a map of site -> site.
-  void SetPersistedSets(base::StringPiece persisted_sets);
-  // Sets the `on_site_data_cleared_` callback, which takes input of a
-  // JSON-encoded string representation of a map of site -> site.
-  void SetOnSiteDataCleared(
+
+  // Sets the `raw_persisted_sets_`, which is a JSON-encoded string
+  // representation of a map of site -> site, and saves a callback to be called
+  // once site data has been cleared appropriately. The callback receives a
+  // serialized representation of the current First-Party Sets as an argument,
+  // and must not be null. (In practice, this callback will be used to update
+  // the on-disk persisted sets, so that the next run of Chromium doesn't clear
+  // more data than necessary.)
+  void SetPersistedSetsAndOnSiteDataCleared(
+      base::StringPiece persisted_sets,
       base::OnceCallback<void(const std::string&)> callback);
+
   // Sets the enabled_ attribute for testing.
   void SetEnabledForTesting(bool enabled);
 

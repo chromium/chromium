@@ -805,8 +805,8 @@ void NetworkService::SetPersistedFirstPartySetsAndGetCurrentSets(
     const std::string& persisted_sets,
     mojom::NetworkService::SetPersistedFirstPartySetsAndGetCurrentSetsCallback
         callback) {
-  first_party_sets_->SetPersistedSets(persisted_sets);
-  first_party_sets_->SetOnSiteDataCleared(std::move(callback));
+  first_party_sets_->SetPersistedSetsAndOnSiteDataCleared(persisted_sets,
+                                                          std::move(callback));
 }
 
 void NetworkService::SetExplicitlyAllowedPorts(

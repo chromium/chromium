@@ -390,9 +390,8 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
   {
     FirstPartySets sets(true);
     callback_calls = 0;
-    sets.SetPersistedSets("{}");
+    sets.SetPersistedSetsAndOnSiteDataCleared("{}", callback);
     sets.SetManuallySpecifiedSet("");
-    sets.SetOnSiteDataCleared(callback);
     EXPECT_EQ(callback_calls, 0);
   }
   // manual sets not ready.
@@ -400,8 +399,7 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
     FirstPartySets sets(true);
     callback_calls = 0;
     SetComponentSets(sets, "[]");
-    sets.SetPersistedSets("{}");
-    sets.SetOnSiteDataCleared(callback);
+    sets.SetPersistedSetsAndOnSiteDataCleared("{}", callback);
     env().RunUntilIdle();
     EXPECT_EQ(callback_calls, 0);
   }
@@ -411,17 +409,6 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
     callback_calls = 0;
     SetComponentSets(sets, "[]");
     sets.SetManuallySpecifiedSet("");
-    sets.SetOnSiteDataCleared(callback);
-    env().RunUntilIdle();
-    EXPECT_EQ(callback_calls, 0);
-  }
-  // callback not set.
-  {
-    FirstPartySets sets(true);
-    callback_calls = 0;
-    SetComponentSets(sets, "[]");
-    sets.SetManuallySpecifiedSet("");
-    sets.SetPersistedSets("{}");
     env().RunUntilIdle();
     EXPECT_EQ(callback_calls, 0);
   }
@@ -434,10 +421,9 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_Ready) {
   SetComponentSets(R"({"owner": "https://example.test", "members": )"
                    R"(["https://member1.test"]})");
   sets().SetManuallySpecifiedSet("https://example2.test,https://member2.test");
-  sets().SetPersistedSets(
+  sets().SetPersistedSetsAndOnSiteDataCleared(
       R"({"https://example.test":"https://example.test",
-            "https://member1.test":"https://example.test"})");
-  sets().SetOnSiteDataCleared(
+            "https://member1.test":"https://example.test"})",
       base::BindLambdaForTesting([&](const std::string& got) {
         EXPECT_EQ(got, R"({"https://member1.test":"https://example.test",)"
                        R"("https://member2.test":"https://example2.test"})");
