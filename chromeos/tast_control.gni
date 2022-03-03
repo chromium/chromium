@@ -142,6 +142,10 @@ tast_disabled_tests_from_chrome_all = [
   "policy.JavaScriptAllowedForUrls",
   "policy.JavaScriptBlockedForUrls",
   "policy.ImagesForURLCheck.default",
+
+  # https://crbug.com/1302469 (http://b/222407003)
+  "inputs.PhysicalKeyboardKoreanTyping",
+  "inputs.PhysicalKeyboardAutocorrect.en_us_2",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
