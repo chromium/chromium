@@ -39,8 +39,9 @@ class MAYBE_MetricsCollectorTest : public GraphTestHarness {
 
   void SetUp() override {
     Super::SetUp();
-    metrics_collector_ = new MetricsCollector();
-    graph()->PassToGraph(base::WrapUnique(metrics_collector_.get()));
+    auto metrics_collector = std::make_unique<MetricsCollector>();
+    metrics_collector_ = metrics_collector.get();
+    graph()->PassToGraph(std::move(metrics_collector));
   }
 
   void TearDown() override {

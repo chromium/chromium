@@ -31,10 +31,10 @@ class Owned {
 TEST(OwnedObjectsTest, ContainerWorksAsAdvertised) {
   using Owner =
       OwnedObjects<Owned, void*, &Owned::OnPassedTo, &Owned::OnTakenFrom>;
-  std::unique_ptr<Owner> owner = base::WrapUnique(new Owner());
+  std::unique_ptr<Owner> owner = std::make_unique<Owner>();
 
-  std::unique_ptr<Owned> owned1 = base::WrapUnique(new Owned());
-  std::unique_ptr<Owned> owned2 = base::WrapUnique(new Owned());
+  std::unique_ptr<Owned> owned1 = std::make_unique<Owned>();
+  std::unique_ptr<Owned> owned2 = std::make_unique<Owned>();
   auto* raw1 = owned1.get();
   auto* raw2 = owned2.get();
 

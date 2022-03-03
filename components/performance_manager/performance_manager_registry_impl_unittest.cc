@@ -100,13 +100,13 @@ TEST_F(PerformanceManagerRegistryImplTest,
   std::unique_ptr<content::WebContents> contents =
       content::RenderViewHostTestHarness::CreateTestWebContents();
   std::unique_ptr<content::NavigationHandle> handle =
-      base::WrapUnique(new content::MockNavigationHandle(contents.get()));
+      std::make_unique<content::MockNavigationHandle>(contents.get());
   std::unique_ptr<content::NavigationThrottle> throttle1 =
-      base::WrapUnique(new content::TestNavigationThrottle(handle.get()));
+      std::make_unique<content::TestNavigationThrottle>(handle.get());
   std::unique_ptr<content::NavigationThrottle> throttle2 =
-      base::WrapUnique(new content::TestNavigationThrottle(handle.get()));
+      std::make_unique<content::TestNavigationThrottle>(handle.get());
   std::unique_ptr<content::NavigationThrottle> throttle3 =
-      base::WrapUnique(new content::TestNavigationThrottle(handle.get()));
+      std::make_unique<content::TestNavigationThrottle>(handle.get());
   auto* raw_throttle1 = throttle1.get();
   auto* raw_throttle2 = throttle2.get();
   auto* raw_throttle3 = throttle3.get();
@@ -158,8 +158,8 @@ TEST_F(PerformanceManagerRegistryImplTest, PerformanceManagerOwned) {
   PerformanceManagerRegistryImpl* registry =
       PerformanceManagerRegistryImpl::GetInstance();
 
-  std::unique_ptr<Owned> owned1 = base::WrapUnique(new Owned());
-  std::unique_ptr<Owned> owned2 = base::WrapUnique(new Owned());
+  std::unique_ptr<Owned> owned1 = std::make_unique<Owned>();
+  std::unique_ptr<Owned> owned2 = std::make_unique<Owned>();
   auto* raw1 = owned1.get();
   auto* raw2 = owned2.get();
 
