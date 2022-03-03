@@ -174,30 +174,30 @@ std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetPlatformPolicies() {
 
 std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
   auto result = std::make_unique<base::DictionaryValue>();
-  result->SetBoolean(key::kRemoteAccessHostFirewallTraversal, true);
-  result->SetBoolean(key::kRemoteAccessHostRequireCurtain, false);
-  result->SetBoolean(key::kRemoteAccessHostMatchUsername, false);
+  result->SetBoolKey(key::kRemoteAccessHostFirewallTraversal, true);
+  result->SetBoolKey(key::kRemoteAccessHostRequireCurtain, false);
+  result->SetBoolKey(key::kRemoteAccessHostMatchUsername, false);
   result->Set(key::kRemoteAccessHostClientDomainList,
               std::make_unique<base::ListValue>());
   result->Set(key::kRemoteAccessHostDomainList,
               std::make_unique<base::ListValue>());
-  result->SetString(key::kRemoteAccessHostTokenUrl, std::string());
-  result->SetString(key::kRemoteAccessHostTokenValidationUrl, std::string());
-  result->SetString(key::kRemoteAccessHostTokenValidationCertificateIssuer,
-                    std::string());
-  result->SetBoolean(key::kRemoteAccessHostAllowClientPairing, true);
-  result->SetBoolean(key::kRemoteAccessHostAllowGnubbyAuth, true);
-  result->SetBoolean(key::kRemoteAccessHostAllowRelayedConnection, true);
-  result->SetString(key::kRemoteAccessHostUdpPortRange, "");
-  result->SetBoolean(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
+  result->SetStringKey(key::kRemoteAccessHostTokenUrl, std::string());
+  result->SetStringKey(key::kRemoteAccessHostTokenValidationUrl, std::string());
+  result->SetStringKey(key::kRemoteAccessHostTokenValidationCertificateIssuer,
+                       std::string());
+  result->SetBoolKey(key::kRemoteAccessHostAllowClientPairing, true);
+  result->SetBoolKey(key::kRemoteAccessHostAllowGnubbyAuth, true);
+  result->SetBoolKey(key::kRemoteAccessHostAllowRelayedConnection, true);
+  result->SetStringKey(key::kRemoteAccessHostUdpPortRange, "");
+  result->SetBoolKey(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
                      false);
-  result->SetInteger(key::kRemoteAccessHostClipboardSizeBytes, -1);
-  result->SetBoolean(key::kRemoteAccessHostAllowRemoteSupportConnections, true);
+  result->SetIntKey(key::kRemoteAccessHostClipboardSizeBytes, -1);
+  result->SetBoolKey(key::kRemoteAccessHostAllowRemoteSupportConnections, true);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  result->SetBoolean(key::kRemoteAccessHostAllowFileTransfer, true);
-  result->SetBoolean(key::kRemoteAccessHostEnableUserInterface, true);
-  result->SetBoolean(key::kRemoteAccessHostAllowRemoteAccessConnections, true);
-  result->SetInteger(key::kRemoteAccessHostMaximumSessionDurationMinutes, 0);
+  result->SetBoolKey(key::kRemoteAccessHostAllowFileTransfer, true);
+  result->SetBoolKey(key::kRemoteAccessHostEnableUserInterface, true);
+  result->SetBoolKey(key::kRemoteAccessHostAllowRemoteAccessConnections, true);
+  result->SetIntKey(key::kRemoteAccessHostMaximumSessionDurationMinutes, 0);
 #endif
   return result;
 }

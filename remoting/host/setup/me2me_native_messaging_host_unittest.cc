@@ -462,7 +462,7 @@ void Me2MeNativeMessagingHostTest::WriteMessageToInputPipe(
 
 void Me2MeNativeMessagingHostTest::TestBadRequest(const base::Value& message) {
   base::DictionaryValue good_message;
-  good_message.SetString("type", "hello");
+  good_message.SetStringKey("type", "hello");
 
   // This test currently relies on synchronous processing of hello messages and
   // message parameters verification.
@@ -483,60 +483,60 @@ void Me2MeNativeMessagingHostTest::TestBadRequest(const base::Value& message) {
 TEST_F(Me2MeNativeMessagingHostTest, All) {
   int next_id = 0;
   base::DictionaryValue message;
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "hello");
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "hello");
   WriteMessageToInputPipe(message);
 
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "getHostName");
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "getHostName");
   WriteMessageToInputPipe(message);
 
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "getPinHash");
-  message.SetString("hostId", "my_host");
-  message.SetString("pin", "1234");
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "getPinHash");
+  message.SetStringKey("hostId", "my_host");
+  message.SetStringKey("pin", "1234");
   WriteMessageToInputPipe(message);
 
   message.DictClear();
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "generateKeyPair");
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "generateKeyPair");
   WriteMessageToInputPipe(message);
 
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "getDaemonConfig");
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "getDaemonConfig");
   WriteMessageToInputPipe(message);
 
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "getUsageStatsConsent");
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "getUsageStatsConsent");
   WriteMessageToInputPipe(message);
 
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "stopDaemon");
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "stopDaemon");
   WriteMessageToInputPipe(message);
 
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "getDaemonState");
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "getDaemonState");
   WriteMessageToInputPipe(message);
 
   // Following messages require a "config" dictionary.
   base::DictionaryValue config;
-  config.SetBoolean("update", true);
+  config.SetBoolKey("update", true);
   message.Set("config", config.CreateDeepCopy());
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "updateDaemonConfig");
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "updateDaemonConfig");
   WriteMessageToInputPipe(message);
 
   config.DictClear();
-  config.SetBoolean("start", true);
+  config.SetBoolKey("start", true);
   message.Set("config", config.CreateDeepCopy());
-  message.SetBoolean("consent", true);
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "startDaemon");
+  message.SetBoolKey("consent", true);
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "startDaemon");
   WriteMessageToInputPipe(message);
 
-  message.SetInteger("id", next_id++);
-  message.SetString("type", "getCredentialsFromAuthCode");
-  message.SetString("authorizationCode", "fake_auth_code");
+  message.SetIntKey("id", next_id++);
+  message.SetStringKey("type", "getCredentialsFromAuthCode");
+  message.SetStringKey("authorizationCode", "fake_auth_code");
   WriteMessageToInputPipe(message);
 
   void (*verify_routines[])(std::unique_ptr<base::DictionaryValue>) = {
@@ -576,9 +576,9 @@ TEST_F(Me2MeNativeMessagingHostTest, All) {
 // Verify that response ID matches request ID.
 TEST_F(Me2MeNativeMessagingHostTest, Id) {
   base::DictionaryValue message;
-  message.SetString("type", "hello");
+  message.SetStringKey("type", "hello");
   WriteMessageToInputPipe(message);
-  message.SetString("id", "42");
+  message.SetStringKey("id", "42");
   WriteMessageToInputPipe(message);
 
   std::unique_ptr<base::DictionaryValue> response = ReadMessageFromOutputPipe();
@@ -607,47 +607,47 @@ TEST_F(Me2MeNativeMessagingHostTest, MissingType) {
 // Verify rejection if type is unrecognized.
 TEST_F(Me2MeNativeMessagingHostTest, InvalidType) {
   base::DictionaryValue message;
-  message.SetString("type", "xxx");
+  message.SetStringKey("type", "xxx");
   TestBadRequest(message);
 }
 
 // Verify rejection if getPinHash request has no hostId.
 TEST_F(Me2MeNativeMessagingHostTest, GetPinHashNoHostId) {
   base::DictionaryValue message;
-  message.SetString("type", "getPinHash");
-  message.SetString("pin", "1234");
+  message.SetStringKey("type", "getPinHash");
+  message.SetStringKey("pin", "1234");
   TestBadRequest(message);
 }
 
 // Verify rejection if getPinHash request has no pin.
 TEST_F(Me2MeNativeMessagingHostTest, GetPinHashNoPin) {
   base::DictionaryValue message;
-  message.SetString("type", "getPinHash");
-  message.SetString("hostId", "my_host");
+  message.SetStringKey("type", "getPinHash");
+  message.SetStringKey("hostId", "my_host");
   TestBadRequest(message);
 }
 
 // Verify rejection if updateDaemonConfig request has invalid config.
 TEST_F(Me2MeNativeMessagingHostTest, UpdateDaemonConfigInvalidConfig) {
   base::DictionaryValue message;
-  message.SetString("type", "updateDaemonConfig");
-  message.SetString("config", "xxx");
+  message.SetStringKey("type", "updateDaemonConfig");
+  message.SetStringKey("config", "xxx");
   TestBadRequest(message);
 }
 
 // Verify rejection if startDaemon request has invalid config.
 TEST_F(Me2MeNativeMessagingHostTest, StartDaemonInvalidConfig) {
   base::DictionaryValue message;
-  message.SetString("type", "startDaemon");
-  message.SetString("config", "xxx");
-  message.SetBoolean("consent", true);
+  message.SetStringKey("type", "startDaemon");
+  message.SetStringKey("config", "xxx");
+  message.SetBoolKey("consent", true);
   TestBadRequest(message);
 }
 
 // Verify rejection if startDaemon request has no "consent" parameter.
 TEST_F(Me2MeNativeMessagingHostTest, StartDaemonNoConsent) {
   base::DictionaryValue message;
-  message.SetString("type", "startDaemon");
+  message.SetStringKey("type", "startDaemon");
   message.Set("config", base::DictionaryValue().CreateDeepCopy());
   TestBadRequest(message);
 }
@@ -655,7 +655,7 @@ TEST_F(Me2MeNativeMessagingHostTest, StartDaemonNoConsent) {
 // Verify rejection if getCredentialsFromAuthCode has no auth code.
 TEST_F(Me2MeNativeMessagingHostTest, GetCredentialsFromAuthCodeNoAuthCode) {
   base::DictionaryValue message;
-  message.SetString("type", "getCredentialsFromAuthCode");
+  message.SetStringKey("type", "getCredentialsFromAuthCode");
   TestBadRequest(message);
 }
 
