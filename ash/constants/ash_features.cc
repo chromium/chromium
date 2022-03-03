@@ -1110,6 +1110,10 @@ const base::Feature kProjectorAnnotator{"ProjectorAnnotator",
 const base::Feature kProjectorAppDebug{"ProjectorAppDebug",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the Projector exclude transcript feature is enabled.
+const base::Feature kProjectorExcludeTranscript{
+    "ProjectorExcludeTranscript", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1950,6 +1954,10 @@ bool IsProjectorAnnotatorEnabled() {
 
 bool IsProjectorAppDebugMode() {
   return base::FeatureList::IsEnabled(kProjectorAppDebug);
+}
+
+bool IsProjectorExcludeTranscriptEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorExcludeTranscript);
 }
 
 bool IsQuickDimEnabled() {
