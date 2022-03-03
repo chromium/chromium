@@ -301,7 +301,8 @@ const int kSearchBarTrailingSpace = 40;
     [self setItems:@[
       _leadingButton, _iconButtonAdditionalSpaceItem, _searchButton, _spaceItem,
       centralItem, _spaceItem, trailingButton
-    ]];
+    ]
+          animated:YES];
     return;
   }
 
@@ -405,7 +406,7 @@ const int kSearchBarTrailingSpace = 40;
     // create a custom cancel button.
     _searchBar.showsCancelButton = NO;
     _cancelSearchButton = [[UIBarButtonItem alloc] init];
-    _cancelSearchButton.style = UIBarButtonItemStyleDone;
+    _cancelSearchButton.style = UIBarButtonItemStylePlain;
     _cancelSearchButton.tintColor =
         UIColorFromRGB(kTabGridToolbarTextButtonColor);
     _cancelSearchButton.accessibilityIdentifier =
