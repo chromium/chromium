@@ -3565,7 +3565,7 @@
 <translation id="4608703838363792434">الملف <ph name="FILE_NAME" /> به محتوى حسّاس.</translation>
 <translation id="4609987916561367134">‏المواقع الإلكترونية التي يُسمح لها باستخدام JavaScript</translation>
 <translation id="4610162781778310380">حدث خطأ في <ph name="PLUGIN_NAME" />.</translation>
-<translation id="4610637590575890427">هل قصدت الذهاب إلى الموقع <ph name="SITE" />؟</translation>
+<translation id="4610637590575890427">هل تقصد الانتقال إلى <ph name="SITE" />؟</translation>
 <translation id="4611114513649582138">اتصال البيانات متاح</translation>
 <translation id="4613144866899789710">‏جارٍ إلغاء عملية تثبيت Linux...</translation>
 <translation id="4613271546271159013">لقد غيّرت الإضافة الصفحة المعروضة عندما فتحت علامة تبويب جديدة.</translation>

@@ -427,7 +427,7 @@
 <translation id="1426870617281699524">Klikk på Prøv igjen, og godta forespørselen på datamaskinen din</translation>
 <translation id="1427179946227469514">Tonehøyde for tekst til tale</translation>
 <translation id="1427269577154060167">Land</translation>
-<translation id="142758023928848008">Slå på trege taster (for å bruke hurtigtaster ved å trykke sekvensen)</translation>
+<translation id="142758023928848008">Slå på trege taster (for å bruke hurtigtaster ved å trykke sekvenser)</translation>
 <translation id="142765311413773645">Lisensen for <ph name="APP_NAME" /> er utløpt</translation>
 <translation id="1429300045468813835">Fjernet alle</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
@@ -1249,7 +1249,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2233502537820838181">Mer informasjon</translation>
 <translation id="223356358902285214">Nett- og appaktivitet</translation>
 <translation id="2234827758954819389">Personvernveiledning</translation>
-<translation id="2234876718134438132">Synkronisering/Google-tjenester</translation>
+<translation id="2234876718134438132">Synkronisering og Google-tjenester</translation>
 <translation id="2235344399760031203">Informasjonskapsler fra tredjeparter er blokkert</translation>
 <translation id="2238379619048995541">Data om frekvenstilstand</translation>
 <translation id="2241053333139545397">lese og endre opplysningene dine på mange nettsteder</translation>
@@ -3902,7 +3902,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="496185450405387901">Denne appen er installert av administratoren.</translation>
 <translation id="4963789650715167449">Fjern gjeldende fane</translation>
 <translation id="4964455510556214366">Oppsett</translation>
-<translation id="496446150016900060">Synkroniser Wi-Fi-nettverk med telefonen din</translation>
+<translation id="496446150016900060">synkronisere Wi-Fi-nettverk med telefonen din</translation>
 <translation id="4965808351167763748">Er du sikker på at du vil konfigurere Hangouts Meet på denne enheten?</translation>
 <translation id="4966972803217407697">Du er inkognito</translation>
 <translation id="496888482094675990">Med Filer-appen får du rask tilgang til filer du har lagret på Google Disk, eksterne langringsenheter eller Chrome OS-enheten din.</translation>

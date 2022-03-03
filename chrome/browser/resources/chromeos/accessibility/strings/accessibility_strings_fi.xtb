@@ -54,7 +54,7 @@
 <translation id="1273314450961659276">Tekstistä puheeksi ‑asetukset</translation>
 <translation id="1275718070701477396">Valittu</translation>
 <translation id="1284576163386164372">Voit katsoa ohjeet milloin tahansa avaamalla valikot nelisormisella napautuksella. Aktivoi sitten ohje ChromeVox-osiosta.</translation>
-<translation id="1291286136605998134">Päälle/pois-painike</translation>
+<translation id="1291286136605998134">Päälle tai pois -painike</translation>
 <translation id="1299774449519412690">Vaalea taivaansininen</translation>
 <translation id="1303806948938513162">Avaa ChromeVox-valikot napauttamalla neljällä sormella</translation>
 <translation id="1313373992684326101">Siirry edelliseen osioon. Näitä ovat esimerkiksi tila-alue ja Käynnistysohjelma.</translation>
@@ -590,7 +590,7 @@
 <translation id="4986606102545753256"><ph name="NAME" />, ikkuna</translation>
 <translation id="4993152509206108683">Nopeus <ph name="PERCENT" /> prosenttia.</translation>
 <translation id="4994420463726586413">Sano akun nykyinen tila</translation>
-<translation id="4997282455736854877"><ph name="NAME" />, radiopainike valittu</translation>
+<translation id="4997282455736854877"><ph name="NAME" />, valintanappi valittu</translation>
 <translation id="5011664330025416377">Aktivoi painamalla Haku+välilyönti</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, valikkokohteen painike valittu</translation>
 <translation id="5020651427400641814">Ota puheen kirjaaminen käyttöön</translation>

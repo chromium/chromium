@@ -142,7 +142,7 @@
 <translation id="3102119246920354026">Välimuisti</translation>
 <translation id="3122464029669770682">Keskusyksikkö</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Poistetaanko sivu?}=1{Poistetaanko sivu {PAGE_NUMBER}?}other{Poistetaanko sivu {PAGE_NUMBER}?}}</translation>
-<translation id="315116470104423982">Mobiilitiedonsiirto</translation>
+<translation id="315116470104423982">Mobiilidata</translation>
 <translation id="3156846309055100599">Skannataan sivu <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Captive portal havaittu</translation>
 <translation id="3170673040743561620">Aseta dokumentti skanneriin</translation>

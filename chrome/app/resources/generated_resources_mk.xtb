@@ -6195,7 +6195,7 @@
 <translation id="7393073300870882456">{COUNT,plural, =1{1 ставка е копирана}one{{COUNT} ставка е копирана}other{{COUNT} ставки се копирани}}</translation>
 <translation id="7395774987022469191">Цел екран</translation>
 <translation id="7396017167185131589">Споделените папки ќе се појават тука</translation>
-<translation id="7396845648024431313"><ph name="APP_NAME" /> ќе стартува при подигнувањето на системот и ќе продолжи да се извршува во заднина дури и откако сте ги затвориле останатите прозорци на <ph name="PRODUCT_NAME" />.</translation>
+<translation id="7396845648024431313"><ph name="APP_NAME" /> ќе стартува при подигнувањето на системот и ќе продолжи да работи во заднина дури и откако сте ги затвориле останатите прозорци на <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7397270852490618635">Исклучи ја светлата тема</translation>
 <translation id="7399045143794278225">Приспособете ја синхронизацијата</translation>
 <translation id="7400418766976504921">URL</translation>

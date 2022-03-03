@@ -1623,7 +1623,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2602501489742255173">Баштоо үчүн, өйдө сүрүп коюңуз</translation>
 <translation id="2603115962224169880">Компьютерди тазалоо</translation>
 <translation id="2603355571917519942">Voice Match даяр</translation>
-<translation id="2604138917550693049">Сүрөттү Google Lens аркылуу издөө</translation>
+<translation id="2604138917550693049">Google Lens аркылуу издөө</translation>
 <translation id="2604255671529671813">Тармакка туташуу катасы</translation>
 <translation id="2605668923777146443">Better Together функциясынын параметрлерин көрүү үчүн <ph name="LINK_BEGIN" />Жөндөөлөргө<ph name="LINK_END" /> өтүңүз.</translation>
 <translation id="2606246518223360146">Дайындарды байланыштыруу</translation>
@@ -2387,7 +2387,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3393554941209044235">Chrome документин талдоо</translation>
 <translation id="3394850431319394743">Сайттар корголгон мазмунду сиздин уруксатыңыз менен ойното алат</translation>
 <translation id="3395403082745257596"><ph name="DEVICE_COUNT" /> ичинен <ph name="DEVICE_INDEX" />-түзмөк, <ph name="DEVICE_NAME" />, түзмөктүн түрү белгисиз.</translation>
-<translation id="3396744558790608201">Сайтка кирип жана товар сатып алууда барактын визуалдык мазмуну тууралуу кеңири маалымат алуу үчүн сайттын каалаган аймагын издей аласыз. Ал үчүн оң баскычты чыкылдатып, “Google Lens акрылуу сүрөттөрдү издөө” дегенди тандаңыз.</translation>
+<translation id="3396744558790608201">Сайтты карап же Интернеттен бир нерсе сатып алып жатканда барактын визуалдык мазмуну менен жакшыраак тааныша аласыз. Ал үчүн оң баскычты чыкылдатып, “Сүрөттөрдү Google Lens аркылуу издөө” дегенди тандаңыз.</translation>
 <translation id="3396800784455899911">"Кабыл алып, улантуу" баскычын басуу менен, бул Google кызматтарын жогоруда сүрөттөлгөн шарттарга ылайык пайдаланууга макулдугуңузду билдиресиз.</translation>
 <translation id="339722927132407568">Сенейип калуу</translation>
 <translation id="3399432415385675819">Билдирмелер өчүрүлөт</translation>
@@ -3983,7 +3983,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5051836348807686060">Сиз тандаган тилдерде орфография текшерилбейт</translation>
 <translation id="5052499409147950210">Сайтты түзөтүү</translation>
 <translation id="505347685865235222">Аталышы жок топ – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Сүрөттү Google Lens аркылуу издөө</translation>
+<translation id="5053962746715621840">Google Lens аркылуу издөө</translation>
 <translation id="5056950756634735043">Контейнерге туташууда</translation>
 <translation id="5057110919553308744">Кеңейтүүнү чыкылдатканда</translation>
 <translation id="505776528429481161">Жакын жердеги түзмөктөрдү оңой туташтырып, тууралайсыз</translation>
@@ -7383,7 +7383,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8597845839771543242">Менчик форматы:</translation>
 <translation id="8599681327221583254">Бир же бир нече саясат туура эмес конфигурацияланды. Администраторуңузга кайрылыңыз</translation>
 <translation id="8601206103050338563">TLS WWW Кардар аныктыгын текшерүү</translation>
-<translation id="8601611099293226919">Экраныңызда Google Lens менен издөө</translation>
+<translation id="8601611099293226919">Экраныңыздагы нерселерди Google Lens аркылуу издөө</translation>
 <translation id="8602851771975208551">Chrome'дун ишин өзгөртө турган колдонмону компьютериңиздеги башка программа кошуп койду.</translation>
 <translation id="8605428685123651449">SQLite эстутуму</translation>
 <translation id="8608618451198398104">Kerberos билетин кошуу</translation>
