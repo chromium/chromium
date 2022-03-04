@@ -1636,7 +1636,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="net.HttpJob.CanIncludeCookies" enum="Boolean"
+<histogram name="Net.HttpJob.CanIncludeCookies" enum="Boolean"
     expires_after="2023-02-14">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
