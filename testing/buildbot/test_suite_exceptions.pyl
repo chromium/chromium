@@ -626,6 +626,12 @@
           '--test-launcher-print-timestamps',
         ],
       },
+      # crbug.com/1300822
+      'Mac10.12 Tests': {
+        'swarming': {
+          'shards': 20,
+        },
+      },
       'Mac10.15 Tests': {
         # crbug.com/1042757
         'swarming': {
