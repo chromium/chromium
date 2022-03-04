@@ -145,6 +145,14 @@ class ExtensionApiFrameIdMap {
       content::WebContents* web_contents,
       int frame_id);
 
+  // Find the current RenderFrameHost for a given extension documentID.
+  // Returns nullptr if not found.
+  content::RenderFrameHost* GetRenderFrameHostByDocumentId(
+      const DocumentId& document_id);
+
+  // Parses a serialized document id string to a DocumentId.
+  static DocumentId DocumentIdFromString(const std::string& document_id);
+
   // Retrieves the FrameData for a given RenderFrameHost id.
   [[nodiscard]] FrameData GetFrameData(content::GlobalRenderFrameHostId rfh_id);
 
@@ -188,6 +196,10 @@ class ExtensionApiFrameIdMap {
   // continue after a frame is unloaded can access the FrameData.
   using FrameDataMap = std::map<content::GlobalRenderFrameHostId, FrameData>;
   FrameDataMap deleted_frame_data_map_;
+
+  // Holds mapping of DocumentIds to ExtensionDocumentUserData objects.
+  using DocumentIdMap = std::map<DocumentId, ExtensionDocumentUserData*>;
+  DocumentIdMap document_id_map_;
 };
 
 }  // namespace extensions

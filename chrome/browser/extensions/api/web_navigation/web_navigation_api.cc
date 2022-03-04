@@ -453,24 +453,68 @@ void WebNavigationTabObserver::RenderFrameHostPendingDeletion(
 ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
   std::unique_ptr<GetFrame::Params> params(GetFrame::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  int tab_id = params->details.tab_id;
-  int frame_id = params->details.frame_id;
 
-  content::WebContents* web_contents;
-  if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
-                                    include_incognito_information(),
-                                    &web_contents) ||
-      !web_contents) {
-    return RespondNow(OneArgument(base::Value()));
+  int tab_id = api::tabs::TAB_ID_NONE;
+  int frame_id = -1;
+
+  content::RenderFrameHost* render_frame_host = nullptr;
+  if (params->details.document_id) {
+    ExtensionApiFrameIdMap::DocumentId document_id =
+        ExtensionApiFrameIdMap::DocumentIdFromString(
+            *params->details.document_id);
+    if (!document_id)
+      return RespondNow(Error("Invalid documentId."));
+
+    // Note that we will globally find a RenderFrameHost but validate that
+    // we are in the right context still as we may be in the wrong profile
+    // or in incognito mode.
+    render_frame_host =
+        ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
+            document_id);
+
+    if (!render_frame_host)
+      return RespondNow(OneArgument(base::Value()));
+
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+    // We found the RenderFrameHost through a generic lookup so we must test to
+    // see if the WebContents is actually in our BrowserContext.
+    if (!ExtensionTabUtil::IsWebContentsInContext(
+            web_contents, browser_context(), include_incognito_information())) {
+      return RespondNow(OneArgument(base::Value()));
+    }
+
+    tab_id = ExtensionTabUtil::GetTabId(web_contents);
+    frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
+
+    // If the provided tab_id and frame_id do not match the calculated ones
+    // return.
+    if ((params->details.tab_id && *params->details.tab_id != tab_id) ||
+        (params->details.frame_id && *params->details.frame_id != frame_id)) {
+      return RespondNow(OneArgument(base::Value()));
+    }
+  } else {
+    // If documentId is not provided, tab_id and frame_id must be. Return early
+    // if not.
+    if (!params->details.tab_id || !params->details.frame_id) {
+      return RespondNow(Error(
+          "Either documentId or both tabId and frameId must be specified."));
+    }
+
+    tab_id = *params->details.tab_id;
+    frame_id = *params->details.frame_id;
+
+    content::WebContents* web_contents = nullptr;
+    if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
+                                      include_incognito_information(),
+                                      &web_contents) ||
+        !web_contents) {
+      return RespondNow(OneArgument(base::Value()));
+    }
+
+    render_frame_host = ExtensionApiFrameIdMap::Get()->GetRenderFrameHostById(
+        web_contents, frame_id);
   }
-
-  WebNavigationTabObserver* observer =
-      WebNavigationTabObserver::Get(web_contents);
-  DCHECK(observer);
-
-  content::RenderFrameHost* render_frame_host =
-      ExtensionApiFrameIdMap::Get()->GetRenderFrameHostById(web_contents,
-                                                            frame_id);
 
   auto* frame_navigation_state =
       render_frame_host
@@ -511,17 +555,13 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   int tab_id = params->details.tab_id;
 
-  content::WebContents* web_contents;
+  content::WebContents* web_contents = nullptr;
   if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
                                     include_incognito_information(),
                                     &web_contents) ||
       !web_contents) {
     return RespondNow(OneArgument(base::Value()));
   }
-
-  WebNavigationTabObserver* observer =
-      WebNavigationTabObserver::Get(web_contents);
-  DCHECK(observer);
 
   std::vector<GetAllFrames::Results::DetailsType> result_list;
 

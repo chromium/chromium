@@ -268,6 +268,20 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, GetFrame) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/getFrame")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, GetFrameIncognito) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/empty.html");
+
+  Browser* incognito_browser = OpenURLOffTheRecord(browser()->profile(), url);
+  ASSERT_TRUE(incognito_browser);
+
+  // Now that we have a OTR browser, run the extension test.
+  ASSERT_TRUE(RunExtensionTest("webnavigation/getFrameIncognito", {},
+                               {.allow_in_incognito = true}))
+      << message_;
+}
+
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          WebNavigationApiTestWithContextType,
                          testing::Values(ContextType::kPersistentBackground));

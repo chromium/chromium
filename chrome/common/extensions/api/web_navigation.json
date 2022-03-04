@@ -30,14 +30,15 @@
             "name": "details",
             "description": "Information about the frame to retrieve information about.",
             "properties": {
-              "tabId": { "type": "integer", "minimum": 0, "description": "The ID of the tab in which the frame is." },
+              "tabId": { "type": "integer", "optional": true, "minimum": 0, "description": "The ID of the tab in which the frame is." },
               "processId": {
                 "type": "integer",
                 "optional": true,
                 "deprecated": "Frames are now uniquely identified by their tab ID and frame ID; the process ID is no longer needed and therefore ignored.",
                 "description": "The ID of the process that runs the renderer for this tab."
               },
-              "frameId": { "type": "integer", "minimum": 0, "description": "The ID of the frame in the given tab." }
+              "frameId": { "type": "integer", "optional": true, "minimum": 0, "description": "The ID of the frame in the given tab." },
+              "documentId": { "type": "string", "optional": true, "nodoc": true, "description": "The UUID of the document. If the frameId and/or tabId are provided they will be validated to match the document found by provided document ID." }
             }
           }
         ],
