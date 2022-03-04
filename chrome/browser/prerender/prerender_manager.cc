@@ -170,7 +170,7 @@ void PrerenderManager::CancelPrerenderDirectUrlInput() {
 }
 
 base::WeakPtr<content::PrerenderHandle>
-PrerenderManager::StartPrerenderAutocompleteMatch(
+PrerenderManager::StartPrerenderSearchSuggestion(
     const AutocompleteMatch& match) {
   DCHECK(AutocompleteMatch::IsSearchType(match.type));
 
@@ -216,7 +216,7 @@ PrerenderManager::StartPrerenderAutocompleteMatch(
 
   // Skip changing the prerender URL in tests as they may not have Profile or
   // TemplateURLServiceFactory. In that case, the callers of
-  // StartPrerenderAutocompleteMatch() should ensure the prerender URL is valid
+  // StartPrerenderSearchSuggestion() should ensure the prerender URL is valid
   // instead.
   if (!skip_template_url_service_for_testing_) {
     TemplateURLService* template_url_service =

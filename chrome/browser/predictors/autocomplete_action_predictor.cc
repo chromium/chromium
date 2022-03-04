@@ -213,7 +213,7 @@ void AutocompleteActionPredictor::StartPrerendering(
     PrerenderManager::CreateForWebContents(&web_contents);
     auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
     search_prerender_handle_ =
-        prerender_manager->StartPrerenderAutocompleteMatch(match);
+        prerender_manager->StartPrerenderSearchSuggestion(match);
   } else if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
     // Check whether preloading is enabled. If users disable this
     // setting, it means users do not want to preload pages.

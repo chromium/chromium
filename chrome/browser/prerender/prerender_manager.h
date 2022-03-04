@@ -51,7 +51,7 @@ class PrerenderManager : public content::WebContentsObserver,
   // The entry of prerender.
   // Calling this method will lead to the cancellation of the previous prerender
   // if the given `match`'s search terms differ from the ongoing one's.
-  base::WeakPtr<content::PrerenderHandle> StartPrerenderAutocompleteMatch(
+  base::WeakPtr<content::PrerenderHandle> StartPrerenderSearchSuggestion(
       const AutocompleteMatch& match);
 
   // The entry of direct url input prerender.
