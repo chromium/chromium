@@ -123,8 +123,7 @@ std::vector<std::unique_ptr<PasswordForm>> GetAllLogins(
 void RemoveLogins(PasswordStoreInterface* store) {
   // Null Time values enforce unbounded deletion in both direction
   store->RemoveLoginsCreatedBetween(/*delete_begin=*/base::Time(),
-                                    /*delete_end=*/base::Time::Max(),
-                                    /*completion=*/base::NullCallback());
+                                    /*delete_end=*/base::Time::Max());
 }
 PasswordStoreInterface* GetProfilePasswordStoreInterface(int index) {
   return PasswordStoreFactory::GetForProfile(test()->GetProfile(index),

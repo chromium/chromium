@@ -113,9 +113,9 @@ bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {
   // exist, the unblocklist operation is no-op.
   auto form_digest = PasswordFormDigest(PasswordForm::Scheme::kHtml,
                                         form.signon_realm, form.url);
-  profile_store_->Unblocklist(form_digest, /*completion=*/base::DoNothing());
+  profile_store_->Unblocklist(form_digest);
   if (account_store_)
-    account_store_->Unblocklist(form_digest, /*completion=*/base::DoNothing());
+    account_store_->Unblocklist(form_digest);
 
   GetStoreFor(form).AddLogin(form);
   metrics_util::LogUserInteractionsWhenAddingCredentialFromSettings(

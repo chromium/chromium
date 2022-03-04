@@ -94,18 +94,19 @@ class PasswordStore : public PasswordStoreInterface {
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceClosure completion,
+      base::OnceClosure completion = base::NullCallback(),
       base::OnceCallback<void(bool)> sync_completion =
           base::NullCallback()) override;
-  void RemoveLoginsCreatedBetween(
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceCallback<void(bool)> completion) override;
+  void RemoveLoginsCreatedBetween(base::Time delete_begin,
+                                  base::Time delete_end,
+                                  base::OnceCallback<void(bool)> completion =
+                                      base::NullCallback()) override;
   void DisableAutoSignInForOrigins(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      base::OnceClosure completion) override;
-  void Unblocklist(const PasswordFormDigest& form_digest,
-                   base::OnceClosure completion) override;
+      base::OnceClosure completion = base::NullCallback()) override;
+  void Unblocklist(
+      const PasswordFormDigest& form_digest,
+      base::OnceClosure completion = base::NullCallback()) override;
   void GetLogins(const PasswordFormDigest& form,
                  base::WeakPtr<PasswordStoreConsumer> consumer) override;
   void GetAutofillableLogins(

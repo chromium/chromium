@@ -94,7 +94,7 @@ PasswordForm FormSaverImpl::Blocklist(PasswordFormDigest digest) {
 }
 
 void FormSaverImpl::Unblocklist(const PasswordFormDigest& digest) {
-  store_->Unblocklist(digest, /*completion=*/base::DoNothing());
+  store_->Unblocklist(digest);
 }
 
 void FormSaverImpl::Save(PasswordForm pending,

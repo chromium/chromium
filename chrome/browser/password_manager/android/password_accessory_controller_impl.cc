@@ -443,7 +443,7 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
   password_manager::PasswordStoreInterface* store =
       password_client_->GetProfilePasswordStore();
   if (saving_enabled) {
-    store->Unblocklist(form_digest, base::NullCallback());
+    store->Unblocklist(form_digest);
   } else {
     password_manager::PasswordForm form =
         password_manager_util::MakeNormalizedBlocklistedForm(
