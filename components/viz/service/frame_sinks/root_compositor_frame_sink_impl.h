@@ -193,8 +193,6 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   gfx::Size last_swap_pixel_size_;
 #endif
 
-  gfx::CALayerParams last_ca_layer_params_;
-
 #if BUILDFLAG(IS_ANDROID)
   // Let client control whether it wants `DidCompleteSwapWithSize`.
   bool enable_swap_competion_callback_ = false;
