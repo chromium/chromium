@@ -20,7 +20,6 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 
 namespace base {
@@ -34,8 +33,9 @@ class SiteForCookies;
 namespace blink {
 
 class CodeCacheHost;
-class WebURLRequest;
 class WebDocumentSubresourceFilter;
+class WebURLLoaderFactory;
+class WebURLRequest;
 
 // Helper class allowing DedicatedOrSharedWorkerFetchContextImpl to notify blink
 // upon an accept languages update. This class will be extended by
