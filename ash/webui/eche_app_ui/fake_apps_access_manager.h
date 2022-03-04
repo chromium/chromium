@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_FAKE_APPS_ACCESS_MANAGER_H_
 #define ASH_WEBUI_ECHE_APP_UI_FAKE_APPS_ACCESS_MANAGER_H_
 
+#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 
 namespace chromeos {
@@ -15,6 +16,9 @@ class MultideviceHandlerTest;
 
 namespace ash {
 namespace eche_app {
+
+using AccessStatus =
+    ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
 
 class FakeAppsAccessManager : public AppsAccessManager {
  public:

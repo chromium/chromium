@@ -44,6 +44,19 @@ void FakeMultideviceFeatureAccessManager::SetCameraRollAccessStatusInternal(
   NotifyCameraRollAccessChanged();
 }
 
+void FakeMultideviceFeatureAccessManager::SetAppsAccessStatusInternal(
+    AccessStatus apps_access_status) {
+  if (apps_access_status_ == apps_access_status)
+    return;
+
+  apps_access_status_ = apps_access_status;
+}
+
+MultideviceFeatureAccessManager::AccessStatus
+FakeMultideviceFeatureAccessManager::GetAppsAccessStatus() const {
+  return apps_access_status_;
+}
+
 MultideviceFeatureAccessManager::AccessStatus
 FakeMultideviceFeatureAccessManager::GetNotificationAccessStatus() const {
   return notification_access_status_;

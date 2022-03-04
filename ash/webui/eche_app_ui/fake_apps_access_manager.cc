@@ -3,16 +3,20 @@
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/fake_apps_access_manager.h"
+#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 
 namespace ash {
 namespace eche_app {
+
+using AccessStatus =
+    ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
 
 FakeAppsAccessManager::FakeAppsAccessManager(AccessStatus access_status)
     : access_status_(access_status) {}
 
 FakeAppsAccessManager::~FakeAppsAccessManager() = default;
 
-AppsAccessManager::AccessStatus FakeAppsAccessManager::GetAccessStatus() const {
+AccessStatus FakeAppsAccessManager::GetAccessStatus() const {
   return access_status_;
 }
 
