@@ -253,4 +253,18 @@ suite('AccessCodeCastAppTest', () => {
     await waitAfterNextRender();
     assertTrue(visited);
   });
+
+  test('submit button disabled during cast attempt', () => {
+    app.setAccessCodeForTest('foobar');
+    assertFalse(app.$.castButton.disabled);
+    let testProxy = createTestProxy(
+      AddSinkResultCode.OK,
+      RouteRequestResultCode.OK,
+      () => {
+        assertTrue(app.$.castButton.disabled);
+      }
+    );
+    BrowserProxy.setInstance(testProxy);
+    app.addSinkAndCast();
+  });
 });

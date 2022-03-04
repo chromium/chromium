@@ -58,7 +58,12 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
       accessCode: {
         type: String,
         value: '',
-        observer: 'accessCodeChange'
+        observer: 'castStateChange'
+      },
+      canCast: {
+        type: Boolean,
+        value: true,
+        observer: 'castStateChange'
       }
     };
   }
@@ -78,7 +83,6 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     super();
     this.listenerIds = [];
     this.router = BrowserProxy.getInstance().callbackRouter;
-    this.canCast = true;
     this.inputLabel = this.i18n('inputLabel');
 
     this.accessCode = '';
@@ -136,7 +140,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
       return;
     }
 
-    this.canCast = false;
+    this.set('canCast', false);
     this.$.errorMessage.setNoError();
 
     const method = this.state === PageState.CODE_INPUT ? 
@@ -148,7 +152,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
 
     if (addResult !== AddSinkResultCode.OK) {
       this.$.errorMessage.setAddSinkError(addResult);
-      this.canCast = true;
+      this.set('canCast', true);
       return;
     }
 
@@ -158,7 +162,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
 
     if (castResult !== RouteRequestResultCode.OK) {
       this.$.errorMessage.setCastError(castResult);
-      this.canCast = true;
+      this.set('canCast', true);
       return;
     }
 
@@ -169,7 +173,7 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     this.accessCode = value;
   }
 
-  private accessCodeChange() {
+  private castStateChange() {
     this.submitDisabled = !this.canCast ||
         this.accessCode.length !== AccessCodeCastElement.ACCESS_CODE_LENGTH;
   }
