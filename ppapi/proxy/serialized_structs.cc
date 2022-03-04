@@ -61,20 +61,5 @@ SerializedNetworkInfo::SerializedNetworkInfo()
 
 SerializedNetworkInfo::~SerializedNetworkInfo() {}
 
-PPBFlash_DrawGlyphs_Params::PPBFlash_DrawGlyphs_Params()
-    : instance(0),
-      font_desc(),
-      color(0) {
-  clip.point.x = 0;
-  clip.point.y = 0;
-  clip.size.height = 0;
-  clip.size.width = 0;
-  position.x = 0;
-  position.y = 0;
-  allow_subpixel_aa = PP_FALSE;
-}
-
-PPBFlash_DrawGlyphs_Params::~PPBFlash_DrawGlyphs_Params() {}
-
 }  // namespace proxy
 }  // namespace ppapi

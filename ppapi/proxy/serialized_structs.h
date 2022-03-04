@@ -66,22 +66,6 @@ struct SerializedDirEntry {
   bool is_dir;
 };
 
-struct PPAPI_PROXY_EXPORT PPBFlash_DrawGlyphs_Params {
-  PPBFlash_DrawGlyphs_Params();
-  ~PPBFlash_DrawGlyphs_Params();
-
-  PP_Instance instance;
-  ppapi::HostResource image_data;
-  SerializedFontDescription font_desc;
-  uint32_t color;
-  PP_Point position;
-  PP_Rect clip;
-  float transformation[3][3];
-  PP_Bool allow_subpixel_aa;
-  std::vector<uint16_t> glyph_indices;
-  std::vector<PP_Point> glyph_advances;
-};
-
 struct PPBURLLoader_UpdateProgress_Params {
   PP_Instance instance;
   ppapi::HostResource resource;

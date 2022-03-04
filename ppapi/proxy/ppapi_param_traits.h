@@ -30,7 +30,6 @@ class PPB_X509Certificate_Fields;
 
 namespace proxy {
 
-struct PPBFlash_DrawGlyphs_Params;
 struct PPBURLLoader_UpdateProgress_Params;
 struct SerializedDirEntry;
 struct SerializedFontDescription;
@@ -59,17 +58,6 @@ struct PPAPI_PROXY_EXPORT ParamTraits<PP_NetAddress_Private> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template<>
-struct PPAPI_PROXY_EXPORT ParamTraits<
-    ppapi::proxy::PPBFlash_DrawGlyphs_Params> {
-  typedef ppapi::proxy::PPBFlash_DrawGlyphs_Params param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
 

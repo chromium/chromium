@@ -1396,15 +1396,6 @@ struct FuzzTraits<ppapi::PPB_X509Certificate_Fields> {
 };
 
 template <>
-struct FuzzTraits<ppapi::proxy::PPBFlash_DrawGlyphs_Params> {
-  static bool Fuzz(ppapi::proxy::PPBFlash_DrawGlyphs_Params* p,
-                       Fuzzer* fuzzer) {
-    // TODO(mbarbella): This should actually do something.
-    return true;
-  }
-};
-
-template <>
 struct FuzzTraits<ppapi::proxy::ResourceMessageCallParams> {
   static bool Fuzz(
       ppapi::proxy::ResourceMessageCallParams* p, Fuzzer* fuzzer) {
