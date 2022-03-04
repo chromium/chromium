@@ -179,6 +179,10 @@ mojom("mojom") {
           mojom = "crosapi.mojom.WebAppInstallResultCode"
           cpp = "::webapps::InstallResultCode"
         },
+        {
+          mojom = "crosapi.mojom.WebAppUninstallResultCode"
+          cpp = "::webapps::UninstallResultCode"
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",

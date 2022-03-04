@@ -9,6 +9,7 @@
 
 namespace webapps {
 enum class InstallResultCode;
+enum class UninstallResultCode;
 }
 
 namespace mojo {
@@ -20,6 +21,15 @@ struct EnumTraits<crosapi::mojom::WebAppInstallResultCode,
       webapps::InstallResultCode input);
   static bool FromMojom(crosapi::mojom::WebAppInstallResultCode input,
                         webapps::InstallResultCode* output);
+};
+
+template <>
+struct EnumTraits<crosapi::mojom::WebAppUninstallResultCode,
+                  webapps::UninstallResultCode> {
+  static crosapi::mojom::WebAppUninstallResultCode ToMojom(
+      webapps::UninstallResultCode input);
+  static bool FromMojom(crosapi::mojom::WebAppUninstallResultCode input,
+                        webapps::UninstallResultCode* output);
 };
 
 }  // namespace mojo
