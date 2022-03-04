@@ -81,7 +81,11 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
@@ -339,7 +343,15 @@ void WaitForFirstNonEmptyPaint(const GURL& url, content::WebContents* target) {
 class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  public:
   ProfilePickerCreationFlowBrowserTest()
-      : feature_list_(feature_engagement::kIPHProfileSwitchFeature) {}
+      : feature_list_(feature_engagement::kIPHProfileSwitchFeature) {
+#if BUILDFLAG(IS_MAC)
+    // Ensure the platform is unmanaged
+    platform_management_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetForPlatform(),
+            policy::EnterpriseManagementAuthority::NONE);
+#endif
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     ProfilePickerTestBase::SetUpInProcessBrowserTestFixture();
@@ -562,6 +574,10 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      platform_management_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowPicker) {
