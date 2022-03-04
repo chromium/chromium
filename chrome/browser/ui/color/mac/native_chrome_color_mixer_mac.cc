@@ -31,4 +31,6 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbar] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
   mixer[kColorToolbarContentAreaSeparator] = {foreground};
   mixer[kColorToolbarText] = {foreground};
+  mixer[kColorToolbarTopSeparatorFrameActive] = {dark_mode ? SK_ColorDKGRAY
+                                                           : SK_ColorLTGRAY};
 }
