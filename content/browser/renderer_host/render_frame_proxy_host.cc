@@ -50,7 +50,6 @@
 namespace content {
 
 namespace {
-using perfetto::protos::pbzero::ChromeTrackEvent;
 
 RenderFrameProxyHost::TestObserver* g_observer_for_testing = nullptr;
 
