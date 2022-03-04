@@ -17,7 +17,7 @@ CredentialManagerProxy::CredentialManagerProxy(LocalDOMWindow& window)
       credential_manager_(window.GetExecutionContext()),
       webotp_service_(window.GetExecutionContext()),
       payment_credential_(window.GetExecutionContext()),
-      fedcm_get_request_(window.GetExecutionContext()),
+      federated_auth_request_(window.GetExecutionContext()),
       fedcm_logout_request_(window.GetExecutionContext()) {}
 
 CredentialManagerProxy::~CredentialManagerProxy() = default;
@@ -83,12 +83,13 @@ void CredentialManagerProxy::BindRemoteForFedCm(
   remote.set_disconnect_handler(std::move(disconnect_closure));
 }
 
-mojom::blink::FederatedAuthRequest* CredentialManagerProxy::FedCmGetRequest() {
+mojom::blink::FederatedAuthRequest*
+CredentialManagerProxy::FederatedAuthRequest() {
   BindRemoteForFedCm(
-      fedcm_get_request_,
-      WTF::Bind(&CredentialManagerProxy::OnFedCmGetConnectionError,
+      federated_auth_request_,
+      WTF::Bind(&CredentialManagerProxy::OnFederatedAuthRequestConnectionError,
                 WrapWeakPersistent(this)));
-  return fedcm_get_request_.get();
+  return federated_auth_request_.get();
 }
 
 mojom::blink::FederatedAuthRequest*
@@ -100,8 +101,8 @@ CredentialManagerProxy::FedCmLogoutRpsRequest() {
   return fedcm_logout_request_.get();
 }
 
-void CredentialManagerProxy::OnFedCmGetConnectionError() {
-  fedcm_get_request_.reset();
+void CredentialManagerProxy::OnFederatedAuthRequestConnectionError() {
+  federated_auth_request_.reset();
   // TODO(crbug.com/1275769): Cache the resolver and resolve the promise with an
   // appropriate error message.
 }
@@ -131,7 +132,7 @@ void CredentialManagerProxy::Trace(Visitor* visitor) const {
   visitor->Trace(credential_manager_);
   visitor->Trace(webotp_service_);
   visitor->Trace(payment_credential_);
-  visitor->Trace(fedcm_get_request_);
+  visitor->Trace(federated_auth_request_);
   visitor->Trace(fedcm_logout_request_);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }

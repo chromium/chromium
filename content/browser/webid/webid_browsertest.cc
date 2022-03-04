@@ -192,11 +192,10 @@ class WebIdBrowserTest : public ContentBrowserTest {
                 url: ')" +
            BaseIdpUrl() + R"(',
                 clientId: 'client_id_1',
-                nonce: '12345',
               }]
             }
           }));
-          return x;
+          return (await x.login({nonce: '12345'})).idToken;
         }) ()
     )";
   }
@@ -261,11 +260,10 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
                 url: 'http://idp.example)" +
                        base::NumberToString(https_server().port()) + R"(',
                 clientId: 'client_id_1',
-                nonce: '12345',
               }]
             }
           }));
-          return x;
+          return await x.login({nonce: '12345'});
         }) ()
     )";
 

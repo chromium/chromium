@@ -50,7 +50,7 @@ class MODULES_EXPORT CredentialManagerProxy
 
   payments::mojom::blink::PaymentCredential* PaymentCredential();
 
-  mojom::blink::FederatedAuthRequest* FedCmGetRequest();
+  mojom::blink::FederatedAuthRequest* FederatedAuthRequest();
 
   mojom::blink::FederatedAuthRequest* FedCmLogoutRpsRequest();
 
@@ -64,14 +64,14 @@ class MODULES_EXPORT CredentialManagerProxy
   template <typename Interface>
   void BindRemoteForFedCm(HeapMojoRemote<Interface>& remote,
                           base::OnceClosure disconnect_closure);
-  void OnFedCmGetConnectionError();
+  void OnFederatedAuthRequestConnectionError();
   void OnFedCmLogoutConnectionError();
 
   HeapMojoRemote<mojom::blink::Authenticator> authenticator_;
   HeapMojoRemote<mojom::blink::CredentialManager> credential_manager_;
   HeapMojoRemote<mojom::blink::WebOTPService> webotp_service_;
   HeapMojoRemote<payments::mojom::blink::PaymentCredential> payment_credential_;
-  HeapMojoRemote<mojom::blink::FederatedAuthRequest> fedcm_get_request_;
+  HeapMojoRemote<mojom::blink::FederatedAuthRequest> federated_auth_request_;
   HeapMojoRemote<mojom::blink::FederatedAuthRequest> fedcm_logout_request_;
 };
 
