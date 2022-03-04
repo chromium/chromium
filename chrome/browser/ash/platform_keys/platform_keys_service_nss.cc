@@ -1401,11 +1401,10 @@ CK_ATTRIBUTE_TYPE TranslateKeyAttributeType(KeyAttributeType type,
   }
 }
 
-// Does the actual attribute value setting with the obtained |cert_db|.
-// Called by SetAttributeForKey().
-void SetAttributeForKeyWithDb(std::unique_ptr<SetAttributeForKeyState> state,
-                              net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+// Does the actual attribute value setting. Called by
+// SetAttributeForKeyWithDb().
+void SetAttributeForKeyWithDbOnWorkerThread(
+    std::unique_ptr<SetAttributeForKeyState> state) {
   DCHECK(state->slot_.get());
 
   crypto::ScopedSECKEYPrivateKey private_key =
@@ -1432,11 +1431,26 @@ void SetAttributeForKeyWithDb(std::unique_ptr<SetAttributeForKeyState> state,
   state->OnSuccess(FROM_HERE);
 }
 
-// Does the actual attribute value retrieval with the obtained |cert_db|.
-// Called by GetAttributeForKey().
-void GetAttributeForKeyWithDb(std::unique_ptr<GetAttributeForKeyState> state,
+// Continues setting the attribute with the obtained NSSCertDatabase.
+// Called by SetAttributeForKey().
+void SetAttributeForKeyWithDb(std::unique_ptr<SetAttributeForKeyState> state,
                               net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
+  // This task could interact with the TPM, hence MayBlock().
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SetAttributeForKeyWithDbOnWorkerThread,
+                     std::move(state)));
+}
+
+// Does the actual attribute value retrieval. Called by
+// GetAttributeForKeyWithDb().
+void GetAttributeForKeyWithDbOnWorkerThread(
+    std::unique_ptr<GetAttributeForKeyState> state) {
   DCHECK(state->slot_.get());
 
   crypto::ScopedSECKEYPrivateKey private_key =
@@ -1477,6 +1491,22 @@ void GetAttributeForKeyWithDb(std::unique_ptr<GetAttributeForKeyState> state,
   }
 
   state->OnSuccess(FROM_HERE, attribute_value_str);
+}
+
+// Continues retrieving the attribute with the obtained NSSCertDatabase.
+// Called by GetAttributeForKey().
+void GetAttributeForKeyWithDb(std::unique_ptr<GetAttributeForKeyState> state,
+                              net::NSSCertDatabase* cert_db) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
+  // This task could interact with the TPM, hence MayBlock().
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GetAttributeForKeyWithDbOnWorkerThread,
+                     std::move(state)));
 }
 
 void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,
