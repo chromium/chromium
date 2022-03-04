@@ -326,6 +326,9 @@ TEST_F(LoginAuthFactorsViewUnittest, ClickRequired_SmartLock) {
   auth_factors_[1]->state_ = AuthFactorState::kClickRequired;
   test_api.UpdateState();
 
+  // Allow icon time to finish drawing/painting.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
   // Check that the arrow button and arrow nudge animation is shown and that the
   // label has been updated.
   EXPECT_TRUE(test_api.arrow_button()->GetVisible());

@@ -2437,6 +2437,7 @@ test("ash_unittests") {
     "login/mock_login_screen_client.cc",
     "login/mock_login_screen_client.h",
     "login/security_token_request_controller_unittest.cc",
+    "login/ui/auth_icon_view_unittest.cc",
     "login/ui/fake_fingerprint_auth_factor_model.cc",
     "login/ui/fake_fingerprint_auth_factor_model.h",
     "login/ui/fake_login_detachable_base_model.cc",
