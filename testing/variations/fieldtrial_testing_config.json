@@ -3619,6 +3619,21 @@
             ]
         }
     ],
+    "IOSSharedHighlightingV2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSSharedHighlightingV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSynthesizedRestoreSession": [
         {
             "platforms": [
