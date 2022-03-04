@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
@@ -25,12 +26,19 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/exo/shell_surface_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace borealis {
 
 namespace {
+
+constexpr char kFeedbackNotificationId[] =
+    "borealis-post-game-feedback-notification";
+constexpr char kNotifierBorealis[] = "ash.borealis";
 
 // Similar to a delayed callback, but can be cancelled by deleting.
 class ScopedDelayedCallback {
@@ -107,8 +115,54 @@ class BorealisLifetimeObserver
 
   void OnDelayComplete(GURL gurl, std::string app_id) {
     app_delayers_.erase(app_id);
-    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-        gurl, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+    CreateFeedbackNotification(gurl);
+  }
+
+  // Creates a notification, that when clicked, will close itself and redirect
+  // the user to a feedback form. If there is an existing notification, this
+  // will replace it.
+  void CreateFeedbackNotification(GURL gurl) {
+    // Delegate for handling click events on the notification.
+    auto on_click_handler =
+        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+            base::BindRepeating(
+                [](GURL gurl, Profile* profile_) {
+                  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+                      gurl,
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+
+                  NotificationDisplayService::GetForProfile(profile_)->Close(
+                      NotificationHandler::Type::TRANSIENT,
+                      kFeedbackNotificationId);
+                },
+                gurl, profile_));
+
+    // Close the current notification (if any).
+    NotificationDisplayService::GetForProfile(profile_)->Close(
+        NotificationHandler::Type::TRANSIENT, kFeedbackNotificationId);
+
+    // Create the new notification.
+    message_center::Notification notification(
+        /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
+        /*id=*/kFeedbackNotificationId,
+        /*title=*/
+        l10n_util::GetStringUTF16(IDS_BOREALIS_FEEDBACK_NOTIFICATION_TITLE),
+        /*message=*/
+        l10n_util::GetStringUTF16(IDS_BOREALIS_FEEDBACK_NOTIFICATION_MESSAGE),
+        /*icon=*/gfx::Image(),
+        /*display_source=*/
+        l10n_util::GetStringUTF16(IDS_BOREALIS_FEEDBACK_NOTIFICATION_SOURCE),
+        /*origin_url=*/GURL(),
+        /*notifier_id=*/
+        message_center::NotifierId(
+            message_center::NotifierType::SYSTEM_COMPONENT, kNotifierBorealis),
+        /*optional_fields=*/message_center::RichNotificationData(),
+        /*delegate*/ on_click_handler);
+
+    // Display the new notification.
+    NotificationDisplayService::GetForProfile(profile_)->Display(
+        NotificationHandler::Type::TRANSIENT, notification,
+        /*metadata=*/nullptr);
   }
 
   Profile* const profile_;

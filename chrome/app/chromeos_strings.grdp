@@ -5787,6 +5787,10 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_EDU_LOGIN_PARENT_SIGNIN_PASSWORD_HIDE" desc="A tool tip on a button that hides the saved password that is being shown.">
     Hide password
   </message>
+  <!--
+    IDS_EDU_LOGIN_INFO_* strings END
+    ==================================================================================
+  -->
 
   <!-- Borealis strings -->
   <!-- TODO(danielng): Add string descriptions and remove translateable tags
@@ -5866,10 +5870,15 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling a game.">
       Data associated with this app may be removed from this device
   </message>
-  <!--
-    IDS_EDU_LOGIN_INFO_* strings END
-    ==================================================================================
-  -->
+  <message name="IDS_BOREALIS_FEEDBACK_NOTIFICATION_TITLE" desc="Title shown in notification that prompts users for feedback">
+    How was your gameplay experience?
+  </message>
+  <message name="IDS_BOREALIS_FEEDBACK_NOTIFICATION_MESSAGE" desc="Message shown in notification that prompts users for feedback">
+    Help us improve gaming on Chromebooks
+  </message>
+  <message name="IDS_BOREALIS_FEEDBACK_NOTIFICATION_SOURCE" desc="Source of notification that prompts users for feedback">
+    Chromebook Gaming
+  </message>
 
   <!-- TPM firmware auto-update notifications -->
   <message name="IDS_TPM_AUTO_UPDATE_PLANNED_NOTIFICATION_TITLE" desc="Title for the notification informing the user that local data will be deleted.">

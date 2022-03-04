@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_util.h"
 
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -93,8 +94,14 @@ TEST_F(BorealisUtilTest, FeedbackFormUrlIsPrefilled) {
     }
     it.Advance();
   }
+  EXPECT_EQ(entries, 2);  // we currently prefill this many form fields.
 
-  EXPECT_EQ(entries, 6);  // we currently prefill this many form fields
+  std::string json_string;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(url, kDeviceInformationKey, &json_string));
+  auto json_root = base::JSONReader::Read(json_string);
+  EXPECT_EQ(json_root.value().GetDict().size(), 5);  // we expect the JSON field
+  // to have 5 key/value pairs.
 }
 
 TEST_F(BorealisUtilTest, ProtonVersionProtonTitle) {

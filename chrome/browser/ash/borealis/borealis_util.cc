@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 
 #include "base/base64.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
@@ -13,6 +14,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -33,6 +35,7 @@ const base::StringPiece kURLAllowlist[] = {"Ly9zdG9yZS8=", "Ly9ydW4v"};
 // are updated.
 const char kBorealisAppIdRegex[] = "([^/]+\\d+)";
 const char kProtonVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
+const char kDeviceInformationKey[] = "entry.1613887985";
 
 const char kInsertCoinSuccessMessage[] = "Success";
 const char kInsertCoinRejectMessage[] = "Coin Invalid";
@@ -42,17 +45,17 @@ namespace {
 // Base feedback form URL, without query parameters for prefilling.
 static constexpr char kFeedbackUrl[] =
     "https://docs.google.com/forms/d/e/"
-    "1FAIpQLSfyI7K7xV3pKiQeJ-yZlep4XI8ZY9bbr7D33LY2jm4Zoda1cg/"
+    "1FAIpQLScGvT2BIwYJe9g15OINX2pvw6TgK8e2ihvSq3hHZudAneRmuA/"
     "viewform?usp=pp_url";
-
 // Query parameter keys for prefilling form data.
-static constexpr char kAppNameKey[] = "entry.1661950665";
-static constexpr char kBoardKey[] = "entry.2066138756";
-static constexpr char kSpecsKey[] = "entry.1341753442";
-static constexpr char kPlatformVersionKey[] = "entry.1193918294";
-static constexpr char kAppIdKey[] = "entry.2112096055";
-static constexpr char kProtonVersionKey[] = "entry.810819520";
-static constexpr char kSlrVersionKey[] = "entry.300735843";
+static constexpr char kAppNameKey[] = "entry.504707995";
+// JSON keys for prefilling JSON section.
+static constexpr char kJSONAppIdKey[] = "steam_appid";
+static constexpr char kJSONBoardKey[] = "board";
+static constexpr char kJSONPlatformKey[] = "platform_version";
+static constexpr char kJSONProtonKey[] = "proton_version";
+static constexpr char kJSONSpecsKey[] = "specs";
+static constexpr char kJSONSteamKey[] = "steam_runtime_version";
 
 // App IDs prefixed with this are identified with a numeric "Borealis ID".
 const base::StringPiece kBorealisWindowWithIdPrefix(
@@ -67,16 +70,22 @@ static constexpr char kNonGameIdHash3[] = "bmhgcnboebpgmobfgfjcfplecleopefa";
 GURL GetSysInfoForUrlAsync(GURL url,
                            absl::optional<int> game_id,
                            std::string owner_id) {
-  url = net::AppendQueryParameter(url, kBoardKey,
-                                  base::SysInfo::HardwareModelName());
-  url = net::AppendQueryParameter(
-      url, kSpecsKey,
+  base::DictionaryValue json_root;
+
+  if (game_id.has_value()) {
+    json_root.SetString(kJSONAppIdKey,
+                        base::StringPrintf("%d", game_id.value()));
+  }
+
+  json_root.SetString(kJSONBoardKey, base::SysInfo::HardwareModelName());
+  json_root.SetString(
+      kJSONSpecsKey,
       base::StringPrintf("%ldGB; %s",
                          (long)(base::SysInfo::AmountOfPhysicalMemory() /
                                 (1000 * 1000 * 1000)),
                          base::SysInfo::CPUModelName().c_str()));
-  url = net::AppendQueryParameter(url, kPlatformVersionKey,
-                                  base::SysInfo::OperatingSystemVersion());
+  json_root.SetString(kJSONPlatformKey,
+                      base::SysInfo::OperatingSystemVersion());
 
   borealis::ProtonVersionInfo version_info;
   std::string output;
@@ -86,8 +95,12 @@ GURL GetSysInfoForUrlAsync(GURL url,
     LOG(WARNING) << "Failed to run get_proton_version.py:";
     LOG(WARNING) << output;
   }
-  url = net::AppendQueryParameter(url, kProtonVersionKey, version_info.proton);
-  url = net::AppendQueryParameter(url, kSlrVersionKey, version_info.slr);
+  json_root.SetString(kJSONProtonKey, version_info.proton);
+  json_root.SetString(kJSONSteamKey, version_info.slr);
+
+  std::string json_string;
+  base::JSONWriter::Write(json_root, &json_string);
+  url = net::AppendQueryParameter(url, kDeviceInformationKey, json_string);
 
   return url;
 }
@@ -146,10 +159,6 @@ void FeedbackFormUrl(Profile* const profile,
       registry_service->GetRegistration(app_id);
   if (registration.has_value()) {
     borealis_app_id = GetBorealisAppId(registration->Exec());
-    if (borealis_app_id.has_value()) {
-      url = net::AppendQueryParameter(
-          url, kAppIdKey, base::StringPrintf("%d", borealis_app_id.value()));
-    }
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(

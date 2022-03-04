@@ -39,6 +39,9 @@ extern const base::StringPiece kURLAllowlist[];
 // parsed with /usr/bin/get_proton_version.py in the Borealis VM does not
 // match the GameID expected based on extraction with kBorealisAppIdRegex.
 extern const char kProtonVersionGameMismatch[];
+// Query parameter key for device information in the borealis feedback
+// form.
+extern const char kDeviceInformationKey[];
 
 // TODO(b/218403711): remove these when insert_coin is deprecated. We only have
 // insert_coin in the short-term until installer UX is finalized.
