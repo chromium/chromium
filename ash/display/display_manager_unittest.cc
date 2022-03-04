@@ -141,7 +141,6 @@ class DisplayManagerTest : public AshTestBase,
   void OnDidProcessDisplayChanges() override { ++did_process_count_; }
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override {
-    LOG(ERROR) << "Changed:" << changed_metrics;
     changed_.push_back(display);
     changed_metrics_ |= changed_metrics;
   }
@@ -2628,10 +2627,14 @@ TEST_F(DisplayManagerTest, NoRotateUnifiedDesktop) {
       display.id(), display::Display::ROTATE_90,
       display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(gfx::Size(1150, 500), screen->GetPrimaryDisplay().size());
+  EXPECT_EQ(display::Display::ROTATE_0,
+            screen->GetPrimaryDisplay().panel_rotation());
   display_manager()->SetDisplayRotation(
       display.id(), display::Display::ROTATE_0,
       display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(gfx::Size(1150, 500), screen->GetPrimaryDisplay().size());
+  EXPECT_EQ(display::Display::ROTATE_0,
+            screen->GetPrimaryDisplay().panel_rotation());
 
   UpdateDisplay("400x500");
   EXPECT_EQ(gfx::Size(400, 500), screen->GetPrimaryDisplay().size());
@@ -3081,51 +3084,76 @@ TEST_F(DisplayManagerTest, UnifiedDesktopPrimarySizeWithRotatedDisplays) {
   display_manager()->SetUnifiedDesktopEnabled(true);
 
   UpdateDisplay("1000x700/r");
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(gfx::Size(700, 1000),
             display::Screen::GetScreen()->GetPrimaryDisplay().size());
 
   UpdateDisplay("1000x700/r,1000x700/r");
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(gfx::Size(1400, 1000),
             display::Screen::GetScreen()->GetPrimaryDisplay().size());
 
   std::vector<aura::WindowTreeHost*> host_list = test_api.GetHosts();
+  std::vector<display::Display> display_list =
+      display_manager()->software_mirroring_display_list();
   EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
             host_list[0]->compositor()->display_transform_hint());
+  EXPECT_EQ(display::Display::ROTATE_90, display_list[0].panel_rotation());
   EXPECT_EQ(gfx::Size(700, 1000), host_list[1]->window()->bounds().size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
             host_list[1]->compositor()->display_transform_hint());
+  EXPECT_EQ(display::Display::ROTATE_90, display_list[1].panel_rotation());
+
+  // Use custom display offset to ensure rotation is properly updated.
+  UpdateDisplay("1000x700/r,1200+100-1000x700/l");
+  EXPECT_EQ(gfx::Size(1400, 1000),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+
+  host_list = test_api.GetHosts();
+  display_list = display_manager()->software_mirroring_display_list();
+  EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+            host_list[0]->compositor()->display_transform_hint());
+  EXPECT_EQ(display::Display::ROTATE_90, display_list[0].panel_rotation());
+  EXPECT_EQ(gfx::Size(700, 1000), host_list[1]->window()->bounds().size());
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_270,
+            host_list[1]->compositor()->display_transform_hint());
+  EXPECT_EQ(display::Display::ROTATE_270, display_list[1].panel_rotation());
 
   UpdateDisplay("1000x700/r,1000x700");
-  base::RunLoop().RunUntilIdle();
   // width = 1000 / 700 * 1000 + 700 ~= 2128
   EXPECT_EQ(gfx::Size(2128, 1000),
             display::Screen::GetScreen()->GetPrimaryDisplay().size());
+
   host_list = test_api.GetHosts();
+  display_list = display_manager()->software_mirroring_display_list();
   EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
             host_list[0]->compositor()->display_transform_hint());
+  EXPECT_EQ(display::Display::ROTATE_90, display_list[0].panel_rotation());
   EXPECT_EQ(gfx::Size(1000, 700), host_list[1]->window()->bounds().size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_NONE,
             host_list[1]->compositor()->display_transform_hint());
+  EXPECT_EQ(display::Display::ROTATE_0, display_list[1].panel_rotation());
 
   // Three displays
-  UpdateDisplay("1000x700/l,1000x700/r, 1000x700/l");
-  base::RunLoop().RunUntilIdle();
+  UpdateDisplay("1000x700/l,1000x700/r,1000x700/l");
   EXPECT_EQ(gfx::Size(2100, 1000),
             display::Screen::GetScreen()->GetPrimaryDisplay().size());
+
   host_list = test_api.GetHosts();
+  display_list = display_manager()->software_mirroring_display_list();
   EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_270,
             host_list[0]->compositor()->display_transform_hint());
+  EXPECT_EQ(display::Display::ROTATE_270, display_list[0].panel_rotation());
   EXPECT_EQ(gfx::Size(700, 1000), host_list[1]->window()->bounds().size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
             host_list[1]->compositor()->display_transform_hint());
+  EXPECT_EQ(display::Display::ROTATE_90, display_list[1].panel_rotation());
   EXPECT_EQ(gfx::Size(700, 1000), host_list[2]->window()->bounds().size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_270,
             host_list[2]->compositor()->display_transform_hint());
+  EXPECT_EQ(display::Display::ROTATE_270, display_list[2].panel_rotation());
 }
 
 TEST_F(DisplayManagerTest, DisplayPrefsAndForcedMirrorMode) {
