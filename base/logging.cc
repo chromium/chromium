@@ -904,12 +904,9 @@ LogMessage::~LogMessage() {
         DisplayDebugMessageInDialog(stream_.str());
       }
 #endif
+
       // Crash the process to generate a dump.
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG)
       IMMEDIATE_CRASH();
-#else
-      base::debug::BreakDebugger();
-#endif
     }
   }
 }
@@ -1142,7 +1139,7 @@ void RawLog(int level, const char* message) {
   }
 
   if (level == LOGGING_FATAL)
-    base::debug::BreakDebuggerAsyncSafe();
+    IMMEDIATE_CRASH();
 }
 
 // This was defined at the beginning of this file.
