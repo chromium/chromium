@@ -23,6 +23,7 @@
 #include "base/base_switches.h"
 #include "base/bits.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/environment.h"
@@ -704,17 +705,17 @@ bool CreateDirectoryAndGetError(const FilePath& full_path,
   }
 
   // Iterate through the parents and create the missing ones.
-  for (auto i = subpaths.rbegin(); i != subpaths.rend(); ++i) {
-    if (DirectoryExists(*i))
+  for (const FilePath& subpath : base::Reversed(subpaths)) {
+    if (DirectoryExists(subpath))
       continue;
-    if (mkdir(i->value().c_str(), 0700) == 0)
+    if (mkdir(subpath.value().c_str(), 0700) == 0)
       continue;
     // Mkdir failed, but it might have failed with EEXIST, or some other error
     // due to the directory appearing out of thin air. This can occur if
     // two processes are trying to create the same file system tree at the same
     // time. Check to see if it exists and make sure it is a directory.
     int saved_errno = errno;
-    if (!DirectoryExists(*i)) {
+    if (!DirectoryExists(subpath)) {
       if (error)
         *error = File::OSErrorToFileError(saved_errno);
       return false;
