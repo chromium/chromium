@@ -425,12 +425,6 @@ class TasksView extends CoordinatorLayoutForPointer {
      * FeedStreamViewResizer} in {@link FeedSurfaceCoordinator}
      */
     private void setHeaderPadding() {
-        int defaultPadding = getResources().getDimensionPixelSize(
-                org.chromium.chrome.R.dimen.content_suggestions_card_modern_margin);
-        int widePadding =
-                getResources().getDimensionPixelSize(R.dimen.ntp_wide_card_lateral_margins);
-
-        FeedStreamViewResizer.createAndAttach(
-                (Activity) mContext, mHeaderView, mUiConfig, defaultPadding, widePadding);
+        FeedStreamViewResizer.createAndAttach((Activity) mContext, mHeaderView, mUiConfig);
     }
 }

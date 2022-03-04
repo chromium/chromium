@@ -47,13 +47,15 @@ public class FeedStreamViewResizer extends ViewResizer {
      * @param activity The activity displays the view.
      * @param view The view that will have its padding resized.
      * @param config The UiConfig object to subscribe to.
-     * @param defaultPaddingPixels Padding to use in {@link HorizontalDisplayStyle#REGULAR}.
-     * @param minWidePaddingPixels Minimum lateral padding to use in {@link
-     *         HorizontalDisplayStyle#WIDE}.
      * @return The {@link ViewResizer} that is created and attached.
      */
-    public static FeedStreamViewResizer createAndAttach(Activity activity, View view,
-            UiConfig config, int defaultPaddingPixels, int minWidePaddingPixels) {
+    public static FeedStreamViewResizer createAndAttach(
+            Activity activity, View view, UiConfig config) {
+        int defaultPaddingPixels = activity.getResources().getDimensionPixelSize(
+                R.dimen.content_suggestions_card_modern_margin);
+        int minWidePaddingPixels = activity.getResources().getDimensionPixelSize(
+                org.chromium.chrome.tab_ui.R.dimen.ntp_wide_card_lateral_margins);
+
         FeedStreamViewResizer viewResizer = new FeedStreamViewResizer(
                 activity, view, config, defaultPaddingPixels, minWidePaddingPixels);
         viewResizer.attach();
