@@ -32,136 +32,127 @@ public class ShadowRecordHistogram {
         sTotals.clear();
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordBooleanHistogram(String name, boolean sample) {
+    protected static void recordBooleanHistogram(String name, boolean sample) {
         Pair<String, Integer> key = Pair.create(name, sample ? 1 : 0);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordEnumeratedHistogram(String name, int sample, int boundary) {
+    protected static void recordEnumeratedHistogram(String name, int sample, int boundary) {
         assert sample < boundary : "Sample " + sample + " is not within boundary " + boundary + "!";
         recordSample(Pair.create(name, sample));
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordExactLinearHistogram(String name, int sample, int max) {
+    protected static void recordExactLinearHistogram(String name, int sample, int max) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordCountHistogram(String name, int sample) {
+    protected static void recordCountHistogram(String name, int sample) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordCount100Histogram(String name, int sample) {
+    protected static void recordCount100Histogram(String name, int sample) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordCount1000Histogram(String name, int sample) {
+    protected static void recordCount1000Histogram(String name, int sample) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordCount100000Histogram(String name, int sample) {
+    protected static void recordCount100000Histogram(String name, int sample) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordCustomCountHistogram(
+    protected static void recordCustomCountHistogram(
             String name, int sample, int min, int max, int numBuckets) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordLinearCountHistogram(
+    protected static void recordLinearCountHistogram(
             String name, int sample, int min, int max, int numBuckets) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordPercentageHistogram(String name, int sample) {
+    protected static void recordPercentageHistogram(String name, int sample) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordSparseHistogram(String name, int sample) {
+    protected static void recordSparseHistogram(String name, int sample) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordTimesHistogram(String name, long durationMs) {
+    protected static void recordTimesHistogram(String name, long durationMs) {
         Pair<String, Integer> key = Pair.create(name, (int) durationMs);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordMediumTimesHistogram(String name, long durationMs) {
+    protected static void recordMediumTimesHistogram(String name, long durationMs) {
         Pair<String, Integer> key = Pair.create(name, (int) durationMs);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordLongTimesHistogram(String name, long durationMs) {
+    protected static void recordLongTimesHistogram(String name, long durationMs) {
         Pair<String, Integer> key = Pair.create(name, (int) durationMs);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordLongTimesHistogram100(String name, long durationMs) {
+    protected static void recordLongTimesHistogram100(String name, long durationMs) {
         Pair<String, Integer> key = Pair.create(name, (int) durationMs);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordCustomTimesHistogram(
+    protected static void recordCustomTimesHistogram(
             String name, long durationMs, long min, long max, int numBuckets) {
         Pair<String, Integer> key = Pair.create(name, (int) durationMs);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
-    public static void recordMemoryKBHistogram(String name, int sizeInKB) {
+    protected static void recordMemoryKBHistogram(String name, int sizeInKB) {
         Pair<String, Integer> key = Pair.create(name, sizeInKB);
         recordSample(key);
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
+    /**
+     * Returns #getHistogramValueCountForTesting value in junit tests.
+     * While {@link RecordHistogram#getHistogramValueCountForTesting} is deprecated, junit tests
+     * should use this function to get the test counts without mocking JNI.
+     */
     @Implementation
     public static int getHistogramValueCountForTesting(String name, int sample) {
         Integer i = sSamples.get(Pair.create(name, sample));
         return (i != null) ? i : 0;
     }
 
-    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
+    /**
+     * Returns #getHistogramTotalCountForTesting value in junit tests.
+     * While {@link RecordHistogram#getHistogramTotalCountForTesting} is deprecated, junit tests
+     * should use this function to get the correct tests counts without mocking JNI.
+     */
     @Implementation
     public static int getHistogramTotalCountForTesting(String name) {
         Integer i = sTotals.get(name);
