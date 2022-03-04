@@ -95,6 +95,11 @@ bool RichAutocompletionApplicable(bool enabled_all_providers,
           base::ranges::none_of(input_text, &base::IsAsciiWhitespace<char>));
 }
 
+bool IsQuickHistoryMatch(const AutocompleteMatch& match) {
+  return match.type == AutocompleteMatchType::HISTORY_TITLE ||
+         match.type == AutocompleteMatchType::HISTORY_URL;
+}
+
 }  // namespace
 
 SplitAutocompletion::SplitAutocompletion(std::u16string display_text,
@@ -503,6 +508,16 @@ bool AutocompleteMatch::BetterDuplicate(const AutocompleteMatch& match1,
   if (match1.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
       match2.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
       match1.fill_into_edit == match2.fill_into_edit) {
+    return false;
+  }
+
+  // Prefer open tab matches over quick history matches.
+  if (match1.type == AutocompleteMatchType::OPEN_TAB &&
+      IsQuickHistoryMatch(match2)) {
+    return true;
+  }
+  if (IsQuickHistoryMatch(match1) &&
+      match2.type == AutocompleteMatchType::OPEN_TAB) {
     return false;
   }
 
