@@ -3489,6 +3489,7 @@ enum WebFeature {
   kWrongBaselineOfMultiLineButtonWithNonSpace = 4168,
   kBlobStoreAccessAcrossTopLevelSite = 4169,
   kBlobStoreAccessUnknownTopLevelSite = 4170,
+  kCookieWithTruncatingChar = 4172,
   kMediaCapabilitiesDecodingInfoWebrtc = 4174,
   kMediaCapabilitiesEncodingInfoWebrtc = 4175,
 

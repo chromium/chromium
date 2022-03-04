@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -22,6 +23,13 @@ void LogCookieHistogram(const char* prefix,
       base::StrCat({prefix, cookie_manager_requested ? "ManagerRequested"
                                                      : "ManagerAvailable"}),
       elapsed);
+}
+
+// TODO(crbug.com/1276520): Remove after truncating characters are fully
+// deprecated.
+bool ContainsTruncatingChar(UChar c) {
+  // equivalent to '\x00', '\x0D', or '\x0A'
+  return c == '\0' || c == '\r' || c == '\n';
 }
 
 }  // namespace
@@ -46,6 +54,12 @@ void CookieJar::SetCookie(const String& value) {
   backend_->SetCookieFromString(cookie_url, document_->SiteForCookies(),
                                 document_->TopFrameOrigin(), value);
   LogCookieHistogram("Blink.SetCookieTime.", requested, timer.Elapsed());
+
+  // TODO(crbug.com/1276520): Remove after truncating characters are fully
+  // deprecated
+  if (value.Find(ContainsTruncatingChar) != kNotFound) {
+    document_->CountDeprecation(WebFeature::kCookieWithTruncatingChar);
+  }
 }
 
 String CookieJar::Cookies() {

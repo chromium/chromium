@@ -728,6 +728,14 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
               MilestoneString(kM106).Ascii().c_str(),
               "https://developer.chrome.com/blog/immutable-document-domain/"));
 
+    case WebFeature::kCookieWithTruncatingChar:
+      return DeprecationInfo::WithDetails(
+          "WebFeature::kCookieWithTruncatingChar", kM103,
+          String::Format(
+              "Cookies containing a '\\0', '\\r', or '\\n' character will be "
+              "rejected instead of truncated in %s.",
+              MilestoneString(kM106).Ascii().c_str()));
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return DeprecationInfo::WithDetails("NotDeprecated", kUnknown, String());

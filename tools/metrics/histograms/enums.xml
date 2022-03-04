@@ -37279,6 +37279,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4168" label="WrongBaselineOfMultiLineButtonWithNonSpace"/>
   <int value="4169" label="BlobStoreAccessAcrossTopLevelSite"/>
   <int value="4170" label="BlobStoreAccessUnknownTopLevelSite"/>
+  <int value="4172" label="CookieWithTruncatingChar"/>
   <int value="4174" label="MediaCapabilitiesDecodingInfoWebrtc"/>
   <int value="4175" label="MediaCapabilitiesEncodingInfoWebrtc"/>
 </enum>
