@@ -734,6 +734,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   scroll_event.phase = blink::WebMouseWheelEvent::kPhaseEnded;
   rwhv_nested->ProcessMouseWheelEvent(scroll_event, ui::LatencyInfo());
   scroll_observer->Wait();
+
+  // Remove scroller_observer because it is only available in this
+  // scope.
+  root->current_frame_host()->GetRenderWidgetHost()->RemoveInputEventObserver(
+      scroll_observer.get());
 }
 
 // Tests that scrolling bubbles from an oopif if its source body has
