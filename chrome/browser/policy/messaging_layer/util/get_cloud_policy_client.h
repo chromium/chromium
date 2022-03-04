@@ -17,6 +17,9 @@ using CloudPolicyClientResultCb =
 using GetCloudPolicyClientCallback =
     base::RepeatingCallback<void(CloudPolicyClientResultCb)>;
 
+// Returns the address of the function, |GetCloudPolicyClient|, which retrieves
+// and operates on the |policy::CloudPolicyClient| object. See
+// |GetCloudPolicyClient| for details.
 GetCloudPolicyClientCallback GetCloudPolicyClientCb();
 
 }  // namespace reporting

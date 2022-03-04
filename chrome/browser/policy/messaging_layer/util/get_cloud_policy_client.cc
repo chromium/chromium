@@ -19,7 +19,6 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/reporting/util/status.h"
-#include "components/reporting/util/statusor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,9 +35,13 @@
 namespace reporting {
 namespace {
 
-// policy::CloudPolicyClient is retrieved in two different ways for ChromeOS and
-// non-ChromeOS browsers. This function should be called on the UI thread, and
-// if it isn't will recall itself to do so.
+// The |policy::CloudPolicyClient| object is retrieved in two different ways for
+// ChromeOS and non-ChromeOS browsers. This function should be called on the UI
+// thread, and if it isn't, it recalls itself to do so.
+//
+// This functions applies |get_client_cb| to the retrieved
+// |policy::CloudPolicyClient| object.
+//
 // TODO(chromium:1078512) Wrap CloudPolicyClient in a new object so that its
 // methods and retrieval are accessed on the correct thread.
 void GetCloudPolicyClient(CloudPolicyClientResultCb get_client_cb) {
