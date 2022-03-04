@@ -54,8 +54,7 @@
     outline: none;
     padding: 0;
     position: absolute;
-    right: calc(2px
-      + 2*var(--emoji-picker-side-padding) - var(--emoji-picker-width));
+    right: 0;
     top: calc(var(--emoji-group-heading-padding-top)
       + var(--emoji-group-heading-padding-bottom)
       + var(--emoji-group-heading-size));
@@ -93,21 +92,21 @@
 
 <template is="dom-if" if="[[group]]">
   <div id="heading" role="heading" aria-level="2" tabindex="-1">
-  <div id="heading-left">[[group]]</div>
-  <template is="dom-if" if="[[clearable]]">
-    <cr-icon-button id="show-clear" iron-icon="emoji_picker:more_horizontal"
-      on-click="onClearClick">
-    </cr-icon-button>
-  </template>
+    <div id="heading-left">[[group]]</div>
+    <template is="dom-if" if="[[clearable]]">
+      <cr-icon-button id="show-clear" iron-icon="emoji_picker:more_horizontal"
+        on-click="onClearClick">
+      </cr-icon-button>
+    </template>
+  </div>
 </template>
-</div>
   <template is = "dom-if" if="[[showClearRecents]]">
   <button id="clear-recents" on-click="onClearRecentsClick">
     <div id="clear-recents-hover">
     Clear recently used emojis
     </div>
   </button>
-  </template>
+</template>
 <div id="emoji">
   <div id="fake-focus-target" tabindex="-1"></div>
   <template is="dom-repeat" items="[[data]]">
