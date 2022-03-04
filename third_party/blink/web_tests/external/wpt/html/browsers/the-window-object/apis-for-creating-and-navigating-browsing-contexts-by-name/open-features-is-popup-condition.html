@@ -26,48 +26,59 @@ var tests = {
     // The explicit popup feature.
     ["popup", false],
     ["popup=1", false],
+    ["popup=true", false],
     ["popup=0", true],
 
     // Other feature alone results in popup.
     ["location", false],
     ["location=yes", false],
+    ["location=true", false],
     ["location=no", false],
 
     ["toolbar", false],
     ["toolbar=yes", false],
+    ["toolbar=true", false],
     ["toolbar=no", false],
 
     ["menubar", false],
     ["menubar=yes", false],
+    ["menubar=true", false],
     ["menubar=no", false],
 
     ["resizable", false],
     ["resizable=yes", false],
+    ["resizable=true", false],
     ["resizable=no", false],
   ],
   "single-2": [
     ["scrollbars", false],
     ["scrollbars=yes", false],
+    ["scrollbars=true", false],
     ["scrollbars=no", false],
 
     ["status", false],
     ["status=yes", false],
+    ["status=true", false],
     ["status=no", false],
 
     ["titlebar", false],
     ["titlebar=yes", false],
+    ["titlebar=true", false],
     ["titlebar=no", false],
 
     ["close", false],
     ["close=yes", false],
+    ["close=true", false],
     ["close=no", false],
 
     ["minimizable", false],
     ["minimizable=yes", false],
+    ["minimizable=true", false],
     ["minimizable=no", false],
 
     ["personalbar", false],
     ["personalbar=yes", false],
+    ["personalbar=true", false],
     ["personalbar=no", false],
   ],
   "position": [
@@ -113,6 +124,8 @@ var tests = {
 
     // The explicit popup feature has priority than others.
     ["popup=1,location,toolbar,menubar,resizable,scrollbars,status", false],
+    ["popup=yes,location,toolbar,menubar,resizable,scrollbars,status", false],
+    ["popup=true,location,toolbar,menubar,resizable,scrollbars,status", false],
     ["popup=0,location,toolbar,menubar,resizable,scrollbars", true],
   ],
 };
