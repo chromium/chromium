@@ -87,20 +87,15 @@ class ServiceImpl : public Service {
                    ResponseCallback callback) override;
 
  private:
-  void OnFetchPaymentsClientToken(
-      const std::string& script_path,
-      const GURL& url,
-      std::unique_ptr<TriggerContext> trigger_context,
-      const std::string& global_payload,
-      const std::string& script_payload,
+  void SendUserDataRequest(
+      bool request_name,
+      bool request_email,
+      bool request_phone,
+      bool request_shipping,
+      bool request_payment_methods,
+      const std::vector<std::string>& supported_card_networks,
       ResponseCallback callback,
       const std::string& client_token);
-  void SendGetActions(const std::string& script_path,
-                      const GURL& url,
-                      const TriggerContext& trigger_context,
-                      const std::string& global_payload,
-                      const std::string& script_payload,
-                      ResponseCallback callback);
 
   Client* const client_;
 

@@ -585,21 +585,30 @@ TEST_F(ProtocolUtilsTest, ParseFromStringCannotParse) {
 }
 
 TEST_F(ProtocolUtilsTest, CreateGetUserDataRequest) {
-  CollectUserDataOptions options;
-  options.request_payer_name = true;
-  options.request_payer_email = true;
-  options.request_phone_number_separately = true;
-  options.request_shipping = true;
-  options.request_payment_method = true;
-
   GetUserDataRequestProto request;
-  EXPECT_TRUE(request.ParseFromString(
-      ProtocolUtils::CreateGetUserDataRequest(options)));
+  EXPECT_TRUE(request.ParseFromString(ProtocolUtils::CreateGetUserDataRequest(
+      /* request_name= */ true, /* request_email= */ true,
+      /* request_phone= */ true, /* request_shipping= */ true,
+      /* request_payment_methods= */ false,
+      /* supported_card_networks= */ std::vector<std::string>(),
+      /* client_token= */ std::string())));
   EXPECT_TRUE(request.request_name());
   EXPECT_TRUE(request.request_email());
   EXPECT_TRUE(request.request_phone());
   EXPECT_TRUE(request.request_addresses());
-  EXPECT_TRUE(request.request_payment_methods());
+  EXPECT_FALSE(request.has_request_payment_methods());
+
+  EXPECT_TRUE(request.ParseFromString(ProtocolUtils::CreateGetUserDataRequest(
+      /* request_name= */ true, /* request_email= */ true,
+      /* request_phone= */ true, /* request_shipping= */ true,
+      /* request_payment_methods= */ true,
+      /* supported_card_networks= */
+      std::vector<std::string>({"VISA", "MASTERCARD"}),
+      /* client_token= */ "token")));
+  EXPECT_TRUE(request.has_request_payment_methods());
+  EXPECT_EQ(request.request_payment_methods().client_token(), "token");
+  EXPECT_THAT(request.request_payment_methods().supported_card_networks(),
+              ElementsAre("VISA", "MASTERCARD"));
 }
 
 }  // namespace autofill_assistant

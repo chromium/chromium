@@ -78,11 +78,6 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
   proto_.set_screen_orientation(client_->GetScreenOrientation());
 }
 
-void ClientContextImpl::SetPaymentsClientToken(
-    const std::string& client_token) {
-  proto_.set_payments_client_token(client_token);
-}
-
 ClientContextProto ClientContextImpl::AsProto() const {
   return proto_;
 }

@@ -104,40 +104,6 @@ void ServiceImpl::GetActions(const std::string& script_path,
                              ResponseCallback callback) {
   DCHECK(!script_path.empty());
   client_context_->Update(trigger_context);
-  if (client_context_->AsProto().payments_client_token().empty() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillAssistantGetPaymentsClientToken)) {
-    client_->FetchPaymentsClientToken(base::BindOnce(
-        &ServiceImpl::OnFetchPaymentsClientToken,
-        weak_ptr_factory_.GetWeakPtr(), script_path, url,
-        std::make_unique<TriggerContext>(
-            std::vector<const TriggerContext*>{&trigger_context}),
-        global_payload, script_payload, std::move(callback)));
-  } else {
-    SendGetActions(script_path, url, trigger_context, global_payload,
-                   script_payload, std::move(callback));
-  }
-}
-
-void ServiceImpl::OnFetchPaymentsClientToken(
-    const std::string& script_path,
-    const GURL& url,
-    std::unique_ptr<TriggerContext> trigger_context,
-    const std::string& global_payload,
-    const std::string& script_payload,
-    ResponseCallback callback,
-    const std::string& client_token) {
-  client_context_->SetPaymentsClientToken(client_token);
-  SendGetActions(script_path, url, *trigger_context, global_payload,
-                 script_payload, std::move(callback));
-}
-
-void ServiceImpl::SendGetActions(const std::string& script_path,
-                                 const GURL& url,
-                                 const TriggerContext& trigger_context,
-                                 const std::string& global_payload,
-                                 const std::string& script_payload,
-                                 ResponseCallback callback) {
   request_sender_->SendRequest(
       script_action_server_url_,
       ProtocolUtils::CreateInitialScriptActionsRequest(
@@ -165,9 +131,41 @@ void ServiceImpl::GetNextActions(
 
 void ServiceImpl::GetUserData(const CollectUserDataOptions& options,
                               ResponseCallback callback) {
-  request_sender_->SendRequest(user_data_url_,
-                               ProtocolUtils::CreateGetUserDataRequest(options),
-                               std::move(callback), RpcType::GET_USER_DATA);
+  if (options.request_payment_method) {
+    // We do not cache the payments client token. It could go stale (in practice
+    // it currently doesn't). Getting the token is little overhead.
+    client_->FetchPaymentsClientToken(base::BindOnce(
+        &ServiceImpl::SendUserDataRequest, weak_ptr_factory_.GetWeakPtr(),
+        options.request_payer_name, options.request_payer_email,
+        options.request_payer_phone || options.request_phone_number_separately,
+        options.request_shipping, options.request_payment_method,
+        options.supported_basic_card_networks, std::move(callback)));
+    return;
+  }
+
+  SendUserDataRequest(
+      options.request_payer_name, options.request_payer_email,
+      options.request_payer_phone || options.request_phone_number_separately,
+      options.request_shipping, options.request_payment_method,
+      options.supported_basic_card_networks, std::move(callback),
+      std::string());
+}
+
+void ServiceImpl::SendUserDataRequest(
+    bool request_name,
+    bool request_email,
+    bool request_phone,
+    bool request_shipping,
+    bool request_payment_methods,
+    const std::vector<std::string>& supported_card_networks,
+    ResponseCallback callback,
+    const std::string& client_token) {
+  request_sender_->SendRequest(
+      user_data_url_,
+      ProtocolUtils::CreateGetUserDataRequest(
+          request_name, request_email, request_phone, request_shipping,
+          request_payment_methods, supported_card_networks, client_token),
+      std::move(callback), RpcType::GET_USER_DATA);
 }
 
 }  // namespace autofill_assistant

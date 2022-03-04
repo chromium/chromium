@@ -19,7 +19,6 @@ class MockClientContext : public ClientContext {
   ~MockClientContext() override;
 
   MOCK_METHOD1(Update, void(const TriggerContext& trigger_context));
-  MOCK_METHOD1(SetPaymentsClientToken, void(const std::string&));
   MOCK_CONST_METHOD0(AsProto, ClientContextProto());
 };
 

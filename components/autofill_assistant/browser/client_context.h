@@ -18,8 +18,6 @@ class ClientContext {
   virtual ~ClientContext() = default;
   // Updates the client context based on the current state of the client.
   virtual void Update(const TriggerContext& trigger_context) = 0;
-  // Updates the payments client token. This is not part of the normal update.
-  virtual void SetPaymentsClientToken(const std::string& client_token) = 0;
   // Returns the proto representation of this client context.
   virtual ClientContextProto AsProto() const = 0;
 };
@@ -31,7 +29,6 @@ class ClientContextImpl : public ClientContext {
   ClientContextImpl(const Client* client);
   ~ClientContextImpl() override = default;
   void Update(const TriggerContext& trigger_context) override;
-  void SetPaymentsClientToken(const std::string& client_token) override;
   ClientContextProto AsProto() const override;
 
  private:
@@ -45,7 +42,6 @@ class EmptyClientContext : public ClientContext {
   EmptyClientContext() = default;
   ~EmptyClientContext() override = default;
   void Update(const TriggerContext& trigger_context) override {}
-  void SetPaymentsClientToken(const std::string& client_token) override {}
   ClientContextProto AsProto() const override;
 };
 
