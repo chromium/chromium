@@ -19,7 +19,6 @@
 #include "ash/app_list/views/app_list_view_util.h"
 #include "ash/app_list/views/continue_task_view.h"
 #include "ash/bubble/bubble_utils.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -27,9 +26,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/strings/string_util.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -44,10 +40,6 @@
 
 namespace ash {
 namespace {
-
-// A flag to enable/disable the privacy toast for test.
-bool g_nudge_accepted_for_test = false;
-
 // Header paddings in dips.
 constexpr gfx::Insets kHeaderPadding(0, 12, 4, 12);
 
@@ -75,26 +67,10 @@ constexpr base::TimeDelta kShowSuggestionsAnimationDuration =
 // AppListBubbleAppsPage.
 constexpr int kVerticalPaddingFromParent = 16;
 
-// Privacy notice dictionary pref keys.
-const char kPrivacyNoticeAcceptedKey[] = "accepted";
-const char kPrivacyNoticeShownKey[] = "shown";
-
 std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
   auto label = std::make_unique<views::Label>(text);
   bubble_utils::ApplyStyle(label.get(), bubble_utils::LabelStyle::kSubtitle);
   return label;
-}
-
-PrefService* GetActiveUserPrefService() {
-  if (!Shell::HasInstance())
-    return nullptr;
-
-  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
-
-  auto* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  DCHECK(pref_service);
-  return pref_service;
 }
 
 void CleanupLayer(views::View* view) {
@@ -188,15 +164,18 @@ bool ContinueSectionView::HasMinimumFilesToShow() const {
 }
 
 bool ContinueSectionView::ShouldShowPrivacyNotice() const {
+  if (!nudge_controller_)
+    return false;
+
   // Don't show the privacy notice if the reorder nudge is showing.
-  if (nudge_controller_ &&
-      nudge_controller_->current_nudge() ==
-          AppListNudgeController::NudgeType::kReorderNudge) {
+  if (nudge_controller_->current_nudge() ==
+      AppListNudgeController::NudgeType::kReorderNudge) {
     return false;
   }
 
   return HasMinimumFilesToShow() &&
-         !(IsPrivacyNoticeAccepted() || IsPrivacyNoticeShown());
+         !(nudge_controller_->IsPrivacyNoticeAccepted() ||
+           nudge_controller_->WasPrivacyNoticeShown());
 }
 
 bool ContinueSectionView::ShouldShowFilesSection() const {
@@ -214,10 +193,11 @@ void ContinueSectionView::SetShownInBackground(bool shown_in_background) {
 
   // If the privacy notice becomes active again, restart the
   // `privacy_notice_shown_timer_`.
-  if (!shown_in_background && !IsPrivacyNoticeShown() && privacy_toast_) {
+  if (!shown_in_background && !nudge_controller_->WasPrivacyNoticeShown() &&
+      privacy_toast_) {
     privacy_notice_shown_timer_.Start(
         FROM_HERE, kPrivacyNoticeShownDelay,
-        base::BindOnce(&ContinueSectionView::MarkPrivacyNoticeShown,
+        base::BindOnce(&ContinueSectionView::OnPrivacyNoticeShowTimerDone,
                        base::Unretained(this)));
   }
 }
@@ -228,7 +208,10 @@ void ContinueSectionView::SetNudgeController(
 }
 
 void ContinueSectionView::OnPrivacyToastAcknowledged() {
-  MarkPrivacyNoticeAccepted();
+  if (nudge_controller_) {
+    nudge_controller_->SetPrivacyNoticeAcceptedPref(true);
+    nudge_controller_->SetPrivacyNoticeShown(false);
+  }
 
   // Keep the privacy notice view for the dismiss animation in clamshell mode.
   if (tablet_mode_)
@@ -318,15 +301,6 @@ void ContinueSectionView::AnimateShowContinueSection() {
       .SetDuration(kShowSuggestionsAnimationDuration);
 }
 
-void ContinueSectionView::MarkPrivacyNoticeAccepted() {
-  {
-    DictionaryPrefUpdate privacy_pref_update(
-        GetActiveUserPrefService(), prefs::kLauncherFilesPrivacyNotice);
-    privacy_pref_update->SetBoolKey(kPrivacyNoticeAcceptedKey, true);
-  }
-  nudge_controller_->SetPrivacyNoticeShown(false);
-}
-
 void ContinueSectionView::RemovePrivacyNotice() {
   if (privacy_toast_) {
     RemoveChildViewT(privacy_toast_);
@@ -338,13 +312,16 @@ void ContinueSectionView::RemovePrivacyNotice() {
     continue_label_->DestroyLayer();
 }
 
-void ContinueSectionView::MarkPrivacyNoticeShown() {
-  DictionaryPrefUpdate privacy_pref_update(GetActiveUserPrefService(),
-                                           prefs::kLauncherFilesPrivacyNotice);
-  privacy_pref_update->SetBoolKey(kPrivacyNoticeShownKey, true);
+void ContinueSectionView::OnPrivacyNoticeShowTimerDone() {
+  if (!nudge_controller_)
+    return;
+
+  nudge_controller_->SetPrivacyNoticeShownPref(true);
 }
 
 void ContinueSectionView::MaybeCreatePrivacyNotice() {
+  DCHECK(nudge_controller_);
+
   if (!ShouldShowPrivacyNotice()) {
     // Reset the nudge controller state if privacy notice shouldn't be showing.
     if (nudge_controller_->current_nudge() ==
@@ -364,7 +341,7 @@ void ContinueSectionView::MaybeCreatePrivacyNotice() {
   // shown, which will keep the user from seeing the nudge again.
   privacy_notice_shown_timer_.Start(
       FROM_HERE, kPrivacyNoticeShownDelay,
-      base::BindOnce(&ContinueSectionView::MarkPrivacyNoticeShown,
+      base::BindOnce(&ContinueSectionView::OnPrivacyNoticeShowTimerDone,
                      base::Unretained(this)));
 
   const int privacy_toast_text_id =
@@ -410,35 +387,6 @@ void ContinueSectionView::UpdateElementsVisibility() {
     continue_label_->SetVisible(show_files_section);
 }
 
-bool ContinueSectionView::IsPrivacyNoticeAccepted() const {
-  if (g_nudge_accepted_for_test)
-    return true;
-
-  const PrefService* prefs = GetActiveUserPrefService();
-  if (!prefs)
-    return false;
-
-  const base::Value* result = prefs->Get(prefs::kLauncherFilesPrivacyNotice)
-                                  ->FindKey(kPrivacyNoticeAcceptedKey);
-  if (!result || !result->is_bool())
-    return false;
-
-  return result->GetBool();
-}
-
-bool ContinueSectionView::IsPrivacyNoticeShown() const {
-  const PrefService* prefs = GetActiveUserPrefService();
-  if (!prefs)
-    return false;
-
-  const base::Value* result = prefs->Get(prefs::kLauncherFilesPrivacyNotice)
-                                  ->FindKey(kPrivacyNoticeShownKey);
-  if (!result || !result->is_bool())
-    return false;
-
-  return result->GetBool();
-}
-
 void ContinueSectionView::OnAppListVisibilityChanged(bool shown,
                                                      int64_t display_id) {
   if (!shown && privacy_toast_) {
@@ -448,7 +396,7 @@ void ContinueSectionView::OnAppListVisibilityChanged(bool shown,
 
   // Update the nudge type in nudge controller if the privacy notice is
   // considered shown and will not be shown again.
-  if (!shown && IsPrivacyNoticeShown() &&
+  if (!shown && nudge_controller_->WasPrivacyNoticeShown() &&
       nudge_controller_->current_nudge() ==
           AppListNudgeController::NudgeType::kPrivacyNotice) {
     nudge_controller_->SetPrivacyNoticeShown(false);
@@ -462,11 +410,6 @@ void ContinueSectionView::OnAppListVisibilityChanged(bool shown,
   if (shown)
     MaybeCreatePrivacyNotice();
   UpdateElementsVisibility();
-}
-
-// static
-void ContinueSectionView::SetPrivacyNoticeAcceptedForTest(bool is_disabled) {
-  g_nudge_accepted_for_test = is_disabled;
 }
 
 BEGIN_METADATA(ContinueSectionView, views::View)

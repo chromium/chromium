@@ -45,7 +45,7 @@ AppListTestHelper::AppListTestHelper() {
                                        &search_model_);
   // Disable app list nudge as default.
   DisableAppListNudge(true);
-  ContinueSectionView::SetPrivacyNoticeAcceptedForTest(true);
+  AppListNudgeController::SetPrivacyNoticeAcceptedForTest(true);
 }
 
 AppListTestHelper::~AppListTestHelper() {
@@ -161,7 +161,7 @@ bool AppListTestHelper::IsInFolderView() {
 }
 
 void AppListTestHelper::DisableAppListNudge(bool disable) {
-  AppListNudgeController::SetNudgeDisabledForTest(disable);
+  AppListNudgeController::SetReorderNudgeDisabledForTest(disable);
 }
 
 AppListView* AppListTestHelper::GetAppListView() {

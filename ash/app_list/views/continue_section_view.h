@@ -78,8 +78,6 @@ class ASH_EXPORT ContinueSectionView : public views::View,
     return nudge_controller_;
   }
 
-  static void SetPrivacyNoticeAcceptedForTest(bool is_disabled);
-
   // Fire `privacy_notice_shown_timer_` for testing purposes.
   bool FirePrivacyNoticeShownTimerForTest();
 
@@ -99,23 +97,11 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // notice, the continue label and the continue section itself.
   void UpdateElementsVisibility();
 
-  // Sets the privacy notice as accepted by the user.
-  void MarkPrivacyNoticeAccepted();
-
   // Removes the privacy notice from the view.
   void RemovePrivacyNotice();
 
   // Invoked when the privacy notice has been shown for enough time.
-  void MarkPrivacyNoticeShown();
-
-  // Invoked after the `privacy_notice_count_timer_` fires.
-  void OnPrivacyNoticeCountTimerDone();
-
-  // Whether the user has already accepted the privacy notice.
-  bool IsPrivacyNoticeAccepted() const;
-
-  // Whether the user has already seen the privacy notice.
-  bool IsPrivacyNoticeShown() const;
+  void OnPrivacyNoticeShowTimerDone();
 
   // Invoked when the privacy notice has been acknowledged.
   void OnPrivacyToastAcknowledged();

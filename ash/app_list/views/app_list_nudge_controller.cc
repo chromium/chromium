@@ -21,12 +21,17 @@
 namespace ash {
 namespace {
 
-// A flag to enable/disable the app list nudges for test.
-bool g_nudge_disabled_for_test = false;
+// Flags to enable/disable the app list nudges for test.
+bool g_reorder_nudge_disabled_for_test = false;
+bool g_privacy_notice_accepted_for_test = false;
 
-// Keys for user preferences.
-constexpr char kShownCount[] = "shown_count";
-constexpr char kConfirmed[] = "confirmed";
+// Reorder nudge dictionary pref keys.
+constexpr char kReorderNudgeShownCount[] = "shown_count";
+constexpr char kReorderNudgeConfirmed[] = "confirmed";
+
+// Privacy notice dictionary pref keys.
+const char kPrivacyNoticeAcceptedKey[] = "accepted";
+const char kPrivacyNoticeShownKey[] = "shown";
 
 // Maximum number of times that the nudge is showing to users.
 constexpr int kMaxShowCount = 3;
@@ -56,7 +61,7 @@ bool WasAppListReorderedPreviously(PrefService* prefs) {
       prefs->GetDictionary(prefs::kAppListReorderNudge);
   if (!dictionary)
     return false;
-  return dictionary->FindBoolPath(kConfirmed).value_or(false);
+  return dictionary->FindBoolPath(kReorderNudgeConfirmed).value_or(false);
 }
 
 }  // namespace
@@ -67,6 +72,13 @@ AppListNudgeController::AppListNudgeController() = default;
 void AppListNudgeController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAppListReorderNudge);
+  registry->RegisterDictionaryPref(prefs::kLauncherFilesPrivacyNotice);
+}
+
+// static
+void AppListNudgeController::ResetPrefsForNewUserSession(PrefService* prefs) {
+  prefs->ClearPref(prefs::kAppListReorderNudge);
+  prefs->ClearPref(prefs::kLauncherFilesPrivacyNotice);
 }
 
 // static
@@ -75,16 +87,21 @@ int AppListNudgeController::GetShownCount(PrefService* prefs, NudgeType type) {
   if (!dictionary)
     return 0;
 
-  return dictionary->FindIntPath(kShownCount).value_or(0);
+  return dictionary->FindIntPath(kReorderNudgeShownCount).value_or(0);
 }
 
 // static
-void AppListNudgeController::SetNudgeDisabledForTest(bool is_disabled) {
-  g_nudge_disabled_for_test = is_disabled;
+void AppListNudgeController::SetReorderNudgeDisabledForTest(bool is_disabled) {
+  g_reorder_nudge_disabled_for_test = is_disabled;
+}
+
+// static
+void AppListNudgeController::SetPrivacyNoticeAcceptedForTest(bool is_disabled) {
+  g_privacy_notice_accepted_for_test = is_disabled;
 }
 
 bool AppListNudgeController::ShouldShowReorderNudge() const {
-  if (g_nudge_disabled_for_test)
+  if (g_reorder_nudge_disabled_for_test)
     return false;
 
   PrefService* prefs = GetPrefs();
@@ -111,7 +128,58 @@ void AppListNudgeController::OnTemporarySortOrderChanged(
 
   // Record the reorder action so that the nudge view won't be showing anymore.
   DictionaryPrefUpdate update(prefs, prefs::kAppListReorderNudge);
-  update->SetBoolPath(kConfirmed, true);
+  update->SetBoolPath(kReorderNudgeConfirmed, true);
+}
+
+void AppListNudgeController::SetPrivacyNoticeAcceptedPref(bool accepted) {
+  PrefService* prefs = GetPrefs();
+  if (!prefs)
+    return;
+
+  {
+    DictionaryPrefUpdate privacy_pref_update(
+        prefs, prefs::kLauncherFilesPrivacyNotice);
+    privacy_pref_update->SetBoolKey(kPrivacyNoticeAcceptedKey, accepted);
+  }
+}
+
+void AppListNudgeController::SetPrivacyNoticeShownPref(bool shown) {
+  PrefService* prefs = GetPrefs();
+  if (!prefs)
+    return;
+
+  DictionaryPrefUpdate privacy_pref_update(prefs,
+                                           prefs::kLauncherFilesPrivacyNotice);
+  privacy_pref_update->SetBoolKey(kPrivacyNoticeShownKey, shown);
+}
+
+bool AppListNudgeController::IsPrivacyNoticeAccepted() const {
+  if (g_privacy_notice_accepted_for_test)
+    return true;
+
+  const PrefService* prefs = GetPrefs();
+  if (!prefs)
+    return false;
+
+  const base::Value* result = prefs->Get(prefs::kLauncherFilesPrivacyNotice)
+                                  ->FindKey(kPrivacyNoticeAcceptedKey);
+  if (!result || !result->is_bool())
+    return false;
+
+  return result->GetBool();
+}
+
+bool AppListNudgeController::WasPrivacyNoticeShown() const {
+  const PrefService* prefs = GetPrefs();
+  if (!prefs)
+    return false;
+
+  const base::Value* result = prefs->Get(prefs::kLauncherFilesPrivacyNotice)
+                                  ->FindKey(kPrivacyNoticeShownKey);
+  if (!result || !result->is_bool())
+    return false;
+
+  return result->GetBool();
 }
 
 void AppListNudgeController::SetPrivacyNoticeShown(bool shown) {
@@ -222,7 +290,7 @@ void AppListNudgeController::MaybeIncrementShownCountInPrefs(
   // invisible. Note that if the nudge is inactive but visible, it doesn't count
   // as showing once to the user.
   if (!is_visible_ && is_nudge_considered_as_shown_) {
-    update->SetIntPath(kShownCount,
+    update->SetIntPath(kReorderNudgeShownCount,
                        GetShownCount(GetPrefs(), NudgeType::kReorderNudge) + 1);
   }
 }

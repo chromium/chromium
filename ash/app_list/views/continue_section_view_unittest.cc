@@ -227,7 +227,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
   void HideLauncher() { Shell::Get()->app_list_controller()->DismissAppList(); }
 
   void ResetPrivacyNoticePref() {
-    ContinueSectionView::SetPrivacyNoticeAcceptedForTest(false);
+    AppListNudgeController::SetPrivacyNoticeAcceptedForTest(false);
   }
 
   void SimulateRightClickOrLongPressOn(const views::View* view) {

@@ -3145,6 +3145,9 @@ extern const char kLauncherNudgeDescription[];
 extern const char kLauncherNudgeShortIntervalName[];
 extern const char kLauncherNudgeShortIntervalDescription[];
 
+extern const char kLauncherNudgeSessionResetName[];
+extern const char kLauncherNudgeSessionResetDescription[];
+
 // Prefer keeping this section sorted to adding new declarations down here.
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)

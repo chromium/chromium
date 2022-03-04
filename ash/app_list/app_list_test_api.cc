@@ -433,7 +433,7 @@ bool AppListTestApi::HasAnyWaitingReorderDoneCallback() const {
 }
 
 void AppListTestApi::DisableAppListNudge(bool disable) {
-  AppListNudgeController::SetNudgeDisabledForTest(disable);
+  AppListNudgeController::SetReorderNudgeDisabledForTest(disable);
 }
 
 void AppListTestApi::ReorderItemInRootByDragAndDrop(int source_index,

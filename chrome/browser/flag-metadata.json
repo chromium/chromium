@@ -3932,6 +3932,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "launcher-nudge-session-reset",
+    "owners":["anasalazar@chromium.org", "wcwang@chromium.org"],
+    "expiry_milestone": 104
+  },
+  {
     "name": "launcher-nudge-short-interval",
     "owners": [ "wcwang", "//ash/app_list/OWNERS" ],
     "expiry_milestone": 104

@@ -322,9 +322,6 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kSuggestedContentInfoDismissedInLauncher, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   AppListNudgeController::RegisterProfilePrefs(registry);
-
-  // TODO(crbug.com/1277666): Move to Launcher nudge controller.
-  registry->RegisterDictionaryPref(prefs::kLauncherFilesPrivacyNotice);
 }
 
 void AppListControllerImpl::SetClient(AppListClient* client) {
@@ -478,6 +475,12 @@ void AppListControllerImpl::OnUserSessionAdded(const AccountId& account_id) {
 
   ash::ReportPrefSortOrderOnSessionStart(client_->GetPermanentSortingOrder(),
                                          IsTabletMode());
+
+  if (features::IsLauncherNudgeSessionResetEnabled()) {
+    AppListNudgeController::ResetPrefsForNewUserSession(
+        Shell::Get()->session_controller()->GetUserPrefServiceForUser(
+            account_id));
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
