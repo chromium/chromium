@@ -7622,3 +7622,6 @@ crbug.com/1302043 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-t
 
 # Sheriff 2022-03-03
 crbug.com/1302571 virtual/threaded/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Skip ]
+
+# Sheriff 2022-03-04
+crbug.com/1302856 [ Mac11-arm64 ] virtual/exotic-color-space/images/rgb-png-with-cmyk-color-profile.html [ Failure Pass ]
