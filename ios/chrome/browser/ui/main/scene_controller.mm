@@ -1962,9 +1962,7 @@ bool IsSigninForcedByPolicy() {
     shouldActivateBrowser:(Browser*)browser
            dismissTabGrid:(BOOL)dismissTabGrid
              focusOmnibox:(BOOL)focusOmnibox {
-  DCHECK(dismissTabGrid ||
-         ShowThumbStripInTraitCollection(
-             self.mainCoordinator.baseViewController.traitCollection));
+  DCHECK(dismissTabGrid || self.mainCoordinator.isThumbStripEnabled);
   [self beginActivatingBrowser:browser
             dismissTabSwitcher:dismissTabGrid
                   focusOmnibox:focusOmnibox];
@@ -1992,9 +1990,7 @@ bool IsSigninForcedByPolicy() {
                   focusOmnibox:(BOOL)focusOmnibox {
   DCHECK(browser == self.mainInterface.browser ||
          browser == self.incognitoInterface.browser);
-  DCHECK(dismissTabSwitcher ||
-         ShowThumbStripInTraitCollection(
-             self.mainCoordinator.baseViewController.traitCollection));
+  DCHECK(dismissTabSwitcher || self.mainCoordinator.isThumbStripEnabled);
 
   self.activatingBrowser = YES;
   ApplicationMode mode = (browser == self.mainInterface.browser)

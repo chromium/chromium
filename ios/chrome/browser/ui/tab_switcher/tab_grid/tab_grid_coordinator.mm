@@ -321,8 +321,7 @@
 - (void)showTabGrid {
   BOOL animated = !self.animationsDisabledForTesting;
 
-  if (ShowThumbStripInTraitCollection(
-          self.baseViewController.traitCollection)) {
+  if ([self isThumbStripEnabled]) {
     [self.thumbStripCoordinator.panHandler
         setNextState:ViewRevealState::Revealed
             animated:animated

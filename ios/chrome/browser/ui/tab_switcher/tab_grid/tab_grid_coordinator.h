@@ -56,6 +56,11 @@ class Browser;
 // the moment. Returns NO if thumb strip is active.
 @property(nonatomic, readonly, getter=isTabGridActive) BOOL tabGridActive;
 
+// If this property is YES, it means the thumbstrip is currently enabled and
+// useable.
+@property(nonatomic, readonly, getter=isThumbStripEnabled)
+    BOOL thumbStripEnabled;
+
 // Stops all child coordinators then calls |completion|. |completion| is called
 // whether or not child coordinators exist.
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion;
