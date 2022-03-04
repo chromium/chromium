@@ -111,7 +111,7 @@ class ImeService : public ash::ime::mojom::ImeService,
   void SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
                                 const std::string& url_str,
                                 const base::FilePath& file);
-  const MojoSystemThunks* GetMojoSystemThunks() override;
+  const MojoSystemThunks32* GetMojoSystemThunks() override;
 
   mojo::Receiver<ash::ime::mojom::ImeService> receiver_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

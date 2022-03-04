@@ -16,9 +16,9 @@ import java.util.List;
  */
 class MessagePipeHandleImpl extends HandleBase implements MessagePipeHandle {
     /**
-     * @see HandleBase#HandleBase(CoreImpl, int)
+     * @see HandleBase#HandleBase(CoreImpl, long)
      */
-    MessagePipeHandleImpl(CoreImpl core, int mojoHandle) {
+    MessagePipeHandleImpl(CoreImpl core, long mojoHandle) {
         super(core, mojoHandle);
     }
 

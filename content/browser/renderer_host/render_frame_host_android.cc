@@ -183,7 +183,7 @@ void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&,
     const base::android::JavaParamRef<jstring>& interface_name,
-    jint message_pipe_raw_handle) const {
+    jlong message_pipe_raw_handle) const {
   DCHECK(render_frame_host_->IsRenderFrameCreated());
   render_frame_host_->GetRemoteInterfaces()->GetInterfaceByName(
       ConvertJavaStringToUTF8(env, interface_name),

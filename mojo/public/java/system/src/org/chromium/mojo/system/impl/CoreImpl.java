@@ -47,7 +47,7 @@ public class CoreImpl implements Core {
     /**
      * the size of a handle, in bytes.
      */
-    private static final int HANDLE_SIZE = 4;
+    private static final int HANDLE_SIZE = 8;
 
     /**
      * the size of a flag, in bytes.
@@ -57,7 +57,7 @@ public class CoreImpl implements Core {
     /**
      * The mojo handle for an invalid handle.
      */
-    static final int INVALID_HANDLE = 0;
+    static final long INVALID_HANDLE = 0;
 
     private static class LazyHolder { private static final Core INSTANCE = new CoreImpl(); }
 
@@ -106,7 +106,7 @@ public class CoreImpl implements Core {
             optionsBuffer.putInt(0, 8);
             optionsBuffer.putInt(4, options.getFlags().getFlags());
         }
-        ResultAnd<IntegerPair> result =
+        ResultAnd<RawHandlePair> result =
                 CoreImplJni.get().createMessagePipe(CoreImpl.this, optionsBuffer);
         if (result.getMojoResult() != MojoResult.OK) {
             throw new MojoException(result.getMojoResult());
@@ -129,7 +129,7 @@ public class CoreImpl implements Core {
             optionsBuffer.putInt(8, options.getElementNumBytes());
             optionsBuffer.putInt(12, options.getCapacityNumBytes());
         }
-        ResultAnd<IntegerPair> result =
+        ResultAnd<RawHandlePair> result =
                 CoreImplJni.get().createDataPipe(CoreImpl.this, optionsBuffer);
         if (result.getMojoResult() != MojoResult.OK) {
             throw new MojoException(result.getMojoResult());
@@ -151,7 +151,7 @@ public class CoreImpl implements Core {
             optionsBuffer.putInt(0, 8);
             optionsBuffer.putInt(4, options.getFlags().getFlags());
         }
-        ResultAnd<Integer> result =
+        ResultAnd<Long> result =
                 CoreImplJni.get().createSharedBuffer(CoreImpl.this, optionsBuffer, numBytes);
         if (result.getMojoResult() != MojoResult.OK) {
             throw new MojoException(result.getMojoResult());
@@ -160,10 +160,10 @@ public class CoreImpl implements Core {
     }
 
     /**
-     * @see org.chromium.mojo.system.Core#acquireNativeHandle(int)
+     * @see org.chromium.mojo.system.Core#acquireNativeHandle(long)
      */
     @Override
-    public UntypedHandle acquireNativeHandle(int handle) {
+    public UntypedHandle acquireNativeHandle(long handle) {
         return new UntypedHandleImpl(this, handle);
     }
 
@@ -172,7 +172,7 @@ public class CoreImpl implements Core {
      */
     @Override
     public UntypedHandle wrapFileDescriptor(ParcelFileDescriptor fd) {
-        int releasedHandle = CoreImplJni.get().createPlatformHandle(fd.detachFd());
+        long releasedHandle = CoreImplJni.get().createPlatformHandle(fd.detachFd());
         return acquireNativeHandle(releasedHandle);
     }
 
@@ -212,18 +212,18 @@ public class CoreImpl implements Core {
         mCurrentRunLoop.remove();
     }
 
-    int closeWithResult(int mojoHandle) {
+    int closeWithResult(long mojoHandle) {
         return CoreImplJni.get().close(CoreImpl.this, mojoHandle);
     }
 
-    void close(int mojoHandle) {
+    void close(long mojoHandle) {
         int mojoResult = CoreImplJni.get().close(CoreImpl.this, mojoHandle);
         if (mojoResult != MojoResult.OK) {
             throw new MojoException(mojoResult);
         }
     }
 
-    HandleSignalsState queryHandleSignalsState(int mojoHandle) {
+    HandleSignalsState queryHandleSignalsState(long mojoHandle) {
         ByteBuffer buffer = allocateDirectBuffer(8);
         int result = CoreImplJni.get().queryHandleSignalsState(CoreImpl.this, mojoHandle, buffer);
         if (result != MojoResult.OK) throw new MojoException(result);
@@ -240,7 +240,7 @@ public class CoreImpl implements Core {
         if (handles != null && !handles.isEmpty()) {
             handlesBuffer = allocateDirectBuffer(handles.size() * HANDLE_SIZE);
             for (Handle handle : handles) {
-                handlesBuffer.putInt(getMojoHandle(handle));
+                handlesBuffer.putLong(getMojoHandle(handle));
             }
             handlesBuffer.position(0);
         }
@@ -272,10 +272,10 @@ public class CoreImpl implements Core {
         }
 
         MessagePipeHandle.ReadMessageResult readResult = result.getValue();
-        int[] rawHandles = readResult.mRawHandles;
+        long[] rawHandles = readResult.mRawHandles;
         if (rawHandles != null && rawHandles.length != 0) {
             readResult.mHandles = new ArrayList<UntypedHandle>(rawHandles.length);
-            for (int rawHandle : rawHandles) {
+            for (long rawHandle : rawHandles) {
                 readResult.mHandles.add(new UntypedHandleImpl(this, rawHandle));
             }
         } else {
@@ -385,7 +385,7 @@ public class CoreImpl implements Core {
             optionsBuffer.putInt(0, 8);
             optionsBuffer.putInt(4, options.getFlags().getFlags());
         }
-        ResultAnd<Integer> result =
+        ResultAnd<Long> result =
                 CoreImplJni.get().duplicate(CoreImpl.this, handle.getMojoHandle(), optionsBuffer);
         if (result.getMojoResult() != MojoResult.OK) {
             throw new MojoException(result.getMojoResult());
@@ -418,7 +418,7 @@ public class CoreImpl implements Core {
     /**
      * @return the mojo handle associated to the given handle, considering invalid handles.
      */
-    private int getMojoHandle(Handle handle) {
+    private long getMojoHandle(Handle handle) {
         if (handle.isValid()) {
             return ((HandleBase) handle).getMojoHandle();
         }
@@ -459,18 +459,18 @@ public class CoreImpl implements Core {
     }
 
     /**
-     * Trivial alias for Pair<Integer, Integer>. This is needed because our jni generator is unable
+     * Trivial alias for Pair<Long, Long>. This is needed because our jni generator is unable
      * to handle class that contains space.
      */
-    static final class IntegerPair extends Pair<Integer, Integer> {
-        public IntegerPair(Integer first, Integer second) {
+    static final class RawHandlePair extends Pair<Long, Long> {
+        public RawHandlePair(Long first, Long second) {
             super(first, second);
         }
     }
 
     @CalledByNative
     private static ResultAnd<MessagePipeHandle.ReadMessageResult> newReadMessageResult(
-            int mojoResult, byte[] data, int[] rawHandles) {
+            int mojoResult, byte[] data, long[] rawHandles) {
         MessagePipeHandle.ReadMessageResult result = new MessagePipeHandle.ReadMessageResult();
         if (mojoResult == MojoResult.OK) {
             result.mData = data;
@@ -485,39 +485,45 @@ public class CoreImpl implements Core {
     }
 
     @CalledByNative
-    private static ResultAnd<IntegerPair> newNativeCreationResult(
-            int mojoResult, int mojoHandle1, int mojoHandle2) {
-        return new ResultAnd<>(mojoResult, new IntegerPair(mojoHandle1, mojoHandle2));
+    private static ResultAnd<Long> newResultAndLong(int mojoResult, long value) {
+        return new ResultAnd<>(mojoResult, value);
+    }
+
+    @CalledByNative
+    private static ResultAnd<RawHandlePair> newNativeCreationResult(
+            int mojoResult, long mojoHandle1, long mojoHandle2) {
+        return new ResultAnd<>(mojoResult, new RawHandlePair(mojoHandle1, mojoHandle2));
     }
 
     @NativeMethods
     interface Natives {
         long getTimeTicksNow(CoreImpl caller);
-        ResultAnd<IntegerPair> createMessagePipe(CoreImpl caller, ByteBuffer optionsBuffer);
-        ResultAnd<IntegerPair> createDataPipe(CoreImpl caller, ByteBuffer optionsBuffer);
-        ResultAnd<Integer> createSharedBuffer(
+        ResultAnd<RawHandlePair> createMessagePipe(CoreImpl caller, ByteBuffer optionsBuffer);
+        ResultAnd<RawHandlePair> createDataPipe(CoreImpl caller, ByteBuffer optionsBuffer);
+        ResultAnd<Long> createSharedBuffer(
                 CoreImpl caller, ByteBuffer optionsBuffer, long numBytes);
-        int close(CoreImpl caller, int mojoHandle);
-        int queryHandleSignalsState(CoreImpl caller, int mojoHandle, ByteBuffer signalsStateBuffer);
-        int writeMessage(CoreImpl caller, int mojoHandle, ByteBuffer bytes, int numBytes,
+        int close(CoreImpl caller, long mojoHandle);
+        int queryHandleSignalsState(
+                CoreImpl caller, long mojoHandle, ByteBuffer signalsStateBuffer);
+        int writeMessage(CoreImpl caller, long mojoHandle, ByteBuffer bytes, int numBytes,
                 ByteBuffer handlesBuffer, int flags);
         ResultAnd<MessagePipeHandle.ReadMessageResult> readMessage(
-                CoreImpl caller, int mojoHandle, int flags);
+                CoreImpl caller, long mojoHandle, int flags);
         ResultAnd<Integer> readData(
-                CoreImpl caller, int mojoHandle, ByteBuffer elements, int elementsSize, int flags);
+                CoreImpl caller, long mojoHandle, ByteBuffer elements, int elementsSize, int flags);
         ResultAnd<ByteBuffer> beginReadData(
-                CoreImpl caller, int mojoHandle, int numBytes, int flags);
-        int endReadData(CoreImpl caller, int mojoHandle, int numBytesRead);
+                CoreImpl caller, long mojoHandle, int numBytes, int flags);
+        int endReadData(CoreImpl caller, long mojoHandle, int numBytesRead);
         ResultAnd<Integer> writeData(
-                CoreImpl caller, int mojoHandle, ByteBuffer elements, int limit, int flags);
+                CoreImpl caller, long mojoHandle, ByteBuffer elements, int limit, int flags);
         ResultAnd<ByteBuffer> beginWriteData(
-                CoreImpl caller, int mojoHandle, int numBytes, int flags);
-        int endWriteData(CoreImpl caller, int mojoHandle, int numBytesWritten);
-        ResultAnd<Integer> duplicate(CoreImpl caller, int mojoHandle, ByteBuffer optionsBuffer);
+                CoreImpl caller, long mojoHandle, int numBytes, int flags);
+        int endWriteData(CoreImpl caller, long mojoHandle, int numBytesWritten);
+        ResultAnd<Long> duplicate(CoreImpl caller, long mojoHandle, ByteBuffer optionsBuffer);
         ResultAnd<ByteBuffer> map(
-                CoreImpl caller, int mojoHandle, long offset, long numBytes, int flags);
+                CoreImpl caller, long mojoHandle, long offset, long numBytes, int flags);
         int unmap(CoreImpl caller, ByteBuffer buffer);
         int getNativeBufferOffset(CoreImpl caller, ByteBuffer buffer, int alignment);
-        int createPlatformHandle(int fd);
+        long createPlatformHandle(int fd);
     }
 }

@@ -77,7 +77,7 @@ public class HandleMock implements UntypedHandle, MessagePipeHandle, ProducerHan
      * @see Handle#releaseNativeHandle()
      */
     @Override
-    public int releaseNativeHandle() {
+    public long releaseNativeHandle() {
         return 0;
     }
 

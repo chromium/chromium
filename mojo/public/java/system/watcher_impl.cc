@@ -33,7 +33,7 @@ class WatcherImpl {
 
   jint Start(JNIEnv* env,
              const JavaParamRef<jobject>& jcaller,
-             jint mojo_handle,
+             jlong mojo_handle,
              jint signals) {
     java_watcher_.Reset(env, jcaller);
 
@@ -83,7 +83,7 @@ static jlong JNI_WatcherImpl_CreateWatcher(
 static jint JNI_WatcherImpl_Start(JNIEnv* env,
                                   const JavaParamRef<jobject>& jcaller,
                                   jlong watcher_ptr,
-                                  jint mojo_handle,
+                                  jlong mojo_handle,
                                   jint signals) {
   auto* watcher = reinterpret_cast<WatcherImpl*>(watcher_ptr);
   return watcher->Start(env, jcaller, mojo_handle, signals);

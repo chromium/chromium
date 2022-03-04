@@ -56,11 +56,11 @@
 //
 // And it's important to keep any unnecessary information out of this header.
 
-// Forward declare MojoSystemThunks to keep this file free of direct
+// Forward declare MojoSystemThunks32 to keep this file free of direct
 // dependencies on Chromium, making it easier to use this file outside of the
 // Chromium repo. When using this file, consumers should also #include their own
-// copy of the MojoSystemThunks struct definition.
-struct MojoSystemThunks;
+// copy of the MojoSystemThunks32 struct definition.
+struct MojoSystemThunks32;
 
 namespace ash {
 namespace ime {
@@ -131,9 +131,9 @@ class ImeCrosPlatform {
   // Returns a pointer to the Mojo system thunks.
   // The shared library can use this pointer for its own Mojo environment in
   // order to communicate directly with the browser process.
-  // MojoSystemThunks has a stable ABI, hence it is safe to use it from the
+  // MojoSystemThunks32 has a stable ABI, hence it is safe to use it from the
   // shared library
-  virtual const MojoSystemThunks* GetMojoSystemThunks() = 0;
+  virtual const MojoSystemThunks32* GetMojoSystemThunks() = 0;
 
   // Retrieves the string value of a CrOS feature's Finch param. Only a subset
   // of CrOS features are considered (see impl for details). |feature_name| is

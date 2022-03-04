@@ -297,7 +297,7 @@ public class DialogOverlayImpl
         // removed once Android O is no longer supported.
         final AndroidOverlayClient.Proxy proxy = (AndroidOverlayClient.Proxy) client;
         final MessagePipeHandle handle = proxy.getProxyHandler().passHandle();
-        final int nativeHandle = handle.releaseNativeHandle();
+        final long nativeHandle = handle.releaseNativeHandle();
         DialogOverlayImplJni.get().notifyDestroyedSynchronously(nativeHandle);
     }
 
@@ -360,6 +360,6 @@ public class DialogOverlayImpl
          * @param version Mojo interface version.
          * @return none, but the message pipe is closed.
          */
-        void notifyDestroyedSynchronously(int messagePipeHandle);
+        void notifyDestroyedSynchronously(long messagePipeHandle);
     }
 }

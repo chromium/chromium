@@ -73,8 +73,8 @@ bool HandleTable::AddDispatchersFromTransit(
   DCHECK_GE(next_available_handle_, 1u);
 
   // If this insertion would cause handle overflow, we're out of handles.
-  const uint32_t num_handles_available =
-      std::numeric_limits<uint32_t>::max() - next_available_handle_ + 1;
+  const uint64_t num_handles_available =
+      std::numeric_limits<uint64_t>::max() - next_available_handle_ + 1;
   if (num_handles_available < dispatchers.size()) {
     return false;
   }
