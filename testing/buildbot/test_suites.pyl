@@ -594,7 +594,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
         },
@@ -1452,6 +1452,21 @@
           'result_format': 'single',
           'result_file': '${ISOLATED_OUTDIR}/sizes/test_results.json'
         },
+        'remove_mixins': [
+          'android_r',
+          'bullhead',
+          'flame',
+          'hammerhead',
+          'kitkat',
+          'lollipop',
+          'marshmallow',
+          'marshmallow_generic',
+          'mdarcy',
+          'nougat_generic',
+          'oreo_fleet',
+          'pie_fleet',
+          'walleye',
+        ],
       },
     },
 
@@ -4154,7 +4169,35 @@
     },
 
     'monochrome_public_apk_checker_isolated_script': {
-      'monochrome_public_apk_checker': {},
+      'monochrome_public_apk_checker': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+              'cpu': 'x86',
+              'device_os': None,
+              'device_os_flavor': None,
+              'device_playstore_version': None,
+              'device_type': None,
+            },
+          ],
+        },
+        'remove_mixins': [
+          'android_r',
+          'bullhead',
+          'flame',
+          'hammerhead',
+          'kitkat',
+          'lollipop',
+          'marshmallow',
+          'marshmallow_generic',
+          'mdarcy',
+          'nougat_generic',
+          'oreo_fleet',
+          'pie_fleet',
+          'walleye',
+        ],
+      },
     },
 
     'network_service_fyi_gtests': {
