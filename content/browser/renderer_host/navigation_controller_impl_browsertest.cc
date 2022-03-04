@@ -18828,20 +18828,11 @@ class DidCommitNavigationCanceller : public DidCommitNavigationInterceptor {
 
 }  //  namespace
 
-// Test is flaky on Mac: https://crbug.com/1151545.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CrossProcessIframeToInvalidURLCancelsRedirectSpoof \
-  DISABLED_CrossProcessIframeToInvalidURLCancelsRedirectSpoof
-#else
-#define MAYBE_CrossProcessIframeToInvalidURLCancelsRedirectSpoof \
-  CrossProcessIframeToInvalidURLCancelsRedirectSpoof
-#endif
 // When running OpenURL to an invalid URL on a frame proxy it should not spoof
 // the url by canceling a main frame navigation.
 // See https://crbug.com/966914.
-IN_PROC_BROWSER_TEST_P(
-    NavigationControllerBrowserTest,
-    MAYBE_CrossProcessIframeToInvalidURLCancelsRedirectSpoof) {
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       CrossProcessIframeToInvalidURLCancelsRedirectSpoof) {
   // This tests something that can only happened with out of process iframes.
   if (!AreAllSitesIsolatedForTesting())
     return;
