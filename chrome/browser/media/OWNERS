@@ -6,6 +6,9 @@ tommi@chromium.org
 per-file cast_*=mfoltz@chromium.org
 per-file cast_*=jophba@chromium.org
 
+# For Media Engagement changes.
+per-file *media_engagement*=evliu@google.com
+
 # For IPC security review
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
