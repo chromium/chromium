@@ -3670,12 +3670,6 @@ const char kVoiceButtonInTopToolbarDescription[] =
     "Enables showing the voice search button in the top toolbar. Enabling "
     "Adaptive Button overrides this.";
 
-const char kWebBluetoothRequestLargerMtuName[] =
-    "Request larger MTU for Web Bluetooth";
-const char kWebBluetoothRequestLargerMtuDescription[] =
-    "Controls whether Web Bluetooth should request for a larger ATT MTU so "
-    "that more information can be exchanged per transmission.";
-
 const char kWebFeedName[] = "Web Feed";
 const char kWebFeedDescription[] =
     "Allows users to keep up with and consume web content.";

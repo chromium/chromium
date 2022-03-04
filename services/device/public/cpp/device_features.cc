@@ -18,9 +18,5 @@ const base::Feature kWinrtGeolocationImplementation{
 // NetworkLocationProvider for macOS.
 const base::Feature kMacCoreLocationBackend{"MacCoreLocationBackend",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
-// Controls whether Web Bluetooth should request for a larger ATT MTU so that
-// more information can be exchanged per transmission.
-const base::Feature kWebBluetoothRequestLargerMtu{
-    "WebBluetoothRequestLargerMtu", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features

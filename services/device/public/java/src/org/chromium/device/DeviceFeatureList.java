@@ -18,8 +18,6 @@ import org.chromium.base.annotations.NativeMethods;
 public class DeviceFeatureList {
     public static final String GENERIC_SENSOR_EXTRA_CLASSES = "GenericSensorExtraClasses";
 
-    public static final String WEB_BLUETOOTH_REQUEST_LARGER_MTU = "WebBluetoothRequestLargerMtu";
-
     private DeviceFeatureList() {}
 
     /**

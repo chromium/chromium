@@ -2095,9 +2095,6 @@ extern const char kShareButtonInTopToolbarDescription[];
 extern const char kVoiceButtonInTopToolbarName[];
 extern const char kVoiceButtonInTopToolbarDescription[];
 
-extern const char kWebBluetoothRequestLargerMtuName[];
-extern const char kWebBluetoothRequestLargerMtuDescription[];
-
 extern const char kWebFeedName[];
 extern const char kWebFeedDescription[];
 

@@ -22,7 +22,6 @@ DEVICE_FEATURES_EXPORT extern const base::Feature
 DEVICE_FEATURES_EXPORT extern const base::Feature
     kMacCoreLocationImplementation;
 DEVICE_FEATURES_EXPORT extern const base::Feature kMacCoreLocationBackend;
-DEVICE_FEATURES_EXPORT extern const base::Feature kWebBluetoothRequestLargerMtu;
 
 }  // namespace features
 

@@ -8041,12 +8041,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kLargeFaviconFromGoogle,
                                     kLargeFaviconFromGoogleVariations,
                                     "LargeFaviconFromGoogle")},
-#if BUILDFLAG(IS_ANDROID)
-    {"web-bluetooth-request-larger-mtu",
-     flag_descriptions::kWebBluetoothRequestLargerMtuName,
-     flag_descriptions::kWebBluetoothRequestLargerMtuDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kWebBluetoothRequestLargerMtu)},
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"request-desktop-site-exceptions",

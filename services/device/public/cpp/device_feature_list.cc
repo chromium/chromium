@@ -20,7 +20,6 @@ namespace {
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kGenericSensorExtraClasses,
-    &kWebBluetoothRequestLargerMtu,
 };
 
 // TODO(crbug.com/1060097): Removethis once a generalized FeatureList exists.
