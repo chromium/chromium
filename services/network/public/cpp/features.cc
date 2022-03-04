@@ -220,6 +220,12 @@ static_assert(kDefaultDataPipeAllocationSize >= net::kMaxBytesToSniff,
 
 // static
 uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/1260751): It is unclear if the increased data pipe size
+  // is responsible for an increased CrOS crash rate, so the size is being
+  // reverted to the default while we investigate.
+  return kDefaultDataPipeAllocationSize;
+#else
   // For low-memory devices, always use the (smaller) default buffer size.
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
     return kDefaultDataPipeAllocationSize;
@@ -229,6 +235,7 @@ uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
     case DataPipeAllocationSize::kLargerSizeIfPossible:
       return kLargerDataPipeAllocationSize;
   }
+#endif
 }
 
 // static
