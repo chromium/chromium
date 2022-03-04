@@ -776,8 +776,8 @@
   'CROS_EVE_DEV': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '100.0.4896.13',
-      'cros_img': 'eve-release/R100-14526.6.0',
+      'cros_chrome_version': '101.0.4918.0',
+      'cros_img': 'eve-release/R101-14543.0.0',
     },
     'enabled': True,
     'identifier': 'EVE_DEV',
@@ -830,8 +830,8 @@
   'CROS_OCTOPUS_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '100.0.4896.13',
-      'cros_img': 'octopus-release/R100-14526.6.0',
+      'cros_chrome_version': '101.0.4918.0',
+      'cros_img': 'octopus-release/R101-14543.0.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_DEV',
