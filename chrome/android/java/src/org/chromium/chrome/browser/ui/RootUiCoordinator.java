@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -686,10 +687,13 @@ public class RootUiCoordinator
         }
 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
-            mIncognitoReauthController =
-                    new IncognitoReauthController(mActivity, mTabModelSelectorSupplier.get(),
-                            mActivityLifecycleDispatcher, mModalDialogManagerSupplier.get(),
-                            mLayoutStateProviderOneShotSupplier, mProfileSupplier);
+            TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+            IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
+                    new IncognitoReauthCoordinatorFactory(
+                            mActivity, tabModelSelector, mModalDialogManagerSupplier.get());
+            mIncognitoReauthController = new IncognitoReauthController(tabModelSelector,
+                    mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
+                    mProfileSupplier, incognitoReauthCoordinatorFactory);
         }
     }
 

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -25,7 +23,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * This is the access point for showing the Incognito re-auth dialog. It controls building the
@@ -99,11 +96,10 @@ public class IncognitoReauthController
     private final CallbackController mLayoutStateProviderCallbackController =
             new CallbackController();
 
-    private final @NonNull Context mContext;
     private final @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final @NonNull TabModelSelector mTabModelSelector;
-    private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull ObservableSupplier<Profile> mProfileObservableSupplier;
+    private final @NonNull IncognitoReauthCoordinatorFactory mIncognitoReauthCoordinatorFactory;
 
     // No strong reference to this should be made outside of this class because
     // we set this to null in hideDialogIfShowing for it to be garbage collected.
@@ -114,30 +110,25 @@ public class IncognitoReauthController
     private boolean mIncognitoReauthPending;
 
     /**
-     * @param context The {@link Context} of the Activity where the re-auth dialog would be shown.
      * @param tabModelSelector The {@link TabModelSelector} in order to interact with the
      *         regular/Incognito {@link TabModel}.
      * @param dispatcher The {@link ActivityLifecycleDispatcher} in order to register to
      *         onStartWithNative event.
-     * @param modalDialogManager The {@link ModalDialogManager} of the underlying {@link
-     *         ChromeActivity} to handle dialogs.
      * @param layoutStateProviderOneshotSupplier A supplier of {@link LayoutStateProvider} which is
      *         used to determine the current {@link LayoutType} which is shown.
      * @param profileSupplier A Observable Supplier of {@link Profile} which is used to query the
      *         preference value of the Incognito lock setting.
      */
-    public IncognitoReauthController(@NonNull Context context,
-            @NonNull TabModelSelector tabModelSelector,
+    public IncognitoReauthController(@NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher dispatcher,
-            @NonNull ModalDialogManager modalDialogManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
-            @NonNull ObservableSupplier<Profile> profileSupplier) {
-        mContext = context;
+            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory) {
         mTabModelSelector = tabModelSelector;
         mActivityLifecycleDispatcher = dispatcher;
-        mModalDialogManager = modalDialogManager;
         mProfileObservableSupplier = profileSupplier;
         mProfileObservableSupplier.addObserver(mProfileSupplierCallback);
+        mIncognitoReauthCoordinatorFactory = incognitoReauthCoordinatorFactory;
 
         layoutStateProviderOneshotSupplier.onAvailable(
                 mLayoutStateProviderCallbackController.makeCancelable(layoutStateProvider -> {
@@ -233,8 +224,9 @@ public class IncognitoReauthController
         if (!IncognitoReauthManager.isIncognitoReauthEnabled(mProfile)) return;
 
         boolean showFullScreen = !mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER);
-        mIncognitoReauthCoordinator = new IncognitoReauthCoordinator(mContext, mTabModelSelector,
-                mModalDialogManager, mIncognitoReauthCallback, showFullScreen);
+        mIncognitoReauthCoordinator =
+                mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
+                        mIncognitoReauthCallback, showFullScreen);
         mIncognitoReauthCoordinator.showDialog();
     }
 

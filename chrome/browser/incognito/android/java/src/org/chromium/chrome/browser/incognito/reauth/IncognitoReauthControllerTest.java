@@ -8,13 +8,12 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import android.content.Context;
 
 import androidx.test.filters.MediumTest;
 
@@ -44,7 +43,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Unit tests for {@link IncognitoReauthController}.
@@ -53,21 +51,21 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class IncognitoReauthControllerTest {
     @Mock
-    private Context mContextMock;
-    @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
     @Mock
     private LayoutStateProvider mLayoutStateProviderMock;
     @Mock
     private TabModelSelector mTabModelSelectorMock;
     @Mock
-    private ModalDialogManager mModalDialogManagerMock;
-    @Mock
     private TabModel mIncognitoTabModelMock;
     @Mock
     private TabModel mRegularTabModelMock;
     @Mock
     private Profile mProfileMock;
+    @Mock
+    private IncognitoReauthCoordinatorFactory mIncognitoReauthCoordinatorFactoryMock;
+    @Mock
+    private IncognitoReauthCoordinator mIncognitoReauthCoordinatorMock;
 
     @Captor
     ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
@@ -125,15 +123,19 @@ public class IncognitoReauthControllerTest {
         doReturn(true).when(mIncognitoTabModelMock).isIncognito();
         doReturn(false).when(mRegularTabModelMock).isIncognito();
         doReturn(false).when(mLayoutStateProviderMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
+        doReturn(mIncognitoReauthCoordinatorMock)
+                .when(mIncognitoReauthCoordinatorFactoryMock)
+                .createIncognitoReauthCoordinator(any(), /*showFullScreen=*/anyBoolean());
+        doNothing().when(mIncognitoReauthCoordinatorMock).showDialog();
 
         mLayoutStateProviderOneshotSupplier = new OneshotSupplierImpl<>();
         mLayoutStateProviderOneshotSupplier.set(mLayoutStateProviderMock);
         mProfileObservableSupplier = new ObservableSupplierImpl<>();
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
 
-        mIncognitoReauthController = new IncognitoReauthController(mContextMock,
-                mTabModelSelectorMock, mActivityLifecycleDispatcherMock, mModalDialogManagerMock,
-                mLayoutStateProviderOneshotSupplier, mProfileObservableSupplier);
+        mIncognitoReauthController = new IncognitoReauthController(mTabModelSelectorMock,
+                mActivityLifecycleDispatcherMock, mLayoutStateProviderOneshotSupplier,
+                mProfileObservableSupplier, mIncognitoReauthCoordinatorFactoryMock);
         mProfileObservableSupplier.set(mProfileMock);
     }
 
@@ -188,6 +190,7 @@ public class IncognitoReauthControllerTest {
         assertTrue("IncognitoReauthCoordinator should be created when Incognito tabs"
                         + " exists already after coming to foreground.",
                 mIncognitoReauthController.isReauthPageShowing());
+        verify(mIncognitoReauthCoordinatorMock).showDialog();
     }
 
     @Test
@@ -232,6 +235,7 @@ public class IncognitoReauthControllerTest {
         mIncognitoReauthController.onStartWithNative();
         assertTrue("IncognitoReauthCoordinator should have been created.",
                 mIncognitoReauthController.isReauthPageShowing());
+        verify(mIncognitoReauthCoordinatorMock).showDialog();
 
         switchToRegularTabModel();
         assertFalse("IncognitoReauthCoordinator should have been destroyed"
@@ -253,6 +257,7 @@ public class IncognitoReauthControllerTest {
         assertTrue("IncognitoReauthCoordinator should be created for restored"
                         + " Incognito tabs.",
                 mIncognitoReauthController.isReauthPageShowing());
+        verify(mIncognitoReauthCoordinatorMock).showDialog();
     }
 
     @Test
@@ -291,6 +296,7 @@ public class IncognitoReauthControllerTest {
         assertTrue("IncognitoReauthCoordinator should be created when all conditions are"
                         + " met.",
                 mIncognitoReauthController.isReauthPageShowing());
+        verify(mIncognitoReauthCoordinatorMock).showDialog();
 
         // Move to regular mode.
         switchToRegularTabModel();
