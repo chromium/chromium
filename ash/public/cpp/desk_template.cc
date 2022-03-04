@@ -67,7 +67,7 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
 
 std::string DeskTemplate::ToString() const {
   std::string result =
-      "Template name: " + base::UTF16ToASCII(template_name_) + "\n";
+      "Template name: " + base::UTF16ToUTF8(template_name_) + "\n";
   result += "Source: ";
   switch (source_) {
     case DeskTemplateSource::kUnknownSource:
