@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <iostream>
+#include <iterator>
 #include <set>
 #include <string>
 #include <tuple>
@@ -11,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/types/id_type.h"
@@ -921,10 +921,10 @@ template <>
 struct FuzzTraits<gfx::Transform> {
   static bool Fuzz(gfx::Transform* p, Fuzzer* fuzzer) {
     SkScalar matrix[16];
-    for (size_t i = 0; i < base::size(matrix); i++) {
+    for (size_t i = 0; i < std::size(matrix); i++) {
       matrix[i] = p->matrix().rc(i / 4, i % 4);
     }
-    if (!FuzzParamArray(&matrix[0], base::size(matrix), fuzzer))
+    if (!FuzzParamArray(&matrix[0], std::size(matrix), fuzzer))
       return false;
     *p = gfx::Transform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4],
                         matrix[5], matrix[6], matrix[7], matrix[8], matrix[9],

@@ -7,12 +7,13 @@
 #include <stddef.h>
 #include <sys/select.h>
 #include <unistd.h>
+
 #include <algorithm>
+#include <iterator>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -81,7 +82,7 @@ void ForwardersManager::WaitForEventsOnInternalThread() {
     deletion_notifier_.receiver_fd(),
   };
 
-  for (size_t i = 0; i < base::size(notifier_fds); ++i) {
+  for (size_t i = 0; i < std::size(notifier_fds); ++i) {
     const int notifier_fd = notifier_fds[i];
     DCHECK_GT(notifier_fd, -1);
     FD_SET(notifier_fd, &read_fds);
