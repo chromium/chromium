@@ -21,6 +21,12 @@ void TrustStoreInMemory::AddTrustAnchor(scoped_refptr<ParsedCertificate> cert) {
   AddCertificate(std::move(cert), CertificateTrust::ForTrustAnchor());
 }
 
+void TrustStoreInMemory::AddTrustAnchorWithExpiration(
+    scoped_refptr<ParsedCertificate> cert) {
+  AddCertificate(std::move(cert),
+                 CertificateTrust::ForTrustAnchorEnforcingExpiration());
+}
+
 void TrustStoreInMemory::AddTrustAnchorWithConstraints(
     scoped_refptr<ParsedCertificate> cert) {
   AddCertificate(std::move(cert),

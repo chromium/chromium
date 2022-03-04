@@ -27,8 +27,13 @@ enum class CertificateTrustType {
   // fields in the certificate that are meaningful are its name and SPKI.
   TRUSTED_ANCHOR,
 
-  // This certificate is a trust anchor, and additionally some of the fields in
-  // the certificate (other than name and SPKI) should be used during the
+  // This certificate is a trust anchor which additionally has expiration
+  // enforced. The only fields in the certificate that are meaningful are its
+  // name, SPKI, and validity period.
+  TRUSTED_ANCHOR_WITH_EXPIRATION,
+
+  // This certificate is a trust anchor for which some of the fields in the
+  // certificate (in addition to the name and SPKI) should be used during the
   // verification process. See VerifyCertificateChain() for details on how
   // constraints are applied.
   TRUSTED_ANCHOR_WITH_CONSTRAINTS,
@@ -42,6 +47,7 @@ enum class CertificateTrustType {
 // TODO(eroman): Right now this is just a glorified wrapper around an enum...
 struct NET_EXPORT CertificateTrust {
   static CertificateTrust ForTrustAnchor();
+  static CertificateTrust ForTrustAnchorEnforcingExpiration();
   static CertificateTrust ForTrustAnchorEnforcingConstraints();
   static CertificateTrust ForUnspecified();
   static CertificateTrust ForDistrusted();

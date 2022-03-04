@@ -27,6 +27,9 @@ class PathBuilderTestDelegate {
       case CertificateTrustType::TRUSTED_ANCHOR:
         trust_store.AddTrustAnchor(test.chain.back());
         break;
+      case CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION:
+        trust_store.AddTrustAnchorWithExpiration(test.chain.back());
+        break;
       case CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS:
         trust_store.AddTrustAnchorWithConstraints(test.chain.back());
         break;

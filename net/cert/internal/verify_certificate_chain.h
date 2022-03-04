@@ -208,6 +208,10 @@ class NET_EXPORT VerifyCertificateChainDelegate {
 // SPKI, are checked during verification. This is the usual
 // interpretation for a "trust anchor".
 //
+// TRUSTED_ANCHOR_WITH_EXPIRATION:
+//
+// The validity period of the root is checked, in addition to Subject and SPKI.
+//
 // TRUSTED_ANCHOR_WITH_CONSTRAINTS:
 //
 // Only a subset of extensions and properties from the certificate are checked,

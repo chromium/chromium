@@ -485,6 +485,7 @@ class PathVerifier {
   // follows the description in RFC 5937
   void ProcessRootCertificate(const ParsedCertificate& cert,
                               const CertificateTrust& trust,
+                              const der::GeneralizedTime& time,
                               KeyPurpose required_key_purpose,
                               CertErrors* errors,
                               bool* shortcircuit_chain_validation);
@@ -1122,6 +1123,7 @@ void PathVerifier::ApplyTrustAnchorConstraints(const ParsedCertificate& cert,
 
 void PathVerifier::ProcessRootCertificate(const ParsedCertificate& cert,
                                           const CertificateTrust& trust,
+                                          const der::GeneralizedTime& time,
                                           KeyPurpose required_key_purpose,
                                           CertErrors* errors,
                                           bool* shortcircuit_chain_validation) {
@@ -1138,11 +1140,12 @@ void PathVerifier::ProcessRootCertificate(const ParsedCertificate& cert,
       *shortcircuit_chain_validation = true;
       break;
     case CertificateTrustType::TRUSTED_ANCHOR:
+      break;
+    case CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION:
+      VerifyTimeValidity(cert, time, errors);
+      break;
     case CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS:
-      // If the trust anchor has constraints, enforce them.
-      if (trust.type == CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS) {
-        ApplyTrustAnchorConstraints(cert, required_key_purpose, errors);
-      }
+      ApplyTrustAnchorConstraints(cert, required_key_purpose, errors);
       break;
   }
   if (*shortcircuit_chain_validation)
@@ -1261,7 +1264,7 @@ void PathVerifier::Run(
 
     if (is_root_cert) {
       bool shortcircuit_chain_validation = false;
-      ProcessRootCertificate(cert, last_cert_trust, required_key_purpose,
+      ProcessRootCertificate(cert, last_cert_trust, time, required_key_purpose,
                              cert_errors, &shortcircuit_chain_validation);
       if (shortcircuit_chain_validation) {
         // Chains that don't start from a trusted root should short-circuit the

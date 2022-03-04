@@ -246,6 +246,9 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
     } else if (GetValue("last_cert_trust: ", line_piece, &value, &has_trust)) {
       if (value == "TRUSTED_ANCHOR") {
         test->last_cert_trust = CertificateTrust::ForTrustAnchor();
+      } else if (value == "TRUSTED_ANCHOR_WITH_EXPIRATION") {
+        test->last_cert_trust =
+            CertificateTrust::ForTrustAnchorEnforcingExpiration();
       } else if (value == "TRUSTED_ANCHOR_WITH_CONSTRAINTS") {
         test->last_cert_trust =
             CertificateTrust::ForTrustAnchorEnforcingConstraints();

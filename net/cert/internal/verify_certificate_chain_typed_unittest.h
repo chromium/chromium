@@ -45,6 +45,8 @@ TYPED_TEST_SUITE_P(VerifyCertificateChainSingleRootTest);
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, Simple) {
   this->RunTest("target-and-intermediate/main.test");
+  this->RunTest("target-and-intermediate/ta-with-expiration.test");
+  this->RunTest("target-and-intermediate/ta-with-constraints.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, BasicConstraintsCa) {
@@ -106,7 +108,9 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, Expired) {
   this->RunTest("expired-intermediate/not-before.test");
   this->RunTest("expired-intermediate/not-after.test");
   this->RunTest("expired-root/not-before.test");
+  this->RunTest("expired-root/not-before-ta-with-expiration.test");
   this->RunTest("expired-root/not-after.test");
+  this->RunTest("expired-root/not-after-ta-with-expiration.test");
   this->RunTest("expired-root/not-after-ta-with-constraints.test");
 }
 

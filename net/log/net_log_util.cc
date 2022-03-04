@@ -193,6 +193,9 @@ base::Value GetNetConstants() {
                    static_cast<int>(CertificateTrustType::UNSPECIFIED));
     dict.SetIntKey("TRUSTED_ANCHOR",
                    static_cast<int>(CertificateTrustType::TRUSTED_ANCHOR));
+    dict.SetIntKey(
+        "TRUSTED_ANCHOR_WITH_EXPIRATION",
+        static_cast<int>(CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION));
     dict.SetIntKey("TRUSTED_ANCHOR_WITH_CONSTRAINTS",
                    static_cast<int>(
                        CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS));

@@ -14,6 +14,12 @@ CertificateTrust CertificateTrust::ForTrustAnchor() {
   return result;
 }
 
+CertificateTrust CertificateTrust::ForTrustAnchorEnforcingExpiration() {
+  CertificateTrust result;
+  result.type = CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION;
+  return result;
+}
+
 CertificateTrust CertificateTrust::ForTrustAnchorEnforcingConstraints() {
   CertificateTrust result;
   result.type = CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS;
@@ -38,6 +44,7 @@ bool CertificateTrust::IsTrustAnchor() const {
     case CertificateTrustType::UNSPECIFIED:
       return false;
     case CertificateTrustType::TRUSTED_ANCHOR:
+    case CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION:
     case CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS:
       return true;
   }
@@ -52,6 +59,7 @@ bool CertificateTrust::IsDistrusted() const {
       return true;
     case CertificateTrustType::UNSPECIFIED:
     case CertificateTrustType::TRUSTED_ANCHOR:
+    case CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION:
     case CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS:
       return false;
   }
@@ -66,6 +74,7 @@ bool CertificateTrust::HasUnspecifiedTrust() const {
       return true;
     case CertificateTrustType::DISTRUSTED:
     case CertificateTrustType::TRUSTED_ANCHOR:
+    case CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION:
     case CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS:
       return false;
   }

@@ -130,6 +130,7 @@ int TrustAndKeyIdentifierMatchToOrder(const ParsedCertificate* target,
   KeyIdentifierMatch key_id_match = CalculateKeyIdentifierMatch(target, issuer);
   switch (issuer_trust.type) {
     case CertificateTrustType::TRUSTED_ANCHOR:
+    case CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION:
     case CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS:
       switch (key_id_match) {
         case kMatch:
@@ -446,6 +447,7 @@ const ParsedCertificate* CertPathBuilderResultPath::GetTrustedCert() const {
 
   switch (last_cert_trust.type) {
     case CertificateTrustType::TRUSTED_ANCHOR:
+    case CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION:
     case CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS:
       return certs.back().get();
     case CertificateTrustType::UNSPECIFIED:
@@ -585,6 +587,7 @@ bool CertPathIter::GetNextPath(ParsedCertificateList* out_certs,
     // (or to the same cert if it's self-signed).
     switch (next_issuer_.trust.type) {
       case CertificateTrustType::TRUSTED_ANCHOR:
+      case CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION:
       case CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS:
         if (cur_path_.Empty()) {
           DVLOG(1) << "Leaf is a trust anchor, considering as UNSPECIFIED";
@@ -603,6 +606,7 @@ bool CertPathIter::GetNextPath(ParsedCertificateList* out_certs,
       // path.
       case CertificateTrustType::DISTRUSTED:
       case CertificateTrustType::TRUSTED_ANCHOR:
+      case CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION:
       case CertificateTrustType::TRUSTED_ANCHOR_WITH_CONSTRAINTS: {
         // If the issuer has a known trust level, can stop building the path.
         DVLOG(2) << "CertPathIter got anchor: "
