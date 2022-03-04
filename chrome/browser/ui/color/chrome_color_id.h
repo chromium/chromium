@@ -230,6 +230,10 @@
     ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN) \
   E(kColorTabGroupBookmarkBarOrange, \
     ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_ORANGE) \
+  E(kColorTabStrokeFrameActive, \
+    ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE) \
+  E(kColorTabStrokeFrameInactive, \
+    ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE) \
   /* Thumbnail tab colors. */ \
   E_CPONLY(kColorThumbnailTabBackground) \
   E_CPONLY(kColorThumbnailTabForeground) \
@@ -254,6 +258,10 @@
   E(kColorToolbarSeparator, \
     ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR) \
   E(kColorToolbarText, ThemeProperties::COLOR_TOOLBAR_TEXT) \
+  E(kColorToolbarTopSeparatorFrameActive, \
+    ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE) \
+  E(kColorToolbarTopSeparatorFrameInactive, \
+    ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE) \
   /* Window control button background colors */ \
   E(kColorWindowControlButtonBackgroundActive, \
     ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE) \

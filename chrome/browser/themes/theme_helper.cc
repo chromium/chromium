@@ -11,6 +11,7 @@
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/theme_resources.h"
@@ -478,15 +479,16 @@ SkColor ThemeHelper::GetDefaultColor(
       return SkColorSetA(SK_ColorBLACK, 0x4D);
     case TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE:
     case TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE: {
-      const SkColor tab_color =
+      const SkColor toolbar_color =
           GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier);
       const SkColor frame_color = get_frame_color(
           /*active=*/id == TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE);
-      const SeparatorColorKey key(tab_color, frame_color);
+      const SeparatorColorKey key(toolbar_color, frame_color);
       auto i = GetSeparatorColorCache().find(key);
       if (i != GetSeparatorColorCache().end())
         return i->second;
-      const SkColor separator_color = GetSeparatorColor(tab_color, frame_color);
+      const SkColor separator_color =
+          GetToolbarTopSeparatorColor(toolbar_color, frame_color);
       GetSeparatorColorCache()[key] = separator_color;
       return separator_color;
     }
@@ -546,52 +548,6 @@ SkColor ThemeHelper::GetDefaultColor(
   }
 
   return TP::GetDefaultColor(id, incognito, UseDarkModeColors(theme_supplier));
-}
-
-// static
-SkColor ThemeHelper::GetSeparatorColor(SkColor tab_color, SkColor frame_color) {
-  constexpr float kContrastRatio = 2.0f;
-
-  // Used to generate the initial alpha blended separator color.
-  const auto generate_separator_color = [&]() {
-    // In most cases, if the tab is lighter than the frame, we darken the frame;
-    // if the tab is darker than the frame, we lighten the frame.
-    // However, if the frame is already very dark or very light, respectively,
-    // this won't contrast sufficiently with the frame color, so we'll need to
-    // reverse when we're lightening and darkening.
-    SkColor separator_color = SK_ColorWHITE;
-    if (color_utils::GetRelativeLuminance(tab_color) >=
-        color_utils::GetRelativeLuminance(frame_color)) {
-      separator_color = color_utils::GetColorWithMaxContrast(separator_color);
-    }
-
-    {
-      const auto result = color_utils::BlendForMinContrast(
-          frame_color, frame_color, separator_color, kContrastRatio);
-      if (color_utils::GetContrastRatio(result.color, frame_color) >=
-          kContrastRatio) {
-        return SkColorSetA(separator_color, result.alpha);
-      }
-    }
-
-    separator_color = color_utils::GetColorWithMaxContrast(separator_color);
-
-    // If the above call failed to create sufficient contrast, the frame color
-    // is already very dark or very light.  Since separators are only used when
-    // the tab has low contrast against the frame, the tab color is similarly
-    // very dark or very light, just not quite as much so as the frame color.
-    // Blend towards the opposite separator color, and compute the contrast
-    // against the tab instead of the frame to ensure both contrasts hit the
-    // desired minimum.
-    const auto result = color_utils::BlendForMinContrast(
-        frame_color, tab_color, separator_color, kContrastRatio);
-    return SkColorSetA(separator_color, result.alpha);
-  };
-
-  // The vertical tab separator might show through the stroke if the stroke
-  // color is translucent. To prevent this, always use an opaque stroke color.
-  return color_utils::GetResultingPaintColor(generate_separator_color(),
-                                             frame_color);
 }
 
 // static

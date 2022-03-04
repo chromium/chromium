@@ -126,6 +126,28 @@ ui::ColorTransform SelectColorBasedOnDarkInputOrMode(
                              std::move(light_mode_color_transform));
 }
 
+ui::ColorTransform GetToolbarTopSeparatorColorTransform(
+    ui::ColorTransform toolbar_color_transform,
+    ui::ColorTransform frame_color_transform) {
+  const auto generator = [](ui::ColorTransform toolbar_color_transform,
+                            ui::ColorTransform frame_color_transform,
+                            SkColor input_color, const ui::ColorMixer& mixer) {
+    const SkColor toolbar_color =
+        toolbar_color_transform.Run(input_color, mixer);
+    const SkColor frame_color = frame_color_transform.Run(input_color, mixer);
+    const SkColor result_color =
+        GetToolbarTopSeparatorColor(toolbar_color, frame_color);
+    DVLOG(2) << "ColorTransform GetToolbarTopSeparatorColor:"
+             << " Input Color: " << ui::SkColorName(input_color)
+             << " Toolbar Transform Color: " << ui::SkColorName(toolbar_color)
+             << " Frame Transform Color: " << ui::SkColorName(frame_color)
+             << " Result Color: " << ui::SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(toolbar_color_transform),
+                             std::move(frame_color_transform));
+}
+
 // Flat version of dark mode colors used in bookmarks bar to fill
 // the buttons.
 constexpr SkColor kFlatGrey = SkColorSetRGB(0x5D, 0x5E, 0x62);
@@ -347,6 +369,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                                                    : gfx::kGoogleGrey050};
   mixer[kColorTabHoverCardForeground] = {dark_mode ? gfx::kGoogleGrey700
                                                    : gfx::kGoogleGrey300};
+  mixer[kColorTabStrokeFrameActive] = {kColorToolbarTopSeparatorFrameActive};
+  mixer[kColorTabStrokeFrameInactive] = {
+      kColorToolbarTopSeparatorFrameInactive};
   mixer[kColorThumbnailTabBackground] = ui::BlendForMinContrast(
       ui::kColorAccent, ui::kColorFrameActive, absl::nullopt,
       color_utils::kMinimumVisibleContrastRatio);
@@ -373,6 +398,12 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarInkDrop] = ui::GetColorWithMaxContrast(kColorToolbar);
   mixer[kColorToolbarSeparator] = ui::SetAlpha(kColorToolbarButtonIcon, 0x4D);
   mixer[kColorToolbarText] = {dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
+  mixer[kColorToolbarTopSeparatorFrameActive] =
+      GetToolbarTopSeparatorColorTransform(kColorToolbar,
+                                           ui::kColorFrameActive);
+  mixer[kColorToolbarTopSeparatorFrameInactive] =
+      GetToolbarTopSeparatorColorTransform(kColorToolbar,
+                                           ui::kColorFrameInactive);
   mixer[kColorWindowControlButtonBackgroundActive] = {ui::kColorFrameActive};
   mixer[kColorWindowControlButtonBackgroundInactive] = {
       ui::kColorFrameInactive};

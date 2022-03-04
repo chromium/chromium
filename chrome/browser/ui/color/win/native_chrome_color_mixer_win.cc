@@ -268,4 +268,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
     mixer[kColorToolbarInkDrop] = {ui::kColorNativeHighlight};
   mixer[kColorToolbarSeparator] = {ui::kColorNativeWindowText};
   mixer[kColorToolbarText] = {ui::kColorNativeBtnText};
+  mixer[kColorToolbarTopSeparatorFrameActive] = {kColorToolbarSeparator};
+  mixer[kColorToolbarTopSeparatorFrameInactive] = {
+      kColorToolbarTopSeparatorFrameActive};
 }

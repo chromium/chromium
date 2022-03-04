@@ -236,14 +236,6 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
                                        extensions::ExtensionRegistry::DISABLED);
   }
 
-  // Returns the separator color as the opaque result of blending it atop the
-  // frame color (which is the color we use when calculating the contrast of the
-  // separator with the tab and frame colors).
-  static SkColor GetSeparatorColor(SkColor tab_color, SkColor frame_color) {
-    return color_utils::GetResultingPaintColor(
-        ThemeHelper::GetSeparatorColor(tab_color, frame_color), frame_color);
-  }
-
  protected:
   ui::TestNativeTheme native_theme_;
   raw_ptr<extensions::ExtensionRegistry> registry_ = nullptr;
@@ -812,6 +804,8 @@ TEST_P(ThemeProviderRedirectedEquivalenceTest, MAYBE_GetColor) {
       {{ThemeProperties::COLOR_STATUS_BUBBLE_INACTIVE, 1},
        {ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE, 1},
        {ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_ORANGE, 1},
+       {ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE, 1},
+       {ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE, 1},
        {ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE, 1}});
   auto get_tolerance = [](int id) {
     auto* it = kTolerances.find(id);
