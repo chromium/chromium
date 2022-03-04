@@ -214,7 +214,9 @@ export class CropDocument extends Review<boolean> {
 
       // Use arrow key to move corner.
       const KEYS = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
-      const getKeyIndex = (e: KeyboardEvent) => KEYS.indexOf(e.key);
+      function getKeyIndex(e: KeyboardEvent) {
+        return KEYS.indexOf(e.key);
+      }
       const KEY_MOVEMENTS = [
         new Vector(0, -1),
         new Vector(-1, 0),
@@ -223,13 +225,13 @@ export class CropDocument extends Review<boolean> {
       ];
       const pressedKeyIndices = new Set<number>();
       let keyInterval: util.DelayInterval|null = null;
-      const clearKeydown = () => {
+      function clearKeydown() {
         if (keyInterval !== null) {
           keyInterval.stop();
           keyInterval = null;
         }
         pressedKeyIndices.clear();
-      };
+      }
       const announcer = new MovementAnnouncer();
 
       corner.el.addEventListener('blur', () => {
@@ -449,25 +451,25 @@ export class CropDocument extends Review<boolean> {
      * @return Square distance of |pt3| to segment formed by |pt1| and |pt2|
      *     and the corresponding nearest point on the segment.
      */
-    const distToSegment = (pt1: Point, pt2: Point, pt3: Point):
-        {dist2: number, nearest: Point} => {
-          // Minimum Distance between a Point and a Line:
-          // http://paulbourke.net/geometry/pointlineplane/
-          const v12 = vectorFromPoints(pt2, pt1);
-          const v13 = vectorFromPoints(pt3, pt1);
-          const u = (v12.x * v13.x + v12.y * v13.y) / v12.length2();
-          if (u <= 0) {
-            return {dist2: v13.length2(), nearest: pt1};
-          }
-          if (u >= 1) {
-            return {dist2: vectorFromPoints(pt3, pt2).length2(), nearest: pt2};
-          }
-          const projection = vectorFromPoints(pt1).add(v12.multiply(u)).point();
-          return {
-            dist2: vectorFromPoints(projection, pt3).length2(),
-            nearest: projection,
-          };
-        };
+    function distToSegment(
+        pt1: Point, pt2: Point, pt3: Point): {dist2: number, nearest: Point} {
+      // Minimum Distance between a Point and a Line:
+      // http://paulbourke.net/geometry/pointlineplane/
+      const v12 = vectorFromPoints(pt2, pt1);
+      const v13 = vectorFromPoints(pt3, pt1);
+      const u = (v12.x * v13.x + v12.y * v13.y) / v12.length2();
+      if (u <= 0) {
+        return {dist2: v13.length2(), nearest: pt1};
+      }
+      if (u >= 1) {
+        return {dist2: vectorFromPoints(pt3, pt2).length2(), nearest: pt2};
+      }
+      const projection = vectorFromPoints(pt1).add(v12.multiply(u)).point();
+      return {
+        dist2: vectorFromPoints(projection, pt3).length2(),
+        nearest: projection,
+      };
+    }
 
     // Project |pt| to nearest point on boundary.
     let mn = Infinity;

@@ -148,14 +148,14 @@ export class Camera extends View implements CameraViewUI {
     /**
      * Gets type of ways to trigger shutter from click event.
      */
-    const getShutterType = (e: MouseEvent) => {
+    function getShutterType(e: MouseEvent) {
       if (e.clientX === 0 && e.clientY === 0) {
         return metrics.ShutterType.KEYBOARD;
       }
       return e.sourceCapabilities?.firesTouchEvents ?
           metrics.ShutterType.TOUCH :
           metrics.ShutterType.MOUSE;
-    };
+    }
 
     dom.get('#start-takephoto', HTMLButtonElement)
         .addEventListener('click', (e) => {
@@ -691,8 +691,10 @@ export class Camera extends View implements CameraViewUI {
     let result = null;
     try {
       await this.prepareReview(async () => {
-        const doCrop = (blob: Blob, corners: Point[], rotation: number) =>
-            helper.convertToDocument(blob, corners, rotation, MimeType.JPEG);
+        function doCrop(blob: Blob, corners: Point[], rotation: number) {
+          return helper.convertToDocument(
+              blob, corners, rotation, MimeType.JPEG);
+        }
         let corners =
             refCorners ?? getDefaultScanCorners(originImage.resolution);
         // This is definitely assigned in either the async doRecrop or the else

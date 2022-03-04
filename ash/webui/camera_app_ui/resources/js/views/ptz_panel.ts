@@ -59,21 +59,21 @@ function detectHoldGesture({
 }) {
   let interval: DelayInterval|null = null;
 
-  const press = () => {
+  function press() {
     if (interval !== null) {
       interval.stop();
     }
     handlePress();
     interval = new DelayInterval(handleHold, pressTimeout, holdInterval);
-  };
+  }
 
-  const release = () => {
+  function release() {
     if (interval !== null) {
       interval.stop();
       interval = null;
     }
     handleRelease();
-  };
+  }
 
   button.onpointerdown = press;
   button.onpointerleave = release;
@@ -157,10 +157,10 @@ export class PTZPanel extends View {
           return;
         }
         const style = getComputedStyle(el, '::before');
-        const getStyleValue = (attr: string) => {
+        function getStyleValue(attr: string) {
           const px = style.getPropertyValue(attr);
           return Number(px.replace(/^([\d.]+)px$/, '$1'));
-        };
+        }
         const pRect = el.getBoundingClientRect();
         focusRing.setUIRect(new DOMRectReadOnly(
             /* x */ pRect.left + getStyleValue('left'),
@@ -183,10 +183,10 @@ export class PTZPanel extends View {
         assert(target.offsetParent !== null);
         const pRect = target.offsetParent.getBoundingClientRect();
         const style = getComputedStyle(target, '::before');
-        const getStyleValue = (attr: string) => {
+        function getStyleValue(attr: string) {
           const px = style.getPropertyValue(attr);
           return Number(px.replace(/^([\d.]+)px$/, '$1'));
-        };
+        }
         const offsetX = getStyleValue('left');
         const offsetY = getStyleValue('top');
         const width = getStyleValue('width');
@@ -228,7 +228,10 @@ export class PTZPanel extends View {
     const track = this.track;
     assert(track !== null);
     const {min, max, step} = track.getCapabilities()[attr];
-    const getCurrent = () => assertExists(track.getSettings()[attr]);
+    function getCurrent() {
+      assert(track !== null);
+      return assertExists(track.getSettings()[attr]);
+    }
     this.checkDisabled();
 
     const queue = new AsyncJobQueue();
@@ -311,15 +314,15 @@ export class PTZPanel extends View {
     }
     const capabilities = this.track.getCapabilities();
     const settings = this.track.getSettings();
-    const updateDisable =
-        (incBtn: HTMLButtonElement, decBtn: HTMLButtonElement,
-         attr: 'pan'|'tilt'|'zoom') => {
-          const current = settings[attr];
-          const {min, max, step} = capabilities[attr];
-          assert(current !== undefined);
-          decBtn.disabled = current - step < min;
-          incBtn.disabled = current + step > max;
-        };
+    function updateDisable(
+        incBtn: HTMLButtonElement, decBtn: HTMLButtonElement,
+        attr: 'pan'|'tilt'|'zoom') {
+      const current = settings[attr];
+      const {min, max, step} = capabilities[attr];
+      assert(current !== undefined);
+      decBtn.disabled = current - step < min;
+      incBtn.disabled = current + step > max;
+    }
     if (capabilities.zoom !== undefined) {
       updateDisable(this.zoomIn, this.zoomOut, 'zoom');
     }

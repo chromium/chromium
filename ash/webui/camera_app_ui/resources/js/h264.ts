@@ -68,8 +68,9 @@ export interface EncoderParameters {
 }
 
 const levelLimits = (() => {
-  const limit = (processRate: number, frameSize: number, mainBitrate: number) =>
-      ({processRate, frameSize, mainBitrate});
+  function limit(processRate: number, frameSize: number, mainBitrate: number) {
+    return {processRate, frameSize, mainBitrate};
+  }
   return {
     [Level.LV30]: limit(40500, 1620, 10000),
     [Level.LV31]: limit(108000, 3600, 14000),

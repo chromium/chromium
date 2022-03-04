@@ -191,10 +191,12 @@ export class StreamManager {
    * virtual device.
    */
   private async doDeviceNotify(devices: DeviceInfo[]) {
-    const isVirtual = (d: DeviceInfo) => d.v3Info !== null &&
-        (d.v3Info.facing === Facing.VIRTUAL_USER ||
-         d.v3Info.facing === Facing.VIRTUAL_ENV ||
-         d.v3Info.facing === Facing.VIRTUAL_EXT);
+    function isVirtual(d: DeviceInfo) {
+      return d.v3Info !== null &&
+          (d.v3Info.facing === Facing.VIRTUAL_USER ||
+           d.v3Info.facing === Facing.VIRTUAL_ENV ||
+           d.v3Info.facing === Facing.VIRTUAL_EXT);
+    }
     const realDevices = devices.filter((d) => !isVirtual(d));
     const virtualDevices = devices.filter(isVirtual);
     // We currently only support one virtual device.

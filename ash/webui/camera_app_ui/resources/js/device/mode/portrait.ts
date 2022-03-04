@@ -73,13 +73,13 @@ export class Portrait extends Photo {
       throw e;
     }
 
-    const toPhotoResult = async (pendingResult: TakePhotoResult) => {
+    async function toPhotoResult(pendingResult: TakePhotoResult) {
       const blob = await pendingResult.pendingBlob;
       const image = await util.blobToImage(blob);
       const resolution = new Resolution(image.width, image.height);
       const metadata = await pendingResult.pendingMetadata;
       return {blob, timestamp, resolution, metadata};
-    };
+    }
     return () => this.portraitHandler.onPortraitCaptureDone(
                toPhotoResult(reference), toPhotoResult(portrait));
   }

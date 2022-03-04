@@ -266,10 +266,10 @@ export class Preview {
     const tpl = util.instantiateTemplate('#preview-video-template');
     const video = dom.getFrom(tpl, 'video', HTMLVideoElement);
     await new Promise<void>((resolve) => {
-      const handler = () => {
+      function handler() {
         video.removeEventListener('canplay', handler);
         resolve();
-      };
+      }
       video.addEventListener('canplay', handler);
       video.srcObject = stream;
     });
@@ -413,38 +413,37 @@ export class Preview {
       element.style.display = 'none';
     }
 
-    const displayCategory = (selector: string, enabled: boolean) => {
+    function displayCategory(selector: string, enabled: boolean) {
       dom.get(selector, HTMLElement).classList.toggle('mode-on', enabled);
-    };
+    }
 
-    const showValue = (selector: string, val: string) => {
+    function showValue(selector: string, val: string) {
       const element = dom.get(selector, HTMLElement);
       element.style.display = '';
       element.textContent = val;
-    };
+    }
 
-    const buildInverseLookupFunction =
-        (obj: Record<string, number>, prefix: string): (key: number) =>
-            string => {
-              const map = new Map<number, string>();
-              for (const [key, val] of Object.entries(obj)) {
-                if (!key.startsWith(prefix)) {
-                  continue;
-                }
-                if (map.has(val)) {
-                  reportError(
-                      ErrorType.METADATA_MAPPING_FAILURE, ErrorLevel.ERROR,
-                      new Error(`Duplicated value: ${val}`));
-                  continue;
-                }
-                map.set(val, key.slice(prefix.length));
-              }
-              return (key: number) => {
-                const val = map.get(key);
-                assert(val !== undefined);
-                return val;
-              };
-            };
+    function buildInverseLookupFunction(
+        obj: Record<string, number>, prefix: string): (key: number) => string {
+      const map = new Map<number, string>();
+      for (const [key, val] of Object.entries(obj)) {
+        if (!key.startsWith(prefix)) {
+          continue;
+        }
+        if (map.has(val)) {
+          reportError(
+              ErrorType.METADATA_MAPPING_FAILURE, ErrorLevel.ERROR,
+              new Error(`Duplicated value: ${val}`));
+          continue;
+        }
+        map.set(val, key.slice(prefix.length));
+      }
+      return (key: number) => {
+        const val = map.get(key);
+        assert(val !== undefined);
+        return val;
+      };
+    }
 
     const afStateNameLookup = buildInverseLookupFunction(
         AndroidControlAfState, 'ANDROID_CONTROL_AF_STATE_');
@@ -458,12 +457,12 @@ export class Preview {
 
     let sensorSensitivity: number|null = null;
     let sensorSensitivityBoost = 100;
-    const getSensitivity = () => {
+    function getSensitivity() {
       if (sensorSensitivity === null) {
         return 'N/A';
       }
       return sensorSensitivity * sensorSensitivityBoost / 100;
-    };
+    }
 
     const tag = CameraMetadataTag;
     const metadataEntryHandlers: Record<string, (values: number[]) => void> = {
@@ -596,7 +595,7 @@ export class Preview {
                          .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF;
       let faceRects: number[] = [];
 
-      const tryParseFaceEntry = (entry: CameraMetadataEntry) => {
+      function tryParseFaceEntry(entry: CameraMetadataEntry) {
         switch (entry.tag) {
           case tag.ANDROID_STATISTICS_FACE_DETECT_MODE: {
             const data = parseMetadata(entry);
@@ -610,7 +609,7 @@ export class Preview {
           }
         }
         return false;
-      };
+      }
 
       assert(metadata.entries !== undefined);
       for (const entry of metadata.entries) {

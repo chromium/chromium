@@ -139,9 +139,9 @@ export class RecordTime extends RecordTimeBase {
 
   getTimeMessage(ticks: number): string {
     // Format time into HH:MM:SS or MM:SS.
-    const pad = (n: number) => {
+    function pad(n: number) {
       return (n < 10 ? '0' : '') + n;
-    };
+    }
     let hh = '';
     if (ticks >= 3600) {
       hh = pad(Math.floor(ticks / 3600)) + ':';

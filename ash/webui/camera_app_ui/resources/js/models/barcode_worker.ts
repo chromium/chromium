@@ -15,12 +15,12 @@ class BarcodeWorkerImpl {
 
     const cx = bitmap.width / 2;
     const cy = bitmap.height / 2;
-    const distanceToCenter = (code: DetectedBarcode): number => {
+    function distanceToCenter(code: DetectedBarcode): number {
       const {left, right, top, bottom} = code.boundingBox;
       const x = (left + right) / 2;
       const y = (top + bottom) / 2;
       return Math.hypot(x - cx, y - cy);
-    };
+    }
 
     let minDistance = Infinity;
     let bestCode: DetectedBarcode|null = null;

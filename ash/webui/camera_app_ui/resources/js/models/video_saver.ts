@@ -61,9 +61,9 @@ async function createGifVideoProcessor(
  * Creates an AsyncWriter that writes to the given intent.
  */
 function createWriterForIntent(intent: Intent): AsyncWriter {
-  const write = async (blob: Blob) => {
+  async function write(blob: Blob) {
     await intent.appendData(new Uint8Array(await blob.arrayBuffer()));
-  };
+  }
   // TODO(crbug.com/1140852): Supports seek.
   return new AsyncWriter({write, seek: null, close: null});
 }

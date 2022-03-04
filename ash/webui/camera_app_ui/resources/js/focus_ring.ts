@@ -67,12 +67,12 @@ export function initialize(): void {
   ring = dom.get('#focus-ring', HTMLElement);
   ringCSSStyle = cssStyle('#focus-ring');
 
-  const setup = (el: HTMLElement) => {
+  function setup(el: HTMLElement) {
     el.addEventListener('focus', () => showFocus(el));
     if (el === document.activeElement) {
       showFocus(el);
     }
-  };
+  }
 
   for (const el of dom.getAll('[tabindex]', HTMLElement)) {
     setup(el);

@@ -151,10 +151,12 @@ export abstract class ConstraintsPreferrer {
     const aspectRatio = captureResolution.width / captureResolution.height;
     const rs = Math.min(screenWidth, Math.floor(screenHeight * aspectRatio));
     const rc = captureResolution.width;
-    const cmpDescending = (r1: Resolution, r2: Resolution) =>
-        r2.width - r1.width;
-    const cmpAscending = (r1: Resolution, r2: Resolution) =>
-        r1.width - r2.width;
+    function cmpDescending(r1: Resolution, r2: Resolution) {
+      return r2.width - r1.width;
+    }
+    function cmpAscending(r1: Resolution, r2: Resolution) {
+      return r1.width - r2.width;
+    }
 
     if (rc <= rs) {
       const notLargerThanR =
@@ -218,13 +220,13 @@ export abstract class ConstraintsPreferrer {
    */
   protected groupResolutionRatio(resolutions: ResolutionList):
       Map<number, ResolutionList> {
-    const toSupportedPreviewRatio = (r: Resolution): number => {
+    function toSupportedPreviewRatio(r: Resolution): number {
       // Special aspect ratio mapping rule, see http://b/147986763.
       if (r.width === 848 && r.height === 480) {
         return (new Resolution(16, 9)).aspectRatio;
       }
       return r.aspectRatio;
-    };
+    }
 
     const result = new Map<number, ResolutionList>();
     for (const r of resolutions) {
@@ -368,9 +370,10 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
       }
       this.deviceVideoPreviewResolutionMap.set(deviceId, pairedResolutions);
 
-      const findResolution = (width: number, height: number): Resolution|
-          undefined => videoResolutions.find(
-              (r) => r.width === width && r.height === height);
+      function findResolution(width: number, height: number) {
+        return videoResolutions.find(
+            (r) => r.width === width && r.height === height);
+      }
 
       let prefResolution = this.getPrefResolution(deviceId) ??
           findResolution(1920, 1080) ?? findResolution(1280, 720) ??
@@ -505,16 +508,18 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
           return constFpses.map((fps) => ({r, fps}));
         };
 
-    const toPreivewConstraints =
-        ({width, height}: Resolution, fps: number|null): StreamConstraints => ({
-          deviceId,
-          audio: true,
-          video: {
-            frameRate: fps !== null ? {exact: fps} : {min: 20, ideal: 30},
-            width,
-            height,
-          },
-        });
+    function toPreivewConstraints(
+        {width, height}: Resolution, fps: number|null): StreamConstraints {
+      return {
+        deviceId,
+        audio: true,
+        video: {
+          frameRate: fps !== null ? {exact: fps} : {min: 20, ideal: 30},
+          width,
+          height,
+        },
+      };
+    }
 
     const prefResolution =
         this.getPrefResolution(deviceId) ?? new Resolution(0, -1);

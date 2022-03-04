@@ -77,7 +77,7 @@ async function doPlay({el, onChild}: {el: HTMLElement, onChild: boolean}):
     Promise<void> {
   doCancel({el, onChild});
   const queue = getQueueFor(el);
-  const job = async () => {
+  async function job() {
     /**
      * Force repaint before applying the animation.
      */
@@ -86,7 +86,7 @@ async function doPlay({el, onChild}: {el: HTMLElement, onChild: boolean}):
     await Promise.allSettled(
         getAnimations({el, onChild}).map((a) => a.finished));
     el.classList.remove('animate');
-  };
+  }
   await queue.push(job);
 }
 

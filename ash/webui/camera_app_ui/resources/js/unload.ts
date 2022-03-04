@@ -4,12 +4,12 @@
 
 const callbacks: Array<(() => void)> = [];
 
-const onWindowUnload = () => {
+function onWindowUnload() {
   for (const callback of callbacks) {
     callback();
   }
   window.removeEventListener('unload', onWindowUnload);
-};
+}
 
 window.addEventListener('unload', onWindowUnload);
 

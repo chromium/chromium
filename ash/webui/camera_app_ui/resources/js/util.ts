@@ -101,13 +101,16 @@ export function getShortcutIdentifier(event: KeyboardEvent): string {
  * @param rootElement Root of DOM subtree to be set up with.
  */
 export function setupI18nElements(rootElement: DocumentFragment|Element): void {
-  const getElements = (attr: string) =>
-      dom.getAllFrom(rootElement, `[${attr}]`, HTMLElement);
-  const getMessage = (element: HTMLElement, attr: string) =>
-      loadTimeData.getI18nMessage(
-          assertEnumVariant(I18nString, element.getAttribute(attr)));
-  const setAriaLabel = (element: HTMLElement, attr: string) =>
-      element.setAttribute('aria-label', getMessage(element, attr));
+  function getElements(attr: string) {
+    return dom.getAllFrom(rootElement, `[${attr}]`, HTMLElement);
+  }
+  function getMessage(element: HTMLElement, attr: string) {
+    return loadTimeData.getI18nMessage(
+        assertEnumVariant(I18nString, element.getAttribute(attr)));
+  }
+  function setAriaLabel(element: HTMLElement, attr: string) {
+    element.setAttribute('aria-label', getMessage(element, attr));
+  }
 
   for (const element of getElements('i18n-text')) {
     element.textContent = getMessage(element, 'i18n-text');
@@ -166,11 +169,11 @@ export function bindElementAriaLabelWithState(
       onLabel: I18nString,
       offLabel: I18nString,
     }): void {
-  const update = (value: boolean) => {
+  function update(value: boolean) {
     const label = value ? onLabel : offLabel;
     element.setAttribute('i18n-label', label);
     element.setAttribute('aria-label', loadTimeData.getI18nMessage(label));
-  };
+  }
   update(state.get(s));
   state.addObserver(s, update);
 }

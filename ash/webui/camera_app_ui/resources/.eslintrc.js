@@ -452,6 +452,10 @@ module.exports = {
     'valid-jsdoc': 'off',
     'require-jsdoc': 'off',
 
+    // This is not useful since ES6 and contradicts to
+    // go/tsstyle#function-declarations.
+    'no-inner-declarations': 'off',
+
     // go/tsstyle#omit-comments-that-are-redundant-with-typescript
     'jsdoc/no-types': 'error',
     'jsdoc/require-jsdoc': [
@@ -544,6 +548,16 @@ module.exports = {
         selector: ':not(:matches(MethodDefinition, Property))' +
             ' > FunctionExpression:not([id])',
         message: 'Use named function or arrow function instead. ' +
+            '(go/tsstyle#function-declarations)',
+      },
+      // Disallow local function declaration with arrow function without
+      // accessing this. This might have some false negative if the "this" is
+      // accessed deep inside the function in another scope, but should be
+      // rare. (go/tsstyle#function-declarations)
+      {
+        selector: 'VariableDeclarator:not(:has(.id[typeAnnotation]))' +
+            ' > ArrowFunctionExpression.init:not(:has(ThisExpression))',
+        message: 'Use named function to declare local function. ' +
             '(go/tsstyle#function-declarations)',
       },
     ],

@@ -80,19 +80,19 @@ export class AsyncWriter {
    * @return The combined writer.
    */
   static combine(...writers: AsyncWriter[]): AsyncWriter {
-    const write = async (blob: Blob) => {
+    async function write(blob: Blob) {
       await Promise.all(writers.map((writer) => writer.write(blob)));
-    };
+    }
 
     const allSeekable = writers.every((writer) => writer.seekable());
-    const seekAll = async (offset: number) => {
+    async function seekAll(offset: number) {
       await Promise.all(writers.map((writer) => writer.seek(offset)));
-    };
+    }
     const seek = allSeekable ? seekAll : null;
 
-    const close = async () => {
+    async function close() {
       await Promise.all(writers.map((writer) => writer.close()));
-    };
+    }
 
     return new AsyncWriter({write, seek, close});
   }

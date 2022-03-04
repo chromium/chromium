@@ -328,12 +328,12 @@ export class Video extends ModeBase {
       this.togglePausedInternal = null;
       waitable.signal();
     };
-    const playEffect = async () => {
+    async function playEffect() {
       state.set(state.State.RECORDING_UI_PAUSED, toBePaused);
       await sound.play(dom.get(
           toBePaused ? '#sound-rec-pause' : '#sound-rec-start',
           HTMLAudioElement));
-    };
+    }
 
     this.mediaRecorder.addEventListener(toggledEvent, onToggled);
     if (toBePaused) {
@@ -532,7 +532,7 @@ export class Video extends ModeBase {
     await new Promise<void>((resolve) => {
       let encodedFrames = 0;
       let start = 0.0;
-      const updateCanvas = (now: number) => {
+      function updateCanvas(now: number) {
         if (start === 0.0) {
           start = now;
         }
@@ -546,7 +546,7 @@ export class Video extends ModeBase {
           gifSaver.write(context.getImageData(0, 0, width, height).data);
         }
         video.requestVideoFrameCallback(updateCanvas);
-      };
+      }
       video.requestVideoFrameCallback(updateCanvas);
     });
     return gifSaver;
@@ -565,14 +565,14 @@ export class Video extends ModeBase {
       await new Promise((resolve, reject) => {
         let noChunk = true;
 
-        const ondataavailable = (event: BlobEvent) => {
+        function onDataAvailable(event: BlobEvent) {
           if (event.data && event.data.size > 0) {
             noChunk = false;
             saver.write(event.data);
           }
-        };
+        }
 
-        const onstop = async () => {
+        const onStop = async () => {
           assert(this.mediaRecorder !== null);
 
           state.set(state.State.RECORDING, false);
@@ -580,8 +580,8 @@ export class Video extends ModeBase {
           state.set(state.State.RECORDING_UI_PAUSED, false);
 
           this.mediaRecorder.removeEventListener(
-              'dataavailable', ondataavailable);
-          this.mediaRecorder.removeEventListener('stop', onstop);
+              'dataavailable', onDataAvailable);
+          this.mediaRecorder.removeEventListener('stop', onStop);
 
           if (noChunk) {
             reject(new NoChunkError());
@@ -591,17 +591,17 @@ export class Video extends ModeBase {
           }
         };
 
-        const onstart = () => {
+        const onStart = () => {
           assert(this.mediaRecorder !== null);
 
           state.set(state.State.RECORDING, true);
-          this.mediaRecorder.removeEventListener('start', onstart);
+          this.mediaRecorder.removeEventListener('start', onStart);
         };
 
         assert(this.mediaRecorder !== null);
-        this.mediaRecorder.addEventListener('dataavailable', ondataavailable);
-        this.mediaRecorder.addEventListener('stop', onstop);
-        this.mediaRecorder.addEventListener('start', onstart);
+        this.mediaRecorder.addEventListener('dataavailable', onDataAvailable);
+        this.mediaRecorder.addEventListener('stop', onStop);
+        this.mediaRecorder.addEventListener('start', onStart);
 
         window.addEventListener('beforeunload', beforeUnloadListener);
 

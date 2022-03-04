@@ -41,15 +41,15 @@ const gaHelper =
  */
 async function sendEvent(
     event: UniversalAnalytics.FieldsObject, dimen?: Map<number, unknown>) {
-  const assignDimension =
-      (e: UniversalAnalytics.FieldsObject, d: Map<number, unknown>) => {
-        for (const [key, value] of d.entries()) {
-          // The TypeScript definition for UniversalAnalytics.FieldsObject
-          // manually listed out dimension1 ~ dimension200, and TypeScript don't
-          // recognize accessing it using []. Force the type here.
-          (e as Record<string, unknown>)[`dimension${key}`] = value;
-        }
-      };
+  function assignDimension(
+      e: UniversalAnalytics.FieldsObject, d: Map<number, unknown>) {
+    for (const [key, value] of d.entries()) {
+      // The TypeScript definition for UniversalAnalytics.FieldsObject
+      // manually listed out dimension1 ~ dimension200, and TypeScript don't
+      // recognize accessing it using []. Force the type here.
+      (e as Record<string, unknown>)[`dimension${key}`] = value;
+    }
+  }
 
   assert(baseDimen !== null);
   assignDimension(event, baseDimen);
@@ -152,9 +152,9 @@ export async function initMetrics(): Promise<void> {
   const GA_LOCAL_STORAGE_KEY = 'google-analytics.analytics.user-id';
   const clientId = localStorage.getString(GA_LOCAL_STORAGE_KEY);
 
-  const setClientId = (id: string) => {
+  function setClientId(id: string) {
     localStorage.set(GA_LOCAL_STORAGE_KEY, id);
-  };
+  }
 
   await (await gaHelper).initGA(GA_ID, clientId, Comlink.proxy(setClientId));
   ready.signal();
@@ -307,17 +307,19 @@ export function sendCaptureEvent({
   recordType = RecordType.NOT_RECORDING,
   gifResult = GifResultType.NOT_GIF_RESULT,
 }: CaptureEventParam): void {
-  const condState =
-      (states: state.StateUnion[], cond?: state.StateUnion, strict?: boolean):
-          string => {
-            // Return the first existing state among the given states only if
-            // there is no gate condition or the condition is met.
-            const prerequisite = !cond || state.get(cond);
-            if (strict && !prerequisite) {
-              return '';
-            }
-            return prerequisite && states.find((s) => state.get(s)) || 'n/a';
-          };
+  function condState(
+      states: state.StateUnion[],
+      cond?: state.StateUnion,
+      strict?: boolean,
+      ): string {
+    // Return the first existing state among the given states only if
+    // there is no gate condition or the condition is met.
+    const prerequisite = !cond || state.get(cond);
+    if (strict && !prerequisite) {
+      return '';
+    }
+    return prerequisite && states.find((s) => state.get(s)) || 'n/a';
+  }
 
   sendEvent(
       {
@@ -414,7 +416,9 @@ export interface IntentEventParam {
  */
 export function sendIntentEvent({intent, result}: IntentEventParam): void {
   const {mode, shouldHandleResult, shouldDownScale, isSecure} = intent;
-  const getBoolValue = (b: boolean) => b ? '1' : '0';
+  function getBoolValue(b: boolean) {
+    return b ? '1' : '0';
+  }
   sendEvent(
       {
         eventCategory: 'intent',

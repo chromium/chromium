@@ -172,14 +172,11 @@ export class Modes {
 
     // Workaround for b/184089334 on PTZ camera to use preview frame as photo
     // result.
-    const checkSupportPTZForPhotoMode =
-        (captureResolution: Resolution, previewResolution: Resolution) =>
-            captureResolution.equals(previewResolution);
+    function checkSupportPTZForPhotoMode(
+        captureResolution: Resolution, previewResolution: Resolution) {
+      return captureResolution.equals(previewResolution);
+    }
 
-    // clang-format format this wrong if we use async (...) => {...} (missing a
-    // space after async). Using async function instead to get around this.
-    // TODO(pihsun): style guide recommends using function xxx() instead of
-    // lambda anyway, change other location too.
     /**
      * Prepare the device for the specific resolution and capture intent.
      */

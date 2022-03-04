@@ -164,7 +164,7 @@ async function getImageFromPdf(blob: Blob): Promise<Blob> {
    * @return Returns begin of found pattern index or -1 for no further pattern
    *     is found.
    */
-  const findPattern = (...patterns: number[]): number => {
+  function findPattern(...patterns: number[]): number {
     for (; i + patterns.length < view.length; i++) {
       if (patterns.every((b, index) => b === view[i + index])) {
         const ret = i;
@@ -173,7 +173,7 @@ async function getImageFromPdf(blob: Blob): Promise<Blob> {
       }
     }
     return -1;
-  };
+  }
   // Parse object contains /Subtype /Image name and field from pdf format:
   // <</Name1 /Field1... \n/Name2... >>...<<...>>
   // The jpeg stream will follow the target object with length in field of

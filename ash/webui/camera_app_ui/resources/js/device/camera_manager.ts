@@ -236,8 +236,9 @@ export class CameraManager implements EventListener {
   async initialize(cameraViewUI: CameraViewUI): Promise<void> {
     const helper = ChromeHelper.getInstance();
 
-    const setTablet = (isTablet: boolean) =>
-        state.set(state.State.TABLET, isTablet);
+    function setTablet(isTablet: boolean) {
+      state.set(state.State.TABLET, isTablet);
+    }
     const isTablet = await helper.initTabletModeMonitor(setTablet);
     setTablet(isTablet);
 

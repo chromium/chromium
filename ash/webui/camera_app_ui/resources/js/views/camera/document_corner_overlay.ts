@@ -238,8 +238,9 @@ export class DocumentCornerOverlay {
           }
           this.maybeUpdatePointOfInterest(corners);
           const rect = this.cornerContainer.getBoundingClientRect();
-          const toOverlaySpace = (pt: Point) =>
-              new Point(rect.width * pt.x, rect.height * pt.y);
+          function toOverlaySpace(pt: Point) {
+            return new Point(rect.width * pt.x, rect.height * pt.y);
+          }
           this.onCornerDetected(corners.map(toOverlaySpace));
         });
     this.hide();
@@ -337,17 +338,17 @@ export class DocumentCornerOverlay {
     /**
      * Start point(corner coordinates + outer shift) of settle animation.
      */
-    const calculateSettleStart =
-        (corner: Point, corner2: Point, corner3: Point, d: number): Point => {
-          const side = vectorFromPoints(corner2, corner);
-          const norm = side.normal().multiply(d);
+    function calculateSettleStart(
+        corner: Point, corner2: Point, corner3: Point, d: number): Point {
+      const side = vectorFromPoints(corner2, corner);
+      const norm = side.normal().multiply(d);
 
-          const side2 = vectorFromPoints(corner2, corner3);
-          const angle = side.rotation(side2);
-          const dir = side.direction().multiply(d / Math.tan(angle / 2));
+      const side2 = vectorFromPoints(corner2, corner3);
+      const angle = side.rotation(side2);
+      const dir = side.direction().multiply(d / Math.tan(angle / 2));
 
-          return vectorFromPoints(corner2).add(norm).add(dir).point();
-        };
+      return vectorFromPoints(corner2).add(norm).add(dir).point();
+    }
     const starts = corners.map((_, idx) => {
       const prevIdx = (idx + 3) % 4;
       const nextIdx = (idx + 1) % 4;

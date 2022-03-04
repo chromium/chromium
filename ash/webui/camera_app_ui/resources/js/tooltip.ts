@@ -95,12 +95,12 @@ export function setup(elements: NodeListOf<HTMLElement>):
     NodeListOf<HTMLElement> {
   wrapper = dom.get('#tooltip', HTMLElement);
   for (const el of elements) {
-    const handler = () => {
+    function handler() {
       // Handler hides tooltip only when it's for the element.
       if (el === hovered) {
         hide();
       }
-    };
+    }
     el.addEventListener('mouseout', handler);
     el.addEventListener('click', handler);
     el.addEventListener('mouseover', () => show(el));

@@ -401,9 +401,12 @@ export class ResolutionSettings extends BaseSettings {
    */
   private photoOptionTextTemplate(
       resolution: Resolution, resolutions: ResolutionList): string {
-    const gcd = (a: number, b: number): number => (a === 0 ? b : gcd(b % a, a));
-    const toMegapixel = ({area}: Resolution): number =>
-        area >= 1e6 ? Math.round(area / 1e6) : Math.round(area / 1e5) / 10;
+    function gcd(a: number, b: number): number {
+      return a === 0 ? b : gcd(b % a, a);
+    }
+    function toMegapixel({area}: Resolution): number {
+      return area >= 1e6 ? Math.round(area / 1e6) : Math.round(area / 1e5) / 10;
+    }
     const d = gcd(resolution.width, resolution.height);
 
     if (resolutions.some(
@@ -448,17 +451,17 @@ export class ResolutionSettings extends BaseSettings {
    * Updates resolution information of front, back camera and external cameras.
    */
   private updateResolutions() {
-    const prepareItem =
-        (item: HTMLElement, id: string,
-         {prefResolution, resolutions}: ResolutionConfig,
-         optionTextTemplate:
-             (prefResolutions: Resolution, resolutions: ResolutionList) =>
-                 string) => {
-          item.dataset['deviceId'] = id;
-          item.classList.toggle('multi-option', resolutions.length > 1);
-          dom.getFrom(item, '.description>span', HTMLSpanElement).textContent =
-              optionTextTemplate(prefResolution, resolutions);
-        };
+    function prepareItem(
+        item: HTMLElement, id: string,
+        {prefResolution, resolutions}: ResolutionConfig,
+        optionTextTemplate:
+            (prefResolutions: Resolution, resolutions: ResolutionList) =>
+                string) {
+      item.dataset['deviceId'] = id;
+      item.classList.toggle('multi-option', resolutions.length > 1);
+      dom.getFrom(item, '.description>span', HTMLSpanElement).textContent =
+          optionTextTemplate(prefResolution, resolutions);
+    }
 
     // Update front camera setting
     state.set(state.State.HAS_FRONT_CAMERA, this.frontSetting !== null);

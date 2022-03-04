@@ -351,7 +351,7 @@ class FFMpegVideoProcessor {
       },
     };
 
-    const initFFmpeg = () => {
+    function initFFmpeg() {
       return new Promise<void>((resolve) => {
         // runFFmpeg() is a special function exposed by Emscripten that will
         // return an object with then(). The function passed into then() would
@@ -360,7 +360,7 @@ class FFMpegVideoProcessor {
         // would cause an infinite loop.
         runFFmpeg(config).then(() => resolve());
       });
-    };
+    }
     this.jobQueue.push(initFFmpeg);
 
     // This is a function to be called by ffmpeg before running read() in C.

@@ -36,13 +36,13 @@ export async function play(el: HTMLAudioElement): Promise<boolean> {
 
   const audioStopped = new WaitableEvent<boolean>();
   const events = ['ended', 'pause'];
-  const onAudioStopped = () => {
+  function onAudioStopped() {
     elementsStatus.set(el, Status.PAUSED);
     audioStopped.signal(el.ended);
     for (const event of events) {
       el.removeEventListener(event, onAudioStopped);
     }
-  };
+  }
   for (const event of events) {
     el.addEventListener(event, onAudioStopped);
   }
@@ -63,10 +63,10 @@ export async function cancel(el: HTMLAudioElement): Promise<void> {
     el.pause();
   } else if (status === Status.LOADING) {
     const canceled = new WaitableEvent();
-    const onPlaying = () => {
+    function onPlaying() {
       el.pause();
       canceled.signal();
-    };
+    }
     el.addEventListener('playing', onPlaying, {once: true});
     await canceled.wait();
   }

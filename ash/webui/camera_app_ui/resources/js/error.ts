@@ -30,7 +30,9 @@ function toStackFrame(callsite: CallSite): StackFrame {
   if (fileName.startsWith(window.location.origin)) {
     fileName = fileName.substring(window.location.origin.length + 1);
   }
-  const ensureNumber = (n: number|undefined) => (n === undefined ? -1 : n);
+  function ensureNumber(n: number|undefined) {
+    return n === undefined ? -1 : n;
+  }
   return {
     fileName,
     funcName: callsite.getFunctionName() ?? '[Anonymous]',
