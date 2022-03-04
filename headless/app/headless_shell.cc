@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -126,8 +127,8 @@ std::vector<GURL> ConvertArgumentsToURLs(
     const base::CommandLine::StringVector& args) {
   std::vector<GURL> urls;
   urls.reserve(args.size());
-  for (auto it = args.rbegin(); it != args.rend(); ++it)
-    urls.push_back(ConvertArgumentToURL(*it));
+  for (const auto& arg : base::Reversed(args))
+    urls.push_back(ConvertArgumentToURL(arg));
   return urls;
 }
 
