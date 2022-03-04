@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -372,6 +373,16 @@ void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
     chromeos::MountError error_code,
     const file_manager::Volume& volume) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Drive FS may restart from time to time, so only remove items if drive is
+  // disabled.
+  if (volume.type() == file_manager::VOLUME_TYPE_GOOGLE_DRIVE) {
+    const auto* drive_integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    if (drive_integration_service && drive_integration_service->is_enabled()) {
+      return;
+    }
+  }
   // Schedule task to remove items under the unmounted file path from the model.
   // During suspend, some volumes get unmounted - for example, drive FS. The
   // file system delegate gets shutdown to avoid removing items from unmounted

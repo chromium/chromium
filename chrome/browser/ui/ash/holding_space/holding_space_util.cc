@@ -10,9 +10,12 @@
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "components/account_id/account_id.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -27,17 +30,40 @@ ValidityRequirement::ValidityRequirement(ValidityRequirement&& other) = default;
 
 // Utilities -------------------------------------------------------------------
 
+bool ShouldSkipPathCheck(Profile* profile, const base::FilePath& path) {
+  // Drive FS may be in the middle of restarting, so if it is enabled but not
+  // mounted, assume any files in drive are valid.
+  const auto* drive_integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  return drive_integration_service && drive_integration_service->is_enabled() &&
+         !drive_integration_service->IsMounted() &&
+         drive_integration_service->GetMountPointPath().IsParent(path);
+}
+
 void FilePathValid(Profile* profile,
                    FilePathWithValidityRequirement file_path_with_requirement,
                    FilePathValidCallback callback) {
+  auto* user = ProfileHelper::Get()->GetUserByProfile(profile);
   file_manager::util::GetMetadataForPath(
       file_manager::util::GetFileManagerFileSystemContext(profile),
       file_path_with_requirement.first,
       storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
       base::BindOnce(
-          [](FilePathValidCallback callback, ValidityRequirement requirement,
-             base::File::Error result, const base::File::Info& file_info) {
+          [](FilePathValidCallback callback,
+             FilePathWithValidityRequirement file_path_with_requirement,
+             AccountId account_id, base::File::Error result,
+             const base::File::Info& file_info) {
+            Profile* profile =
+                ProfileHelper::Get()->GetProfileByAccountId(account_id);
+            if (profile && ShouldSkipPathCheck(
+                               profile, file_path_with_requirement.first)) {
+              std::move(callback).Run(true);
+              return;
+            }
+
             bool valid = true;
+            const ValidityRequirement& requirement =
+                file_path_with_requirement.second;
             if (requirement.must_exist)
               valid = result == base::File::Error::FILE_OK;
             if (valid && requirement.must_be_newer_than) {
@@ -47,7 +73,8 @@ void FilePathValid(Profile* profile,
             }
             std::move(callback).Run(valid);
           },
-          std::move(callback), file_path_with_requirement.second));
+          std::move(callback), file_path_with_requirement,
+          user ? user->GetAccountId() : EmptyAccountId()));
 }
 
 void PartitionFilePathsByExistence(
