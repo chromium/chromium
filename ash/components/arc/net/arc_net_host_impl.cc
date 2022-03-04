@@ -1029,6 +1029,10 @@ void ArcNetHostImpl::TranslateEapCredentialsToDictWithCertID(
   dict.SetStringKey(shill::kEapKeyMgmtProperty,
                     TranslateKeyManagement(cred->key_management));
 
+  if (cred->ca_certificate_pem.has_value()) {
+    dict.SetKey(shill::kEapCaCertPemProperty,
+                TranslateStringListToValue(cred->ca_certificate_pem.value()));
+  }
   if (cert_id.has_value() && slot_id.has_value()) {
     // The ID of imported user certificate and private key is the same, use one
     // of them.
