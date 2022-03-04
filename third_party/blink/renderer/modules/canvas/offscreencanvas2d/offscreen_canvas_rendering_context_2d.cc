@@ -107,8 +107,8 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
 
   ExecutionContext* execution_context = canvas->GetTopExecutionContext();
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    DCHECK(window->GetFrame() && window->GetFrame()->GetSettings());
-    if (window->GetFrame()->GetSettings()->GetDisableReadingFromCanvas())
+    if (window->GetFrame() && window->GetFrame()->GetSettings() &&
+        window->GetFrame()->GetSettings()->GetDisableReadingFromCanvas())
       canvas->SetDisableReadingFromCanvasTrue();
     return;
   }
