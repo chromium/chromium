@@ -1445,6 +1445,9 @@ void CollectUserDataAction::UpdateUserDataFromProto(
   }
 
   if (RequiresAddress(*collect_user_data_options_)) {
+    collect_user_data_options_->add_address_token =
+        proto_data.add_address_token();
+
     user_data->available_addresses_.clear();
     for (const auto& profile_data : proto_data.available_addresses()) {
       auto profile = std::make_unique<autofill::AutofillProfile>();

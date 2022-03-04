@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.app.Activity;
 
+import org.chromium.components.autofill_assistant.AssistantAddressEditorGms;
 import org.chromium.components.autofill_assistant.AssistantContactEditorAccount;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddressEditor;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantContactEditor;
@@ -41,6 +42,14 @@ public class AssistantEditorFactoryChrome implements AssistantEditorFactory {
     public AssistantAddressEditor createAddressEditor(
             WebContents webContents, Activity activity, boolean shouldStoreChanges) {
         return new AssistantAddressEditorAutofill(webContents, activity, shouldStoreChanges);
+    }
+
+    @Override
+    public AssistantAddressEditor createGmsAddressEditor(Activity activity,
+            WindowAndroid windowAndroid, String accountEmail,
+            byte[] initializeAddressCollectionParams) {
+        return new AssistantAddressEditorGms(
+                activity, windowAndroid, accountEmail, initializeAddressCollectionParams);
     }
 
     @Override

@@ -1353,6 +1353,11 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
             env,
             *collect_user_data_options->add_payment_instrument_action_token));
   }
+  if (collect_user_data_options->add_address_token.has_value()) {
+    Java_AssistantCollectUserDataModel_setInitializeAddressCollectionParams(
+        env, jmodel,
+        ToJavaByteArray(env, *collect_user_data_options->add_address_token));
+  }
 
   Java_AssistantCollectUserDataModel_setVisible(env, jmodel, true);
 }

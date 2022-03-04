@@ -191,6 +191,7 @@ android_library("public_java") {
 
   sources = [
     "public/java/src/org/chromium/components/autofill_assistant/AssistantAccessTokenUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantAddressEditorGms.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillCreditCard.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillProfile.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantBrowserControls.java",

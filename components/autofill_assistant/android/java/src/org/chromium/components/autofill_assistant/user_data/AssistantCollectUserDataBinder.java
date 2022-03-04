@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddressEditor;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
 import org.chromium.components.autofill_assistant.AssistantEditorFactory;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.AddressModel;
@@ -572,8 +573,9 @@ class AssistantCollectUserDataBinder
                 && propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES
                 && propertyKey != AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS
                 && propertyKey != AssistantCollectUserDataModel.ACCOUNT_EMAIL
+                && propertyKey != AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN
                 && propertyKey
-                        != AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN) {
+                        != AssistantCollectUserDataModel.INITIALIZE_ADDRESS_COLLECTION_PARAMS) {
             return false;
         }
 
@@ -586,24 +588,18 @@ class AssistantCollectUserDataBinder
             return true;
         }
 
-        boolean shouldStoreChanges =
-                model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES);
-
         if (shouldShowContactDetails(model)) {
-            updateContactEditor(model, view, webContents, shouldStoreChanges);
+            updateContactEditor(model, view, webContents);
             updatePhoneNumberEditor(model, view);
         }
-
-        view.mShippingAddressSection.setEditor(view.mEditorFactory.createAddressEditor(
-                webContents, view.mActivity, shouldStoreChanges));
-
-        updatePaymentEditor(model, view, webContents, shouldStoreChanges);
+        updateAddressEditor(model, view, webContents);
+        updatePaymentEditor(model, view, webContents);
 
         return true;
     }
 
-    private void updateContactEditor(AssistantCollectUserDataModel model, ViewHolder view,
-            WebContents webContents, boolean shouldStoreChanges) {
+    private void updateContactEditor(
+            AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
         if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
             view.mContactDetailsSection.setRequestReloadOnChange(true);
             view.mContactDetailsSection.setEditor(
@@ -617,7 +613,8 @@ class AssistantCollectUserDataBinder
                     webContents, view.mActivity,
                     model.get(AssistantCollectUserDataModel.REQUEST_NAME),
                     model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
-                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL), shouldStoreChanges));
+                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
+                    model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES)));
         }
     }
 
@@ -636,8 +633,27 @@ class AssistantCollectUserDataBinder
         }
     }
 
-    private void updatePaymentEditor(AssistantCollectUserDataModel model, ViewHolder view,
-            WebContents webContents, boolean shouldStoreChanges) {
+    private void updateAddressEditor(
+            AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
+        AssistantAddressEditor editor = null;
+        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+            byte[] initializeAddressCollectionParams =
+                    model.get(AssistantCollectUserDataModel.INITIALIZE_ADDRESS_COLLECTION_PARAMS);
+            if (initializeAddressCollectionParams != null) {
+                editor = view.mEditorFactory.createGmsAddressEditor(view.mActivity,
+                        view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
+                        initializeAddressCollectionParams);
+            }
+        } else {
+            editor = view.mEditorFactory.createAddressEditor(webContents, view.mActivity,
+                    model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES));
+        }
+
+        view.mShippingAddressSection.setEditor(editor);
+    }
+
+    private void updatePaymentEditor(
+            AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
         AssistantPaymentInstrumentEditor editor = null;
         if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
             byte[] addInstrumentActionToken =
@@ -650,7 +666,7 @@ class AssistantCollectUserDataBinder
         } else {
             editor = view.mEditorFactory.createPaymentInstrumentEditor(webContents, view.mActivity,
                     model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS),
-                    shouldStoreChanges);
+                    model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES));
         }
 
         view.mPaymentMethodSection.setEditor(editor);

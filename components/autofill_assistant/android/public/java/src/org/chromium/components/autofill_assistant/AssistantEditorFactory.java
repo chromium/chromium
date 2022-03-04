@@ -29,6 +29,9 @@ public interface AssistantEditorFactory {
     AssistantAddressEditor createAddressEditor(
             WebContents webContents, Activity activity, boolean shouldStoreChanges);
 
+    AssistantAddressEditor createGmsAddressEditor(Activity activity, WindowAndroid windowAndroid,
+            String accountEmail, byte[] initializeAddressCollectionParams);
+
     AssistantPaymentInstrumentEditor createPaymentInstrumentEditor(WebContents webContents,
             Activity activity, List<String> supportedCardNetworks, boolean shouldStoreChanges);
 
