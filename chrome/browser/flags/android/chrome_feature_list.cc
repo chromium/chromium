@@ -35,6 +35,7 @@
 #include "components/embedder_support/android/util/cdn_utils.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/history_clusters/core/features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/messages/android/messages_feature.h"
@@ -151,6 +152,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kWebFeed,
     &feed::kWebFeedSort,
     &feed::kXsurfaceMetricsReporting,
+    &history_clusters::internal::kJourneys,
     &kAdaptiveButtonInTopToolbar,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAddToHomescreenIPH,

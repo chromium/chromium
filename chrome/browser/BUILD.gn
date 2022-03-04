@@ -3137,6 +3137,8 @@ static_library("browser") {
       "flags/android/chrome_feature_list.h",
       "geolocation/geolocation_permission_context_delegate_android.cc",
       "geolocation/geolocation_permission_context_delegate_android.h",
+      "history_clusters/history_clusters_bridge.cc",
+      "history_clusters/history_clusters_bridge.h",
       "history_clusters/history_clusters_tab_helper_android.cc",
       "icon_loader_android.cc",
       "incognito/android/incognito_utils_android.cc",

@@ -7,17 +7,28 @@ import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/history_clusters/ClusterVisit.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryCluster.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersBridge.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersResult.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java",
+  ]
 
   deps = [
     "//base:base_java",
+    "//chrome/browser/profiles/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersBridge.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java",
+  ]
 }

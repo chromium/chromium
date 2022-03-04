@@ -5034,12 +5034,13 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(optimization_guide::switches::kDebugLoggingEnabled)},
 
     {"history-journeys", flag_descriptions::kJourneysName,
-     flag_descriptions::kJourneysDescription, kOsDesktop,
+     flag_descriptions::kJourneysDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(history_clusters::internal::kJourneys)},
 
     {"history-journeys-omnibox-action",
      flag_descriptions::kJourneysOmniboxActionName,
-     flag_descriptions::kJourneysOmniboxActionDescription, kOsDesktop,
+     flag_descriptions::kJourneysOmniboxActionDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(history_clusters::internal::kOmniboxAction)},
 
     {"history-journeys-on-device-clustering",
@@ -5052,7 +5053,8 @@ const FeatureEntry kFeatureEntries[] = {
          "HistoryJourneysOnDeviceClusteringBackend")},
 
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
-     flag_descriptions::kPageContentAnnotationsDescription, kOsDesktop,
+     flag_descriptions::kPageContentAnnotationsDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          optimization_guide::features::kPageContentAnnotations,
          kPageContentAnnotationsVariations,

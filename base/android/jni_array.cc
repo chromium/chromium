@@ -180,6 +180,32 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
   return ScopedJavaLocalRef<jobjectArray>(env, joa);
 }
 
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
+    JNIEnv* env,
+    base::span<const ScopedJavaLocalRef<jobject>> v,
+    ScopedJavaLocalRef<jclass> type) {
+  jobjectArray joa = env->NewObjectArray(v.size(), type.obj(), nullptr);
+  CheckException(env);
+
+  for (size_t i = 0; i < v.size(); ++i) {
+    env->SetObjectArrayElement(joa, i, v[i].obj());
+  }
+  return ScopedJavaLocalRef<jobjectArray>(env, joa);
+}
+
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
+    JNIEnv* env,
+    base::span<const ScopedJavaGlobalRef<jobject>> v,
+    ScopedJavaLocalRef<jclass> type) {
+  jobjectArray joa = env->NewObjectArray(v.size(), type.obj(), nullptr);
+  CheckException(env);
+
+  for (size_t i = 0; i < v.size(); ++i) {
+    env->SetObjectArrayElement(joa, i, v[i].obj());
+  }
+  return ScopedJavaLocalRef<jobjectArray>(env, joa);
+}
+
 ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
     JNIEnv* env,
     base::span<const std::string> v) {
