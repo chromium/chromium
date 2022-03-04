@@ -406,7 +406,9 @@ BrailleDisplayManager = class {
       this.refresh_();
     } else {
       this.commandListener_(
-          {command: BrailleKeyCommand.PAN_LEFT}, this.content_);
+          /** @type {!BrailleKeyEvent} */ (
+              {command: BrailleKeyCommand.PAN_LEFT}),
+          this.content_);
     }
   }
 
@@ -420,7 +422,9 @@ BrailleDisplayManager = class {
       this.refresh_();
     } else {
       this.commandListener_(
-          {command: BrailleKeyCommand.PAN_RIGHT}, this.content_);
+          /** @type {!BrailleKeyEvent} */ (
+              {command: BrailleKeyCommand.PAN_RIGHT}),
+          this.content_);
     }
   }
 
@@ -439,7 +443,9 @@ BrailleDisplayManager = class {
         this.panStrategy_.viewPort.firstRow *
             this.panStrategy_.displaySize.columns);
     this.commandListener_(
-        {command: BrailleKeyCommand.ROUTING, displayPosition}, this.content_);
+        /** @type {!BrailleKeyEvent} */ (
+            {command: BrailleKeyCommand.ROUTING, displayPosition}),
+        this.content_);
   }
 
   /**

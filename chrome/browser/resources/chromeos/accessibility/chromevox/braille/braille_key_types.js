@@ -61,7 +61,7 @@ BrailleKeyCommand = {
  * ctrlKey Whether the control key was pressed.
  * shiftKey Whether the shift key was pressed.
  */
-BrailleKeyEvent = {};
+BrailleKeyEvent;
 
 
 /**
