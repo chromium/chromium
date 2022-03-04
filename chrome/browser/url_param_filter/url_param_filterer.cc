@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
 #include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
 #include "chrome/common/chrome_features.h"
 #include "net/base/escape.h"
@@ -106,45 +107,6 @@ FilterResult FilterUrl(const GURL& source_url,
   return FilterResult{result, filtered_params_count};
 }
 
-url_param_filter::ClassificationMap GetClassifications(
-    url_param_filter::FilterClassification_SiteRole role) {
-  base::FieldTrialParams params;
-  base::GetFieldTrialParamsByFeature(features::kIncognitoParamFilterEnabled,
-                                     &params);
-  auto classification_arg = params.find("classifications");
-  url_param_filter::FilterClassifications classifications;
-  url_param_filter::ClassificationMap map;
-  if (classification_arg != params.end()) {
-    std::string out;
-    base::Base64Decode(classification_arg->second, &out);
-    std::string uncompressed;
-    if (compression::GzipUncompress(out, &uncompressed)) {
-      if (classifications.ParseFromString(uncompressed)) {
-        for (auto i : classifications.classifications()) {
-          if (i.site_role() == role) {
-            map[i.site()] = i;
-          }
-        }
-      }
-    }
-  }
-  return map;
-}
-const url_param_filter::ClassificationMap& GetSourceClassifications() {
-  static const base::NoDestructor<url_param_filter::ClassificationMap>
-      source_classifications(
-          GetClassifications(url_param_filter::FilterClassification_SiteRole::
-                                 FilterClassification_SiteRole_SOURCE));
-  return *source_classifications;
-}
-const url_param_filter::ClassificationMap& GetDestinationClassifications() {
-  static const base::NoDestructor<url_param_filter::ClassificationMap>
-      destination_classifications(
-          GetClassifications(url_param_filter::FilterClassification_SiteRole::
-                                 FilterClassification_SiteRole_DESTINATION));
-  return *destination_classifications;
-}
-
 // Write metrics about results of param filtering.
 void WriteMetrics(FilterResult result) {
   base::UmaHistogramCounts100(
@@ -164,9 +126,10 @@ FilterResult FilterUrl(
 
 GURL FilterUrl(const GURL& source_url, const GURL& destination_url) {
   if (base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
-    FilterResult result =
-        FilterUrl(source_url, destination_url, GetSourceClassifications(),
-                  GetDestinationClassifications());
+    FilterResult result = FilterUrl(
+        source_url, destination_url,
+        ClassificationsLoader::GetInstance()->GetSourceClassifications(),
+        ClassificationsLoader::GetInstance()->GetDestinationClassifications());
     WriteMetrics(result);
     return result.filtered_url;
   }

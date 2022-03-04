@@ -5,13 +5,10 @@
 #ifndef CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTERER_H_
 #define CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTERER_H_
 
-#include <unordered_map>
-#include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
+#include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
 #include "url/gurl.h"
 
 namespace url_param_filter {
-using ClassificationMap =
-    std::unordered_map<std::string, url_param_filter::FilterClassification>;
 
 // Represents the result of filtering; includes the resulting URL (which may be
 // unmodified), along with the count of params filtered.

@@ -1784,6 +1784,8 @@ static_library("browser") {
     "update_client/chrome_update_query_params_delegate.h",
     "url_param_filter/cross_otr_metric_throttle.cc",
     "url_param_filter/cross_otr_metric_throttle.h",
+    "url_param_filter/url_param_classifications_loader.cc",
+    "url_param_filter/url_param_classifications_loader.h",
     "url_param_filter/url_param_filterer.cc",
     "url_param_filter/url_param_filterer.h",
     "usb/frame_usb_services.cc",
