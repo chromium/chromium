@@ -2,66 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/shell/browser/shell.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-namespace content {
-
 namespace {
-// Test for audible playback message.
-class WaitForAudioContextAudible : WebContentsObserver {
- public:
-  explicit WaitForAudioContextAudible(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {
-    run_loop_.Run();
-  }
 
-  WaitForAudioContextAudible(const WaitForAudioContextAudible&) = delete;
-  WaitForAudioContextAudible& operator=(const WaitForAudioContextAudible&) =
-      delete;
+class Waiter : public content::WebContentsObserver {
+ public:
+  explicit Waiter(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  Waiter(const Waiter&) = delete;
+  Waiter& operator=(const Waiter&) = delete;
+
+  void Wait() {
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
 
   void AudioContextPlaybackStarted(const AudioContextId&) final {
-    // Stop the run loop when we get the message
-    run_loop_.Quit();
+    quit_closure_.Run();
   }
-
- private:
-  base::RunLoop run_loop_;
-};
-
-// Test for silent playback started (audible playback stopped).
-class WaitForAudioContextSilent : WebContentsObserver {
- public:
-  explicit WaitForAudioContextSilent(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {
-    run_loop_.Run();
-  }
-
-  WaitForAudioContextSilent(const WaitForAudioContextSilent&) = delete;
-  WaitForAudioContextSilent& operator=(const WaitForAudioContextSilent&) =
-      delete;
 
   void AudioContextPlaybackStopped(const AudioContextId&) final {
-    // Stop the run loop when we get the message
-    run_loop_.Quit();
+    quit_closure_.Run();
   }
 
  private:
-  base::RunLoop run_loop_;
+  base::RepeatingClosure quit_closure_;
 };
 
 }  // namespace
 
-class AudioContextManagerTest : public ContentBrowserTest {
+class AudioContextManagerTest : public content::ContentBrowserTest {
  public:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -74,42 +56,39 @@ class AudioContextManagerTest : public ContentBrowserTest {
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
   }
+
+  void PlayPause() {
+    Waiter waiter(shell()->web_contents());
+    testing::NiceMock<content::MockWebContentsObserver> mock_observer(
+        shell()->web_contents());
+
+    // Set gain to 1 to start audible audio and verify we got the
+    // playback started message.
+    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 1;"));
+    EXPECT_CALL(mock_observer, AudioContextPlaybackStarted(testing::_))
+        .Times(1);
+    EXPECT_CALL(mock_observer, AudioContextPlaybackStopped(testing::_))
+        .Times(0);
+    waiter.Wait();
+
+    // Set gain to 0 to stop audible audio and verify we got the
+    // playback stopped message.
+    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 0;"));
+    EXPECT_CALL(mock_observer, AudioContextPlaybackStarted(testing::_))
+        .Times(0);
+    EXPECT_CALL(mock_observer, AudioContextPlaybackStopped(testing::_))
+        .Times(1);
+    waiter.Wait();
+  }
 };
 
-// Flaky on Linux: https://crbug.com/1047163
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AudioContextPlaybackRecorded DISABLED_AudioContextPlaybackRecorded
-#else
-#define MAYBE_AudioContextPlaybackRecorded AudioContextPlaybackRecorded
-#endif
-IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
-                       MAYBE_AudioContextPlaybackRecorded) {
+IN_PROC_BROWSER_TEST_F(AudioContextManagerTest, AudioContextPlaybackRecorded) {
   EXPECT_TRUE(NavigateToURL(
       shell(), content::GetTestUrl("media/webaudio/", "playback-test.html")));
-
-  // Set gain to 1 to start audible audio and verify we got the
-  // playback started message.
-  {
-    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 1;"));
-    WaitForAudioContextAudible wait(shell()->web_contents());
-  }
-
-  // Set gain to 0 to stop audible audio and verify we got the
-  // playback stopped message.
-  {
-    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 0;"));
-    WaitForAudioContextSilent wait(shell()->web_contents());
-  }
+  PlayPause();
 }
 
-// Flaky on Linux: https://crbug.com/941219
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AudioContextPlaybackTimeUkm DISABLED_AudioContextPlaybackTimeUkm
-#else
-#define MAYBE_AudioContextPlaybackTimeUkm AudioContextPlaybackTimeUkm
-#endif
-IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
-                       MAYBE_AudioContextPlaybackTimeUkm) {
+IN_PROC_BROWSER_TEST_F(AudioContextManagerTest, AudioContextPlaybackTimeUkm) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   using Entry = ukm::builders::Media_WebAudio_AudioContext_AudibleTime;
 
@@ -120,13 +99,7 @@ IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
   EXPECT_EQ(0u, test_ukm_recorder.GetEntriesByName(Entry::kEntryName).size());
 
   // Play/pause something audible, it should lead to new Ukm entry.
-  {
-    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 1;"));
-    WaitForAudioContextAudible wait_audible(shell()->web_contents());
-
-    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 0;"));
-    WaitForAudioContextSilent wait_silent(shell()->web_contents());
-  }
+  PlayPause();
 
   EXPECT_EQ(1u, test_ukm_recorder.GetEntriesByName(Entry::kEntryName).size());
 
@@ -137,8 +110,8 @@ IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
     ASSERT_EQ(1u, ukm_entries.size());
     auto* entry = ukm_entries[0];
 
-    // The test doesn't check the URL because not the full Ukm stack is running
-    // in //content.
+    // The test doesn't check the URL because not the full Ukm stack is
+    // running in //content.
 
     EXPECT_TRUE(
         test_ukm_recorder.EntryHasMetric(entry, Entry::kAudibleTimeName));
@@ -151,15 +124,7 @@ IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
   }
 
   // Play/pause again and check that there is a new entry.
-  {
-    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 1;"));
-    WaitForAudioContextAudible wait_audible(shell()->web_contents());
-
-    ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 0;"));
-    WaitForAudioContextSilent wait_silent(shell()->web_contents());
-  }
+  PlayPause();
 
   EXPECT_EQ(2u, test_ukm_recorder.GetEntriesByName(Entry::kEntryName).size());
 }
-
-}  // namespace content
