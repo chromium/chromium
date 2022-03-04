@@ -37,7 +37,7 @@ struct GtkPrimarySelectionOffer final : public TestSelectionOffer::Delegate {
 
 struct GtkPrimarySelectionDevice final : public TestSelectionDevice::Delegate {
   TestSelectionOffer* CreateAndSendOffer() override {
-    const struct gtk_primary_selection_offer_interface kOfferImpl = {
+    static const struct gtk_primary_selection_offer_interface kOfferImpl = {
         &TestSelectionOffer::Receive, &Destroy};
     wl_resource* device_resource = device->resource();
     const int version = wl_resource_get_version(device_resource);
@@ -98,7 +98,7 @@ struct GtkPrimarySelectionDeviceManager
   ~GtkPrimarySelectionDeviceManager() override = default;
 
   TestSelectionDevice* CreateDevice(wl_client* client, uint32_t id) override {
-    const struct gtk_primary_selection_device_interface
+    static const struct gtk_primary_selection_device_interface
         kTestSelectionDeviceImpl = {&TestSelectionDevice::SetSelection,
                                     &Destroy};
     auto* delegate = new GtkPrimarySelectionDevice;
@@ -110,7 +110,7 @@ struct GtkPrimarySelectionDeviceManager
   }
 
   TestSelectionSource* CreateSource(wl_client* client, uint32_t id) override {
-    const struct gtk_primary_selection_source_interface
+    static const struct gtk_primary_selection_source_interface
         kTestSelectionSourceImpl = {&TestSelectionSource::Offer, &Destroy};
     auto* delegate = new GtkPrimarySelectionSource;
     wl_resource* resource = CreateResourceWithImpl<TestSelectionSource>(
@@ -130,7 +130,7 @@ struct GtkPrimarySelectionDeviceManager
 
 TestSelectionDeviceManager* CreateTestSelectionManagerGtk() {
   constexpr uint32_t kVersion = 1;
-  const struct gtk_primary_selection_device_manager_interface
+  static const struct gtk_primary_selection_device_manager_interface
       kTestSelectionManagerImpl = {&TestSelectionDeviceManager::CreateSource,
                                    &TestSelectionDeviceManager::GetDevice,
                                    &Destroy};
