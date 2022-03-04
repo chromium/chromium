@@ -105,6 +105,7 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
 
   void SerializeTreeUpdates();
   void UnserializeTreeUpdates(const std::vector<ui::AXTreeUpdate>& updates);
+  void FireLoadComplete();
 
   // Determines the platform node which corresponds to the given |node| and
   // fires the given |event| on it.

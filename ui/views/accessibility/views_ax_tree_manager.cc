@@ -36,9 +36,15 @@ ViewsAXTreeManager::ViewsAXTreeManager(Widget* widget)
   views::WidgetAXTreeIDMap::GetInstance().AddWidget(tree_id_, widget);
   views_event_observer_.Observe(AXEventManager::Get());
   widget_observer_.Observe(widget);
-  View* root_view = widget->GetRootView();
-  if (root_view)
-    root_view->NotifyAccessibilityEvent(ax::mojom::Event::kLoadComplete, true);
+
+  // Load complete can't be fired synchronously here. The act of firing the
+  // event will call |View::GetViewAccessibility|, which (if fired
+  // synchronously) will create *another* |ViewsAXTreeManager| for the same
+  // widget, since the wrapper that created this |ViewsAXTreeManager| hasn't
+  // been added to the cache yet.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ViewsAXTreeManager::FireLoadComplete,
+                                weak_factory_.GetWeakPtr()));
 }
 
 ViewsAXTreeManager::~ViewsAXTreeManager() {
@@ -193,6 +199,14 @@ void ViewsAXTreeManager::UnserializeTreeUpdates(
       FireGeneratedEvent(targeted_event.event_params.event, *node);
   }
   event_generator_.ClearEvents();
+}
+
+void ViewsAXTreeManager::FireLoadComplete() {
+  DCHECK(widget_.get());
+
+  View* root_view = widget_->GetRootView();
+  if (root_view)
+    root_view->NotifyAccessibilityEvent(ax::mojom::Event::kLoadComplete, true);
 }
 
 void ViewsAXTreeManager::FireGeneratedEvent(

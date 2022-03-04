@@ -232,5 +232,32 @@ TEST_P(ViewsAXTreeManagerTest, CloseWidget) {
   EXPECT_EQ(nullptr, ax_button);
 }
 
+TEST_P(ViewsAXTreeManagerTest, MultipleTopLevelWidgets) {
+  // This test is only relevant when IsAccessibilityTreeForViewsEnabled is set,
+  // as it tests the lifetime management of ViewsAXTreeManager when a Widget is
+  // closed.
+  if (!features::IsAccessibilityTreeForViewsEnabled())
+    return;
+
+  std::unique_ptr<Widget> second_widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.bounds = gfx::Rect(0, 0, 200, 200);
+  second_widget->Init(std::move(params));
+
+  std::unique_ptr<TestButton> second_button = std::make_unique<TestButton>();
+  second_button->SetSize(gfx::Size(20, 20));
+
+  std::unique_ptr<Label> second_label = std::make_unique<Label>();
+  second_button->AddChildView(second_label.get());
+
+  // If the load complete event is fired synchronously from
+  // |ViewsAXtreeManager|, creating a second widget will inadvertently create
+  // another ViewsAXTreeManager and hit DCHECK's due to the cache not being
+  // up to date.
+  second_widget->GetContentsView()->AddChildView(second_button.get());
+  second_widget->Show();
+}
+
 }  // namespace test
 }  // namespace views
