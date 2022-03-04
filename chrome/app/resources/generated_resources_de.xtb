@@ -339,7 +339,7 @@
 <translation id="1341988552785875222">Der aktuelle Hintergrund wurde von <ph name="APP_NAME" /> festgelegt. Sie müssen <ph name="APP_NAME" /> möglicherweise deinstallieren, bevor Sie einen anderen Hintergrund auswählen.</translation>
 <translation id="1343865611738742294">Linux-Apps erlauben, auf USB-Geräte zuzugreifen. Linux merkt sich keine USB-Geräte, nachdem diese entfernt wurden.</translation>
 <translation id="1346630054604077329">Bestätigen und neu starten</translation>
-<translation id="1347256498747320987">Updates und Apps installieren: Wenn du fortfährst, stimmst du zu, dass dieses Gerät automatisch Updates und Apps von Google, deinem Mobilfunkanbieter und dem Hersteller deines Geräts herunterladen und installieren darf, möglicherweise über eine mobile Datenverbindung. Einige dieser Apps bieten eventuell In-App-Käufe an. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
+<translation id="1347256498747320987">Updates und Apps installieren. Wenn Sie fortfahren, stimmen Sie zu, dass dieses Gerät automatisch Updates und Apps von Google, Ihrem Mobilfunkanbieter und dem Hersteller Ihres Geräts herunterladen und installieren darf, möglicherweise über eine mobile Datenverbindung. Einige dieser Apps bieten eventuell In-App-Käufe an. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-Speicher</translation>
 <translation id="1347975661240122359">Das Update wird ausgeführt, sobald der Akkustand <ph name="BATTERY_LEVEL" /> % erreicht.</translation>
 <translation id="1353275871123211385">Wenn Sie Jugendschutzeinstellungen wie das Genehmigen von Apps und Limits für die Gerätenutzungsdauer verwenden möchten, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Sie können später das Konto einer Bildungseinrichtung hinzufügen, damit Tools wie Google Classroom genutzt werden können.</translation>
@@ -3352,7 +3352,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Alle &amp;öffnen}=1{Lesezeichen &amp;öffnen}other{Alle ({COUNT}) &amp;öffnen}}</translation>
 <translation id="439817266247065935">Ihr Gerät wurde nicht ordnungsgemäß heruntergefahren. Starten Sie Linux neu, um Linux-Apps zu verwenden.</translation>
 <translation id="4400367121200150367">Hier werden Websites angezeigt, für die keine Passwörter gespeichert werden</translation>
-<translation id="4400632832271803360">Halten Sie die Taste "Suche" gedrückt, um die Funktion der Tasten in der obersten Reihe zu ändern</translation>
+<translation id="4400632832271803360">Die Taste "Suche" gedrückt halten, um die Funktion der Tasten in der obersten Reihe zu ändern</translation>
 <translation id="4400963414856942668">Sie können auf den Stern klicken, um einen Tab als Lesezeichen zu speichern</translation>
 <translation id="4402755511846832236">Websites daran hindern, Informationen zu Ihrer aktiven Nutzung dieses Geräts abzurufen</translation>
 <translation id="4403266582403435904">Wenn Sie Ihre Daten sichern, können Sie diese jederzeit wiederherstellen – auch auf einem anderen Gerät. Sicherungen werden an Google gesendet und mit dem Passwort des Google-Kontos Ihres Kindes verschlüsselt.</translation>
@@ -3874,7 +3874,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4941246025622441835">Diese Geräteanforderung beim Registrieren des Geräts für die Unternehmensverwaltung verwenden:</translation>
 <translation id="4941627891654116707">Schriftgröße</translation>
 <translation id="494286511941020793">Proxy-Konfigurationshilfe</translation>
-<translation id="4943368462779413526">Fußball</translation>
+<translation id="4943368462779413526">American Football</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" möchte eine Verbindung mit einem seriellen Port herstellen</translation>
 <translation id="4944310289250773232">Dieser Authentifizierungsdienst wird von <ph name="SAML_DOMAIN" /> gehostet</translation>
 <translation id="4945439665401275950">Bitten Sie Ihr Kind, die Ein-/Aus-Taste zu berühren, um den Fingerabdruck einzurichten. Der Fingerabdruck Ihres Kindes wird möglichst sicher und niemals außerhalb dieses Geräts (<ph name="DEVICE_TYPE" />) gespeichert.</translation>
@@ -5392,7 +5392,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6551739526055143276">Verwaltet über Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> Nutzer</translation>
 <translation id="655483977608336153">Erneut versuchen</translation>
-<translation id="6555432686520421228">Alle Nutzerkonten entfernen und Ihr <ph name="IDS_SHORT_PRODUCT_NAME" />-Gerät auf die Werkseinstellungen zurücksetzen</translation>
+<translation id="6555432686520421228">Alle Nutzerkonten entfernen und das <ph name="IDS_SHORT_PRODUCT_NAME" />-Gerät auf die Werkseinstellungen zurücksetzen</translation>
 <translation id="6555810572223193255">Die Bereinigung ist derzeit nicht verfügbar</translation>
 <translation id="6556477848444788999">Die PIN bzw. das Passwort trägt zum Schutz der Daten auf diesem Gerät (<ph name="DEVICE_TYPE" />) bei, einschließlich der Inhalte, die Sie über Ihr Smartphone streamen.</translation>
 <translation id="6556866813142980365">Wiederholen</translation>

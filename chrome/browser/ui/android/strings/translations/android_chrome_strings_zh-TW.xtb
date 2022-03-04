@@ -1446,7 +1446,7 @@ Privacy Sandbox 的試用功能仍在積極開發階段，目前開放地區有�
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8964479563882643397">如要開啟新的無痕分頁，請按一下「選單」圖示</translation>
 <translation id="8965591936373831584">正在等待下載</translation>
-<translation id="8967427617812342790">加到閱讀清單</translation>
+<translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>

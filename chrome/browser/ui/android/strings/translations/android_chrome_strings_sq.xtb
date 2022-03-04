@@ -73,7 +73,7 @@
 <translation id="1376578503827013741">Po llogarit...</translation>
 <translation id="1382912999714108023">Nuk shfaqen informacionet aktuale? Kontakto bankën për t'i përditësuar.</translation>
 <translation id="1383876407941801731">Kërko</translation>
-<translation id="1384704387250346179">Përkthe imazhin me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
+<translation id="1384704387250346179">Përkthe imazh me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktiv <ph name="LAST_UPDATED" /> ditë më parë</translation>
 <translation id="1397811292916898096">Kërko me <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">"Mos gjurmo"</translation>
@@ -760,7 +760,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5342314432463739672">Kërkesat për autorizim</translation>
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> skedë e hapur, trokit për të ndërruar skedat}other{<ph name="OPEN_TABS_MANY" /> skeda të hapura, trokit për të ndërruar skedat}}</translation>
-<translation id="5375577065097716013">Kërko imazhin me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Kërko imazh me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Lejo vetëm sajte të caktuara</translation>
 <translation id="5409881200985013443">Të dërgohet <ph name="ONE_TIME_CODE" /> te <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Po verifikon…</translation>

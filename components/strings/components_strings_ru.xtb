@@ -483,7 +483,7 @@
 <translation id="2414886740292270097">Темная</translation>
 <translation id="2430968933669123598">Параметры аккаунта Google. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Ввод.</translation>
 <translation id="2438874542388153331">Четыре отверстия справа</translation>
-<translation id="2450021089947420533">Связи</translation>
+<translation id="2450021089947420533">Сеансы</translation>
 <translation id="2463739503403862330">Заполнить</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Выбрать способ доставки</translation>
@@ -872,7 +872,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Загрузка...</translation>
 <translation id="3709599264800900598">Скопированный текст</translation>
-<translation id="370972442370243704">Включить формирование связей</translation>
+<translation id="370972442370243704">Включить сеансы</translation>
 <translation id="3711895659073496551">Спящий режим</translation>
 <translation id="3712624925041724820">Недостаточно лицензий</translation>
 <translation id="3714780639079136834">Включите Wi-Fi или мобильный Интернет.</translation>
@@ -1131,7 +1131,7 @@
 <translation id="4508814173490746936">Не удалось использовать Touch ID</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы с помощью Google Переводчика ознакомиться с содержанием страницы.</translation>
 <translation id="4510487217173779431">Chou4 (конверт)</translation>
-<translation id="4514308731478712184">Отключить формирование связей</translation>
+<translation id="4514308731478712184">Отключить сеансы</translation>
 <translation id="4515275063822566619">Это карты и адреса, указанные в Chrome и вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />). Вы можете изменить их на странице <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (конверт)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>

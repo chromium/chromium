@@ -18,7 +18,7 @@
 <translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}one{Comprimi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}other{Comprimi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="2569352796411618312">Suggerimento: <ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
-<translation id="257674075312929031">Raggruppa</translation>
+<translation id="257674075312929031">Gruppo</translation>
 <translation id="2613747923081026172">Crea gruppo</translation>
 <translation id="2662028055331606429">Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita il sito</translation>
