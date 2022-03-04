@@ -63,14 +63,14 @@ class FuseBoxServiceProvider
   // In terms of semantics, they're roughly equivalent to the C standard
   // library functions of the same name. For example, the Stat method here
   // corresponds to the standard stat function described by "man 2 stat".
-  //
-  // TODO(nigeltao): add ReadDir, etc.
   void Close(dbus::MethodCall* method_call,
              dbus::ExportedObject::ResponseSender sender);
   void Open(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
   void Read(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
+  void ReadDir(dbus::MethodCall* method_call,
+               dbus::ExportedObject::ResponseSender sender);
   void Stat(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
 

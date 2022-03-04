@@ -272,6 +272,8 @@ source_set("chromeos") {
     "//chromeos/dbus/dlp:dlp_proto",
     "//chromeos/dbus/easy_unlock",
     "//chromeos/dbus/federated",
+    "//chromeos/dbus/fusebox",
+    "//chromeos/dbus/fusebox:proto",
     "//chromeos/dbus/fwupd",
     "//chromeos/dbus/gnubby",
     "//chromeos/dbus/hermes",
