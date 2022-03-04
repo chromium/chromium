@@ -464,7 +464,7 @@ void AppListSyncableService::InitFromLocalStorage() {
       sync_item->item_name = *maybe_item_name;
     const std::string* maybe_parent_id =
         item.second.FindStringKey(kParentIdKey);
-    if (maybe_item_name)
+    if (maybe_parent_id)
       sync_item->parent_id = *maybe_parent_id;
 
     const std::string* position = item.second.FindStringKey(kPositionKey);
