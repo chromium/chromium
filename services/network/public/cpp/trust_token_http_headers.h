@@ -62,6 +62,11 @@ constexpr char kTrustTokensRequestHeaderSignedHeaders[] = "Signed-Headers";
 constexpr char kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData[] =
     "Sec-Trust-Tokens-Additional-Signing-Data";
 
+// A response header, asks UA to discard all previously issued tokens when
+// value is "all", ignored otherwise.
+constexpr char kTrustTokensResponseHeaderSecTrustTokenClearData[] =
+    "Sec-Trust-Token-Clear-Data";
+
 // Returns a view of all of the Trust Tokens-internal request headers.
 // This vector contains all of the headers that clients must not provide on
 // requests bearing Trust Tokens operations, because they are added internally

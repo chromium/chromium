@@ -291,11 +291,19 @@ void TrustTokenRequestIssuanceHelper::Finalize(
   if (!response->headers->EnumerateHeader(
           /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader, &header_value)) {
     LogOutcome(net_log_, kFinalize, "Response missing Trust Tokens header");
+    response->headers->RemoveHeader(
+        kTrustTokensResponseHeaderSecTrustTokenClearData);
     std::move(done).Run(mojom::TrustTokenOperationStatus::kBadResponse);
     return;
   }
 
   response->headers->RemoveHeader(kTrustTokensSecTrustTokenHeader);
+  if (response->headers->HasHeaderValue(
+          kTrustTokensResponseHeaderSecTrustTokenClearData, "all")) {
+    static_cast<void>(token_store_->DeleteStoredTrustTokens(*issuer_));
+  }
+  response->headers->RemoveHeader(
+      kTrustTokensResponseHeaderSecTrustTokenClearData);
 
   ProcessIssuanceResponse(std::move(header_value), std::move(done));
 }
