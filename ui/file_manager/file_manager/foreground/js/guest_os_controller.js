@@ -27,14 +27,27 @@ export class GuestOsController {
 
     /** @private @const */
     this.directoryTree_ = directoryTree;
+
+    chrome.fileManagerPrivate.onMountableGuestsChanged.addListener(
+        this.onMountableGuestsChanged.bind(this));
   }
 
   /**
-   * Refresh the Guest OS files items by fetching an updated list of guests,
+   * Refresh the Guest OS placeholders by fetching an updated list of guests,
    * adding them to the directory tree and triggering a redraw.
    */
   async refresh() {
     const guests = await listMountableGuests();
+    this.onMountableGuestsChanged(guests);
+  }
+
+  /**
+   * Updates the list of Guest OSs when we receive an event for the list of
+   * registered guests changing, by adding them to the directory tree and
+   * triggering a redraw.
+   * @param {!Array<!chrome.fileManagerPrivate.MountableGuest>} guests
+   */
+  async onMountableGuestsChanged(guests) {
     this.directoryTree_.dataModel.guestOsPlaceholders = guests.map(guest => {
       return new NavigationModelFakeItem(
           guest.displayName, NavigationModelItemType.GUEST_OS,

@@ -42,8 +42,10 @@ testcase.fakesListed = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Check that our guests are listed.
-  const query = '#directory-tree [root-type-icon=guest_os]';
-  await remoteCall.waitForElementsCount(appId, [query], names.length);
+  for (const name of names) {
+    await remoteCall.waitForElement(
+        appId, `#directory-tree [entry-label="${name}"]`);
+  }
 };
 
 /**
@@ -73,4 +75,47 @@ testcase.mountGuestError = async () => {
 
   // We expect there to be an error, from the mount failure.
   return IGNORE_APP_ERRORS;
+};
+
+/**
+ * Tests that the list of guests is updated when new guests are added or
+ * removed.
+ */
+testcase.listUpdatedWhenGuestsChanged = async () => {
+  // Open the files app.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // We'll use this query a lot to check how many guests we have.
+  const query = '#directory-tree [root-type-icon=guest_os]';
+
+  const names = ['Etcetera', 'Electra'];
+  const ids = [];
+
+  for (const name of names) {
+    // Add a guest...
+    ids.push(await sendTestMessage(
+        {name: 'registerMountableGuest', displayName: name}));
+
+    // ...and it should show up
+    await remoteCall.waitForElement(
+        appId, `#directory-tree [entry-label="${name}"]`);
+  }
+
+  // Check that we have the right number of entries.
+  await remoteCall.waitForElementsCount(appId, [query], ids.length);
+
+  // Remove the guests...
+  for (const guestId of ids) {
+    await sendTestMessage({name: 'unregisterMountableGuest', guestId: guestId});
+  }
+
+  // ...and they should all be gone.
+  await remoteCall.waitForElementsCount(appId, [query], 0);
+
+  // Then add them back for good measure.
+  for (const name of names) {
+    await sendTestMessage({name: 'registerMountableGuest', displayName: name});
+  }
+  await remoteCall.waitForElementsCount(appId, [query], names.length);
 };

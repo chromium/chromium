@@ -113,6 +113,9 @@ export class FileManager extends EventTarget {
     /** @private {?CrostiniController} */
     this.crostiniController_ = null;
 
+    /** @private {?GuestOsController} */
+    this.guestOsController_ = null;
+
     /**
      * ImportHistory. Non-null only once history observer is added in
      * {@code addHistoryObserver}.
@@ -1339,9 +1342,9 @@ export class FileManager extends EventTarget {
         maybeShowToast, this.ui_.toast);
 
     if (util.isGuestOsEnabled()) {
-      const guestOsController = new GuestOsController(
+      this.guestOsController_ = new GuestOsController(
           this.directoryModel_, assert(this.directoryTree));
-      await guestOsController.refresh();
+      await this.guestOsController_.refresh();
     }
   }
 

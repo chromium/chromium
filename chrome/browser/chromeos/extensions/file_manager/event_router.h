@@ -24,6 +24,8 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
@@ -57,7 +59,8 @@ class EventRouter
       public drive::DriveIntegrationServiceObserver,
       public guest_os::GuestOsSharePath::Observer,
       public ash::TabletModeObserver,
-      public file_manager::io_task::IOTaskController::Observer {
+      public file_manager::io_task::IOTaskController::Observer,
+      public guest_os::GuestOsMountProviderRegistry::Observer {
  public:
   using DispatchDirectoryChangeEventImplCallback =
       base::RepeatingCallback<void(const base::FilePath& virtual_path,
@@ -195,6 +198,11 @@ class EventRouter
   // IOTaskController::Observer:
   void OnIOTaskStatus(const io_task::ProgressStatus& status) override;
 
+  // guest_os::GuestOsMountProviderRegistry::Observer overrides.
+  void OnRegistered(guest_os::GuestOsMountProviderRegistry::Id id,
+                    guest_os::GuestOsMountProvider* provider) override;
+  void OnUnregistered(guest_os::GuestOsMountProviderRegistry::Id id) override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, PopulateCrostiniEvent);
 
@@ -261,6 +269,9 @@ class EventRouter
   void DisplayDriveConfirmDialog(
       const drivefs::mojom::DialogReason& reason,
       base::OnceCallback<void(drivefs::mojom::DialogResult)> callback);
+
+  // Called to refresh the list of guests and broadcast it.
+  void OnMountableGuestsChanged();
 
   base::Time last_copy_progress_event_;
 

@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/disks/disk.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -584,6 +586,12 @@ void EventRouter::Shutdown() {
       chromeos::PowerManagerClient::Get();
   power_manager_client->RemoveObserver(device_event_router_.get());
 
+  if (base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles)) {
+    auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
+                         ->MountProviderRegistry();
+    registry->RemoveObserver(this);
+  }
+
   profile_ = nullptr;
 }
 
@@ -676,6 +684,12 @@ void EventRouter::ObserveEvents() {
   ash::TabletMode* tablet_mode = ash::TabletMode::Get();
   if (tablet_mode)
     tablet_mode->AddObserver(this);
+
+  if (base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles)) {
+    auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
+                         ->MountProviderRegistry();
+    registry->AddObserver(this);
+  }
 }
 
 // File watch setup routines.
@@ -1286,6 +1300,33 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   // If no Files app window exists we send the progress to the system
   // notification.
   notification_manager_->HandleIOTaskProgress(status);
+}
+void EventRouter::OnRegistered(guest_os::GuestOsMountProviderRegistry::Id id,
+                               guest_os::GuestOsMountProvider* provider) {
+  OnMountableGuestsChanged();
+}
+
+void EventRouter::OnUnregistered(
+    guest_os::GuestOsMountProviderRegistry::Id id) {
+  OnMountableGuestsChanged();
+}
+
+void EventRouter::OnMountableGuestsChanged() {
+  auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
+                       ->MountProviderRegistry();
+  std::vector<file_manager_private::MountableGuest> guests;
+  for (const auto id : registry->List()) {
+    file_manager_private::MountableGuest guest;
+    auto* provider = registry->Get(id);
+    guest.id = id;
+    guest.display_name = provider->DisplayName();
+    guests.push_back(std::move(guest));
+  }
+  BroadcastEvent(
+      profile_,
+      extensions::events::FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS,
+      file_manager_private::OnMountableGuestsChanged::kEventName,
+      file_manager_private::OnMountableGuestsChanged::Create(guests));
 }
 
 }  // namespace file_manager

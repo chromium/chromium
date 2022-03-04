@@ -727,4 +727,9 @@ export class GuestOsPlaceholder extends FakeEntryImpl {
   get iconName() {
     return /** @type{string} */ ('crostini');
   }
+
+  /** @override */
+  toURL() {
+    return `fake-entry://guest-os/${this.guest_id}`;
+  }
 }
