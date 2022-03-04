@@ -51,10 +51,7 @@ libxslt_la_SOURCES = 			\
 	transform.c			\
 	security.c			\
 	win32config.h			\
-	xsltwin32config.h.in		\
 	libxslt.h
-nodist_libxslt_la_SOURCES =		\
-	xsltwin32config.h
 
 if USE_VERSION_SCRIPT
 LIBXSLT_VERSION_SCRIPT = $(VERSION_SCRIPT_FLAGS)$(srcdir)/libxslt.syms

@@ -3631,8 +3631,10 @@ xsltDocumentElem(xsltTransformContextPtr ctxt, xmlNodePtr node,
     if (elements != NULL) {
 	if (style->stripSpaces == NULL)
 	    style->stripSpaces = xmlHashCreate(10);
-	if (style->stripSpaces == NULL)
+	if (style->stripSpaces == NULL) {
+	    xmlFree(elements);
 	    return;
+	}
 
 	element = elements;
 	while (*element != 0) {

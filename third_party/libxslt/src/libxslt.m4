@@ -122,9 +122,8 @@ main()
       {
         printf("\n*** An old version of libxslt (%d.%d.%d) was found.\n",
                xslt_major_version, xslt_minor_version, xslt_micro_version);
-        printf("*** You need a version of libxslt newer than %d.%d.%d. The latest version of\n",
+        printf("*** You need a version of libxslt newer than %d.%d.%d.\n",
            major, minor, micro);
-        printf("*** libxslt is always available from ftp://ftp.xmlsoft.org.\n");
         printf("***\n");
         printf("*** If you have already installed a sufficiently new version, this error\n");
         printf("*** probably means that the wrong copy of the xslt-config shell script is\n");

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(libxslt1 VERSION 1.1.34 LANGUAGES C)
+project(libxslt1 VERSION 1.1.35 LANGUAGES C)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -145,7 +145,7 @@ else()
 	set(PACKAGE_NAME "libxslt")
 	set(PACKAGE_STRING "libxslt ${LIBXSLT_DOTTED_VERSION}")
 	set(PACKAGE_TARNAME "libxslt")
-	set(PACKAGE_URL "http://www.xmlsoft.org/libxslt")
+	set(PACKAGE_URL "https://gitlab.gnome.org/GNOME/libxslt")
 	set(PACKAGE_VERSION ${LIBXSLT_DOTTED_VERSION})
 	check_include_files("float.h;stdarg.h;stdlib.h;string.h" STDC_HEADERS)
 	set(_ALL_SOURCE ON)

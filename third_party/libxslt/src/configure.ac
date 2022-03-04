@@ -3,7 +3,7 @@ AC_PREREQ(2.63)
 
 m4_define([MAJOR_VERSION], [1])
 m4_define([MINOR_VERSION], [1])
-m4_define([MICRO_VERSION], [34])
+m4_define([MICRO_VERSION], [35])
 
 AC_INIT([libxslt], [MAJOR_VERSION.MINOR_VERSION.MICRO_VERSION])
 AC_CONFIG_SRCDIR([libxslt/xslt.c])
@@ -30,29 +30,14 @@ LIBXSLT_VERSION_INFO=`expr $LIBXSLT_MAJOR_VERSION + $LIBXSLT_MINOR_VERSION`:$LIB
 LIBXSLT_VERSION_NUMBER=`expr $LIBXSLT_MAJOR_VERSION \* 10000 + $LIBXSLT_MINOR_VERSION \* 100 + $LIBXSLT_MICRO_VERSION`
 LIBXSLT_MAJOR_MINOR_VERSION=$LIBXSLT_MAJOR_VERSION.$LIBXSLT_MINOR_VERSION
 
-if test -f CVS/Entries; then
-  extra=`grep ChangeLog CVS/Entries | grep -v LIBXSLT | sed -e s\%/ChangeLog/1\.%% -e s\%/.*$%%`
-  echo extra=$extra
-  if test "$extra" != ""
-  then
-      LIBXSLT_VERSION_EXTRA="-CVS$extra"
-  fi
-else if test -d .svn ; then
-  extra=`svn info | grep Revision | sed 's+Revision: ++'`
-  echo extra=$extra
-  if test "$extra" != ""
-  then
-      LIBXSLT_VERSION_EXTRA="-SVN$extra"
-  fi
-else if test -d .git ; then
+if test -d .git ; then
   extra=`git describe | sed 's+LIBXSLT[[0-9.]]*-++'`
   echo extra=$extra
   if test "$extra" != ""
   then
       LIBXSLT_VERSION_EXTRA="-GIT$extra"
+      LIBEXSLT_VERSION_EXTRA="-GIT$extra"
   fi
-fi
-fi
 fi
 
 AC_SUBST(LIBXSLT_MAJOR_VERSION)
@@ -72,10 +57,6 @@ LIBEXSLT_VERSION=$LIBEXSLT_MAJOR_VERSION.$LIBEXSLT_MINOR_VERSION.$LIBEXSLT_MICRO
 LIBEXSLT_VERSION_INFO=`expr $LIBEXSLT_MAJOR_VERSION + $LIBEXSLT_MINOR_VERSION`:$LIBEXSLT_MICRO_VERSION:$LIBEXSLT_MINOR_VERSION
 
 LIBEXSLT_VERSION_NUMBER=`expr $LIBEXSLT_MAJOR_VERSION \* 10000 + $LIBEXSLT_MINOR_VERSION \* 100 + $LIBEXSLT_MICRO_VERSION`
-
-if test -f CVS/Entries; then
-  LIBEXSLT_VERSION_EXTRA=-CVS`grep ChangeLog CVS/Entries | sed -e s\%/ChangeLog/1\.%% -e s\%/.*$%%`
-fi
 
 AC_SUBST(LIBEXSLT_MAJOR_VERSION)
 AC_SUBST(LIBEXSLT_MINOR_VERSION)
@@ -108,6 +89,13 @@ AC_ARG_WITH(html-subdir, AS_HELP_STRING([--with-html-subdir=path],
             [HTML_DIR="$HTML_DIR/\$(PACKAGE)-\$(VERSION)/html"])
 
 AC_SUBST(HTML_DIR)
+
+AC_ARG_ENABLE(rebuild-docs,
+[  --enable-rebuild-docs[[=yes/no]]  rebuild some generated docs [[default=no]]])
+if test "$enable_rebuild_docs" = "yes" -a "$srcdir" != "."; then
+  AC_MSG_ERROR([cannot rebuild docs when builddir != srcdir])
+fi
+AM_CONDITIONAL([REBUILD_DOCS], [test "$enable_rebuild_docs" = "yes"])
 
 dnl
 dnl Check the environment
@@ -326,7 +314,7 @@ except:
 	    then
 		PYTHON_SITE_PACKAGES=$with_python/lib/site-packages
 	    else
-		PYTHON_SITE_PACKAGES=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_lib())"`
+		PYTHON_SITE_PACKAGES=$($PYTHON -c 'from distutils import sysconfig; print(sysconfig.get_python_lib(True,False,"${exec_prefix}"))')
 	    fi
 	fi
     fi
@@ -604,7 +592,7 @@ fi
 
 if test "x$LIBXML_LIBS" = "x"
 then
-	AC_MSG_ERROR([Could not find libxml2 anywhere, check ftp://xmlsoft.org/.])
+	AC_MSG_ERROR([Could not find libxml2 anywhere.])
 fi
 
 
@@ -710,7 +698,6 @@ libexslt.pc
 libxslt-config.cmake
 libxslt/Makefile
 libxslt/xsltconfig.h
-libxslt/xsltwin32config.h
 libexslt/Makefile
 libexslt/exsltconfig.h
 xsltproc/Makefile
@@ -742,16 +729,15 @@ tests/exslt/sets/Makefile
 tests/exslt/strings/Makefile
 tests/exslt/date/Makefile
 tests/exslt/dynamic/Makefile
+tests/exslt/crypto/Makefile
 tests/plugins/Makefile
 tests/fuzz/Makefile
 doc/Makefile
+doc/devhelp/Makefile
+doc/EXSLT/devhelp/Makefile
 xslt-config
 libxslt.spec
 ])
-if test "$CRYPTO_TESTDIR" != ""
-then
-  AC_CONFIG_FILES(["tests/exslt/$CRYPTO_TESTDIR/Makefile"])
-fi
 AC_CONFIG_LINKS([tests/fuzz/xpath.xml:tests/fuzz/xpath.xml])
 AC_CONFIG_LINKS([tests/fuzz/xslt.xml:tests/fuzz/xslt.xml])
 

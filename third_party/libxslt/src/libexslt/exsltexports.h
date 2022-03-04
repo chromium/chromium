@@ -1,9 +1,9 @@
 /*
- * exsltexports.h : macros for marking symbols as exportable/importable.
+ * Summary: macros for marking symbols as exportable/importable.
  *
- * See Copyright for the status of this software.
+ * Copy: See Copyright for the status of this software.
  *
- * igor@zlatkovic.com
+ * Author: Igor Zlatkovic <igor@zlatkovic.com>
  */
 
 #ifndef __EXSLT_EXPORTS_H__

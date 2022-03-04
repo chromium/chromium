@@ -20,26 +20,26 @@ extern "C" {
  *
  * the version string like "1.2.3"
  */
-#define LIBXSLT_DOTTED_VERSION "1.1.34"
+#define LIBXSLT_DOTTED_VERSION "1.1.35"
 
 /**
  * LIBXSLT_VERSION:
  *
  * the version number: 1.2.3 value is 10203
  */
-#define LIBXSLT_VERSION 10134
+#define LIBXSLT_VERSION 10135
 
 /**
  * LIBXSLT_VERSION_STRING:
  *
  * the version number string, 1.2.3 value is "10203"
  */
-#define LIBXSLT_VERSION_STRING "10134"
+#define LIBXSLT_VERSION_STRING "10135"
 
 /**
  * LIBXSLT_VERSION_EXTRA:
  *
- * extra version information, used to show a CVS compilation
+ * extra version information, used to show a Git commit description
  */
 #define	LIBXSLT_VERSION_EXTRA ""
 
