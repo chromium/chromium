@@ -2112,10 +2112,8 @@ TEST_F('ChromeVoxEditingTest', 'TableNavigation', function() {
   });
 });
 
-// TODO(crbug.com/1273183): Disabled due to flakiness.
 TEST_F(
-    'ChromeVoxEditingTest', 'DISABLED_InputTextBrailleContractions',
-    function() {
+    'ChromeVoxEditingTest', 'InputTextBrailleContractions', function() {
       const site = `
     <input type=text value="about that"></input>
   `;
@@ -2138,6 +2136,15 @@ TEST_F(
         // Set braille to use 6-dot braille (which is defaulted to UEB grade 2
         // contracted braille).
         localStorage['brailleTable'] = 'en-ueb-g2';
+        BrailleBackground.getInstance().getTranslatorManager().refresh(
+            localStorage['brailleTable']);
+        // Wait for it to be fully refreshed (liblouis loads the new tables, our
+        // translators are re-created).
+        await new Promise(r => {
+          BrailleBackground.getInstance()
+              .getTranslatorManager()
+              .addChangeListener(r);
+        });
 
         async function waitForBrailleDots(expectedDots) {
           return new Promise(r => {
