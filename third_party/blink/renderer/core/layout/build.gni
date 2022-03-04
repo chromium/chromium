@@ -478,6 +478,8 @@ blink_core_sources_layout = [
   "ng/mathml/ng_math_scripts_layout_algorithm.h",
   "ng/mathml/ng_math_space_layout_algorithm.cc",
   "ng/mathml/ng_math_space_layout_algorithm.h",
+  "ng/mathml/ng_math_token_layout_algorithm.cc",
+  "ng/mathml/ng_math_token_layout_algorithm.h",
   "ng/mathml/ng_math_under_over_layout_algorithm.cc",
   "ng/mathml/ng_math_under_over_layout_algorithm.h",
   "ng/mathml/ng_mathml_paint_info.h",
