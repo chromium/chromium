@@ -16,8 +16,6 @@
 -DohHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
 -DohHttpsProtocolUpgradeBrowserTest.NoProtocolUpgrade
 -MemoryTracingTest.BrowserInitiatedDump
--MidiBrowserTest.RequestMIDIAccess
--MidiBrowserTest.SubscribeAll
 -MojoSandboxTest.NotIsProcessSandboxed
 -NetworkServiceDataMigrationBrowserTest.LegacyDataDir
 -NetworkServiceDataMigrationBrowserTest.MigrateThenNoMigrate
