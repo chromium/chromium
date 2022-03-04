@@ -171,7 +171,7 @@ class ListValue;
 //
 //   base::Value GetFoo() {
 //     base::Value::Dict dict;
-//     dict.SetString("mykey", "abc");
+//     dict.Set("mykey", "abc");
 //     return base::Value(std::move(dict));
 //   }
 //
