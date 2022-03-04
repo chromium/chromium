@@ -38,7 +38,10 @@ class WptReportUploader(object):
 
         rv = 0
 
-        builders = [("chromium", "ci", "android-webview-pie-x86-wpt-fyi-rel")]
+        builders = [
+            ("chromium", "ci", "android-webview-pie-x86-wpt-fyi-rel"),
+            ("chromium", "ci", "android-chrome-pie-x86-wpt-fyi-rel"),
+        ]
         for builder in builders:
             reports = []
             _log.info("Uploading report for %s" % builder[2])
