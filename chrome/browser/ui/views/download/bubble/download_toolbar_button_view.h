@@ -35,7 +35,7 @@ class DownloadToolbarButtonView : public ToolbarButton, public DownloadDisplay {
   bool IsShowing() override;
   void Enable() override;
   void Disable() override;
-  void UpdateDownloadIcon(download::DownloadIconState state) override;
+  void UpdateDownloadIcon() override;
   void ShowDetails() override;
 
   // ToolbarButton:
@@ -54,7 +54,6 @@ class DownloadToolbarButtonView : public ToolbarButton, public DownloadDisplay {
   std::unique_ptr<DownloadDisplayController> controller_;
   // Controller for the DownloadBubbleUI, both main view and partial view.
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
-  download::DownloadIconState icon_state_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
 };
 

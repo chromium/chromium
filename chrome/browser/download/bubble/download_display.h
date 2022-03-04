@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_H_
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_H_
 
-#include "chrome/browser/download/bubble/download_icon_state.h"
-
 class DownloadDisplay {
  public:
   // Shows the download display.
@@ -19,8 +17,8 @@ class DownloadDisplay {
   virtual void Enable() = 0;
   // Disables potential actions resulting from clicking the download display.
   virtual void Disable() = 0;
-  // Updates the download icon according to |state|.
-  virtual void UpdateDownloadIcon(download::DownloadIconState state) = 0;
+  // Updates the download icon.
+  virtual void UpdateDownloadIcon() = 0;
   // Shows detailed information on the download display. It can be a popup or
   // dialog other than the main view.
   virtual void ShowDetails() = 0;

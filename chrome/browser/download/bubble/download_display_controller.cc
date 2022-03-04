@@ -13,10 +13,16 @@
 
 namespace {
 
+using DownloadIconState = download::DownloadIconState;
+
 // The amount of time for the toolbar icon to be visible after a download is
 // completed.
 constexpr base::TimeDelta kToolbarIconVisibilityTimeInterval = base::Hours(24);
-}
+
+// The amount of time for the toolbar icon to stay active after a download is
+// completed.
+constexpr base::TimeDelta kToolbarIconActiveTimeInterval = base::Minutes(1);
+}  // namespace
 
 DownloadDisplayController::DownloadDisplayController(
     DownloadDisplay* display,
@@ -57,6 +63,15 @@ void DownloadDisplayController::OnManagerGoingDown(
   }
 }
 
+void DownloadDisplayController::OnButtonPressed() {
+  // If the current state is kComplete, set the icon to inactive because of the
+  // user action.
+  if (icon_info_.icon_state == DownloadIconState::kComplete) {
+    icon_info_.is_active = false;
+  }
+  display_->UpdateDownloadIcon();
+}
+
 void DownloadDisplayController::ShowToolbarButton() {
   if (!display_->IsShowing()) {
     display_->Enable();
@@ -71,16 +86,26 @@ void DownloadDisplayController::HideToolbarButton() {
 }
 
 void DownloadDisplayController::UpdateToolbarButtonState() {
-  download::DownloadIconState icon_state;
-
   if (download_manager_->InProgressCount() > 0) {
     ShowToolbarButton();
-    icon_state = download::DownloadIconState::kProgress;
+    icon_info_.icon_state = DownloadIconState::kProgress;
+    icon_info_.is_active = true;
   } else {
-    icon_state = download::DownloadIconState::kComplete;
+    icon_info_.icon_state = DownloadIconState::kComplete;
+    if (HasRecentCompleteDownload(kToolbarIconActiveTimeInterval)) {
+      icon_info_.is_active = true;
+      ScheduleToolbarInactive(kToolbarIconActiveTimeInterval);
+    } else {
+      icon_info_.is_active = false;
+    }
   }
 
-  display_->UpdateDownloadIcon(icon_state);
+  display_->UpdateDownloadIcon();
+}
+
+void DownloadDisplayController::UpdateDownloadIconToInactive() {
+  icon_info_.is_active = false;
+  display_->UpdateDownloadIcon();
 }
 
 void DownloadDisplayController::ScheduleToolbarDisappearance(
@@ -90,23 +115,50 @@ void DownloadDisplayController::ScheduleToolbarDisappearance(
       FROM_HERE, interval, this, &DownloadDisplayController::HideToolbarButton);
 }
 
+void DownloadDisplayController::ScheduleToolbarInactive(
+    base::TimeDelta interval) {
+  icon_inactive_timer_.Stop();
+  icon_inactive_timer_.Start(
+      FROM_HERE, interval, this,
+      &DownloadDisplayController::UpdateDownloadIconToInactive);
+}
+
 void DownloadDisplayController::MaybeShowButtonWhenCreated() {
+  if (!HasRecentCompleteDownload(kToolbarIconVisibilityTimeInterval)) {
+    return;
+  }
+  // If the last download complete time is less than
+  // `kToolbarIconVisibilityTimeInterval` ago, show the button immediately.
+  ShowToolbarButton();
+  icon_info_.icon_state = DownloadIconState::kComplete;
+  // The initial state should be inactive, because there is no active
+  // download.
+  icon_info_.is_active = false;
+  display_->UpdateDownloadIcon();
+
+  base::TimeDelta time_since_last_completion =
+      base::Time::Now() - DownloadPrefs::FromDownloadManager(download_manager_)
+                              ->GetLastCompleteTime();
+  ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval -
+                               time_since_last_completion);
+}
+
+bool DownloadDisplayController::HasRecentCompleteDownload(
+    base::TimeDelta interval) {
   base::Time last_complete_time =
       DownloadPrefs::FromDownloadManager(download_manager_)
           ->GetLastCompleteTime();
   base::Time current_time = base::Time::Now();
   base::TimeDelta time_since_last_completion =
       current_time - last_complete_time;
-  // If the last download complete time is less than
-  // `kToolbarIconVisibilityTimeInterval` ago, show the button immediately. Also
-  // check that the current time is not smaller than the last complete time,
-  // this can happen if the system clock has moved backward.
-  if (time_since_last_completion < kToolbarIconVisibilityTimeInterval &&
-      current_time >= last_complete_time) {
-    ShowToolbarButton();
-    ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval -
-                                 time_since_last_completion);
-  }
+  // Also check that the current time is not smaller than the last complete
+  // time, this can happen if the system clock has moved backward.
+  return time_since_last_completion < interval &&
+         current_time >= last_complete_time;
+}
+
+DownloadDisplayController::IconInfo DownloadDisplayController::GetIconInfo() {
+  return icon_info_;
 }
 
 DownloadDisplayController::ProgressInfo

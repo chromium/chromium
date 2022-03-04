@@ -102,9 +102,7 @@ void DownloadToolbarButtonView::Disable() {
   SetEnabled(false);
 }
 
-void DownloadToolbarButtonView::UpdateDownloadIcon(
-    download::DownloadIconState state) {
-  icon_state_ = state;
+void DownloadToolbarButtonView::UpdateDownloadIcon() {
   UpdateIcon();
 }
 
@@ -119,14 +117,15 @@ void DownloadToolbarButtonView::UpdateIcon() {
   // Schedule paint to update the progress ring.
   SchedulePaint();
 
+  DownloadDisplayController::IconInfo icon_info = controller_->GetIconInfo();
   const gfx::VectorIcon* new_icon;
   SkColor icon_color =
-      GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive);
-  if (icon_state_ == download::DownloadIconState::kProgress) {
+      icon_info.is_active
+          ? GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)
+          : GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive);
+  if (icon_info.icon_state == download::DownloadIconState::kProgress) {
     new_icon = &kDownloadInProgressIcon;
   } else {
-    // TODO(crbug.com/1282240): Change the color to inactive if the download was
-    // completed for more than 1 minute or the button was pressed.
     new_icon = &kDownloadToolbarButtonIcon;
   }
 
@@ -177,6 +176,7 @@ void DownloadToolbarButtonView::ButtonPressed() {
     views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
     bubble_delegate_->GetWidget()->Show();
   }
+  controller_->OnButtonPressed();
 }
 
 BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)
