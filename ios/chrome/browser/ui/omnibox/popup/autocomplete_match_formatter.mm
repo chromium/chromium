@@ -73,13 +73,6 @@ UIColor* DimColorIncognito() {
   return _match.answer.has_value();
 }
 
-- (BOOL)hasImage {
-  BOOL hasAnswerImage =
-      self.hasAnswer && _match.answer->second_line().image_url().is_valid();
-  BOOL hasRichEntityImage = !_match.image_url.is_empty();
-  return hasAnswerImage || hasRichEntityImage;
-}
-
 - (BOOL)isURL {
   return !AutocompleteMatch::IsSearchType(_match.type);
 }
@@ -214,27 +207,6 @@ UIColor* DimColorIncognito() {
          _match.type == AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED;
 }
 
-- (GURL)imageURL {
-  if (self.hasAnswer && _match.answer->second_line().image_url().is_valid()) {
-    return _match.answer->second_line().image_url();
-  } else {
-    return GURL(_match.image_url);
-  }
-}
-
-- (GURL)faviconPageURL {
-  return _match.destination_url;
-}
-
-- (UIImage*)suggestionTypeIcon {
-  DCHECK(
-      !(self.isIncognito && _match.type == AutocompleteMatchType::CALCULATOR))
-      << "Calculator answers are never shown in incognito mode because input "
-         "is never sent to the search provider.";
-  return GetOmniboxSuggestionIconForAutocompleteMatchType(_match.type,
-                                                          self.isStarred);
-}
-
 - (BOOL)isTabMatch {
   return _match.has_tab_match.value_or(false);
 }
@@ -246,7 +218,7 @@ UIColor* DimColorIncognito() {
 }
 
 - (NSString*)commonPrefix {
-  if (![self isTailSuggestion]) {
+  if (!self.isTailSuggestion) {
     return @"";
   }
   return base::SysUTF16ToNSString(_match.tail_suggest_common_prefix);

@@ -43,10 +43,10 @@ struct PopupMatchRowView: View {
         Spacer().frame(width: Dimensions.leadingSpacing)
         VStack(alignment: .leading, spacing: 0) {
           VStack(alignment: .leading, spacing: 0) {
-            Text(match.title)
+            Text(match.text)
               .lineLimit(1)
 
-            if let subtitle = match.subtitle, !subtitle.isEmpty {
+            if let subtitle = match.detailText, !subtitle.isEmpty {
               Text(subtitle)
                 .font(.footnote)
                 .foregroundColor(Color.gray)

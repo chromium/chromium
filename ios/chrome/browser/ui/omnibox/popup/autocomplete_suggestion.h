@@ -7,61 +7,40 @@
 
 #import <UIKit/UIKit.h>
 
-#ifdef __cplusplus
-class GURL;
-#endif
-
 @protocol OmniboxIcon;
 
 // Represents an autocomplete suggestion in UI.
 @protocol AutocompleteSuggestion <NSObject>
 // Some suggestions can be deleted with a swipe-to-delete gesture.
-- (BOOL)supportsDeletion;
+@property(nonatomic, readonly) BOOL supportsDeletion;
 // Some suggestions are answers that are displayed inline, such as for weather
 // or calculator.
-- (BOOL)hasAnswer;
+@property(nonatomic, readonly) BOOL hasAnswer;
 // Some suggestions represent a URL, for example the ones from history.
-- (BOOL)isURL;
+@property(nonatomic, readonly) BOOL isURL;
 // Some suggestions can be appended to omnibox text in order to refine the
 // query or URL.
-- (BOOL)isAppendable;
-// The leading image for this suggestion type (loupe, globe, etc). The returned
-// image is in template rendering mode, it is expected to be tinted by the image
-// view.
-- (UIImage*)suggestionTypeIcon;
+@property(nonatomic, readonly) BOOL isAppendable;
 // Some suggestions are opened in an other tab.
-- (BOOL)isTabMatch;
+@property(nonatomic, readonly) BOOL isTabMatch;
 
 // Text of the suggestion.
-- (NSAttributedString*)text;
+@property(nonatomic, readonly) NSAttributedString* text;
 // Second line of text.
-- (NSAttributedString*)detailText;
+@property(nonatomic, readonly) NSAttributedString* detailText;
 // Suggested number of lines to format |detailText|.
-- (NSInteger)numberOfLines;
+@property(nonatomic, readonly) NSInteger numberOfLines;
 
-// Wether the suggestion has a downloadable image.
-- (BOOL)hasImage;
-
-// Image loading is treated differently in SwiftUI, so these fields are
-// unnecessary.
-#ifdef __cplusplus
-
-// URL of the image, if |hasImage| is true.
-- (GURL)imageURL;
-// Page URL to be used to retrieve the favicon.
-- (GURL)faviconPageURL;
-#endif
-
-- (id<OmniboxIcon>)icon;
+@property(nonatomic, readonly) id<OmniboxIcon> icon;
 
 #pragma mark tail suggest
 
 // Yes if this is a tail suggestion. Used by the popup to display according to
 // tail suggest standards.
-- (BOOL)isTailSuggestion;
+@property(nonatomic, readonly) BOOL isTailSuggestion;
 
 // Common prefix for tail suggestions. Empty otherwise.
-- (NSString*)commonPrefix;
+@property(nonatomic, readonly) NSString* commonPrefix;
 
 @end
 

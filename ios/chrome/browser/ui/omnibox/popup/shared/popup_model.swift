@@ -17,7 +17,7 @@ import UIKit
   // MARK: AutocompleteResultConsumer
 
   public func updateMatches(_ matches: [AutocompleteSuggestion], withAnimation: Bool) {
-    self.matches = matches.map(PopupMatch.init(match:))
+    self.matches = matches.map { match in PopupMatch(suggestion: match, pedal: nil) }
   }
 
   public func setTextAlignment(_ alignment: NSTextAlignment) {}

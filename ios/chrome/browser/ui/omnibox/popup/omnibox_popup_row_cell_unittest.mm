@@ -19,15 +19,11 @@
 @property(nonatomic, assign) BOOL supportsDeletion;
 @property(nonatomic, assign) BOOL hasAnswer;
 @property(nonatomic, assign) BOOL isURL;
-@property(nonatomic, assign, getter=isAppendable) BOOL appendable;
-@property(nonatomic, strong) UIImage* suggestionTypeIcon;
+@property(nonatomic, assign) BOOL isAppendable;
 @property(nonatomic, assign) BOOL isTabMatch;
 @property(nonatomic, strong) NSAttributedString* text;
 @property(nonatomic, strong) NSAttributedString* detailText;
 @property(nonatomic, assign) NSInteger numberOfLines;
-@property(nonatomic, assign) BOOL hasImage;
-@property(nonatomic, assign) GURL imageURL;
-@property(nonatomic, assign) GURL faviconPageURL;
 @property(nonatomic, strong) id<OmniboxIcon> icon;
 @property(nonatomic, assign) BOOL isTailSuggestion;
 @property(nonatomic, assign) NSString* commonPrefix;

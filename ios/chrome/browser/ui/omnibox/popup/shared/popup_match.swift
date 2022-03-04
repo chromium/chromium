@@ -5,104 +5,101 @@
 import Foundation
 
 @objcMembers public class PopupMatch: NSObject, Identifiable {
-  let title: String
-  let subtitle: String?
-  let url: URL?
+  // The underlying suggestion backing all the data.
+  let suggestion: AutocompleteSuggestion
+
+  var text: String {
+    return suggestion.text?.string ?? ""
+  }
+
+  var detailText: String? {
+    return suggestion.detailText?.string
+  }
 
   /// Some suggestions can be appended to omnibox text in order to refine the query or URL.
-  let isAppendable: Bool
+  var isAppendable: Bool {
+    return suggestion.isAppendable
+  }
 
   /// Some suggestions are opened in another tab.
-  let isTabMatch: Bool
+  var isTabMatch: Bool {
+    return suggestion.isTabMatch
+  }
 
   /// Some suggestions can be deleted with a swipe-to-delete gesture.
-  let supportsDeletion: Bool
+  var supportsDeletion: Bool {
+    return suggestion.supportsDeletion
+  }
 
   let pedal: Pedal?
 
-  public init(match: AutocompleteSuggestion) {
-    self.title = match.text().string
-    self.subtitle = match.detailText()?.string
-    self.isAppendable = match.isAppendable()
-    self.isTabMatch = match.isTabMatch()
-    self.supportsDeletion = match.supportsDeletion()
-    self.pedal = nil
-    self.url = nil  // TODO: remove url
-  }
-
-  public init(
-    title: String, subtitle: String? = nil, url: URL?, isAppendable: Bool, isTabMatch: Bool,
-    supportsDeletion: Bool, pedal: Pedal?
-  ) {
-    self.title = title
-    self.subtitle = subtitle
-    self.url = url
-    self.isAppendable = isAppendable
-    self.isTabMatch = isTabMatch
-    self.supportsDeletion = supportsDeletion
+  public init(suggestion: AutocompleteSuggestion, pedal: Pedal? = nil) {
+    self.suggestion = suggestion
     self.pedal = pedal
   }
 
   public var id: String {
-    return title
+    return text
   }
 }
 
 extension PopupMatch {
+  class FakeAutocompleteSuggestion: NSObject, AutocompleteSuggestion {
+    let text: NSAttributedString?
+    let detailText: NSAttributedString?
+    let isAppendable: Bool
+    let isTabMatch: Bool
+    let supportsDeletion: Bool
+
+    let hasAnswer = false
+    let isURL = false
+    let numberOfLines = 1
+    let icon: OmniboxIcon? = nil
+    let isTailSuggestion = false
+    let commonPrefix = ""
+
+    init(
+      text: String, detailText: String? = nil, isAppendable: Bool = false, isTabMatch: Bool = false,
+      supportsDeletion: Bool = false
+    ) {
+      self.text = NSAttributedString(string: text, attributes: [:])
+      self.detailText = detailText.flatMap { string in
+        NSAttributedString(string: string, attributes: [:])
+      }
+      self.isAppendable = isAppendable
+      self.isTabMatch = isTabMatch
+      self.supportsDeletion = supportsDeletion
+    }
+  }
+
   static let short = PopupMatch(
-    title: "Google",
-    subtitle: "google.com",
-    url: URL(string: "http://www.google.com"),
-    isAppendable: false,
-    isTabMatch: false,
-    supportsDeletion: false,
-    pedal: nil)
+    suggestion: FakeAutocompleteSuggestion(
+      text: "Google",
+      detailText: "google.com"))
   static let long = PopupMatch(
-    title: "1292459 - Overflow menu is displayed on top of NTP ...",
-    subtitle: "bugs.chromium.org/p/chromium/issues/detail?id=1292459",
-    url: URL(string: "https://bugs.chromium.org/p/chromium/issues/detail?id=1292459"),
-    isAppendable: false,
-    isTabMatch: false,
-    supportsDeletion: false,
-    pedal: nil)
+    suggestion: FakeAutocompleteSuggestion(
+      text: "1292459 - Overflow menu is displayed on top of NTP ...",
+      detailText: "bugs.chromium.org/p/chromium/issues/detail?id=1292459"))
   static let pedal = PopupMatch(
-    title: "clear browsing data",
-    url: nil,
-    isAppendable: false,
-    isTabMatch: false,
-    supportsDeletion: false,
-    pedal: Pedal(title: "Clear Browsing Data"))
-  static let appendable = PopupMatch(
-    title: "is appendable",
-    subtitle: nil,
-    url: nil,
-    isAppendable: true,
-    isTabMatch: false,
-    supportsDeletion: false,
-    pedal: nil)
-  static let tab_match = PopupMatch(
-    title: "Home",
-    subtitle: "https://chromium.org/chromium-projects/",
-    url: nil,
-    isAppendable: false,
-    isTabMatch: true,
-    supportsDeletion: false,
-    pedal: nil)
-  static let added = PopupMatch(
-    title: "New Match",
-    subtitle: "a new match",
-    url: nil,
-    isAppendable: false,
-    isTabMatch: false,
-    supportsDeletion: false,
+    suggestion: FakeAutocompleteSuggestion(
+      text: "clear browsing data"),
     pedal: Pedal(title: "Click here"))
-  static let supports_deletion = PopupMatch(
-    title: "supports deletion",
-    subtitle: nil,
-    url: nil,
-    isAppendable: true,
-    isTabMatch: false,
-    supportsDeletion: true,
-    pedal: nil)
-  static let previews = [short, long, pedal, appendable, tab_match, supports_deletion]
+  static let appendable = PopupMatch(
+    suggestion: FakeAutocompleteSuggestion(
+      text: "is appendable",
+      isAppendable: true))
+  static let tabMatch = PopupMatch(
+    suggestion: FakeAutocompleteSuggestion(
+      text: "Home",
+      isTabMatch: true))
+  static let added = PopupMatch(
+    suggestion: FakeAutocompleteSuggestion(
+      text: "New Match"),
+    pedal: Pedal(title: "Click here"))
+  static let supportsDeletion = PopupMatch(
+    suggestion: FakeAutocompleteSuggestion(
+      text: "supports deletion",
+      isAppendable: true,
+      supportsDeletion: true))
+  static let previews = [short, long, pedal, appendable, tabMatch, supportsDeletion]
 }

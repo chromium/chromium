@@ -272,6 +272,12 @@ NSAttributedString* calculatorText() {
 }
 }  // namespace
 
+@interface FakeAutocompleteSuggestion ()
+
+@property(nonatomic, copy, readwrite) NSString* commonPrefix;
+
+@end
+
 @implementation FakeAutocompleteSuggestion
 
 - (instancetype)init {
