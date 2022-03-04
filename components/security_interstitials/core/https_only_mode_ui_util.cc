@@ -11,8 +11,6 @@
 
 void PopulateHttpsOnlyModeStringsForBlockingPage(base::Value* load_time_data,
                                                  const GURL& url) {
-  PopulateHttpsOnlyModeStringsForSharedHTML(load_time_data);
-
   load_time_data->SetStringKey(
       "tabTitle", l10n_util::GetStringUTF16(IDS_HTTPS_ONLY_MODE_TITLE));
   load_time_data->SetStringKey(
