@@ -463,9 +463,6 @@ void PredictionManager::OnModelsFetched(
     UpdatePredictionModels((*get_models_response_data)->models());
   }
 
-  // Purge any inactive models from the store.
-  model_and_features_store_->PurgeInactiveModels();
-
   fetch_timer_.Stop();
   ScheduleModelsFetch();
 }
@@ -518,7 +515,9 @@ void PredictionManager::UpdatePredictionModels(
     // will be removed from store if it fails to load.
     prediction_model_update_data->CopyPredictionModelIntoUpdateData(model);
     RecordModelUpdateVersion(model.model_info());
-    OnLoadPredictionModel(std::make_unique<proto::PredictionModel>(model));
+    OnLoadPredictionModel(model.model_info().optimization_target(),
+                          /*record_availability_metrics=*/false,
+                          std::make_unique<proto::PredictionModel>(model));
 
     if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
       OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
@@ -567,7 +566,9 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
 
   if (registered_optimization_targets_and_metadata_.contains(
           model.model_info().optimization_target())) {
-    OnLoadPredictionModel(std::make_unique<proto::PredictionModel>(model));
+    OnLoadPredictionModel(model.model_info().optimization_target(),
+                          /*record_availability_metrics=*/false,
+                          std::make_unique<proto::PredictionModel>(model));
   }
 }
 
@@ -619,6 +620,9 @@ void PredictionManager::OnStoreInitialized(
     prediction_model_download_manager_->AddObserver(this);
   }
 
+  // Purge any inactive models from the store.
+  model_and_features_store_->PurgeInactiveModels();
+
   // Only load models if there are optimization targets registered.
   if (registered_optimization_targets_and_metadata_.empty())
     return;
@@ -639,7 +643,9 @@ void PredictionManager::LoadPredictionModels(
       std::unique_ptr<proto::PredictionModel> prediction_model =
           BuildPredictionModelFromCommandLineForOptimizationTarget(
               optimization_target);
-      OnLoadPredictionModel(std::move(prediction_model));
+      OnLoadPredictionModel(optimization_target,
+                            /*record_availability_metrics=*/false,
+                            std::move(prediction_model));
       RecordModelAvailableAtRegistration(optimization_target,
                                          prediction_model != nullptr);
     }
@@ -656,25 +662,34 @@ void PredictionManager::LoadPredictionModels(
     bool model_stored_locally =
         model_and_features_store_->FindPredictionModelEntryKey(
             optimization_target, &model_entry_key);
-    RecordModelAvailableAtRegistration(optimization_target,
-                                       model_stored_locally);
     if (!model_stored_locally) {
+      RecordModelAvailableAtRegistration(optimization_target,
+                                         model_stored_locally);
       continue;
     }
     model_and_features_store_->LoadPredictionModel(
         model_entry_key,
         base::BindOnce(&PredictionManager::OnLoadPredictionModel,
-                       ui_weak_ptr_factory_.GetWeakPtr()));
+                       ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
+                       /*record_availability_metrics=*/true));
   }
 }
 
 void PredictionManager::OnLoadPredictionModel(
+    proto::OptimizationTarget optimization_target,
+    bool record_availability_metrics,
     std::unique_ptr<proto::PredictionModel> model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!model)
+  if (!model) {
+    if (record_availability_metrics) {
+      RecordModelAvailableAtRegistration(optimization_target, false);
+    }
     return;
-
+  }
   bool success = ProcessAndStoreLoadedModel(*model);
+  DCHECK_EQ(optimization_target, model->model_info().optimization_target());
+  if (record_availability_metrics)
+    RecordModelAvailableAtRegistration(optimization_target, success);
   OnProcessLoadedModel(*model, success);
 }
 

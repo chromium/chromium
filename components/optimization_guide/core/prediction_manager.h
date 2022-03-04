@@ -174,8 +174,10 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // Callback run after a prediction model is loaded from the store.
   // |prediction_model| is used to construct a PredictionModel capable of making
-  // prediction for the appropriate optimization target.
+  // prediction for the appropriate |optimization_target|.
   void OnLoadPredictionModel(
+      proto::OptimizationTarget optimization_target,
+      bool record_availability_metrics,
       std::unique_ptr<proto::PredictionModel> prediction_model);
 
   // Process loaded |model| into memory. Return true if a prediction
