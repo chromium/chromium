@@ -355,6 +355,7 @@ public class ExternalNavigationHandler {
             Intent targetIntent, GURL browserFallbackUrl, boolean canLaunchExternalFallback) {
         if (browserFallbackUrl.isEmpty()
                 || (params.getRedirectHandler() != null
+                        && params.getRedirectHandler().isOnNavigation()
                         // For instance, if this is a chained fallback URL, we ignore it.
                         && params.getRedirectHandler().shouldNotOverrideUrlLoading())) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -409,7 +410,7 @@ public class ExternalNavigationHandler {
         // Otherwise, it can be used in chain for fingerprinting multiple app installation
         // status in one shot. In order to prevent this scenario, we notify redirection
         // handler that redirection from the current navigation should stay in this app.
-        if (params.getRedirectHandler() != null
+        if (params.getRedirectHandler() != null && params.getRedirectHandler().isOnNavigation()
                 && !params.getRedirectHandler()
                             .getAndClearShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain()) {
             params.getRedirectHandler().setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
