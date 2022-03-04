@@ -4,6 +4,7 @@
 
 #include "content/test/attribution_simulator_input_parser.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <ostream>
@@ -11,8 +12,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
@@ -22,12 +26,57 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
 namespace {
+
+using Context = absl::variant<base::StringPiece, size_t>;
+using ContextPath = std::vector<Context>;
+
+class ScopedContext {
+ public:
+  ScopedContext(ContextPath& path, Context context) : path_(path) {
+    path_.push_back(context);
+  }
+
+  ~ScopedContext() { path_.pop_back(); }
+
+  ScopedContext(const ScopedContext&) = delete;
+  ScopedContext(ScopedContext&&) = delete;
+
+  ScopedContext& operator=(const ScopedContext&) = delete;
+  ScopedContext& operator=(ScopedContext&&) = delete;
+
+ private:
+  ContextPath& path_;
+};
+
+// Writes a newline on destruction.
+class ErrorWriter {
+ public:
+  explicit ErrorWriter(std::ostream& stream) : stream_(stream) {}
+
+  ~ErrorWriter() { stream_ << std::endl; }
+
+  ErrorWriter(const ErrorWriter&) = delete;
+  ErrorWriter(ErrorWriter&&) = default;
+
+  ErrorWriter& operator=(const ErrorWriter&) = delete;
+  ErrorWriter& operator=(ErrorWriter&&) = delete;
+
+  std::ostream& operator*() { return stream_; }
+
+  void operator()(base::StringPiece key) { stream_ << "[\"" << key << "\"]"; }
+
+  void operator()(size_t index) { stream_ << '[' << index << ']'; }
+
+ private:
+  std::ostream& stream_;
+};
 
 class AttributionSimulatorInputParser {
  public:
@@ -51,9 +100,21 @@ class AttributionSimulatorInputParser {
     if (!EnsureDictionary(input))
       return absl::nullopt;
 
-    ParseList(input, "sources", &AttributionSimulatorInputParser::ParseSource);
-    ParseList(input, "triggers",
-              &AttributionSimulatorInputParser::ParseTrigger);
+    static constexpr char kKeySources[] = "sources";
+    if (base::Value* sources = input.FindKey(kKeySources)) {
+      auto context = PushContext(kKeySources);
+      ParseList(*sources, base::BindRepeating(
+                              &AttributionSimulatorInputParser::ParseSource,
+                              base::Unretained(this)));
+    }
+
+    static constexpr char kKeyTriggers[] = "triggers";
+    if (base::Value* triggers = input.FindKey(kKeyTriggers)) {
+      auto context = PushContext(kKeyTriggers);
+      ParseList(*triggers, base::BindRepeating(
+                               &AttributionSimulatorInputParser::ParseTrigger,
+                               base::Unretained(this)));
+    }
 
     if (has_error_)
       return absl::nullopt;
@@ -65,48 +126,45 @@ class AttributionSimulatorInputParser {
   const base::Time offset_time_;
   std::ostream& error_stream_;
 
-  base::StringPiece context_ = "input root";
-  absl::optional<size_t> context_index_;
+  ContextPath context_path_;
   bool has_error_ = false;
   std::vector<AttributionSimulationEventAndValue> events_;
 
-  // Returns an ostream& for callers to append detailed error information to.
-  std::ostream& Error() {
+  ScopedContext PushContext(Context context) {
+    return ScopedContext(context_path_, context);
+  }
+
+  ErrorWriter Error() {
     has_error_ = true;
-    error_stream_ << context_;
 
-    if (context_index_.has_value())
-      error_stream_ << "[" << *context_index_ << "]";
+    if (context_path_.empty())
+      error_stream_ << "input root";
 
-    return error_stream_ << ": ";
+    ErrorWriter writer(error_stream_);
+    for (Context context : context_path_) {
+      absl::visit(writer, context);
+    }
+
+    error_stream_ << ": ";
+    return writer;
   }
 
-  using ParseListMethod =
-      void (AttributionSimulatorInputParser::*)(base::Value&&);
-
-  void ParseList(base::Value& input,
-                 base::StringPiece key,
-                 ParseListMethod parse) {
-    context_ = key;
-    context_index_ = absl::nullopt;
-
-    base::Value* values = input.FindKey(context_);
-    if (!values)
-      return;
-
-    if (!values->is_list()) {
-      Error() << "must be a list" << std::endl;
+  void ParseList(base::Value& values,
+                 base::RepeatingCallback<void(base::Value)> callback) {
+    if (!values.is_list()) {
+      *Error() << "must be a list";
       return;
     }
 
-    context_index_ = 0;
-    for (base::Value& value : values->GetListDeprecated()) {
-      (this->*parse)(std::move(value));
-      (*context_index_)++;
+    size_t index = 0;
+    for (base::Value& value : values.GetList()) {
+      auto index_context = PushContext(index);
+      callback.Run(std::move(value));
+      index++;
     }
   }
 
-  void ParseSource(base::Value&& source) {
+  void ParseSource(base::Value source) {
     if (!EnsureDictionary(source))
       return;
 
@@ -116,7 +174,7 @@ class AttributionSimulatorInputParser {
     absl::optional<CommonSourceInfo::SourceType> source_type =
         ParseSourceType(source);
 
-    const base::Value* cfg = ParseRegistrationConfig(source);
+    base::Value* cfg = ParseRegistrationConfig(source);
     if (!cfg)
       return;
 
@@ -143,7 +201,7 @@ class AttributionSimulatorInputParser {
         std::move(source));
   }
 
-  void ParseTrigger(base::Value&& trigger) {
+  void ParseTrigger(base::Value trigger) {
     if (!EnsureDictionary(trigger))
       return;
 
@@ -179,23 +237,25 @@ class AttributionSimulatorInputParser {
   }
 
   url::Origin ParseOrigin(const base::Value& dict, base::StringPiece key) {
+    auto context = PushContext(key);
+
     url::Origin origin;
 
     if (const std::string* v = dict.FindStringKey(key))
       origin = url::Origin::Create(GURL(*v));
 
     if (origin.opaque())
-      Error() << key << " must be a valid origin" << std::endl;
+      *Error() << "must be a valid origin";
 
     return origin;
   }
 
   base::Time ParseTime(const base::Value& dict, base::StringPiece key) {
+    auto context = PushContext(key);
+
     absl::optional<int> v = dict.FindIntKey(key);
     if (!v) {
-      Error() << key
-              << " must be an integer number of seconds since the Unix epoch"
-              << std::endl;
+      *Error() << "must be an integer number of seconds since the Unix epoch";
       return base::Time();
     }
 
@@ -203,23 +263,23 @@ class AttributionSimulatorInputParser {
   }
 
   uint64_t ParseUint64(const std::string* s, base::StringPiece key) {
+    auto context = PushContext(key);
+
     uint64_t value = 0;
 
-    if (!s || !base::StringToUint64(*s, &value)) {
-      Error() << key << " must be a uint64 formatted as a base-10 string"
-              << std::endl;
-    }
+    if (!s || !base::StringToUint64(*s, &value))
+      *Error() << "must be a uint64 formatted as a base-10 string";
 
     return value;
   }
 
   int64_t ParseInt64(const std::string* s, base::StringPiece key) {
+    auto context = PushContext(key);
+
     int64_t value = 0;
 
-    if (!s || !base::StringToInt64(*s, &value)) {
-      Error() << key << " must be an int64 formatted as a base-10 string"
-              << std::endl;
-    }
+    if (!s || !base::StringToInt64(*s, &value))
+      *Error() << "must be an int64 formatted as a base-10 string";
 
     return value;
   }
@@ -252,6 +312,8 @@ class AttributionSimulatorInputParser {
     static constexpr char kNavigation[] = "navigation";
     static constexpr char kEvent[] = "event";
 
+    auto context = PushContext(kKey);
+
     absl::optional<CommonSourceInfo::SourceType> source_type;
 
     if (const std::string* v = dict.FindStringKey(kKey)) {
@@ -263,68 +325,70 @@ class AttributionSimulatorInputParser {
     }
 
     if (!source_type) {
-      Error() << kKey << " must be either \"" << kNavigation << "\" or \""
-              << kEvent << "\"" << std::endl;
+      *Error() << "must be either \"" << kNavigation << "\" or \"" << kEvent
+               << "\"";
     }
 
     return source_type;
   }
 
-  const base::Value* ParseRegistrationConfig(const base::Value& dict) {
+  base::Value* ParseRegistrationConfig(base::Value& dict) {
     static constexpr char kKey[] = "registration_config";
 
-    const base::Value* cfg = dict.FindDictKey(kKey);
-    if (!cfg)
-      Error() << kKey << " must be a dictionary" << std::endl;
+    auto context = PushContext(kKey);
+
+    base::Value* cfg = dict.FindKey(kKey);
+    if (!cfg) {
+      *Error() << "must be present";
+      return nullptr;
+    }
+
+    if (!EnsureDictionary(*cfg))
+      return nullptr;
 
     return cfg;
   }
 
-  AttributionFilterData ParseFilterData(const base::Value& dict,
+  AttributionFilterData ParseFilterData(base::Value& dict,
                                         base::StringPiece key) {
-    const base::Value* value = dict.FindKey(key);
+    auto context = PushContext(key);
+
+    base::Value* value = dict.FindKey(key);
     if (!value)
       return AttributionFilterData();
 
-    if (!value->is_dict()) {
-      Error() << key << " must be a dictionary";
+    if (!EnsureDictionary(*value))
       return AttributionFilterData();
-    }
 
     AttributionFilterData::FilterValues::container_type container;
-    for (auto [filter, values_list] : value->DictItems()) {
-      if (!values_list.is_list()) {
-        Error() << key << "[\"" << filter << "\"] must be a list" << std::endl;
-        continue;
-      }
-
-      size_t index = 0;
+    for (auto [filter, values_list] : std::move(value->GetDict())) {
+      auto filter_context = PushContext(filter);
       std::vector<std::string> values;
-      for (const auto& value : values_list.GetList()) {
-        if (!value.is_string()) {
-          Error() << key << "[\"" << filter << "\"][" << index
-                  << "] must be a string" << std::endl;
-        } else {
-          values.emplace_back(value.GetString());
-        }
 
-        index++;
-      }
+      ParseList(values_list, base::BindLambdaForTesting([&](base::Value value) {
+                  if (!value.is_string()) {
+                    *Error() << "must be a string";
+                  } else {
+                    values.emplace_back(std::move(value.GetString()));
+                  }
+                }));
 
-      container.emplace_back(filter, std::move(values));
+      container.emplace_back(std::move(filter), std::move(values));
     }
 
     absl::optional<AttributionFilterData> filter_data =
         AttributionFilterData::FromFilterValues(std::move(container));
     // TODO(apaseltiner): Provide more detailed information.
     if (!filter_data)
-      Error() << key << " is too big" << std::endl;
+      *Error() << "too big";
 
     return std::move(filter_data).value_or(AttributionFilterData());
   }
 
   absl::optional<base::TimeDelta> ParseSourceExpiry(const base::Value& dict) {
     static constexpr char kKey[] = "expiry";
+
+    auto context = PushContext(kKey);
 
     const base::Value* value = dict.FindKey(kKey);
     if (!value)
@@ -339,10 +403,8 @@ class AttributionSimulatorInputParser {
     }
 
     if (!expiry || *expiry < base::TimeDelta()) {
-      Error() << kKey
-              << " must be a positive number of milliseconds formatted as a"
-                 " base-10 string"
-              << std::endl;
+      *Error() << "must be a positive number of milliseconds formatted as a "
+                  "base-10 string";
     }
 
     return expiry;
@@ -350,7 +412,7 @@ class AttributionSimulatorInputParser {
 
   bool EnsureDictionary(const base::Value& value) {
     if (!value.is_dict()) {
-      Error() << "must be a dictionary" << std::endl;
+      *Error() << "must be a dictionary";
       return false;
     }
     return true;

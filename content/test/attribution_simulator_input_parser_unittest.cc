@@ -281,7 +281,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json(1)json",
     },
     {
-        "sources[0]: source_type",
+        R"(["sources"][0]["source_type"]: must be either)",
         R"json({"sources": [{
           "source_time": 1643235574,
           "reporting_origin": "https://a.r.test",
@@ -293,7 +293,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: source_time",
+        R"(["sources"][0]["source_time"]: must be an integer number of)",
         R"json({"sources": [{
           "source_type": "navigation",
           "reporting_origin": "https://a.r.test",
@@ -305,7 +305,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: reporting_origin",
+        R"(["sources"][0]["reporting_origin"]: must be a valid origin)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -317,7 +317,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: source_origin",
+        R"(["sources"][0]["source_origin"]: must be a valid origin)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -329,7 +329,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: registration_config",
+        R"(["sources"][0]["registration_config"]: must be present)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -338,7 +338,17 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: source_event_id",
+        R"(["sources"][0]["registration_config"]: must be a dictionary)",
+        R"json({"sources": [{
+          "source_type": "navigation",
+          "source_time": 1643235574,
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test",
+          "registration_config": ""
+        }]})json",
+    },
+    {
+        R"(["sources"][0]["source_event_id"]: must be a uint64 formatted)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -350,7 +360,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: destination",
+        R"(["sources"][0]["destination"]: must be a valid origin)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -362,7 +372,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: source_type",
+        R"(["sources"][0]["source_type"]: must be either)",
         R"json({"sources": [{
           "source_type": "NAVIGATION",
           "source_time": 1643235574,
@@ -375,7 +385,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: expiry",
+        R"(["sources"][0]["expiry"]: must be a positive number of)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -389,7 +399,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: priority",
+        R"(["sources"][0]["priority"]: must be an int64)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -403,7 +413,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: source_event_id",
+        R"(["sources"][0]["source_event_id"]: must be a uint64 formatted)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -416,7 +426,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: filter_data must be a dictionary",
+        R"(["sources"][0]["filter_data"]: must be a dictionary)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -430,7 +440,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: filter_data[\"a\"] must be a list",
+        R"(["sources"][0]["filter_data"]["a"]: must be a list)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -446,7 +456,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources[0]: filter_data[\"a\"][0] must be a string",
+        R"(["sources"][0]["filter_data"]["a"][0]: must be a string)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -462,11 +472,11 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "sources: must be a list",
+        R"(["sources"]: must be a list)",
         R"json({"sources": ""})json",
     },
     {
-        "triggers[0]: registration_config",
+        R"(["triggers"][0]["registration_config"]: must be present)",
         R"json({"triggers": [{
           "trigger_time": 1643235576,
           "reporting_origin": "https://a.r.test",
@@ -474,7 +484,16 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "triggers[0]: trigger_time",
+        R"(["triggers"][0]["registration_config"]: must be a dictionary)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": ""
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["trigger_time"]: must be an integer number of)",
         R"json({"triggers": [{
           "reporting_origin": "https://a.r.test",
           "destination": " https://a.d1.test",
@@ -482,7 +501,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "triggers[0]: destination",
+        R"(["triggers"][0]["destination"]: must be a valid origin)",
         R"json({"triggers": [{
           "trigger_time": 1643235576,
           "reporting_origin": "https://a.r.test",
@@ -490,7 +509,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "triggers[0]: reporting_origin",
+        R"(["triggers"][0]["reporting_origin"]: must be a valid origin)",
         R"json({"triggers": [{
           "trigger_time": 1643235576,
           "destination": " https://a.d1.test",
@@ -498,7 +517,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        "triggers: must be a list",
+        R"(["triggers"]: must be a list)",
         R"json({"triggers": ""})json",
     },
 };
