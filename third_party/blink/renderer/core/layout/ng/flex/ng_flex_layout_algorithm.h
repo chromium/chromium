@@ -79,7 +79,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       Vector<EBreakBetween>* row_break_between_outputs);
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
       HeapVector<NGFlexLine>* flex_line_outputs,
-      Vector<EBreakBetween>* row_break_between_outputs);
+      Vector<EBreakBetween>* row_break_between_outputs,
+      bool* broke_before_row);
   NGLayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
                                                 wtf_size_t flex_line_idx,
                                                 LogicalOffset offset,
@@ -110,7 +111,9 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // break before a child.
   //
   // https://www.w3.org/TR/css-break-3/#box-splitting
-  void ConsumeRemainingFragmentainerSpace();
+  void ConsumeRemainingFragmentainerSpace(
+      LayoutUnit previously_consumed_block_size,
+      NGFlexLine* flex_line);
 
   // Insert a fragmentainer break before a row if necessary. Rows do not produce
   // a layout result, so when breaking before a row, we will insert a

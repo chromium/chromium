@@ -36,9 +36,11 @@ class CORE_EXPORT NGFlexItemIterator {
                      bool is_horizontal_flow);
 
   // Returns the next flex item which should be laid out, along with its
-  // respective break token.
+  // respective break token. |broke_before_row| will be true if the current
+  // flex row broke before, represented by its first child's break token.
+  // |broke_before_row| should always be false for column flex containers.
   struct Entry;
-  Entry NextItem();
+  Entry NextItem(bool broke_before_row);
 
  private:
   NGFlexItem* FindNextItem(const NGBlockBreakToken* item_break_token = nullptr);

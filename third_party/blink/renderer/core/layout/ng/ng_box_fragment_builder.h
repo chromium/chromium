@@ -661,6 +661,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     minimal_space_shortage_ = LayoutUnit::Max();
   }
 
+  bool HasForcedBreak() const { return has_forced_break_; }
+
   void InsertLegacyPositionedObject(const NGBlockNode& positioned) const {
     positioned.InsertIntoLegacyPositionedObjectsOf(
         To<LayoutBlock>(layout_object_));

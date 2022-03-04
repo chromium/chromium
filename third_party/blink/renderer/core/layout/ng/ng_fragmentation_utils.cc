@@ -601,11 +601,8 @@ NGBreakStatus BreakBeforeChildIfNeeded(const NGConstraintSpace& space,
                                        bool is_row_item) {
   DCHECK(space.HasBlockFragmentation());
 
-  // Items in a row should never have container separation.
-  DCHECK(!is_row_item || !has_container_separation);
-
   // Break-before and break-after are handled at the row level.
-  if (has_container_separation) {
+  if (has_container_separation && !is_row_item) {
     EBreakBetween break_between =
         CalculateBreakBetweenValue(child, layout_result, *builder);
     if (IsForcedBreakValue(space, break_between)) {
@@ -619,10 +616,6 @@ NGBreakStatus BreakBeforeChildIfNeeded(const NGConstraintSpace& space,
   NGBreakAppeal appeal_before =
       CalculateBreakAppealBefore(space, child, layout_result, *builder,
                                  has_container_separation, is_row_item);
-#if DCHECK_IS_ON()
-  if (is_row_item)
-    DCHECK_EQ(appeal_before, NGBreakAppeal::kBreakAppealLastResort);
-#endif
 
   // Attempt to move past the break point, and if we can do that, also assess
   // the appeal of breaking there, even if we didn't.

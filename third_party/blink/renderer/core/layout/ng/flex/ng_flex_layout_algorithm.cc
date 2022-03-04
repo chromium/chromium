@@ -838,6 +838,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
 
   Vector<EBreakBetween> row_break_between_outputs;
   HeapVector<NGFlexLine> flex_line_outputs;
+  bool broke_before_row = false;
   ClearCollectionScope<HeapVector<NGFlexLine>> scope(&flex_line_outputs);
 
   bool use_empty_line_block_size;
@@ -847,6 +848,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
     total_intrinsic_block_size_ = flex_data->intrinsic_block_size;
     flex_line_outputs = flex_data->flex_lines;
     row_break_between_outputs = flex_data->row_break_between;
+    broke_before_row = flex_data->broke_before_row;
 
     use_empty_line_block_size =
         flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
@@ -886,7 +888,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
   if (involved_in_block_fragmentation_) {
     NGLayoutResult::EStatus status =
         GiveItemsFinalPositionAndSizeForFragmentation(
-            &flex_line_outputs, &row_break_between_outputs);
+            &flex_line_outputs, &row_break_between_outputs, &broke_before_row);
     if (status != NGLayoutResult::kSuccess)
       return container_builder_.Abort(status);
   }
@@ -953,7 +955,8 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<NGFlexBreakTokenData>(
             container_builder_.GetBreakTokenData(), flex_line_outputs,
-            row_break_between_outputs, total_intrinsic_block_size_));
+            row_break_between_outputs, total_intrinsic_block_size_,
+            broke_before_row));
   }
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
@@ -1241,17 +1244,20 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 NGLayoutResult::EStatus
 NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     HeapVector<NGFlexLine>* flex_line_outputs,
-    Vector<EBreakBetween>* row_break_between_outputs) {
+    Vector<EBreakBetween>* row_break_between_outputs,
+    bool* broke_before_row) {
   DCHECK(involved_in_block_fragmentation_);
+  DCHECK(flex_line_outputs);
+  DCHECK(row_break_between_outputs);
+  DCHECK(broke_before_row);
 
   absl::optional<LayoutUnit> fallback_baseline;
   NGFlexItemIterator item_iterator(*flex_line_outputs, BreakToken(),
                                    is_horizontal_flow_);
-  bool broke_before_row = false;
 
-  for (auto entry = item_iterator.NextItem();
+  for (auto entry = item_iterator.NextItem(*broke_before_row);
        NGFlexItem* flex_item = entry.flex_item;
-       entry = item_iterator.NextItem()) {
+       entry = item_iterator.NextItem(*broke_before_row)) {
     wtf_size_t flex_item_idx = entry.flex_item_idx;
     wtf_size_t flex_line_idx = entry.flex_line_idx;
     NGFlexLine& line_output = (*flex_line_outputs)[flex_line_idx];
@@ -1270,6 +1276,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       break;
     }
 
+    LayoutUnit row_block_offset =
+        is_horizontal_flow_ ? line_output.cross_axis_offset : LayoutUnit();
     LogicalOffset offset = flex_item->offset.ToLogicalOffset(is_column_);
     LayoutUnit previously_consumed_block_size;
     if (BreakToken())
@@ -1278,35 +1286,36 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     // If a row or item broke before, subsequent items and lines need to be
     // adjusted by the expansion amount.
     if (item_break_token && item_break_token->IsBreakBefore()) {
-      if (is_horizontal_flow_) {
+      if (item_break_token->IsForcedBreak()) {
+        // We had previously updated the adjustment to subtract out the total
+        // consumed block size up to the break. Now add the total consumed
+        // block size in the previous fragmentainer to get the total amount
+        // the item or row expanded by. This allows for things like margins
+        // and alignment offsets to not get sliced by a forced break.
+        line_output.item_offset_adjustment += previously_consumed_block_size;
+      } else if (is_horizontal_flow_ && flex_item_idx == 0 &&
+                 *broke_before_row) {
         LayoutUnit total_row_block_offset =
-            line_output.cross_axis_offset + line_output.item_offset_adjustment;
+            row_block_offset + line_output.item_offset_adjustment;
         line_output.item_offset_adjustment +=
             previously_consumed_block_size - total_row_block_offset;
       } else {
         LayoutUnit total_item_block_offset =
             offset.block_offset + line_output.item_offset_adjustment;
-        flex_item->total_remaining_block_size -=
-            previously_consumed_block_size - total_item_block_offset;
+        line_output.item_offset_adjustment +=
+            (previously_consumed_block_size - total_item_block_offset)
+                .ClampNegativeToZero();
       }
     }
 
-    // TODO(almaher): Margins should not be clamped in the case of flexbox.
-    if (item_break_token || broke_before_row) {
-      // We break before the first item in a row to indicate that the whole row
-      // should break before. Make sure that the block-offset for the remaining
-      // items in the row are also set to 0.
+    if (IsResumingLayout(item_break_token)) {
       offset.block_offset = LayoutUnit();
-      if (is_horizontal_flow_ && !broke_before_row &&
-          item_break_token->IsBreakBefore()) {
-        broke_before_row = true;
-      }
     } else if (IsResumingLayout(BreakToken())) {
-      LayoutUnit updated_block_offset = offset.block_offset -
-                                        previously_consumed_block_size +
-                                        line_output.item_offset_adjustment;
-      DCHECK_GE(updated_block_offset, LayoutUnit());
-      offset.block_offset = updated_block_offset;
+      LayoutUnit offset_adjustment =
+          previously_consumed_block_size - line_output.item_offset_adjustment;
+      offset.block_offset -= offset_adjustment;
+      if (is_horizontal_flow_)
+        row_block_offset -= offset_adjustment;
     }
 
     const NGEarlyBreak* early_break_in_child = nullptr;
@@ -1318,7 +1327,10 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         container_builder_.AddBreakBeforeChild(flex_item->ng_input_node,
                                                kBreakAppealPerfect,
                                                /* is_forced_break */ false);
-        ConsumeRemainingFragmentainerSpace();
+        if (early_break_->Type() == NGEarlyBreak::kLine)
+          *broke_before_row = true;
+        ConsumeRemainingFragmentainerSpace(previously_consumed_block_size,
+                                           &line_output);
         return NGLayoutResult::kSuccess;
       } else {
         early_break_in_child =
@@ -1346,20 +1358,24 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     if (!early_break_ && ConstraintSpace().HasBlockFragmentation()) {
       bool has_container_separation = false;
       if (is_horizontal_flow_) {
-        // Items in a row never have container separation. However, the row
-        // itself might. Flex rows do not get laid out, so ensure that if
-        // the row has container separation, that the container identifies the
-        // row as the potential next best breakpoint.
+        has_container_separation =
+            offset.block_offset > row_block_offset &&
+            (!item_break_token || (broke_before_row && flex_item_idx == 0));
         if (flex_item_idx == 0) {
+          // Rows have no layout result, so if the row breaks before, we
+          // will break before the first item in the row instead.
           bool row_container_separation = has_processed_first_line_;
           NGBreakStatus row_break_status = BreakBeforeRowIfNeeded(
               line_output, (*row_break_between_outputs)[flex_line_idx],
               flex_line_idx, flex_item->ng_input_node, *layout_result,
               row_container_separation);
           if (row_break_status == NGBreakStatus::kBrokeBefore) {
-            ConsumeRemainingFragmentainerSpace();
+            ConsumeRemainingFragmentainerSpace(previously_consumed_block_size,
+                                               &line_output);
+            *broke_before_row = true;
             return NGLayoutResult::kSuccess;
           }
+          *broke_before_row = false;
           if (row_break_status == NGBreakStatus::kNeedsEarlierBreak) {
             return NGLayoutResult::kNeedsEarlierBreak;
           }
@@ -1367,7 +1383,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         }
       } else {
         has_container_separation =
-            last_line_idx_to_process_first_child_ == flex_line_idx;
+            last_line_idx_to_process_first_child_ == flex_line_idx ||
+            (!item_break_token && offset.block_offset > LayoutUnit());
       }
       break_status = BreakBeforeChildIfNeeded(
           ConstraintSpace(), flex_item->ng_input_node, *layout_result,
@@ -1376,8 +1393,14 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     if (break_status == NGBreakStatus::kBrokeBefore) {
-      ConsumeRemainingFragmentainerSpace();
-      return NGLayoutResult::kSuccess;
+      ConsumeRemainingFragmentainerSpace(previously_consumed_block_size,
+                                         &line_output);
+      // If we broke before an item in a row container, make sure that all
+      // items in that row have been processed before returning.
+      if (!is_horizontal_flow_ || last_item_in_line)
+        return NGLayoutResult::kSuccess;
+      last_line_idx_to_process_first_child_ = flex_line_idx;
+      continue;
     }
     if (break_status == NGBreakStatus::kNeedsEarlierBreak) {
       return NGLayoutResult::kNeedsEarlierBreak;
@@ -1424,7 +1447,6 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
                                  offset.block_offset, &fallback_baseline);
     }
     if (last_item_in_line) {
-      broke_before_row = false;
       if (!has_processed_first_line_)
         has_processed_first_line_ = true;
 
@@ -1447,7 +1469,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   }
 
   if (!container_builder_.HasInflowChildBreakInside() &&
-      !item_iterator.NextItem().flex_item) {
+      !item_iterator.NextItem(*broke_before_row).flex_item) {
     container_builder_.SetHasSeenAllChildren();
   }
 
@@ -1670,7 +1692,17 @@ LayoutUnit NGFlexLayoutAlgorithm::FragmentainerSpaceAvailable(
       .ClampNegativeToZero();
 }
 
-void NGFlexLayoutAlgorithm::ConsumeRemainingFragmentainerSpace() {
+void NGFlexLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
+    LayoutUnit previously_consumed_block_size,
+    NGFlexLine* flex_line) {
+  if (container_builder_.HasForcedBreak()) {
+    // This will be further adjusted by the total consumed block size once we
+    // handle the break before in the next fragmentainer. This ensures that the
+    // expansion is properly handled in the column balancing pass.
+    flex_line->item_offset_adjustment -=
+        intrinsic_block_size_ + previously_consumed_block_size;
+  }
+
   if (!ConstraintSpace().HasKnownFragmentainerBlockSize())
     return;
   // The remaining part of the fragmentainer (the unusable space for child
