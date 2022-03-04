@@ -32,6 +32,7 @@ import re
 import shlex
 import signal
 import socket
+import struct
 import subprocess
 import syslog
 import tempfile
@@ -590,9 +591,9 @@ class Desktop(abc.ABC):
                        (self.session_proc, "session"),
                        (self.pre_session_proc, "pre-session"),
                        (self.server_proc, "display server")]:
-      logging.info("Shutting down %s: %s", name, proc and proc.pid)
       if proc is not None:
-        logging.info("Sending SIGTERM to %s proc.", name)
+        logging.info("Sending SIGTERM to %s proc (pid=%s)",
+                     name, proc and proc.pid)
         try:
           psutil_proc = psutil.Process(proc.pid)
           psutil_proc.terminate()
@@ -792,8 +793,9 @@ class WaylandDesktop(Desktop):
 
   WL_SOCKET_CHECK_DELAY_SECONDS = 1
   WL_SOCKET_CHECK_TIMEOUT_SECONDS = 30
-  # We scan for the unused socket starting from number 0. If we are not able to
-  # find anything between 0 and 100 then we error out since there could be a
+  WL_SERVER_REPLY_TIMEOUT_SECONDS = 1
+  # We scan for the unused socket starting from number 1. If we are not able to
+  # find anything between 1 and 100 then we error out since there could be a
   # socket leak and we don't want to keep retrying forever.
   MAX_WAYLAND_SOCKET_NUM = 100
 
@@ -878,7 +880,7 @@ class WaylandDesktop(Desktop):
   def _gnome_shell_cmd(self, screen_width=1280, screen_height=720):
     return ["gnome-shell", "--wayland", "--headless", "--virtual-monitor",
             "%sx%s" % (screen_width, screen_height), "--wayland-display",
-            self._wayland_socket, "--no-x11"]
+            self._wayland_socket, "--no-x11", "--replace"]
 
   def _launch_server(self, *args, **kwargs):
     if not self._is_gnome_shell_present():
@@ -978,31 +980,30 @@ class WaylandDesktop(Desktop):
     If the connection succeeds, it means that the server is still up and
     running.
     """
-    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     try:
-      sock.connect(os.path.join(self.runtime_dir, self._wayland_socket))
-      # Asks the server for the global registry object
-      # (See: https://wayland-book.com/registry.html)
-      sock.sendall(struct.pack(">III", 0x00000001, 0x000C0001, 0x00000002))
+      with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+        sock.connect(os.path.join(self.runtime_dir, self._wayland_socket))
+        # Asks the server for the global registry object
+        # (See: https://wayland-book.com/registry.html)
+        sock.sendall(struct.pack("<III", 0x00000001, 0x000C0001, 0x00000002))
 
-      num_bytes_received = 0
-      NUM_BYTES_EXPECTED = 32
-      sock.settimeout(1)  # We don't want to wait forever for a reply
-      while num_bytes_received < NUM_BYTES_EXPECTED:
-          data = sock.recv(NUM_BYTES_EXPECTED)
-          if len(data) == 0:  # Expect empty reply if server dies
-             break
-          num_bytes_received += len(data)
-          logging.debug("Wayland server replied with: %s" % data)
-      if not num_bytes_received:
-        # If we don't receive a reply at all then the server is likely not
-        # listening on the socket.
-        return False
+        num_bytes_received = 0
+        NUM_BYTES_EXPECTED = 32
+        # We don't want to wait forever for a reply so we set a timeout here.
+        sock.settimeout(self.WL_SERVER_REPLY_TIMEOUT_SECONDS)
+        while num_bytes_received < NUM_BYTES_EXPECTED:
+            data = sock.recv(NUM_BYTES_EXPECTED)
+            if len(data) == 0:  # Expect empty reply if server dies
+               break
+            num_bytes_received += len(data)
+            logging.debug("Wayland server replied with: %s" % data)
+        if not num_bytes_received:
+          # If we don't receive a reply at all then the server is likely not
+          # listening on the socket.
+          return False
     except socket.error as err:
         logging.error("Wayland server is not responding: %s" % err)
         return False
-    finally:
-      sock.close()
     return True
 
 
