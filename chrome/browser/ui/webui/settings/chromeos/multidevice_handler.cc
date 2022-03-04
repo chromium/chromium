@@ -31,6 +31,11 @@
 
 namespace chromeos {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace multidevice_setup {
+namespace mojom = ::ash::multidevice_setup::mojom;
+}
+
 namespace settings {
 
 namespace {
@@ -435,14 +440,14 @@ MultideviceHandler::GenerateAndroidSmsInfo() {
       kAndroidSmsInfoOriginKey,
       ContentSettingsPattern::FromURLNoWildcard(*app_url).ToString());
 
-  chromeos::multidevice_setup::mojom::FeatureState messages_state =
+  multidevice_setup::mojom::FeatureState messages_state =
       multidevice_setup_client_->GetFeatureState(
-          chromeos::multidevice_setup::mojom::Feature::kMessages);
+          multidevice_setup::mojom::Feature::kMessages);
   bool enabled_state =
       messages_state ==
-          chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser ||
-      messages_state == chromeos::multidevice_setup::mojom::FeatureState::
-                            kFurtherSetupRequired;
+          multidevice_setup::mojom::FeatureState::kEnabledByUser ||
+      messages_state ==
+          multidevice_setup::mojom::FeatureState::kFurtherSetupRequired;
   android_sms_info->SetBoolKey(kAndroidSmsInfoEnabledKey, enabled_state);
 
   return android_sms_info;

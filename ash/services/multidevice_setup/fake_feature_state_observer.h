@@ -15,7 +15,8 @@ namespace chromeos {
 namespace multidevice_setup {
 
 // Fake mojom::FeatureStateObserver implementation for tests.
-class FakeFeatureStateObserver : public mojom::FeatureStateObserver {
+class FakeFeatureStateObserver
+    : public ash::multidevice_setup::mojom::FeatureStateObserver {
  public:
   FakeFeatureStateObserver();
 
@@ -24,9 +25,12 @@ class FakeFeatureStateObserver : public mojom::FeatureStateObserver {
 
   ~FakeFeatureStateObserver() override;
 
-  mojo::PendingRemote<mojom::FeatureStateObserver> GenerateRemote();
+  mojo::PendingRemote<ash::multidevice_setup::mojom::FeatureStateObserver>
+  GenerateRemote();
 
-  const std::vector<base::flat_map<mojom::Feature, mojom::FeatureState>>&
+  const std::vector<
+      base::flat_map<ash::multidevice_setup::mojom::Feature,
+                     ash::multidevice_setup::mojom::FeatureState>>&
   feature_state_updates() {
     return feature_state_updates_;
   }
@@ -34,13 +38,16 @@ class FakeFeatureStateObserver : public mojom::FeatureStateObserver {
  private:
   // mojom::FeatureStateObserver:
   void OnFeatureStatesChanged(
-      const base::flat_map<mojom::Feature, mojom::FeatureState>&
+      const base::flat_map<ash::multidevice_setup::mojom::Feature,
+                           ash::multidevice_setup::mojom::FeatureState>&
           feature_states_map) override;
 
-  std::vector<base::flat_map<mojom::Feature, mojom::FeatureState>>
+  std::vector<base::flat_map<ash::multidevice_setup::mojom::Feature,
+                             ash::multidevice_setup::mojom::FeatureState>>
       feature_state_updates_;
 
-  mojo::ReceiverSet<mojom::FeatureStateObserver> receivers_;
+  mojo::ReceiverSet<ash::multidevice_setup::mojom::FeatureStateObserver>
+      receivers_;
 };
 
 }  // namespace multidevice_setup

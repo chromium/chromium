@@ -179,7 +179,7 @@ void ChromeShellDelegate::BindFingerprint(
 }
 
 void ChromeShellDelegate::BindMultiDeviceSetup(
-    mojo::PendingReceiver<chromeos::multidevice_setup::mojom::MultiDeviceSetup>
+    mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
         receiver) {
   chromeos::multidevice_setup::MultiDeviceSetupService* service =
       chromeos::multidevice_setup::MultiDeviceSetupServiceFactory::

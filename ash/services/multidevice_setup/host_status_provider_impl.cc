@@ -19,6 +19,9 @@ namespace multidevice_setup {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::multidevice_setup::mojom;
+
 constexpr base::TimeDelta kHostStatusLoggingPeriod = base::Minutes(30);
 
 }  // namespace

@@ -9,8 +9,8 @@ namespace phonehub {
 
 namespace {
 
-using ::chromeos::multidevice_setup::mojom::Feature;
-using ::chromeos::multidevice_setup::mojom::FeatureState;
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 
 }  // namespace
 

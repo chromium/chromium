@@ -18,6 +18,9 @@ namespace chromeos {
 namespace multidevice_setup {
 
 namespace {
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::multidevice_setup::mojom;
+
 const base::Time kTestTime = base::Time::FromJavaTime(1500000000000);
 const base::Time kLaterTime = kTestTime + base::Milliseconds(123456789);
 }  // namespace

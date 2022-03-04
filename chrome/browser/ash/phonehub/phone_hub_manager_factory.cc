@@ -41,8 +41,7 @@ content::BrowserContext* g_context_for_service = nullptr;
 
 bool IsProhibitedByPolicy(Profile* profile) {
   return !multidevice_setup::IsFeatureAllowed(
-      chromeos::multidevice_setup::mojom::Feature::kPhoneHub,
-      profile->GetPrefs());
+      multidevice_setup::mojom::Feature::kPhoneHub, profile->GetPrefs());
 }
 
 bool IsLoggedInAsPrimaryUser(Profile* profile) {

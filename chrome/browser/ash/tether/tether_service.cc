@@ -310,8 +310,8 @@ void TetherService::UpdateEnabledState() {
 
   if (is_enabled != was_pref_enabled) {
     multidevice_setup_client_->SetFeatureEnabledState(
-        chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-        is_enabled, absl::nullopt /* auth_token */, base::DoNothing());
+        multidevice_setup::mojom::Feature::kInstantTethering, is_enabled,
+        absl::nullopt /* auth_token */, base::DoNothing());
   } else {
     UpdateTetherTechnologyState();
   }
@@ -340,19 +340,18 @@ void TetherService::OnReady() {
 void TetherService::OnFeatureStatesChanged(
     const chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
-  const chromeos::multidevice_setup::mojom::FeatureState new_state =
+  const multidevice_setup::mojom::FeatureState new_state =
       feature_states_map
-          .find(chromeos::multidevice_setup::mojom::Feature::kInstantTethering)
+          .find(multidevice_setup::mojom::Feature::kInstantTethering)
           ->second;
 
   // If the feature changed from enabled to disabled or vice-versa, log the
   // associated metric.
-  if (new_state ==
-          chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser &&
+  if (new_state == multidevice_setup::mojom::FeatureState::kEnabledByUser &&
       previous_feature_state_ == TetherFeatureState::USER_PREFERENCE_DISABLED) {
     LogUserPreferenceChanged(true /* is_now_enabled */);
-  } else if (new_state == chromeos::multidevice_setup::mojom::FeatureState::
-                              kDisabledByUser &&
+  } else if (new_state ==
+                 multidevice_setup::mojom::FeatureState::kDisabledByUser &&
              previous_feature_state_ == TetherFeatureState::ENABLED) {
     LogUserPreferenceChanged(false /* is_now_enabled */);
   }
@@ -527,37 +526,34 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
   if (!IsBluetoothPowered())
     return BLUETOOTH_DISABLED;
 
-  chromeos::multidevice_setup::mojom::FeatureState tether_multidevice_state =
+  multidevice_setup::mojom::FeatureState tether_multidevice_state =
       multidevice_setup_client_->GetFeatureState(
-          chromeos::multidevice_setup::mojom::Feature::kInstantTethering);
+          multidevice_setup::mojom::Feature::kInstantTethering);
   switch (tether_multidevice_state) {
-    case chromeos::multidevice_setup::mojom::FeatureState::kProhibitedByPolicy:
+    case multidevice_setup::mojom::FeatureState::kProhibitedByPolicy:
       return PROHIBITED;
-    case chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser:
+    case multidevice_setup::mojom::FeatureState::kDisabledByUser:
       return USER_PREFERENCE_DISABLED;
-    case chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser:
+    case multidevice_setup::mojom::FeatureState::kEnabledByUser:
       return ENABLED;
-    case chromeos::multidevice_setup::mojom::FeatureState::
-        kUnavailableSuiteDisabled:
+    case multidevice_setup::mojom::FeatureState::kUnavailableSuiteDisabled:
       return BETTER_TOGETHER_SUITE_DISABLED;
-    case chromeos::multidevice_setup::mojom::FeatureState::
-        kUnavailableNoVerifiedHost:
+    case multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost:
       // Note that because of the early return above after
       // !HasSyncedTetherHosts, if this point is hit, there are synced tether
       // hosts available, but the multidevice state is unverified.
       [[fallthrough]];
-    case chromeos::multidevice_setup::mojom::FeatureState::
+    case multidevice_setup::mojom::FeatureState::
         kUnavailableNoVerifiedHost_ClientNotReady:
       [[fallthrough]];
-    case chromeos::multidevice_setup::mojom::FeatureState::
-        kNotSupportedByChromebook:
+    case multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook:
       // CryptAuth may not yet know that this device supports
       // MAGIC_TETHER_CLIENT (and the local device metadata is reflecting
       // that). This should be resolved shortly once DeviceReenroller realizes
       // reconciles the discrepancy. For now, fall through to mark as
       // unavailable.
       [[fallthrough]];
-    case chromeos::multidevice_setup::mojom::FeatureState::kNotSupportedByPhone:
+    case multidevice_setup::mojom::FeatureState::kNotSupportedByPhone:
       return NO_AVAILABLE_HOSTS;
     default:
       // Other FeatureStates:

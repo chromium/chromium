@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.multidevice_setup.mojom;
+module ash.multidevice_setup.mojom;
 
 import "chromeos/components/multidevice/mojom/multidevice_types.mojom";
 import "chromeos/services/device_sync/public/mojom/device_sync.mojom";

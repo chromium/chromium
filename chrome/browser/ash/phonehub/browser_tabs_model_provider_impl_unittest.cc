@@ -129,10 +129,9 @@ class BrowserTabsModelProviderImplTest
   }
 
   void SetPiiFreeName(const std::string& pii_free_name) {
-    fake_multidevice_setup_client_.SetHostStatusWithDevice(
-        std::make_pair(chromeos::multidevice_setup::mojom::HostStatus::
-                           kEligibleHostExistsButNoHostSet,
-                       CreatePhoneDevice(/*pii_name=*/pii_free_name)));
+    fake_multidevice_setup_client_.SetHostStatusWithDevice(std::make_pair(
+        multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+        CreatePhoneDevice(/*pii_name=*/pii_free_name)));
   }
 
   base::CallbackListSubscription MockSubscribeToForeignSessionsChanged(

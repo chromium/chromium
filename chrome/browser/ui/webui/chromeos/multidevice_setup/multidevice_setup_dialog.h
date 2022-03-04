@@ -68,8 +68,8 @@ class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver);
+      mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
+          receiver);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();

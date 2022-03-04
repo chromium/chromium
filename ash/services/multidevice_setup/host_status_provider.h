@@ -22,7 +22,7 @@ class HostStatusProvider {
   class HostStatusWithDevice {
    public:
     HostStatusWithDevice(
-        mojom::HostStatus host_status,
+        ash::multidevice_setup::mojom::HostStatus host_status,
         const absl::optional<multidevice::RemoteDeviceRef>& host_device);
     HostStatusWithDevice(const HostStatusWithDevice& other);
     ~HostStatusWithDevice();
@@ -30,7 +30,9 @@ class HostStatusProvider {
     bool operator==(const HostStatusWithDevice& other) const;
     bool operator!=(const HostStatusWithDevice& other) const;
 
-    mojom::HostStatus host_status() const { return host_status_; }
+    ash::multidevice_setup::mojom::HostStatus host_status() const {
+      return host_status_;
+    }
 
     // If host_status() is kNoEligibleHosts or
     // kEligibleHostExistsButNoHostSet, host_device() is null.
@@ -39,7 +41,7 @@ class HostStatusProvider {
     }
 
    private:
-    mojom::HostStatus host_status_;
+    ash::multidevice_setup::mojom::HostStatus host_status_;
     absl::optional<multidevice::RemoteDeviceRef> host_device_;
   };
 
@@ -64,7 +66,7 @@ class HostStatusProvider {
   HostStatusProvider();
 
   void NotifyHostStatusChange(
-      mojom::HostStatus host_status,
+      ash::multidevice_setup::mojom::HostStatus host_status,
       const absl::optional<multidevice::RemoteDeviceRef>& host_device);
 
  private:

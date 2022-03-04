@@ -25,11 +25,11 @@ namespace ash {
 namespace phonehub {
 namespace {
 
-using ::chromeos::multidevice_setup::mojom::Feature;
-using ::chromeos::multidevice_setup::mojom::FeatureState;
 using ::chromeos::network_config::mojom::ConnectionStateType;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::StartConnectResult;
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 
 constexpr char kWifiGuid[] = "WifiGuid";
 constexpr char kTetherGuid[] = "TetherGuid";

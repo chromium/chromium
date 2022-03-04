@@ -935,7 +935,7 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::CrostiniUpgraderUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::multidevice_setup::mojom::MultiDeviceSetup, chromeos::OobeUI,
+      ash::multidevice_setup::mojom::MultiDeviceSetup, chromeos::OobeUI,
       ash::multidevice::ProximityAuthUI,
       chromeos::multidevice_setup::MultiDeviceSetupDialogUI>(map);
 
@@ -944,7 +944,7 @@ void PopulateChromeWebUIFrameBinders(
       map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::multidevice_setup::mojom::PrivilegedHostDeviceSetter,
+      ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter,
       chromeos::OobeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<

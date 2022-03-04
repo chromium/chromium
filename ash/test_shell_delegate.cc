@@ -68,7 +68,7 @@ int TestShellDelegate::GetBrowserWebUITabStripHeight() {
 }
 
 void TestShellDelegate::BindMultiDeviceSetup(
-    mojo::PendingReceiver<chromeos::multidevice_setup::mojom::MultiDeviceSetup>
+    mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
         receiver) {
   if (multidevice_setup_binder_)
     multidevice_setup_binder_.Run(std::move(receiver));

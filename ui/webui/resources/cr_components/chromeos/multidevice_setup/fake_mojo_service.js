@@ -7,7 +7,7 @@
 // clang-format on
 
 /**
- * @implements {chromeos.multideviceSetup.mojom.MultiDeviceSetupInterface}
+ * @implements {ash.multideviceSetup.mojom.MultiDeviceSetupInterface}
  */
 /* #export */ class FakeMojoService {
   constructor() {

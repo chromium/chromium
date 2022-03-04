@@ -8,10 +8,13 @@ namespace chromeos {
 
 namespace multidevice_setup {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::multidevice_setup::mojom;
+
 FakeMultiDeviceSetupClient::FakeMultiDeviceSetupClient()
     : host_status_with_device_(GenerateDefaultHostStatusWithDevice()),
       feature_states_map_(GenerateDefaultFeatureStatesMap(
-          multidevice_setup::mojom::FeatureState::kProhibitedByPolicy)) {}
+          mojom::FeatureState::kProhibitedByPolicy)) {}
 
 FakeMultiDeviceSetupClient::~FakeMultiDeviceSetupClient() {
   DCHECK(get_eligible_host_devices_callback_queue_.empty());

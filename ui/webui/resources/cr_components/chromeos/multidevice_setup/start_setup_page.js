@@ -33,7 +33,7 @@ Polymer({
     /**
      * Array of objects representing all potential MultiDevice hosts.
      *
-     * @type {!Array<!chromeos.multideviceSetup.mojom.HostDevice>}
+     * @type {!Array<!ash.multideviceSetup.mojom.HostDevice>}
      */
     devices: {
       type: Array,
@@ -137,7 +137,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!chromeos.multideviceSetup.mojom.HostDevice>} devices
+   * @param {!Array<!ash.multideviceSetup.mojom.HostDevice>} devices
    * @return {string} Label for devices selection content.
    * @private
    */
@@ -153,7 +153,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!chromeos.multideviceSetup.mojom.HostDevice>} devices
+   * @param {!Array<!ash.multideviceSetup.mojom.HostDevice>} devices
    * @return {boolean} True if there are more than one potential host devices.
    * @private
    */
@@ -162,7 +162,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!chromeos.multideviceSetup.mojom.HostDevice>} devices
+   * @param {!Array<!ash.multideviceSetup.mojom.HostDevice>} devices
    * @return {boolean} True if there is exactly one potential host device.
    * @private
    */
@@ -171,7 +171,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!chromeos.multideviceSetup.mojom.HostDevice>} devices
+   * @param {!Array<!ash.multideviceSetup.mojom.HostDevice>} devices
    * @return {string} Name of the first device in device list if there are any.
    *     Returns an empty string otherwise.
    * @private
@@ -193,7 +193,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.multideviceSetup.mojom.HostDevice} device
+   * @param {!ash.multideviceSetup.mojom.HostDevice} device
    * @return {string} Name of the device, with connectivity status information.
    * @private
    */
@@ -207,7 +207,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.multideviceSetup.mojom.HostDevice} device
+   * @param {!ash.multideviceSetup.mojom.HostDevice} device
    * @return {string} Returns a unique identifier for the input device, using
    *     the device's Instance ID if it is available; otherwise, the device's
    *     legacy device ID is used.

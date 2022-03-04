@@ -40,8 +40,7 @@ class NotificationManagerImpl
   MessageSender* message_sender_;
   UserActionRecorder* user_action_recorder_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  chromeos::multidevice_setup::mojom::FeatureState
-      notifications_feature_status_;
+  multidevice_setup::mojom::FeatureState notifications_feature_status_;
 };
 
 }  // namespace phonehub

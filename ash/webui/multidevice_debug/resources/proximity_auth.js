@@ -92,7 +92,7 @@ class CryptAuthController {
         this.showExistingUserNewChromebookNotification_.bind(this);
 
     this.multiDeviceSetup =
-        chromeos.multideviceSetup.mojom.MultiDeviceSetup.getRemote();
+        ash.multideviceSetup.mojom.MultiDeviceSetup.getRemote();
   }
 
   /**
@@ -207,7 +207,7 @@ class CryptAuthController {
    */
   showNewUserNotification_() {
     this.showMultiDeviceSetupPromoNotification_(
-        chromeos.multideviceSetup.mojom.EventTypeForDebugging
+        ash.multideviceSetup.mojom.EventTypeForDebugging
             .kNewUserPotentialHostExists);
   }
 
@@ -216,7 +216,7 @@ class CryptAuthController {
    */
   showExistingUserNewHostNotification_() {
     this.showMultiDeviceSetupPromoNotification_(
-        chromeos.multideviceSetup.mojom.EventTypeForDebugging
+        ash.multideviceSetup.mojom.EventTypeForDebugging
             .kExistingUserConnectedHostSwitched);
   }
 
@@ -225,13 +225,13 @@ class CryptAuthController {
    */
   showExistingUserNewChromebookNotification_() {
     this.showMultiDeviceSetupPromoNotification_(
-        chromeos.multideviceSetup.mojom.EventTypeForDebugging
+        ash.multideviceSetup.mojom.EventTypeForDebugging
             .kExistingUserNewChromebookAdded);
   }
 
   /**
    * Shows a "MultiDevice Setup" notification of the given type.
-   * @param {!chromeos.multideviceSetup.mojom.EventTypeForDebugging} type
+   * @param {!ash.multideviceSetup.mojom.EventTypeForDebugging} type
    */
   showMultiDeviceSetupPromoNotification_(type) {
     this.multiDeviceSetup.triggerEventForDebugging(type)

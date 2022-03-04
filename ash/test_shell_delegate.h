@@ -27,8 +27,7 @@ class TestShellDelegate : public ShellDelegate {
   // Allows tests to override the MultiDeviceSetup binding behavior for this
   // TestShellDelegate.
   using MultiDeviceSetupBinder = base::RepeatingCallback<void(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup>)>;
+      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>)>;
   void SetMultiDeviceSetupBinder(MultiDeviceSetupBinder binder) {
     multidevice_setup_binder_ = std::move(binder);
   }
@@ -50,9 +49,8 @@ class TestShellDelegate : public ShellDelegate {
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   int GetBrowserWebUITabStripHeight() override;
   void BindMultiDeviceSetup(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver)
-      override;
+      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
+          receiver) override;
   bool IsSessionRestoreInProgress() const override;
   void SetUpEnvironmentForLockedFullscreen(bool locked) override {}
   const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;

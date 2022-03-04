@@ -69,7 +69,9 @@ class AccountStatusChangeDelegateNotifierImpl
   ~AccountStatusChangeDelegateNotifierImpl() override;
 
   void SetAccountStatusChangeDelegateRemote(
-      mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate_remote);
+      mojo::PendingRemote<
+          ash::multidevice_setup::mojom::AccountStatusChangeDelegate>
+          delegate_remote);
 
  private:
   friend class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest;
@@ -106,7 +108,8 @@ class AccountStatusChangeDelegateNotifierImpl
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device);
   void CheckForNoLongerNewUserEvent(
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-      const absl::optional<mojom::HostStatus> host_status_before_update);
+      const absl::optional<ash::multidevice_setup::mojom::HostStatus>
+          host_status_before_update);
   void CheckForExistingUserHostSwitchedEvent(
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
       const absl::optional<std::string>& verified_host_device_id_before_update);
@@ -122,9 +125,11 @@ class AccountStatusChangeDelegateNotifierImpl
   absl::optional<std::string> verified_host_device_id_from_most_recent_update_;
 
   // Set to absl::nullopt until the first host status update.
-  absl::optional<mojom::HostStatus> host_status_from_most_recent_update_;
+  absl::optional<ash::multidevice_setup::mojom::HostStatus>
+      host_status_from_most_recent_update_;
 
-  mojo::Remote<mojom::AccountStatusChangeDelegate> delegate_remote_;
+  mojo::Remote<ash::multidevice_setup::mojom::AccountStatusChangeDelegate>
+      delegate_remote_;
   HostStatusProvider* host_status_provider_;
   PrefService* pref_service_;
   HostDeviceTimestampManager* host_device_timestamp_manager_;

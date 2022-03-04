@@ -32,6 +32,9 @@ namespace multidevice_setup {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::multidevice_setup::mojom;
+
 const GlobalStateFeatureManagerImpl::Factory::Option kTestOption =
     GlobalStateFeatureManagerImpl::Factory::Option::kWifiSync;
 const multidevice::SoftwareFeature kTestHostFeature =

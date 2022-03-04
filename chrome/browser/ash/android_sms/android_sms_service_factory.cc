@@ -26,8 +26,7 @@ namespace {
 
 bool ShouldStartAndroidSmsService(Profile* profile) {
   const bool multidevice_feature_allowed = multidevice_setup::IsFeatureAllowed(
-      chromeos::multidevice_setup::mojom::Feature::kMessages,
-      profile->GetPrefs());
+      multidevice_setup::mojom::Feature::kMessages, profile->GetPrefs());
 
   const bool has_user_for_profile =
       !!ProfileHelper::Get()->GetUserByProfile(profile);

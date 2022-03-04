@@ -20,7 +20,7 @@ const int64_t kUserId = 0;
 
 namespace {
 
-using FeatureState = ::chromeos::multidevice_setup::mojom::FeatureState;
+using FeatureState = multidevice_setup::mojom::FeatureState;
 
 class FakeEvent : public ui::Event {
  public:

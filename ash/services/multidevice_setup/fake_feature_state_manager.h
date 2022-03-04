@@ -23,8 +23,10 @@ class FakeFeatureStateManager : public FeatureStateManager {
 
   ~FakeFeatureStateManager() override;
 
-  mojom::FeatureState GetFeatureState(mojom::Feature feature);
-  void SetFeatureState(mojom::Feature feature, mojom::FeatureState state);
+  ash::multidevice_setup::mojom::FeatureState GetFeatureState(
+      ash::multidevice_setup::mojom::Feature feature);
+  void SetFeatureState(ash::multidevice_setup::mojom::Feature feature,
+                       ash::multidevice_setup::mojom::FeatureState state);
   void SetFeatureStates(const FeatureStatesMap& feature_states_map);
 
   using FeatureStateManager::NotifyFeatureStatesChange;
@@ -32,8 +34,9 @@ class FakeFeatureStateManager : public FeatureStateManager {
  private:
   // FeatureStateManager:
   FeatureStatesMap GetFeatureStates() override;
-  void PerformSetFeatureEnabledState(mojom::Feature feature,
-                                     bool enabled) override;
+  void PerformSetFeatureEnabledState(
+      ash::multidevice_setup::mojom::Feature feature,
+      bool enabled) override;
 
   FeatureStatesMap feature_states_map_;
 };

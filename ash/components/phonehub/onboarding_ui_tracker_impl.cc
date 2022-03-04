@@ -60,7 +60,7 @@ void OnboardingUiTrackerImpl::HandleGetStarted() {
   // The user is already opted into Better Together, but not Phone Hub.
   if (status == FeatureStatus::kDisabled) {
     multidevice_setup_client_->SetFeatureEnabledState(
-        chromeos::multidevice_setup::mojom::Feature::kPhoneHub,
+        multidevice_setup::mojom::Feature::kPhoneHub,
         /*enabled=*/true, /*auth_token=*/absl::nullopt, base::DoNothing());
     util::LogFeatureOptInEntryPoint(util::OptInEntryPoint::kOnboardingFlow);
     return;
@@ -77,14 +77,13 @@ void OnboardingUiTrackerImpl::OnFeatureStatusChanged() {
 void OnboardingUiTrackerImpl::OnFeatureStatesChanged(
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
-  const chromeos::multidevice_setup::mojom::FeatureState phonehub_state =
-      feature_states_map
-          .find(chromeos::multidevice_setup::mojom::Feature::kPhoneHub)
+  const multidevice_setup::mojom::FeatureState phonehub_state =
+      feature_states_map.find(multidevice_setup::mojom::Feature::kPhoneHub)
           ->second;
   // User has gone through the onboarding process, prevent the UI from
   // displaying again.
   if (phonehub_state ==
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser) {
+      multidevice_setup::mojom::FeatureState::kEnabledByUser) {
     pref_service_->SetBoolean(prefs::kHideOnboardingUi, true);
     UpdateShouldShowOnboardingUi();
   }

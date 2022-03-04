@@ -20,8 +20,7 @@ namespace multidevice {
 class ProximityAuthUI : public ui::MojoWebUIController {
  public:
   using MultiDeviceSetupBinder = base::RepeatingCallback<void(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup>)>;
+      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>)>;
 
   // Note: |web_ui| is not owned by this instance and must outlive this
   // instance.
@@ -37,8 +36,8 @@ class ProximityAuthUI : public ui::MojoWebUIController {
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver);
+      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
+          receiver);
 
  private:
   const MultiDeviceSetupBinder multidevice_setup_binder_;

@@ -12,6 +12,9 @@ namespace chromeos {
 
 namespace multidevice_setup {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::multidevice_setup::mojom;
+
 // Note: Pref name strings follow an inconsistent naming convention because some
 // of them were created before the MultiDeviceSetup project.
 

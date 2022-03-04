@@ -15,13 +15,13 @@ namespace phonehub {
 namespace {
 
 using ::chromeos::multidevice_setup::MultiDeviceSetupClient;
-using ::chromeos::multidevice_setup::mojom::Feature;
-using ::chromeos::multidevice_setup::mojom::FeatureState;
 using ::chromeos::network_config::mojom::ConnectionStateType;
 using ::chromeos::network_config::mojom::DeviceStatePropertiesPtr;
 using ::chromeos::network_config::mojom::FilterType;
 using ::chromeos::network_config::mojom::NetworkType;
 using ::chromeos::network_config::mojom::StartConnectResult;
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 
 // TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
 namespace network_config = ::chromeos::network_config;

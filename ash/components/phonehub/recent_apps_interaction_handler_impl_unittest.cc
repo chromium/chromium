@@ -19,8 +19,8 @@ namespace ash {
 namespace phonehub {
 namespace {
 
-using FeatureState = ::chromeos::multidevice_setup::mojom::FeatureState;
-using HostStatus = ::chromeos::multidevice_setup::mojom::HostStatus;
+using FeatureState = multidevice_setup::mojom::FeatureState;
+using HostStatus = multidevice_setup::mojom::HostStatus;
 
 // Garbage color for the purpose of verification in these tests.
 const SkColor kIconColor = SkColorSetRGB(0x12, 0x34, 0x56);
@@ -128,12 +128,12 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
 
   void SetEcheFeatureState(FeatureState feature_state) {
     fake_multidevice_setup_client_->SetFeatureState(
-        chromeos::multidevice_setup::mojom::Feature::kEche, feature_state);
+        multidevice_setup::mojom::Feature::kEche, feature_state);
   }
 
   void SetPhoneHubNotificationsFeatureState(FeatureState feature_state) {
     fake_multidevice_setup_client_->SetFeatureState(
-        chromeos::multidevice_setup::mojom::Feature::kPhoneHubNotifications,
+        multidevice_setup::mojom::Feature::kPhoneHubNotifications,
         feature_state);
   }
 

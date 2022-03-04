@@ -15,7 +15,7 @@ cr.define('multidevice_setup', function() {
   /** @interface */
   /* #export */ class MojoInterfaceProvider {
     /**
-     * @return {!chromeos.multideviceSetup.mojom.MultiDeviceSetupRemote}
+     * @return {!ash.multideviceSetup.mojom.MultiDeviceSetupRemote}
      */
     getMojoServiceRemote() {}
   }
@@ -23,15 +23,14 @@ cr.define('multidevice_setup', function() {
   /** @implements {multidevice_setup.MojoInterfaceProvider} */
   /* #export */ class MojoInterfaceProviderImpl {
     constructor() {
-      /** @private {?chromeos.multideviceSetup.mojom.MultiDeviceSetupRemote} */
+      /** @private {?ash.multideviceSetup.mojom.MultiDeviceSetupRemote} */
       this.remote_ = null;
     }
 
     /** @override */
     getMojoServiceRemote() {
       if (!this.remote_) {
-        this.remote_ =
-            chromeos.multideviceSetup.mojom.MultiDeviceSetup.getRemote();
+        this.remote_ = ash.multideviceSetup.mojom.MultiDeviceSetup.getRemote();
       }
 
       return this.remote_;

@@ -26,9 +26,6 @@ namespace tether {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when multidevice_setup moved to ash
-namespace multidevice_setup = ::chromeos::multidevice_setup;
-
 const size_t kNumTestDevices = 5;
 
 class TestObserver : public TetherHostFetcher::Observer {

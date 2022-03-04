@@ -25,20 +25,23 @@ namespace chromeos {
 namespace multidevice_setup {
 
 // Concrete implementation of MultiDeviceSetupClient.
-class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
-                                   public mojom::HostStatusObserver,
-                                   public mojom::FeatureStateObserver {
+class MultiDeviceSetupClientImpl
+    : public MultiDeviceSetupClient,
+      public ash::multidevice_setup::mojom::HostStatusObserver,
+      public ash::multidevice_setup::mojom::FeatureStateObserver {
  public:
   class Factory {
    public:
     static std::unique_ptr<MultiDeviceSetupClient> Create(
-        mojo::PendingRemote<mojom::MultiDeviceSetup> remote_setup);
+        mojo::PendingRemote<ash::multidevice_setup::mojom::MultiDeviceSetup>
+            remote_setup);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<MultiDeviceSetupClient> CreateInstance(
-        mojo::PendingRemote<mojom::MultiDeviceSetup> remote_setup) = 0;
+        mojo::PendingRemote<ash::multidevice_setup::mojom::MultiDeviceSetup>
+            remote_setup) = 0;
 
    private:
     static Factory* test_factory_;
@@ -55,26 +58,28 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
   void SetHostDevice(
       const std::string& host_instance_id_or_legacy_device_id,
       const std::string& auth_token,
-      mojom::MultiDeviceSetup::SetHostDeviceCallback callback) override;
+      ash::multidevice_setup::mojom::MultiDeviceSetup::SetHostDeviceCallback
+          callback) override;
   void RemoveHostDevice() override;
   const HostStatusWithDevice& GetHostStatus() const override;
   void SetFeatureEnabledState(
-      mojom::Feature feature,
+      ash::multidevice_setup::mojom::Feature feature,
       bool enabled,
       const absl::optional<std::string>& auth_token,
-      mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback)
-      override;
+      ash::multidevice_setup::mojom::MultiDeviceSetup::
+          SetFeatureEnabledStateCallback callback) override;
   const FeatureStatesMap& GetFeatureStates() const override;
   void RetrySetHostNow(
-      mojom::MultiDeviceSetup::RetrySetHostNowCallback callback) override;
+      ash::multidevice_setup::mojom::MultiDeviceSetup::RetrySetHostNowCallback
+          callback) override;
   void TriggerEventForDebugging(
-      mojom::EventTypeForDebugging type,
-      mojom::MultiDeviceSetup::TriggerEventForDebuggingCallback callback)
-      override;
+      ash::multidevice_setup::mojom::EventTypeForDebugging type,
+      ash::multidevice_setup::mojom::MultiDeviceSetup::
+          TriggerEventForDebuggingCallback callback) override;
 
   // mojom::HostStatusObserver:
   void OnHostStatusChanged(
-      mojom::HostStatus host_status,
+      ash::multidevice_setup::mojom::HostStatus host_status,
       const absl::optional<multidevice::RemoteDevice>& host_device) override;
 
   // mojom::FeatureStateObserver:
@@ -85,7 +90,8 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
   friend class MultiDeviceSetupClientImplTest;
 
   explicit MultiDeviceSetupClientImpl(
-      mojo::PendingRemote<mojom::MultiDeviceSetup> remote_setup);
+      mojo::PendingRemote<ash::multidevice_setup::mojom::MultiDeviceSetup>
+          remote_setup);
 
   void OnGetEligibleHostDevicesCompleted(
       GetEligibleHostDevicesCallback callback,
@@ -93,18 +99,19 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
 
   void OnFeatureStateMetricTimerFired();
 
-  mojo::PendingRemote<mojom::HostStatusObserver>
+  mojo::PendingRemote<ash::multidevice_setup::mojom::HostStatusObserver>
   GenerateHostStatusObserverRemote();
-  mojo::PendingRemote<mojom::FeatureStateObserver>
+  mojo::PendingRemote<ash::multidevice_setup::mojom::FeatureStateObserver>
   GenerateFeatureStatesObserverRemote();
 
   void FlushForTesting();
 
-  mojo::Remote<mojom::MultiDeviceSetup> multidevice_setup_remote_;
-  mojo::Receiver<mojom::HostStatusObserver> host_status_observer_receiver_{
-      this};
-  mojo::Receiver<mojom::FeatureStateObserver> feature_state_observer_receiver_{
-      this};
+  mojo::Remote<ash::multidevice_setup::mojom::MultiDeviceSetup>
+      multidevice_setup_remote_;
+  mojo::Receiver<ash::multidevice_setup::mojom::HostStatusObserver>
+      host_status_observer_receiver_{this};
+  mojo::Receiver<ash::multidevice_setup::mojom::FeatureStateObserver>
+      feature_state_observer_receiver_{this};
   std::unique_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;
 
   // We want to delay the initial logging of the feature states map to better

@@ -31,7 +31,7 @@ const char kConnectionResultMetricName[] = "PhoneHub.Connection.Result";
 const char kConnectionDurationMetricName[] = "PhoneHub.Connection.Duration";
 const char kConnectionLatencyMetricName[] = "PhoneHub.Connectivity.Latency";
 
-using multidevice_setup::mojom::HostStatus;
+using ::ash::multidevice_setup::mojom::HostStatus;
 
 constexpr base::TimeDelta kFakeConnectionLatencyTime(base::Seconds(3u));
 constexpr base::TimeDelta kFakeConnectionDurationTime(base::Seconds(10u));

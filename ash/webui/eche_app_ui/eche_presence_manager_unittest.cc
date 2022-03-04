@@ -62,9 +62,9 @@ class EchePresenceManagerTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kEcheSWA},
         /*disabled_features=*/{});
-    fake_multidevice_setup_client_.SetHostStatusWithDevice(std::make_pair(
-        chromeos::multidevice_setup::mojom::HostStatus::kHostVerified,
-        test_remote_device_));
+    fake_multidevice_setup_client_.SetHostStatusWithDevice(
+        std::make_pair(multidevice_setup::mojom::HostStatus::kHostVerified,
+                       test_remote_device_));
     fake_device_sync_client_.set_local_device_metadata(test_devices_[0]);
     fake_device_sync_client_.NotifyReady();
     fake_eche_connector_ = std::make_unique<FakeEcheConnector>();

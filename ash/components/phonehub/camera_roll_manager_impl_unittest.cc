@@ -34,7 +34,7 @@ using BatchDecodeResult = CameraRollThumbnailDecoder::BatchDecodeResult;
 using BatchDecodeCallback =
     base::OnceCallback<void(BatchDecodeResult,
                             const std::vector<CameraRollItem>&)>;
-using FeatureState = chromeos::multidevice_setup::mojom::FeatureState;
+using FeatureState = multidevice_setup::mojom::FeatureState;
 using FileTransferStatus = chromeos::secure_channel::mojom::FileTransferStatus;
 
 class FakeObserver : public CameraRollManager::Observer {
@@ -224,8 +224,7 @@ class CameraRollManagerImplTest : public testing::Test {
 
   void SetCameraRollFeatureState(FeatureState feature_state) {
     fake_multidevice_setup_client_->SetFeatureState(
-        chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
-        feature_state);
+        multidevice_setup::mojom::Feature::kPhoneHubCameraRoll, feature_state);
   }
 
   void UngrantAndroidStoragePermission() {

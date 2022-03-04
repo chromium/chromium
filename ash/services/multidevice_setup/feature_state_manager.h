@@ -19,7 +19,9 @@ namespace multidevice_setup {
 // interface as well as a way to toggle a feature on/off when appropriate.
 class FeatureStateManager {
  public:
-  using FeatureStatesMap = base::flat_map<mojom::Feature, mojom::FeatureState>;
+  using FeatureStatesMap =
+      base::flat_map<ash::multidevice_setup::mojom::Feature,
+                     ash::multidevice_setup::mojom::FeatureState>;
 
   class Observer {
    public:
@@ -42,7 +44,8 @@ class FeatureStateManager {
   // state is mojom::FeatureState::kEnabledByUser,
   // mojom::FeatureState::kFurtherSetupRequired or
   // mojom::FeatureState::kDisabledByUser.
-  bool SetFeatureEnabledState(mojom::Feature feature, bool enabled);
+  bool SetFeatureEnabledState(ash::multidevice_setup::mojom::Feature feature,
+                              bool enabled);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -52,8 +55,9 @@ class FeatureStateManager {
 
   // Enables or disables the feature; by the time this function has been called,
   // it has already been confirmed that the state is indeed able to be changed.
-  virtual void PerformSetFeatureEnabledState(mojom::Feature feature,
-                                             bool enabled) = 0;
+  virtual void PerformSetFeatureEnabledState(
+      ash::multidevice_setup::mojom::Feature feature,
+      bool enabled) = 0;
 
   void NotifyFeatureStatesChange(const FeatureStatesMap& feature_states_map);
 

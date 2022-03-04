@@ -53,11 +53,8 @@ class FakeOperationDelegate : public AppsAccessSetupOperation::Delegate {
 };
 }  // namespace
 
-using ::chromeos::multidevice_setup::mojom::Feature;
-using ::chromeos::multidevice_setup::mojom::FeatureState;
-
-// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
-namespace multidevice_setup = ::chromeos::multidevice_setup;
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 
 class AppsAccessManagerImplTest : public testing::Test {
  protected:

@@ -71,8 +71,7 @@ bool MultiDeviceSetupScreen::MaybeSkip(WizardContext* /*context*/) {
     return true;
   }
   if (setup_client_->GetHostStatus().first !=
-      chromeos::multidevice_setup::mojom::HostStatus::
-          kEligibleHostExistsButNoHostSet) {
+      multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet) {
     VLOG(1) << "Skipping MultiDevice setup screen; host status: "
             << setup_client_->GetHostStatus().first;
     exit_callback_.Run(Result::NOT_APPLICABLE);

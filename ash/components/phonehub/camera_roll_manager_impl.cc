@@ -28,8 +28,6 @@ namespace phonehub {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace multidevice_setup = ::chromeos::multidevice_setup;
 namespace secure_channel = ::chromeos::secure_channel;
 
 constexpr int kMaxCameraRollItemCount = 4;
@@ -225,11 +223,11 @@ void CameraRollManagerImpl::CancelPendingThumbnailRequests() {
 }
 
 bool CameraRollManagerImpl::IsCameraRollSettingEnabled() {
-  chromeos::multidevice_setup::mojom::FeatureState camera_roll_feature_state =
+  multidevice_setup::mojom::FeatureState camera_roll_feature_state =
       multidevice_setup_client_->GetFeatureState(
-          chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
+          multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
   return camera_roll_feature_state ==
-         chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
+         multidevice_setup::mojom::FeatureState::kEnabledByUser;
 }
 
 void CameraRollManagerImpl::OnFeatureStatesChanged(
@@ -271,15 +269,15 @@ void CameraRollManagerImpl::ComputeAndUpdateUiState() {
     return;
   }
 
-  chromeos::multidevice_setup::mojom::FeatureState feature_state =
+  multidevice_setup::mojom::FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(
-          chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
+          multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
   switch (feature_state) {
-    case chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser:
+    case multidevice_setup::mojom::FeatureState::kDisabledByUser:
       ui_state_ = CameraRollUiState::SHOULD_HIDE;
       ;
       break;
-    case chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser:
+    case multidevice_setup::mojom::FeatureState::kEnabledByUser:
       if (current_items().empty()) {
         ui_state_ = CameraRollUiState::SHOULD_HIDE;
       } else {

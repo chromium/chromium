@@ -28,7 +28,9 @@ class AccountStatusChangeDelegateNotifier {
   virtual ~AccountStatusChangeDelegateNotifier();
 
   void SetAccountStatusChangeDelegateRemote(
-      mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate_remote);
+      mojo::PendingRemote<
+          ash::multidevice_setup::mojom::AccountStatusChangeDelegate>
+          delegate_remote);
 
  protected:
   AccountStatusChangeDelegateNotifier();
@@ -37,7 +39,7 @@ class AccountStatusChangeDelegateNotifier {
   // SetAccountStatusChangeDelegateRemote() is called.
   virtual void OnDelegateSet();
 
-  mojom::AccountStatusChangeDelegate* delegate() {
+  ash::multidevice_setup::mojom::AccountStatusChangeDelegate* delegate() {
     return delegate_remote_.is_bound() ? delegate_remote_.get() : nullptr;
   }
 
@@ -50,7 +52,8 @@ class AccountStatusChangeDelegateNotifier {
 
   void FlushForTesting();
 
-  mojo::Remote<mojom::AccountStatusChangeDelegate> delegate_remote_;
+  mojo::Remote<ash::multidevice_setup::mojom::AccountStatusChangeDelegate>
+      delegate_remote_;
 };
 
 }  // namespace multidevice_setup

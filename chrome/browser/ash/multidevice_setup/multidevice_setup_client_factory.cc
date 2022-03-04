@@ -23,10 +23,6 @@
 namespace ash {
 namespace multidevice_setup {
 
-// TODO(https://crbug.com/1164001): remove when
-// chromeos/services/multidevice_setup is migrated.
-namespace mojom = ::chromeos::multidevice_setup::mojom;
-
 namespace {
 
 bool IsAllowedByPolicy(content::BrowserContext* context) {

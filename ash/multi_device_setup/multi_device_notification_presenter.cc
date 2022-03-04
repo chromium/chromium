@@ -199,7 +199,7 @@ void MultiDeviceNotificationPresenter::OnNotificationClicked(
         case 0:  // "Turn on" button
           PA_LOG(INFO) << "Enabling Wi-Fi Sync.";
           multidevice_setup_remote_->SetFeatureEnabledState(
-              chromeos::multidevice_setup::mojom::Feature::kWifiSync,
+              multidevice_setup::mojom::Feature::kWifiSync,
               /*enabled=*/true, /*auth_token=*/absl::nullopt,
               /*callback=*/base::DoNothing());
           break;

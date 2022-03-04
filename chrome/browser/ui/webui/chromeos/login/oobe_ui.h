@@ -151,13 +151,13 @@ class OobeUI : public ui::MojoWebUIController {
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
+      mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
           receiver);
   // Instantiates implementor of the mojom::PrivilegedHostDeviceSetter mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<
-          multidevice_setup::mojom::PrivilegedHostDeviceSetter> receiver);
+          ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter> receiver);
   // Instantiates implementor of the mojom::CrosNetworkConfig mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(

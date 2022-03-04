@@ -67,8 +67,8 @@ TEST_F(PushMessagingNotificationManagerTest,
   auto fake_multidevice_setup_client = std::make_unique<
       chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
   fake_multidevice_setup_client->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kMessages,
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
+      ash::multidevice_setup::mojom::Feature::kMessages,
+      ash::multidevice_setup::mojom::FeatureState::kEnabledByUser);
 
   PushMessagingNotificationManager manager(profile());
   manager.SetTestMultiDeviceSetupClient(fake_multidevice_setup_client.get());

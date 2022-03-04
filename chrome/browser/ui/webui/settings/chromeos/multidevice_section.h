@@ -67,7 +67,7 @@ class MultiDeviceSection
   // Nearby Share enabled pref change observer.
   void OnNearbySharingEnabledChanged();
 
-  bool IsFeatureSupported(multidevice_setup::mojom::Feature feature);
+  bool IsFeatureSupported(ash::multidevice_setup::mojom::Feature feature);
   void RefreshNearbyBackgroundScanningShareSearchConcepts();
 
   // nearby_share::mojom::NearbyShareSettingsObserver:

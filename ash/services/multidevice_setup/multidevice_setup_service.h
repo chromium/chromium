@@ -51,9 +51,11 @@ class MultiDeviceSetupService {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   void BindMultiDeviceSetup(
-      mojo::PendingReceiver<mojom::MultiDeviceSetup> receiver);
+      mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
+          receiver);
   void BindPrivilegedHostDeviceSetter(
-      mojo::PendingReceiver<mojom::PrivilegedHostDeviceSetter> receiver);
+      mojo::PendingReceiver<
+          ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter> receiver);
 
  private:
   std::unique_ptr<MultiDeviceSetupBase> multidevice_setup_;

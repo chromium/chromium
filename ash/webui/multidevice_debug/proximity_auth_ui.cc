@@ -47,7 +47,7 @@ ProximityAuthUI::ProximityAuthUI(
 ProximityAuthUI::~ProximityAuthUI() = default;
 
 void ProximityAuthUI::BindInterface(
-    mojo::PendingReceiver<chromeos::multidevice_setup::mojom::MultiDeviceSetup>
+    mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
         receiver) {
   multidevice_setup_binder_.Run(std::move(receiver));
 }

@@ -98,8 +98,8 @@ class ASH_EXPORT ShellDelegate {
 
   // Binds a MultiDeviceSetup receiver for the primary profile.
   virtual void BindMultiDeviceSetup(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver) = 0;
+      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
+          receiver) = 0;
 
   // Returns an interface to the Media Session service, or null if not
   // available.

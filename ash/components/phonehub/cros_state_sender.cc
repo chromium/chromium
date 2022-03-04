@@ -13,8 +13,8 @@ namespace ash {
 namespace phonehub {
 namespace {
 
-using ::chromeos::multidevice_setup::mojom::Feature;
-using ::chromeos::multidevice_setup::mojom::FeatureState;
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 
 // The minimum time to wait before checking whether the phone has responded to
 // status messages sent by CrosStateSender, and re-sending the status messages

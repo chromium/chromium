@@ -55,13 +55,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
-// TODO(https://crbug.com/1164001): remove when migrated to ash::
-namespace multidevice_setup {
-namespace mojom {
-using ::chromeos::multidevice_setup::mojom::Feature;
-using ::chromeos::multidevice_setup::mojom::FeatureState;
-}  // namespace mojom
-}  // namespace multidevice_setup
 
 namespace {
 

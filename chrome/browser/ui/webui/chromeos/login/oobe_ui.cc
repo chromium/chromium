@@ -137,6 +137,11 @@
 
 namespace chromeos {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace multidevice_setup {
+namespace mojom = ::ash::multidevice_setup::mojom;
+}
+
 namespace {
 
 const char* kKnownDisplayTypes[] = {

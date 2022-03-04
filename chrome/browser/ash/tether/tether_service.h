@@ -248,8 +248,8 @@ class TetherService
 
   bool is_adapter_being_fetched_ = false;
 
-  chromeos::multidevice_setup::mojom::HostStatus host_status_ =
-      chromeos::multidevice_setup::mojom::HostStatus::kNoEligibleHosts;
+  multidevice_setup::mojom::HostStatus host_status_ =
+      multidevice_setup::mojom::HostStatus::kNoEligibleHosts;
 
   // The first report of TetherFeatureState::BLE_NOT_PRESENT is usually
   // incorrect and hence is a false positive. This property tracks if the first

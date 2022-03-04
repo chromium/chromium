@@ -18,9 +18,8 @@
 
 namespace proximity_auth {
 namespace {
-
-using chromeos::multidevice_setup::mojom::Feature;
-using chromeos::multidevice_setup::mojom::FeatureState;
+using ::ash::multidevice_setup::mojom::Feature;
+using ::ash::multidevice_setup::mojom::FeatureState;
 }  // namespace
 
 ProximityAuthProfilePrefManager::ProximityAuthProfilePrefManager(

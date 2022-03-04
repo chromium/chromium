@@ -47,7 +47,7 @@ class FakeMultiDeviceSetupClientImplFactory
   // NOTE: At most, one client should be created per-test.
   std::unique_ptr<chromeos::multidevice_setup::MultiDeviceSetupClient>
   CreateInstance(
-      mojo::PendingRemote<chromeos::multidevice_setup::mojom::MultiDeviceSetup>)
+      mojo::PendingRemote<ash::multidevice_setup::mojom::MultiDeviceSetup>)
       override {
     EXPECT_TRUE(fake_multidevice_setup_client_);
     return std::move(fake_multidevice_setup_client_);
@@ -187,18 +187,18 @@ TEST_F(ChromeOSMetricsProviderTest, MultiProfileCountInvalidated) {
 }
 
 TEST_F(ChromeOSMetricsProviderTest, HasLinkedAndroidPhoneAndEnabledFeatures) {
-  fake_multidevice_setup_client_->SetHostStatusWithDevice(std::make_pair(
-      chromeos::multidevice_setup::mojom::HostStatus::kHostVerified,
-      chromeos::multidevice::CreateRemoteDeviceRefForTest()));
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(
+      std::make_pair(ash::multidevice_setup::mojom::HostStatus::kHostVerified,
+                     chromeos::multidevice::CreateRemoteDeviceRefForTest()));
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
+      ash::multidevice_setup::mojom::Feature::kInstantTethering,
+      ash::multidevice_setup::mojom::FeatureState::kEnabledByUser);
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kSmartLock,
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
+      ash::multidevice_setup::mojom::Feature::kSmartLock,
+      ash::multidevice_setup::mojom::FeatureState::kEnabledByUser);
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kMessages,
-      chromeos::multidevice_setup::mojom::FeatureState::kFurtherSetupRequired);
+      ash::multidevice_setup::mojom::Feature::kMessages,
+      ash::multidevice_setup::mojom::FeatureState::kFurtherSetupRequired);
 
   // |scoped_enabler| takes over the lifetime of |user_manager|.
   auto* user_manager = new ash::FakeChromeUserManager();

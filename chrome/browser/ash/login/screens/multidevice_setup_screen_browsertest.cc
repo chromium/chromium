@@ -22,11 +22,6 @@
 
 namespace ash {
 
-// TODO(https://crbug.com/1164001): remove when migrated to ash::
-namespace multidevice_setup {
-namespace mojom = ::chromeos::multidevice_setup::mojom;
-}
-
 constexpr test::UIPath kMultideviceSetupPath = {"multidevice-setup-screen",
                                                 "multideviceSetup"};
 

@@ -16,7 +16,7 @@ namespace multidevice_setup {
 // PrivilegedHostDeviceSetter implementation which accepts receivers to bind to
 // it.
 class PrivilegedHostDeviceSetterBase
-    : public mojom::PrivilegedHostDeviceSetter {
+    : public ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter {
  public:
   PrivilegedHostDeviceSetterBase(const PrivilegedHostDeviceSetterBase&) =
       delete;
@@ -26,13 +26,15 @@ class PrivilegedHostDeviceSetterBase
   ~PrivilegedHostDeviceSetterBase() override;
 
   void BindReceiver(
-      mojo::PendingReceiver<mojom::PrivilegedHostDeviceSetter> receiver);
+      mojo::PendingReceiver<
+          ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter> receiver);
 
  protected:
   PrivilegedHostDeviceSetterBase();
 
  private:
-  mojo::ReceiverSet<mojom::PrivilegedHostDeviceSetter> receivers_;
+  mojo::ReceiverSet<ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter>
+      receivers_;
 };
 
 }  // namespace multidevice_setup

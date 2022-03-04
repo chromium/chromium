@@ -38,6 +38,10 @@ namespace chromeos {
 namespace multidevice_setup {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::multidevice_setup::mojom;
+
 const char kTestDeviceNameForDebugNotification[] = "Test Device";
 
 // This enum is tied directly to a UMA enum defined in

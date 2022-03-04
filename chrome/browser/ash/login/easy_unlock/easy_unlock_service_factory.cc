@@ -31,7 +31,7 @@ namespace {
 
 bool IsFeatureAllowed(content::BrowserContext* context) {
   return multidevice_setup::IsFeatureAllowed(
-      chromeos::multidevice_setup::mojom::Feature::kSmartLock,
+      multidevice_setup::mojom::Feature::kSmartLock,
       Profile::FromBrowserContext(context)->GetPrefs());
 }
 

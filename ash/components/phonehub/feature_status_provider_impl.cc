@@ -24,9 +24,9 @@ using ::chromeos::multidevice::RemoteDeviceRef;
 using ::chromeos::multidevice::RemoteDeviceRefList;
 using ::chromeos::multidevice::SoftwareFeature;
 using ::chromeos::multidevice::SoftwareFeatureState;
-using ::chromeos::multidevice_setup::mojom::Feature;
-using ::chromeos::multidevice_setup::mojom::FeatureState;
-using ::chromeos::multidevice_setup::mojom::HostStatus;
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
+using multidevice_setup::mojom::HostStatus;
 
 bool IsEligiblePhoneHubHost(const RemoteDeviceRef& device) {
   // Device must be capable of being a multi-device host.

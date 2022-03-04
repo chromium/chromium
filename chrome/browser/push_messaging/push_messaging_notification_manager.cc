@@ -312,8 +312,8 @@ bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
 
   // Check if messages feature is enabled
   if (multidevice_setup_client->GetFeatureState(
-          chromeos::multidevice_setup::mojom::Feature::kMessages) !=
-      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser) {
+          ash::multidevice_setup::mojom::Feature::kMessages) !=
+      ash::multidevice_setup::mojom::FeatureState::kEnabledByUser) {
     return false;
   }
 

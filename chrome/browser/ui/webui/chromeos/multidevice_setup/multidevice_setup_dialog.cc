@@ -128,7 +128,7 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
 MultiDeviceSetupDialogUI::~MultiDeviceSetupDialogUI() = default;
 
 void MultiDeviceSetupDialogUI::BindInterface(
-    mojo::PendingReceiver<chromeos::multidevice_setup::mojom::MultiDeviceSetup>
+    mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
         receiver) {
   MultiDeviceSetupService* service =
       MultiDeviceSetupServiceFactory::GetForProfile(

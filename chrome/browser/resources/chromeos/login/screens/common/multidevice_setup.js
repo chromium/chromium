@@ -13,7 +13,7 @@ class MultiDeviceSetupScreenDelegate {
 
   constructor() {
     /**
-     * @private {?chromeos.multideviceSetup.mojom.
+     * @private {?ash.multideviceSetup.mojom.
      *               PrivilegedHostDeviceSetterRemote}
      */
     this.remote_ = null;
@@ -31,7 +31,8 @@ class MultiDeviceSetupScreenDelegate {
     assert(!opt_authToken);
 
     if (!this.remote_) {
-      this.remote_ = chromeos.multideviceSetup.mojom.PrivilegedHostDeviceSetter.getRemote();
+      this.remote_ =
+          ash.multideviceSetup.mojom.PrivilegedHostDeviceSetter.getRemote();
     }
 
     return /** @type {!Promise<{success: boolean}>} */ (

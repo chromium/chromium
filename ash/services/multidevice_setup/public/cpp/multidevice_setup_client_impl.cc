@@ -35,8 +35,7 @@ void LogFeatureStates(
   base::UmaHistogramEnumeration(
       "MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState.MojoClient",
       feature_states_map
-          .find(
-              chromeos::multidevice_setup::mojom::Feature::kBetterTogetherSuite)
+          .find(ash::multidevice_setup::mojom::Feature::kBetterTogetherSuite)
           ->second);
 }
 
@@ -45,6 +44,9 @@ void LogFeatureStates(
 namespace chromeos {
 
 namespace multidevice_setup {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::multidevice_setup::mojom;
 
 // static
 MultiDeviceSetupClientImpl::Factory*

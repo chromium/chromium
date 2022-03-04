@@ -17,6 +17,9 @@ namespace chromeos {
 
 namespace multidevice_setup {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::multidevice_setup::mojom;
+
 // static
 MultiDeviceSetupInitializer::Factory*
     MultiDeviceSetupInitializer::Factory::test_factory_ = nullptr;

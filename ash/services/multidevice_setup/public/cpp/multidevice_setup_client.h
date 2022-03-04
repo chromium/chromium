@@ -23,9 +23,11 @@ namespace multidevice_setup {
 class MultiDeviceSetupClient {
  public:
   using HostStatusWithDevice =
-      std::pair<mojom::HostStatus,
+      std::pair<ash::multidevice_setup::mojom::HostStatus,
                 absl::optional<multidevice::RemoteDeviceRef>>;
-  using FeatureStatesMap = base::flat_map<mojom::Feature, mojom::FeatureState>;
+  using FeatureStatesMap =
+      base::flat_map<ash::multidevice_setup::mojom::Feature,
+                     ash::multidevice_setup::mojom::FeatureState>;
 
   class Observer {
    public:
@@ -49,7 +51,7 @@ class MultiDeviceSetupClient {
 
   static HostStatusWithDevice GenerateDefaultHostStatusWithDevice();
   static FeatureStatesMap GenerateDefaultFeatureStatesMap(
-      mojom::FeatureState default_value);
+      ash::multidevice_setup::mojom::FeatureState default_value);
 
   MultiDeviceSetupClient();
 
@@ -66,21 +68,26 @@ class MultiDeviceSetupClient {
   virtual void SetHostDevice(
       const std::string& host_instance_id_or_legacy_device_id,
       const std::string& auth_token,
-      mojom::MultiDeviceSetup::SetHostDeviceCallback callback) = 0;
+      ash::multidevice_setup::mojom::MultiDeviceSetup::SetHostDeviceCallback
+          callback) = 0;
   virtual void RemoveHostDevice() = 0;
   virtual const HostStatusWithDevice& GetHostStatus() const = 0;
   virtual void SetFeatureEnabledState(
-      mojom::Feature feature,
+      ash::multidevice_setup::mojom::Feature feature,
       bool enabled,
       const absl::optional<std::string>& auth_token,
-      mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback) = 0;
+      ash::multidevice_setup::mojom::MultiDeviceSetup::
+          SetFeatureEnabledStateCallback callback) = 0;
   virtual const FeatureStatesMap& GetFeatureStates() const = 0;
-  mojom::FeatureState GetFeatureState(mojom::Feature feature) const;
+  ash::multidevice_setup::mojom::FeatureState GetFeatureState(
+      ash::multidevice_setup::mojom::Feature feature) const;
   virtual void RetrySetHostNow(
-      mojom::MultiDeviceSetup::RetrySetHostNowCallback callback) = 0;
+      ash::multidevice_setup::mojom::MultiDeviceSetup::RetrySetHostNowCallback
+          callback) = 0;
   virtual void TriggerEventForDebugging(
-      mojom::EventTypeForDebugging type,
-      mojom::MultiDeviceSetup::TriggerEventForDebuggingCallback callback) = 0;
+      ash::multidevice_setup::mojom::EventTypeForDebugging type,
+      ash::multidevice_setup::mojom::MultiDeviceSetup::
+          TriggerEventForDebuggingCallback callback) = 0;
 
  protected:
   void NotifyHostStatusChanged(

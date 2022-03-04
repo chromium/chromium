@@ -45,9 +45,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   void BindFingerprint(
       mojo::PendingReceiver<device::mojom::Fingerprint> receiver) override;
   void BindMultiDeviceSetup(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver)
-      override;
+      mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
+          receiver) override;
   media_session::MediaSessionService* GetMediaSessionService() override;
   bool IsSessionRestoreInProgress() const override;
   void SetUpEnvironmentForLockedFullscreen(bool locked) override;

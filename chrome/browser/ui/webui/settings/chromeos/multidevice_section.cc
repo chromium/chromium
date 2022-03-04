@@ -42,7 +42,9 @@ namespace chromeos {
 namespace settings {
 namespace {
 
-using FeatureState = multidevice_setup::mojom::FeatureState;
+using Feature = ::ash::multidevice_setup::mojom::Feature;
+using FeatureState = ::ash::multidevice_setup::mojom::FeatureState;
+using HostStatus = ::ash::multidevice_setup::mojom::HostStatus;
 
 // TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
 namespace phonehub = ::ash::phonehub;
@@ -299,10 +301,9 @@ void AddEasyUnlockStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-bool IsOptedIn(multidevice_setup::mojom::HostStatus host_status) {
-  return host_status ==
-             multidevice_setup::mojom::HostStatus::kHostSetButNotYetVerified ||
-         host_status == multidevice_setup::mojom::HostStatus::kHostVerified;
+bool IsOptedIn(HostStatus host_status) {
+  return host_status == HostStatus::kHostSetButNotYetVerified ||
+         host_status == HostStatus::kHostVerified;
 }
 
 }  // namespace
@@ -746,27 +747,25 @@ void MultiDeviceSection::OnFeatureStatesChanged(
   updater.RemoveSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubAppsSearchConcepts());
 
-  if (feature_states_map.at(multidevice_setup::mojom::Feature::kSmartLock) ==
-      multidevice_setup::mojom::FeatureState::kEnabledByUser) {
+  if (feature_states_map.at(Feature::kSmartLock) ==
+      FeatureState::kEnabledByUser) {
     updater.AddSearchTags(GetSmartLockOptionsSearchConcepts());
   }
-  if (IsFeatureSupported(multidevice_setup::mojom::Feature::kPhoneHub)) {
+  if (IsFeatureSupported(Feature::kPhoneHub)) {
     updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
     if (features::IsPhoneHubCameraRollEnabled() &&
-        IsFeatureSupported(
-            multidevice_setup::mojom::Feature::kPhoneHubCameraRoll)) {
+        IsFeatureSupported(Feature::kPhoneHubCameraRoll)) {
       updater.AddSearchTags(
           GetMultiDeviceOptedInPhoneHubCameraRollSearchConcepts());
     }
   }
-  if (IsFeatureSupported(multidevice_setup::mojom::Feature::kWifiSync))
+  if (IsFeatureSupported(Feature::kWifiSync))
     updater.AddSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
-  if (IsFeatureSupported(multidevice_setup::mojom::Feature::kEche))
+  if (IsFeatureSupported(Feature::kEche))
     updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubAppsSearchConcepts());
 }
 
-bool MultiDeviceSection::IsFeatureSupported(
-    multidevice_setup::mojom::Feature feature) {
+bool MultiDeviceSection::IsFeatureSupported(Feature feature) {
   const FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(feature);
   return feature_state != FeatureState::kNotSupportedByPhone &&

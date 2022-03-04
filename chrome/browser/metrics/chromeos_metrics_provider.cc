@@ -75,9 +75,9 @@ std::string GetFullHardwareClassOnBackgroundThread() {
 bool IsFeatureEnabled(
     const chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map,
-    chromeos::multidevice_setup::mojom::Feature feature) {
+    ash::multidevice_setup::mojom::Feature feature) {
   return feature_states_map.find(feature)->second ==
-         chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
+         ash::multidevice_setup::mojom::FeatureState::kEnabledByUser;
 }
 
 }  // namespace
@@ -277,7 +277,7 @@ void ChromeOSMetricsProvider::WriteLinkedAndroidPhoneProto(
   const chromeos::multidevice_setup::MultiDeviceSetupClient::
       HostStatusWithDevice& host_status_with_device = client->GetHostStatus();
   if (host_status_with_device.first !=
-      chromeos::multidevice_setup::mojom::HostStatus::kHostVerified) {
+      ash::multidevice_setup::mojom::HostStatus::kHostVerified) {
     return;
   }
 
@@ -290,14 +290,12 @@ void ChromeOSMetricsProvider::WriteLinkedAndroidPhoneProto(
   const chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
       feature_states_map = client->GetFeatureStates();
   linked_android_phone_data->set_is_smartlock_enabled(IsFeatureEnabled(
-      feature_states_map,
-      chromeos::multidevice_setup::mojom::Feature::kSmartLock));
+      feature_states_map, ash::multidevice_setup::mojom::Feature::kSmartLock));
   linked_android_phone_data->set_is_instant_tethering_enabled(IsFeatureEnabled(
       feature_states_map,
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering));
-  linked_android_phone_data->set_is_messages_enabled(
-      IsFeatureEnabled(feature_states_map,
-                       chromeos::multidevice_setup::mojom::Feature::kMessages));
+      ash::multidevice_setup::mojom::Feature::kInstantTethering));
+  linked_android_phone_data->set_is_messages_enabled(IsFeatureEnabled(
+      feature_states_map, ash::multidevice_setup::mojom::Feature::kMessages));
 }
 
 void ChromeOSMetricsProvider::UpdateMultiProfileUserCount(

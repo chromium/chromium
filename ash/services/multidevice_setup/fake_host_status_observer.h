@@ -15,7 +15,8 @@ namespace chromeos {
 namespace multidevice_setup {
 
 // Fake mojom::HostStatusObserver implementation for tests.
-class FakeHostStatusObserver : public mojom::HostStatusObserver {
+class FakeHostStatusObserver
+    : public ash::multidevice_setup::mojom::HostStatusObserver {
  public:
   FakeHostStatusObserver();
 
@@ -24,10 +25,11 @@ class FakeHostStatusObserver : public mojom::HostStatusObserver {
 
   ~FakeHostStatusObserver() override;
 
-  mojo::PendingRemote<mojom::HostStatusObserver> GenerateRemote();
+  mojo::PendingRemote<ash::multidevice_setup::mojom::HostStatusObserver>
+  GenerateRemote();
 
-  const std::vector<
-      std::pair<mojom::HostStatus, absl::optional<multidevice::RemoteDevice>>>&
+  const std::vector<std::pair<ash::multidevice_setup::mojom::HostStatus,
+                              absl::optional<multidevice::RemoteDevice>>>&
   host_status_updates() const {
     return host_status_updates_;
   }
@@ -35,14 +37,15 @@ class FakeHostStatusObserver : public mojom::HostStatusObserver {
  private:
   // mojom::HostStatusObserver:
   void OnHostStatusChanged(
-      mojom::HostStatus host_status,
+      ash::multidevice_setup::mojom::HostStatus host_status,
       const absl::optional<multidevice::RemoteDevice>& host_device) override;
 
-  std::vector<
-      std::pair<mojom::HostStatus, absl::optional<multidevice::RemoteDevice>>>
+  std::vector<std::pair<ash::multidevice_setup::mojom::HostStatus,
+                        absl::optional<multidevice::RemoteDevice>>>
       host_status_updates_;
 
-  mojo::ReceiverSet<mojom::HostStatusObserver> receivers_;
+  mojo::ReceiverSet<ash::multidevice_setup::mojom::HostStatusObserver>
+      receivers_;
 };
 
 }  // namespace multidevice_setup

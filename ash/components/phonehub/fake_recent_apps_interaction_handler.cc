@@ -9,7 +9,7 @@
 namespace ash {
 namespace phonehub {
 
-using FeatureState = ::chromeos::multidevice_setup::mojom::FeatureState;
+using FeatureState = multidevice_setup::mojom::FeatureState;
 
 FakeRecentAppsInteractionHandler::FakeRecentAppsInteractionHandler() = default;
 

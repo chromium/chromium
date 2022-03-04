@@ -21,9 +21,9 @@ namespace ash {
 namespace eche_app {
 namespace {
 
-using ::chromeos::multidevice_setup::mojom::Feature;
-using ::chromeos::multidevice_setup::mojom::FeatureState;
-using ::chromeos::multidevice_setup::mojom::HostStatus;
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
+using multidevice_setup::mojom::HostStatus;
 
 multidevice::RemoteDeviceRef CreateLocalDevice(bool supports_eche_client) {
   multidevice::RemoteDeviceRefBuilder builder;

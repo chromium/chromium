@@ -205,11 +205,9 @@ class EasyUnlockServiceRegularTest : public testing::Test {
 
   void SetIsEnabled(bool is_enabled) {
     fake_multidevice_setup_client_->SetFeatureState(
-        chromeos::multidevice_setup::mojom::Feature::kSmartLock,
-        is_enabled
-            ? chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser
-            : chromeos::multidevice_setup::mojom::FeatureState::
-                  kDisabledByUser);
+        multidevice_setup::mojom::Feature::kSmartLock,
+        is_enabled ? multidevice_setup::mojom::FeatureState::kEnabledByUser
+                   : multidevice_setup::mojom::FeatureState::kDisabledByUser);
   }
 
   void SetEasyUnlockAllowedPolicy(bool allowed) {
@@ -296,8 +294,8 @@ class EasyUnlockServiceRegularTest : public testing::Test {
 TEST_F(EasyUnlockServiceRegularTest, NotAllowedWhenProhibited) {
   InitializeService(true /* should_initialize_all_dependencies */);
   fake_multidevice_setup_client_->SetFeatureState(
-      chromeos::multidevice_setup::mojom::Feature::kSmartLock,
-      chromeos::multidevice_setup::mojom::FeatureState::kProhibitedByPolicy);
+      multidevice_setup::mojom::Feature::kSmartLock,
+      multidevice_setup::mojom::FeatureState::kProhibitedByPolicy);
 
   EXPECT_FALSE(easy_unlock_service_regular_->IsAllowed());
 }

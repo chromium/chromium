@@ -48,12 +48,14 @@ extern const char kSmartLockEnabledDeprecatedPrefName[];
 
 void RegisterFeaturePrefs(PrefRegistrySimple* registry);
 bool AreAnyMultiDeviceFeaturesAllowed(const PrefService* pref_service);
-bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service);
+bool IsFeatureAllowed(ash::multidevice_setup::mojom::Feature feature,
+                      const PrefService* pref_service);
 
 // Returns true if the pref tracking |feature|'s enabled state is using the
 // default value it was registered with.
-bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
-                                  const PrefService* pref_service);
+bool IsDefaultFeatureEnabledValue(
+    ash::multidevice_setup::mojom::Feature feature,
+    const PrefService* pref_service);
 
 }  // namespace multidevice_setup
 
@@ -65,6 +67,7 @@ namespace ash {
 namespace multidevice_setup {
 using ::chromeos::multidevice_setup::AreAnyMultiDeviceFeaturesAllowed;
 using ::chromeos::multidevice_setup::IsFeatureAllowed;
+using ::chromeos::multidevice_setup::RegisterFeaturePrefs;
 }  // namespace multidevice_setup
 }  // namespace ash
 

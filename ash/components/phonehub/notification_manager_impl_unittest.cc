@@ -18,8 +18,8 @@ namespace ash {
 namespace phonehub {
 namespace {
 
-using ::chromeos::multidevice_setup::mojom::Feature;
-using ::chromeos::multidevice_setup::mojom::FeatureState;
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 
 const char16_t kAppName[] = u"Test App";
 const char kPackageName[] = "com.google.testapp";

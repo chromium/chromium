@@ -30,7 +30,7 @@ namespace {
 
 bool IsFeatureAllowed(content::BrowserContext* context) {
   return chromeos::multidevice_setup::IsFeatureAllowed(
-      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::Feature::kInstantTethering,
       Profile::FromBrowserContext(context)->GetPrefs());
 }
 

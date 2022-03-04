@@ -79,7 +79,7 @@ class GlobalStateFeatureManagerImpl
 
  private:
   GlobalStateFeatureManagerImpl(
-      mojom::Feature managed_feature,
+      ash::multidevice_setup::mojom::Feature managed_feature,
       multidevice::SoftwareFeature managed_host_feature,
       const std::string& pending_state_pref_name,
       HostStatusProvider* host_status_provider,
@@ -145,7 +145,7 @@ class GlobalStateFeatureManagerImpl
   bool ShouldAttemptToEnableAfterHostVerified();
 
   // The feature being managed.
-  mojom::Feature managed_feature_;
+  ash::multidevice_setup::mojom::Feature managed_feature_;
   // Corresponding CryptAuth host feature for |managed_feature_|.
   multidevice::SoftwareFeature managed_host_feature_;
   const std::string pending_state_pref_name_;

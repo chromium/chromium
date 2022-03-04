@@ -14,14 +14,17 @@ namespace chromeos {
 namespace multidevice_setup {
 
 // MultiDeviceSetup implementation which accepts receivers to bind to it.
-class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
+class MultiDeviceSetupBase
+    : public ash::multidevice_setup::mojom::MultiDeviceSetup {
  public:
   MultiDeviceSetupBase(const MultiDeviceSetupBase&) = delete;
   MultiDeviceSetupBase& operator=(const MultiDeviceSetupBase&) = delete;
 
   ~MultiDeviceSetupBase() override;
 
-  void BindReceiver(mojo::PendingReceiver<mojom::MultiDeviceSetup> receiver);
+  void BindReceiver(
+      mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
+          receiver);
   void CloseAllReceivers();
 
   // Sets the device with the given ID as the multi-device host for this
@@ -30,13 +33,14 @@ class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
   // use Instance ID since all devices are guaranteed to have one.
   virtual void SetHostDeviceWithoutAuthToken(
       const std::string& host_instance_id_or_legacy_device_id,
-      mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback) = 0;
+      ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter::
+          SetHostDeviceCallback callback) = 0;
 
  protected:
   MultiDeviceSetupBase();
 
  private:
-  mojo::ReceiverSet<mojom::MultiDeviceSetup> receivers_;
+  mojo::ReceiverSet<ash::multidevice_setup::mojom::MultiDeviceSetup> receivers_;
 };
 
 }  // namespace multidevice_setup

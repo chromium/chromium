@@ -105,7 +105,7 @@ TetherHostFetcherImpl::GenerateHostDeviceList() {
   multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice
       host_status_with_device = multidevice_setup_client_->GetHostStatus();
   if (host_status_with_device.first ==
-      chromeos::multidevice_setup::mojom::HostStatus::kHostVerified) {
+      multidevice_setup::mojom::HostStatus::kHostVerified) {
     host_list.push_back(*host_status_with_device.second);
   }
   return host_list;
