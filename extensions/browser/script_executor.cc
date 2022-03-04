@@ -90,24 +90,32 @@ class Handler : public content::WebContentsObserver {
     // `pending_render_frames_` and add them if they are alive (and not already
     // contained in `pending_frames`).
     if (scope == ScriptExecutor::INCLUDE_SUB_FRAMES) {
-      auto append_frame =
-          [](std::vector<content::RenderFrameHost*>* pending_frames,
-             content::RenderFrameHost* frame) {
-            if (!frame->IsRenderFrameLive() ||
-                base::Contains(*pending_frames, frame)) {
-              return;
-            }
+      auto append_frame = [](content::WebContents* web_contents,
+                             std::vector<raw_ptr<content::RenderFrameHost>>*
+                                 pending_frames,
+                             content::RenderFrameHost* frame) {
+        // Avoid inner web contents. If we need to execute scripts on
+        // inner WebContents this class needs to be updated.
+        // See crbug.com/1301320.
+        if (content::WebContents::FromRenderFrameHost(frame) != web_contents) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+        if (!frame->IsRenderFrameLive() ||
+            base::Contains(*pending_frames, frame)) {
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
+        }
 
-            pending_frames->push_back(frame);
-          };
+        pending_frames->push_back(frame);
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      };
 
       // We iterate over the requested frames. Note we can't use an iterator
       // as the for loop will mutate `pending_render_frames_`.
       size_t requested_frame_count = pending_render_frames_.size();
       for (size_t i = 0; i < requested_frame_count; ++i) {
-        auto* frame = pending_render_frames_.at(i);
-        frame->ForEachRenderFrameHost(
-            base::BindRepeating(append_frame, &pending_render_frames_));
+        pending_render_frames_.at(i)->ForEachRenderFrameHost(
+            base::BindRepeating(append_frame, web_contents,
+                                &pending_render_frames_));
       }
     }
 
@@ -254,7 +262,7 @@ class Handler : public content::WebContentsObserver {
   // TODO(devlin): Extensions *shouldn't* rely on order here, because there's
   // never a guarantee. We should probably just adjust the test and disregard
   // order (except the root frame).
-  std::vector<content::RenderFrameHost*> pending_render_frames_;
+  std::vector<raw_ptr<content::RenderFrameHost>> pending_render_frames_;
 
   // The results of the injection.
   std::vector<ScriptExecutor::FrameResult> results_;
