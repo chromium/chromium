@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
-#include "media/base/timestamp_constants.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
@@ -73,10 +72,6 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
   const Member<ScriptWrappable> media_stream_track_processor_;
 
   const Member<MediaStreamComponent> track_;
-
-  // State for handling duplicate frames. Only accessed from the IO thread.
-  base::TimeDelta last_enqueued_timestamp = media::kNoTimestamp;
-  bool reported_out_of_order_timestamp = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
