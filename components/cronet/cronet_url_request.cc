@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/cronet/cronet_context.h"
 #include "net/base/idempotency.h"
+#include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"

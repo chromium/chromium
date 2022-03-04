@@ -12,11 +12,10 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
-#include "net/quic/platform/impl/quic_mem_slice_impl.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_mem_slice.h"
 #include "net/third_party/quiche/src/quic/core/quic_session.h"
 #include "net/third_party/quiche/src/quic/core/quic_time.h"
 #include "net/third_party/quiche/src/quic/core/quic_types.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_mem_slice.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 
@@ -408,10 +407,9 @@ void WebTransport::SendDatagram(base::span<const uint8_t> data,
 
   datagram_callbacks_.emplace(std::move(callback));
 
-  auto buffer = base::MakeRefCounted<net::IOBuffer>(data.size());
-  memcpy(buffer->data(), data.data(), data.size());
-  quic::QuicMemSlice slice(
-      quic::QuicMemSliceImpl(std::move(buffer), data.size()));
+  quic::QuicBuffer buffer(quic::SimpleBufferAllocator::Get(), data.size());
+  memcpy(buffer.data(), data.data(), data.size());
+  quiche::QuicheMemSlice slice(std::move(buffer));
   transport_->session()->SendOrQueueDatagram(std::move(slice));
 }
 

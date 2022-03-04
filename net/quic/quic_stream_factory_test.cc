@@ -263,7 +263,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
 
   void SetIetfConnectionMigrationFlagsAndConnectionOptions() {
     FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = true;
-    FLAGS_quic_reloadable_flag_quic_send_path_response2 = true;
     FLAGS_quic_reloadable_flag_quic_server_reverse_validate_new_path3 = true;
     FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2 = true;
     quic_params_->connection_options.push_back(quic::kRVCM);
@@ -4808,7 +4807,6 @@ TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithoutNetworkHandle) {
   }
   quic_params_->allow_port_migration = true;
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
-  FLAGS_quic_reloadable_flag_quic_send_path_response2 = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -4824,7 +4822,6 @@ TEST_P(QuicStreamFactoryTest, PortMigrationProbingReceivedStatelessReset) {
   }
   quic_params_->allow_port_migration = true;
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
-  FLAGS_quic_reloadable_flag_quic_send_path_response2 = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -5118,7 +5115,6 @@ TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithNetworkHandle) {
   mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
   quic_params_->allow_port_migration = true;
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
-  FLAGS_quic_reloadable_flag_quic_send_path_response2 = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5148,7 +5144,6 @@ TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithMigration) {
   quic_params_->migrate_sessions_on_network_change_v2 = true;
   quic_params_->allow_port_migration = true;
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
-  FLAGS_quic_reloadable_flag_quic_send_path_response2 = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5392,10 +5387,9 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
 }
 
 // Regression test for https://crbug.com/1014092.
-TEST_P(QuicStreamFactoryTest, MultiplePortMigrationsExceedsMaxLimit) {
+TEST_P(QuicStreamFactoryTest, DISABLED_MultiplePortMigrationsExceedsMaxLimit) {
   quic_params_->allow_port_migration = true;
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
-  FLAGS_quic_reloadable_flag_quic_send_path_response2 = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -14939,7 +14933,7 @@ TEST_P(QuicStreamFactoryTest, ConfigInitialRttForHandshake) {
   // which is 2 * 400ms with crypto frames and 1.5 * 400ms otherwise.
   base::TimeDelta handshake_timeout =
       QuicVersionUsesCryptoFrames(version_.transport_version)
-          ? 2 * kInitialRtt
+          ? (GetQuicRestartFlag(quic_default_on_pto2) ? 3 : 2) * kInitialRtt
           : 1.5 * kInitialRtt;
   EXPECT_EQ(handshake_timeout, task_runner->NextPendingTaskDelay());
 

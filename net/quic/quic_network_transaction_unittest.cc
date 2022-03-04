@@ -3286,7 +3286,7 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
                        client_maker_->MakeConnectionClosePacket(
                            packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
                            "No recent network activity after 4s. Timeout:4s"));
-  } else if (version_.UsesTls()) {
+  } else if (version_.UsesTls() || GetQuicRestartFlag(quic_default_on_pto2)) {
     // Settings were sent in the request packet so there is only 1 packet to
     // retransmit.
     // QuicConnection::OnRetransmissionTimeout skips a packet number when
@@ -3509,7 +3509,7 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
                        client_maker_->MakeConnectionClosePacket(
                            packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
                            "No recent network activity after 4s. Timeout:4s"));
-  } else if (version_.UsesTls()) {
+  } else if (version_.UsesTls() || GetQuicRestartFlag(quic_default_on_pto2)) {
     // Settings were sent in the request packet so there is only 1 packet to
     // retransmit.
     // QuicConnection::OnRetransmissionTimeout skips a packet number when

@@ -53,7 +53,6 @@ class NET_EXPORT_PRIVATE QuicHttp3Logger : public quic::Http3DebugVisitor {
 
   void OnSettingsFrameSent(const quic::SettingsFrame& frame) override;
   void OnGoAwayFrameSent(quic::QuicStreamId stream_id) override;
-  void OnMaxPushIdFrameSent(const quic::MaxPushIdFrame& frame) override;
   void OnPriorityUpdateFrameSent(
       const quic::PriorityUpdateFrame& frame) override;
 

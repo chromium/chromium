@@ -469,9 +469,6 @@ QuicTestPacketMaker::MakeRstAckAndConnectionClosePacket(
     AddQuicStopSendingFrame(stream_id, error_code);
   }
   AddQuicRstStreamFrame(stream_id, error_code);
-  if (!FLAGS_quic_reloadable_flag_quic_single_ack_in_packet2) {
-    AddQuicAckFrame(largest_received, smallest_received);
-  }
   AddQuicConnectionCloseFrame(quic_error, quic_error_details);
 
   return BuildPacket();

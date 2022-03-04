@@ -781,8 +781,6 @@ component("net") {
     "quic/platform/impl/quic_hostname_utils_impl.cc",
     "quic/platform/impl/quic_hostname_utils_impl.h",
     "quic/platform/impl/quic_iovec_impl.h",
-    "quic/platform/impl/quic_mem_slice_impl.cc",
-    "quic/platform/impl/quic_mem_slice_impl.h",
     "quic/platform/impl/quic_prefetch_impl.h",
     "quic/platform/impl/quic_reference_counted_impl.h",
     "quic/platform/impl/quic_server_stats_impl.h",
