@@ -160,6 +160,7 @@ SystemToastStyle::SystemToastStyle(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->SetFlexForView(label_, 1);
 
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(toast_height / 2.f));
   SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
                                                    toast_height / 2.f));
 }
