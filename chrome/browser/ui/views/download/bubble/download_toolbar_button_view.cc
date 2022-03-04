@@ -24,30 +24,13 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/progress_ring_utils.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
 
 constexpr int kProgressRingRadius = 7;
-
-// TODO(crbug.com/1282240): Move this helper function into ui/views/controls/
-// so it can be used by ring_progress_bar too.
-void DrawRing(gfx::Canvas* canvas,
-              const gfx::RectF& bounds,
-              SkColor color,
-              SkScalar sweep_angle) {
-  SkPath path;
-  path.addArc(gfx::RectFToSkRect(bounds), /*startAngle=*/-90,
-              /*sweepAngle=*/sweep_angle);
-
-  cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
-  flags.setAntiAlias(true);
-  flags.setColor(color);
-  flags.setStrokeWidth(1.7f);
-
-  canvas->DrawPath(std::move(path), std::move(flags));
-}
+constexpr float kProgressRingStrokeWidth = 1.7f;
 
 }  // namespace
 
@@ -89,15 +72,12 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   int diameter = 2 * kProgressRingRadius;
   gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
 
-  // Draw the background ring that gets progressively filled.
-  DrawRing(
-      canvas, ring_bounds,
+  views::DrawProgressRing(
+      canvas, gfx::RectFToSkRect(ring_bounds),
       GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground),
-      /*sweep_angle=*/360);
-  // Draw the filled portion of the progress ring.
-  DrawRing(canvas, ring_bounds,
-           GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive),
-           /*sweep_angle=*/360 * progress_info.progress_percentage / 100.0);
+      GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive),
+      kProgressRingStrokeWidth, /*start_angle=*/-90,
+      /*sweep_angle=*/360 * progress_info.progress_percentage / 100.0);
 }
 
 void DownloadToolbarButtonView::Show() {

@@ -15,6 +15,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/controls/progress_ring_utils.h"
 
 namespace {
 constexpr float kStrokeWidth = 4;
@@ -40,34 +41,19 @@ void RingProgressBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void RingProgressBar::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect content_bounds = GetContentsBounds();
-  // Draw the background ring that gets progressively filled.
-  gfx::PointF center(content_bounds.width() / 2, content_bounds.height() / 2);
   const float radius =
       (std::min(content_bounds.width(), content_bounds.height()) -
        kStrokeWidth) /
       2;
-  cc::PaintFlags background_flags;
-  background_flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
-  background_flags.setAntiAlias(true);
-  background_flags.setColor(kBackgroundColor);
-  background_flags.setStrokeWidth(kStrokeWidth);
-  canvas->DrawCircle(center, radius, std::move(background_flags));
 
-  // Draw the filled portion of the circle.
-  SkPath ring_path;
   SkRect bounds{/*fLeft=*/(content_bounds.width() / 2 - radius),
                 /*fTop=*/(content_bounds.height() / 2 - radius),
                 /*fRight=*/(content_bounds.width() / 2 + radius),
                 /*fBottom=*/(content_bounds.height() / 2 + radius)};
-  ring_path.addArc(
-      std::move(bounds), /*startAngle=*/-90,
-      /*sweepAngle=*/360 * animation_->CurrentValueBetween(initial_, target_));
-  cc::PaintFlags ring_flags;
-  ring_flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
-  ring_flags.setAntiAlias(true);
-  ring_flags.setColor(kRingColor);
-  ring_flags.setStrokeWidth(kStrokeWidth);
-  canvas->DrawPath(std::move(ring_path), std::move(ring_flags));
+  views::DrawProgressRing(
+      canvas, bounds, kBackgroundColor, kRingColor, kStrokeWidth,
+      /*start_angle=*/-90,
+      /*sweep_angle=*/360 * animation_->CurrentValueBetween(initial_, target_));
 }
 
 void RingProgressBar::AnimationProgressed(const gfx::Animation* animation) {

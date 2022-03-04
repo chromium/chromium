@@ -95,6 +95,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/progress_ring_utils.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
@@ -1062,13 +1063,6 @@ void DownloadItemView::PaintDownloadProgress(
     int percent_done) const {
   const SkColor color = GetColorProvider()->GetColor(ui::kColorThrobber);
 
-  // Draw background.
-  cc::PaintFlags bg_flags;
-  bg_flags.setColor(SkColorSetA(color, 0x33));
-  bg_flags.setStyle(cc::PaintFlags::kFill_Style);
-  bg_flags.setAntiAlias(true);
-  canvas->DrawCircle(bounds.CenterPoint(), bounds.width() / 2, bg_flags);
-
   // Calculate progress.
   SkScalar start_pos = SkIntToScalar(270);  // 12 o'clock
   SkScalar sweep_angle = SkDoubleToScalar(360 * percent_done / 100.0);
@@ -1080,15 +1074,9 @@ void DownloadItemView::PaintDownloadProgress(
     sweep_angle = SkIntToScalar(50);
   }
 
-  // Draw progress.
-  SkPath progress;
-  progress.addArc(gfx::RectFToSkRect(bounds), start_pos, sweep_angle);
-  cc::PaintFlags progress_flags;
-  progress_flags.setColor(color);
-  progress_flags.setStyle(cc::PaintFlags::kStroke_Style);
-  progress_flags.setStrokeWidth(1.7f);
-  progress_flags.setAntiAlias(true);
-  canvas->DrawPath(progress, progress_flags);
+  views::DrawProgressRing(canvas, gfx::RectFToSkRect(bounds),
+                          SkColorSetA(color, 0x33), color,
+                          /*stroke_width=*/1.7f, start_pos, sweep_angle);
 }
 
 ui::ImageModel DownloadItemView::GetIcon() const {
