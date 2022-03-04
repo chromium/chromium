@@ -1,4 +1,1 @@
-monorail {
-  component: "UI>Browser>Mobile>Messages"
-}
-os: ANDROID
+mixins: "//components/messages/COMMON_METADATA"

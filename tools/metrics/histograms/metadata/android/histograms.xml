@@ -1699,9 +1699,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.Dismissed{MessageIdentifier}"
     enum="MessageDismissReason" expires_after="2022-06-01">
-  <owner>pavely@chromium.org</owner>
   <owner>lazzzis@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
+  <owner>src/components/messages/OWNERS</owner>
   <summary>
     Recorded once per message when the message is dismissed to capture the
     dismissal reason (e.g. primary button tap, timeout). The histogram can be
@@ -1712,9 +1711,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.Enqueued" enum="MessageIdentifier"
     expires_after="2022-07-31">
-  <owner>pavely@chromium.org</owner>
   <owner>lazzzis@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
+  <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the message identifier each time a message is enqueued through
     MessageDispatcher (the entry point to Chrome for Android's messages system).
@@ -1725,9 +1723,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.Enqueued.Hidden" enum="MessageIdentifier"
     expires_after="2022-07-31">
-  <owner>pavely@chromium.org</owner>
   <owner>lazzzis@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
+  <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the message identifier when an enqueued message is not immediately
     displayed either because there is another message on the secreen or because
@@ -1739,9 +1736,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.Enqueued.Hiding" enum="MessageIdentifier"
     expires_after="2022-06-01">
-  <owner>pavely@chromium.org</owner>
   <owner>lazzzis@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
+  <owner>src/components/messages/OWNERS</owner>
   <summary>
     Recorded when an enqueued message is not immediately displayed. This metric
     records message identifier of a message currently displayed on the screen
@@ -1753,9 +1749,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.Enqueued.Visible" enum="MessageIdentifier"
     expires_after="2022-07-31">
-  <owner>pavely@chromium.org</owner>
   <owner>lazzzis@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
+  <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the message identifier when a message is displayed immediately when
     it is enqueued. This includes cases when there are no other messages on the
@@ -1766,9 +1761,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.TimeToAction.Dismiss{MessageIdentifier}"
     units="ms" expires_after="2022-06-01">
-  <owner>pavely@chromium.org</owner>
   <owner>lazzzis@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
+  <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the time interval the message was displayed on the screen before the
     user dismissed it with a gesture. The metric is NOT recorded when the user
@@ -1782,9 +1776,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Messages.TimeToAction{MessageIdentifier}" units="ms"
     expires_after="2022-06-01">
-  <owner>pavely@chromium.org</owner>
   <owner>lazzzis@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
+  <owner>src/components/messages/OWNERS</owner>
   <summary>
     Records the time interval the message was displayed on the screen before the
     user explicitly dismissed it. The metric is recorded when the user presses
