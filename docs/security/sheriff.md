@@ -92,16 +92,30 @@ various important responsibilities:
     owner. If not, you may need to do them yourself. Please see
     [How to do Chrome Third-Party Security Reviews](https://goto.google.com/how-to-do-chrome-third-party-security-reviews)
     for hints.
-* Change bugs status to **Fixed** for those that the developer forgets to close.
-  Make sure to read bug comments where developer might point out that it needs
-  more CLs, et c. Wait 24 hours before closing ClusterFuzz bugs, to give
-  ClusterFuzz a chance to close it automatically.
-  * [Starting point](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=Type%3D%22Bug-Security%22+%22Change-Id:%22)
 * Look at the open security bug reports and check that progress is occurring.
   This does not apply to the **new bug reports** (these are handled by the
-  sheriff), but does apply to the issues on the *Low Severity Bugs* page of the
-  dashboard. The rule of thumb is *if there is any red cell on the dashboard, it
-  needs your attention*.
+  sheriff). The rule of thumb is *if there is any red cell on the dashboard, it
+  needs your attention*: that especially includes the "last updated" column.
+  (Our [severity guidelines](severity-guidelines.md) contain the expected duration
+  for shipping fixes, but remember, to get a fix to all users in - say - 60
+  days may require us to land a fix in a week or two).
+  Hints:
+  * Don't just add a comment to the bug: sometimes they can disappear into spam.
+    (Although a hand-crafted, meaningful comment can be effective).
+  * Contact via chat or e-mail (ideally, also comment on the bug so other marshals
+    can see you did so).
+  * CC more people!
+  * Think about what you can do to unblock the bug. What would _you_ do next?
+    Perhaps you can bring in different experts, suggest a different way to
+    reproduce the bug, or even write a fuzzer? Sometimes your security perspective
+    can really help engineering see a different way forward.
+  * Consider whether it's better for you to make meaningful steps forward on
+    ten bugs than to add ignorable nag messages to twenty bugs.
+  * You can't possibly hope to meaningfully move all bugs forward. As a rule of
+    thumb, perhaps expect to spend a solid ten hours progressing bugs during
+    your shift.
+  * Use the 'last updated' column to avoid duplicating the work of the previous
+    marshal.
 * Stay sharp, keep in shape ([finger
   exercises](https://youtu.be/20elMaVZ9lg?t=47s) are standard for the marshal),
   and remember you may be called upon during emergencies.
