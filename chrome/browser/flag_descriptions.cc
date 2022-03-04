@@ -4283,10 +4283,10 @@ const char kDefaultLinkCapturingInBrowserDescription[] =
     "When enabled, newly installed apps will not capture links clicked in the "
     "browser.";
 
-const char kDesksTemplatesName[] = "Desks Templates";
+const char kDesksTemplatesName[] = "Desk Templates";
 const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "
-    "launchable template.";
+    "launchable template in a new desk";
 
 const char kDesksTrackpadSwipeImprovementsName[] =
     "Experiment: Trackpad swiping to switch desks.";
