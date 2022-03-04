@@ -22,8 +22,6 @@
 
 using optimization_guide::proto::OptimizationTarget;
 
-const int kInvalidModelVersion = 0;
-
 namespace segmentation_platform {
 namespace {
 
@@ -133,6 +131,9 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
       if (hash_index_map.find(output_metric_hash) == hash_index_map.end())
         continue;
 
+      if (!segment_info.has_model_version())
+        continue;
+
       // Generate training data input.
       // TODO(xingliu): Validate immediate output is not included in the input
       // features and update the comment in model_metadata.proto.
@@ -143,23 +144,23 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
                          weak_ptr_factory_.GetWeakPtr(),
                          static_cast<float>(output_metric_sample),
                          hash_index_map[output_metric_hash],
-                         segment_info.segment_id()));
+                         segment_info.segment_id(),
+                         segment_info.model_version()));
     }
   }
 
   void OnGetInputTensor(float output_value,
                         int output_index,
                         OptimizationTarget segment_id,
+                        int64_t model_version,
                         bool success,
                         const std::vector<float>& inputs) {
     if (!success)
       return;
 
-    // TODO(xingliu): Plumb model version to here.
     auto ukm_source_id =
         SegmentationUkmHelper::GetInstance()->RecordTrainingData(
-            segment_id, /*model_version=*/kInvalidModelVersion, inputs,
-            {output_value}, {output_index});
+            segment_id, model_version, inputs, {output_value}, {output_index});
     if (ukm_source_id == ukm::kInvalidSourceId) {
       VLOG(1) << "Failed to collect training data for segment:" << segment_id;
     }

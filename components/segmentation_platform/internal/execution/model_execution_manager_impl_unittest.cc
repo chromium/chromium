@@ -41,8 +41,9 @@ using testing::SaveArg;
 using testing::SetArgReferee;
 
 namespace segmentation_platform {
-
 namespace {
+
+const int64_t kModelVersion = 123;
 
 using Sample = SignalDatabase::Sample;
 
@@ -247,7 +248,8 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
   // SegmentInfoDatabase, nor invokes the callback.
   EXPECT_CALL(*mock_segment_database_ptr, GetSegmentInfo(_, _)).Times(0);
   EXPECT_CALL(callback, Run(_)).Times(0);
-  model_handlers_callbacks_[segment_id].Run(segment_id, metadata);
+  model_handlers_callbacks_[segment_id].Run(segment_id, metadata,
+                                            kModelVersion);
 }
 
 TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
@@ -262,7 +264,8 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
   metadata.set_bucket_duration(42u);
   metadata.set_time_unit(proto::TimeUnit::DAY);
   EXPECT_CALL(callback, Run(_)).WillOnce(SaveArg<0>(&segment_info));
-  model_handlers_callbacks_[segment_id].Run(segment_id, metadata);
+  model_handlers_callbacks_[segment_id].Run(segment_id, metadata,
+                                            kModelVersion);
 
   // Verify that the resulting callback was invoked correctly.
   EXPECT_EQ(segment_id, segment_info.segment_id());
@@ -340,7 +343,8 @@ TEST_F(ModelExecutionManagerTest,
   // Invoke the callback and store the resulting invocation of the outer
   // callback for verification.
   EXPECT_CALL(callback, Run(_)).WillOnce(SaveArg<0>(&segment_info));
-  model_handlers_callbacks_[segment_id].Run(segment_id, metadata);
+  model_handlers_callbacks_[segment_id].Run(segment_id, metadata,
+                                            kModelVersion);
 
   // Should now have the metadata from the new proto.
   EXPECT_EQ(segment_id, segment_info.segment_id());

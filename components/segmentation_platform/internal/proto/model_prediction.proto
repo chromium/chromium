@@ -22,6 +22,7 @@ message PredictionResult {
 
 // Top level message for a segment. Contains both the model metadata and
 // prediction results.
+// Next tag: 5
 message SegmentInfo {
   // Segment target.
   optional optimization_guide.proto.OptimizationTarget segment_id = 1;
@@ -33,4 +34,8 @@ message SegmentInfo {
 
   // The last prediction result for this segment.
   optional PredictionResult prediction_result = 3;
+
+  // The model version defined in ModeInfo in optimization guide, given by
+  // optimization guide API after ModeInfo is fetched.
+  optional int64 model_version = 4;
 }

@@ -35,7 +35,7 @@ constexpr auto kTestOptimizationTarget1 =
     OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
 constexpr char kHistogramName0[] = "histogram0";
 constexpr char kHistogramName1[] = "histogram1";
-
+constexpr int64_t kModelVersion = 123;
 constexpr int kSample = 1;
 
 namespace segmentation_platform {
@@ -89,6 +89,7 @@ class TrainingDataCollectorTest : public ::testing::Test {
     auto* segment_info =
         test_segment_db()->FindOrCreateSegment(optimization_target);
     segment_info->mutable_model_metadata()->set_time_unit(proto::TimeUnit::DAY);
+    segment_info->set_model_version(kModelVersion);
     return segment_info;
   }
 
@@ -168,10 +169,11 @@ TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported) {
   CreateSegmentInfo();
   Init();
   WaitForHistogramSignalUpdated(kHistogramName0, kSample);
-  ExpectUkm(
-      {Segmentation_ModelExecution::kOptimizationTargetName,
-       Segmentation_ModelExecution::kActualResultName},
-      {kTestOptimizationTarget0, SegmentationUkmHelper::FloatToInt64(kSample)});
+  ExpectUkm({Segmentation_ModelExecution::kOptimizationTargetName,
+             Segmentation_ModelExecution::kModelVersionName,
+             Segmentation_ModelExecution::kActualResultName},
+            {kTestOptimizationTarget0, kModelVersion,
+             SegmentationUkmHelper::FloatToInt64(kSample)});
 }
 
 TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported_MultipleModel) {

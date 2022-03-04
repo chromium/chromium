@@ -31,7 +31,8 @@ class SegmentationModelHandler
  public:
   using ModelUpdatedCallback = base::RepeatingCallback<void(
       optimization_guide::proto::OptimizationTarget,
-      proto::SegmentationModelMetadata)>;
+      proto::SegmentationModelMetadata,
+      int64_t)>;
 
   explicit SegmentationModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,

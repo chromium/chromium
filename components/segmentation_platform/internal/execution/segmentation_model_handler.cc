@@ -68,7 +68,8 @@ void SegmentationModelHandler::OnModelUpdated(
       stats::SegmentationModelAvailability::kModelAvailable);
 
   model_updated_callback_.Run(optimization_target,
-                              std::move(*segmentation_model_metadata));
+                              std::move(*segmentation_model_metadata),
+                              model_info.GetVersion());
 }
 
 }  // namespace segmentation_platform

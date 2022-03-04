@@ -254,7 +254,8 @@ void ModelExecutionManagerImpl::RunModelExecutionCallback(
 
 void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
     optimization_guide::proto::OptimizationTarget segment_id,
-    proto::SegmentationModelMetadata metadata) {
+    proto::SegmentationModelMetadata metadata,
+    int64_t model_version) {
   TRACE_EVENT("segmentation_platform",
               "ModelExecutionManagerImpl::OnSegmentationModelUpdated");
   stats::RecordModelDeliveryReceived(segment_id);
@@ -277,12 +278,14 @@ void ModelExecutionManagerImpl::OnSegmentationModelUpdated(
       segment_id,
       base::BindOnce(
           &ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate,
-          weak_ptr_factory_.GetWeakPtr(), segment_id, std::move(metadata)));
+          weak_ptr_factory_.GetWeakPtr(), segment_id, std::move(metadata),
+          model_version));
 }
 
 void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
     optimization_guide::proto::OptimizationTarget segment_id,
     proto::SegmentationModelMetadata metadata,
+    int64_t model_version,
     absl::optional<proto::SegmentInfo> old_segment_info) {
   TRACE_EVENT("segmentation_platform",
               "ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate");
@@ -313,6 +316,7 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   // Inject the newly updated metadata into the new SegmentInfo.
   auto* new_metadata = new_segment_info.mutable_model_metadata();
   new_metadata->CopyFrom(metadata);
+  new_segment_info.set_model_version(model_version);
 
   // We have a valid segment id, and the new metadata was valid, therefore the
   // new metadata should be valid. We are not allowed to invoke the callback

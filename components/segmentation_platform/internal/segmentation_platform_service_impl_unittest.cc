@@ -61,6 +61,10 @@ constexpr char kTestSegmentationKey1[] = "test_key1";
 constexpr char kTestSegmentationKey2[] = "test_key2";
 constexpr char kTestSegmentationKey3[] = "test_key3";
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+const int64_t kModelVersion = 123;
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB
+
 std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
   std::vector<std::unique_ptr<Config>> configs;
   {
@@ -261,7 +265,8 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     // from the database, and then write the merged result of the old and new to
     // the database.
     mem_impl->OnSegmentationModelUpdated(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata);
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata,
+        kModelVersion);
     segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
 
@@ -295,7 +300,8 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     segment_db_->LoadCallback(true);
 
     mem_impl->OnSegmentationModelUpdated(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE, metadata);
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE, metadata,
+        kModelVersion);
     segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
 

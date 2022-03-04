@@ -31,6 +31,7 @@ using testing::_;
 namespace {
 const auto kOptimizationTarget = optimization_guide::proto::OptimizationTarget::
     OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+const int64_t kModelVersion = 123;
 }  // namespace
 
 namespace segmentation_platform {
@@ -105,6 +106,7 @@ class SegmentationModelExecutorTest : public testing::Test {
     auto model_metadata = optimization_guide::TestModelInfoBuilder()
                               .SetModelMetadata(any)
                               .SetModelFilePath(model_file_path_)
+                              .SetVersion(kModelVersion)
                               .Build();
     model_executor_handle_->OnModelUpdated(kOptimizationTarget,
                                            *model_metadata);
@@ -137,10 +139,12 @@ TEST_F(SegmentationModelExecutorTest, ExecuteWithLoadedModel) {
       [](base::RunLoop* run_loop,
          proto::SegmentationModelMetadata original_metadata,
          optimization_guide::proto::OptimizationTarget optimization_target,
-         proto::SegmentationModelMetadata actual_metadata) {
+         proto::SegmentationModelMetadata actual_metadata,
+         int64_t model_version) {
         // Verify that the callback is invoked with the correct data.
         EXPECT_EQ(kOptimizationTarget, optimization_target);
         EXPECT_TRUE(AreEqual(original_metadata, actual_metadata));
+        EXPECT_EQ(kModelVersion, model_version);
         run_loop->Quit();
       },
       model_update_runloop.get(), metadata));
@@ -176,7 +180,7 @@ TEST_F(SegmentationModelExecutorTest, FailToProvideMetadata) {
       std::make_unique<base::RunLoop>();
   base::MockCallback<SegmentationModelHandler::ModelUpdatedCallback> callback;
   CreateModelExecutor(callback.Get());
-  EXPECT_CALL(callback, Run(_, _)).Times(0);
+  EXPECT_CALL(callback, Run(_, _, _)).Times(0);
 
   // Intentionally pass an empty metadata which will pass absl::nullopt as the
   // Any proto.
