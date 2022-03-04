@@ -67,6 +67,14 @@ wheel: <
   name: "infra/python/wheels/requests-py2_py3"
   version: "version:2.26.0"
 >
+wheel: <
+  name: "infra/python/wheels/pillow/${vpython_platform}"
+  version: "version:8.3.1"
+  # There is currently no Linux arm/arm64 version in CIPD.
+  not_match_tag <
+    platform: "linux_aarch64"
+  >
+>
 
 # Used by various python unit tests.
 wheel: <
@@ -205,10 +213,6 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/distro-py2_py3"
   version: "version:1.4.0"
->
-wheel: <
-  name: "infra/python/wheels/pillow/linux-amd64_cp38_cp38"
-  version: "version:8.1.2"
 >
 wheel: <
   name: "infra/python/wheels/aioquic/${vpython_platform}"
