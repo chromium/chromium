@@ -8,6 +8,7 @@
 
 goog.provide('UserActionMonitor');
 
+goog.require('CommandHandlerInterface');
 goog.require('KeyCode');
 goog.require('KeySequence');
 goog.require('Output');

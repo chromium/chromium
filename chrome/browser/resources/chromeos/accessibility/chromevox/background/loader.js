@@ -23,7 +23,6 @@ goog.require('ChromeVoxKbHandler');
 goog.require('ChromeVoxPrefs');
 goog.require('ChromeVoxState');
 goog.require('ChromeVoxStateObserver');
-goog.require('Color');
 goog.require('CommandHandlerInterface');
 goog.require('CommandStore');
 goog.require('CustomAutomationEvent');

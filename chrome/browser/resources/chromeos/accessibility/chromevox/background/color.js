@@ -6,7 +6,7 @@
  * @fileoverview Provides color matching services for ChromeVox.
  */
 
-goog.provide('Color');
+export const Color = {};
 
 /**
  * Returns a string representation of a color.

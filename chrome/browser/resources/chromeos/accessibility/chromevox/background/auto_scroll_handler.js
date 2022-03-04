@@ -15,6 +15,7 @@ goog.provide('AutoScrollHandler');
 
 goog.require('AutomationPredicate');
 goog.require('AutomationUtil');
+goog.require('CommandHandlerInterface');
 goog.require('constants');
 
 goog.scope(function() {

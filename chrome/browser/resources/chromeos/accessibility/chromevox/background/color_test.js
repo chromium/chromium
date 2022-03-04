@@ -8,7 +8,13 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 /**
  * Test fixture for Color.
  */
-ChromeVoxColorTest = class extends ChromeVoxNextE2ETest {};
+ChromeVoxColorTest = class extends ChromeVoxNextE2ETest {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('Color', '/chromevox/background/color.js');
+  }
+};
 
 
 SYNC_TEST_F('ChromeVoxColorTest', 'FindDistanceTest', function() {
