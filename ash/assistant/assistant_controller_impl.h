@@ -165,8 +165,7 @@ class ASH_EXPORT AssistantControllerImpl
   AssistantInteractionControllerImpl assistant_interaction_controller_{this};
   AssistantNotificationControllerImpl assistant_notification_controller_;
   AssistantStateController assistant_state_controller_;
-  AssistantScreenContextControllerImpl assistant_screen_context_controller_{
-      this};
+  AssistantScreenContextControllerImpl assistant_screen_context_controller_;
   AssistantSetupController assistant_setup_controller_{this};
   AssistantSuggestionsControllerImpl assistant_suggestions_controller_;
   AssistantUiControllerImpl assistant_ui_controller_{this};

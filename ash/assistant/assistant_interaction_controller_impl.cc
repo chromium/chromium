@@ -264,9 +264,7 @@ void AssistantInteractionControllerImpl::OnHighlighterSelectionRecognized(
   DCHECK(AssistantState::Get()->IsScreenContextAllowed());
 
   AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kStylus);
-  StartScreenContextInteraction(
-      /*include_assistant_structure=*/false, rect,
-      AssistantQuerySource::kStylus);
+  StartScreenContextInteraction(rect, AssistantQuerySource::kStylus);
 }
 
 void AssistantInteractionControllerImpl::OnInteractionStateChanged(
@@ -793,7 +791,6 @@ void AssistantInteractionControllerImpl::OnUiVisible(
 }
 
 void AssistantInteractionControllerImpl::StartScreenContextInteraction(
-    bool include_assistant_structure,
     const gfx::Rect& region,
     AssistantQuerySource query_source) {
   StopActiveInteraction(false);
@@ -803,7 +800,7 @@ void AssistantInteractionControllerImpl::StartScreenContextInteraction(
       query_source));
 
   assistant_controller_->screen_context_controller()->RequestScreenContext(
-      include_assistant_structure, region,
+      region,
       base::BindOnce(
           [](const base::WeakPtr<AssistantInteractionControllerImpl>& self,
              ax::mojom::AssistantStructurePtr assistant_structure,

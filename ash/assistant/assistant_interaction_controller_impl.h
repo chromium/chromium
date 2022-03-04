@@ -135,8 +135,7 @@ class AssistantInteractionControllerImpl
   void OnTabletModeChanged();
   bool HasActiveInteraction() const;
   void OnUiVisible(AssistantEntryPoint entry_point);
-  void StartScreenContextInteraction(bool include_assistant_structure,
-                                     const gfx::Rect& region,
+  void StartScreenContextInteraction(const gfx::Rect& region,
                                      AssistantQuerySource query_source);
   void StartVoiceInteraction();
   void StopActiveInteraction(bool cancel_conversation);

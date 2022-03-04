@@ -37,7 +37,6 @@ class AssistantViewDelegateImpl : public AssistantViewDelegate {
   bool IsTabletMode() const override;
   void OnDialogPlateButtonPressed(AssistantButtonId id) override;
   void OnDialogPlateContentsCommitted(const std::string& text) override;
-  void OnHostViewVisibilityChanged(bool visible) override;
   void OnNotificationButtonPressed(const std::string& notification_id,
                                    int notification_button_index) override;
   void OnOnboardingShown() override;
