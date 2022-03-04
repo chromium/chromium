@@ -28,8 +28,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -45,9 +43,6 @@ namespace net {
 namespace internal {
 
 namespace {
-
-// Interval between retries to parse config. Used only until parsing succeeds.
-const int kRetryIntervalSeconds = 5;
 
 // Registry key paths.
 const wchar_t kTcpipPath[] =
@@ -491,7 +486,8 @@ class DnsConfigServiceWin::Watcher
 // Reads config from registry and IpHelper. All work performed in ThreadPool.
 class DnsConfigServiceWin::ConfigReader : public SerialWorker {
  public:
-  explicit ConfigReader(DnsConfigServiceWin& service) : service_(&service) {}
+  explicit ConfigReader(DnsConfigServiceWin& service)
+      : SerialWorker(/*max_number_of_retries=*/3), service_(&service) {}
   ~ConfigReader() override {}
 
   // SerialWorker::
@@ -499,7 +495,7 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
     return std::make_unique<WorkItem>();
   }
 
-  void OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+  bool OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
                           serial_worker_work_item) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(serial_worker_work_item);
@@ -508,12 +504,10 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
     WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
     if (work_item->dns_config_.has_value()) {
       service_->OnConfigRead(std::move(work_item->dns_config_).value());
+      return true;
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
-      // Try again in a while in case DnsConfigWatcher missed the signal.
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, base::BindOnce(&ConfigReader::WorkNow, AsWeakPtr()),
-          base::Seconds(kRetryIntervalSeconds));
+      return false;
     }
   }
 

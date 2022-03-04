@@ -137,15 +137,17 @@ DnsConfigService::HostsReader::CreateWorkItem() {
       std::make_unique<DnsHostsFileParser>(hosts_file_path_));
 }
 
-void DnsConfigService::HostsReader::OnWorkFinished(
+bool DnsConfigService::HostsReader::OnWorkFinished(
     std::unique_ptr<SerialWorker::WorkItem> serial_worker_work_item) {
   DCHECK(serial_worker_work_item);
 
   WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
   if (work_item->hosts_.has_value()) {
     service_->OnHostsRead(std::move(work_item->hosts_).value());
+    return true;
   } else {
     LOG(WARNING) << "Failed to read DnsHosts.";
+    return false;
   }
 }
 

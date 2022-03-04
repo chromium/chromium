@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
+#include "base/timer/timer.h"
+#include "net/base/backoff_entry.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -25,6 +27,10 @@ namespace net {
 // is already under way, after completion of the work and before any call is
 // made to `OnWorkFinished()` the same `WorkItem` will be passed back to the
 // `ThreadPool`, and `DoWork()` will be called once more.
+//
+// If |OnWorkFinished| returns a failure and |max_number_of_retries|
+// is non-zero, retries will be scheduled according to the |backoff_policy|.
+// A default backoff policy is used if one is not provided.
 //
 // This behavior is designed for updating a result after some trigger, for
 // example reading a file once FilePathWatcher indicates it changed.
@@ -56,7 +62,9 @@ class NET_EXPORT_PRIVATE SerialWorker {
     virtual void FollowupWork(base::OnceClosure closure);
   };
 
-  SerialWorker();
+  explicit SerialWorker(
+      int max_number_of_retries = 0,
+      const net::BackoffEntry::Policy* backoff_policy = nullptr);
 
   SerialWorker(const SerialWorker&) = delete;
   SerialWorker& operator=(const SerialWorker&) = delete;
@@ -70,6 +78,10 @@ class NET_EXPORT_PRIVATE SerialWorker {
 
   bool IsCancelled() const { return state_ == State::kCancelled; }
 
+  // Allows tests to inspect the current backoff/retry state.
+  const BackoffEntry& GetBackoffEntryForTesting() const;
+  const base::OneShotTimer& GetRetryTimerForTesting() const;
+
  protected:
   // protected to allow sub-classing, but prevent deleting
   virtual ~SerialWorker();
@@ -78,7 +90,8 @@ class NET_EXPORT_PRIVATE SerialWorker {
   virtual std::unique_ptr<WorkItem> CreateWorkItem() = 0;
 
   // Executed on origin thread after `WorkItem` completes.
-  virtual void OnWorkFinished(std::unique_ptr<WorkItem> work_item) = 0;
+  // Must return true on success.
+  virtual bool OnWorkFinished(std::unique_ptr<WorkItem> work_item) = 0;
 
   base::WeakPtr<SerialWorker> AsWeakPtr();
 
@@ -94,6 +107,8 @@ class NET_EXPORT_PRIVATE SerialWorker {
     kPending,  // |WorkNow| while WORKING, must re-do work
   };
 
+  void WorkNowInternal();
+
   // Called on the origin thread after `WorkItem::DoWork()` completes.
   void OnDoWorkFinished(std::unique_ptr<WorkItem> work_item);
 
@@ -103,6 +118,11 @@ class NET_EXPORT_PRIVATE SerialWorker {
   void RerunWork(std::unique_ptr<WorkItem> work_item);
 
   State state_;
+
+  // Max retries and backoff entry to control timing.
+  const int max_number_of_retries_;
+  BackoffEntry backoff_entry_;
+  base::OneShotTimer retry_timer_;
 
   base::WeakPtrFactory<SerialWorker> weak_factory_{this};
 };

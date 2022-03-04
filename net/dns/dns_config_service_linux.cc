@@ -414,7 +414,7 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
     return std::move(work_item_);
   }
 
-  void OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+  bool OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
                           serial_worker_work_item) override {
     DCHECK(serial_worker_work_item);
     DCHECK(!work_item_);
@@ -423,8 +423,10 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
     work_item_.reset(static_cast<WorkItem*>(serial_worker_work_item.release()));
     if (work_item_->dns_config_.has_value()) {
       service_->OnConfigRead(std::move(work_item_->dns_config_).value());
+      return true;
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
+      return false;
     }
   }
 
