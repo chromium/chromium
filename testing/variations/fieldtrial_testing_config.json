@@ -1387,7 +1387,6 @@
                         "holdback_chance": "0.3"
                     },
                     "enable_features": [
-                        "OptimizationHints",
                         "PermissionOnDeviceNotificationPredictions"
                     ]
                 }
