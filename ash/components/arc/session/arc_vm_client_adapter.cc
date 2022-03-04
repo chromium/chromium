@@ -246,6 +246,9 @@ std::vector<std::string> GenerateKernelCmdline(
       base::StringPrintf("androidboot.zram_size=%d", guest_zram_size),
   };
 
+  if (ShouldMountVmDebugFs())
+    result.push_back("androidboot.arcvm_mount_debugfs=1");
+
   const ArcVmUreadaheadMode mode =
       GetArcVmUreadaheadMode(base::BindRepeating(&base::GetSystemMemoryInfo));
   switch (mode) {

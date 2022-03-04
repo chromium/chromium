@@ -149,6 +149,11 @@ const char kArcStartMode[] = "arc-start-mode";
 // Sets ARC Terms Of Service hostname url for testing.
 const char kArcTosHostForTests[] = "arc-tos-host-for-tests";
 
+// Mounts the debugfs file system if this flag is set.
+// Debugfs was removed in Android S to meet GTS requirements, but for ureadahead
+// tracing we need to enable it in developer mode only.
+const char kArcVmMountDebugFs[] = "arcvm-mount-debugfs";
+
 // Sets the mode of operation for ureadahead during ARCVM boot. If this switch
 // is not set, ARCVM ureadahead will check for the presence and age of pack
 // file and reads ahead files to page cache for improved boot performance.
