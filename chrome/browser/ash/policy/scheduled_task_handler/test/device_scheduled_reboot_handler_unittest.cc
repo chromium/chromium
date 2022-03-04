@@ -402,9 +402,10 @@ TEST_F(DeviceScheduledRebootHandlerTest,
       /* disabled_features */ {ash::features::kDeviceForceScheduledReboot});
   session_manager_.SetSessionState(session_manager::SessionState::LOCKED);
 
-  // Calculate time from one hour from now and set the reboot policy to
-  // happen daily at that time.
-  base::TimeDelta delay_from_now = base::Hours(1);
+  // Set device uptime to 10 minutes and schedule reboot in 30 minutes. Apply
+  // grace time - reboot should not occur.
+  notifications_scheduler_->SetUptime(base::Minutes(10));
+  base::TimeDelta delay_from_now = base::Minutes(30);
   auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
       scheduled_task_executor_->GetTimeZone(),
       scheduled_task_executor_->GetCurrentTime(), delay_from_now,
@@ -422,10 +423,16 @@ TEST_F(DeviceScheduledRebootHandlerTest,
   EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
 
   // Fast forward to the expected reboot time and then check if the
-  // reboot timer has expired and the reboot is executed.
+  // reboot timer has expired and the reboot is not executed.
+  expected_scheduled_reboots += 1;
+  task_environment_.FastForwardBy(small_delay);
+  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
+
+  // Fast forward to the next day at the same time and verify reboot is
+  // executed.
   expected_scheduled_reboots += 1;
   expected_reboot_requests += 1;
-  task_environment_.FastForwardBy(small_delay);
+  task_environment_.FastForwardBy(base::Days(1));
   EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
 
   // After the reboot, the current handler is destroyed and the new one is

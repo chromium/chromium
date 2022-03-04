@@ -92,21 +92,25 @@ void DeviceScheduledRebootHandler::OnRebootTimerExpired() {
   // Always request restart if the device is in the kiosk mode or on the sign-in
   // screen. Once the device has rebooted, the handler will be created again and
   // the reboot will be rescheduled.
-  if (session_manager::SessionManager::Get()->IsScreenLocked() ||
-      user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
-    ash::PowerManagerClient::Get()->RequestRestart(
-        power_manager::REQUEST_RESTART_OTHER, kRebootDescriptionOnTimerExpired);
+  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
+    RebootDevice(kRebootDescriptionOnTimerExpired);
     return;
   }
 
-  // If the device is not in the kiosk mode, check if the
-  // |kDeviceForceScheduledReboot| feature flag is enabled and if we should not
-  // skip reboot due to grace period applied.
-  if (base::FeatureList::IsEnabled(
-          ash::features::kDeviceForceScheduledReboot) &&
-      !skip_reboot_) {
-    ash::PowerManagerClient::Get()->RequestRestart(
-        power_manager::REQUEST_RESTART_OTHER, kRebootDescriptionOnTimerExpired);
+  // If the device is on the sign-in screen, skip reboot only if the grace
+  // period is applied.
+  if (!skip_reboot_ &&
+      session_manager::SessionManager::Get()->IsScreenLocked()) {
+    RebootDevice(kRebootDescriptionOnTimerExpired);
+    return;
+  }
+
+  // If the device is not in the kiosk mode or on the sign-in screen, check if
+  // the |kDeviceForceScheduledReboot| feature flag is enabled and if we should
+  // not skip reboot due to grace period applied.
+  if (!skip_reboot_ && base::FeatureList::IsEnabled(
+                           ash::features::kDeviceForceScheduledReboot)) {
+    RebootDevice(kRebootDescriptionOnTimerExpired);
     return;
   }
 
@@ -116,8 +120,7 @@ void DeviceScheduledRebootHandler::OnRebootTimerExpired() {
 }
 
 void DeviceScheduledRebootHandler::OnRebootButtonClicked() {
-  ash::PowerManagerClient::Get()->RequestRestart(
-      power_manager::REQUEST_RESTART_OTHER, kRebootDescriptionOnButtonClicked);
+  RebootDevice(kRebootDescriptionOnButtonClicked);
 }
 
 void DeviceScheduledRebootHandler::OnScheduledRebootDataChanged() {
@@ -162,12 +165,13 @@ void DeviceScheduledRebootHandler::StartRebootTimer() {
                      base::Unretained(this)),
       GetExternalDelay());
 
+  // Set |skip_reboot_| flag if the grace time should be applied.
+  skip_reboot_ = notifications_scheduler_->ShouldApplyGraceTime(
+      scheduled_task_executor_->GetScheduledTaskTime());
+
   // If the flag is enabled, schedule reboot notification and dialog.
   if (base::FeatureList::IsEnabled(
           ash::features::kDeviceForceScheduledReboot)) {
-    // Set |skip_reboot_| flag if the grace time should be applied.
-    skip_reboot_ = notifications_scheduler_->ShouldApplyGraceTime(
-        scheduled_task_executor_->GetScheduledTaskTime());
     if (!skip_reboot_) {
       notifications_scheduler_->ScheduleNotifications(
           base::BindOnce(&DeviceScheduledRebootHandler::OnRebootButtonClicked,
@@ -200,6 +204,12 @@ const base::TimeDelta DeviceScheduledRebootHandler::GetExternalDelay() const {
              ? reboot_delay_for_testing_.value()
              : scheduled_task_util::GenerateRandomDelay(
                    ash::features::kDeviceForceScheduledRebootMaxDelay.Get());
+}
+
+void DeviceScheduledRebootHandler::RebootDevice(
+    const std::string& reboot_description) const {
+  ash::PowerManagerClient::Get()->RequestRestart(
+      power_manager::REQUEST_RESTART_OTHER, reboot_description);
 }
 
 }  // namespace policy

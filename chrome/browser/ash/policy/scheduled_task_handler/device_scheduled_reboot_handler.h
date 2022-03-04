@@ -72,6 +72,8 @@ class DeviceScheduledRebootHandler
   // |reboot_delay_for_testing_| if set.
   const base::TimeDelta GetExternalDelay() const;
 
+  void RebootDevice(const std::string& reboot_description) const;
+
   // Used to retrieve Chrome OS settings. Not owned.
   ash::CrosSettings* const cros_settings_;
 
