@@ -19,7 +19,9 @@
 #include "components/policy/core/common/configuration_policy_provider_test.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 
 namespace policy {
@@ -28,6 +30,12 @@ namespace {
 
 // Subdirectory of the config dir that contains mandatory policies.
 const base::FilePath::CharType kMandatoryPath[] = FILE_PATH_LITERAL("managed");
+// The policy input supports trailing comma and c++ styled comments.
+const char PolicyWithQuirks[] = R"({
+  // Some comments here.
+  "HomepageIsNewTabPage": true,
+  /* Some more comments here */
+})";
 
 class TestHarness : public PolicyProviderTestHarness {
  public:
@@ -60,9 +68,10 @@ class TestHarness : public PolicyProviderTestHarness {
   // JSON-encode a dictionary and write it to a file.
   void WriteConfigFile(const base::DictionaryValue& dict,
                        const std::string& file_name);
+  void WriteConfigFile(const std::string& data, const std::string& file_name);
 
-  // Returns a unique name for a policy file. Each subsequent call returns a new
-  // name that comes lexicographically after the previous one.
+  // Returns a unique name for a policy file. Each subsequent call returns a
+  // new name that comes lexicographically after the previous one.
   std::string NextConfigFileName();
 
   static PolicyProviderTestHarness* Create();
@@ -143,10 +152,15 @@ void TestHarness::WriteConfigFile(const base::DictionaryValue& dict,
   std::string data;
   JSONStringValueSerializer serializer(&data);
   serializer.Serialize(dict);
+  WriteConfigFile(data, file_name);
+}
+
+void TestHarness::WriteConfigFile(const std::string& data,
+                                  const std::string& file_name) {
   const base::FilePath mandatory_dir(test_dir().Append(kMandatoryPath));
   ASSERT_TRUE(base::CreateDirectory(mandatory_dir));
   const base::FilePath file_path(mandatory_dir.AppendASCII(file_name));
-  ASSERT_EQ((int) data.size(),
+  ASSERT_EQ((int)data.size(),
             base::WriteFile(file_path, data.c_str(), data.size()));
 }
 
@@ -206,6 +220,21 @@ TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsNonExistentDirectory) {
   ASSERT_TRUE(bundle.get());
   const PolicyBundle kEmptyBundle;
   EXPECT_TRUE(bundle->Equals(kEmptyBundle));
+}
+
+TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsWithComments) {
+  harness_.WriteConfigFile(PolicyWithQuirks, "policies.json");
+  ConfigDirPolicyLoader loader(task_environment_.GetMainThreadTaskRunner(),
+                               harness_.test_dir(), POLICY_SCOPE_MACHINE);
+  std::unique_ptr<PolicyBundle> bundle(loader.Load());
+  ASSERT_TRUE(bundle.get());
+  PolicyBundle expected_bundle;
+  expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+      .Set(key::kHomepageIsNewTabPage, POLICY_LEVEL_MANDATORY,
+           POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM, base::Value(true),
+           /*external_data_fetcher=*/nullptr);
+
+  EXPECT_TRUE(bundle->Equals(expected_bundle));
 }
 
 // Test merging values from different files.
