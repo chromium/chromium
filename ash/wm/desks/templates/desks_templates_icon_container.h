@@ -18,18 +18,8 @@ class ColorProvider;
 
 namespace ash {
 
-// A struct for storing the various information used to determine which app
-// icons/favicons to display.
-struct IconInfo {
-  std::string app_id;
-  int activation_index;
-  int count;
-};
-
 class DeskTemplate;
 class DesksTemplatesIconView;
-
-using IconIdentifierAndIconInfo = std::pair<std::string, IconInfo>;
 
 // This class for determines which app icons/favicons to show for a desk
 // template and creates the according DesksTemplatesIconView's for them.
@@ -49,6 +39,16 @@ using IconIdentifierAndIconInfo = std::pair<std::string, IconInfo>;
 class DesksTemplatesIconContainer : public views::BoxLayoutView {
  public:
   METADATA_HEADER(DesksTemplatesIconContainer);
+
+  // A struct for storing the various information used to determine which app
+  // icons/favicons to display.
+  struct IconInfo {
+    std::string app_id;
+    int activation_index;
+    int count;
+  };
+
+  using IconIdentifierAndIconInfo = std::pair<std::string, IconInfo>;
 
   DesksTemplatesIconContainer();
   DesksTemplatesIconContainer(const DesksTemplatesIconContainer&) = delete;

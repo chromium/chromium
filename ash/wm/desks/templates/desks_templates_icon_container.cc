@@ -30,11 +30,14 @@ constexpr int kIconSpacingDp = 8;
 
 // Given a map of unique icon identifiers to icon info, returns a vector of the
 // same key, value pair ordered by icons' activation index.
-std::vector<IconIdentifierAndIconInfo> SortIconIdentifierToIconInfo(
-    std::map<std::string, IconInfo>& icon_identifier_to_icon_info) {
+std::vector<DesksTemplatesIconContainer::IconIdentifierAndIconInfo>
+SortIconIdentifierToIconInfo(
+    std::map<std::string, DesksTemplatesIconContainer::IconInfo>&
+        icon_identifier_to_icon_info) {
   // Create a vector using `sorted_icon_identifier_to_icon_info` that contains
   // pairs of identifiers and counts. This will initially be unsorted.
-  std::vector<IconIdentifierAndIconInfo> sorted_icon_identifier_to_icon_info;
+  std::vector<DesksTemplatesIconContainer::IconIdentifierAndIconInfo>
+      sorted_icon_identifier_to_icon_info;
 
   for (const auto& entry : icon_identifier_to_icon_info) {
     sorted_icon_identifier_to_icon_info.emplace_back(entry.first,
@@ -47,8 +50,10 @@ std::vector<IconIdentifierAndIconInfo> SortIconIdentifierToIconInfo(
   std::sort(
       sorted_icon_identifier_to_icon_info.begin(),
       sorted_icon_identifier_to_icon_info.end(),
-      [&icon_identifier_to_icon_info](const IconIdentifierAndIconInfo& data_1,
-                                      const IconIdentifierAndIconInfo& data_2) {
+      [&icon_identifier_to_icon_info](
+          const DesksTemplatesIconContainer::IconIdentifierAndIconInfo& data_1,
+          const DesksTemplatesIconContainer::IconIdentifierAndIconInfo&
+              data_2) {
         return icon_identifier_to_icon_info.at(data_1.first).activation_index <
                icon_identifier_to_icon_info.at(data_2.first).activation_index;
       });
@@ -63,7 +68,8 @@ void InsertIconIdentifierToIconInfo(
     const std::string& app_id,
     const std::string& identifier,
     int activation_index,
-    std::map<std::string, IconInfo>* out_icon_identifier_to_icon_info) {
+    std::map<std::string, DesksTemplatesIconContainer::IconInfo>*
+        out_icon_identifier_to_icon_info) {
   // A single app/site can have multiple windows so count their occurrences and
   // use the smallest activation index for sorting purposes.
   if (!base::Contains(*out_icon_identifier_to_icon_info, identifier)) {
@@ -82,7 +88,8 @@ void InsertIconIdentifierToIconInfo(
 void InsertIconIdentifierToIconInfoFromLaunchList(
     const std::string& app_id,
     const app_restore::RestoreData::LaunchList& launch_list,
-    std::map<std::string, IconInfo>* out_icon_identifier_to_icon_info) {
+    std::map<std::string, DesksTemplatesIconContainer::IconInfo>*
+        out_icon_identifier_to_icon_info) {
   // We want to group active tabs and apps ahead of inactive tabs so offsets
   // inactive tabs activation index by `kInactiveTabOffset`. In almost every use
   // case, there should be no more than `kInactiveTabOffset` number of tabs +
@@ -184,7 +191,7 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
 
     // Since there were no modifications to `app_id`, app id and icon identifier
     // are both `app_id`.
-    InsertIconIdentifierToIconInfo(/*app_id*/ app_id, /*identifier*/ app_id, i,
+    InsertIconIdentifierToIconInfo(/*app_id=*/app_id, /*identifier=*/app_id, i,
                                    &icon_identifier_to_icon_info);
   }
 
@@ -269,7 +276,7 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
   // Set both `icon_identifier` and `app_id` to be empty strings for overflow
   // icon views, since only the count should matter.
   overflow_icon_view->SetIconIdentifierAndCount(
-      /*icon_identifier*/ std::string(), /*app_id*/ std::string(),
+      /*icon_identifier=*/std::string(), /*app_id=*/std::string(),
       icon_identifier_to_icon_info.size() - num_added_icons);
 }
 
