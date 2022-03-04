@@ -13,6 +13,9 @@ EmulationHandler::EmulationHandler(content::DevToolsAgentHost* agent_host,
     : agent_host_(agent_host) {
   protocol::Emulation::Dispatcher::wire(dispatcher, this);
 }
+EmulationHandler::~EmulationHandler() {
+  SetAutomationOverride(false);
+}
 
 protocol::Response EmulationHandler::Disable() {
   SetAutomationOverride(false);
@@ -20,30 +23,44 @@ protocol::Response EmulationHandler::Disable() {
 }
 
 protocol::Response EmulationHandler::SetAutomationOverride(bool enabled) {
-  // Fallthrough requests when the override is already enabled.
-  if (enabled && automation_info_bar_)
+  if (!enabled) {
+    if (automation_info_bar_) {
+      automation_info_bar_->RemoveSelf();
+    }
     return protocol::Response::FallThrough();
-
-  infobars::ContentInfoBarManager* info_bar_manager = nullptr;
-  content::WebContents* web_contents = agent_host_->GetWebContents();
-  if (web_contents) {
-    info_bar_manager = infobars::ContentInfoBarManager::FromWebContents(
-        web_contents->GetOutermostWebContents());
   }
+  if (automation_info_bar_) {
+    return protocol::Response::FallThrough();
+  }
+
+  infobars::ContentInfoBarManager* info_bar_manager =
+      GetContentInfoBarManager();
   if (!info_bar_manager) {
     // Implies the web content cannot have an info bar attached. A priori, the
     // automation override doesn't matter on the chrome layer.
     return protocol::Response::FallThrough();
   }
 
-  if (!enabled) {
-    if (automation_info_bar_) {
-      info_bar_manager->RemoveInfoBar(automation_info_bar_);
-      automation_info_bar_ = nullptr;
-    }
-    return protocol::Response::FallThrough();
-  }
-
+  // Note since the observer removes itself when the info bar is removed, the
+  // observer is added at most once because of the info bar nullity check above.
+  info_bar_manager->AddObserver(this);
   automation_info_bar_ = AutomationInfoBarDelegate::Create(info_bar_manager);
   return protocol::Response::FallThrough();
+}
+
+infobars::ContentInfoBarManager* EmulationHandler::GetContentInfoBarManager() {
+  content::WebContents* web_contents = agent_host_->GetWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+  return infobars::ContentInfoBarManager::FromWebContents(
+      web_contents->GetOutermostWebContents());
+}
+
+void EmulationHandler::OnInfoBarRemoved(infobars::InfoBar* infobar,
+                                        bool animate) {
+  if (automation_info_bar_ == infobar) {
+    infobar->owner()->RemoveObserver(this);
+    automation_info_bar_ = nullptr;
+  }
 }
