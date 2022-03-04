@@ -881,15 +881,6 @@ need to be translated for each locale.-->
         Please try again
       </message>
       <if expr="chromeos">
-        <message name="IDS_MESSAGE_CENTER_NOTIFIER_SCREENSHOT_NAME" desc="The name of screenshot notifier that is a system component">
-          Screenshot
-        </message>
-        <message name="IDS_MESSAGE_CENTER_NOTIFICATION_BUTTON_COPY_SCREENSHOT_TO_CLIPBOARD" desc="The button label for the screenshot notification which copies the screenshot image to clipboard on click.">
-          Copy to clipboard
-        </message>
-        <message name="IDS_MESSAGE_CENTER_NOTIFICATION_BUTTON_ANNOTATE_SCREENSHOT" desc="The label for the screenshot notification button that opens the note-taking app to annotate the screenhsot.">
-          Annotate image
-        </message>
         <message name="IDS_MESSAGE_CENTER_NOTIFIER_HATS_NAME" desc="The name of hats notifier that is a system component">
           Survey
         </message>

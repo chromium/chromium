@@ -4378,41 +4378,6 @@
     Searching for networks...
   </message>
 
-  <!-- Screenshot notification -->
-  <message name="IDS_SCREENSHOT_NOTIFICATION_TITLE_SUCCESS" desc="The title of the notification when a screenshot was taken.">
-    Screenshot taken
-  </message>
-  <message name="IDS_SCREENSHOT_NOTIFICATION_TITLE_DISABLED" desc="The title of the notification when taking a screenshot failed because screenshots are disabled.">
-    Can't capture content
-  </message>
-  <message name="IDS_SCREENSHOT_NOTIFICATION_TITLE_DISABLED_BY_DLP" desc="The title of the notification when taking a screenshot failed because screenshots are disabled because of confidential content.">
-    Can't capture confidential content
-  </message>
-  <message name="IDS_SCREENSHOT_NOTIFICATION_TITLE_FAIL" desc="The title of the notification when taking a screenshot failed.">
-    An error occurred
-  </message>
-  <message name="IDS_SCREENSHOT_NOTIFICATION_TEXT_SUCCESS" desc="The text of the notification when a screenshot was taken. If clicked, the screenshot file is displayed in the Files app.">
-    Show in folder
-  </message>
-  <message name="IDS_SCREENSHOT_NOTIFICATION_TEXT_DISABLED" desc="The text of the notification when taking a screenshot failed because screenshots are disabled by administrator policy.">
-    Administrator policy disables screen capture
-  </message>
-  <message name="IDS_SCREENSHOT_NOTIFICATION_TEXT_DISABLED_BY_DLP" desc="The text of the notification when taking a screenshot failed because screenshots are disabled because of confidential content.">
-    Administrator policy disables screen capture when confidential content is visible
-  </message>
-  <message name="IDS_SCREENSHOT_NOTIFICATION_TEXT_FAIL" desc="The text of the notification when taking a screenshot failed.">
-    Failed to save screenshot
-  </message>
-  <message name="IDS_SCREENSHOT_NOTIFICATION_NOTIFIER_NAME" desc="The name of screenshot notifier that is a system component">
-    Screenshot
-  </message>
-  <message name="IDS_SCREENSHOT_NOTIFICATION_BUTTON_COPY_TO_CLIPBOARD" desc="The button label for the screenshot notification which copies the screenshot image to clipboard on click.">
-    Copy to clipboard
-  </message>
-  <message name="IDS_SCREENSHOT_NOTIFICATION_BUTTON_ANNOTATE" desc="The label for the screenshot notification button that opens the note-taking app to annotate the screenshot.">
-    Annotate image
-  </message>
-
   <!-- HaTS Strings -->
   <message name="IDS_HATS_NOTIFICATION_TITLE" desc="The title of the notification for Happiness Tracking Survey.">
     Help us improve Chromebooks
