@@ -113,6 +113,7 @@ extern const base::Feature kKitKatSupported;
 extern const base::Feature kLanguagesPreference;
 extern const base::Feature kLensCameraAssistedSearch;
 extern const base::Feature kNewWindowAppMenu;
+extern const base::Feature kNotificationPermissionVariant;
 extern const base::Feature kOfflineIndicatorV2;
 extern const base::Feature kPageAnnotationsService;
 extern const base::Feature kBookmarksImprovedSaveFlow;

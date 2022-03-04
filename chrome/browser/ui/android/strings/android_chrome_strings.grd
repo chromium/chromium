@@ -5275,6 +5275,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_DIALOG_MESSAGE" desc="The body text of a dialog explaining the benefits of enabling Chrome notifications.">
         You’ll be able to easily manage media controls, incognito sessions, downloads and more
       </message>
+      <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_DIALOG_TITLE_VARIATION_2" desc="The title of a dialog shown to users before asking for notification permission.">
+        Manage media controls, incognito tabs, and more with notifications
+      </message>
+      <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_DIALOG_MESSAGE_VARIATION_2" desc="The body text of a dialog explaining the benefits of enabling Chrome notifications.">
+        You can disable notifications by visiting settings
+      </message>
       <message name="IDS_NOTIFICATION_PERMISSION_RATIONALE_ACCEPT_BUTTON_TEXT" desc="The text of the positive button on the notification permission prompt dialog">
         Continue
       </message>

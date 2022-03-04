@@ -242,6 +242,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kKitKatSupported,
     &kLensCameraAssistedSearch,
     &kNewWindowAppMenu,
+    &kNotificationPermissionVariant,
     &kOfflineIndicatorV2,
     &kPageAnnotationsService,
     &kBookmarksImprovedSaveFlow,
@@ -686,6 +687,9 @@ const base::Feature kSearchEnginePromoNewDeviceV2{
 
 const base::Feature kNewWindowAppMenu{"NewWindowAppMenu",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kNotificationPermissionVariant{
+    "NotificationPermissionVariant", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kInstanceSwitcher{"InstanceSwitcher",
                                       base::FEATURE_ENABLED_BY_DEFAULT};

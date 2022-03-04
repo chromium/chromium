@@ -402,6 +402,7 @@ public abstract class ChromeFeatureList {
     public static final String MODAL_PERMISSION_DIALOG_VIEW = "ModalPermissionDialogView";
     public static final String METRICS_SETTINGS_ANDROID = "MetricsSettingsAndroid";
     public static final String NEW_WINDOW_APP_MENU = "NewWindowAppMenu";
+    public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
     public static final String OFFLINE_INDICATOR = "OfflineIndicator";
     public static final String OFFLINE_INDICATOR_V2 = "OfflineIndicatorV2";
     public static final String OFFLINE_PAGES_DESCRIPTIVE_FAIL_STATUS =
