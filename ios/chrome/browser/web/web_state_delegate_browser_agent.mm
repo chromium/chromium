@@ -185,10 +185,6 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
 }
 
 void WebStateDelegateBrowserAgent::CloseWebState(web::WebState* source) {
-  security_interstitials::IOSBlockingPageTabHelper* helper =
-      security_interstitials::IOSBlockingPageTabHelper::FromWebState(source);
-  DCHECK(source->HasOpener() || !source->GetNavigationItemCount() ||
-         helper->GetCurrentBlockingPage() != nullptr);
   int index = web_state_list_->GetIndexOfWebState(source);
   if (index != WebStateList::kInvalidIndex)
     web_state_list_->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
