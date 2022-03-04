@@ -1299,8 +1299,11 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_VPN_TYPE" desc="ONC Property label for VPN.Type">
         Provider type
       </message>
-      <message name="IDS_ONC_VPN_AUTH_TYPE" desc="ONC Porperty label for VPN.IPsec.AuthenticationType">
+      <message name="IDS_ONC_VPN_AUTH_TYPE" desc="ONC Property label for VPN.IPsec.AuthenticationType">
         Authentication type
+      </message>
+      <message name="IDS_ONC_VPN_AUTH_TYPE_USERNAME" desc="ONC Property label for VPN.IPsec.AuthenticationType.EAP">
+        Username and password
       </message>
       <message name="IDS_ONC_VPN_IPSEC_GROUP" desc="ONC Property label for VPN.IPSec.Group">
         Group name
@@ -2012,7 +2015,7 @@ Try tapping the mic to ask me anything.
         Use this photo
       </message>
       <message name="IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_VIDEO" desc="Label for the button to confirm webcam video">
-        Use this video 
+        Use this video
       </message>
       <message name="IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO" desc="Label for the button to reject webcam photo or video">
         Retake

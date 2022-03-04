@@ -102,6 +102,18 @@
               items="[[ipsecAuthTypeItems_]]" onc-prefix="VPN.IPsec.AuthType"
               disabled="[[hasGuid_(guid)]]">
           </network-config-select>
+          <template is="dom-if" if="[[showVpn_.IPsecEAP]]" restamp>
+            <network-config-input label="[[i18n('OncVPN-IPsec-Username')]]"
+                id="ipsec-eap-username-input"
+                value="{{eapProperties_.identity}}"
+                property="[[managedEapProperties_.identity]]">
+            </network-config-input>
+            <network-password-input label="[[i18n('OncVPN-IPsec-Password')]]"
+                id="ipsec-eap-password-input"
+                value="{{eapProperties_.password}}"
+                property="[[managedEapProperties_.password]]">
+            </network-password-input>
+          </template>
           <template is="dom-if" if="[[!showVpn_.IKEv2]]" restamp>
             <network-config-input label="[[i18n('OncVPN-L2TP-Username')]]"
                 id="l2tp-username-input"

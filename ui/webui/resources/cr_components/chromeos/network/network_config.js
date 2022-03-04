@@ -26,6 +26,7 @@ const VPNConfigType = {
 const IpsecAuthType = {
   PSK: 'PSK',
   CERT: 'Cert',
+  EAP: 'EAP',
 };
 
 /**
@@ -287,6 +288,7 @@ Polymer({
      * @private {?{
      *   IPsec: (boolean|undefined),
      *   IPsecPSK: (boolean|undefined),
+     *   IPsecEAP: (boolean|undefined),
      *   IKEv2: (boolean|undefined),
      *   OpenVPN: (boolean|undefined),
      *   WireGuard: (boolean|undefined),
@@ -362,11 +364,7 @@ Polymer({
      */
     ipsecAuthTypeItems_: {
       type: Array,
-      readOnly: true,
-      value: [
-        IpsecAuthType.PSK,
-        IpsecAuthType.CERT,
-      ],
+      value: [],
     },
 
     /**
@@ -422,6 +420,7 @@ Polymer({
     'updateShowEap_(configProperties_.*, eapProperties_.*, securityType_)',
     'updateCertItems_(cachedServerCaCerts_, cachedUserCerts_, vpnType_)',
     'updateVpnType_(configProperties_, vpnType_, ipsecAuthType_)',
+    'updateVpnIPsecAuthTypeItems_(vpnType_)',
     'updateVpnIPsecCerts_(vpnType_, ipsecAuthType_,' +
         'configProperties_.typeConfig.vpn.ipSec.*, serverCaCerts_, userCerts_)',
     'updateOpenVPNCerts_(vpnType_,' +
@@ -869,6 +868,7 @@ Polymer({
           OncMojo.getActiveString(ipSec.authenticationType) || 'PSK',
       clientCertPkcs11Id: OncMojo.getActiveString(ipSec.clientCertPkcs11Id),
       clientCertType: OncMojo.getActiveString(ipSec.clientCertType),
+      eap: ipSec.eap ? this.getEAPConfigProperties_(ipSec.eap) : null,
       group: OncMojo.getActiveString(ipSec.group),
       ikeVersion: this.getActiveInt32_(ipSec.ikeVersion),
       psk: OncMojo.getActiveString(ipSec.psk),
@@ -1154,6 +1154,8 @@ Polymer({
       eap = properties.typeConfig.wifi.eap;
     } else if (properties.typeConfig.ethernet) {
       eap = properties.typeConfig.ethernet.eap;
+    } else if (properties.typeConfig.vpn && properties.typeConfig.vpn.ipSec) {
+      eap = properties.typeConfig.vpn.ipSec.eap;
     }
     if (opt_create) {
       return eap || {
@@ -1196,6 +1198,11 @@ Polymer({
       case mojom.NetworkType.kEthernet:
         managedEap = managedProperties.typeProperties.ethernet.eap;
         break;
+      case mojom.NetworkType.kVPN:
+        if (managedProperties.typeProperties.vpn.ipSec) {
+          managedEap = managedProperties.typeProperties.vpn.ipSec.eap;
+        }
+        break;
     }
     return managedEap || null;
   },
@@ -1233,8 +1240,14 @@ Polymer({
       // Initiate it to "PSK" for simplicity.
       return IpsecAuthType.PSK;
     }
-    return vpn.ipSec.authenticationType === 'Cert' ? IpsecAuthType.CERT :
-                                                     IpsecAuthType.PSK;
+    if (vpn.ipSec.authenticationType === IpsecAuthType.PSK) {
+      return IpsecAuthType.PSK;
+    } else if (vpn.ipSec.authenticationType === IpsecAuthType.CERT) {
+      return IpsecAuthType.CERT;
+    } else if (vpn.ipSec.authenticationType === IpsecAuthType.EAP) {
+      return IpsecAuthType.EAP;
+    }
+    assertNotReached();
   },
 
   /** @private */
@@ -1315,15 +1328,34 @@ Polymer({
       case VPNConfigType.IKEV2:
         vpn.type = {value: mojom.VpnType.kIKEv2};
         if (!vpn.ipSec) {
+          this.ipsecAuthType_ = IpsecAuthType.EAP;
           vpn.ipSec = {
             authenticationType: this.ipsecAuthType_,
             ikeVersion: 2,
             saveCredentials: false,
           };
         }
+        if (this.ipsecAuthType_ === IpsecAuthType.EAP && !vpn.ipSec.eap) {
+          vpn.ipSec.eap = {
+            domainSuffixMatch: [],
+            outer: 'MSCHAPv2',
+            saveCredentials: false,
+            subjectAltNameMatch: [],
+            useSystemCas: false,
+          };
+          this.eapProperties_ = vpn.ipSec.eap;
+        }
         break;
       case VPNConfigType.L2TP_IPSEC:
         vpn.type = {value: mojom.VpnType.kL2TPIPsec};
+        if (this.ipsecAuthType_ !== IpsecAuthType.PSK &&
+            this.ipsecAuthType_ !== IpsecAuthType.CERT) {
+          // This will happen if user changes the VPN type to IKEv2 where the
+          // default value of auth type is EAP, and then changes the VPN type to
+          // L2TP/IPsec.
+          this.ipsecAuthType_ = IpsecAuthType.PSK;
+        }
+
         if (!vpn.ipSec) {
           vpn.ipSec = {
             authenticationType: this.ipsecAuthType_,
@@ -1347,11 +1379,13 @@ Polymer({
     const isIpsec = this.vpnType_ === VPNConfigType.L2TP_IPSEC ||
         this.vpnType_ === VPNConfigType.IKEV2;
     const ipsecAuthIsPsk = this.ipsecAuthType_ === IpsecAuthType.PSK;
+    const ipsecAuthIsEap = this.ipsecAuthType_ === IpsecAuthType.EAP;
     const ipsecAuthIsCert = this.ipsecAuthType_ === IpsecAuthType.CERT;
     const isOpenvpn = this.vpnType_ === VPNConfigType.OPEN_VPN;
     this.showVpn_ = {
       IPsec: isIpsec,
       IPsecPSK: isIpsec && ipsecAuthIsPsk,
+      IPsecEAP: isIpsec && ipsecAuthIsEap,
       IKEv2: this.vpnType_ === VPNConfigType.IKEV2,
       OpenVPN: isOpenvpn,
       WireGuard: this.vpnType_ === VPNConfigType.WIREGUARD,
@@ -1384,12 +1418,23 @@ Polymer({
   },
 
   /** @private */
+  updateVpnIPsecAuthTypeItems_() {
+    this.ipsecAuthTypeItems_ = [
+      IpsecAuthType.PSK,
+      IpsecAuthType.CERT,
+    ];
+    if (this.vpnType_ === VPNConfigType.IKEV2) {
+      this.ipsecAuthTypeItems_.push(IpsecAuthType.EAP);
+    }
+  },
+
+  /** @private */
   updateVpnIPsecCerts_() {
     if (this.vpnType_ !== VPNConfigType.L2TP_IPSEC &&
         this.vpnType_ !== VPNConfigType.IKEV2) {
       return;
     }
-    if (this.ipsecAuthType_ !== IpsecAuthType.CERT) {
+    if (this.ipsecAuthType_ === IpsecAuthType.PSK) {
       return;
     }
     const ipSec = this.configProperties_.typeConfig.vpn.ipSec;
@@ -1782,6 +1827,9 @@ Polymer({
         // is invalid.
         return this.selectedServerCaHashIsValid_() &&
             this.selectedUserCertHashIsValid_();
+      case IpsecAuthType.EAP:
+        return this.selectedServerCaHashIsValid_() &&
+            !!this.eapProperties_.identity;
       default:
         assertNotReached();
     }
@@ -1993,6 +2041,23 @@ Polymer({
       ipsec.clientCertPkcs11Id = this.getUserCertPkcs11Id_();
     } else {
       delete ipsec.clientCertType;
+      delete ipsec.clientCertPkcs11Id;
+    }
+
+    if (ipsec.authenticationType === IpsecAuthType.EAP) {
+      // Not all fields in eap are used by IKEv2, so create a new object here.
+      const eap = ipsec.eap;
+      ipsec.eap = {
+        domainSuffixMatch: [],
+        identity: eap.identity,
+        outer: 'MSCHAPv2',
+        password: eap.password,
+        saveCredentials: this.vpnSaveCredentials_,
+        subjectAltNameMatch: [],
+        useSystemCas: false,
+      };
+    } else {
+      delete ipsec.eap;
     }
 
     ipsec.ikeVersion = 2;
