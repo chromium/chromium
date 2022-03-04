@@ -4547,12 +4547,6 @@
   <message name="IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_MESSAGE" desc="Text shown in the Crostini installer dialog when the container inside the VM is being set up">
     This process may take a few minutes. Setting up the Linux container.
   </message>
-  <message name="IDS_CROSTINI_INSTALLER_FETCH_SSH_KEYS_MESSAGE" desc="Text shown in the Crostini installer dialog when fetching ssh keys">
-    This process may take a few minutes. Setting up the Linux container.
-  </message>
-  <message name="IDS_CROSTINI_INSTALLER_MOUNT_CONTAINER_MESSAGE" desc="Text shown in the Crostini installer dialog when doing sshfs mount of container">
-    This process may take a few minutes. Setting up the Linux container.
-  </message>
   <message name="IDS_CROSTINI_INSTALLER_RETRY_BUTTON" desc="Retry button of the Crostini installer dialog that starts the install steps again.">
     Retry
   </message>
