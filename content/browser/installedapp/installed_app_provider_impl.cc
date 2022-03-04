@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 #include "content/browser/installedapp/installed_app_provider_impl.h"
+
 #include "build/build_config.h"
-#include "content/browser/installedapp/installed_app_provider_impl_win.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "content/browser/installedapp/installed_app_provider_impl_win.h"
+#endif
 
 namespace content {
 

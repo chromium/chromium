@@ -5,9 +5,12 @@
 #include "components/spellcheck/common/spellcheck_features.h"
 
 #include "base/system/sys_info.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 namespace spellcheck {
 

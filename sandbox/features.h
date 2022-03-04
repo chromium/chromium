@@ -5,8 +5,11 @@
 #ifndef SANDBOX_FEATURES_H_
 #define SANDBOX_FEATURES_H_
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
-#include "build/buildflag.h"
+#endif
 
 namespace sandbox::features {
 #if BUILDFLAG(IS_WIN)
