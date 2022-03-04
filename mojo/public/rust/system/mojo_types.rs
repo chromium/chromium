@@ -19,7 +19,7 @@ use std::fmt;
 use std::u64;
 
 /// A MojoHandle is represented as a plain 32-bit unsigned int.
-pub type MojoHandle = u32;
+pub type MojoHandle = u64;
 
 /// An opaque pointer to a wait set. Since the C bindings no longer have wait sets, our glue code creates a C++ mojo::WaitSet object and returns it as an opaque pointer.
 pub type MojoWaitSetHandle = usize;
