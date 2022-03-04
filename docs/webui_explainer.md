@@ -379,7 +379,7 @@ if (loadTimeData.getBoolean('myFeatureIsEnabled')) {
 <div class="note">
 Data sources are not recreated on refresh, and therefore values that are dynamic
 (i.e. that can change while Chrome is running) may easily become stale. It may
-be preferable to use <code>cr.sendWithPromise()</code> to initialize dynamic
+be preferable to use <code>sendWithPromise()</code> to initialize dynamic
 values and call <code>FireWebUIListener()</code> to update them.
 
 If you really want or need to use <code>AddBoolean()</code> for a dynamic value,
@@ -513,7 +513,7 @@ alternatives:
 * [`FireWebUIListener()`](#FireWebUIListener) allows easily notifying the page
   when an event occurs in C++ and is more loosely coupled (nothing blows up if
   the event dispatch is ignored). JS subscribes to notifications via
-  [`cr.addWebUIListener`](#cr_addWebUIListener).
+  [`addWebUIListener`](#addWebUIListener).
 * [`ResolveJavascriptCallback`](#ResolveJavascriptCallback) and
   [`RejectJavascriptCallback`](#RejectJavascriptCallback) are useful
   when Javascript requires a response to an inquiry about C++-canonical state
@@ -529,7 +529,7 @@ happen in timely manner, or may be caused to happen by unpredictable events
 Here's some example to detect a change to Chrome's theme:
 
 ```js
-cr.addWebUIListener("theme-changed", refreshThemeStyles);
+addWebUIListener("theme-changed", refreshThemeStyles);
 ```
 
 This Javascript event listener can be triggered in C++ via:
@@ -544,7 +544,7 @@ Because it's not clear when a user might want to change their theme nor what
 theme they'll choose, this is a good candidate for an event listener.
 
 If you simply need to get a response in Javascript from C++, consider using
-[`cr.sendWithPromise()`](#cr_sendWithPromise) and
+[`sendWithPromise()`](#sendWithPromise) and
 [`ResolveJavascriptCallback`](#ResolveJavascriptCallback).
 
 ### WebUIMessageHandler::OnJavascriptAllowed()
@@ -626,7 +626,7 @@ imperatively unsubscribe in `OnJavascriptDisallowed()`.
 ### WebUIMessageHandler::RejectJavascriptCallback()
 
 This method is called in response to
-[`cr.sendWithPromise()`](#cr_sendWithPromise) to reject the issued Promise. This
+[`sendWithPromise()`](#sendWithPromise) to reject the issued Promise. This
 runs the rejection (second) callback in the [Promise's
 executor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 and any
@@ -657,16 +657,16 @@ See also: [`ResolveJavascriptCallback`](#ResolveJavascriptCallback)
 ### WebUIMessageHandler::ResolveJavascriptCallback()
 
 This method is called in response to
-[`cr.sendWithPromise()`](#cr_sendWithPromise) to fulfill an issued Promise,
+[`sendWithPromise()`](#sendWithPromise) to fulfill an issued Promise,
 often with a value. This results in runnings any fulfillment (first) callbacks
 in the associate Promise executor and any registered
 [`then()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then)
 callbacks.
 
-So, given this JS code:
+So, given this TypeScript code:
 
 ```js
-cr.sendWithPromise('bakeDonuts').then(function(numDonutsBaked) {
+sendWithPromise('bakeDonuts').then(function(numDonutsBaked: number) {
   shop.donuts += numDonutsBaked;
 });
 ```
@@ -734,7 +734,7 @@ callback with the deserialized arguments:
 message_callbacks_.find(message)->second.Run(&args);
 ```
 
-### cr.addWebUIListener()
+### addWebUIListener()
 
 WebUI listeners are a convenient way for C++ to inform JavaScript of events.
 
@@ -745,7 +745,9 @@ listening for events in some cases. **cr.addWebUIListener** is preferred in new
 code.
 
 Adding WebUI listeners creates and inserts a unique ID into a map in JavaScript,
-just like [cr.sendWithPromise()](#cr_sendWithPromise).
+just like [sendWithPromise()](#sendWithPromise).
+
+addWebUIListener can be imported from 'chrome://resources/js/cr.m.js'.
 
 ```js
 // addWebUIListener():
@@ -774,18 +776,18 @@ void OvenHandler::OnBakingDonutsFinished(size_t num_donuts) {
 }
 ```
 
-JavaScript can listen for WebUI events via:
+TypeScript can listen for WebUI events via:
 
 ```js
-var donutsReady = 0;
-cr.addWebUIListener('donuts-baked', function(numFreshlyBakedDonuts) {
+let donutsReady: number = 0;
+addWebUIListener('donuts-baked', function(numFreshlyBakedDonuts: number) {
   donutsReady += numFreshlyBakedDonuts;
 });
 ```
 
-### cr.sendWithPromise()
+### sendWithPromise()
 
-`cr.sendWithPromise()` is a wrapper around `chrome.send()`. It's used when
+`sendWithPromise()` is a wrapper around `chrome.send()`. It's used when
 triggering a message requires a response:
 
 ```js
@@ -799,16 +801,18 @@ to make request specific or do from deeply nested code.
 In newer WebUI pages, you see code like this:
 
 ```js
-cr.sendWithPromise('getNumberOfDonuts').then(function(numDonuts) {
+sendWithPromise('getNumberOfDonuts').then(function(numDonuts: number) {
   alert('Yay, there are ' + numDonuts + ' delicious donuts left!');
 });
 ```
+
+Note that sendWithPromise can be imported from 'chrome://resources/js/cr.m.js';
 
 On the C++ side, the message registration is similar to
 [`chrome.send()`](#chrome_send) except that the first argument in the
 message handler's list is a callback ID. That ID is passed to
 `ResolveJavascriptCallback()`, which ends up resolving the `Promise` in
-JavaScript and calling the `then()` function.
+JavaScript/TypeScript and calling the `then()` function.
 
 ```c++
 void DonutHandler::HandleGetNumberOfDonuts(const base::ListValue* args) {
@@ -826,7 +830,7 @@ The callback ID is just a namespaced, ever-increasing number. It's used to
 insert a `Promise` into the JS-side map when created.
 
 ```js
-// cr.sendWithPromise():
+// sendWithPromise():
 var id = methodName + '_' + uidCounter++;
 chromeSendResolverMap[id] = new PromiseResolver;
 chrome.send(methodName, [id].concat(args));
