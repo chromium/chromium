@@ -37504,6 +37504,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="16" label="IdTokenNoResponse"/>
   <int value="17" label="IdTokenInvalidResponse"/>
   <int value="18" label="IdTokenInvalidRequest"/>
+  <int value="19" label="ClientMetadataMissingPrivacyPolicyUrl"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">
