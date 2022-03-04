@@ -1679,6 +1679,7 @@ public class ImeTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1303034")
     @Feature({"TextInput"})
     public void testBackgroundAndUnderlineSpans() throws Throwable {
         mRule.fullyLoadUrl("data:text/html, <div contenteditable id=\"div\" />");
