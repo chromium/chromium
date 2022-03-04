@@ -172,7 +172,12 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
  * `--writable-system`
 
-    Makes system & vendor image writable after adb remount.
+    Makes system & vendor image writable. It's necessary to run
+    ```
+    adb root
+    adb remount
+    ```
+    after the emulator starts.
 
  * `--debug-tags`
 
