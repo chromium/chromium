@@ -156,19 +156,8 @@ if (is_android) {
     template = "//components/variations/android/java_templates/VariationsSwitches.java.tmpl"
   }
 
-  java_cpp_features("java_features_srcjar") {
-    # External code should depend on ":variations_java" instead.
-    visibility = [ ":*" ]
-    sources = [
-      "fake_crash.cc",
-      "variations_features.cc",
-    ]
-    template = "//components/variations/android/java_templates/VariationsFeatures.java.tmpl"
-  }
-
   android_library("variations_java") {
     srcjar_deps = [
-      ":java_features_srcjar",
       ":java_switches_srcjar",
       ":load_seed_result_enum_srcjar",
     ]
