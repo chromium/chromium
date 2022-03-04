@@ -860,6 +860,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   base::RunLoop run_loop;
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+  run_loop.Run();
   EXPECT_FALSE(expected_report.HasRequest());
 }
 
@@ -981,6 +982,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   base::RunLoop run_loop;
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+  run_loop.Run();
   EXPECT_FALSE(expected_report.HasRequest());
 }
 
