@@ -560,6 +560,11 @@ module.exports = {
         message: 'Use named function to declare local function. ' +
             '(go/tsstyle#function-declarations)',
       },
+      // Disallow private fields. (go/tsstyle#private-fields)
+      {
+        selector: 'TSPrivateIdentifier',
+        message: 'Private fields are not allowed. (go/tsstyle#private-fields)',
+      },
     ],
 
     '@typescript-eslint/naming-convention': [
