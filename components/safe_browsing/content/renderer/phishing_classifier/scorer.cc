@@ -42,21 +42,37 @@ std::unique_ptr<tflite::MutableOpResolver> CreateOpResolver() {
   tflite::MutableOpResolver resolver;
   // The minimal set of OPs required to run the visual model.
   resolver.AddBuiltin(tflite::BuiltinOperator_ADD,
-                      tflite::ops::builtin::Register_ADD());
+                      tflite::ops::builtin::Register_ADD(),
+                      /* min_version = */ 1,
+                      /* max_version = */ 2);
   resolver.AddBuiltin(tflite::BuiltinOperator_CONV_2D,
-                      tflite::ops::builtin::Register_CONV_2D());
+                      tflite::ops::builtin::Register_CONV_2D(),
+                      /* min_version = */ 1,
+                      /* max_version = */ 5);
   resolver.AddBuiltin(tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
-                      tflite::ops::builtin::Register_DEPTHWISE_CONV_2D());
+                      tflite::ops::builtin::Register_DEPTHWISE_CONV_2D(),
+                      /* min_version = */ 1,
+                      /* max_version = */ 6);
   resolver.AddBuiltin(tflite::BuiltinOperator_FULLY_CONNECTED,
-                      tflite::ops::builtin::Register_FULLY_CONNECTED());
+                      tflite::ops::builtin::Register_FULLY_CONNECTED(),
+                      /* min_version = */ 1,
+                      /* max_version = */ 9);
   resolver.AddBuiltin(tflite::BuiltinOperator_MEAN,
-                      tflite::ops::builtin::Register_MEAN());
+                      tflite::ops::builtin::Register_MEAN(),
+                      /* min_version = */ 1,
+                      /* max_version = */ 2);
   resolver.AddBuiltin(tflite::BuiltinOperator_SOFTMAX,
-                      tflite::ops::builtin::Register_SOFTMAX());
+                      tflite::ops::builtin::Register_SOFTMAX(),
+                      /* min_version = */ 1,
+                      /* max_version = */ 3);
   resolver.AddBuiltin(tflite::BuiltinOperator_DEQUANTIZE,
-                      tflite::ops::builtin::Register_DEQUANTIZE());
+                      tflite::ops::builtin::Register_DEQUANTIZE(),
+                      /* min_version = */ 1,
+                      /* max_version = */ 4);
   resolver.AddBuiltin(tflite::BuiltinOperator_QUANTIZE,
-                      tflite::ops::builtin::Register_QUANTIZE());
+                      tflite::ops::builtin::Register_QUANTIZE(),
+                      /* min_version = */ 1,
+                      /* max_version = */ 2);
   return std::make_unique<tflite::MutableOpResolver>(resolver);
 }
 
