@@ -38,8 +38,6 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
-class Browser;
-
 namespace content {
 struct FocusedNodeDetails;
 }  // namespace content
@@ -127,7 +125,7 @@ class AccessibilityManager
   static AccessibilityManager* Get();
 
   // Show the accessibility help as a tab in the browser.
-  static void ShowAccessibilityHelp(Browser* browser);
+  static void ShowAccessibilityHelp();
 
   // Returns true when the accessibility menu should be shown.
   bool ShouldShowAccessibilityMenu();

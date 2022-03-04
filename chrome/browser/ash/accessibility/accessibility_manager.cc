@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_event_handler_delegate_impl.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -53,6 +54,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
@@ -277,8 +279,17 @@ AccessibilityManager* AccessibilityManager::Get() {
 }
 
 // static
-void AccessibilityManager::ShowAccessibilityHelp(Browser* browser) {
-  ShowSingletonTab(browser, GURL(chrome::kChromeAccessibilityHelpURL));
+void AccessibilityManager::ShowAccessibilityHelp() {
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    crosapi::BrowserManager::Get()->SwitchToTab(
+        GURL(chrome::kChromeAccessibilityHelpURL));
+    return;
+  }
+
+  chrome::ScopedTabbedBrowserDisplayer displayer(
+      ProfileManager::GetActiveUserProfile());
+  ShowSingletonTab(displayer.browser(),
+                   GURL(chrome::kChromeAccessibilityHelpURL));
 }
 
 AccessibilityManager::AccessibilityManager() {
