@@ -291,7 +291,6 @@ void OmniboxResult::UpdateIcon() {
 }
 
 void OmniboxResult::UpdateTitleAndDetails() {
-  // TODO(crbug.com/1258415): We can remove the tags logic.
   if (!IsUrlResultWithDescription()) {
     SetTitle(match_.contents);
     ChromeSearchResult::Tags title_tags;

@@ -13,7 +13,8 @@ namespace app_list {
 // Translates ACMatchClassifications into ChromeSearchResult tags.
 void ACMatchClassificationsToTags(const std::u16string& text,
                                   const ACMatchClassifications& text_classes,
-                                  ChromeSearchResult::Tags* tags);
+                                  ChromeSearchResult::Tags* tags,
+                                  const bool ignore_match = false);
 
 // TODO(crbug.com/1258415): Remove this and its references once the productivity
 // launcher is enabled.

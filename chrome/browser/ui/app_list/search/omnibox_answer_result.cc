@@ -55,6 +55,7 @@ ChromeSearchResult::IconInfo CreateAnswerIconInfo(
   return ChromeSearchResult::IconInfo(icon, dimension);
 }
 
+// Creates a TextItem without tags.
 TextItem CreateTextItem(const std::u16string& text) {
   TextItem text_item(TextType::kString);
   text_item.SetText(text);
@@ -62,17 +63,10 @@ TextItem CreateTextItem(const std::u16string& text) {
   return text_item;
 }
 
-std::u16string GetAdditionalText(const SuggestionAnswer::ImageLine& line) {
-  if (line.additional_text()) {
-    const auto& additional_text = line.additional_text()->text();
-    if (!additional_text.empty())
-      return additional_text;
-  }
-  return std::u16string();
-}
+TextItem TextFieldToTextItem(const SuggestionAnswer::TextField& text_field) {
+  TextItem text_item(TextType::kString);
+  text_item.SetText(text_field.text());
 
-ash::SearchResultTags TextFieldToTags(
-    const SuggestionAnswer::TextField& text_field) {
   ash::SearchResultTags tags;
   const auto length = text_field.text().length();
   switch (text_field.style()) {
@@ -85,22 +79,54 @@ ash::SearchResultTags TextFieldToTags(
     default:
       break;
   }
-  return tags;
+  text_item.SetTextTags(tags);
+
+  return text_item;
 }
 
+// Converts an ImageLine to TextVector, ignoring any additional text.
 std::vector<TextItem> ImageLineToTextVector(
     const SuggestionAnswer::ImageLine& line) {
   std::vector<TextItem> text_vector;
   for (const auto& text_field : line.text_fields()) {
-    if (!text_vector.empty())
+    if (!text_vector.empty()) {
       text_vector.push_back(CreateTextItem(u" "));
-
-    TextItem text_item(TextType::kString);
-    text_item.SetText(text_field.text());
-    text_item.SetTextTags(TextFieldToTags(text_field));
-    text_vector.push_back(text_item);
+    }
+    text_vector.push_back(TextFieldToTextItem(text_field));
   }
   return text_vector;
+}
+
+// Converts the line's additional text into a TextItem and appends it to the
+// supplied TextVector.
+void AppendAdditionalText(const SuggestionAnswer::ImageLine& line,
+                          std::vector<TextItem>& text_vector) {
+  if (!line.additional_text() || line.additional_text()->text().empty())
+    return;
+
+  if (!text_vector.empty()) {
+    text_vector.push_back(CreateTextItem(u" "));
+  }
+
+  text_vector.push_back(TextFieldToTextItem(*line.additional_text()));
+}
+
+// Converts AutocompleteMatch fields to a TextItem.
+std::vector<TextItem> MatchFieldsToTextVector(
+    const std::u16string& text,
+    const ACMatchClassifications& classifications) {
+  TextItem text_item(TextType::kString);
+  text_item.SetText(text);
+
+  ash::SearchResultTags tags;
+  // Classifications include URL tags, which we need to convert, and MATCH tags,
+  // which we should ignore since the query highlighter will perform all the
+  // matching instead.
+  ACMatchClassificationsToTags(text, classifications, &tags,
+                               /*ignore_match=*/true);
+  text_item.SetTextTags(tags);
+
+  return {text_item};
 }
 
 std::vector<TextItem> AddBoldTags(std::vector<TextItem> text_vector) {
@@ -207,12 +233,14 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
     // Calculator results come in two forms:
     // 1) Answer in |match.contents|, empty description,
     // 2) Query in |match.contents|, answer in |match.description|.
-    std::vector<TextItem> contents_vector = {CreateTextItem(match_.contents)};
+    std::vector<TextItem> contents_vector =
+        MatchFieldsToTextVector(match_.contents, match_.contents_class);
     if (match_.description.empty()) {
       SetTitleTextVector(contents_vector);
       SetDetailsTextVector({CreateTextItem(query_)});
     } else {
-      SetTitleTextVector({CreateTextItem(match_.description)});
+      SetTitleTextVector(MatchFieldsToTextVector(match_.description,
+                                                 match_.description_class));
       SetDetailsTextVector(contents_vector);
     }
   } else if (IsWeatherResult()) {
@@ -222,25 +250,22 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
     // TODO(crbug.com/1250154): Put additional weather text into the title
     // field instead of match contents, once the information becomes available
     // from the Suggest server.
-    SetTitleTextVector({CreateTextItem(match_.contents)});
-    SetDetailsTextVector({CreateTextItem(GetAdditionalText(second_line))});
+    SetTitleTextVector(
+        MatchFieldsToTextVector(match_.contents, match_.contents_class));
+
+    std::vector<TextItem> details_vector;
+    AppendAdditionalText(second_line, details_vector);
+    SetDetailsTextVector(details_vector);
   } else {
     const auto& second_line = match_.answer->second_line();
     auto title_vector = ImageLineToTextVector(second_line);
-    const auto& additional_title = GetAdditionalText(second_line);
-    if (!additional_title.empty()) {
-      title_vector.push_back(CreateTextItem(u" "));
-      title_vector.push_back(CreateTextItem(additional_title));
-    }
+    AppendAdditionalText(second_line, title_vector);
     SetTitleTextVector(title_vector);
 
     const auto& first_line = match_.answer->first_line();
-    std::vector<TextItem> details_vector = {CreateTextItem(match_.contents)};
-    const auto& additional_details = GetAdditionalText(first_line);
-    if (!additional_details.empty()) {
-      details_vector.push_back(CreateTextItem(u" "));
-      details_vector.push_back(CreateTextItem(additional_details));
-    }
+    std::vector<TextItem> details_vector =
+        MatchFieldsToTextVector(match_.contents, match_.contents_class);
+    AppendAdditionalText(first_line, details_vector);
     SetDetailsTextVector(details_vector);
   }
 
@@ -250,11 +275,6 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
   std::u16string accessible_name = ComputeAccessibleName(
       {big_title_text_vector(), title_text_vector(), details_text_vector()});
   SetAccessibleName(accessible_name);
-
-  // TODO(crbug.com/1250154): Remove these once the migration to TextVectors
-  // is completed.
-  SetTitle(TextVectorToString(title_text_vector()));
-  SetDetails(TextVectorToString(details_text_vector()));
 }
 
 void OmniboxAnswerResult::UpdateClassicTitleAndDetails() {
@@ -271,16 +291,16 @@ void OmniboxAnswerResult::UpdateClassicTitleAndDetails() {
                                  &details_tags);
     SetDetailsTags(details_tags);
   } else {
-    const auto& additional_text =
-        GetAdditionalText(match_.answer->first_line());
-    // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
-    // construct this string instead of concatenation. This currently only
-    // happens for stock ticker symbols.
-    SetTitle(!additional_text.empty()
-                 ? base::JoinString({match_.contents, additional_text}, u" ")
-                 : match_.contents);
-    SetDetails(TextVectorToString(
-        ImageLineToTextVector(match_.answer->second_line())));
+    const auto* additional = match_.answer->first_line().additional_text();
+    const std::u16string title =
+        additional && !additional->text().empty()
+            ? base::JoinString({match_.contents, additional->text()}, u" ")
+            : match_.contents;
+    SetTitle(title);
+
+    auto details_vector = ImageLineToTextVector(match_.answer->second_line());
+    AppendAdditionalText(match_.answer->second_line(), details_vector);
+    SetDetails(TextVectorToString(details_vector));
   }
 }
 

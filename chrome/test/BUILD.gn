@@ -6920,6 +6920,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/keyboard_shortcut_provider_unittest.cc",
       "../browser/ui/app_list/search/keyboard_shortcut_result_unittest.cc",
       "../browser/ui/app_list/search/mixer_unittest.cc",
+      "../browser/ui/app_list/search/omnibox_answer_result_unittest.cc",
       "../browser/ui/app_list/search/omnibox_result_unittest.cc",
       "../browser/ui/app_list/search/open_tab_result_unittest.cc",
       "../browser/ui/app_list/search/ranking/answer_ranker_unittest.cc",

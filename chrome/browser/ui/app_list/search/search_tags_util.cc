@@ -26,7 +26,8 @@ int ACMatchStyleToTagStyle(int styles) {
 
 void ACMatchClassificationsToTags(const std::u16string& text,
                                   const ACMatchClassifications& text_classes,
-                                  ChromeSearchResult::Tags* tags) {
+                                  ChromeSearchResult::Tags* tags,
+                                  const bool ignore_match) {
   int tag_styles = ash::SearchResultTag::NONE;
   size_t tag_start = 0;
 
@@ -40,11 +41,17 @@ void ACMatchClassificationsToTags(const std::u16string& text,
       tag_styles = ash::SearchResultTag::NONE;
     }
 
-    if (text_class.style == ACMatchClassification::NONE)
+    int style = text_class.style;
+    if (ignore_match) {
+      style &= ~ACMatchClassification::MATCH;
+    }
+
+    if (style == ACMatchClassification::NONE) {
       continue;
+    }
 
     tag_start = text_class.offset;
-    tag_styles = ACMatchStyleToTagStyle(text_class.style);
+    tag_styles = ACMatchStyleToTagStyle(style);
   }
 
   if (tag_styles != ash::SearchResultTag::NONE) {
