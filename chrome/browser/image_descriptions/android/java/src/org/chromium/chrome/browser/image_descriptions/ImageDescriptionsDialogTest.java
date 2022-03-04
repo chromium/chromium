@@ -8,11 +8,12 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.thatMatchesFirst;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -175,7 +176,8 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testHeaderAndButtonContent() {
         showDialog();
-        onView(thatMatchesFirst(withId(org.chromium.chrome.R.id.title)))
+        onView(allOf(isDescendantOfA(withId(org.chromium.chrome.R.id.title_container)),
+                       withId(org.chromium.chrome.R.id.title)))
                 .check(matches(withText("Get image descriptions?")));
         onView(withId(R.id.image_descriptions_dialog_content))
                 .check(matches(
