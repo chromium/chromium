@@ -104,7 +104,7 @@ export class PersonalizationRouter extends PolymerElement {
 
   /** Navigate to albums subpage of specific topic source. */
   selectAmbientAlbums(topicSource: TopicSource) {
-    this.goToRoute(Paths.AmbientAlbums, {topicSource});
+    this.goToRoute(Paths.AmbientAlbums, {topicSource: topicSource.toString()});
   }
 
   goToRoute(path: Paths, queryParams: Object = {}) {

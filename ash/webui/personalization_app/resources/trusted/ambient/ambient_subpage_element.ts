@@ -105,9 +105,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
     return topicSource;
   }
 
-  private getAlbums_(): AmbientModeAlbum[] {
-    if (!this.queryParams) {
-      return [];
+  // Null result indicates albums are loading.
+  private getAlbums_(): AmbientModeAlbum[]|null {
+    if (!this.queryParams || this.albums_ === null) {
+      return null;
     }
 
     const topicSource = this.getTopicSource_();

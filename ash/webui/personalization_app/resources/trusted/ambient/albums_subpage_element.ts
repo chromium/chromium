@@ -49,8 +49,15 @@ export class AlbumsSubpage extends WithPersonalizationStore {
     }
   }
 
-  private hasAlbums_(): boolean {
-    return isNonEmptyArray(this.albums);
+  private loadingAlbums_(): boolean {
+    return this.albums === null;
+  }
+
+  private showNoGoogleAlbums_(): boolean {
+    if (this.topicSource !== TopicSource.kGooglePhotos) {
+      return false;
+    }
+    return !isNonEmptyArray(this.albums);
   }
 }
 

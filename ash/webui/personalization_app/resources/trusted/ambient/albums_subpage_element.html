@@ -10,12 +10,17 @@
     localized-string="[[getTitleInnerHtml_(topicSource)]]">
 </localized-link>
 
-<!-- Only Google Photos may not has albums -->
-<template is="dom-if" if="[[!hasAlbums_(albums)]]">
-  <localized-link class="cr-row first"
-      localized-string=
-          "[[i18nAdvanced('ambientModeAlbumsSubpageGooglePhotosNoAlbum')]]"
-  </localized-link>
+<template is="dom-if" if="[[loadingAlbums_(albums)]]">
+  <!-- TODO(b/217311018): Add loading state -->
 </template>
+<template is="dom-if" if="[[!loadingAlbums_(albums)]]">
+  <!-- Only Google Photos may not have albums -->
+  <template is="dom-if" if="[[showNoGoogleAlbums_(topicSource, albums)]]">
+    <localized-link class="cr-row first"
+        localized-string=
+            "[[i18nAdvanced('ambientModeAlbumsSubpageGooglePhotosNoAlbum')]]">
+    </localized-link>
+  </template>
 
-<album-list albums="[[albums]]" topic-source="[[topicSource]]"></album-list>
+  <album-list albums="[[albums]]" topic-source="[[topicSource]]"></album-list>
+</template>
