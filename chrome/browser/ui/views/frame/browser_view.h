@@ -201,6 +201,10 @@ class BrowserView : public BrowserWindow,
     return side_panel_coordinator_.get();
   }
 
+  SidePanelRegistry* global_side_panel_registry() {
+    return global_side_panel_registry_.get();
+  }
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   lens::LensSidePanelController* lens_side_panel_controller() {
     return lens_side_panel_controller_.get();
