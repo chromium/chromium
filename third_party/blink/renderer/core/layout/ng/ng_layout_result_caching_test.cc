@@ -2151,6 +2151,41 @@ TEST_F(NGLayoutResultCachingTest, HitBlockOffsetUnchangedInFragmentainer) {
   EXPECT_NE(result, nullptr);
 }
 
+TEST_F(NGLayoutResultCachingTest, HitNewFormattingContextInFragmentainer) {
+  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .multicol { columns:2; }
+      .newfc { display: flow-root; height:50px; }
+    </style>
+    <div class="multicol">
+      <div id="test" class="newfc"></div>
+      <div style="height: 100px;"></div>
+    </div>
+    <div class="multicol">
+      <div id="src" class="newfc"></div>
+      <div style="height: 90px;"></div>
+    </div>
+  )HTML");
+
+  auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
+  auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
+
+  NGLayoutCacheStatus cache_status;
+  absl::optional<NGFragmentGeometry> fragment_geometry;
+  ASSERT_NE(src->GetCachedLayoutResult(), nullptr);
+  ASSERT_NE(test->GetCachedLayoutResult(), nullptr);
+  const NGConstraintSpace& space =
+      src->GetCachedLayoutResult()->GetConstraintSpaceForCaching();
+  EXPECT_TRUE(space.IsInitialColumnBalancingPass());
+  const NGLayoutResult* result = test->CachedLayoutResult(
+      space, nullptr, nullptr, &fragment_geometry, &cache_status);
+
+  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_NE(result, nullptr);
+}
+
 TEST_F(NGLayoutResultCachingTest, MissMonolithicChangeInFragmentainer) {
   ScopedLayoutNGBlockFragmentationForTest block_frag(true);
 
