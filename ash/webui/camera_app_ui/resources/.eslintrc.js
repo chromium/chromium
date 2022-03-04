@@ -565,6 +565,15 @@ module.exports = {
         selector: 'TSPrivateIdentifier',
         message: 'Private fields are not allowed. (go/tsstyle#private-fields)',
       },
+      // Disallow explicit boolean coercions in condition.
+      // (go/tsstyle#type-coercion-implicit)
+      {
+        selector: ':matches(IfStatement, WhileStatement)' +
+            ' > UnaryExpression.test[operator="!"]' +
+            ' > UnaryExpression.argument[operator="!"]',
+        message: 'Explicit boolean coercion is not needed in conditions. ' +
+            '(go/tsstyle#type-coercion-implicit)',
+      },
     ],
 
     '@typescript-eslint/naming-convention': [
