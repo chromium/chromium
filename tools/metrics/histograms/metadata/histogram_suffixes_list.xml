@@ -10091,6 +10091,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="SoftwareReporterEngine" separator="_">
   <suffix name="ESET" label=""/>
   <suffix name="URZA" label=""/>
+  <affected-histogram name="SoftwareReporter.CreateJobResult"/>
   <affected-histogram name="SoftwareReporter.FoundUwSReadError"/>
   <affected-histogram name="SoftwareReporter.LogsUploadEnabled"/>
   <affected-histogram name="SoftwareReporter.LogsUploadResult"/>
@@ -10099,9 +10100,9 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SoftwareReporter.MemoryUsed"/>
   <affected-histogram name="SoftwareReporter.MinorVersion"/>
   <affected-histogram name="SoftwareReporter.RunningTime"/>
-  <affected-histogram name="SoftwareReporter.RunningTimeAccordingToChrome"/>
+  <affected-histogram name="SoftwareReporter.RunningTimeAccordingToChrome2"/>
   <affected-histogram name="SoftwareReporter.RunningTimeRegistryError"/>
-  <affected-histogram name="SoftwareReporter.RunningTimeWithoutSleep"/>
+  <affected-histogram name="SoftwareReporter.RunningTimeWithoutSleep2"/>
   <affected-histogram name="SoftwareReporter.Step"/>
 </histogram_suffixes>
 

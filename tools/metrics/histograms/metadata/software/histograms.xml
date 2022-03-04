@@ -125,6 +125,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SoftwareReporter.CreateJobResult" enum="WinGetLastError"
+    expires_after="2022-08-21">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The Windows error code from CreateJobObject, which is called just before
+    launching the Software Reporter. If this is not ERROR_SUCCESS, the reporter
+    process is not attached to a job and may outlive the browser. Not logged on
+    Windows 7, where CreateJobObject is not called because nested job objects
+    aren't supported.
+  </summary>
+</histogram>
+
 <histogram name="SoftwareReporter.FoundUwSReadError" enum="BooleanError"
     expires_after="2022-07-03">
   <owner>drubery@chromium.org</owner>
@@ -283,27 +296,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SoftwareReporter.RunningTimeAccordingToChrome" units="ms"
-    expires_after="2022-07-31">
+<histogram name="SoftwareReporter.RunningTimeAccordingToChrome2" units="ms"
+    expires_after="2022-08-21">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The amount of time from the Software Reporter process launch to the time it
     exits, in milliseconds. This includes time the computer was asleep or
-    hibernating. SoftwareReporter.RunningTimeWithoutSleep excludes those
-    periods.
+    hibernating. SoftwareReporter.RunningTimeWithoutSleep2 excludes those
+    periods. This replaces SoftwareReporter.RunningTimeAccordingToChrome which
+    also included queuing time of tasks before and after launch.
   </summary>
 </histogram>
 
-<histogram name="SoftwareReporter.RunningTimeWithoutSleep" units="ms"
+<histogram name="SoftwareReporter.RunningTimeWithoutSleep2" units="ms"
     expires_after="2022-08-21">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The amount of time from the Software Reporter process launch to the time it
     exits, in milliseconds. This does not include time the computer was asleep
-    or hibernating. SoftwareReporter.RunningTimeAccordingToChrome includes those
-    periods.
+    or hibernating. SoftwareReporter.RunningTimeAccordingToChrome2 includes
+    those periods. This replaces SoftwareReporter.RunningTimeWithoutSleep which
+    also included queuing time of tasks before and after launch.
   </summary>
 </histogram>
 
