@@ -846,12 +846,13 @@ VaapiVideoDecoder::AllocateCustomFrameProxy(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     bool use_protected,
+    bool use_linear_buffers,
     base::TimeDelta timestamp) {
   if (!decoder)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
-  return decoder->AllocateCustomFrame(gpu_memory_buffer_factory, format,
-                                      coded_size, visible_rect, natural_size,
-                                      use_protected, timestamp);
+  return decoder->AllocateCustomFrame(
+      gpu_memory_buffer_factory, format, coded_size, visible_rect, natural_size,
+      use_protected, use_linear_buffers, timestamp);
 }
 
 CroStatus::Or<scoped_refptr<VideoFrame>> VaapiVideoDecoder::AllocateCustomFrame(
@@ -861,10 +862,12 @@ CroStatus::Or<scoped_refptr<VideoFrame>> VaapiVideoDecoder::AllocateCustomFrame(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     bool use_protected,
+    bool use_linear_buffers,
     base::TimeDelta timestamp) {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::kChangingResolution || state_ == State::kDecoding);
+  DCHECK(!use_linear_buffers);
   if (format != PIXEL_FORMAT_NV12)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 

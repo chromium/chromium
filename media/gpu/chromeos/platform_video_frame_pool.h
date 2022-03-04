@@ -56,7 +56,8 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
                                             const gfx::Rect& visible_rect,
                                             const gfx::Size& natural_size,
                                             size_t max_num_frames,
-                                            bool use_protected) override;
+                                            bool use_protected,
+                                            bool use_linear_buffers) override;
   scoped_refptr<VideoFrame> GetFrame() override;
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;
@@ -135,6 +136,10 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // If we are using HW protected buffers.
   bool use_protected_ GUARDED_BY(lock_) = false;
+
+  // True if we need to allocate GPU buffers in a way that is accessible from
+  // the CPU with a linear layout. Can only be set once per instance.
+  absl::optional<bool> use_linear_buffers_ GUARDED_BY(lock_);
 
   // Callback which is called when the pool is not exhausted.
   base::OnceClosure frame_available_cb_ GUARDED_BY(lock_);

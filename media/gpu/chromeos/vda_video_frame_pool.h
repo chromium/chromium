@@ -66,7 +66,8 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
                                             const gfx::Rect& visible_rect,
                                             const gfx::Size& natural_size,
                                             size_t max_num_frames,
-                                            bool use_protected) override;
+                                            bool use_protected,
+                                            bool use_linear_buffers) override;
   scoped_refptr<VideoFrame> GetFrame() override;
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;

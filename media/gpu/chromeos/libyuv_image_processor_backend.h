@@ -44,6 +44,8 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
                scoped_refptr<VideoFrame> output_frame,
                FrameReadyCB cb) override;
 
+  bool needs_linear_output_buffers() const override;
+
  private:
   LibYUVImageProcessorBackend(
       std::unique_ptr<VideoFrameMapper> input_frame_mapper,

@@ -27,12 +27,20 @@ CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     bool use_protected,
+    bool use_linear_buffers,
     base::TimeDelta timestamp) {
+  if (use_protected && use_linear_buffers) {
+    VLOGF(1) << "Linear buffers are unsupported when |use_protected| is true.";
+    return CroStatus::Codes::kFailedToCreateVideoFrame;
+  }
+
   scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
       gpu_memory_buffer_factory, format, coded_size, visible_rect, natural_size,
       timestamp,
-      use_protected ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
-                    : gfx::BufferUsage::SCANOUT_VDA_WRITE);
+      use_protected
+          ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
+          : (use_linear_buffers ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+                                : gfx::BufferUsage::SCANOUT_VDA_WRITE));
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
@@ -100,10 +108,11 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
     // with (10, 20), 100x100 we cannot (even though it's contained in the
     // former). Hence the use of GetRectSizeFromOrigin() to calculate the
     // visible rect for |new_frame|.
-    CroStatus::Or<scoped_refptr<VideoFrame>> new_frame =
-        create_frame_cb_.Run(gpu_memory_buffer_factory_, format, coded_size,
-                             gfx::Rect(GetRectSizeFromOrigin(visible_rect_)),
-                             coded_size, use_protected_, base::TimeDelta());
+    CHECK(use_linear_buffers_.has_value());
+    CroStatus::Or<scoped_refptr<VideoFrame>> new_frame = create_frame_cb_.Run(
+        gpu_memory_buffer_factory_, format, coded_size,
+        gfx::Rect(GetRectSizeFromOrigin(visible_rect_)), coded_size,
+        use_protected_, *use_linear_buffers_, base::TimeDelta());
     if (new_frame.has_error()) {
       // TODO(crbug.com/c/1103510) Push the error up instead of dropping it.
       return nullptr;
@@ -153,9 +162,13 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     size_t max_num_frames,
-    bool use_protected) {
+    bool use_protected,
+    bool use_linear_buffers) {
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
+
+  CHECK(!use_linear_buffers_ || *use_linear_buffers_ == use_linear_buffers);
+  use_linear_buffers_ = use_linear_buffers;
 
   // Only support the Fourcc that could map to VideoPixelFormat.
   VideoPixelFormat format = fourcc.ToVideoPixelFormat();
@@ -188,7 +201,7 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     free_frames_.clear();
     auto maybe_frame = create_frame_cb_.Run(
         gpu_memory_buffer_factory_, format, coded_size, visible_rect,
-        natural_size, use_protected, base::TimeDelta());
+        natural_size, use_protected, *use_linear_buffers_, base::TimeDelta());
     if (maybe_frame.has_error())
       return std::move(maybe_frame).error();
     auto frame = std::move(maybe_frame).value();

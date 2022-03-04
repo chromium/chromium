@@ -182,6 +182,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       bool use_protected,
+      bool use_linear_buffers,
       base::TimeDelta timestamp);
 
   // Allocates a new VideoFrame using a new VASurface directly. Since this is
@@ -194,6 +195,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       bool use_protected,
+      bool use_linear_buffers,
       base::TimeDelta timestamp);
 
   // Having too many decoder instances at once may cause us to run out of FDs

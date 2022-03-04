@@ -26,9 +26,9 @@ ImageProcessorWithPool::Create(
   DCHECK(gfx::Rect(coded_size).Contains(config.visible_rect));
   const gfx::Size natural_size = config.visible_rect.size();
 
-  CroStatus::Or<GpuBufferLayout> status_or_layout =
-      frame_pool->Initialize(config.fourcc, coded_size, config.visible_rect,
-                             natural_size, num_frames, use_protected);
+  CroStatus::Or<GpuBufferLayout> status_or_layout = frame_pool->Initialize(
+      config.fourcc, coded_size, config.visible_rect, natural_size, num_frames,
+      use_protected, image_processor->needs_linear_output_buffers());
   if (status_or_layout.has_error()) {
     VLOGF(1) << "Failed to initialize the pool.";
     return std::move(status_or_layout).error();

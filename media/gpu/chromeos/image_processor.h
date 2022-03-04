@@ -105,6 +105,12 @@ class MEDIA_GPU_EXPORT ImageProcessor {
   // Reset() must be called on |client_task_runner_|.
   bool Reset();
 
+  // Returns true if and only if, in IMPORT mode, the image processor requires
+  // the output video frames to be CPU-readable with a linear view of the data.
+  bool needs_linear_output_buffers() const {
+    return needs_linear_output_buffers_;
+  }
+
  protected:
   // Container for both FrameReadyCB and LegacyFrameReadyCB. With this class,
   // we could store both kind of callback in the same container.
@@ -161,6 +167,8 @@ class MEDIA_GPU_EXPORT ImageProcessor {
 
   // The sequence for interacting with |backend_|.
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+
+  const bool needs_linear_output_buffers_;
 
   // The weak pointer of this, bound to |client_task_runner_|.
   base::WeakPtr<ImageProcessor> weak_this_;

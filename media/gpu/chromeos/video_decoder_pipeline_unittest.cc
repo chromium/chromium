@@ -55,12 +55,13 @@ class MockVideoFramePool : public DmabufVideoFramePool {
   ~MockVideoFramePool() override = default;
 
   // DmabufVideoFramePool implementation.
-  MOCK_METHOD6(Initialize,
+  MOCK_METHOD7(Initialize,
                CroStatus::Or<GpuBufferLayout>(const Fourcc&,
                                               const gfx::Size&,
                                               const gfx::Rect&,
                                               const gfx::Size&,
                                               size_t,
+                                              bool,
                                               bool));
   MOCK_METHOD0(GetFrame, scoped_refptr<VideoFrame>());
   MOCK_METHOD0(IsExhausted, bool());
@@ -667,7 +668,8 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
     EXPECT_CALL(*pool_,
                 Initialize(expected_fourcc, expected_coded_size, kVisibleRect,
                            /*natural_size=*/kVisibleRect.size(),
-                           kMaxNumOfFrames, /*use_protected=*/false))
+                           kMaxNumOfFrames, /*use_protected=*/false,
+                           /*use_linear_buffers=*/false))
         .WillOnce(Return(*GpuBufferLayout::Create(
             expected_fourcc, expected_coded_size, std::move(planes),
             /*modifier=*/kModifier)));
@@ -724,7 +726,7 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormatLinearModifier) {
       std::vector<ColorPlaneLayout>(
           VideoFrame::NumPlanes(kFourcc.ToVideoPixelFormat())),
       /*modifier=*/DRM_FORMAT_MOD_LINEAR);
-  EXPECT_CALL(*pool_, Initialize(_, _, _, _, _, _))
+  EXPECT_CALL(*pool_, Initialize(_, _, _, _, _, _, _))
       .WillRepeatedly(Return(gpu_buffer_layout));
 
   PixelLayoutCandidate candidate{Fourcc(Fourcc::NV12), kSize,
@@ -756,7 +758,7 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormatUnsupportedModifier) {
       std::vector<ColorPlaneLayout>(
           VideoFrame::NumPlanes(kFourcc.ToVideoPixelFormat())),
       /*modifier=*/~DRM_FORMAT_MOD_LINEAR);
-  EXPECT_CALL(*pool_, Initialize(_, _, _, _, _, _))
+  EXPECT_CALL(*pool_, Initialize(_, _, _, _, _, _, _))
       .WillRepeatedly(Return(gpu_buffer_layout));
 
   // Make sure the modifier mismatches the |gpu_buffer_layout|'s

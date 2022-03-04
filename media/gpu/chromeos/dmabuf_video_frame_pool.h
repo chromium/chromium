@@ -43,6 +43,7 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
           const gfx::Rect&,
           const gfx::Size&,
           bool,
+          bool,
           base::TimeDelta)>;
 
   // Get the identifier of Dmabuf-backed |frame|. Calling this method with the
@@ -73,7 +74,8 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       size_t max_num_frames,
-      bool use_protected) = 0;
+      bool use_protected,
+      bool use_linear_buffers = false) = 0;
 
   // Returns a frame from the pool with the layout that is returned by the
   // previous Initialize() method and zero timestamp. Returns nullptr if the

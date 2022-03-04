@@ -520,4 +520,8 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
   return -1;
 }
 
+bool LibYUVImageProcessorBackend::needs_linear_output_buffers() const {
+  return true;
+}
+
 }  // namespace media

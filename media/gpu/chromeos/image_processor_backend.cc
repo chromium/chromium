@@ -96,6 +96,10 @@ void ImageProcessorBackend::Reset() {
   // Do nothing as the default action.
 }
 
+bool ImageProcessorBackend::needs_linear_output_buffers() const {
+  return false;
+}
+
 }  // namespace media
 
 namespace std {

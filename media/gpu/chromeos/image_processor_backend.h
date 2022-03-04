@@ -112,6 +112,8 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   const PortConfig& output_config() const { return output_config_; }
   OutputMode output_mode() const { return output_mode_; }
 
+  virtual bool needs_linear_output_buffers() const;
+
  protected:
   friend struct std::default_delete<ImageProcessorBackend>;
 
