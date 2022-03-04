@@ -4,7 +4,7 @@
 
 package org.chromium.components.webapps.bottomsheet;
 
-import android.app.Activity;
+import android.content.Context;
 
 import org.chromium.ui.base.WindowAndroid;
 
@@ -12,8 +12,8 @@ import org.chromium.ui.base.WindowAndroid;
  * A factory for producing a {@link PwaBottomSheetController}.
  */
 public class PwaBottomSheetControllerFactory {
-    public static PwaBottomSheetController createPwaBottomSheetController(Activity activity) {
-        return new PwaBottomSheetController(activity);
+    public static PwaBottomSheetController createPwaBottomSheetController(Context context) {
+        return new PwaBottomSheetController(context);
     }
 
     public static void attach(WindowAndroid windowAndroid, PwaBottomSheetController controller) {

@@ -31,6 +31,8 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.SystemUi
 import org.chromium.components.content_capture.ContentCaptureConsumer;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
+import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -86,6 +88,8 @@ public final class BrowserViewController
     private final ViewGroup mBottomSheetContainer;
     private final ManagedBottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
+
+    private PwaBottomSheetController mPwaBottomSheetController;
 
     private TabImpl mTab;
 
@@ -189,6 +193,9 @@ public final class BrowserViewController
                 KeyboardVisibilityDelegate.getInstance(), () -> mBottomSheetContainer);
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
 
+        mPwaBottomSheetController = PwaBottomSheetControllerFactory.createPwaBottomSheetController(
+                mWindowAndroid.getContext().get());
+        PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             /** A token for suppressing app modal dialogs. */
             private int mAppModalToken = TokenHolder.INVALID_TOKEN;
@@ -229,6 +236,7 @@ public final class BrowserViewController
     public void destroy() {
         BottomSheetControllerFactory.detach(mBottomSheetController);
         mBottomSheetController.removeObserver(mBottomSheetObserver);
+        PwaBottomSheetControllerFactory.detach(mPwaBottomSheetController);
         mWindowAndroid.setModalDialogManager(null);
         setActiveTab(null);
         if (mOnscreenContentProvider != null) mOnscreenContentProvider.destroy();

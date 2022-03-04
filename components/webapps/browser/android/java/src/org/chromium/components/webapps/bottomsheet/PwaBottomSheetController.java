@@ -4,7 +4,6 @@
 
 package org.chromium.components.webapps.bottomsheet;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Pair;
@@ -46,7 +45,7 @@ import java.util.ArrayList;
 @JNINamespace("webapps")
 public class PwaBottomSheetController
         implements UnownedUserData, AddToHomescreenViewDelegate, View.OnClickListener {
-    private final Activity mActivity;
+    private final Context mContext;
 
     /** A pointer to the native version of this class. It's lifetime is controlled by this class. */
     private long mNativePwaBottomSheetController;
@@ -158,10 +157,10 @@ public class PwaBottomSheetController
 
     /**
      * Constructs a PwaBottomSheetController.
-     * @param activity The current activity.
+     * @param context The current context.
      */
-    public PwaBottomSheetController(Activity activity) {
-        mActivity = activity;
+    public PwaBottomSheetController(Context context) {
+        mContext = context;
     }
 
     // AddToHomescreenViewDelegate:
@@ -219,9 +218,9 @@ public class PwaBottomSheetController
             return;
         }
 
-        mScreenshotAdapter = new ScreenshotsAdapter(mActivity);
+        mScreenshotAdapter = new ScreenshotsAdapter(mContext);
         PwaInstallBottomSheetView view =
-                new PwaInstallBottomSheetView(mActivity, mScreenshotAdapter);
+                new PwaInstallBottomSheetView(mContext, mScreenshotAdapter);
         mPwaBottomSheetContent = new PwaInstallBottomSheetContent(view, this);
         mModel = new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS)
                          .with(AddToHomescreenProperties.ICON, new Pair<>(icon, isAdaptiveIcon))
