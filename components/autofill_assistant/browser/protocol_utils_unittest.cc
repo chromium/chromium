@@ -231,13 +231,16 @@ TEST_F(ProtocolUtilsTest, ParseActionsParseError) {
   bool unused;
   std::vector<std::unique_ptr<Action>> unused_actions;
   std::vector<std::unique_ptr<Script>> unused_scripts;
-  EXPECT_FALSE(ProtocolUtils::ParseActions(nullptr, "invalid", nullptr, nullptr,
-                                           &unused_actions, &unused_scripts,
-                                           &unused));
+  EXPECT_FALSE(ProtocolUtils::ParseActions(
+      /* delegate= */ nullptr, /* response= */ "invalid", /* run_id= */ nullptr,
+      /* global_payload= */ nullptr,
+      /* script_payload= */ nullptr, &unused_actions, &unused_scripts,
+      /* should_update_scripts= */ &unused));
 }
 
 TEST_F(ProtocolUtilsTest, ParseActionsValid) {
   ActionsResponseProto proto;
+  proto.set_run_id(1);
   proto.set_global_payload("global_payload");
   proto.set_script_payload("script_payload");
   proto.add_actions()->mutable_tell();
@@ -246,15 +249,17 @@ TEST_F(ProtocolUtilsTest, ParseActionsValid) {
   std::string proto_str;
   proto.SerializeToString(&proto_str);
 
+  uint64_t run_id;
   std::string global_payload;
   std::string script_payload;
   bool should_update_scripts = true;
   std::vector<std::unique_ptr<Action>> actions;
   std::vector<std::unique_ptr<Script>> scripts;
 
-  EXPECT_TRUE(ProtocolUtils::ParseActions(nullptr, proto_str, &global_payload,
-                                          &script_payload, &actions, &scripts,
-                                          &should_update_scripts));
+  EXPECT_TRUE(ProtocolUtils::ParseActions(
+      nullptr, proto_str, &run_id, &global_payload, &script_payload, &actions,
+      &scripts, &should_update_scripts));
+  EXPECT_EQ(1u, run_id);
   EXPECT_EQ("global_payload", global_payload);
   EXPECT_EQ("script_payload", script_payload);
   EXPECT_THAT(actions, SizeIs(2));
@@ -274,7 +279,7 @@ TEST_F(ProtocolUtilsTest, ParseActionsEmptyUpdateScriptList) {
   std::vector<std::unique_ptr<Action>> unused_actions;
 
   EXPECT_TRUE(ProtocolUtils::ParseActions(
-      nullptr, proto_str, /* global_payload= */ nullptr,
+      nullptr, proto_str, /* run_id= */ nullptr, /* global_payload= */ nullptr,
       /* script_payload */ nullptr, &unused_actions, &scripts,
       &should_update_scripts));
   EXPECT_TRUE(should_update_scripts);
@@ -299,7 +304,7 @@ TEST_F(ProtocolUtilsTest, ParseActionsUpdateScriptListFullFeatured) {
   std::vector<std::unique_ptr<Action>> unused_actions;
 
   EXPECT_TRUE(ProtocolUtils::ParseActions(
-      nullptr, proto_str, /* global_payload= */ nullptr,
+      nullptr, proto_str, /* run_id= */ nullptr, /* global_payload= */ nullptr,
       /* script_payload= */ nullptr, &unused_actions, &scripts,
       &should_update_scripts));
   EXPECT_TRUE(should_update_scripts);
@@ -587,11 +592,12 @@ TEST_F(ProtocolUtilsTest, ParseFromStringCannotParse) {
 TEST_F(ProtocolUtilsTest, CreateGetUserDataRequest) {
   GetUserDataRequestProto request;
   EXPECT_TRUE(request.ParseFromString(ProtocolUtils::CreateGetUserDataRequest(
-      /* request_name= */ true, /* request_email= */ true,
+      /* run_id= */ 1, /* request_name= */ true, /* request_email= */ true,
       /* request_phone= */ true, /* request_shipping= */ true,
       /* request_payment_methods= */ false,
       /* supported_card_networks= */ std::vector<std::string>(),
       /* client_token= */ std::string())));
+  EXPECT_EQ(request.run_id(), 1u);
   EXPECT_TRUE(request.request_name());
   EXPECT_TRUE(request.request_email());
   EXPECT_TRUE(request.request_phone());
@@ -599,7 +605,7 @@ TEST_F(ProtocolUtilsTest, CreateGetUserDataRequest) {
   EXPECT_FALSE(request.has_request_payment_methods());
 
   EXPECT_TRUE(request.ParseFromString(ProtocolUtils::CreateGetUserDataRequest(
-      /* request_name= */ true, /* request_email= */ true,
+      /* run_id= */ 1, /* request_name= */ true, /* request_email= */ true,
       /* request_phone= */ true, /* request_shipping= */ true,
       /* request_payment_methods= */ true,
       /* supported_card_networks= */

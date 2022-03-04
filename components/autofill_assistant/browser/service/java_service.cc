@@ -88,6 +88,7 @@ void JavaService::GetNextActions(
 }
 
 void JavaService::GetUserData(const CollectUserDataOptions& options,
+                              uint64_t run_id,
                               ResponseCallback callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto jresponse =

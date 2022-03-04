@@ -402,6 +402,8 @@ class ScriptExecutor : public ActionDelegate,
   bool website_warning_already_shown_ = false;
   int consecutive_slow_roundtrip_counter_ = 0;
 
+  uint64_t run_id_ = 0;
+
   base::WeakPtrFactory<ScriptExecutor> weak_ptr_factory_{this};
 };
 }  // namespace autofill_assistant

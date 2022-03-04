@@ -918,8 +918,8 @@ bool ScriptExecutor::ProcessNextActionResponse(const std::string& response) {
   bool should_update_scripts = false;
   std::vector<std::unique_ptr<Script>> scripts;
   bool parse_result = ProtocolUtils::ParseActions(
-      this, response, &last_global_payload_, &last_script_payload_, &actions_,
-      &scripts, &should_update_scripts);
+      this, response, &run_id_, &last_global_payload_, &last_script_payload_,
+      &actions_, &scripts, &should_update_scripts);
   if (!parse_result) {
     return false;
   }
@@ -1135,7 +1135,7 @@ void ScriptExecutor::RequestUserData(
   // TODO(b/218838411): Make sure we always send the OAuth token and disable
   // the auth-less path. Enable retry options.
   service->GetUserData(
-      options,
+      options, run_id_,
       base::BindOnce(&ScriptExecutor::OnRequestUserData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -74,6 +74,7 @@ class ProtocolUtils {
 
   // Create request to get user data.
   static std::string CreateGetUserDataRequest(
+      uint64_t run_id,
       bool request_name,
       bool request_email,
       bool request_phone,
@@ -106,6 +107,7 @@ class ProtocolUtils {
   // proto. Return false if parse failed, otherwise return true.
   static bool ParseActions(ActionDelegate* delegate,
                            const std::string& response,
+                           uint64_t* run_id,
                            std::string* return_global_payload,
                            std::string* return_script_payload,
                            std::vector<std::unique_ptr<Action>>* actions,

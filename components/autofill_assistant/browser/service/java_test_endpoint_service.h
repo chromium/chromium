@@ -46,6 +46,7 @@ class JavaTestEndpointService : public Service {
       ResponseCallback callback) override;
 
   void GetUserData(const CollectUserDataOptions& options,
+                   uint64_t run_id,
                    ResponseCallback callback) override;
 
  private:

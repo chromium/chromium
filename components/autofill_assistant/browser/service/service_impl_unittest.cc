@@ -163,7 +163,8 @@ TEST_F(ServiceImplTest, GetUserDataWithPayments) {
 
   CollectUserDataOptions options;
   options.request_payment_method = true;
-  service_->GetUserData(options, mock_response_callback_.Get());
+  service_->GetUserData(options, /* run_id= */ 1,
+                        mock_response_callback_.Get());
 }
 
 TEST_F(ServiceImplTest, GetUserDataWithoutPayments) {
@@ -175,7 +176,8 @@ TEST_F(ServiceImplTest, GetUserDataWithoutPayments) {
               Run(net::HTTP_OK, std::string("response")));
 
   CollectUserDataOptions options;
-  service_->GetUserData(options, mock_response_callback_.Get());
+  service_->GetUserData(options, /* run_id= */ 1,
+                        mock_response_callback_.Get());
 }
 
 }  // namespace

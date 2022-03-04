@@ -726,6 +726,7 @@ absl::optional<ActionProto> ProtocolUtils::ParseFromString(
 // static
 bool ProtocolUtils::ParseActions(ActionDelegate* delegate,
                                  const std::string& response,
+                                 uint64_t* run_id,
                                  std::string* return_global_payload,
                                  std::string* return_script_payload,
                                  std::vector<std::unique_ptr<Action>>* actions,
@@ -740,6 +741,9 @@ bool ProtocolUtils::ParseActions(ActionDelegate* delegate,
     return false;
   }
 
+  if (run_id) {
+    *run_id = response_proto.run_id();
+  }
   if (return_global_payload) {
     *return_global_payload = response_proto.global_payload();
   }
@@ -913,6 +917,7 @@ bool ProtocolUtils::ValidateTriggerCondition(
 
 // static
 std::string ProtocolUtils::CreateGetUserDataRequest(
+    uint64_t run_id,
     bool request_name,
     bool request_email,
     bool request_phone,
@@ -921,6 +926,7 @@ std::string ProtocolUtils::CreateGetUserDataRequest(
     const std::vector<std::string>& supported_card_networks,
     const std::string& client_token) {
   GetUserDataRequestProto request_proto;
+  request_proto.set_run_id(run_id);
   request_proto.set_request_name(request_name);
   request_proto.set_request_email(request_email);
   request_proto.set_request_phone(request_phone);

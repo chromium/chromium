@@ -84,10 +84,12 @@ class ServiceImpl : public Service {
       const ScriptStoreConfig& script_store_config) override;
 
   void GetUserData(const CollectUserDataOptions& options,
+                   uint64_t run_id,
                    ResponseCallback callback) override;
 
  private:
   void SendUserDataRequest(
+      uint64_t run_id,
       bool request_name,
       bool request_email,
       bool request_phone,
