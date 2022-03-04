@@ -40,6 +40,11 @@ extern const base::StringPiece kURLAllowlist[];
 // match the GameID expected based on extraction with kBorealisAppIdRegex.
 extern const char kProtonVersionGameMismatch[];
 
+// TODO(b/218403711): remove these when insert_coin is deprecated. We only have
+// insert_coin in the short-term until installer UX is finalized.
+extern const char kInsertCoinSuccessMessage[];
+extern const char kInsertCoinRejectMessage[];
+
 struct ProtonVersionInfo {
   std::string proton = "Not applicable";
   std::string slr = "Not applicable";

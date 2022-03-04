@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 
 class Profile;
 
@@ -32,6 +33,7 @@ class BorealisFeatures {
     kBlockedByFlag,
     kUnsupportedModel,
     kHardwareChecksFailed,
+    kIncorrectToken,
   };
 
   // Creates a per-profile instance of the feature-checker for borealis.
@@ -54,9 +56,20 @@ class BorealisFeatures {
   // Returns true if borealis has been installed and can be run in the profile.
   bool IsEnabled();
 
+  // Sets the token used to authorize borealis. Since doing this will usually
+  // cause IsAllowed() to change we also invoke |callback| with the new
+  // allowedness status.
+  void SetVmToken(std::string token,
+                  base::OnceCallback<void(AllowStatus)> callback);
+
  private:
+  void OnVmTokenDetermined(base::OnceCallback<void(AllowStatus)> callback,
+                           std::string hashed_token);
+
   Profile* const profile_;
   std::unique_ptr<AsyncAllowChecker> async_checker_;
+  // TODO(b/218403711): remove this.
+  base::WeakPtrFactory<BorealisFeatures> weak_factory_{this};
 };
 
 }  // namespace borealis

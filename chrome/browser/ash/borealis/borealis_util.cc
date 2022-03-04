@@ -34,6 +34,9 @@ const base::StringPiece kURLAllowlist[] = {"Ly9zdG9yZS8=", "Ly9ydW4v"};
 const char kBorealisAppIdRegex[] = "([^/]+\\d+)";
 const char kProtonVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 
+const char kInsertCoinSuccessMessage[] = "Success";
+const char kInsertCoinRejectMessage[] = "Coin Invalid";
+
 namespace {
 
 // Base feedback form URL, without query parameters for prefilling.

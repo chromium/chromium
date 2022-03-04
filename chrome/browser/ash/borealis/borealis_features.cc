@@ -8,13 +8,17 @@
 
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
+#include "base/base64.h"
 #include "base/callback.h"
 #include "base/cpu.h"
-#include "base/feature_list.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
@@ -28,6 +32,7 @@
 #include "chromeos/tpm/install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
+#include "crypto/sha2.h"
 #include "third_party/re2/src/re2/re2.h"
 
 using AllowStatus = borealis::BorealisFeatures::AllowStatus;
@@ -49,11 +54,65 @@ constexpr int64_t kMinimumMemoryBytes = 7 * kGibi;
 // Matches i5 and i7 of the 11th generation and up.
 constexpr char kMinimumCpuRegex[] = "[1-9][1-9].. Gen.*i[57]-";
 
-AllowStatus GetAsyncAllowStatus() {
-  // First, avoid excluding -borealis variants, which are dev-only boards that
+// Used to make it difficult to tell what someone's token is based on their
+// prefs.
+constexpr char kSaltForPrefStorage[] = "/!RoFN8,nDxiVgTI6CvU";
+
+// A prime number chosen to give ~0.1s of wait time on my DUT.
+constexpr unsigned kHashIterations = 100129;
+
+// The below mechanism is not secure, and is not intended to be. It is a
+// temporary measure that does not warrant any more effort. You might say
+// it can be gamed 😎.
+//
+// Reminder: Don't Roll Your Own Crypto! Security should be left to the
+// experts.
+//
+// TODO(b/218403711): This mechanism is temporary. It exists to allow borealis
+// developers to verify that borealis functions correctly on the target
+// platforms before releasing borealis broadly. We only need it because the
+// boards we are targeting are publicly available, and going forward we will
+// verify borealis is functioning on hardware before its public release.
+std::string H(std::string input, const std::string& salt) {
+  // Hashing is not strictly "blocking" since the cpu is probably busy, but best
+  // not to call this method if you're on a thread that disallows blocking.
+  base::ScopedBlockingCall sbc(FROM_HERE, base::BlockingType::WILL_BLOCK);
+  std::string ret = std::move(input);
+  for (int i = 0; i < kHashIterations; ++i) {
+    std::string raw_sha = crypto::SHA256HashString(ret + salt);
+    base::Base64Encode(raw_sha, &ret);
+  }
+  return ret;
+}
+
+bool HasCorrectToken(const std::string& board,
+                     const std::string& hash_of_current_token) {
+  // If you are supposed to know the correct token, then you will be able to
+  // find it ~if you go to the place we all know and love~.
+  //
+  // For the maintainer:
+  //
+  // H(H("token", kSaltForPrefStorage), "salt") =
+  //   "aT79k1Uv7v7D5s2/rpYUJYRXTUq4EkPN2FK4JBQJWgw=";
+  if (base::EndsWith(board, kOverrideHardwareChecksBoardSuffix)) {
+    return H(hash_of_current_token, "MXlY+SFZ!2,P_k^02]hK") ==
+           "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=";
+  } else if (board == "volteer") {
+    return H(hash_of_current_token, "F9sOMmgrk9%C$poxLT.Eg") ==
+           "Gn5gDfMLbMrBI10zrVba6q/1QEGJilyEyUeNiOID0X8=";
+  }
+  return false;
+}
+
+AllowStatus GetAsyncAllowStatus(const std::string& hash_of_current_token) {
+  // First, check the token.
+  std::string board = base::SysInfo::GetLsbReleaseBoard();
+  if (!HasCorrectToken(board, hash_of_current_token))
+    return AllowStatus::kIncorrectToken;
+
+  // Then, avoid excluding -borealis variants, which are dev-only boards that
   // get a free pass.
-  if (base::EndsWith(base::SysInfo::GetLsbReleaseBoard(),
-                     kOverrideHardwareChecksBoardSuffix)) {
+  if (base::EndsWith(board, kOverrideHardwareChecksBoardSuffix)) {
     // Note: the comment on GetLsbReleaseBoard() (rightly) points out that we're
     // not supposed to use LsbReleaseBoard directly, but rather set a flag in
     // the overlay. I am not doing that as the following check is only a
@@ -63,7 +122,7 @@ AllowStatus GetAsyncAllowStatus() {
     return AllowStatus::kAllowed;
   }
 
-  // Second, exclude variants of the boards that we don't expect to work on.
+  // Next, exclude variants of the boards that we don't expect to work on.
   std::string model_name;
   if (!chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           chromeos::system::kCustomizationIdKey, &model_name)) {
@@ -79,7 +138,7 @@ AllowStatus GetAsyncAllowStatus() {
   if (!found)
     return AllowStatus::kUnsupportedModel;
 
-  // Third, check system requirements.
+  // Finally, check system requirements.
   if (base::SysInfo::AmountOfPhysicalMemory() < kMinimumMemoryBytes) {
     return AllowStatus::kHardwareChecksFailed;
   } else if (!RE2::PartialMatch(
@@ -94,6 +153,9 @@ AllowStatus GetAsyncAllowStatus() {
 }  // namespace
 
 class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
+ public:
+  explicit AsyncAllowChecker(Profile* profile) : profile_(profile) {}
+
  private:
   void Build(RealCallback callback) override {
     // Testing hardware capabilities in unit tests is kindof pointless. The
@@ -107,12 +169,19 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
       return;
     }
 
+    // Bail out if the prefs service is not up and running, this just means we
+    // retry later.
+    if (!profile_ || !profile_->GetPrefs()) {
+      std::move(callback).Run(Failure(Reject()));
+      return;
+    }
+
     chromeos::system::StatisticsProvider::GetInstance()
         ->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
-            [](RealCallback callback) {
+            [](RealCallback callback, const std::string& token_hash) {
               base::ThreadPool::PostTaskAndReplyWithResult(
                   FROM_HERE, base::MayBlock(),
-                  base::BindOnce(&GetAsyncAllowStatus),
+                  base::BindOnce(&GetAsyncAllowStatus, token_hash),
                   base::BindOnce(
                       [](RealCallback callback, AllowStatus status) {
                         // "Success" here means we successfully determined the
@@ -123,15 +192,19 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
                       },
                       std::move(callback)));
             },
-            std::move(callback)));
+            std::move(callback),
+            profile_->GetPrefs()->GetString(prefs::kBorealisVmTokenHash)));
   }
+
+  Profile* const profile_;
 };
 
 BorealisFeatures::BorealisFeatures(Profile* profile)
-    : profile_(profile), async_checker_(std::make_unique<AsyncAllowChecker>()) {
-  // Issue a request for the async status immediately upon creation, in case
-  // it's needed.
-  async_checker_->Get(base::DoNothing());
+    : profile_(profile),
+      async_checker_(std::make_unique<AsyncAllowChecker>(profile_)) {
+  // Issue a request for the status immediately upon creation, in case
+  // it's needed later.
+  IsAllowed(base::DoNothing());
 }
 
 BorealisFeatures::~BorealisFeatures() = default;
@@ -199,6 +272,28 @@ bool BorealisFeatures::IsEnabled() {
   return profile_->GetPrefs()->GetBoolean(prefs::kBorealisInstalledOnDevice);
 }
 
+void BorealisFeatures::SetVmToken(
+    std::string token,
+    base::OnceCallback<void(AllowStatus)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::MayBlock(),
+      base::BindOnce(&H, std::move(token), kSaltForPrefStorage),
+      base::BindOnce(&BorealisFeatures::OnVmTokenDetermined,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BorealisFeatures::OnVmTokenDetermined(
+    base::OnceCallback<void(AllowStatus)> callback,
+    std::string hashed_token) {
+  // This has the effect that you could overwrite the correct token and disable
+  // borealis. Adding extra code to avoid that is not worth while because end
+  // users aren't supposed to have the correct token anyway.
+  profile_->GetPrefs()->SetString(prefs::kBorealisVmTokenHash, hashed_token);
+  // The user has given a new password, so we invalidate the old status.
+  async_checker_->Invalidate();
+  IsAllowed(std::move(callback));
+}
+
 }  // namespace borealis
 
 std::ostream& operator<<(std::ostream& os, const AllowStatus& reason) {
@@ -231,5 +326,7 @@ std::ostream& operator<<(std::ostream& os, const AllowStatus& reason) {
       return os << "Borealis is not supported on this model hardware";
     case AllowStatus::kHardwareChecksFailed:
       return os << "Insufficient CPU/Memory to run Borealis";
+    case AllowStatus::kIncorrectToken:
+      return os << "Borealis needs a valid permission token";
   }
 }
