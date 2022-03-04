@@ -1396,4 +1396,26 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_FALSE(transient_child_win1->IsVisible());
   EXPECT_FALSE(transient_child_win2->IsVisible());
 }
+
+// Tests that destroying a dragged window in split view will not cause crash.
+TEST_F(DragWindowFromShelfControllerTest,
+       DestroyWindowDuringDraggingInSplitView) {
+  UpdateDisplay("500x400");
+  const gfx::Rect shelf_bounds =
+      Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
+
+  // Create a window and snapped to the left in split screen.
+  auto window = CreateTestWindow();
+  split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
+
+  // Try to drag the window from shelf.
+  StartDrag(window.get(), shelf_bounds.left_center());
+  Drag(gfx::Point(0, 200), 1.f, 1.f);
+
+  // Destroy the window while dragging. Expect no crash.
+  window.reset();
+
+  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
+}
+
 }  // namespace ash
