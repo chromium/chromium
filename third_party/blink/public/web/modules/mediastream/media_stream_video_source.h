@@ -328,10 +328,6 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // to this object being deleted.
   void FinalizeAddPendingTracks(mojom::MediaStreamRequestResult result);
 
-  // Actually adds |track| to this source, provided the source has started.
-  void FinalizeAddTrack(MediaStreamVideoTrack* track,
-                        const VideoCaptureDeliverFrameCB& frame_callback,
-                        const VideoTrackAdapterSettings& adapter_settings);
   void StartFrameMonitoring();
   void UpdateTrackSettings(MediaStreamVideoTrack* track,
                            const VideoTrackAdapterSettings& adapter_settings);
