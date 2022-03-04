@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
@@ -13,12 +14,14 @@
 #include "base/notreached.h"
 #include "base/time/clock.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/data_collection/dummy_training_data_collector.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
+#include "components/segmentation_platform/public/features.h"
 
 using optimization_guide::proto::OptimizationTarget;
 
@@ -187,8 +190,13 @@ std::unique_ptr<TrainingDataCollector> TrainingDataCollector::Create(
     FeatureListQueryProcessor* processor,
     HistogramSignalHandler* histogram_signal_handler,
     base::Clock* clock) {
-  return std::make_unique<TrainingDataCollectorImpl>(
-      segment_info_database, processor, histogram_signal_handler, clock);
+  if (base::FeatureList::IsEnabled(
+          features::kSegmentationStructuredMetricsFeature)) {
+    return std::make_unique<TrainingDataCollectorImpl>(
+        segment_info_database, processor, histogram_signal_handler, clock);
+  }
+
+  return std::make_unique<DummyTrainingDataCollector>();
 }
 
 }  // namespace segmentation_platform

@@ -17,6 +17,8 @@ static_library("internal") {
   sources = [
     "constants.cc",
     "constants.h",
+    "data_collection/dummy_training_data_collector.cc",
+    "data_collection/dummy_training_data_collector.h",
     "data_collection/training_data_collector.cc",
     "data_collection/training_data_collector.h",
     "database/database_maintenance.h",
