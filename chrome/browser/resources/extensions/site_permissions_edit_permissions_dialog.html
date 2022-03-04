@@ -1,0 +1,28 @@
+<style include="cr-shared-style">
+  cr-radio-group {
+    width: 100%;
+  }
+</style>
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">[[computeDialogTitle_(site)]]</div>
+  <div slot="body">
+    <cr-radio-group selected="{{siteSet_}}">
+      <cr-radio-button
+          name="[[userSiteSetEnum_.PERMITTED]]"
+          label="[[getPermittedSiteLabel_(site)]]">
+      </cr-radio-button>
+      <cr-radio-button
+          name="[[userSiteSetEnum_.RESTRICTED]]"
+          label="[[getRestrictedSiteLabel_(site)]]">
+      </cr-radio-button>
+    </cr-radio-group>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" id="submit" on-click="onSubmitClick_">
+      $i18n{save}
+    </cr-button>
+  </div>
+</cr-dialog>

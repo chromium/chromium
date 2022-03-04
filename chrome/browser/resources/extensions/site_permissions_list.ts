@@ -10,7 +10,8 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './strings.m.js';
 import './shared_style.js';
 import './shared_vars.js';
-import './site_permissions_edit_dialog.js';
+import './site_permissions_edit_permissions_dialog.js';
+import './site_permissions_edit_url_dialog.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
@@ -44,7 +45,12 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
       siteSet: String,
       sites: Array,
 
-      showEditSiteDialog_: {
+      showEditSiteUrlDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showEditSitePermissionsDialog_: {
         type: Boolean,
         value: false,
       },
@@ -64,7 +70,8 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
   header: string;
   siteSet: chrome.developerPrivate.UserSiteSet;
   sites: Array<string>;
-  private showEditSiteDialog_: boolean;
+  private showEditSiteUrlDialog_: boolean;
+  private showEditSitePermissionsDialog_: boolean;
   private siteToEdit_: string|null;
 
   // The element to return focus to once the site input dialog closes. If
@@ -80,37 +87,56 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
     return getFaviconUrl(url);
   }
 
-  private onAddSiteClick_() {
-    this.siteToEdit_ = null;
-    this.showEditSiteDialog_ = true;
+  private focusOnAnchor_() {
+    // Return focus to the three dots menu once a site has been edited.
+    // TODO(crbug.com/1298326): If the edited site is the only site in the
+    // list, focus is not on the three dots menu.
+    assert(this.siteToEditAnchorElement_, 'Site Anchor');
+    focusWithoutInk(this.siteToEditAnchorElement_);
+    this.siteToEditAnchorElement_ = null;
   }
 
-  private onEditSiteDialogClose_() {
-    this.showEditSiteDialog_ = false;
+  private onAddSiteClick_() {
+    assert(!this.showEditSitePermissionsDialog_);
+    this.siteToEdit_ = null;
+    this.showEditSiteUrlDialog_ = true;
+  }
+
+  private onEditSiteUrlDialogClose_() {
+    this.showEditSiteUrlDialog_ = false;
     if (this.siteToEdit_ !== null) {
-      // Return focus to the three dots menu once a site has been edited.
-      // TODO(crbug.com/1298326): If the edited site is the only site in the
-      // list, focus is not on the three dots menu.
-      assert(this.siteToEditAnchorElement_, 'Site Anchor');
-      focusWithoutInk(this.siteToEditAnchorElement_);
-      this.siteToEditAnchorElement_ = null;
+      this.focusOnAnchor_();
     }
+    this.siteToEdit_ = null;
+  }
+
+  private onEditSitePermissionsDialogClose_() {
+    this.showEditSitePermissionsDialog_ = false;
+    assert(this.siteToEdit_, 'Site To Edit');
+    this.focusOnAnchor_();
     this.siteToEdit_ = null;
   }
 
   private onDotsClick_(e: DomRepeatEvent<string>) {
     this.siteToEdit_ = e.model.item;
+    assert(!this.showEditSitePermissionsDialog_);
     this.$.siteActionMenu.showAt(e.target as HTMLElement);
     this.siteToEditAnchorElement_ = e.target as HTMLElement;
   }
 
-  private onActionMenuEditClick_() {
+  private onEditSitePermissionsClick_() {
     this.closeActionMenu_();
     assert(this.siteToEdit_ !== null);
-    this.showEditSiteDialog_ = true;
+    this.showEditSitePermissionsDialog_ = true;
   }
 
-  private onActionMenuRemoveClick_() {
+  private onEditSiteUrlClick_() {
+    this.closeActionMenu_();
+    assert(this.siteToEdit_ !== null);
+    this.showEditSiteUrlDialog_ = true;
+  }
+
+  private onRemoveSiteClick_() {
     assert(this.siteToEdit_, 'Site To Edit');
     this.delegate.removeUserSpecifiedSite(this.siteSet, this.siteToEdit_)
         .then(() => {

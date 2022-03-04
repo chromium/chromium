@@ -76,6 +76,12 @@
   <message name="IDS_EXTENSIONS_ERROR_PAGE_HEADING" desc="The heading of the page displaying an extension's errors.">
     Errors
   </message>
+  <message name="IDS_EXTENSIONS_EDIT_SITE_PERMISSIONS_ALLOW_ALL_EXTENSIONS" desc="The label for the dialog option to always allow extension to run on a site.">
+    Allow all extensions to read and change <ph name="PERMITTED_SITE">$1</ph>
+  </message>
+  <message name="IDS_EXTENSIONS_EDIT_SITE_PERMISSIONS_RESTRICT_EXTENSIONS" desc="The label for the dialog option to prevent extensions from running on a site.">
+    Don't allow any extensions on <ph name="RESTRICTED_SITE">$1</ph>
+  </message>
   <message name="IDS_EXTENSIONS_ERROR_ANONYMOUS_FUNCTION" desc="The label indicating that an error was caused within an anonymous function in the code.">
     anonymous function
   </message>
@@ -402,6 +408,15 @@
   </message>
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_SITE_DIALOG_TITLE" desc="The title of the dialog used to allow a user to edit an existing site. Used for the permitted and restricted site lists.">
     Edit site
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_URL" desc="The label for the option used to allow a user to edit a site's URL. Used in the site permissions page.">
+    Edit site URL
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_PERMISSIONS_DIALOG_TITLE" desc="The label for the option used to allow a user to edit a site's permissions. Used in the site permissions page.">
+    Edit site permissions for <ph name="SITE">$1</ph>
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_PERMISSIONS" desc="The label for the option used to allow a user to edit a site's permissions. Used in the site permissions page.">
+    Edit site permissions
   </message>
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_DIALOG_INPUT_ERROR" desc="The error message shown to the user when they entered an invalid site address into the input field.">
     Not a valid web address

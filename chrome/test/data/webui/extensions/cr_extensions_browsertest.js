@@ -895,17 +895,17 @@ TEST_F('CrExtensionsSitePermissionsBySiteTest', 'All', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-// SitePermissionsEditDialog tests
+// SitePermissionsEditUrlDialog tests
 
-var CrExtensionsSitePermissionsEditDialogTest =
+var CrExtensionsSitePermissionsEditUrlDialogTest =
     class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_edit_dialog_test.js&host=webui-test';
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_edit_url_dialog_test.js&host=webui-test';
   }
 };
 
-TEST_F('CrExtensionsSitePermissionsEditDialogTest', 'All', () => {
+TEST_F('CrExtensionsSitePermissionsEditUrlDialogTest', 'All', () => {
   mocha.run();
 });
 
@@ -935,5 +935,20 @@ var CrUrlUtilTest = class extends CrExtensionsBrowserTest {
 };
 
 TEST_F('CrUrlUtilTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// SitePermissionsEditPermissionsDialog tests
+
+var CrExtensionsSitePermissionsEditPermissionsDialog =
+    class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_edit_permissions_dialog_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrExtensionsSitePermissionsEditPermissionsDialog', 'All', () => {
   mocha.run();
 });

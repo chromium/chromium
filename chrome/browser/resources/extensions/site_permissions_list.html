@@ -44,8 +44,6 @@
       <div class="site-favicon"
           style$="background-image:[[getFaviconUrl_(item)]]"></div>
       <span class="site">[[item]]</span>
-      <cr-icon-button class="subpage-arrow no-overlap"></cr-icon-button>
-      <div class="separator"></div>
       <cr-icon-button class="icon-more-vert no-overlap" on-click="onDotsClick_">
       </cr-icon-button>
     </div>
@@ -53,21 +51,34 @@
 </div>
 
 <cr-action-menu id="siteActionMenu">
-  <button class="dropdown-item" id="edit-site"
-      on-click="onActionMenuEditClick_">
-    $i18n{hostPermissionsEdit}
+  <button class="dropdown-item" id="edit-site-url"
+      on-click="onEditSiteUrlClick_">
+    $i18n{sitePermissionsEditUrl}
+  </button>
+  <button class="dropdown-item" id="edit-site-permissions"
+      on-click="onEditSitePermissionsClick_">
+    $i18n{sitePermissionsEditPermissions}
   </button>
   <button class="dropdown-item" id="remove-site"
-      on-click="onActionMenuRemoveClick_">
+      on-click="onRemoveSiteClick_">
     $i18n{remove}
   </button>
 </cr-action-menu>
 
-<template is="dom-if" if="[[showEditSiteDialog_]]" restamp>
-  <site-permissions-edit-dialog
+<template is="dom-if" if="[[showEditSiteUrlDialog_]]" restamp>
+  <site-permissions-edit-url-dialog
       delegate="[[delegate]]"
       site-to-edit="[[siteToEdit_]]"
       site-set="[[siteSet]]"
-      on-close="onEditSiteDialogClose_">
-  </site-permissions-edit-dialog>
+      on-close="onEditSiteUrlDialogClose_">
+  </site-permissions-edit-url-dialog>
+</template>
+
+<template is="dom-if" if="[[showEditSitePermissionsDialog_]]" restamp>
+  <site-permissions-edit-permissions-dialog
+      delegate="[[delegate]]"
+      site="[[siteToEdit_]]"
+      original-site-set="[[siteSet]]"
+      on-close="onEditSitePermissionsDialogClose_">
+  </site-permissions-edit-permissions-dialog>
 </template>

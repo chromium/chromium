@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Suite of tests for site-permissions-edit-dialog. */
+/** @fileoverview Suite of tests for site-permissions-edit-url-dialog. */
 import 'chrome://extensions/extensions.js';
 
-import {getSitePermissionsPatternFromSite, SitePermissionsEditDialogElement} from 'chrome://extensions/extensions.js';
+import {getSitePermissionsPatternFromSite, SitePermissionsEditUrlDialogElement} from 'chrome://extensions/extensions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 
-suite('SitePermissionsEditDialog', function() {
-  let element: SitePermissionsEditDialogElement;
+suite('SitePermissionsEditUrlDialog', function() {
+  let element: SitePermissionsEditUrlDialogElement;
   let delegate: TestService;
 
   setup(function() {
     delegate = new TestService();
 
     document.body.innerHTML = '';
-    element = document.createElement('site-permissions-edit-dialog');
+    element = document.createElement('site-permissions-edit-url-dialog');
     element.delegate = delegate;
     element.siteSet = chrome.developerPrivate.UserSiteSet.PERMITTED;
     document.body.appendChild(element);
@@ -76,6 +76,7 @@ suite('SitePermissionsEditDialog', function() {
     input.fire('input');
     assertFalse(input.invalid);
 
+    const whenClosed = eventToPromise('close', element);
     const submit = element.$.submit;
     assertFalse(submit.disabled);
     submit.click();
@@ -90,7 +91,7 @@ suite('SitePermissionsEditDialog', function() {
     assertEquals(chrome.developerPrivate.UserSiteSet.PERMITTED, addedSiteSet);
     assertEquals(newSite, addedSite);
 
-    await eventToPromise('close', element);
+    await whenClosed;
     assertFalse(element.$.dialog.open);
   });
 

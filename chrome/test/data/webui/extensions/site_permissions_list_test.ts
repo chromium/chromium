@@ -38,7 +38,7 @@ suite('SitePermissionsList', function() {
     flush();
 
     const dialog =
-        element.shadowRoot!.querySelector('site-permissions-edit-dialog');
+        element.shadowRoot!.querySelector('site-permissions-edit-url-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
   });
@@ -67,30 +67,66 @@ suite('SitePermissionsList', function() {
     assertFalse(actionMenu.open);
   });
 
-  test('clicking edit through action menu opens a dialog', async function() {
-    element.sites = ['https://google.com', 'http://www.example.com'];
-    flush();
+  test(
+      'clicking "edit site url" through action menu opens a dialog',
+      async function() {
+        element.sites = ['https://google.com', 'http://www.example.com'];
+        flush();
 
-    const openEditSites =
-        element!.shadowRoot!.querySelectorAll<HTMLElement>('.icon-more-vert');
-    assertEquals(2, openEditSites.length);
-    openEditSites[1]!.click();
+        const openEditSites =
+            element!.shadowRoot!.querySelectorAll<HTMLElement>(
+                '.icon-more-vert');
+        assertEquals(2, openEditSites.length);
+        openEditSites[1]!.click();
 
-    const actionMenu = element.$.siteActionMenu;
-    assertTrue(!!actionMenu);
-    assertTrue(actionMenu.open);
+        const actionMenu = element.$.siteActionMenu;
+        assertTrue(!!actionMenu);
+        assertTrue(actionMenu.open);
 
-    const actionMenuEdit = actionMenu.querySelector<HTMLElement>('#edit-site');
-    assertTrue(!!actionMenuEdit);
+        const actionMenuEditUrl =
+            actionMenu.querySelector<HTMLElement>('#edit-site-url');
+        assertTrue(!!actionMenuEditUrl);
 
-    actionMenuEdit.click();
-    flush();
-    assertFalse(actionMenu.open);
+        actionMenuEditUrl.click();
+        flush();
+        assertFalse(actionMenu.open);
 
-    const dialog =
-        element.shadowRoot!.querySelector('site-permissions-edit-dialog');
-    assertTrue(!!dialog);
-    assertTrue(dialog.$.dialog.open);
-    assertEquals('http://www.example.com', dialog.siteToEdit);
-  });
+        const dialog = element.shadowRoot!.querySelector(
+            'site-permissions-edit-url-dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.$.dialog.open);
+        assertEquals('http://www.example.com', dialog.siteToEdit);
+      });
+
+  test(
+      'clicking "edit site permissions" through action menu opens a dialog',
+      async function() {
+        element.sites = ['https://google.com', 'http://www.example.com'];
+        flush();
+
+        const openEditSites =
+            element!.shadowRoot!.querySelectorAll<HTMLElement>(
+                '.icon-more-vert');
+        assertEquals(2, openEditSites.length);
+        openEditSites[1]!.click();
+
+        const actionMenu = element.$.siteActionMenu;
+        assertTrue(!!actionMenu);
+        assertTrue(actionMenu.open);
+
+        const actionMenuEditPermissions =
+            actionMenu.querySelector<HTMLElement>('#edit-site-permissions');
+        assertTrue(!!actionMenuEditPermissions);
+
+        actionMenuEditPermissions.click();
+        flush();
+        assertFalse(actionMenu.open);
+
+        const dialog = element.shadowRoot!.querySelector(
+            'site-permissions-edit-permissions-dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.$.dialog.open);
+        assertEquals('http://www.example.com', dialog.site);
+        assertEquals(element.siteSet, dialog.originalSiteSet);
+      });
 });

@@ -42,16 +42,16 @@ export function getSitePermissionsPatternFromSite(site: string): string {
   return scheme + host + port;
 }
 
-export interface SitePermissionsEditDialogElement {
+export interface SitePermissionsEditUrlDialogElement {
   $: {
     dialog: CrDialogElement,
     submit: CrButtonElement,
   };
 }
 
-export class SitePermissionsEditDialogElement extends PolymerElement {
+export class SitePermissionsEditUrlDialogElement extends PolymerElement {
   static get is() {
-    return 'site-permissions-edit-dialog';
+    return 'site-permissions-edit-url-dialog';
   }
 
   static get template() {
@@ -171,9 +171,10 @@ export class SitePermissionsEditDialogElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'site-permissions-edit-dialog': SitePermissionsEditDialogElement;
+    'site-permissions-edit-url-dialog': SitePermissionsEditUrlDialogElement;
   }
 }
 
 customElements.define(
-    SitePermissionsEditDialogElement.is, SitePermissionsEditDialogElement);
+    SitePermissionsEditUrlDialogElement.is,
+    SitePermissionsEditUrlDialogElement);
