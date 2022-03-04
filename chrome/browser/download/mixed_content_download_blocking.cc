@@ -286,24 +286,18 @@ struct MixedContentDownloadData {
   bool is_mixed_content_;
 };
 
-// Whether or not |extension| is contained in the comma-separated list in a
-// feature param specified by |override_param_name|. If |override_param_name| is
-// not set, defaults to |default_extensions|.
-bool ContainsExtension(const base::FeatureParam<std::string>& extensions,
-                       const base::FeatureParam<bool>& is_allowlist,
-                       const std::string& download_extension) {
-  auto extensions_str = extensions.Get();
-  std::vector<base::StringPiece> listed_extensions = base::SplitStringPiece(
-      extensions_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  for (const auto& unsafe_extension : listed_extensions) {
-    DCHECK_EQ(base::ToLowerASCII(unsafe_extension), unsafe_extension);
-    if (base::LowerCaseEqualsASCII(download_extension, unsafe_extension)) {
-      return !is_allowlist.Get();  // aka true when it's a blocklist.
-    }
+// Check if |extension| is contained in the comma separated |extension_list|.
+bool ContainsExtension(const std::string& extension_list,
+                       const std::string& extension) {
+  for (const auto& item :
+       base::SplitStringPiece(extension_list, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    DCHECK_EQ(base::ToLowerASCII(item), item);
+    if (base::LowerCaseEqualsASCII(extension, item))
+      return true;
   }
 
-  return is_allowlist.Get();  // aka false when it's a blocklist.
+  return false;
 }
 
 // Just print a descriptive message to the console about the blocked download.
@@ -387,8 +381,8 @@ MixedContentStatus GetMixedContentStatusForDownload(
     return MixedContentStatus::SAFE;
   }
 
-  if (ContainsExtension(kSilentBlockExtensionList,
-                        kTreatSilentBlockListAsAllowlist, data.extension_)) {
+  if (ContainsExtension(kSilentBlockExtensionList.Get(), data.extension_) !=
+      kTreatSilentBlockListAsAllowlist.Get()) {
     PrintConsoleMessage(data, true);
 
     // Only permit silent blocking when not initiated by an explicit user
@@ -402,14 +396,14 @@ MixedContentStatus GetMixedContentStatusForDownload(
     return MixedContentStatus::SILENT_BLOCK;
   }
 
-  if (ContainsExtension(kBlockExtensionList, kTreatBlockListAsAllowlist,
-                        data.extension_)) {
+  if (ContainsExtension(kBlockExtensionList.Get(), data.extension_) !=
+      kTreatBlockListAsAllowlist.Get()) {
     PrintConsoleMessage(data, true);
     return MixedContentStatus::BLOCK;
   }
 
-  if (ContainsExtension(kWarnExtensionList, kTreatWarnListAsAllowlist,
-                        data.extension_)) {
+  if (ContainsExtension(kWarnExtensionList.Get(), data.extension_) !=
+      kTreatWarnListAsAllowlist.Get()) {
     PrintConsoleMessage(data, true);
     return MixedContentStatus::WARN;
   }
