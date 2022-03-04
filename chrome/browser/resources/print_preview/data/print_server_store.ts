@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-
 import {NativeLayerCros, NativeLayerCrosImpl, PrintServer, PrintServersConfig} from '../native_layer_cros.js';
 
 import {DestinationStore} from './destination_store.js';
