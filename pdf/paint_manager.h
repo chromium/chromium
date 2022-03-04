@@ -144,7 +144,7 @@ class PaintManager {
   void Flush();
 
   // Callback for asynchronous completion of Flush.
-  void OnFlushComplete(int32_t);
+  void OnFlushComplete();
 
   // Callback for manual scheduling of paints when there is no flush callback
   // pending.

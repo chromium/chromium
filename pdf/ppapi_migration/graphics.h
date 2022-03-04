@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "pdf/ppapi_migration/callback.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/size.h"
@@ -36,7 +36,7 @@ class Graphics {
 
   // Flushes pending operations, invoking the callback on completion. Returns
   // `true` if the callback is still pending.
-  virtual bool Flush(ResultCallback callback) = 0;
+  virtual bool Flush(base::OnceClosure callback) = 0;
 
   // Paints the `src_rect` region of `image` to the graphics device. The image
   // must be compatible with the concrete `Graphics` implementation.
@@ -86,7 +86,7 @@ class SkiaGraphics final : public Graphics {
 
   ~SkiaGraphics() override;
 
-  bool Flush(ResultCallback callback) override;
+  bool Flush(base::OnceClosure callback) override;
 
   void PaintImage(const Image& image, const gfx::Rect& src_rect) override;
 

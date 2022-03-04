@@ -17,7 +17,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "pdf/paint_ready_rect.h"
-#include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -274,7 +273,7 @@ void PaintManager::Flush() {
   DCHECK(flush_pending_);
 }
 
-void PaintManager::OnFlushComplete(int32_t) {
+void PaintManager::OnFlushComplete() {
   DCHECK(flush_pending_);
   flush_pending_ = false;
 
