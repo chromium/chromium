@@ -37377,6 +37377,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4174" label="MediaCapabilitiesDecodingInfoWebrtc"/>
   <int value="4175" label="MediaCapabilitiesEncodingInfoWebrtc"/>
   <int value="4176" label="UsbDeviceForget"/>
+  <int value="4177" label="PartitionedCookies"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
