@@ -1686,7 +1686,8 @@ void BookmarkBarView::Init() {
           &BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged,
           base::Unretained(this)));
 
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+  if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+      browser_->profile()->IsRegularProfile()) {
     tab_groups_separator_view_ =
         AddChildView(std::make_unique<ButtonSeparatorView>());
     saved_tab_group_model_ =

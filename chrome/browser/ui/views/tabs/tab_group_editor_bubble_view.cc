@@ -18,6 +18,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -377,7 +378,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   views::View* save_group_line_container = nullptr;
   views::Label* save_group_label = nullptr;
 
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+  if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+      browser_->profile()->IsRegularProfile()) {
     save_group_line_container = AddChildView(std::make_unique<views::View>());
 
     // The save_group_icon is put in differently than the rest because it

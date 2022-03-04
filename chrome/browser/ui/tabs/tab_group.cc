@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model.h"
-
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -153,6 +152,7 @@ void TabGroup::SaveGroup() {
 
 void TabGroup::UnsaveGroup() {
   is_saved_ = false;
+
   SavedTabGroupKeyedService* backend =
       SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
   backend->model()->Remove(id_);
