@@ -38,8 +38,7 @@ class EcheRecentAppClickHandlerTest : public AshTestBase {
   // AshTestBase::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA, features::kPhoneHubRecentApps,
-                              features::kEcheCustomWidget},
+        /*enabled_features=*/{features::kEcheSWA, features::kEcheCustomWidget},
         /*disabled_features=*/{});
 
     DCHECK(test_web_view_factory_.get());

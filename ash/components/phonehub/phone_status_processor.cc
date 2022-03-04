@@ -281,7 +281,7 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
   find_my_device_controller_->SetPhoneRingingStatusInternal(
       ComputeFindMyDeviceStatus(phone_properties));
 
-  if (features::IsPhoneHubRecentAppsEnabled()) {
+  if (features::IsEcheSWAEnabled()) {
     recent_apps_interaction_handler_->set_user_states(
         GetUserStates(phone_properties.user_states()));
   }

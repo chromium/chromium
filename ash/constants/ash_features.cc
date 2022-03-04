@@ -1072,11 +1072,6 @@ const base::Feature kPhoneHubCallNotification{
 const base::Feature kPhoneHubMonochromeNotificationIcons{
     "PhoneHubMonochromeNotificationIcons", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the Recent Apps feature in Phone Hub, which allows users to relaunch
-// the streamed app.
-const base::Feature kPhoneHubRecentApps{"PhoneHubRecentApps",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kPinSetupForManagedUsers{"PinSetupForManagedUsers",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -1914,10 +1909,6 @@ bool IsPhoneHubEnabled() {
 
 bool IsPhoneHubCallNotificationEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubCallNotification);
-}
-
-bool IsPhoneHubRecentAppsEnabled() {
-  return base::FeatureList::IsEnabled(kPhoneHubRecentApps);
 }
 
 bool IsPinAutosubmitBackfillFeatureEnabled() {

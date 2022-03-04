@@ -114,7 +114,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
       notification_processor_(
           std::make_unique<NotificationProcessor>(notification_manager_.get())),
       recent_apps_interaction_handler_(
-          features::IsPhoneHubRecentAppsEnabled()
+          features::IsEcheSWAEnabled()
               ? std::make_unique<RecentAppsInteractionHandlerImpl>(
                     pref_service,
                     multidevice_setup_client,

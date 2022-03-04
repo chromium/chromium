@@ -95,7 +95,7 @@ class PhoneStatusProcessorTest : public testing::Test {
     fake_recent_apps_interaction_handler_ =
         std::make_unique<FakeRecentAppsInteractionHandler>();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPhoneHubRecentApps,
+        /*enabled_features=*/{features::kEcheSWA,
                               features::kPhoneHubCameraRoll},
         /*disabled_features=*/{});
   }

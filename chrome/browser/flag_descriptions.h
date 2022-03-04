@@ -3005,9 +3005,6 @@ extern const char kPhoneHubCallNotificationDescription[];
 extern const char kPhoneHubCameraRollName[];
 extern const char kPhoneHubCameraRollDescription[];
 
-extern const char kPhoneHubRecentAppsName[];
-extern const char kPhoneHubRecentAppsDescription[];
-
 extern const char kProductivityLauncherName[];
 extern const char kProductivityLauncherDescription[];
 

@@ -52233,7 +52233,6 @@ from previous Chrome versions.
   <int value="-1565683260" label="EnableSwitchAccessPointScanning:disabled"/>
   <int value="-1564232131"
       label="OmniboxOnDeviceHeadProviderNonIncognito:enabled"/>
-  <int value="-1563539313" label="PhoneHubRecentApps:enabled"/>
   <int value="-1563280385" label="Floss:enabled"/>
   <int value="-1562065709" label="ForceEnableDevicesPage:enabled"/>
   <int value="-1561252720" label="AutofillCreditCardUploadFeedback:disabled"/>
@@ -54317,7 +54316,6 @@ from previous Chrome versions.
   <int value="-118993417" label="TLS13HardeningForLocalAnchors:disabled"/>
   <int value="-118897826" label="IntensiveWakeUpThrottling:enabled"/>
   <int value="-116692797" label="HTTPAuthCommittedInterstitials:enabled"/>
-  <int value="-116172457" label="PhoneHubRecentApps:disabled"/>
   <int value="-115834377" label="EnableUnifiedMultiDeviceSetup:disabled"/>
   <int value="-115261987" label="DesksTemplates:disabled"/>
   <int value="-114807608" label="TerminalSystemApp:disabled"/>

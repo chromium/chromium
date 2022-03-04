@@ -58,8 +58,7 @@ PhoneConnectedView::PhoneConnectedView(
 
   auto* recent_apps_handler =
       phone_hub_manager->GetRecentAppsInteractionHandler();
-  if (features::IsEcheSWAEnabled() && features::IsPhoneHubRecentAppsEnabled() &&
-      recent_apps_handler) {
+  if (features::IsEcheSWAEnabled() && recent_apps_handler) {
     setup_layered_view(AddChildView(
         std::make_unique<PhoneHubRecentAppsView>(recent_apps_handler)));
   }

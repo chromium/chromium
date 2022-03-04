@@ -59,9 +59,8 @@ PhoneModel* FakePhoneHubManager::GetPhoneModel() {
 
 RecentAppsInteractionHandler*
 FakePhoneHubManager::GetRecentAppsInteractionHandler() {
-  return features::IsPhoneHubRecentAppsEnabled()
-             ? &fake_recent_apps_interaction_handler_
-             : nullptr;
+  return features::IsEcheSWAEnabled() ? &fake_recent_apps_interaction_handler_
+                                      : nullptr;
 }
 
 ScreenLockManager* FakePhoneHubManager::GetScreenLockManager() {

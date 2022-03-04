@@ -5222,11 +5222,6 @@ const char kPhoneHubCameraRollDescription[] =
     "Enables the Camera Roll feature in Phone Hub, which allows users to "
     "access recent photos and videos taken on a connected Android device.";
 
-const char kPhoneHubRecentAppsName[] = "Recent Apps in Phone Hub";
-const char kPhoneHubRecentAppsDescription[] =
-    "Enables the Recent Apps feature in Phone Hub, which allows users to "
-    "relaunch a recently streamed app.";
-
 const char kProductivityLauncherName[] =
     "Productivity experiment: App Launcher";
 const char kProductivityLauncherDescription[] =
