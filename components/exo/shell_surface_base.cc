@@ -662,6 +662,19 @@ void ShellSurfaceBase::SetGeometry(const gfx::Rect& geometry) {
   pending_geometry_ = geometry;
 }
 
+void ShellSurfaceBase::SetWindowBounds(const gfx::Rect& bounds) {
+  TRACE_EVENT1("exo", "ShellSurfaceBase::SetWindowBounds", "bounds",
+               bounds.ToString());
+  if (!widget_) {
+    // TODO(crbug.com/1261321): Handle initial bounds.
+    return;
+  }
+  // TODO(crbug.com/1261321): This will not work if the full server side
+  // decoration is used.
+  DCHECK(!frame_enabled());
+  widget_->SetBounds(bounds);
+}
+
 void ShellSurfaceBase::SetDisplay(int64_t display_id) {
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetDisplay", "display_id", display_id);
 
@@ -1171,6 +1184,15 @@ void ShellSurfaceBase::OnWindowActivated(ActivationReason reason,
   }
 }
 
+// Returns true if surface is currently being resized.
+bool ShellSurfaceBase::IsDragged() const {
+  if (in_extended_drag_)
+    return true;
+  ash::WindowState* window_state =
+      ash::WindowState::Get(widget_->GetNativeWindow());
+  return window_state->is_dragged();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ui::AcceleratorTarget overrides:
 
@@ -1393,9 +1415,10 @@ void ShellSurfaceBase::UpdateSurfaceBounds() {
   origin += GetSurfaceOrigin().OffsetFromOrigin();
   origin -= ToFlooredVector2d(ScaleVector2d(
       root_surface_origin().OffsetFromOrigin(), 1.f / GetScale()));
-
-  if (host_window()->bounds().origin() != origin)
-    host_window()->SetBounds(gfx::Rect(origin, host_window()->bounds().size()));
+  gfx::Rect surface_bounds(origin, host_window()->bounds().size());
+  if (host_window()->bounds() == surface_bounds)
+    return;
+  host_window()->SetBounds(surface_bounds);
 }
 
 void ShellSurfaceBase::UpdateShadow() {

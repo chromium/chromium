@@ -14,11 +14,14 @@
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
 #include "components/exo/seat.h"
+#include "components/exo/shell_surface_base.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_tree_host.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -86,7 +89,7 @@ DndAction DragOperationToDndAction(DragOperation op) {
     case DragOperation::kCopy:
       return DndAction::kCopy;
     default:
-      NOTREACHED();
+      NOTREACHED() << op;
       return DndAction::kNone;
   }
 }
@@ -332,6 +335,14 @@ void DragDropOperation::ScheduleStartDragDropOperation() {
   // to let any nested run loops that are currently running to have a chance to
   // exit to avoid arbitrarily deep nesting. We can accomplish both of those
   // things by posting a new task to actually start the drag and drop operation.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (extended_drag_source_) {
+    ShellSurfaceBase* shell_surface = GetShellSurfaceBaseForWindow(
+        origin_->get()->window()->GetToplevelWindow());
+    if (shell_surface)
+      shell_surface->set_in_extended_drag(true);
+  }
+#endif
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&DragDropOperation::StartDragDropOperation,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -356,6 +367,17 @@ void DragDropOperation::StartDragDropOperation() {
   // The instance deleted during StartDragAndDrop's nested RunLoop.
   if (!weak_ptr)
     return;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Always reset the in_extended_drag becacuse ExtendedDragSource may be
+  // destroyed during nested loop.
+  if (origin_->get()) {
+    ShellSurfaceBase* shell_surface = GetShellSurfaceBaseForWindow(
+        origin_->get()->window()->GetToplevelWindow());
+    if (shell_surface)
+      shell_surface->set_in_extended_drag(false);
+  }
+#endif
 
   // In tests, drag_drop_controller_ does not create a nested message loop and
   // so StartDragAndDrop exits before the drag&drop session finishes. In that

@@ -616,7 +616,7 @@
     </event>
  </interface>
 
-  <interface name="zaura_toplevel" version="28">
+  <interface name="zaura_toplevel" version="29">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -650,6 +650,57 @@
         scale transform for the submitted buffers to be composited correctly.
       </description>
     </request>
+
+    <request name="set_supports_screen_coordinates" since="29">
+      <description summary="enables screen coordinates in window bounds">
+	Requesting this will enable screen coordinates in surfaces
+	associated with aura_toplevel including sub surfaces and popup
+	windows who added this toplevel as a parent. This should be
+	set before first commit.
+      </description>
+    </request>
+
+    <request name="set_window_bounds" since="29">
+      <description summary="set window size and position">
+	Request a new location and bounds of the surface in DP screen
+	coordinates.  The size will be applied to visible bounds used
+	in set_geometry.  The output is a hint for the compositor to
+	determine which output the window should move to.  These
+	parameters are just a request and the compositor may ignore,
+	adjust the size and position based on the rule imposed by the
+	window manager, or may preserve it for future operations. For
+	example, the compositor will not allow a position outside of
+	the output, or the compositor may just store it if the
+	toplevel surface is in maximiezd state, and may use it upon
+	unmaximized.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+      <arg name="output" type="object" interface="wl_output" summary="the output"/>
+    </request>
+
+    <event name="configure" since="29">
+      <description summary="suggest a surface change">
+        A configuration change that also includes the window origin in screen coordinates.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+      <arg name="states" type="array"/>
+    </event>
+
+    <event name="origin_change" since="29">
+      <description summary="window origin change">
+        A notification sent when the window origin has changed. Unlike a configure,
+        this does not imply the client needs to resize. The values are in screen
+        coordinates.
+      </description>
+      <arg name="x" type="int" />
+      <arg name="y" type="int" />
+    </event>
   </interface>
 
   <interface name="zaura_popup" version="28">

@@ -21,6 +21,7 @@
 #include "components/exo/buffer.h"
 #include "components/exo/data_source.h"
 #include "components/exo/data_source_delegate.h"
+#include "components/exo/drag_drop_operation.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface.h"
@@ -64,32 +65,6 @@ void DispatchGesture(ui::EventType gesture_type, gfx::Point location) {
       event_source_test.SendEventToSink(&gesture_event);
   CHECK(!details.dispatcher_destroyed);
 }
-
-class TestDataSourceDelegate : public DataSourceDelegate {
- public:
-  TestDataSourceDelegate() {}
-  TestDataSourceDelegate(const TestDataSourceDelegate&) = delete;
-  TestDataSourceDelegate& operator=(const TestDataSourceDelegate&) = delete;
-  ~TestDataSourceDelegate() override = default;
-
-  bool cancelled() const { return cancelled_; }
-
-  // Overridden from DataSourceDelegate:
-  void OnDataSourceDestroying(DataSource* device) override { delete this; }
-  void OnTarget(const absl::optional<std::string>& mime_type) override {}
-  void OnSend(const std::string& mime_type, base::ScopedFD fd) override {}
-  void OnCancelled() override { cancelled_ = true; }
-  void OnDndDropPerformed() override {}
-  void OnDndFinished() override { finished_ = true; }
-  void OnAction(DndAction dnd_action) override {}
-  bool CanAcceptDataEventsForSurface(Surface* surface) const override {
-    return true;
-  }
-
- private:
-  bool cancelled_ = false;
-  bool finished_ = false;
-};
 
 class TestExtendedDragSourceDelegate : public ExtendedDragSource::Delegate {
  public:
@@ -589,6 +564,39 @@ TEST_F(ExtendedDragSourceTest, CancelDraggingOperation) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_source_delegate_->cancelled());
+}
+
+// Make sure that the extended drag is recognized as shell surface drag.
+TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates) {
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  TestDataExchangeDelegate data_exchange_delegate;
+
+  auto delegate = std::make_unique<TestDataSourceDelegate>();
+  auto data_source = std::make_unique<DataSource>(delegate.get());
+  constexpr char kTextMimeType[] = "text/plain";
+  data_source->Offer(kTextMimeType);
+
+  gfx::PointF location(10, 10);
+  auto operation = DragDropOperation::Create(
+      &data_exchange_delegate, data_source.get(), shell_surface->root_surface(),
+      nullptr, location, ui::mojom::DragEventSource::kMouse);
+
+  auto* drag_drop_controller = static_cast<ash::DragDropController*>(
+      aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow()));
+  EXPECT_FALSE(shell_surface->IsDragged());
+  base::RunLoop loop;
+  drag_drop_controller->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        // The drag session must have been started by the time
+        // drag loop starts.
+        EXPECT_TRUE(shell_surface->IsDragged());
+        drag_drop_controller->DragCancel();
+        loop.Quit();
+      }),
+      base::DoNothing());
+  loop.Run();
+  operation.reset();
+  EXPECT_FALSE(shell_surface->IsDragged());
 }
 
 }  // namespace exo

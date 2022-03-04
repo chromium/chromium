@@ -81,6 +81,9 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
  private:
   // aura::WindowObserver:
   void OnWindowAddedToRootWindow(aura::Window* window) override {
+    if (toplevel_window_)
+      return;
+
     DCHECK_EQ(window, surface_->window());
     FindToplevelWindow();
     DCHECK(toplevel_window_);

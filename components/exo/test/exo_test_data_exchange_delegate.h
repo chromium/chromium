@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_TEST_EXO_TEST_DATA_EXCHANGE_DELEGATE_H_
 
 #include "components/exo/data_exchange_delegate.h"
+#include "components/exo/data_source_delegate.h"
 
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
@@ -47,6 +48,32 @@ class TestDataExchangeDelegate : public DataExchangeDelegate {
  private:
   ui::EndpointType endpoint_type_ = ui::EndpointType::kUnknownVm;
   SendDataCallback send_pickle_callback_;
+};
+
+class TestDataSourceDelegate : public DataSourceDelegate {
+ public:
+  bool cancelled() const { return cancelled_; }
+
+  // DataSourceDelegate:
+  void OnDataSourceDestroying(DataSource* source) override {}
+
+  void OnTarget(const absl::optional<std::string>& mime_type) override {}
+
+  void OnSend(const std::string& mime_type, base::ScopedFD fd) override;
+
+  void OnCancelled() override;
+
+  void OnDndDropPerformed() override {}
+
+  void OnDndFinished() override;
+
+  void OnAction(DndAction dnd_action) override {}
+
+  bool CanAcceptDataEventsForSurface(Surface* surface) const override;
+
+ private:
+  bool cancelled_ = false;
+  bool finished_ = false;
 };
 
 }  // namespace exo

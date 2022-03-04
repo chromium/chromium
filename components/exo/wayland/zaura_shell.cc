@@ -7,6 +7,7 @@
 #include <aura-shell-server-protocol.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
+#include <xdg-shell-server-protocol.h>
 
 #include <algorithm>
 #include <limits>
@@ -19,11 +20,13 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/display.h"
 #include "components/exo/seat.h"
 #include "components/exo/seat_observer.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_base.h"
+#include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wl_output.h"
@@ -649,8 +652,37 @@ chromeos::OrientationType OrientationLock(uint32_t orientation_lock) {
   return chromeos::OrientationType::kAny;
 }
 
-AuraToplevel::AuraToplevel(ShellSurfaceBase* shell_surface)
-    : shell_surface_(shell_surface) {
+using AuraSurfaceConfigureCallback =
+    base::RepeatingCallback<void(const gfx::Rect& bounds,
+                                 chromeos::WindowStateType state_type,
+                                 bool resizing,
+                                 bool activated)>;
+
+uint32_t HandleAuraSurfaceConfigureCallback(
+    wl_resource* resource,
+    SerialTracker* serial_tracker,
+    const AuraSurfaceConfigureCallback& callback,
+    const gfx::Rect& bounds,
+    chromeos::WindowStateType state_type,
+    bool resizing,
+    bool activated,
+    const gfx::Vector2d& origin_offset) {
+  uint32_t serial =
+      serial_tracker->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
+  callback.Run(bounds, state_type, resizing, activated);
+  xdg_surface_send_configure(resource, serial);
+  wl_client_flush(wl_resource_get_client(resource));
+  return serial;
+}
+
+AuraToplevel::AuraToplevel(ShellSurface* shell_surface,
+                           SerialTracker* const serial_tracker,
+                           wl_resource* xdg_toplevel_resource,
+                           wl_resource* aura_toplevel_resource)
+    : shell_surface_(shell_surface),
+      serial_tracker_(serial_tracker),
+      xdg_toplevel_resource_(xdg_toplevel_resource),
+      aura_toplevel_resource_(aura_toplevel_resource) {
   DCHECK(shell_surface);
 }
 
@@ -662,6 +694,62 @@ void AuraToplevel::SetOrientationLock(uint32_t lock_type) {
 
 void AuraToplevel::SetClientSubmitsSurfacesInPixelCoordinates(bool enable) {
   shell_surface_->set_client_submits_surfaces_in_pixel_coordinates(enable);
+}
+
+void AuraToplevel::SetWindowBounds(int32_t x,
+                                   int32_t y,
+                                   int32_t width,
+                                   int32_t height) {
+  if (!shell_surface_->IsDragged())
+    shell_surface_->SetWindowBounds(gfx::Rect(x, y, width, height));
+}
+
+void AuraToplevel::OnOriginChange(const gfx::Point& origin) {
+  zaura_toplevel_send_origin_change(aura_toplevel_resource_, origin.x(),
+                                    origin.y());
+  wl_client_flush(wl_resource_get_client(aura_toplevel_resource_));
+}
+
+void AuraToplevel::SetClientUsesScreenCoordinates() {
+  supports_window_bounds_ = true;
+  shell_surface_->set_client_supports_window_bounds(true);
+  shell_surface_->set_configure_callback(
+      base::BindRepeating(&HandleAuraSurfaceConfigureCallback,
+                          xdg_toplevel_resource_, serial_tracker_,
+                          base::BindRepeating(&AuraToplevel::OnConfigure,
+                                              weak_ptr_factory_.GetWeakPtr())));
+  shell_surface_->set_origin_change_callback(base::BindRepeating(
+      &AuraToplevel::OnOriginChange, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AddState(wl_array* states, xdg_toplevel_state state) {
+  xdg_toplevel_state* value = static_cast<xdg_toplevel_state*>(
+      wl_array_add(states, sizeof(xdg_toplevel_state)));
+  DCHECK(value);
+  *value = state;
+}
+
+void AuraToplevel::OnConfigure(const gfx::Rect& bounds,
+                               chromeos::WindowStateType state_type,
+                               bool resizing,
+                               bool activated) {
+  wl_array states;
+  wl_array_init(&states);
+  if (state_type == chromeos::WindowStateType::kMaximized)
+    AddState(&states, XDG_TOPLEVEL_STATE_MAXIMIZED);
+  // TODO(crbug/1250129): Pinned states need to be handled properly.
+  // TODO(crbug/1250129): Support snapped state.
+  if (IsFullscreenOrPinnedWindowStateType(state_type)) {
+    AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
+  }
+  if (resizing)
+    AddState(&states, XDG_TOPLEVEL_STATE_RESIZING);
+  if (activated)
+    AddState(&states, XDG_TOPLEVEL_STATE_ACTIVATED);
+
+  zaura_toplevel_send_configure(aura_toplevel_resource_, bounds.x(), bounds.y(),
+                                bounds.width(), bounds.height(), &states);
+  wl_array_release(&states);
 }
 
 AuraPopup::AuraPopup(ShellSurfaceBase* shell_surface)
@@ -938,6 +1026,11 @@ void aura_toplevel_set_orientation_lock(wl_client* client,
   GetUserDataAs<AuraToplevel>(resource)->SetOrientationLock(orientation_lock);
 }
 
+void aura_toplevel_set_client_supports_window_bounds(wl_client* client,
+                                                     wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->SetClientUsesScreenCoordinates();
+}
+
 void aura_toplevel_surface_submission_in_pixel_coordinates(
     wl_client* client,
     wl_resource* resource) {
@@ -945,9 +1038,23 @@ void aura_toplevel_surface_submission_in_pixel_coordinates(
       ->SetClientSubmitsSurfacesInPixelCoordinates(true);
 }
 
+void aura_toplevel_set_window_bounds(wl_client* client,
+                                     wl_resource* resource,
+                                     int32_t x,
+                                     int32_t y,
+                                     int32_t width,
+                                     int32_t height,
+                                     wl_resource* output) {
+  // TODO(crbug.com/1261321): Use output hint.
+  GetUserDataAs<AuraToplevel>(resource)->SetWindowBounds(x, y, width, height);
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
-    aura_toplevel_surface_submission_in_pixel_coordinates};
+    aura_toplevel_surface_submission_in_pixel_coordinates,
+    aura_toplevel_set_client_supports_window_bounds,
+    aura_toplevel_set_window_bounds,
+};
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
                                                         wl_resource* resource) {
@@ -962,14 +1069,17 @@ const struct zaura_popup_interface aura_popup_implementation = {
 void aura_shell_get_aura_toplevel(wl_client* client,
                                   wl_resource* resource,
                                   uint32_t id,
-                                  wl_resource* surface_resource) {
-  ShellSurfaceBase* shell_surface =
-      GetShellSurfaceFromToplevelResource(surface_resource);
+                                  wl_resource* xdg_toplevel_resource) {
+  ShellSurfaceData shell_surface_data =
+      GetShellSurfaceFromToplevelResource(xdg_toplevel_resource);
   wl_resource* aura_toplevel_resource = wl_resource_create(
       client, &zaura_toplevel_interface, wl_resource_get_version(resource), id);
 
-  SetImplementation(aura_toplevel_resource, &aura_toplevel_implementation,
-                    std::make_unique<AuraToplevel>(shell_surface));
+  SetImplementation(
+      aura_toplevel_resource, &aura_toplevel_implementation,
+      std::make_unique<AuraToplevel>(
+          shell_surface_data.shell_surface, shell_surface_data.serial_tracker,
+          shell_surface_data.surface_resource, aura_toplevel_resource));
 }
 
 void aura_shell_get_aura_popup(wl_client* client,
