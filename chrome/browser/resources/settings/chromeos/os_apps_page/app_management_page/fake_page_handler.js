@@ -16,7 +16,7 @@ import {AppManagementStore} from './store.js';
 export class FakePageHandler {
   /**
    * @param {Object=} options
-   * @return {!Object<number, Permission>}
+   * @return {!Object<number, appManagement.mojom.Permission>}
    */
   static createWebPermissions(options) {
     const permissionTypes = [
@@ -47,7 +47,7 @@ export class FakePageHandler {
 
   /**
    * @param {Array<number>=} optIds
-   * @return {!Object<number, Permission>}
+   * @return {!Object<number, appManagement.mojom.Permission>}
    */
   static createArcPermissions(optIds) {
     const permissionTypes = optIds || [
@@ -71,7 +71,7 @@ export class FakePageHandler {
 
   /**
    * @param {apps.mojom.AppType} appType
-   * @return {!Object<number, Permission>}
+   * @return {!Object<number, appManagement.mojom.Permission>}
    */
   static createPermissions(appType) {
     switch (appType) {
@@ -234,7 +234,7 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
-   * @param {Permission} permission
+   * @param {appManagement.mojom.Permission} permission
    */
   setPermission(appId, permission) {
     const app = AppManagementStore.getInstance().data.apps[appId];

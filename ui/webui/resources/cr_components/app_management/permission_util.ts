@@ -4,8 +4,8 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
+import {Permission} from './app_management.mojom-webui.js';
 import {PermissionType, PermissionValue, TriState} from './permission_constants.js';
-import {Permission} from './types.mojom-webui.js';
 
 export function createPermission(
     permissionType: PermissionType, value: PermissionValue,

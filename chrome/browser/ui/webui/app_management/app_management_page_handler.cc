@@ -246,11 +246,10 @@ void AppManagementPageHandler::SetPinned(const std::string& app_id,
 #endif
 }
 
-void AppManagementPageHandler::SetPermission(
-    const std::string& app_id,
-    apps::mojom::PermissionPtr permission) {
+void AppManagementPageHandler::SetPermission(const std::string& app_id,
+                                             apps::PermissionPtr permission) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
-      app_id, std::move(permission));
+      app_id, apps::ConvertPermissionToMojomPermission(permission));
 }
 
 void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
@@ -353,21 +352,25 @@ void AppManagementPageHandler::OnWebAppFileHandlerApprovalStateChanged(
 
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const apps::AppUpdate& update) {
-  base::flat_map<apps::mojom::PermissionType, apps::mojom::PermissionPtr>
-      permissions;
+  auto app = app_management::mojom::App::New();
+  app->id = update.AppId();
+  app->type = update.AppType();
+  app->title = update.Name();
+
   for (const auto& permission : update.Permissions()) {
     if (permission->permission_type == apps::mojom::PermissionType::kStorage &&
         ShouldHideStoragePermission(update.AppId())) {
       continue;
     }
-    permissions[permission->permission_type] = permission->Clone();
+    app_management::mojom::PermissionType permission_type =
+        mojo::EnumTraits<app_management::mojom::PermissionType,
+                         apps::PermissionType>::
+            ToMojom(apps::ConvertMojomPermissionTypeToPermissionType(
+                permission->permission_type));
+    app->permissions[permission_type] =
+        apps::ConvertMojomPermissionToPermission(permission);
   }
 
-  auto app = app_management::mojom::App::New();
-  app->id = update.AppId();
-  app->type = update.AppType();
-  app->title = update.Name();
-  app->permissions = std::move(permissions);
   app->install_reason = update.InstallReason();
   app->install_source = update.InstallSource();
 

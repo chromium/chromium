@@ -4007,6 +4007,7 @@ if (!is_android) {
         "//ui/display:display_manager_test_api",
         "//ui/display/manager",
         "//ui/events/devices:test_support",
+        "//ui/webui/resources/cr_components/app_management:mojo_bindings",
         "//ui/wm/public",
         "//url",
       ]
@@ -7054,6 +7055,7 @@ test("unit_tests") {
       "//components/arc/common",
       "//components/services/app_service/public/cpp:preferred_apps",
       "//components/soda:soda",
+      "//ui/webui/resources/cr_components/app_management:unit_tests",
     ]
   }
 

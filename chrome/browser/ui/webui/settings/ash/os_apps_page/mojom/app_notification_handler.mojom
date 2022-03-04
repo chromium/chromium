@@ -4,6 +4,8 @@
 
 module chromeos.settings.app_notification.mojom;
 
+import "ui/webui/resources/cr_components/app_management/app_management.mojom";
+
 // Whether an app is ready to launch, i.e. installed.
 enum Readiness {
   kUnknown = 0,
@@ -15,36 +17,6 @@ enum Readiness {
   kUninstalledByUser,
   kRemoved,
   kUninstalledByMigration,
-};
-
-// The types of permission.
-enum PermissionType {
-  kUnknown         = 0,
-  kCamera          = 1,
-  kLocation        = 2,
-  kMicrophone      = 3,
-  kNotifications   = 4,
-  kContacts        = 5,
-  kStorage         = 6,
-  kPrinting        = 7,
-};
-
-enum TriState {
-  kAllow,
-  kBlock,
-  kAsk,
-};
-
-union PermissionValue {
-  bool bool_value;
-  TriState tristate_value;
-};
-
-struct Permission {
-  PermissionType permission_type;
-  PermissionValue value;
-  // If the permission is managed by an enterprise policy.
-  bool is_managed;
 };
 
 // Implementation of App
@@ -63,7 +35,7 @@ struct App {
   Readiness readiness;
 
   // Contains the current permission state of the App's notification.
-  Permission notification_permission;
+  app_management.mojom.Permission notification_permission;
 };
 
 // Browser interface.
@@ -77,7 +49,8 @@ interface AppNotificationsHandler {
   AddObserver(pending_remote<AppNotificationsObserver> observer);
 
   // Updates the permission of the specified app (via app_id).
-  SetNotificationPermission(string app_id, Permission permission);
+  SetNotificationPermission(string app_id,
+                            app_management.mojom.Permission permission);
 
   // Get the list of installed apps.
   GetApps() => (array<App> apps);

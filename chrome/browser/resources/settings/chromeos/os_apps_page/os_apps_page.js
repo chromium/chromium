@@ -48,16 +48,17 @@ import {getAppNotificationProvider} from './app_notifications_page/mojo_interfac
  */
 export function isAppInstalled(app) {
   switch (app.readiness) {
-    case apps.mojom.Readiness.kReady:
-    case apps.mojom.Readiness.kDisabledByBlocklist:
-    case apps.mojom.Readiness.kDisabledByPolicy:
-    case apps.mojom.Readiness.kDisabledByUser:
-    case apps.mojom.Readiness.kTerminated:
+    case chromeos.settings.appNotification.mojom.Readiness.kReady:
+    case chromeos.settings.appNotification.mojom.Readiness.kDisabledByBlocklist:
+    case chromeos.settings.appNotification.mojom.Readiness.kDisabledByPolicy:
+    case chromeos.settings.appNotification.mojom.Readiness.kDisabledByUser:
+    case chromeos.settings.appNotification.mojom.Readiness.kTerminated:
       return true;
-    case apps.mojom.Readiness.kUninstalledByUser:
-    case apps.mojom.Readiness.kUninstalledByMigration:
-    case apps.mojom.Readiness.kRemoved:
-    case apps.mojom.Readiness.kUnknown:
+    case chromeos.settings.appNotification.mojom.Readiness.kUninstalledByUser:
+    case chromeos.settings.appNotification.mojom.Readiness
+        .kUninstalledByMigration:
+    case chromeos.settings.appNotification.mojom.Readiness.kRemoved:
+    case chromeos.settings.appNotification.mojom.Readiness.kUnknown:
       return false;
   }
   assertNotReached();

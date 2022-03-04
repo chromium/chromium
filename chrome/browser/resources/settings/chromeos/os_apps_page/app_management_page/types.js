@@ -17,7 +17,7 @@ let App;
 let ExtensionAppPermissionMessage;
 
 /**
- * @typedef {apps.mojom.Permission}
+ * @typedef {appManagement.mojom.Permission}
  */
 let Permission;
 

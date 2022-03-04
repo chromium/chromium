@@ -166,7 +166,7 @@ class FakeAppNotificationHandler {
 
   /**
    * @param {string} id
-   * @param {!apps.mojom.Permission} permission
+   * @param {!appManagement.mojom.Permission} permission
    */
   setNotificationPermission(id, permission) {
     return new Promise(resolve => {
@@ -197,8 +197,8 @@ suite('AppsPageTests', function() {
   /**
    * @param {string} id
    * @param {string} title
-   * @param {!apps.mojom.Permission} permission
-   * @param {?apps.mojom.Readiness} readiness
+   * @param {!appManagement.mojom.Permission} permission
+   * @param {?chromeos.settings.appNotification.mojom.Readiness} readiness
    * @return {!chromeos.settings.appNotification.mojom.App}
    */
   function createApp(
