@@ -56,6 +56,7 @@ source_set("flags") {
     "//ios/chrome/browser/screen_time:buildflags",
     "//ios/chrome/browser/sessions:features",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/autofill:features",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/download:features",

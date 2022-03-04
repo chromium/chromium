@@ -504,6 +504,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "autofill-password-rich-iph",
+    "owners": [ "christianxu", "bling-flags@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "autofill-save-card-dismiss-on-navigation",
     "owners": [ "sczs", "bling-flags@google.com" ],
     "expiry_milestone": 82
