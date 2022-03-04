@@ -108,6 +108,9 @@ class CHROMECAST_EXPORT RebootShlib {
     // system-level anomaly and needs to recover from it with restarting the
     // Cast component.
     ANOMALY = 20,
+
+    // A reboot is triggered when the kernel panics.
+    KERNEL_PANIC = 21,
   };
 
   // Initializes any platform-specific reboot systems.

@@ -49,6 +49,7 @@ bool RebootUtil::IsValidRebootSource(RebootShlib::RebootSource reboot_source) {
     case RebootShlib::RebootSource::POWER_MANAGER_SHUTDOWN:
     case RebootShlib::RebootSource::EXPERIMENT_CHANGE:
     case RebootShlib::RebootSource::ANOMALY:
+    case RebootShlib::RebootSource::KERNEL_PANIC:
       return true;
     default:
       return false;
