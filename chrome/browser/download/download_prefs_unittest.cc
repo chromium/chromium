@@ -451,9 +451,10 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   const base::FilePath drivefs_dir = base::FilePath(
       "/media/fuse/drivefs-" + base::MD5String(drivefs_profile_salt + "-" +
                                                account_id.GetAccountIdKey()));
+  const base::FilePath ash_resources_dir = base::FilePath("/opt/google/chrome");
   chrome::SetLacrosDefaultPaths(documents_path, default_dir, drivefs_dir,
                                 removable_media_dir, android_files_dir,
-                                linux_files_dir);
+                                linux_files_dir, ash_resources_dir);
 #endif
 
   // Test a valid subdirectory of downloads.

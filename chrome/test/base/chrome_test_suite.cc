@@ -122,7 +122,8 @@ void ChromeTestSuite::Initialize() {
                                 /*drivefs=*/base::FilePath(),
                                 /*removable_media_dir*/ base::FilePath(),
                                 /*android_files_dir*/ base::FilePath(),
-                                /*linux_files_dir*/ base::FilePath());
+                                /*linux_files_dir*/ base::FilePath(),
+                                /*ash_resources_dir*/ base::FilePath());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

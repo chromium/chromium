@@ -514,6 +514,9 @@ enum MetricsReportingManaged {
 // Default directories on the system. We send the full path for each value for
 // future compatibility, to avoid assumptions about where on disk the directory
 // is located.
+//
+// Next version: 33
+// Next id: 8
 [Stable]
 struct DefaultPaths {
   // The default (non-configurable) directory for documents. For example,
@@ -543,6 +546,10 @@ struct DefaultPaths {
   // The (non-configurable) path at which Crostini's home directory is
   // mounted. For example, /media/fuse/crostini_<hash>_termina_penguin.
   [MinVersion=31] mojo_base.mojom.FilePath? linux_files@6;
+
+  // The (non-coniggurable) directory for ash resources. For example,
+  // /opt/google/chrome.
+  [MinVersion=32] mojo_base.mojom.FilePath? ash_resources@7;
 };
 
 // The device specific data needed in Lacros.
