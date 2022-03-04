@@ -83,6 +83,14 @@ class CORE_EXPORT PermissionsPolicyParser {
       PolicyParserMessageBuffer& logger,
       ExecutionContext* = nullptr);
 
+  // Converts a PermissionsPolicy::Node into a ParsedPermissionsPolicy
+  // Unrecognized features are filtered out.
+  static ParsedPermissionsPolicy ParsePolicyFromNode(
+      Node&,
+      scoped_refptr<const SecurityOrigin>,
+      PolicyParserMessageBuffer& logger,
+      ExecutionContext* = nullptr);
+
   static ParsedPermissionsPolicy ParseFeaturePolicyForTest(
       const String& policy,
       scoped_refptr<const SecurityOrigin> self_origin,

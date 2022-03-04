@@ -95,9 +95,10 @@ class ParsingContext {
 
   ParsedPermissionsPolicy ParseFeaturePolicy(const String& policy);
   ParsedPermissionsPolicy ParsePermissionsPolicy(const String& policy);
+  ParsedPermissionsPolicy ParsePolicyFromNode(
+      const PermissionsPolicyParser::Node& root);
 
  private:
-  ParsedPermissionsPolicy ParseIR(const PermissionsPolicyParser::Node& root);
   PermissionsPolicyParser::Node ParseFeaturePolicyToIR(const String& policy);
   PermissionsPolicyParser::Node ParsePermissionsPolicyToIR(
       const String& policy);
@@ -387,15 +388,15 @@ absl::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
 
 ParsedPermissionsPolicy ParsingContext::ParseFeaturePolicy(
     const String& policy) {
-  return ParseIR(ParseFeaturePolicyToIR(policy));
+  return ParsePolicyFromNode(ParseFeaturePolicyToIR(policy));
 }
 
 ParsedPermissionsPolicy ParsingContext::ParsePermissionsPolicy(
     const String& policy) {
-  return ParseIR(ParsePermissionsPolicyToIR(policy));
+  return ParsePolicyFromNode(ParsePermissionsPolicyToIR(policy));
 }
 
-ParsedPermissionsPolicy ParsingContext::ParseIR(
+ParsedPermissionsPolicy ParsingContext::ParsePolicyFromNode(
     const PermissionsPolicyParser::Node& root) {
   ParsedPermissionsPolicy parsed_policy;
   for (const PermissionsPolicyParser::Declaration& declaration_node : root) {
@@ -611,6 +612,16 @@ ParsedPermissionsPolicy PermissionsPolicyParser::ParseAttribute(
   return ParsingContext(logger, self_origin, src_origin,
                         GetDefaultFeatureNameMap(), execution_context)
       .ParseFeaturePolicy(policy);
+}
+
+ParsedPermissionsPolicy PermissionsPolicyParser::ParsePolicyFromNode(
+    PermissionsPolicyParser::Node& policy,
+    scoped_refptr<const SecurityOrigin> origin,
+    PolicyParserMessageBuffer& logger,
+    ExecutionContext* execution_context) {
+  return ParsingContext(logger, origin, /*src_origin=*/nullptr,
+                        GetDefaultFeatureNameMap(), execution_context)
+      .ParsePolicyFromNode(policy);
 }
 
 ParsedPermissionsPolicy PermissionsPolicyParser::ParseFeaturePolicyForTest(
