@@ -72,16 +72,16 @@ void MoveMigrator::Migrate() {
           base::BindOnce(&MoveMigrator::OnPreMigrationCleanUp,
                          weak_factory_.GetWeakPtr()));
       return;
-    case ResumeStep::kRemoveHardLinks:
+    case ResumeStep::kMoveLacrosItems:
       LOG(ERROR) << "Migration did not complete in the previous attempt. "
-                    "Resuming migration from kRemoveHardLinks step.";
+                    "Resuming migration from kMoveLacrosItems step.";
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE,
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-          base::BindOnce(&MoveMigrator::RemoveHardLinksFromOriginalDir,
+          base::BindOnce(&MoveMigrator::MoveLacrosItemsToNewDir,
                          original_profile_dir_),
-          base::BindOnce(&MoveMigrator::OnRemoveHardLinksFromOriginalDir,
+          base::BindOnce(&MoveMigrator::OnMoveLacrosItemsToNewDir,
                          weak_factory_.GetWeakPtr()));
       return;
     case ResumeStep::kMoveTmpDir:
@@ -119,7 +119,7 @@ bool MoveMigrator::IsResumeStep(ResumeStep resume_step) {
   switch (resume_step) {
     case ResumeStep::kStart:
       return false;
-    case ResumeStep::kRemoveHardLinks:
+    case ResumeStep::kMoveLacrosItems:
       return true;
     case ResumeStep::kMoveTmpDir:
       return true;
@@ -206,7 +206,7 @@ MoveMigrator::PreMigrationCleanUpResult MoveMigrator::PreMigrationCleanUp(
   if (base::PathExists(tmp_user_dir)) {
     // Delete tmp_user_dir if any were left from a previous failed move
     // migration attempt. Note that if resuming move migration from later steps
-    // such as `RemoveHardLinksFromOriginalDir()`, this tmp_user_dir will not be
+    // such as `MoveLacrosItemsToNewDir()`, this tmp_user_dir will not be
     // deleted. This is an intended behaviour because we do not want to delete
     // tmp_user_dir once we start deleting items from the Ash PDD.
     if (!base::DeletePathRecursively(tmp_user_dir)) {
@@ -315,34 +315,6 @@ bool MoveMigrator::SetupLacrosDir(
     return false;
   }
 
-  browser_data_migrator_util::TargetItems lacros_items =
-      browser_data_migrator_util::GetTargetItems(
-          original_profile_dir, browser_data_migrator_util::ItemType::kLacros);
-
-  // This check ensures that the migrator can at least rename the directory to
-  // `<kRemoveDir>/<item.path.BaseName()>` to make it inaccessible from ash in
-  // `RemoveHardLinksFromOriginalDir()`. Note that not having write permission
-  // to a directory does not automatically mean that creating a hard link fails.
-  // As long as the process has rx permission to the parent directory, a hard
-  // link can be created for a file. Also note that for a file, write permission
-  // is not required for renaming. Only the w permission for the parent
-  // directory is checked.
-  for (const auto& item : lacros_items.items) {
-    if (item.is_directory && !base::PathIsWritable(item.path)) {
-      // TODO(ythjkt): Add a UMA.
-      PLOG(ERROR) << "The current process does not have write permission to "
-                     "the directory "
-                  << item.path.value();
-      return false;
-    }
-  }
-
-  if (!browser_data_migrator_util::CopyTargetItemsByHardLinks(
-          tmp_profile_dir, lacros_items, cancel_flag.get())) {
-    LOG(ERROR) << "CopyTargetItemsByHardLinks() failed for lacros_items.";
-    return false;
-  }
-
   if (!base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel), "")) {
     LOG(ERROR) << "WriteFile() failed for " << chrome::kFirstRunSentinel;
     return false;
@@ -360,82 +332,59 @@ void MoveMigrator::OnSetupLacrosDir(bool success) {
     return;
   }
 
-  // `RemoveHardLinksFromOriginalDir()` is the point of no return. Once it is
-  // started, it has to be completed. Otherwise the profile in ash directory
-  // becomes fragmented. The profile in lacros will be complete but with hard
-  // links left in ash directory causing the files with hard links left in ash
-  // to be updated by both ash and lacros. This is obviously a dangerous
-  // situation to be in. We store the resume step as `kRemoveHardLinks` in Local
-  // State so that if the migration is interrupted during
-  // `RemoveHardLinksFromOriginalDir()` then the migrator can resume the
-  // migration from that point.
-  SetResumeStep(local_state_, user_id_hash_, ResumeStep::kRemoveHardLinks);
+  // Once `MoveLacrosItemsToNewDir()` is started, it should be completed.
+  // Otherwise the profile in ash directory becomes fragmented. We store the
+  // resume step as `kMoveLacrosItems` in Local State so that if the migration
+  // is interrupted during `MoveLacrosItemsToNewDir()` then the migrator can
+  // resume the migration from that point.
+  SetResumeStep(local_state_, user_id_hash_, ResumeStep::kMoveLacrosItems);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&MoveMigrator::RemoveHardLinksFromOriginalDir,
+      base::BindOnce(&MoveMigrator::MoveLacrosItemsToNewDir,
                      original_profile_dir_),
-      base::BindOnce(&MoveMigrator::OnRemoveHardLinksFromOriginalDir,
+      base::BindOnce(&MoveMigrator::OnMoveLacrosItemsToNewDir,
                      weak_factory_.GetWeakPtr()));
 }
 
 // static
-bool MoveMigrator::RemoveHardLinksFromOriginalDir(
+bool MoveMigrator::MoveLacrosItemsToNewDir(
     const base::FilePath& original_profile_dir) {
-  LOG(WARNING) << "Running RemoveHardLinksFromOriginalDir()";
+  LOG(WARNING) << "Running MoveLacrosItemsToNewDir()";
 
   browser_data_migrator_util::TargetItems lacros_items =
       browser_data_migrator_util::GetTargetItems(
           original_profile_dir, browser_data_migrator_util::ItemType::kLacros);
 
-  const base::FilePath remove_dir =
-      original_profile_dir.Append(browser_data_migrator_util::kRemoveDir);
-  if (!base::DirectoryExists(remove_dir) &&
-      !base::CreateDirectory(remove_dir)) {
-    LOG(ERROR) << remove_dir.value() << " could not be created.";
-    return false;
-  }
-
-  // Delete hard links for lacros file/dirs in ash directory. If deletion fails,
-  // try moving them to `kRemoveDir` so that they become inaccessible from ash.
   for (const auto& item : lacros_items.items) {
-    if (!base::DeletePathRecursively(item.path)) {
-      // One cause of this failure is that there is a subdirectory in
-      // `item.path` that chronos does not have w permission of. Even in such a
-      // case, moving the parent directory `item.path` should succeed as long as
-      // that is owned by chronos.
-      PLOG(ERROR) << "Failed deleting item " << item.path.value()
-                  << ". Trying renaming to make the item inaccessible instead.";
-      if (!base::Move(item.path, remove_dir.Append(item.path.BaseName()))) {
-        PLOG(ERROR) << "Failed moving " << item.path.value() << " to "
-                    << remove_dir.value();
-        return false;
-      }
+    if (item.is_directory && !base::PathIsWritable(item.path)) {
+      // TODO(ythjkt): Add a UMA.
+      PLOG(ERROR) << "The current process does not have write permission to "
+                     "the directory "
+                  << item.path.value();
+      return false;
     }
   }
 
-  if (!base::DeletePathRecursively(remove_dir)) {
-    // This indicates that there is a subdirectory in `remove_dir` which chronos
-    // does not have a write permission to. Failing to remove this directory is
-    // not critical since it is not accessible by ash or lacros so only log the
-    // error but continue with the migration.
-    // TODO(ythjkt): Add a logic to make session_manager delete this directory
-    // with root privilege.
-    // TODO(ythjkt): Add UMA to collect cases of this happening.
-    PLOG(ERROR) << "Failed removing "
-                << original_profile_dir
-                       .Append(browser_data_migrator_util::kRemoveDir)
-                       .value();
-  }
+  const base::FilePath tmp_profile_dir =
+      original_profile_dir.Append(browser_data_migrator_util::kMoveTmpDir)
+          .Append(browser_data_migrator_util::kLacrosProfilePath);
 
+  for (const auto& item : lacros_items.items) {
+    if (!base::Move(item.path, tmp_profile_dir.Append(item.path.BaseName()))) {
+      PLOG(ERROR) << "Failed to move item " << item.path.value() << " to "
+                  << tmp_profile_dir.Append(item.path.BaseName()) << ": ";
+      return false;
+    }
+  }
   return true;
 }
 
-void MoveMigrator::OnRemoveHardLinksFromOriginalDir(bool success) {
+void MoveMigrator::OnMoveLacrosItemsToNewDir(bool success) {
   if (!success) {
-    LOG(ERROR) << "Removing hard links have failed.";
+    LOG(ERROR) << "Moving Lacros items to temporary directory failed.";
     std::move(finished_callback_)
         .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
               {BrowserDataMigrator::ResultKind::kFailed}});

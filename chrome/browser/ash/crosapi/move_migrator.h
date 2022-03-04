@@ -45,15 +45,11 @@ constexpr int kMoveMigrationResumeCountLimit = 5;
 // forward, to the new profile data directory
 // (/<Ash PDD>/lacros/Default/) with the steps described below. The renaming of
 // <kMoveTmpDir> is the last step of the migration so that the existence of
-// <Ash PDD>/lacros/ is equivalent to having completed the migration. Also it
-// ensures that there is no state in which Ash and Lacros have access to the
-// same inode via two hardlinks.
+// <Ash PDD>/lacros/ is equivalent to having completed the migration.
 // 1) Delete any `ItemType::kDeletable` items in <Ash PDD>.
 // 2) Setup <Ash PDD>/<kMoveTmpDir> by copying `ItemType::kNeedCopy`
-// items into it and creating hard links for `ItemType::kLacros` in it.
-// 3) Delete the original hard links for `ItemType::kLacros` in <Ash PDD>. If
-// deletion fails, move them to `<Ash PDD>/<kRemoveDir>` to make them
-// inaccessible by Ash.
+// items into it.
+// 3) Move `ItemType::kLacros` in <Ash PDD> to <lacros PDD>.
 // 4) Rename <Ash PDD>/<kMoveTmpDir>/ as <Ash PDD>/lacros/.
 class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
  public:
@@ -61,7 +57,7 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // in the previous attempt.
   enum class ResumeStep {
     kStart = 0,
-    kRemoveHardLinks = 1,
+    kMoveLacrosItems = 1,
     kMoveTmpDir = 2,
     kCompleted = 3,
   };
@@ -111,11 +107,12 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, ResumeRequired);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, PreMigrationCleanUp);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, SetupLacrosDir);
-  FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest,
-                           SetupLacrosDirFailIfNoWritePermForLacrosItem);
-  FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, RemoveHardLinksFromOriginalDir);
+  FRIEND_TEST_ALL_PREFIXES(
+      MoveMigratorTest,
+      MoveLacrosItemsToNewDirFailIfNoWritePermForLacrosItem);
+  FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, MoveLacrosItemsToNewDir);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest,
-                           MigrateResumeFromRemoveHardLinks);
+                           MigrateResumeFromMoveLacrosItems);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest, MigrateResumeFromMove);
   friend class BrowserDataMigratorResumeOnSignInTest;
   friend class BrowserDataMigratorResumeRestartInSession;
@@ -157,8 +154,8 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // `SetupLacrosRemoveHardLinksFromAshDir()` as the next step.
   void OnPreMigrationCleanUp(PreMigrationCleanUpResult);
 
-  // Set up lacros user directory by copying `ItemType::kNeedCopy` items and
-  // creating hard links for `ItemType::kLacros` into it.
+  // Set up lacros user directory by copying `ItemType::kNeedCopy` items
+  // and also creating `First Run` file in Lacros user data dir.
   static bool SetupLacrosDir(
       const base::FilePath& original_profile_dir,
       std::unique_ptr<MigrationProgressTracker> progress_tracker,
@@ -168,14 +165,13 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // `SetupLacrosRemoveHardLinksFromAshDir()` as the next step.
   void OnSetupLacrosDir(bool success);
 
-  // Removes hard links for `ItemType::kLacros` in the original profile
-  // directory. Hard links pointing to the same inode should have been created
-  // in `OnSetupLacrosDir()` inside lacros profile directory.
-  static bool RemoveHardLinksFromOriginalDir(
+  // Move `ItemType::kLacros` in the original profile
+  // directory to the temp dir.
+  static bool MoveLacrosItemsToNewDir(
       const base::FilePath& original_profile_dir);
 
-  // Called as a reply to `RemoveHardLinksFromOriginalDir()`.
-  void OnRemoveHardLinksFromOriginalDir(bool success);
+  // Called as a reply to `MoveLacrosItemsToNewDir()`.
+  void OnMoveLacrosItemsToNewDir(bool success);
 
   // Moves newly created `kMoveTmpDir` to `kLacrosDir` to complete the
   // migration.

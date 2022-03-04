@@ -60,7 +60,7 @@ class BrowserDataMigratorResumeOnSignInTest : public ash::LoginManagerTest,
     // Setting this pref triggers a restart to resume move migration. Check
     // `BrowserDataMigratorImpl::MaybeForceResumeMoveMigration()`.
     MoveMigrator::SetResumeStep(g_browser_process->local_state(), user_id_hash,
-                                MoveMigrator::ResumeStep::kRemoveHardLinks);
+                                MoveMigrator::ResumeStep::kMoveLacrosItems);
   }
 
   bool LoginAsRegularUser() {
@@ -124,7 +124,7 @@ class BrowserDataMigratorResumeRestartInSession
     // Setting this pref triggers a restart to resume move migration. Check
     // `BrowserDataMigratorImpl::MaybeForceResumeMoveMigration()`.
     MoveMigrator::SetResumeStep(g_browser_process->local_state(), kUserIdHash,
-                                MoveMigrator::ResumeStep::kRemoveHardLinks);
+                                MoveMigrator::ResumeStep::kMoveLacrosItems);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
