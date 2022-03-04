@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 // An enhanced implementation of the basic InputEngine that uses a built-in
@@ -36,12 +36,12 @@ class SystemEngine : public InputEngine {
   // Binds the mojom::InputMethod interface to this object and returns true if
   // the given ime_spec is supported by the engine.
   bool BindRequest(const std::string& ime_spec,
-                   mojo::PendingReceiver<ash::ime::mojom::InputMethod> receiver,
-                   mojo::PendingRemote<ash::ime::mojom::InputMethodHost> host);
+                   mojo::PendingReceiver<mojom::InputMethod> receiver,
+                   mojo::PendingRemote<mojom::InputMethodHost> host);
 
   // Binds the mojom::ConnectionFactory interface in the shared library.
   bool BindConnectionFactory(
-      mojo::PendingReceiver<ash::ime::mojom::ConnectionFactory> receiver);
+      mojo::PendingReceiver<mojom::ConnectionFactory> receiver);
 
   // InputEngine:
   bool IsConnected() override;
@@ -52,6 +52,11 @@ class SystemEngine : public InputEngine {
 };
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::ime {
+using ::ash::ime::SystemEngine;
+}
 
 #endif  // ASH_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_

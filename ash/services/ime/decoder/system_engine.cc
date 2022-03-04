@@ -10,11 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::ime::mojom;
 
 SystemEngine::SystemEngine(ImeCrosPlatform* platform,
                            absl::optional<ImeDecoder::EntryPoints> entry_points)
@@ -61,4 +58,4 @@ bool SystemEngine::IsConnected() {
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

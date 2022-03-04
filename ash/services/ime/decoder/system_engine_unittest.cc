@@ -11,7 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
@@ -19,9 +19,6 @@ namespace {
 constexpr char kImeSpec[] = "xkb:us::eng";
 
 class TestDecoderState;
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::ime::mojom;
 
 // The fake decoder state has to be available globally because
 // ImeDecoder::EntryPoints is a list of stateless C functions, so the only way
@@ -222,4 +219,4 @@ TEST_F(SystemEngineTest, CanReceiveMessagesAfterBinding) {
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

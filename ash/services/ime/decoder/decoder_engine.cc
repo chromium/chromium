@@ -9,13 +9,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::ime::mojom;
 
 // A client delegate passed to the shared library in order for the
 // shared library to send replies back to the engine.
@@ -105,4 +102,4 @@ void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

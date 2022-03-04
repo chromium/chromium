@@ -19,4 +19,9 @@ struct InputEngine {
 }  // namespace ime
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::ime {
+using ::chromeos::ime::InputEngine;
+}
+
 #endif  // ASH_SERVICES_IME_INPUT_ENGINE_H_
