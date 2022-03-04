@@ -33,6 +33,7 @@
                 android:importantForAccessibility="no" />
 
             <TextView
+                android:id="@+id/privacy_sandbox_consent_title"
                 android:layout_marginBottom="@dimen/promo_between_text_margin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
