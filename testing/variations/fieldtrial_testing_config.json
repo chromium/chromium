@@ -1421,7 +1421,7 @@
             ]
         }
     ],
-    "Canvas2DStaysGPUOnReadback": [
+    "Canvas2dStaysGPUOnReadback": [
         {
             "platforms": [
                 "android",
@@ -1437,7 +1437,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "Canvas2DStaysGPUOnReadback"
+                        "Canvas2dStaysGPUOnReadback"
                     ]
                 }
             ]
