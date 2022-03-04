@@ -33,7 +33,7 @@ class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
 
   MOCK_METHOD(GooglePhotosAlbumsCbkArgs,
               ParseResponse,
-              (absl::optional<base::Value> response),
+              (const base::Value::Dict* response),
               (override));
 };
 
@@ -57,7 +57,7 @@ class MockGooglePhotosCountFetcher : public GooglePhotosCountFetcher {
 
   MOCK_METHOD(int,
               ParseResponse,
-              (absl::optional<base::Value> response),
+              (const base::Value::Dict* response),
               (override));
 };
 
@@ -85,7 +85,7 @@ class MockGooglePhotosPhotosFetcher : public GooglePhotosPhotosFetcher {
 
   MOCK_METHOD(GooglePhotosPhotosCbkArgs,
               ParseResponse,
-              (absl::optional<base::Value> response),
+              (const base::Value::Dict* response),
               (override));
 };
 

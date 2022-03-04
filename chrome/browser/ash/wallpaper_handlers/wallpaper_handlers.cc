@@ -176,28 +176,32 @@ std::string MaybeConvertToTestUrl(std::string url) {
   return url;
 }
 
-// Parses a `base::Value` into a GooglePhotosPhoto. If the necessary data isn't
-// present, returns `absl::nullopt` instead.
-absl::optional<ash::personalization_app::mojom::GooglePhotosPhotoPtr>
-ParseGooglePhotosPhoto(const base::Value& photo) {
-  DCHECK(photo.is_dict());
-  const std::string* id = photo.FindStringPath("itemId.mediaKey");
-  const std::string* filename = photo.FindStringPath("filename");
-  const std::string* timestamp_string =
-      photo.FindStringPath("creationTimestamp");
-  const std::string* url = photo.FindStringPath("photo.servingUrl");
+// Attempts to parse `photo` as a `GooglePhotosPhoto`. If successful, adds the
+// parsed photo to `parsed_response`.
+void AddGooglePhotosPhotoIfValid(
+    ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr&
+        parsed_response,
+    const base::Value::Dict* photo) {
+  if (!photo)
+    return;
+
+  const auto* id = photo->FindStringByDottedPath("itemId.mediaKey");
+  const auto* filename = photo->FindString("filename");
+  const auto* timestamp_string = photo->FindString("creationTimestamp");
+  const auto* url = photo->FindStringByDottedPath("photo.servingUrl");
 
   base::Time timestamp;
   if (!id || !filename || !timestamp_string ||
       !base::Time::FromUTCString(timestamp_string->c_str(), &timestamp) ||
       !url) {
-    return absl::nullopt;
+    return;
   }
 
   std::string name = base::FilePath(*filename).RemoveExtension().value();
   std::u16string date = base::TimeFormatFriendlyDate(timestamp);
-  return ash::personalization_app::mojom::GooglePhotosPhoto::New(
-      *id, name, date, GURL(*url));
+  parsed_response->photos->push_back(
+      ash::personalization_app::mojom::GooglePhotosPhoto::New(*id, name, date,
+                                                              GURL(*url)));
 }
 
 }  // namespace
@@ -596,7 +600,8 @@ template <typename T>
 void GooglePhotosFetcher<T>::OnResponseReady(
     const GURL& service_url,
     absl::optional<base::Value> response) {
-  T args = ParseResponse(std::move(response));
+  T args =
+      ParseResponse(response.has_value() ? response->GetIfDict() : nullptr);
   for (auto& callback : pending_client_callbacks_[service_url])
     std::move(callback).Run(mojo::Clone(args));
 
@@ -624,46 +629,49 @@ void GooglePhotosAlbumsFetcher::AddRequestAndStartIfNecessary(
 }
 
 GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
-    absl::optional<base::Value> response) {
+    const base::Value::Dict* response) {
   auto parsed_response =
       ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New();
-  if (!response.has_value())
+  if (!response)
     return parsed_response;
 
-  const std::string* resume_token = response->FindStringPath("resumeToken");
+  const auto* resume_token = response->FindString("resumeToken");
   if (resume_token && !resume_token->empty())
     parsed_response->resume_token = *resume_token;
 
   // The photos listed under "item" are the albums' cover photos.
-  const base::Value* response_photos = response->FindListPath("item");
+  const auto* response_photos = response->FindList("item");
   if (!response_photos)
     return parsed_response;
 
   // Populate the ID -> URL mapping for the each album's cover photo.
   std::map<std::string, std::string> cover_photo_urls_by_id;
-  for (const auto& response_photo : response_photos->GetListDeprecated()) {
-    const std::string* id = response_photo.FindStringPath("itemId.mediaKey");
-    const std::string* url = response_photo.FindStringPath("photo.servingUrl");
+  for (const auto& untyped_response_photo : *response_photos) {
+    DCHECK(untyped_response_photo.is_dict());
+    const auto& response_photo = untyped_response_photo.GetDict();
+    const auto* id = response_photo.FindStringByDottedPath("itemId.mediaKey");
+    const auto* url = response_photo.FindStringByDottedPath("photo.servingUrl");
     if (id && url)
       cover_photo_urls_by_id.emplace(*id, *url);
   }
 
-  const base::Value* response_albums = response->FindListPath("collection");
+  const auto* response_albums = response->FindList("collection");
   if (!response_albums)
     return parsed_response;
 
   parsed_response->albums =
       std::vector<ash::personalization_app::mojom::GooglePhotosAlbumPtr>();
-  for (const auto& response_album : response_albums->GetListDeprecated()) {
-    const std::string* album_id =
-        response_album.FindStringPath("collectionId.mediaKey");
-    const std::string* title = response_album.FindStringPath("name");
-    const std::string* num_photos_string =
-        response_album.FindStringPath("numPhotos");
+  for (const auto& untyped_response_album : *response_albums) {
+    DCHECK(untyped_response_album.is_dict());
+    const auto& response_album = untyped_response_album.GetDict();
+    const auto* album_id =
+        response_album.FindStringByDottedPath("collectionId.mediaKey");
+    const auto* title = response_album.FindString("name");
+    const auto* num_photos_string = response_album.FindString("numPhotos");
 
     // TODO(b/214577469): Get cover photo URL directly from `response_album`.
-    const std::string* cover_photo_id =
-        response_album.FindStringPath("coverItemId.mediaKey");
+    const auto* cover_photo_id =
+        response_album.FindStringByDottedPath("coverItemId.mediaKey");
     auto cover_photo_url_iter =
         cover_photo_id ? cover_photo_urls_by_id.find(*cover_photo_id)
                        : cover_photo_urls_by_id.end();
@@ -697,12 +705,11 @@ void GooglePhotosCountFetcher::AddRequestAndStartIfNecessary(
       GURL(kGooglePhotosCountUrl), std::move(callback));
 }
 
-int GooglePhotosCountFetcher::ParseResponse(
-    absl::optional<base::Value> response) {
-  if (!response.has_value())
+int GooglePhotosCountFetcher::ParseResponse(const base::Value::Dict* response) {
+  if (!response)
     return -1;
 
-  const std::string* count_string = response->FindStringPath("user.numPhotos");
+  const auto* count_string = response->FindStringByDottedPath("user.numPhotos");
 
   int64_t count;
   if (!count_string || !base::StringToInt64(*count_string, &count) || count < 0)
@@ -744,35 +751,29 @@ void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
 }
 
 GooglePhotosPhotosCbkArgs GooglePhotosPhotosFetcher::ParseResponse(
-    absl::optional<base::Value> response) {
+    const base::Value::Dict* response) {
   auto parsed_response =
       ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New();
-  if (!response.has_value())
+  if (!response)
     return parsed_response;
 
-  const std::string* resume_token = response->FindStringPath("resumeToken");
+  const auto* resume_token = response->FindString("resumeToken");
   if (resume_token && !resume_token->empty())
     parsed_response->resume_token = *resume_token;
 
-  // The `base::Value` at key "item" can be a single item or a list of them.
-  const base::Value* item_or_items = response->FindPath("item");
-
-  if (!item_or_items)
+  // The `base::Value` at key "item" can be a single photos or a list of photos.
+  const auto* photo_or_photos = response->Find("item");
+  if (!photo_or_photos)
     return parsed_response;
 
   parsed_response->photos =
       std::vector<ash::personalization_app::mojom::GooglePhotosPhotoPtr>();
-
-  if (item_or_items->is_list()) {
-    for (const auto& item : item_or_items->GetList()) {
-      auto maybe_photo = ParseGooglePhotosPhoto(item);
-      if (maybe_photo.has_value())
-        parsed_response->photos->push_back(std::move(maybe_photo.value()));
+  if (auto* photos = photo_or_photos->GetIfList()) {
+    for (const auto& photo : *photos) {
+      AddGooglePhotosPhotoIfValid(parsed_response, photo.GetIfDict());
     }
-  } else {
-    auto maybe_photo = ParseGooglePhotosPhoto(*item_or_items);
-    if (maybe_photo.has_value())
-      parsed_response->photos->push_back(std::move(maybe_photo.value()));
+  } else if (auto* photo = photo_or_photos->GetIfDict()) {
+    AddGooglePhotosPhotoIfValid(parsed_response, photo);
   }
   return parsed_response;
 }

@@ -12,6 +12,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "base/callback_forward.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
@@ -23,10 +24,6 @@ namespace backdrop {
 class Collection;
 class Image;
 }  // namespace backdrop
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace net {
 struct NetworkTrafficAnnotationTag;
@@ -174,7 +171,7 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // was an error in sending the request, receiving the response, or parsing the
   // response; otherwise, it will hold a response in the API's specified
   // structure.
-  virtual T ParseResponse(absl::optional<base::Value> response) = 0;
+  virtual T ParseResponse(const base::Value::Dict* response) = 0;
 
  private:
   void OnTokenReceived(const GURL& service_url,
@@ -235,7 +232,7 @@ class GooglePhotosAlbumsFetcher
  protected:
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
-      absl::optional<base::Value> response) override;
+      const base::Value::Dict* response) override;
 };
 
 // Downloads the number of photos in a user's Google Photos library.
@@ -253,7 +250,7 @@ class GooglePhotosCountFetcher : public GooglePhotosFetcher<int> {
 
  protected:
   // GooglePhotosFetcher:
-  int ParseResponse(absl::optional<base::Value> response) override;
+  int ParseResponse(const base::Value::Dict* response) override;
 };
 
 using GooglePhotosPhotosCbkArgs =
@@ -279,7 +276,7 @@ class GooglePhotosPhotosFetcher
  protected:
   // GooglePhotosFetcher:
   GooglePhotosPhotosCbkArgs ParseResponse(
-      absl::optional<base::Value> response) override;
+      const base::Value::Dict* response) override;
 };
 
 }  // namespace wallpaper_handlers
