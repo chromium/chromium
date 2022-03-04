@@ -8484,279 +8484,6 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(speculative_rph, web_contents->GetMainFrame()->GetProcess());
 }
 
-namespace {
-
-// ContentBrowserClient that skips assigning a site URL for all URLs that match
-// a given URL's scheme and host.
-class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
- public:
-  // Any visit to |url_to_skip| will not cause the site to be assigned to the
-  // SiteInstance.
-  explicit DontAssignSiteContentBrowserClient(const GURL& url_to_skip)
-      : url_to_skip_(url_to_skip) {}
-
-  DontAssignSiteContentBrowserClient(
-      const DontAssignSiteContentBrowserClient&) = delete;
-  DontAssignSiteContentBrowserClient& operator=(
-      const DontAssignSiteContentBrowserClient&) = delete;
-
-  bool ShouldAssignSiteForURL(const GURL& url) override {
-    return url.host() != url_to_skip_.host() ||
-           url.scheme() != url_to_skip_.scheme();
-  }
-
- private:
-  GURL url_to_skip_;
-};
-
-}  // namespace
-
-// Ensure that coming back to a NavigationEntry with a previously unassigned
-// SiteInstance (which is now used for another site) properly switches processes
-// and SiteInstances.  See https://crbug.com/945399.
-IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
-                       NavigateWithUnassignedSiteInstance) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  // Navigate to a URL that does not assign site URLs.
-  GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  DontAssignSiteContentBrowserClient content_browser_client(url1);
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-  EXPECT_EQ(url1, web_contents->GetLastCommittedURL());
-  scoped_refptr<SiteInstanceImpl> instance1(
-      web_contents->GetMainFrame()->GetSiteInstance());
-  RenderProcessHost* process1 = instance1->GetProcess();
-  EXPECT_EQ(GURL(), instance1->GetSiteURL());
-
-  // Navigate to foo.com, which uses the previous SiteInstance and sets its site
-  // URL.
-  GURL url2(embedded_test_server()->GetURL("foo.com", "/title1.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), url2));
-  EXPECT_EQ(instance1, web_contents->GetMainFrame()->GetSiteInstance());
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(instance1->IsDefaultSiteInstance());
-  } else {
-    EXPECT_EQ(GURL("http://foo.com"), instance1->GetSiteURL());
-  }
-
-  // The previously committed entry should get a new, related instance to avoid
-  // a SiteInstance mismatch when returning to it. See http://crbug.com/992198
-  // for further context.
-  SiteInstanceImpl* prev_entry_instance = web_contents->GetController()
-                                              .GetEntryAtIndex(0)
-                                              ->root_node()
-                                              ->frame_entry->site_instance();
-  EXPECT_NE(prev_entry_instance, instance1);
-  EXPECT_NE(prev_entry_instance, nullptr);
-  EXPECT_TRUE(prev_entry_instance->IsRelatedSiteInstance(instance1.get()));
-  EXPECT_EQ(GURL(), prev_entry_instance->GetSiteURL());
-
-  // Navigate to bar.com, which destroys the previous RenderProcessHost.
-  GURL url3(embedded_test_server()->GetURL("bar.com", "/title1.html"));
-  RenderProcessHostWatcher exit_observer(
-      process1, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-
-  // With BackForwardCache, old process won't be deleted on navigation as it is
-  // still in use by the bfcached document, disable back-forward cache to ensure
-  // that the process gets deleted.
-  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
-
-  EXPECT_TRUE(NavigateToURL(shell(), url3));
-  exit_observer.Wait();
-
-  if (AreDefaultSiteInstancesEnabled()) {
-    // Verify that the new navigation also results in a default SiteInstance,
-    // and verify that it is not related to |instance1| because the navigation
-    // swapped to a new BrowsingInstance.
-    EXPECT_TRUE(web_contents->GetMainFrame()
-                    ->GetSiteInstance()
-                    ->IsDefaultSiteInstance());
-    EXPECT_FALSE(instance1->IsRelatedSiteInstance(
-        web_contents->GetMainFrame()->GetSiteInstance()));
-  } else {
-    EXPECT_NE(instance1, web_contents->GetMainFrame()->GetSiteInstance());
-  }
-
-  // At this point, process1 is deleted, and the first entry is unfortunately
-  // pointing to instance1, which has been locked to url2 and has no process.
-  EXPECT_FALSE(instance1->HasProcess());
-  if (AreAllSitesIsolatedForTesting()) {
-    // In site-per-process, we cannot use foo.com's SiteInstance for a.com.
-    EXPECT_FALSE(
-        instance1->IsSuitableForUrlInfo(UrlInfo::CreateForTesting(url1)));
-  } else if (AreDefaultSiteInstancesEnabled()) {
-    // Since |instance1| is a default SiteInstance AND this test explicitly
-    // ensures that ShouldAssignSiteForURL(url1) will return false, |url1|
-    // cannot be placed in the default SiteInstance. This also means that |url1|
-    // cannot be placed in the same process as the default SiteInstance.
-    EXPECT_FALSE(
-        instance1->IsSuitableForUrlInfo(UrlInfo::CreateForTesting(url1)));
-  } else {
-    // If neither foo.com nor a.com require dedicated processes, then we can use
-    // the same process.
-    EXPECT_TRUE(
-        instance1->IsSuitableForUrlInfo(UrlInfo::CreateForTesting(url1)));
-  }
-
-  // Go back to url1's entry, which should swap to a new SiteInstance with an
-  // unused site URL.
-  TestNavigationObserver observer(web_contents);
-  web_contents->GetController().GoToOffset(-2);
-  observer.Wait();
-  scoped_refptr<SiteInstanceImpl> new_instance =
-      web_contents->GetMainFrame()->GetSiteInstance();
-  EXPECT_EQ(url1, web_contents->GetLastCommittedURL());
-  EXPECT_NE(instance1, new_instance);
-  EXPECT_EQ(GURL(), new_instance->GetSiteURL());
-  EXPECT_TRUE(new_instance->HasProcess());
-
-  // Because url1 does not set a site URL, it should not lock the new process
-  // either, so that it can be used for subsequent navigations.
-  content::RenderProcessHost* new_process = new_instance->GetProcess();
-  auto* policy = ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetID(),
-                                             url::Origin::Create(url1)));
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetID(),
-                                             url::Origin::Create(url2)));
-
-  SetBrowserClientForTesting(old_client);
-}
-
-// Check that when a navigation to a URL that doesn't require assigning a site
-// URL is in progress, another navigation can't reuse the same process in the
-// meantime.  Such reuse previously led to a renderer kill when the siteless
-// URL later committed; a real-world example of the siteless URL was
-// chrome-native://newtab.  See https://crbug.com/970046.
-IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
-                       NavigationRacesWithCommitInUnassignedSiteInstance) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Set up a URL for which ShouldAssignSiteForURL will return false.  The
-  // corresponding SiteInstance's site will be left unassigned, and its process
-  // won't be locked.  The test will navigate to this URL first.
-  GURL siteless_url(
-      embedded_test_server()->GetURL("siteless.com", "/title1.html"));
-  DontAssignSiteContentBrowserClient content_browser_client(siteless_url);
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
-
-  // Prepare for a second navigation to a normal URL.  Ensure it's isolated so
-  // that it requires a process lock on all platforms.
-  GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddFutureIsolatedOrigins(
-      {url::Origin::Create(foo_url)},
-      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
-
-  // Create a new shell where the foo.com origin isolation will take effect.
-  Shell* shell = CreateBrowser();
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell->web_contents());
-  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
-  RenderProcessHost* foo_process = nullptr;
-  TestNavigationManager foo_manager(web_contents, foo_url);
-  auto& current_isolation_context =
-      root->current_frame_host()->GetSiteInstance()->GetIsolationContext();
-  auto site_info = SiteInfo::CreateForTesting(current_isolation_context,
-                                              GURL("http://foo.com"));
-  EXPECT_TRUE(site_info.RequiresDedicatedProcess(current_isolation_context));
-
-  // Set up the work to be done after the renderer is asked to commit
-  // |siteless_url|, but before the corresponding DidCommitProvisionalLoad IPC
-  // is processed.  This will start a navigation to |foo_url| and wait for its
-  // response.
-  auto did_commit_callback =
-      base::BindLambdaForTesting([&](RenderFrameHost* rfh) {
-        // The navigation should stay in the initial empty SiteInstance, with
-        // the site still unassigned.
-        EXPECT_FALSE(
-            static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance())->HasSite());
-        EXPECT_FALSE(root->render_manager()->speculative_frame_host());
-
-        shell->LoadURL(foo_url);
-
-        // The foo.com navigation should swap to a new process, since it is not
-        // safe to reuse |siteless_url|'s process before |siteless_url|
-        // commits.
-        EXPECT_TRUE(root->render_manager()->speculative_frame_host());
-        foo_process =
-            root->render_manager()->speculative_frame_host()->GetProcess();
-
-        // Wait for response.  This will cause |foo_manager| to spin up a
-        // nested message loop while we're blocked in the current message loop
-        // (within DidCommitNavigationInterceptor).  Thus, it's important to
-        // allow nestable tasks in |foo_manager|'s message loop, so that it can
-        // process the response before we unblock the
-        // DidCommitNavigationInterceptor's message loop and finish processing
-        // the commit.
-        foo_manager.AllowNestableTasks();
-        EXPECT_TRUE(foo_manager.WaitForResponse());
-
-        foo_manager.ResumeNavigation();
-        // After returning here, the commit for |siteless_url| will be
-        // processed.
-      });
-
-  CommitMessageDelayer commit_delayer(web_contents,
-                                      siteless_url /* deferred_url */,
-                                      std::move(did_commit_callback));
-
-  // Start the first navigation, which does not assign a site URL.
-  shell->LoadURL(siteless_url);
-
-  // The navigation should stay in the initial empty SiteInstance, so there
-  // shouldn't be a speculative RFH at this point.
-  EXPECT_FALSE(root->render_manager()->speculative_frame_host());
-
-  // Wait for the DidCommit IPC for |siteless_url|, and before processing it,
-  // trigger a navigation to |foo_url| and wait for its response.
-  commit_delayer.Wait();
-
-  // Check that the renderer hasn't been killed.  At this point, it should've
-  // successfully committed the navigation to |siteless_url|, and it shouldn't
-  // be locked.
-  EXPECT_TRUE(web_contents->GetMainFrame()->IsRenderFrameLive());
-  EXPECT_EQ(siteless_url, web_contents->GetMainFrame()->GetLastCommittedURL());
-  RenderProcessHost* process1 = web_contents->GetMainFrame()->GetProcess();
-  EXPECT_FALSE(web_contents->GetMainFrame()->GetSiteInstance()->HasSite());
-  auto process1_lock = process1->GetProcessLock();
-  EXPECT_FALSE(process1_lock.is_invalid());
-  EXPECT_TRUE(process1_lock.allows_any_site());
-
-  // Now wait for second navigation to finish and ensure it also succeeds.
-  foo_manager.WaitForNavigationFinished();
-  EXPECT_TRUE(foo_manager.was_successful());
-  EXPECT_TRUE(web_contents->GetMainFrame()->IsRenderFrameLive());
-  EXPECT_EQ(foo_url, web_contents->GetMainFrame()->GetLastCommittedURL());
-
-  // The foo.com navigation should've used a different process, locked to
-  // foo.com.
-  BrowserContext* browser_context = web_contents->GetBrowserContext();
-  RenderProcessHost* process2 = web_contents->GetMainFrame()->GetProcess();
-  EXPECT_NE(process1, process2);
-  EXPECT_EQ(GURL("http://foo.com"),
-            web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL());
-  EXPECT_EQ(
-      ProcessLock::FromSiteInfo(SiteInfo(
-          GURL("http://foo.com"), GURL("http://foo.com"),
-          false /* requires_origin_keyed_process */, false /* is_sandboxed */,
-          StoragePartitionConfig::CreateDefault(browser_context),
-          WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
-          false /* does_site_request_dedicated_process_for_coop */,
-          false /* is_jit_disabled */, false /* is_pdf */)),
-      policy->GetProcessLock(process2->GetID()));
-
-  // Ensure also that the foo.com process didn't change midway through the
-  // navigation.
-  EXPECT_EQ(foo_process, process2);
-
-  SetBrowserClientForTesting(old_client);
-}
-
 // When ProactivelySwapBrowsingInstance is enabled, the browser switch to a new
 // BrowsingInstance on cross-site HTTP(S) main frame navigations, when there are
 // no other windows in the BrowsingInstance.
@@ -8817,6 +8544,33 @@ class RenderFrameHostManagerDefaultProcessTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+namespace {
+
+// ContentBrowserClient that skips assigning a site URL for all URLs that match
+// a given URL's scheme and host.
+class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
+ public:
+  // Any visit to |url_to_skip| will not cause the site to be assigned to the
+  // SiteInstance.
+  explicit DontAssignSiteContentBrowserClient(const GURL& url_to_skip)
+      : url_to_skip_(url_to_skip) {}
+
+  DontAssignSiteContentBrowserClient(
+      const DontAssignSiteContentBrowserClient&) = delete;
+  DontAssignSiteContentBrowserClient& operator=(
+      const DontAssignSiteContentBrowserClient&) = delete;
+
+  bool ShouldAssignSiteForURL(const GURL& url) override {
+    return url.host() != url_to_skip_.host() ||
+           url.scheme() != url_to_skip_.scheme();
+  }
+
+ private:
+  GURL url_to_skip_;
+};
+
+}  // namespace
 
 // Ensure that the default process can be used for URLs that don't assign a site
 // to the SiteInstance, when Site Isolation is not enabled.
