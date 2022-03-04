@@ -317,6 +317,10 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     DebugData debug_data;
     CertificateTrust cert_trust = trust_store.GetTrust(cert.get(), &debug_data);
     bool is_trust_anchor = cert_trust.IsTrustAnchor();
+    if (is_trust_anchor) {
+      EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR_WITH_EXPIRATION,
+                cert_trust.type);
+    }
 
     // Check if this cert is considered a trust anchor by the OS.
     base::ScopedCFTypeRef<SecTrustRef> trust;
