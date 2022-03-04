@@ -107,9 +107,7 @@ bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
   if (!app)
     return false;
 
-  // TODO(crbug.com/1235894): Figure out if "hosted apps" should be checked as
-  // well.
-  return (app->is_platform_app() || app->is_legacy_packaged_app()) &&
+  return app->is_app() &&
          !IsExtensionForceInstalled(context, extension_id, nullptr);
 }
 #endif
