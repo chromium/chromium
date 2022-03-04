@@ -7,8 +7,9 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PasswordEditDialogElement} from 'chrome://settings/lazy_load.js';
+import {CrInputElement, PasswordDialogMode, PasswordEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
@@ -29,16 +30,24 @@ function isElementVisible(element: HTMLElement) {
  * Helper function to test if all components of edit dialog are shown correctly.
  */
 function assertEditDialogParts(passwordDialog: PasswordEditDialogElement) {
+  assertEquals(PasswordDialogMode.EDIT, passwordDialog.dialogMode);
+
   assertEquals(
       passwordDialog.i18n('editPasswordTitle'),
       passwordDialog.$.title.textContent!.trim());
   assertTrue(!!passwordDialog.$.websiteInput.readonly);
+
   assertFalse(!!passwordDialog.$.usernameInput.readonly);
+
   assertFalse(!!passwordDialog.$.passwordInput.readonly);
   assertTrue(!!passwordDialog.$.passwordInput.required);
+
   assertFalse(isElementVisible(passwordDialog.$.storePicker));
+
   assertTrue(!!passwordDialog.shadowRoot!.querySelector('#showPasswordButton'));
+
   assertTrue(isElementVisible(passwordDialog.$.footnote));
+
   assertTrue(isElementVisible(passwordDialog.$.cancel));
   assertEquals(
       passwordDialog.i18n('save'),
@@ -50,19 +59,61 @@ function assertEditDialogParts(passwordDialog: PasswordEditDialogElement) {
  * Helper function to test if all components of details dialog are shown
  * correctly.
  */
-function assertDetailsDialogParts(passwordDialog: PasswordEditDialogElement) {
+function assertFederatedDialogParts(passwordDialog: PasswordEditDialogElement) {
+  assertEquals(PasswordDialogMode.FEDERATED_VIEW, passwordDialog.dialogMode);
+
   assertEquals(
       passwordDialog.i18n('passwordDetailsTitle'),
       passwordDialog.$.title.textContent!.trim());
+
   assertTrue(!!passwordDialog.$.websiteInput.readonly);
+
   assertTrue(!!passwordDialog.$.usernameInput.readonly);
+
   assertTrue(!!passwordDialog.$.passwordInput.readonly);
   assertFalse(!!passwordDialog.$.passwordInput.required);
+
   assertFalse(isElementVisible(passwordDialog.$.storePicker));
+
   assertFalse(
       !!passwordDialog.shadowRoot!.querySelector('#showPasswordButton'));
+
   assertFalse(isElementVisible(passwordDialog.$.footnote));
+
   assertFalse(isElementVisible(passwordDialog.$.cancel));
+  assertEquals(
+      passwordDialog.i18n('done'),
+      passwordDialog.$.actionButton.textContent!.trim());
+  assertFalse(passwordDialog.$.actionButton.disabled);
+}
+
+/**
+ * Helper function to test if all components of view dialog are shown
+ * correctly.
+ */
+function assertViewDialogParts(
+    passwordDialog: PasswordEditDialogElement, titleText: string) {
+  assertEquals(PasswordDialogMode.PASSWORD_VIEW, passwordDialog.dialogMode);
+
+  assertEquals(titleText, passwordDialog.$.title.textContent!.trim());
+
+  assertTrue(!!passwordDialog.$.websiteInput.hidden);
+
+  assertTrue(!!passwordDialog.$.usernameInput.readonly);
+  assertTrue(!!passwordDialog.shadowRoot!.querySelector('#copyUsernameButton'));
+
+  assertTrue(!!passwordDialog.$.passwordInput.readonly);
+  assertTrue(!!passwordDialog.$.passwordInput.required);
+
+  assertTrue(!!passwordDialog.shadowRoot!.querySelector('#copyPasswordButton'));
+  assertTrue(!!passwordDialog.shadowRoot!.querySelector('#showPasswordButton'));
+
+  assertFalse(isElementVisible(passwordDialog.$.storePicker));
+
+  assertFalse(isElementVisible(passwordDialog.$.footnote));
+
+  assertFalse(isElementVisible(passwordDialog.$.cancel));
+  assertTrue(!!passwordDialog.shadowRoot!.querySelector('#switchToEditButton'));
   assertEquals(
       passwordDialog.i18n('done'),
       passwordDialog.$.actionButton.textContent!.trim());
@@ -73,16 +124,25 @@ function assertDetailsDialogParts(passwordDialog: PasswordEditDialogElement) {
  * Helper function to test if all components of add dialog are shown correctly.
  */
 function assertAddDialogParts(passwordDialog: PasswordEditDialogElement) {
+  assertEquals(PasswordDialogMode.ADD, passwordDialog.dialogMode);
+
   assertEquals(
       passwordDialog.i18n('addPasswordTitle'),
       passwordDialog.$.title.textContent!.trim());
+
   assertFalse(!!passwordDialog.$.websiteInput.readonly);
+
   assertFalse(!!passwordDialog.$.usernameInput.readonly);
+
   assertFalse(!!passwordDialog.$.passwordInput.readonly);
   assertTrue(!!passwordDialog.$.passwordInput.required);
+
   assertFalse(isElementVisible(passwordDialog.$.storageDetails));
+
   assertTrue(!!passwordDialog.shadowRoot!.querySelector('#showPasswordButton'));
+
   assertTrue(isElementVisible(passwordDialog.$.footnote));
+
   assertTrue(isElementVisible(passwordDialog.$.cancel));
   assertEquals(
       passwordDialog.i18n('save'),
@@ -197,7 +257,7 @@ suite('PasswordEditDialog', function() {
         {federationText: 'with chromium.org', username: 'bart', deviceId: 42});
     const passwordDialog =
         elementFactory.createPasswordEditDialog(federationEntry);
-    assertDetailsDialogParts(passwordDialog);
+    assertFederatedDialogParts(passwordDialog);
     assertEquals(
         federationEntry.urls.link, passwordDialog.$.websiteInput.value);
     assertEquals(
@@ -583,6 +643,67 @@ suite('PasswordEditDialog', function() {
         assertEquals(existingEntry.username, addDialog.$.usernameInput.value);
         assertEquals(existingEntry.password, addDialog.$.passwordInput.value);
       });
+
+  test('hasCorrectInitialStateWhenEditModeWhenNotesEnabled', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    const commonEntry = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart', accountId: 42});
+    const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
+    assertEditDialogParts(passwordDialog);
+    const noteElement =
+        passwordDialog.shadowRoot!.querySelector<CrInputElement>('#note');
+    assertTrue(!!noteElement);
+    assertTrue(!noteElement.readonly);
+  });
+
+  test('hasCorrectInitialStateWhenViewModeWhenNotesEnabled', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    const commonEntry = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart', accountId: 42});
+    const passwordDialog = elementFactory.createPasswordEditDialog(
+        commonEntry, [], false, PasswordDialogMode.PASSWORD_VIEW);
+    assertViewDialogParts(passwordDialog, commonEntry.urls.shown);
+    assertTrue(passwordDialog.$.passwordInput.type === 'text');
+    const noteElement =
+        passwordDialog.shadowRoot!.querySelector<CrInputElement>('#note');
+    assertTrue(!!noteElement);
+    assertTrue(!!noteElement.readonly);
+  });
+
+  test('noChangesWhenNotesIsNotEnabled', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: false});
+    const commonEntry = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart', accountId: 42});
+    const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
+    assertEditDialogParts(passwordDialog);
+    assertFalse(
+        !!passwordDialog.shadowRoot!.querySelector<CrInputElement>('#note'));
+  });
+
+  test('clickingEditInPasswordViewModeChangesDialogMode', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    const commonEntry = createMultiStorePasswordEntry(
+        {url: 'goo.gl', username: 'bart', accountId: 42});
+    const passwordDialog = elementFactory.createPasswordEditDialog(
+        commonEntry, [], false, PasswordDialogMode.PASSWORD_VIEW);
+    assertViewDialogParts(passwordDialog, commonEntry.urls.shown);
+    const button = passwordDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        '#switchToEditButton')!;
+    button.click();
+    flush();
+    assertEditDialogParts(passwordDialog);
+  });
+
+  test('federatedCredentialDoesntHaveNotes', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    const federationEntry = createMultiStorePasswordEntry(
+        {federationText: 'with chromium.org', username: 'bart', deviceId: 42});
+    const passwordDialog =
+        elementFactory.createPasswordEditDialog(federationEntry);
+    assertFederatedDialogParts(passwordDialog);
+    assertFalse(
+        !!passwordDialog.shadowRoot!.querySelector<CrInputElement>('#note'));
+  });
 
   // <if expr="not chromeos_ash and not chromeos_lacros">
   // On ChromeOS/Lacros the behavior is different (on failure we request token
