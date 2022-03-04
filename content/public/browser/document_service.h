@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/threading/thread_checker.h"
 #include "content/public/browser/document_service_internal.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/origin.h"
