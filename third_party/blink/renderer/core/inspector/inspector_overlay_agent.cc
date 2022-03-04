@@ -935,11 +935,10 @@ Response InspectorOverlayAgent::getHighlightObjectForTest(
   } else {
     config->color_format = ColorFormat::kHex;
   }
-
-  node->GetDocument().EnsurePaintLocationDataValidForNode(
-      node, DocumentUpdateReason::kInspector);
   NodeHighlightTool tool(this, GetFrontend(), node, "" /* selector_list */,
                          std::move(config));
+  node->GetDocument().EnsurePaintLocationDataValidForNode(
+      node, DocumentUpdateReason::kInspector);
   *result = tool.GetNodeInspectorHighlightAsJson(
       true /* append_element_info */, include_distance.fromMaybe(false));
   return Response::Success();

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_child_iterator.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_data.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_item_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
@@ -67,8 +68,10 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
       algorithm_(&Style(),
                  MainAxisContentExtent(LayoutUnit::Max()),
                  child_percentage_size_,
-                 &Node().GetDocument()),
-      layout_info_for_devtools_(layout_info_for_devtools) {
+                 &Node().GetDocument()) {
+  if (Node().GetLayoutBox()->NeedsDevtoolsInfo())
+    layout_info_for_devtools_ = std::make_unique<DevtoolsFlexInfo>();
+
   // TODO(almaher): Support multi-line column fragmentation.
   involved_in_block_fragmentation_ =
       InvolvedInBlockFragmentation(container_builder_) &&
@@ -815,7 +818,6 @@ const NGLayoutResult*
 NGFlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
   DCHECK(!ignore_child_scrollbar_changes_);
   DCHECK(!layout_info_for_devtools_);
-  DCHECK(!DevtoolsReadonlyLayoutScope::InDevtoolsLayout());
   NGLayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
       BreakToken(), /* early_break */ nullptr);
@@ -911,7 +913,10 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
 
   if (has_column_percent_flex_basis_)
     container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(true);
-
+  if (UNLIKELY(layout_info_for_devtools_)) {
+    container_builder_.TransferFlexLayoutData(
+        std::move(layout_info_for_devtools_));
+  }
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus break_status = FinishFragmentation(
         Node(), ConstraintSpace(), BorderPadding().block_end,
@@ -1480,9 +1485,7 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::PropagateFlexItemInfo(
     // devtools uses margin box.
     item_rect.Expand(flex_item->physical_margins_);
     DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
-    DevtoolsFlexInfo::Item item;
-    item.rect = item_rect;
-    item.baseline = flex_item->MarginBoxAscent();
+    DevtoolsFlexInfo::Item item(item_rect, flex_item->MarginBoxAscent());
     layout_info_for_devtools_->lines[flex_line_idx].items.push_back(item);
   }
 

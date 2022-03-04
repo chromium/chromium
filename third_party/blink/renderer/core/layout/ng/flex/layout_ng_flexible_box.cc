@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -76,44 +77,16 @@ bool LayoutNGFlexibleBox::IsChildAllowed(LayoutObject* object,
   return LayoutNGMixin<LayoutBlock>::IsChildAllowed(object, style);
 }
 
-// This is devtools' entry point into layout. This function is intended to have
-// no side effects on the NGFragment tree or the LayoutObject tree.
-//
-// Execution time of this function is not critical, but the flex item layouts
-// will hit their caches, so it's probably fast anyway.
-DevtoolsFlexInfo LayoutNGFlexibleBox::LayoutForDevtools() {
-  DCHECK(!NeedsLayout());
-  DevtoolsReadonlyLayoutScope fragments_and_tree_are_now_readonly;
-  const NGLayoutResult* old_layout_result = GetCachedLayoutResult();
-#if DCHECK_IS_ON()
-  MinMaxSizes old_min_max_sizes = IntrinsicLogicalWidths();
-  String old_string = old_layout_result->PhysicalFragment().DumpFragmentTree(
-      NGPhysicalLineBoxFragment::DumpAll);
-#endif
+void LayoutNGFlexibleBox::SetNeedsLayoutForDevtools() {
+  SetNeedsLayout(layout_invalidation_reason::kDevtools);
+  SetNeedsDevtoolsInfo(true);
+}
 
-  DCHECK(old_layout_result);
-  const NGConstraintSpace& constraint_space =
-      old_layout_result->GetConstraintSpaceForCaching();
-
-  NGBlockNode node(this);
-  NGFragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(constraint_space, node);
-  NGLayoutAlgorithmParams params(node, fragment_geometry, constraint_space);
-  DevtoolsFlexInfo flex_info;
-  NGFlexLayoutAlgorithm flex_algorithm(params, &flex_info);
-  [[maybe_unused]] auto* new_result = flex_algorithm.Layout();
-
-#if DCHECK_IS_ON()
-  MinMaxSizes new_min_max_sizes = IntrinsicLogicalWidths();
-  DCHECK_EQ(old_min_max_sizes, new_min_max_sizes)
-      << "Legacy min_max_sizes changed!";
-
-  String new_string = new_result->PhysicalFragment().DumpFragmentTree(
-      NGPhysicalLineBoxFragment::DumpAll);
-  DCHECK_EQ(old_string, new_string) << "Fragment tree changed!";
-#endif
-
-  return flex_info;
+const DevtoolsFlexInfo* LayoutNGFlexibleBox::FlexLayoutData() const {
+  const wtf_size_t fragment_count = PhysicalFragmentCount();
+  DCHECK_GE(fragment_count, 1u);
+  // Currently, devtools data is on the first fragment of a fragmented flexbox.
+  return GetLayoutResult(0)->FlexLayoutData();
 }
 
 void LayoutNGFlexibleBox::RemoveChild(LayoutObject* child) {

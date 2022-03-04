@@ -312,6 +312,7 @@ blink_core_sources_layout = [
   "ng/flex/ng_flex_break_token_data.h",
   "ng/flex/ng_flex_child_iterator.cc",
   "ng/flex/ng_flex_child_iterator.h",
+  "ng/flex/ng_flex_data.h",
   "ng/flex/ng_flex_item_iterator.cc",
   "ng/flex/ng_flex_item_iterator.h",
   "ng/flex/ng_flex_layout_algorithm.cc",

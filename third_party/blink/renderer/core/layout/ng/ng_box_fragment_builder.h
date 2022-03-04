@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_data.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
@@ -588,6 +589,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
       std::unique_ptr<NGGridLayoutData> grid_layout_data) {
     grid_layout_data_ = std::move(grid_layout_data);
   }
+  void TransferFlexLayoutData(
+      std::unique_ptr<DevtoolsFlexInfo> flex_layout_data) {
+    flex_layout_data_ = std::move(flex_layout_data);
+  }
 
   const NGGridLayoutData& GridLayoutData() const {
     DCHECK(grid_layout_data_);
@@ -735,6 +740,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Grid specific types.
   std::unique_ptr<NGGridLayoutData> grid_layout_data_;
+
+  std::unique_ptr<DevtoolsFlexInfo> flex_layout_data_;
 
   LogicalBoxSides sides_to_include_;
 

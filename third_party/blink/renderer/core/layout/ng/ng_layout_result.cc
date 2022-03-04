@@ -107,6 +107,8 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
     EnsureRareData()->math_layout_data_ = builder->math_data_;
   if (builder->grid_layout_data_)
     EnsureRareData()->grid_layout_data_ = std::move(builder->grid_layout_data_);
+  if (builder->flex_layout_data_)
+    EnsureRareData()->flex_layout_data_ = std::move(builder->flex_layout_data_);
 }
 
 NGLayoutResult::NGLayoutResult(NGLineBoxFragmentBuilderPassKey passkey,

@@ -159,7 +159,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   bool has_processed_first_line_ = false;
 
   FlexLayoutAlgorithm algorithm_;
-  DevtoolsFlexInfo* layout_info_for_devtools_;
+  std::unique_ptr<DevtoolsFlexInfo> layout_info_for_devtools_;
 
   // The block size of the entire flex container (ignoring any fragmentation).
   LayoutUnit total_block_size_;

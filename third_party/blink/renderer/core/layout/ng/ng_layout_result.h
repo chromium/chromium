@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_data.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
@@ -309,6 +310,9 @@ class CORE_EXPORT NGLayoutResult final
   const NGGridLayoutData* GridLayoutData() const {
     return HasRareData() ? rare_data_->grid_layout_data_.get() : nullptr;
   }
+  const DevtoolsFlexInfo* FlexLayoutData() const {
+    return HasRareData() ? rare_data_->flex_layout_data_.get() : nullptr;
+  }
 
   LayoutUnit MathItalicCorrection() const {
     return HasRareData() && rare_data_->math_layout_data_
@@ -549,6 +553,7 @@ class CORE_EXPORT NGLayoutResult final
     int lines_until_clamp = 0;
     wtf_size_t table_column_count_ = 0;
     std::unique_ptr<const NGGridLayoutData> grid_layout_data_;
+    std::unique_ptr<const DevtoolsFlexInfo> flex_layout_data_;
     absl::optional<MathData> math_layout_data_;
   };
   bool HasRareData() const { return rare_data_; }

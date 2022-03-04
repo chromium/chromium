@@ -2190,6 +2190,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return bitfields_.WhitespaceChildrenMayChange();
   }
+  void SetNeedsDevtoolsInfo(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetNeedsDevtoolsInfo(b);
+  }
+  bool NeedsDevtoolsInfo() const {
+    NOT_DESTROYED();
+    return bitfields_.NeedsDevtoolsInfo();
+  }
 
   virtual void Paint(const PaintInfo&) const;
 
@@ -3960,6 +3968,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           might_traverse_physical_fragments_(false),
           is_anonymous_ng_multicol_inline_wrapper_(false),
           whitespace_children_may_change_(false),
+          needs_devtools_info_(false),
           positioned_state_(kIsStaticallyPositioned),
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
           subtree_paint_property_update_reasons_(
@@ -4308,6 +4317,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // re-evaluation of whitespace children.
     ADD_BOOLEAN_BITFIELD(whitespace_children_may_change_,
                          WhitespaceChildrenMayChange);
+
+    ADD_BOOLEAN_BITFIELD(needs_devtools_info_, NeedsDevtoolsInfo);
 
    private:
     // This is the cached 'position' value of this object

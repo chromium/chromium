@@ -17,11 +17,12 @@ class NGFlexLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
  protected:
   DevtoolsFlexInfo LayoutForDevtools(const String& body_content) {
     SetBodyInnerHTML(body_content);
-    UpdateAllLifecyclePhasesForTest();
     LayoutNGFlexibleBox* flex =
         To<LayoutNGFlexibleBox>(GetLayoutObjectByElementId("flexbox"));
     EXPECT_NE(flex, nullptr);
-    return flex->LayoutForDevtools();
+    flex->SetNeedsLayoutForDevtools();
+    UpdateAllLifecyclePhasesForTest();
+    return *flex->FlexLayoutData();
   }
 };
 

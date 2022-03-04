@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
@@ -1040,12 +1041,18 @@ bool IsHorizontalFlex(LayoutObject* layout_flex) {
          layout_flex->StyleRef().ResolvedIsColumnFlexDirection();
 }
 
-Vector<Vector<std::pair<PhysicalRect, float>>> GetFlexLinesAndItems(
-    LayoutBox* layout_box,
-    bool is_horizontal,
-    bool is_reverse) {
-  Vector<Vector<std::pair<PhysicalRect, float>>> flex_lines;
+DevtoolsFlexInfo GetFlexLinesAndItems(LayoutBox* layout_box,
+                                      bool is_horizontal,
+                                      bool is_reverse) {
+  if (auto* layout_ng_flex = DynamicTo<LayoutNGFlexibleBox>(layout_box)) {
+    const DevtoolsFlexInfo* flex_info_from_layout =
+        layout_ng_flex->FlexLayoutData();
+    DCHECK(flex_info_from_layout);
+    return *flex_info_from_layout;
+  }
 
+  DevtoolsFlexInfo flex_info;
+  Vector<DevtoolsFlexInfo::Line>& flex_lines = flex_info.lines;
   // Flex containers can't get fragmented yet, but this may change in the
   // future.
   for (const auto& fragment : layout_box->PhysicalFragments()) {
@@ -1084,13 +1091,14 @@ Vector<Vector<std::pair<PhysicalRect, float>>> GetFlexLinesAndItems(
         flex_lines.emplace_back();
       }
 
-      flex_lines.back().push_back(std::make_pair(item_rect, adjusted_baseline));
+      flex_lines.back().items.push_back(
+          DevtoolsFlexInfo::Item(item_rect, LayoutUnit(adjusted_baseline)));
 
       progression = is_reverse ? item_start : item_end;
     }
   }
 
-  return flex_lines;
+  return flex_info;
 }
 
 std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
@@ -1120,28 +1128,28 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
   container_builder.AppendPath(QuadToPath(content_quad), scale);
 
   // Gather all flex items, sorted by flex line.
-  Vector<Vector<std::pair<PhysicalRect, float>>> flex_lines =
+  DevtoolsFlexInfo flex_lines =
       GetFlexLinesAndItems(layout_box, is_horizontal, is_reverse);
 
   // We send a list of flex lines, each containing a list of flex items, with
   // their baselines, to the frontend.
   std::unique_ptr<protocol::ListValue> lines_info =
       protocol::ListValue::create();
-  for (auto line : flex_lines) {
+  for (auto line : flex_lines.lines) {
     std::unique_ptr<protocol::ListValue> items_info =
         protocol::ListValue::create();
-    for (auto item_data : line) {
+    for (auto item_data : line.items) {
       std::unique_ptr<protocol::DictionaryValue> item_info =
           protocol::DictionaryValue::create();
 
       gfx::QuadF item_margin_quad =
-          layout_object->LocalRectToAbsoluteQuad(item_data.first);
+          layout_object->LocalRectToAbsoluteQuad(item_data.rect);
       FrameQuadToViewport(containing_view, item_margin_quad);
       PathBuilder item_builder;
       item_builder.AppendPath(QuadToPath(item_margin_quad), scale);
 
       item_info->setValue("itemBorder", item_builder.Release());
-      item_info->setDouble("baseline", item_data.second);
+      item_info->setDouble("baseline", item_data.baseline);
 
       items_info->pushValue(std::move(item_info));
     }
