@@ -34,10 +34,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.modules.cablev2_authenticator.Cablev2AuthenticatorModule;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Provides a UI that attempts to install the caBLEv2 Authenticator module. If already installed, or
@@ -87,6 +89,18 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         ((TextView) mErrorView.findViewById(R.id.error_code))
                 .setText(getResources().getString(
                         R.string.cablev2_error_code, INSTALL_FAILURE_ERROR_CODE));
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            // While the device will not be advertised in Sync if the Android
+            // version is too old, this case can occur in the QR flow because
+            // there's no version restriction on Play Services forwarding the
+            // `Intent`.
+            ((TextView) mErrorView.findViewById(R.id.error_description))
+                    .setText(getResources().getString(
+                            R.string.menu_update_unsupported_summary_default));
+            return mErrorView;
+        }
+
         ((TextView) mErrorView.findViewById(R.id.error_description))
                 .setText(getResources().getString(R.string.cablev2_error_generic));
 
@@ -96,9 +110,15 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
             Cablev2AuthenticatorModule.install((success) -> {
                 if (!success) {
                     Log.e(TAG, "Failed to install caBLE DFM");
-                    final ViewGroup v = (ViewGroup) getView();
-                    v.removeAllViews();
-                    v.addView(mErrorView);
+                    // This can either happen synchronously or asynchronously.
+                    // If it happens synchronously then `onCreateView` hasn't
+                    // completed and there's no `View` to update. Thus
+                    // post a task to ensure an asynchronous context.
+                    PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                        final ViewGroup v = (ViewGroup) getView();
+                        v.removeAllViews();
+                        v.addView(mErrorView);
+                    });
                     return;
                 }
                 showModule();
