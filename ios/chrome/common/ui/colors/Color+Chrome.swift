@@ -40,4 +40,9 @@ extension Color {
   public static var cr_blue500: Color {
     return Color(kBlue500Color)
   }
+
+  /// The table row view highlight color.
+  public static var cr_tableRowViewHighlight: Color {
+    return Color(kTableViewRowHighlightColor)
+  }
 }

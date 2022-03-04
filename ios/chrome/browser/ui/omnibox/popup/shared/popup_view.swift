@@ -6,17 +6,27 @@ import SwiftUI
 
 struct PopupView: View {
   enum Dimensions {
-    static let matchListRowInsets = EdgeInsets(top: 9, leading: 0, bottom: 9, trailing: 16)
+    static let matchListRowInsets = EdgeInsets(.zero)
   }
 
   @ObservedObject var model: PopupModel
   var body: some View {
     VStack {
       List {
-        ForEach(model.matches) { match in
-          PopupMatchRowView(match: match)
-            .deleteDisabled(!match.supportsDeletion)
-            .listRowInsets(Dimensions.matchListRowInsets)
+        ForEach(Array(zip(model.matches.indices, model.matches)), id: \.0) {
+          (index, match) in
+          PopupMatchRowView(
+            match: match,
+            selectionHandler: {
+              model.delegate?.autocompleteResultConsumer(model, didSelectRow: UInt(index))
+            },
+            trailingButtonHandler: {
+              model.delegate?.autocompleteResultConsumer(
+                model, didTapTrailingButtonForRow: UInt(index))
+            }
+          )
+          .deleteDisabled(!match.supportsDeletion)
+          .listRowInsets(Dimensions.matchListRowInsets)
         }
         .onDelete { indexSet in
           for matchIndex in indexSet {

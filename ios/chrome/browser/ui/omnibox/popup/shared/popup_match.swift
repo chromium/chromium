@@ -20,12 +20,6 @@ import Foundation
 
   let pedal: Pedal?
 
-  /// Closure to execute when the trailing button is tapped.
-  let trailingButtonHandler: () -> Void
-
-  /// Closure to execute when the match is deleted.
-  let deletionHandler: () -> Void
-
   public init(match: AutocompleteSuggestion) {
     self.title = match.text().string
     self.subtitle = match.detailText()?.string
@@ -33,15 +27,12 @@ import Foundation
     self.isTabMatch = match.isTabMatch()
     self.supportsDeletion = match.supportsDeletion()
     self.pedal = nil
-    self.trailingButtonHandler = {}
-    self.deletionHandler = {}
     self.url = nil  // TODO: remove url
   }
 
   public init(
     title: String, subtitle: String? = nil, url: URL?, isAppendable: Bool, isTabMatch: Bool,
-    supportsDeletion: Bool, pedal: Pedal?, trailingButtonHandler: @escaping () -> Void = {},
-    deletionHandler: @escaping () -> Void = {}
+    supportsDeletion: Bool, pedal: Pedal?
   ) {
     self.title = title
     self.subtitle = subtitle
@@ -50,20 +41,10 @@ import Foundation
     self.isTabMatch = isTabMatch
     self.supportsDeletion = supportsDeletion
     self.pedal = pedal
-    self.trailingButtonHandler = trailingButtonHandler
-    self.deletionHandler = deletionHandler
   }
 
   public var id: String {
     return title
-  }
-
-  func trailingButtonTapped() {
-    trailingButtonHandler()
-  }
-
-  func selectedForDeletion() {
-    deletionHandler()
   }
 }
 

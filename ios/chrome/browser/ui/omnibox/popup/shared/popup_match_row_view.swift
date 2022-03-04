@@ -6,13 +6,7 @@ import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
 struct PopupMatchRowView: View {
-  enum Constants {
-    static let actionButtonTextKerning = -0.17
-  }
-
   enum Colors {
-    static let actionButtonForegroundColor = Color.cr_blue
-    static let actionButtonBackgroundColor = Color(red: 0.933, green: 0.933, blue: 0.941)
     static let trailingButtonColor = Color(red: 0.769, green: 0.769, blue: 0.769)
   }
 
@@ -23,56 +17,74 @@ struct PopupMatchRowView: View {
     static let leadingSpacing: CGFloat = 60
     static let minHeight: CGFloat = 58
     static let maxHeight: CGFloat = 98
+    static let padding = EdgeInsets(top: 9, leading: 0, bottom: 9, trailing: 16)
     static let textHeight: CGFloat = 40
     static let trailingButtonSize: CGFloat = 24
   }
 
   let match: PopupMatch
+  let selectionHandler: () -> Void
+  let trailingButtonHandler: () -> Void
+
+  @State var isPressed = false
 
   var body: some View {
-    HStack {
-      Spacer().frame(width: Dimensions.leadingSpacing)
-      VStack(alignment: .leading, spacing: 0) {
-        VStack(alignment: .leading, spacing: 0) {
-          Text(match.title)
-            .lineLimit(1)
+    ZStack {
+      if self.isPressed { Color.cr_tableRowViewHighlight }
 
-          if let subtitle = match.subtitle {
-            Text(subtitle)
-              .font(.footnote)
-              .foregroundColor(Color.gray)
+      Button(action: selectionHandler) { Rectangle().fill(.clear).contentShape(Rectangle()) }
+        .buttonStyle(PressedPreferenceKeyButtonStyle())
+        .onPreferenceChange(PressedPreferenceKey.self) { isPressed in
+          self.isPressed = isPressed
+        }
+
+      /// The content is in front of the button, for proper hit testing.
+      HStack {
+        Spacer().frame(width: Dimensions.leadingSpacing)
+        VStack(alignment: .leading, spacing: 0) {
+          VStack(alignment: .leading, spacing: 0) {
+            Text(match.title)
               .lineLimit(1)
+
+            if let subtitle = match.subtitle, !subtitle.isEmpty {
+              Text(subtitle)
+                .font(.footnote)
+                .foregroundColor(Color.gray)
+                .lineLimit(1)
+            }
+          }
+          .frame(height: Dimensions.textHeight)
+          .allowsHitTesting(false)
+
+          if let pedal = match.pedal {
+            PopupMatchRowActionButton(pedal: pedal)
+              .padding(Dimensions.actionButtonOuterPadding)
+              .offset(Dimensions.actionButtonOffset)
           }
         }
-        .frame(height: Dimensions.textHeight)
-
-        if let pedal = match.pedal {
-          PopupMatchRowActionButton(pedal: pedal)
-            .padding(Dimensions.actionButtonOuterPadding)
-            .offset(Dimensions.actionButtonOffset)
-        }
-      }
-      if match.isAppendable || match.isTabMatch {
         Spacer()
-        Button(action: match.trailingButtonTapped) {
-          Image(systemName: match.isAppendable ? "arrow.up.backward" : "arrow.right.square")
-            .foregroundColor(Colors.trailingButtonColor)
+        if match.isAppendable || match.isTabMatch {
+          Button(action: trailingButtonHandler) {
+            Image(systemName: match.isAppendable ? "arrow.up.backward" : "arrow.right.square")
+              .foregroundColor(Colors.trailingButtonColor)
+              .aspectRatio(contentMode: .fit)
+              .frame(
+                width: Dimensions.trailingButtonSize, height: Dimensions.trailingButtonSize,
+                alignment: .center
+              )
+              .contentShape(
+                Circle().size(
+                  width: Dimensions.extendedTouchTargetDiameter,
+                  height: Dimensions.extendedTouchTargetDiameter)
+              )
+          }
+          .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
-        .frame(
-          width: Dimensions.trailingButtonSize, height: Dimensions.trailingButtonSize,
-          alignment: .center
-        )
-        .contentShape(
-          Circle().size(
-            width: Dimensions.extendedTouchTargetDiameter,
-            height: Dimensions.extendedTouchTargetDiameter)
-        )
       }
+      .padding(Dimensions.padding)
     }
-    .frame(minHeight: Dimensions.minHeight, maxHeight: Dimensions.maxHeight)
+    .frame(maxWidth: .infinity, minHeight: Dimensions.minHeight, maxHeight: Dimensions.maxHeight)
   }
-
 }
 
 struct PopupMatchRowView_Previews: PreviewProvider {
