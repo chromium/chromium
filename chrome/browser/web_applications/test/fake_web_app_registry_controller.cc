@@ -45,7 +45,8 @@ void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
                                          /*icon_manager=*/nullptr);
   translation_manager_ = std::make_unique<WebAppTranslationManager>(
       profile, base::MakeRefCounted<TestFileUtils>());
-  translation_manager_->SetSubsystems(/*install_manager=*/nullptr);
+  translation_manager_->SetSubsystems(/*install_manager=*/nullptr,
+                                      mutable_registrar_.get());
 
   fake_externally_managed_app_manager_ =
       std::make_unique<FakeExternallyManagedAppManager>(profile);

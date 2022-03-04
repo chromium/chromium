@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
 
@@ -33,7 +34,8 @@ class WebAppTranslationManager : public WebAppInstallManagerObserver {
   WebAppTranslationManager& operator=(const WebAppTranslationManager&) = delete;
   ~WebAppTranslationManager() override;
 
-  void SetSubsystems(base::raw_ptr<WebAppInstallManager> install_manager);
+  void SetSubsystems(base::raw_ptr<WebAppInstallManager> install_manager,
+                     base::raw_ptr<WebAppRegistrar> registrar);
 
   void Start();
 
@@ -45,11 +47,11 @@ class WebAppTranslationManager : public WebAppInstallManagerObserver {
   void DeleteTranslations(const AppId& app_id, WriteCallback callback);
   void ReadTranslations(ReadCallback callback);
 
-  // TODO(crbug.com/1259777): Add methods to get the name, short_name and
-  // description.
+  std::string GetName(const AppId& app_id);
+  std::string GetDescription(const AppId& app_id);
+  // TODO(crbug.com/1212519): Add a method to get the short_name.
 
   // WebAppInstallManager:
-  void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppUninstalled(const AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
@@ -57,8 +59,10 @@ class WebAppTranslationManager : public WebAppInstallManagerObserver {
   void OnTranslationsRead(ReadCallback callback, const AllTranslations& proto);
 
   base::raw_ptr<WebAppInstallManager> install_manager_;
+  base::raw_ptr<WebAppRegistrar> registrar_;
   base::FilePath web_apps_directory_;
   scoped_refptr<FileUtilsWrapper> utils_;
+  // Cache of the translations on disk for the current device language.
   std::map<AppId, blink::Manifest::TranslationItem> translation_cache_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>

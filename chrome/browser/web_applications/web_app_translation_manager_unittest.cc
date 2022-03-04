@@ -34,7 +34,7 @@ class WebAppTranslationManagerTest : public WebAppTest {
 
     translation_manager_ =
         std::make_unique<WebAppTranslationManager>(profile(), file_utils_);
-    translation_manager_->SetSubsystems(&install_manager());
+    translation_manager_->SetSubsystems(&install_manager(), registrar());
   }
 
  protected:
@@ -91,7 +91,7 @@ class WebAppTranslationManagerTest : public WebAppTest {
   WebAppInstallManager& install_manager() { return *install_manager_; }
 
   FakeWebAppProvider& provider() { return *provider_; }
-
+  WebAppRegistrar* registrar() { return &controller().registrar(); }
   WebAppTranslationManager& translation_manager() {
     return *translation_manager_;
   }
@@ -113,8 +113,13 @@ class WebAppTranslationManagerTest : public WebAppTest {
 TEST_F(WebAppTranslationManagerTest, WriteReadAndDelete) {
   auto web_app1 = test::CreateWebApp(GURL("https://example.com/path"));
   const AppId app_id1 = web_app1->app_id();
+  web_app1->SetName("App1 name");
+  controller().RegisterApp(std::move(web_app1));
+
   auto web_app2 = test::CreateWebApp(GURL("https://example.com/path2"));
   const AppId app_id2 = web_app2->app_id();
+  web_app2->SetName("App2 name");
+  controller().RegisterApp(std::move(web_app2));
 
   g_browser_process->SetApplicationLocale("en");
 
@@ -133,7 +138,7 @@ TEST_F(WebAppTranslationManagerTest, WriteReadAndDelete) {
   translations1[u"fr"] = item2;
 
   blink::Manifest::TranslationItem item3;
-  item3.name = "name 3";
+  item3.short_name = "short name 3";
   translations2[u"en"] = item3;
 
   blink::Manifest::TranslationItem item4;
@@ -152,10 +157,22 @@ TEST_F(WebAppTranslationManagerTest, WriteReadAndDelete) {
     ASSERT_EQ(cache.size(), static_cast<size_t>(2));
     EXPECT_EQ(cache.find(app_id1)->second, item1);
     EXPECT_EQ(cache.find(app_id2)->second, item3);
+
+    EXPECT_EQ(translation_manager().GetName(app_id1), item1.name);
+    EXPECT_EQ(translation_manager().GetDescription(app_id1), item1.description);
+
+    EXPECT_EQ(translation_manager().GetName(app_id2), "App2 name");
+    EXPECT_EQ(translation_manager().GetDescription(app_id2), "");
   }
 
   // Delete translations for web_app1.
   AwaitDeleteTranslations(app_id1);
+
+  EXPECT_EQ(translation_manager().GetName(app_id1), "App1 name");
+  EXPECT_EQ(translation_manager().GetDescription(app_id1), "");
+
+  EXPECT_EQ(translation_manager().GetName(app_id2), "App2 name");
+  EXPECT_EQ(translation_manager().GetDescription(app_id2), "");
 
   // Read translations to ensure web_app1 deleted.
   {
@@ -169,6 +186,7 @@ TEST_F(WebAppTranslationManagerTest, WriteReadAndDelete) {
 TEST_F(WebAppTranslationManagerTest, UpdateTranslations) {
   auto web_app1 = test::CreateWebApp(GURL("https://example.com/path"));
   const AppId app_id1 = web_app1->app_id();
+  controller().RegisterApp(std::move(web_app1));
 
   g_browser_process->SetApplicationLocale("en");
 
@@ -189,17 +207,47 @@ TEST_F(WebAppTranslationManagerTest, UpdateTranslations) {
   // Write translations for the app.
   AwaitWriteTranslations(app_id1, translations1);
 
+  // Check the translations set correctly.
+  EXPECT_EQ(translation_manager().GetName(app_id1), item1.name);
+  EXPECT_EQ(translation_manager().GetDescription(app_id1), item1.description);
+
   // Update the translations for the app.
   AwaitWriteTranslations(app_id1, translations2);
 
   // Check the translations have correctly updated.
-  std::map<AppId, blink::Manifest::TranslationItem> cache =
-      AwaitReadTranslations();
-  ASSERT_EQ(cache.size(), static_cast<size_t>(1));
-  EXPECT_EQ(cache.find(app_id1)->second, item2);
+  EXPECT_EQ(translation_manager().GetName(app_id1), item2.name);
+  EXPECT_EQ(translation_manager().GetDescription(app_id1), item2.description);
 }
 
-// TODO(crbug.com/1259777): Add a test for installing and uninstalling an app.
+TEST_F(WebAppTranslationManagerTest, InstallAndUninstall) {
+  g_browser_process->SetApplicationLocale("en");
+
+  base::flat_map<Locale, blink::Manifest::TranslationItem> translations;
+
+  blink::Manifest::TranslationItem item1;
+  item1.name = "name 1";
+  item1.short_name = "short name 1";
+  item1.description = "description 1";
+  translations[u"en"] = item1;
+
+  auto app_info = std::make_unique<WebAppInstallInfo>();
+  app_info->start_url = GURL("https://example.com/path");
+  app_info->scope = GURL("https://example.com/path");
+  app_info->title = u"Web App";
+  app_info->translations = translations;
+
+  // Install app
+  AppId app_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
+
+  // Check translations are stored
+  EXPECT_EQ(provider().translation_manager().GetName(app_id), item1.name);
+
+  // Uninstall app
+  web_app::test::UninstallWebApp(profile(), app_id);
+
+  // Check translations were deleted
+  EXPECT_EQ(provider().translation_manager().GetName(app_id), std::string());
+}
 
 // TODO(crbug.com/1259777): Add a test for an app which is installed before the
 // translation manager is started.
