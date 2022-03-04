@@ -10,9 +10,9 @@
 
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -351,11 +351,11 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
   while (StackWalk64(machine_type, GetCurrentProcess(), GetCurrentThread(),
                      &stack_frame, &context_copy, NULL,
                      &SymFunctionTableAccess64, &SymGetModuleBase64, NULL) &&
-         count_ < size(trace_)) {
+         count_ < std::size(trace_)) {
     trace_[count_++] = reinterpret_cast<void*>(stack_frame.AddrPC.Offset);
   }
 
-  for (size_t i = count_; i < size(trace_); ++i)
+  for (size_t i = count_; i < std::size(trace_); ++i)
     trace_[i] = NULL;
 }
 

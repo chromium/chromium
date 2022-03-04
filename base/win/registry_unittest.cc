@@ -9,10 +9,10 @@
 #include <stdint.h>
 
 #include <cstring>
+#include <iterator>
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_reg_util_win.h"
@@ -137,9 +137,9 @@ TEST_F(RegistryTest, TruncatedCharTest) {
   const wchar_t kName[] = L"name";
   // kData size is not a multiple of sizeof(wchar_t).
   const uint8_t kData[] = {1, 2, 3, 4, 5};
-  EXPECT_EQ(5u, size(kData));
+  EXPECT_EQ(5u, std::size(kData));
   ASSERT_EQ(ERROR_SUCCESS,
-            key.WriteValue(kName, kData, size(kData), REG_BINARY));
+            key.WriteValue(kName, kData, std::size(kData), REG_BINARY));
 
   RegistryValueIterator iterator(HKEY_CURRENT_USER, root_key().c_str());
   ASSERT_TRUE(iterator.Valid());
@@ -147,12 +147,12 @@ TEST_F(RegistryTest, TruncatedCharTest) {
   // operator== to perform a deep comparison.
   EXPECT_EQ(WStringPiece(kName), WStringPiece(iterator.Name()));
   // ValueSize() is in bytes.
-  ASSERT_EQ(size(kData), iterator.ValueSize());
+  ASSERT_EQ(std::size(kData), iterator.ValueSize());
   // Value() is NUL terminated.
   int end = (iterator.ValueSize() + sizeof(wchar_t) - 1) / sizeof(wchar_t);
   EXPECT_NE('\0', iterator.Value()[end - 1]);
   EXPECT_EQ('\0', iterator.Value()[end]);
-  EXPECT_EQ(0, std::memcmp(kData, iterator.Value(), size(kData)));
+  EXPECT_EQ(0, std::memcmp(kData, iterator.Value(), std::size(kData)));
   ++iterator;
   EXPECT_FALSE(iterator.Valid());
 }

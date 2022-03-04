@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_buffer.h"
@@ -41,8 +40,8 @@ class TargetThread : public SimpleThread {
 
     // Copy the sentinel values onto the stack. Volatile to defeat compiler
     // optimizations.
-    volatile uint32_t sentinels[size(kStackSentinels)];
-    for (size_t i = 0; i < size(kStackSentinels); ++i)
+    volatile uint32_t sentinels[std::size(kStackSentinels)];
+    for (size_t i = 0; i < std::size(kStackSentinels); ++i)
       sentinels[i] = kStackSentinels[i];
 
     started_.Signal();
@@ -103,8 +102,8 @@ TEST(StackCopierSignalTest, MAYBE_CopyStack) {
   StackCopierSignal copier(std::move(thread_delegate));
 
   // Copy the sentinel values onto the stack.
-  uint32_t sentinels[size(kStackSentinels)];
-  for (size_t i = 0; i < size(kStackSentinels); ++i)
+  uint32_t sentinels[std::size(kStackSentinels)];
+  for (size_t i = 0; i < std::size(kStackSentinels); ++i)
     sentinels[i] = kStackSentinels[i];
   base::debug::Alias((void*)sentinels);  // Defeat compiler optimizations.
 
