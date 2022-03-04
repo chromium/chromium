@@ -34,9 +34,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 class SecureChannelClientChannelImplTest : public testing::Test {
  public:
@@ -348,6 +349,4 @@ TEST_F(SecureChannelClientChannelImplTest,
                            /*total_bytes=*/0, /*bytes_transferred=*/0);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -12,8 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 
-namespace chromeos {
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class FakeConnectionManager : public secure_channel::ConnectionManager {
  public:
@@ -31,7 +30,8 @@ class FakeConnectionManager : public secure_channel::ConnectionManager {
     register_payload_file_result_ = result;
   }
 
-  void SendFileTransferUpdate(mojom::FileTransferUpdatePtr update);
+  void SendFileTransferUpdate(
+      chromeos::secure_channel::mojom::FileTransferUpdatePtr update);
 
   size_t num_attempt_connection_calls() const {
     return num_attempt_connection_calls_;
@@ -47,8 +47,9 @@ class FakeConnectionManager : public secure_channel::ConnectionManager {
   void SendMessage(const std::string& payload) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
-      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<
+          void(chromeos::secure_channel::mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
@@ -56,20 +57,13 @@ class FakeConnectionManager : public secure_channel::ConnectionManager {
   std::vector<std::string> sent_messages_;
   bool register_payload_file_result_ = true;
   base::flat_map<int64_t,
-                 base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>>
+                 base::RepeatingCallback<void(
+                     chromeos::secure_channel::mojom::FileTransferUpdatePtr)>>
       file_transfer_update_callbacks_;
   size_t num_attempt_connection_calls_ = 0;
   size_t num_disconnect_calls_ = 0;
 };
 
-}  // namespace secure_channel
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::FakeConnectionManager;
-}  // namespace secure_channel
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CONNECTION_MANAGER_H_

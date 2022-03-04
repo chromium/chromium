@@ -12,7 +12,6 @@
 #include "ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
-#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"

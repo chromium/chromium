@@ -89,8 +89,7 @@ class FakeEasyUnlockService : public ash::EasyUnlockServiceRegular {
   FakeEasyUnlockService(
       Profile* profile,
       chromeos::device_sync::FakeDeviceSyncClient* fake_device_sync_client,
-      chromeos::secure_channel::FakeSecureChannelClient*
-          fake_secure_channel_client,
+      ash::secure_channel::FakeSecureChannelClient* fake_secure_channel_client,
       chromeos::multidevice_setup::FakeMultiDeviceSetupClient*
           fake_multidevice_setup_client)
       : ash::EasyUnlockServiceRegular(profile,
@@ -112,7 +111,7 @@ std::unique_ptr<KeyedService> CreateEasyUnlockServiceForTest(
     content::BrowserContext* context) {
   static base::NoDestructor<chromeos::device_sync::FakeDeviceSyncClient>
       fake_device_sync_client;
-  static base::NoDestructor<chromeos::secure_channel::FakeSecureChannelClient>
+  static base::NoDestructor<ash::secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client;
   static base::NoDestructor<
       chromeos::multidevice_setup::FakeMultiDeviceSetupClient>

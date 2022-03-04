@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/public/cpp/client/fake_client_channel_observer.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeClientChannelObserver::FakeClientChannelObserver() = default;
 
@@ -20,6 +18,4 @@ void FakeClientChannelObserver::OnMessageReceived(const std::string& payload) {
   received_messages_.push_back(payload);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

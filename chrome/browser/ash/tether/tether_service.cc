@@ -94,7 +94,7 @@ TetherService::TetherService(
     Profile* profile,
     chromeos::PowerManagerClient* power_manager_client,
     chromeos::device_sync::DeviceSyncClient* device_sync_client,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+    secure_channel::SecureChannelClient* secure_channel_client,
     chromeos::multidevice_setup::MultiDeviceSetupClient*
         multidevice_setup_client,
     chromeos::NetworkStateHandler* network_state_handler,

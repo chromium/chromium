@@ -10,9 +10,10 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 FakeClientChannel::FakeClientChannel() = default;
 
@@ -49,6 +50,4 @@ void FakeClientChannel::PerformRegisterPayloadFile(
   std::move(registration_result_callback).Run(/*success=*/true);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

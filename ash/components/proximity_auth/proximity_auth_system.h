@@ -12,11 +12,11 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 class SecureChannelClient;
-}  // namespace secure_channel
-}  // namespace chromeos
+}
+}  // namespace ash
 
 namespace proximity_auth {
 
@@ -36,7 +36,7 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   ProximityAuthSystem(
       ScreenlockType screenlock_type,
       ProximityAuthClient* proximity_auth_client,
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client);
+      ash::secure_channel::SecureChannelClient* secure_channel_client);
 
   ProximityAuthSystem(const ProximityAuthSystem&) = delete;
   ProximityAuthSystem& operator=(const ProximityAuthSystem&) = delete;
@@ -87,7 +87,7 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   // Constructor which allows passing in a custom |unlock_manager_|.
   // Exposed for testing.
   ProximityAuthSystem(
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+      ash::secure_channel::SecureChannelClient* secure_channel_client,
       std::unique_ptr<UnlockManager> unlock_manager);
 
   // Creates the RemoteDeviceLifeCycle for |remote_device| and |local_device|.
@@ -117,7 +117,7 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   std::map<AccountId, chromeos::multidevice::RemoteDeviceRef> local_device_map_;
 
   // Entry point to the SecureChannel API.
-  chromeos::secure_channel::SecureChannelClient* secure_channel_client_;
+  ash::secure_channel::SecureChannelClient* secure_channel_client_;
 
   // Responsible for the life cycle of connecting and authenticating to
   // the RemoteDevice of the currently focused user.

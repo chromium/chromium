@@ -19,9 +19,6 @@ namespace tether {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when secure_channel moved to ash
-namespace secure_channel = ::chromeos::secure_channel;
-
 const char kTetherFeature[] = "magic_tether";
 
 multidevice::RemoteDeviceRefList RemoveDuplicatesFromVector(
@@ -56,7 +53,8 @@ MessageTransferOperation::ConnectionAttemptDelegate::
 
 void MessageTransferOperation::ConnectionAttemptDelegate::
     OnConnectionAttemptFailure(
-        secure_channel::mojom::ConnectionAttemptFailureReason reason) {
+        chromeos::secure_channel::mojom::ConnectionAttemptFailureReason
+            reason) {
   operation_->OnConnectionAttemptFailure(remote_device_, reason);
 }
 
@@ -90,7 +88,7 @@ void MessageTransferOperation::ClientChannelObserver::OnMessageReceived(
 
 MessageTransferOperation::MessageTransferOperation(
     const multidevice::RemoteDeviceRefList& devices_to_connect,
-    secure_channel::ConnectionPriority connection_priority,
+    chromeos::secure_channel::ConnectionPriority connection_priority,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client)
     : remote_devices_(RemoveDuplicatesFromVector(devices_to_connect)),
@@ -216,7 +214,7 @@ uint32_t MessageTransferOperation::GetMessageTimeoutSeconds() {
 
 void MessageTransferOperation::OnConnectionAttemptFailure(
     multidevice::RemoteDeviceRef remote_device,
-    secure_channel::mojom::ConnectionAttemptFailureReason reason) {
+    chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason) {
   PA_LOG(WARNING) << "Failed to connect to device "
                   << remote_device.GetTruncatedDeviceIdForLogs()
                   << ", error: " << reason;

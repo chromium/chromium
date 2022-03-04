@@ -14,9 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test SecureChannelClient implementation.
 class FakeSecureChannelClient : public SecureChannelClient {
@@ -156,16 +154,6 @@ class FakeSecureChannelClient : public SecureChannelClient {
       last_listen_for_connection_request_arguments_list_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::FakeSecureChannelClient;
-}
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_SECURE_CHANNEL_CLIENT_H_

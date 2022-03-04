@@ -10,12 +10,9 @@
 
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test double implementation of ClientChannel.
 class FakeClientChannel : public ClientChannel {
@@ -31,7 +28,8 @@ class FakeClientChannel : public ClientChannel {
   using ClientChannel::NotifyMessageReceived;
 
   void InvokePendingGetConnectionMetadataCallback(
-      mojom::ConnectionMetadataPtr connection_metadata);
+      chromeos::secure_channel::mojom::ConnectionMetadataPtr
+          connection_metadata);
 
   std::vector<std::pair<std::string, base::OnceClosure>>& sent_messages() {
     return sent_messages_;
@@ -50,34 +48,29 @@ class FakeClientChannel : public ClientChannel {
 
   // ClientChannel:
   void PerformGetConnectionMetadata(
-      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
+      base::OnceCallback<void(
+          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback)
+      override;
   void PerformSendMessage(const std::string& payload,
                           base::OnceClosure on_sent_callback) override;
   void PerformRegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
-      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<
+          void(chromeos::secure_channel::mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
   // Queues up callbacks passed into PerformGetConnectionMetadata(), to be
   // invoked later.
-  std::queue<base::OnceCallback<void(mojom::ConnectionMetadataPtr)>>
+  std::queue<base::OnceCallback<void(
+      chromeos::secure_channel::mojom::ConnectionMetadataPtr)>>
       get_connection_metadata_callback_queue_;
   std::vector<std::pair<std::string, base::OnceClosure>> sent_messages_;
   std::vector<int64_t> registered_file_payloads_;
   base::OnceClosure destructor_callback_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::FakeClientChannel;
-}  // namespace secure_channel
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CLIENT_CHANNEL_H_

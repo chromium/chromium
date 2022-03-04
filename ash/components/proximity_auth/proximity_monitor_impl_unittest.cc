@@ -77,7 +77,7 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
                                  false /* paired */,
                                  true /* connected */),
         fake_client_channel_(
-            std::make_unique<chromeos::secure_channel::FakeClientChannel>()),
+            std::make_unique<ash::secure_channel::FakeClientChannel>()),
         remote_device_(chromeos::multidevice::RemoteDeviceRefBuilder()
                            .SetUserEmail(kRemoteDeviceUserEmail)
                            .SetName(kRemoteDeviceName)
@@ -135,8 +135,7 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
   // Mocks used for verifying interactions with the Bluetooth subsystem.
   scoped_refptr<device::MockBluetoothAdapter> bluetooth_adapter_;
   NiceMock<device::MockBluetoothDevice> remote_bluetooth_device_;
-  std::unique_ptr<chromeos::secure_channel::FakeClientChannel>
-      fake_client_channel_;
+  std::unique_ptr<ash::secure_channel::FakeClientChannel> fake_client_channel_;
   chromeos::multidevice::RemoteDeviceRef remote_device_;
   std::unique_ptr<chromeos::multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;

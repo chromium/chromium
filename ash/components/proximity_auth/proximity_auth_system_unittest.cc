@@ -98,7 +98,7 @@ class MockProximityAuthPrefManager : public ProximityAuthProfilePrefManager {
 class TestableProximityAuthSystem : public ProximityAuthSystem {
  public:
   TestableProximityAuthSystem(
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+      ash::secure_channel::SecureChannelClient* secure_channel_client,
       std::unique_ptr<UnlockManager> unlock_manager,
       ProximityAuthPrefManager* pref_manager)
       : ProximityAuthSystem(secure_channel_client, std::move(unlock_manager)),
@@ -168,7 +168,7 @@ class ProximityAuthSystemTest : public testing::Test {
     unlock_manager_ = unlock_manager.get();
 
     fake_secure_channel_client_ =
-        std::make_unique<chromeos::secure_channel::FakeSecureChannelClient>();
+        std::make_unique<ash::secure_channel::FakeSecureChannelClient>();
 
     proximity_auth_system_ = std::make_unique<TestableProximityAuthSystem>(
         fake_secure_channel_client_.get(), std::move(unlock_manager),
@@ -205,7 +205,7 @@ class ProximityAuthSystemTest : public testing::Test {
 
   FakeLockHandler lock_handler_;
   NiceMock<MockProximityAuthClient> proximity_auth_client_;
-  std::unique_ptr<chromeos::secure_channel::FakeSecureChannelClient>
+  std::unique_ptr<ash::secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
   std::unique_ptr<TestableProximityAuthSystem> proximity_auth_system_;
   MockUnlockManager* unlock_manager_;

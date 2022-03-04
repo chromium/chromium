@@ -101,7 +101,7 @@ class EcheAppManagerTest : public testing::Test {
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     fake_secure_channel_client_ =
-        std::make_unique<chromeos::secure_channel::FakeSecureChannelClient>();
+        std::make_unique<secure_channel::FakeSecureChannelClient>();
 
     std::unique_ptr<FakePresenceMonitorClient> fake_presence_monitor_client =
         std::make_unique<FakePresenceMonitorClient>();
@@ -163,7 +163,7 @@ class EcheAppManagerTest : public testing::Test {
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
-  std::unique_ptr<chromeos::secure_channel::FakeSecureChannelClient>
+  std::unique_ptr<secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
   std::unique_ptr<EcheAppManager> manager_;
 

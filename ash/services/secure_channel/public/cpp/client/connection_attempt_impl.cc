@@ -8,9 +8,10 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 // static
 ConnectionAttemptImpl::Factory* ConnectionAttemptImpl::Factory::test_factory_ =
@@ -54,6 +55,4 @@ void ConnectionAttemptImpl::OnConnection(
       std::move(channel), std::move(message_receiver_receiver)));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

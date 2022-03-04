@@ -28,7 +28,7 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
   // RemoteDeviceLifeCycle:
   void Start() override;
   chromeos::multidevice::RemoteDeviceRef GetRemoteDevice() const override;
-  chromeos::secure_channel::ClientChannel* GetChannel() const override;
+  ash::secure_channel::ClientChannel* GetChannel() const override;
   State GetState() const override;
   Messenger* GetMessenger() override;
   void AddObserver(Observer* observer) override;
@@ -39,7 +39,7 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
 
   void set_messenger(Messenger* messenger) { messenger_ = messenger; }
 
-  void set_channel(chromeos::secure_channel::ClientChannel* channel) {
+  void set_channel(ash::secure_channel::ClientChannel* channel) {
     channel_ = channel;
   }
 
@@ -57,7 +57,7 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
   base::ObserverList<Observer>::Unchecked observers_;
   bool started_;
   State state_;
-  chromeos::secure_channel::ClientChannel* channel_;
+  ash::secure_channel::ClientChannel* channel_;
   Messenger* messenger_;
 };
 

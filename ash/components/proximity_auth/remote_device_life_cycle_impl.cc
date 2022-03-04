@@ -24,7 +24,7 @@ const char kSmartLockFeatureName[] = "easy_unlock";
 RemoteDeviceLifeCycleImpl::RemoteDeviceLifeCycleImpl(
     chromeos::multidevice::RemoteDeviceRef remote_device,
     absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client)
+    ash::secure_channel::SecureChannelClient* secure_channel_client)
     : remote_device_(remote_device),
       local_device_(local_device),
       secure_channel_client_(secure_channel_client),
@@ -43,7 +43,7 @@ RemoteDeviceLifeCycleImpl::GetRemoteDevice() const {
   return remote_device_;
 }
 
-chromeos::secure_channel::ClientChannel* RemoteDeviceLifeCycleImpl::GetChannel()
+ash::secure_channel::ClientChannel* RemoteDeviceLifeCycleImpl::GetChannel()
     const {
   if (channel_)
     return channel_.get();
@@ -122,7 +122,7 @@ void RemoteDeviceLifeCycleImpl::OnConnectionAttemptFailure(
 }
 
 void RemoteDeviceLifeCycleImpl::OnConnection(
-    std::unique_ptr<chromeos::secure_channel::ClientChannel> channel) {
+    std::unique_ptr<ash::secure_channel::ClientChannel> channel) {
   DCHECK(state_ == RemoteDeviceLifeCycle::State::FINDING_CONNECTION);
   TransitionToState(RemoteDeviceLifeCycle::State::AUTHENTICATING);
 

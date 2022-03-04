@@ -57,7 +57,7 @@ std::string GetMessageType(const base::DictionaryValue& message) {
 }  // namespace
 
 MessengerImpl::MessengerImpl(
-    std::unique_ptr<chromeos::secure_channel::ClientChannel> channel)
+    std::unique_ptr<ash::secure_channel::ClientChannel> channel)
     : channel_(std::move(channel)) {
   DCHECK(!channel_->is_disconnected());
   channel_->AddObserver(this);
@@ -104,7 +104,7 @@ void MessengerImpl::RequestUnlock() {
   ProcessMessageQueue();
 }
 
-chromeos::secure_channel::ClientChannel* MessengerImpl::GetChannel() const {
+ash::secure_channel::ClientChannel* MessengerImpl::GetChannel() const {
   if (channel_->is_disconnected())
     return nullptr;
 

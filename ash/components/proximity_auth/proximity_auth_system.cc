@@ -15,7 +15,7 @@ namespace proximity_auth {
 ProximityAuthSystem::ProximityAuthSystem(
     ScreenlockType screenlock_type,
     ProximityAuthClient* proximity_auth_client,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client)
+    ash::secure_channel::SecureChannelClient* secure_channel_client)
     : secure_channel_client_(secure_channel_client),
       unlock_manager_(
           std::make_unique<UnlockManagerImpl>(screenlock_type,
@@ -24,7 +24,7 @@ ProximityAuthSystem::ProximityAuthSystem(
       started_(false) {}
 
 ProximityAuthSystem::ProximityAuthSystem(
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+    ash::secure_channel::SecureChannelClient* secure_channel_client,
     std::unique_ptr<UnlockManager> unlock_manager)
     : secure_channel_client_(secure_channel_client),
       unlock_manager_(std::move(unlock_manager)),

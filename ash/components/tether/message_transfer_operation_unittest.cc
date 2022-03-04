@@ -25,9 +25,6 @@ namespace tether {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when secure_channel moved to ash
-namespace secure_channel = ::chromeos::secure_channel;
-
 // Arbitrarily chosen value. The MessageType used in this test does not matter
 // except that it must be consistent throughout the test.
 const MessageType kTestMessageType = MessageType::TETHER_AVAILABILITY_REQUEST;
@@ -274,7 +271,7 @@ TEST_F(MessageTransferOperationTest, TestFailedConnection) {
 
   remote_device_to_fake_connection_attempt_map_[test_devices_[0]]
       ->NotifyConnectionAttemptFailure(
-          secure_channel::mojom::ConnectionAttemptFailureReason::
+          chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
               AUTHENTICATION_ERROR);
 
   VerifyOperationStartedAndFinished(true /* has_started */,
@@ -385,7 +382,7 @@ TEST_F(MessageTransferOperationTest, MultipleDevices) {
       test_devices_[1].GetDeviceId());
   remote_device_to_fake_connection_attempt_map_[test_devices_[1]]
       ->NotifyConnectionAttemptFailure(
-          secure_channel::mojom::ConnectionAttemptFailureReason::
+          chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
               GATT_CONNECTION_ERROR);
   EXPECT_FALSE(operation_->HasDeviceAuthenticated(test_devices_[1]));
   EXPECT_FALSE(GetTimerForDevice(test_devices_[1]));
@@ -400,7 +397,7 @@ TEST_F(MessageTransferOperationTest, MultipleDevices) {
       test_devices_[3].GetDeviceId());
   remote_device_to_fake_connection_attempt_map_[test_devices_[3]]
       ->NotifyConnectionAttemptFailure(
-          secure_channel::mojom::ConnectionAttemptFailureReason::
+          chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
               GATT_CONNECTION_ERROR);
   EXPECT_FALSE(operation_->HasDeviceAuthenticated(test_devices_[3]));
   EXPECT_FALSE(GetTimerForDevice(test_devices_[3]));

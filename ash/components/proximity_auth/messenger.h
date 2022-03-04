@@ -5,11 +5,11 @@
 #ifndef ASH_COMPONENTS_PROXIMITY_AUTH_MESSENGER_H_
 #define ASH_COMPONENTS_PROXIMITY_AUTH_MESSENGER_H_
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 class ClientChannel;
-}  // namespace secure_channel
-}  // namespace chromeos
+}
+}  // namespace ash
 
 namespace proximity_auth {
 
@@ -38,7 +38,7 @@ class Messenger {
   // OnUnlockResponse is called for each observer when the response is returned.
   virtual void RequestUnlock() = 0;
 
-  virtual chromeos::secure_channel::ClientChannel* GetChannel() const = 0;
+  virtual ash::secure_channel::ClientChannel* GetChannel() const = 0;
 };
 
 }  // namespace proximity_auth

@@ -4,8 +4,10 @@
 
 #include "ash/services/secure_channel/public/cpp/client/nearby_connector.h"
 
-namespace chromeos {
-namespace secure_channel {
+namespace ash::secure_channel {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 NearbyConnector::NearbyConnector() = default;
 
@@ -18,5 +20,4 @@ NearbyConnector::GeneratePendingRemote() {
   return pending_remote;
 }
 
-}  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash::secure_channel

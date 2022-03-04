@@ -7,8 +7,10 @@
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 
-namespace chromeos {
-namespace secure_channel {
+namespace ash::secure_channel {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 FakeConnectionManager::FakeConnectionManager()
     : status_(Status::kDisconnected) {}
@@ -62,5 +64,4 @@ void FakeConnectionManager::SendFileTransferUpdate(
   file_transfer_update_callbacks_.at(payload_id).Run(std::move(update));
 }
 
-}  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -6,9 +6,10 @@
 
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 ConnectionAttempt::Delegate::~Delegate() = default;
 
@@ -40,6 +41,4 @@ void ConnectionAttempt::NotifyConnection(
   }
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

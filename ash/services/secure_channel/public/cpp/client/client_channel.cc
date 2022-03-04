@@ -8,9 +8,10 @@
 #include "base/callback.h"
 #include "base/guid.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 ClientChannel::Observer::~Observer() = default;
 
@@ -77,6 +78,4 @@ void ClientChannel::NotifyMessageReceived(const std::string& payload) {
     observer.OnMessageReceived(payload_copy);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

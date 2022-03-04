@@ -28,8 +28,6 @@ namespace phonehub {
 
 namespace {
 
-namespace secure_channel = ::chromeos::secure_channel;
-
 constexpr int kMaxCameraRollItemCount = 4;
 
 }  // namespace

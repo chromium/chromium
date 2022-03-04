@@ -24,10 +24,7 @@ class Profile;
 
 namespace chromeos {
 class NetworkStateHandler;
-namespace secure_channel {
-class SecureChannelClient;
-}  // namespace secure_channel
-}  // namespace chromeos
+}
 
 namespace session_manager {
 class SessionManager;
@@ -38,6 +35,11 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 namespace ash {
+
+namespace secure_channel {
+class SecureChannelClient;
+}
+
 namespace tether {
 
 class GmsCoreNotificationsStateTracker;
@@ -60,19 +62,16 @@ class TetherService
       public chromeos::device_sync::DeviceSyncClient::Observer,
       public chromeos::multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
-  TetherService(
-      Profile* profile,
-      chromeos::PowerManagerClient* power_manager_client,
-      chromeos::device_sync::DeviceSyncClient* device_sync_client,
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
-      chromeos::multidevice_setup::MultiDeviceSetupClient*
-          multidevice_setup_client,
-      chromeos::NetworkStateHandler* network_state_handler,
-      session_manager::SessionManager* session_manager);
-
+  TetherService(Profile* profile,
+                chromeos::PowerManagerClient* power_manager_client,
+                chromeos::device_sync::DeviceSyncClient* device_sync_client,
+                secure_channel::SecureChannelClient* secure_channel_client,
+                chromeos::multidevice_setup::MultiDeviceSetupClient*
+                    multidevice_setup_client,
+                chromeos::NetworkStateHandler* network_state_handler,
+                session_manager::SessionManager* session_manager);
   TetherService(const TetherService&) = delete;
   TetherService& operator=(const TetherService&) = delete;
-
   ~TetherService() override;
 
   // Gets TetherService instance.
@@ -269,7 +268,7 @@ class TetherService
   Profile* profile_;
   chromeos::PowerManagerClient* power_manager_client_;
   chromeos::device_sync::DeviceSyncClient* device_sync_client_;
-  chromeos::secure_channel::SecureChannelClient* secure_channel_client_;
+  secure_channel::SecureChannelClient* secure_channel_client_;
   chromeos::multidevice_setup::MultiDeviceSetupClient*
       multidevice_setup_client_;
   chromeos::NetworkStateHandler* network_state_handler_;

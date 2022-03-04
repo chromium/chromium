@@ -20,8 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Fake NearbyConnector implementation. When Connect() is called, parameters are
 // queued up and can be completed using either FailQueuedCallback() or
@@ -34,37 +33,46 @@ class FakeNearbyConnector : public NearbyConnector {
   FakeNearbyConnector();
   ~FakeNearbyConnector() override;
 
-  class FakeConnection : public mojom::NearbyMessageSender,
-                         public mojom::NearbyFilePayloadHandler {
+  class FakeConnection
+      : public chromeos::secure_channel::mojom::NearbyMessageSender,
+        public chromeos::secure_channel::mojom::NearbyFilePayloadHandler {
    public:
-    FakeConnection(const std::vector<uint8_t>& bluetooth_public_address,
-                   mojo::PendingReceiver<mojom::NearbyMessageSender>
-                       message_sender_pending_receiver,
-                   mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
-                       nearby_file_payload_handler_receiver,
-                   mojo::PendingRemote<mojom::NearbyMessageReceiver>
-                       message_receiver_pending_remote);
+    FakeConnection(
+        const std::vector<uint8_t>& bluetooth_public_address,
+        mojo::PendingReceiver<
+            chromeos::secure_channel::mojom::NearbyMessageSender>
+            message_sender_pending_receiver,
+        mojo::PendingReceiver<
+            chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+            nearby_file_payload_handler_receiver,
+        mojo::PendingRemote<
+            chromeos::secure_channel::mojom::NearbyMessageReceiver>
+            message_receiver_pending_remote);
     ~FakeConnection() override;
 
     struct RegisterPayloadFileRequest {
-      RegisterPayloadFileRequest(int64_t payload_id,
-                                 mojo::PendingRemote<mojom::FilePayloadListener>
-                                     file_payload_listener);
+      RegisterPayloadFileRequest(
+          int64_t payload_id,
+          mojo::PendingRemote<
+              chromeos::secure_channel::mojom::FilePayloadListener>
+              file_payload_listener);
       RegisterPayloadFileRequest(RegisterPayloadFileRequest&&);
       RegisterPayloadFileRequest& operator=(RegisterPayloadFileRequest&&);
       ~RegisterPayloadFileRequest();
 
       int64_t payload_id;
-      mojo::Remote<mojom::FilePayloadListener> file_payload_listener;
+      mojo::Remote<chromeos::secure_channel::mojom::FilePayloadListener>
+          file_payload_listener;
     };
 
     void Disconnect();
     void ReceiveMessage(const std::string& message);
 
-    void SendFileTransferUpdate(int64_t payload_id,
-                                mojom::FileTransferStatus status,
-                                uint64_t total_bytes,
-                                uint64_t bytes_transferred);
+    void SendFileTransferUpdate(
+        int64_t payload_id,
+        chromeos::secure_channel::mojom::FileTransferStatus status,
+        uint64_t total_bytes,
+        uint64_t bytes_transferred);
     void SendUnexpectedFileTransferUpdate(int64_t unexpected_payload_id);
     void DisconnectPendingFileTransfers();
 
@@ -90,15 +98,18 @@ class FakeNearbyConnector : public NearbyConnector {
     // mojom::NearbyFilePayloadHandler:
     void RegisterPayloadFile(
         int64_t payload_id,
-        mojom::PayloadFilesPtr payload_files,
-        mojo::PendingRemote<mojom::FilePayloadListener> listener,
+        chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+        mojo::PendingRemote<
+            chromeos::secure_channel::mojom::FilePayloadListener> listener,
         RegisterPayloadFileCallback callback) override;
 
     std::vector<uint8_t> bluetooth_public_address_;
-    mojo::Receiver<mojom::NearbyMessageSender> message_sender_receiver_;
-    mojo::Receiver<mojom::NearbyFilePayloadHandler>
+    mojo::Receiver<chromeos::secure_channel::mojom::NearbyMessageSender>
+        message_sender_receiver_;
+    mojo::Receiver<chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
         file_payload_handler_receiver_;
-    mojo::Remote<mojom::NearbyMessageReceiver> message_receiver_remote_;
+    mojo::Remote<chromeos::secure_channel::mojom::NearbyMessageReceiver>
+        message_receiver_remote_;
 
     std::vector<std::string> sent_messages_;
     base::flat_map<int64_t, RegisterPayloadFileRequest>
@@ -114,34 +125,31 @@ class FakeNearbyConnector : public NearbyConnector {
 
  private:
   struct ConnectArgs {
-    ConnectArgs(
-        const std::vector<uint8_t>& bluetooth_public_address,
-        mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
-        ConnectCallback callback);
+    ConnectArgs(const std::vector<uint8_t>& bluetooth_public_address,
+                mojo::PendingRemote<
+                    chromeos::secure_channel::mojom::NearbyMessageReceiver>
+                    message_receiver,
+                ConnectCallback callback);
     ~ConnectArgs();
 
     std::vector<uint8_t> bluetooth_public_address;
-    mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver;
+    mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyMessageReceiver>
+        message_receiver;
     ConnectCallback callback;
   };
 
   /// mojom::NearbyConnector:
-  void Connect(
-      const std::vector<uint8_t>& bluetooth_public_address,
-      const std::vector<uint8_t>& service_data,
-      mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
-      ConnectCallback callback) override;
+  void Connect(const std::vector<uint8_t>& bluetooth_public_address,
+               const std::vector<uint8_t>& service_data,
+               mojo::PendingRemote<
+                   chromeos::secure_channel::mojom::NearbyMessageReceiver>
+                   message_receiver,
+               ConnectCallback callback) override;
 
   base::queue<std::unique_ptr<ConnectArgs>> queued_connect_args_;
   std::vector<std::unique_ptr<FakeConnection>> fake_connections_;
 };
 
-}  // namespace secure_channel
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeNearbyConnector;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_NEARBY_CONNECTOR_H_

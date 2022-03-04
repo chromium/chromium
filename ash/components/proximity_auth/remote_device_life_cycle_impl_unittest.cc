@@ -38,7 +38,7 @@ class TestableRemoteDeviceLifeCycleImpl : public RemoteDeviceLifeCycleImpl {
   TestableRemoteDeviceLifeCycleImpl(
       chromeos::multidevice::RemoteDeviceRef remote_device,
       absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device,
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client)
+      ash::secure_channel::SecureChannelClient* secure_channel_client)
       : RemoteDeviceLifeCycleImpl(remote_device,
                                   local_device,
                                   secure_channel_client),
@@ -73,8 +73,7 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
         test_local_device_(
             chromeos::multidevice::CreateRemoteDeviceRefForTest()),
         fake_secure_channel_client_(
-            std::make_unique<
-                chromeos::secure_channel::FakeSecureChannelClient>()),
+            std::make_unique<ash::secure_channel::FakeSecureChannelClient>()),
         life_cycle_(test_remote_device_,
                     test_local_device_,
                     fake_secure_channel_client_.get()),
@@ -87,7 +86,7 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
 
   void CreateFakeConnectionAttempt() {
     auto fake_connection_attempt =
-        std::make_unique<chromeos::secure_channel::FakeConnectionAttempt>();
+        std::make_unique<ash::secure_channel::FakeConnectionAttempt>();
     fake_connection_attempt_ = fake_connection_attempt.get();
     fake_secure_channel_client_->set_next_listen_connection_attempt(
         test_remote_device_, test_local_device_,
@@ -118,7 +117,7 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
                            RemoteDeviceLifeCycle::State::AUTHENTICATING));
 
     auto fake_client_channel =
-        std::make_unique<chromeos::secure_channel::FakeClientChannel>();
+        std::make_unique<ash::secure_channel::FakeClientChannel>();
     auto* fake_client_channel_raw = fake_client_channel.get();
     fake_connection_attempt_->NotifyConnection(std::move(fake_client_channel));
 
@@ -160,11 +159,11 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
 
   chromeos::multidevice::RemoteDeviceRef test_remote_device_;
   chromeos::multidevice::RemoteDeviceRef test_local_device_;
-  std::unique_ptr<chromeos::secure_channel::FakeSecureChannelClient>
+  std::unique_ptr<ash::secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
   TestableRemoteDeviceLifeCycleImpl life_cycle_;
 
-  chromeos::secure_channel::FakeConnectionAttempt* fake_connection_attempt_;
+  ash::secure_channel::FakeConnectionAttempt* fake_connection_attempt_;
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle thread_task_runner_handle_;

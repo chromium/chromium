@@ -26,7 +26,7 @@ FakeRemoteDeviceLifeCycle::GetRemoteDevice() const {
   return remote_device_;
 }
 
-chromeos::secure_channel::ClientChannel* FakeRemoteDeviceLifeCycle::GetChannel()
+ash::secure_channel::ClientChannel* FakeRemoteDeviceLifeCycle::GetChannel()
     const {
   return channel_;
 }

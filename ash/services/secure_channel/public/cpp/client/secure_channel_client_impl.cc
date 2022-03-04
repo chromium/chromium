@@ -10,9 +10,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/task_runner.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 // static
 SecureChannelClientImpl::Factory*
@@ -127,6 +128,4 @@ void SecureChannelClientImpl::FlushForTesting() {
   secure_channel_remote_.FlushForTesting();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

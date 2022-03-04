@@ -12,9 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/observer_list.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // A full-duplex communication channel which is guaranteed to be authenticated
 // (i.e., the two sides of the channel both belong to the same underlying user).
@@ -37,7 +35,8 @@ class ClientChannel {
   virtual ~ClientChannel();
 
   bool GetConnectionMetadata(
-      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback);
+      base::OnceCallback<void(
+          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback);
 
   // Sends a message with the specified |payload|. Once the message has been
   // sent, |on_sent_callback| will be invoked. Returns whether this
@@ -54,8 +53,9 @@ class ClientChannel {
   // |file_transfer_update_callback| if the registration was successful.
   void RegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
-      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<
+          void(chromeos::secure_channel::mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback);
 
@@ -78,13 +78,16 @@ class ClientChannel {
   // been disconnected.
   virtual void PerformRegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
-      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<
+          void(chromeos::secure_channel::mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) = 0;
 
   virtual void PerformGetConnectionMetadata(
-      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) = 0;
+      base::OnceCallback<
+          void(chromeos::secure_channel::mojom::ConnectionMetadataPtr)>
+          callback) = 0;
 
   void NotifyDisconnected();
   void NotifyMessageReceived(const std::string& payload);
@@ -94,15 +97,6 @@ class ClientChannel {
   bool is_disconnected_ = false;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::ClientChannel;
-}  // namespace secure_channel
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CLIENT_CHANNEL_H_

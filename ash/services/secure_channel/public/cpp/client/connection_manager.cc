@@ -4,8 +4,7 @@
 
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
-namespace secure_channel {
+namespace ash::secure_channel {
 
 ConnectionManager::ConnectionManager() = default;
 ConnectionManager::~ConnectionManager() = default;
@@ -44,5 +43,4 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash::secure_channel

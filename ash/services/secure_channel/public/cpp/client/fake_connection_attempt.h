@@ -10,9 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test double implementation of ConnectionAttemptImpl.
 class FakeConnectionAttempt : public ConnectionAttemptImpl {
@@ -29,10 +27,12 @@ class FakeConnectionAttempt : public ConnectionAttemptImpl {
 
   // ConnectionAttemptImpl:
   void OnConnectionAttemptFailure(
-      mojom::ConnectionAttemptFailureReason reason) override;
-  void OnConnection(mojo::PendingRemote<mojom::Channel> channel,
-                    mojo::PendingReceiver<mojom::MessageReceiver>
-                        message_receiver_receiver) override;
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
+      override;
+  void OnConnection(
+      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
+      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
+          message_receiver_receiver) override;
 
   void set_on_connection_attempt_failure_callback(base::OnceClosure callback) {
     on_connection_attempt_failure_callback_ = std::move(callback);
@@ -47,15 +47,6 @@ class FakeConnectionAttempt : public ConnectionAttemptImpl {
   base::OnceClosure on_connection_callback_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::FakeConnectionAttempt;
-}  // namespace secure_channel
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CONNECTION_ATTEMPT_H_

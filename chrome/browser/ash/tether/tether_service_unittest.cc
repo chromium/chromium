@@ -89,15 +89,14 @@ chromeos::multidevice::RemoteDeviceRefList CreateTestDevices() {
 
 class TestTetherService : public TetherService {
  public:
-  TestTetherService(
-      Profile* profile,
-      chromeos::PowerManagerClient* power_manager_client,
-      chromeos::device_sync::DeviceSyncClient* device_sync_client,
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
-      chromeos::multidevice_setup::MultiDeviceSetupClient*
-          multidevice_setup_client,
-      chromeos::NetworkStateHandler* network_state_handler,
-      session_manager::SessionManager* session_manager)
+  TestTetherService(Profile* profile,
+                    chromeos::PowerManagerClient* power_manager_client,
+                    chromeos::device_sync::DeviceSyncClient* device_sync_client,
+                    secure_channel::SecureChannelClient* secure_channel_client,
+                    chromeos::multidevice_setup::MultiDeviceSetupClient*
+                        multidevice_setup_client,
+                    chromeos::NetworkStateHandler* network_state_handler,
+                    session_manager::SessionManager* session_manager)
       : TetherService(profile,
                       power_manager_client,
                       device_sync_client,
@@ -149,7 +148,7 @@ class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
   // TetherComponentImpl::Factory:
   std::unique_ptr<TetherComponent> CreateInstance(
       chromeos::device_sync::DeviceSyncClient* device_sync_client,
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+      secure_channel::SecureChannelClient* secure_channel_client,
       TetherHostFetcher* tether_host_fetcher,
       NotificationPresenter* notification_presenter,
       GmsCoreNotificationsStateTrackerImpl*
@@ -246,19 +245,18 @@ class FakeDeviceSyncClientImplFactory
 };
 
 class FakeSecureChannelClientImplFactory
-    : public chromeos::secure_channel::SecureChannelClientImpl::Factory {
+    : public secure_channel::SecureChannelClientImpl::Factory {
  public:
   FakeSecureChannelClientImplFactory() = default;
 
   ~FakeSecureChannelClientImplFactory() override = default;
 
-  // chromeos::secure_channel::SecureChannelClientImpl::Factory:
-  std::unique_ptr<chromeos::secure_channel::SecureChannelClient> CreateInstance(
+  // secure_channel::SecureChannelClientImpl::Factory:
+  std::unique_ptr<secure_channel::SecureChannelClient> CreateInstance(
       mojo::PendingRemote<chromeos::secure_channel::mojom::SecureChannel>
           channel,
       scoped_refptr<base::TaskRunner> task_runner) override {
-    return std::make_unique<
-        chromeos::secure_channel::FakeSecureChannelClient>();
+    return std::make_unique<secure_channel::FakeSecureChannelClient>();
   }
 };
 
@@ -326,11 +324,11 @@ class TetherServiceTest : public testing::Test {
         fake_device_sync_client_impl_factory_.get());
 
     fake_secure_channel_client_ =
-        std::make_unique<chromeos::secure_channel::FakeSecureChannelClient>();
+        std::make_unique<secure_channel::FakeSecureChannelClient>();
     fake_secure_channel_client_impl_factory_ =
         std::make_unique<FakeSecureChannelClientImplFactory>();
-    chromeos::secure_channel::SecureChannelClientImpl::Factory::
-        SetFactoryForTesting(fake_secure_channel_client_impl_factory_.get());
+    secure_channel::SecureChannelClientImpl::Factory::SetFactoryForTesting(
+        fake_secure_channel_client_impl_factory_.get());
 
     fake_multidevice_setup_client_ = std::make_unique<
         chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
@@ -380,8 +378,8 @@ class TetherServiceTest : public testing::Test {
 
     chromeos::device_sync::DeviceSyncClientImpl::Factory::SetFactoryForTesting(
         nullptr);
-    chromeos::secure_channel::SecureChannelClientImpl::Factory::
-        SetFactoryForTesting(nullptr);
+    secure_channel::SecureChannelClientImpl::Factory::SetFactoryForTesting(
+        nullptr);
     chromeos::multidevice_setup::MultiDeviceSetupClientImpl::Factory::
         SetFactoryForTesting(nullptr);
 
@@ -543,7 +541,7 @@ class TetherServiceTest : public testing::Test {
       fake_device_sync_client_;
   std::unique_ptr<FakeDeviceSyncClientImplFactory>
       fake_device_sync_client_impl_factory_;
-  std::unique_ptr<chromeos::secure_channel::FakeSecureChannelClient>
+  std::unique_ptr<secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
   std::unique_ptr<FakeSecureChannelClientImplFactory>
       fake_secure_channel_client_impl_factory_;

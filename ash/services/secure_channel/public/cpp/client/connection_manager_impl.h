@@ -7,11 +7,11 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
@@ -19,13 +19,7 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 
-namespace chromeos {
-
-namespace multidevice_setup {
-class MultiDeviceSetupClient;
-}  // namespace multidevice_setup
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class SecureChannelClient;
 
@@ -53,8 +47,9 @@ class ConnectionManagerImpl
   void SendMessage(const std::string& payload) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
-      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<
+          void(chromeos::secure_channel::mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
@@ -98,7 +93,8 @@ class ConnectionManagerImpl
 
   // secure_channel::ConnectionAttempt::Delegate:
   void OnConnectionAttemptFailure(
-      secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
+      override;
   void OnConnection(
       std::unique_ptr<secure_channel::ClientChannel> channel) override;
 
@@ -112,23 +108,14 @@ class ConnectionManagerImpl
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   device_sync::DeviceSyncClient* device_sync_client_;
   secure_channel::SecureChannelClient* secure_channel_client_;
-  std::unique_ptr<chromeos::secure_channel::ConnectionAttempt>
-      connection_attempt_;
-  std::unique_ptr<chromeos::secure_channel::ClientChannel> channel_;
+  std::unique_ptr<ConnectionAttempt> connection_attempt_;
+  std::unique_ptr<ClientChannel> channel_;
   std::unique_ptr<base::OneShotTimer> timer_;
   const std::string feature_name_;
   std::unique_ptr<MetricsRecorder> metrics_recorder_;
   base::WeakPtrFactory<ConnectionManagerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::ConnectionManagerImpl;
-}  // namespace secure_channel
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_MANAGER_IMPL_H_

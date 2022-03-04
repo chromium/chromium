@@ -9,16 +9,10 @@
 
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 #include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace multidevice {
-
-class RemoteDeviceRef;
-
-}  // namespace multidevice
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Provides clients access to the PresenceMonitor API.
 class PresenceMonitorClientImpl : public PresenceMonitorClient {
@@ -56,14 +50,6 @@ class PresenceMonitorClientImpl : public PresenceMonitorClient {
   std::unique_ptr<PresenceMonitor> presence_monitor_;
 };
 
-}  // namespace secure_channel
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::PresenceMonitorClientImpl;
-}
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_PRESENCE_MONITOR_CLIENT_IMPL_H_

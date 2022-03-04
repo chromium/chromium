@@ -6,9 +6,7 @@
 
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeSecureChannelClient::ConnectionRequestArguments::ConnectionRequestArguments(
     multidevice::RemoteDeviceRef device_to_connect,
@@ -60,6 +58,4 @@ FakeSecureChannelClient::ListenForConnectionFromDevice(
   return connection_attempt;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

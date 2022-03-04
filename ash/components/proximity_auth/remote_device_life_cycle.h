@@ -9,11 +9,11 @@
 
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 class ClientChannel;
-}  // namespace secure_channel
-}  // namespace chromeos
+}
+}  // namespace ash
 
 namespace proximity_auth {
 
@@ -66,7 +66,7 @@ class RemoteDeviceLifeCycle {
 
   // Returns the active channel to the remote device, or null if the device is
   // not yet connected.
-  virtual chromeos::secure_channel::ClientChannel* GetChannel() const = 0;
+  virtual ash::secure_channel::ClientChannel* GetChannel() const = 0;
 
   // Returns the current state of in the life cycle.
   virtual State GetState() const = 0;

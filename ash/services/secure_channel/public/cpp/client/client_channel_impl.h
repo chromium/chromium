@@ -17,28 +17,27 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Concrete implementation of ClientChannel.
-class ClientChannelImpl : public ClientChannel,
-                          public mojom::MessageReceiver,
-                          public mojom::FilePayloadListener {
+class ClientChannelImpl
+    : public ClientChannel,
+      public chromeos::secure_channel::mojom::MessageReceiver,
+      public chromeos::secure_channel::mojom::FilePayloadListener {
  public:
   class Factory {
    public:
     static std::unique_ptr<ClientChannel> Create(
-        mojo::PendingRemote<mojom::Channel> channel,
-        mojo::PendingReceiver<mojom::MessageReceiver>
+        mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
+        mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
             message_receiver_receiver);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<ClientChannel> CreateInstance(
-        mojo::PendingRemote<mojom::Channel> channel,
-        mojo::PendingReceiver<mojom::MessageReceiver>
+        mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
+        mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
             message_receiver_receiver) = 0;
 
    private:
@@ -54,18 +53,22 @@ class ClientChannelImpl : public ClientChannel,
   friend class SecureChannelClientChannelImplTest;
 
   ClientChannelImpl(
-      mojo::PendingRemote<mojom::Channel> channel,
-      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver);
+      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
+      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
+          message_receiver_receiver);
 
   // ClientChannel:
   void PerformGetConnectionMetadata(
-      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
+      base::OnceCallback<void(
+          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback)
+      override;
   void PerformSendMessage(const std::string& payload,
                           base::OnceClosure on_sent_callback) override;
   void PerformRegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
-      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<
+          void(chromeos::secure_channel::mojom::FileTransferUpdatePtr)>
           file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
@@ -73,11 +76,14 @@ class ClientChannelImpl : public ClientChannel,
   void OnMessageReceived(const std::string& message) override;
 
   // mojom::FilePayloadListener:
-  void OnFileTransferUpdate(mojom::FileTransferUpdatePtr update) override;
+  void OnFileTransferUpdate(
+      chromeos::secure_channel::mojom::FileTransferUpdatePtr update) override;
 
   void OnGetConnectionMetadata(
-      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback,
-      mojom::ConnectionMetadataPtr connection_metadata_ptr);
+      base::OnceCallback<void(
+          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback,
+      chromeos::secure_channel::mojom::ConnectionMetadataPtr
+          connection_metadata_ptr);
 
   // Called when this channel is disconnected or destroyed to notify callers
   // about pending file transfers being canceled.
@@ -90,29 +96,29 @@ class ClientChannelImpl : public ClientChannel,
 
   void FlushForTesting();
 
-  mojo::Remote<mojom::Channel> channel_;
-  mojo::Receiver<mojom::MessageReceiver> receiver_;
+  mojo::Remote<chromeos::secure_channel::mojom::Channel> channel_;
+  mojo::Receiver<chromeos::secure_channel::mojom::MessageReceiver> receiver_;
   // Set of receivers created to listen to file payload transfer updates, one
   // for each payload registered via RegisterPayloadFile(). These receivers will
   // be automatically removed from the set when their corresponding Remote
   // endpoints are destroyed upon transfer completion. current_context() will
   // return the corresponding payload ID when a receiver is called or
   // disconnected.
-  mojo::ReceiverSet<mojom::FilePayloadListener, int64_t>
+  mojo::ReceiverSet<chromeos::secure_channel::mojom::FilePayloadListener,
+                    int64_t>
       file_payload_listeners_;
 
   // Callbacks to receive FileTransferUpdates for registered file payloads.
   // Keyed by payload ID. A callback will be emitted from this map when the
   // corresponding mojo::Remote<mojom::FilePayloadListener> is disconnected.
   base::flat_map<int64_t,
-                 base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>>
+                 base::RepeatingCallback<void(
+                     chromeos::secure_channel::mojom::FileTransferUpdatePtr)>>
       file_transfer_update_callbacks_;
 
   base::WeakPtrFactory<ClientChannelImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CLIENT_CHANNEL_IMPL_H_

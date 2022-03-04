@@ -19,9 +19,6 @@ namespace tether {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when secure_channel moved to ash
-namespace secure_channel = ::chromeos::secure_channel;
-
 const char kTetherFeature[] = "magic_tether";
 
 }  // namespace
@@ -81,7 +78,7 @@ void ConnectionPreserverImpl::HandleSuccessfulTetherAvailabilityResponse(
 }
 
 void ConnectionPreserverImpl::OnConnectionAttemptFailure(
-    secure_channel::mojom::ConnectionAttemptFailureReason reason) {
+    chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason) {
   PA_LOG(WARNING) << "Failed to connect to device "
                   << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
                          preserved_connection_device_id_)
@@ -188,7 +185,7 @@ void ConnectionPreserverImpl::SetPreservedConnection(
   connection_attempt_ = secure_channel_client_->ListenForConnectionFromDevice(
       *remote_device, *local_device, kTetherFeature,
       secure_channel::ConnectionMedium::kBluetoothLowEnergy,
-      secure_channel::ConnectionPriority::kLow);
+      chromeos::secure_channel::ConnectionPriority::kLow);
   connection_attempt_->SetDelegate(this);
 
   preserved_connection_timer_->Start(

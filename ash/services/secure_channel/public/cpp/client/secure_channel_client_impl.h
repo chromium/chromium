@@ -13,11 +13,9 @@
 
 namespace base {
 class TaskRunner;
-}  // namespace base
+}
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Provides clients access to the SecureChannel API.
 class SecureChannelClientImpl : public SecureChannelClient {
@@ -25,7 +23,8 @@ class SecureChannelClientImpl : public SecureChannelClient {
   class Factory {
    public:
     static std::unique_ptr<SecureChannelClient> Create(
-        mojo::PendingRemote<mojom::SecureChannel> channel,
+        mojo::PendingRemote<chromeos::secure_channel::mojom::SecureChannel>
+            channel,
         scoped_refptr<base::TaskRunner> task_runner =
             base::ThreadTaskRunnerHandle::Get());
     static void SetFactoryForTesting(Factory* test_factory);
@@ -33,7 +32,8 @@ class SecureChannelClientImpl : public SecureChannelClient {
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<SecureChannelClient> CreateInstance(
-        mojo::PendingRemote<mojom::SecureChannel> channel,
+        mojo::PendingRemote<chromeos::secure_channel::mojom::SecureChannel>
+            channel,
         scoped_refptr<base::TaskRunner> task_runner) = 0;
 
    private:
@@ -48,8 +48,10 @@ class SecureChannelClientImpl : public SecureChannelClient {
  private:
   friend class SecureChannelClientImplTest;
 
-  SecureChannelClientImpl(mojo::PendingRemote<mojom::SecureChannel> channel,
-                          scoped_refptr<base::TaskRunner> task_runner);
+  SecureChannelClientImpl(
+      mojo::PendingRemote<chromeos::secure_channel::mojom::SecureChannel>
+          channel,
+      scoped_refptr<base::TaskRunner> task_runner);
 
   // SecureChannelClient:
   std::unique_ptr<ConnectionAttempt> InitiateConnectionToDevice(
@@ -72,7 +74,7 @@ class SecureChannelClientImpl : public SecureChannelClient {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<mojom::ConnectionDelegate>
+      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
           connection_delegate_remote);
   void PerformListenForConnectionFromDevice(
       multidevice::RemoteDeviceRef device_to_connect,
@@ -80,28 +82,19 @@ class SecureChannelClientImpl : public SecureChannelClient {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<mojom::ConnectionDelegate>
+      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
           connection_delegate_remote);
 
   void FlushForTesting();
 
-  mojo::Remote<mojom::SecureChannel> secure_channel_remote_;
+  mojo::Remote<chromeos::secure_channel::mojom::SecureChannel>
+      secure_channel_remote_;
 
   scoped_refptr<base::TaskRunner> task_runner_;
 
   base::WeakPtrFactory<SecureChannelClientImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::SecureChannelClientImpl;
-}
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_SECURE_CHANNEL_CLIENT_IMPL_H_

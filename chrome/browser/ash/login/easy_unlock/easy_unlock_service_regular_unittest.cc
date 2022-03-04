@@ -142,7 +142,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
     test_remote_devices_.push_back(test_other_remote_device);
 
     fake_secure_channel_client_ =
-        std::make_unique<chromeos::secure_channel::FakeSecureChannelClient>();
+        std::make_unique<secure_channel::FakeSecureChannelClient>();
     fake_device_sync_client_ =
         std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_multidevice_setup_client_ = std::make_unique<

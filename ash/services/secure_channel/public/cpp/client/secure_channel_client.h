@@ -7,16 +7,16 @@
 
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class ConnectionAttempt;
 class NearbyConnector;
-enum class ConnectionMedium;
-enum class ConnectionPriority;
 
 // Provides clients access to the SecureChannel API.
 //
@@ -75,16 +75,6 @@ class SecureChannelClient {
   SecureChannelClient() = default;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::SecureChannelClient;
-}
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_SECURE_CHANNEL_CLIENT_H_

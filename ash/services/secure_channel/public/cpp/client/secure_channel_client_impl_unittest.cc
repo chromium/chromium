@@ -24,11 +24,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 const size_t kNumTestDevices = 5u;
 
@@ -361,6 +362,4 @@ TEST_F(SecureChannelClientImplTest, TestMultipleConnections) {
   EXPECT_NE(client_channel_1, client_channel_2);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -23,15 +23,19 @@
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace secure_channel {
+namespace ash::secure_channel {
+
 namespace {
+
+using ::ash::multidevice_setup::mojom::HostStatus;
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
+
 const char kSecureChannelFeatureName[] = "phone_hub";
 const char kConnectionResultMetricName[] = "PhoneHub.Connection.Result";
 const char kConnectionDurationMetricName[] = "PhoneHub.Connection.Duration";
 const char kConnectionLatencyMetricName[] = "PhoneHub.Connectivity.Latency";
-
-using ::ash::multidevice_setup::mojom::HostStatus;
 
 constexpr base::TimeDelta kFakeConnectionLatencyTime(base::Seconds(3u));
 constexpr base::TimeDelta kFakeConnectionDurationTime(base::Seconds(10u));
@@ -71,8 +75,7 @@ class ConnectionManagerImplTest : public testing::Test {
         test_local_device_(
             chromeos::multidevice::CreateRemoteDeviceRefForTest()),
         fake_secure_channel_client_(
-            std::make_unique<
-                chromeos::secure_channel::FakeSecureChannelClient>()) {}
+            std::make_unique<FakeSecureChannelClient>()) {}
 
   ConnectionManagerImplTest(const ConnectionManagerImplTest&) = delete;
   ConnectionManagerImplTest& operator=(const ConnectionManagerImplTest&) =
@@ -119,8 +122,7 @@ class ConnectionManagerImplTest : public testing::Test {
   }
 
   void CreateFakeConnectionAttempt() {
-    auto fake_connection_attempt =
-        std::make_unique<chromeos::secure_channel::FakeConnectionAttempt>();
+    auto fake_connection_attempt = std::make_unique<FakeConnectionAttempt>();
     fake_connection_attempt_ = fake_connection_attempt.get();
     fake_secure_channel_client_->set_next_initiate_connection_attempt(
         test_remote_device_, test_local_device_,
@@ -151,11 +153,10 @@ class ConnectionManagerImplTest : public testing::Test {
   chromeos::multidevice::RemoteDeviceRef test_local_device_;
   device_sync::FakeDeviceSyncClient fake_device_sync_client_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
-  std::unique_ptr<chromeos::secure_channel::FakeSecureChannelClient>
-      fake_secure_channel_client_;
+  std::unique_ptr<FakeSecureChannelClient> fake_secure_channel_client_;
   std::unique_ptr<secure_channel::ConnectionManagerImpl> connection_manager_;
   FakeObserver fake_observer_;
-  chromeos::secure_channel::FakeConnectionAttempt* fake_connection_attempt_;
+  FakeConnectionAttempt* fake_connection_attempt_;
   std::unique_ptr<base::SimpleTestClock> test_clock_;
   base::HistogramTester histogram_tester_;
 };
@@ -172,8 +173,7 @@ TEST_F(ConnectionManagerImplTest, SuccessfullyAttemptConnection) {
 
   test_clock_->Advance(kFakeConnectionLatencyTime);
 
-  auto fake_client_channel =
-      std::make_unique<chromeos::secure_channel::FakeClientChannel>();
+  auto fake_client_channel = std::make_unique<FakeClientChannel>();
   fake_connection_attempt_->NotifyConnection(std::move(fake_client_channel));
 
   // Status has been updated to connected, verify that the status observer has
@@ -221,10 +221,8 @@ TEST_F(ConnectionManagerImplTest, SuccessfulAttemptConnectionButDisconnected) {
 
   test_clock_->Advance(kFakeConnectionLatencyTime);
 
-  auto fake_client_channel =
-      std::make_unique<chromeos::secure_channel::FakeClientChannel>();
-  chromeos::secure_channel::FakeClientChannel* fake_client_channel_raw =
-      fake_client_channel.get();
+  auto fake_client_channel = std::make_unique<FakeClientChannel>();
+  FakeClientChannel* fake_client_channel_raw = fake_client_channel.get();
   fake_connection_attempt_->NotifyConnection(std::move(fake_client_channel));
 
   // Status has been updated to connected, verify that the status observer has
@@ -261,10 +259,8 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithMessageReceived) {
 
   test_clock_->Advance(kFakeConnectionLatencyTime);
 
-  auto fake_client_channel =
-      std::make_unique<chromeos::secure_channel::FakeClientChannel>();
-  chromeos::secure_channel::FakeClientChannel* fake_client_channel_raw =
-      fake_client_channel.get();
+  auto fake_client_channel = std::make_unique<FakeClientChannel>();
+  FakeClientChannel* fake_client_channel_raw = fake_client_channel.get();
   fake_connection_attempt_->NotifyConnection(std::move(fake_client_channel));
 
   histogram_tester_.ExpectTimeBucketCount(kConnectionLatencyMetricName,
@@ -356,10 +352,8 @@ TEST_F(ConnectionManagerImplTest, DisconnectConnection) {
 TEST_F(ConnectionManagerImplTest, RegisterPayloadFiles) {
   CreateFakeConnectionAttempt();
   connection_manager_->AttemptNearbyConnection();
-  auto fake_client_channel =
-      std::make_unique<chromeos::secure_channel::FakeClientChannel>();
-  chromeos::secure_channel::FakeClientChannel* fake_client_channel_raw =
-      fake_client_channel.get();
+  auto fake_client_channel = std::make_unique<FakeClientChannel>();
+  FakeClientChannel* fake_client_channel_raw = fake_client_channel.get();
   fake_connection_attempt_->NotifyConnection(std::move(fake_client_channel));
   int registeration_result_count = 0;
 
@@ -398,5 +392,4 @@ TEST_F(ConnectionManagerImplTest, RegisterPayloadFilesBeforeConnection) {
   EXPECT_EQ(1, registeration_result_count);
 }
 
-}  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash::secure_channel

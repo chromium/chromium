@@ -7,9 +7,7 @@
 
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test double implementation of ClientChannel::Observer.
 class FakeClientChannelObserver : public ClientChannel::Observer {
@@ -38,8 +36,6 @@ class FakeClientChannelObserver : public ClientChannel::Observer {
   std::vector<std::string> received_messages_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CLIENT_CHANNEL_OBSERVER_H_

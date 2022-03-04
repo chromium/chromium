@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -15,15 +16,20 @@
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 
-namespace chromeos {
-namespace secure_channel {
+namespace ash::secure_channel {
+
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
+
 constexpr base::TimeDelta kConnectionTimeoutSeconds(base::Seconds(15u));
 
 void RecordConnectionSuccessMetric(const std::string& metric_name_result,
                                    bool success) {
   base::UmaHistogramBoolean(metric_name_result, success);
 }
+
 }  // namespace
 
 ConnectionManagerImpl::MetricsRecorder::MetricsRecorder(
@@ -77,7 +83,7 @@ void ConnectionManagerImpl::MetricsRecorder::OnConnectionStatusChanged() {
 ConnectionManagerImpl::ConnectionManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     device_sync::DeviceSyncClient* device_sync_client,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+    SecureChannelClient* secure_channel_client,
     const std::string& feature_name,
     const std::string& metric_name_result,
     const std::string& metric_name_latency,
@@ -95,7 +101,7 @@ ConnectionManagerImpl::ConnectionManagerImpl(
 ConnectionManagerImpl::ConnectionManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     device_sync::DeviceSyncClient* device_sync_client,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+    SecureChannelClient* secure_channel_client,
     std::unique_ptr<base::OneShotTimer> timer,
     const std::string& feature_name,
     const std::string& metric_name_result,
@@ -215,7 +221,7 @@ void ConnectionManagerImpl::OnConnectionAttemptFailure(
 }
 
 void ConnectionManagerImpl::OnConnection(
-    std::unique_ptr<chromeos::secure_channel::ClientChannel> channel) {
+    std::unique_ptr<ClientChannel> channel) {
   PA_LOG(VERBOSE) << "AttemptConnection() successfully established a "
                   << "connection between local and remote device.";
   timer_->Stop();
@@ -250,5 +256,4 @@ void ConnectionManagerImpl::TearDownConnection() {
   NotifyStatusChanged();
 }
 
-}  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash::secure_channel
