@@ -195,17 +195,13 @@ class AccountSelectionViewBinder {
             String consentText = String.format(view.getContext().getString(consentTextId),
                     properties.mFormattedIdpEtldPlusOne);
 
-            // If the consent text includes the link for the privacy policy and there is no
-            // corresponding URL, remove the link tag. This cannot happen for the terms of service
-            // as we just performed the check. This could potentially happen for privacy policy
-            // because the API checks whether there is some nonempty string provided, but we later
-            // transform this into a URL, and it may become empty when sanity checking.
+            // |privacyPolicySpan| cannot be null due to the following:
+            // 1. We check that the privacy URL is valid in
+            // FederatedAuthRequestImpl::OnClientMetadataResponseReceived(), and an empty URL is
+            // invalid.
+            // 2. createLink() only returns null if the provided URL is empty.
             List<SpanApplier.SpanInfo> spans = new ArrayList<>();
-            if (privacyPolicySpan == null) {
-                consentText = consentText.replaceAll("</?link_privacy_policy>", "");
-            } else {
-                spans.add(privacyPolicySpan);
-            }
+            spans.add(privacyPolicySpan);
             if (termsOfServiceSpan != null) {
                 spans.add(termsOfServiceSpan);
             }
