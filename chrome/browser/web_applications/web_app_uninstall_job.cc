@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 
 namespace web_app {
 
@@ -141,8 +142,8 @@ void WebAppUninstallJob::MaybeFinishUninstall() {
       break;
   }
   install_manager_->NotifyWebAppUninstalled(app_id_);
-  std::move(callback_).Run(errors_ ? WebAppUninstallJobResult::kError
-                                   : WebAppUninstallJobResult::kSuccess);
+  std::move(callback_).Run(errors_ ? webapps::UninstallResultCode::kError
+                                   : webapps::UninstallResultCode::kSuccess);
 }
 
 }  // namespace web_app

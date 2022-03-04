@@ -15,6 +15,7 @@
 class PrefService;
 
 namespace webapps {
+enum class UninstallResultCode;
 enum class WebappUninstallSource;
 }
 
@@ -27,11 +28,6 @@ class WebAppInstallFinalizer;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 
-enum class WebAppUninstallJobResult {
-  kSuccess = 0,
-  kError = 1,
-};
-
 // Uninstalls a given web app by:
 // 1) Unregistering OS hooks.
 // 2) Deleting the app from the database.
@@ -42,7 +38,8 @@ enum class WebAppUninstallJobResult {
 // TODO(https://crbug.com/1162477): Make the database delete happen last.
 class WebAppUninstallJob {
  public:
-  using UninstallCallback = base::OnceCallback<void(WebAppUninstallJobResult)>;
+  using UninstallCallback =
+      base::OnceCallback<void(webapps::UninstallResultCode)>;
 
   WebAppUninstallJob(OsIntegrationManager* os_integration_manager,
                      WebAppSyncBridge* sync_bridge,

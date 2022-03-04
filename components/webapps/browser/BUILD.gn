@@ -10,6 +10,7 @@ source_set("constants") {
   sources = [
     "install_result_code.cc",
     "install_result_code.h",
+    "uninstall_result_code.h",
   ]
 }
 

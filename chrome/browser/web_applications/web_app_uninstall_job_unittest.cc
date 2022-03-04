@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -103,8 +104,8 @@ TEST_F(WebAppUninstallJobTest, SimpleUninstall) {
   base::RunLoop loop;
   task.Start(id, url::Origin(), webapps::WebappUninstallSource::kAppMenu,
              WebAppUninstallJob::ModifyAppRegistry::kYes,
-             base::BindLambdaForTesting([&](WebAppUninstallJobResult result) {
-               EXPECT_EQ(WebAppUninstallJobResult::kSuccess, result);
+             base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+               EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
                loop.Quit();
              }));
   loop.Run();
@@ -139,8 +140,8 @@ TEST_F(WebAppUninstallJobTest, FailedDataDelete) {
   base::RunLoop loop;
   task.Start(id, url::Origin(), webapps::WebappUninstallSource::kAppMenu,
              WebAppUninstallJob::ModifyAppRegistry::kYes,
-             base::BindLambdaForTesting([&](WebAppUninstallJobResult result) {
-               EXPECT_EQ(WebAppUninstallJobResult::kError, result);
+             base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+               EXPECT_EQ(webapps::UninstallResultCode::kError, code);
                loop.Quit();
              }));
   loop.Run();
@@ -176,8 +177,8 @@ TEST_F(WebAppUninstallJobTest, FailedOsHooks) {
   base::RunLoop loop;
   task.Start(id, url::Origin(), webapps::WebappUninstallSource::kAppMenu,
              WebAppUninstallJob::ModifyAppRegistry::kYes,
-             base::BindLambdaForTesting([&](WebAppUninstallJobResult result) {
-               EXPECT_EQ(WebAppUninstallJobResult::kError, result);
+             base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+               EXPECT_EQ(webapps::UninstallResultCode::kError, code);
                loop.Quit();
              }));
   loop.Run();

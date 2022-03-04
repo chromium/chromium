@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -499,14 +500,14 @@ void WebAppInstallFinalizer::OnUninstallComplete(
     AppId app_id,
     webapps::WebappUninstallSource source,
     UninstallWebAppCallback callback,
-    WebAppUninstallJobResult result) {
+    webapps::UninstallResultCode code) {
   DCHECK(base::Contains(pending_uninstalls_, app_id));
   pending_uninstalls_.erase(app_id);
   if (source == webapps::WebappUninstallSource::kSync) {
     base::UmaHistogramBoolean("Webapp.SyncInitiatedUninstallResult",
-                              result == WebAppUninstallJobResult::kSuccess);
+                              code == webapps::UninstallResultCode::kSuccess);
   }
-  std::move(callback).Run(result == WebAppUninstallJobResult::kSuccess);
+  std::move(callback).Run(code == webapps::UninstallResultCode::kSuccess);
 }
 
 void WebAppInstallFinalizer::UninstallExternalWebAppOrRemoveSource(
