@@ -494,21 +494,6 @@ const char kTimesHIDDialogShown[] = "HIDDialog.shown_how_many_times";
 const char kSplitSettingsSyncTrialGroup[] = "split_settings_sync.trial_group";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Deprecated 03/2021
-const char kLiteModeUserNeedsNotification[] =
-    "previews.litepage.user-needs-notification";
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Deprecated 03/2021
-const char kPinnedExtensionsMigrationComplete[] =
-    "extensions.pinned_extension_migration";
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Deprecated 03/2021
-const char kRunAllFlashInAllowMode[] = "plugins.run_all_flash_in_allow_mode";
-#endif
-
 // Deprecated 04/2021.
 const char kSessionStatisticFCPMean[] =
     "optimization_guide.session_statistic.fcp_mean";
@@ -756,10 +741,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(kCloudPolicyOverridesPlatformPolicy, false);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  registry->RegisterBooleanPref(kPinnedExtensionsMigrationComplete, false);
-#endif
-
   registry->RegisterStringPref(kPrivacyBudgetActiveSurfaces, std::string());
   registry->RegisterStringPref(kPrivacyBudgetRetiredSurfaces, std::string());
   registry->RegisterUint64Pref(kPrivacyBudgetSeed, 0u);
@@ -791,19 +772,9 @@ void RegisterProfilePrefsForMigration(
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
 
-  registry->RegisterBooleanPref(kLiteModeUserNeedsNotification, true);
-
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kMediaRouterCloudServicesPrefSet, false);
   registry->RegisterBooleanPref(kMediaRouterEnableCloudServices, false);
-  registry->RegisterStringPref(
-      enterprise_connectors::kDeviceTrustPrivateKeyPref, std::string());
-  registry->RegisterStringPref(enterprise_connectors::kDeviceTrustPublicKeyPref,
-                               std::string());
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  registry->RegisterBooleanPref(kRunAllFlashInAllowMode, false);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1154,13 +1125,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   policy::SystemFeaturesDisableListPolicyHandler::RegisterPrefs(registry);
   policy::DlpRulesManagerImpl::RegisterPrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-// TODO(crbug/1169547) Remove `BUILDFLAG(IS_CHROMEOS_LACROS)` once the
-// migration is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
-  enterprise_connectors::RegisterLocalPrefs(registry);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
   confirm_quit::RegisterLocalState(registry);
@@ -1576,11 +1540,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kSplitSettingsSyncTrialGroup);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Added 03/2021
-  local_state->ClearPref(kPinnedExtensionsMigrationComplete);
-#endif
-
   // Added 07/2021
   local_state->ClearPref(kUserAgentClientHintsEnabled);
 
@@ -1656,20 +1615,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 10/2021
   profile_prefs->ClearPref(kHasCameraAppMigratedToSWA);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 03/2021
-  profile_prefs->ClearPref(kLiteModeUserNeedsNotification);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 03/2021
-  profile_prefs->ClearPref(enterprise_connectors::kDeviceTrustPrivateKeyPref);
-  profile_prefs->ClearPref(enterprise_connectors::kDeviceTrustPublicKeyPref);
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Added 03/2021
-  profile_prefs->ClearPref(kRunAllFlashInAllowMode);
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   // Added 04/2021
