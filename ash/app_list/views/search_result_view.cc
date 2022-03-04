@@ -609,13 +609,24 @@ void SearchResultView::StyleLabel(views::Label* label,
 
     bool has_match_tag = (tag.styles & SearchResult::Tag::MATCH);
     if (has_match_tag) {
-      label->SetTextStyleRange(AshTextStyle::STYLE_EMPHASIZED, tag.range);
+      switch (view_type_) {
+        case SearchResultViewType::kClassic:
+          label->SetTextStyleRange(AshTextStyle::STYLE_EMPHASIZED, tag.range);
+          break;
+        case SearchResultViewType::kDefault:
+          ABSL_FALLTHROUGH_INTENDED;
+        case SearchResultViewType::kAnswerCard:
+          label->SetTextStyleRange(AshTextStyle::STYLE_HIGHLIGHT, tag.range);
+          break;
+      }
     }
   }
 
   switch (color_tag) {
     case SearchResult::Tag::NONE:
+      ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::DIM:
+      ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::MATCH:
       label->SetEnabledColor(
           is_title_label
@@ -646,7 +657,7 @@ void SearchResultView::StyleBigTitleContainer() {
 
 void SearchResultView::StyleTitleContainer() {
   for (auto& span : title_label_tags_) {
-    StyleLabel(span.GetLabel(), false /*is_title_label*/, span.GetTags());
+    StyleLabel(span.GetLabel(), true /*is_title_label*/, span.GetTags());
   }
 }
 
