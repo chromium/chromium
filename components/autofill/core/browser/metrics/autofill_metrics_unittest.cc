@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
@@ -380,6 +381,14 @@ class AutofillMetricsTest : public testing::Test {
   // Purge recorded UKM metrics for running more tests.
   void PurgeUKM();
 
+  // Mocks a credit card fetching was completed. This mock starts from the
+  // BrowserAutofillManager. Use these if your test does not depends on
+  // OnDidGetRealPan but just need to mock the card fetching result (so that
+  // you don't need to branch on what auth method was used).
+  void OnCreditCardFetchingSuccessful(const std::u16string& real_pan,
+                                      bool is_virtual_card = false);
+  void OnCreditCardFetchingFailed();
+
   base::test::TaskEnvironment task_environment_;
   MockAutofillClient autofill_client_;
   raw_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
@@ -392,6 +401,8 @@ class AutofillMetricsTest : public testing::Test {
 
  private:
   void CreateTestAutofillProfiles();
+
+  CreditCard credit_card_ = test::GetMaskedServerCard();
 };
 
 AutofillMetricsTest::AutofillMetricsTest() {
@@ -552,6 +563,23 @@ void AutofillMetricsTest::OnDidGetRealPanWithNonHttpOkResponse() {
   // Don't set |response.card_type|, so that it stays as kUnknown.
   full_card_request->OnDidGetRealPan(
       AutofillClient::PaymentsRpcResult::kPermanentFailure, response);
+}
+
+void AutofillMetricsTest::OnCreditCardFetchingSuccessful(
+    const std::u16string& real_pan,
+    bool is_virtual_card) {
+  credit_card_.set_record_type(
+      is_virtual_card ? CreditCard::RecordType::VIRTUAL_CARD
+                      : CreditCard::RecordType::MASKED_SERVER_CARD);
+  credit_card_.SetNumber(real_pan);
+
+  browser_autofill_manager_->OnCreditCardFetched(
+      CreditCardFetchResult::kSuccess, &credit_card_, u"123");
+}
+
+void AutofillMetricsTest::OnCreditCardFetchingFailed() {
+  browser_autofill_manager_->OnCreditCardFetched(
+      CreditCardFetchResult::kPermanentError, nullptr, u"");
 }
 
 void AutofillMetricsTest::RecreateCreditCards(
@@ -5564,8 +5592,8 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
         form.fields[2]);
-    OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
-                    "6011000990139424");
+    OnCreditCardFetchingSuccessful(u"6011000990139424",
+                                   /*is_virtual_card=*/true);
     histogram_tester.ExpectBucketCount(
         "Autofill.FormEvents.CreditCard",
         FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED, 1);
@@ -5591,13 +5619,13 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
         form.fields[2]);
-    OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
-                    "6011000990139424");
+    OnCreditCardFetchingSuccessful(u"6011000990139424",
+                                   /*is_virtual_card=*/true);
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
         form.fields[2]);
-    OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
-                    "6011000990139424");
+    OnCreditCardFetchingSuccessful(u"6011000990139424",
+                                   /*is_virtual_card=*/true);
     histogram_tester.ExpectBucketCount(
         "Autofill.FormEvents.CreditCard",
         FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED, 2);
@@ -5676,8 +5704,8 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
         form.fields.front());
-    OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
-                    "6011000990139424");
+    OnCreditCardFetchingSuccessful(u"6011000990139424",
+                                   /*is_virtual_card=*/true);
     histogram_tester.ExpectBucketCount(
         "Autofill.FormEvents.CreditCard",
         FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED, 1);
@@ -5704,8 +5732,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
     browser_autofill_manager_->FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.back(),
         browser_autofill_manager_->MakeFrontendIDForTest(guid, std::string()));
-    OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
-                    "6011000990139424");
+    OnCreditCardFetchingSuccessful(u"6011000990139424");
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -6668,8 +6695,8 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
         form.fields.front());
-    OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
-                    "6011000990139424");
+    OnCreditCardFetchingSuccessful(u"6011000990139424",
+                                   /*is_virtual_card=*/true);
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -6762,8 +6789,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     browser_autofill_manager_->FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.back(),
         browser_autofill_manager_->MakeFrontendIDForTest(guid, std::string()));
-    OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
-                    "6011000990139424");
+    OnCreditCardFetchingSuccessful(u"6011000990139424");
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -7127,8 +7153,8 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
         form.fields.front());
-    OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
-                    "6011000990139424");
+    OnCreditCardFetchingSuccessful(u"6011000990139424",
+                                   /*is_virtual_card=*/true);
     browser_autofill_manager_->OnFormSubmitted(
         form, /*known_success=*/false, SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -7187,8 +7213,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
     browser_autofill_manager_->FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.back(),
         browser_autofill_manager_->MakeFrontendIDForTest(guid, std::string()));
-    OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
-                    "6011000990139424");
+    OnCreditCardFetchingSuccessful(u"6011000990139424");
     histogram_tester.ExpectBucketCount(
         "Autofill.FormEvents.CreditCard",
         FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1);

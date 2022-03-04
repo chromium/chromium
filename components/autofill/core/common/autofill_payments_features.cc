@@ -123,7 +123,7 @@ const base::Feature kAutofillEnableVirtualCardManagementInDesktopSettingsPage{
 // authentication based on risk level.
 const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication{
     "AutofillEnableVirtualCardsRiskBasedAuthentication",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, Autofill will attempt to fill merchant promo/coupon/gift code
 // fields when data is available.

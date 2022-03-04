@@ -4307,41 +4307,6 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardForm_VirtualCard) {
-  personal_data_.ClearCreditCards();
-  CreditCard masked_server_card;
-  test::SetCreditCardInfo(&masked_server_card, "Lorem Ipsum",
-                          "5555555555554444",  // Mastercard
-                          "10", test::NextYear().c_str(), "1");
-  masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
-  masked_server_card.set_record_type(
-      CreditCard::RecordType::MASKED_SERVER_CARD);
-  masked_server_card.SetNetworkForMaskedCard(kMasterCard);
-  personal_data_.AddServerCreditCard(masked_server_card);
-  // Set up our form data.
-  FormData form;
-  CreateTestCreditCardFormData(&form, true, false);
-  std::vector<FormData> forms(1, form);
-  FormsSeen(forms);
-
-  browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
-      mojom::RendererFormDataAction::kFill, masked_server_card.guid(),
-      kDefaultPageID, form, form.fields[1]);
-
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  details.exp_month = u"10";
-  details.exp_year = u"2998";
-  full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-
-  const payments::PaymentsClient::UnmaskRequestDetails* request_details =
-      payments_client_->unmask_request();
-  EXPECT_EQ(request_details->card.number(), u"5555555555554444");
-  EXPECT_EQ(request_details->last_committed_url_origin.value(),
-            GURL("https://example.test/"));
-}
-
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
        PreviewCreditCardForm_VirtualCard) {
   personal_data_.ClearCreditCards();
   CreditCard virtual_card = test::GetVirtualCard();
