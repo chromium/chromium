@@ -57,7 +57,6 @@ namespace chrome_pdf {
 class PDFiumEngine;
 class PdfAccessibilityDataHandler;
 
-// Skeleton for a `blink::WebPlugin` to replace `OutOfProcessInstance`.
 class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public blink::WebPlugin,
                                public pdf::mojom::PdfListener,

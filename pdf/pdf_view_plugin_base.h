@@ -56,8 +56,7 @@ struct AccessibilityPageObjects;
 struct AccessibilityTextRunInfo;
 struct AccessibilityViewportInfo;
 
-// Common base to share code between the two plugin implementations,
-// `OutOfProcessInstance` (Pepper) and `PdfViewWebPlugin` (Blink).
+// TODO(crbug.com/1302059): Merge with PdfViewWebPlugin.
 class PdfViewPluginBase : public PDFEngine::Client,
                           public PaintManager::Client,
                           public PreviewModeClient::Client {
@@ -366,11 +365,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Requests the plugin's render frame to set up a print dialog for the
   // document.
   virtual void InvokePrintDialog() = 0;
-
-  // Notifies the embedder about a new link under the cursor.
-  // TODO(crbug.com/702993): This is only needed by `OutOfProcessInstance`.
-  // Remove this method when that class ceases to exist.
-  virtual void NotifyLinkUnderCursor() {}
 
   // Notifies the embedder of the top-left and bottom-right coordinates of the
   // current selection.

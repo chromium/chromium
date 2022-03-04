@@ -562,11 +562,7 @@ void PdfViewPluginBase::DocumentFocusChanged(bool document_has_focus) {
 
 void PdfViewPluginBase::SetLinkUnderCursor(
     const std::string& link_under_cursor) {
-  if (link_under_cursor_ == link_under_cursor)
-    return;
-
   link_under_cursor_ = link_under_cursor;
-  NotifyLinkUnderCursor();
 }
 
 bool PdfViewPluginBase::HandleInputEvent(const blink::WebInputEvent& event) {

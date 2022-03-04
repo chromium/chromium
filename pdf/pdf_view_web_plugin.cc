@@ -314,7 +314,6 @@ bool PdfViewWebPlugin::InitializeForTesting(
   return InitializeCommon(std::move(container_wrapper), std::move(engine));
 }
 
-// Modeled on `OutOfProcessInstance::Init()`.
 bool PdfViewWebPlugin::InitializeCommon(
     std::unique_ptr<ContainerWrapper> container_wrapper,
     std::unique_ptr<PDFiumEngine> engine) {

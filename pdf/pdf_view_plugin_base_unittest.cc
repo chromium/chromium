@@ -149,9 +149,8 @@ class MockUrlLoader : public UrlLoader {
   MOCK_METHOD(void, Close, (), (override));
 };
 
-// This test approach relies on PdfViewPluginBase continuing to exist.
-// PdfViewPluginBase and PdfViewWebPlugin are going to merge once
-// OutOfProcessInstance is deprecated.
+// TODO(crbug.com/1302059): Overhaul this when PdfViewPluginBase merges with
+// PdfViewWebPlugin.
 class FakePdfViewPluginBase : public PdfViewPluginBase {
  public:
   FakePdfViewPluginBase() {
