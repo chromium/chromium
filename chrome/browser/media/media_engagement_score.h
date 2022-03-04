@@ -61,8 +61,9 @@ class MediaEngagementScore final {
 
   // Writes the values in this score into |settings_map_|. If there are multiple
   // instances of a score object for an origin, this could result in stale data
-  // being stored.
-  void Commit();
+  // being stored. Takes in a boolean indicating whether to force an update
+  // even if properties of the score are unchanged.
+  void Commit(bool force_update = false);
 
   // Get/increment the number of visits this origin has had.
   int visits() const { return visits_; }
@@ -109,8 +110,9 @@ class MediaEngagementScore final {
 
   // Update the dictionary continaing the latest score values and return whether
   // they have changed or not (since what was last retrieved from content
-  // settings).
-  bool UpdateScoreDict();
+  // settings). Takes in a boolean indicating whether to force an update
+  // even if properties of the score are unchanged.
+  bool UpdateScoreDict(bool force_update = false);
 
   // If the number of playbacks or visits is updated then this will recalculate
   // the total score and whether the score is considered high.

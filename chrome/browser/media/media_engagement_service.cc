@@ -5,6 +5,7 @@
 #include "chrome/browser/media/media_engagement_service.h"
 
 #include <functional>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/time/clock.h"
@@ -31,7 +32,12 @@ namespace {
 
 // The current schema version of the MEI data. If this value is higher
 // than the stored value, all MEI data will be wiped.
-static const int kSchemaVersion = 4;
+static const int kSchemaVersion = 5;
+
+// The schema version that adds an expiration duration to the media engagement
+// scores.
+// TODO: Remove this once kSchemaVersion is incremented beyond 5.
+static const int kSchemaVersionAddingExpiration = 5;
 
 // Do not change the values of this enum as it is used for UMA.
 enum class MediaEngagementClearReason {
@@ -120,8 +126,21 @@ MediaEngagementService::MediaEngagementService(Profile* profile,
   // If kSchemaVersion is higher than what we have stored we should wipe
   // all Media Engagement data.
   if (GetSchemaVersion() < kSchemaVersion) {
-    HostContentSettingsMapFactory::GetForProfile(profile_)
-        ->ClearSettingsForOneType(ContentSettingsType::MEDIA_ENGAGEMENT);
+    if (GetSchemaVersion() == kSchemaVersionAddingExpiration - 1) {
+      // Schema version 5 just adds an expiration time, so we can update
+      // all records with an expiration time instead of clearing all media
+      // engagement entries when upgrading from version 4 to 5.
+      // TODO: Remove this code once kSchemaVersion is incremented beyond 5.
+      std::vector<MediaEngagementScore> data = GetAllStoredScores();
+      for (MediaEngagementScore& score : data) {
+        // Recommit the score to update it with an expiration time.
+        score.Commit(true);
+      }
+    } else {
+      HostContentSettingsMapFactory::GetForProfile(profile_)
+          ->ClearSettingsForOneType(ContentSettingsType::MEDIA_ENGAGEMENT);
+    }
+
     SetSchemaVersion(kSchemaVersion);
   }
 }

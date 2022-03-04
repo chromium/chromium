@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -26,7 +27,7 @@ const char MediaEngagementScore::kHighScoreLowerThresholdParamName[] =
 const char MediaEngagementScore::kHighScoreUpperThresholdParamName[] =
     "upper_threshold";
 
-base::TimeDelta kScoreExpirationDuration = base::Days(30);
+base::TimeDelta kScoreExpirationDuration = base::Days(90);
 
 namespace {
 
@@ -149,13 +150,13 @@ MediaEngagementScore::MediaEngagementScore(MediaEngagementScore&&) = default;
 MediaEngagementScore& MediaEngagementScore::operator=(MediaEngagementScore&&) =
     default;
 
-void MediaEngagementScore::Commit() {
+void MediaEngagementScore::Commit(bool force_update) {
   DCHECK(settings_map_);
 
   if (origin_.opaque())
     return;
 
-  if (!UpdateScoreDict())
+  if (!UpdateScoreDict(force_update))
     return;
 
   content_settings::ContentSettingConstraints constraints = {
@@ -171,7 +172,7 @@ void MediaEngagementScore::IncrementMediaPlaybacks() {
   last_media_playback_time_ = clock_->Now();
 }
 
-bool MediaEngagementScore::UpdateScoreDict() {
+bool MediaEngagementScore::UpdateScoreDict(bool force_update) {
   int stored_visits = 0;
   int stored_media_playbacks = 0;
   double stored_last_media_playback_internal = 0;
@@ -206,7 +207,7 @@ bool MediaEngagementScore::UpdateScoreDict() {
                  stored_last_media_playback_internal !=
                      last_media_playback_time_.ToInternalValue();
 
-  if (!changed)
+  if (!changed && !force_update)
     return false;
 
   score_dict_->SetInteger(kVisitsKey, visits_);
