@@ -18,6 +18,10 @@ namespace privacy_sandbox_test_util {
 
 MockPrivacySandboxObserver::MockPrivacySandboxObserver() = default;
 MockPrivacySandboxObserver::~MockPrivacySandboxObserver() = default;
+MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() =
+    default;
+MockPrivacySandboxSettingsDelegate::~MockPrivacySandboxSettingsDelegate() =
+    default;
 
 void SetupTestState(
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,

@@ -155,13 +155,19 @@ PrivacySandboxService::PrivacySandboxService(
   // TODO(crbug.com/1166665): Remove reconciliation logic when kAPI controls are
   // further separated from cookie controls.
   MaybeReconcilePrivacySandboxPref();
+
+  // If the Sandbox is currently restricted, disable the V2 preference. The user
+  // must manually enable the sandbox if they stop being restricted.
+  if (IsPrivacySandboxRestricted())
+    pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
 }
 
 PrivacySandboxService::~PrivacySandboxService() = default;
 
 PrivacySandboxService::DialogType
 PrivacySandboxService::GetRequiredDialogType() {
-  return GetRequiredDialogTypeInternal(pref_service_, profile_type_);
+  return GetRequiredDialogTypeInternal(pref_service_, profile_type_,
+                                       privacy_sandbox_settings_);
 }
 
 void PrivacySandboxService::DialogActionOccurred(
@@ -592,7 +598,8 @@ void PrivacySandboxService::SetTopicAllowed(
 /*static*/ PrivacySandboxService::DialogType
 PrivacySandboxService::GetRequiredDialogTypeInternal(
     PrefService* pref_service,
-    profile_metrics::BrowserProfileType profile_type) {
+    profile_metrics::BrowserProfileType profile_type,
+    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings) {
   // If the profile isn't a regular profile, no dialog should ever be shown.
   if (profile_type != profile_metrics::BrowserProfileType::kRegular)
     return DialogType::kNone;
@@ -610,6 +617,21 @@ PrivacySandboxService::GetRequiredDialogTypeInternal(
 
   if (privacy_sandbox::kPrivacySandboxSettings3ForceShowNoticeForTesting.Get())
     return DialogType::kNotice;
+
+  // If the Privacy Sandbox is restricted, no dialog is shown.
+  if (privacy_sandbox_settings->IsPrivacySandboxRestricted()) {
+    pref_service->SetBoolean(
+        prefs::kPrivacySandboxNoConfirmationSandboxRestricted, true);
+    return DialogType::kNone;
+  }
+
+  // If a user wasn't shown a confirmation because the sandbox was previously
+  // restricted, do not attempt to show them one. The user will be able to
+  // enable the Sandbox on the settings page.
+  if (pref_service->GetBoolean(
+          prefs::kPrivacySandboxNoConfirmationSandboxRestricted)) {
+    return DialogType::kNone;
+  }
 
   // If a user wasn't shown a confirmation because they previously turned the
   // Privacy Sandbox off, we do not attempt to re-show one.

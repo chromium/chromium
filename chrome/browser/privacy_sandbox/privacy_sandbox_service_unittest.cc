@@ -62,6 +62,17 @@ class TestInterestGroupManager : public content::InterestGroupManager {
   std::vector<url::Origin> origins_;
 };
 
+class MockPrivacySandboxSettings
+    : public privacy_sandbox::PrivacySandboxSettings {
+ public:
+  void SetupDefaultResponse() {
+    ON_CALL(*this, IsPrivacySandboxRestricted).WillByDefault([]() {
+      return false;
+    });
+  }
+  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
+};
+
 struct DialogTestState {
   bool consent_required;
   bool old_api_pref;
@@ -635,17 +646,27 @@ class PrivacySandboxServiceTest : public testing::Test {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    InitializePrefsBeforeStart();
+    auto mock_delegate = std::make_unique<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
+    mock_delegate_ = mock_delegate.get();
+
+    InitializeBeforeStart();
+
+    privacy_sandbox_settings_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxSettings>(
+            std::move(mock_delegate), host_content_settings_map(),
+            cookie_settings(), prefs(), /*incognito_profile=*/false);
 
     privacy_sandbox_service_ = std::make_unique<PrivacySandboxService>(
-        PrivacySandboxSettingsFactory::GetForProfile(profile()),
-        CookieSettingsFactory::GetForProfile(profile()).get(),
-        profile()->GetPrefs(), policy_service(), sync_service(),
+        privacy_sandbox_settings(), cookie_settings(), profile()->GetPrefs(),
+        policy_service(), sync_service(),
         identity_test_env()->identity_manager(), test_interest_group_manager(),
         GetProfileType());
   }
 
-  virtual void InitializePrefsBeforeStart() {}
+  virtual void InitializeBeforeStart() {
+    mock_delegate()->SetupDefaultResponse(/*restricted=*/false);
+  }
 
   virtual profile_metrics::BrowserProfileType GetProfileType() {
     return profile_metrics::BrowserProfileType::kRegular;
@@ -663,7 +684,7 @@ class PrivacySandboxServiceTest : public testing::Test {
     return privacy_sandbox_service_.get();
   }
   privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
-    return PrivacySandboxSettingsFactory::GetForProfile(profile());
+    return privacy_sandbox_settings_.get();
   }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   sync_preferences::TestingPrefServiceSyncable* prefs() {
@@ -672,6 +693,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   HostContentSettingsMap* host_content_settings_map() {
     return HostContentSettingsMapFactory::GetForProfile(profile());
   }
+  content_settings::CookieSettings* cookie_settings() {
+    return CookieSettingsFactory::GetForProfile(profile()).get();
+  }
   syncer::TestSyncService* sync_service() { return &sync_service_; }
   policy::MockPolicyService* policy_service() { return &mock_policy_service_; }
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -679,6 +703,10 @@ class PrivacySandboxServiceTest : public testing::Test {
   }
   TestInterestGroupManager* test_interest_group_manager() {
     return &test_interest_group_manager_;
+  }
+  privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
+  mock_delegate() {
+    return mock_delegate_;
   }
 
  private:
@@ -690,6 +718,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   syncer::TestSyncService sync_service_;
   TestInterestGroupManager test_interest_group_manager_;
+  privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate* mock_delegate_;
+  std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
+      privacy_sandbox_settings_;
 
   std::unique_ptr<PrivacySandboxService> privacy_sandbox_service_;
 };
@@ -869,10 +900,24 @@ TEST_F(PrivacySandboxServiceTest, DialogActionUpdatesRequiredDialog) {
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
 }
 
+class PrivacySandboxRestrictedTest : public PrivacySandboxServiceTest {
+  void InitializeBeforeStart() override {
+    prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
+    mock_delegate()->SetupDefaultResponse(/*restricted=*/true);
+  }
+};
+
+TEST_F(PrivacySandboxRestrictedTest, DisablePreferenceOnStartup) {
+  // Confirm that because it is restricted, the Privacy Sandbox, which will have
+  // been enabled in the test setup, has been disabled by the service during
+  // creation.
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+}
+
 class PrivacySandboxServiceTestReconciliationBlocked
     : public PrivacySandboxServiceTest {
  public:
-  void InitializePrefsBeforeStart() override {
+  void InitializeBeforeStart() override {
     // Set the reconciled preference to true here, so when the service is
     // created prior to each test case running, it does not attempt to reconcile
     // the preferences. Tests must call ResetReconciledPref before testing to
@@ -1612,9 +1657,9 @@ TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoDialogRequired) {
             privacy_sandbox_service()->GetRequiredDialogType());
 }
 
-class PrivacySandboxServiceDeathTest : public testing::TestWithParam<int> {
+class PrivacySandboxServiceDialogTestBase {
  public:
-  PrivacySandboxServiceDeathTest() {
+  PrivacySandboxServiceDialogTestBase() {
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
   }
 
@@ -1623,14 +1668,57 @@ class PrivacySandboxServiceDeathTest : public testing::TestWithParam<int> {
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return &pref_service_;
   }
+  MockPrivacySandboxSettings* privacy_sandbox_settings() {
+    return &privacy_sandbox_settings_;
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  MockPrivacySandboxSettings privacy_sandbox_settings_;
 };
+
+class PrivacySandboxServiceDialogTest
+    : public PrivacySandboxServiceDialogTestBase,
+      public testing::Test {};
+
+TEST_F(PrivacySandboxServiceDialogTest, RestrictedDialog) {
+  // Confirm that when the Privacy Sandbox is restricted, that no dialog is
+  // shown.
+  SetupDialogTestState(feature_list(), prefs(),
+                       {/*consent_required=*/true,
+                        /*old_api_pref=*/true,
+                        /*new_api_pref=*/false,
+                        /*notice_displayed=*/false,
+                        /*consent_decision_made=*/false,
+                        /*confirmation_not_shown=*/false});
+
+  EXPECT_CALL(*privacy_sandbox_settings(), IsPrivacySandboxRestricted())
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            PrivacySandboxService::GetRequiredDialogTypeInternal(
+                prefs(), profile_metrics::BrowserProfileType::kRegular,
+                privacy_sandbox_settings()));
+
+  // After being restricted, even if the restriction is removed, no dialog
+  // should be shown.
+  EXPECT_CALL(*privacy_sandbox_settings(), IsPrivacySandboxRestricted())
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            PrivacySandboxService::GetRequiredDialogTypeInternal(
+                prefs(), profile_metrics::BrowserProfileType::kRegular,
+                privacy_sandbox_settings()));
+}
+
+class PrivacySandboxServiceDeathTest
+    : public PrivacySandboxServiceDialogTestBase,
+      public testing::TestWithParam<int> {};
 
 TEST_P(PrivacySandboxServiceDeathTest, GetRequiredDialogType) {
   const auto& test_case = kDialogTestCases[GetParam()];
+  privacy_sandbox_settings()->SetupDefaultResponse();
 
   testing::Message scope_message;
   scope_message << "consent_required:" << test_case.test_setup.consent_required
@@ -1645,18 +1733,24 @@ TEST_P(PrivacySandboxServiceDeathTest, GetRequiredDialogType) {
 
   SetupDialogTestState(feature_list(), prefs(), test_case.test_setup);
   if (test_case.expected_output.dcheck_failure) {
-    EXPECT_DCHECK_DEATH(PrivacySandboxService::GetRequiredDialogTypeInternal(
-        prefs(), profile_metrics::BrowserProfileType::kRegular));
+    EXPECT_DCHECK_DEATH(
+        PrivacySandboxService::GetRequiredDialogTypeInternal(
+            prefs(), profile_metrics::BrowserProfileType::kRegular,
+            privacy_sandbox_settings());
+
+    );
     return;
   }
 
   // Returned dialog type should never change between successive calls.
   EXPECT_EQ(test_case.expected_output.dialog_type,
             PrivacySandboxService::GetRequiredDialogTypeInternal(
-                prefs(), profile_metrics::BrowserProfileType::kRegular));
+                prefs(), profile_metrics::BrowserProfileType::kRegular,
+                privacy_sandbox_settings()));
   EXPECT_EQ(test_case.expected_output.dialog_type,
             PrivacySandboxService::GetRequiredDialogTypeInternal(
-                prefs(), profile_metrics::BrowserProfileType::kRegular));
+                prefs(), profile_metrics::BrowserProfileType::kRegular,
+                privacy_sandbox_settings()));
 
   EXPECT_EQ(test_case.expected_output.new_api_pref,
             prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));

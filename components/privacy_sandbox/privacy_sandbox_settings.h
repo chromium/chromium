@@ -161,7 +161,8 @@ class PrivacySandboxSettings : public KeyedService {
 
   // Returns whether the Privacy Sandbox is being restricted by the associated
   // delegate. Forwards directly to the corresponding delegate function.
-  bool IsPrivacySandboxRestricted();
+  // Virtual to allow mocking in tests.
+  virtual bool IsPrivacySandboxRestricted();
 
   // Called when there's a broad cookies clearing action. For example, this
   // should be called on "Clear browsing data", but shouldn't be called on the
@@ -175,6 +176,9 @@ class PrivacySandboxSettings : public KeyedService {
   void RemoveObserver(Observer* observer);
 
  protected:
+  // Protected default constructor to allow mocking in tests.
+  PrivacySandboxSettings();
+
   // Determines based on the current features, preferences and provided
   // |cookie_settings| whether Privacy Sandbox APIs are generally allowable for
   // |url| on |top_frame_origin|. Individual APIs may perform additional checks

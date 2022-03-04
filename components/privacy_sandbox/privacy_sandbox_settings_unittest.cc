@@ -24,16 +24,6 @@ namespace privacy_sandbox {
 
 using Topic = browsing_topics::Topic;
 
-class MockPrivacySandboxDelegate : public PrivacySandboxSettings::Delegate {
- public:
-  void SetupDefaultResponse() {
-    ON_CALL(*this, IsPrivacySandboxRestricted).WillByDefault([]() {
-      return false;
-    });
-  }
-  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
-};
-
 class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
  public:
   PrivacySandboxSettingsTest()
@@ -54,7 +44,8 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
   }
 
   void SetUp() override {
-    auto mock_delegate = std::make_unique<MockPrivacySandboxDelegate>();
+    auto mock_delegate = std::make_unique<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
     mock_delegate_ = mock_delegate.get();
 
     InitializePrefsBeforeStart();
@@ -79,12 +70,15 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
   }
 
   virtual void InitializeDelegateBeforeStart() {
-    mock_delegate()->SetupDefaultResponse();
+    mock_delegate()->SetupDefaultResponse(/*restricted=*/false);
   }
 
   virtual bool IsIncognitoProfile() { return false; }
 
-  MockPrivacySandboxDelegate* mock_delegate() { return mock_delegate_; }
+  privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
+  mock_delegate() {
+    return mock_delegate_;
+  }
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
   HostContentSettingsMap* host_content_settings_map() {
     return host_content_settings_map_.get();
@@ -102,7 +96,8 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockPrivacySandboxDelegate> mock_delegate_;
+  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+      mock_delegate_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;

@@ -428,6 +428,8 @@ void PrivacySandboxSettings::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+PrivacySandboxSettings::PrivacySandboxSettings() = default;
+
 bool PrivacySandboxSettings::IsPrivacySandboxEnabledForContext(
     const GURL& url,
     const absl::optional<url::Origin>& top_frame_origin,

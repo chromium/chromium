@@ -72,6 +72,10 @@ extern const char kPrivacySandboxConsentDecisionMade[];
 // profile because the profile had already disabled the Privacy Sandbox.
 extern const char kPrivacySandboxNoConfirmationSandboxDisabled[];
 
+// Boolean that indicates a Privacy Sandbox confirmation was not shown to the
+// profile because the Privacy Sandbox was being restricted.
+extern const char kPrivacySandboxNoConfirmationSandboxRestricted[];
+
 // Boolean that indicates the user's Privacy Sandbox setting was disabled
 // automatically because they do not have the correct level of confirmation.
 extern const char kPrivacySandboxDisabledInsufficientConfirmation[];

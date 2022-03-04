@@ -251,6 +251,7 @@ class PrivacySandboxService : public KeyedService,
                            MetricsLoggingOccursCorrectly);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTestNonRegularProfile,
                            NoMetricsRecorded);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, RestrictedDialog);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDeathTest,
                            GetRequiredDialogType);
 
@@ -313,7 +314,8 @@ class PrivacySandboxService : public KeyedService,
   // other dependencies of this service.
   static PrivacySandboxService::DialogType GetRequiredDialogTypeInternal(
       PrefService* pref_service,
-      profile_metrics::BrowserProfileType profile_type);
+      profile_metrics::BrowserProfileType profile_type,
+      privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings);
 
  private:
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
