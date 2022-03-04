@@ -59,6 +59,20 @@ sync_pb::PasswordWithLocalData CreatePasswordWithLocalData(
   return result;
 }
 
+base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
+    PasswordStoreAndroidBackendBridgeImpl::Account account) {
+  if (absl::holds_alternative<password_manager::PasswordStoreOperationTarget>(
+          account)) {
+    DCHECK(password_manager::PasswordStoreOperationTarget::kLocalStorage ==
+           absl::get<password_manager::PasswordStoreOperationTarget>(account));
+    return nullptr;
+  }
+  return base::android::ConvertUTF8ToJavaString(
+      base::android::AttachCurrentThread(),
+      absl::get<PasswordStoreAndroidBackendBridgeImpl::SyncingAccount>(account)
+          .value());
+}
+
 }  // namespace
 
 namespace password_manager {
@@ -118,64 +132,71 @@ void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env,
                      consumer_, JobId(job_id), std::move(error)));
 }
 
-JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins(
-    password_manager::PasswordStoreOperationTarget target) {
+JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins(Account account) {
   JobId job_id = GetNextJobId();
   Java_PasswordStoreAndroidBackendBridgeImpl_getAllLogins(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
-      static_cast<int>(target));
+      GetJavaStringFromAccount(std::move(account)));
   return job_id;
 }
 
-JobId PasswordStoreAndroidBackendBridgeImpl::GetAutofillableLogins() {
+JobId PasswordStoreAndroidBackendBridgeImpl::GetAutofillableLogins(
+    Account account) {
   JobId job_id = GetNextJobId();
   Java_PasswordStoreAndroidBackendBridgeImpl_getAutofillableLogins(
-      base::android::AttachCurrentThread(), java_object_, job_id.value());
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      GetJavaStringFromAccount(std::move(account)));
   return job_id;
 }
 
 JobId PasswordStoreAndroidBackendBridgeImpl::GetLoginsForSignonRealm(
-    const std::string& signon_realm) {
+    const std::string& signon_realm,
+    Account account) {
   JobId job_id = GetNextJobId();
   Java_PasswordStoreAndroidBackendBridgeImpl_getLoginsForSignonRealm(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ConvertUTF8ToJavaString(
-          base::android::AttachCurrentThread(), signon_realm));
+          base::android::AttachCurrentThread(), signon_realm),
+      GetJavaStringFromAccount(std::move(account)));
   return job_id;
 }
 
 JobId PasswordStoreAndroidBackendBridgeImpl::AddLogin(
-    const password_manager::PasswordForm& form) {
+    const password_manager::PasswordForm& form,
+    Account account) {
   JobId job_id = GetNextJobId();
   sync_pb::PasswordWithLocalData data = PasswordWithLocalDataFromPassword(form);
   Java_PasswordStoreAndroidBackendBridgeImpl_addLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
-                                     data.SerializeAsString()));
+                                     data.SerializeAsString()),
+      GetJavaStringFromAccount(std::move(account)));
   return job_id;
 }
 
 JobId PasswordStoreAndroidBackendBridgeImpl::UpdateLogin(
-    const password_manager::PasswordForm& form) {
+    const password_manager::PasswordForm& form,
+    Account account) {
   JobId job_id = GetNextJobId();
   sync_pb::PasswordWithLocalData data = PasswordWithLocalDataFromPassword(form);
   Java_PasswordStoreAndroidBackendBridgeImpl_updateLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
-                                     data.SerializeAsString()));
+                                     data.SerializeAsString()),
+      GetJavaStringFromAccount(std::move(account)));
   return job_id;
 }
 
 JobId PasswordStoreAndroidBackendBridgeImpl::RemoveLogin(
     const password_manager::PasswordForm& form,
-    password_manager::PasswordStoreOperationTarget target) {
+    Account account) {
   JobId job_id = GetNextJobId();
   sync_pb::PasswordSpecificsData data = SpecificsDataFromPassword(form);
   Java_PasswordStoreAndroidBackendBridgeImpl_removeLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
                                      data.SerializeAsString()),
-      static_cast<int>(target));
+      GetJavaStringFromAccount(std::move(account)));
   return job_id;
 }
 

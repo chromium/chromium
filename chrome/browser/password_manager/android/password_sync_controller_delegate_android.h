@@ -25,7 +25,7 @@ class PasswordSyncControllerDelegateAndroid
     : public syncer::ModelTypeControllerDelegate {
  public:
   explicit PasswordSyncControllerDelegateAndroid(
-      std::unique_ptr<PasswordStoreBackend::SyncDelegate> sync_delegate);
+      PasswordStoreBackend::SyncDelegate* sync_delegate);
   PasswordSyncControllerDelegateAndroid(
       const PasswordSyncControllerDelegateAndroid&) = delete;
   PasswordSyncControllerDelegateAndroid(
@@ -59,7 +59,7 @@ class PasswordSyncControllerDelegateAndroid
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetWeakPtrToBaseClass();
 
-  std::unique_ptr<PasswordStoreBackend::SyncDelegate> sync_delegate_;
+  raw_ptr<PasswordStoreBackend::SyncDelegate> sync_delegate_;
 
   // Current sync status, absl::nullopt until UpdateSyncStatusOnStartUp() is
   // called. This value is used to distinguish between sync setup on startup and

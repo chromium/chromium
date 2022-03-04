@@ -13,8 +13,8 @@
 namespace password_manager {
 
 PasswordSyncControllerDelegateAndroid::PasswordSyncControllerDelegateAndroid(
-    std::unique_ptr<PasswordStoreBackend::SyncDelegate> sync_delegate)
-    : sync_delegate_(std::move(sync_delegate)) {}
+    PasswordStoreBackend::SyncDelegate* sync_delegate)
+    : sync_delegate_(sync_delegate) {}
 
 PasswordSyncControllerDelegateAndroid::
     ~PasswordSyncControllerDelegateAndroid() = default;

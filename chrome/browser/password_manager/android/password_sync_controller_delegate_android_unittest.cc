@@ -25,27 +25,21 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
   PasswordSyncControllerDelegateAndroidTest() {
     sync_controller_delegate_ =
         std::make_unique<PasswordSyncControllerDelegateAndroid>(
-            CreateSyncDelegate());
+            &sync_delegate_);
   }
 
   ~PasswordSyncControllerDelegateAndroidTest() override = default;
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  MockPasswordBackendSyncDelegate* sync_delegate() { return sync_delegate_; }
+  MockPasswordBackendSyncDelegate* sync_delegate() { return &sync_delegate_; }
   PasswordSyncControllerDelegateAndroid* sync_controller_delegate() {
     return sync_controller_delegate_.get();
   }
 
  private:
-  std::unique_ptr<MockPasswordBackendSyncDelegate> CreateSyncDelegate() {
-    auto unique_delegate = std::make_unique<MockPasswordBackendSyncDelegate>();
-    sync_delegate_ = unique_delegate.get();
-    return unique_delegate;
-  }
-
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<MockPasswordBackendSyncDelegate> sync_delegate_;
+  MockPasswordBackendSyncDelegate sync_delegate_;
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>
       sync_controller_delegate_;
 };

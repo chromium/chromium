@@ -24,6 +24,9 @@ namespace password_manager {
 class PasswordStoreAndroidBackendBridge {
  public:
   using JobId = base::StrongAlias<struct JobIdTag, int>;
+  using SyncingAccount =
+      base::StrongAlias<struct SyncingAccountTag, std::string>;
+  using Account = absl::variant<PasswordStoreOperationTarget, SyncingAccount>;
 
   // Each bridge is created with a consumer that will be called when a job is
   // completed. In order to identify which request the response belongs to, the
@@ -60,39 +63,52 @@ class PasswordStoreAndroidBackendBridge {
 
   // Triggers an asynchronous request to retrieve all stored passwords. The
   // registered `Consumer` is notified with `OnCompleteWithLogins` when the
-  // job with the returned JobId succeeds.
-  [[nodiscard]] virtual JobId GetAllLogins(
-      PasswordStoreOperationTarget target) = 0;
+  // job with the returned JobId succeeds. `syncing_account` is used to decide
+  // which storage to use. If `syncing_account` is absl::nullopt local storage
+  // will be used.
+  [[nodiscard]] virtual JobId GetAllLogins(Account account) = 0;
 
   // Triggers an asynchronous request to retrieve all autofillable
   // (non-blocklisted) passwords. The registered `Consumer` is notified with
   // `OnCompleteWithLogins` when the job with the returned JobId succeeds.
-  [[nodiscard]] virtual JobId GetAutofillableLogins() = 0;
+  // `syncing_account` is used to decide which storage to use. If
+  // `syncing_account` is absl::nullopt local storage will be used.
+  [[nodiscard]] virtual JobId GetAutofillableLogins(Account account) = 0;
 
   // Triggers an asynchronous request to retrieve stored passwords with
   // matching |signon_realm|. The returned results must be validated (e.g
   // matching "sample.com" also returns logins for "not-sample.com").
   // The registered `Consumer` is notified with `OnCompleteWithLogins` when the
-  // job with the returned JobId succeeds.
+  // job with the returned JobId succeeds. `syncing_account` is used to decide
+  // which storage to use. If `syncing_account` is absl::nullopt local storage
+  // will be used.
   [[nodiscard]] virtual JobId GetLoginsForSignonRealm(
-      const std::string& signon_realm) = 0;
+      const std::string& signon_realm,
+      Account account) = 0;
 
   // Triggers an asynchronous request to add |form| to store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
-  // job with the returned JobId succeeds.
-  [[nodiscard]] virtual JobId AddLogin(const PasswordForm& form) = 0;
+  // job with the returned JobId succeeds. `syncing_account` is used to decide
+  // which storage to use. If `syncing_account` is absl::nullopt local storage
+  // will be used.
+  [[nodiscard]] virtual JobId AddLogin(const PasswordForm& form,
+                                       Account account) = 0;
 
   // Triggers an asynchronous request to update |form| in store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
-  // job with the returned JobId succeeds.
-  [[nodiscard]] virtual JobId UpdateLogin(const PasswordForm& form) = 0;
+  // job with the returned JobId succeeds. `syncing_account` is used to decide
+  // which storage to use. If `syncing_account` is absl::nullopt local storage
+  // will be used.
+  [[nodiscard]] virtual JobId UpdateLogin(const PasswordForm& form,
+                                          Account account) = 0;
 
   // Triggers an asynchronous request to remove |form| from store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
-  // job with the returned JobId succeeds.
-  [[nodiscard]] virtual JobId RemoveLogin(
-      const PasswordForm& form,
-      PasswordStoreOperationTarget target) = 0;
+  // job with the returned JobId succeeds. `syncing_account` is used to decide
+  // which storage to use. If `syncing_account` is absl::nullopt local storage
+  // will be used.
+  [[nodiscard]] virtual JobId RemoveLogin(const PasswordForm& form,
+                                          Account account) = 0;
 
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.

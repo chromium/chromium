@@ -211,14 +211,15 @@ class PasswordStoreAndroidBackend
       PasswordStoreChangeListReply callback);
 
   // Returns the complete list of PasswordForms (regardless of their blocklist
-  // status) from specified storage.
-  void GetAllLoginsForTarget(PasswordStoreOperationTarget target,
-                             LoginsOrErrorReply callback);
+  // status) for |account|.
+  void GetAllLoginsForAccount(
+      PasswordStoreAndroidBackendBridge::Account account,
+      LoginsOrErrorReply callback);
 
-  // Removes |form| from specified storage.
-  void RemoveLoginForTarget(const PasswordForm& form,
-                            PasswordStoreOperationTarget target,
-                            PasswordStoreChangeListReply callback);
+  // Removes |form| from |account|.
+  void RemoveLoginForAccount(const PasswordForm& form,
+                             PasswordStoreAndroidBackendBridge::Account account,
+                             PasswordStoreChangeListReply callback);
 
   // Invoked synchronously by `lifecycle_helper_` when Chrome is foregrounded.
   // This should not cover the initial startup since the registration for the
@@ -242,6 +243,9 @@ class PasswordStoreAndroidBackend
 
   // This object is the proxy to the JNI bridge that performs the API requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;
+
+  // Delegate to obtain sync status, and syncing account.
+  std::unique_ptr<SyncDelegate> sync_delegate_;
 
   // Delegate to handle sync events.
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>

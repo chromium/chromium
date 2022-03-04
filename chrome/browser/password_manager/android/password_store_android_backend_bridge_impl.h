@@ -59,18 +59,16 @@ class PasswordStoreAndroidBackendBridgeImpl
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
-  [[nodiscard]] JobId GetAllLogins(
-      password_manager::PasswordStoreOperationTarget target) override;
-  [[nodiscard]] JobId GetAutofillableLogins() override;
-  [[nodiscard]] JobId GetLoginsForSignonRealm(
-      const std::string& signon_realm) override;
-  [[nodiscard]] JobId AddLogin(
-      const password_manager::PasswordForm& form) override;
-  [[nodiscard]] JobId UpdateLogin(
-      const password_manager::PasswordForm& form) override;
-  [[nodiscard]] JobId RemoveLogin(
-      const password_manager::PasswordForm& form,
-      password_manager::PasswordStoreOperationTarget target) override;
+  [[nodiscard]] JobId GetAllLogins(Account account) override;
+  [[nodiscard]] JobId GetAutofillableLogins(Account account) override;
+  [[nodiscard]] JobId GetLoginsForSignonRealm(const std::string& signon_realm,
+                                              Account account) override;
+  [[nodiscard]] JobId AddLogin(const password_manager::PasswordForm& form,
+                               Account account) override;
+  [[nodiscard]] JobId UpdateLogin(const password_manager::PasswordForm& form,
+                                  Account account) override;
+  [[nodiscard]] JobId RemoveLogin(const password_manager::PasswordForm& form,
+                                  Account account) override;
 
   [[nodiscard]] JobId GetNextJobId();
 
