@@ -13,6 +13,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoDeps;
@@ -21,6 +22,8 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /**
  * Various utility methods needed by the feature notification guide and external clients to show
@@ -168,7 +171,12 @@ public final class FeatureNotificationUtils {
      * @return True if the feature should be skipped, false otherwise.
      */
     public static boolean shouldSkipFeature(@FeatureType int featureType) {
-        if (featureType == FeatureType.DEFAULT_BROWSER) return !shouldShowDefaultBrowserPromo();
+        if (featureType == FeatureType.DEFAULT_BROWSER) {
+            return !shouldShowDefaultBrowserPromo();
+        } else if (featureType == FeatureType.NTP_SUGGESTION_CARD) {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            return !prefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+        }
         return false;
     }
 
