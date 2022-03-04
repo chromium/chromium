@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/containers/adapters.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,9 +24,7 @@ std::string MatchHit(const std::u16string& text,
   std::u16string marked = text;
 
   const TokenizedStringMatch::Hits& hits = match.hits();
-  for (TokenizedStringMatch::Hits::const_reverse_iterator it = hits.rbegin();
-       it != hits.rend(); ++it) {
-    const gfx::Range& hit = *it;
+  for (const gfx::Range& hit : base::Reversed(hits)) {
     marked.insert(hit.end(), 1, ']');
     marked.insert(hit.start(), 1, '[');
   }
