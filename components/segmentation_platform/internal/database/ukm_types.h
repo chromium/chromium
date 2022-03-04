@@ -19,6 +19,28 @@ using UkmEventHash = base::IdTypeU64<class UkmEventHashTag>;
 using UkmMetricHash = base::IdTypeU64<class UkmMetricHashTag>;
 using UrlId = base::IdType64<class UrlIdTag>;
 
+// A struct that can accommodate multiple output types needed for Segmentation
+// metadata's feature processing. It can only hold one value at a time with the
+// corresponding type.
+struct ProcessedValue {
+  enum Type {
+    UNKNOWN = 0,
+    BOOL = 1,
+    INT = 2,
+    FLOAT = 3,
+    DOUBLE = 4,
+    STRING = 5,
+    TIME = 6,
+  };
+  Type type{UNKNOWN};
+  bool bool_val{false};
+  int int_val{0};
+  float float_val{0};
+  double double_val{0};
+  std::string str_val;
+  base::Time time_val;
+};
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_UKM_TYPES_H_
