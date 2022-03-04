@@ -2712,9 +2712,6 @@ extern const char kEcheSWADescription[];
 extern const char kEcheCustomWidgetName[];
 extern const char kEcheCustomWidgetDescription[];
 
-extern const char kEcheSWAResizingName[];
-extern const char kEcheSWAResizingDescription[];
-
 extern const char kEcheSWADebugModeName[];
 extern const char kEcheSWADebugModeDescription[];
 

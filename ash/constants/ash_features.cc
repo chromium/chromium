@@ -470,10 +470,6 @@ const base::Feature kEcheSWA{"EcheSWA", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEcheCustomWidget{"EcheCustomWidget",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the naive resize for the Eche window.
-const base::Feature kEcheSWAResizing{"EcheSWAResizing",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the Debug Mode of Eche.
 const base::Feature kEcheSWADebugMode{"EcheSWADebugMode",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1611,10 +1607,6 @@ bool IsEcheSWAEnabled() {
 
 bool IsEcheCustomWidgetEnabled() {
   return base::FeatureList::IsEnabled(kEcheCustomWidget);
-}
-
-bool IsEcheSWAResizingEnabled() {
-  return base::FeatureList::IsEnabled(kEcheSWAResizing);
 }
 
 bool IsEcheSWADebugModeEnabled() {

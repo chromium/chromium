@@ -56325,7 +56325,6 @@ from previous Chrome versions.
   <int value="1287625114" label="EnableIncognitoShortcutOnDesktop:disabled"/>
   <int value="1287947083" label="WebAssemblyCodeProtectionPku:enabled"/>
   <int value="1288612648" label="PluginVmFullscreen:enabled"/>
-  <int value="1288713607" label="EcheSWAResizing:disabled"/>
   <int value="1289433604" label="RecoverFromNeverSaveAndroid:enabled"/>
   <int value="1289495171" label="AssistantBetterOnboarding:disabled"/>
   <int value="1289670142" label="ArcAccountRestrictions:disabled"/>
@@ -56591,7 +56590,6 @@ from previous Chrome versions.
   <int value="1467583815" label="AVIF:disabled"/>
   <int value="1469407485" label="disable-accelerated-2d-canvas"/>
   <int value="1472938299" label="WellKnownChangePassword:disabled"/>
-  <int value="1473157145" label="EcheSWAResizing:enabled"/>
   <int value="1473379096" label="NearbySharingReceiveWifiCredentials:disabled"/>
   <int value="1473838479" label="EnableVirtualKeyboardMdUi:disabled"/>
   <int value="1473967338" label="OmniboxShortBookmarkSuggestions:enabled"/>

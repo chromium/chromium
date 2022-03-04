@@ -63,7 +63,7 @@ bool EcheSystemAppDelegate::ShouldShowInSearch() const {
 }
 
 bool EcheSystemAppDelegate::ShouldAllowResize() const {
-  return base::FeatureList::IsEnabled(chromeos::features::kEcheSWAResizing);
+  return false;
 }
 
 bool EcheSystemAppDelegate::ShouldAllowMaximize() const {

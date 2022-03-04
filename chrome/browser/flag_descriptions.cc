@@ -4733,10 +4733,6 @@ const char kEcheCustomWidgetName[] = "Move Eche in a custom widget.";
 const char kEcheCustomWidgetDescription[] =
     "Move the Eche App into a custom widget.";
 
-const char kEcheSWAResizingName[] = "Allow resizing Eche App.";
-const char kEcheSWAResizingDescription[] =
-    "Enable a naive resize for the Eche window";
-
 const char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
 const char kEcheSWADebugModeDescription[] = "Enable the Debug Mode of the Eche";
 
