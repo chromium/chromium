@@ -13,6 +13,7 @@
 #include "base/cpu.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -61,6 +62,32 @@ constexpr char kSaltForPrefStorage[] = "/!RoFN8,nDxiVgTI6CvU";
 // A prime number chosen to give ~0.1s of wait time on my DUT.
 constexpr unsigned kHashIterations = 100129;
 
+// Returns the Board's name according to /etc/lsb-release. Strips any variant
+// except the "-borealis" variant.
+//
+// Note: the comment on GetLsbReleaseBoard() (rightly) points out that we're
+// not supposed to use LsbReleaseBoard directly, but rather set a flag in
+// the overlay. I am not doing that as the following check is only a
+// temporary hack necessary while we release borealis, but will be removed
+// shortly afterwards. This check can fail in either direction and we won't
+// be too upset.
+std::string GetBoardName() {
+  // In a developer build, the name "volteer" or "volteer-borealis" will become
+  // "volteer-signed-mp-blahblah" and "volteer-borealis-signed..." on a signed
+  // build, so we want to stop everything after the "-" unless its "-borealis".
+  //
+  // This means a variant like "volteer-kernelnext" will be treated as "volteer"
+  // by us.
+  std::vector<std::string> pieces =
+      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (pieces.size() >= 2 && pieces[1] == "borealis") {
+    return pieces[0] + "-" + pieces[1];
+  }
+  DCHECK(!pieces.empty());
+  return pieces[0];
+}
+
 // The below mechanism is not secure, and is not intended to be. It is a
 // temporary measure that does not warrant any more effort. You might say
 // it can be gamed 😎.
@@ -106,19 +133,15 @@ bool HasCorrectToken(const std::string& board,
 
 AllowStatus GetAsyncAllowStatus(const std::string& hash_of_current_token) {
   // First, check the token.
-  std::string board = base::SysInfo::GetLsbReleaseBoard();
-  if (!HasCorrectToken(board, hash_of_current_token))
+  std::string board = GetBoardName();
+  if (!HasCorrectToken(board, hash_of_current_token)) {
+    LOG(WARNING) << "Incorrect token for board=" << board;
     return AllowStatus::kIncorrectToken;
+  }
 
   // Then, avoid excluding -borealis variants, which are dev-only boards that
   // get a free pass.
   if (base::EndsWith(board, kOverrideHardwareChecksBoardSuffix)) {
-    // Note: the comment on GetLsbReleaseBoard() (rightly) points out that we're
-    // not supposed to use LsbReleaseBoard directly, but rather set a flag in
-    // the overlay. I am not doing that as the following check is only a
-    // temporary hack necessary while we release borealis, but will be removed
-    // shortly afterwards. This check can fail in either direction and we won't
-    // be too upset.
     return AllowStatus::kAllowed;
   }
 

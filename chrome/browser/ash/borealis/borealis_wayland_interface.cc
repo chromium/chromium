@@ -38,6 +38,7 @@ void BorealisWaylandInterface::OnAllowednessChecked(
     CapabilityCallback callback,
     BorealisFeatures::AllowStatus allowed) {
   if (allowed != BorealisFeatures::AllowStatus::kAllowed) {
+    LOG(WARNING) << "Borealis is not allowed: " << allowed;
     std::move(callback).Run(nullptr, {});
     return;
   }
