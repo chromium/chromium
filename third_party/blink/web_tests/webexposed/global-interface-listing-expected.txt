@@ -2664,12 +2664,13 @@ interface FederatedCredential : Credential
     static method logoutRps
     static method revoke
     attribute @@toStringTag
+    getter approvedBy
     getter iconURL
+    getter idToken
     getter name
     getter protocol
     getter provider
     method constructor
-    method login
     method logout
 interface File : Blob
     attribute @@toStringTag

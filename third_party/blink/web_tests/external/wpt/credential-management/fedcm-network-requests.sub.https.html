@@ -21,10 +21,10 @@ promise_test(async t => {
       providers: [{
         url: url_prefix,
         clientId: '1',
+        nonce: '1',
       }]
     }
   });
-  const token = await result.login({nonce: '1'});
-  assert_equals(token.idToken, 'token');
+  assert_equals(result, 'token');
 }, 'Test that COEP policy do not apply to FedCM requests');
 </script>
