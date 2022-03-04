@@ -162,6 +162,11 @@ bool InitBasicPrinterInfo(HANDLE printer, PrinterBasicInfo* printer_info);
 
 COMPONENT_EXPORT(PRINT_BACKEND) std::string GetDriverInfo(HANDLE printer);
 
+// Determines if the specified printer driver is known to cause a file save
+// UI dialog to be displayed when printing a document.
+COMPONENT_EXPORT(PRINT_BACKEND)
+bool DoesDriverDisplayFileDialogForPrinting(const std::string& printer_name);
+
 COMPONENT_EXPORT(PRINT_BACKEND)
 std::unique_ptr<DEVMODE, base::FreeDeleter> XpsTicketToDevMode(
     const std::wstring& printer_name,

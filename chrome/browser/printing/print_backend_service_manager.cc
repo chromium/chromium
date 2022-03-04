@@ -27,6 +27,7 @@
 #include "printing/backend/print_backend.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "printing/backend/win_helper.h"
 #include "printing/printed_page_win.h"
 #endif
 
@@ -467,12 +468,41 @@ size_t PrintBackendServiceManager::GetClientsRegisteredCount() const {
   return clients_count;
 }
 
+#if BUILDFLAG(IS_WIN)
+bool PrintBackendServiceManager::PrinterDriverKnownToRequireElevatedPrivilege(
+    const std::string& printer_name,
+    ClientType client_type) {
+  // Any Windows printer driver which causes a UI dialog to be displayed does
+  // not work if printing is started from within a sandboxed environment.
+  // crbug.com/1243873
+  switch (client_type) {
+    case ClientType::kQuery:
+      return false;
+    case ClientType::kQueryWithUi:
+      // Guaranteed to display the system print dialog.
+      return true;
+    case ClientType::kPrintDocument:
+      // Drivers with a print port that results in saving to a file will cause
+      // a system dialog to be displayed.
+      return DoesDriverDisplayFileDialogForPrinting(printer_name);
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 const mojo::Remote<mojom::PrintBackendService>&
 PrintBackendServiceManager::GetService(const std::string& printer_name,
                                        ClientType client_type,
                                        bool* is_sandboxed) {
+  // Determine if sandboxing is appropriate.  This might be already known for
+  // certain drivers/configurations, or learned during runtime.
   bool should_sandbox =
       !PrinterDriverFoundToRequireElevatedPrivilege(printer_name);
+#if BUILDFLAG(IS_WIN)
+  bool avoid_sandbox =
+      PrinterDriverKnownToRequireElevatedPrivilege(printer_name, client_type);
+  if (avoid_sandbox)
+    should_sandbox = false;
+#endif
   *is_sandboxed = should_sandbox;
 
   if (sandboxed_service_remote_for_test_) {
@@ -489,10 +519,15 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
   // be needed by client callers.
   DCHECK_GT(GetClientsRegisteredCount(), 0u);
 
-  // On the first print make note that so far no drivers have required fallback.
+  // On the first print make note that so far no drivers have been discovered
+  // to require fallback beyond any predetermined known cases.
   static bool first_print = true;
   if (first_print) {
+#if BUILDFLAG(IS_WIN)
+    DCHECK(should_sandbox || avoid_sandbox);
+#else
     DCHECK(should_sandbox);
+#endif
     first_print = false;
     base::UmaHistogramBoolean(
         kPrintBackendRequiresElevatedPrivilegeHistogramName, /*sample=*/false);

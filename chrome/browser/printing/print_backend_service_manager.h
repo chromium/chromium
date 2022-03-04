@@ -238,6 +238,16 @@ class PrintBackendServiceManager {
   // Get the total number of clients registered.
   size_t GetClientsRegisteredCount() const;
 
+#if BUILDFLAG(IS_WIN)
+  // Query if printer driver has known reasons for requiring elevated
+  // privileges in order to operate.  In these cases relying upon fallback
+  // after an access-denied error is not preferable.  Any such reasons are
+  // platform specific.
+  bool PrinterDriverKnownToRequireElevatedPrivilege(
+      const std::string& printer_name,
+      ClientType client_type);
+#endif
+
   // Acquires a remote handle to the Print Backend Service instance, launching a
   // process to host the service if necessary. `is_sandboxed` is set to indicate
   // if the service was launched within a sandbox.

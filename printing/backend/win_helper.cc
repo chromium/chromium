@@ -11,16 +11,20 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/debug/alias.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
 #include "base/memory/free_deleter.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/win/registry.h"
+#include "base/win/windows_types.h"
 #include "base/win/windows_version.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
@@ -128,6 +132,36 @@ const char kXpsTicketTemplate[] =
 
 const char kXpsTicketColor[] = "Color";
 const char kXpsTicketMonochrome[] = "Monochrome";
+
+// Registry path prefix for the printer drivers' keys.
+constexpr wchar_t kDriversRegistryKeyPath[] =
+    L"SYSTEM\\CurrentControlSet\\Control\\Print\\Printers\\";
+
+// Registry value name for a port.
+constexpr wchar_t kPortRegistryValue[] = L"Port";
+
+// List of printer ports which are known to cause a UI dialog to be displayed
+// when printing.
+constexpr wchar_t kPrinterDriverPortFile[] = L"FILE:";
+constexpr wchar_t kPrinterDriverPortPrompt[] = L"PORTPROMPT:";
+constexpr wchar_t kPrinterDriverPortFax[] = L"SHRFAX:";
+
+// Gets the port used for a particular printer driver.  This can be found in
+// the Windows registry entry for the driver.
+std::wstring GetPrinterDriverPort(const std::string& printer_name) {
+  base::win::RegKey reg_key;
+  std::wstring root_key(std::wstring(kDriversRegistryKeyPath) +
+                        base::UTF8ToWide(printer_name));
+  LONG result =
+      reg_key.Open(HKEY_LOCAL_MACHINE, root_key.c_str(), KEY_QUERY_VALUE);
+  if (result != ERROR_SUCCESS)
+    return std::wstring();
+  std::wstring port_value;
+  result = reg_key.ReadValue(kPortRegistryValue, &port_value);
+  if (result != ERROR_SUCCESS)
+    return std::wstring();
+  return port_value;
+}
 
 }  // namespace
 
@@ -421,6 +455,13 @@ std::string GetDriverInfo(HANDLE printer) {
       driver_info.append(";");
   }
   return driver_info;
+}
+
+bool DoesDriverDisplayFileDialogForPrinting(const std::string& printer_name) {
+  static constexpr auto kPortNames = base::MakeFixedFlatSet<base::WStringPiece>(
+      {kPrinterDriverPortFile, kPrinterDriverPortPrompt,
+       kPrinterDriverPortFax});
+  return kPortNames.contains(GetPrinterDriverPort(printer_name));
 }
 
 std::unique_ptr<DEVMODE, base::FreeDeleter> XpsTicketToDevMode(
