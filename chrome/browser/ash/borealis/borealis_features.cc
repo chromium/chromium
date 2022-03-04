@@ -186,6 +186,41 @@ TokenAuthority GetAuthorityForToken(const std::string& board,
   return TokenAuthority::kRejected;
 }
 
+// Returns the model name of this device (either from its CustomizationId or by
+// parsing its hardware class). Returns "" if it fails.
+std::string GetModelName() {
+  std::string ret;
+  if (chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          chromeos::system::kCustomizationIdKey, &ret)) {
+    return ret;
+  }
+  LOG(WARNING)
+      << "CustomizationId unavailable, attempting to parse hardware class";
+
+  // As a fallback when the CustomizationId is not available, we try to parse it
+  // out of the hardware class. If The hardware class is unavailable, all bets
+  // are off.
+  std::string hardware_class;
+  if (!chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          chromeos::system::kHardwareClassKey, &hardware_class)) {
+    return "";
+  }
+
+  // Hardware classes for the "modelname" model might look like this:
+  //
+  //    MODELNAME-FFFF DEAD-BEEF-HEX-JUNK
+  //
+  // (or "unknown" if we can't find it). So we only care about converting the
+  // stuff before the first "-" into lowercase.
+  //
+  // Naively searching for the first hyphen is fine until we start caring about
+  // models with hyphens in the name.
+  size_t hyphen_pos = hardware_class.find('-');
+  if (hyphen_pos != std::string::npos)
+    hardware_class = hardware_class.substr(0, hyphen_pos);
+  return base::ToLowerASCII(hardware_class);
+}
+
 AllowStatus GetAsyncAllowStatus(const std::string& hash_of_current_token) {
   // First, check the token.
   std::string board = GetBoardName();
@@ -198,11 +233,7 @@ AllowStatus GetAsyncAllowStatus(const std::string& hash_of_current_token) {
   }
 
   // Next, exclude variants of the boards that we don't expect to work on.
-  std::string model_name;
-  if (!chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kCustomizationIdKey, &model_name)) {
-    return AllowStatus::kHardwareChecksFailed;
-  }
+  std::string model_name = GetModelName();
   bool found = false;
   for (const char* allowed_model : kAllowedModelNames) {
     if (model_name == allowed_model) {
@@ -210,8 +241,11 @@ AllowStatus GetAsyncAllowStatus(const std::string& hash_of_current_token) {
       break;
     }
   }
-  if (!found)
+  if (!found) {
+    LOG(WARNING) << "Borealis is not supported on \"" << model_name
+                 << "\" models";
     return AllowStatus::kUnsupportedModel;
+  }
 
   // Finally, check system requirements.
   if (base::SysInfo::AmountOfPhysicalMemory() < kMinimumMemoryBytes) {
