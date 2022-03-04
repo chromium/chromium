@@ -164,10 +164,10 @@ class COMPONENT_EXPORT(URL) GURL {
   // It is an error to replace components of an invalid URL. The result will
   // be the empty URL.
   //
-  // Note that we use the more general url::Replacements type to give
-  // callers extra flexibility rather than our override.
-  GURL ReplaceComponents(const url::Replacements<char>& replacements) const;
-  GURL ReplaceComponents(const url::Replacements<char16_t>& replacements) const;
+  // Note that this intentionally disallows direct use of url::Replacements,
+  // which is harder to use correctly.
+  GURL ReplaceComponents(const Replacements& replacements) const;
+  GURL ReplaceComponents(const ReplacementsW& replacements) const;
 
   // A helper function that is equivalent to replacing the path with a slash
   // and clearing out everything after that. We sometimes need to know just the

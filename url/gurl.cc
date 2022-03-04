@@ -223,8 +223,7 @@ GURL GURL::Resolve(base::StringPiece16 relative) const {
 }
 
 // Note: code duplicated below (it's inconvenient to use a template here).
-GURL GURL::ReplaceComponents(
-    const url::Replacements<char>& replacements) const {
+GURL GURL::ReplaceComponents(const Replacements& replacements) const {
   GURL result;
 
   // Not allowed for invalid URLs.
@@ -243,8 +242,7 @@ GURL GURL::ReplaceComponents(
 }
 
 // Note: code duplicated above (it's inconvenient to use a template here).
-GURL GURL::ReplaceComponents(
-    const url::Replacements<char16_t>& replacements) const {
+GURL GURL::ReplaceComponents(const ReplacementsW& replacements) const {
   GURL result;
 
   // Not allowed for invalid URLs.
@@ -281,7 +279,7 @@ GURL GURL::DeprecatedGetOriginAsURL() const {
   if (SchemeIsFileSystem())
     return inner_url_->DeprecatedGetOriginAsURL();
 
-  url::Replacements<char> replacements;
+  Replacements replacements;
   replacements.ClearUsername();
   replacements.ClearPassword();
   replacements.ClearPath();
@@ -298,7 +296,7 @@ GURL GURL::GetAsReferrer() const {
   if (!has_ref() && !has_username() && !has_password())
     return GURL(*this);
 
-  url::Replacements<char> replacements;
+  Replacements replacements;
   replacements.ClearRef();
   replacements.ClearUsername();
   replacements.ClearPassword();

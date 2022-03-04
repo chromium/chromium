@@ -207,9 +207,8 @@ TEST_F(HistoryStateOperationsTest, NoOpPushDifferentOrigin) {
   std::string empty_state;
   std::string empty_title;
   std::string new_port_string = base::NumberToString(test_server_->port() + 1);
-  url::Replacements<char> port_replacement;
-  port_replacement.SetPort(new_port_string.c_str(),
-                           url::Component(0, new_port_string.length()));
+  GURL::Replacements port_replacement;
+  port_replacement.SetPortStr(new_port_string);
   GURL different_origin_url =
       state_operations_url().ReplaceComponents(port_replacement);
   ASSERT_TRUE(IsOnLoadTextVisible());
@@ -228,9 +227,8 @@ TEST_F(HistoryStateOperationsTest, NoOpReplaceDifferentOrigin) {
   std::string empty_state;
   std::string empty_title;
   std::string new_port_string = base::NumberToString(test_server_->port() + 1);
-  url::Replacements<char> port_replacement;
-  port_replacement.SetPort(new_port_string.c_str(),
-                           url::Component(0, new_port_string.length()));
+  GURL::Replacements port_replacement;
+  port_replacement.SetPortStr(new_port_string);
   GURL different_origin_url =
       state_operations_url().ReplaceComponents(port_replacement);
   ASSERT_TRUE(IsOnLoadTextVisible());
