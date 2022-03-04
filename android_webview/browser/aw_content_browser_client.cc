@@ -801,7 +801,12 @@ bool AwContentBrowserClient::
   // creation/modification NavigationStateChanged calls to preserve legacy
   // behavior (not firing extra onPageFinished calls), as initial
   // NavigationEntries used to not exist. See https://crbug.com/1277414.
-  return true;
+  // However, if kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess is
+  // enabled, we won't need to ignore the extra NavigationStateChanged() calls,
+  // because they won't trigger synthesized page loads and won't cause extra
+  // onPageFinished calls.
+  return !base::FeatureList::IsEnabled(
+      features::kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess);
 }
 
 bool AwContentBrowserClient::CreateThreadPool(base::StringPiece name) {

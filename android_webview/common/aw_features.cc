@@ -110,5 +110,12 @@ const base::Feature kWebViewXRequestedWithHeader{
 const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode{
     &kWebViewXRequestedWithHeader, "WebViewXRequestedWithHeaderMode", 1};
 
+// Only synthesize page load for URL spoof prevention at most once, on initial
+// main document access (instead on every NavigationStateChanged call that
+// invalidates the URL after).
+const base::Feature kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess{
+    "WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace android_webview

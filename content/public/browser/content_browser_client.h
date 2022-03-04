@@ -1718,6 +1718,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // NavigationStateChanged calls to preserve legacy behavior (not firing extra
   // onPageFinished calls), as initial NavigationEntries used to not exist.
   // See https://crbug.com/1277414.
+  // TODO(https://crbug.com/1293332): Remove this function if the
+  // kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess approach works.
   virtual bool
   ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport();
 #endif

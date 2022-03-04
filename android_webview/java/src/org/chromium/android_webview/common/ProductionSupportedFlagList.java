@@ -273,5 +273,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER,
                     "Enables automatic insertion of XRequestedWith header "
                             + "on all outgoing requests."),
+            Flag.baseFeature(
+                    AwFeatures.WEBVIEW_SYNTHESIZE_PAGE_LOAD_ONLY_ON_INITIAL_MAIN_DOCUMENT_ACCESS,
+                    "Only synthesize page load for URL spoof prevention at most once,"
+                            + " on initial main document access."),
     };
 }

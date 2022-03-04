@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -34,6 +35,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewUseMetricsUploadService,
     &features::kWebViewLogFirstPartyPageTimeSpent,
     &features::kWebViewXRequestedWithHeader,
+    &features::kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {

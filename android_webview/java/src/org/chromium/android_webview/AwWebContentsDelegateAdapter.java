@@ -17,6 +17,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.FrameLayout;
+
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ThreadUtils;
@@ -40,6 +42,7 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     private final Context mContext;
     private View mContainerView;
     private FrameLayout mCustomView;
+    private boolean mDidSynthesizePageLoad;
 
     public AwWebContentsDelegateAdapter(AwContents awContents, AwContentsClient contentsClient,
             AwSettings settings, Context context, View containerView) {
@@ -47,6 +50,7 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
         mContentsClient = contentsClient;
         mAwSettings = settings;
         mContext = context;
+        mDidSynthesizePageLoad = false;
         setContainerView(containerView);
     }
 
@@ -244,14 +248,26 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
 
     @Override
     public void navigationStateChanged(int flags) {
-        if ((flags & InvalidateTypes.URL) != 0 && mAwContents.isPopupWindow()
-                && mAwContents.hasAccessedInitialDocument()) {
-            // This is a popup whose document has been accessed by script. Hint
-            // the client to show the last committed url, as it may be unsafe to
-            // show the pending entry.
+        // If this is a popup whose document has been accessed by script, hint
+        // the client to show the last committed url through synthesizing a page
+        // load, as it may be unsafe to show the pending entry.
+        boolean shouldSynthesizePageLoad = ((flags & InvalidateTypes.URL) != 0)
+                && mAwContents.isPopupWindow() && mAwContents.hasAccessedInitialDocument();
+        if (AwFeatureList.isEnabled(
+                    AwFeatures.WEBVIEW_SYNTHESIZE_PAGE_LOAD_ONLY_ON_INITIAL_MAIN_DOCUMENT_ACCESS)) {
+            // Since we want to synthesize the page load only once for when the
+            // NavigationStateChange call is triggered by the first initial main
+            // document access, the flag must match InvalidateTypes.URL (the flag
+            // fired by NavigationControllerImpl::DidAccessInitialMainDocument())
+            // and we must check whether a page load has previously been
+            // synthesized here.
+            shouldSynthesizePageLoad &= (flags == InvalidateTypes.URL) && !mDidSynthesizePageLoad;
+        }
+        if (shouldSynthesizePageLoad) {
             String url = mAwContents.getLastCommittedUrl();
             url = TextUtils.isEmpty(url) ? ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL : url;
             mContentsClient.getCallbackHelper().postSynthesizedPageLoadingForUrlBarUpdate(url);
+            mDidSynthesizePageLoad = true;
         }
     }
 

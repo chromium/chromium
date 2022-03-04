@@ -35,6 +35,8 @@ extern const base::Feature kWebViewUseMetricsUploadService;
 extern const base::Feature kWebViewWideColorGamutSupport;
 extern const base::Feature kWebViewXRequestedWithHeader;
 extern const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode;
+extern const base::Feature
+    kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess;
 
 }  // namespace features
 }  // namespace android_webview
