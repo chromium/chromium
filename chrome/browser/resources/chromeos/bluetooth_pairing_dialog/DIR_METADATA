@@ -1,7 +1,4 @@
 buganizer {
   component_id: 1131776
 }
-monorail {
-  component: "OS>Systems>Network>Bluetooth"
-}
 team_email: "cros-connectivity@google.com"

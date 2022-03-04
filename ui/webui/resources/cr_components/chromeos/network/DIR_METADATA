@@ -9,7 +9,4 @@
 buganizer {
   component_id: 1131775
 }
-monorail {
-  component: "OS>Systems>Network>General"
-}
 team_email: "cros-connectivity@google.com"
