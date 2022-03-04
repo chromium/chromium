@@ -217,6 +217,8 @@ suite('network-config', function() {
       assertFalse(!!networkConfig.$$('#vpnUserCert'));
       assertTrue(!!networkConfig.$$('#ipsec-eap-username-input'));
       assertTrue(!!networkConfig.$$('#ipsec-eap-password-input'));
+      assertTrue(!!networkConfig.$$('#ipsec-local-id-input'));
+      assertTrue(!!networkConfig.$$('#ipsec-remote-id-input'));
 
       networkConfig.set('ipsecAuthType_', 'PSK');
       Polymer.dom.flush();
@@ -225,6 +227,8 @@ suite('network-config', function() {
       assertFalse(!!networkConfig.$$('#vpnUserCert'));
       assertFalse(!!networkConfig.$$('#ipsec-eap-username-input'));
       assertFalse(!!networkConfig.$$('#ipsec-eap-password-input'));
+      assertTrue(!!networkConfig.$$('#ipsec-local-id-input'));
+      assertTrue(!!networkConfig.$$('#ipsec-remote-id-input'));
 
       networkConfig.set('ipsecAuthType_', 'Cert');
       Polymer.dom.flush();
@@ -233,6 +237,8 @@ suite('network-config', function() {
       assertTrue(!!networkConfig.$$('#vpnUserCert'));
       assertFalse(!!networkConfig.$$('#ipsec-eap-username-input'));
       assertFalse(!!networkConfig.$$('#ipsec-eap-password-input'));
+      assertTrue(!!networkConfig.$$('#ipsec-local-id-input'));
+      assertTrue(!!networkConfig.$$('#ipsec-remote-id-input'));
     });
 
     test('No Certs', function() {
@@ -303,7 +309,7 @@ suite('network-config', function() {
       configProperties.typeConfig.vpn.ipSec.psk = 'test-psk';
       assertTrue(networkConfig.vpnIsConfigured_());
 
-      const props = networkConfig.getPropertiesToSet_();
+      let props = networkConfig.getPropertiesToSet_();
       const mojom = chromeos.networkConfig.mojom;
       assertEquals(kTestVpnName, props.name);
       assertEquals(kTestVpnHost, props.typeConfig.vpn.host);
@@ -312,10 +318,18 @@ suite('network-config', function() {
       assertEquals(2, props.typeConfig.vpn.ipSec.ikeVersion);
       assertFalse(props.typeConfig.vpn.ipSec.saveCredentials);
       assertEquals('test-psk', props.typeConfig.vpn.ipSec.psk);
+      assertEquals('', props.typeConfig.vpn.ipSec.localIdentity);
+      assertEquals('', props.typeConfig.vpn.ipSec.remoteIdentity);
 
       networkConfig.set('vpnSaveCredentials_', true);
       assertTrue(networkConfig.getPropertiesToSet_()
                      .typeConfig.vpn.ipSec.saveCredentials);
+
+      configProperties.typeConfig.vpn.ipSec.localIdentity = 'local-id';
+      configProperties.typeConfig.vpn.ipSec.remoteIdentity = 'remote-id';
+      props = networkConfig.getPropertiesToSet_();
+      assertEquals('local-id', props.typeConfig.vpn.ipSec.localIdentity);
+      assertEquals('remote-id', props.typeConfig.vpn.ipSec.remoteIdentity);
     });
 
     // Checks if values are read correctly for an existing service of PSK
@@ -329,6 +343,8 @@ suite('network-config', function() {
       ikev2.typeProperties.vpn.ipSec = {
         authenticationType: {activeValue: 'PSK'},
         ikeVersion: {activeValue: 2},
+        localIdentity: {activeValue: 'local-id'},
+        remoteIdentity: {activeValue: 'remote-id'},
         saveCredentials: {activeValue: true},
       };
       setNetworkConfig(ikev2);
@@ -347,6 +363,8 @@ suite('network-config', function() {
         assertEquals(mojom.VpnType.kIKEv2, props.typeConfig.vpn.type.value);
         assertEquals('PSK', props.typeConfig.vpn.ipSec.authenticationType);
         assertEquals(2, props.typeConfig.vpn.ipSec.ikeVersion);
+        assertEquals('local-id', props.typeConfig.vpn.ipSec.localIdentity);
+        assertEquals('remote-id', props.typeConfig.vpn.ipSec.remoteIdentity);
         assertTrue(props.typeConfig.vpn.ipSec.saveCredentials);
       });
     });
@@ -551,6 +569,8 @@ suite('network-config', function() {
       Polymer.dom.flush();
       assertEquals(2, networkConfig.get('ipsecAuthTypeItems_').length);
       assertEquals('PSK', networkConfig.ipsecAuthType_);
+      assertFalse(!!networkConfig.$$('#ipsec-local-id-input'));
+      assertFalse(!!networkConfig.$$('#ipsec-remote-id-input'));
       assertTrue(!!networkConfig.$$('#ipsec-auth-type'));
       assertTrue(!!networkConfig.$$('#l2tp-username-input'));
       assertTrue(!!networkConfig.$$('#ipsec-psk-input'));

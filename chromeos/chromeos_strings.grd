@@ -1308,6 +1308,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_VPN_IPSEC_GROUP" desc="ONC Property label for VPN.IPSec.Group">
         Group name
       </message>
+      <message name="IDS_ONC_VPN_IPSEC_LOCAL_IDENTITY" desc="ONC Property label for VPN.IPSec.LocalIdentity">
+        Local identity
+      </message>
+      <message name="IDS_ONC_VPN_IPSEC_REMOTE_IDENTITY" desc="ONC Property label for VPN.IPSec.RemoteIdentity">
+        Remote identity
+      </message>
       <message name="IDS_ONC_VPN_THIRD_PARTY_VPN_PROVIDER_NAME" desc="ONC Property label for VPN.ThirdPartyVPN.ProviderName">
         Provider name
       </message>

@@ -136,6 +136,18 @@
                 property="[[managedProperties_.typeProperties.vpn.ipSec.psk]]">
             </network-password-input>
           </template>
+          <template is="dom-if" if="[[showVpn_.IKEv2]]" restamp>
+            <network-config-input label="[[i18n('OncVPN-IPsec-LocalIdentity')]]"
+                id="ipsec-local-id-input"
+                value="{{configProperties_.typeConfig.vpn.ipSec.localIdentity}}"
+                property="[[managedProperties_.typeProperties.vpn.ipSec.localIdentity]]">
+            </network-config-input>
+            <network-config-input label="[[i18n('OncVPN-IPsec-RemoteIdentity')]]"
+                id="ipsec-remote-id-input"
+                value="{{configProperties_.typeConfig.vpn.ipSec.remoteIdentity}}"
+                property="[[managedProperties_.typeProperties.vpn.ipSec.remoteIdentity]]">
+            </network-config-input>
+          </template>
         </template>
         <template is="dom-if" if="[[showVpn_.OpenVPN]]" restamp>
           <network-config-input label="[[i18n('OncVPN-OpenVPN-Username')]]"
