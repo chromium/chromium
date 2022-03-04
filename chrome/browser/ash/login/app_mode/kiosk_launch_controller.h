@@ -145,6 +145,9 @@ class KioskLaunchController
 
   // ForceInstalledTracker::Observer:
   void OnForceInstalledExtensionsReady() override;
+  void OnForceInstalledExtensionFailed(
+      const extensions::ExtensionId& extension_id,
+      extensions::InstallStageTracker::FailureReason reason) override;
 
   void OnOwnerSigninSuccess();
 
@@ -160,6 +163,10 @@ class KioskLaunchController
   void CloseNetworkConfigureScreenIfOnline();
 
   void HandleWebAppInstallFailed();
+
+  // Continues launching after forced extensions are installed if required.
+  // If it times out waiting for extensions to install, logs metrics via UMA.
+  void FinishForcedExtensionsInstall(bool timeout);
 
   void OnNetworkWaitTimedOut();
   void StartTimerToWaitForExtensions();
@@ -207,6 +214,9 @@ class KioskLaunchController
   // A timer that fires when the force-installed extensions were not ready
   // within the allocated time.
   base::OneShotTimer extension_wait_timer_;
+
+  // Tracks the moment when extensions start to be installed.
+  absl::optional<base::Time> extension_start_time_;
 
   // Observe the installation status of extensions in Ash. This object is
   // only used when Lacros is disabled.
