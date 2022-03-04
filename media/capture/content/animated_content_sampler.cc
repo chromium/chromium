@@ -9,6 +9,8 @@
 
 #include <algorithm>
 
+#include "base/containers/adapters.h"
+
 namespace media {
 
 namespace {
@@ -202,27 +204,27 @@ bool AnimatedContentSampler::AnalyzeObservations(
   size_t count_frame_durations = 0;
   base::TimeTicks first_event_time;
   base::TimeTicks last_event_time;
-  for (ObservationFifo::const_reverse_iterator i = observations_.rbegin();
-       i != observations_.rend(); ++i) {
-    const int area = i->damage_rect.size().GetArea();
+  for (const auto& observation : base::Reversed(observations_)) {
+    const int area = observation.damage_rect.size().GetArea();
     num_pixels_damaged_in_all += area;
-    if (i->damage_rect != elected_rect)
+    if (observation.damage_rect != elected_rect)
       continue;
     num_pixels_damaged_in_chosen += area;
     if (last_event_time.is_null()) {
-      last_event_time = i->event_time;
+      last_event_time = observation.event_time;
       if ((event_time - last_event_time) >= kNonAnimatingThreshold) {
         return false;  // Content animation has recently ended.
       }
     } else {
-      const base::TimeDelta frame_duration = first_event_time - i->event_time;
+      const base::TimeDelta frame_duration =
+          first_event_time - observation.event_time;
       if (frame_duration >= kNonAnimatingThreshold) {
         break;  // Content not animating before this point.
       }
       sum_frame_durations += frame_duration;
       ++count_frame_durations;
     }
-    first_event_time = i->event_time;
+    first_event_time = observation.event_time;
   }
 
   if ((last_event_time - first_event_time) < kMinObservationWindow) {
