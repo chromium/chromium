@@ -607,8 +607,9 @@ export class Preview {
             faceRects = parseMetadata(entry);
             return true;
           }
+          default:
+            return false;
         }
-        return false;
       }
 
       assert(metadata.entries !== undefined);

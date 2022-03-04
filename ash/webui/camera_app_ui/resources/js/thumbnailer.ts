@@ -200,6 +200,8 @@ async function getImageFromPdf(blob: Blob): Promise<Blob> {
         case '/Length':
           length = Number(field);
           break;
+        default:
+          // nothing to do.
       }
     }
     if (isImage) {

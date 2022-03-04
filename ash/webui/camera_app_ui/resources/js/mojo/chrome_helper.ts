@@ -53,8 +53,9 @@ function castToMojoRotation(rotation: number): Rotation {
       return Rotation.ROTATION_180;
     case 270:
       return Rotation.ROTATION_270;
+    default:
+      assertNotReached(`Invalid rotation ${rotation}`);
   }
-  assertNotReached(`Invalid rotation ${rotation}`);
 }
 
 /**
@@ -292,6 +293,8 @@ export class ChromeHelper {
         return;
       case FileMonitorResult.ERROR:
         throw new Error('Error happens when monitoring file deletion');
+      default:
+        assertNotReached();
     }
   }
 

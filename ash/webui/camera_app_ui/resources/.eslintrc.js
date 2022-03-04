@@ -692,6 +692,9 @@ module.exports = {
 
     // go/tsstyle#assignment-in-control-statements
     'no-cond-assign': 'error',
+
+    // go/tsstyle#switch-statements
+    'default-case': 'error',
   }),
   overrides: [{
     files: ['**/*.ts'],

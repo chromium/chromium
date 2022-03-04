@@ -100,8 +100,9 @@ export function getMaxBitrate(profile: Profile, level: Level): number {
         return mainBitrate;
       case Profile.HIGH:
         return Math.floor(mainBitrate * 5 / 4);
+      default:
+        assertNotReached();
     }
-    assertNotReached();
   })();
   return kbs * 1000;
 }

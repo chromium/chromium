@@ -25,8 +25,9 @@ function rotate(x: number, y: number, orientation: number): [number, number] {
       return [1.0 - x, 1.0 - y];
     case 270:
       return [1.0 - y, x];
+    default:
+      assertNotReached('Unexpected orientation');
   }
-  assertNotReached('Unexpected orientation');
 }
 
 /**

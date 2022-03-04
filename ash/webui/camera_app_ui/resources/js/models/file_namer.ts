@@ -116,8 +116,9 @@ export class Filenamer {
           return 'jpg';
         case MimeType.PDF:
           return 'pdf';
+        default:
+          assertNotReached(`Unknown type ${mimeType}`);
       }
-      assertNotReached(`Unknown type ${mimeType}`);
     })();
     return DOCUMENT_PREFIX + timestampToDatetimeName(this.timestamp) + '.' +
         ext;
