@@ -183,8 +183,9 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
   DVLOG(2) << __func__ << ": " << config.AsHumanReadableString()
            << " media_crypto:" << media_crypto.obj();
 
-  const std::string mime =
-      MediaCodecUtil::CodecToAndroidMimeType(config.codec());
+  const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(
+      config.codec(), config.target_output_sample_format());
+
   if (mime.empty())
     return nullptr;
 

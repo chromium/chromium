@@ -105,7 +105,8 @@ class AudioDecoderSelectorTestParam {
 
   // StreamTraits() takes different parameters depending on the type.
   static std::unique_ptr<StreamTraits> CreateStreamTraits(MediaLog* media_log) {
-    return std::make_unique<StreamTraits>(media_log, CHANNEL_LAYOUT_STEREO);
+    return std::make_unique<StreamTraits>(media_log, CHANNEL_LAYOUT_STEREO,
+                                          kSampleFormatPlanarF32);
   }
 
   static const base::Feature& ForceHardwareDecodersFeature() {

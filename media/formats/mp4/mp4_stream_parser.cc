@@ -449,7 +449,14 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           sample_per_second = entry.samplerate;
         } else if (audio_type == kDTSX) {
           codec = AudioCodec::kDTSXP2;
-          channel_layout = GuessChannelLayout(entry.channelcount);
+          // TODO(crbug.com/1302884): Adding a new 5.1.4 channel layout enum
+          // and modify GuessChannelLayout function.
+          // HDMI versions pre HDMI 2.0 can only transmit 8 raw PCM channels.
+          // In the case of a 5_1_4 stream we downmix to 5_1.
+          if (entry.channelcount == 10)
+            channel_layout = CHANNEL_LAYOUT_5_1;
+          else
+            channel_layout = GuessChannelLayout(entry.channelcount);
           sample_per_second = entry.samplerate;
 #endif
         } else {

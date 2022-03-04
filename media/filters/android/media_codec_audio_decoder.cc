@@ -70,20 +70,6 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
   DCHECK(input_queue_.empty());
   ClearInputQueue(DecoderStatus::Codes::kAborted);
 
-  is_passthrough_ = MediaCodecUtil::IsPassthroughAudioFormat(config.codec());
-  sample_format_ = kSampleFormatS16;
-
-  if (config.codec() == AudioCodec::kAC3)
-    sample_format_ = kSampleFormatAc3;
-  else if (config.codec() == AudioCodec::kEAC3)
-    sample_format_ = kSampleFormatEac3;
-  else if (config.codec() == AudioCodec::kMpegHAudio)
-    sample_format_ = kSampleFormatMpegHAudio;
-  else if (config.codec() == AudioCodec::kDTS)
-    sample_format_ = kSampleFormatDts;
-  else if (config.codec() == AudioCodec::kDTSXP2)
-    sample_format_ = kSampleFormatDtsxP2;
-
   if (state_ == STATE_ERROR) {
     DVLOG(1) << "Decoder is in error state.";
     BindToCurrentLoop(std::move(init_cb)).Run(DecoderStatus::Codes::kFailed);
@@ -93,13 +79,51 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // We can support only the codecs that MediaCodecBridge can decode.
   // TODO(xhwang): Get this list from MediaCodecBridge or just rely on
   // attempting to create one to determine whether the codec is supported.
-  const bool is_codec_supported = config.codec() == AudioCodec::kVorbis ||
-                                  config.codec() == AudioCodec::kFLAC ||
-                                  config.codec() == AudioCodec::kAAC ||
-                                  config.codec() == AudioCodec::kOpus ||
-                                  is_passthrough_;
+
+  bool platform_codec_supported = false;
+  is_passthrough_ = false;
+  sample_format_ = config.target_output_sample_format();
+  switch (config.codec()) {
+    case AudioCodec::kVorbis:
+    case AudioCodec::kFLAC:
+    case AudioCodec::kAAC:
+    case AudioCodec::kOpus:
+      platform_codec_supported = true;
+      break;
+    case AudioCodec::kUnknown:
+    case AudioCodec::kMP3:
+    case AudioCodec::kPCM:
+    case AudioCodec::kAMR_NB:
+    case AudioCodec::kAMR_WB:
+    case AudioCodec::kPCM_MULAW:
+    case AudioCodec::kGSM_MS:
+    case AudioCodec::kPCM_S16BE:
+    case AudioCodec::kPCM_S24BE:
+    case AudioCodec::kPCM_ALAW:
+    case AudioCodec::kALAC:
+      platform_codec_supported = false;
+      break;
+    case AudioCodec::kAC3:
+    case AudioCodec::kEAC3:
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSXP2:
+    case AudioCodec::kMpegHAudio:
+      is_passthrough_ = sample_format_ != kUnknownSampleFormat;
+      // Check if MediaCodec Library supports decoding of the sample format.
+      platform_codec_supported = MediaCodecUtil::CanDecode(config.codec());
+      break;
+  }
+
+  // sample_format_ is stream type for pass-through. Otherwise sample_format_
+  // should be set to kSampleFormatS16, which is what Android MediaCodec
+  // supports for PCM decode.
+  if (!is_passthrough_)
+    sample_format_ = kSampleFormatS16;
+
+  const bool is_codec_supported = platform_codec_supported || is_passthrough_;
+
   if (!is_codec_supported) {
-    DVLOG(1) << "Unsuported codec " << GetCodecName(config.codec());
+    DVLOG(1) << "Unsupported codec " << GetCodecName(config.codec());
     BindToCurrentLoop(std::move(init_cb))
         .Run(DecoderStatus::Codes::kUnsupportedCodec);
     return;

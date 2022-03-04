@@ -115,6 +115,14 @@ class MEDIA_EXPORT AudioDecoderConfig {
     return target_output_channel_layout_;
   }
 
+  // Optionally set by renderer to signal desired bitstream-passthru format.
+  void set_target_output_sample_format(SampleFormat sample_format) {
+    target_output_sample_format_ = sample_format;
+  }
+  SampleFormat target_output_sample_format() const {
+    return target_output_sample_format_;
+  }
+
   void set_aac_extra_data(std::vector<uint8_t> aac_extra_data) {
     aac_extra_data_ = std::move(aac_extra_data);
   }
@@ -151,6 +159,9 @@ class MEDIA_EXPORT AudioDecoderConfig {
 
   // Layout of the output hardware. Optionally set. See setter comments.
   ChannelLayout target_output_channel_layout_ = CHANNEL_LAYOUT_NONE;
+
+  // Desired output format of bitstream. Optionally set. See setter comments.
+  SampleFormat target_output_sample_format_ = kUnknownSampleFormat;
 
   // This is a hack for backward compatibility. For AAC, to preserve existing
   // behavior, we set `aac_extra_data_` on all platforms but only set

@@ -53,8 +53,11 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::SetEncryptionType(
 
 DecoderStreamTraits<DemuxerStream::AUDIO>::DecoderStreamTraits(
     MediaLog* media_log,
-    ChannelLayout initial_hw_layout)
-    : media_log_(media_log), initial_hw_layout_(initial_hw_layout) {
+    ChannelLayout initial_hw_layout,
+    SampleFormat initial_hw_sample_format)
+    : media_log_(media_log),
+      initial_hw_layout_(initial_hw_layout),
+      initial_hw_sample_format_(initial_hw_sample_format) {
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -64,6 +67,7 @@ DecoderStreamTraits<DemuxerStream::AUDIO>::GetDecoderConfig(
   auto config = stream->audio_decoder_config();
   // Demuxer is not aware of hw layout, so we set it here.
   config.set_target_output_channel_layout(initial_hw_layout_);
+  config.set_target_output_sample_format(initial_hw_sample_format_);
   return config;
 }
 

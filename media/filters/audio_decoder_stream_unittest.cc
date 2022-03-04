@@ -49,7 +49,8 @@ class AudioDecoderStreamTest : public testing::Test {
       : audio_decoder_stream_(
             std::make_unique<AudioDecoderStream::StreamTraits>(
                 &media_log_,
-                CHANNEL_LAYOUT_STEREO),
+                CHANNEL_LAYOUT_STEREO,
+                kSampleFormatPlanarF32),
             task_environment_.GetMainThreadTaskRunner(),
             base::BindRepeating(&AudioDecoderStreamTest::CreateMockAudioDecoder,
                                 base::Unretained(this)),

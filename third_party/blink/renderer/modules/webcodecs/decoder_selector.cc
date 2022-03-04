@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/channel_layout.h"
 #include "media/base/demuxer_stream.h"
+#include "media/base/sample_format.h"
 #include "media/filters/decrypting_demuxer_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -116,7 +117,8 @@ std::unique_ptr<WebCodecsAudioDecoderSelector::StreamTraits>
 DecoderSelector<media::DemuxerStream::AUDIO>::CreateStreamTraits() {
   // TODO(chcunningham): Consider plumbing real hw channel layout.
   return std::make_unique<DecoderSelector::StreamTraits>(
-      &null_media_log_, media::CHANNEL_LAYOUT_NONE);
+      &null_media_log_, media::CHANNEL_LAYOUT_NONE,
+      media::kUnknownSampleFormat);
 }
 
 template <>

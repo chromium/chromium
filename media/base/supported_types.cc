@@ -359,10 +359,15 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
     case AudioCodec::kALAC:
     case AudioCodec::kAC3:
     case AudioCodec::kMpegHAudio:
-    case AudioCodec::kDTS:
-    case AudioCodec::kDTSXP2:
     case AudioCodec::kUnknown:
       return false;
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSXP2:
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+      return true;
+#else
+      return false;
+#endif
   }
 }
 

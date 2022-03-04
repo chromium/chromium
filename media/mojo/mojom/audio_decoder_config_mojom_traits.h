@@ -60,6 +60,11 @@ struct StructTraits<media::mojom::AudioDecoderConfigDataView,
     return input.target_output_channel_layout();
   }
 
+  static media::SampleFormat target_output_sample_format(
+      const media::AudioDecoderConfig& input) {
+    return input.target_output_sample_format();
+  }
+
   static bool should_discard_decoder_delay(
       const media::AudioDecoderConfig& input) {
     return input.should_discard_decoder_delay();

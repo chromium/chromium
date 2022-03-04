@@ -62,12 +62,6 @@ bool IsAudioSinkConnected() {
       base::android::AttachCurrentThread());
 }
 
-// Return a bit mask of AudioParameters::Format enum values sink device supports
-int GetSinkAudioEncodingFormats() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_AudioManagerAndroid_getAudioEncodingFormatsSupported(env);
-}
-
 }  // namespace
 
 static bool InitAAudio() {
@@ -475,6 +469,13 @@ int AudioManagerAndroid::GetOptimalOutputFrameSize(int sample_rate,
                   Java_AudioManagerAndroid_getMinOutputFrameSize(
                       base::android::AttachCurrentThread(),
                       sample_rate, channels));
+}
+
+// Returns a bit mask of AudioParameters::Format enum values sink device
+// supports.
+int AudioManagerAndroid::GetSinkAudioEncodingFormats() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_AudioManagerAndroid_getAudioEncodingFormatsSupported(env);
 }
 
 // Returns encoding bitstream formats supported by Sink device. Returns

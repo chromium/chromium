@@ -118,7 +118,20 @@ static bool HasVp9Profile23Decoder() {
 
 // static
 std::string MediaCodecUtil::CodecToAndroidMimeType(AudioCodec codec) {
-  if (IsPassthroughAudioFormat(codec))
+  return CodecToAndroidMimeType(codec, kUnknownSampleFormat);
+}
+
+// static
+std::string MediaCodecUtil::CodecToAndroidMimeType(AudioCodec codec,
+                                                   SampleFormat sample_format) {
+  // Passthrough is possible for some bitstream formats.
+  const bool is_passthrough = sample_format == kSampleFormatDts ||
+                              sample_format == kSampleFormatDtsxP2 ||
+                              sample_format == kSampleFormatAc3 ||
+                              sample_format == kSampleFormatEac3 ||
+                              sample_format == kSampleFormatMpegHAudio;
+
+  if (IsPassthroughAudioFormat(codec) || is_passthrough)
     return kBitstreamAudioMimeType;
 
   switch (codec) {
@@ -278,8 +291,6 @@ bool MediaCodecUtil::IsPassthroughAudioFormat(AudioCodec codec) {
   switch (codec) {
     case AudioCodec::kAC3:
     case AudioCodec::kEAC3:
-    case AudioCodec::kDTS:
-    case AudioCodec::kDTSXP2:
     case AudioCodec::kMpegHAudio:
       return true;
     default:

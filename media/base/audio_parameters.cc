@@ -206,6 +206,11 @@ bool AudioParameters::IsBitstreamFormat() const {
   }
 }
 
+bool AudioParameters::IsFormatSupportedByHardware(Format format) const {
+  return hardware_capabilities_.has_value() &&
+         (hardware_capabilities_->bitstream_formats & format);
+}
+
 // static
 AudioParameters AudioParameters::UnavailableDeviceParams() {
   // Using 10 ms buffer since WebAudioMediaStreamSource::DeliverRebufferedAudio

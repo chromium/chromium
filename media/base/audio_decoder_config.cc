@@ -65,21 +65,23 @@ bool AudioDecoderConfig::IsValidConfig() const {
 }
 
 bool AudioDecoderConfig::Matches(const AudioDecoderConfig& config) const {
-  return ((codec() == config.codec()) &&
-          (bytes_per_channel() == config.bytes_per_channel()) &&
-          (channel_layout() == config.channel_layout()) &&
-          (samples_per_second() == config.samples_per_second()) &&
-          (extra_data() == config.extra_data()) &&
-          (encryption_scheme() == config.encryption_scheme()) &&
-          (sample_format() == config.sample_format()) &&
-          (seek_preroll() == config.seek_preroll()) &&
-          (codec_delay() == config.codec_delay()) &&
-          (profile() == config.profile()) &&
-          (should_discard_decoder_delay() ==
-           config.should_discard_decoder_delay()) &&
-          (target_output_channel_layout() ==
-           config.target_output_channel_layout()) &&
-          (aac_extra_data() == config.aac_extra_data()));
+  return (
+      (codec() == config.codec()) &&
+      (bytes_per_channel() == config.bytes_per_channel()) &&
+      (channel_layout() == config.channel_layout()) &&
+      (samples_per_second() == config.samples_per_second()) &&
+      (extra_data() == config.extra_data()) &&
+      (encryption_scheme() == config.encryption_scheme()) &&
+      (sample_format() == config.sample_format()) &&
+      (seek_preroll() == config.seek_preroll()) &&
+      (codec_delay() == config.codec_delay()) &&
+      (profile() == config.profile()) &&
+      (should_discard_decoder_delay() ==
+       config.should_discard_decoder_delay()) &&
+      (target_output_channel_layout() ==
+       config.target_output_channel_layout()) &&
+      (target_output_sample_format() == config.target_output_sample_format()) &&
+      (aac_extra_data() == config.aac_extra_data()));
 }
 
 std::string AudioDecoderConfig::AsHumanReadableString() const {
@@ -100,6 +102,8 @@ std::string AudioDecoderConfig::AsHumanReadableString() const {
     << (should_discard_decoder_delay() ? "true" : "false")
     << ", target_output_channel_layout: "
     << ChannelLayoutToString(target_output_channel_layout())
+    << ", target_output_sample_format: "
+    << SampleFormatToString(target_output_sample_format())
     << ", has aac extra data: "
     << (aac_extra_data().empty() ? "false" : "true");
   return s.str();
