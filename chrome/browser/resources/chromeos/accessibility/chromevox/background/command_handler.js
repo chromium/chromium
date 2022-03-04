@@ -5,6 +5,7 @@
 /**
  * @fileoverview ChromeVox commands.
  */
+import {SmartStickyMode} from './smart_sticky_mode.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationEvent = chrome.automation.AutomationEvent;
