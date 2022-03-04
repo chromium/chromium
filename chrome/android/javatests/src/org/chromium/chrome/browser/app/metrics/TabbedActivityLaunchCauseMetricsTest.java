@@ -44,7 +44,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
@@ -246,7 +245,6 @@ public final class TabbedActivityLaunchCauseMetricsTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1224738")
     public void testServiceWorkerTabLaunch() throws Throwable {
         final int count = 1 + histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION);
         mJniMocker.mock(ServiceTabLauncherJni.TEST_HOOKS, mServiceTabLauncherJni);
