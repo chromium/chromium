@@ -13,7 +13,9 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AnnotationTool} from '../annotation_tool.js';
 import {InkController, InkControllerEventType} from '../ink_controller.js';
+import {ViewerPenOptionsElement} from './viewer-pen-options.js';
 import {ViewerToolbarDropdownElement} from './viewer-toolbar-dropdown.js';
 
 export class ViewerAnnotationsBarElement extends PolymerElement {
@@ -32,16 +34,13 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
         observer: 'onAnnotationModeChanged_',
       },
 
-      /** @private {?AnnotationTool} */
       annotationTool_: Object,
 
-      /** @private */
       canUndoAnnotation_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       canRedoAnnotation_: {
         type: Boolean,
         value: false,
@@ -49,19 +48,20 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
     };
   }
 
+  annotationMode: boolean;
+  private annotationTool_: AnnotationTool|null;
+  private canUndoAnnotation_: boolean;
+  private canRedoAnnotation_: boolean;
+  private inkController_: InkController = InkController.getInstance();
+  private tracker_: EventTracker = new EventTracker();
+
   constructor() {
     super();
-
-    /** @private {!InkController} */
-    this.inkController_ = InkController.getInstance();
-
-    /** @private {!EventTracker} */
-    this.tracker_ = new EventTracker();
 
     this.tracker_.add(
         this.inkController_.getEventTarget(),
         InkControllerEventType.SET_ANNOTATION_UNDO_STATE,
-        e => this.setAnnotationUndoState_(e));
+        this.setAnnotationUndoState_.bind(this));
 
     this.tracker_.add(
         this.inkController_.getEventTarget(), InkControllerEventType.LOADED,
@@ -73,96 +73,73 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
         });
   }
 
-  /**
-   * @param {!CustomEvent<{canUndo: boolean, canRedo: boolean}>} e
-   * @private
-   */
-  setAnnotationUndoState_(e) {
+  private setAnnotationUndoState_(
+      e: CustomEvent<{canUndo: boolean, canRedo: boolean}>) {
     this.canUndoAnnotation_ = e.detail.canUndo;
     this.canRedoAnnotation_ = e.detail.canRedo;
   }
 
-  /** @private */
-  onUndoClick_() {
+  private onUndoClick_() {
     this.inkController_.undo();
   }
 
-  /** @private */
-  onRedoClick_() {
+  private onRedoClick_() {
     this.inkController_.redo();
   }
 
-  /** @private */
-  onAnnotationModeChanged_() {
+  private onAnnotationModeChanged_() {
     if (this.annotationMode) {
       // Select pen tool when entering annotation mode.
-      this.updateAnnotationTool_(/** @type {!ViewerToolbarDropdownElement} */ (
-          this.shadowRoot.querySelector('#pen')));
+      this.updateAnnotationTool_(this.shadowRoot!.querySelector('#pen')!);
     }
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  annotationToolClicked_(e) {
-    this.updateAnnotationTool_(/** @type {!HTMLElement} */ (e.currentTarget));
+  private annotationToolClicked_(e: Event) {
+    this.updateAnnotationTool_(e.currentTarget as HTMLElement);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  annotationToolOptionChanged_(e) {
-    const element = e.currentTarget.parentElement;
+  private annotationToolOptionChanged_(e: Event) {
+    const element = (e.currentTarget as HTMLElement).parentElement!;
     if (!this.annotationTool_ || element.id !== this.annotationTool_.tool) {
       return;
     }
-    this.updateAnnotationTool_(e.currentTarget.parentElement);
+    this.updateAnnotationTool_(element);
   }
 
-  /**
-   * @param {!HTMLElement} element
-   * @private
-   */
-  updateAnnotationTool_(element) {
+  private updateAnnotationTool_(element: HTMLElement) {
     const tool = element.id;
-    const options = element.querySelector('viewer-pen-options') || {
-      selectedSize: 1,
-      selectedColor: undefined,
-    };
-    const attributeStyleMap = element.attributeStyleMap;
-    attributeStyleMap.set('--pen-tip-fill', options.selectedColor);
-    attributeStyleMap.set(
+    const options =
+        element.querySelector<ViewerPenOptionsElement>('viewer-pen-options') ||
+        {
+          selectedSize: 1,
+          selectedColor: null,
+        };
+
+    element.style.setProperty('--pen-tip-fill', options.selectedColor);
+    element.style.setProperty(
         '--pen-tip-border',
         options.selectedColor === '#000000' ? 'currentcolor' :
                                               options.selectedColor);
     this.annotationTool_ = {
       tool: tool,
       size: options.selectedSize,
-      color: options.selectedColor,
+      color: options.selectedColor ? options.selectedColor : undefined,
     };
     this.inkController_.setAnnotationTool(this.annotationTool_);
   }
 
-  /**
-   * @param {string} toolName
-   * @return {boolean} Whether the annotation tool is using tool |toolName|.
-   * @private
-   */
-  isAnnotationTool_(toolName) {
+  /** @return Whether the annotation tool is using tool `toolName`. */
+  private isAnnotationTool_(toolName: string): boolean {
     return !!this.annotationTool_ && this.annotationTool_.tool === toolName;
   }
 
-  /** @return {!NodeList<!ViewerToolbarDropdownElement>} */
-  getOpenDropdowns_() {
-    return /** @type {!NodeList<!ViewerToolbarDropdownElement>} */ (
-        this.shadowRoot.querySelectorAll(
-            'viewer-toolbar-dropdown[dropdown-open]'));
+  private getOpenDropdowns_(): NodeListOf<ViewerToolbarDropdownElement> {
+    return this.shadowRoot!.querySelectorAll(
+        'viewer-toolbar-dropdown[dropdown-open]');
   }
 
-  /** @return {boolean} Whether one of the dropdowns is open. */
-  hasOpenDropdown() {
+  /** @return Whether one of the dropdowns is open. */
+  hasOpenDropdown(): boolean {
     return this.getOpenDropdowns_().length > 0;
   }
 
@@ -170,5 +147,12 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
     this.getOpenDropdowns_().forEach(element => element.toggleDropdown());
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-annotations-bar': ViewerAnnotationsBarElement;
+  }
+}
+
 customElements.define(
     ViewerAnnotationsBarElement.is, ViewerAnnotationsBarElement);

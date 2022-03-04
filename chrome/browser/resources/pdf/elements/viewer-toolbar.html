@@ -270,7 +270,7 @@
 <paper-progress id="progress" value="[[loadProgress]]" hidden="[[!loading_]]">
 </paper-progress>
 
-<cr-action-menu on-open-changed="onMoreOpenChanged_">
+<cr-action-menu id="menu" on-open-changed="onMoreOpenChanged_">
   <button id="two-page-view-button"
       class="dropdown-item" on-click="toggleTwoPageViewClick_" role="checkbox"
 <if expr="enable_ink">

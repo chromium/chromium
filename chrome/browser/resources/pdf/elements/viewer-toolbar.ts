@@ -22,9 +22,12 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {FittingType} from '../constants.js';
 import {record, UserAction} from '../metrics.js';
-// <if expr="enable_ink">
-import {ViewerAnnotationsModeDialogElement} from './viewer-annotations-mode-dialog.js';
-// </if>
+
+export interface ViewerToolbarElement {
+  $: {
+    menu: CrActionMenuElement,
+  };
+}
 
 export class ViewerToolbarElement extends PolymerElement {
   static get is() {
@@ -66,7 +69,6 @@ export class ViewerToolbarElement extends PolymerElement {
       printingEnabled: Boolean,
       rotated: Boolean,
       viewportZoom: Number,
-      /** @type {!{min: number, max: number}} */
       zoomBounds: Object,
 
       sidenavCollapsed: Boolean,
@@ -79,13 +81,11 @@ export class ViewerToolbarElement extends PolymerElement {
 
       fittingType_: Number,
 
-      /** @private {string} */
       fitToButtonIcon_: {
         type: String,
         computed: 'computeFitToButtonIcon_(fittingType_)',
       },
 
-      /** @private */
       viewportZoomPercent_: {
         type: Number,
         computed: 'computeViewportZoomPercent_(viewportZoom)',
@@ -93,13 +93,11 @@ export class ViewerToolbarElement extends PolymerElement {
       },
 
       // <if expr="enable_ink">
-      /** @private */
       showAnnotationsModeDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showAnnotationsBar_: {
         type: Boolean,
         computed: 'computeShowAnnotationsBar_(' +
@@ -109,105 +107,83 @@ export class ViewerToolbarElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  docTitle: string;
+  docLength: number;
+  hasEdits: boolean;
+  hasEnteredAnnotationMode: boolean;
+  isFormFieldFocused: boolean;
+  loadProgress: number;
+  pageNo: number;
+  pdfAnnotationsEnabled: boolean;
+  printingEnabled: boolean;
+  rotated: boolean;
+  viewportZoom: number;
+  zoomBounds: {min: number, max: number};
+  sidenavCollapsed: boolean = false;
+  twoUpViewEnabled: boolean;
+  private displayAnnotations_: boolean = true;
+  private fittingType_: FittingType = FittingType.FIT_TO_PAGE;
+  private fitToButtonIcon_: string;
+  private moreMenuOpen_: boolean = false;
+  private loading_: boolean = true;
+  private viewportZoomPercent_: number;
 
-    /** @type {boolean} */
-    this.sidenavCollapsed = false;
+  // <if expr="enable_ink">
+  annotationAvailable: boolean;
+  annotationMode: boolean;
+  private showAnnotationsModeDialog_: boolean;
+  private showAnnotationsBar_: boolean;
+  // </if>
 
-    /** @private {!FittingType} */
-    this.fittingType_ = FittingType.FIT_TO_PAGE;
-
-    /** @private {boolean} */
-    this.loading_ = true;
-
-    /** @private {boolean} */
-    this.displayAnnotations_ = true;
-
-    /** @private {boolean} */
-    this.moreMenuOpen_ = false;
-  }
-
-  /**
-   * @return {!CrActionMenuElement}
-   * @private
-   */
-  getMenu_() {
-    return /** @type {!CrActionMenuElement} */ (
-        this.shadowRoot.querySelector('cr-action-menu'));
-  }
-
-  /** @private */
-  onSidenavToggleClick_() {
+  private onSidenavToggleClick_() {
     record(UserAction.TOGGLE_SIDENAV);
     this.dispatchEvent(new CustomEvent('sidenav-toggle-click'));
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeFitToButtonIcon_() {
+  private computeFitToButtonIcon_(): string {
     return this.fittingType_ === FittingType.FIT_TO_PAGE ? 'pdf:fit-to-height' :
                                                            'pdf:fit-to-width';
   }
 
-  /**
-   * @return {number}
-   * @private
-   */
-  computeViewportZoomPercent_() {
+  private computeViewportZoomPercent_(): number {
     return Math.round(100 * this.viewportZoom);
   }
 
-  /**
-   * @param {string} fitToPageTooltip
-   * @param {string} fitToWidthTooltip
-   * @return {string} The appropriate tooltip for the current state
-   * @private
-   */
-  getFitToButtonTooltip_(fitToPageTooltip, fitToWidthTooltip) {
+  /** @return The appropriate tooltip for the current state. */
+  private getFitToButtonTooltip_(
+      fitToPageTooltip: string, fitToWidthTooltip: string): string {
     return this.fittingType_ === FittingType.FIT_TO_PAGE ? fitToPageTooltip :
                                                            fitToWidthTooltip;
   }
 
-  /** @private */
-  loadProgressChanged_() {
+  private loadProgressChanged_() {
     this.loading_ = this.loadProgress < 100;
   }
 
-  /** @private */
-  viewportZoomPercentChanged_() {
+  private viewportZoomPercentChanged_() {
     this.getZoomInput_().value = `${this.viewportZoomPercent_}%`;
   }
 
   // <if expr="enable_ink">
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowAnnotationsBar_() {
+  private computeShowAnnotationsBar_(): boolean {
     return this.pdfAnnotationsEnabled && !this.loading_ && this.annotationMode;
   }
   // </if>
 
-  /** @private */
-  onPrintClick_() {
+  private onPrintClick_() {
     this.dispatchEvent(new CustomEvent('print'));
   }
 
-  /** @private */
-  onRotateClick_() {
+  private onRotateClick_() {
     this.dispatchEvent(new CustomEvent('rotate-left'));
   }
 
-  /** @private */
-  toggleDisplayAnnotations_() {
+  private toggleDisplayAnnotations_() {
     record(UserAction.TOGGLE_DISPLAY_ANNOTATIONS);
     this.displayAnnotations_ = !this.displayAnnotations_;
     this.dispatchEvent(new CustomEvent(
         'display-annotations-changed', {detail: this.displayAnnotations_}));
-    this.getMenu_().close();
+    this.$.menu.close();
 
     // <if expr="enable_ink">
     if (!this.displayAnnotations_ && this.annotationMode) {
@@ -216,69 +192,50 @@ export class ViewerToolbarElement extends PolymerElement {
     // </if>
   }
 
-  /** @private */
-  onPresentClick_() {
+  private onPresentClick_() {
     record(UserAction.PRESENT);
-    this.getMenu_().close();
+    this.$.menu.close();
     this.dispatchEvent(new CustomEvent('present-click'));
   }
 
-  /** @private */
-  onPropertiesClick_() {
+  private onPropertiesClick_() {
     record(UserAction.PROPERTIES);
-    this.getMenu_().close();
+    this.$.menu.close();
     this.dispatchEvent(new CustomEvent('properties-click'));
   }
 
-  /**
-   * @param {boolean} checked
-   * @return {string}
-   */
-  getSinglePageAriaChecked_(checked) {
+  getSinglePageAriaChecked_(checked: boolean): string {
     return checked ? 'false' : 'true';
   }
 
-  /**
-   * @param {boolean} checked
-   * @return {string}
-   */
-  getTwoPageViewAriaChecked_(checked) {
+  getTwoPageViewAriaChecked_(checked: boolean): string {
     return checked ? 'true' : 'false';
   }
 
-  /**
-   * @param {boolean} checked
-   * @return {string}
-   */
-  getShowAnnotationsAriaChecked_(checked) {
+  getShowAnnotationsAriaChecked_(checked: boolean): string {
     return checked ? 'true' : 'false';
   }
 
-  /** @return {string} */
-  getAriaExpanded_() {
+  getAriaExpanded_(): string {
     return this.sidenavCollapsed ? 'false' : 'true';
   }
 
-  /** @private */
-  toggleTwoPageViewClick_() {
+  private toggleTwoPageViewClick_() {
     const newTwoUpViewEnabled = !this.twoUpViewEnabled;
     this.dispatchEvent(
         new CustomEvent('two-up-view-changed', {detail: newTwoUpViewEnabled}));
-    this.getMenu_().close();
+    this.$.menu.close();
   }
 
-  /** @private */
-  onZoomInClick_() {
+  private onZoomInClick_() {
     this.dispatchEvent(new CustomEvent('zoom-in'));
   }
 
-  /** @private */
-  onZoomOutClick_() {
+  private onZoomOutClick_() {
     this.dispatchEvent(new CustomEvent('zoom-out'));
   }
 
-  /** @param {!FittingType} fittingType */
-  forceFit(fittingType) {
+  forceFit(fittingType: FittingType) {
     // The fitting type is the new state. We want to set the button fitting type
     // to the opposite value.
     this.fittingType_ = fittingType === FittingType.FIT_TO_WIDTH ?
@@ -295,22 +252,15 @@ export class ViewerToolbarElement extends PolymerElement {
     this.fittingType_ = newState;
   }
 
-  /** @private */
-  onFitToButtonClick_() {
+  private onFitToButtonClick_() {
     this.fitToggle();
   }
 
-  /**
-   * @return {!HTMLInputElement}
-   * @private
-   */
-  getZoomInput_() {
-    return /** @type {!HTMLInputElement} */ (
-        this.shadowRoot.querySelector('#zoom-controls input'));
+  private getZoomInput_(): HTMLInputElement {
+    return this.shadowRoot!.querySelector('#zoom-controls input')!;
   }
 
-  /** @private */
-  onZoomChange_() {
+  private onZoomChange_() {
     const input = this.getZoomInput_();
     let value = Number.parseInt(input.value, 10);
     value = Math.max(Math.min(value, this.zoomBounds.max), this.zoomBounds.min);
@@ -323,11 +273,10 @@ export class ViewerToolbarElement extends PolymerElement {
   }
 
   /**
-   * @param {number} value The new zoom value
-   * @return {boolean} Whether the zoom-changed event was sent.
-   * @private
+   * @param value The new zoom value
+   * @return Whether the zoom-changed event was sent.
    */
-  sendZoomChanged_(value) {
+  private sendZoomChanged_(value: number): boolean {
     if (Number.isNaN(value)) {
       return false;
     }
@@ -341,58 +290,38 @@ export class ViewerToolbarElement extends PolymerElement {
     return true;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onZoomInputPointerup_(e) {
-    /* @type {!HTMLInputElement} */ (e.target).select();
+  private onZoomInputPointerup_(e: Event) {
+    (e.target as HTMLInputElement).select();
   }
 
-  /** @private */
-  onMoreClick_() {
-    const anchor =
-        /** @type {!HTMLElement} */ (this.shadowRoot.querySelector('#more'));
-    this.getMenu_().showAt(anchor, {
+  private onMoreClick_() {
+    const anchor = this.shadowRoot!.querySelector('#more')!;
+    this.$.menu.showAt(anchor, {
       anchorAlignmentX: AnchorAlignment.CENTER,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,
     });
   }
 
-  /**
-   * @param {!CustomEvent<!{value: boolean}>} e
-   * @private
-   */
-  onMoreOpenChanged_(e) {
+  private onMoreOpenChanged_(e: CustomEvent<{value: boolean}>) {
     this.moreMenuOpen_ = e.detail.value;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isAtMinimumZoom_() {
+  private isAtMinimumZoom_(): boolean {
     return this.zoomBounds !== undefined &&
         this.viewportZoomPercent_ === this.zoomBounds.min;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isAtMaximumZoom_() {
+  private isAtMaximumZoom_(): boolean {
     return this.zoomBounds !== undefined &&
         this.viewportZoomPercent_ === this.zoomBounds.max;
   }
 
   // <if expr="enable_ink">
-  /** @private */
-  onDialogClose_() {
+  private onDialogClose_() {
     const confirmed =
-        /** @type {!ViewerAnnotationsModeDialogElement} */ (
-            this.shadowRoot.querySelector('viewer-annotations-mode-dialog'))
-            .wasConfirmed();
+        this.shadowRoot!.querySelector(
+                            'viewer-annotations-mode-dialog')!.wasConfirmed();
     this.showAnnotationsModeDialog_ = false;
     if (confirmed) {
       this.dispatchEvent(new CustomEvent('annotation-mode-dialog-confirmed'));
@@ -400,8 +329,7 @@ export class ViewerToolbarElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  onAnnotationClick_() {
+  private onAnnotationClick_() {
     if (!this.rotated && !this.twoUpViewEnabled) {
       this.toggleAnnotation();
       return;
@@ -420,6 +348,12 @@ export class ViewerToolbarElement extends PolymerElement {
     }
   }
   // </if>
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-toolbar': ViewerToolbarElement;
+  }
 }
 
 customElements.define(ViewerToolbarElement.is, ViewerToolbarElement);

@@ -191,6 +191,7 @@ ts_library("build_ts") {
       print_preview_non_webcomponents_files + print_preview_webcomponents_files
   definitions = [
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
     "source_capabilities.d.ts",
   ]
   deps = [
