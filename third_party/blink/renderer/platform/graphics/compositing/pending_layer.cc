@@ -322,7 +322,12 @@ PendingLayer::ScrollTranslationForScrollHitTestLayer() const {
   return *paint_chunk.hit_test_data->scroll_translation;
 }
 
-bool PendingLayer::PropertyTreeStateChanged() const {
+bool PendingLayer::PropertyTreeStateChanged(
+    const PendingLayer* old_pending_layer) const {
+  if (!old_pending_layer ||
+      old_pending_layer->property_tree_state_ != property_tree_state_)
+    return true;
+
   auto change = PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
   if (change_of_decomposited_transforms_ >= change)
     return true;
@@ -551,7 +556,8 @@ void PendingLayer::UpdateContentLayer(PendingLayer* old_pending_layer,
 
 void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
                                          cc::LayerSelection& layer_selection,
-                                         bool tracks_raster_invalidations) {
+                                         bool tracks_raster_invalidations,
+                                         cc::LayerTreeHost* layer_tree_host) {
   switch (compositing_type_) {
     case PendingLayer::kForeignLayer:
       UpdateForeignLayer();
@@ -570,6 +576,13 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
 
   UpdateLayerProperties();
   UpdateLayerSelection(layer_selection);
+
+  cc::Layer& layer = CcLayer();
+  layer.SetLayerTreeHost(layer_tree_host);
+  if (!layer.subtree_property_changed() &&
+      PropertyTreeStateChanged(old_pending_layer)) {
+    layer.SetSubtreePropertyChanged();
+  }
 }
 
 void PendingLayer::UpdateCompositedLayerForRepaint(

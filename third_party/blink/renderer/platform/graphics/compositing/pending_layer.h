@@ -12,6 +12,10 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+namespace cc {
+class LayerTreeHost;
+}
+
 namespace blink {
 
 // A pending layer is a collection of paint chunks that will end up in the same
@@ -114,8 +118,6 @@ class PLATFORM_EXPORT PendingLayer {
     return result;
   }
 
-  bool PropertyTreeStateChanged() const;
-
   bool MightOverlap(const PendingLayer& other) const;
 
   static void DecompositeTransforms(Vector<PendingLayer>& pending_layers);
@@ -138,7 +140,8 @@ class PLATFORM_EXPORT PendingLayer {
   // contents and properties of this PendingLayer.
   void UpdateCompositedLayer(PendingLayer* old_pending_layer,
                              cc::LayerSelection&,
-                             bool tracks_raster_invalidations);
+                             bool tracks_raster_invalidations,
+                             cc::LayerTreeHost*);
 
   // A lighter version of UpdateCompositedLayer(). Called when the existing
   // composited layer has only repainted since the last update.
@@ -160,6 +163,8 @@ class PLATFORM_EXPORT PendingLayer {
 
   // True if this contains only a single solid color DrawingDisplayItem.
   bool IsSolidColor() const;
+
+  bool PropertyTreeStateChanged(const PendingLayer* old_pending_layer) const;
 
   // The following methods are called by UpdateCompositedLayer(), each for a
   // particular type of composited layer.

@@ -45,7 +45,6 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
                                   JSONObject&) const override;
 
   cc::Layer& Layer() const { return *cc_picture_layer_.get(); }
-  const PropertyTreeState& State() const { return layer_state_; }
 
   void UpdateCcPictureLayer(const PendingLayer&);
 
@@ -61,8 +60,6 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
   scoped_refptr<cc::DisplayItemList> cc_display_item_list_;
   RasterInvalidator raster_invalidator_;
   RasterInvalidator::RasterInvalidationFunction raster_invalidation_function_;
-
-  PropertyTreeState layer_state_;
 
   String debug_name_;
 #if EXPENSIVE_DCHECKS_ARE_ON()

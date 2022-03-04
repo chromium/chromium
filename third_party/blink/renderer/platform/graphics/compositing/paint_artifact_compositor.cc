@@ -672,10 +672,9 @@ void PaintArtifactCompositor::Update(
   for (auto& pending_layer : pending_layers_) {
     pending_layer.UpdateCompositedLayer(
         old_pending_layer_matcher.Find(pending_layer), layer_selection,
-        tracks_raster_invalidations_);
-    cc::Layer& layer = pending_layer.CcLayer();
-    layer.SetLayerTreeHost(root_layer_->layer_tree_host());
+        tracks_raster_invalidations_, root_layer_->layer_tree_host());
 
+    cc::Layer& layer = pending_layer.CcLayer();
     const auto& property_state = pending_layer.GetPropertyTreeState();
     const auto& transform = property_state.Transform();
     const auto& clip = property_state.Clip();
@@ -719,16 +718,8 @@ void PaintArtifactCompositor::Update(
     bool backface_hidden = transform.IsBackfaceHidden();
     layer.SetShouldCheckBackfaceVisibility(backface_hidden);
 
-    // If the property tree state has changed between the layer and the root,
-    // we need to inform the compositor so damage can be calculated. Calling
-    // |PropertyTreeStateChanged| for every pending layer is O(|property
-    // nodes|^2) and could be optimized by caching the lookup of nodes known
-    // to be changed/unchanged.
-    if (layer.subtree_property_changed() ||
-        pending_layer.PropertyTreeStateChanged()) {
-      layer.SetSubtreePropertyChanged();
+    if (layer.subtree_property_changed())
       root_layer_->SetNeedsCommit();
-    }
 
     auto shared_element_id = layer.DocumentTransitionResourceId();
     if (shared_element_id.IsValid()) {

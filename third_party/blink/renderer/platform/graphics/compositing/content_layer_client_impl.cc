@@ -29,8 +29,7 @@ ContentLayerClientImpl::ContentLayerClientImpl()
     : cc_picture_layer_(cc::PictureLayer::Create(this)),
       raster_invalidation_function_(
           base::BindRepeating(&ContentLayerClientImpl::InvalidateRect,
-                              base::Unretained(this))),
-      layer_state_(PropertyTreeState::Uninitialized()) {}
+                              base::Unretained(this))) {}
 
 ContentLayerClientImpl::~ContentLayerClientImpl() {
   cc_picture_layer_->ClearClient();
@@ -77,19 +76,13 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   }
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
-  // The raster invalidator will only handle invalidations within a cc::Layer so
-  // we need this invalidation if the layer's properties have changed.
   auto layer_state = pending_layer.GetPropertyTreeState();
-  if (layer_state != layer_state_)
-    cc_picture_layer_->SetSubtreePropertyChanged();
-
   gfx::Size layer_bounds = pending_layer.LayerBounds();
   gfx::Vector2dF layer_offset = pending_layer.LayerOffset();
   gfx::Size old_layer_bounds = raster_invalidator_.LayerBounds();
   DCHECK_EQ(old_layer_bounds, cc_picture_layer_->bounds());
   raster_invalidator_.Generate(raster_invalidation_function_, paint_chunks,
                                layer_offset, layer_bounds, layer_state);
-  layer_state_ = layer_state;
 
   absl::optional<RasterUnderInvalidationCheckingParams>
       raster_under_invalidation_params;
