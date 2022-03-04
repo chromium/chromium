@@ -14,6 +14,8 @@ class Profile;
 namespace policy {
 
 // This class gives information related to the browser's management state.
+// For more imformation please read
+// //components/policy/core/common/management/management_service.md
 class BrowserManagementService : public ManagementService, public KeyedService {
  public:
   explicit BrowserManagementService(Profile* profile);

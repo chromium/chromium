@@ -17,6 +17,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+// For more imformation about this file please read
+// //components/policy/core/common/management/management_service.md
+
 class PrefService;
 class PrefRegistrySimple;
 
