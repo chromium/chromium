@@ -95,6 +95,10 @@ function updateVerboseLogging(enabled) {
   $('verbose-logging-toggle').checked = enabled;
 }
 
+function updateMirroring(enabled) {
+  $('mirroring-toggle').checked = enabled;
+}
+
 function updateStartupArguments(args) {
   $('startup-arguments-input').value = args;
 }
@@ -303,6 +307,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   $('verbose-logging-toggle').addEventListener('change', function(e) {
     chrome.send('setVerboseLoggingEnabled', [e.target.checked]);
+  });
+
+  $('mirroring-toggle').addEventListener('change', function(e) {
+    chrome.send('setMirroringEnabled', [e.target.checked]);
   });
 
   $('startup-arguments-form').addEventListener('submit', function(e) {

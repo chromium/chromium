@@ -277,6 +277,10 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
             &DriveInternalsWebUIHandler::SetVerboseLoggingEnabled,
             weak_ptr_factory_.GetWeakPtr()));
     web_ui()->RegisterMessageCallback(
+        "setMirroringEnabled",
+        base::BindRepeating(&DriveInternalsWebUIHandler::SetMirroringEnabled,
+                            weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
         "enableTracing",
         base::BindRepeating(&DriveInternalsWebUIHandler::SetTracingEnabled,
                             weak_ptr_factory_.GetWeakPtr(), true));
@@ -469,6 +473,10 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     MaybeCallJavascript("updateVerboseLogging",
                         base::Value(verbose_logging_enabled));
 
+    bool mirroring_enabled = profile()->GetPrefs()->GetBoolean(
+        drive::prefs::kDriveFsEnableMirrorSync);
+    MaybeCallJavascript("updateMirroring", base::Value(mirroring_enabled));
+
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(GetDeveloperMode),
@@ -533,6 +541,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
         drive::prefs::kDriveFsWasLaunchedAtLeastOnce,
         drive::prefs::kDriveFsPinnedMigrated,
         drive::prefs::kDriveFsEnableVerboseLogging,
+        drive::prefs::kDriveFsEnableMirrorSync,
     };
 
     PrefService* pref_service = profile()->GetPrefs();
@@ -658,6 +667,21 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
       profile()->GetPrefs()->SetBoolean(
           drive::prefs::kDriveFsEnableVerboseLogging, enabled);
       RestartDrive(base::Value::List());
+    }
+  }
+
+  void SetMirroringEnabled(const base::Value::List& args) {
+    AllowJavascript();
+    drive::DriveIntegrationService* integration_service =
+        GetIntegrationService();
+    if (!integration_service) {
+      return;
+    }
+
+    if (args.size() == 1 && args[0].is_bool()) {
+      bool enabled = args[0].GetBool();
+      profile()->GetPrefs()->SetBoolean(drive::prefs::kDriveFsEnableMirrorSync,
+                                        enabled);
     }
   }
 
