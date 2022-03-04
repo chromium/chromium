@@ -808,7 +808,7 @@ bool CanvasResourceSkiaDawnSharedImage::IsValid() const {
 
 GLenum CanvasResourceSkiaDawnSharedImage::TextureTarget() const {
 #if BUILDFLAG(IS_MAC)
-  return GL_TEXTURE_RECTANGLE_ARB;
+  return gpu::GetPlatformSpecificTextureTarget();
 #else
   return GL_TEXTURE_2D;
 #endif
