@@ -315,7 +315,7 @@ def _remove_deleted_files(emulator: device_utils.DeviceUtils):
     # This is necessary to terminate all non-chrome processes still holding
     # file descriptors open for deleted chrome apk files. Otherwise the
     # emulator will run out of space.
-    find_holders_of_deleted_fds_cmd = 'lsof | grep "(deleted)" | grep ".apk" | grep chrome | sed "s/  */ /g"'
+    find_holders_of_deleted_fds_cmd = 'lsof | grep "(deleted)" | grep ".apk" | grep chrome | sed "s/  +/ /g"'
     # Example output:
     # COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
     # gle.android.gms 2492 u0_a10 94r REG 252,1 652841428 172035 /data/app/org.chromium.chrome-UDsQx3j_rw_6nevertBVeQ==/base.apk (deleted)
