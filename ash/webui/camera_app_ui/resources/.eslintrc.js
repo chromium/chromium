@@ -672,6 +672,9 @@ module.exports = {
     'cca/parameter-comment-format': 'error',
 
     'cca/generic-parameter-on-declaration-type': 'error',
+
+    // go/tsstyle#constructors
+    'new-parens': 'error',
   }),
   overrides: [{
     files: ['**/*.ts'],
