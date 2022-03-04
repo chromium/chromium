@@ -212,10 +212,6 @@ tools/android/asan/third_party/asan_device_setup.sh \
     --lib third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/*/lib/linux
 # wait a few seconds for the device to reload
 ```
-**Note:** You need to replace `-arm-` part in `libclang_rt.asan-arm-android.so`
-in the command above with the corresponding architecture of the android device
-(e.g `-i686-` if you are running an `x86` emulator image).
-
 It only needs to be run once per device. It is safe to run it multiple times.
 Examine the output to ensure that setup was successful (you may need to run
 `adb disable-verity` and restart the device first). When this is done, the
