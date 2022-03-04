@@ -798,16 +798,9 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
 
 // Tests that an extension can not fetch a file scheme URL from the lazy
 // background page, if it does not have file access.
-// Flaky on Linux: crbug.com/1284362.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_FetchFileSchemeURLWithNoFileAccess \
-  DISABLED_FetchFileSchemeURLWithNoFileAccess
-#else
-#define MAYBE_FetchFileSchemeURLWithNoFileAccess \
-  FetchFileSchemeURLWithNoFileAccess
-#endif
+// Flaky on various builders: crbug.com/1284362.
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
-                       MAYBE_FetchFileSchemeURLWithNoFileAccess) {
+                       DISABLED_FetchFileSchemeURLWithNoFileAccess) {
   ASSERT_TRUE(RunExtensionTest(
       "lazy_background_page/fetch_file_scheme_url_with_no_file_access", {}))
       << message_;
