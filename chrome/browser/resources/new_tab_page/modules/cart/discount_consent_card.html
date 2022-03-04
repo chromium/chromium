@@ -60,6 +60,14 @@
     width: 220px;
   }
 
+  .truncate {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .button-container {
     display: inline-block;
     margin-block-end: 16px;
@@ -99,7 +107,7 @@
       <template id="consentStepRepeat" is="dom-repeat" items="[[steps_]]"
           as="step">
         <div class="step-container" id="[[step.id]]">
-          <div class="content-container">
+          <div class="content-container truncate">
             <span class="content">
               [[step.content]]
             </span>
