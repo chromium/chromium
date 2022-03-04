@@ -11,9 +11,11 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/public/browser/storage_partition.h"
@@ -27,6 +29,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -38,8 +41,10 @@ AggregatableReportSender::AggregatableReportSender(
 }
 
 AggregatableReportSender::AggregatableReportSender(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    bool enable_debug_logging)
+    : url_loader_factory_(std::move(url_loader_factory)),
+      enable_debug_logging_(enable_debug_logging) {
   DCHECK(url_loader_factory_);
 }
 
@@ -48,9 +53,10 @@ AggregatableReportSender::~AggregatableReportSender() = default;
 // static
 std::unique_ptr<AggregatableReportSender>
 AggregatableReportSender::CreateForTesting(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return base::WrapUnique(
-      new AggregatableReportSender(std::move(url_loader_factory)));
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    bool enable_debug_logging) {
+  return base::WrapUnique(new AggregatableReportSender(
+      std::move(url_loader_factory), enable_debug_logging));
 }
 
 void AggregatableReportSender::SendReport(const GURL& url,
@@ -146,7 +152,9 @@ void AggregatableReportSender::OnReportSent(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   RequestStatus status;
 
-  int http_response_code = headers ? headers->response_code() : 1;
+  absl::optional<int> http_response_code;
+  if (headers)
+    http_response_code = headers->response_code();
 
   network::SimpleURLLoader* loader = it->get();
   if (loader->NetError() != net::OK) {
@@ -157,6 +165,15 @@ void AggregatableReportSender::OnReportSent(
     status = RequestStatus::kServerError;
   }
 
+  if (enable_debug_logging_ && status != RequestStatus::kOk) {
+    LOG(ERROR) << "Report sending failed, net error: "
+               << net::ErrorToShortString(loader->NetError())
+               << ", HTTP response code: "
+               << (http_response_code
+                       ? base::NumberToString(*http_response_code)
+                       : "N/A");
+  }
+
   base::UmaHistogramEnumeration(
       "PrivacySandbox.AggregationService.ReportSender.Status", status);
 
@@ -165,7 +182,8 @@ void AggregatableReportSender::OnReportSent(
   base::UmaHistogramSparse(
       "PrivacySandbox.AggregationService.ReportSender."
       "HttpResponseOrNetErrorCode",
-      loader->NetError() != net::OK ? loader->NetError() : http_response_code);
+      loader->NetError() != net::OK ? loader->NetError()
+                                    : http_response_code.value_or(1));
 
   loaders_in_progress_.erase(it);
   std::move(callback).Run(status);

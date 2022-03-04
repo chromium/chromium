@@ -76,7 +76,9 @@ TestAggregationServiceImpl::TestAggregationServiceImpl(
           /*run_in_memory=*/true,
           /*path_to_database=*/base::FilePath(),
           clock)),
-      sender_(AggregatableReportSender::CreateForTesting(url_loader_factory)),
+      sender_(AggregatableReportSender::CreateForTesting(
+          url_loader_factory,
+          /*enable_debug_logging=*/true)),
       assembler_(
           AggregatableReportAssembler::CreateForTesting(/*manager=*/this,
                                                         url_loader_factory)) {

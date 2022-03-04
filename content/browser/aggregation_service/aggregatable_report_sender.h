@@ -63,12 +63,14 @@ class CONTENT_EXPORT AggregatableReportSender {
   // network response. Also used by the aggregation service tool to inject a
   // `url_loader_factory` if one is provided.
   static std::unique_ptr<AggregatableReportSender> CreateForTesting(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool enable_debug_logging = false);
 
  protected:
   // For testing only.
   explicit AggregatableReportSender(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool enable_debug_logging = false);
 
  private:
   // This is a std::list so that iterators remain valid during modifications.
@@ -87,6 +89,9 @@ class CONTENT_EXPORT AggregatableReportSender {
 
   // Lazily accessed URLLoaderFactory used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Whether to enable debug logging. Should be false in production.
+  bool enable_debug_logging_ = false;
 };
 
 }  // namespace content
