@@ -30,6 +30,7 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -42,6 +43,7 @@
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
@@ -162,6 +164,18 @@ apps::IntentFilters CreateIntentFilters() {
   return filters;
 }
 
+MATCHER(Ready, "App has readiness=\"kReady\"") {
+  return arg.readiness == apps::Readiness::kReady;
+}
+
+MATCHER_P(ShownInShelf, shown, "App shown on the shelf") {
+  return arg.show_in_shelf.has_value() && arg.show_in_shelf == shown;
+}
+
+MATCHER_P(ShownInLauncher, shown, "App shown in the launcher") {
+  return arg.show_in_launcher.has_value() && arg.show_in_launcher == shown;
+}
+
 }  // namespace
 
 namespace apps {
@@ -227,6 +241,12 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     if (source.has_value()) {
       EXPECT_EQ(source, target);
     }
+  }
+
+  const AppPtr& GetApp(const std::string& app_id) {
+    AppRegistryCache& cache =
+        AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
+    return cache.states_[app_id];
   }
 
   void VerifyApp(AppType app_type,
@@ -553,6 +573,30 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/true,
             /*has_badge=*/true, /*paused=*/true, WindowMode::kBrowser);
+}
+
+// This framework conveniently sets up everything but borealis.
+using NonBorealisPublisherTest = StandaloneBrowserPublisherTest;
+
+TEST_F(NonBorealisPublisherTest, BorealisAppsNotAllowed) {
+  EXPECT_THAT(*GetApp(borealis::kInstallerAppId), testing::Not(Ready()));
+}
+
+class BorealisPublisherTest : public StandaloneBrowserPublisherTest {
+ public:
+  BorealisPublisherTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kBorealis, chromeos::features::kBorealisPermitted,
+         kAppServiceOnAppTypeInitializedWithoutMojom},
+        {});
+  }
+};
+
+TEST_F(BorealisPublisherTest, BorealisAppsAllowed) {
+  EXPECT_THAT(
+      *GetApp(borealis::kInstallerAppId),
+      testing::AllOf(Ready(), ShownInShelf(true), ShownInLauncher(false)));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

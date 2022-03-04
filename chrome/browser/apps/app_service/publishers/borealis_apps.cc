@@ -51,33 +51,40 @@ const char* PermissionToPrefName(apps::mojom::PermissionType permission) {
   return nullptr;
 }
 
-void SetAppAllowed(apps::mojom::App* app, bool allowed) {
+void SetAppAllowed(apps::mojom::App* app,
+                   bool allowed,
+                   bool partially_hidden = false) {
   app->readiness = allowed ? apps::mojom::Readiness::kReady
                            : apps::mojom::Readiness::kDisabledByPolicy;
 
   const apps::mojom::OptionalBool opt_allowed =
       allowed ? apps::mojom::OptionalBool::kTrue
               : apps::mojom::OptionalBool::kFalse;
+  const apps::mojom::OptionalBool opt_partial_allowed =
+      allowed && !partially_hidden ? apps::mojom::OptionalBool::kTrue
+                                   : apps::mojom::OptionalBool::kFalse;
 
   app->recommendable = opt_allowed;
   app->searchable = opt_allowed;
-  app->show_in_launcher = opt_allowed;
+  app->show_in_launcher = opt_partial_allowed;
   app->show_in_shelf = opt_allowed;
-  app->show_in_search = opt_allowed;
-  app->show_in_management = opt_allowed;
+  app->show_in_search = opt_partial_allowed;
+  app->show_in_management = opt_partial_allowed;
   app->handles_intents = opt_allowed;
 }
 
-void SetAppAllowed(bool allowed, apps::App& app) {
+void SetAppAllowed(bool allowed,
+                   apps::App& app,
+                   bool partially_hidden = false) {
   app.readiness =
       allowed ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy;
 
   app.recommendable = allowed;
   app.searchable = allowed;
-  app.show_in_launcher = allowed;
+  app.show_in_launcher = allowed && !partially_hidden;
   app.show_in_shelf = allowed;
-  app.show_in_search = allowed;
-  app.show_in_management = allowed;
+  app.show_in_search = allowed && !partially_hidden;
+  app.show_in_management = allowed && !partially_hidden;
   app.handles_intents = allowed;
 }
 
@@ -92,7 +99,7 @@ apps::AppPtr CreateBorealisLauncher(Profile* profile, bool allowed) {
       apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
                     IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
 
-  SetAppAllowed(allowed, *app);
+  SetAppAllowed(allowed, *app, /*partially_hidden=*/true);
 
   app->allow_uninstall =
       borealis::BorealisService::GetForProfile(profile)->Features().IsEnabled();
@@ -113,7 +120,7 @@ apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
       apps::mojom::IconKey::kDoesNotChangeOverTime,
       IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
 
-  SetAppAllowed(app.get(), allowed);
+  SetAppAllowed(app.get(), allowed, /*partially_hidden=*/true);
 
   app->allow_uninstall = (borealis::BorealisService::GetForProfile(profile)
                               ->Features()

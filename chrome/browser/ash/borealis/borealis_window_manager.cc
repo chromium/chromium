@@ -95,11 +95,6 @@ std::string WindowToAppId(Profile* profile, const aura::Window* window) {
   return kBorealisAnonymousPrefix + *GetWindowId(window);
 }
 
-bool IsAnonymousAppId(const std::string& app_id) {
-  return base::StartsWith(app_id, kBorealisAnonymousPrefix,
-                          base::CompareCase::SENSITIVE);
-}
-
 }  // namespace
 
 // static
@@ -151,6 +146,12 @@ bool BorealisWindowManager::ShouldNewWindowBeMinimized(
     return false;
 
   return true;
+}
+
+// static
+bool BorealisWindowManager::IsAnonymousAppId(const std::string& app_id) {
+  return base::StartsWith(app_id, kBorealisAnonymousPrefix,
+                          base::CompareCase::SENSITIVE);
 }
 
 BorealisWindowManager::BorealisWindowManager(Profile* profile)
