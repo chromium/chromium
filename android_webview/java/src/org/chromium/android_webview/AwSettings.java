@@ -1274,7 +1274,7 @@ public class AwSettings {
     }
 
     public void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode) {
-        if (TRACE) Log.i(TAG, "setRequestedWithHeaderMode=" + mode);
+        AwWebContentsMetricsRecorder.recordRequestedWithHeaderModeAPIUsage(mode);
         synchronized (mAwSettingsLock) {
             mRequestedWithHeaderMode = mode;
         }
@@ -1739,7 +1739,7 @@ public class AwSettings {
     }
 
     public void setForceDarkMode(@ForceDarkMode int forceDarkMode) {
-        DarkModeHistogramRecorder.recordForceDarkModeAPIUsage(mContext, forceDarkMode);
+        AwWebContentsMetricsRecorder.recordForceDarkModeAPIUsage(mContext, forceDarkMode);
         synchronized (mAwSettingsLock) {
             if (mForceDarkMode != forceDarkMode) {
                 mForceDarkMode = forceDarkMode;
@@ -1791,7 +1791,7 @@ public class AwSettings {
     }
 
     public void setForceDarkBehavior(@ForceDarkBehavior int forceDarkBehavior) {
-        DarkModeHistogramRecorder.recordForceDarkBehaviorAPIUsage(forceDarkBehavior);
+        AwWebContentsMetricsRecorder.recordForceDarkBehaviorAPIUsage(forceDarkBehavior);
         synchronized (mAwSettingsLock) {
             if (mForceDarkBehavior != forceDarkBehavior) {
                 mForceDarkBehavior = forceDarkBehavior;

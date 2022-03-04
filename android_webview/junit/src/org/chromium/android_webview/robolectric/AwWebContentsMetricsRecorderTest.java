@@ -20,19 +20,22 @@ import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwWebContentsMetricsRecorder;
 import org.chromium.android_webview.DarkModeHelper;
-import org.chromium.android_webview.DarkModeHistogramRecorder;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.util.Feature;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
- * Junit tests for DarkModeHistogrmRecorder.
+ * Junit tests for AwWebContentsMetricsRecorder.
+ *
+ * Due to the complexity of logging dark mode settings, that part of the class is protected by test
+ * cases.
  */
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
-public class DarkModeHistogramRecorderTest {
+public class AwWebContentsMetricsRecorderTest {
     @Before
     public void setUp() {
         ShadowRecordHistogram.reset();
@@ -43,7 +46,7 @@ public class DarkModeHistogramRecorderTest {
     @Feature({"AndroidWebView"})
     public void testRecordDarkModeMetrics() {
         // The hardcode numbers can't be changed, they are written to histogram.
-        DarkModeHistogramRecorder.recordDarkModeMetrics(DarkModeHelper.NightMode.NIGHT_MODE_ON,
+        AwWebContentsMetricsRecorder.recordDarkModeMetrics(DarkModeHelper.NightMode.NIGHT_MODE_ON,
                 DarkModeHelper.LightTheme.LIGHT_THEME_TRUE, /*isDarkMode=*/true,
                 AwSettings.FORCE_DARK_ON, AwSettings.MEDIA_QUERY_ONLY,
                 DarkModeHelper.TextLuminance.TEXT_LUMINACE_LIGHT);
@@ -125,7 +128,7 @@ public class DarkModeHistogramRecorderTest {
         Context mockedContext = Mockito.mock(Context.class);
         when(mockedContext.getResources()).thenReturn(mockedResource);
 
-        DarkModeHistogramRecorder.recordForceDarkModeAPIUsage(
+        AwWebContentsMetricsRecorder.recordForceDarkModeAPIUsage(
                 mockedContext, AwSettings.FORCE_DARK_AUTO);
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting("Android.WebView.ForceDarkMode"));
@@ -139,7 +142,7 @@ public class DarkModeHistogramRecorderTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testRecordForceDarkBehaviorAPIUsage() {
-        DarkModeHistogramRecorder.recordForceDarkBehaviorAPIUsage(
+        AwWebContentsMetricsRecorder.recordForceDarkBehaviorAPIUsage(
                 AwSettings.PREFER_MEDIA_QUERY_OVER_FORCE_DARK);
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(

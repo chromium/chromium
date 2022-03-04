@@ -3724,6 +3724,58 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.WebView.RequestedWithHeader.CommittedHeaderMode"
+    enum="CommittedRequestedWithHeaderMode" expires_after="2023-01-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the type of X-Requested-With HTTP header that is set on request from
+    WebView. This enum is recorded by
+    |InterceptedRequest::InterceptResponseReceived| for all requests. It may
+    differ from the user settings, as it also captures if the header has been
+    set explicitly on the request by other means, such as javascript or
+    embedding code.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.RequestedWithHeader.OnNavigationHeaderMode"
+    enum="WebViewRequestedWithHeaderMode" expires_after="2023-01-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the XRequestedWithHeaderMode that was configured to be used on page
+    navigation to decide how to set the X-Requested-With HTTP header. This is
+    recorded on navigation committed, and records the configured setting. It may
+    be the case that javascript or the embedder has overwritten the header,
+    which will not be reflected by this histogram.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.RequestedWithHeader.SetRequestedWithHeaderMode"
+    enum="WebViewRequestedWithHeaderMode" expires_after="2023-01-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the parameter passed to WebSettingsCompat#setRequestedWithHeaderMode
+    when called by the embedding app. This reflects explict configuration of the
+    X-Requested-With HTTP header by the app for WebViews.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.RequestedWithHeader.SetServiceWorkerRequestedWithHeaderMode"
+    enum="WebViewRequestedWithHeaderMode" expires_after="2023-01-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the parameter passed to
+    ServiceWorkerWebSettingsCompat#setRequestedWithHeaderMode when called by the
+    embedding app. This reflects explict configuration of the X-Requested-With
+    HTTP header by the app for WebView service workers.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SafeMode.ActionsCount"
     units="SafeMode actions" expires_after="2022-06-08">
   <owner>ntfschr@chromium.org</owner>

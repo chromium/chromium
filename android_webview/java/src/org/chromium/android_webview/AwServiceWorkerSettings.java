@@ -142,7 +142,7 @@ public class AwServiceWorkerSettings {
      * See {@link androidx.webkit.ServiceWorkerWebSettingsCompat#setRequestedWithHeaderMode}
      */
     public void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode) {
-        if (TRACE) Log.i(TAG, "setRequestedWithHeaderMode=" + mode);
+        AwWebContentsMetricsRecorder.recordRequestedWithHeaderModeServiceWorkerAPIUsage(mode);
         synchronized (mAwServiceWorkerSettingsLock) {
             mRequestedWithHeaderMode = mode;
         }

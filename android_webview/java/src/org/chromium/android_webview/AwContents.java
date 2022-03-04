@@ -483,7 +483,7 @@ public class AwContents implements SmartClipProvider {
     private AwWindowCoverageTracker mAwWindowCoverageTracker;
 
     private AwDarkMode mAwDarkMode;
-    private DarkModeHistogramRecorder mDarkModeHistogramRecorder;
+    private AwWebContentsMetricsRecorder mAwWebContentsMetricsRecorder;
 
     private static class WebContentsInternalsHolder implements WebContents.InternalsHolder {
         private final WeakReference<AwContents> mAwContentsRef;
@@ -1467,7 +1467,7 @@ public class AwContents implements SmartClipProvider {
                 .addListener(new AwGestureStateListener());
 
         mNavigationController = mWebContents.getNavigationController();
-        installWebContentsObserver();
+        installWebContentsObservers();
         mSettings.setWebContents(mWebContents);
         mAwDarkMode.setWebContents(mWebContents);
         initializeAutofillProviderIfNecessary();
@@ -1482,16 +1482,16 @@ public class AwContents implements SmartClipProvider {
                 this, new AwContentsDestroyRunnable(mNativeAwContents, mWindowAndroid));
     }
 
-    private void installWebContentsObserver() {
+    private void installWebContentsObservers() {
         if (mWebContentsObserver != null) {
             mWebContentsObserver.destroy();
         }
         mWebContentsObserver = new AwWebContentsObserver(mWebContents, this, mContentsClient);
-        if (mDarkModeHistogramRecorder != null) {
-            mDarkModeHistogramRecorder.destroy();
+        if (mAwWebContentsMetricsRecorder != null) {
+            mAwWebContentsMetricsRecorder.destroy();
         }
-        mDarkModeHistogramRecorder =
-                new DarkModeHistogramRecorder(mWebContents, mContext, mSettings);
+        mAwWebContentsMetricsRecorder =
+                new AwWebContentsMetricsRecorder(mWebContents, mContext, mSettings);
     }
 
     /**
@@ -1672,8 +1672,8 @@ public class AwContents implements SmartClipProvider {
 
             mWebContentsObserver.destroy();
             mWebContentsObserver = null;
-            mDarkModeHistogramRecorder.destroy();
-            mDarkModeHistogramRecorder = null;
+            mAwWebContentsMetricsRecorder.destroy();
+            mAwWebContentsMetricsRecorder = null;
             mNativeAwContents = 0;
             mWebContents = null;
             mWebContentsInternals = null;

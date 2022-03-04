@@ -15153,6 +15153,13 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Successful first layout"/>
 </enum>
 
+<enum name="CommittedRequestedWithHeaderMode">
+  <int value="0" label="No header set"/>
+  <int value="1" label="App package name"/>
+  <int value="2" label="Constant string 'WebView'"/>
+  <int value="3" label="Header set by client code"/>
+</enum>
+
 <enum name="CompanionLibraryApisList">
 <!-- Value from components/arc/mojom/metrics.mojom -->
 
@@ -95847,6 +95854,12 @@ Called by update_scheduler_enums.py.-->
   <int value="6" label="Text dark, night mode undefined"/>
   <int value="7" label="Text dark, night mode on"/>
   <int value="8" label="Text dark, night mode off"/>
+</enum>
+
+<enum name="WebViewRequestedWithHeaderMode">
+  <int value="0" label="No header set"/>
+  <int value="1" label="App package name"/>
+  <int value="2" label="Constant string 'WebView'"/>
 </enum>
 
 <enum name="WebViewUrlScheme">

@@ -22,6 +22,7 @@
 #include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/response_delegate_impl.h"
@@ -114,6 +115,16 @@ class InterceptedRequest : public network::mojom::URLLoader,
   bool InputStreamFailed(bool restart_needed);
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CommittedRequestedWithHeaderMode {
+    kNoHeader = 0,
+    kAppPackageName = 1,
+    kConstantWebview = 2,
+    kClientOverridden = 3,
+    kMaxValue = kClientOverridden
+  };
+
   std::unique_ptr<AwContentsIoThreadClient> GetIoThreadClient();
 
   // This is called when the original URLLoaderClient has a connection error.
@@ -345,19 +356,26 @@ void InterceptedRequest::InterceptResponseReceived(
   // shouldInterceptRequest. It should also not trigger CORS prefetch if
   // OOR-CORS is enabled.
   std::string header = content::GetCorsExemptRequestedWithHeaderName();
+
+  CommittedRequestedWithHeaderMode committed_mode =
+      CommittedRequestedWithHeaderMode::kClientOverridden;
+
   // Only overwrite if the header hasn't already been set
   if (!request_.headers.HasHeader(header)) {
     switch (requested_with_header_mode) {
       case AwSettings::RequestedWithHeaderMode::NO_HEADER:
-        break;  // Intentionally left empty
+        committed_mode = CommittedRequestedWithHeaderMode::kNoHeader;
+        break;
       case AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME:
         request_.cors_exempt_headers.SetHeader(
             header,
             base::android::BuildInfo::GetInstance()->host_package_name());
+        committed_mode = CommittedRequestedWithHeaderMode::kAppPackageName;
         break;
       case AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW:
         request_.cors_exempt_headers.SetHeader(header,
                                                kRequestedWithHeaderWebView);
+        committed_mode = CommittedRequestedWithHeaderMode::kConstantWebview;
         break;
       default:
         NOTREACHED()
@@ -365,6 +383,9 @@ void InterceptedRequest::InterceptResponseReceived(
             << requested_with_header_mode;
     }
   }
+  base::UmaHistogramEnumeration(
+      "Android.WebView.RequestedWithHeader.CommittedHeaderMode",
+      committed_mode);
 
   JNIEnv* env = base::android::AttachCurrentThread();
   if (intercept_response && intercept_response->RaisedException(env)) {

@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.settings.ForceDarkBehavior;
+import org.chromium.android_webview.settings.RequestedWithHeaderMode;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
@@ -17,13 +18,17 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import java.lang.ref.WeakReference;
 
 /**
- * This class to record various dark mode metrics.
+ * This class records WebView settings usage.
+ *
+ * It records histograms at navigationEntryCommitted to show what the settings were on navigation.
+ * It also offers static helpers to record the settings as they are configured by the embedding
+ * application.
  */
-public class DarkModeHistogramRecorder extends WebContentsObserver {
+public class AwWebContentsMetricsRecorder extends WebContentsObserver {
     private WeakReference<Context> mContext;
     private WeakReference<AwSettings> mAwSettings;
 
-    public DarkModeHistogramRecorder(
+    public AwWebContentsMetricsRecorder(
             WebContents webContents, Context context, AwSettings awSettings) {
         super(webContents);
         mContext = new WeakReference<Context>(context);
@@ -34,6 +39,7 @@ public class DarkModeHistogramRecorder extends WebContentsObserver {
     public void navigationEntryCommitted(LoadCommittedDetails details) {
         if (!details.isMainFrame()) return;
         recordDarkModeMetrics();
+        recordRequestedWithHeaderMetrics();
     }
 
     private void recordDarkModeMetrics() {
@@ -89,6 +95,16 @@ public class DarkModeHistogramRecorder extends WebContentsObserver {
                         * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT);
     }
 
+    private void recordRequestedWithHeaderMetrics() {
+        AwSettings awSettings = mAwSettings.get();
+        if (awSettings == null) return;
+
+        int requestedWithHeaderMode = awSettings.getRequestedWithHeaderMode();
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.RequestedWithHeader.OnNavigationHeaderMode",
+                requestedWithHeaderMode, AwSettings.REQUESTED_WITH_MODES_COUNT);
+    }
+
     public static void recordForceDarkModeAPIUsage(Context context, int forceDarkMode) {
         int value = DarkModeHelper.getNightMode(context) * AwSettings.FORCE_DARK_MODES_COUNT
                 + forceDarkMode;
@@ -100,5 +116,19 @@ public class DarkModeHistogramRecorder extends WebContentsObserver {
     public static void recordForceDarkBehaviorAPIUsage(@ForceDarkBehavior int forceDarkBehavior) {
         RecordHistogram.recordEnumeratedHistogram("Android.WebView.ForceDarkBehavior",
                 forceDarkBehavior, AwSettings.FORCE_DARK_STRATEGY_COUNT);
+    }
+
+    public static void recordRequestedWithHeaderModeAPIUsage(
+            @RequestedWithHeaderMode int requestedWithHeaderMode) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.RequestedWithHeader.SetRequestedWithHeaderMode",
+                requestedWithHeaderMode, AwSettings.REQUESTED_WITH_MODES_COUNT);
+    }
+
+    public static void recordRequestedWithHeaderModeServiceWorkerAPIUsage(
+            @RequestedWithHeaderMode int requestedWithHeaderMode) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.RequestedWithHeader.SetServiceWorkerRequestedWithHeaderMode",
+                requestedWithHeaderMode, AwSettings.REQUESTED_WITH_MODES_COUNT);
     }
 }
