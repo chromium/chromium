@@ -942,6 +942,8 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
         pseudo_id_matches,
     Maybe<protocol::Array<protocol::CSS::InheritedStyleEntry>>*
         inherited_entries,
+    Maybe<protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*
+        inherited_pseudo_id_matches,
     Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
         css_keyframes_rules) {
   Response response = AssertEnabled();
@@ -977,8 +979,7 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
   InspectorStyleResolver resolver(element, element_pseudo_id);
 
   // Matched rules.
-  *matched_css_rules =
-      BuildArrayForMatchedRuleList(resolver.MatchedRules(), kPseudoIdNone);
+  *matched_css_rules = BuildArrayForMatchedRuleList(resolver.MatchedRules());
 
   // Pseudo elements.
   if (element_pseudo_id)
@@ -999,8 +1000,7 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
         protocol::CSS::PseudoElementMatches::create()
             .setPseudoType(
                 InspectorDOMAgent::ProtocolPseudoElementType(match->pseudo_id))
-            .setMatches(BuildArrayForMatchedRuleList(match->matched_rules,
-                                                     match->pseudo_id))
+            .setMatches(BuildArrayForMatchedRuleList(match->matched_rules))
             .build());
   }
 
@@ -1010,8 +1010,8 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
   for (InspectorCSSMatchedRules* match : resolver.ParentRules()) {
     std::unique_ptr<protocol::CSS::InheritedStyleEntry> entry =
         protocol::CSS::InheritedStyleEntry::create()
-            .setMatchedCSSRules(BuildArrayForMatchedRuleList(
-                match->matched_rules, match->pseudo_id))
+            .setMatchedCSSRules(
+                BuildArrayForMatchedRuleList(match->matched_rules))
             .build();
     if (match->element->style() && match->element->style()->length()) {
       InspectorStyleSheetForInlineStyle* style_sheet =
@@ -1021,6 +1021,33 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
             style_sheet->BuildObjectForStyle(style_sheet->InlineStyle()));
     }
     inherited_entries->fromJust()->emplace_back(std::move(entry));
+  }
+
+  *inherited_pseudo_id_matches = std::make_unique<
+      protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>();
+
+  for (InspectorCSSMatchedPseudoElements* match :
+       resolver.ParentPseudoElementRules()) {
+    auto parent_pseudo_element_matches = std::make_unique<
+        protocol::Array<protocol::CSS::PseudoElementMatches>>();
+    for (InspectorCSSMatchedRules* pseudo_match : match->pseudo_element_rules) {
+      parent_pseudo_element_matches->emplace_back(
+          protocol::CSS::PseudoElementMatches::create()
+              .setPseudoType(InspectorDOMAgent::ProtocolPseudoElementType(
+                  pseudo_match->pseudo_id))
+              .setMatches(
+                  BuildArrayForMatchedRuleList(pseudo_match->matched_rules))
+              .build());
+    }
+
+    std::unique_ptr<protocol::CSS::InheritedPseudoElementMatches>
+        inherited_pseudo_element_matches =
+            protocol::CSS::InheritedPseudoElementMatches::create()
+                .setPseudoElements(std::move(parent_pseudo_element_matches))
+                .build();
+
+    inherited_pseudo_id_matches->fromJust()->emplace_back(
+        std::move(inherited_pseudo_element_matches));
   }
 
   *css_keyframes_rules = AnimationsForNode(element, animating_element);
@@ -2271,9 +2298,7 @@ std::unique_ptr<protocol::CSS::CSSRule> InspectorCSSAgent::BuildObjectForRule(
 }
 
 std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>
-InspectorCSSAgent::BuildArrayForMatchedRuleList(
-    RuleIndexList* rule_list,
-    PseudoId matches_for_pseudo_id) {
+InspectorCSSAgent::BuildArrayForMatchedRuleList(RuleIndexList* rule_list) {
   auto result = std::make_unique<protocol::Array<protocol::CSS::RuleMatch>>();
   if (!rule_list)
     return result;

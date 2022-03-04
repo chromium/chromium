@@ -1015,7 +1015,8 @@
     "bases": [
       "external/wpt/css/css-pseudo",
       "wpt_internal/css/css-pseudo",
-      "external/wpt/css/css-highlight-api"
+      "external/wpt/css/css-highlight-api",
+      "http/tests/inspector-protocol/css/highlight-pseudo-inheritance.js"
     ],
     "args": ["--enable-blink-features=HighlightInheritance"]
   },

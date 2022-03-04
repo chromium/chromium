@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -76,6 +77,36 @@ InspectorStyleResolver::InspectorStyleResolver(Element* element,
     match->matched_rules = parent_matched_rules;
     match->pseudo_id = kPseudoIdNone;
     parent_rules_.push_back(match);
+
+    if (RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
+      InspectorCSSMatchedPseudoElements* matched_pseudo_elements =
+          MakeGarbageCollected<InspectorCSSMatchedPseudoElements>();
+      matched_pseudo_elements->element = parent_element;
+
+      for (PseudoId pseudo_id = kFirstPublicPseudoId;
+           pseudo_id < kAfterLastInternalPseudoId;
+           pseudo_id = static_cast<PseudoId>(pseudo_id + 1)) {
+        // Only highlight pseudos can be inherited.
+        if (!PseudoElement::IsWebExposed(pseudo_id, element_) ||
+            !IsHighlightPseudoElement(pseudo_id))
+          continue;
+
+        RuleIndexList* matched_rules = style_resolver.PseudoCSSRulesForElement(
+            parent_element, pseudo_id, StyleResolver::kAllButUACSSRules);
+        if (matched_rules && matched_rules->size()) {
+          InspectorCSSMatchedRules* pseudo_match =
+              MakeGarbageCollected<InspectorCSSMatchedRules>();
+          pseudo_match->element = parent_element;
+          pseudo_match->matched_rules = matched_rules;
+          pseudo_match->pseudo_id = pseudo_id;
+
+          matched_pseudo_elements->pseudo_element_rules.push_back(pseudo_match);
+        }
+      }
+
+      parent_pseudo_element_rules_.push_back(matched_pseudo_elements);
+    }
+
     parent_element = FlatTreeTraversal::ParentElement(*parent_element);
   }
 }
@@ -92,6 +123,11 @@ InspectorStyleResolver::PseudoElementRules() {
 HeapVector<Member<InspectorCSSMatchedRules>>
 InspectorStyleResolver::ParentRules() {
   return parent_rules_;
+}
+
+HeapVector<Member<InspectorCSSMatchedPseudoElements>>
+InspectorStyleResolver::ParentPseudoElementRules() {
+  return parent_pseudo_element_rules_;
 }
 
 }  // namespace blink

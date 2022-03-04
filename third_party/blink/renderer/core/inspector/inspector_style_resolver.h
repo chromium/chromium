@@ -32,6 +32,19 @@ struct CORE_EXPORT InspectorCSSMatchedRules
   }
 };
 
+// Contains matched pseudos for an element.
+struct CORE_EXPORT InspectorCSSMatchedPseudoElements
+    : public GarbageCollected<InspectorCSSMatchedPseudoElements> {
+ public:
+  Member<Element> element;
+  HeapVector<Member<InspectorCSSMatchedRules>> pseudo_element_rules;
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(element);
+    visitor->Trace(pseudo_element_rules);
+  }
+};
+
 // Resolves style rules for an element.
 class CORE_EXPORT InspectorStyleResolver {
   STACK_ALLOCATED();
@@ -41,12 +54,16 @@ class CORE_EXPORT InspectorStyleResolver {
   RuleIndexList* MatchedRules() const;
   HeapVector<Member<InspectorCSSMatchedRules>> PseudoElementRules();
   HeapVector<Member<InspectorCSSMatchedRules>> ParentRules();
+  HeapVector<Member<InspectorCSSMatchedPseudoElements>>
+  ParentPseudoElementRules();
 
  private:
   Element* element_;
   RuleIndexList* matched_rules_;
   HeapVector<Member<InspectorCSSMatchedRules>> parent_rules_;
   HeapVector<Member<InspectorCSSMatchedRules>> pseudo_element_rules_;
+  HeapVector<Member<InspectorCSSMatchedPseudoElements>>
+      parent_pseudo_element_rules_;
 };
 
 }  // namespace blink

@@ -152,6 +152,8 @@ class CORE_EXPORT InspectorCSSAgent final
           matched_css_rules,
       protocol::Maybe<protocol::Array<protocol::CSS::PseudoElementMatches>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::InheritedStyleEntry>>*,
+      protocol::Maybe<
+          protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*)
       override;
   protocol::Response getInlineStylesForNode(
@@ -337,7 +339,7 @@ class CORE_EXPORT InspectorCSSAgent final
   std::unique_ptr<protocol::CSS::RuleUsage> BuildCoverageInfo(CSSStyleRule*,
                                                               bool);
   std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>
-  BuildArrayForMatchedRuleList(RuleIndexList*, PseudoId);
+  BuildArrayForMatchedRuleList(RuleIndexList*);
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForAttributesStyle(
       Element*);
   std::unique_ptr<protocol::Array<int>>
