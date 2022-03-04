@@ -12,13 +12,18 @@
       return test_driver.set_permission({ name: "geolocation" }, "prompt");
     });
     await test_driver.set_permission({ name: "geolocation" }, "denied");
-    const result = await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(reject, resolve);
+    const error = await new Promise((resolve, reject) => {
+      let calledAsync = false;
+      navigator.geolocation.getCurrentPosition(reject, t.step_func((error) => {
+        assert_true(calledAsync, "Expected callback to be called asynchronously");
+        resolve(error);
+      }));
+      calledAsync = true;
     });
     assert_true(
-      result instanceof GeolocationPositionError,
+      error instanceof GeolocationPositionError,
       "should be a GeolocationPositionError"
     );
-    assert_equals(result.code, result.PERMISSION_DENIED);
+    assert_equals(error.code, error.PERMISSION_DENIED);
   }, "User denies access, check that error callback is called with correct code");
 </script>
