@@ -105,7 +105,19 @@ bool IconColorWrapperComparator::operator()(
   // Folders are placed at the bottom of the app list in color sort.
   if (lhs.is_folder != rhs.is_folder)
     return rhs.is_folder;
-  return lhs.key_attribute < rhs.key_attribute;
+
+  if (lhs.key_attribute != rhs.key_attribute)
+    return lhs.key_attribute < rhs.key_attribute;
+
+  const syncer::StringOrdinal& lhs_ordinal = lhs.item_ordinal;
+  const syncer::StringOrdinal& rhs_ordinal = rhs.item_ordinal;
+  if (lhs_ordinal.IsValid() && rhs_ordinal.IsValid() &&
+      !lhs_ordinal.Equals(rhs_ordinal)) {
+    lhs.item_ordinal.LessThan(rhs.item_ordinal);
+  }
+
+  // Compare ids so that sorting with this comparator is stable.
+  return lhs.id < rhs.id;
 }
 
 // StringWrapperComparator ----------------------------------------------------

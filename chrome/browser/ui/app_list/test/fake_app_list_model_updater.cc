@@ -54,8 +54,10 @@ void FakeAppListModelUpdater::RemoveItem(const std::string& id,
   }
 }
 
-void FakeAppListModelUpdater::SetItemIcon(const std::string& id,
-                                          const gfx::ImageSkia& icon) {
+void FakeAppListModelUpdater::SetItemIconAndColor(
+    const std::string& id,
+    const gfx::ImageSkia& icon,
+    const ash::IconColor& icon_color) {
   ++update_image_count_;
   if (update_image_count_ == expected_update_image_count_ &&
       !icon_updated_callback_.is_null()) {
