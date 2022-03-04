@@ -5698,7 +5698,7 @@
   {
     "name": "terminal-ssh",
     "owners": [ "lxj@google.com", "joelhockey", "//chrome/browser/ash/guest_os/OWNERS" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "terminal-tmux-integration",
