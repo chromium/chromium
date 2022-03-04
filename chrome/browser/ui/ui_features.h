@@ -39,8 +39,6 @@ extern const base::FeatureParam<bool> kChromeWhatsNewUIFeedbackButton;
 extern const base::Feature kChromeWhatsNewInMainMenuNewBadge;
 #endif
 
-extern const base::Feature kCommander;
-
 #if !defined(ANDROID)
 extern const base::Feature kAccessCodeCastUI;
 #endif
@@ -56,6 +54,8 @@ extern const base::Feature kProminentDarkModeActiveTabTitle;
 extern const base::Feature kReadLaterNewBadgePromo;
 
 extern const base::Feature kReadLaterAddFromDialog;
+
+extern const base::Feature kQuickCommands;
 
 extern const base::Feature kScrollableTabStrip;
 extern const char kMinimumTabWidthFeatureParameterName[];

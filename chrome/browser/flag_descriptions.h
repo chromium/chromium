@@ -3228,14 +3228,14 @@ extern const char kWebuiFeedbackDescription[];
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 
-extern const char kCommanderName[];
-extern const char kCommanderDescription[];
-
 extern const char kDesktopRestructuredLanguageSettingsName[];
 extern const char kDesktopRestructuredLanguageSettingsDescription[];
 
 extern const char kDesktopDetailedLanguageSettingsName[];
 extern const char kDesktopDetailedLanguageSettingsDescription[];
+
+extern const char kQuickCommandsName[];
+extern const char kQuickCommandsDescription[];
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // defined (OS_FUCHSIA)

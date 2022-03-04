@@ -13,7 +13,7 @@
 namespace commander {
 
 bool IsEnabled() {
-  return base::FeatureList::IsEnabled(features::kCommander);
+  return base::FeatureList::IsEnabled(features::kQuickCommands);
 }
 
 // static

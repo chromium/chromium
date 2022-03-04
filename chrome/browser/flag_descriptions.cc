@@ -5593,10 +5593,6 @@ const char kWebuiFeedbackDescription[] =
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 
-const char kCommanderName[] = "Commander";
-const char kCommanderDescription[] =
-    "Enable a text interface to browser features. Invoke with Ctrl-Space.";
-
 const char kDesktopRestructuredLanguageSettingsName[] =
     "Restructured Language Settings (Desktop)";
 const char kDesktopRestructuredLanguageSettingsDescription[] =
@@ -5606,6 +5602,10 @@ const char kDesktopDetailedLanguageSettingsName[] =
     "Detailed Language Settings (Desktop)";
 const char kDesktopDetailedLanguageSettingsDescription[] =
     "Enable the new detailed language settings page";
+
+const char kQuickCommandsName[] = "Quick Commands";
+const char kQuickCommandsDescription[] =
+    "Enable a text interface to browser features. Invoke with Ctrl-Space.";
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA)

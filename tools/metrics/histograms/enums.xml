@@ -53475,6 +53475,7 @@ from previous Chrome versions.
   <int value="-747463111" label="ContentSuggestionsNotifications:disabled"/>
   <int value="-747072690" label="NtpRepeatableQueries:disabled"/>
   <int value="-746328467" label="ExpensiveBackgroundTimerThrottling:disabled"/>
+  <int value="-746042208" label="QuickCommands:enabled"/>
   <int value="-745082968" label="SyncDeviceInfoInTransportMode:disabled"/>
   <int value="-745005043"
       label="enable-experimental-accessibility-switch-access-setup-guide"/>
@@ -55082,6 +55083,7 @@ from previous Chrome versions.
   <int value="391632490" label="NtpDriveModule:enabled"/>
   <int value="392782890" label="SafeBrowsingTelemetryForApkDownloads:enabled"/>
   <int value="393704200" label="account-consistency"/>
+  <int value="397275669" label="QuickCommands:disabled"/>
   <int value="398903399" label="GenericSensorExtraClasses:disabled"/>
   <int value="399039205" label="enable-webrtc-hw-vp9-encoding"/>
   <int value="399177140" label="FillingPasswordsFromAnyOrigin:enabled"/>

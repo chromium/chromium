@@ -848,11 +848,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "commander",
-    "owners": [ "lgrey" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "compositor-threaded-scrollbar-scrolling",
     "owners": [ "arakeri@microsoft.com" ],
     "expiry_milestone": 90
@@ -5050,6 +5045,11 @@
     "name": "quick-answers-always-trigger-for-single-word",
     "owners": [ "croissant-eng", "updowndota" ],
     "expiry_milestone": 105
+  },
+  {
+    "name": "quick-commands",
+    "owners": [ "lgrey" ],
+    "expiry_milestone": 110
   },
   {
     "name": "quick-dim",

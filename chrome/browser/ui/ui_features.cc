@@ -20,9 +20,6 @@ const base::Feature kAllowWindowDragUsingSystemDragDrop{
 const base::Feature kChromeLabs{"ChromeLabs",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the Commander UI surface. See https://crbug.com/1014639
-const base::Feature kCommander{"Commander", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Enables "Tips for Chrome" in Main Chrome Menu | Help.
 const base::Feature kChromeTipsInMainMenu{"ChromeTipsInMainMenu",
@@ -78,6 +75,10 @@ const base::Feature kForceSignInReauth{"ForceSignInReauth",
 // accessibility.
 const base::Feature kProminentDarkModeActiveTabTitle{
     "ProminentDarkModeActiveTabTitle", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables the QuickCommands UI surface. See https://crbug.com/1014639
+const base::Feature kQuickCommands{"QuickCommands",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables a 'new' badge on the option to add to the reading list in the tab
 // context menu.

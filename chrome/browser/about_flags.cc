@@ -7128,9 +7128,9 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-    {"commander", flag_descriptions::kCommanderName,
-     flag_descriptions::kCommanderDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kCommander)},
+    {"quick-commands", flag_descriptions::kQuickCommandsName,
+     flag_descriptions::kQuickCommandsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kQuickCommands)},
 
     {"desktop-restructured-language-settings",
      flag_descriptions::kDesktopRestructuredLanguageSettingsName,
