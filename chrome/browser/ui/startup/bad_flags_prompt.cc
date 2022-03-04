@@ -43,6 +43,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/flags/bad_flags_snackbar_manager.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -195,8 +196,14 @@ void ShowBadFlagsPrompt(content::WebContents* web_contents) {
 
   for (const base::Feature* feature : kBadFeatureFlagsInAboutFlags) {
     if (base::FeatureList::IsEnabled(*feature)) {
+#if BUILDFLAG(IS_ANDROID)
+      ShowBadFlagsSnackbar(web_contents, l10n_util::GetStringFUTF16(
+                                             IDS_BAD_FEATURES_WARNING_MESSAGE,
+                                             base::UTF8ToUTF16(feature->name)));
+#else
       ShowBadFlagsInfoBarHelper(web_contents, IDS_BAD_FEATURES_WARNING_MESSAGE,
                                 feature->name);
+#endif
       return;
     }
   }

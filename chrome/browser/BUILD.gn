@@ -2792,6 +2792,8 @@ static_library("browser") {
       "android/feedback/connectivity_checker.cc",
       "android/feedback/screenshot_mode.h",
       "android/feedback/screenshot_task.cc",
+      "android/flags/bad_flags_snackbar_manager.cc",
+      "android/flags/bad_flags_snackbar_manager.h",
       "android/foreign_session_helper.cc",
       "android/foreign_session_helper.h",
       "android/historical_tab_saver.cc",
