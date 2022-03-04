@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
+#include "third_party/blink/renderer/core/mathml/mathml_token_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -162,7 +163,7 @@ LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,
                                              LegacyLayout legacy) {
   DCHECK(IsA<MathMLElement>(node));
   bool disable_ng_for_type = !RuntimeEnabledFeatures::MathMLCoreEnabled();
-  if (To<MathMLElement>(node).IsTokenElement()) {
+  if (IsA<MathMLTokenElement>(node)) {
     return CreateObject<LayoutBlockFlow, LayoutNGMathMLBlockFlow,
                         LayoutBlockFlow>(node, legacy, disable_ng_for_type);
   }

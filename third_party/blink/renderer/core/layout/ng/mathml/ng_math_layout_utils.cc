@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_radical_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_scripts_element.h"
+#include "third_party/blink/renderer/core/mathml/mathml_token_element.h"
 
 namespace blink {
 
@@ -232,12 +233,20 @@ bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node) {
   return base_properties && base_properties->has_movablelimits;
 }
 
-bool IsOperatorWithSpecialShaping(const NGBlockNode& node) {
+bool IsTextOnlyToken(const NGBlockNode& node) {
   if (!node.IsBlock() || !node.IsMathML() || !node.FirstChild().IsInline())
+    return false;
+  if (auto* element = DynamicTo<MathMLTokenElement>(node.GetDOMNode()))
+    return !element->GetTokenContent().characters.IsNull();
+  return false;
+}
+
+bool IsOperatorWithSpecialShaping(const NGBlockNode& node) {
+  if (!IsTextOnlyToken(node))
     return false;
   // https://w3c.github.io/mathml-core/#layout-of-operators
   if (auto* element = DynamicTo<MathMLOperatorElement>(node.GetDOMNode())) {
-    UChar32 base_code_point = element->GetOperatorContent().code_point;
+    UChar32 base_code_point = element->GetTokenContent().code_point;
     if (base_code_point == kNonCharacter ||
         !node.Style().GetFont().PrimaryFont() ||
         !node.Style().GetFont().PrimaryFont()->GlyphForCharacter(
@@ -396,7 +405,7 @@ GetMathMLEmbellishedOperatorProperties(const NGBlockNode& node) {
   properties.is_large_op =
       core_operator->HasBooleanProperty(MathMLOperatorElement::kLargeOp);
 
-  properties.is_vertical = core_operator->GetOperatorContent().is_vertical;
+  properties.is_vertical = core_operator->IsVertical();
 
   LayoutUnit leading_space(core_operator->DefaultLeadingSpace() *
                            core_operator_style.FontSize());

@@ -59,7 +59,7 @@ const NGLayoutResult* NGMathOperatorLayoutAlgorithm::Layout() {
   auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());
   if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy)) {
     // "If the operator has the stretchy property:"
-    if (!element->GetOperatorContent().is_vertical) {
+    if (!element->IsVertical()) {
       // "If the stretch axis of the operator is inline."
       if (ConstraintSpace().HasTargetStretchInlineSize())
         operator_target_size = ConstraintSpace().TargetStretchInlineSize();
@@ -130,9 +130,8 @@ const NGLayoutResult* NGMathOperatorLayoutAlgorithm::Layout() {
 
   StretchyOperatorShaper shaper(
       GetBaseCodePoint(),
-      element->GetOperatorContent().is_vertical
-          ? OpenTypeMathStretchData::StretchAxis::Vertical
-          : OpenTypeMathStretchData::StretchAxis::Horizontal);
+      element->IsVertical() ? OpenTypeMathStretchData::StretchAxis::Vertical
+                            : OpenTypeMathStretchData::StretchAxis::Horizontal);
   StretchyOperatorShaper::Metrics metrics;
   scoped_refptr<ShapeResult> shape_result =
       shaper.Shape(&Style().GetFont(), operator_target_size, &metrics);
@@ -159,7 +158,7 @@ const NGLayoutResult* NGMathOperatorLayoutAlgorithm::Layout() {
   LayoutUnit ascent = BorderScrollbarPadding().block_start + operator_ascent;
   LayoutUnit descent = operator_descent + BorderScrollbarPadding().block_end;
   if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy) &&
-      element->GetOperatorContent().is_vertical) {
+      element->IsVertical()) {
     // "The stretchy glyph is shifted towards the line-under by a value Δ so
     // that its center aligns with the center of the target"
     LayoutUnit delta = ((operator_ascent - operator_descent) -
@@ -187,7 +186,7 @@ MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
   auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());
   if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy)) {
     // "If the operator has the stretchy property:"
-    if (!element->GetOperatorContent().is_vertical) {
+    if (!element->IsVertical()) {
       // "If the stretch axis of the operator is inline."
       // The spec current says we should rely on the layout algorithm of
       // § 3.2.1.1 Layout of <mtext>. Instead, we perform horizontal stretching
@@ -219,7 +218,7 @@ MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
 
 UChar32 NGMathOperatorLayoutAlgorithm::GetBaseCodePoint() const {
   return DynamicTo<MathMLOperatorElement>(Node().GetDOMNode())
-      ->GetOperatorContent()
+      ->GetTokenContent()
       .code_point;
 }
 

@@ -97,6 +97,7 @@ MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(const ComputedStyle&,
                                                       UChar character);
 
 bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node);
+bool IsTextOnlyToken(const NGBlockNode& node);
 bool IsOperatorWithSpecialShaping(const NGBlockNode& node);
 
 LayoutUnit MathTableBaseline(const ComputedStyle&, LayoutUnit block_offset);
