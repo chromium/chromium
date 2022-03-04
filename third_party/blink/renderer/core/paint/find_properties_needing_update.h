@@ -42,8 +42,7 @@ class FindPropertiesNeedingUpdateScope {
       return;
 
     // Mark the properties as needing an update to ensure they are rebuilt.
-    object.GetMutableForPainting()
-        .SetOnlyThisNeedsPaintPropertyUpdateForTesting();
+    object.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
 
     if (const auto* properties = fragment_data_.PaintProperties()) {
       had_original_properties_ = true;

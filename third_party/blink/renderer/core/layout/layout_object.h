@@ -3251,9 +3251,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           layout_object_.StyleRef().Visibility() == EVisibility::kVisible);
     }
 
-    void SetNeedsPaintPropertyUpdate() {
-      layout_object_.SetNeedsPaintPropertyUpdate();
+    // Same as LayoutObject::SetNeedsPaintPropertyUpdate(), but does not mark
+    // ancestors as having a descendant needing a paint property update.
+    void SetOnlyThisNeedsPaintPropertyUpdate() {
+      layout_object_.bitfields_.SetNeedsPaintPropertyUpdate(true);
     }
+
     void AddSubtreePaintPropertyUpdateReason(
         SubtreePaintPropertyUpdateReason reason) {
       layout_object_.AddSubtreePaintPropertyUpdateReason(reason);
@@ -3274,11 +3277,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     }
 
 #if DCHECK_IS_ON()
-    // Same as setNeedsPaintPropertyUpdate() but does not mark ancestors as
-    // having a descendant needing a paint property update.
-    void SetOnlyThisNeedsPaintPropertyUpdateForTesting() {
-      layout_object_.bitfields_.SetNeedsPaintPropertyUpdate(true);
-    }
     void ClearNeedsPaintPropertyUpdateForTesting() {
       layout_object_.bitfields_.SetNeedsPaintPropertyUpdate(false);
     }

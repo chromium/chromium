@@ -2647,11 +2647,13 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
 
   if (box.IsLayoutReplaced() &&
       box.PreviousPhysicalContentBoxRect() != box.PhysicalContentBoxRect()) {
-    box.GetMutableForPainting().SetNeedsPaintPropertyUpdate();
+    box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
     if (box.IsLayoutEmbeddedContent()) {
       if (const auto* child_view =
-              To<LayoutEmbeddedContent>(box).ChildLayoutView())
-        child_view->GetMutableForPainting().SetNeedsPaintPropertyUpdate();
+              To<LayoutEmbeddedContent>(box).ChildLayoutView()) {
+        child_view->GetMutableForPainting()
+            .SetOnlyThisNeedsPaintPropertyUpdate();
+      }
     }
   }
 
@@ -2675,7 +2677,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
       // only need to update properties if there are relative lengths.
       box.HasTransform() || NeedsPerspective(box) ||
       box_generates_property_nodes_for_mask_and_clip_path) {
-    box.GetMutableForPainting().SetNeedsPaintPropertyUpdate();
+    box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
   }
 
   if (MayNeedClipPathClip(box))
@@ -2685,7 +2687,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   if (box.HasReflection()) {
     DCHECK(box.HasLayer());
     box.Layer()->SetFilterOnEffectNodeDirty();
-    box.GetMutableForPainting().SetNeedsPaintPropertyUpdate();
+    box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
   }
 }
 
