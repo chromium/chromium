@@ -5,6 +5,7 @@
 /**
  * @fileoverview ChromeVox braille commands.
  */
+import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;

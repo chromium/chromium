@@ -15,6 +15,14 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
     super();
   }
 
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'DesktopAutomationInterface',
+        '/chromevox/background/desktop_automation_interface.js');
+  }
+
   press(keyCode, modifiers) {
     return function() {
       EventGenerator.sendKeyPress(keyCode, modifiers);

@@ -25,7 +25,6 @@ goog.require('Color');
 goog.require('CommandHandlerInterface');
 goog.require('CommandStore');
 goog.require('CustomAutomationEvent');
-goog.require('DesktopAutomationInterface');
 goog.require('editing.TextEditHandler');
 goog.require('EventGenerator');
 goog.require('EventSourceState');

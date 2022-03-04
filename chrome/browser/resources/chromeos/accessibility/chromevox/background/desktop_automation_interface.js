@@ -6,12 +6,7 @@
  * @fileoverview Interface to prevent circular dependencies.
  */
 
-goog.provide('DesktopAutomationInterface');
-
-goog.require('BaseAutomationHandler');
-goog.require('editing.TextEditHandler');
-
-DesktopAutomationInterface = class extends BaseAutomationHandler {
+export class DesktopAutomationInterface extends BaseAutomationHandler {
   /** @type {editing.TextEditHandler} */
   get textEditHandler() {}
 
@@ -20,7 +15,7 @@ DesktopAutomationInterface = class extends BaseAutomationHandler {
    * @param {boolean} val
    */
   ignoreDocumentSelectionFromAction(val) {}
-};
+}
 
 /**
  * @type {DesktopAutomationInterface}

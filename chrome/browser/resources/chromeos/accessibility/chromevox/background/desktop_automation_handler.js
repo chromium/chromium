@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation from a desktop automation node.
  */
+import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;

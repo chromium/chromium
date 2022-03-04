@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox pointer handler. A pointer, in this context, is
  * either user touch or mouse input.
  */
+import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const EventType = chrome.automation.EventType;
