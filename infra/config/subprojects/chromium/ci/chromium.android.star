@@ -284,6 +284,9 @@ ci.builder(
     ),
     executable = "recipe:binary_size_generator_tot",
     ssd = True,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
 )
 
 ci.builder(
