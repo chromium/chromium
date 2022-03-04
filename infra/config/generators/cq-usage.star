@@ -6,11 +6,12 @@
 This generator copies commit-queue.cfg, removing builders that are experimental
 or includable_only and removing other fields that don't impact when the CQ is
 triggered or what the CQ triggers. The resultant file is output as
-cq-usage/details.cfg. This enables applying limited owners for changes that
+cq-usage/default.cfg. This enables applying limited owners for changes that
 would impact the CQ for all users.
 """
 
 load("@stdlib//internal/luci/proto.star", "cq_pb")
+load("//subprojects/chromium/fallback-cq.star", "fallback_cq")
 
 def _remove_none(l):
     return [e for e in l if e != None]
@@ -58,10 +59,18 @@ def _trim_config_group(config_group, include_path_based):
 def _generate_cq_usage(ctx):
     cfg = ctx.output["luci/commit-queue.cfg"]
     ctx.output["cq-usage/default.cfg"] = cq_pb.Config(config_groups = _remove_none(
-        [_trim_config_group(g, include_path_based = False) for g in cfg.config_groups],
+        [
+            _trim_config_group(g, include_path_based = False)
+            for g in cfg.config_groups
+            if g.name != fallback_cq.GROUP
+        ],
     ))
     ctx.output["cq-usage/full.cfg"] = cq_pb.Config(config_groups = _remove_none(
-        [_trim_config_group(g, include_path_based = True) for g in cfg.config_groups],
+        [
+            _trim_config_group(g, include_path_based = True)
+            for g in cfg.config_groups
+            if g.name != fallback_cq.GROUP
+        ],
     ))
 
 lucicfg.generator(_generate_cq_usage)
