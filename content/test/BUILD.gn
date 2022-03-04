@@ -1276,7 +1276,6 @@ test("content_browsertests") {
     "../browser/renderer_host/render_widget_host_view_browsertest.cc",
     "../browser/renderer_host/render_widget_host_view_child_frame_browsertest.cc",
     "../browser/renderer_host/sec_fetch_browsertest.cc",
-    "../browser/renderer_host/unassigned_site_instance_browsertest.cc",
     "../browser/resource_loading_browsertest.cc",
     "../browser/screen_enumeration/screen_enumeration_browsertest.cc",
     "../browser/screen_orientation/screen_orientation_browsertest.cc",
