@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -155,28 +154,6 @@ bool UkmMetricsTable::DeleteEventsBeforeTimestamp(base::Time time) {
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteoldEntries));
   statement.BindTime(0, time);
   return statement.Run();
-}
-
-// static
-UkmMetricsTable::MetricsRow UkmMetricsTable::FillRowFromStatementForTesting(
-    sql::Statement& statement) {
-  DCHECK(statement.is_valid());
-  DCHECK_EQ(statement.ColumnCount(), 8);
-
-  UkmMetricsTable::MetricsRow row;
-  row.id = MetricsRowId::FromUnsafeValue(statement.ColumnInt(0));
-  row.event_timestamp = statement.ColumnTime(1);
-  row.source_id = statement.ColumnInt64(2);
-  row.url_id = UrlId::FromUnsafeValue(statement.ColumnInt64(3));
-  row.event_id = MetricsRowEventId::FromUnsafeValue(statement.ColumnInt64(4));
-  uint64_t event_hash = 0;
-  if (base::HexStringToUInt64(statement.ColumnString(5), &event_hash))
-    row.event_hash = UkmEventHash::FromUnsafeValue(event_hash);
-  uint64_t metric_hash = 0;
-  if (base::HexStringToUInt64(statement.ColumnString(6), &metric_hash))
-    row.metric_hash = UkmMetricHash::FromUnsafeValue(metric_hash);
-  row.metric_value = statement.ColumnInt64(7);
-  return row;
 }
 
 }  // namespace segmentation_platform

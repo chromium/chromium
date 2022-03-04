@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/rand_util.h"
+#include "components/segmentation_platform/internal/database/ukm_database_test_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,19 +17,7 @@ namespace segmentation_platform {
 
 namespace {
 
-void ExpectRowIsEqual(const UkmMetricsTable::MetricsRow& row1,
-                      const UkmMetricsTable::MetricsRow& row2) {
-  // Skip checking ID.
-  EXPECT_EQ(row1.url_id, row2.url_id);
-  EXPECT_EQ(row1.event_timestamp, row2.event_timestamp);
-  EXPECT_EQ(row1.source_id, row2.source_id);
-  EXPECT_EQ(row1.event_id, row2.event_id);
-  EXPECT_EQ(row1.event_hash, row2.event_hash);
-  EXPECT_EQ(row1.metric_hash, row2.metric_hash);
-  EXPECT_EQ(row1.metric_value, row2.metric_value);
-}
-
-UkmMetricsTable::MetricsRow GetSampleRow() {
+UkmMetricsTable::MetricsRow GetSampleMetricsRow() {
   static auto event_id_generator = MetricsRowEventId::Generator();
   static auto event_hash_generator = UkmEventHash::Generator();
   static auto metric_hash_generator = UkmMetricHash::Generator();
@@ -65,30 +54,6 @@ class UkmMetricsTableTest : public testing::Test {
 
   sql::Database& db() { return *db_; }
 
-  absl::optional<UkmMetricsTable::MetricsRow> GetSingleRow(const char* query) {
-    sql::Statement statement(db_->GetUniqueStatement(query));
-    if (statement.Step()) {
-      return UkmMetricsTable::FillRowFromStatementForTesting(statement);
-    }
-    return absl::nullopt;
-  }
-
-  void AssertRowsInTable(const std::vector<UkmMetricsTable::MetricsRow>& rows) {
-    sql::Statement statement(db_->GetCachedStatement(
-        SQL_FROM_HERE, "SELECT * FROM metrics ORDER BY id"));
-    std::vector<UkmMetricsTable::MetricsRow> actual_rows;
-    while (statement.Step()) {
-      actual_rows.emplace_back(
-          UkmMetricsTable::FillRowFromStatementForTesting(statement));
-    }
-    ASSERT_EQ(actual_rows.size(), rows.size());
-    auto it1 = actual_rows.begin();
-    auto it2 = rows.begin();
-    for (; it1 != actual_rows.end(); ++it1, ++it2) {
-      ExpectRowIsEqual(*it1, *it2);
-    }
-  }
-
  private:
   std::unique_ptr<sql::Database> db_;
   std::unique_ptr<UkmMetricsTable> metrics_table_;
@@ -117,19 +82,19 @@ TEST_F(UkmMetricsTableTest, InsertRow) {
   // Invalid rows should not inserted.
   UkmMetricsTable::MetricsRow row;
   EXPECT_FALSE(metrics_table().AddUkmEvent(row));
-  auto row1 = GetSampleRow();
+  auto row1 = GetSampleMetricsRow();
   row1.event_timestamp = base::Time();
   EXPECT_FALSE(metrics_table().AddUkmEvent(row1));
 
-  AssertRowsInTable({});
+  test_util::AssertRowsInMetricsTable(db(), {});
 
-  auto row2 = GetSampleRow();
+  auto row2 = GetSampleMetricsRow();
   EXPECT_TRUE(metrics_table().AddUkmEvent(row2));
-  AssertRowsInTable({row2});
+  test_util::AssertRowsInMetricsTable(db(), {row2});
 
-  auto row3 = GetSampleRow();
+  auto row3 = GetSampleMetricsRow();
   EXPECT_TRUE(metrics_table().AddUkmEvent(row3));
-  AssertRowsInTable({row2, row3});
+  test_util::AssertRowsInMetricsTable(db(), {row2, row3});
 }
 
 TEST_F(UkmMetricsTableTest, DeleteForUrl) {
@@ -142,49 +107,49 @@ TEST_F(UkmMetricsTableTest, DeleteForUrl) {
 
   // Delete on empty table does nothing.
   EXPECT_TRUE(metrics_table().DeleteEventsForUrls({}));
-  AssertRowsInTable({});
+  test_util::AssertRowsInMetricsTable(db(), {});
   EXPECT_TRUE(metrics_table().DeleteEventsForUrls({url_id1}));
-  AssertRowsInTable({});
+  test_util::AssertRowsInMetricsTable(db(), {});
 
-  auto row1 = GetSampleRow();
+  auto row1 = GetSampleMetricsRow();
   row1.url_id = url_id1;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row1));
-  auto row2 = GetSampleRow();
+  auto row2 = GetSampleMetricsRow();
   row2.url_id = url_id1;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row2));
-  auto row3 = GetSampleRow();
+  auto row3 = GetSampleMetricsRow();
   row3.url_id = url_id2;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row3));
-  auto row4 = GetSampleRow();
+  auto row4 = GetSampleMetricsRow();
   row4.url_id = url_id2;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row4));
 
-  AssertRowsInTable({row1, row2, row3, row4});
+  test_util::AssertRowsInMetricsTable(db(), {row1, row2, row3, row4});
 
   // Remove empty URL list.
   EXPECT_TRUE(metrics_table().DeleteEventsForUrls({}));
-  AssertRowsInTable({row1, row2, row3, row4});
+  test_util::AssertRowsInMetricsTable(db(), {row1, row2, row3, row4});
 
   // Remove matching URL ID, should remove 2 rows.
   EXPECT_TRUE(metrics_table().DeleteEventsForUrls({url_id1}));
-  AssertRowsInTable({row3, row4});
+  test_util::AssertRowsInMetricsTable(db(), {row3, row4});
 
   // Remove non-existent URL IDs, no change to db.
   EXPECT_TRUE(metrics_table().DeleteEventsForUrls({url_id1, url_id3}));
-  AssertRowsInTable({row3, row4});
+  test_util::AssertRowsInMetricsTable(db(), {row3, row4});
 
-  auto row5 = GetSampleRow();
+  auto row5 = GetSampleMetricsRow();
   row5.url_id = url_id3;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row5));
-  auto row6 = GetSampleRow();
+  auto row6 = GetSampleMetricsRow();
   row6.url_id = url_id3;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row6));
 
-  AssertRowsInTable({row3, row4, row5, row6});
+  test_util::AssertRowsInMetricsTable(db(), {row3, row4, row5, row6});
 
   // Remove all URL IDs, should clear the table.
   EXPECT_TRUE(metrics_table().DeleteEventsForUrls({url_id1, url_id2, url_id3}));
-  AssertRowsInTable({});
+  test_util::AssertRowsInMetricsTable(db(), {});
 }
 
 TEST_F(UkmMetricsTableTest, DeleteBeforeTimestamp) {
@@ -198,51 +163,51 @@ TEST_F(UkmMetricsTableTest, DeleteBeforeTimestamp) {
 
   // Delete on empty table does nothing.
   EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(base::Time()));
-  AssertRowsInTable({});
+  test_util::AssertRowsInMetricsTable(db(), {});
   EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp1));
-  AssertRowsInTable({});
+  test_util::AssertRowsInMetricsTable(db(), {});
 
-  auto row1 = GetSampleRow();
+  auto row1 = GetSampleMetricsRow();
   row1.event_timestamp = kTimestamp1;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row1));
-  auto row2 = GetSampleRow();
+  auto row2 = GetSampleMetricsRow();
   row2.event_timestamp = kTimestamp2;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row2));
-  auto row3 = GetSampleRow();
+  auto row3 = GetSampleMetricsRow();
   row3.event_timestamp = kTimestamp3;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row3));
-  auto row4 = GetSampleRow();
+  auto row4 = GetSampleMetricsRow();
   row4.event_timestamp = kTimestamp4;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row4));
 
-  AssertRowsInTable({row1, row2, row3, row4});
+  test_util::AssertRowsInMetricsTable(db(), {row1, row2, row3, row4});
 
   // Delete with time before all rows does nothing.
   EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(base::Time()));
-  AssertRowsInTable({row1, row2, row3, row4});
+  test_util::AssertRowsInMetricsTable(db(), {row1, row2, row3, row4});
   EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp1 -
                                                           base::Seconds(1)));
-  AssertRowsInTable({row1, row2, row3, row4});
+  test_util::AssertRowsInMetricsTable(db(), {row1, row2, row3, row4});
 
   // Remove single row.
   EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp1));
-  AssertRowsInTable({row2, row3, row4});
+  test_util::AssertRowsInMetricsTable(db(), {row2, row3, row4});
 
-  auto row5 = GetSampleRow();
+  auto row5 = GetSampleMetricsRow();
   row5.event_timestamp = kTimestamp5;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row5));
-  AssertRowsInTable({row2, row3, row4, row5});
+  test_util::AssertRowsInMetricsTable(db(), {row2, row3, row4, row5});
 
   // Remove bunch of rows.
   EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp3));
-  AssertRowsInTable({row4, row5});
+  test_util::AssertRowsInMetricsTable(db(), {row4, row5});
 
   // Insert entry with an older timestamp out of order and remove old entries
   // should still work.
   EXPECT_TRUE(metrics_table().AddUkmEvent(row1));
-  AssertRowsInTable({row4, row5, row1});
+  test_util::AssertRowsInMetricsTable(db(), {row4, row5, row1});
   EXPECT_TRUE(metrics_table().DeleteEventsBeforeTimestamp(kTimestamp3));
-  AssertRowsInTable({row4, row5});
+  test_util::AssertRowsInMetricsTable(db(), {row4, row5});
 }
 
 TEST_F(UkmMetricsTableTest, MatchHashesTest) {
@@ -253,29 +218,30 @@ TEST_F(UkmMetricsTableTest, MatchHashesTest) {
       UkmEventHash::FromUnsafeValue(std::numeric_limits<uint64_t>::max());
   ASSERT_TRUE(metrics_table().InitTable());
 
-  UkmMetricsTable::MetricsRow row1 = GetSampleRow();
+  UkmMetricsTable::MetricsRow row1 = GetSampleMetricsRow();
   row1.event_hash = event_hash1;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row1));
-  UkmMetricsTable::MetricsRow row2 = GetSampleRow();
+  UkmMetricsTable::MetricsRow row2 = GetSampleMetricsRow();
   row2.event_hash = event_hash2;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row2));
-  UkmMetricsTable::MetricsRow row3 = GetSampleRow();
+  UkmMetricsTable::MetricsRow row3 = GetSampleMetricsRow();
   row3.event_hash = event_hash3;
   EXPECT_TRUE(metrics_table().AddUkmEvent(row3));
 
-  auto result1 = GetSingleRow("SELECT * FROM metrics WHERE event_hash = '1'");
-  ASSERT_TRUE(result1);
-  ExpectRowIsEqual(row1, *result1);
+  auto result1 = test_util::GetMetricsRowWithQuery(
+      "SELECT * FROM metrics WHERE event_hash = '1'", db());
+  ASSERT_EQ(1u, result1.size());
+  test_util::ExpectRowIsEqual(row1, result1[0]);
 
-  auto result2 = GetSingleRow(
-      "SELECT * FROM metrics WHERE event_hash = '9CEA8CBC362AB242'");
-  ASSERT_TRUE(result2);
-  ExpectRowIsEqual(row2, *result2);
+  auto result2 = test_util::GetMetricsRowWithQuery(
+      "SELECT * FROM metrics WHERE event_hash = '9CEA8CBC362AB242'", db());
+  ASSERT_EQ(1u, result2.size());
+  test_util::ExpectRowIsEqual(row2, result2[0]);
 
-  auto result3 = GetSingleRow(
-      "SELECT * FROM metrics WHERE event_hash = 'FFFFFFFFFFFFFFFF'");
-  ASSERT_TRUE(result3);
-  ExpectRowIsEqual(row3, *result3);
+  auto result3 = test_util::GetMetricsRowWithQuery(
+      "SELECT * FROM metrics WHERE event_hash = 'FFFFFFFFFFFFFFFF'", db());
+  ASSERT_EQ(1u, result3.size());
+  test_util::ExpectRowIsEqual(row2, result2[0]);
 }
 
 }  // namespace segmentation_platform

@@ -17,7 +17,6 @@
 
 namespace sql {
 class Database;
-class Statement;
 }  // namespace sql
 
 namespace segmentation_platform {
@@ -81,14 +80,6 @@ class UkmMetricsTable {
   bool DeleteEventsBeforeTimestamp(base::Time time);
 
  private:
-  friend class UkmMetricsTableTest;
-
-  // Gets values from all the columns from the |statement|, assuming the
-  // statement is already executed (Step()), and the current row is valid. This
-  // function only works for "SELECT * FROM metrics" queries, that select all
-  // columns in order.
-  static MetricsRow FillRowFromStatementForTesting(sql::Statement& statement);
-
   SEQUENCE_CHECKER(sequence_checker_);
   const raw_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
 };

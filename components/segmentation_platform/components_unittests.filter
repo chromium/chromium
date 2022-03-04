@@ -29,5 +29,7 @@ StatsTest.*
 TrainingDataCollectorTest.*
 UkmConfigTest.*
 UrlSignalHandlerTest.*
+UkmDatabaseBackendTest.*
 UkmMetricsTableTest.*
+UkmUrlTableTest.*
 UserActionSignalHandlerTest.*
