@@ -7922,10 +7922,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSideSearchClearCacheWhenClosedName,
      flag_descriptions::kSideSearchClearCacheWhenClosedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSideSearchClearCacheWhenClosed)},
-
-    {"side-search-state-per-tab", flag_descriptions::kSideSearchStatePerTabName,
-     flag_descriptions::kSideSearchStatePerTabDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSideSearchStatePerTab)},
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

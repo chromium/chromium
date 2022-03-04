@@ -3313,9 +3313,6 @@ extern const char kSideSearchDescription[];
 
 extern const char kSideSearchClearCacheWhenClosedName[];
 extern const char kSideSearchClearCacheWhenClosedDescription[];
-
-extern const char kSideSearchStatePerTabName[];
-extern const char kSideSearchStatePerTabDescription[];
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

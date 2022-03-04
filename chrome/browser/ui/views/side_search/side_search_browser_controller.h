@@ -82,11 +82,6 @@ class SideSearchBrowserController
   void CloseSidePanel(
       absl::optional<SideSearchCloseActionType> action = absl::nullopt);
 
-  // Called when the side panel is toggled into the closed state. Clears the
-  // side panel contents for all tabs belonging to the side panel's browser
-  // window.
-  void ClearSideContentsCacheForBrowser();
-
   // Clears the side contents for the currently active tab in this browser
   // window.
   void ClearSideContentsCacheForActiveTab();
@@ -102,10 +97,6 @@ class SideSearchBrowserController
   void OnWebViewVisibilityChanged();
 
   base::CallbackListSubscription web_view_visibility_subscription_;
-
-  // The toggled state of the side panel (i.e. the state of the side panel
-  // as controlled by the toolbar button).
-  bool toggled_open_ = false;
 
   ToolbarButton* toolbar_button_;
   SidePanel* const side_panel_;

@@ -269,18 +269,16 @@ void SideSearchBrowserController::DidFinishNavigation(
   }
 
   // The toggled state of the side panel for this tab contents should be reset
-  // when landing on a page that should not show the side panel in the
-  // state-per-tab mode (e.g. NTP, Google home page etc). This will prevent the
-  // side panel from reopening automatically after the tab next encounters a
-  // page where the side panel can be shown.
-  if (base::FeatureList::IsEnabled(features::kSideSearchStatePerTab)) {
-    auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
-        navigation_handle->GetWebContents());
-    if (GetSidePanelToggledOpen() &&
-        !tab_contents_helper->CanShowSidePanelForCommittedNavigation()) {
-      CloseSidePanel();
-      return;
-    }
+  // when landing on a page that should not show the side panel (e.g. NTP,
+  // Google home page etc). This will prevent the side panel from reopening
+  // automatically after the tab next encounters a page where the side panel can
+  // be shown.
+  auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
+      navigation_handle->GetWebContents());
+  if (GetSidePanelToggledOpen() &&
+      !tab_contents_helper->CanShowSidePanelForCommittedNavigation()) {
+    CloseSidePanel();
+    return;
   }
 
   // We need to update the side panel state in response to navigations to catch
@@ -343,14 +341,11 @@ SideSearchBrowserController::CreateToolbarButton() {
 }
 
 bool SideSearchBrowserController::GetSidePanelToggledOpen() const {
-  if (base::FeatureList::IsEnabled(features::kSideSearchStatePerTab)) {
-    auto* active_contents = browser_view_->GetActiveWebContents();
-    return active_contents
-               ? SideSearchTabContentsHelper::FromWebContents(active_contents)
-                     ->toggled_open()
-               : false;
-  }
-  return toggled_open_;
+  auto* active_contents = browser_view_->GetActiveWebContents();
+  return active_contents
+             ? SideSearchTabContentsHelper::FromWebContents(active_contents)
+                   ->toggled_open()
+             : false;
 }
 
 void SideSearchBrowserController::SidePanelButtonPressed() {
@@ -391,25 +386,9 @@ void SideSearchBrowserController::CloseSidePanel(
   SetSidePanelToggledOpen(false);
   UpdateSidePanel();
 
-  if (base::FeatureList::IsEnabled(features::kSideSearchClearCacheWhenClosed)) {
-    // If per tab state is enabled only clear the side contents for the
-    // currently active tab.
-    base::FeatureList::IsEnabled(features::kSideSearchStatePerTab)
-        ? ClearSideContentsCacheForActiveTab()
-        : ClearSideContentsCacheForBrowser();
-  }
-}
-
-void SideSearchBrowserController::ClearSideContentsCacheForBrowser() {
-  web_view_->SetWebContents(nullptr);
-
-  // Notify the tab helpers that their side panel contentes can be cleared away.
-  TabStripModel* tab_strip_model = browser_view_->browser()->tab_strip_model();
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    SideSearchTabContentsHelper::FromWebContents(
-        tab_strip_model->GetWebContentsAt(i))
-        ->ClearSidePanelContents();
-  }
+  // Clear the side contents for the currently active tab.
+  if (base::FeatureList::IsEnabled(features::kSideSearchClearCacheWhenClosed))
+    ClearSideContentsCacheForActiveTab();
 }
 
 void SideSearchBrowserController::ClearSideContentsCacheForActiveTab() {
@@ -422,14 +401,10 @@ void SideSearchBrowserController::ClearSideContentsCacheForActiveTab() {
 }
 
 void SideSearchBrowserController::SetSidePanelToggledOpen(bool toggled_open) {
-  if (base::FeatureList::IsEnabled(features::kSideSearchStatePerTab)) {
-    if (auto* active_contents = browser_view_->GetActiveWebContents()) {
-      SideSearchTabContentsHelper::FromWebContents(active_contents)
-          ->set_toggled_open(toggled_open);
-      side_search::MaybeSaveSideSearchTabSessionData(active_contents);
-    }
-  } else {
-    toggled_open_ = toggled_open;
+  if (auto* active_contents = browser_view_->GetActiveWebContents()) {
+    SideSearchTabContentsHelper::FromWebContents(active_contents)
+        ->set_toggled_open(toggled_open);
+    side_search::MaybeSaveSideSearchTabSessionData(active_contents);
   }
 }
 

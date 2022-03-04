@@ -84,7 +84,7 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
  public:
   // InProcessBrowserTest:
   void SetUp() override {
-    InitializeFeatureList(scoped_feature_list_);
+    scoped_feature_list_.InitWithFeatures({features::kSideSearch}, {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
@@ -108,12 +108,6 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InProcessBrowserTest::TearDownOnMainThread();
-  }
-
-  virtual void InitializeFeatureList(
-      base::test::ScopedFeatureList& feature_list) {
-    feature_list.InitWithFeatures({features::kSideSearch},
-                                  {features::kSideSearchStatePerTab});
   }
 
   void ActivateTabAt(Browser* browser, int index) {
@@ -479,49 +473,6 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
-                       SidePanelTogglesCorrectlyMultipleTabs) {
-  // Navigate to a Google search URL followed by a non-Google URL in two
-  // independent browser tabs such that both have the side panel ready.
-
-  // Tab 1.
-  NavigateActiveTab(browser(), google_search_url());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-  NavigateActiveTab(browser(), non_google_url());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  // Tab 2.
-  AppendTab(browser(), google_search_url());
-  ActivateTabAt(browser(), 1);
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-  NavigateActiveTab(browser(), non_google_url());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  // Show the side panel on Tab 2 and switch to Tab 1. The side panel should
-  // still be visible.
-  NotifyButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
-
-  ActivateTabAt(browser(), 0);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
-
-  // Hide the side panel on Tab 1 and switch to Tab 2. The side panel should be
-  // hidden after the tab switch.
-  NotifyButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  ActivateTabAt(browser(), 1);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        CloseButtonClosesSidePanel) {
   // The close button should be visible in the toggled state.
   NavigateToSRPAndOpenSidePanel(browser());
@@ -530,24 +481,6 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   histogram_tester_.ExpectBucketCount(
       "SideSearch.CloseAction",
       SideSearchCloseActionType::kTapOnSideSearchCloseButton, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SideSearchBrowserControllerTest,
-    SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
-  NavigateToSRPAndOpenSidePanel(browser());
-
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  NavigateToSRPAndNonGoogleUrl(browser2);
-
-  std::unique_ptr<content::WebContents> web_contents =
-      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-  browser()->tab_strip_model()->InsertWebContentsAt(1, std::move(web_contents),
-                                                    TabStripModel::ADD_ACTIVE);
-
-  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
@@ -624,27 +557,177 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(side_panel->Contains(focus_manager->GetFocusedView()));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SideSearchBrowserControllerTest,
+    SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
+  NavigateToSRPAndOpenSidePanel(browser());
+
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  NavigateToSRPAndNonGoogleUrl(browser2);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
+  browser()->tab_strip_model()->InsertWebContentsAt(1, std::move(web_contents),
+                                                    TabStripModel::ADD_ACTIVE);
+
+  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+                       SidePanelTogglesCorrectlyMultipleTabs) {
+  // Navigate to a Google search URL followed by a non-Google URL in two
+  // independent browser tabs such that both have the side panel ready. The
+  // side panel should respect the state-per-tab flag.
+
+  // Tab 1.
+  NavigateActiveTab(browser(), google_search_url());
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  NavigateActiveTab(browser(), non_google_url());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // Tab 2.
+  AppendTab(browser(), google_search_url());
+  ActivateTabAt(browser(), 1);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  NavigateActiveTab(browser(), non_google_url());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // Show the side panel on Tab 2 and switch to Tab 1. The side panel should
+  // not be visible for Tab 1.
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // Show the side panel on Tab 1 and switch to Tab 2. The side panel should be
+  // still be visible for Tab 2, respecting its per-tab state.
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  ActivateTabAt(browser(), 1);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  // Close the side panel on Tab 2 and switch to Tab 1. The side panel should be
+  // still be visible for Tab 1, respecting its per-tab state.
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+                       SwitchingTabsHandlesFocusCorrectly) {
+  auto* browser_view = BrowserViewFor(browser());
+  auto* side_panel = GetSidePanelFor(browser());
+  auto* contents_view = browser_view->contents_web_view();
+  auto* focus_manager = browser_view->GetFocusManager();
+  ASSERT_NE(nullptr, focus_manager);
+
+  // The side panel should currently have focus as it was opened via the toolbar
+  // button.
+  NavigateToSRPAndOpenSidePanel(browser());
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
+  EXPECT_FALSE(contents_view->HasFocus());
+
+  // Switch to another tab and open the side panel. The side panel should still
+  // have focus as it was opened via the toolbar button.
+  AppendTab(browser(), non_google_url());
+  ActivateTabAt(browser(), 1);
+  NavigateToSRPAndOpenSidePanel(browser());
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
+  EXPECT_FALSE(contents_view->HasFocus());
+
+  // Set focus to the contents view and switch to the first tab (which also has
+  // its side panel toggled open). In this switch the focus should return to the
+  // side panel as the BrowserView will update focus on a tab switch.
+  contents_view->RequestFocus();
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_FALSE(side_panel->Contains(focus_manager->GetFocusedView()));
+  EXPECT_TRUE(contents_view->HasFocus());
+
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
+  EXPECT_FALSE(contents_view->HasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+                       SidePanelTogglesClosedCorrectlyDuringNavigation) {
+  // Navigate to a Google SRP and then a non-Google page. The side panel will be
+  // available and open.
+  NavigateToSRPAndOpenSidePanel(browser());
+  auto* side_panel = GetSidePanelFor(browser());
+
+  // Navigating to a Google SRP URL should automatically hide the side panel as
+  // it should not be available.
+  EXPECT_TRUE(side_panel->GetVisible());
+  NavigateActiveTab(browser(), google_search_url());
+  EXPECT_FALSE(side_panel->GetVisible());
+
+  // When navigating again to a non-Google / non-NTP page the side panel will
+  // become available again but should not automatically reopen.
+  NavigateActiveTab(browser(), google_search_url());
+  EXPECT_FALSE(side_panel->GetVisible());
+}
+
 IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
                        SidePanelCrashesCloseSidePanel) {
-  // Navigate to a Google SRP and then a non-Google page. The side panel will be
-  // available but closed.
+  // Open two tabs with the side panel open.
+  NavigateToSRPAndOpenSidePanel(browser());
+  AppendTab(browser(), non_google_url());
+  ActivateTabAt(browser(), 1);
   NavigateToSRPAndOpenSidePanel(browser());
 
   auto* side_panel = GetSidePanelFor(browser());
 
-  // Side panel should be open with a hosted WebContents.
+  // Side panel should be open with the side contents present.
   EXPECT_TRUE(side_panel->GetVisible());
-  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 1));
 
-  // Simulate a crash in the side panel contents.
-  auto* rph =
-      GetSidePanelContentsFor(browser(), 0)->GetMainFrame()->GetProcess();
-  content::RenderProcessHostWatcher crash_observer(
-      rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  EXPECT_TRUE(rph->Shutdown(content::RESULT_CODE_KILLED));
-  crash_observer.Wait();
+  // Simulate a crash in the hosted side panel contents.
+  auto* rph_second_tab =
+      GetSidePanelContentsFor(browser(), 1)->GetMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer_second_tab(
+      rph_second_tab,
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(rph_second_tab->Shutdown(content::RESULT_CODE_KILLED));
+  crash_observer_second_tab.Wait();
 
   // Side panel should be closed and the WebContents cleared.
+  EXPECT_FALSE(side_panel->GetVisible());
+  EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 1));
+
+  // Simulate a crash in the side panel contents of the first tab which is not
+  // currently active.
+  auto* rph_first_tab =
+      GetSidePanelContentsFor(browser(), 0)->GetMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer_first_tab(
+      rph_first_tab, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(rph_first_tab->Shutdown(content::RESULT_CODE_KILLED));
+  crash_observer_first_tab.Wait();
+
+  // Switch to the first tab, the side panel should still be closed.
+  ActivateTabAt(browser(), 0);
   EXPECT_FALSE(side_panel->GetVisible());
   EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 0));
 
@@ -841,195 +924,4 @@ IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
 
   // Navigation to the third URL should proceed as expected.
   NavigateInSideContents(third_url, third_url);
-}
-
-class SideSearchStatePerTabBrowserControllerTest
-    : public SideSearchBrowserControllerTest {
- public:
-  // SideSearchBrowserControllerTest:
-  void InitializeFeatureList(
-      base::test::ScopedFeatureList& feature_list) override {
-    feature_list.InitWithFeatures(
-        {features::kSideSearch, features::kSideSearchStatePerTab}, {});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SideSearchStatePerTabBrowserControllerTest,
-    SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
-  NavigateToSRPAndOpenSidePanel(browser());
-
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  NavigateToSRPAndNonGoogleUrl(browser2);
-
-  std::unique_ptr<content::WebContents> web_contents =
-      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-  browser()->tab_strip_model()->InsertWebContentsAt(1, std::move(web_contents),
-                                                    TabStripModel::ADD_ACTIVE);
-
-  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
-  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  ActivateTabAt(browser(), 0);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
-                       SidePanelTogglesCorrectlyMultipleTabs) {
-  // Navigate to a Google search URL followed by a non-Google URL in two
-  // independent browser tabs such that both have the side panel ready. The
-  // side panel should respect the state-per-tab flag.
-
-  // Tab 1.
-  NavigateActiveTab(browser(), google_search_url());
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-  NavigateActiveTab(browser(), non_google_url());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  // Tab 2.
-  AppendTab(browser(), google_search_url());
-  ActivateTabAt(browser(), 1);
-  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-  NavigateActiveTab(browser(), non_google_url());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  // Show the side panel on Tab 2 and switch to Tab 1. The side panel should
-  // not be visible for Tab 1.
-  NotifyButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
-
-  ActivateTabAt(browser(), 0);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  // Show the side panel on Tab 1 and switch to Tab 2. The side panel should be
-  // still be visible for Tab 2, respecting its per-tab state.
-  NotifyButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
-
-  ActivateTabAt(browser(), 1);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
-
-  // Close the side panel on Tab 2 and switch to Tab 1. The side panel should be
-  // still be visible for Tab 1, respecting its per-tab state.
-  NotifyButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  ActivateTabAt(browser(), 0);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
-  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
-                       SwitchingTabsHandlesFocusCorrectly) {
-  auto* browser_view = BrowserViewFor(browser());
-  auto* side_panel = GetSidePanelFor(browser());
-  auto* contents_view = browser_view->contents_web_view();
-  auto* focus_manager = browser_view->GetFocusManager();
-  ASSERT_NE(nullptr, focus_manager);
-
-  // The side panel should currently have focus as it was opened via the toolbar
-  // button.
-  NavigateToSRPAndOpenSidePanel(browser());
-  EXPECT_TRUE(side_panel->GetVisible());
-  EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
-  EXPECT_FALSE(contents_view->HasFocus());
-
-  // Switch to another tab and open the side panel. The side panel should still
-  // have focus as it was opened via the toolbar button.
-  AppendTab(browser(), non_google_url());
-  ActivateTabAt(browser(), 1);
-  NavigateToSRPAndOpenSidePanel(browser());
-  EXPECT_TRUE(side_panel->GetVisible());
-  EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
-  EXPECT_FALSE(contents_view->HasFocus());
-
-  // Set focus to the contents view and switch to the first tab (which also has
-  // its side panel toggled open). In this switch the focus should return to the
-  // side panel as the BrowserView will update focus on a tab switch.
-  contents_view->RequestFocus();
-  EXPECT_TRUE(side_panel->GetVisible());
-  EXPECT_FALSE(side_panel->Contains(focus_manager->GetFocusedView()));
-  EXPECT_TRUE(contents_view->HasFocus());
-
-  ActivateTabAt(browser(), 0);
-  EXPECT_TRUE(side_panel->GetVisible());
-  EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
-  EXPECT_FALSE(contents_view->HasFocus());
-}
-
-IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
-                       SidePanelTogglesClosedCorrectlyDuringNavigation) {
-  // Navigate to a Google SRP and then a non-Google page. The side panel will be
-  // available and open.
-  NavigateToSRPAndOpenSidePanel(browser());
-  auto* side_panel = GetSidePanelFor(browser());
-
-  // Navigating to a Google SRP URL should automatically hide the side panel as
-  // it should not be available.
-  EXPECT_TRUE(side_panel->GetVisible());
-  NavigateActiveTab(browser(), google_search_url());
-  EXPECT_FALSE(side_panel->GetVisible());
-
-  // When navigating again to a non-Google / non-NTP page the side panel will
-  // become available again but should not automatically reopen.
-  NavigateActiveTab(browser(), google_search_url());
-  EXPECT_FALSE(side_panel->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
-                       SidePanelCrashesCloseSidePanel) {
-  // Open two tabs with the side panel open.
-  NavigateToSRPAndOpenSidePanel(browser());
-  AppendTab(browser(), non_google_url());
-  ActivateTabAt(browser(), 1);
-  NavigateToSRPAndOpenSidePanel(browser());
-
-  auto* side_panel = GetSidePanelFor(browser());
-
-  // Side panel should be open with the side contents present.
-  EXPECT_TRUE(side_panel->GetVisible());
-  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 1));
-
-  // Simulate a crash in the hosted side panel contents.
-  auto* rph_second_tab =
-      GetSidePanelContentsFor(browser(), 1)->GetMainFrame()->GetProcess();
-  content::RenderProcessHostWatcher crash_observer_second_tab(
-      rph_second_tab,
-      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  EXPECT_TRUE(rph_second_tab->Shutdown(content::RESULT_CODE_KILLED));
-  crash_observer_second_tab.Wait();
-
-  // Side panel should be closed and the WebContents cleared.
-  EXPECT_FALSE(side_panel->GetVisible());
-  EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 1));
-
-  // Simulate a crash in the side panel contents of the first tab which is not
-  // currently active.
-  auto* rph_first_tab =
-      GetSidePanelContentsFor(browser(), 0)->GetMainFrame()->GetProcess();
-  content::RenderProcessHostWatcher crash_observer_first_tab(
-      rph_first_tab, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  EXPECT_TRUE(rph_first_tab->Shutdown(content::RESULT_CODE_KILLED));
-  crash_observer_first_tab.Wait();
-
-  // Switch to the first tab, the side panel should still be closed.
-  ActivateTabAt(browser(), 0);
-  EXPECT_FALSE(side_panel->GetVisible());
-  EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 0));
-
-  // Reopening the side panel should restore the side panel and its contents.
-  NotifyButtonClick(browser());
-  EXPECT_TRUE(side_panel->GetVisible());
-  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
 }

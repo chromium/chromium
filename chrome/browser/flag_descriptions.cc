@@ -5720,10 +5720,6 @@ const char kSideSearchClearCacheWhenClosedName[] =
     "Side search clear cache when closed";
 const char kSideSearchClearCacheWhenClosedDescription[] =
     "Clears the side search cache when the side panel is closed.";
-
-const char kSideSearchStatePerTabName[] = "Side search state per tab";
-const char kSideSearchStatePerTabDescription[] =
-    "Enables a per-tab toggled state for the side search side panel";
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
