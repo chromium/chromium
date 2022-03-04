@@ -1244,6 +1244,7 @@
       },
       'Mac11 Tests': {
         'swarming': {
+          'shards': 12,
           'quickrun_shards': 10,
         },
       },
