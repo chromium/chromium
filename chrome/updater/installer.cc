@@ -97,7 +97,7 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   component.crx_format_requirement = crx_verifier_format_;
   component.app_id = app_id_;
   component.ap = ap_;
-  component.ap = persisted_data_->GetBrandCode(app_id_);
+  component.brand = persisted_data_->GetBrandCode(app_id_);
   component.name = app_id_;
   component.version = pv_;
   component.fingerprint = fingerprint_;
