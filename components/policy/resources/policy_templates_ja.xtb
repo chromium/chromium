@@ -1191,6 +1191,7 @@
 <translation id="2355876547176311490">リモート アクセスホストで中継サーバーを使用できないようにする</translation>
 <translation id="2358176879566587521">このポリシーは削除されました。このバージョンの <ph name="PRODUCT_NAME" /> には対応していません。詳しくは、https://support.google.com/chrome/a/answer/7643500 をご覧ください。</translation>
 <translation id="2362469626417133796">再起動の時間枠</translation>
+<translation id="2362539163677485510">クラウド ポリシーの登録トークン</translation>
 <translation id="2363928351203698966">このポリシーでは、<ph name="PRODUCT_NAME" /> で使用する SSL / TLS の最小バージョンを指定できます。認識できない値は無視されます。
 
       このポリシーを設定しない場合、<ph name="PRODUCT_NAME" /> では TLS 1.0 および TLS 1.1 についてエラーが表示されますが、ユーザーはこのエラーを回避できます。

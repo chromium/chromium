@@ -2510,6 +2510,7 @@
 <translation id="346298925039590474">ယခုမိုဘိုင်းကွန်ရက်ကို ဤစက်ပေါ်ရှိ အသုံးပြုသူအားလုံး သုံးနိုင်ပါမည်</translation>
 <translation id="3464145797867108663">အလုပ်ပရိုဖိုင်ကို ထည့်ရန်</translation>
 <translation id="346431825526753">၄င်းသည် <ph name="CUSTODIAN_EMAIL" /> မှ စီမံသော ကလေးများအတွက် အကောင့်တစ်ခုဖြစ်သည်။</translation>
+<translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />၊ <ph name="MERCHANT_NAME_2" /> စသည်တို့အတွက် လျှော့ဈေးများ ရယူမလား</translation>
 <translation id="3468298837301810372">အညွှန်း</translation>
 <translation id="3468999815377931311">Android ဖုန်း</translation>
 <translation id="3469583217479686109">ရွေးဆွဲမှတ်ရန် တူးလ်</translation>
@@ -2954,6 +2955,7 @@
 <translation id="3879748587602334249">ဒေါင်းလုဒ်မန်နေဂျာ</translation>
 <translation id="3882165008614329320">ကင်မရာ သို့မဟုတ် ဖိုင်မှ လက်ရှိဗီဒီယို</translation>
 <translation id="3883306461188700142">သင့်အသံဖြင့် စာရိုက်နိုင်သည်။ Search + D ကိုနှိပ်ပြီး စကားစပြောပါ။</translation>
+<translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> နှင့် <ph name="MERCHANT_NAME_2" /> အတွက် လျှော့ဈေးများ ရယူမလား</translation>
 <translation id="3884152383786131369">ဘာသာစကားအမျိုးမျိုး အသုံးပြုနိုင်သော ဝဘ်အကြောင်းအရာများက ဤစာရင်းထဲမှ ပထမဆုံးပံ့ပိုးထားသော ဘာသာစကားကို အသုံးပြုပါမည်။ ဤသတ်မှတ်ချက်များကို သင့်ဘရောင်ဇာဆက်တင်များနှင့် စင့်ခ်လုပ်ထားသည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">အပ်ဒိတ်များကို သင့်ကြီးကြပ်သူက စီမံပါသည်</translation>
 <translation id="3886446263141354045">ဤဆိုက်အား အသုံးပြုရန် သင့်တောင်းဆိုချက်ကို <ph name="NAME" /> သို့ ပို့လိုက်ပါပြီ</translation>
