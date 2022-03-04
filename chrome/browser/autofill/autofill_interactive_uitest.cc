@@ -2003,7 +2003,12 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 }
 
 // Test that we can Autofill dynamically generated forms.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DynamicFormFill) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DynamicFormFill DISABLED_DynamicFormFill
+#else
+#define MAYBE_DynamicFormFill DynamicFormFill
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_DynamicFormFill) {
   static const char kDynamicForm[] =
       R"( <p>Some text to paint</p>
           <form id="form" action="https://www.example.com/"
@@ -3093,7 +3098,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 }
 
 // Test that forms that dynamically change a second time do not get filled.
-// Test is flaky on Mac, see https://crbug.com/1290277.
+// Test is flaky on Mac, see https://crbug.com/1297560.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DynamicChangingFormFill_SecondChange \
   DISABLED_DynamicChangingFormFill_SecondChange
@@ -3145,7 +3150,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 }
 
 // Test that only field of a type group that was filled initially get refilled.
-// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_AddsNewFieldTypeGroups) {
   CreateTestProfile();
@@ -3175,7 +3180,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change select fields to text
 // fields by changing the visibilities.
-// Test is flaky on Mac, see https://crbug.com/1290277.
+// Test is flaky on Mac, see https://crbug.com/1297560.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DynamicFormFill_SelectToText DISABLED_DynamicFormFill_SelectToText
 #else
@@ -3205,7 +3210,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the visibility of a
 // field after it's autofilled.
-// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_VisibilitySwitch) {
   CreateTestProfile();
@@ -3231,7 +3236,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on.
-// Test is flaky on Mac, see https://crbug.com/1290277.
+// Test is flaky on Mac, see https://crbug.com/1297560.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DynamicFormFill_FirstElementDisappears \
   DISABLED_DynamicFormFill_FirstElementDisappears
@@ -3261,7 +3266,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the form has no name.
-// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_FirstElementDisappearsNoNameForm) {
   CreateTestProfile();
@@ -3313,7 +3318,7 @@ IN_PROC_BROWSER_TEST_P(
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with identical
 // names.
-// Test is flaky on Mac, see https://crbug.com/1290277.
+// Test is flaky on Mac, see https://crbug.com/1297560.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DynamicFormFill_FirstElementDisappearsBadnameUnowned \
   DISABLED_DynamicFormFill_FirstElementDisappearsBadnameUnowned
@@ -3346,7 +3351,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with no name.
-// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_P(
     AutofillInteractiveTestDynamicForm,
     DynamicFormFill_FirstElementDisappearsMultipleNoNameForms) {
@@ -3373,8 +3378,16 @@ IN_PROC_BROWSER_TEST_P(
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the elements are unowned.
+// Test is flaky on Mac, see https://crbug.com/1297560.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DynamicFormFill_FirstElementDisappearsUnowned \
+  DISABLED_DynamicFormFill_FirstElementDisappearsUnowned
+#else
+#define MAYBE_DynamicFormFill_FirstElementDisappearsUnowned \
+  DynamicFormFill_FirstElementDisappearsUnowned
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
-                       DynamicFormFill_FirstElementDisappearsUnowned) {
+                       MAYBE_DynamicFormFill_FirstElementDisappearsUnowned) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid_unowned.html");
@@ -3394,9 +3407,16 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 }
 
 // Test that credit card fields are re-filled.
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
+// Test is flaky on Mac, see https://crbug.com/1297560.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DynamicChangingFormFill_AlsoForCreditCard \
+  DISABLED_DynamicChangingFormFill_AlsoForCreditCard
+#else
+#define MAYBE_DynamicChangingFormFill_AlsoForCreditCard \
+  DynamicChangingFormFill_AlsoForCreditCard
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_AlsoForCreditCard) {
+                       MAYBE_DynamicChangingFormFill_AlsoForCreditCard) {
   CreateTestCreditCart();
   GURL url = https_server()->GetURL("a.com",
                                     "/autofill/dynamic_form_credit_card.html");
@@ -3416,9 +3436,16 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed.
-// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+// Test is flaky on Mac, see https://crbug.com/1297560.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DynamicChangingFormFill_SelectUpdated \
+  DISABLED_DynamicChangingFormFill_SelectUpdated
+#else
+#define MAYBE_DynamicChangingFormFill_SelectUpdated \
+  DynamicChangingFormFill_SelectUpdated
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectUpdated) {
+                       MAYBE_DynamicChangingFormFill_SelectUpdated) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_select_options_change.html");
@@ -3440,7 +3467,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed only once.
-// Test is flaky on Mac, see https://crbug.com/1290277.
+// Test is flaky on Mac, see https://crbug.com/1297560.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DynamicChangingFormFill_DoubleSelectUpdated \
   DISABLED_DynamicChangingFormFill_DoubleSelectUpdated
@@ -3496,7 +3523,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed for forms with no names if the NameForAutofill of the first
 // field matches.
-// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated_FormWithoutName) {
   CreateTestProfile();
@@ -3521,7 +3548,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically generated synthetic forms if the
 // NameForAutofill of the first field matches.
-// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SyntheticForm) {
   CreateTestProfile();
