@@ -386,7 +386,10 @@ public final class ReturnToChromeExperimentsUtil {
     private static ChromeActivity getActivityPresentingOverviewWithOmnibox(
             String url, boolean skipOverviewCheck) {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (!isStartSurfaceEnabled(activity) || !(activity instanceof ChromeActivity)) return null;
+        if (activity == null || !isStartSurfaceEnabled(activity)
+                || !(activity instanceof ChromeActivity)) {
+            return null;
+        }
 
         ChromeActivity chromeActivity = (ChromeActivity) activity;
 
