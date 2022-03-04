@@ -62,8 +62,6 @@ class MEDIA_EXPORT VideoCodecConfig {
   // Enables the async MediaCodec.Callback API. |on_buffers_available_cb|
   // will be called when input or output buffers are available. This will be
   // called on an arbitrary thread, so use BindToCurrentLoop if needed.
-  //
-  // May only be used on API level 23 and higher.
   base::RepeatingClosure on_buffers_available_cb;
 };
 

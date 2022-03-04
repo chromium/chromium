@@ -17,8 +17,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.Surface;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -225,7 +223,6 @@ class MediaCodecBridge {
     // Warning: This class may execute on an arbitrary thread for the lifetime
     // of the MediaCodec. The MediaCodecBridge methods it calls are synchronized
     // to avoid race conditions.
-    @RequiresApi(Build.VERSION_CODES.M)
     class MediaCodecCallback extends MediaCodec.Callback {
         private MediaCodecBridge mMediaCodecBridge;
         MediaCodecCallback(MediaCodecBridge bridge) {
@@ -269,11 +266,6 @@ class MediaCodecBridge {
         prepareAsyncApiForRestart();
     }
 
-    // There's a Lollipop version of the setCallback() API, so we could enable
-    // it there, but since it's likely to be more stable in later SDK versions
-    // and our tests require their own Handler to pump the callbacks, we limit
-    // support to Marshmallow only.
-    @RequiresApi(Build.VERSION_CODES.M)
     private void enableAsyncApi() {
         mPendingError = false;
         mPendingFormat = new LinkedList<MediaFormatWrapper>();
@@ -721,7 +713,6 @@ class MediaCodecBridge {
         return false;
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private boolean setSurface(Surface surface) {
         try {
@@ -762,11 +753,7 @@ class MediaCodecBridge {
             case 6:
                 return AudioFormat.CHANNEL_OUT_5POINT1;
             case 8:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    return AudioFormat.CHANNEL_OUT_7POINT1_SURROUND;
-                } else {
-                    return AudioFormat.CHANNEL_OUT_7POINT1;
-                }
+                return AudioFormat.CHANNEL_OUT_7POINT1_SURROUND;
             default:
                 return AudioFormat.CHANNEL_OUT_DEFAULT;
         }

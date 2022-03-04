@@ -281,12 +281,6 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
 
 // static
 void MediaCodecBridgeImpl::SetupCallbackHandlerForTesting() {
-  // Callback APIs are only available on M+, so do nothing if below that.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    return;
-  }
-
   JNIEnv* env = AttachCurrentThread();
   Java_MediaCodecBridge_createCallbackHandlerForTesting(env);
 }
@@ -304,9 +298,6 @@ MediaCodecBridgeImpl::MediaCodecBridgeImpl(
 
   if (!on_buffers_available_cb_)
     return;
-
-  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_MARSHMALLOW);
 
   // Note this should be done last since setBuffersAvailableListener() may
   // immediately invoke the callback if buffers came in during construction.
@@ -674,8 +665,6 @@ std::string MediaCodecBridgeImpl::GetName() {
 }
 
 bool MediaCodecBridgeImpl::SetSurface(const JavaRef<jobject>& surface) {
-  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_MARSHMALLOW);
   JNIEnv* env = AttachCurrentThread();
   return Java_MediaCodecBridge_setSurface(env, j_bridge_, surface);
 }
