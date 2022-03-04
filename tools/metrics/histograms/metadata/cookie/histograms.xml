@@ -319,6 +319,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.FirstPartySets.InitializationDuration.{Landmark}"
+    units="microseconds" expires_after="M110">
+  <owner>cfredric@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    The amount of time taken until {Landmark} during First-Party Sets
+    initialization. Each sample is measured starting from the moment the
+    FirstPartySets instance is constructed.
+
+    Each metric is recorded once when the First-Party Sets objects are
+    initialized in the Network Service. (Note that this may happen multiple
+    times during a single Chrome session, if the Network Service crashes and
+    restarts.) Recorded for all clients, even those with low-resolution clocks.
+  </summary>
+  <token key="Landmark">
+    <variant name="ReadCommandLineSet"/>
+    <variant name="ReadComponentSets"/>
+    <variant name="ReadPersistedSets"/>
+    <variant name="ReadyToServeQueries"/>
+  </token>
+</histogram>
+
 <histogram name="Cookie.FirstPartySets.MostDelayedQueryDelta"
     units="microseconds" expires_after="M110">
   <owner>cfredric@chromium.org</owner>

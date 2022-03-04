@@ -79,6 +79,9 @@ void FirstPartySetsLoader::SetManuallySpecifiedSet(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   manually_specified_set_ = {CanonicalizeSet(base::SplitString(
       flag_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY))};
+  UmaHistogramTimes(
+      "Cookie.FirstPartySets.InitializationDuration.ReadCommandLineSet",
+      construction_timer_.Elapsed());
 
   MaybeFinishLoading();
 }
@@ -114,6 +117,9 @@ void FirstPartySetsLoader::OnReadSetsFile(const std::string& raw_sets) {
   sets_ = FirstPartySetParser::ParseSetsFromStream(stream);
 
   component_sets_parse_progress_ = Progress::kFinished;
+  UmaHistogramTimes(
+      "Cookie.FirstPartySets.InitializationDuration.ReadComponentSets",
+      construction_timer_.Elapsed());
   MaybeFinishLoading();
 }
 

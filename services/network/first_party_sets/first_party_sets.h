@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_metadata.h"
@@ -268,6 +269,9 @@ class FirstPartySets {
   // The time when the first async query was enqueued, if any. Used for metrics.
   absl::optional<base::TimeTicks> first_async_query_time_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Timer starting when the instance is constructed. Used for metrics.
+  base::ElapsedTimer construction_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

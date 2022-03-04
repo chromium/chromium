@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/timer/elapsed_timer.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -91,6 +92,9 @@ class FirstPartySetsLoader {
   // We use a OnceCallback to ensure we only pass along the completed sets once.
   LoadCompleteOnceCallback on_load_complete_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Timer starting when the instance is constructed. Used for latency metrics.
+  base::ElapsedTimer construction_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

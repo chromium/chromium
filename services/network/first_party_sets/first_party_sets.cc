@@ -351,6 +351,10 @@ void FirstPartySets::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
 
+  UmaHistogramTimes(
+      "Cookie.FirstPartySets.InitializationDuration.ReadyToServeQueries",
+      construction_timer_.Elapsed());
+
   if (!pending_queries_)
     return;
 
@@ -385,6 +389,9 @@ void FirstPartySets::SetPersistedSetsAndOnSiteDataCleared(
   DCHECK(!callback.is_null());
   raw_persisted_sets_ = static_cast<std::string>(raw_sets);
   on_site_data_cleared_ = std::move(callback);
+  UmaHistogramTimes(
+      "Cookie.FirstPartySets.InitializationDuration.ReadPersistedSets",
+      construction_timer_.Elapsed());
   ClearSiteDataOnChangedSetsIfReady();
 }
 
