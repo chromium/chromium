@@ -14,13 +14,14 @@
 #include <signal.h>
 #include <string.h>
 
+#include <iterator>
+
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/debugger.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -86,7 +87,7 @@ static void JNI_NativeTest_RunTests(
 
   // Command line initialized basically, will be fully initialized later.
   static const char* const kInitialArgv[] = { "ChromeTestActivity" };
-  base::CommandLine::Init(base::size(kInitialArgv), kInitialArgv);
+  base::CommandLine::Init(std::size(kInitialArgv), kInitialArgv);
 
   std::vector<std::string> args;
 

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
@@ -81,7 +80,7 @@ class VIZ_COMMON_EXPORT BlitRequest {
   }
 
   const gpu::MailboxHolder& mailbox(size_t i) const {
-    CHECK(i < base::size(mailboxes_));
+    CHECK(i < std::size(mailboxes_));
     return mailboxes_[i];
   }
 

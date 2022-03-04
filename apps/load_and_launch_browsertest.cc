@@ -6,8 +6,9 @@
 // The two cases are when chrome is running and another process uses the switch
 // and when chrome is started from scratch.
 
+#include <iterator>
+
 #include "apps/switches.h"
-#include "base/cxx17_backports.h"
 #include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_switches.h"
@@ -62,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine new_cmdline(cmdline.GetProgram());
   new_cmdline.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                               base::size(kSwitchesToCopy));
+                               std::size(kSwitchesToCopy));
 
   base::FilePath app_path = test_data_dir_
       .AppendASCII("platform_apps")
@@ -98,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine new_cmdline(cmdline.GetProgram());
   new_cmdline.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                               base::size(kSwitchesToCopy));
+                               std::size(kSwitchesToCopy));
 
   base::FilePath app_path = test_data_dir_
       .AppendASCII("platform_apps")
