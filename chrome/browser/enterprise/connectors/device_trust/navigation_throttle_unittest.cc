@@ -115,6 +115,16 @@ TEST_F(DeviceTrustNavigationThrottleTest, ExpectHeaderDeviceTrustOnRequest) {
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 }
 
+TEST_F(DeviceTrustNavigationThrottleTest, NullService) {
+  content::MockNavigationHandle test_handle(GURL("https://www.example.com/"),
+                                            main_frame());
+  EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
+      .Times(0);
+  auto throttle =
+      std::make_unique<DeviceTrustNavigationThrottle>(nullptr, &test_handle);
+  EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+}
+
 TEST_F(DeviceTrustNavigationThrottleTest, NoHeaderDeviceTrustOnRequest) {
   content::MockNavigationHandle test_handle(GURL("https://www.no-example.com/"),
                                             main_frame());

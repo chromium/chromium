@@ -31,7 +31,8 @@ void ConnectorsInternalsPageHandler::GetZeroTrustState(
   auto* device_trust_service =
       DeviceTrustServiceFactory::GetForProfile(profile_);
 
-  // The factory will not return a service if the profile is off-the-record.
+  // The factory will not return a service if the profile is off-the-record, or
+  // if the current management configuration is not supported.
   if (!device_trust_service) {
     auto state = connectors_internals::mojom::ZeroTrustState::New(
         false,

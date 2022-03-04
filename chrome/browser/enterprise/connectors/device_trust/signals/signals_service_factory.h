@@ -10,6 +10,10 @@
 class PolicyBlocklistService;
 class Profile;
 
+namespace policy {
+class ManagementService;
+}
+
 namespace enterprise_connectors {
 
 class SignalsService;
@@ -18,7 +22,8 @@ class SignalsService;
 // environment.
 std::unique_ptr<SignalsService> CreateSignalsService(
     Profile* profile,
-    PolicyBlocklistService* policy_blocklist_service);
+    PolicyBlocklistService* policy_blocklist_service,
+    policy::ManagementService* management_service);
 
 }  // namespace enterprise_connectors
 

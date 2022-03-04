@@ -56,9 +56,7 @@ DeviceTrustNavigationThrottle::DeviceTrustNavigationThrottle(
     DeviceTrustService* device_trust_service,
     content::NavigationHandle* navigation_handle)
     : content::NavigationThrottle(navigation_handle),
-      device_trust_service_(device_trust_service) {
-  DCHECK(device_trust_service_);
-}
+      device_trust_service_(device_trust_service) {}
 
 DeviceTrustNavigationThrottle::~DeviceTrustNavigationThrottle() = default;
 
