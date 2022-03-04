@@ -996,7 +996,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   // Unknown url fails.
   EXPECT_EQ(
-      webapps::UninstallResultCode::kError,
+      webapps::UninstallResultCode::kNoAppToUninstall,
       UninstallExternalWebAppByUrl(GURL("https://example.org/"),
                                    ExternalInstallSource::kExternalPolicy));
 
@@ -1036,7 +1036,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   // Unknown url fails.
   EXPECT_EQ(
-      webapps::UninstallResultCode::kError,
+      webapps::UninstallResultCode::kNoAppToUninstall,
       UninstallExternalWebAppByUrl(GURL("https://example.org/"),
                                    ExternalInstallSource::kExternalPolicy));
 

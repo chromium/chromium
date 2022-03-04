@@ -281,8 +281,9 @@ void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
     LOG(WARNING) << "Couldn't uninstall web app with url " << app_url
                  << "; No corresponding web app for url.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  webapps::UninstallResultCode::kError));
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       webapps::UninstallResultCode::kNoAppToUninstall));
     return;
   }
 
@@ -482,7 +483,7 @@ void WebAppInstallFinalizer::UninstallWebAppInternal(
     UninstallWebAppCallback callback) {
   if (registrar_->GetAppById(app_id) == nullptr ||
       base::Contains(pending_uninstalls_, app_id)) {
-    std::move(callback).Run(webapps::UninstallResultCode::kError);
+    std::move(callback).Run(webapps::UninstallResultCode::kNoAppToUninstall);
     return;
   }
   auto uninstall_task = std::make_unique<WebAppUninstallJob>(
@@ -518,8 +519,9 @@ void WebAppInstallFinalizer::UninstallExternalWebAppOrRemoveSource(
   const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
   if (!app) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  webapps::UninstallResultCode::kError));
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       webapps::UninstallResultCode::kNoAppToUninstall));
     return;
   }
 

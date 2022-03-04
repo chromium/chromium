@@ -8,10 +8,11 @@
 namespace webapps {
 
 enum class UninstallResultCode {
-  kSuccess = 0,
-  kError = 1,
+  kSuccess,
+  kNoAppToUninstall,
+  kCancelled,
+  kError,
 };
-
 }
 
 #endif  // COMPONENTS_WEBAPPS_BROWSER_UNINSTALL_RESULT_CODE_H_
