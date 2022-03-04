@@ -5,6 +5,9 @@
 /* This file is generated from:
  *  typography_test.json5
  */
+:root {
+  color-scheme: light dark;
+}
 
 html:not(body) {}
 

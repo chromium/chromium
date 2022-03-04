@@ -9,6 +9,9 @@
 {%- endfor %}
  */
 {%- endif %}
+:root {
+  color-scheme: light dark;
+}
 {% macro render_variables_for_mode(mode) -%}
 {%- for model_name, color in colors[mode].items() %}
   {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};

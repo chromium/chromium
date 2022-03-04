@@ -6,6 +6,9 @@
  *  colors_test.json5
  *  colors_test_palette.json5
  */
+:root {
+  color-scheme: light dark;
+}
 
 html:not(body) {
   --google-grey-900-rgb: 32, 33, 36;
