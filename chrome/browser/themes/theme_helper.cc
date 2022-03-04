@@ -417,6 +417,18 @@ SkColor ThemeHelper::GetDefaultColor(
           gfx::kGoogleBlue500, download_shelf_color,
           color_utils::kMinimumReadableContrastRatio);
     }
+    case TP::COLOR_STATUS_BUBBLE_ACTIVE:
+      return GetColor(TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE, incognito,
+                      theme_supplier);
+    case TP::COLOR_STATUS_BUBBLE_INACTIVE:
+      return GetColor(TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE,
+                      incognito, theme_supplier);
+    case TP::COLOR_STATUS_BUBBLE_TEXT_ACTIVE:
+      return GetColor(TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE, incognito,
+                      theme_supplier);
+    case TP::COLOR_STATUS_BUBBLE_TEXT_INACTIVE:
+      return GetColor(TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE,
+                      incognito, theme_supplier);
     case TP::COLOR_OMNIBOX_BACKGROUND: {
       // TODO(http://crbug.com/878664): Enable for all cases.
       if (!IsCustomTheme(theme_supplier))

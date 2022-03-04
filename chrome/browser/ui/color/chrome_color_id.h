@@ -110,6 +110,14 @@
   /* Read Later button colors. */ \
   E(kColorReadLaterButtonHighlight, \
     ThemeProperties::COLOR_READ_LATER_BUTTON_HIGHLIGHT) \
+  /* Status bubble colors. */ \
+  E(kColorStatusBubbleBackgroundFrameActive, \
+    ThemeProperties::COLOR_STATUS_BUBBLE_ACTIVE) \
+  E(kColorStatusBubbleBackgroundFrameInactive, \
+    ThemeProperties::COLOR_STATUS_BUBBLE_INACTIVE) \
+  E_CPONLY(kColorStatusBubbleForegroundFrameActive) \
+  E_CPONLY(kColorStatusBubbleForegroundFrameInactive) \
+  E(kColorStatusBubbleShadow, ThemeProperties::COLOR_STATUS_BUBBLE_SHADOW) \
   /* Tab colors. */ \
   E(kColorTabBackgroundActiveFrameActive, \
     ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE) \

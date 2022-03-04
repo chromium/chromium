@@ -232,6 +232,15 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxText] =
       ui::GetColorWithMaxContrast(kColorOmniboxBackground);
   mixer[kColorReadLaterButtonHighlight] = {kColorAvatarButtonHighlightNormal};
+  mixer[kColorStatusBubbleBackgroundFrameActive] = {
+      kColorTabBackgroundInactiveFrameActive};
+  mixer[kColorStatusBubbleBackgroundFrameInactive] = {
+      kColorTabBackgroundInactiveFrameInactive};
+  mixer[kColorStatusBubbleForegroundFrameActive] = {
+      kColorTabForegroundInactiveFrameActive};
+  mixer[kColorStatusBubbleForegroundFrameInactive] = {
+      kColorTabForegroundInactiveFrameInactive};
+  mixer[kColorStatusBubbleShadow] = {SkColorSetA(SK_ColorBLACK, 0x1E)};
 
   ui::ColorTransform input_transform = {kColorTabBackgroundInactiveFrameActive};
   mixer[kColorTabGroupTabStripFrameActiveBlue] = ui::SelectBasedOnDarkInput(

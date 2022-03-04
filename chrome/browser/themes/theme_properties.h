@@ -150,7 +150,11 @@ class ThemeProperties {
     COLOR_INFOBAR_TEXT,
 
     // Status bubble colors.
-    COLOR_STATUS_BUBBLE,
+    COLOR_STATUS_BUBBLE_ACTIVE,
+    COLOR_STATUS_BUBBLE_INACTIVE,
+    COLOR_STATUS_BUBBLE_SHADOW,
+    COLOR_STATUS_BUBBLE_TEXT_ACTIVE,
+    COLOR_STATUS_BUBBLE_TEXT_INACTIVE,
 
     // /!\ If you make any changes to this enum, you must also increment
     // kThemePackVersion in browser_theme_pack.cc, or else themes will display

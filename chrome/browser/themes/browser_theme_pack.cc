@@ -98,7 +98,7 @@ constexpr int kTallestFrameHeight = kTallestTabHeight + 19;
 // changed default theme assets, if you need themes to recreate their generated
 // images (which are cached), if you changed how missing values are
 // generated, or if you changed any constants.
-const int kThemePackVersion = 91;
+const int kThemePackVersion = 92;
 
 // IDs that are in the DataPack won't clash with the positive integer
 // uint16_t. kHeaderID should always have the maximum value because we want the
@@ -269,7 +269,6 @@ constexpr int kNonOverwritableColorTable[] = {
     TP::COLOR_INFOBAR,
     TP::COLOR_INFOBAR_TEXT,
     TP::COLOR_DOWNLOAD_SHELF,
-    TP::COLOR_STATUS_BUBBLE,
     TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED,
     TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED,
     TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
@@ -1553,11 +1552,7 @@ void BrowserThemePack::CropImages(ImageCache* images) const {
 }
 
 void BrowserThemePack::SetFrameAndToolbarRelatedColors() {
-  // Propagate the user-specified Frame and Toolbar Colors to similar elements.
-  SkColor frame_color;
-  if (GetColor(TP::COLOR_FRAME_ACTIVE, &frame_color))
-    SetColor(TP::COLOR_STATUS_BUBBLE, frame_color);
-
+  // Propagate the user-specified toolbar color to similar elements.
   SkColor toolbar_color;
   if (GetColor(TP::COLOR_TOOLBAR, &toolbar_color)) {
     SetColor(TP::COLOR_INFOBAR, toolbar_color);

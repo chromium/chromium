@@ -809,7 +809,8 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
 #endif
 TEST_P(ThemeProviderRedirectedEquivalenceTest, MAYBE_GetColor) {
   static constexpr const auto kTolerances = base::MakeFixedFlatMap<int, int>(
-      {{ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE, 1},
+      {{ThemeProperties::COLOR_STATUS_BUBBLE_INACTIVE, 1},
+       {ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE, 1},
        {ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_ORANGE, 1},
        {ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE, 1}});
   auto get_tolerance = [](int id) {

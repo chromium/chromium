@@ -57,9 +57,6 @@
 
 namespace {
 
-// The alpha and color of the bubble's shadow.
-constexpr SkColor kShadowColor = SkColorSetARGB(30, 0, 0, 0);
-
 // The roundedness of the edges of our bubble.
 constexpr int kBubbleCornerRadius = 4;
 
@@ -229,6 +226,8 @@ class StatusBubbleViews::StatusView : public views::View {
   // memory savings of closing the widget when it's hidden and unused.
   base::OneShotTimer destroy_popup_timer_;
 
+  base::CallbackListSubscription paint_as_active_subscription_;
+
   base::WeakPtrFactory<StatusBubbleViews::StatusView> timer_factory_{this};
 };
 using StatusView = StatusBubbleViews::StatusView;
@@ -245,6 +244,12 @@ StatusView::StatusView(StatusBubbleViews* status_bubble)
   SetTextLabelColors(text.get());
   text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   text_ = AddChildView(std::move(text));
+
+  paint_as_active_subscription_ =
+      status_bubble_->base_view()
+          ->GetWidget()
+          ->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+              &StatusView::SetTextLabelColors, base::Unretained(this), text_));
 }
 
 StatusView::~StatusView() {
@@ -422,12 +427,16 @@ void StatusView::StartShowing() {
 
 void StatusView::SetTextLabelColors(views::Label* text) {
   const auto* theme_provider = status_bubble_->base_view()->GetThemeProvider();
-  SkColor bubble_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_STATUS_BUBBLE);
+  const bool active =
+      status_bubble_->base_view()->GetWidget()->ShouldPaintAsActive();
+  SkColor bubble_color = theme_provider->GetColor(
+      active ? ThemeProperties::COLOR_STATUS_BUBBLE_ACTIVE
+             : ThemeProperties::COLOR_STATUS_BUBBLE_INACTIVE);
   text->SetBackgroundColor(bubble_color);
   // Text color is the background tab text color, adjusted if required.
   text->SetEnabledColor(theme_provider->GetColor(
-      ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE));
+      active ? ThemeProperties::COLOR_STATUS_BUBBLE_TEXT_ACTIVE
+             : ThemeProperties::COLOR_STATUS_BUBBLE_TEXT_INACTIVE));
 }
 
 void StatusView::OnPaint(gfx::Canvas* canvas) {
@@ -527,12 +536,15 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
 
   const auto* theme_provider = status_bubble_->base_view()->GetThemeProvider();
-  const SkColor bubble_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_STATUS_BUBBLE);
-  flags.setColor(bubble_color);
+  const auto id =
+      status_bubble_->base_view()->GetWidget()->ShouldPaintAsActive()
+          ? ThemeProperties::COLOR_STATUS_BUBBLE_ACTIVE
+          : ThemeProperties::COLOR_STATUS_BUBBLE_INACTIVE;
+  flags.setColor(theme_provider->GetColor(id));
   canvas->sk_canvas()->drawPath(fill_path, flags);
 
-  flags.setColor(kShadowColor);
+  flags.setColor(
+      theme_provider->GetColor(ThemeProperties::COLOR_STATUS_BUBBLE_SHADOW));
   canvas->sk_canvas()->drawPath(stroke_path, flags);
 }
 

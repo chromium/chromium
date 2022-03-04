@@ -953,20 +953,12 @@ TEST_F(BrowserThemePackTest, TestWindowControlButtonBGColor_ButtonBGImage) {
   }
 }
 
-// Ensure that specified 'frame' and 'toolbar' colors are propagated to other
-// 'bar' and 'shelf' colors.
+// Ensure that specified 'toolbar' color is propagated to other 'bar' and
+// 'shelf' colors.
 TEST_F(BrowserThemePackTest, TestFrameAndToolbarColorPropagation) {
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(CustomThemeSupplier::ThemeType::EXTENSION));
   BuildTestExtensionTheme("theme_test_toolbar_color_no_image", pack.get());
-
-  // Frame colors.
-  SkColor status_bubble_color;
-
-  EXPECT_TRUE(pack->GetColor(TP::COLOR_STATUS_BUBBLE, &status_bubble_color));
-
-  constexpr SkColor kExpectedFrameColor = SkColorSetRGB(255, 0, 255);
-  EXPECT_EQ(status_bubble_color, kExpectedFrameColor);
 
   // Toolbar colors.
   SkColor infobar_color;

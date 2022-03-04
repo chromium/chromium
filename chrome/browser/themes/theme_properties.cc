@@ -54,7 +54,6 @@ SkColor GetLightModeColor(int id) {
     case ThemeProperties::COLOR_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE:
-    case ThemeProperties::COLOR_STATUS_BUBBLE:
       return SkColorSetRGB(0xDE, 0xE1, 0xE6);
     case ThemeProperties::COLOR_FRAME_INACTIVE:
     case ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE:
@@ -94,6 +93,8 @@ SkColor GetLightModeColor(int id) {
       return gfx::kGoogleGrey100;
 
     // Properties not stored in theme pack.
+    case ThemeProperties::COLOR_STATUS_BUBBLE_SHADOW:
+      return SkColorSetA(SK_ColorBLACK, 0x1E);
     case ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_STROKE_FRAME_INACTIVE:
     case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE:
@@ -149,7 +150,6 @@ absl::optional<SkColor> GetIncognitoColor(int id) {
           ThemeProperties::GetDefaultTint(ThemeProperties::TINT_FRAME_INACTIVE,
                                           true));
     case ThemeProperties::COLOR_DOWNLOAD_SHELF:
-    case ThemeProperties::COLOR_STATUS_BUBBLE:
     case ThemeProperties::COLOR_INFOBAR:
     case ThemeProperties::COLOR_TOOLBAR:
     case ThemeProperties::COLOR_NTP_BACKGROUND:
