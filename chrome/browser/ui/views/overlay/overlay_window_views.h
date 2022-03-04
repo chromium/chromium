@@ -11,6 +11,8 @@
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/display.h"
+#include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 
@@ -20,7 +22,8 @@
 //
 // This class is a views::Widget. The subclasses implement the needed
 // methods for their corresponding OverlayWindow subclass.
-class OverlayWindowViews : public views::Widget {
+class OverlayWindowViews : public views::Widget,
+                           public display::DisplayObserver {
  public:
   OverlayWindowViews(const OverlayWindowViews&) = delete;
   OverlayWindowViews& operator=(const OverlayWindowViews&) = delete;
@@ -98,6 +101,10 @@ class OverlayWindowViews : public views::Widget {
   void set_minimum_size_for_testing(const gfx::Size& min_size) {
     min_size_ = min_size;
   }
+
+  // display::DisplayObserver
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
  protected:
   OverlayWindowViews();

@@ -274,13 +274,11 @@ TEST_F(VideoOverlayWindowViewsTest, UpdateMaximumSize) {
 
   // If the maximum size increases then we should keep the existing window size.
   SetDisplayWorkArea({0, 0, 8000, 8000});
-  overlay_window().OnNativeWidgetMove();
   EXPECT_EQ(gfx::Size(1200, 800), overlay_window().GetBounds().size());
   EXPECT_EQ(gfx::Size(4000, 4000), overlay_window().GetMaximumSize());
 
   // If the maximum size decreases then we should shrink to fit.
   SetDisplayWorkArea({0, 0, 1000, 2000});
-  overlay_window().OnNativeWidgetMove();
   EXPECT_EQ(gfx::Size(500, 800), overlay_window().GetBounds().size());
   EXPECT_EQ(gfx::Size(500, 1000), overlay_window().GetMaximumSize());
 }
@@ -289,7 +287,6 @@ TEST_F(VideoOverlayWindowViewsTest, IgnoreInvalidMaximumSize) {
   ASSERT_EQ(gfx::Size(500, 500), overlay_window().GetMaximumSize());
 
   SetDisplayWorkArea({0, 0, 0, 0});
-  overlay_window().OnNativeWidgetMove();
   EXPECT_EQ(gfx::Size(500, 500), overlay_window().GetMaximumSize());
 }
 
