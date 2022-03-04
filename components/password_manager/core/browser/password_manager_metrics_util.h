@@ -418,17 +418,17 @@ enum class PasswordAccountStorageUserState {
   kSignedOutUser = 0,
   // Signed-out user, but an account storage opt-in exists.
   kSignedOutAccountStoreUser = 1,
-  // Signed-in user, not opted in to the account storage (but will save
-  // passwords to the account storage by default).
+  // Signed-in non-syncing user, not opted in to the account storage (but may
+  // save passwords to the account storage by default).
   kSignedInUser = 2,
-  // Signed-in user, not opted in to the account storage, and has explicitly
-  // chosen to save passwords only on the device.
+  // Signed-in non-syncing user, not opted in to the account storage, and has
+  // explicitly chosen to save passwords only on the device.
   kSignedInUserSavingLocally = 3,
-  // Signed-in user, opted in to the account storage, and saving passwords to
-  // the account storage.
+  // Signed-in non-syncing user, opted in to the account storage, and saving
+  // passwords to the account storage.
   kSignedInAccountStoreUser = 4,
-  // Signed-in user and opted in to the account storage, but has chosen to save
-  // passwords only on the device.
+  // Signed-in non-syncing user and opted in to the account storage, but has
+  // chosen to save passwords only on the device.
   kSignedInAccountStoreUserSavingLocally = 5,
   // Syncing user.
   kSyncUser = 6,
@@ -536,7 +536,8 @@ enum class PasswordAccountStorageUsageLevel {
   // The user is not using the account-scoped password storage. Either they're
   // not signed in, or they haven't opted in to the account storage.
   kNotUsingAccountStorage = 0,
-  // The user is signed in and has opted in to the account storage.
+  // The user is signed in (but not syncing) and has opted in to the account
+  // storage.
   kUsingAccountStorage = 1,
   // The user has enabled Sync.
   kSyncing = 2,
