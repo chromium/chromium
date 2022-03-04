@@ -197,12 +197,14 @@ public class ContextualSearchTabHelper
         boolean webContentsChanged = currentWebContents != mWebContents;
         if (webContentsChanged || mContextualSearchManager != getContextualSearchManager(tab)) {
             mContextualSearchManager = getContextualSearchManager(tab);
-            if (webContentsChanged && currentWebContents != null) {
+            if (webContentsChanged) {
                 // Ensure the hooks are cleared on the old web contents before proceeding. All of
                 // the objects associated with the web content need to be recreated in order for
                 // selection to continue working. See https://crbug.com/1076326 for more details.
                 removeContextualSearchHooks(mWebContents);
-                mSelectionClientManager = new SelectionClientManager(currentWebContents);
+                mSelectionClientManager = currentWebContents != null
+                        ? new SelectionClientManager(currentWebContents)
+                        : null;
             }
             mWebContents = currentWebContents;
             updateContextualSearchHooks(mWebContents);
