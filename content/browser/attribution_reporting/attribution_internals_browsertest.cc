@@ -402,49 +402,49 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetPriority(13)
                .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
-      AttributionTrigger::Result::kPriorityTooLow,
+      AttributionTrigger::EventLevelResult::kPriorityTooLow,
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(1))
           .SetPriority(11)
           .Build()));
   manager_.NotifyTriggerHandled(CreateReportResult(
-      AttributionTrigger::Result::kDroppedForNoise,
+      AttributionTrigger::EventLevelResult::kDroppedForNoise,
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(2))
           .SetPriority(12)
           .Build()));
   manager_.NotifyTriggerHandled(CreateReportResult(
-      AttributionTrigger::Result::kExcessiveAttributions,
+      AttributionTrigger::EventLevelResult::kExcessiveAttributions,
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(6))
           .SetPriority(-3)
           .Build()));
   manager_.NotifyTriggerHandled(CreateReportResult(
-      AttributionTrigger::Result::kExcessiveReportingOrigins,
+      AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins,
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(7))
           .SetPriority(-4)
           .Build()));
   manager_.NotifyTriggerHandled(CreateReportResult(
-      AttributionTrigger::Result::kDeduplicated,
+      AttributionTrigger::EventLevelResult::kDeduplicated,
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(8))
           .SetPriority(-5)
           .Build()));
   manager_.NotifyTriggerHandled(CreateReportResult(
-      AttributionTrigger::Result::kNoCapacityForConversionDestination,
+      AttributionTrigger::EventLevelResult::kNoCapacityForConversionDestination,
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(9))
           .SetPriority(-6)
           .Build()));
   manager_.NotifyTriggerHandled(CreateReportResult(
-      AttributionTrigger::Result::kInternalError,
+      AttributionTrigger::EventLevelResult::kInternalError,
       ReportBuilder(
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(10))
@@ -453,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // This shouldn't result in a row, as registration succeeded.
   manager_.NotifyTriggerHandled(CreateReportResult(
-      AttributionTrigger::Result::kSuccess, /*dropped_report=*/absl::nullopt,
+      AttributionTrigger::EventLevelResult::kSuccess,
+      /*dropped_report=*/absl::nullopt,
       /*dropped_report_source_deactivation_reason=*/absl::nullopt,
       /*new_report=*/
       ReportBuilder(
@@ -463,9 +464,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // These shouldn't result in a row, as `CreateReportResult::dropped_report()`
   // is null.
   manager_.NotifyTriggerHandled(
-      CreateReportResult(AttributionTrigger::Result::kInternalError));
-  manager_.NotifyTriggerHandled(
-      CreateReportResult(AttributionTrigger::Result::kNoMatchingImpressions));
+      CreateReportResult(AttributionTrigger::EventLevelResult::kInternalError));
+  manager_.NotifyTriggerHandled(CreateReportResult(
+      AttributionTrigger::EventLevelResult::kNoMatchingImpressions));
 
   {
     static constexpr char wait_script[] = R"(

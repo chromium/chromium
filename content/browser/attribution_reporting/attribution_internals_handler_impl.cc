@@ -292,40 +292,41 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
     const CreateReportResult& result) {
   mojom::WebUIAttributionReport::Status status;
   switch (result.status()) {
-    case AttributionTrigger::Result::kSuccessDroppedLowerPriority:
-    case AttributionTrigger::Result::kPriorityTooLow:
+    case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
+    case AttributionTrigger::EventLevelResult::kPriorityTooLow:
       status = mojom::WebUIAttributionReport::Status::kDroppedDueToLowPriority;
       break;
-    case AttributionTrigger::Result::kDroppedForNoise:
+    case AttributionTrigger::EventLevelResult::kDroppedForNoise:
       status = mojom::WebUIAttributionReport::Status::kDroppedForNoise;
       break;
-    case AttributionTrigger::Result::kExcessiveAttributions:
+    case AttributionTrigger::EventLevelResult::kExcessiveAttributions:
       status = mojom::WebUIAttributionReport::Status::
           kDroppedDueToExcessiveAttributions;
       break;
-    case AttributionTrigger::Result::kExcessiveReportingOrigins:
+    case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
       status = mojom::WebUIAttributionReport::Status::
           kDroppedDueToExcessiveReportingOrigins;
       break;
-    case AttributionTrigger::Result::kDeduplicated:
+    case AttributionTrigger::EventLevelResult::kDeduplicated:
       status = mojom::WebUIAttributionReport::Status::kDeduplicated;
       break;
-    case AttributionTrigger::Result::kNoCapacityForConversionDestination:
+    case AttributionTrigger::EventLevelResult::
+        kNoCapacityForConversionDestination:
       status = mojom::WebUIAttributionReport::Status::
           kNoReportCapacityForDestinationSite;
       break;
-    case AttributionTrigger::Result::kNoMatchingEventTriggers:
+    case AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers:
       status = mojom::WebUIAttributionReport::Status::kNoMatchingEventTriggers;
       break;
-    case AttributionTrigger::Result::kInternalError:
+    case AttributionTrigger::EventLevelResult::kInternalError:
       // `kInternalError` doesn't always have a dropped report.
       if (!result.dropped_report().has_value())
         return;
 
       status = mojom::WebUIAttributionReport::Status::kInternalError;
       break;
-    case AttributionTrigger::Result::kSuccess:
-    case AttributionTrigger::Result::kNoMatchingImpressions:
+    case AttributionTrigger::EventLevelResult::kSuccess:
+    case AttributionTrigger::EventLevelResult::kNoMatchingImpressions:
       // TODO(apaseltiner): Surface `kNoMatchingImpressions` in internals UI.
       return;
   }

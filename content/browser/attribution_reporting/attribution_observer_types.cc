@@ -12,7 +12,7 @@
 namespace content {
 
 CreateReportResult::CreateReportResult(
-    AttributionTrigger::Result status,
+    AttributionTrigger::EventLevelResult status,
     absl::optional<AttributionReport> dropped_report,
     absl::optional<DeactivatedSource::Reason>
         dropped_report_source_deactivation_reason,
@@ -22,19 +22,20 @@ CreateReportResult::CreateReportResult(
       dropped_report_source_deactivation_reason_(
           dropped_report_source_deactivation_reason),
       new_report_(std::move(new_report)) {
-  DCHECK((status_ == AttributionTrigger::Result::kSuccess &&
+  DCHECK((status_ == AttributionTrigger::EventLevelResult::kSuccess &&
           !dropped_report_.has_value()) ||
-         status_ == AttributionTrigger::Result::kNoMatchingImpressions ||
-         status_ == AttributionTrigger::Result::kInternalError ||
+         status_ ==
+             AttributionTrigger::EventLevelResult::kNoMatchingImpressions ||
+         status_ == AttributionTrigger::EventLevelResult::kInternalError ||
          dropped_report_.has_value());
 
   DCHECK(dropped_report_.has_value() ||
          !dropped_report_source_deactivation_reason_);
 
-  DCHECK_EQ(
-      status_ == AttributionTrigger::Result::kSuccess ||
-          status_ == AttributionTrigger::Result::kSuccessDroppedLowerPriority,
-      new_report_.has_value());
+  DCHECK_EQ(status_ == AttributionTrigger::EventLevelResult::kSuccess ||
+                status_ == AttributionTrigger::EventLevelResult::
+                               kSuccessDroppedLowerPriority,
+            new_report_.has_value());
 }
 
 CreateReportResult::~CreateReportResult() = default;

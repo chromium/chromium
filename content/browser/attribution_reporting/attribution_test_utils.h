@@ -571,7 +571,8 @@ bool operator==(const SendResult& a, const SendResult& b);
 
 bool operator==(const DeactivatedSource& a, const DeactivatedSource& b);
 
-std::ostream& operator<<(std::ostream& out, AttributionTrigger::Result status);
+std::ostream& operator<<(std::ostream& out,
+                         AttributionTrigger::EventLevelResult status);
 
 std::ostream& operator<<(std::ostream& out, DeactivatedSource::Reason reason);
 

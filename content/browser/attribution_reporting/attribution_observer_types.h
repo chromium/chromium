@@ -35,7 +35,7 @@ struct CONTENT_EXPORT DeactivatedSource {
 class CONTENT_EXPORT CreateReportResult {
  public:
   explicit CreateReportResult(
-      AttributionTrigger::Result status,
+      AttributionTrigger::EventLevelResult status,
       absl::optional<AttributionReport> dropped_report = absl::nullopt,
       absl::optional<DeactivatedSource::Reason>
           dropped_report_source_deactivation_reason = absl::nullopt,
@@ -48,7 +48,7 @@ class CONTENT_EXPORT CreateReportResult {
   CreateReportResult& operator=(const CreateReportResult&);
   CreateReportResult& operator=(CreateReportResult&&);
 
-  AttributionTrigger::Result status() const { return status_; }
+  AttributionTrigger::EventLevelResult status() const { return status_; }
 
   const absl::optional<AttributionReport>& dropped_report() const {
     return dropped_report_;
@@ -63,10 +63,10 @@ class CONTENT_EXPORT CreateReportResult {
   absl::optional<DeactivatedSource> GetDeactivatedSource() const;
 
  private:
-  AttributionTrigger::Result status_;
+  AttributionTrigger::EventLevelResult status_;
 
-  // `AttributionTrigger::Result::kInternalError` is only associated with a
-  // dropped report if the browser succeeded in running the
+  // `AttributionTrigger::EventLevelResult::kInternalError` is only associated
+  // with a dropped report if the browser succeeded in running the
   // source-to-attribute logic.
   absl::optional<AttributionReport> dropped_report_;
 

@@ -99,7 +99,7 @@ class AttributionStorageSqlTest : public testing::Test {
     EXPECT_EQ(expected, rows);
   }
 
-  AttributionTrigger::Result MaybeCreateAndStoreReport(
+  AttributionTrigger::EventLevelResult MaybeCreateAndStoreEventLevelReport(
       const AttributionTrigger& conversion) {
     return storage_->MaybeCreateAndStoreReport(conversion).status();
   }
@@ -233,16 +233,16 @@ TEST_F(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
   storage()->StoreSource(impression);
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   // Use a time range that targets all conversions.
   storage()->ClearData(
@@ -275,12 +275,12 @@ TEST_F(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
   storage()->StoreSource(impression);
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   // Use a time range that only intersects the last conversion.
   storage()->ClearData(
@@ -311,12 +311,12 @@ TEST_F(AttributionStorageSqlTest, ClearAllDataWithVestigialConversion) {
   storage()->StoreSource(impression);
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   // Use a time range that only intersects the last conversion.
   auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
@@ -347,11 +347,11 @@ TEST_F(AttributionStorageSqlTest, DeleteEverything) {
     task_environment_.FastForwardBy(base::Days(1));
   }
 
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
   storage()->ClearData(base::Time::Min(), base::Time::Max(), null_filter);
@@ -570,8 +570,8 @@ TEST_F(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
   storage()->StoreSource(SourceBuilder().Build());
   storage()->StoreSource(SourceBuilder().Build());
   storage()->StoreSource(SourceBuilder().Build());
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   CloseDatabase();
   sql::Database raw_db;
@@ -588,12 +588,13 @@ TEST_F(AttributionStorageSqlTest, MaxAttributionsPerOrigin) {
   OpenDatabase();
   delegate()->set_max_attributions_per_origin(2);
   storage()->StoreSource(SourceBuilder().Build());
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
-  EXPECT_EQ(AttributionTrigger::Result::kNoCapacityForConversionDestination,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+  EXPECT_EQ(
+      AttributionTrigger::EventLevelResult::kNoCapacityForConversionDestination,
+      MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   CloseDatabase();
   sql::Database raw_db;
@@ -626,8 +627,8 @@ TEST_F(AttributionStorageSqlTest,
 
   task_environment_.FastForwardBy(base::Days(1));
   EXPECT_EQ(
-      AttributionTrigger::Result::kSuccess,
-      MaybeCreateAndStoreReport(
+      AttributionTrigger::EventLevelResult::kSuccess,
+      MaybeCreateAndStoreEventLevelReport(
           TriggerBuilder()
               .SetConversionDestination(net::SchemefulSite(conversion_origin))
               .SetReportingOrigin(reporting_origin)
@@ -638,8 +639,8 @@ TEST_F(AttributionStorageSqlTest,
   // in a different window.
   delegate()->set_report_delay(base::Milliseconds(1));
   EXPECT_EQ(
-      AttributionTrigger::Result::kPriorityTooLow,
-      MaybeCreateAndStoreReport(
+      AttributionTrigger::EventLevelResult::kPriorityTooLow,
+      MaybeCreateAndStoreEventLevelReport(
           TriggerBuilder()
               .SetConversionDestination(net::SchemefulSite(conversion_origin))
               .SetReportingOrigin(reporting_origin)
@@ -684,8 +685,8 @@ TEST_F(AttributionStorageSqlTest,
 
   task_environment_.FastForwardBy(base::Days(1));
   EXPECT_EQ(
-      AttributionTrigger::Result::kSuccess,
-      MaybeCreateAndStoreReport(
+      AttributionTrigger::EventLevelResult::kSuccess,
+      MaybeCreateAndStoreEventLevelReport(
           TriggerBuilder()
               .SetConversionDestination(net::SchemefulSite(conversion_origin))
               .SetReportingOrigin(reporting_origin)
@@ -696,8 +697,8 @@ TEST_F(AttributionStorageSqlTest,
   // in a different window.
   delegate()->set_report_delay(base::Milliseconds(1));
   EXPECT_EQ(
-      AttributionTrigger::Result::kPriorityTooLow,
-      MaybeCreateAndStoreReport(
+      AttributionTrigger::EventLevelResult::kPriorityTooLow,
+      MaybeCreateAndStoreEventLevelReport(
           TriggerBuilder()
               .SetConversionDestination(net::SchemefulSite(conversion_origin))
               .SetReportingOrigin(reporting_origin)
@@ -734,7 +735,7 @@ TEST_F(AttributionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
 
   // These calls should be no-ops.
   storage->StoreSource(SourceBuilder().Build());
-  EXPECT_EQ(AttributionTrigger::Result::kNoMatchingImpressions,
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
             storage->MaybeCreateAndStoreReport(DefaultTrigger()).status());
 }
 
@@ -748,7 +749,7 @@ TEST_F(AttributionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
 
   // The directory should be created, and the database opened.
   storage->StoreSource(SourceBuilder().Build());
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             storage->MaybeCreateAndStoreReport(DefaultTrigger()).status());
 }
 
@@ -778,8 +779,8 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
               ElementsAre(CommonSourceInfoIs(impression.common_info())));
 
   EXPECT_EQ(
-      AttributionTrigger::Result::kSuccess,
-      MaybeCreateAndStoreReport(
+      AttributionTrigger::EventLevelResult::kSuccess,
+      MaybeCreateAndStoreEventLevelReport(
           TriggerBuilder()
               .SetTriggerData(kMaxUint64)
               .SetConversionDestination(
@@ -840,8 +841,8 @@ TEST_F(AttributionStorageSqlTest,
 
   storage()->StoreSource(
       SourceBuilder().SetExpiry(base::Milliseconds(3)).Build());
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   task_environment_.FastForwardBy(base::Milliseconds(3));
   // Store another impression to trigger the expiry logic.
@@ -877,8 +878,8 @@ TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
 
   storage()->StoreSource(
       SourceBuilder().SetExpiry(base::Milliseconds(3)).Build());
-  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   task_environment_.FastForwardBy(base::Milliseconds(3));
   // Advance past the default report time.

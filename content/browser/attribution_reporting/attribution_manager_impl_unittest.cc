@@ -750,7 +750,7 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
     InSequence seq;
 
     EXPECT_CALL(observer, OnTriggerHandled(CreateReportStatusIs(
-                              AttributionTrigger::Result::kSuccess)))
+                              AttributionTrigger::EventLevelResult::kSuccess)))
         .Times(3);
 
     EXPECT_CALL(checkpoint, Call(1));
@@ -759,8 +759,8 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
         observer,
         OnTriggerHandled(AllOf(
             DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(1)))),
-            CreateReportStatusIs(
-                AttributionTrigger::Result::kSuccessDroppedLowerPriority))));
+            CreateReportStatusIs(AttributionTrigger::EventLevelResult::
+                                     kSuccessDroppedLowerPriority))));
 
     EXPECT_CALL(checkpoint, Call(2));
 
@@ -769,7 +769,7 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
         OnTriggerHandled(AllOf(
             DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(-5)))),
             CreateReportStatusIs(
-                AttributionTrigger::Result::kPriorityTooLow))));
+                AttributionTrigger::EventLevelResult::kPriorityTooLow))));
 
     EXPECT_CALL(checkpoint, Call(3));
 
@@ -777,14 +777,14 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
         observer,
         OnTriggerHandled(AllOf(
             DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(2)))),
-            CreateReportStatusIs(
-                AttributionTrigger::Result::kSuccessDroppedLowerPriority))));
+            CreateReportStatusIs(AttributionTrigger::EventLevelResult::
+                                     kSuccessDroppedLowerPriority))));
     EXPECT_CALL(
         observer,
         OnTriggerHandled(AllOf(
             DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(3)))),
-            CreateReportStatusIs(
-                AttributionTrigger::Result::kSuccessDroppedLowerPriority))));
+            CreateReportStatusIs(AttributionTrigger::EventLevelResult::
+                                     kSuccessDroppedLowerPriority))));
   }
 
   attribution_manager_->HandleSource(
@@ -1036,7 +1036,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   EXPECT_THAT(StoredReports(), IsEmpty());
   histograms.ExpectUniqueSample(
       "Conversions.CreateReportStatus",
-      AttributionTrigger::Result::kNoMatchingImpressions, 1);
+      AttributionTrigger::EventLevelResult::kNoMatchingImpressions, 1);
 }
 
 TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {

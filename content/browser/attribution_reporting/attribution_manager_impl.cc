@@ -86,7 +86,7 @@ bool IsOriginSessionOnly(
   return false;
 }
 
-void RecordCreateReportStatus(AttributionTrigger::Result status) {
+void RecordCreateReportStatus(AttributionTrigger::EventLevelResult status) {
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus", status);
 }
 
@@ -437,7 +437,7 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
     MaybeSendDebugReport(std::move(*new_report));
   }
 
-  if (result.status() != AttributionTrigger::Result::kInternalError) {
+  if (result.status() != AttributionTrigger::EventLevelResult::kInternalError) {
     // Sources are changed here because storing a report can cause sources to be
     // deleted or become associated with a dedup key.
     NotifySourcesChanged();

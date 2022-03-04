@@ -21,11 +21,12 @@ namespace content {
 // the renderer and is now being used by the browser process.
 class CONTENT_EXPORT AttributionTrigger {
  public:
-  // Represents the potential outcomes from attempting to register a trigger.
+  // Represents the potential event-level outcomes from attempting to register
+  // a trigger.
   //
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class Result {
+  enum class EventLevelResult {
     kSuccess = 0,
     // The report was stored successfully, but it replaced an existing report
     // with a lower priority.

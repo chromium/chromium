@@ -797,39 +797,41 @@ bool operator==(const DeactivatedSource& a, const DeactivatedSource& b) {
   return tie(a) == tie(b);
 }
 
-std::ostream& operator<<(std::ostream& out, AttributionTrigger::Result status) {
+std::ostream& operator<<(std::ostream& out,
+                         AttributionTrigger::EventLevelResult status) {
   switch (status) {
-    case AttributionTrigger::Result::kSuccess:
+    case AttributionTrigger::EventLevelResult::kSuccess:
       out << "success";
       break;
-    case AttributionTrigger::Result::kSuccessDroppedLowerPriority:
+    case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
       out << "successDroppedLowerPriority";
       break;
-    case AttributionTrigger::Result::kInternalError:
+    case AttributionTrigger::EventLevelResult::kInternalError:
       out << "internalError";
       break;
-    case AttributionTrigger::Result::kNoCapacityForConversionDestination:
+    case AttributionTrigger::EventLevelResult::
+        kNoCapacityForConversionDestination:
       out << "insufficientDestinationCapacity";
       break;
-    case AttributionTrigger::Result::kNoMatchingImpressions:
+    case AttributionTrigger::EventLevelResult::kNoMatchingImpressions:
       out << "noMatchingSources";
       break;
-    case AttributionTrigger::Result::kDeduplicated:
+    case AttributionTrigger::EventLevelResult::kDeduplicated:
       out << "deduplicated";
       break;
-    case AttributionTrigger::Result::kExcessiveAttributions:
+    case AttributionTrigger::EventLevelResult::kExcessiveAttributions:
       out << "excessiveAttributions";
       break;
-    case AttributionTrigger::Result::kPriorityTooLow:
+    case AttributionTrigger::EventLevelResult::kPriorityTooLow:
       out << "priorityTooLow";
       break;
-    case AttributionTrigger::Result::kDroppedForNoise:
+    case AttributionTrigger::EventLevelResult::kDroppedForNoise:
       out << "noised";
       break;
-    case AttributionTrigger::Result::kExcessiveReportingOrigins:
+    case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
       out << "excessiveReportingOrigins";
       break;
-    case AttributionTrigger::Result::kNoMatchingEventTriggers:
+    case AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers:
       out << "noMatchingEventTriggers";
       break;
   }

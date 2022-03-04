@@ -224,20 +224,21 @@ class AttributionEventHandler : public AttributionObserver {
 
     std::stringstream reason;
     switch (result.status()) {
-      case AttributionTrigger::Result::kSuccess:
-      case AttributionTrigger::Result::kSuccessDroppedLowerPriority:
+      case AttributionTrigger::EventLevelResult::kSuccess:
+      case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
         // TODO(apaseltiner): Consider surfacing reports dropped due to
         // prioritization.
         return;
-      case AttributionTrigger::Result::kInternalError:
-      case AttributionTrigger::Result::kNoCapacityForConversionDestination:
-      case AttributionTrigger::Result::kNoMatchingImpressions:
-      case AttributionTrigger::Result::kDeduplicated:
-      case AttributionTrigger::Result::kExcessiveAttributions:
-      case AttributionTrigger::Result::kPriorityTooLow:
-      case AttributionTrigger::Result::kDroppedForNoise:
-      case AttributionTrigger::Result::kExcessiveReportingOrigins:
-      case AttributionTrigger::Result::kNoMatchingEventTriggers:
+      case AttributionTrigger::EventLevelResult::kInternalError:
+      case AttributionTrigger::EventLevelResult::
+          kNoCapacityForConversionDestination:
+      case AttributionTrigger::EventLevelResult::kNoMatchingImpressions:
+      case AttributionTrigger::EventLevelResult::kDeduplicated:
+      case AttributionTrigger::EventLevelResult::kExcessiveAttributions:
+      case AttributionTrigger::EventLevelResult::kPriorityTooLow:
+      case AttributionTrigger::EventLevelResult::kDroppedForNoise:
+      case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
+      case AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers:
         reason << result.status();
         break;
     }
