@@ -23,7 +23,6 @@
 #include "pdf/document_metadata.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
-#include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/test/test_pdfium_engine.h"
@@ -141,10 +140,13 @@ class TestPDFiumEngineWithDocInfo : public TestPDFiumEngine {
 class MockUrlLoader : public UrlLoader {
  public:
   MOCK_METHOD(void, GrantUniversalAccess, (), (override));
-  MOCK_METHOD(void, Open, (const UrlRequest&, ResultCallback), (override));
+  MOCK_METHOD(void,
+              Open,
+              (const UrlRequest&, base::OnceCallback<void(int)>),
+              (override));
   MOCK_METHOD(void,
               ReadResponseBody,
-              (base::span<char>, ResultCallback),
+              (base::span<char>, base::OnceCallback<void(int)>),
               (override));
   MOCK_METHOD(void, Close, (), (override));
 };

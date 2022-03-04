@@ -15,7 +15,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "pdf/ppapi_migration/callback.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 
 namespace blink {
@@ -100,9 +99,10 @@ class UrlLoader {
   virtual void GrantUniversalAccess() = 0;
 
   // Mimic `pp::URLLoader`:
-  virtual void Open(const UrlRequest& request, ResultCallback callback) = 0;
+  virtual void Open(const UrlRequest& request,
+                    base::OnceCallback<void(int)> callback) = 0;
   virtual void ReadResponseBody(base::span<char> buffer,
-                                ResultCallback callback) = 0;
+                                base::OnceCallback<void(int)> callback) = 0;
   virtual void Close() = 0;
 
   // Returns the URL response (not including the body). Only valid after
@@ -161,9 +161,10 @@ class BlinkUrlLoader final : public UrlLoader,
 
   // UrlLoader:
   void GrantUniversalAccess() override;
-  void Open(const UrlRequest& request, ResultCallback callback) override;
+  void Open(const UrlRequest& request,
+            base::OnceCallback<void(int)> callback) override;
   void ReadResponseBody(base::span<char> buffer,
-                        ResultCallback callback) override;
+                        base::OnceCallback<void(int)> callback) override;
   void Close() override;
 
   // blink::WebAssociatedURLLoaderClient:
@@ -212,7 +213,7 @@ class BlinkUrlLoader final : public UrlLoader,
   std::unique_ptr<blink::WebAssociatedURLLoader> blink_loader_;
 
   bool ignore_redirects_ = false;
-  ResultCallback open_callback_;
+  base::OnceCallback<void(int)> open_callback_;
 
   // Thresholds control buffer throttling, as defined in `UrlRequest`.
   size_t buffer_lower_threshold_ = 0;
@@ -220,7 +221,7 @@ class BlinkUrlLoader final : public UrlLoader,
   bool deferring_loading_ = false;
   base::circular_deque<char> buffer_;
 
-  ResultCallback read_callback_;
+  base::OnceCallback<void(int)> read_callback_;
   base::span<char> client_buffer_;
 };
 

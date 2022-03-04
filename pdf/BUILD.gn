@@ -238,7 +238,6 @@ if (enable_pdf) {
     sources = [
       "ppapi_migration/bitmap.cc",
       "ppapi_migration/bitmap.h",
-      "ppapi_migration/callback.h",
       "ppapi_migration/graphics.cc",
       "ppapi_migration/graphics.h",
       "ppapi_migration/image.cc",

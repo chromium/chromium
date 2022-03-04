@@ -154,16 +154,17 @@ void URLLoaderWrapperImpl::OpenRange(const std::string& url,
                                      const std::string& referrer_url,
                                      uint32_t position,
                                      uint32_t size,
-                                     ResultCallback callback) {
+                                     base::OnceCallback<void(int)> callback) {
   url_loader_->Open(
       MakeRangeRequest(url, referrer_url, position, size),
       base::BindOnce(&URLLoaderWrapperImpl::DidOpen, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
 
-void URLLoaderWrapperImpl::ReadResponseBody(char* buffer,
-                                            int buffer_size,
-                                            ResultCallback callback) {
+void URLLoaderWrapperImpl::ReadResponseBody(
+    char* buffer,
+    int buffer_size,
+    base::OnceCallback<void(int)> callback) {
   buffer_ = buffer;
   buffer_size_ = buffer_size;
   read_starter_.Start(
@@ -172,7 +173,8 @@ void URLLoaderWrapperImpl::ReadResponseBody(char* buffer,
                      base::Unretained(this), std::move(callback)));
 }
 
-void URLLoaderWrapperImpl::ReadResponseBodyImpl(ResultCallback callback) {
+void URLLoaderWrapperImpl::ReadResponseBodyImpl(
+    base::OnceCallback<void(int)> callback) {
   url_loader_->ReadResponseBody(
       base::make_span(buffer_.get(), buffer_size_),
       base::BindOnce(&URLLoaderWrapperImpl::DidRead, weak_factory_.GetWeakPtr(),
@@ -231,12 +233,14 @@ void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
   }
 }
 
-void URLLoaderWrapperImpl::DidOpen(ResultCallback callback, int32_t result) {
+void URLLoaderWrapperImpl::DidOpen(base::OnceCallback<void(int)> callback,
+                                   int32_t result) {
   SetHeadersFromLoader();
   std::move(callback).Run(result);
 }
 
-void URLLoaderWrapperImpl::DidRead(ResultCallback callback, int32_t result) {
+void URLLoaderWrapperImpl::DidRead(base::OnceCallback<void(int)> callback,
+                                   int32_t result) {
   if (multi_part_processed_) {
     // Reset this flag so we look inside the buffer in calls of DidRead for this
     // response only once.  Note that this code DOES NOT handle multi part

@@ -19,7 +19,6 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
-#include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/result_codes.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -88,7 +87,8 @@ void BlinkUrlLoader::GrantUniversalAccess() {
 }
 
 // Modeled on `content::PepperURLLoaderHost::OnHostMsgOpen()`.
-void BlinkUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
+void BlinkUrlLoader::Open(const UrlRequest& request,
+                          base::OnceCallback<void(int)> callback) {
   DCHECK_EQ(state_, LoadingState::kWaitingToOpen);
   DCHECK(callback);
   state_ = LoadingState::kOpening;
@@ -151,7 +151,7 @@ void BlinkUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
 
 // Modeled on `ppapi::proxy::URLLoaderResource::ReadResponseBody()`.
 void BlinkUrlLoader::ReadResponseBody(base::span<char> buffer,
-                                      ResultCallback callback) {
+                                      base::OnceCallback<void(int)> callback) {
   // Can be in `kLoadComplete` if still reading after loading finished.
   DCHECK(state_ == LoadingState::kStreamingData ||
          state_ == LoadingState::kLoadComplete)

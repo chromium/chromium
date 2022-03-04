@@ -10,7 +10,6 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/ppapi_migration/bitmap.h"
-#include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/image.h"
 #include "pdf/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"

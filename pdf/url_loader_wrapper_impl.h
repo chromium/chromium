@@ -10,10 +10,10 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "pdf/ppapi_migration/callback.h"
 #include "pdf/url_loader_wrapper.h"
 #include "ui/gfx/range/range.h"
 
@@ -42,18 +42,18 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
                  const std::string& referrer_url,
                  uint32_t position,
                  uint32_t size,
-                 ResultCallback callback) override;
+                 base::OnceCallback<void(int)> callback) override;
   void ReadResponseBody(char* buffer,
                         int buffer_size,
-                        ResultCallback callback) override;
+                        base::OnceCallback<void(int)> callback) override;
 
  private:
   void SetHeadersFromLoader();
   void ParseHeaders(const std::string& response_headers);
-  void DidOpen(ResultCallback callback, int32_t result);
-  void DidRead(ResultCallback callback, int32_t result);
+  void DidOpen(base::OnceCallback<void(int)> callback, int32_t result);
+  void DidRead(base::OnceCallback<void(int)> callback, int32_t result);
 
-  void ReadResponseBodyImpl(ResultCallback callback);
+  void ReadResponseBodyImpl(base::OnceCallback<void(int)> callback);
 
   std::unique_ptr<UrlLoader> url_loader_;
 

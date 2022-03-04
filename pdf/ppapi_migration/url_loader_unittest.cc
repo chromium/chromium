@@ -22,7 +22,6 @@
 #include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/site_for_cookies.h"
-#include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/result_codes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -181,7 +180,7 @@ class BlinkUrlLoaderTest : public testing::Test {
   }
 
   FakeBlinkUrlLoaderClient fake_client_;
-  NiceMock<base::MockCallback<ResultCallback>> mock_callback_;
+  NiceMock<base::MockCallback<base::OnceCallback<void(int)>>> mock_callback_;
   std::unique_ptr<BlinkUrlLoader> loader_;
 
   // Becomes invalid if `loader_` is closed or destructed.
