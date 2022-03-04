@@ -291,7 +291,6 @@ IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, TCPSocketPrivateCrash_Resolve) {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   content::GetNetworkService()->BindTestInterface(
       network_service_test.BindNewPipeAndPassReceiver());
-  IgnoreNetworkServiceCrashes();
   network_service_test->CrashOnResolveHost("crash.com");
 
   RunTestViaHTTP(STRIP_PREFIXES(TCPSocketPrivateCrash_Resolve));
@@ -1282,7 +1281,6 @@ IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, HostResolverCrash_Basic) {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   content::GetNetworkService()->BindTestInterface(
       network_service_test.BindNewPipeAndPassReceiver());
-  IgnoreNetworkServiceCrashes();
   network_service_test->CrashOnResolveHost("crash.com");
 
   RunTestViaHTTP(STRIP_PREFIXES(HostResolverCrash_Basic));
