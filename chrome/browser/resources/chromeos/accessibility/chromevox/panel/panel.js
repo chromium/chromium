@@ -371,8 +371,8 @@ Panel = class {
       // not the keymap. There are commands that don't have a key binding (e.g.
       // commands for touch).
 
-      // Get the key map from the background page.
-      const keymap = bkgnd['KeyMap']['get']();
+      // Get the key map.
+      const keymap = KeyMap.get();
 
       // Make a copy of the key bindings, get the localized title of each
       // command, and then sort them.
