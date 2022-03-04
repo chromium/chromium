@@ -189,6 +189,16 @@ std::u16string GetCurrentSite(Browser* browser) {
   return base::UTF8ToUTF16(web_contents->GetLastCommittedURL().host());
 }
 
+// Sets the `label` text to `message_id` with `current_site` emphasized.
+void SetLabelTextAndStyle(views::Label& label,
+                          int message_id,
+                          std::u16string current_site) {
+  size_t offset = 0u;
+  label.SetText(l10n_util::GetStringFUTF16(message_id, current_site, &offset));
+  label.SetTextStyleRange(ChromeTextStyle::STYLE_EMPHASIZED,
+                          gfx::Range(offset, offset + current_site.length()));
+}
+
 }  // namespace
 
 ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
@@ -204,10 +214,10 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())),
       allow_pinning_(allow_pinning),
       requests_access_{
-          nullptr, nullptr,
+          nullptr, nullptr, nullptr,
           IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_REQUESTS_ACCESS_SECTION_TITLE,
           extensions::SitePermissionsHelper::SiteInteraction::kPending},
-      has_access_{nullptr, nullptr,
+      has_access_{nullptr, nullptr, nullptr,
                   IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_HAS_ACCESS_SECTION_TITLE,
                   extensions::SitePermissionsHelper::SiteInteraction::kActive} {
   // Ensure layer masking is used for the extensions menu to ensure buttons with
@@ -476,29 +486,31 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
 
   auto create_section_builder =
       [=](ExtensionsTabbedMenuView::SiteAccessSection* section) {
-        return views::Builder<views::BoxLayoutView>()
-            .CopyAddressTo(&section->container)
-            .SetOrientation(views::BoxLayout::Orientation::kVertical)
-            // Start off with the section invisible. We'll update it as we
-            // add items if necessary.
-            .SetVisible(false)
-            .AddChildren(
-                // Emphasized short header explaining the section.
-                views::Builder<views::Label>(
-                    std::make_unique<views::Label>(
-                        l10n_util::GetStringFUTF16(section->header_string_id,
-                                                   current_site),
-                        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-                        ChromeTextStyle::STYLE_EMPHASIZED))
-                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                    .SetBorder(views::CreateEmptyBorder(
-                        vertical_spacing, horizontal_spacing, vertical_spacing,
-                        horizontal_spacing)),
-                // Empty section for the menu items. Items
-                // will be populated later.
-                views::Builder<views::BoxLayoutView>()
-                    .CopyAddressTo(&section->items)
-                    .SetOrientation(views::BoxLayout::Orientation::kVertical));
+        auto section_view =
+            views::Builder<views::BoxLayoutView>()
+                .CopyAddressTo(&section->container)
+                .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                // Start off with the section invisible. We'll update it as we
+                // add items if necessary.
+                .SetVisible(false)
+                .AddChildren(
+                    // Empty header explaining the section. Text will be
+                    // populated later since it depends on the current site.
+                    views::Builder<views::Label>()
+                        .CopyAddressTo(&section->header)
+                        .SetTextContext(
+                            ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                        .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                        .SetBorder(views::CreateEmptyBorder(
+                            vertical_spacing, horizontal_spacing,
+                            vertical_spacing, horizontal_spacing)),
+                    // Empty section for the menu items. Items
+                    // will be populated later.
+                    views::Builder<views::BoxLayoutView>()
+                        .CopyAddressTo(&section->items)
+                        .SetOrientation(
+                            views::BoxLayout::Orientation::kVertical));
+        return section_view;
       };
 
   auto site_access_content =
@@ -696,7 +708,11 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
     return;
   }
 
-  auto update_section = [](SiteAccessSection* section) {
+  auto current_site = GetCurrentSite(browser_);
+
+  auto update_section = [current_site](SiteAccessSection* section) {
+    SetLabelTextAndStyle(*section->header, section->header_string_id,
+                         current_site);
     bool should_be_visible = !section->items->children().empty();
     if (section->container->GetVisible() != should_be_visible)
       section->container->SetVisible(should_be_visible);
@@ -709,9 +725,10 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
   if (!has_access_.container->GetVisible() &&
       !requests_access_.container->GetVisible()) {
     site_access_message_->SetVisible(true);
-    site_access_message_->SetText(l10n_util::GetStringFUTF16(
+    SetLabelTextAndStyle(
+        *site_access_message_,
         IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_NO_EXTENSIONS_HAVE_ACCESS_TEXT,
-        GetCurrentSite(browser_)));
+        current_site);
   } else {
     site_access_message_->SetVisible(false);
   }

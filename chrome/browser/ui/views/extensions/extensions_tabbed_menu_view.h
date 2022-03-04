@@ -121,6 +121,10 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
     // entire section (depending on whether there are any menu items).
     raw_ptr<views::View> container;
 
+    // The view containing the section heder. The text changes based on the
+    // current site.
+    raw_ptr<views::Label> header;
+
     // The view containing only the menu items for this section.
     raw_ptr<views::View> items;
 
@@ -161,8 +165,8 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
   // changed. Called when one or more items are updated.
   void MoveItemsBetweenSectionsIfNecessary();
 
-  // Updates the visibility of the site access sections. A given section should
-  // be visible if there are any extensions displayed in it.
+  // Updates the visibility and header of the site access sections. A given
+  // section should be visible if there are any extensions displayed in it.
   void UpdateSiteAccessSectionsVisibility();
 
   // Returns the section corresponding to `site_interaction`, or nullptr.
