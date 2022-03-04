@@ -112,36 +112,34 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
   app->SetSyncFallbackData(std::move(parsed_sync_fallback_data.value()));
 }
 
-WebAppSyncBridge::WebAppSyncBridge(
-    AbstractWebAppDatabaseFactory* database_factory,
-    WebAppRegistrarMutable* registrar,
-    SyncInstallDelegate* install_delegate)
+WebAppSyncBridge::WebAppSyncBridge(WebAppRegistrarMutable* registrar)
     : WebAppSyncBridge(
-          database_factory,
           registrar,
-          install_delegate,
           std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
               syncer::WEB_APPS,
               base::BindRepeating(&syncer::ReportUnrecoverableError,
                                   chrome::GetChannel()))) {}
 
 WebAppSyncBridge::WebAppSyncBridge(
-    AbstractWebAppDatabaseFactory* database_factory,
     WebAppRegistrarMutable* registrar,
-    SyncInstallDelegate* install_delegate,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)),
-      registrar_(registrar),
-      install_delegate_(install_delegate) {
-  DCHECK(database_factory);
+      registrar_(registrar) {
   DCHECK(registrar_);
+}
+
+WebAppSyncBridge::~WebAppSyncBridge() = default;
+
+void WebAppSyncBridge::SetSubsystems(
+    AbstractWebAppDatabaseFactory* database_factory,
+    SyncInstallDelegate* install_delegate) {
+  DCHECK(database_factory);
   database_ = std::make_unique<WebAppDatabase>(
       database_factory,
       base::BindRepeating(&WebAppSyncBridge::ReportErrorToChangeProcessor,
                           base::Unretained(this)));
+  install_delegate_ = install_delegate;
 }
-
-WebAppSyncBridge::~WebAppSyncBridge() = default;
 
 std::unique_ptr<WebAppRegistryUpdate> WebAppSyncBridge::BeginUpdate() {
   DCHECK(database_->is_opened());

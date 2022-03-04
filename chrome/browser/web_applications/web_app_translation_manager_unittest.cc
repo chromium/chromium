@@ -32,8 +32,9 @@ class WebAppTranslationManagerTest : public WebAppTest {
     controller().Init();
     InitWebAppProvider();
 
-    translation_manager_ = std::make_unique<WebAppTranslationManager>(
-        profile(), &install_manager(), file_utils_);
+    translation_manager_ =
+        std::make_unique<WebAppTranslationManager>(profile(), file_utils_);
+    translation_manager_->SetSubsystems(&install_manager());
   }
 
  protected:

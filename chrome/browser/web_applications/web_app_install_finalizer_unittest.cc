@@ -85,12 +85,12 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
         std::make_unique<TestInstallManagerObserver>(install_manager_.get());
     fake_registry_controller_->SetUp(profile());
     icon_manager_ = std::make_unique<WebAppIconManager>(
-        profile(), registrar(), install_manager(),
-        base::MakeRefCounted<FileUtilsWrapper>());
+        profile(), base::MakeRefCounted<FileUtilsWrapper>());
     policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
     ui_manager_ = std::make_unique<FakeWebAppUiManager>();
     finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile());
 
+    icon_manager_->SetSubsystems(&registrar(), &install_manager());
     finalizer_->SetSubsystems(
         &install_manager(), &registrar(), ui_manager_.get(),
         &fake_registry_controller_->sync_bridge(),

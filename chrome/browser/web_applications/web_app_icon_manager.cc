@@ -692,12 +692,8 @@ class WriteIconsJob {
 }  // namespace
 
 WebAppIconManager::WebAppIconManager(Profile* profile,
-                                     WebAppRegistrar& registrar,
-                                     WebAppInstallManager& install_manager,
                                      scoped_refptr<FileUtilsWrapper> utils)
-    : registrar_(registrar),
-      install_manager_(install_manager),
-      utils_(std::move(utils)),
+    : utils_(std::move(utils)),
       icon_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
@@ -707,6 +703,12 @@ WebAppIconManager::WebAppIconManager(Profile* profile,
 }
 
 WebAppIconManager::~WebAppIconManager() = default;
+
+void WebAppIconManager::SetSubsystems(WebAppRegistrar* registrar,
+                                      WebAppInstallManager* install_manager) {
+  registrar_ = registrar;
+  install_manager_ = install_manager;
+}
 
 void WebAppIconManager::WriteData(
     AppId app_id,
@@ -737,7 +739,7 @@ void WebAppIconManager::DeleteData(AppId app_id, WriteDataCallback callback) {
 }
 
 void WebAppIconManager::Start() {
-  for (const AppId& app_id : registrar_.GetAppIds()) {
+  for (const AppId& app_id : registrar_->GetAppIds()) {
     ReadFavicon(app_id);
 
     if (base::FeatureList::IsEnabled(
@@ -745,7 +747,7 @@ void WebAppIconManager::Start() {
       ReadMonochromeFavicon(app_id);
     }
   }
-  install_manager_observation_.Observe(&install_manager_);
+  install_manager_observation_.Observe(install_manager_);
 }
 
 void WebAppIconManager::Shutdown() {}
@@ -754,7 +756,7 @@ bool WebAppIconManager::HasIcons(const AppId& app_id,
                                  IconPurpose purpose,
                                  const SortedSizesPx& icon_sizes) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_.GetAppById(app_id);
+  const WebApp* web_app = registrar_->GetAppById(app_id);
   if (!web_app)
     return false;
 
@@ -767,7 +769,7 @@ WebAppIconManager::FindIconMatchBigger(const AppId& app_id,
                                        const std::vector<IconPurpose>& purposes,
                                        SquareSizePx min_size) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_.GetAppById(app_id);
+  const WebApp* web_app = registrar_->GetAppById(app_id);
   if (!web_app)
     return absl::nullopt;
 
@@ -810,7 +812,7 @@ void WebAppIconManager::ReadIcons(const AppId& app_id,
 void WebAppIconManager::ReadAllIcons(const AppId& app_id,
                                      ReadIconBitmapsCallback callback) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_.GetAppById(app_id);
+  const WebApp* web_app = registrar_->GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(IconBitmaps());
     return;
@@ -836,7 +838,7 @@ void WebAppIconManager::ReadAllShortcutsMenuIcons(
     const AppId& app_id,
     ReadShortcutsMenuIconsCallback callback) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_.GetAppById(app_id);
+  const WebApp* web_app = registrar_->GetAppById(app_id);
   if (!web_app) {
     std::move(callback).Run(ShortcutsMenuIconBitmaps{});
     return;
@@ -1037,7 +1039,7 @@ WebAppIconManager::FindIconMatchSmaller(
     const std::vector<IconPurpose>& purposes,
     SquareSizePx max_size) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = registrar_.GetAppById(app_id);
+  const WebApp* web_app = registrar_->GetAppById(app_id);
   if (!web_app)
     return absl::nullopt;
 
@@ -1080,7 +1082,7 @@ void WebAppIconManager::ReadMonochromeFavicon(const AppId& app_id) {
 void WebAppIconManager::OnReadMonochromeFavicon(
     const AppId& app_id,
     gfx::ImageSkia manifest_monochrome_image) {
-  const WebApp* web_app = registrar_.GetAppById(app_id);
+  const WebApp* web_app = registrar_->GetAppById(app_id);
   if (!web_app)
     return;
 

@@ -62,8 +62,8 @@ class WebAppIconManagerTest : public WebAppTest {
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
 
     file_utils_ = base::MakeRefCounted<TestFileUtils>();
-    icon_manager_ = std::make_unique<WebAppIconManager>(
-        profile(), registrar(), install_manager(), file_utils_);
+    icon_manager_ = std::make_unique<WebAppIconManager>(profile(), file_utils_);
+    icon_manager_->SetSubsystems(&registrar(), &install_manager());
 
     controller().Init();
   }

@@ -57,18 +57,17 @@ struct RegistryUpdateData;
 // ModelTypeChangeProcessor and WebAppDatabase (the storage).
 class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
-  WebAppSyncBridge(AbstractWebAppDatabaseFactory* database_factory,
-                   WebAppRegistrarMutable* registrar,
-                   SyncInstallDelegate* install_delegate);
+  explicit WebAppSyncBridge(WebAppRegistrarMutable* registrar);
   // Tests may inject mocks using this ctor.
   WebAppSyncBridge(
-      AbstractWebAppDatabaseFactory* database_factory,
       WebAppRegistrarMutable* registrar,
-      SyncInstallDelegate* install_delegate,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
   WebAppSyncBridge(const WebAppSyncBridge&) = delete;
   WebAppSyncBridge& operator=(const WebAppSyncBridge&) = delete;
   ~WebAppSyncBridge() override;
+
+  void SetSubsystems(AbstractWebAppDatabaseFactory* database_factory,
+                     SyncInstallDelegate* install_delegate);
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
   // This is the writable API for the registry. Any updates will be written to
@@ -190,7 +189,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   std::unique_ptr<WebAppDatabase> database_;
   const raw_ptr<WebAppRegistrarMutable> registrar_;
-  const raw_ptr<SyncInstallDelegate> install_delegate_;
+  raw_ptr<SyncInstallDelegate> install_delegate_;
 
   bool is_in_update_ = false;
   bool disable_checks_for_testing_ = false;

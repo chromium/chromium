@@ -126,13 +126,17 @@ bool WriteTranslationsBlocking(
 
 WebAppTranslationManager::WebAppTranslationManager(
     Profile* profile,
-    base::raw_ptr<WebAppInstallManager> install_manager,
     scoped_refptr<FileUtilsWrapper> utils)
-    : install_manager_(install_manager), utils_(std::move(utils)) {
+    : utils_(std::move(utils)) {
   web_apps_directory_ = GetWebAppsRootDirectory(profile);
 }
 
 WebAppTranslationManager::~WebAppTranslationManager() = default;
+
+void WebAppTranslationManager::SetSubsystems(
+    base::raw_ptr<WebAppInstallManager> install_manager) {
+  install_manager_ = install_manager;
+}
 
 void WebAppTranslationManager::Start() {
   if (base::FeatureList::IsEnabled(

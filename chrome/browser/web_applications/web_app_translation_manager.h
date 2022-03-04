@@ -28,11 +28,12 @@ class WebAppTranslationManager : public WebAppInstallManagerObserver {
   using WriteCallback = base::OnceCallback<void(bool success)>;
 
   WebAppTranslationManager(Profile* profile,
-                           base::raw_ptr<WebAppInstallManager> install_manager,
                            scoped_refptr<FileUtilsWrapper> utils);
   WebAppTranslationManager(const WebAppTranslationManager&) = delete;
   WebAppTranslationManager& operator=(const WebAppTranslationManager&) = delete;
   ~WebAppTranslationManager() override;
+
+  void SetSubsystems(base::raw_ptr<WebAppInstallManager> install_manager);
 
   void Start();
 

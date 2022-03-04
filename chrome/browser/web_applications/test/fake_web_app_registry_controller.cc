@@ -37,15 +37,15 @@ void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
       /*url_handler_manager=*/nullptr);
 
   sync_bridge_ = std::make_unique<WebAppSyncBridge>(
-      database_factory_.get(), mutable_registrar_.get(), this,
-      mock_processor_.CreateForwardingProcessor());
+      mutable_registrar_.get(), mock_processor_.CreateForwardingProcessor());
+  sync_bridge_->SetSubsystems(database_factory_.get(), this);
   os_integration_manager_->SetSubsystems(sync_bridge_.get(),
                                          mutable_registrar_.get(),
                                          /*ui_manager=*/nullptr,
                                          /*icon_manager=*/nullptr);
   translation_manager_ = std::make_unique<WebAppTranslationManager>(
-      profile, /*install_manager=*/nullptr,
-      base::MakeRefCounted<TestFileUtils>());
+      profile, base::MakeRefCounted<TestFileUtils>());
+  translation_manager_->SetSubsystems(/*install_manager=*/nullptr);
 
   fake_externally_managed_app_manager_ =
       std::make_unique<FakeExternallyManagedAppManager>(profile);

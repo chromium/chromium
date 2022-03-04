@@ -41,13 +41,13 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   using ReadImageSkiaCallback =
       base::OnceCallback<void(gfx::ImageSkia image_skia)>;
 
-  WebAppIconManager(Profile* profile,
-                    WebAppRegistrar& registrar,
-                    WebAppInstallManager& install_manager,
-                    scoped_refptr<FileUtilsWrapper> utils);
+  WebAppIconManager(Profile* profile, scoped_refptr<FileUtilsWrapper> utils);
   WebAppIconManager(const WebAppIconManager&) = delete;
   WebAppIconManager& operator=(const WebAppIconManager&) = delete;
   ~WebAppIconManager() override;
+
+  void SetSubsystems(WebAppRegistrar* registrar,
+                     WebAppInstallManager* install_manager);
 
   using WriteDataCallback = base::OnceCallback<void(bool success)>;
 
@@ -205,8 +205,8 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void OnMonochromeIconConverted(const AppId& app_id,
                                  gfx::ImageSkia converted_image);
 
-  WebAppRegistrar& registrar_;
-  WebAppInstallManager& install_manager_;
+  raw_ptr<WebAppRegistrar> registrar_;
+  raw_ptr<WebAppInstallManager> install_manager_;
   base::FilePath web_apps_directory_;
   scoped_refptr<FileUtilsWrapper> utils_;
   scoped_refptr<base::SequencedTaskRunner> icon_task_runner_;

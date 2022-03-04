@@ -145,8 +145,7 @@ class SystemWebAppManagerTest : public WebAppTest {
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
     icon_manager_ = std::make_unique<WebAppIconManager>(
-        profile(), controller().registrar(), install_manager(),
-        base::MakeRefCounted<TestFileUtils>());
+        profile(), base::MakeRefCounted<TestFileUtils>());
     web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
     install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile());
     fake_externally_managed_app_manager_impl_ =
@@ -164,6 +163,8 @@ class SystemWebAppManagerTest : public WebAppTest {
     install_manager().SetSubsystems(&controller().registrar(),
                                     &controller().os_integration_manager(),
                                     &install_finalizer());
+
+    icon_manager().SetSubsystems(&controller().registrar(), &install_manager());
 
     externally_managed_app_manager().SetSubsystems(
         &controller().registrar(), &ui_manager(), &install_finalizer(),
