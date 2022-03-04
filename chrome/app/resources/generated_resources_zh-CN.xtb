@@ -566,6 +566,7 @@
 <translation id="1567993339577891801">JavaScript 控制台</translation>
 <translation id="1568323446248056064">打开显示设备设置</translation>
 <translation id="1570604804919108255">将通知取消静音</translation>
+<translation id="1571304935088121812">复制用户名</translation>
 <translation id="1571738973904005196">查看标签页：<ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />（访客）</translation>
 <translation id="1572266655485775982">Wi-Fi 开关</translation>
@@ -1250,9 +1251,6 @@
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">未命名的媒体来源</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />为了提供最佳体验，<ph name="DEVICE_OS" /> 会收集与设备有关的硬件数据并将其分享给 Google 以确定应提供哪些更新。您也可允许 Google 将这些数据用于其他用途，例如提供支持以及改进 <ph name="DEVICE_OS" /> 体验和服务。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />您可在此设备上登录，然后访问 chrome://system 中的 CLOUDREADY_HARDWARE_INFO 部分，以查看向 Google 发送的用于更新过滤机制的数据，以及您选择与 Google 分享数据的所有其他情形。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />如需详细了解 <ph name="DEVICE_OS" /> 可能会与 Google 分享的数据及其使用方式，请访问 g.co/CR2/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">此设置属于<ph name="OWNER_EMAIL" />。</translation>
 <translation id="222447520299472966">您需要选择至少 1 个画廊影集</translation>
 <translation id="2224551243087462610">修改文件夹名</translation>
@@ -1806,15 +1804,6 @@
 <translation id="2766161002040448006">询问家长的意见</translation>
 <translation id="2767077837043621282">无法更新您的 Chromebook。请稍后再试。</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> 将能够修改“<ph name="FILENAME" />”中的内容，除非您关闭此网站的所有标签页</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />请尝试执行以下问题排查步骤：
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />确保您的设备包含正常运行的内部存储设备，例如 HDD、SSD 或 eMMC
-    <ph name="LIST_ITEM" />确认您的内部存储设备的空间大于 16GB
-    <ph name="LIST_ITEM" />检查与内部存储设备的连接（如果确实可以查看）
-    <ph name="LIST_ITEM" />确保您使用的是经过认证的型号并查看安装说明
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问 g.co/CR2/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">从列表中移除</translation>
 <translation id="2770690685823456775">将您的密码导出到其他文件夹</translation>
 <translation id="2770929488047004208">显示器分辨率</translation>
@@ -3083,7 +3072,6 @@
 <translation id="4005817994523282006">时区检测方法</translation>
 <translation id="4007856537951125667">隐藏快捷方式</translation>
 <translation id="4008291085758151621">虚拟实境中不提供网站信息</translation>
-<translation id="4009955655170295852">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/CR2/InstallGuide。</translation>
 <translation id="4010917659463429001">要在移动设备上获取书签，请<ph name="GET_IOS_APP_LINK" />。</translation>
 <translation id="4014432863917027322">要修复“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="4015163439792426608">安装了扩展程序？在一个位置轻松<ph name="BEGIN_LINK" />管理您的扩展程序<ph name="END_LINK" />。</translation>
@@ -3797,7 +3785,6 @@
 <translation id="4781443161433589743">您正在享受 Chrome 的最强安全保护</translation>
 <translation id="4785719467058219317">您使用的安全密钥尚未在此网站注册</translation>
 <translation id="4785914069240823137">取消剪裁</translation>
-<translation id="478708757211772586">使用“下一项”即可在屏幕上向前移动焦点</translation>
 <translation id="4788092183367008521">请检查您的网络连接，然后重试。</translation>
 <translation id="4789550509729954245">当附近的设备正在分享内容时显示通知</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 张照片</translation>
@@ -3832,9 +3819,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{已删除 1 个书签}other{已删除 {COUNT} 个书签}}</translation>
 <translation id="4819607494758673676">Google 助理通知</translation>
 <translation id="4820236583224459650">设为当前所用票据</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />注册之前，您需要清除 TPM，以使 <ph name="DEVICE_OS" /> 拥有对设备的所有权。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />您还可彻底关闭 TPM 设备。您的数据仍会通过软件加密技术得到妥善存储，但某些安全功能（例如由硬件支持的证书）将被停用。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />若要更改您的 TPM 设置，请重新启动并进入系统 BIOS/UEFI 设置。具体步骤因设备型号而异。如需了解详情，请于重新启动之前在另外一部设备上打开 <ph name="DEVICE_OS" /> 文档：g.co/CR2/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">分析已启用(&amp;P)</translation>
 <translation id="4823484602432206655">读取和更改用户设置与设备设置</translation>
 <translation id="4824037980212326045">Linux 备份和恢复</translation>
@@ -5814,7 +5798,6 @@
 <translation id="6834652994408928492">深色模式将在日落时自动开启</translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="6839225236531462745">证书删除错误</translation>
-<translation id="6839882458129755986">Google 不对任何数据损失承担责任，<ph name="DEVICE_OS" /> 在未经认证的型号上可能无法正常运行。如需了解详情，请访问 g.co/CR2/InstallGuide。</translation>
 <translation id="6839916869147598086">登录发生变化</translation>
 <translation id="6840155290835956714">发送前先询问</translation>
 <translation id="6840184929775541289">不是证书授权中心</translation>
@@ -6138,7 +6121,6 @@
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7180865173735832675">自定义</translation>
 <translation id="7182791023900310535">移动您的密码</translation>
-<translation id="7183193772170782394">允许 Google 使用您的硬件数据协助改进 <ph name="DEVICE_OS" />。如果您拒绝，系统仍会将这些数据发送给 Google 以确定适当的更新，但不会存储或以其他方式使用这些数据。如需了解详情，请访问 g.co/CR2/HWDataCollection。</translation>
 <translation id="7183420126213758623">开启/关闭侧边搜索。未启用侧边搜索。</translation>
 <translation id="7186088072322679094">固定在工具栏中</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> 无法打开此文件夹，因为其中含有系统文件</translation>
@@ -7235,8 +7217,6 @@
 <translation id="8260864402787962391">鼠标</translation>
 <translation id="8261378640211443080">该扩展程序未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并可能是在您不知情的情况下添加的。</translation>
 <translation id="8261506727792406068">删除</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />出了点问题，无法安装 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问 g.co/CR2/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">为此组命名</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> 已隐藏鼠标指针。</translation>
 <translation id="8264024885325823677">此设置由您的管理员管理。</translation>

@@ -570,6 +570,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1567993339577891801">JavaScript konzola</translation>
 <translation id="1568323446248056064">Otvori podešavanja uređaja za ekran</translation>
 <translation id="1570604804919108255">Uključite zvuk obaveštenja</translation>
+<translation id="1571304935088121812">Kopiraj korisničko ime</translation>
 <translation id="1571738973904005196">Prikaži karticu: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gost)</translation>
 <translation id="1572266655485775982">Omogući WiFi</translation>
@@ -1255,9 +1256,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Neimenovani izvori medija</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Da bi pružio najbolji doživljaj, <ph name="DEVICE_OS" /> prikuplja podatke o hardveru sa uređaja i deli ih sa Google-om da bi utvrdio koja ažuriranja treba da pruži. Možete opcionalno da dozvolite Google-u da koristi te podatke u dodatne svrhe poput podrške i poboljšanja za <ph name="DEVICE_OS" /> doživljaj i uslugu.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Možete da se prijavite na ovom uređaju i posetite odeljak CLOUDREADY_HARDWARE_INFO na chrome://system da biste videli podatke koji se šalju Google-u radi filtriranja ažuriranja, kao i sve druge slučajeve u kojima odlučujete da delite podatke sa Google-om.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Više detalja o podacima koje <ph name="DEVICE_OS" /> može da deli sa Google-om, kao i o tome kako se oni koriste, potražite na g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Vlasnik ovog podešavanja je <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Mora da bude izabran bar jedan album likovne galerije</translation>
 <translation id="2224551243087462610">Izmena imena direktorijuma</translation>
@@ -1812,15 +1810,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2766161002040448006">Zamoli roditelja</translation>
 <translation id="2767077837043621282">Ažuriranje Chromebook-a nije uspelo. Probajte ponovo kasnije.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> će moći da menja datoteku <ph name="FILENAME" /> dok ne zatvorite sve kartice ovog sajta</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Isprobajte ove korake za rešavanje problema:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Uverite se da uređaj ima ispravnu internu memoriju, kao što je HDD, SSD ili eMMC
-    <ph name="LIST_ITEM" />Uverite se da je interna memorija veća od 16 GB
-    <ph name="LIST_ITEM" />Proverite vezu sa internom memorijom ako je fizički dostupna
-    <ph name="LIST_ITEM" />Uverite se da koristite sertifikovan model i pregledajte napomene o instaliranju
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Dodatnu pomoć potražite na: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Ukloni sa liste</translation>
 <translation id="2770690685823456775">Izvezite lozinke u drugi direktorijum</translation>
 <translation id="2770929488047004208">Rezolucija monitora</translation>
@@ -3096,7 +3085,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4005817994523282006">Metod otkrivanja vremenske zone</translation>
 <translation id="4007856537951125667">Sakrij prečice</translation>
 <translation id="4008291085758151621">Informacije o sajtovima nisu dostupne u VR-u</translation>
-<translation id="4009955655170295852">Pre nego što počnete, uverite se da ste napravili rezervnu kopiju podataka. Instaliranjem sistema <ph name="DEVICE_OS" /> zameniće se podaci na hard-disku. Saznajte više na g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Da bi vam obeleživači bili dostupni na mobilnom uređaju, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Želite li da popravite „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Imate dodatke? <ph name="BEGIN_LINK" />Upravljajte dodacima<ph name="END_LINK" /> na jednom praktičnom mestu.</translation>
@@ -3810,7 +3798,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4781443161433589743">Vi koristite najjaču Chrome zaštitu</translation>
 <translation id="4785719467058219317">Koristite bezbednosni ključ koji nije registrovan za ovaj veb-sajt</translation>
 <translation id="4785914069240823137">Otkažite opsecanje</translation>
-<translation id="478708757211772586">Pomoću radnje Sledeće pređite na sledeći ekran</translation>
 <translation id="4788092183367008521">Proverite mrežnu vezu i probajte ponovo.</translation>
 <translation id="4789550509729954245">Prikazuj obaveštenje kada uređaji dele sadržaj u blizini</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> slika</translation>
@@ -3845,9 +3832,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4816336393325437908">{COUNT,plural, =1{1 obeleživač je izbrisan}one{{COUNT} obeleživač je izbrisan}few{{COUNT} obeleživača su izbrisana}other{{COUNT} obeleživača je izbrisano}}</translation>
 <translation id="4819607494758673676">Obaveštenja Google pomoćnika</translation>
 <translation id="4820236583224459650">Podesi kao aktivni tiket</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Pre nego što se registrujete, treba da obrišete TPM da bi <ph name="DEVICE_OS" /> mogao da preuzme vlasništvo nad uređajem.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Možete i u potpunosti da isključite TPM uređaj. Vaši podaci će se i dalje bezbedno čuvati pomoću softverskog šifrovanja, ali određene bezbednosne funkcije, poput hardverskih sertifikata, biće onemogućene.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Podešavanja TPM-a možete da promenite restartovanjem i unosom BIOS/UEFI podešavanja. Koraci se razlikuju u zavisnosti od modela uređaja. Da biste pronašli više informacija, otvorite dokumentaciju za <ph name="DEVICE_OS" /> na posebnom uređaju pre restartovanja: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Profilisanje je omogućeno</translation>
 <translation id="4823484602432206655">Čitanje i menjanje podešavanja korisnika i uređaja</translation>
 <translation id="4824037980212326045">Linux rezervne kopije i vraćanje</translation>
@@ -5829,7 +5813,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6834652994408928492">Tamni režim se automatski uključuje kada sunce zađe</translation>
 <translation id="6835762382653651563">Povežite se na internet da biste ažurirali <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Greška pri brisanju sertifikata</translation>
-<translation id="6839882458129755986">Google nije odgovoran ni za kakav gubitak podataka i <ph name="DEVICE_OS" /> možda neće raditi na modelima bez sertifikata. Saznajte više na g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Prijavljivanje je promenjeno</translation>
 <translation id="6840155290835956714">Pitaj pre slanja</translation>
 <translation id="6840184929775541289">Nije autoritet za izdavanje sertifikata</translation>
@@ -6154,7 +6137,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7182791023900310535">Premestite lozinku</translation>
-<translation id="7183193772170782394">Dozvolite Google-u da koristi podatke o hardveru kako bi poboljšao <ph name="DEVICE_OS" />. Ako odbijete, ti podaci se ipak šalju Google-u da bi se utvrdila odgovarajuća ažuriranja, ali se ne čuvaju niti koriste na neki drugi način. Saznajte više na g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Uključite/isključite bočnu pretragu. Bočna pretraga nije aktivirana.</translation>
 <translation id="7186088072322679094">Zadrži na traci s alatkama</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ne može da otvori ovaj folder jer on sadrži sistemske fajlove</translation>
@@ -7251,8 +7233,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8260864402787962391">Miš</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ne navodi ovaj dodatak i on je možda dodat bez vašeg znanja.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Došlo je do greške i instaliranje sistema <ph name="DEVICE_OS" /> nije uspelo.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Dodatnu pomoć potražite na: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Dajte naziv ovoj grupi</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> je onemogućio kursor.</translation>
 <translation id="8264024885325823677">Ovim podešavanjem upravlja administrator.</translation>

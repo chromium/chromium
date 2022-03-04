@@ -575,6 +575,7 @@
 <translation id="1567993339577891801">JavaScript কনসোল</translation>
 <translation id="1568323446248056064">প্রদর্শন ডিভাইস সেটিংস খুলুন</translation>
 <translation id="1570604804919108255">বিজ্ঞপ্তি আনমিউট করুন</translation>
+<translation id="1571304935088121812">ইউজারনেম কপি করুন</translation>
 <translation id="1571738973904005196">ট্যাব দেখুন: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (অতিথি)</translation>
 <translation id="1572266655485775982">ওয়াই ফাই সক্ষম করুন</translation>
@@ -782,6 +783,7 @@
 <translation id="1744060673522309905">ডোমেনে ডিভাইসটি যোগ করা যাবে না। ভাল করে দেখে নিন যে আপনার ডিভাইস যোগ করার সর্বাধিক সংখ্যা যেন অতিক্রম না করে।</translation>
 <translation id="1744108098763830590">পৃষ্ঠভূমি পৃষ্ঠা</translation>
 <translation id="1745732479023874451">পরিচিতি ম্যানেজ করুন</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}one{এই ওয়েব অ্যাপে #টি ফাইল খুলবেন এবং এডিট করবেন?}other{এই ওয়েব অ্যাপে #টি ফাইল খুলবেন এবং এডিট করবেন?}}</translation>
 <translation id="1748563609363301860">আপনার Google অ্যাকাউন্ট অথবা শুধুমাত্র এই ডিভাইসে আপনি পাসওয়ার্ড সেভ করতে পারবেন</translation>
 <translation id="1750048572964661931">আপনার ফোনের অ্যাপ সুরক্ষিত রাখতে এই Chromebook-এ পিন বা পাসওয়ার্ড সেট করুন।</translation>
 <translation id="1750172676754093297">আপনার নিরাপত্তা কী-তে ফিঙ্গারপ্রিন্ট স্টোর করা যায় না</translation>
@@ -1269,9 +1271,6 @@
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">নামবিহীন মিডিয়া সোর্স</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />আপনাকে সেরা অভিজ্ঞতা প্রদান করার জন্য, <ph name="DEVICE_OS" /> ডিভাইস সম্পর্কিত হার্ডওয়্যার ডেটা সংগ্রহ করে এবং কোন আপডেট ডেলিভার করা হবে সেটি নির্ধারণ করতে Google-এর সাথে শেয়ার করে। আপনি নিজের ইচ্ছায় <ph name="DEVICE_OS" /> অভিজ্ঞতা ও পরিষেবার উন্নতি এবং সহায়তার জন্য এই ডেটা Google-কে ব্যবহার করার অনুমতি দিতে পারেন।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />আপডেট ফিল্টারিংয়ের জন্য Google-এ পাঠানো ডেটা দেখতে এবং Google-এর সাথে ডেটা শেয়ার করার জন্য আপনার বেছে নেওয়া অন্য কোনও উদাহরণ দেখতে, এই ডিভাইসে লগ-ইন করে Chrome://system-এর CLOUDREADY_HARDWARE_INFO বিভাগ দেখতে পারেন।<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />-এর সাথে কোন ডেটা শেয়ার করতে পারে এবং তা কীভাবে ব্যবহার করা হয় সেই সম্পর্কে আরও জানতে, g.co/CR2/HWDataCollection লিঙ্কে যান।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">এই সেটিংটি <ph name="OWNER_EMAIL" /> এর৷</translation>
 <translation id="222447520299472966">কমপক্ষে একটি আর্ট গ্যালারি অ্যালবাম বেছে নিতে হবে</translation>
 <translation id="2224551243087462610">ফোল্ডার নাম সম্পাদনা করুন</translation>
@@ -1829,15 +1828,6 @@
 <translation id="2766161002040448006">কোনও অভিভাবককে বলুন</translation>
 <translation id="2767077837043621282">আপনার Chromebook আপডেট করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> <ph name="FILENAME" /> এডিট করতে পারবে যতক্ষণ না আপনি এই সাইটের জন্য সব ট্যাব বন্ধ করে দিচ্ছেন</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />সমস্যা সমাধানের জন্য এই ধাপগুলি অনুসরণ করে দেখুন:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />আপনার ডিভাইসে HDD, SSD বা eMMC-র মতো ব্যবহারযোগ্য ইন্টার্নাল স্টোরেজ আছে কিনা দেখুন
-    <ph name="LIST_ITEM" />ইন্টার্নাল স্টোরেজ ডিভাইসে ১৬ জিবির বেশি জায়গা আছে কিনা দেখুন
-    <ph name="LIST_ITEM" />ইন্টার্নাল স্টোরেজ অ্যাক্সেস করতে পারলে, সেটির কানেকশন চেক করুন
-    <ph name="LIST_ITEM" />আপনি সার্টিফায়েড মডেল ব্যবহার করছেন কিনা দেখুন এবং ইনস্টলেশন নোট চেক করুন
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />আরও সাহায্য পেতে এই লিঙ্কে যান: g.co/CR2/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">তালিকা থেকে সরান</translation>
 <translation id="2770690685823456775">আপনার পাসওয়ার্ড অন্য ফোল্ডারে এক্সপোর্ট করুন</translation>
 <translation id="2770929488047004208">মনিটরের রেজোলিউশন</translation>
@@ -2267,6 +2257,7 @@
 <translation id="3201422919974259695">উপলভ্য ইউএসবি ডিভাইসগুলি এখানে দেখা যাবে।</translation>
 <translation id="3202131003361292969">পাথ</translation>
 <translation id="3202173864863109533">এই ট্যাবের অডিও মিউট করা হচ্ছে৷</translation>
+<translation id="3204648577100496185">এই অ্যাপের ডেটাও হয়ত ডিভাইস থেকে মুছে যাবে</translation>
 <translation id="3208321278970793882">অ্যাপ</translation>
 <translation id="3208584281581115441">এখনই চেক করুন</translation>
 <translation id="3208703785962634733">অনিশ্চিত</translation>
@@ -2413,6 +2404,7 @@
 <translation id="337286756654493126">আপনি অ্যাপ্লিকেশানটিতে খোলেন এমন ফোল্ডারগুলি পড়ে</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' '<ph name="NEW_FOLDER_TITLE" />'-এ সরানো হয়েছে।</translation>
 <translation id="3378572629723696641">এই এক্সটেনশনটি হয়ত ক্ষতিগ্রস্ত হয়েছে৷</translation>
+<translation id="3378627645871606983">Steam-এর জন্য অনুমোদিত অনুমতিগুলি সমস্ত Steam গেম এবং অ্যাপগুলিতে প্রযোজ্য৷</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> ইনস্টল করা হবে৷</translation>
 <translation id="3380365263193509176">অজানা ত্রুটি</translation>
 <translation id="3382073616108123819">ওহো! সিস্টেমটি এই ডিভাইসের জন্য ডিভাইস শনাক্তকারী নির্ধারণ করতে ব্যর্থ হয়েছে৷</translation>
@@ -2519,9 +2511,11 @@
 <translation id="346298925039590474">এই ডিভাইস ব্যবহারকারী সকলেই এই মোবাইল নেটওয়ার্ক ব্যবহার করতে পারবেন</translation>
 <translation id="3464145797867108663">অফিস প্রোফাইল যোগ করুন</translation>
 <translation id="346431825526753">এটি <ph name="CUSTODIAN_EMAIL" />-এর দ্বারা পরিচালিত বাচ্চাদের জন্য একটি অ্যাকাউন্ট৷</translation>
+<translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> এবং আরও অনেক কিছুতে ছাড় পান</translation>
 <translation id="3468298837301810372">লেবেল</translation>
 <translation id="3468999815377931311">Android ফোন</translation>
 <translation id="3469583217479686109">বেছে নেওয়ার টুল</translation>
+<translation id="3470392222765168737">সাইট ফলো করুন</translation>
 <translation id="3471876058939596279">ভিডিওর জন্য একসাথে HDMI এবং USB টাইপ-সি পোর্ট ব্যবহার করা যাবে না। অন্য ভিডিও পোর্ট ব্যবহার করুন।</translation>
 <translation id="3473241910002674503">ট্যাবলেট মোডে বোতাম ব্যবহার করে হোম পেজে যান, ফিরে আসুন এবং একটি অ্যাপ থেকে আরেকটি অ্যাপে যান।</translation>
 <translation id="3473479545200714844">স্ক্রিন ম্যাগনিফায়ার</translation>
@@ -2905,6 +2899,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{একটি এক্সটেনশনে অনুমোদন দেওয়া হয়েছে}one{#টি এক্সটেনশনে অনুমোদন দেওয়া হয়েছে}other{#টি এক্সটেনশনে অনুমোদন দেওয়া হয়েছে}}</translation>
 <translation id="3823310065043511710">Linux-এর জন্য কমপক্ষে <ph name="INSTALL_SIZE" />  জায়গা খালি রাখার জন্য সাজেস্ট করা হচ্ছে।</translation>
 <translation id="3824621460022590830">ডিভাইস এনরোলমেন্ট টোকেনটি সঠিক নয়। আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{এই ধরনের ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}one{এই ধরনের সমস্ত ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}other{এই ধরনের সমস্ত ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">মোশন সেন্সর ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="3826440694796503677">আপনার অ্যাডমিনিস্ট্রেটর আরও Google অ্যাকাউন্ট যোগ করার বিকল্প বন্ধ করে দিয়েছে</translation>
 <translation id="3827774300009121996">&amp;পূর্ণ স্ক্রীণ</translation>
@@ -2962,6 +2957,7 @@
 <translation id="3879748587602334249">ডাউনলোড ম্যানেজার</translation>
 <translation id="3882165008614329320">ক্যামেরা বা ফাইলে আগে থেকে থাকা ভিডিও</translation>
 <translation id="3883306461188700142">আপনার ভয়েস ব্যবহার করে টাইপ করুন। Search + D বোতামে প্রেস করে, কথা বলা শুরু করুন।</translation>
+<translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> এবং <ph name="MERCHANT_NAME_2" />-এ ছাড় পান</translation>
 <translation id="3884152383786131369">যেসকল ওয়েব কন্টেন্ট একাধিক ভাষায় উপলভ্য সেগুলি এই তালিকা থেকে উপযুক্ত প্রথম ভাষাটি ব্যবহার করবে। আপনার ব্রাউজার সেটিংসের সাথে এই পছন্দ সিঙ্ক করা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">আপনার অ্যাডমিনিস্ট্রেটর আপডেটগুলি ম্যানেজ করে।</translation>
 <translation id="3886446263141354045">এই সাইটটি অ্যাক্সেস করার জন্য আপনার অনুরোধ <ph name="NAME" />কে পাঠানো হয়েছে</translation>
@@ -3106,7 +3102,6 @@
 <translation id="4005817994523282006">টাইম জোন শনাক্তকরণ পদ্ধতি</translation>
 <translation id="4007856537951125667">শর্টকাট লুকান</translation>
 <translation id="4008291085758151621">VR এ সাইটের তথ্য উপলব্ধ নেই</translation>
-<translation id="4009955655170295852">চালু করার আগে আপনার ডেটার ব্যাক-আপ নেওয়া আছে কিনা দেখুন। <ph name="DEVICE_OS" /> ইনস্টল করা হলে, হার্ড ড্রাইভ ওভাররাইট হয়ে যাবে। g.co/CR2/InstallGuide লিঙ্ক থেকে আরও জানুন।</translation>
 <translation id="4010917659463429001">আপনার মোবাইল ডিভাইসে আপনার বুকমার্কগুলি পেতে, <ph name="GET_IOS_APP_LINK" />।</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" মেরামত করবেন?</translation>
 <translation id="4015163439792426608">ব্রাউজারে এক্সটেনশন ব্যবহার করছেন? একটি জায়গা থেকে সহজেই <ph name="BEGIN_LINK" />আপনার এক্সটেনশন ম্যানেজ করুন<ph name="END_LINK" />।</translation>
@@ -3821,7 +3816,6 @@
 <translation id="4781443161433589743">আপনার কাছে Chrome-এর সবথেকে মজবুত সুরক্ষা ব্যবস্থা আছে</translation>
 <translation id="4785719467058219317">আপনি এমন একটি নিরাপত্তা কী ব্যবহার করছেন যেটি এই ওয়েবসাইটের সাথে রেজিস্টার করা নেই</translation>
 <translation id="4785914069240823137">ক্রপ করা বাতিল করুন</translation>
-<translation id="478708757211772586">স্ক্রিনে এগিয়ে যেতে 'পরবর্তী' বিকল্প ব্যবহার করুন</translation>
 <translation id="4788092183367008521">আপনার নেটওয়ার্ক কানেকশন পরীক্ষা করে আবার চেষ্টা করুন।</translation>
 <translation id="4789550509729954245">ডিভাইস আশেপাশে শেয়ার করা হলে বিজ্ঞপ্তি দেখুন</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" />টি ফটো</translation>
@@ -3856,9 +3850,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{১টি বুকমার্ক মোছা হয়েছে}one{{COUNT}টি বুকমার্ক মোছা হয়েছে}other{{COUNT}টি বুকমার্ক মোছা হয়েছে}}</translation>
 <translation id="4819607494758673676">Google Assistant বিজ্ঞপ্তি</translation>
 <translation id="4820236583224459650">অ্যাক্টিভ টিকিট হিসেবে সেট করুন</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> যাতে ডিভাইসের মালিকানা পেতে পারে সেই জন্য আপনাকে এনরোল করার আগে TPM মুছতে হবে।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />এছাড়াও, আপনি TPM ডিভাইস সম্পূর্ণ বন্ধ করে দিতে পারেন। আপনার ডেটা সফ্টওয়্যার এনক্রিপশনের সাহায্যে নিরাপদে সেভ করা থাকবে, কিন্তু হার্ডওয়্যার-ব্যাকড সার্টিফিকেটের মতো কিছু নিরাপত্তা ফিচার বন্ধ করা থাকবে।<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />TPM সেটিংস পরিবর্তন করার জন্য রিবুট করার পরে সিস্টেম BIOS/UEFI সেটিংস লিখতে পারেন। ডিভাইসের মডেলের উপর নির্ভর করে কোন ধাপ গ্রহণ করতে হবে সেটিতে পরিবর্তন হতে পারে। আরও তথ্যের জন্য রিবুট করার আগে আলাদা ডিভাইসে <ph name="DEVICE_OS" /> ডকুমেন্টেশন খুলুন: g.co/CR2/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;প্রোফাইলিং সক্ষমিত</translation>
 <translation id="4823484602432206655">ব্যবহারকারী এবং ডিভাইস সেটিংস পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="4824037980212326045">Linux-এর ব্যাক-আপ এবং রিস্টোর করা</translation>
@@ -3924,6 +3915,7 @@
 <translation id="4880827082731008257">সার্চের ইতিহাস</translation>
 <translation id="4881685975363383806">পরের বার আমাকে মনে করানোর দরকার নেই</translation>
 <translation id="4881695831933465202">খুলুন</translation>
+<translation id="488211015466188466">সাইট ফলো করুন</translation>
 <translation id="4882312758060467256">এই সাইটে অ্যাক্সেস আছে</translation>
 <translation id="4882919381756638075">ভিডিও চ্যাটের মতো যোগাযোগ করার ফিচারের জন্য সাইট সাধারণত আপনার মাইক্রোফোন ব্যবহার করে</translation>
 <translation id="4883436287898674711">সব <ph name="WEBSITE_1" /> সাইট</translation>
@@ -5182,6 +5174,7 @@
 <translation id="6166185671393271715">Chrome এ পাসওয়ার্ড আমদানি করুন</translation>
 <translation id="6169040057125497443">অনুগ্রহ করে আপনার মাইক্রোফোন ভাল করে দেখে নিন।</translation>
 <translation id="6169666352732958425">ডেস্কটপ কাস্ট করতে ব্যর্থ হয়েছে।</translation>
+<translation id="6169967265765719844">Steam-এর মাধ্যমে ইনস্টল করা গেম এবং অ্যাপের অনুমতি <ph name="LINK_BEGIN" />Steam অ্যাপ সেটিংস<ph name="LINK_END" /> বিভাগে ম্যানেজ করা যেতে পারে।</translation>
 <translation id="6170470584681422115">স্যান্ডউইচ</translation>
 <translation id="6170498031581934115">ADB ডিবাগিং চালু করা যায়নি। 'সেটিংস'-এ গিয়ে আবার চেষ্টা করুন।</translation>
 <translation id="617213288191670920">কোনও ভাষা যোগ করা হয়নি</translation>
@@ -5839,7 +5832,6 @@
 <translation id="6834652994408928492">সূর্যাস্তের সময় ডার্ক মোড অটোমেটিক চালু হয়ে যাবে</translation>
 <translation id="6835762382653651563">আপনার <ph name="DEVICE_TYPE" /> আপডেট করার জন্য দয়া করে ইন্টারনেটে সংযুক্ত হোন।</translation>
 <translation id="6839225236531462745">সার্টিফিকেট মুছতে সমস্যা</translation>
-<translation id="6839882458129755986">কোনও ডেটা হারিয়ে যাওয়ার ক্ষেত্রে Google দায়বদ্ধ নয় এবং <ph name="DEVICE_OS" /> সার্টিফায়েড নয় এমন মডেলে কাজ নাও করতে পারে। g.co/CR2/InstallGuide লিঙ্ক থেকে আরও জানুন।</translation>
 <translation id="6839916869147598086">সাইন-ইন পরিবর্তন করা হয়েছে</translation>
 <translation id="6840155290835956714">পাঠানোর আগে জিজ্ঞাসা করুন</translation>
 <translation id="6840184929775541289">একটি শংসাপত্র কর্তৃপক্ষ নয়</translation>
@@ -5883,6 +5875,7 @@
 <translation id="6876469544038980967">উপযোগী নয়</translation>
 <translation id="6878422606530379992">সেন্সর ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6880587130513028875">এই পৃষ্ঠাতে ছবিগুলি ব্লক করা হয়েছে৷</translation>
+<translation id="688312408602122936">Steam-এর মাধ্যমে ইনস্টল করা যেকোনও গেম এবং অ্যাপও এই ডিভাইস থেকে সরিয়ে দেওয়া হবে</translation>
 <translation id="6883319974225028188">ওহো! সিস্টেম ডিভাইস কনফিগারেশন সংরক্ষণ করতে ব্যর্থ হয়েছে।</translation>
 <translation id="6884474387073389421">আপনি কি এই বেছে নেওয়া সাইন-ইন ডেটা সত্যিই মুছে দিতে চান?</translation>
 <translation id="6885771755599377173">সিস্টেম তথ্যের প্রিভিউ</translation>
@@ -6163,7 +6156,6 @@
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7180865173735832675">কাস্টমাইজ করুন</translation>
 <translation id="7182791023900310535">পাসওয়ার্ড সরান</translation>
-<translation id="7183193772170782394"><ph name="DEVICE_OS" />-এর উন্নতিতে সাহায্য করতে Google-কে আপনার হার্ডওয়্যার ডেটা ব্যবহার করার অনুমতি দিন। আপনি অনুমতি না দিলেও উপযুক্ত আপডেট নির্ধারণ করার জন্য এই ডেটা Google-এ পাঠানো হয়, কিন্তু সেভ করা বা অন্য কোনও কাজে ব্যবহার করা হয় না। g.co/CR2/HWDataCollection লিঙ্ক থেকে আরও জানুন।</translation>
 <translation id="7183420126213758623">সাইড সার্চ টগল করুন। সাইড সার্চ চালু করা হয়নি।</translation>
 <translation id="7186088072322679094">টুলবারের মধ্যে রাখুন</translation>
 <translation id="7186303001964993981">এই ফোল্ডারে সিস্টেম ফাইল আছে তাই <ph name="ORIGIN" /> এই ফোল্ডারটি খুলতে পারছে না</translation>
@@ -7260,8 +7252,6 @@
 <translation id="8260864402787962391">মাউস</translation>
 <translation id="8261378640211443080">এই এক্সটেনশনটি <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-এ তালিকাভুক্ত নেই এবং হয়ত আপনাকে না জানিয়ে যোগ করা হয়েছে৷</translation>
 <translation id="8261506727792406068">মুছুন</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />কিছু সমস্যা হয়েছে এবং <ph name="DEVICE_OS" /> ইনস্টল করা যায়নি।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />আরও সাহায্য পেতে এই লিঙ্কে যান: g.co/CR2/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">এই গ্রুপের নাম দিন</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />আপনার মাউস কার্সার অক্ষম করেছে৷</translation>
 <translation id="8264024885325823677">এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে থাকে।</translation>

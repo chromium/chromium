@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">向右箭头</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3909791450649380159">剪切(&amp;T)</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">右边缘</translation>
 <translation id="3994749195054421561">“<ph name="COLUMN_NAME" />”列目前是按升序排列。</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 条未读通知}other{# 条未读通知}}</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 个月前}other{# 个月前}}</translation>

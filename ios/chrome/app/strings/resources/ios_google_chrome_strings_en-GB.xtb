@@ -83,6 +83,15 @@
 <translation id="6709398533399187136">Your password was exposed in a data breach. Google Password Manager recommends changing it now.</translation>
 <translation id="6822673484890854830">Chrome couldn't check all passwords. Try again later.</translation>
 <translation id="6964931465519938134">You can now use Chrome whenever you tap on links in messages, documents and other apps.</translation>
+<translation id="7046845777663074840">When on:
+<ph name="BEGIN_INDENT" />  • Help make Chrome better for people who use it the way that you do.<ph name="END_INDENT" />
+
+Things to consider:
+<ph name="BEGIN_INDENT" />  • Info is sent to Google about your Chrome usage, but it isn't tied to you.
+
+  • If Chrome crashes, details about the crash may include some personal info.
+
+  • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Make Chrome your own</translation>
 <translation id="7124339256045485976">Keep Chrome up to date</translation>
 <translation id="7161390184744336561">Google Chrome is out of date</translation>

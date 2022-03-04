@@ -525,6 +525,7 @@
 <translation id="2539524384386349900">Aşkarlayın</translation>
 <translation id="2540701853218677861">Zaman nişanı və uğursuz cəhdlər daxil olmaqla cihaz giriş/çıxış tarixçəsi</translation>
 <translation id="2541219929084442027">Bütün Anonim tabları bağladıqdan sonra Anonim rejimdə baxdığınız səhifələr brauzerinizin tarixçəsində, kuki yaddaşında və ya axtarış tarixçəsində saxlanılmayacaq. Endirdiyiniz və ya əlfəcin yaratdığınız fayllar isə saxlanılacaq.</translation>
+<translation id="2544546346215446551">Administratorunuz cihazınızı yenidən başlatdı</translation>
 <translation id="2544644783021658368">Tək sənəd</translation>
 <translation id="2546283357679194313">Kukilər və sayt datası</translation>
 <translation id="254947805923345898">Siyasət dəyəri düzgün deyil.</translation>
@@ -934,7 +935,6 @@
 <translation id="385051799172605136">Geri</translation>
 <translation id="3858027520442213535">Tarix və saatı güncəlləşdirin</translation>
 <translation id="3858860766373142691">Ad</translation>
-<translation id="3879224246272917991">CPU/RAM istifadəsi kimi cihaz statistikası və avadanlıq spesifikasiyaları</translation>
 <translation id="3881478300875776315">Daha az sətir göstərin</translation>
 <translation id="3884278016824448484">Ziddiyyətli cihaz identifikatoru</translation>
 <translation id="3885155851504623709">Kilsə</translation>
@@ -969,6 +969,7 @@
 <translation id="3990250421422698716">Kənarını bükün</translation>
 <translation id="3996311196211510766"><ph name="ORIGIN" /> saytı ona yönləndirilən
     bütün sorğulara mənbə siyasətin tətbiq edilməsini tələb edib, lakin bu siyasət hazırda tətbiq edilə bilmir.</translation>
+<translation id="4006465311664329701">Google Pay istifadə edən Ödəniş Metodları, Təkliflər və Ünvanlar</translation>
 <translation id="4009243425692662128">Çap etdiyiniz səhifələrin məzmunu təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. Məsələn, onlar həssas dataya görə skanlana bilər.</translation>
 <translation id="4010758435855888356">Yaddaşa giriş icazəsi verilsin?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} səhifədən ibarət PDF sənədi}other{{COUNT} səhifədən ibarət PDF sənədi}}</translation>
@@ -1247,6 +1248,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq cəld yeni Google Cədvəli yaradın</translation>
 <translation id="4825507807291741242">Güclü</translation>
 <translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
+<translation id="4834250788637067901">Google Pay istifadə edən ödəniş metodları, təkliflər və ünvanlar</translation>
 <translation id="4838327282952368871">Xəyali</translation>
 <translation id="4840250757394056958">Chrome tarixçənizə baxın</translation>
 <translation id="484462545196658690">Avtomatik</translation>

@@ -56,6 +56,13 @@
 <translation id="4828317641996116749">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>
 <translation id="4985291216379576555">Interneteko konexiorik gabe, Chromium-ek ezin ditu bilatu eguneratzeak</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> domeinuak kudeatutako kontu baten saioa amaituko duzunez, Chromium-en dituzun datuak ezabatu egingo dira gailu honetatik. Hala ere, datu horiek Google-ko kontuan egoten jarraituko dute.</translation>
+<translation id="5039881550736388123">Aktibatuta dagoenean:
+<ph name="BEGIN_INDENT" />  • Chromium zuk bezala erabiltzen dutenentzat hobetzen laguntzen duzu.<ph name="END_INDENT" />
+
+Kontuan hartu beharrekoak:
+<ph name="BEGIN_INDENT" />  • Chromium-en erabilerari buruzko informazioa bidaliko zaio Google-ri, baina ez du izango loturarik zurekin.
+  • Chromium-ek huts egiten badu, baliteke hutsegiteari buruzko xehetasunek informazio pertsonala edukitzea.
+  • Sinkronizazioa aktibatuz gero, baliteke neurketek bisitatzen dituzun URLei buruzko informazioa edukitzea.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Hasi saioa Chromium-en</translation>
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
 <translation id="5308226104666789935">Chromium-ek ezin ditu bilatu eguneratzeak</translation>

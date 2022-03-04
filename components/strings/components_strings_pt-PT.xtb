@@ -525,6 +525,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2539524384386349900">Detetar</translation>
 <translation id="2540701853218677861">Histórico de início/fim de sessão do dispositivo, incluindo data/hora e tentativas falhadas</translation>
 <translation id="2541219929084442027">As páginas que visualizar em separadores de navegação anónima não são memorizadas no histórico do navegador, no armazenamento de cookies ou no histórico de pesquisas depois de fechar todos os separadores de navegação anónima. Todos os ficheiros transferidos ou os marcadores criados são guardados.</translation>
+<translation id="2544546346215446551">O administrador reiniciou o seu dispositivo</translation>
 <translation id="2544644783021658368">Documento único</translation>
 <translation id="2546283357679194313">Cookies e dados de Web sites</translation>
 <translation id="254947805923345898">O valor da política não é válido.</translation>
@@ -938,7 +939,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3858027520442213535">Atualizar a data e a hora</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="3879224246272917991">Estatísticas do dispositivo, como utilização da CPU/RAM e especificações de hardware</translation>
 <translation id="3881478300875776315">Mostrar menos linhas</translation>
 <translation id="3884278016824448484">Identificador do dispositivo em conflito</translation>
 <translation id="3885155851504623709">Freguesia</translation>
@@ -973,6 +973,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3990250421422698716">Separar conjuntos</translation>
 <translation id="3996311196211510766">O site <ph name="ORIGIN" /> solicitou que seja aplicada uma política de origem
     a todos os pedidos, mas, de momento, não é possível aplicar essa política.</translation>
+<translation id="4006465311664329701">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
 <translation id="4009243425692662128">O conteúdo das páginas que imprime é enviado para o Google Cloud ou terceiros para análise. Por exemplo, pode ser analisado quanto a dados confidenciais.</translation>
 <translation id="4010758435855888356">Pretende permitir o acesso ao armazenamento?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página(s)}other{Documento PDF com {COUNT} páginas}}</translation>
@@ -1252,6 +1253,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente uma nova Folha de cálculo do Google Sheets</translation>
 <translation id="4825507807291741242">Potente</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
+<translation id="4834250788637067901">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
 <translation id="4838327282952368871">Sonhador</translation>
 <translation id="4840250757394056958">Ver o Histórico do Chrome</translation>
 <translation id="484462545196658690">Auto</translation>

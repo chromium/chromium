@@ -87,7 +87,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1650222530560417226">Tap the 'Start Logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop Logging' is tapped.</translation>
-<translation id="1654232554734641711">Microphone access allowed</translation>
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
 <translation id="1657641691196698092">Blocked cookies</translation>
 <translation id="165877110639533037">No open tabs</translation>
@@ -211,6 +210,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871695793448672541">Hidden Password</translation>
 <translation id="2876369937070532032">Sends URLs of some pages that you visit to Google, when your security is at risk</translation>
+<translation id="2883151425485251736">See and edit topics that you've hidden from your account</translation>
 <translation id="288655811176831528">Close Tab</translation>
 <translation id="2893180576842394309">Google may use your history to personalise Search and other Google services</translation>
 <translation id="2898963176829412617">New Folder…</translation>
@@ -323,7 +323,6 @@ Follow the steps below:</translation>
 <translation id="3892144330757387737">You'll find your history here</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">Your organisation turned off sync. You can still see your bookmarks, history, passwords and other settings on this device. If you make changes, they won’t sync to your account.</translation>
-<translation id="3905353503976611311">Search on the web</translation>
 <translation id="3913386780052199712">Signed in to Chrome</translation>
 <translation id="3915450441834151894">Site Information</translation>
 <translation id="3922310737605261887">Search for copied text</translation>
@@ -349,7 +348,6 @@ Follow the steps below:</translation>
 <translation id="4121993058175073134">To send net-export data, please configure your email account in the Settings app.</translation>
 <translation id="4124987746317609294">Time range</translation>
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
-<translation id="4153925727916232411">This lets you take and upload photos, as well as scan QR codes.</translation>
 <translation id="4172051516777682613">Always show</translation>
 <translation id="418156467088430727">View Offline Version in New Tab</translation>
 <translation id="4181841719683918333">Languages</translation>
@@ -386,7 +384,6 @@ Follow the steps below:</translation>
 <translation id="4526249700380860531">View and manage saved passwords at <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="4540780316273593836">Something went wrong</translation>
-<translation id="4572065712096155137">Access</translation>
 <translation id="457386861538956877">More...</translation>
 <translation id="4592368184551360546">Keyboard</translation>
 <translation id="461440297010471931">Searching with Google</translation>
@@ -408,7 +405,6 @@ Your data is encrypted with your sync passphrase. Enter it to start sync.</trans
 <translation id="4689564913179979534">Manage Payment Methods...</translation>
 <translation id="4697071790493980729">No results found</translation>
 <translation id="470966556546083668">Don't turn on sync</translation>
-<translation id="4731472194328757163">Camera and microphone access allowed</translation>
 <translation id="4737560986434232178">Search recent tabs</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4747097190499141774">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you will need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
@@ -431,6 +427,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4833686396768033263">Recent tabs are unavailable</translation>
 <translation id="4833786495304741580">Automatically sends usage statistics and crash reports to Google.</translation>
 <translation id="4840495572919996524">Your bookmarks, history, passwords and more will no longer be synced to your Google Account.</translation>
+<translation id="4844899002472726590">See and edit the topics that you're interested in</translation>
 <translation id="4854345657858711387">Set A Passcode</translation>
 <translation id="4860895144060829044">Call</translation>
 <translation id="4872323082491632254">Check passwords</translation>
@@ -501,7 +498,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5580834567471114021">Add to reading list for later?</translation>
 <translation id="5592679540098330836">Turn on sync for <ph name="NAME" /></translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>
-<translation id="560999923643681074">Edit access</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5626245204502895507">The file could not be downloaded at this time.</translation>
 <translation id="5631164295104953411">Add payment method</translation>
@@ -524,7 +520,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5812974770859303494">Add to…</translation>
-<translation id="5816228676161003208">This lets you search faster using your voice.</translation>
 <translation id="581659025233126501">Turn On Sync</translation>
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Search Engine</translation>
@@ -563,7 +558,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6059830886158432458">Control your stories and activity here</translation>
 <translation id="6064824697233747382">Your organisation requires you to turn off sync.</translation>
 <translation id="6066301408025741299">Tap to cancel.</translation>
-<translation id="6077126322656614846">Camera access allowed</translation>
 <translation id="60829778314739003">Accept and continue</translation>
 <translation id="6084848228346514841">Select tabs</translation>
 <translation id="6103540626693881831">On-device encryption</translation>
@@ -827,7 +821,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8319076807703933069">New search</translation>
 <translation id="8323906514956095947">Touch and hold for more tab options</translation>
 <translation id="8328777765163860529">Close All</translation>
-<translation id="8364085047956854021">'<ph name="SITE_NAME" />' permissions will reset to off when you leave this site.</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8386068868580335421">Reset</translation>
 <translation id="8407669440184693619">No passwords found for this site</translation>

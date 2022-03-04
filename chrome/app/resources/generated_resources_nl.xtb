@@ -571,6 +571,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1567993339577891801">JavaScript-console</translation>
 <translation id="1568323446248056064">Weergave-instellingen van apparaat openen</translation>
 <translation id="1570604804919108255">Negeren van meldingen opheffen</translation>
+<translation id="1571304935088121812">Gebruikersnaam kopiëren</translation>
 <translation id="1571738973904005196">Tabblad bekijken: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gast)</translation>
 <translation id="1572266655485775982">Wifi aanzetten</translation>
@@ -668,6 +669,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1640235262200048077"><ph name="IME_NAME" /> werkt nog niet in Linux-apps</translation>
 <translation id="1640283014264083726">PKCS nr. 1 MD4 met RSA-encryptie</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1641496881756082050">Meer acties voor <ph name="NETWORK_NAME" /></translation>
 <translation id="1642492862748815878">Verbonden met <ph name="DEVICE" /> en <ph name="NUMBER_OF_DEVICES" /> andere bluetooth-apparaten</translation>
 <translation id="1642494467033190216">Je moet rootfs-beveiliging verwijderen en opnieuw opstarten voordat je andere foutopsporingsfuncties kunt aanzetten.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA-handtekening met SHA-1</translation>
@@ -1255,9 +1257,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2220572644011485463">Pincode of wachtwoord</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Naamloze mediabron</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> verzamelt hardwaregegevens over apparaten en deelt deze met Google om te bepalen welke updates moeten worden geleverd. Zo kan de best mogelijke functionaliteit worden geboden. Je kunt desgewenst ook toestaan dat Google deze gegevens gebruikt voor aanvullende doeleinden, zoals support en verbeteringen voor de functionaliteit en service van <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Je kunt inloggen bij dit apparaat en naar het gedeelte CLOUDREADY_HARDWARE_INFO in chrome://system gaan om te zien welke gegevens naar Google worden gestuurd om updates te filteren, evenals andere instanties waarin je ervoor kiest gegevens met Google te delen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ga naar g.co/CR2/HWDataCollection voor meer informatie over de gegevens die <ph name="DEVICE_OS" /> kan delen met Google en hoe deze worden gebruikt.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Deze instelling hoort bij <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Er moet minimaal één album uit de kunstgalerie worden geselecteerd</translation>
 <translation id="2224551243087462610">Mapnaam bewerken</translation>
@@ -1443,6 +1442,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2381499968174336913">Voorbeeld van gedeeld tabblad</translation>
 <translation id="2381756643783702095">Vragen vóór verzenden (aanbevolen)</translation>
 <translation id="2387052489799050037">Naar het startscherm</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (huidig)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">Kan geen verbinding maken met proxy, log opnieuw in</translation>
 <translation id="2390782873446084770">Wifi-synchronisatie</translation>
@@ -1811,15 +1811,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2766161002040448006">Aan een ouder vragen</translation>
 <translation id="2767077837043621282">Kan je Chromebook niet updaten. Probeer het later opnieuw.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bewerken totdat je alle tabbladen voor deze site sluit</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Probeer de volgende stappen om het probleem op te lossen:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />Zorg dat je apparaat werkende interne opslag bevat, zoals een HDD, SSD of eMMC.
-<ph name="LIST_ITEM" />Check of je interne opslagapparaat groter is dan 16 GB.
-<ph name="LIST_ITEM" />Check de verbinding met de interne opslag als deze fysiek toegankelijk is.
-<ph name="LIST_ITEM" />Zorg dat je een gecertificeerd model gebruikt en check de installatieopmerkingen.
-<ph name="END_LIST" />
-<ph name="END_PARAGRAPH1" />
-<ph name="BEGIN_PARAGRAPH2" />Ga naar g.co/CR2/InstallErrors voor meer hulp.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Verwijderen uit lijst</translation>
 <translation id="2770690685823456775">Exporteer je wachtwoorden naar een andere map</translation>
 <translation id="2770929488047004208">Monitorresolutie</translation>
@@ -3089,7 +3080,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4005817994523282006">Detectiemethode voor tijdzone</translation>
 <translation id="4007856537951125667">Snelkoppelingen verbergen</translation>
 <translation id="4008291085758151621">Sitegegevens zijn niet beschikbaar in VR</translation>
-<translation id="4009955655170295852">Check voordat je begint of je een back-up van je gegevens hebt. Als je <ph name="DEVICE_OS" /> installeert, wordt je harde schijf overschreven. Bekijk meer informatie op g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> om je bookmarks te bekijken op je mobiele apparaat.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" repareren?</translation>
 <translation id="4015163439792426608">Heb je extensies? <ph name="BEGIN_LINK" />Beheer ze<ph name="END_LINK" /> overzichtelijk op één plaats.</translation>
@@ -3803,7 +3793,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4781443161433589743">Je gebruikt de sterkste beveiliging van Chrome</translation>
 <translation id="4785719467058219317">Je gebruikt een beveiligingssleutel die niet is geregistreerd voor deze website</translation>
 <translation id="4785914069240823137">Bijsnijden annuleren</translation>
-<translation id="478708757211772586">Gebruik Volgende om vooruit te gaan op het scherm</translation>
 <translation id="4788092183367008521">Controleer de netwerkverbinding en probeer het opnieuw.</translation>
 <translation id="4789550509729954245">Melding laten zien als apparaten in de buurt delen</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto('s)</translation>
@@ -3838,9 +3827,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bookmark verwijderd}other{{COUNT} bookmarks verwijderd}}</translation>
 <translation id="4819607494758673676">Google Assistent-meldingen</translation>
 <translation id="4820236583224459650">Instellen als actief ticket</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Voordat je je inschrijft, moet je de TPM wissen, zodat <ph name="DEVICE_OS" /> eigenaar van het apparaat kan worden.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Je kunt de TPM op het apparaat ook helemaal uitzetten. Je gegevens worden nog steeds beveiligd opgeslagen met softwareversleuteling, maar bepaalde beveiligingsfuncties zoals certificaten met hardwareondersteuning worden uitgezet.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Je kunt je TPM-instellingen wijzigen door opnieuw op te starten en naar de systeem-BIOS/UEFI-instellingen te gaan. De stappen hiervoor variëren op basis van het apparaatmodel. Open voor meer informatie de <ph name="DEVICE_OS" />-documentatie op een afzonderlijk apparaat voordat je opnieuw opstart: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Profiling staat aan</translation>
 <translation id="4823484602432206655">Gebruikers- en apparaatinstellingen lezen en wijzigen</translation>
 <translation id="4824037980212326045">Back-up en herstel voor Linux</translation>
@@ -5818,7 +5804,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6834652994408928492">De donkere modus wordt automatisch aangezet bij zonsondergang</translation>
 <translation id="6835762382653651563">Maak verbinding met internet om je <ph name="DEVICE_TYPE" /> te updaten.</translation>
 <translation id="6839225236531462745">Fout tijdens verwijderen van certificaat</translation>
-<translation id="6839882458129755986">Google is niet verantwoordelijk voor verlies van gegevens. <ph name="DEVICE_OS" /> werkt misschien niet op niet-gecertificeerde modellen. Bekijk meer informatie op g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Inloggegevens zijn gewijzigd</translation>
 <translation id="6840155290835956714">Vragen vóór verzenden</translation>
 <translation id="6840184929775541289">Is geen certificeringsinstantie</translation>
@@ -6142,7 +6127,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7180865173735832675">Aanpassen</translation>
 <translation id="7182791023900310535">Je wachtwoord verplaatsen</translation>
-<translation id="7183193772170782394">Toestaan dat Google je hardwaregegevens gebruikt om <ph name="DEVICE_OS" /> te verbeteren. Als je geen toestemming geeft, worden deze gegevens nog wel naar Google gestuurd om te bepalen welke updates nodig zijn. De gegevens worden niet anderszins opgeslagen of gebruikt. Bekijk meer informatie op g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Zoekfunctie aan zijkant aan-/uitzetten. Zoekfunctie aan zijkant niet geactiveerd.</translation>
 <translation id="7186088072322679094">In werkbalk houden</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan deze map niet openen omdat deze systeembestanden bevat</translation>
@@ -7238,8 +7222,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8260864402787962391">Muis</translation>
 <translation id="8261378640211443080">Deze extensie wordt niet vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en is mogelijk zonder je medeweten toegevoegd.</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Er is iets misgegaan en <ph name="DEVICE_OS" /> kan niet worden geïnstalleerd.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ga naar g.co/CR2/InstallErrors voor meer hulp.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Deze groep een naam geven</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> heeft je muisaanwijzer uitgezet.</translation>
 <translation id="8264024885325823677">Deze instelling wordt beheerd door je beheerder.</translation>

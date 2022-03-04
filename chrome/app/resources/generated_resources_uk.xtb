@@ -577,6 +577,7 @@
 <translation id="1567993339577891801">Консоль JavaScript</translation>
 <translation id="1568323446248056064">Відкрити налаштування дисплея</translation>
 <translation id="1570604804919108255">Увімкнути звук сповіщень</translation>
+<translation id="1571304935088121812">Копіювати ім’я користувача</translation>
 <translation id="1571738973904005196">Переглянути вкладку: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гість)</translation>
 <translation id="1572266655485775982">Увімкнути Wi-Fi</translation>
@@ -1110,6 +1111,7 @@
 <translation id="2060375639911876205">Видалити профіль eSIM-карти</translation>
 <translation id="2062354623176996748">Відкрийте вікно в режимі анонімного перегляду й користуйтесь Інтернетом, не зберігаючи історію веб-перегляду</translation>
 <translation id="2065405795449409761">Веб-переглядачем Chrome керує автоматична пробна програма.</translation>
+<translation id="2069869989954932144">Пропонувати додаток для відкривання файлів на вашому комп’ютері</translation>
 <translation id="2071393345806050157">Немає локального файлу журналу.</translation>
 <translation id="2071692954027939183">Сповіщення автоматично заблоковано, оскільки ви зазвичай не дозволяєте їх</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Натисніть, щоб установити розширення}one{Натисніть, щоб установити ці розширення}few{Натисніть, щоб установити ці розширення}many{Натисніть, щоб установити ці розширення}other{Натисніть, щоб установити ці розширення}}</translation>
@@ -1269,9 +1271,6 @@
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Джерело медіа без назви</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Щоб забезпечити найвищу якість роботи, ОС <ph name="DEVICE_OS" /> збирає дані про апаратне забезпечення пристроїв і передає їх компанії Google, щоб визначати потрібні оновлення. Також ви можете дозволити нам використовувати такі відомості для інших цілей, зокрема щоб покращувати роботу й обслуговування <ph name="DEVICE_OS" /> і надавати підтримку.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Щоб побачити, які дані ви надсилаєте для оновлення пристрою, а також якщо виникнуть інші запитання, пов’язані з наданням доступу до своїх даних компанії Google, перейдіть у розділ CLOUDREADY_HARDWARE_INFO в chrome://system.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Щоб дізнатися більше про те, які дані ОС <ph name="DEVICE_OS" /> може надавати компанії Google і як вони використовуються, перейдіть на сторінку g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Це налаштування встановив користувач <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Потрібно вибрати принаймні один альбом із мистецької галереї</translation>
 <translation id="2224551243087462610">Редагувати ім’я папки</translation>
@@ -1348,6 +1347,7 @@
 <translation id="2292848386125228270">Почніть роботу з <ph name="PRODUCT_NAME" /> як звичайний користувач. Щоб запустити програму для розробки з кореневого каталогу, перезапустіть її, поставивши прапорець біля опції "--не в ізольованому програмному середовищі".</translation>
 <translation id="2294081976975808113">Екран конфіденційності</translation>
 <translation id="2294358108254308676">Установити <ph name="PRODUCT_NAME" />?</translation>
+<translation id="229477815107578534">Перегляньте свої налаштування</translation>
 <translation id="2295864384543949385">Результатів: <ph name="NUM_RESULTS" /></translation>
 <translation id="2296022312651137376">Адміністратор домену <ph name="DOMAIN_NAME" /> вимагає, щоб під час входу в обліковий запис <ph name="EMAIL" /> пристрій був підключений до Інтернету</translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено 1 годину тому}one{Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено {NUM_HOURS} годину тому}few{Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено {NUM_HOURS} години тому}many{Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено {NUM_HOURS} годин тому}other{Веб-переглядач Chrome не виявив шкідливого програмного забезпечення на вашому комп'ютері • Перевірено {NUM_HOURS} години тому}}</translation>
@@ -1828,15 +1828,6 @@
 <translation id="2766161002040448006">Попросити батьків</translation>
 <translation id="2767077837043621282">Не вдалось оновити Chromebook. Повторіть спробу пізніше.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> зможе змінювати файл "<ph name="FILENAME" />", поки ви не закриєте всі вкладки для цього сайту</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Для вирішення проблеми виконайте подані нижче дії.
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Переконайтеся, що на пристрої є робоча внутрішня пам’ять, наприклад HDD-диск, SSD-диск або eMMC
-    <ph name="LIST_ITEM" />Переконайтеся, що внутрішня пам’ять пристрою більша ніж 16 ГБ
-    <ph name="LIST_ITEM" />Перевірте підключення до внутрішньої пам’яті, якщо це фізично можливо
-    <ph name="LIST_ITEM" />Переконайтеся, що ви використовуєте сертифіковану модель, і перегляньте примітки щодо встановлення
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Щоб дізнатися більше, перейдіть на сторінку g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Видалити зі списку</translation>
 <translation id="2770690685823456775">Експортуйте паролі в іншу папку</translation>
 <translation id="2770929488047004208">Роздільна здатність монітора</translation>
@@ -3106,7 +3097,6 @@
 <translation id="4005817994523282006">Спосіб визначення часового поясу</translation>
 <translation id="4007856537951125667">Сховати ярлики</translation>
 <translation id="4008291085758151621">Інформація про сайт недоступна у VR-режимі</translation>
-<translation id="4009955655170295852">Перш ніж почати, переконайтеся, що ви створили резервну копію даних. Під час встановлення ОС <ph name="DEVICE_OS" /> буде перезаписано всі дані жорсткого диска. Докладніше читайте на сторінці g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Щоб мати доступ до закладок на мобільному пристрої, потрібно <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Відновити розширення <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Користуєтеся розширеннями? <ph name="BEGIN_LINK" />Керуйте ними<ph name="END_LINK" /> в єдиному зручному місці.</translation>
@@ -3821,7 +3811,6 @@
 <translation id="4781443161433589743">Вас захищає найнадійніша система безпеки Chrome</translation>
 <translation id="4785719467058219317">Ви використовуєте ключ безпеки, не зареєстрований на цьому веб-сайті</translation>
 <translation id="4785914069240823137">Скасувати обрізування</translation>
-<translation id="478708757211772586">Натискайте "Далі", щоб переходити вперед на екрані</translation>
 <translation id="4788092183367008521">Перевірте з’єднання з мережею та повторіть спробу.</translation>
 <translation id="4789550509729954245">Показувати сповіщення, коли пристрої поблизу обмінюються даними</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фото</translation>
@@ -3856,9 +3845,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{Видалено 1 закладку}one{Видалено {COUNT} закладку}few{Видалено {COUNT} закладки}many{Видалено {COUNT} закладок}other{Видалено {COUNT} закладки}}</translation>
 <translation id="4819607494758673676">Сповіщення Google Асистента</translation>
 <translation id="4820236583224459650">Зробити активним квитком</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Перед реєстрацією потрібно очистити TPM, щоб ОС <ph name="DEVICE_OS" /> змогла керувати пристроєм.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ви також можете повністю вимкнути пристрій із модулем TPM. Ваші дані залишатимуться захищеними завдяки шифруванню програмного забезпечення, але певні функції безпеки (наприклад, сертифікати апаратного забезпечення) буде вимкнено.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ви можете змінити параметри TPM. Для цього перезапустіть систему й увійдіть у налаштування BIOS/UEFI. Конкретні вказівки можуть відрізнятися залежно від моделі пристрою. Щоб дізнатися більше, відкрийте документацію ОС <ph name="DEVICE_OS" /> на окремому пристрої, перш ніж перезапустити систему: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Профілювання ввімкнено</translation>
 <translation id="4823484602432206655">Переглядати та змінювати налаштування користувача й пристрою</translation>
 <translation id="4824037980212326045">Резервне копіювання й відновлення Linux</translation>
@@ -5838,7 +5824,6 @@
 <translation id="6834652994408928492">Темний режим увімкнеться автоматично після заходу сонця</translation>
 <translation id="6835762382653651563">Щоб оновити свій <ph name="DEVICE_TYPE" />, під’єднайтеся до Інтернету.</translation>
 <translation id="6839225236531462745">Помилка видалення сертифіката</translation>
-<translation id="6839882458129755986">Компанія Google не несе відповідальності за втрату даних і не гарантує, що ОС <ph name="DEVICE_OS" /> працюватиме на несертифікованих моделях. Докладніше читайте на сторінці g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Спосіб входу в обліковий запис змінено</translation>
 <translation id="6840155290835956714">Запитувати, перш ніж надсилати</translation>
 <translation id="6840184929775541289">Не є Центром сертифікації</translation>
@@ -6084,6 +6069,7 @@
 <translation id="7077829361966535409">Не вдалося завантажити сторінку входу за допомогою поточних налаштувань проксі-сервера. <ph name="GAIA_RELOAD_LINK_START" />Спробуйте ввійти знову<ph name="GAIA_RELOAD_LINK_END" /> або скористайтеся іншими <ph name="PROXY_SETTINGS_LINK_START" />налаштуваннями проксі-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Усі мережі</translation>
 <translation id="708060913198414444">Копіювати адресу аудіо</translation>
+<translation id="7082568314107259011">Мережею <ph name="NETWORK_NAME" /> керує ваш адміністратор</translation>
 <translation id="7085389578340536476">Дозволити Chrome записувати аудіо?</translation>
 <translation id="7086672505018440886">Включити в архів файли журналу Chrome.</translation>
 <translation id="7088434364990739311">Не вдалося запустити перевірку наявності оновлень (код помилки: <ph name="ERROR" />).</translation>
@@ -6161,7 +6147,6 @@
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7180865173735832675">Налаштувати</translation>
 <translation id="7182791023900310535">Перемістити пароль</translation>
-<translation id="7183193772170782394">Дозволити компанії Google використовувати дані про ваше апаратне забезпечення, щоб покращувати ОС <ph name="DEVICE_OS" />. Якщо ви відмовитеся, Google усе одно отримуватиме ці дані, щоб визначати потрібні оновлення, проте не буде зберігати чи використовувати їх для інших цілей. Докладніше читайте на сторінці g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Перемкнути бічну панель пошуку. Бічну панель пошуку не активовано.</translation>
 <translation id="7186088072322679094">Залишити на панелі інструментів</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> не може відкрити цю папку, оскільки вона містить системні файли</translation>
@@ -7259,8 +7244,6 @@
 <translation id="8260864402787962391">Миша</translation>
 <translation id="8261378640211443080">Це розширення встановлено не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />. Можливо, його було додано без вашого відома.</translation>
 <translation id="8261506727792406068">Видалити</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Сталася помилка. Не вдалося встановити <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Щоб дізнатися більше, перейдіть на сторінку g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Введіть назву групи</translation>
 <translation id="8263744495942430914">Сторінка <ph name="FULLSCREEN_ORIGIN" /> вимкнула курсор миші.</translation>
 <translation id="8264024885325823677">Цим налаштуванням керує адміністратор.</translation>
@@ -7324,6 +7307,7 @@
 <translation id="8325413836429495820">Заборонено переглядати буфер обміну</translation>
 <translation id="8326478304147373412">PKCS #7, ланцюжок сертифікатів</translation>
 <translation id="8327676037044516220">Дозволи й налаштування контенту</translation>
+<translation id="8330689128072902965">Контакти поблизу можуть ділитися контентом із вами. Натисніть, щоб змінити.</translation>
 <translation id="833256022891467078">Спільні папки Crostini</translation>
 <translation id="8335587457941836791">Відкріпити від панелі запуску</translation>
 <translation id="8336407002559723354">Оновлення не надходитимуть після такого часу: <ph name="MONTH_AND_YEAR" /></translation>

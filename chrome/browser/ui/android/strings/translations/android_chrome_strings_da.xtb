@@ -143,7 +143,6 @@
 <translation id="189358972401248634">Andre sprog</translation>
 <translation id="1894023287452300670">Hold øje med prisen her</translation>
 <translation id="1900260903084164610">Ved at fortsætte accepterer du <ph name="BEGIN_TOS_LINK" />servicevilkårene<ph name="END_TOS_LINK" />.</translation>
-<translation id="1905320231301365059">De filer, du downloader i inkognitotilstand, kan stadig ses af alle, der bruger denne enhed.</translation>
 <translation id="1910950723001426294">Listen over delingsindstillinger er lukket.</translation>
 <translation id="1918175104945982129">Brugerfladen for samtykke i forbindelse med stemmesøgning i Assistent er åbnet i halv højde</translation>
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
@@ -277,7 +276,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2604446170045642109">Du kan deaktivere mørkt tema for websites i dine indstillinger.</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2625189173221582860">Adgangskoden er kopieret</translation>
-<translation id="2634905176438867146">Se, hvordan du angiver Chrome som standardbrowser</translation>
 <translation id="2645657967708199252">Din <ph name="CONNECTION_TYPE" />-forbindelse kan gøre downloadprocessen langsommere</translation>
 <translation id="2647434099613338025">Tilføj sprog</translation>
 <translation id="2649068648233607930">Din browser administreres af <ph name="DOMAIN" /></translation>

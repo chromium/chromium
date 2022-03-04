@@ -571,6 +571,7 @@
 <translation id="1567993339577891801">JavaScript კონსოლი</translation>
 <translation id="1568323446248056064">ჩვენების მოწყობილობის პარამეტრების გახსნა</translation>
 <translation id="1570604804919108255">შეტყობინებების დადუმების მოხსნა</translation>
+<translation id="1571304935088121812">მომხმარებლის სახელის კოპირება</translation>
 <translation id="1571738973904005196">ჩანართის ნახვა: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (სტუმარი)</translation>
 <translation id="1572266655485775982">Wi-Fi-ს ჩართვა</translation>
@@ -668,6 +669,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ჯერ არ მუშაობს Linux აპებში</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 RSA დაშიფვრით</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1641496881756082050">სხვა ქმედებები „<ph name="NETWORK_NAME" />“-სთვის</translation>
 <translation id="1642492862748815878">დაკავშირებულია <ph name="DEVICE" />-თან და <ph name="NUMBER_OF_DEVICES" /> სხვა Bluetooth მოწყობილობასთან</translation>
 <translation id="1642494467033190216">ძირეული დაცვის მოხსნა და გადატვირთვა საჭირო მანამ, სანამ ჩართავთ სხვა გამართვის ფუნქციებს.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA ხელმოწერა SHA-1-ით</translation>
@@ -1256,9 +1258,6 @@
 <translation id="2220572644011485463">PIN-კოდი ან პაროლი</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">მედიის უსახელო წყარო</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />საუკეთესო ფუნქციების უზრუნველყოფის მიზნით, <ph name="DEVICE_OS" /> აგროვებს მოწყობილობების აპარატურის მონაცემებს და უზიარებს მათ Google-ს, სათანადო განახლებების დასადგენად. სურვილისამებრ, შეგიძლიათ საშუალება მისცეთ Google-ს, გამოიყენოს აღნიშნული მონაცემები სხვა მიზნებითაც, მაგალითად, <ph name="DEVICE_OS" />-თან დაკავშირებული მხარდაჭერის, ფუნქციების და მომსახურების გაუმჯობესების მიზნით.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Google-ისთვის განახლებების გაფილტვრის მიზნით (ასევე, თქვენ არჩეული სხვა მიზნებისთვის) გაგზავნილი მონაცემების სანახავად შედით თქვენს ანგარიშში ამ მოწყობილობაზე და გადადით chrome://system-ის სექციაზე „CLOUDREADY_HARDWARE_INFO“.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />დეტალური ინფორმაცია იმ მონაცემების შესახებ, რომელთა გაზიარებაც <ph name="DEVICE_OS" />-ს შეუძლია Google-ისთვის, ასევე, აღნიშნული მონაცემების გამოყენების შესახებ, ხელმისაწვდომია მისამართზე g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">ამ პარამეტრის მფლობელია <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">ასარჩევია ხელოვნების გალერეის მინიმუმ ერთი ალბომი</translation>
 <translation id="2224551243087462610">საქაღალდის სახელის რედაქტირება</translation>
@@ -1444,6 +1443,7 @@
 <translation id="2381499968174336913">გაზიარებული ჩანართის გადასახედი ვერსია</translation>
 <translation id="2381756643783702095">შეკითხვა გაგზავნამდე (რეკომენდირებულია)</translation>
 <translation id="2387052489799050037">მთავარზე გადასვლა</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (ამჟამინდელი)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">პროქსი-სერვერთან დაკავშირება ვერ მოხერხდა, ხელახლა შედით სისტემაში</translation>
 <translation id="2390782873446084770">Wi-Fi სინქრონიზაცია</translation>
@@ -1813,15 +1813,6 @@
 <translation id="2766161002040448006">მშობლისთვის თხოვნა</translation>
 <translation id="2767077837043621282">თქვენი Chromebook-ის განახლება ვერ მოხერხდა. ცადეთ მოგვიანებით.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> შეძლებს „<ph name="FILENAME" />“-ის რედაქტირებას ამ საიტის ყველა ჩანართის დახურვამდე</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />დეფექტების აღმოფხვრისთვის ცადეთ შემდეგი:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />დარწმუნდით, რომ თქვენს მოწყობილობაში არის მუშა შიდა მეხსიერება, როგორიცაა, მაგალითად, HDD, SSD ან eMMC
-    <ph name="LIST_ITEM" />შეამოწმეთ, რომ თქვენი შიდა მეხსიერების მოწყობილობის მოცულობა აღემატება 16 გბაიტს
-    <ph name="LIST_ITEM" />შეამოწმეთ კავშირი შიდა მეხსიერებასთან, თუ ის ფიზიკურად ხელმისაწვდომია
-    <ph name="LIST_ITEM" />დარწმუნდით, რომ სერტიფიცირებულ მოდელს იყენებთ და შეამოწმეთ შენიშვნები ინსტალაციასთან დაკავშირებით
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />დამატებითი დახმარებისთვის ეწვიეთ მისამართს g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">სიიდან ამოშლა</translation>
 <translation id="2770690685823456775">განახორციელეთ თქვენი პაროლების ექსპორტირება სხვა საქაღალდეში</translation>
 <translation id="2770929488047004208">მონიტორის გარჩევადობა</translation>
@@ -3097,7 +3088,6 @@
 <translation id="4005817994523282006">სასაათო სარტყლის ამოცნობის მეთოდი</translation>
 <translation id="4007856537951125667">მალსახმობების დამალვა</translation>
 <translation id="4008291085758151621">საიტის ინფორმაცია მიუწვდომელია VR რეჟიმში</translation>
-<translation id="4009955655170295852">დაწყებამდე დარწმუნდით, რომ თქვენი მონაცემების სარეზერვო ასლი გაქვთ შექმნილი. <ph name="DEVICE_OS" />-ის ინსტალაციის შემთხვევაში, თქვენი მყარი დისკი გადაიწერება. დამატებითი ინფორმაცია ხელმისაწვდომია მისამართზე g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> სანიშნეების ყველა თქვენს მობილურ მოწყობილობაზე მისაღებად.</translation>
 <translation id="4014432863917027322">აღვადგინოთ „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">სარგებლობთ გაფართოებებით? მარტივად <ph name="BEGIN_LINK" />მართეთ ყველა გაფართოება<ph name="END_LINK" /> ერთი სივრციდან.</translation>
@@ -3811,7 +3801,6 @@
 <translation id="4781443161433589743">თქვენ Chrome-ის უძლიერესი დაცვა გაქვთ ჩართული</translation>
 <translation id="4785719467058219317">თქვენ მიერ გამოყენებული უსაფრთხოების გასაღები არ არის რეგისტრირებული ამ ვებსაიტზე</translation>
 <translation id="4785914069240823137">ჩამოჭრის გაუქმება</translation>
-<translation id="478708757211772586">ეკრანზე წინ გადასასვლელად გამოიყენეთ „შემდეგი“</translation>
 <translation id="4788092183367008521">გთხოვთ, შეამოწმოთ თქვენი კავშირი ქსელთან და ხელახლა ცადოთ.</translation>
 <translation id="4789550509729954245">შეტყობინების ჩვენება, როცა მოწყობილობები ახლომახლოა</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ფოტო</translation>
@@ -3846,9 +3835,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 სანიშნე წაიშალა}other{{COUNT} სანიშნე წაიშალა}}</translation>
 <translation id="4819607494758673676">Google ასისტენტის შეტყობინებები</translation>
 <translation id="4820236583224459650">აქტიურ ბილეთად დაყენება</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />რეგისტრაციამდე უნდა გაიაროთ TPM-ის შემოწმება, რომ <ph name="DEVICE_OS" /> მოწყობილობის მფლობელი გახდეს.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />სურვილისამებრ, TPM მოწყობილობის მთლიანად გამორთვა შეგიძლიათ. თქვენი მონაცემები უსაფრთხოდ შეინახება პროგრამული უზრუნველყოფის დაშიფვრის მეშვეობით, თუმცა უსაფრთხოების ზოგიერთი ფუნქცია, როგორიცაა აპარატურით უზრუნველყოფილი სერტიფიკატები, გაითიშება.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />თქვენი TPM პარამეტრების შესაცვლელად გადატვირთეთ მოწყობილობა და შედით სისტემის BIOS/UEFI პარამეტრებში. მოქმედებათა მიმდევრობა განსხვავდება მოწყობილობის მოდელის მიხედვით. დამატებითი ინფორმაციისთვის მოწყობილობის გადატვირთვამდე გაეცანით <ph name="DEVICE_OS" />-ის დოკუმენტაციას სხვა მოწყობილობიდან: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;პროფილის დამუშავება ჩართულია</translation>
 <translation id="4823484602432206655">მომხმარებელთა და მოწყობილობათა პარამეტრების წაკითხვა და შეცვლა</translation>
 <translation id="4824037980212326045">Linux-ის სარეზერვო ასლის შექმნა და აღდგენა</translation>
@@ -5830,7 +5816,6 @@
 <translation id="6834652994408928492">მუქი რეჟიმი ავტომატურად ჩაირთვება მზის ჩასვლისას</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ის განსაახლებლად, გთხოვთ, დაუკავშირდეთ ინტერნეტს.</translation>
 <translation id="6839225236531462745">სერტიფიკატის წაშლის შეცდომა</translation>
-<translation id="6839882458129755986">Google პასუხს არ აგებს მონაცემთა დაკარგვაზე, ხოლო <ph name="DEVICE_OS" /> შეიძლება არ მუშაობდეს არასერტიფიცირებულ მოდელებზე. დამატებითი ინფორმაცია ხელმისაწვდომია მისამართზე g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">სისტემაში შესვლა შეიცვალა</translation>
 <translation id="6840155290835956714">ნებართვის მოთხოვნა გაგზავნამდე</translation>
 <translation id="6840184929775541289">არ არის სერტიფიკაციის ცენტრი</translation>
@@ -6155,7 +6140,6 @@
 <translation id="7180611975245234373">განახლება</translation>
 <translation id="7180865173735832675">მორგება</translation>
 <translation id="7182791023900310535">პაროლის გადატანა</translation>
-<translation id="7183193772170782394">მიეცით საშუალება Google-ს, გამოიყენოს თქვენი აპარატურის მონაცემები, <ph name="DEVICE_OS" />-ის გაუმჯობესების ხელშეწყობის მიზნით. უარყოფის შემთხვევაში, აღნიშნული მონაცემები მაინც გაეგზავნება Google-ს სათანადო განახლებების დასადგენად, თუმცა სხვა მიზნით არც შეინახება და არც გამოყენებული იქნება. დამატებითი ინფორმაცია ხელმისაწვდომია მისამართზე g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">გვერდითი ძიების გადართვა. გვერდითი ძიება არ არის გააქტიურებული.</translation>
 <translation id="7186088072322679094">ხელსაწყოთა ზოლში შენარჩუნება</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ვერ გახსნის ამ საქაღალდეს, რადგან ის შეიცავს სისტემის ფაილებს</translation>
@@ -7251,8 +7235,6 @@
 <translation id="8260864402787962391">მაუსი</translation>
 <translation id="8261378640211443080">ეს გაფართოება არ არის <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ის სიაში და, შესაძლოა, დამატებულია თქვენი თანხმობის გარეშე.</translation>
 <translation id="8261506727792406068">წაშლა</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> ვერ დაინსტალირდა შეფერხების გამო.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />დამატებითი დახმარებისთვის ეწვიეთ მისამართს g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">დაარქვით სახელი ამ ჯგუფს</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />-მა გამორთო მაუსის კურსორი.</translation>
 <translation id="8264024885325823677">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>

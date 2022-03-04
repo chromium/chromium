@@ -46,7 +46,6 @@
 <translation id="1877026089748256423">Chrome on aegunud</translation>
 <translation id="1887927549935943139">CloudReady 2.0 ei saa teie andmeid sünkroonida, sest teie domeenis pole sünkroonimine saadaval.</translation>
 <translation id="1919130412786645364">Luba Chrome'i sisselogimine</translation>
-<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">Igal profiilil on oma Chrome'i teave, nagu järjehoidjad, ajalugu, paroolid ja muu</translation>
 <translation id="2063848847527508675">Chrome OS tuleb värskenduse rakendamiseks taaskäivitada.</translation>
 <translation id="2094919256425865063">Kas väljuda Chrome'ist ikkagi?</translation>
@@ -215,7 +214,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5941830788786076944">Tee Google Chrome vaikebrauseriks</translation>
 <translation id="6070348360322141662">Turvalisuse suurendamiseks krüpteerib Google Chrome teie andmed</translation>
 <translation id="608006075545470555">Tööprofiili lisamine sellesse brauserisse</translation>
-<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Chrome muutus just paremaks</translation>
 <translation id="6145313976051292476">Ava PDF-id Chrome'is</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

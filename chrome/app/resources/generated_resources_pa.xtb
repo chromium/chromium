@@ -575,6 +575,7 @@
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">ਡਿਸਪਲੇ ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="1570604804919108255">ਸੂਚਨਾਵਾਂ ਨੂੰ ਅਣਮਿਊਟ ਕਰੋ</translation>
+<translation id="1571304935088121812">ਵਰਤੋਂਕਾਰ ਨਾਮ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="1571738973904005196">ਇਹ ਟੈਬ ਦੇਖੋ: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ਮਹਿਮਾਨ)</translation>
 <translation id="1572266655485775982">ਵਾਈ-ਫਾਈ ਚਾਲੂ</translation>
@@ -1268,9 +1269,6 @@
 <translation id="2220572644011485463">ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">ਬੇਨਾਮ ਮੀਡੀਆ ਸਰੋਤ</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />ਬਿਹਤਰੀਨ ਅਨੁਭਵ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ, <ph name="DEVICE_OS" /> ਡੀਵਾਈਸਾਂ ਬਾਰੇ ਹਾਰਡਵੇਅਰ ਡਾਟਾ ਇਕੱਤਰ ਕਰਦਾ ਹੈ ਅਤੇ ਇਹ ਨਿਰਧਾਰਿਤ ਕਰਨ ਲਈ Google ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਕਿ ਕਿਹੜੇ ਅੱਪਡੇਟ ਡਿਲੀਵਰ ਕੀਤੇ ਜਾਣੇ ਚਾਹੀਦੇ ਹਨ। ਵਿਕਲਪਿਕ ਤੌਰ 'ਤੇ, ਤੁਸੀਂ Google ਨੂੰ <ph name="DEVICE_OS" /> ਅਨੁਭਵ ਅਤੇ ਸੇਵਾ ਵਿੱਚ ਸਹਾਇਤਾ ਅਤੇ ਸੁਧਾਰਾਂ ਵਰਗੇ ਵਧੀਕ ਉਦੇਸ਼ਾਂ ਲਈ ਇਸ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਤੁਸੀਂ ਲੌਗ-ਇਨ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ Google ਨੂੰ ਅੱਪਡੇਟ ਫਿਲਟਰ ਕਰਨ ਲਈ ਭੇਜੇ ਗਏ ਡਾਟੇ ਅਤੇ ਇਸਦੇ ਨਾਲ ਹੀ ਕੋਈ ਹੋਰ ਕਿਰਿਆ ਜਿੱਥੇ ਤੁਸੀਂ Google ਨਾਲ ਡਾਟੇ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਚੋਣ ਕਰਦੇ ਹੋ, ਨੂੰ ਦੇਖਣ ਲਈ chrome://system ਵਿੱਚ CLOUDREADY_HARDWARE_INFO ਸੈਕਸ਼ਨ 'ਤੇ ਜਾਓ।<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> ਵੱਲੋਂ Google ਨਾਲ ਡਾਟਾ ਸਾਂਝਾ ਕੀਤੇ ਜਾਣ ਬਾਰੇ ਅਤੇ ਇਸਦੀ ਵਰਤੋਂ ਦੇ ਤਰੀਕਿਆਂ ਬਾਰੇ ਹੋਰ ਵੇਰਵਿਆਂ ਲਈ g.co/CR2/HWDataCollection 'ਤੇ ਜਾਓ।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">ਇਹ ਸੈਟਿੰਗ <ph name="OWNER_EMAIL" /> ਨਾਲ ਸੰਬੰਧਿਤ ਹੈ।</translation>
 <translation id="222447520299472966">ਘੱਟੋ-ਘੱਟ ਇੱਕ ਕਲਾ ਗੈਲਰੀ ਐਲਬਮ ਨੂੰ ਚੁਣਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="2224551243087462610">ਫੋਲਡਰ ਨਾਮ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
@@ -1828,15 +1826,6 @@
 <translation id="2766161002040448006">ਮਾਂ-ਪਿਓ ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="2767077837043621282">ਤੁਹਾਡੀ Chromebook ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ਇਸ ਸਾਈਟ ਲਈ ਸਾਰੀਆਂ ਟੈਬਾਂ ਬੰਦ ਨਾ ਕੀਤੇ ਜਾਣ ਤੱਕ <ph name="FILENAME" /> ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕੇਗੀ</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />ਸਮੱਸਿਆ-ਨਿਪਟਾਰੇ ਸੰਬੰਧੀ ਇਨ੍ਹਾਂ ਪੜਾਵਾਂ ਨੂੰ ਅਜ਼ਮਾਓ:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿੱਚ ਕੰਮ ਕਰਦੀ ਅੰਦਰੂਨੀ ਸਟੋਰੇਜ ਹੈ, ਜਿਵੇਂ ਕਿ HDD, SSD ਜਾਂ eMMC
-    <ph name="LIST_ITEM" />ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਅੰਦਰੂਨੀ ਸਟੋਰੇਜ 16GB ਤੋਂ ਵੱਧ ਹੈ
-    <ph name="LIST_ITEM" />ਜੇ ਭੌਤਿਕ ਤੌਰ 'ਤੇ ਪਹੁੰਚਯੋਗ ਹੋਵੇ, ਤਾਂ ਅੰਦਰੂਨੀ ਸਟੋਰੇਜ ਨਾਲ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ
-    <ph name="LIST_ITEM" />ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਇੱਕ ਪ੍ਰਮਾਣਿਤ ਮਾਡਲ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ ਅਤੇ ਸਥਾਪਨਾ ਨੋਟਾਂ ਦੀ ਜਾਂਚ ਕਰੋ
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ਹੋਰ ਮਦਦ ਲਈ, ਇਸ 'ਤੇ ਜਾਓ: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">ਸੂਚੀ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
 <translation id="2770690685823456775">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਕਿਸੇ ਹੋਰ ਫੋਲਡਰ ਵਿੱਚ ਨਿਰਯਾਤ ਕਰੋ</translation>
 <translation id="2770929488047004208">ਮਾਨੀਟਰ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
@@ -3105,7 +3094,6 @@
 <translation id="4005817994523282006">ਸਮਾਂ-ਖੇਤਰ ਦੀ ਪਛਾਣ ਵਿਧੀ</translation>
 <translation id="4007856537951125667">ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="4008291085758151621">VR ਵਿੱਚ ਸਾਈਟ ਦੀ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
-<translation id="4009955655170295852">ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਤੁਹਾਡੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਹੈ। <ph name="DEVICE_OS" /> ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਨਾਲ ਤੁਹਾਡੀ ਹਾਰਡ ਡਰਾਈਵ ਦਾ ਡਾਟਾ ਓਵਰਰਾਈਟ ਹੋ ਜਾਵੇਗਾ। g.co/CR2/InstallGuide 'ਤੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="4010917659463429001">ਆਪਣੇ ਮੋਬਾਈਲ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="GET_IOS_APP_LINK" />।</translation>
 <translation id="4014432863917027322">ਕੀ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਰਿਪੇਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="4015163439792426608">ਕੀ ਤੁਹਾਡੇ ਕੋਲ ਐਕਸਟੈਂਸ਼ਨਾਂ ਹਨ? ਇੱਕ ਸੁਖਾਲੀ ਥਾਂ 'ਤੇ <ph name="BEGIN_LINK" />ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ<ph name="END_LINK" />।</translation>
@@ -3820,7 +3808,6 @@
 <translation id="4781443161433589743">ਤੁਸੀਂ Chrome ਦੀ ਸਭ ਤੋਂ ਮਜਬੂਤ ਸੁਰੱਖਿਆ 'ਤੇ ਮੌਜੂਦ ਹੋ</translation>
 <translation id="4785719467058219317">ਤੁਸੀਂ ਇੱਕ ਅਜਿਹੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਰਤ ਰਹੇ ਹੋ ਜੋ ਇਸ ਵੈੱਬਸਾਈਟ ਨਾਲ ਰਜਿਸਟਰ ਨਹੀਂ ਹੈ</translation>
 <translation id="4785914069240823137">ਕਾਂਟ-ਛਾਂਟ ਰੱਦ ਕਰੋ</translation>
-<translation id="478708757211772586">ਸਕ੍ਰੀਨ 'ਤੇ ਅੱਗੇ ਜਾਣ ਲਈ “ਅੱਗੇ” ਬਟਨ ਵਰਤੋ</translation>
 <translation id="4788092183367008521">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4789550509729954245">ਡੀਵਾਈਸਾਂ ਦੇ ਨਜ਼ਦੀਕੀ ਸਾਂਝਾਕਰਨ ਕਰਨ 'ਤੇ ਸੂਚਨਾ ਦਿਖਾਓ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ਫ਼ੋਟੋ</translation>
@@ -3855,9 +3842,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 ਬੁੱਕਮਾਰਕ ਮਿਟਾਇਆ ਗਿਆ}one{{COUNT} ਬੁੱਕਮਾਰਕ ਮਿਟਾਇਆ ਗਿਆ}other{{COUNT} ਬੁੱਕਮਾਰਕ ਮਿਟਾਏ ਗਏ}}</translation>
 <translation id="4819607494758673676">Google Assistant ਸੂਚਨਾਵਾਂ</translation>
 <translation id="4820236583224459650">ਕਿਰਿਆਸ਼ੀਲ ਟਿਕਟ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />ਦਰਜ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਨੂੰ TPM ਨੂੰ ਕਲੀਅਰ ਕਰਨ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ਜੋ <ph name="DEVICE_OS" /> ਡੀਵਾਈਸ ਦੀ ਮਲਕੀਅਤ ਲੈ ਸਕੇ।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ TPM ਡੀਵਾਈਸ ਨੂੰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਬੰਦ ਵੀ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਹਾਡਾ ਡਾਟਾ ਹਾਲੇ ਵੀ ਸਾਫ਼ਟਵੇਅਰ ਇਨਕ੍ਰਿਪਸ਼ਨ ਦੇ ਨਾਲ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਟੋਰ ਕੀਤਾ ਜਾਵੇਗਾ, ਪਰ ਕੁਝ ਸੁਰੱਖਿਆ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ, ਜਿਵੇਂ ਕਿ ਹਾਰਡਵੇਅਰ-ਸਮਰਥਿਤ ਪ੍ਰਮਾਣ-ਪੱਤਰਾਂ, ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ਤੁਸੀਂ ਰੀਬੂਟ ਕਰ ਕੇ ਅਤੇ ਸਿਸਟਮ BIOS/UEFI ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਦਾਖਲ ਹੋ ਕੇ ਆਪਣੀਆਂ TPM ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ। ਡੀਵਾਈਸ ਮਾਡਲ ਦੇ ਆਧਾਰ 'ਤੇ ਪੜਾਅ ਵੱਖੋ-ਵੱਖਰੇ ਹੋ ਸਕਦੇ ਹਨ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਰੀਬੂਟ ਕੀਤੇ ਜਾਣ ਤੋਂ ਪਹਿਲਾਂ <ph name="DEVICE_OS" /> ਸੰਬੰਧੀ ਦਸਤਾਵੇਜ਼ਾਂ ਨੂੰ ਕਿਸੇ ਵੱਖਰੇ ਡੀਵਾਈਸ 'ਤੇ ਖੋਲ੍ਹੋ: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;ਪ੍ਰੋਫਾਈਲਿੰਗ ਸਮਰਥਿਤ</translation>
 <translation id="4823484602432206655">ਵਰਤੋਂਕਾਰ ਅਤੇ ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="4824037980212326045">Linux ਬੈਕਅੱਪ ਅਤੇ ਮੁੜ-ਬਹਾਲੀ</translation>
@@ -5838,7 +5822,6 @@
 <translation id="6834652994408928492">ਸੂਰਜ ਡੁੱਬਣ ਵੇਲੇ ਗੂੜ੍ਹਾ ਮੋਡ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਆਪਣੇ ਆਪ ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="6835762382653651563">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਇੰਟਰਨੈਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="6839225236531462745">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਮਿਟਾਉਣ ਵਿੱਚ ਗੜਬੜ</translation>
-<translation id="6839882458129755986">Google ਕਿਸੇ ਵੀ ਤਰ੍ਹਾਂ ਦੇ ਡਾਟੇ ਦੇ ਨੁਕਸਾਨ ਲਈ ਜ਼ਿੰਮੇਵਾਰ ਨਹੀਂ ਹੈ ਅਤੇ ਸ਼ਾਇਦ <ph name="DEVICE_OS" /> ਅਪ੍ਰਮਾਣਿਤ ਮਾਡਲਾਂ 'ਤੇ ਕੰਮ ਨਾ ਕਰੇ। g.co/CR2/InstallGuide 'ਤੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="6839916869147598086">ਸਾਈਨ-ਇਨ ਬਦਲ ਗਿਆ ਹੈ</translation>
 <translation id="6840155290835956714">ਭੇਜਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ</translation>
 <translation id="6840184929775541289">ਇੱਕ ਸਰਟੀਫਿਕੇਸ਼ਨ ਅਥਾੱਰਿਟੀ ਨਹੀਂ ਹੈ।</translation>
@@ -6162,7 +6145,6 @@
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7180865173735832675">ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7182791023900310535">ਆਪਣਾ ਪਾਸਵਰਡ ਲਿਜਾਓ</translation>
-<translation id="7183193772170782394"><ph name="DEVICE_OS" /> ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ Google ਨੂੰ ਤੁਹਾਡੇ ਹਾਰਡਵੇਅਰ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿਓ। ਜੇ ਤੁਸੀਂ ਅਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਵੀ ਇਹ ਡਾਟਾ Google ਨੂੰ ਉਚਿਤ ਅੱਪਡੇਟ ਨਿਰਧਾਰਿਤ ਕਰਨ ਲਈ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ, ਪਰ ਨਾ ਹੀ ਇਸਨੂੰ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਨਾ ਹੀ ਕਿਸੇ ਹੋਰ ਕੰਮ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ। g.co/CR2/HWDataCollection 'ਤੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="7183420126213758623">ਸਾਈਡ ਖੋਜ ਟੌਗਲ ਕਰੋ। ਸਾਈਡ ਖੋਜ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="7186088072322679094">ਟੂਲਬਾਰ ਵਿੱਚ ਰੱਖੋ</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ਸਾਈਟ ਇਸ ਫੋਲਡਰ ਨੂੰ ਨਹੀਂ ਖੋਲ੍ਹ ਸਕਦੀ ਕਿਉਂਕਿ ਇਸ ਵਿੱਚ ਸਿਸਟਮ ਫ਼ਾਈਲਾਂ ਹਨ</translation>
@@ -7258,8 +7240,6 @@
 <translation id="8260864402787962391">ਮਾਊਸ</translation>
 <translation id="8261378640211443080">ਇਹ ਐਕਸਟੈਂਸ਼ਨ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ਵਿੱਚ ਸੂਚੀਬੱਧ ਨਹੀਂ ਹੈ ਅਤੇ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਤੋਂ ਬਿਨਾਂ ਜੋੜਿਆ ਗਿਆ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ ਅਤੇ <ph name="DEVICE_OS" /> ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ਹੋਰ ਮਦਦ ਲਈ, ਇਸ 'ਤੇ ਜਾਓ: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">ਇਸ ਗਰੁੱਪ ਦਾ ਨਾਮ ਰੱਖੋ</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ਨੇ ਤੁਹਾਡਾ ਮਾਊਸ ਕਰਸਰ ਅਯੋਗ ਬਣਾਇਆ ਹੈ।</translation>
 <translation id="8264024885325823677">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ।</translation>

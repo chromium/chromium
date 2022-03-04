@@ -940,7 +940,6 @@
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3858027520442213535">తేదీని, సమయాన్ని అప్‌డేట్ చేయి</translation>
 <translation id="3858860766373142691">పేరు</translation>
-<translation id="3879224246272917991">CPU/RAM వినియోగం, ఇంకా హార్డ్‌వేర్ స్పెసిఫికేషన్‌లు వంటి పరికర గణాంకాలు</translation>
 <translation id="3881478300875776315">కొన్ని వరుసలను మాత్రమే చూపించు</translation>
 <translation id="3884278016824448484">వైరుధ్యమైన పరికరం ఐడెంటిఫైయర్</translation>
 <translation id="3885155851504623709">పారిష్</translation>
@@ -2164,7 +2163,7 @@
 <translation id="7791196057686275387">బండిల్</translation>
 <translation id="7791543448312431591">జోడించు</translation>
 <translation id="7798389633136518089">ఈ పాలసీ, క్లౌడ్ సోర్స్ ద్వారా సెట్ చేయబడనందున విస్మరించబడింది.</translation>
-<translation id="7800304661137206267"><ph name="KX" />‌ను కీ మార్పిడి విధానం లాగా మరియు సందేశ ప్రామాణీకరణ కోసం <ph name="CIPHER" />‌ను <ph name="MAC" />తో ఉపయోగించడం ద్వారా కనెక్షన్ గుప్తీకరించబడింది.</translation>
+<translation id="7800304661137206267"><ph name="KX" />‌ను కీ మార్పిడి విధానం లాగా మరియు సందేశ ప్రామాణీకరణ కోసం <ph name="CIPHER" />‌ను <ph name="MAC" />తో ఉపయోగించడం ద్వారా కనెక్షన్ ఎన్‌క్రిప్ట్ చేయబడింది.</translation>
 <translation id="7802523362929240268">సైట్ చట్టబద్ధమైనది</translation>
 <translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>
 <translation id="7805571567667010077">మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతుంది</translation>

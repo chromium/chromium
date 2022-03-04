@@ -572,6 +572,7 @@
 <translation id="1567993339577891801">JavaScriptৰ কনছ’ল</translation>
 <translation id="1568323446248056064">ডিভাইচৰ ডিছপ্লে’ ছেটিংসমূহ খোলক</translation>
 <translation id="1570604804919108255">জাননী আনমিউট কৰক</translation>
+<translation id="1571304935088121812">ব্যৱহাৰকাৰীৰ নামটোৰ প্ৰতিলিপি কৰক</translation>
 <translation id="1571738973904005196">টেবটো চাওক: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (অতিথি)</translation>
 <translation id="1572266655485775982">ৱাই-ফাই সক্ষম/অক্ষম ট‘গল</translation>
@@ -1265,9 +1266,6 @@
 <translation id="2220572644011485463">পিন বা পাছৱৰ্ড</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">নামবিহীন মিডিয়াৰ উৎস</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />শ্ৰেষ্ঠ অভিজ্ঞতাটো প্ৰদান কৰিবলৈ, <ph name="DEVICE_OS" />এ ডিভাইচৰ বিষয়ে হাৰ্ডৱেৰৰ ডেটা সংগ্ৰহ কৰে আৰু কোনটো আপডে’ট দিব লাগে সেয়া নিৰ্ধাৰণ কৰিবলৈ সেই ডেটা Googleৰ সৈতে শ্বেয়াৰ কৰে। বিকল্প হিচাপে, আপুনি Googleক অতিৰিক্ত উদ্দেশ্যসমূহৰ বাবে এই ডেটা ব্যৱহাৰ কৰিবলৈ অনুমতি দিব পাৰে, যেনে <ph name="DEVICE_OS" />ৰ অভিজ্ঞতা আৰু সেৱাৰ সহায়তা আৰু উন্নীতকৰণৰ বাবে।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />আপুনি ফিল্টাৰ আপডে’ট কৰিবলৈ Googleলৈ পঠিওৱা আৰু আপুনি Googleৰ সৈতে ডেটা শ্বেয়াৰ কৰিবলৈ সিদ্ধান্ত লোৱা অন্য যিকোনো নিদৰ্শনৰ ডেটাখিনি চাবলৈ এই ডিভাইচটোত লগ ইন কৰি chrome://systemৰ CLOUDREADY_HARDWARE_INFO শাখাটোলৈ যাব পাৰে।<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />এ Googleৰ সৈতে শ্বেয়াৰ কৰা ডেটা আৰু সেয়া ব্যৱহাৰ কৰা হৈছে সেই বিষয়ে অধিক সবিশেষৰ বাবে g.co/CR2/HWDataCollectionলৈ যাওক।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">এই ছেটিংটোৰ গৰাকী হৈছে <ph name="OWNER_EMAIL" />।</translation>
 <translation id="222447520299472966">কমেও এটা আৰ্ট গেলাৰীৰ এলবাম বাছনি কৰিব লাগিব</translation>
 <translation id="2224551243087462610">ফ’ল্ডাৰৰ নাম সম্পাদনা কৰক</translation>
@@ -1824,15 +1822,6 @@
 <translation id="2766161002040448006">এগৰাকী অভিভাৱকক সোধক</translation>
 <translation id="2767077837043621282">আপোনাৰ Chromebook আপডে'ট কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2767127727915954024">আপুনি এই ছাইটটোৰ বাবে সকলো টেব বন্ধ নকৰা পর্যন্ত <ph name="ORIGIN" />এ <ph name="FILENAME" /> সম্পাদনা কৰিব পাৰিব</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />সমস্যা সমাধানৰ এই পদক্ষেপকেইটা লৈ চাওক:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />আপোনাৰ ডিভাইচত কাৰ্যক্ষম অভ্যন্তৰীণ ষ্ট’ৰেজ, যেনে- HDD, SSD অথবা eMMC থকাটো নিশ্চিত কৰক
-    <ph name="LIST_ITEM" />আপোনাৰ অভ্যন্তৰীণ ষ্ট’ৰেজ ডিভাইচটো ১৬ জিবিতকৈ বেছি হয়নে নহয় চাওক
-    <ph name="LIST_ITEM" />অভ্যন্তৰীণ ষ্ট’ৰেজৰ সংযোগটো পৰীক্ষা কৰক, যদিহে সেইটো হাতেৰে ঢুকি পাব পাৰি
-    <ph name="LIST_ITEM" />আপুনি এটা প্ৰমাণিত মডেল ব্যৱহাৰ কৰি থকাটো নিশ্চিত কৰক আৰু ইনষ্টল কৰা বিষয়ক টোকা চাওক
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />অধিক সহায় পাবলৈ ইয়ালৈ যাওক: g.co/CR2/InstallErrors।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">সূচীৰ পৰা আঁতৰাওক</translation>
 <translation id="2770690685823456775">আপোনাৰ পাছৱৰ্ড বেলেগ ফ’ল্ডাৰলৈ ৰপ্তানি কৰক</translation>
 <translation id="2770929488047004208">মনিটৰৰ ৰিজ’লিউশ্বন</translation>
@@ -3101,7 +3090,6 @@
 <translation id="4005817994523282006">সময় মণ্ডল বাছনি কৰাৰ পদ্ধতি</translation>
 <translation id="4007856537951125667">শ্বৰ্টকাটসমূহ লুকুৱাওক</translation>
 <translation id="4008291085758151621">VRত ছাইটত তথ্য নাই</translation>
-<translation id="4009955655170295852">আৰম্ভ কৰাৰ আগতে আপোনাৰ ওচৰত নিজৰ ডেটাৰ এটা বেকআপ থকাটো নিশ্চিত কৰক। <ph name="DEVICE_OS" /> ইনষ্টল কৰিলে আপোনাৰ হাৰ্ড ড্ৰাইভটো অ’ভাৰৰাইট কৰা হ’ব। g.co/CR2/InstallGuideত অধিক জানক।</translation>
 <translation id="4010917659463429001">আপোনাৰ ম'বাইল ডিভাইচটোত নিজৰ বুকমার্কসমূহ পাবলৈ <ph name="GET_IOS_APP_LINK" />।</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" মেৰামতি কৰিবনে?</translation>
 <translation id="4015163439792426608">এক্সটেনশ্বনসমূহ আছেনে? এক সহজ ঠাইত <ph name="BEGIN_LINK" />আপোনাৰ এক্সটেনশ্বনসমূহ পৰিচালনা কৰক<ph name="END_LINK" />।</translation>
@@ -3816,7 +3804,6 @@
 <translation id="4781443161433589743">আপুনি Chromeৰ আটাইতকৈ বৰ্ধিত সুৰক্ষাৰ সুবিধা লাভ কৰি আছে</translation>
 <translation id="4785719467058219317">আপুনি ব্যৱহাৰ কৰি থকা সুৰক্ষা চাবিটো এই ৱেবছাইটটোত পঞ্জীকৃত নহয়</translation>
 <translation id="4785914069240823137">ক্ৰপ কৰাটো বাতিল কৰক</translation>
-<translation id="478708757211772586">স্ক্ৰীনখনত আগলৈ যাবলৈ “পৰৱৰ্তী” ব্যৱহাৰ কৰক</translation>
 <translation id="4788092183367008521">আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4789550509729954245">নিকটৱৰ্তী ডিভাইচসমূহে শ্বেয়াৰ কৰি থাকিলে জাননী দেখুৱাওক</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> খন ফট’</translation>
@@ -3851,9 +3838,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{১ টা বুকমাৰ্ক মচা হ’ল}one{{COUNT} টা বুকমাৰ্ক মচা হ’ল}other{{COUNT} টা বুকমাৰ্ক মচা হ’ল}}</translation>
 <translation id="4819607494758673676">Google Assistantৰ জাননীসমূহ</translation>
 <translation id="4820236583224459650">সক্ৰিয় টিকেট হিচাপে ছেট কৰক</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />পঞ্জীয়ন কৰাৰ আগতে আপুনি TPM আঁতৰাব লাগিব যাতে <ph name="DEVICE_OS" />এ ডিভাইচটোৰ মালিকীস্বত্ব ল’ব পাৰে।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />আপুনি TPM ডিভাইচটো সম্পূৰ্ণৰূপে অফ কৰিবও পাৰে। আপোনাৰ ডেটা তথাপি ছফ্টৱেৰ এনক্ৰিপশ্বনৰ সৈতে সুৰক্ষিতভাৱে ষ্ট’ৰ কৰা হ’ব, কিন্তু হাৰ্ডৱেৰ-সমৰ্থিত প্ৰমাণপত্ৰৰ দৰে নিৰ্দিষ্ট কিছুমান সুৰক্ষা সম্পৰ্কীয় সুবিধা অক্ষম কৰা হ’ব।<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />আপুনি ৰিবুট কৰি ছিষ্টেমৰ BIOS/UEFI ছেটিঙলৈ গৈ আপোনাৰ TPM ছেটিং সলনি কৰিব পাৰে। ডিভাইচৰ মডেল অনুসৰি পদক্ষেপসমূহ ভিন্ন হয়। অধিক তথ্যৰ বাবে আপুনি ৰিবুট কৰাৰ আগতে অন্য এটা ডিভাইচত <ph name="DEVICE_OS" />ৰ বিষয়ে থকা নথি খোলক: g.co/CR2/TPMHelp।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;প্ৰ’ফাইলিং সক্ষম কৰা হৈছে</translation>
 <translation id="4823484602432206655">ব্যৱহাৰকাৰী আৰু ডিভাইচৰ ছেটিংসমূহ পঢ়ক আৰু সলনি কৰক</translation>
 <translation id="4824037980212326045">Linuxৰ বেকআপ আৰু পুনঃস্থাপন</translation>
@@ -5833,7 +5817,6 @@
 <translation id="6834652994408928492">সূৰ্যাস্ত হ’লে গাঢ় ম’ডটো স্বয়ংক্ৰিয়ভাৱে অন হ’ব</translation>
 <translation id="6835762382653651563">অনুগ্ৰহ কৰি আপোনাৰ <ph name="DEVICE_TYPE" /> আপডে’ট কৰিবলৈ ইন্টাৰনেটৰ সৈতে সংযোগ কৰক।</translation>
 <translation id="6839225236531462745">প্ৰমাণপত্ৰ মচাত আসোঁৱাহ</translation>
-<translation id="6839882458129755986">যিকোনো ধৰণৰ ডেটা হেৰুওৱাৰ বাবে Google দায়বদ্ধ নহয় আৰু প্ৰমাণিত নোহোৱা মডেলত <ph name="DEVICE_OS" />এ কাম নকৰিবও পাৰে। g.co/CR2/InstallGuideত অধিক জানক।</translation>
 <translation id="6839916869147598086">ছাইন ইন প্ৰক্ৰিয়া সলনি হৈছে</translation>
 <translation id="6840155290835956714">পঠিওৱাৰ আগতে সোধক</translation>
 <translation id="6840184929775541289">প্ৰমাণপত্ৰ প্ৰদানকাৰী কৰ্তৃপক্ষ নহয়</translation>
@@ -6157,7 +6140,6 @@
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7180865173735832675">কাষ্ট’মাইজ কৰক</translation>
 <translation id="7182791023900310535">আপোনাৰ পাছৱৰ্ডটো স্থানান্তৰ কৰক</translation>
-<translation id="7183193772170782394"><ph name="DEVICE_OS" /> উন্নত কৰাত সহায় কৰিবলৈ Googleক আপোনাৰ হাৰ্ডৱেৰৰ ডেটা ব্যৱহাৰ কৰিবলৈ দিয়ক। আপুনি যদি প্ৰত্যাখ্যান কৰে, সঠিক আপডে’ট নিৰ্ধাৰণ কৰিবলৈ এই ডেটাখিনি তথাপি Googleলৈ পঠিওৱা হয়, কিন্তু অন্যথা এইখিনি ষ্ট’ৰ অথবা ব্যৱহাৰ কৰা নহয়। g.co/CR2/HWDataCollectionত অধিক জানক।</translation>
 <translation id="7183420126213758623">ছাইড ছাৰ্চ ট’গল কৰক। ছাইড ছাৰ্চ সক্ৰিয় কৰা হোৱা নাই।</translation>
 <translation id="7186088072322679094">টুলবাৰত ৰাখক</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" />এ এই ফ’ল্ডাৰটো খুলিব নোৱাৰে কাৰণ ইয়াত ছিষ্টেমৰ ফাইল আছে</translation>
@@ -7253,8 +7235,6 @@
 <translation id="8260864402787962391">মাউছ</translation>
 <translation id="8261378640211443080">এই এক্সটেনশ্বনটো <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ত সূচীবদ্ধ কৰা হোৱা নাই আৰু আপুনি নজনাকৈয়ে ইয়াক যোগ কৰা হ’ব পাৰে।</translation>
 <translation id="8261506727792406068">মচক</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />কিবা ভুল হৈছে আৰু <ph name="DEVICE_OS" /> ইনষ্টল কৰিব পৰা নগ’ল।<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />অধিক সহায় পাবলৈ ইয়ালৈ যাওক: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">এই গোটটোৰ নাম দিয়ক</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />এ আপোনাৰ মাউছৰ কাৰ্ছৰ অক্ষম কৰিছে।</translation>
 <translation id="8264024885325823677">এই ছেটিংটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে।</translation>

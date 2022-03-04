@@ -87,7 +87,6 @@
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1650222530560417226">‏אפשר להקיש על הלחצן "התחלת הרישום ביומן" כדי לאסוף רשומות יומן ושגיאות של לוח JavaScript מכל הכרטיסיות. רשומות היומן ייאספו (ויישמרו רק בזיכרון) עד לסגירת הדף הזה, או להקשה על "הפסקת הרישום ביומן".</translation>
-<translation id="1654232554734641711">יש הרשאת גישה למיקרופון</translation>
 <translation id="1657011748321897393">השיתוף נכשל משום שאין לך חיבור לרשת.</translation>
 <translation id="1657641691196698092">‏קובצי Cookie חסומים</translation>
 <translation id="165877110639533037">אין כרטיסיות פתוחות</translation>
@@ -323,7 +322,6 @@
 <translation id="3892144330757387737">ההיסטוריה זמינה כאן</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3904829425754749514">הארגון שלך השבית את הסנכרון. יש לך עדיין אפשרות לראות את הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות במכשיר הזה. שינויים שיתבצעו על ידך לא יסונכרנו בחשבון שלך.</translation>
-<translation id="3905353503976611311">חיפוש באינטרנט</translation>
 <translation id="3913386780052199712">‏נכנסת ל-Chrome</translation>
 <translation id="3915450441834151894">פרטי אתר</translation>
 <translation id="3922310737605261887">חיפוש טקסט שהועתק</translation>
@@ -349,7 +347,6 @@
 <translation id="4121993058175073134">כדי לשלוח נתוני ייצוא ברשת, יש להגדיר את חשבון האימייל שלך ביישום 'הגדרות'.</translation>
 <translation id="4124987746317609294">טווח זמן</translation>
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
-<translation id="4153925727916232411">‏אישור הגישה יאפשר לך לצלם ולהעלות תמונות, וגם לסרוק קודי QR.</translation>
 <translation id="4172051516777682613">להציג תמיד</translation>
 <translation id="418156467088430727">הצגת גרסה אופליין בכרטיסייה חדשה</translation>
 <translation id="4181841719683918333">שפות</translation>
@@ -386,7 +383,6 @@
 <translation id="4526249700380860531">‏הצגה וינוהל של סיסמאות שמורות ב-<ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">יש לנסות להיכנס שוב.</translation>
 <translation id="4540780316273593836">משהו השתבש</translation>
-<translation id="4572065712096155137">גישה</translation>
 <translation id="457386861538956877">עוד...</translation>
 <translation id="4592368184551360546">מקלדת</translation>
 <translation id="461440297010471931">‏חיפוש באמצעות Google</translation>
@@ -408,7 +404,6 @@
 <translation id="4689564913179979534">ניהול אמצעי תשלום...</translation>
 <translation id="4697071790493980729">לא נמצאו תוצאות</translation>
 <translation id="470966556546083668">אין להפעיל את הסנכרון</translation>
-<translation id="4731472194328757163">יש הרשאות גישה למצלמה ולמיקרופון</translation>
 <translation id="4737560986434232178">חיפוש בכרטיסיות האחרונות</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4747097190499141774">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay. רק מי שיודע את ביטוי הסיסמה שלך יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם שוכחים את ביטוי הסיסמה או רוצים לשנות את ההגדרה הזו, צריך לאפס את הסנכרון. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -501,7 +496,6 @@
 <translation id="5580834567471114021">להוסיף לרשימת הקריאה לשלב מאוחר יותר?</translation>
 <translation id="5592679540098330836">הפעלת הסנכרון בשביל <ph name="NAME" /></translation>
 <translation id="560322036295180549">האפשרות הושבתה על ידי הארגון שלך</translation>
-<translation id="560999923643681074">גישת עריכה</translation>
 <translation id="5614553682702429503">לשמור את הסיסמה?</translation>
 <translation id="5626245204502895507">לא ניתן להוריד את הקובץ בשלב הזה.</translation>
 <translation id="5631164295104953411">הוספת אמצעי תשלום</translation>
@@ -524,7 +518,6 @@
 <translation id="5803566855766646066">הכרטיס החדש יימחק. להמשיך?</translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5812974770859303494">הוספה אל…</translation>
-<translation id="5816228676161003208">אישור זה מאפשר לך לחפש מהר יותר בעזרת דיבור.</translation>
 <translation id="581659025233126501">הפעלת הסנכרון</translation>
 <translation id="5819208479324046259">מנוהל על ידי <ph name="MANAGER" />. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">מנוע חיפוש</translation>
@@ -563,7 +556,6 @@
 <translation id="6059830886158432458">כאן אפשר לנהל את הסטוריז והפעילות שלך</translation>
 <translation id="6064824697233747382">לפי דרישת הארגון שלך, עליך להשבית את הסנכרון.</translation>
 <translation id="6066301408025741299">יש להקיש כדי לבטל.</translation>
-<translation id="6077126322656614846">יש הרשאת גישה למצלמה</translation>
 <translation id="60829778314739003">אישור והמשך</translation>
 <translation id="6084848228346514841">בחירת כרטיסיות</translation>
 <translation id="6103540626693881831">הצפנה במכשיר</translation>
@@ -827,7 +819,6 @@
 <translation id="8319076807703933069">חיפוש חדש</translation>
 <translation id="8323906514956095947">לחיצה ארוכה תציג אפשרויות נוספות של כרטיסיות</translation>
 <translation id="8328777765163860529">סגירת הכול</translation>
-<translation id="8364085047956854021">ההרשאות לאתר <ph name="SITE_NAME" /> יאופסו לאחר היציאה ממנו.</translation>
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
 <translation id="8386068868580335421">איפוס</translation>
 <translation id="8407669440184693619">לא נמצאו סיסמאות בשביל האתר הזה</translation>

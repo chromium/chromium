@@ -56,6 +56,15 @@
 <translation id="4828317641996116749">O Chromium não conseguiu verificar todas as palavras-passe. Tente novamente mais tarde.</translation>
 <translation id="4985291216379576555">Está offline. O Chromium não consegue verificar se existem atualizações.</translation>
 <translation id="4999538639245140991">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chromium serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
+<translation id="5039881550736388123">Quando a opção está ativada:
+<ph name="BEGIN_INDENT" />  • Ajude a melhorar o Chromium para as pessoas que o utilizam de forma semelhante à sua.<ph name="END_INDENT" />
+
+Aspetos a considerar:
+<ph name="BEGIN_INDENT" />  • São enviadas à Google informações sobre a sua utilização do Chromium, mas estas não são associadas a si.
+
+  • Se o Chromium falhar, os detalhes sobre a falha podem incluir algumas informações pessoais.
+
+  • Se ativar a sincronização, as métricas também podem incluir informações sobre os URLs que visita.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Inicie sessão no Chromium</translation>
 <translation id="5224391634244552924">Não existem palavras-passe guardadas. O Chromium consegue verificar as suas palavras-passe quando as guarda.</translation>
 <translation id="5308226104666789935">O Chromium não consegue verificar se existem atualizações.</translation>

@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">Săgeată spre dreapta</translation>
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3909791450649380159">&amp;Taie</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">Marginea dreaptă</translation>
 <translation id="3994749195054421561">Coloana <ph name="COLUMN_NAME" /> este sortată în ordine crescătoare.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{O notificare necitită}few{# notificări necitite}other{# de notificări necitite}}</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Acum 1 lună}few{Acum # luni}other{Acum # de luni}}</translation>

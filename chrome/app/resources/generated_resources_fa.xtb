@@ -572,6 +572,7 @@
 <translation id="1567993339577891801">کنسول جاوا اسکریپت</translation>
 <translation id="1568323446248056064">باز کردن تنظیمات نمایشگر دستگاه</translation>
 <translation id="1570604804919108255">باصدا کردن اعلان‌ها</translation>
+<translation id="1571304935088121812">کپی کردن نام کاربری</translation>
 <translation id="1571738973904005196">مشاهده برگه: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (مهمان)</translation>
 <translation id="1572266655485775982">‏فعال کردن Wi-Fi</translation>
@@ -1264,9 +1265,6 @@
 <translation id="2220572644011485463">پین یا گذرواژه</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">منبع رسانه بدون نام</translation>
-<translation id="2224173723542116248">‏<ph name="BEGIN_PARAGRAPH1" />برای ارائه بهترین تجربه، <ph name="DEVICE_OS" /> داده‌های سخت‌افزار مربوط دستگاه‌ها را جمع‌آوری می‌کند و آن‌ها را با Google هم‌رسانی می‌کند تا مشخص شود چه به‌روزرسانی‌هایی باید ارائه شود. درصورت تمایل، می‌توانید به Google اجازه دهید از این داده‌ها برای اهداف دیگری مثل پشتیبانی و بهبود بخشیدن به سرویس و تجربه <ph name="DEVICE_OS" /> استفاده کند.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />می‌توانید در این دستگاه به سیستم وارد شوید و به بخش CLOUDREADY_HARDWARE_INFO در chrome://system بروید تا این موارد را ببینید: داده‌های ارسال‌شده به Google برای فیلتر کردن به‌روزرسانی‌ها و همچنین هر نمونه دیگری از انتخاب هم‌رسانی داده با Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />برای دریافت جزئیات بیشتر درباره داده‌هایی که <ph name="DEVICE_OS" /> ممکن است با Google هم‌رسانی کند و نحوه استفاده از این داده‌ها، از g.co/CR2/HWDataCollection بازدید کنید.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">این تنظیم به <ph name="OWNER_EMAIL" /> متعلق است.</translation>
 <translation id="222447520299472966">باید حداقل یک آلبوم از «گالری هنری» انتخاب شود</translation>
 <translation id="2224551243087462610">ویرایش نام پوشه</translation>
@@ -1824,15 +1822,6 @@
 <translation id="2766161002040448006">پرسش از ولی</translation>
 <translation id="2767077837043621282">‏نمی‌توان Chromebook را به‌روزرسانی کرد. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="2767127727915954024">تا زمانی‌که همه برگه‌های <ph name="ORIGIN" /> را نبندید، این سایت می‌تواند <ph name="FILENAME" /> را ویرایش کند</translation>
-<translation id="2767821224812051905">‏<ph name="BEGIN_PARAGRAPH1" />این مراحل عیب‌یابی را دنبال کنید:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />مطمئن شوید دستگاهتان حافظه داخلی فعالی داشته باشد، مثلاً حافظه HDD، ‏SSD، یا eMMC
-    <ph name="LIST_ITEM" />بررسی کنید حجم دستگاه حافظه داخلی بیشتر از ۱۶ گیگابایت باشد
-    <ph name="LIST_ITEM" />اگر حافظه داخلی به‌صورت فیزیکی دردسترس است، اتصال آن را بررسی کنید
-    <ph name="LIST_ITEM" />مطمئن شوید از مدل تأییدشده‌ای استفاده می‌کنید و نکات نصب را بررسی کنید
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />برای راهنمایی بیشتر، از g.co/CR2/InstallErrors بازدید کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">حذف از فهرست</translation>
 <translation id="2770690685823456775">گذرواژه‌ها را به پوشه دیگری صادر کنید</translation>
 <translation id="2770929488047004208">وضوح نمایشگر</translation>
@@ -3103,7 +3092,6 @@
 <translation id="4005817994523282006">روش تشخیص منطقه زمانی</translation>
 <translation id="4007856537951125667">پنهان کردن میان‌برها</translation>
 <translation id="4008291085758151621">‏اطلاعات سایت در VR در دسترس نیست</translation>
-<translation id="4009955655170295852">‏پیش‌از شروع، حتماً از داده‌هایتان پشتیبان‌گیری کنید. با نصب <ph name="DEVICE_OS" />، داده‌های دیسک سخت شما بازنویسی خواهد کرد. برای کسب اطلاعات بیشتر، به g.co/CR2/InstallGuide بروید.</translation>
 <translation id="4010917659463429001">برای اینکه نشانک‌هایتان را در دستگاه همراهتان داشته باشید، <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">«<ph name="EXTENSION_NAME" />» را اصلاح می‌کنید؟</translation>
 <translation id="4015163439792426608">افزونه‌ها را دریافت کردید؟ به‌راحتی در یک جا <ph name="BEGIN_LINK" />افزونه‌هایتان را مدیریت کنید<ph name="END_LINK" />.</translation>
@@ -3818,7 +3806,6 @@
 <translation id="4781443161433589743">‏از بالاترین سطح امنیت در Chrome برخوردار هستید</translation>
 <translation id="4785719467058219317">شما از کلید امنیتی استفاده می‌کنید که در این وب‌سایت ثبت نشده است</translation>
 <translation id="4785914069240823137">لغو برش</translation>
-<translation id="478708757211772586">استفاده از «بعدی» برای پیشروی در صفحه</translation>
 <translation id="4788092183367008521">لطفاً اتصال شبکه‌تان را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="4789550509729954245">نمایش اعلان هنگامی‌که دستگاه‌های اطراف درحال هم‌رسانی هستند</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> عکس</translation>
@@ -3853,9 +3840,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{۱ نشانک حذف شد}one{{COUNT} نشانک حذف شد}other{{COUNT} نشانک حذف شد}}</translation>
 <translation id="4819607494758673676">‏اعلان‌های «دستیار Google»</translation>
 <translation id="4820236583224459650">تنظیم به‌عنوان بلیت فعال</translation>
-<translation id="4820771945393916447">‏<ph name="BEGIN_PARAGRAPH1" />پیش‌از ثبت‌نام، باید «ماژول پلاتفرم مورداعتماد» (TPM) را پاک کنید تا <ph name="DEVICE_OS" /> بتواند مالک این دستگاه شود.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />همچنین می‌توانید دستگاه TPM را به‌طور کامل خاموش کنید. داده‌های شما همچنان بااستفاده از رمزگذاری نرم‌افزار به‌طور ایمن ذخیره می‌شود، اما برخی‌از ویژگی‌های امنیتی مثل گواهینامه‌های دارای پشتیبان سخت‌افزاری غیرفعال می‌شوند.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />می‌توانید با راه‌اندازی مجدد سیستم و وارد شدن به تنظیمات BIOS/UEFI، تنظیمات «ماژول پلاتفرم مورداعتماد» را تغییر دهید. مراحل بسته به مدل دستگاه متفاوت است. برای کسب اطلاعات بیشتر، پیش‌از راه‌اندازی مجدد، اسناد <ph name="DEVICE_OS" /> را در دستگاه دیگری باز کنید: g.co/CR2/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;ایجاد نمایه فعال شد</translation>
 <translation id="4823484602432206655">تغییر و خواندن تنظیمات کاربر و دستگاه</translation>
 <translation id="4824037980212326045">‏پشتیبان‌گیری و بازیابی Linux</translation>
@@ -5836,7 +5820,6 @@
 <translation id="6834652994408928492">«حالت تاریک» هنگام غروب آفتاب به‌طور خودکار روشن خواهد شد</translation>
 <translation id="6835762382653651563">برای به‌روزرسانی <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
 <translation id="6839225236531462745">خطای حذف مجوز</translation>
-<translation id="6839882458129755986">‏Google مسئولیتی درقبال ازدست رفتن داده ندارد، و <ph name="DEVICE_OS" /> ممکن است در مدل‌های تأییدنشده کار نکند. برای کسب اطلاعات بیشتر، به g.co/CR2/InstallGuide بروید.</translation>
 <translation id="6839916869147598086">ورود به سیستم تغییر کرده است</translation>
 <translation id="6840155290835956714">پیش از ارسال سؤال شود</translation>
 <translation id="6840184929775541289">یک ارائه دهنده مجوز نیست</translation>
@@ -6160,7 +6143,6 @@
 <translation id="7180611975245234373">بازخوانی</translation>
 <translation id="7180865173735832675">سفارشی کردن</translation>
 <translation id="7182791023900310535">انتقال گذرواژه</translation>
-<translation id="7183193772170782394">‏به Google اجازه دهید از داده‌های سخت‌افزار برای کمک به بهبود <ph name="DEVICE_OS" /> استفاده کند. اگر نپذیرید، این داده‌ها همچنان برای تعیین به‌روزرسانی‌های مناسب به Google ارسال می‌شوند اما ذخیره نمی‌شوند یا به‌نحو دیگری از آن‌ها استفاده نمی‌شود. برای کسب اطلاعات بیشتر، به g.co/CR2/HWDataCollection بروید.</translation>
 <translation id="7183420126213758623">فعال/ غیرفعال کردن جستجوی جانبی. جستجوی جانبی فعال نیست.</translation>
 <translation id="7186088072322679094">نگه داشتن در نوار ابزار</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> نمی‌تواند این پوشه را باز کند زیرا فایل‌های سیستم در آن وجود دارد</translation>
@@ -7257,8 +7239,6 @@
 <translation id="8260864402787962391">ماوس</translation>
 <translation id="8261378640211443080">این برنامه‌افزودنی در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده است و ممکن است بدون اطلاع شما اضافه شده باشد.</translation>
 <translation id="8261506727792406068">حذف</translation>
-<translation id="8262443362616648274">‏<ph name="BEGIN_PARAGRAPH1" />مشکلی پیش آمد و <ph name="DEVICE_OS" /> نصب نشد.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />برای راهنمایی بیشتر، از g.co/CR2/InstallErrors بازدید کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">نامی برای گروه وارد کنید</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> مکان‌نمای ماوس شما را غیرفعال کرد.</translation>
 <translation id="8264024885325823677">این تنظیم را سرپرست شما مدیریت می‌کند.</translation>

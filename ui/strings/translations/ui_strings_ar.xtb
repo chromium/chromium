@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">مفتاح سهم إلى اليمين</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3909791450649380159">&amp;قص</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">الحافة اليسرى</translation>
 <translation id="3994749195054421561">العمود <ph name="COLUMN_NAME" /> مرتَّب تصاعديًا.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{إشعار واحد غير مقروء}zero{ما مِن إشعارات غير مقروءة}two{إشعاران غير مقروءين}few{# إشعارات غير مقروءة}many{# إشعارًا غير مقروء}other{# إشعار غير مقروء}}</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{قبل شهر واحد}zero{قبل # شهر}two{قبل شهرين (#)}few{قبل # أشهر}many{قبل # شهرًا}other{قبل # شهر}}</translation>

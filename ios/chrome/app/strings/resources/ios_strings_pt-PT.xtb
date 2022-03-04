@@ -87,7 +87,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1650222530560417226">Toque no botão "Iniciar o registo" para recolher futuros registos da consola de JavaScript e erros de todos os separadores. Os registos serão recolhidos (e armazenados apenas na memória) até fechar esta página ou tocar em "Parar o registo".</translation>
-<translation id="1654232554734641711">Acesso ao microfone permitido</translation>
 <translation id="1657011748321897393">A partilha falhou porque não está ligado à rede.</translation>
 <translation id="1657641691196698092">Cookies bloqueados</translation>
 <translation id="165877110639533037">Sem separadores abertos</translation>
@@ -211,6 +210,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871695793448672541">Palavra-passe oculta</translation>
 <translation id="2876369937070532032">Quando a sua segurança está em risco, envia para a Google URLs de algumas páginas que visita.</translation>
+<translation id="2883151425485251736">Veja e edite tópicos que ocultou na sua conta</translation>
 <translation id="288655811176831528">Fechar separador</translation>
 <translation id="2893180576842394309">A Google pode utilizar o seu histórico para personalizar a Pesquisa e outros serviços Google.</translation>
 <translation id="2898963176829412617">Nova pasta…</translation>
@@ -323,7 +323,6 @@ Siga os passos abaixo:</translation>
 <translation id="3892144330757387737">O seu histórico será apresentado aqui</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">A sua organização desativou a sincronização. Ainda pode ver os seus marcadores, histórico, palavras-passe e outras definições neste dispositivo. Se fizer alterações, estes não serão sincronizadas com a sua conta.</translation>
-<translation id="3905353503976611311">Procurar na Web</translation>
 <translation id="3913386780052199712">Sessão iniciada no Chrome</translation>
 <translation id="3915450441834151894">Informações do site</translation>
 <translation id="3922310737605261887">Pesquisar texto copiado</translation>
@@ -349,7 +348,6 @@ Siga os passos abaixo:</translation>
 <translation id="4121993058175073134">P/enviar dados exp. da Int., config. a conta de email na ap. Definiç.</translation>
 <translation id="4124987746317609294">Intervalo de tempo</translation>
 <translation id="4152011295694446843">Os seus marcadores serão apresentados aqui</translation>
-<translation id="4153925727916232411">Permite-lhe tirar e carregar fotos, bem como ler códigos QR.</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="418156467088430727">Ver versão offline num novo separador</translation>
 <translation id="4181841719683918333">Idiomas</translation>
@@ -386,7 +384,6 @@ Siga os passos abaixo:</translation>
 <translation id="4526249700380860531">Ver e gerir as palavras-passe guardadas em <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Experimente iniciar sessão novamente.</translation>
 <translation id="4540780316273593836">Algo correu mal</translation>
-<translation id="4572065712096155137">Acesso</translation>
 <translation id="457386861538956877">Mais...</translation>
 <translation id="4592368184551360546">Teclado</translation>
 <translation id="461440297010471931">Pesquisar com o Google</translation>
@@ -408,7 +405,6 @@ Os dados estão encriptados com a sua frase de acesso de sincronização. Introd
 <translation id="4689564913179979534">Gerir métodos de pagamento</translation>
 <translation id="4697071790493980729">Nenhum resultado encontrado</translation>
 <translation id="470966556546083668">Não ative a sincronização</translation>
-<translation id="4731472194328757163">Acesso à câmara e ao microfone permitidos</translation>
 <translation id="4737560986434232178">Pesquise separadores recentes</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4747097190499141774">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay. Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de repor a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -431,6 +427,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="4833686396768033263">Os separadores recentes estão indisponíveis</translation>
 <translation id="4833786495304741580">Envia automaticamente estatísticas de utilização e relatórios de falhas para a Google.</translation>
 <translation id="4840495572919996524">Os seus marcadores, o histórico, as palavras-passe, entre outros, deixam de ser sincronizados com a sua Conta Google.</translation>
+<translation id="4844899002472726590">Veja e edite tópicos nos quais tem interesse</translation>
 <translation id="4854345657858711387">Definir um código secreto</translation>
 <translation id="4860895144060829044">Telefonar</translation>
 <translation id="4872323082491632254">Verifique palavras-passe</translation>
@@ -501,7 +498,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5580834567471114021">Pretende adicionar à Lista de leitura para ler mais tarde?</translation>
 <translation id="5592679540098330836">Ative a sincronização para <ph name="NAME" /></translation>
 <translation id="560322036295180549">Desativado pela sua entidade</translation>
-<translation id="560999923643681074">Acesso de edição</translation>
 <translation id="5614553682702429503">Pretende guardar a palavra-passe?</translation>
 <translation id="5626245204502895507">De momento não é possível transferir o ficheiro.</translation>
 <translation id="5631164295104953411">Adicionar método de pagamento</translation>
@@ -524,7 +520,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5803566855766646066">Tem a certeza de que pretende rejeitar o novo cartão?</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5812974770859303494">Adicionar a…</translation>
-<translation id="5816228676161003208">Isto permite-lhe pesquisar mais rapidamente com a sua voz.</translation>
 <translation id="581659025233126501">Ativar sincronização</translation>
 <translation id="5819208479324046259">Gerido por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Motor de Pesquisa</translation>
@@ -563,7 +558,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6059830886158432458">Controle as suas notícias e atividade aqui.</translation>
 <translation id="6064824697233747382">A sua entidade requer que desative a sincronização.</translation>
 <translation id="6066301408025741299">Toque para cancelar.</translation>
-<translation id="6077126322656614846">Acesso à câmara permitido</translation>
 <translation id="60829778314739003">Aceitar e continuar</translation>
 <translation id="6084848228346514841">Selecionar separadores</translation>
 <translation id="6103540626693881831">Encriptação no dispositivo</translation>
@@ -827,7 +821,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8323906514956095947">Toque sem soltar para obter mais opções de separadores.</translation>
 <translation id="8328777765163860529">Fechar Tudo</translation>
-<translation id="8364085047956854021">As autorizações de "<ph name="SITE_NAME" />" serão repostas para desativadas quando sair deste site.</translation>
 <translation id="8378714024927312812">Gerido pela sua entidade</translation>
 <translation id="8386068868580335421">Repor</translation>
 <translation id="8407669440184693619">Não foram encontradas palavras-passe para este site</translation>

@@ -58,6 +58,7 @@
 <translation id="4698415050768537821">Chrome bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin və ya <ph name="BEGIN_LINK" />Google Hesabınızda parolları yoxlayın.<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome Beta'da dəstəklənmir</translation>
 <translation id="5030102366287574140">Chrome sizi data pozuntuları, güvənli olmayan vebsaytlar və digər güvənlik məsələlərindən qoruya bilər.</translation>
+<translation id="5108659628347594808">Chrome'u yaxşılaşdırın</translation>
 <translation id="5119391094379141756">Chrome seçin</translation>
 <translation id="5162467219239570114">Chrome köhnəlib. <ph name="BEGIN_LINK" />App Store'da<ph name="END_LINK" /> əlçatan güncəlləmə yoxdursa, ola bilər ki, cihazınız artıq Chrome'un yeni versiyalarını dəstəkləmir.</translation>
 <translation id="5389212809648216794">Digər tətbiq tərəfindən istifadə olunduğu üçün Google Chrome kameranı istifadə edə bilməz</translation>
@@ -82,6 +83,15 @@
 <translation id="6709398533399187136">Parolunuz data pozulması zamanı ələ keçirilib. Google Parol Meneceri onu indi dəyişmənizi tövsiyə edir.</translation>
 <translation id="6822673484890854830">Chrome bütün parolları yoxlaya bilmədi. Sonra cəhd edin.</translation>
 <translation id="6964931465519938134">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>
+<translation id="7046845777663074840">Aktiv olduqda:
+<ph name="BEGIN_INDENT" />  • Chrome'u sizin kimi istifadə edən insanlar üçün yaxşılaşdırmağa kömək edin.<ph name="END_INDENT" />
+
+Bunları nəzərə alın:
+<ph name="BEGIN_INDENT" />  • Chrome istifadəniz haqqında məlumat Google'a göndərilir, lakin sizinlə əlaqələndirilmir.
+
+  • Chrome xəta ilə üzləşərsə, xəta haqqında təfərrüatlar bəzi şəxsi məlumatları ehtiva edə bilər.
+
+  • Sinxronizasiyanı aktiv etsəniz, göstəricilərə ziyarət etdiyiniz keçidlər haqqında məlumat da daxil ola bilər.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Chrome'u fərdiləşdirin</translation>
 <translation id="7124339256045485976">Chrome'u yeni saxlayın</translation>
 <translation id="7161390184744336561">Google Chrome köhnəlib</translation>

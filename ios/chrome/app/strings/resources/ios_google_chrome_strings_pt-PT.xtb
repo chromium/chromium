@@ -83,6 +83,15 @@
 <translation id="6709398533399187136">A sua palavra-passe foi exposta numa violação de dados. O Gestor de palavras-passe da Google recomenda que a altere agora.</translation>
 <translation id="6822673484890854830">O Chrome não conseguiu verificar todas as palavras-passe. Tente novamente mais tarde.</translation>
 <translation id="6964931465519938134">Agora, pode utilizar o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
+<translation id="7046845777663074840">Quando a opção está ativada:
+<ph name="BEGIN_INDENT" />  • Ajude a melhorar o Chrome para as pessoas que o utilizam de forma semelhante à sua.<ph name="END_INDENT" />
+
+Aspetos a considerar:
+<ph name="BEGIN_INDENT" />  • São enviadas à Google informações sobre a sua utilização do Chrome, mas estas não são associadas a si.
+
+  • Se o Chrome falhar, os detalhes sobre a falha podem incluir algumas informações pessoais.
+
+  • Se ativar a sincronização, as métricas também podem incluir informações sobre os URLs que visita.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Personalize o Chrome</translation>
 <translation id="7124339256045485976">Mantenha o Chrome atualizado.</translation>
 <translation id="7161390184744336561">O Google Chrome está desatualizado.</translation>

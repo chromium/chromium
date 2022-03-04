@@ -83,6 +83,14 @@
 <translation id="6709398533399187136">Jelszava adatvédelmi incidens során nyilvánosságra került. A Google Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="6822673484890854830">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
 <translation id="6964931465519938134">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
+<translation id="7046845777663074840">Ha be van kapcsolva:
+<ph name="BEGIN_INDENT" />  • Segíthet, hogy továbbfejlesszük a Chrome-ot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" />
+
+Fontos tudnivalók:
+<ph name="BEGIN_INDENT" />  • A rendszer az Ön Chrome-használatáról küld információt a Google-nak, ez az információ azonban nem köthető Önhöz.
+  • Ha a Chrome összeomlik, az összeomlással kapcsolatos adatok között szerepelhetnek bizonyos személyes információk.
+
+  • Ha bekapcsolja a szinkronizálást, a mutatók tartalmazhatnak az Ön által felkeresett URL-címekkel kapcsolatos adatokat is.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Tegye személyessé a Chrome-ot</translation>
 <translation id="7124339256045485976">Chrome böngészője legyen mindig naprakész</translation>
 <translation id="7161390184744336561">A Google Chrome elavult</translation>

@@ -56,6 +56,14 @@
 <translation id="4828317641996116749">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to neskôr.</translation>
 <translation id="4985291216379576555">Offline, Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="4999538639245140991">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
+<translation id="5039881550736388123">Keď zapnete túto možnosť:
+<ph name="BEGIN_INDENT" />  • Pomáhajte zlepšovať Chromium pre ľudí, ktorí ho používajú rovnako ako vy.<ph name="END_INDENT" />
+
+
+Čo je potrebné vziať do úvahy:
+<ph name="BEGIN_INDENT" />  • Informácie o vašom používaní prehliadača Chromium sa odosielajú Googlu, ale nie sú s vami spojené.
+  • V prípade pádu prehliadača Chromium môžu podrobnosti o páde zahŕňať niektoré osobné údaje.
+  • Ak zapnete synchronizáciu, metriky môžu zahŕňať aj informácie o webových adresách, ktoré navštívite.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Prihláste sa do prehliadača Chromium</translation>
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>
 <translation id="5308226104666789935">Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>

@@ -56,6 +56,15 @@
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
 <translation id="4999538639245140991">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chromium data will be deleted from this device. Your data will remain in your Google Account.</translation>
+<translation id="5039881550736388123">When on:
+<ph name="BEGIN_INDENT" />  • Help make Chromium better for people who use it the way that you do.<ph name="END_INDENT" />
+
+Things to consider:
+<ph name="BEGIN_INDENT" />  • Info is sent to Google about your Chromium usage, but it isn't tied to you.
+
+  • If Chromium crashes, details about the crash may include some personal info.
+
+  • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Sign In to Chromium</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
 <translation id="5308226104666789935">Chromium can't check for updates</translation>

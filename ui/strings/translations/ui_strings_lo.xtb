@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">ລູກ​ສອນ​ເບື້ອງຂວາ</translation>
 <translation id="3897092660631435901">ເມ​ນູ</translation>
 <translation id="3909791450649380159">ຕັດ</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">ຮີມເບື້ອງຂວາ</translation>
 <translation id="3994749195054421561">ຈັດຮຽງຖັນ <ph name="COLUMN_NAME" /> ຕາມລຳດັບນ້ອຍຫາໃຫຍ່ແລ້ວ.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ 1 ລາຍການ}other{ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ # ລາຍການ}}</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ເດືອນກ່ອນນີ້}other{# ເດືອນກ່ອນນີ້}}</translation>

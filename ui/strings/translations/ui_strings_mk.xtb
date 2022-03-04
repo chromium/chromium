@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">Стрелка надесно</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3909791450649380159">Ис&amp;ечи</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">Десен раб</translation>
 <translation id="3994749195054421561">Колоната <ph name="COLUMN_NAME" /> е подредена по растечки редослед.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочитано известување}one{# непрочитанo известувањe}other{# непрочитани известувања}}</translation>
 <translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Пред 1 месец}one{Пред # месец}other{Пред # месеци}}</translation>

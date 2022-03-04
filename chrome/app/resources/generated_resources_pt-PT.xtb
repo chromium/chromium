@@ -572,6 +572,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1568323446248056064">Abrir definições do dispositivo de visualização</translation>
 <translation id="1570604804919108255">Reativar o som das notificações</translation>
+<translation id="1571304935088121812">Copiar nome de utilizador</translation>
 <translation id="1571738973904005196">Ver o separador: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (convidado)</translation>
 <translation id="1572266655485775982">Ativar Wi-Fi</translation>
@@ -669,6 +670,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1640235262200048077">O <ph name="IME_NAME" /> ainda não funciona em aplicações Linux.</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 Com encriptação RSA</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
+<translation id="1641496881756082050">Mais ações para <ph name="NETWORK_NAME" /></translation>
 <translation id="1642492862748815878">Ligado a <ph name="DEVICE" /> e a mais <ph name="NUMBER_OF_DEVICES" /> dispositivos Bluetooth</translation>
 <translation id="1642494467033190216">Antes de ativar outras funcionalidades de depuração, é necessário remover a proteção de rootfs e reiniciar.</translation>
 <translation id="1643072738649235303">Assinatura X9.62 ECDSA com SHA-1</translation>
@@ -770,6 +772,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1744060673522309905">Não é possível associar o dispositivo ao domínio. Certifique-se de que não excedeu o número de dispositivos que pode adicionar.</translation>
 <translation id="1744108098763830590">página de fundo</translation>
 <translation id="1745732479023874451">Gerir contactos</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Abrir e editar # ficheiro(s) nesta app Web?}other{Abrir e editar # ficheiros nesta app Web?}}</translation>
 <translation id="1748563609363301860">Pode guardar esta palavra-passe na sua Conta Google ou apenas neste dispositivo.</translation>
 <translation id="1750048572964661931">Defina um PIN ou palavra-passe neste Chromebook para proteger o acesso às apps do seu telemóvel.</translation>
 <translation id="1750172676754093297">Não é possível armazenar impressões digitais na sua chave de segurança.</translation>
@@ -1256,9 +1259,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2220572644011485463">PIN ou palavra-passe</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Origem multimédia sem nome</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Para proporcionar a melhor experiência, o dispositivo <ph name="DEVICE_OS" /> recolhe dados de hardware acerca dos dispositivos e partilha-os com a Google para determinar que atualizações devem ser fornecidas. Opcionalmente, pode permitir que a Google utilize estes dados para fins adicionais, como o apoio técnico e melhorias ao serviço e experiência do dispositivo <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pode iniciar sessão neste dispositivo e visitar a secção CLOUDREADY_HARDWARE_INFO em chrome://system para ver os dados enviados para a Google para atualizar a filtragem, bem como outras instâncias onde opta por partilhar dados com a Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Para obter mais detalhes sobre os dados que o dispositivo <ph name="DEVICE_OS" /> pode partilhar com a Google e como são utilizados, visite g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Esta definição pertence a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">É necessário selecionar, pelo menos, um álbum da galeria de arte.</translation>
 <translation id="2224551243087462610">Editar nome da pasta</translation>
@@ -1444,6 +1444,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2381499968174336913">Pré-visualização do separador partilhado</translation>
 <translation id="2381756643783702095">Perguntar antes de enviar (recomendado)</translation>
 <translation id="2387052489799050037">Aceda à Página inicial</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (atual)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">Não é possível estabelecer ligação ao proxy, inicie sessão novamente</translation>
 <translation id="2390782873446084770">Sync Wi-Fi</translation>
@@ -1813,15 +1814,6 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2766161002040448006">Pedir ao pai/mãe</translation>
 <translation id="2767077837043621282">Não foi possível atualizar o seu Chromebook. Tente novamente mais tarde.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> poderá editar o ficheiro <ph name="FILENAME" /> até fechar todos os separadores deste site.</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Experimente estes passos de resolução de problemas:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Certifique-se de que o dispositivo contém uma memória de armazenamento interno funcional como HDD, SSD ou eMMC
-    <ph name="LIST_ITEM" />Verifique se a memória de armazenamento interno no dispositivo é superior a 16 GB
-    <ph name="LIST_ITEM" />Verifique a ligação à memória de armazenamento interno, se estiver fisicamente acessível
-    <ph name="LIST_ITEM" />Certifique-se de que está a utilizar um modelo certificado e verifique as notas de instalação
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Para obter mais ajuda, visite: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Remover da lista</translation>
 <translation id="2770690685823456775">Exportar as palavras-passe para outra pasta</translation>
 <translation id="2770929488047004208">Resolução do monitor</translation>
@@ -2252,6 +2244,7 @@ Pretende pará-lo?</translation>
 <translation id="3201422919974259695">Os dispositivos USB disponíveis são apresentados aqui.</translation>
 <translation id="3202131003361292969">Caminho</translation>
 <translation id="3202173864863109533">O som deste separador foi desativado.</translation>
+<translation id="3204648577100496185">Os dados associados a esta app poderão ser removidos deste dispositivo</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Verificar agora</translation>
 <translation id="3208703785962634733">Não confirmado</translation>
@@ -2398,6 +2391,7 @@ Pretende pará-lo?</translation>
 <translation id="337286756654493126">Ler pastas que são abertas na aplicação</translation>
 <translation id="3374294321938930390">"<ph name="BOOKMARK_TITLE" />" movido para "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3378572629723696641">Esta extensão pode ter sido danificada.</translation>
+<translation id="3378627645871606983">As autorizações que foram permitidas para o Steam aplicam-se a todos os jogos e apps do Steam.</translation>
 <translation id="337920581046691015">O <ph name="PRODUCT_NAME" /> será instalado.</translation>
 <translation id="3380365263193509176">Erro desconhecido</translation>
 <translation id="3382073616108123819">Ups! O sistema não conseguiu determinar identificadores de dispositivos para este dispositivo.</translation>
@@ -2504,9 +2498,11 @@ Pretende pará-lo?</translation>
 <translation id="346298925039590474">Esta rede móvel ficará acessível a todos os utilizadores neste dispositivo</translation>
 <translation id="3464145797867108663">Adicionar perfil de trabalho</translation>
 <translation id="346431825526753">Esta é uma conta para crianças gerida por <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Obtenha descontos para <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> e muito mais</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Telemóvel Android</translation>
 <translation id="3469583217479686109">Ferramenta de seleção</translation>
+<translation id="3470392222765168737">Seguir site</translation>
 <translation id="3471876058939596279">Não é possível utilizar as portas HDMI e USB tipo C para vídeo ao mesmo tempo. Utilize uma porta de vídeo diferente.</translation>
 <translation id="3473241910002674503">Navegue para a página inicial, para trás e mude de apps através de botões no modo de tablet.</translation>
 <translation id="3473479545200714844">Lupa</translation>
@@ -2890,6 +2886,7 @@ Pretende pará-lo?</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Uma extensão foi aprovada}one{# extensão(ões) foi(ram) aprovada(s)}other{# extensões foram aprovadas}}</translation>
 <translation id="3823310065043511710">Recomenda-se, pelo menos, <ph name="INSTALL_SIZE" /> de espaço para o Linux.</translation>
 <translation id="3824621460022590830">O token de inscrição de dispositivo é inválido. Contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Memorizar a minha escolha para este tipo de ficheiro: <ph name="FILE_TYPES" />}one{Memorizar a minha escolha para este(s) tipo(s) de ficheiro(s): <ph name="FILE_TYPES" />}other{Memorizar a minha escolha para estes tipos de ficheiros: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">Com autorização para utilizar sensores de movimentos</translation>
 <translation id="3826440694796503677">O seu administrador desativou a adição de mais Contas Google.</translation>
 <translation id="3827774300009121996">&amp;Ecrã inteiro</translation>
@@ -2947,6 +2944,7 @@ Pretende pará-lo?</translation>
 <translation id="3879748587602334249">Gestor de transferências</translation>
 <translation id="3882165008614329320">Vídeo existente da câmara ou do ficheiro</translation>
 <translation id="3883306461188700142">Escrever com a sua voz. Prima Pesquisar + D e comece a falar.</translation>
+<translation id="3883482240657453056">Obtenha descontos para <ph name="MERCHANT_NAME_1" /> e <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">O conteúdo Web disponível em vários idiomas irá utilizar o primeiro idioma suportado desta lista. Estas preferências serão sincronizadas com as definições do seu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">O seu administrador gere as atualizações</translation>
 <translation id="3886446263141354045">O seu pedido para aceder a este site foi enviado para <ph name="NAME" />.</translation>
@@ -3092,7 +3090,6 @@ Pretende pará-lo?</translation>
 <translation id="4005817994523282006">Método de deteção do fuso horário</translation>
 <translation id="4007856537951125667">Ocultar atalhos</translation>
 <translation id="4008291085758151621">As informações do site não estão disponíveis na RV</translation>
-<translation id="4009955655170295852">Antes de iniciar, certifique-se de que tem uma cópia de segurança dos dados. A instalação do <ph name="DEVICE_OS" /> substitui o seu disco rígido. Saiba mais em g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Para obter os seus marcadores no dispositivo móvel, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Tem extensões? <ph name="BEGIN_LINK" />Faça a gestão das suas extensões<ph name="END_LINK" /> num lugar acessível.</translation>
@@ -3806,7 +3803,6 @@ Pretende pará-lo?</translation>
 <translation id="4781443161433589743">Tem a segurança mais avançada do Chrome</translation>
 <translation id="4785719467058219317">Está a utilizar uma chave de segurança que não está registada neste Website.</translation>
 <translation id="4785914069240823137">Cancele o recorte</translation>
-<translation id="478708757211772586">Utilize "Seguinte" para avançar no ecrã</translation>
 <translation id="4788092183367008521">Verifique a sua ligação à rede e tente novamente.</translation>
 <translation id="4789550509729954245">Mostrar notificação quando os dispositivos estiverem a partilhar nas proximidades</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -3841,9 +3837,6 @@ Pretende pará-lo?</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 marcador eliminado}one{{COUNT} marcador(es) eliminado(s)}other{{COUNT} marcadores eliminados}}</translation>
 <translation id="4819607494758673676">Notificações do Assistente Google</translation>
 <translation id="4820236583224459650">Definir como permissão ativa</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Antes de se inscrever, tem de limpar o TPM para que o <ph name="DEVICE_OS" /> possa assumir a propriedade do dispositivo.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Também pode desativar completamente o dispositivo TPM. Os seus dados continuarão a ser armazenados em segurança com encriptação de software, mas determinadas funcionalidades de segurança, como certificados suportados por hardware, serão desativadas.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Pode alterar as definições do TPM ao reiniciar e introduzir as definições do sistema BIOS/UEFI. Os passos variam consoante o modelo do dispositivo. Para mais informações, abra a documentação do <ph name="DEVICE_OS" /> num dispositivo separado antes de reiniciar: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">Criação de &amp;perfis ativada</translation>
 <translation id="4823484602432206655">Ler e alterar definições do utilizador e do dispositivo</translation>
 <translation id="4824037980212326045">Cópia de segurança e restauro do Linux</translation>
@@ -3909,6 +3902,7 @@ Pretende pará-lo?</translation>
 <translation id="4880827082731008257">Pesquisar histórico</translation>
 <translation id="4881685975363383806">Não lembrar novamente</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="488211015466188466">Seguir site</translation>
 <translation id="4882312758060467256">Tem acesso a este site</translation>
 <translation id="4882919381756638075">Normalmente, os sites utilizam o seu microfone para funcionalidades de comunicação como chat de vídeo.</translation>
 <translation id="4883436287898674711">Todos os sites de <ph name="WEBSITE_1" /></translation>
@@ -5167,6 +5161,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6166185671393271715">Importar palavras-passe para o Chrome</translation>
 <translation id="6169040057125497443">Verifique o microfone.</translation>
 <translation id="6169666352732958425">Não é possível transmitir o ambiente de trabalho.</translation>
+<translation id="6169967265765719844">Pode gerir as autorizações de jogos e apps instalados através do Steam nas <ph name="LINK_BEGIN" />definições da app Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sanduíche</translation>
 <translation id="6170498031581934115">Não foi possível ativar a depuração do adb. Aceda às Definições e tente novamente.</translation>
 <translation id="617213288191670920">Nenhum idioma adicionado</translation>
@@ -5824,7 +5819,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6834652994408928492">O modo escuro ativa-se automaticamente ao pôr do sol</translation>
 <translation id="6835762382653651563">Ligue-se à Internet para atualizar o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Erro ao eliminar o certificado</translation>
-<translation id="6839882458129755986">A Google não é responsável por qualquer perda de dados e o <ph name="DEVICE_OS" /> pode não funcionar em modelos não certificados. Saiba mais em g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">O início de sessão foi alterado</translation>
 <translation id="6840155290835956714">Perguntar antes de enviar</translation>
 <translation id="6840184929775541289">Não é uma autoridade de certificação</translation>
@@ -5868,6 +5862,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6876469544038980967">Inútil</translation>
 <translation id="6878422606530379992">Sensores permitidos</translation>
 <translation id="6880587130513028875">As imagens foram bloqueadas nesta página.</translation>
+<translation id="688312408602122936">Todos os jogos e apps instalados através do Steam também serão removidos deste dispositivo</translation>
 <translation id="6883319974225028188">Ups! O sistema não conseguiu guardar a configuração do dispositivo.</translation>
 <translation id="6884474387073389421">Tem a certeza de que quer eliminar os dados de início de sessão selecionados?</translation>
 <translation id="6885771755599377173">Pré-visualização das informações do sistema</translation>
@@ -6148,7 +6143,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7182791023900310535">Mova a sua palavra-passe</translation>
-<translation id="7183193772170782394">Permitir que a Google utilize os dados do seu hardware para ajudar a melhorar o dispositivo <ph name="DEVICE_OS" />. Se recusar, estes dados ainda são enviados para a Google para determinar quais são as atualizações adequadas, mas não são armazenados nem utilizados em qualquer outro local. Saiba mais em g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Ativar/desativar pesquisa lateral. Pesquisa lateral não ativada.</translation>
 <translation id="7186088072322679094">Manter na Barra de ferramentas</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> não consegue abrir esta pasta porque contém ficheiros de sistema.</translation>
@@ -7246,8 +7240,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8260864402787962391">Rato</translation>
 <translation id="8261378640211443080">Esta extensão não está listada no <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e é possível que tenha sido adicionada sem o seu conhecimento.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Algo correu mal e não foi possível instalar o <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Para obter mais ajuda, visite: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Dar um nome a este grupo</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> desativou o cursor do rato.</translation>
 <translation id="8264024885325823677">Esta definição é gerida pelo seu administrador.</translation>

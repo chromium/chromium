@@ -87,7 +87,6 @@
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1650222530560417226">ভবিষ্যতে সব ট্যাব থেকে জাভাস্ক্রিপ্ট কনসোল লগ ও সমস্যা সংগ্রহ করতে "লগ করা শুরু করুন" বোতামে ট্যাপ করুন। এই পৃষ্ঠা বন্ধ করে না দেওয়া পর্যন্ত বা "লগ করা বন্ধ করুন"-এ ট্যাপ না করা পর্যন্ত লগ সংগ্রহ করা হবে এবং মেমরিতে সংরক্ষণ করা থাকবে।</translation>
-<translation id="1654232554734641711">মাইক্রোফোন অ্যাক্সেসের অনুমতি আছে</translation>
 <translation id="1657011748321897393">শেয়ার করা ব্যার্থ হয়েছে কারণ আপনি নেটওয়ার্কের সাথে সংযুক্ত নন৷</translation>
 <translation id="1657641691196698092">ব্লক করা কুকি</translation>
 <translation id="165877110639533037">কোনো ট্যাব খোলা নেই</translation>
@@ -324,7 +323,6 @@
 <translation id="3892144330757387737">আপনি এখানে আপনার ইতিহাস দেখতে পাবেন</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3904829425754749514">আপনার প্রতিষ্ঠান সিঙ্ক করার সুবিধা বন্ধ করে দিয়েছে। এখনও এই ডিভাইসে আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্য সেটিংস দেখতে পাবেন। আপনি কোনও পরিবর্তন করলে, তা আপনার অ্যাকাউন্টে সিঙ্ক হবে না।</translation>
-<translation id="3905353503976611311">ওয়েবে সার্চ করুন</translation>
 <translation id="3913386780052199712">Chrome-এ সাইন-ইন করা হয়েছে</translation>
 <translation id="3915450441834151894">সাইটের তথ্য</translation>
 <translation id="3922310737605261887">কপি করা টেক্সট সার্চ করুন</translation>
@@ -350,7 +348,6 @@
 <translation id="4121993058175073134">নেট-রপ্তানি ডেটা পাঠানোর জন্য, অনুগ্রহ করে সিস্টেম অ্যাপে আপনার ইমেল অ্যাকাউন্ট কনফিগার করুন৷</translation>
 <translation id="4124987746317609294">সময় সীমা</translation>
 <translation id="4152011295694446843">আপনি নিজের বুকমার্ক এখানে খুঁজে পাবেন</translation>
-<translation id="4153925727916232411">এর সাহায্যে আপনি ফটো তুলতে ও আপলোড করতে, এমনকি QR কোড স্ক্যানও করতে পারবেন।</translation>
 <translation id="4172051516777682613">সর্বদা দেখান</translation>
 <translation id="418156467088430727">নতুন ট্যাবে অফলাইন ভার্সন দেখুন</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
@@ -387,7 +384,6 @@
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> এ গিয়ে সংরক্ষণ করা পাসওয়ার্ডগুলি দেখুন ও পরিচালনা করুন</translation>
 <translation id="4536418791685807335">আবার সাইন ইন করার চেষ্টা করুন।</translation>
 <translation id="4540780316273593836">কিছু সমস্যা হয়েছে</translation>
-<translation id="4572065712096155137">অ্যাক্সেস করুন</translation>
 <translation id="457386861538956877">আরও...</translation>
 <translation id="4592368184551360546">কীবোর্ড</translation>
 <translation id="461440297010471931">Google এর মাধ্যমে সার্চ করা হচ্ছে</translation>
@@ -409,7 +405,6 @@
 <translation id="4689564913179979534">পেমেন্ট পদ্ধতিগুলি ম্যানেজ করুন...</translation>
 <translation id="4697071790493980729">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="470966556546083668">সিঙ্ক চালু করবেন না</translation>
-<translation id="4731472194328757163">ক্যামেরা ও মাইক্রোফোন অ্যাক্সেসের অনুমতি আছে</translation>
 <translation id="4737560986434232178">সাম্প্রতিক ট্যাব সার্চ করুন</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4747097190499141774">পাসফ্রেজ এনক্রিপশনে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না। আপনার পাসফ্রেজ আছে এমন কেউই শুধু আপনার এনক্রিপ্ট করা ডেটা পড়তে পারবেন। পাসফ্রেজ Google-এ পাঠানো হয় না বা Google তা সংরক্ষণ করে না। আপনার পাসফ্রেজ ভুলে গেলে বা এই সেটিং পরিবর্তন করতে চাইলে, আপনাকে সিঙ্ক রিসেট করতে হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -504,7 +499,6 @@
 <translation id="5580834567471114021">পরে পড়ার জন্য পড়ার তালিকায় যোগ করতে চান?</translation>
 <translation id="5592679540098330836"><ph name="NAME" />-এর জন্য সিঙ্ক করার সুবিধাটি চালু করুন</translation>
 <translation id="560322036295180549">আপনার সংস্থা বন্ধ করে দিয়েছে</translation>
-<translation id="560999923643681074">এডিট করার অ্যাক্সেস</translation>
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
 <translation id="5626245204502895507">ফাইলটি এই সময়ে ডাউনলোড করা যাবে না৷</translation>
 <translation id="5631164295104953411">পেমেন্টের পদ্ধতি যোগ করুন</translation>
@@ -527,7 +521,6 @@
 <translation id="5803566855766646066">আপনি কি সত্যিই এই নতুন কার্ড বাতিল করতে চান?</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
 <translation id="5812974770859303494">এতে যোগ করুন...</translation>
-<translation id="5816228676161003208">এটি আপনাকে আপনার ভয়েস ব্যবহার করে আরও দ্রুত সার্চ করতে দেয়।</translation>
 <translation id="581659025233126501">সিঙ্ক চালু করুন</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> এটি ম্যানেজ করে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">সার্চ ইঞ্জিন</translation>
@@ -566,7 +559,6 @@
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
 <translation id="6064824697233747382">আপনার সংস্থার প্রয়োজনে আপনার সিঙ্ক প্রসেস বন্ধ করা হয়েছে।</translation>
 <translation id="6066301408025741299">বাতিল করতে আলতো চাপুন৷</translation>
-<translation id="6077126322656614846">ক্যামেরা অ্যাক্সেসের অনুমতি আছে</translation>
 <translation id="60829778314739003">সম্মতি দিন এবং কাজ চালিয়ে যান</translation>
 <translation id="6084848228346514841">ট্যাব বেছে নিন</translation>
 <translation id="6103540626693881831">অন-ডিভাইস এনক্রিপশন</translation>
@@ -830,7 +822,6 @@
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
 <translation id="8323906514956095947">আরও ট্যাবের বিকল্প দেখতে টাচ করে ধরে থাকুন</translation>
 <translation id="8328777765163860529">সমস্ত বন্ধ করুন</translation>
-<translation id="8364085047956854021">আপনি এই সাইটটি বন্ধ করে দিলে "<ph name="SITE_NAME" />"-এর অনুমতি বন্ধ হয়ে যাবে।</translation>
 <translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
 <translation id="8386068868580335421">রিসেট করুন</translation>
 <translation id="8407669440184693619">এই সাইটের জন্য কোনও পাসওয়ার্ড পাওয়া যায়নি</translation>

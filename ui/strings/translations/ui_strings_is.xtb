@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">Ör til hægri</translation>
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3909791450649380159">Klippa</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">Hægri brún</translation>
 <translation id="3994749195054421561">Dálknum <ph name="COLUMN_NAME" /> raðað í hækkandi röð.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Ein ólesin tilkynning}one{# ólesin tilkynning}other{# ólesnar tilkynningar}}</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Fyrir einum mánuði}one{Fyrir # mánuði}other{Fyrir # mánuðum}}</translation>

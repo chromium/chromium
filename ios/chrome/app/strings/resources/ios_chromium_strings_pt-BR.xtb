@@ -56,6 +56,15 @@
 <translation id="4828317641996116749">Não foi possível verificar todas as senhas com o Chromium. Tente novamente mais tarde.</translation>
 <translation id="4985291216379576555">Off-line. Não é possível verificar se há atualizações</translation>
 <translation id="4999538639245140991">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chromium serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
+<translation id="5039881550736388123">Quando ativada, esta configuração faz o seguinte:
+<ph name="BEGIN_INDENT" />  • Ajuda a melhorar o Chromium para as pessoas que o usam da mesma forma que você.<ph name="END_INDENT" />
+
+Considerações:
+<ph name="BEGIN_INDENT" />  • São enviadas ao Google informações sobre seu uso do Chromium, mas elas não são vinculadas a você.
+
+  • Se o Chromium falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.
+
+  • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Faça login no Chromium</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>

@@ -87,7 +87,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="1650222530560417226">Barcha varaqlardagi JavaScript konsoli jurnali va xatolari yigʻilishi uchun “Jurnalga yozishni boshlash” ustiga bosing. Jurnallar sahifa yopilmaguncha yoki “Jurnalga yozishni toʻxtatish” bosilmaguncha yigʻiladi (va faqat xotirada saqlanadi).</translation>
-<translation id="1654232554734641711">Mikrofondan foydalanishga ruxsat berildi</translation>
 <translation id="1657011748321897393">Yozuv tarmoq xatoligi sababli joylanmadi.</translation>
 <translation id="1657641691196698092">Cookie-fayllar bloklandi</translation>
 <translation id="165877110639533037">Ochiq tablar yo‘q</translation>
@@ -323,7 +322,6 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="3892144330757387737">Brauzer tarixi shu yerda chiqadi</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3904829425754749514">Sinxronizatsiya tashkilotingiz tomonidan faolsizlantirilgan. Bu qurilmadagi bukmarklar, tarix, parollar va boshqa sozlamalarni koʻrishingiz mumkin. Oʻzgartirish kiritilsa, ular hisobingizga sinxronlanmaydi.</translation>
-<translation id="3905353503976611311">Internetdan qidirish</translation>
 <translation id="3913386780052199712">Chrome hisobiga kirildi</translation>
 <translation id="3915450441834151894">Sayt haqida</translation>
 <translation id="3922310737605261887">Nusxalangan matnni qidirish</translation>
@@ -349,7 +347,6 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="4121993058175073134">Tozalangan ma’lumotlarni eksport qilish uchun “Sozlamalar” ilovasida yaroqli e-pochta hisobini kiriting.</translation>
 <translation id="4124987746317609294">Vaqt diapazoni</translation>
 <translation id="4152011295694446843">Brauzer bukmarklari shu yerda chiqadi</translation>
-<translation id="4153925727916232411">Rasmlarni suratga olish va internetga yuklash, QR kodlarni skanerlash imkonini beradi.</translation>
 <translation id="4172051516777682613">Doim ko‘rsatilsin</translation>
 <translation id="418156467088430727">Oflayn versiyasini yangi varaqda ochish</translation>
 <translation id="4181841719683918333">Tillar</translation>
@@ -365,7 +362,7 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="4304713468139749426">Parollar menejeri</translation>
 <translation id="430793432425771671">Barchasini sinxronlash</translation>
 <translation id="4309403553630140242">Batafsil axborot olish uchun ikki marta bosing.</translation>
-<translation id="430967081421617822">Shu kungacha</translation>
+<translation id="430967081421617822">Boshidan beri</translation>
 <translation id="4334428914252001502">1 ta maqola ochilmagan.</translation>
 <translation id="4338650699862464074">Siz tashrif buyurgan URL manzillarni Google serverlariga yuboradi.</translation>
 <translation id="4359125752503270327">Bu sahifa boshqa ilovada ochiladi.</translation>
@@ -386,7 +383,6 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="4526249700380860531">Saqlab olingan parollarni <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> sahifasi orqali ko‘ring va ularni boshqaring.</translation>
 <translation id="4536418791685807335">Qaytadan kirib ko‘ring.</translation>
 <translation id="4540780316273593836">Nimadir xato ketdi</translation>
-<translation id="4572065712096155137">Ruxsat</translation>
 <translation id="457386861538956877">Yana...</translation>
 <translation id="4592368184551360546">Klaviatura</translation>
 <translation id="461440297010471931">Google orqali qidiruv</translation>
@@ -408,7 +404,6 @@ Ma’lumotlaringiz kodli ibora bilan shifrlangan. Sinxronlashuvni boshlash uchun
 <translation id="4689564913179979534">Toʻlov usullarini boshqarish...</translation>
 <translation id="4697071790493980729">Hech qanday natija topilmadi</translation>
 <translation id="470966556546083668">Sinxronizatsiya qilinmasin</translation>
-<translation id="4731472194328757163">Kamera va mikrofondan foydalanishga ruxsat berildi</translation>
 <translation id="4737560986434232178">Oxirgi varaqlar ichidan qidirish</translation>
 <translation id="473775607612524610">Yangilash</translation>
 <translation id="4747097190499141774">Kodli ibora yordamida shifrlaganda Google Pay manzillari va toʻlov usullari shifrlanmaydi. Shifrlangan maʼlumotlaringizni faqat kodli iborani biladiganlar koʻra oladi. Bu iborani Google bilmaydi va serverlarida saqlamaydi. Agar kodli iborani unutsangiz, sinxronlash sozlamalarini qayta tiklash kerak bo‘ladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -501,7 +496,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5580834567471114021">Keyinroq oʻqish uchun mutolaa roʻyxatiga kiritilsinmi?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> hisobingizni sinxronlang</translation>
 <translation id="560322036295180549">Tashkilotingiz tomonidan faolsizlantirilgan</translation>
-<translation id="560999923643681074">Tahrirlash ruxsati</translation>
 <translation id="5614553682702429503">Parol saqlansinmi?</translation>
 <translation id="5626245204502895507">Faylni yuklab olishda xatolik yuz berdi.</translation>
 <translation id="5631164295104953411">To‘lov usulini qo‘shing</translation>
@@ -524,7 +518,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5803566855766646066">Bu yangi karta inkor etilsinmi?</translation>
 <translation id="5804241973901381774">Ruxsatlar</translation>
 <translation id="5812974770859303494">Kiritish...</translation>
-<translation id="5816228676161003208">Ovoz orqali tezroq qidirish imkonini beradi.</translation>
 <translation id="581659025233126501">Sinxronizatsiyani yoqish</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> tomonidan boshqariladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Qidiruv tizimi</translation>
@@ -563,7 +556,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6059830886158432458">Yangiliklar va faoliyatni shu yerdan boshqaring</translation>
 <translation id="6064824697233747382">Tashkilotingiz sinxronizatsiyani faolsizlantirishni talab qiladi.</translation>
 <translation id="6066301408025741299">Bekor qilish uchun bu yerga bosing.</translation>
-<translation id="6077126322656614846">Kameradan foydalanishga ruxsat berildi</translation>
 <translation id="60829778314739003">Qabul qilish va davom etish</translation>
 <translation id="6084848228346514841">Varaqlarni tanlang</translation>
 <translation id="6103540626693881831">Qurilmada shifrlash</translation>
@@ -827,7 +819,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8319076807703933069">Yangi qidiruv</translation>
 <translation id="8323906514956095947">Varaqqa oid boshqa amallar uchun bosib turing</translation>
 <translation id="8328777765163860529">Hammasini yopish</translation>
-<translation id="8364085047956854021">Bu sayt yopilganda “<ph name="SITE_NAME" />” ruxsatlari asliga qaytariladi.</translation>
 <translation id="8378714024927312812">Tashkilotingiz tomonidan boshqariladi</translation>
 <translation id="8386068868580335421">Asliga qaytarish</translation>
 <translation id="8407669440184693619">Bu sayt uchun hech qanday parol topilmadi</translation>

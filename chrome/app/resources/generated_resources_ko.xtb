@@ -574,6 +574,7 @@
 <translation id="1567993339577891801">자바스크립트 콘솔</translation>
 <translation id="1568323446248056064">디스플레이 기기 설정 열기</translation>
 <translation id="1570604804919108255">알림 숨기기 취소</translation>
+<translation id="1571304935088121812">사용자 이름 복사</translation>
 <translation id="1571738973904005196">탭 보기: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />(게스트)</translation>
 <translation id="1572266655485775982">Wi-Fi 사용</translation>
@@ -1267,9 +1268,6 @@
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">이름이 지정되지 않은 미디어 소스</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />최상의 사용자 경험을 제공하기 위해 <ph name="DEVICE_OS" />에서는 어떤 업데이트가 전송되어야 하는지 결정하고자 기기의 하드웨어 데이터를 수집하여 Google과 공유합니다. <ph name="DEVICE_OS" /> 사용자 경험과 서비스 지원 개선이라는 추가적인 목적을 위해 사용자가 Google에서 이 데이터를 사용하도록 허용할 수도 있습니다.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />이 기기에 로그인한 후 chrome://system의 CLOUDREADY_HARDWARE_INFO 섹션으로 이동하면 업데이트 필터링을 사용하여 Google에 전송되는 데이터를 확인할 수 있으며, Google과 데이터를 공유하도록 선택한 다른 항목도 살펴볼 수 있습니다.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />에서 Google과 공유할 수 있는 데이터와 데이터가 사용되는 방식에 관해 자세히 알아보려면 g.co/CR2/HWDataCollection 페이지로 이동하세요.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269"><ph name="OWNER_EMAIL" />의 설정입니다.</translation>
 <translation id="222447520299472966">아트 갤러리 앨범을 하나 이상 선택해야 합니다.</translation>
 <translation id="2224551243087462610">폴더 이름 수정</translation>
@@ -1827,15 +1825,6 @@
 <translation id="2766161002040448006">부모님에게 묻기</translation>
 <translation id="2767077837043621282">Chromebook을 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2767127727915954024">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있게 됩니다.</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />다음 문제 해결 단계를 시도해 보세요.
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />기기에 HDD, SSD 또는 eMMC와 같은 내부 저장소가 설치되어 있고 정상 작동하는지 확인하세요.
-    <ph name="LIST_ITEM" />내부 저장소가 16GB 이상인지 확인하세요.
-    <ph name="LIST_ITEM" />내부 저장소 연결을 물리적으로 확인할 수 있으면 점검하세요.
-    <ph name="LIST_ITEM" />인증된 모델을 사용하고 있는지 확인하고 설치 노트를 확인하세요.
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />도움이 필요한 경우 g.co/CR2/InstallErrors 페이지를 참고하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">목록에서 삭제</translation>
 <translation id="2770690685823456775">비밀번호를 다른 폴더로 내보냅니다.</translation>
 <translation id="2770929488047004208">모니터 해상도</translation>
@@ -3105,7 +3094,6 @@
 <translation id="4005817994523282006">시간대 감지 방법</translation>
 <translation id="4007856537951125667">바로가기 숨기기</translation>
 <translation id="4008291085758151621">VR에서 사이트 정보를 사용할 수 없습니다</translation>
-<translation id="4009955655170295852">시작하기 전에 데이터 백업이 있는지 확인하세요. <ph name="DEVICE_OS" />을 설치하면 하드 드라이브가 덮어쓰기됩니다. g.co/CR2/InstallGuide에서 자세히 알아보세요.</translation>
 <translation id="4010917659463429001">휴대기기에서 내 북마크를 사용하려면 <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">'<ph name="EXTENSION_NAME" />'을(를) 복구하시겠습니까?</translation>
 <translation id="4015163439792426608">확장 프로그램이 있나요? 한곳에서 편리하게 <ph name="BEGIN_LINK" />확장 프로그램을 관리<ph name="END_LINK" />하세요.</translation>
@@ -3817,7 +3805,6 @@
 <translation id="4781443161433589743">Chrome의 가장 강력한 보안 기능으로 보호되고 있습니다.</translation>
 <translation id="4785719467058219317">이 웹사이트에 등록되지 않은 보안 키를 사용하고 있습니다.</translation>
 <translation id="4785914069240823137">자르기 취소</translation>
-<translation id="478708757211772586">'다음'을 사용하여 화면에서 앞으로 이동합니다.</translation>
 <translation id="4788092183367008521">네트워크 연결을 확인한 다음 다시 시도하세요.</translation>
 <translation id="4789550509729954245">근처의 기기가 공유 중일 때 알림 표시</translation>
 <translation id="4791000909649665275">사진 <ph name="NUMBER" />장</translation>
@@ -3852,9 +3839,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{북마크 1개 삭제됨}other{북마크 {COUNT}개 삭제됨}}</translation>
 <translation id="4819607494758673676">Google 어시스턴트 알림</translation>
 <translation id="4820236583224459650">활성 티켓으로 설정</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />등록하기 전에 <ph name="DEVICE_OS" />에서 기기 소유권을 가질 수 있도록 TPM을 삭제해야 합니다.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />TPM 기기를 완전히 끌 수도 있습니다. 데이터는 소프트웨어 암호화를 통해 계속 안전하게 저장되지만 하드웨어 지원 인증서와 같은 특정 보안 기능은 중지됩니다.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />재부팅하고 시스템 BIOS/UEFI 설정을 입력하여 TPM 설정을 변경할 수 있습니다. 기기 모델에 따라 설정을 변경하는 단계가 다를 수 있습니다. 자세한 내용을 확인하려면 재부팅하기 전에 별도의 기기에서 <ph name="DEVICE_OS" /> 도움말(g.co/CR2/TPMHelp)을 여세요.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">프로파일링 사용(&amp;P)</translation>
 <translation id="4823484602432206655">사용자와 기기 설정 확인 및 변경</translation>
 <translation id="4824037980212326045">Linux 백업 및 복원</translation>
@@ -5834,7 +5818,6 @@
 <translation id="6834652994408928492">일몰 시 어두운 모드가 자동으로 켜짐</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />을(를) 업데이트하려면 인터넷에 연결하세요.</translation>
 <translation id="6839225236531462745">인증서 삭제 오류</translation>
-<translation id="6839882458129755986">Google은 데이터 손실에 대해 책임지지 않으며 <ph name="DEVICE_OS" />은 인증되지 않은 모델에서는 작동하지 않을 수 있습니다. g.co/CR2/InstallGuide에서 자세히 알아보세요.</translation>
 <translation id="6839916869147598086">로그인 변경됨</translation>
 <translation id="6840155290835956714">보내기 전에 확인</translation>
 <translation id="6840184929775541289">인증 기관 아님</translation>
@@ -6158,7 +6141,6 @@
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7180865173735832675">맞춤설정</translation>
 <translation id="7182791023900310535">비밀번호 이동</translation>
-<translation id="7183193772170782394"><ph name="DEVICE_OS" /> 개선을 위해 Google에서 하드웨어 데이터를 사용하도록 허용합니다. 거부하더라도 데이터가 Google에 전송되어 적절한 업데이트를 결정하는 데 사용되지만, 저장되거나 다른 용도로 사용되지는 않습니다. g.co/CR2/HWDataCollection에서 자세히 알아보세요.</translation>
 <translation id="7183420126213758623">사이드 검색을 전환합니다. 사이드 검색이 활성화되지 않았습니다.</translation>
 <translation id="7186088072322679094">툴바에 보관</translation>
 <translation id="7186303001964993981">이 폴더에는 시스템 파일이 포함되어 있으므로 <ph name="ORIGIN" />에서 열 수 없습니다.</translation>
@@ -7256,8 +7238,6 @@
 <translation id="8260864402787962391">마우스</translation>
 <translation id="8261378640211443080">이 확장 프로그램은 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않으며 사용자 모르게 추가되었을 수 있습니다.</translation>
 <translation id="8261506727792406068">삭제</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />문제가 발생하여 <ph name="DEVICE_OS" />을 설치할 수 없습니다.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />도움이 필요한 경우 g.co/CR2/InstallErrors 페이지를 참고하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">그룹 이름 지정</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />에서 마우스 커서를 사용 중지했습니다.</translation>
 <translation id="8264024885325823677">관리자가 관리하는 설정입니다.</translation>

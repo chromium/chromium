@@ -571,6 +571,7 @@
 <translation id="1567993339577891801">JavaScript консол</translation>
 <translation id="1568323446248056064">Төхөөрөмжийн дэлгэцийн тохиргоог харуулах</translation>
 <translation id="1570604804919108255">Мэдэгдлийн дууг нээх</translation>
+<translation id="1571304935088121812">Хэрэглэгчийн нэрийг хуулах</translation>
 <translation id="1571738973904005196">Таб үзэх: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719">(Зочин) <ph name="WINDOW_TITLE" /></translation>
 <translation id="1572266655485775982">Wi-Fi-г идэвхжүүлэх</translation>
@@ -1264,9 +1265,6 @@
 <translation id="2220572644011485463">ПИН, эсвэл нууц үг</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Нэргүй медиа эх сурвалж</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Хамгийн сайн туршлагыг олгохын тулд <ph name="DEVICE_OS" /> нь төхөөрөмжийн талаарх техник хангамжийн өгөгдлийг цуглуулж, үүнийг аль шинэчлэлтүүдийг хүргэхийг тодорхойлохын тулд Google-тэй хуваалцана. Сонголтоор та Google-д энэ өгөгдлийг <ph name="DEVICE_OS" />-н туршлага болон үйлчилгээний тусламж, сайжруулалт зэрэг нэмэлт зорилгоор ашиглахыг зөвшөөрөх боломжтой.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Та энэ төхөөрөмж дээр нэвтэрч, chrome://system дэх CLOUDREADY_HARDWARE_INFO хэсэгт зочлон шинэчлэлтийг шүүх зорилгоор Google рүү илгээсэн өгөгдөл түүнчлэн таны Google-тэй өгөгдөл хуваалцахаар сонгосон бусад аливаа инстансыг харах боломжтой.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />-н Google-тэй хуваалцаж болох өгөгдөл болон үүнийг хэрхэн ашигладаг талаарх нэмэлт мэдээллийг g.co/CR2/HWDataCollection дээрээс авна уу<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Энэ тохиргоо нь <ph name="OWNER_EMAIL" />-д хамаатай.</translation>
 <translation id="222447520299472966">Дор хаяж нэг Уран зургийн галерейн цомгийг сонгосон байх шаардлагатай</translation>
 <translation id="2224551243087462610">Хавтасны нэрийг засах</translation>
@@ -1824,15 +1822,6 @@
 <translation id="2766161002040448006">Эцэг эхээс асуух</translation>
 <translation id="2767077837043621282">Таны Chromebook-г шинэчилж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2767127727915954024">Таныг энэ сайтын бүх табыг хаах хүртэл <ph name="ORIGIN" /> нь <ph name="FILENAME" />-г засах боломжтой байна</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Эдгээр асуудал шийдэх алхмыг туршиж үзнэ үү:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Таны төхөөрөмжид HDD, SSD эсвэл eMMC зэрэг ажиллагаатай дотоод сан байгаа эсэхийг шалгана уу
-    <ph name="LIST_ITEM" />Таны дотоод сангийн төхөөрөмж 16ГБ-аас илүү их зайтай эсэхийг шалгана уу
-    <ph name="LIST_ITEM" />Хэрэв биетээр хандах боломжтой бол дотоод сангийнхаа холболтыг шалгана уу
-    <ph name="LIST_ITEM" />Та баталгаажсан загвар ашиглаж байгаа эсэх болон суулгах тэмдэглэлийг шалгана уу
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Илүү их тусламж хэрэгтэй бол дараахад зочилно уу: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Жагсаалтаас устгах</translation>
 <translation id="2770690685823456775">Нууц үгээ өөр фолдерт экспортлох</translation>
 <translation id="2770929488047004208">Мониторын нягтрал</translation>
@@ -3107,7 +3096,6 @@
 <translation id="4005817994523282006">Цагийн бүс илрүүлэх арга</translation>
 <translation id="4007856537951125667">Товчлолыг нуух</translation>
 <translation id="4008291085758151621">Сайтын мэдээлэл VR-д боломжгүй байна</translation>
-<translation id="4009955655170295852">Эхлэхээсээ өмнө өгөгдлөө нөөцөлсөн эсэхээ шалгана уу. <ph name="DEVICE_OS" />-г суулгаснаар таны хатуу дискийг дарж бичнэ. Та g.co/CR2/InstallGuide дээрээс нэмэлт мэдээлэл авна уу.</translation>
 <translation id="4010917659463429001">Хавчуургаа мобайл төхөөрөмждөө авахын тулд, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Та "<ph name="EXTENSION_NAME" />-г" засварлах уу?</translation>
 <translation id="4015163439792426608">Өргөтгөлтэй болсон уу? Хялбарчилсан нэг газраас <ph name="BEGIN_LINK" />өргөтгөлүүдээ удирдаарай<ph name="END_LINK" />.</translation>
@@ -3822,7 +3810,6 @@
 <translation id="4781443161433589743">Та Chrome-н хамгийн найдвартай хамгаалалтад байна</translation>
 <translation id="4785719467058219317">Та энэ веб сайтад бүртгүүлээгүй аюулгүй байдлын түлхүүрийг ашиглаж байна</translation>
 <translation id="4785914069240823137">Тайралтыг цуцална уу</translation>
-<translation id="478708757211772586">Дэлгэц дээр урагш шилжихийн тулд “Дараах”-ыг ашиглана уу</translation>
 <translation id="4788092183367008521">Сүлжээний холболтоо шалгаад дахин оролдоно уу.</translation>
 <translation id="4789550509729954245">Төхөөрөмжүүд ойролцоо хуваалцаж байгаа үед мэдэгдэл харуулах</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> зураг</translation>
@@ -3857,9 +3844,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 хавчуургыг устгасан}other{{COUNT} хавчуургыг устгасан}}</translation>
 <translation id="4819607494758673676">Google Туслахын мэдэгдэл</translation>
 <translation id="4820236583224459650">Идэвхтэй тасалбар болгож тохируулах</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Бүртгүүлэхээсээ өмнө та TPM-г цэвэрлэх шаардлагатай бөгөөд ингэснээр <ph name="DEVICE_OS" /> нь төхөөрөмжийн өмчлөлийг авах боломжтой.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Та мөн TPM төхөөрөмжийг бүхэлд нь унтраах боломжтой. Таны өгөгдлийг программ хангамжийн шифрлэлтээр аюулгүйгээр хадгалсаар байх хэдий ч техник хангамжаар баталгаажсан сертификатууд зэрэг аюулгүй байдлын тодорхой онцлогуудыг идэвхгүй болгоно.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Та TPM-н тохиргоогоо системийн BIOS/UEFI-н тохиргоог дахин асааж, оруулснаар өөрчлөх боломжтой. Алхмууд нь төхөөрөмжийн загварт тулгуурлан ялгаатай байна. Нэмэлт мэдээлэл авах бол та дахин асаахаасаа өмнө <ph name="DEVICE_OS" />-н баримт бичгийг тусдаа төхөөрөмж дээр нээнэ үү: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Профайл боловсруулалт идэвхжлээ.</translation>
 <translation id="4823484602432206655">Хэрэглэгч болон төхөөрөмжийн тохиргоог уншиж, өөрчлөх</translation>
 <translation id="4824037980212326045">Linux-н нөөцлөлт болон сэргээлт</translation>
@@ -5841,7 +5825,6 @@
 <translation id="6834652994408928492">Нар жаргах үед бараан горим автоматаар асна</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ээ шинэчлэхийн тулд интернэтэд холбогдоно уу.</translation>
 <translation id="6839225236531462745">Гэрчилгээг арчих алдаа</translation>
-<translation id="6839882458129755986">Google аливаа өгөгдлийн алдагдлыг хариуцахгүй бөгөөд <ph name="DEVICE_OS" /> нь баталгаажаагүй загварууд дээр ажиллахгүй байж магадгүй. Та g.co/CR2/InstallGuide дээрээс нэмэлт мэдээлэл авна уу.</translation>
 <translation id="6839916869147598086">Нэвтрэх өөрчлөгдлөө</translation>
 <translation id="6840155290835956714">Илгээхээсээ өмнө асуух</translation>
 <translation id="6840184929775541289">Гэрчилгээжүүлэх эрх байхгүй</translation>
@@ -6166,7 +6149,6 @@
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7180865173735832675">Хүссэнээр өөрчлөх</translation>
 <translation id="7182791023900310535">Нууц үгээ зөөх</translation>
-<translation id="7183193772170782394">Google-д таны техник хангамжийн өгөгдлийг <ph name="DEVICE_OS" />-г сайжруулахад ашиглахыг зөвшөөрнө үү. Хэрэв та татгалзвал энэ өгөгдлийг Google рүү зохих шинэчлэлтүүдийг тодорхойлохын тулд илгээсэн хэвээр байх хэдий ч хадгалахгүй эсвэл өөрөөр ашиглахгүй. Та g.co/CR2/HWDataCollection дээрээс нэмэлт мэдээлэл авна уу.</translation>
 <translation id="7183420126213758623">Хажуугийн хайлтыг асаана уу/унтраана уу. Хажуугийн хайлтыг идэвхжүүлээгүй.</translation>
 <translation id="7186088072322679094">Хэрэгслийн мөрд хадгалaх</translation>
 <translation id="7186303001964993981">Энэ фолдер системийн файл агуулдаг тул <ph name="ORIGIN" /> үүнийг нээх боломжгүй</translation>
@@ -7261,8 +7243,6 @@
 <translation id="8260864402787962391">Хулгана</translation>
 <translation id="8261378640211443080">Энэ өргөтгөл нь <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ийн нь жагсаалтад ороогүй байгаа бөгөөд танд мэдэгдэхгүйгээр нэмэгдсэн байж болно.</translation>
 <translation id="8261506727792406068">Устгах</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Алдаа гарсан бөгөөд <ph name="DEVICE_OS" />-г суулгаж чадсангүй.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Илүү их тусламж авах бол дараахад зочилно уу: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Энэ бүлгийг нэрлэнэ үү</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> нь таны хулганын заагчийг идэвхгүй болгосон байна.</translation>
 <translation id="8264024885325823677">Энэ тохиргоог таны администратор удирддаг.</translation>

@@ -87,7 +87,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1650222530560417226">Ketik butang "Hentikan Pengelogan" untuk mengumpulkan log konsol JavaScript yang akan datang dan ralat daripada semua tab. Log akan dikumpulkan (dan disimpan dalam memori sahaja) hingga halaman ini ditutup atau "Hentikan Pengelogan" diketik.</translation>
-<translation id="1654232554734641711">Akses Mikrofon di benarkan</translation>
 <translation id="1657011748321897393">Perkongsian gagal kerana anda tidak disambungkan ke rangkaian.</translation>
 <translation id="1657641691196698092">Kuki yang Disekat</translation>
 <translation id="165877110639533037">Tiada Tab Terbuka</translation>
@@ -323,7 +322,6 @@ Ikut langkah di bawah:</translation>
 <translation id="3892144330757387737">Anda dapat menemukan sejarah anda di sini</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">Organisasi anda mematikan penyegerakan. Anda masih boleh melihat penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada peranti ini. Jika perubahan dibuat, perubahan itu tidak akan disegerakkan ke akaun anda.</translation>
-<translation id="3905353503976611311">Cari di Web</translation>
 <translation id="3913386780052199712">Dilog masuk ke Chrome</translation>
 <translation id="3915450441834151894">Maklumat Tapak</translation>
 <translation id="3922310737605261887">Cari Teks yang Disalin</translation>
@@ -349,7 +347,6 @@ Ikut langkah di bawah:</translation>
 <translation id="4121993058175073134">Tetapkn akaun e-mel anda dahulu dlm apl Tetapan utk mhantar data net-eksport.</translation>
 <translation id="4124987746317609294">Julat Masa</translation>
 <translation id="4152011295694446843">Anda dapat menemukan penanda halaman anda di sini</translation>
-<translation id="4153925727916232411">Langkah ini membolehkan anda mengambil dan memuat naik foto serta mengimbas Kod QR.</translation>
 <translation id="4172051516777682613">Sentiasa paparkan</translation>
 <translation id="418156467088430727">Lihat Versi Luar Talian di Tab Baharu</translation>
 <translation id="4181841719683918333">Bahasa</translation>
@@ -386,7 +383,6 @@ Ikut langkah di bawah:</translation>
 <translation id="4526249700380860531">Lihat dan urus kata laluan yang disimpan di <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Cuba log masuk semula.</translation>
 <translation id="4540780316273593836">Kesilapan Telah Berlaku</translation>
-<translation id="4572065712096155137">Akses</translation>
 <translation id="457386861538956877">Lagi...</translation>
 <translation id="4592368184551360546">Papan kekunci</translation>
 <translation id="461440297010471931">Mencari dengan Google</translation>
@@ -408,7 +404,6 @@ Data anda disulitkan dengan ungkapan laluan segerak anda. Masukkannya untuk memu
 <translation id="4689564913179979534">Urus Kaedah Pembayaran...</translation>
 <translation id="4697071790493980729">Tiada Hasil Carian Ditemukan</translation>
 <translation id="470966556546083668">Jangan Hidupkan Penyegerakan</translation>
-<translation id="4731472194328757163">Akses Kamera dan Mikrofon dibenarkan</translation>
 <translation id="4737560986434232178">Cari Tab Terkini</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4747097190499141774">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat daripada Google Pay. Hanya orang yang mempunyai ungkapan laluan anda boleh membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar atau disimpan oleh Google. Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, anda perlu menetapkan semula penyegerakan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -501,7 +496,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5580834567471114021">Tambahkan pada Senarai Bacaan untuk Kemudian?</translation>
 <translation id="5592679540098330836">Hidupkan penyegerakan untuk <ph name="NAME" /></translation>
 <translation id="560322036295180549">Dimatikan oleh organisasi anda</translation>
-<translation id="560999923643681074">Akses Edit</translation>
 <translation id="5614553682702429503">Simpan kata laluan?</translation>
 <translation id="5626245204502895507">Fail tidak boleh dimuat turun pada masa ini.</translation>
 <translation id="5631164295104953411">Tambahkan Kaedah Pembayaran</translation>
@@ -524,7 +518,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5803566855766646066">Adakah anda pasti anda mahu membuang kad baharu ini?</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5812974770859303494">Tambahkan pada...</translation>
-<translation id="5816228676161003208">Langkah ini membolehkan anda mencari dengan lebih cepat menggunakan suara anda.</translation>
 <translation id="581659025233126501">Hidupkan Penyegerakan</translation>
 <translation id="5819208479324046259">Diurus oleh <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Enjin Carian</translation>
@@ -563,7 +556,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6059830886158432458">Kawal cerita dan aktiviti anda di sini</translation>
 <translation id="6064824697233747382">Organisasi anda menghendaki anda mematikan penyegerakan.</translation>
 <translation id="6066301408025741299">Ketik untuk membatalkan.</translation>
-<translation id="6077126322656614846">Akses Kamera dibenarkan</translation>
 <translation id="60829778314739003">Terima dan Teruskan</translation>
 <translation id="6084848228346514841">Pilih Tab</translation>
 <translation id="6103540626693881831">Penyulitan pada Peranti</translation>
@@ -827,7 +819,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8319076807703933069">Carian Baharu</translation>
 <translation id="8323906514956095947">Sentuh &amp; tahan untuk melihat lagi pilihan tab</translation>
 <translation id="8328777765163860529">Tutup Semua</translation>
-<translation id="8364085047956854021">Kebenaran "<ph name="SITE_NAME" />" akan ditetapkan semula kepada dimatikan apabila anda meninggalkan laman ini.</translation>
 <translation id="8378714024927312812">Diurus oleh organisasi anda</translation>
 <translation id="8386068868580335421">Tetapkan semula</translation>
 <translation id="8407669440184693619">Tiada kata laluan ditemui untuk tapak ini</translation>

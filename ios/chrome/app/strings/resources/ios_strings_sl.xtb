@@ -87,7 +87,6 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="1650222530560417226">Dotaknite se gumba »Začni zapisovanje dnevnikov«, če želite zbirati prihodnje dnevnike konzole za JavaScript in napake z vseh zavihkov. Dnevniki se bodo zbirali (in shranjevali samo v pomnilniku), dokler ta stran ne bo zaprta ali dokler se ne dotaknete »Ustavi zapisovanje dnevnikov«.</translation>
-<translation id="1654232554734641711">Dostop do mikrofona je odobren.</translation>
 <translation id="1657011748321897393">Deljenje z drugimi ni uspelo, ker niste povezani v omrežje.</translation>
 <translation id="1657641691196698092">Blokirani piškotki</translation>
 <translation id="165877110639533037">No Open Tabs</translation>
@@ -323,7 +322,6 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="3892144330757387737">Tukaj bo prikazana zgodovina</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3904829425754749514">Vaša organizacija je izklopila sinhronizacijo. Še vedno si lahko ogledate zaznamke, zgodovino, gesla in druge nastavitve v tej napravi. Če naredite spremembe, ne bodo sinhronizirane z računom.</translation>
-<translation id="3905353503976611311">Iskanje v spletu</translation>
 <translation id="3913386780052199712">Prijavljeni ste v Chrome</translation>
 <translation id="3915450441834151894">Podatki o spletnem mestu</translation>
 <translation id="3922310737605261887">Iskanje besedila, ki ste ga kopirali</translation>
@@ -349,7 +347,6 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4121993058175073134">Če želite pošiljati podatke net-export, v aplikaciji Nastavitve konfigurirajte e-poštni račun.</translation>
 <translation id="4124987746317609294">Časovno obdobje</translation>
 <translation id="4152011295694446843">Tukaj bodo prikazani zavihki</translation>
-<translation id="4153925727916232411">S tem je mogoče fotografirati in nalagati fotografije ter optično brati kode QR.</translation>
 <translation id="4172051516777682613">Vedno pokaži</translation>
 <translation id="418156467088430727">Ogled različice brez povezave na novem zavihku</translation>
 <translation id="4181841719683918333">Jeziki</translation>
@@ -386,7 +383,6 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4526249700380860531">Dostopajte do shranjenih gesel in jih upravljajte na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="4540780316273593836">Prišlo je do napake</translation>
-<translation id="4572065712096155137">Dostop</translation>
 <translation id="457386861538956877">Več ...</translation>
 <translation id="4592368184551360546">Tipkovnica</translation>
 <translation id="461440297010471931">Iskanje z Googlom</translation>
@@ -408,7 +404,6 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4689564913179979534">Upravljanje plačilnih sredstev ...</translation>
 <translation id="4697071790493980729">Najden ni bil noben rezultat</translation>
 <translation id="470966556546083668">Ne vklopi sinhroniziranja</translation>
-<translation id="4731472194328757163">Dostop do kamere in mikrofona je odobren.</translation>
 <translation id="4737560986434232178">Iskanje po nedavnih zavihkih</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="4747097190499141774">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov iz Googla Pay. Vaše šifrirane podatke lahko bere samo oseba z vašim geslom. Geslo ni poslano Googlu in ni shranjeno v Googlu. Če ga pozabite ali želite spremeniti to nastavitev, boste morali sinhronizacijo ponastaviti. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -501,7 +496,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5580834567471114021">Želite dodati na bralni seznam za pozneje?</translation>
 <translation id="5592679540098330836">Vklopite sinhronizacijo za uporabnika <ph name="NAME" /></translation>
 <translation id="560322036295180549">Izklopila organizacija.</translation>
-<translation id="560999923643681074">Dostop za urejanje</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
 <translation id="5626245204502895507">Datoteke trenutno ni mogoče prenesti.</translation>
 <translation id="5631164295104953411">Dodajanje plačilnega sredstva</translation>
@@ -524,7 +518,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5803566855766646066">Ali ste prepričani, da želite zavreči to novo kartico?</translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
 <translation id="5812974770859303494">Dodaj v …</translation>
-<translation id="5816228676161003208">S tem je mogoče hitreje iskati z glasom.</translation>
 <translation id="581659025233126501">Vklopi sinhronizacijo</translation>
 <translation id="5819208479324046259">Brskalnik upravlja podjetje <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Iskalnik</translation>
@@ -563,7 +556,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6059830886158432458">Nadzirajte članke in dejavnost tukaj</translation>
 <translation id="6064824697233747382">Vaša organizacija zahteva, da izklopite sinhronizacijo.</translation>
 <translation id="6066301408025741299">Dotaknite se, da prekinete.</translation>
-<translation id="6077126322656614846">Dostop do kamere je odobren.</translation>
 <translation id="60829778314739003">Sprejmi in nadaljuj</translation>
 <translation id="6084848228346514841">Izbira zavihkov</translation>
 <translation id="6103540626693881831">Šifriranje v napravi</translation>
@@ -827,7 +819,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8319076807703933069">Novo iskanje</translation>
 <translation id="8323906514956095947">Pridržite za več možnosti zavihkov</translation>
 <translation id="8328777765163860529">Zapri vse</translation>
-<translation id="8364085047956854021">Dovoljenja za spletno mesto »<ph name="SITE_NAME" />« bodo ponastavljena na izklopljena, ko zapustite to spletno mesto.</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>
 <translation id="8386068868580335421">Ponastavi</translation>
 <translation id="8407669440184693619">Za to spletno mesto ni najdenih gesel</translation>

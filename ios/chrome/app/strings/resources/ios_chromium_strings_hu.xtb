@@ -56,6 +56,14 @@
 <translation id="4828317641996116749">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
 <translation id="4985291216379576555">Offline állapotban van, ezért a Chromium nem tud frissítéseket keresni</translation>
 <translation id="4999538639245140991">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chromium-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
+<translation id="5039881550736388123">Ha be van kapcsolva:
+<ph name="BEGIN_INDENT" />  • Segíthet, hogy továbbfejlesszük a Chromiumot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" />
+
+Fontos tudnivalók:
+<ph name="BEGIN_INDENT" />  • A rendszer az Ön Chromium-használatáról küld információt a Google-nak, ez az információ azonban nem köthető Önhöz.
+  • Ha a Chromium összeomlik, az összeomlással kapcsolatos adatok között szerepelhetnek bizonyos személyes információk.
+
+  • Ha bekapcsolja a szinkronizálást, a mutatók tartalmazhatnak az Ön által felkeresett URL-címekkel kapcsolatos adatokat is.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Bejelentkezés a Chromiumba</translation>
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
 <translation id="5308226104666789935">A Chromium nem tud frissítéseket keresni</translation>

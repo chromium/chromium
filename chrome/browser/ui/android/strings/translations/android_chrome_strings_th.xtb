@@ -143,7 +143,6 @@
 <translation id="189358972401248634">ภาษาอื่นๆ</translation>
 <translation id="1894023287452300670">ติดตามราคาที่นี่</translation>
 <translation id="1900260903084164610">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_TOS_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_TOS_LINK" /></translation>
-<translation id="1905320231301365059">ทุกคนที่ใช้อุปกรณ์เครื่องนี้จะยังเห็นไฟล์ที่คุณดาวน์โหลดในโหมดไม่ระบุตัวตน</translation>
 <translation id="1910950723001426294">ปิดรายการตัวเลือกการแชร์แล้ว</translation>
 <translation id="1918175104945982129">UI คำยินยอมให้ค้นหาด้วยเสียงของ Assistant ที่เปิดอยู่ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
 <translation id="1919130412786645364">อนุญาตให้ลงชื่อเข้าใช้ Chrome</translation>
@@ -277,7 +276,6 @@
 <translation id="2604446170045642109">คุณปิดธีมมืดสำหรับเว็บไซต์ได้ในการตั้งค่า</translation>
 <translation id="2612676031748830579">หมายเลขบัตร</translation>
 <translation id="2625189173221582860">คัดลอกรหัสผ่านแล้ว</translation>
-<translation id="2634905176438867146">ดูวิธีตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="2645657967708199252">การเชื่อมต่อ <ph name="CONNECTION_TYPE" /> อาจทำให้ดาวน์โหลดได้ช้า</translation>
 <translation id="2647434099613338025">เพิ่มภาษา</translation>
 <translation id="2649068648233607930"><ph name="DOMAIN" /> เป็นผู้จัดการเบราว์เซอร์</translation>
@@ -643,6 +641,7 @@
 <translation id="4818017973810341238">ยืนยันลิงก์เนื้อหาดิจิทัลบน <ph name="VIOLATED_URL" /> ไม่สำเร็จ</translation>
 <translation id="4831037795716408498">ดาวน์โหลดเนื้อหา</translation>
 <translation id="4834007576107377210">ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
+<translation id="4834250788637067901">วิธีการชำระเงิน ข้อเสนอ และที่อยู่จาก Google Pay</translation>
 <translation id="4835385943915508971">Chrome ไม่มีสิทธิ์เข้าถึงทรัพยากรที่ขอ</translation>
 <translation id="4837753911714442426">เปิดตัวเลือกในการพิมพ์หน้า</translation>
 <translation id="4842092870884894799">กำลังแสดงป๊อปอัปการสร้างรหัสผ่าน</translation>

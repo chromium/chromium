@@ -573,6 +573,7 @@
 <translation id="1567993339577891801">Консоль JavaScript</translation>
 <translation id="1568323446248056064">Открыть настройки экрана</translation>
 <translation id="1570604804919108255">Включить звук уведомлений</translation>
+<translation id="1571304935088121812">Копировать имя пользователя</translation>
 <translation id="1571738973904005196">Перейти на вкладку: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гость)</translation>
 <translation id="1572266655485775982">Включить Wi-Fi</translation>
@@ -670,6 +671,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> пока не работает в приложениях для Linux.</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 с шифрованием RSA</translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
+<translation id="1641496881756082050">Другие действия с сетью "<ph name="NETWORK_NAME" />"</translation>
 <translation id="1642492862748815878">Установлено подключение к устройству "<ph name="DEVICE" />" и другим устройствам Bluetooth (<ph name="NUMBER_OF_DEVICES" />)</translation>
 <translation id="1642494467033190216">Перед включением других функций отладки отключите защиту корневой файловой системы и перезагрузите устройство.</translation>
 <translation id="1643072738649235303">Подпись ECDSA X9.62 с SHA-1</translation>
@@ -1098,6 +1100,7 @@
 <translation id="2060375639911876205">Удалить профиль eSIM</translation>
 <translation id="2062354623176996748">Не хотите, чтобы сохранялась история браузера? Используйте режим инкогнито.</translation>
 <translation id="2065405795449409761">Браузером Chrome управляет автоматизированное тестовое ПО.</translation>
+<translation id="2069869989954932144">Предлагать приложение при открытии файлов на компьютере</translation>
 <translation id="2071393345806050157">Нет локального файла журнала.</translation>
 <translation id="2071692954027939183">Уведомления заблокированы автоматически, потому что вы обычно запрещаете их показ.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Нажмите, чтобы установить его.}one{Нажмите, чтобы установить их.}few{Нажмите, чтобы установить их.}many{Нажмите, чтобы установить их.}other{Нажмите, чтобы установить их.}}</translation>
@@ -1257,9 +1260,6 @@
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> и <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Источник медиа без названия</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Для удобства пользователей <ph name="DEVICE_OS" /> собирает данные об аппаратном обеспечении устройств и передает эту информацию компании Google, чтобы определять подходящие обновления. Вы также можете разрешить Google использовать эти сведения в других целях, например для улучшения <ph name="DEVICE_OS" /> и предоставления поддержки.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Чтобы посмотреть, какие сведения отправляются в Google для фильтрации обновлений и для каких ещё целей можно передавать нам данные, войдите в аккаунт на этом устройстве и изучите раздел CLOUDREADY_HARDWARE_INFO на странице chrome://system.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Чтобы узнать больше о том, какую информацию <ph name="DEVICE_OS" /> может отправлять в Google и как она будет использоваться, перейдите на страницу g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Этот параметр установлен пользователем <ph name="OWNER_EMAIL" /></translation>
 <translation id="222447520299472966">Выберите хотя бы одну художественную галерею.</translation>
 <translation id="2224551243087462610">Изменить имя папки</translation>
@@ -1333,6 +1333,7 @@
 <translation id="2292848386125228270">Запустите <ph name="PRODUCT_NAME" /> от имени обычного пользователя. Если вам нужно выполнить запуск от имени суперпользователя, перезапустите браузер, установив параметр "--no-sandbox".</translation>
 <translation id="2294081976975808113">Конфиденциальность данных на экране</translation>
 <translation id="2294358108254308676">Установить <ph name="PRODUCT_NAME" />?</translation>
+<translation id="229477815107578534">Проверьте настройки</translation>
 <translation id="2295864384543949385">Результатов: <ph name="NUM_RESULTS" /></translation>
 <translation id="2296022312651137376">По правилам домена <ph name="DOMAIN_NAME" /> для входа в аккаунт <ph name="EMAIL" /> устройство должно быть подключено к интернету.</translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{Браузер Chrome не обнаружил на компьютере вредоносное ПО • Последняя проверка: 1 час назад}one{Браузер Chrome не обнаружил на компьютере вредоносное ПО • Последняя проверка: {NUM_HOURS} час назад}few{Браузер Chrome не обнаружил на компьютере вредоносное ПО • Последняя проверка: {NUM_HOURS} часа назад}many{Браузер Chrome не обнаружил на компьютере вредоносное ПО • Последняя проверка: {NUM_HOURS} часов назад}other{Браузер Chrome не обнаружил на компьютере вредоносное ПО • Последняя проверка: {NUM_HOURS} часа назад}}</translation>
@@ -1444,6 +1445,7 @@
 <translation id="2381499968174336913">Предварительный просмотр демонстрируемой вкладки</translation>
 <translation id="2381756643783702095">Спрашивать разрешение перед отправкой (рекомендуется)</translation>
 <translation id="2387052489799050037">Переход на главный экран</translation>
+<translation id="2387602571959163792">"<ph name="DESK_NAME" />" (текущий рабочий стол)</translation>
 <translation id="2389775852302560582">IP-адрес</translation>
 <translation id="2390347491606624519">Не удалось подключиться к прокси-серверу, войдите снова</translation>
 <translation id="2390782873446084770">Синхронизация Wi-Fi</translation>
@@ -1812,15 +1814,6 @@
 <translation id="2766161002040448006">Отправить запрос родителям</translation>
 <translation id="2767077837043621282">Не удалось обновить Chromebook. Повторите попытку позже.</translation>
 <translation id="2767127727915954024">Сайт <ph name="ORIGIN" /> сможет изменять файл "<ph name="FILENAME" />", пока вы не закроете все вкладки этого сайта.</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Следуйте приведенным ниже инструкциям.
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Убедитесь, что у устройства исправное внутреннее хранилище, например HDD, SSD или eMMC.
-    <ph name="LIST_ITEM" />Убедитесь, что емкость этого хранилища превышает 16 ГБ.
-    <ph name="LIST_ITEM" />Проверьте подключение к нему, если это физически возможно.
-    <ph name="LIST_ITEM" />Убедитесь, что вы используете сертифицированную модель, и прочитайте примечания к установке.
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Более подробная информация доступна на странице g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Удалить из списка</translation>
 <translation id="2770690685823456775">Экспортируйте пароли в другую папку.</translation>
 <translation id="2770929488047004208">Разрешение монитора</translation>
@@ -3096,7 +3089,6 @@
 <translation id="4005817994523282006">Способ определения часового пояса</translation>
 <translation id="4007856537951125667">Скрыть ярлыки</translation>
 <translation id="4008291085758151621">В режиме VR сведения о сайте недоступны</translation>
-<translation id="4009955655170295852">Прежде всего обязательно создайте резервную копию данных. При установке <ph name="DEVICE_OS" /> вся информация на жестком диске будет перезаписана. Подробные сведения доступны на странице g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Чтобы получить доступ к закладкам на мобильном устройстве, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Восстановить "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Используете расширения? <ph name="BEGIN_LINK" />Управляйте ими<ph name="END_LINK" /> в специальном разделе.</translation>
@@ -3810,7 +3802,6 @@
 <translation id="4781443161433589743">Используется максимальная защита в Chrome.</translation>
 <translation id="4785719467058219317">Вы используете электронный ключ, который не зарегистрирован на этом сайте.</translation>
 <translation id="4785914069240823137">Отменить кадрирование</translation>
-<translation id="478708757211772586">Переходить к следующему объекту на экране с помощью переключателя "Далее"</translation>
 <translation id="4788092183367008521">Проверьте подключение к сети и повторите попытку.</translation>
 <translation id="4789550509729954245">Показывать уведомления, когда устройства обмениваются данными</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фото</translation>
@@ -3845,9 +3836,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{Удалена 1 закладка.}one{Удалена {COUNT} закладка.}few{Удалено {COUNT} закладки.}many{Удалено {COUNT} закладок.}other{Удалено {COUNT} закладки.}}</translation>
 <translation id="4819607494758673676">Уведомления Google Ассистента</translation>
 <translation id="4820236583224459650">Выбрать в качестве активного билета</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Перед регистрацией нужно очистить TPM, чтобы операционная система <ph name="DEVICE_OS" /> могла управлять устройством.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Вы также можете полностью отключить TPM на устройстве. В этом случае данные по-прежнему будут программно шифроваться во время хранения, но некоторые функции безопасности, например аппаратные сертификаты, станут недоступны.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Параметры TPM можно изменить в настройках BIOS/UEFI во время перезагрузки системы. Конкретные действия зависят от модели. Перед перезагрузкой изучите документацию <ph name="DEVICE_OS" /> на другом устройстве: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Сбор данных включен</translation>
 <translation id="4823484602432206655">Просмотр и изменение настроек для пользователей и устройств</translation>
 <translation id="4824037980212326045">Резервное копирование и восстановление Linux</translation>
@@ -5747,7 +5735,7 @@
 <translation id="6767566652486411142">Выбрать другой язык…</translation>
 <translation id="6767639283522617719">Не удалось подключить устройство к домену. Проверьте настройки организационного подразделения.</translation>
 <translation id="6768034047581882264">Запретить сайтам показывать небезопасный контент</translation>
-<translation id="6770602306803890733">Делает Интернет более безопасным для вас и других пользователей.</translation>
+<translation id="6770602306803890733">Делает интернет более безопасным для вас и других пользователей.</translation>
 <translation id="6771503742377376720">Является центром сертификации</translation>
 <translation id="6775163072363532304">Здесь будут появляться доступные устройства.</translation>
 <translation id="6776729248872343918">Включить Быстрое подключение</translation>
@@ -5829,7 +5817,6 @@
 <translation id="6834652994408928492">Тёмная тема автоматически включается на закате</translation>
 <translation id="6835762382653651563">Чтобы обновить устройство <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="6839225236531462745">Ошибка при удалении сертификата</translation>
-<translation id="6839882458129755986">Google не несет ответственности за потерю данных. Операционная система <ph name="DEVICE_OS" /> может не работать на несертифицированных моделях устройств. Подробные сведения доступны на странице g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Изменения, связанные с аккаунтами</translation>
 <translation id="6840155290835956714">Запрашивать разрешение перед отправкой</translation>
 <translation id="6840184929775541289">Не является Центром сертификации</translation>
@@ -6076,6 +6063,7 @@
 <translation id="7077829361966535409">При загрузке текущих настроек прокси-сервера на главной странице произошла ошибка. <ph name="GAIA_RELOAD_LINK_START" />Выполните вход повторно<ph name="GAIA_RELOAD_LINK_END" /> или измените <ph name="PROXY_SETTINGS_LINK_START" />параметры прокси-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Все сети</translation>
 <translation id="708060913198414444">&amp;Копировать URL аудио</translation>
+<translation id="7082568314107259011">Сетью <ph name="NETWORK_NAME" /> управляет ваш администратор</translation>
 <translation id="7085389578340536476">Разрешить Chrome записывать аудио?</translation>
 <translation id="7086672505018440886">Включать файлы журналов Chrome в архив</translation>
 <translation id="7088434364990739311">Не удалось выполнить проверку обновлений (код ошибки: <ph name="ERROR" />).</translation>
@@ -6153,7 +6141,6 @@
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7180865173735832675">Настроить</translation>
 <translation id="7182791023900310535">Перенести пароль</translation>
-<translation id="7183193772170782394">Разрешить компании Google использовать данные о вашем оборудовании, чтобы улучшать <ph name="DEVICE_OS" />. Если вы откажетесь, эта информация все равно будет отправляться в Google для определения подходящих обновлений, но она не будет храниться или использоваться в других целях. Подробные сведения доступны на странице g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Показать боковую панель поиска. Боковая панель поиска не активирована.</translation>
 <translation id="7186088072322679094">Сохранить на Панели инструментов</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> не может открыть эту папку, поскольку она содержит системные файлы.</translation>
@@ -7250,8 +7237,6 @@
 <translation id="8260864402787962391">Мышь</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений об этом расширении, то есть оно могло быть установлено без вашего ведома.</translation>
 <translation id="8261506727792406068">Удалить</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Произошла ошибка. Не удалось установить <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Узнайте больше на странице g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Введите название группы вкладок</translation>
 <translation id="8263744495942430914">Сайт <ph name="FULLSCREEN_ORIGIN" /> скрыл курсор.</translation>
 <translation id="8264024885325823677">Этим параметром управляет администратор.</translation>
@@ -7315,6 +7300,7 @@
 <translation id="8325413836429495820">Запретить сайтам просматривать буфер обмена</translation>
 <translation id="8326478304147373412">PKCS #7, цепочка сертификатов</translation>
 <translation id="8327676037044516220">Разрешения и настройки контента</translation>
+<translation id="8330689128072902965">Контакты рядом могут обмениваться с вами данными. Нажмите, чтобы изменить.</translation>
 <translation id="833256022891467078">Общие папки Crostini</translation>
 <translation id="8335587457941836791">Открепить от панели запуска</translation>
 <translation id="8336407002559723354">Прекращение автоматического обновления: <ph name="MONTH_AND_YEAR" /></translation>

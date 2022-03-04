@@ -87,7 +87,6 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1650222530560417226">Tocca il pulsante "Inizia registrazione" per raccogliere i log della console JavaScript e gli errori di tutte le schede. I log verranno raccolti e archiviati unicamente in memoria fino alla chiusura della pagina o finché non toccherai "Interrompi registrazione".</translation>
-<translation id="1654232554734641711">Accesso al microfono consentito</translation>
 <translation id="1657011748321897393">Condivisione non riuscita perché non sei collegato alla rete.</translation>
 <translation id="1657641691196698092">Cookie bloccati</translation>
 <translation id="165877110639533037">Nessuna scheda aperta</translation>
@@ -323,7 +322,6 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="3892144330757387737">Qui troverai la tua cronologia</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">La tua organizzazione ha disattivato la sincronizzazione. Puoi trovare ancora i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo account.</translation>
-<translation id="3905353503976611311">Cerca nel Web</translation>
 <translation id="3913386780052199712">Accesso a Chrome eseguito</translation>
 <translation id="3915450441834151894">Informazioni sito</translation>
 <translation id="3922310737605261887">Cerca il testo copiato</translation>
@@ -349,7 +347,6 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4121993058175073134">Per inviare dati net-export, configura il tuo account email nell'app Impostazioni.</translation>
 <translation id="4124987746317609294">Intervallo di tempo</translation>
 <translation id="4152011295694446843">Qui troverai i tuoi preferiti</translation>
-<translation id="4153925727916232411">In questo modo puoi scattare e caricare foto, nonché scansionare codici QR.</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="418156467088430727">Visualizza versione offline in una nuova scheda</translation>
 <translation id="4181841719683918333">Lingue</translation>
@@ -386,7 +383,6 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4526249700380860531">Controlla e gestisci le password salvate all'indirizzo <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Prova ad accedere nuovamente.</translation>
 <translation id="4540780316273593836">Si è verificato un problema</translation>
-<translation id="4572065712096155137">Accedi</translation>
 <translation id="457386861538956877">Altro...</translation>
 <translation id="4592368184551360546">Tastiera</translation>
 <translation id="461440297010471931">Ricerca con Google</translation>
@@ -408,7 +404,6 @@ I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inserisc
 <translation id="4689564913179979534">Gestisci metodi di pagamento…</translation>
 <translation id="4697071790493980729">Nessun risultato trovato</translation>
 <translation id="470966556546083668">Non attivare la sincronizzazione</translation>
-<translation id="4731472194328757163">Accesso a fotocamera e microfono consentito</translation>
 <translation id="4737560986434232178">Cerca nelle schede recenti</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4747097190499141774">La crittografia della passphrase non include metodi di pagamento e indirizzi di Google Pay. Soltanto chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google né memorizzata. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai reimpostare la sincronizzazione. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
@@ -501,7 +496,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5580834567471114021">Aggiungere all'elenco di lettura per consultare la pagina in un secondo momento?</translation>
 <translation id="5592679540098330836">Attiva la sincronizzazione per <ph name="NAME" /></translation>
 <translation id="560322036295180549">Opzione disattivata dall'organizzazione</translation>
-<translation id="560999923643681074">Accesso in modifica</translation>
 <translation id="5614553682702429503">Salvare la password?</translation>
 <translation id="5626245204502895507">Il file non può essere scaricato in questo momento.</translation>
 <translation id="5631164295104953411">Aggiungi il metodo di pagamento</translation>
@@ -524,7 +518,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5803566855766646066">Vuoi eliminare questa nuova carta?</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5812974770859303494">Aggiungi a…</translation>
-<translation id="5816228676161003208">In questo modo puoi eseguire ricerche più veloci con la voce.</translation>
 <translation id="581659025233126501">Attiva la sincronizzazione</translation>
 <translation id="5819208479324046259">Gestito da <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Motore di ricerca</translation>
@@ -563,7 +556,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
 <translation id="6064824697233747382">La tua organizzazione richiede di disattivare la sincronizzazione.</translation>
 <translation id="6066301408025741299">Tocca per annullare.</translation>
-<translation id="6077126322656614846">Accesso alla fotocamera consentito</translation>
 <translation id="60829778314739003">Accetta e continua</translation>
 <translation id="6084848228346514841">Seleziona schede</translation>
 <translation id="6103540626693881831">Crittografia on-device</translation>
@@ -827,7 +819,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8319076807703933069">Nuova ricerca</translation>
 <translation id="8323906514956095947">Tocca e tieni premuto per vedere maggiori opzioni sulla scheda</translation>
 <translation id="8328777765163860529">Chiudi tutte</translation>
-<translation id="8364085047956854021">Le autorizzazioni di "<ph name="SITE_NAME" />" verranno reimpostate su Disattivate quando esci dal sito.</translation>
 <translation id="8378714024927312812">Gestito dalla tua organizzazione</translation>
 <translation id="8386068868580335421">Reimposta</translation>
 <translation id="8407669440184693619">Non è stata trovata alcuna password per questo sito</translation>

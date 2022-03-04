@@ -570,6 +570,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1567993339577891801">consola de JavaScript</translation>
 <translation id="1568323446248056064">Abrir a configuración de visualización do dispositivo</translation>
 <translation id="1570604804919108255">Deixar de silenciar notificacións</translation>
+<translation id="1571304935088121812">Copia o nome de usuario</translation>
 <translation id="1571738973904005196">Ver pestana: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (modo de convidado)</translation>
 <translation id="1572266655485775982">Wifi activada</translation>
@@ -1254,9 +1255,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Fonte de información sen nome</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Para ofrecerche a mellor experiencia posible, <ph name="DEVICE_OS" /> recompila datos de hardware sobre os dispositivos e compárteos con Google a fin de determinar as actualizacións necesarias. De maneira opcional, podes permitir que Google utilice estes datos con outros fins, como prestar asistencia e incorporar melloras á experiencia e aos servizos de <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Podes iniciar sesión neste dispositivo e visitar a sección CLOUDREADY_HARDWARE_INFO en chrome://system para consultar os datos que se lle envían a Google co obxectivo de filtrar as actualizacións, así como noutros casos nos que decides compartir información con Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Se queres obter máis información sobre os datos que pode compartir <ph name="DEVICE_OS" /> con Google e o uso que se lles dá, visita g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Esta configuración pertence a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Debes seleccionar polo menos un álbum da galería de arte</translation>
 <translation id="2224551243087462610">Editar o nome do cartafol</translation>
@@ -1810,15 +1808,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2766161002040448006">Preguntar a teu pai ou túa nai</translation>
 <translation id="2767077837043621282">Non se puido actualizar o Chromebook. Téntao de novo máis tarde.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> poderá editar <ph name="FILENAME" /> ata que peches todas as pestanas deste sitio</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Proba estes pasos para tentar solucionar o problema:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />Asegúrate de que o teu dispositivo conteña unha unidade de almacenamento interno operativa (por exemplo, unha unidade de disco duro, unha SSD ou unha eMMC).
-<ph name="LIST_ITEM" />Comproba que o teu dispositivo de almacenamento interno teña unha capacidade superior a 16 GB.
-<ph name="LIST_ITEM" />Verifica a conexión á unidade de almacenamento interno, no caso de que teñas acceso físico a ela.
-<ph name="LIST_ITEM" />Asegúrate de estar utilizando un modelo aprobado e consulta as notas de instalación.
-<ph name="END_LIST" />
-<ph name="END_PARAGRAPH1" />
-<ph name="BEGIN_PARAGRAPH2" />Para obter máis axuda, visita g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Eliminar da lista</translation>
 <translation id="2770690685823456775">Exporta os teus contrasinais a outro cartafol</translation>
 <translation id="2770929488047004208">Resolución do monitor</translation>
@@ -3088,7 +3077,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4005817994523282006">Método de detección de fuso horario</translation>
 <translation id="4007856537951125667">Ocultar atallos</translation>
 <translation id="4008291085758151621">A información do sitio non está dispoñible en RV</translation>
-<translation id="4009955655170295852">Antes de comezar, asegúrate de ter unha copia de seguranza dos teus datos. Ao instalar <ph name="DEVICE_OS" /> sobrescribirase a información da unidade de disco duro. Consulta máis información en g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Para ter os teus marcadores no teu dispositivo móbil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Queres reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Tes extensións? <ph name="BEGIN_LINK" />Xestiónaas<ph name="END_LINK" /> facilmente desde un único lugar.</translation>
@@ -3802,7 +3790,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4781443161433589743">Estás usando a máxima seguranza de Chrome</translation>
 <translation id="4785719467058219317">Estás utilizando unha chave de seguranza que non está rexistrada neste sitio web</translation>
 <translation id="4785914069240823137">Cancelar recorte</translation>
-<translation id="478708757211772586">Para avanzar na pantalla, utiliza Seguinte</translation>
 <translation id="4788092183367008521">Comproba a conexión de rede e téntao de novo.</translation>
 <translation id="4789550509729954245">Mostrar notificación cando os dispositivos están a compartir contido preto</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto/s</translation>
@@ -3837,9 +3824,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4816336393325437908">{COUNT,plural, =1{Eliminouse 1 marcador}other{Elimináronse {COUNT} marcadores}}</translation>
 <translation id="4819607494758673676">Notificacións do Asistente de Google</translation>
 <translation id="4820236583224459650">Definir como tícket activo</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Antes de inscribirte, debes borrar o TPM para que <ph name="DEVICE_OS" /> poida facerse cargo do dispositivo.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Tamén podes desactivar completamente o dispositivo do TPM. Os teus datos seguiranse almacenando de forma segura coa encriptación de software, pero desactivaranse certas funcións de seguranza, como os certificados almacenados en hardware.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Podes cambiar a configuración do TPM reiniciando o dispositivo e accedendo á configuración de BIOS/UEFI do sistema. Os pasos varían segundo o modelo do dispositivo. Para obter máis información, abre a documentación de <ph name="DEVICE_OS" /> nun dispositivo independente antes de proceder co reinicio: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Perfís activados</translation>
 <translation id="4823484602432206655">Ler e cambiar a configuración do usuario e o dispositivo</translation>
 <translation id="4824037980212326045">Copia de seguranza e restauración de Linux</translation>
@@ -5819,7 +5803,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6834652994408928492">O modo escuro activarase automaticamente ao anoitecer</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar o teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Erro de eliminación do certificado</translation>
-<translation id="6839882458129755986">Google non é responsable das perdas de datos que poidan producirse. Ademais, pode que <ph name="DEVICE_OS" /> non funcione en modelos que non estean aprobados. Consulta máis información en g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">O inicio de sesión cambiou</translation>
 <translation id="6840155290835956714">Preguntar antes de enviar</translation>
 <translation id="6840184929775541289">Non é unha autoridade de certificación</translation>
@@ -6143,7 +6126,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7182791023900310535">Mover o teu contrasinal</translation>
-<translation id="7183193772170782394">Permitir que Google use os datos do hardware para axudar a mellorar <ph name="DEVICE_OS" />. Se non dás o teu permiso, estes datos enviaránselle a Google de todas as formas co obxecto de determinar as actualizacións necesarias, pero non se almacenarán nin se utilizarán con outros fins. Consulta máis información en g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Activar/Desactivar busca lateral. Busca lateral sen activar.</translation>
 <translation id="7186088072322679094">Manter na barra de ferramentas</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> non pode abrir este cartafol porque contén ficheiros do sistema</translation>
@@ -7239,8 +7221,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8260864402787962391">Rato</translation>
 <translation id="8261378640211443080">Esta extensión non figura en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e é posible que se engadise sen o teu coñecemento.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Produciuse un erro e <ph name="DEVICE_OS" /> non puido instalarse.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Para obter máis axuda, visita esta páxina: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Ponlle un nome a este grupo</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> desactivou o cursor do rato.</translation>
 <translation id="8264024885325823677">O teu administrador xestiona esta opción de configuración.</translation>

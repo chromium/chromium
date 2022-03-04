@@ -574,6 +574,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">Open display device settings</translation>
 <translation id="1570604804919108255">Unmute notifications</translation>
+<translation id="1571304935088121812">Copy username</translation>
 <translation id="1571738973904005196">View tab: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Guest)</translation>
 <translation id="1572266655485775982">Wi-Fi enable</translation>
@@ -671,6 +672,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1640235262200048077"><ph name="IME_NAME" /> doesn’t work in Linux apps yet</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 With RSA Encryption</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1641496881756082050">More actions for <ph name="NETWORK_NAME" /></translation>
 <translation id="1642492862748815878">Connected to <ph name="DEVICE" /> and <ph name="NUMBER_OF_DEVICES" /> other Bluetooth devices</translation>
 <translation id="1642494467033190216">A removal of rootfs protection and restart is required before enabling other debugging features.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA Signature with SHA-1</translation>
@@ -1268,9 +1270,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Unnamed media source</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />To provide the best experience, <ph name="DEVICE_OS" /> collects hardware data about devices and shares it with Google to determine which updates should be delivered. Optionally, you can allow Google to use this data for additional purposes, like support and improvements to the <ph name="DEVICE_OS" /> experience and service.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />You can log in on this device and visit the CLOUDREADY_HARDWARE_INFO section in chrome://system to see the data sent to Google for update filtering, as well as any other instances where you choose to share data with Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />For more details on data that <ph name="DEVICE_OS" /> may share with Google, and how it is used, visit g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">This setting belongs to <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">A minimum of one Art gallery album needs to be selected</translation>
 <translation id="2224551243087462610">Edit folder name</translation>
@@ -1459,6 +1458,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2381499968174336913">Preview of shared tab</translation>
 <translation id="2381756643783702095">Ask before sending (recommended)</translation>
 <translation id="2387052489799050037">Go home</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (current)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">Can’t connect to proxy; please sign in again</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
@@ -1828,15 +1828,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2766161002040448006">Ask a parent</translation>
 <translation id="2767077837043621282">Couldn't update your Chromebook. Please try again later.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> will be able to edit <ph name="FILENAME" /> until you close all tabs for this site</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Try these troubleshooting steps:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Make sure that your device contains working internal storage such as a HDD, SSD or eMMC
-    <ph name="LIST_ITEM" />Check that your internal storage device is greater than 16 GB
-    <ph name="LIST_ITEM" />Check the connection to the internal storage, if physically accessible
-    <ph name="LIST_ITEM" />Make sure that you're using a certified model and check installation notes
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />For more help, visit: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Remove from list</translation>
 <translation id="2770690685823456775">Export your passwords to another folder</translation>
 <translation id="2770929488047004208">Monitor resolution</translation>
@@ -3112,7 +3103,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4005817994523282006">Time zone detection method</translation>
 <translation id="4007856537951125667">Hide shortcuts</translation>
 <translation id="4008291085758151621">Site information is not available in VR</translation>
-<translation id="4009955655170295852">Before starting, make sure that you have a backup of your data. Installing <ph name="DEVICE_OS" /> will overwrite your hard drive. Learn more at g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">To get your bookmarks on your mobile device, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Repair "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Got extensions? <ph name="BEGIN_LINK" />Manage your extensions<ph name="END_LINK" /> in one easy place.</translation>
@@ -3827,7 +3817,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4781443161433589743">You’re on Chrome’s strongest security</translation>
 <translation id="4785719467058219317">You're using a security key that's not registered with this website</translation>
 <translation id="4785914069240823137">Cancel crop</translation>
-<translation id="478708757211772586">Use 'Next' to move forward on the screen</translation>
 <translation id="4788092183367008521">Please check your network connection and try again.</translation>
 <translation id="4789550509729954245">Show notification when devices are sharing nearby</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
@@ -3862,9 +3851,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bookmark deleted}other{{COUNT} bookmarks deleted}}</translation>
 <translation id="4819607494758673676">Google Assistant notifications</translation>
 <translation id="4820236583224459650">Set as active ticket</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Before enrolling, you need to clear the TPM so that <ph name="DEVICE_OS" /> can take ownership of the device.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />You can also turn off the TPM device entirely. Your data will still be stored safely with software encryption, but certain security features such as hardware-backed certificates will be disabled.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the <ph name="DEVICE_OS" /> documentation on a separate device before you reboot: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Profiling Enabled</translation>
 <translation id="4823484602432206655">Read and change user and device settings</translation>
 <translation id="4824037980212326045">Linux backup and restore</translation>
@@ -5846,7 +5832,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6834652994408928492">Dark mode will turn on automatically at sunset</translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Certificate Deletion Error</translation>
-<translation id="6839882458129755986">Google isn’t responsible for any data loss, and <ph name="DEVICE_OS" /> may not work on uncertified models. Learn more at g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Sign-in has changed</translation>
 <translation id="6840155290835956714">Ask before sending</translation>
 <translation id="6840184929775541289">Is not a Certification Authority</translation>
@@ -6171,7 +6156,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7180865173735832675">Customise</translation>
 <translation id="7182791023900310535">Move your password</translation>
-<translation id="7183193772170782394">Let Google use your hardware data to help improve <ph name="DEVICE_OS" />. If you decline, this data is still sent to Google to determine proper updates but is not stored or used otherwise. Learn more at g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Toggle side search. Side search not activated.</translation>
 <translation id="7186088072322679094">Keep in Toolbar</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> can't open this folder because it contains system files</translation>
@@ -7269,8 +7253,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">This extension is not listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="8261506727792406068">Delete</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Something went wrong and <ph name="DEVICE_OS" /> couldn’t be installed.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />For more help, visit: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Name this group</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> has disabled your mouse cursor.</translation>
 <translation id="8264024885325823677">This setting is managed by your administrator.</translation>

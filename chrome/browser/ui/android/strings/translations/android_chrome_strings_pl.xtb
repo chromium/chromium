@@ -143,7 +143,6 @@
 <translation id="189358972401248634">Inne języki</translation>
 <translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
 <translation id="1900260903084164610">Przechodząc dalej, akceptujesz <ph name="BEGIN_TOS_LINK" />Warunki korzystania z usługi<ph name="END_TOS_LINK" />.</translation>
-<translation id="1905320231301365059">Pliki pobrane w trybie incognito może zobaczyć każdy użytkownik tego urządzenia.</translation>
 <translation id="1910950723001426294">Lista opcji udostępniania jest zamknięta.</translation>
 <translation id="1918175104945982129">Ekran wyrażenia zgody na wyszukiwanie głosowe z pomocą Asystenta został otwarty na połowę wysokości</translation>
 <translation id="1919130412786645364">Zezwalaj na logowanie się w Chrome</translation>
@@ -277,7 +276,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2604446170045642109">Ciemny motyw witryn możesz wyłączyć w ustawieniach.</translation>
 <translation id="2612676031748830579">Numer karty</translation>
 <translation id="2625189173221582860">Hasło zostało skopiowane</translation>
-<translation id="2634905176438867146">Jak ustawić Chrome jako przeglądarkę domyślną</translation>
 <translation id="2645657967708199252">Połączenie <ph name="CONNECTION_TYPE" /> może spowalniać pobieranie</translation>
 <translation id="2647434099613338025">Dodaj język</translation>
 <translation id="2649068648233607930">Twoją przeglądarką zarządza <ph name="DOMAIN" /></translation>
@@ -643,6 +641,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="4818017973810341238">Weryfikacja Digital Asset Links na <ph name="VIOLATED_URL" /> nie udała się</translation>
 <translation id="4831037795716408498">Pobieranie treści</translation>
 <translation id="4834007576107377210">W razie potrzeby zapoznaj się z instrukcjami usuwania historii wyszukiwania w danej przeglądarce</translation>
+<translation id="4834250788637067901">Formy płatności, oferty i adresy korzystające z Google Pay</translation>
 <translation id="4835385943915508971">Chrome nie ma dostępu do żądanego zasobu.</translation>
 <translation id="4837753911714442426">Otwórz opcje drukowania strony</translation>
 <translation id="4842092870884894799">Pokazuję wyskakujące okienko generowania hasła</translation>

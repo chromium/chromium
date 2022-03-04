@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">Klávesa šipka vpravo</translation>
 <translation id="3897092660631435901">Nabídka</translation>
 <translation id="3909791450649380159">Vyjmou&amp;t</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">Pravý okraj</translation>
 <translation id="3994749195054421561">Sloupec <ph name="COLUMN_NAME" /> je seřazen vzestupně.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nepřečtené oznámení}few{# nepřečtená oznámení}many{# nepřečteného oznámení}other{# nepřečtených oznámení}}</translation>
 <translation id="4250229828105606438">Snímek obrazovky</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{před 1 měsícem}few{před # měsíci}many{před # měsíce}other{před # měsíci}}</translation>

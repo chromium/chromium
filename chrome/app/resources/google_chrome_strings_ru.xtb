@@ -44,7 +44,6 @@
 <translation id="1877026089748256423">Версия Chrome устарела</translation>
 <translation id="1887927549935943139">CloudReady 2.0 не удалось синхронизировать данные, так как эта функция недоступна для вашего домена.</translation>
 <translation id="1919130412786645364">Разрешить вход в Chrome</translation>
-<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">В каждом профиле отдельно хранятся данные пользователей Chrome, такие как закладки, история просмотров и пароли.</translation>
 <translation id="2063848847527508675">Перезагрузите Chrome OS, чтобы установить обновление.</translation>
 <translation id="2094919256425865063">Завершить работу Chrome?</translation>
@@ -110,7 +109,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome перезапускается}=1{Chrome перезапустится через 1 секунду}one{Chrome перезапустится через # секунду}few{Chrome перезапустится через # секунды}many{Chrome перезапустится через # секунд}other{Chrome перезапустится через # секунды}}</translation>
 <translation id="3395323229510056640">Справка Chrome OS</translation>
 <translation id="3396977131400919238">При установке произошла ошибка операционной системы. Скачайте Google Chrome снова.</translation>
-<translation id="3428747202529429621">Защищает вас в браузере Chrome и может использоваться для повышения безопасности в других приложениях Google при входе в аккаунт</translation>
+<translation id="3428747202529429621">Защищает вас в браузере Chrome и может использоваться для повышения безопасности в других приложениях Google при входе в аккаунт.</translation>
 <translation id="3434246496373299699">Chrome сможет проверить ваши пароли, когда вы войдете в аккаунт Google.</translation>
 <translation id="3451115285585441894">Установка...</translation>
 <translation id="345171907106878721">Добавить пользователя Chrome</translation>
@@ -211,7 +210,6 @@
 <translation id="5941830788786076944">Назначить Google Chrome браузером по умолчанию</translation>
 <translation id="6070348360322141662">В целях повышения безопасности Google Chrome шифрует ваши данные</translation>
 <translation id="608006075545470555">Добавление рабочего профиля в браузер</translation>
-<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Chrome становится все лучше</translation>
 <translation id="6145313976051292476">Открывать PDF-файлы в Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

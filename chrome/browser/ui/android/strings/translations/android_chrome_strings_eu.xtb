@@ -143,7 +143,6 @@
 <translation id="189358972401248634">Beste hizkuntzak</translation>
 <translation id="1894023287452300670">Egin prezioaren jarraipena hemen</translation>
 <translation id="1900260903084164610">Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_TOS_LINK" />Zerbitzu-baldintzak<ph name="END_TOS_LINK" />.</translation>
-<translation id="1905320231301365059">Gailua erabiltzen duten guztiek ezkutuko moduan deskargatzen dituzun fitxategiak ikusten jarraituko dute.</translation>
 <translation id="1910950723001426294">Partekatzeko aukeren zerrenda itxita dago.</translation>
 <translation id="1918175104945982129">Ahozko bilaketa egite aldera Laguntzailea zerbitzuari baimena emateko erabiltzaile-interfazea altuera erdian irekita dago</translation>
 <translation id="1919130412786645364">Baimendu Chrome-n saioa hastea</translation>
@@ -277,7 +276,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2604446170045642109">Ezarpenetan desaktiba dezakezu webguneetarako gai iluna.</translation>
 <translation id="2612676031748830579">Txartelaren zenbakia</translation>
 <translation id="2625189173221582860">Kopiatu da pasahitza</translation>
-<translation id="2634905176438867146">Ikasi Chrome arakatzaile lehenetsi gisa ezartzen</translation>
 <translation id="2645657967708199252">Baliteke polikiago deskargatzea <ph name="CONNECTION_TYPE" /> konexioa dela eta</translation>
 <translation id="2647434099613338025">Gehitu hizkuntza bat</translation>
 <translation id="2649068648233607930"><ph name="DOMAIN" /> domeinuak kudeatzen du arakatzailea</translation>
@@ -643,6 +641,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4818017973810341238">Huts egin du Digital Asset Links protokoloaren egiaztapenak helbide honetan: <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Edukia deskargatzea</translation>
 <translation id="4834007576107377210">Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko</translation>
+<translation id="4834250788637067901">Google Pay-rekin erabiltzen dituzun ordainketa-metodoak, eskaintzak eta helbideak</translation>
 <translation id="4835385943915508971">Chrome-k ez du eskatutako baliabiderako sarbiderik.</translation>
 <translation id="4837753911714442426">Ireki orria inprimatzeko aukerak</translation>
 <translation id="4842092870884894799">Pasahitza sortzeko leiho gainerakorra erakusten</translation>

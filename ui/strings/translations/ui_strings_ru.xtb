@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">Стрелка вправо</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3909791450649380159">Выре&amp;зать</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">Правый край</translation>
 <translation id="3994749195054421561">Значения в столбце "<ph name="COLUMN_NAME" />" упорядочены по возрастанию.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочитанное уведомление}one{# непрочитанное уведомление}few{# непрочитанных уведомления}many{# непрочитанных уведомлений}other{# непрочитанного уведомления}}</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{месяц назад}one{# месяц назад}few{# месяца назад}many{# месяцев назад}other{# месяца назад}}</translation>

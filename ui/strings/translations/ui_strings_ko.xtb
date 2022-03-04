@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">오른쪽 화살표</translation>
 <translation id="3897092660631435901">메뉴</translation>
 <translation id="3909791450649380159">잘라내기(&amp;T)</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">오른쪽 모서리</translation>
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> 열은 오름차순으로 정렬되어 있습니다.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{읽지 않은 알림 1개}other{읽지 않은 알림 #개}}</translation>
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1개월 전}other{#개월 전}}</translation>

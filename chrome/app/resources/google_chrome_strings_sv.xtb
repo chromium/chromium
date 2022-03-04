@@ -49,7 +49,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1877026089748256423">Den här versionen av Chrome är inaktuell</translation>
 <translation id="1887927549935943139">Det gick inte att synkronisera data med CloudReady 2.0 eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="1919130412786645364">Tillåt inloggning i Chrome</translation>
-<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">I alla profiler sparas egen Chrome-information som bokmärken, historik, lösenord och annat</translation>
 <translation id="2063848847527508675">Chrome OS måste startas om för att uppdateringen ska börja gälla.</translation>
 <translation id="2094919256425865063">Vill du avsluta Chrome ändå?</translation>
@@ -220,7 +219,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5941830788786076944">Använd Google Chrome som standardwebbläsare</translation>
 <translation id="6070348360322141662">Din data krypteras i Google Chrome för att öka säkerheten</translation>
 <translation id="608006075545470555">Lägg till en jobbprofil i den här webbläsaren</translation>
-<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Vi har gjort Chrome ännu bättre</translation>
 <translation id="6145313976051292476">Öppna PDF-filer i Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

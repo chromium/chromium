@@ -571,6 +571,7 @@
 <translation id="1567993339577891801">JavaScript コンソール</translation>
 <translation id="1568323446248056064">ディスプレイのデバイス設定を開く</translation>
 <translation id="1570604804919108255">通知のミュートを解除する</translation>
+<translation id="1571304935088121812">ユーザー名をコピー</translation>
 <translation id="1571738973904005196">タブを表示: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />（ゲスト）</translation>
 <translation id="1572266655485775982">Wi-Fi の有効化</translation>
@@ -768,6 +769,7 @@
 <translation id="1744060673522309905">デバイスをドメインに追加できません。追加できるデバイスの上限数を超えていないかご確認ください。</translation>
 <translation id="1744108098763830590">バックグラウンド ページ</translation>
 <translation id="1745732479023874451">連絡先を管理</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# 件のファイルをこのウェブアプリで開いて編集しますか？}}</translation>
 <translation id="1748563609363301860">このパスワードは、Google アカウントまたはこのデバイスのみに保存できます。</translation>
 <translation id="1750048572964661931">スマートフォンのアプリへのアクセスを保護するため、この Chromebook にピンまたはパスワードを設定してください。</translation>
 <translation id="1750172676754093297">セキュリティ キーにフィンガープリントを保存できません</translation>
@@ -1254,9 +1256,6 @@
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">名前のないメディアソース</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />利便性を高めるため、<ph name="DEVICE_OS" /> ではデバイスのハードウェア データを収集し、Google と共有して、適切なアップデートを確認します。さらに、サポートや <ph name="DEVICE_OS" /> の利便性やサービスの改善といった追加の目的で Google がこのデータを使用することを許可できます。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />アップデートの確認時のほか、追加の目的で Google とのデータの共有を許可した場合に、Google に送信されるデータについては、このデバイスにログインして、chrome://system の「CLOUDREADY_HARDWARE_INFO」の欄でご確認いただけます。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" /> が Google と共有するデータおよびその使用方法について詳しくは、g.co/CR2/HWDataCollection をご覧ください。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">この設定は <ph name="OWNER_EMAIL" /> に帰属します。</translation>
 <translation id="222447520299472966">アート ギャラリーのアルバムを少なくとも 1 つ選択してください</translation>
 <translation id="2224551243087462610">フォルダ名の編集</translation>
@@ -1809,15 +1808,6 @@
 <translation id="2766161002040448006">保護者に聞く</translation>
 <translation id="2767077837043621282">Chromebook を更新できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2767127727915954024">このサイトのタブをすべて閉じるまでの間、<ph name="ORIGIN" /> は「<ph name="FILENAME" />」を編集できるようになります</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />次の解決方法をお試しください。
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />デバイスに有効な内部ストレージ（HDD、SSD、eMMC など）が含まれていることを確認します
-    <ph name="LIST_ITEM" />内部ストレージ デバイスが 16 GB 以上であることを確認します
-    <ph name="LIST_ITEM" />物理的にアクセス可能な場合は、内部ストレージへの接続を確認します
-    <ph name="LIST_ITEM" />認定モデルを使用していることを確認し、インストールに関する注意事項を確認します
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/CR2/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">リストから削除</translation>
 <translation id="2770690685823456775">パスワードを別のフォルダにエクスポートしてください</translation>
 <translation id="2770929488047004208">モニターの解像度</translation>
@@ -2247,6 +2237,7 @@
 <translation id="3201422919974259695">使用可能な USB デバイスがここに表示されます。</translation>
 <translation id="3202131003361292969">パス</translation>
 <translation id="3202173864863109533">このタブの音声はミュートされています。</translation>
+<translation id="3204648577100496185">このアプリに関連付けられているデータがこのデバイスから削除される可能性があります</translation>
 <translation id="3208321278970793882">アプリ</translation>
 <translation id="3208584281581115441">今すぐ確認</translation>
 <translation id="3208703785962634733">未確認</translation>
@@ -2393,6 +2384,7 @@
 <translation id="337286756654493126">アプリケーションで開いたフォルダに書き込む</translation>
 <translation id="3374294321938930390">「<ph name="BOOKMARK_TITLE" />」を「<ph name="NEW_FOLDER_TITLE" />」に移動しました。</translation>
 <translation id="3378572629723696641">この拡張機能は破損している可能性があります。</translation>
+<translation id="3378627645871606983">Steam に対して許可した権限は、すべての Steam ゲームとアプリに適用されます。</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> がインストールされます。</translation>
 <translation id="3380365263193509176">不明なエラー</translation>
 <translation id="3382073616108123819">このデバイスのデバイス識別子を特定できませんでした。</translation>
@@ -2499,9 +2491,11 @@
 <translation id="346298925039590474">このデバイスのすべてのユーザーがこのモバイル ネットワークを使用できます</translation>
 <translation id="3464145797867108663">仕事用プロファイルを追加</translation>
 <translation id="346431825526753">これは <ph name="CUSTODIAN_EMAIL" /> によって管理されている子供向けのアカウントです。</translation>
+<translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />、<ph name="MERCHANT_NAME_2" /> などの割引情報を取得しますか？</translation>
 <translation id="3468298837301810372">ラベル</translation>
 <translation id="3468999815377931311">Android スマートフォン</translation>
 <translation id="3469583217479686109">選択ツール</translation>
+<translation id="3470392222765168737">サイトをフォロー</translation>
 <translation id="3471876058939596279">HDMI ポートと USB Type-C ポートを同時にビデオ出力に使用することはできません。別のビデオポートを使用してください。</translation>
 <translation id="3473241910002674503">タブレット モードで、ボタンを使用してホームに移動したり、戻ったり、アプリを切り替えたりできます。</translation>
 <translation id="3473479545200714844">画面拡大鏡</translation>
@@ -2885,6 +2879,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{1 個の拡張機能が承認されました}other{# 個の拡張機能が承認されました}}</translation>
 <translation id="3823310065043511710">Linux 用の推奨される空き容量は <ph name="INSTALL_SIZE" /> 以上です。</translation>
 <translation id="3824621460022590830">デバイス登録トークンが無効です。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{次のファイル形式の設定を保存: <ph name="FILE_TYPES" />}other{次のファイル形式の設定を保存: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">モーション センサーの使用を許可するサイト</translation>
 <translation id="3826440694796503677">Google アカウントをさらに追加するオプションは、管理者によって無効にされています</translation>
 <translation id="3827774300009121996">全画面表示(&amp;F)</translation>
@@ -2942,6 +2937,7 @@
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3882165008614329320">カメラやファイルに保存されている動画</translation>
 <translation id="3883306461188700142">音声で入力できます。音声入力を開始するには、検索+D キーを押します。</translation>
+<translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> と <ph name="MERCHANT_NAME_2" /> の割引情報を取得しますか？</translation>
 <translation id="3884152383786131369">複数の言語に対応しているウェブ コンテンツでは、次のリストの最初にある対応言語が使用されます。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新は管理者によって管理されています</translation>
 <translation id="3886446263141354045">このサイトへのアクセス リクエストを <ph name="NAME" /> さんに送信しました</translation>
@@ -3085,7 +3081,6 @@
 <translation id="4005817994523282006">タイムゾーンの検出方法</translation>
 <translation id="4007856537951125667">ショートカットを非表示にする</translation>
 <translation id="4008291085758151621">サイト情報は VR ではご利用いただけません</translation>
-<translation id="4009955655170295852">開始する前に、データがバックアップされていることを確認してください。<ph name="DEVICE_OS" /> をインストールすると、ハードドライブは上書きされます。詳しくは、g.co/CR2/InstallGuide をご覧ください。</translation>
 <translation id="4010917659463429001">ブックマークをモバイル デバイスで使用できるようにするには、<ph name="GET_IOS_APP_LINK" />してください。</translation>
 <translation id="4014432863917027322">「<ph name="EXTENSION_NAME" />」を修復しますか？</translation>
 <translation id="4015163439792426608">拡張機能はご利用ですか？<ph name="BEGIN_LINK" />拡張機能の管理<ph name="END_LINK" />は 1 か所で簡単に行うことができます。</translation>
@@ -3797,7 +3792,6 @@
 <translation id="4781443161433589743">Chrome の最高のセキュリティ強度で保護されています</translation>
 <translation id="4785719467058219317">このウェブサイトに登録されていないセキュリティ キーを使用しています</translation>
 <translation id="4785914069240823137">切り抜きをキャンセル</translation>
-<translation id="478708757211772586">「次へ」を画面上で先に進むために使用します</translation>
 <translation id="4788092183367008521">ネットワーク接続を確認してからもう一度お試しください。</translation>
 <translation id="4789550509729954245">付近に共有を行っているデバイスがある場合に通知を表示します</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 枚の写真</translation>
@@ -3832,7 +3826,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 個のブックマークが削除されました}other{{COUNT} 個のブックマークが削除されました}}</translation>
 <translation id="4819607494758673676">Google アシスタントの通知</translation>
 <translation id="4820236583224459650">有効なチケットとして設定</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />登録する前に、<ph name="DEVICE_OS" /> がデバイスのオーナー権限を取得できるよう TPM を消去する必要があります。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />デバイスの TPM を完全にオフにすることもできます。データは、ソフトウェアによる暗号化で引き続き安全に保存されますが、ハードウェア式証明書など、特定のセキュリティ機能は無効になります。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />TPM の設定を変更するには、再起動してシステム BIOS / UEFI の設定に入ってください。手順はデバイスモデルに応じて異なります。詳しくは、再起動する前に別のデバイスで <ph name="DEVICE_OS" /> のドキュメントをご確認ください: g.co/CR2/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">プロファイル記録の開始(&amp;P)</translation>
 <translation id="4823484602432206655">ユーザー設定とデバイス設定の読み取りと変更</translation>
 <translation id="4824037980212326045">Linux のバックアップと復元</translation>
@@ -3898,6 +3891,7 @@
 <translation id="4880827082731008257">履歴を検索</translation>
 <translation id="4881685975363383806">次回表示しない</translation>
 <translation id="4881695831933465202">開く</translation>
+<translation id="488211015466188466">サイトをフォロー</translation>
 <translation id="4882312758060467256">このサイトへのアクセスが許可されています</translation>
 <translation id="4882919381756638075">多くのサイトは、ビデオチャットなどの通信機能にマイクを使用します。</translation>
 <translation id="4883436287898674711"><ph name="WEBSITE_1" /> の全サイト</translation>
@@ -5150,6 +5144,7 @@
 <translation id="6166185671393271715">Chrome にパスワードをインポート</translation>
 <translation id="6169040057125497443">マイクを確認してください。</translation>
 <translation id="6169666352732958425">デスクトップをキャストできません。</translation>
+<translation id="6169967265765719844">Steam 経由でインストールしたゲームやアプリの権限は、<ph name="LINK_BEGIN" />Steam アプリの設定<ph name="LINK_END" />で管理できます。</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
 <translation id="6170498031581934115">ADB デバッグを有効にできませんでした。設定に移動して、もう一度お試しください。</translation>
 <translation id="617213288191670920">言語が追加されていません</translation>
@@ -5805,7 +5800,6 @@
 <translation id="6834652994408928492">ダークモードは日の入り時刻に自動的にオンになります</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
 <translation id="6839225236531462745">証明書削除エラー</translation>
-<translation id="6839882458129755986">Google はデータの消失について一切の責任を負いません。<ph name="DEVICE_OS" /> は未認定のモデルでは動作しない可能性があります。詳しくは、g.co/CR2/InstallGuide をご覧ください。</translation>
 <translation id="6839916869147598086">ログインが変わりました</translation>
 <translation id="6840155290835956714">送信する前に確認する</translation>
 <translation id="6840184929775541289">認証局ではない</translation>
@@ -5849,6 +5843,7 @@
 <translation id="6876469544038980967">役に立たなかった</translation>
 <translation id="6878422606530379992">センサーが許可されました</translation>
 <translation id="6880587130513028875">このページの画像はブロックされました。</translation>
+<translation id="688312408602122936">Steam 経由でインストールしたゲームやアプリもすべてこのデバイスから削除されます</translation>
 <translation id="6883319974225028188">デバイスの設定を保存できませんでした。</translation>
 <translation id="6884474387073389421">選択したログインデータを削除してもよろしいですか？</translation>
 <translation id="6885771755599377173">システム情報のプレビュー</translation>
@@ -6129,7 +6124,6 @@
 <translation id="7180611975245234373">更新</translation>
 <translation id="7180865173735832675">カスタマイズ</translation>
 <translation id="7182791023900310535">パスワードを移動</translation>
-<translation id="7183193772170782394">Google とハードウェア データを共有して <ph name="DEVICE_OS" /> の改善に協力する。同意されない場合も、このデータは適切なアップデートを確認するため Google に送信されますが、それ以外の目的で保存または使用されることはありません。詳しくは、g.co/CR2/HWDataCollection をご覧ください。</translation>
 <translation id="7183420126213758623">サイド検索を切り替えます。サイド検索は無効になっています。</translation>
 <translation id="7186088072322679094">ツールバーに残す</translation>
 <translation id="7186303001964993981">システム ファイルが含まれているため、<ph name="ORIGIN" /> はこのフォルダを開くことができません</translation>
@@ -7225,7 +7219,6 @@
 <translation id="8260864402787962391">マウス</translation>
 <translation id="8261378640211443080">この拡張機能は <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供されていません。知らないうちに追加された可能性があります。</translation>
 <translation id="8261506727792406068">削除</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />エラーが発生したため、<ph name="DEVICE_OS" /> をインストールできませんでした。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/CR2/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">このグループに名前を付ける</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> でマウスカーソルが無効になりました。</translation>
 <translation id="8264024885325823677">この設定は管理者によって管理されています。</translation>

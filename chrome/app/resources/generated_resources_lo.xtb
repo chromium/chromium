@@ -572,6 +572,7 @@
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">ເປີດການຕັ້ງຄ່າອຸປະກອນສະແດງຜົນ</translation>
 <translation id="1570604804919108255">ເຊົາປິດສຽງການແຈ້ງເຕືອນ</translation>
+<translation id="1571304935088121812">ສຳເນົາຊື່ຜູ້ໃຊ້</translation>
 <translation id="1571738973904005196">ເບິ່ງແຖບ: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ແຂກ)</translation>
 <translation id="1572266655485775982">ເປີດນຳໃຊ້ Wi-Fi</translation>
@@ -1264,9 +1265,6 @@
 <translation id="2220572644011485463">PIN ຫຼື ລະຫັດຜ່ານ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">ແຫຼ່ງທີ່ມາມີເດຍທີ່ບໍ່ມີຊື່</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />ເພື່ອມອບປະສົບການທີ່ດີທີ່ສຸດ, <ph name="DEVICE_OS" /> ຈະມີການຮວບຮວມຂໍ້ມູນຮາດແວກ່ຽວກັບອຸປະກອນຕ່າງໆ ແລະ ແບ່ງປັນມັນໃຫ້ກັບ Google ເພື່ອກວດສອບວ່າຄວນຈັດສົ່ງອັບເດດອັນໃດ. ຫຼືຖ້າບໍ່ດັ່ງນັ້ນ, ທ່ານສາມາດອະນຸຍາດໃຫ້ Google ໃຊ້ຂໍ້ມູນນີ້ເພື່ອຈຸດປະສົງເພີ່ມເຕີມໄດ້ ເຊັ່ນ: ການຊ່ວຍເຫຼືອ ແລະ ການປັບປຸງປະສົບການ ແລະ ບໍລິການຂອງ <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດເຂົ້າສູ່ລະບົບຢູ່ອຸປະກອນນີ້ ແລະ ເຂົ້າໄປພາກສ່ວນ CLOUDREADY_HARDWARE_INFO ໃນ chrome://system ເພື່ອເບິ່ງຂໍ້ມູນທີ່ສົ່ງໄປໃຫ້ Google ສຳລັບການກັ່ນຕອງອັບເດດໄດ້, ຮວມທັງກໍລະນີອື່ນທີ່ທ່ານເລືອກແບ່ງປັນຂໍ້ມູນໃຫ້ກັບ Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ສຳລັບລາຍລະອຽດເພີ່ມເຕີມກ່ຽວກັບຂໍ້ມູນທີ່ <ph name="DEVICE_OS" /> ອາດແບ່ງປັນໃຫ້ກັບ Google ແລະ ວິທີທີ່ມັນຖືກໃຊ້ ກະລຸນາເຂົ້າໄປ g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">ການຕັ້ງຄ່ານີ້ເປັນຂອງ <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">ຈຳເປັນຕ້ອງເລືອກອະລະບໍ້າຄັງຮູບສິນລະປະຢ່າງໜ້ອຍໜຶ່ງອະລະບໍ້າ</translation>
 <translation id="2224551243087462610">ແກ້ໄຂຊື່ໂຟລເດີ</translation>
@@ -1824,15 +1822,6 @@
 <translation id="2766161002040448006">ຖາມພໍ່ແມ່</translation>
 <translation id="2767077837043621282">ບໍ່ສາມາດອັບເດດ Chromebook ຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ພາຍຫຼັງ.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ຈະສາມາດແກ້ໄຂ <ph name="FILENAME" /> ໄດ້ຈົນກວ່າທ່ານປິດແຖບທັງໝົດສຳລັບເວັບໄຊນີ້</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />ລອງເຮັດຂັ້ນຕອນການແກ້ໄຂບັນຫາເຫຼົ່ານີ້:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />ກວດສອບວ່າອຸປະກອນຂອງທ່ານມີບ່ອນຈັດເກັບຂໍ້ມູນພາຍໃນທີ່ໃຊ້ໄດ້ ເຊັ່ນ: HDD, SSD ຫຼື eMMC
-    <ph name="LIST_ITEM" />ກວດສອບວ່າບ່ອນຈັດເກັບຂໍ້ມູນພາຍໃນຂອງທ່ານມີຂະໜາດຫຼາຍກວ່າ 16GB
-    <ph name="LIST_ITEM" />ກວດສອບການເຊື່ອມຕໍ່ຫາບ່ອນຈັດເກັບຂໍ້ມູນພາຍໃນ, ຫາກວ່າສາມາດເຂົ້າເຖິງໄດ້ທາງກາຍະພາບ
-    <ph name="LIST_ITEM" />ກວດສອບວ່າທ່ານກຳລັງໃຊ້ໂມເດວທີ່ໄດ້ຮັບການຮັບຮອງ ແລະ ກວດສອບບັນທຶກການຕິດຕັ້ງ
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ສຳລັບການຊ່ວຍເຫຼືອເພີ່ມເຕີມ, ກະລຸນາເຂົ້າໄປ: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">ເອົາ​ອອກ​ຈາກລາຍການ</translation>
 <translation id="2770690685823456775">ສົ່ງລະຫັດຜ່ານຂອງທ່ານອອກໄປໃສ່ໂຟນເດີອື່ນ</translation>
 <translation id="2770929488047004208">ຄວາມລະອຽດໜ້າຈໍ</translation>
@@ -3103,7 +3092,6 @@
 <translation id="4005817994523282006">ວິທີການກວດຫາເຂດເວລາ</translation>
 <translation id="4007856537951125667">ເຊື່ອງທາງລັດ</translation>
 <translation id="4008291085758151621">ຂໍ້ມູນເວັບໄຊບໍ່ມີໃຫ້ໃນ VR</translation>
-<translation id="4009955655170295852">ກ່ອນການເລີ່ມຕົ້ນ, ໃຫ້ກວດສອບວ່າທ່ານໄດ້ສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ແລ້ວ. ການຕິດຕັ້ງ <ph name="DEVICE_OS" /> ຈະຂຽນທັບຂໍ້ມູນໃນຮາດໄດຣຟ໌ຂອງທ່ານ. ສຶກສາເພີ່ມເຕີມໄດ້ຢູ່ g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">ເພື່ອເອົາບຸກມາກຂອງທ່ານຢູ່ໃນອຸປະກອນມືຖື, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">ສ້ອມແປງ "<ph name="EXTENSION_NAME" />" ບໍ?</translation>
 <translation id="4015163439792426608">ມີສ່ວນຂະຫຍາຍຫຼາຍລາຍການບໍ? <ph name="BEGIN_LINK" />ຈັດການສ່ວນຂະຫຍາຍຂອງທ່ານ<ph name="END_LINK" /> ໄດ້ງ່າຍໆຢູ່ບ່ອນດຽວ.</translation>
@@ -3818,7 +3806,6 @@
 <translation id="4781443161433589743">ທ່ານກຳລັງໃຊ້ຄວາມປອດໄພຂັ້ນສູງສຸດຂອງ Chrome ຢູ່</translation>
 <translation id="4785719467058219317">ທ່ານກຳລັງໃຊ້ກະແຈຄວາມປອດໄພທີ່ບໍ່ໄດ້ລົງທະບຽນນຳເວັບໄຊນີ້</translation>
 <translation id="4785914069240823137">ຍົກເລີກການຕັດ</translation>
-<translation id="478708757211772586">ໃຊ້ “ຕໍ່ໄປ” ເພື່ອຍ້າຍໄປໜ້າຢູ່ໜ້າຈໍ</translation>
 <translation id="4788092183367008521">ກະລຸນາກວດເບິ່ງການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ ແລ້ວລອງອີກຄັ້ງ.</translation>
 <translation id="4789550509729954245">ສະແດງການແຈ້ງເຕືອນເມື່ອມີອຸປະກອນກຳລັງແບ່ງປັນຢູ່ໃກ້ຄຽງ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ຮູບ</translation>
@@ -3853,9 +3840,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{ລຶບບຸກມາກ 1 ລາຍການແລ້ວ}other{ລຶບບຸກມາກ {COUNT} ລາຍການແລ້ວ}}</translation>
 <translation id="4819607494758673676">ການແຈ້ງເຕືອນຜູ້ຊ່ວຍ Google</translation>
 <translation id="4820236583224459650">ຕັ້ງຄ່າເປັນປີ້ທີ່ນຳໃຊ້ຢູ່</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />ກ່ອນການລົງທະບຽນທ່ານຈະຕ້ອງລຶບລ້າງ TPM ກ່ອນເພື່ອໃຫ້ <ph name="DEVICE_OS" /> ສາມາດຮັບຄວາມເປັນເຈົ້າຂອງອຸປະກອນໄດ້.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດປິດອຸປະກອນ TPM ທັງໝົດໄດ້ນຳ. ຂໍ້ມູນຂອງທ່ານຈະຖືກຈັດເກັບໄວ້ຢ່າງປອດໄພດ້ວຍການເຂົ້າລະຫັດຊອບແວ, ແຕ່ຄຸນສົມບັດຄວາມປອດໄພບາງຢ່າງ ເຊັ່ນ: ໃບຮັບຮອງທີ່ໃຊ້ຮາດແວຈະຖືກປິດການນຳໃຊ້ໄວ້.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່າ TPM ຂອງທ່ານໄດ້ໂດຍການປິດເປີດໃໝ່ແລ້ວເຂົ້າໄປການຕັ້ງຄ່າ BIOS/UEFI ຂອງລະບົບ. ຂັ້ນຕອນຕ່າງໆແມ່ນແຕກຕ່າງກັນໄປຂຶ້ນກັບໂມເດວຂອງອຸປະກອນ. ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ, ໃຫ້ເປີດເອກະສານ <ph name="DEVICE_OS" /> ຢູ່ອຸປະກອນແຍກຕ່າງຫາກກ່ອນທີ່ທ່ານຈະປິດເປີດໃໝ່: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">ການສ້າງໂປຣໄຟລ໌ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="4823484602432206655">ອ່ານ ​ແລະ​ປ່ຽນ​ການຕັ້ງຄ່າຜູ້​ໃຊ້ ແລະ​ອຸ​ປະ​ກອນ</translation>
 <translation id="4824037980212326045">ການສຳຮອງ ແລະ ກູ້ຂໍ້ມູນ Linux</translation>
@@ -5835,7 +5819,6 @@
 <translation id="6834652994408928492">ໂໝດມືດຈະເປີດອັດຕະໂນມັດເມື່ອຕາເວັນຕົກ</translation>
 <translation id="6835762382653651563">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດເພື່ອອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
 <translation id="6839225236531462745">ການລຶບໃບຢັ້ງຢືນຜິດພາດ</translation>
-<translation id="6839882458129755986">Google ຈະບໍ່ຮັບຜິດຊອບຕໍ່ການສູນເສຍຂໍ້ມູນໃດກໍຕາມ ແລະ <ph name="DEVICE_OS" /> ອາດບໍ່ເຮັດວຽກຢູ່ໂມເດວທີ່ບໍ່ໄດ້ຮັບການຮັບຮອງ. ສຶກສາເພີ່ມເຕີມໄດ້ຢູ່ g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">ການເຂົ້າສູ່ລະບົບໄດ້ປ່ຽນໄປແລ້ວ</translation>
 <translation id="6840155290835956714">ຖາມກ່ອນສົ່ງ</translation>
 <translation id="6840184929775541289">ບໍ່​ແມ່ນໜ່ວຍງານອອກ​ໃບ​ຢັ້ງ​ຢືນ</translation>
@@ -6159,7 +6142,6 @@
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7180865173735832675">ກໍານົດເອງ</translation>
 <translation id="7182791023900310535">ຍ້າຍລະຫັດຜ່ານຂອງທ່ານ</translation>
-<translation id="7183193772170782394">ໃຫ້ Google ໃຊ້ຂໍ້ມູນຮາດແວຂອງທ່ານເພື່ອຊ່ວຍປັບປຸງ <ph name="DEVICE_OS" />. ຫາກທ່ານປະຕິເສດ, ຂໍ້ມູນນີ້ຈະຍັງຄົງຖືກສົ່ງໄປໃຫ້ Google ເພື່ອກວດສອບການອັບເດດທີ່ເໝາະສົມ, ແຕ່ຈະບໍ່ຖືກຈັດເກັບ ຫຼື ຖືກໃຊ້ໄປໃນທາງອື່ນ. ສຶກສາເພີ່ມເຕີມໄດ້ຢູ່ g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">ສະຫຼັບການຊອກຫາດ້ານຂ້າງ. ບໍ່ໄດ້ເປີດໃຊ້ການຊອກຫາດ້ານຂ້າງ.</translation>
 <translation id="7186088072322679094">ຮັກ​ສາ​ໄວ້​ຢູ່​ໃນ​ແຖບ​ເຄື່ອງ​ມື</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ບໍ່ສາມາດເປີດໂຟນເດີນີ້ໄດ້ເນື່ອງຈາກມັນມີໄຟລ໌ລະບົບ</translation>
@@ -7255,8 +7237,6 @@
 <translation id="8260864402787962391">ເມົາສ໌</translation>
 <translation id="8261378640211443080">ສ່ວນຂະຫຍາຍນີ້ບໍ່ມີລາຍຊື່ຢູ່ໃນ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ແລະອາດຈະຖືກເພີ່ມເຂົ້າໂດຍທີ່ທ່ານບໍ່ຮູ້ຈັກ.</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ ແລະ ບໍ່ສາມາດຕິດຕັ້ງ <ph name="DEVICE_OS" /> ໄດ້.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ສຳລັບຄວາມຊ່ວຍເຫຼືອເພີ່ມເຕີມ, ກະລຸນາເຂົ້າໄປ: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">ຕັ້ງຊື່ໃຫ້ກຸ່ມນີ້</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ປິດໃຊ້ງານເຄີເຊີເມົາສ໌ຂອງທ່ານແລ້ວ.</translation>
 <translation id="8264024885325823677">ການຕັ້ງຄ່ານີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>

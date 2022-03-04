@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">右矢印キー</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3909791450649380159">切り取り(&amp;T)</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">右端</translation>
 <translation id="3994749195054421561">「<ph name="COLUMN_NAME" />」列の昇順で並べ替えました。</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{未読のお知らせ 1 件}other{未読のお知らせ # 件}}</translation>
 <translation id="4250229828105606438">スクリーンショット</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 か月前}other{# か月前}}</translation>

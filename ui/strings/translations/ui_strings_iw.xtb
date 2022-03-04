@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">חץ לימין</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3909791450649380159">גז&amp;ירה</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">קצה ימני</translation>
 <translation id="3994749195054421561">העמודה <ph name="COLUMN_NAME" /> ממוינת בסדר עולה.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{הודעה אחת שלא נקראה}two{2 הודעות שלא נקראו}many{# הודעות שלא נקראו}other{# הודעות שלא נקראו}}</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{לפני חודש אחד}two{לפני חודשיים}many{לפני # חודשים}other{לפני # חודשים}}</translation>

@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">Seta para a direita</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3909791450649380159">&amp;Recortar</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">Borda direita</translation>
 <translation id="3994749195054421561">Coluna <ph name="COLUMN_NAME" /> em ordem crescente.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notificação não lida}one{# notificação não lida}other{# notificações não lidas}}</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 mês atrás}one{# mês atrás}other{# meses atrás}}</translation>

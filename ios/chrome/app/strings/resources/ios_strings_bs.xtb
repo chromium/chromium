@@ -87,7 +87,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Historija</translation>
 <translation id="1650222530560417226">Dodirnite gumb "Pokreni bilježenje" za prikupljanje budućih zapisnika konzole JavaScript i pogrešaka sa svih kartica. Zapisnici će se prikupljati (i pohranjivati samo u memoriju) dok se ne zatvori ova stranica ili dodirne "Prekini bilježenje".</translation>
-<translation id="1654232554734641711">Pristup mikrofonu je dozvoljen</translation>
 <translation id="1657011748321897393">Dijeljenje nije uspjelo jer niste povezani na mrežu.</translation>
 <translation id="1657641691196698092">Blokirani kolačići</translation>
 <translation id="165877110639533037">Nema otvorenih kartica</translation>
@@ -323,7 +322,6 @@ Slijedite korake u nastavku:</translation>
 <translation id="3892144330757387737">Svoju historiju ćete pronaći ovdje</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3904829425754749514">Vaša organizacija je isključila sinhronizaciju. I dalje ćete moći pregledati svoje oznake, historiju, lozinke i druge postavke na ovom uređaju. Ako nešto promijenite, te promjene se neće sinhronizirati s vašim računom.</translation>
-<translation id="3905353503976611311">Pretražite web</translation>
 <translation id="3913386780052199712">Prijavljeni ste na Chrome</translation>
 <translation id="3915450441834151894">Informacije o web lokaciji</translation>
 <translation id="3922310737605261887">Pretraži kopirani tekst</translation>
@@ -349,7 +347,6 @@ Slijedite korake u nastavku:</translation>
 <translation id="4121993058175073134">Za slanje podataka o neto izvozu, prvo konfigurirajte svoj račun e-pošte u aplikaciji Postavke.</translation>
 <translation id="4124987746317609294">Vremenski raspon</translation>
 <translation id="4152011295694446843">Oznake ćete pronaći ovdje</translation>
-<translation id="4153925727916232411">To vam omogućava da snimate i otpremate fotografije kao i da skenirate QR kodove.</translation>
 <translation id="4172051516777682613">Uvijek prikaži</translation>
 <translation id="418156467088430727">Prikaži verziju van mreže u novoj kartici</translation>
 <translation id="4181841719683918333">Jezici</translation>
@@ -386,7 +383,6 @@ Slijedite korake u nastavku:</translation>
 <translation id="4526249700380860531">Prikaz spremljenih zaporki i upravljanje njima na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Pokušajte se ponovo prijaviti.</translation>
 <translation id="4540780316273593836">Nešto nije uredu</translation>
-<translation id="4572065712096155137">Pristupi</translation>
 <translation id="457386861538956877">Više...</translation>
 <translation id="4592368184551360546">Tastatura</translation>
 <translation id="461440297010471931">Pretraživanje s Googleom</translation>
@@ -408,7 +404,6 @@ Vaši podaci su šifrirani sinhroniziranim pristupnim izrazom. Unesite da započ
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
 <translation id="4697071790493980729">Nije pronađen nijedan rezultat</translation>
 <translation id="470966556546083668">Nemojte uključiti sinhronizaciju</translation>
-<translation id="4731472194328757163">Pristup kameri i mikrofonu je dozvoljen</translation>
 <translation id="4737560986434232178">Pretražite nedavno korištene kartice</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4747097190499141774">Šifriranje pristupnim izrazom ne obuhvata načine plaćanja i adrese iz Google Paya. Vaše šifrirane podatke može čitati samo osoba koja posjeduje vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga Google pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, morate poništiti sinhronizaciju <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -501,7 +496,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5580834567471114021">Dodati u listu za čitanje za kasnije?</translation>
 <translation id="5592679540098330836">Uključite sinhronizaciju za <ph name="NAME" /></translation>
 <translation id="560322036295180549">Isključila je vaša organizacija</translation>
-<translation id="560999923643681074">Uredi pristup</translation>
 <translation id="5614553682702429503">Sačuvati lozinku?</translation>
 <translation id="5626245204502895507">Ovaj put nismo uspjeli preuzeti fajl.</translation>
 <translation id="5631164295104953411">Dodajte način plaćanja</translation>
@@ -524,7 +518,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5803566855766646066">Jeste li sigurni da želite odbaciti novu karticu?</translation>
 <translation id="5804241973901381774">Odobrenja</translation>
 <translation id="5812974770859303494">Dodaj u...</translation>
-<translation id="5816228676161003208">To vam omogućava brže pretraživanje pomoću glasa.</translation>
 <translation id="581659025233126501">Uključi sinhronizaciju</translation>
 <translation id="5819208479324046259">Preglednikom upravlja <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Pretraživač</translation>
@@ -563,7 +556,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6059830886158432458">Upravljajte pričama i aktivnostima ovdje</translation>
 <translation id="6064824697233747382">Vaša organizacija zahtijeva da isključite sinhronizaciju.</translation>
 <translation id="6066301408025741299">Dodirnite da otkažete.</translation>
-<translation id="6077126322656614846">Pristup kameri je dozvoljen</translation>
 <translation id="60829778314739003">Prihvati i nastavi</translation>
 <translation id="6084848228346514841">Odaberite kartice</translation>
 <translation id="6103540626693881831">Šifriranje na uređaju</translation>
@@ -827,7 +819,6 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8319076807703933069">Novo pretraživanje</translation>
 <translation id="8323906514956095947">Dodirnite i zadržite za više opcija za karticu</translation>
 <translation id="8328777765163860529">Zatvori sve</translation>
-<translation id="8364085047956854021">Odobrenja za "<ph name="SITE_NAME" />" će se vratiti na zadano kada napustite ovu web lokaciju.</translation>
 <translation id="8378714024927312812">Pod upravljanjem vaše organizacije</translation>
 <translation id="8386068868580335421">Vrati na zadano</translation>
 <translation id="8407669440184693619">Nije pronađena nijedna lozinka za ovu web lokaciju</translation>

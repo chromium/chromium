@@ -87,7 +87,6 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
 <translation id="1650222530560417226">Nhấn nút "Bắt đầu ghi nhật ký" để thu thập nhật ký trong bảng điều khiển JavaScript và lỗi từ tất cả các thẻ trong tương lai. Nhật ký sẽ được thu thập (và chỉ được lưu trữ trong bộ nhớ) cho đến khi bạn đóng trang này hoặc nhấn vào "Dừng ghi nhật ký".</translation>
-<translation id="1654232554734641711">Đã cho phép truy cập Micrô</translation>
 <translation id="1657011748321897393">Không thể chia sẻ do bạn không kết nối với mạng.</translation>
 <translation id="1657641691196698092">Số cookie bị chặn</translation>
 <translation id="165877110639533037">Không có thẻ nào đang mở</translation>
@@ -323,7 +322,6 @@ Hãy làm theo các bước sau:</translation>
 <translation id="3892144330757387737">Bạn sẽ thấy lịch sử hoạt động ở đây</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">Tổ chức của bạn đã tắt tính năng đồng bộ hoá. Bạn vẫn có thể xem dấu trang, nhật ký duyệt web, mật khẩu và các chế độ cài đặt khác trên thiết bị này. Nếu bạn thực hiện thay đổi thì những thay đổi đó sẽ không đồng bộ hoá với tài khoản của bạn.</translation>
-<translation id="3905353503976611311">Tìm kiếm trên web</translation>
 <translation id="3913386780052199712">Đã đăng nhập vào Chrome</translation>
 <translation id="3915450441834151894">Thông tin về trang web</translation>
 <translation id="3922310737605261887">Tìm kiếm văn bản đã sao chép</translation>
@@ -349,7 +347,6 @@ Hãy làm theo các bước sau:</translation>
 <translation id="4121993058175073134">Để gửi dữ liệu đã xuất, hãy định cấu hình tài khoản email trong ứng dụng Cài đặt.</translation>
 <translation id="4124987746317609294">Phạm vi thời gian</translation>
 <translation id="4152011295694446843">Bạn sẽ thấy các dấu trang ở đây</translation>
-<translation id="4153925727916232411">Điều này cho phép bạn chụp và tải ảnh lên, cũng như quét mã QR.</translation>
 <translation id="4172051516777682613">Luôn hiển thị</translation>
 <translation id="418156467088430727">Xem phiên bản ngoại tuyến trong thẻ mới</translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
@@ -386,7 +383,6 @@ Hãy làm theo các bước sau:</translation>
 <translation id="4526249700380860531">Xem và quản lý mật khẩu đã lưu tại <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Thử đăng nhập lại.</translation>
 <translation id="4540780316273593836">Đã xảy ra lỗi</translation>
-<translation id="4572065712096155137">Truy cập</translation>
 <translation id="457386861538956877">Thêm...</translation>
 <translation id="4592368184551360546">Bàn phím</translation>
 <translation id="461440297010471931">Tìm kiếm bằng Google</translation>
@@ -408,7 +404,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="4689564913179979534">Quản lý phương thức thanh toán...</translation>
 <translation id="4697071790493980729">Không tìm thấy kết quả nào</translation>
 <translation id="470966556546083668">Không bật tính năng đồng bộ hóa</translation>
-<translation id="4731472194328757163">Đã cho phép truy cập Máy ảnh và Micrô</translation>
 <translation id="4737560986434232178">Tìm kiếm trên các thẻ gần đây</translation>
 <translation id="473775607612524610">Cập nhật</translation>
 <translation id="4747097190499141774">Việc mã hóa cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay. Chỉ người có cụm mật khẩu của bạn mới đọc dữ liệu mã hóa. Cụm mật khẩu này sẽ không được gửi đến hay lưu trữ tại Google. Nếu quên cụm mật khẩu hoặc muốn thay đổi tùy chọn cài đặt này, thì bạn cần phải đặt lại tính năng đồng bộ hóa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -501,7 +496,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5580834567471114021">Thêm vào Danh sách đọc để đọc sau?</translation>
 <translation id="5592679540098330836">Bật tính năng đồng bộ hóa cho <ph name="NAME" /></translation>
 <translation id="560322036295180549">Do tổ chức của bạn tắt</translation>
-<translation id="560999923643681074">Quyền chỉnh sửa</translation>
 <translation id="5614553682702429503">Bạn có muốn lưu mật khẩu không?</translation>
 <translation id="5626245204502895507">Không thể tải xuống tệp vào lúc này.</translation>
 <translation id="5631164295104953411">Thêm phương thức thanh toán</translation>
@@ -524,7 +518,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5803566855766646066">Bạn có chắc chắn muốn hủy thẻ mới này không?</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5812974770859303494">Thêm vào...</translation>
-<translation id="5816228676161003208">Điều này cho phép bạn tìm kiếm nhanh hơn bằng giọng nói.</translation>
 <translation id="581659025233126501">Bật tính năng đồng bộ hóa</translation>
 <translation id="5819208479324046259">Do <ph name="MANAGER" /> quản lý. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Công cụ tìm kiếm</translation>
@@ -563,7 +556,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6059830886158432458">Kiểm soát tin bài và hoạt động của bạn tại đây</translation>
 <translation id="6064824697233747382">Tổ chức của bạn yêu cầu bạn tắt tính năng đồng bộ hóa.</translation>
 <translation id="6066301408025741299">Nhấn để hủy.</translation>
-<translation id="6077126322656614846">Đã cho phép truy cập Máy ảnh</translation>
 <translation id="60829778314739003">Đồng ý và tiếp tục</translation>
 <translation id="6084848228346514841">Chọn các thẻ</translation>
 <translation id="6103540626693881831">Mã hoá trên thiết bị</translation>
@@ -827,7 +819,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8319076807703933069">Tìm kiếm mới</translation>
 <translation id="8323906514956095947">Chạm và giữ để hiển thị thêm tùy chọn về thẻ</translation>
 <translation id="8328777765163860529">Đóng tất cả</translation>
-<translation id="8364085047956854021">Các quyền của "<ph name="SITE_NAME" />" sẽ đặt lại thành tắt khi bạn rời khỏi trang web này.</translation>
 <translation id="8378714024927312812">Do tổ chức của bạn quản lý</translation>
 <translation id="8386068868580335421">Đặt lại</translation>
 <translation id="8407669440184693619">Không tìm thấy mật khẩu nào cho trang web này</translation>

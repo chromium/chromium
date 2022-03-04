@@ -571,6 +571,7 @@
 <translation id="1567993339577891801">JavaScript கன்சோல்</translation>
 <translation id="1568323446248056064">திரை அமைப்புகளைத் திற</translation>
 <translation id="1570604804919108255">அறிவிப்புகளை ஒலி இயக்குதல்</translation>
+<translation id="1571304935088121812">பயனர்பெயரை நகலெடுக்கும்</translation>
 <translation id="1571738973904005196">இந்தப் பிரிவைக் காட்டு: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (கெஸ்ட்)</translation>
 <translation id="1572266655485775982">வைஃபையை இயக்கு</translation>
@@ -1103,6 +1104,7 @@
 <translation id="2060375639911876205">eSIM சுயவிவரத்தை அகற்றுதல்</translation>
 <translation id="2062354623176996748">மறைநிலைச் சாளரத்தின் மூலம் நீங்கள் உலாவுவது குறித்த தகவல்கள் சேமிக்கப்படாத வகையில் இணையத்தைப் பயன்படுத்தலாம்</translation>
 <translation id="2065405795449409761">Chromeஐத் தானியங்கிச் சோதனை மென்பொருள் கட்டுப்படுத்துகிறது.</translation>
+<translation id="2069869989954932144">கம்ப்யூட்டரில் ஃபைல்களைத் திறக்கும்போது ஆப்ஸைப் பரிந்துரை</translation>
 <translation id="2071393345806050157">அக லாக் ஃபைல் எதுவுமில்லை.</translation>
 <translation id="2071692954027939183">வழக்கமாக நீங்கள் அறிவிப்புகளை அனுமதிப்பதில்லை என்பதால் அவை தானாகவே தடுக்கப்பட்டன</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{இந்த நீட்டிப்பை நிறுவுவதற்குக் கிளிக் செய்யவும்}other{இந்த நீட்டிப்புகளை நிறுவுவதற்குக் கிளிக் செய்யவும்}}</translation>
@@ -1261,9 +1263,6 @@
 <translation id="2220572644011485463">பின் அல்லது கடவுச்சொல்</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">பெயரிடப்படாத மீடியா ஆதாரம்</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />சிறந்த அனுபவத்தை வழங்குவதற்காக, சாதனங்கள் குறித்த வன்பொருள் தரவை <ph name="DEVICE_OS" /> சேகரித்து, அவற்றை Googleளுடன் பகிரும். இதன்மூலம், தேவையான புதுப்பிப்புகள் உங்களுக்குக் கிடைக்கும். நீங்கள் விரும்பினால் <ph name="DEVICE_OS" /> உபயோகம், சேவை ஆகியவை தொடர்பான உதவி, மேம்பாடுகள் போன்ற கூடுதல் நோக்கங்களுக்காக இந்தத் தரவை Google பயன்படுத்த நீங்கள் அனுமதிக்கலாம்.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />பொருத்தமான புதுப்பிப்புகளைத் தேர்ந்தெடுக்கவும் Googleளுடன் தரவைப் பகிர நீங்கள் அனுமதித்த வேறு காரணங்களுக்காகவும் Googleளுக்கு அனுப்பப்பட்ட தரவை அறிந்துகொள்ள, இந்தச் சாதனத்தில் உள்நுழைந்து chrome://system என்பதில் உள்ள CLOUDREADY_HARDWARE_INFO பிரிவுக்குச் செல்லவும்.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Googleளுடன் <ph name="DEVICE_OS" /> பகிரக்கூடிய தரவைப் பற்றியும் அவை எவ்வாறு பயன்படுத்தப்படுகின்றன என்பதைப் பற்றியும் கூடுதல் விவரங்களை அறிய, g.co/CR2/HWDataCollection என்ற தளத்தைப் பார்க்கவும்.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">இந்த அமைப்பானது <ph name="OWNER_EMAIL" /> க்கு உரியதாகும்.</translation>
 <translation id="222447520299472966">குறைந்தது ஒரு ஆர்ட் கேலரி ஆல்பத்தைத் தேர்ந்தெடுக்க வேண்டும்</translation>
 <translation id="2224551243087462610">ஃபோல்டர் பெயரை மாற்று</translation>
@@ -1340,6 +1339,7 @@
 <translation id="2292848386125228270"><ph name="PRODUCT_NAME" />ஐ வழக்கமான பயனராகத் தொடங்குங்கள். டெவெலப்மெண்ட்டுக்காக அதை ரூட் பயனராக இயக்க வேண்டும் எனில், --no-sandbox விருப்பத்தைப் பயன்படுத்தி மீண்டும் இயக்கவும்.</translation>
 <translation id="2294081976975808113">திரைக்கான தனியுரிமை</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" /> ஐ நிறுவ விரும்புகிறீர்களா?</translation>
+<translation id="229477815107578534">உங்கள் அமைப்புகளைச் சரிபாருங்கள்</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> முடிவுகள்</translation>
 <translation id="2296022312651137376"><ph name="EMAIL" /> கணக்கில் உள்நுழையும்போது சாதனம் ஆன்லைனில் இருக்க வேண்டுமென <ph name="DOMAIN_NAME" /> கோருகிறது</translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{தீங்கிழைக்கும் மென்பொருளை உங்கள் கம்ப்யூட்டரில் Chrome கண்டறியவில்லை • சரிபார்க்கப்பட்டது: 1 மணிநேரத்திற்கு முன்பு}other{தீங்கிழைக்கும் மென்பொருளை உங்கள் கம்ப்யூட்டரில் Chrome கண்டறியவில்லை • சரிபார்க்கப்பட்டது: {NUM_HOURS} மணிநேரத்திற்கு முன்பு}}</translation>
@@ -1819,15 +1819,6 @@
 <translation id="2766161002040448006">பெற்றோரிடம் கேள்</translation>
 <translation id="2767077837043621282">Chromebookகைப் புதுப்பிக்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="2767127727915954024">இந்தத் தளத்தின் தாவல்கள் அனைத்தையும் மூடும் வரை <ph name="ORIGIN" /> தளத்தால் <ph name="FILENAME" /> கோப்பைத் திருத்த முடியும்</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />பிழையறிந்து திருத்துவதற்கான இந்தப் படிகளை முயன்று பார்க்கவும்:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />HDD, SSD, eMMC போன்ற அகச் சேமிப்பகம் உங்கள் சாதனத்தில் இயங்கும் நிலையில் இருப்பதை உறுதிசெய்துகொள்ளவும்
-    <ph name="LIST_ITEM" />அகச் சேமிப்பகச் சாதனம் 16 ஜி.பை.க்கும் அதிகமாக உள்ளதா எனச் சரிபார்க்கவும்
-    <ph name="LIST_ITEM" />அகச் சேமிப்பகம் சரியாக இணைக்கப்பட்டுள்ளதா எனப் பார்க்கவும்
-    <ph name="LIST_ITEM" />சான்றளிக்கப்பட்ட மாடலை நீங்கள் பயன்படுத்துவதை உறுதிசெய்துகொள்ளவும், அத்துடன் நிறுவல் குறிப்புகளையும் பார்க்கவும்
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />மேலும் உதவிக்கு, g.co/CR2/InstallErrors என்ற தளத்தைப் பார்க்கவும்.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">பட்டியலிலிருந்து நீக்கு</translation>
 <translation id="2770690685823456775">மற்றொரு ஃபோல்டருக்குக் கடவுச்சொற்களை ஏற்றவும்</translation>
 <translation id="2770929488047004208">மானிட்டரின் தெளிவுத்திறன்</translation>
@@ -3069,7 +3060,6 @@
 <translation id="4005817994523282006">நேர மண்டலம் கண்டறிதல் முறை</translation>
 <translation id="4007856537951125667">ஷார்ட்கட்களை மறை</translation>
 <translation id="4008291085758151621">VR இல் தளத் தகவல் இல்லை</translation>
-<translation id="4009955655170295852">தொடங்குவதற்கு முன்பு, தரவு காப்புப் பிரதி எடுக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும். <ph name="DEVICE_OS" /> ஐ நிறுவினால் உங்கள் ஹார்டு டிரைவில் உள்ளவை மாற்றியமைக்கப்படும். g.co/CR2/InstallGuide என்ற தளத்தில் மேலும் அறிக.</translation>
 <translation id="4010917659463429001">மொபைல் சாதனத்தில் உங்கள் புத்தகக்குறிகளைப் பெற, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />"ஐப் புதுப்பிக்கவா?</translation>
 <translation id="4015163439792426608">நீட்டிப்புகள் இருக்கிறதா? ஒரே இடத்தில் எளிதாக <ph name="BEGIN_LINK" />உங்கள் நீட்டிப்புகளை நிர்வகியுங்கள்<ph name="END_LINK" />.</translation>
@@ -3777,7 +3767,6 @@
 <translation id="4781443161433589743">Chromeமின் வலுவான பாதுகாப்பைப் பெற்றுள்ளீர்கள்</translation>
 <translation id="4785719467058219317">இந்த இணையதளத்தில் பதிவுசெய்யப்படாத பாதுகாப்பு விசையைப் பயன்படுத்துகிறீர்கள்</translation>
 <translation id="4785914069240823137">செதுக்கியதை ரத்துசெய்யும்</translation>
-<translation id="478708757211772586">திரையில் இருப்பவற்றில் அடுத்ததை ஃபோகஸ் செய்ய, “அடுத்து” ஸ்விட்ச்சைப் பயன்படுத்தும்</translation>
 <translation id="4788092183367008521">நெட்வொர்க் இணைப்பைச் சரிபார்த்து, மீண்டும் முயலவும்.</translation>
 <translation id="4789550509729954245">அருகிலுள்ள சாதனங்கள் பகிரும்போது அறிவிப்பைக் காட்டும்</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> படம்</translation>
@@ -3812,9 +3801,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 புக்மார்க் நீக்கப்பட்டது}other{{COUNT} புக்மார்க்குகள் நீக்கப்பட்டன}}</translation>
 <translation id="4819607494758673676">Google Assistant அறிவிப்புகள்</translation>
 <translation id="4820236583224459650">செயலிலுள்ள டிக்கெட்டாக அமை</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />சாதனத்தின் உரிமையை <ph name="DEVICE_OS" /> எடுத்துக்கொள்ள, பதிவுசெய்வதற்கு முன்பே நீங்கள் TPMமை அழிக்க வேண்டும்.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />TPM சாதனத்தை முழுவதுமாகவும் முடக்கலாம். மென்பொருள் என்க்ரிப்ஷன் மூலம் உங்கள் தரவு பாதுகாப்பாகச் சேமிக்கப்படும். ஆனால், வன்பொருள்-காப்புப் பிரதியெடுக்கப்பட்ட சான்றிதழ்கள் போன்ற சில பாதுகாப்பு அம்சங்கள் முடக்கப்படும்.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />சிஸ்டத்தை மறுபடி தொடங்கி, BIOS/UEFI அமைப்புகளுக்குச் சென்றும் TPM அமைப்புகளை மாற்றலாம். சாதனத்தின் மாடலைப் பொறுத்து படிகள் வேறுபடும். கூடுதல் தகவலுக்கு, மறுபடி தொடங்குவதற்கு முன்பு <ph name="DEVICE_OS" /> ஆவணத்தை வேறொரு சாதனத்தில் திறக்கவும்: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;சுயவிவரமாக்கம் இயக்கப்பட்டது</translation>
 <translation id="4823484602432206655">பயணர் மற்றும் சாதன அமைப்புகளைப் படிக்கும் மற்றும் மாற்றும்</translation>
 <translation id="4824037980212326045">Linux காப்புப் பிரதி மற்றும் மீட்டெடுப்பு</translation>
@@ -5761,7 +5747,6 @@
 <translation id="6834652994408928492">சூரியன் மறையும்போது, டார்க் பயன்முறை தானாக இயக்கப்படும்</translation>
 <translation id="6835762382653651563">உங்கள் <ph name="DEVICE_TYPE" />ஐப் புதுப்பிக்க இணையத்துடன் இணையவும்.</translation>
 <translation id="6839225236531462745">சான்றிதழ் நீக்குதல் பிழை</translation>
-<translation id="6839882458129755986">தரவு இழப்பிற்கு Google பொறுப்பாகாது. சான்றளிக்கப்படாத மாடல்களில் <ph name="DEVICE_OS" /> வேலை செய்யாமல் போகலாம். g.co/CR2/InstallGuide என்ற தளத்தில் மேலும் அறிக.</translation>
 <translation id="6839916869147598086">உள்நுழையும் முறை மாறியுள்ளது</translation>
 <translation id="6840155290835956714">அனுப்பும் முன் கேள்</translation>
 <translation id="6840184929775541289">இது ஒரு சான்றளிக்கும் மையம் அல்ல</translation>
@@ -6006,6 +5991,7 @@
 <translation id="7077829361966535409">தற்போதைய பிராக்ஸி அமைப்புகளைப் பயன்படுத்தி உள்நுழைவுப் பக்கத்தை ஏற்றுவது தோல்வியடைந்தது. <ph name="GAIA_RELOAD_LINK_START" />மீண்டும் உள்நுழைய முயற்சிக்கவும்<ph name="GAIA_RELOAD_LINK_END" /> அல்லது வேறொரு <ph name="PROXY_SETTINGS_LINK_START" />பிராக்ஸி அமைப்புகளைப்<ph name="PROXY_SETTINGS_LINK_END" /> பயன்படுத்தவும்.</translation>
 <translation id="7078120482318506217">எல்லா நெட்வொர்க்குகளும்</translation>
 <translation id="708060913198414444">ஆடியோ முகவரியை ந&amp;கலெடு</translation>
+<translation id="7082568314107259011"><ph name="NETWORK_NAME" /> உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7085389578340536476">ஆடியோவை ரெக்கார்டு செய்ய, Chromeஐ அனுமதிக்கவா?</translation>
 <translation id="7086672505018440886">காப்பகத்தில் Chrome லாக் ஃபைல்களைச் சேர்க்கும்.</translation>
 <translation id="7088434364990739311">புதுப்பிப்பு சரிபார்த்தலை துவங்குவதில் தோல்வி. (பிழை குறியீடு <ph name="ERROR" />).</translation>
@@ -6083,7 +6069,6 @@
 <translation id="7180611975245234373">புதுப்பி</translation>
 <translation id="7180865173735832675">பிரத்தியேகமாக்கு</translation>
 <translation id="7182791023900310535">உங்கள் கடவுச்சொல்லை நகற்றுக</translation>
-<translation id="7183193772170782394"><ph name="DEVICE_OS" /> ஐ மேம்படுத்த உதவுவதற்காக உங்கள் வன்பொருள் தரவைப் பயன்படுத்த Googleளை அனுமதிக்கும். நீங்கள் நிராகரித்தால் கூட சரியான புதுப்பிப்புகளைக் கண்டறிய உதவுவதற்காக இந்தத் தரவு Googleளுக்கு அனுப்பப்படும். ஆனால் இது சேமிக்கப்படாது, வேறு எதற்காகவும் பயன்படுத்தப்படாது. g.co/CR2/HWDataCollection என்ற தளத்தில் மேலும் அறிக.</translation>
 <translation id="7183420126213758623">பக்கவாட்டுத் தேடலுக்கு மாறும். பக்கவாட்டுத் தேடல் இயக்கப்படவில்லை.</translation>
 <translation id="7186088072322679094">கருவிப்பட்டியில் வை</translation>
 <translation id="7186303001964993981">இந்த ஃபோல்டரில் சிஸ்டம் ஃபைல்கள்  இருப்பதால் அதை <ph name="ORIGIN" /> தளத்தால் திறக்க முடியவில்லை</translation>
@@ -7175,8 +7160,6 @@
 <translation id="8260864402787962391">சுட்டி</translation>
 <translation id="8261378640211443080">இந்த நீட்டிப்பு <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> இல் பட்டியலிடப்படவில்லை, மேலும் அது உங்களுக்குத் தெரியாமல் சேர்க்கப்பட்டிருக்கலாம்.</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />ஏதோ தவறாகிவிட்டதால் <ph name="DEVICE_OS" /> ஐ நிறுவ முடியவில்லை.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />மேலும் உதவிக்கு, g.co/CR2/InstallErrors என்ற தளத்தைப் பார்க்கவும்.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">இந்தக் குழுவிற்குப் பெயரிடவும்</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />, உங்கள் இடஞ்சுட்டியை முடக்கியுள்ளது.</translation>
 <translation id="8264024885325823677">உங்கள் நிர்வாகி இந்த அமைப்பை நிர்வகிக்கிறார்.</translation>
@@ -7240,6 +7223,7 @@
 <translation id="8325413836429495820">உங்கள் கிளிப்போர்டைப் பார்க்க அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="8326478304147373412">PKCS #7, சான்றிதழ் சங்கிலி</translation>
 <translation id="8327676037044516220">அனுமதிகளும் உள்ளடக்க அமைப்புகளும்</translation>
+<translation id="8330689128072902965">அருகிலுள்ள தொடர்புகள் உங்களுடன் பகிர முடியும். மாற்ற, கிளிக் செய்யவும்.</translation>
 <translation id="833256022891467078">Crostini பகிர்ந்த ஃபோல்டர்கள்</translation>
 <translation id="8335587457941836791">அடுக்கிலிருந்து பிரித்தெடு</translation>
 <translation id="8336407002559723354"><ph name="MONTH_AND_YEAR" /> வரை மட்டுமே புதுப்பிப்புகளைப் பெற முடியும்</translation>

@@ -54,7 +54,7 @@
 <translation id="1273314450961659276">Impostazioni di sintesi vocale</translation>
 <translation id="1275718070701477396">Selezionato</translation>
 <translation id="1284576163386164372">Puoi sempre visualizzare i tutorial aprendo i menu con un tocco a quattro dita. Quindi attiva il tutorial nella sezione "ChromeVox".</translation>
-<translation id="1291286136605998134">Pulsante di attivazione/disattivazione</translation>
+<translation id="1291286136605998134">Pulsante di attivazione o disattivazione</translation>
 <translation id="1299774449519412690">Azzurro cielo chiaro</translation>
 <translation id="1303806948938513162">Tocca con quattro dita per aprire i menu di ChromeVox</translation>
 <translation id="1313373992684326101">Passa alla sezione precedente. Alcuni esempi includono la barra di stato e Avvio app.</translation>
@@ -226,7 +226,7 @@
 <translation id="2553108862507765288">grammatical mistake</translation>
 <translation id="2556326187583116255">Tocca con due dita per interrompere qualsiasi lettura corrente</translation>
 <translation id="2573256689920773241">Navigazione di base</translation>
-<translation id="257674075312929031">Raggruppa</translation>
+<translation id="257674075312929031">Gruppo</translation>
 <translation id="2582407057977008361">Di lato</translation>
 <translation id="2592212930811759050">Tocca due volte per iniziare la modifica</translation>
 <translation id="2598495320872286378">Errore grammaticale</translation>
@@ -1151,7 +1151,7 @@
 <translation id="9099429023611373837">taglia</translation>
 <translation id="9108370397979208512">elemento matematico</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{percentuale}one{# percent signs}other{# simboli percentuale}}</translation>
+<translation id="911476240645808512">{COUNT,plural, =1{percento}one{# percent signs}other{# simboli percentuale}}</translation>
 <translation id="9128414153595658330">dlg</translation>
 <translation id="9133928141873682933">Cachi</translation>
 <translation id="9149560530563164529">sctn</translation>

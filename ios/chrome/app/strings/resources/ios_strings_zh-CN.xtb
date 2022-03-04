@@ -87,7 +87,6 @@
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1650222530560417226">点按“开始记录”按钮即可从所有标签页中收集日后的 JavaScript 控制台日志和错误。系统会一直收集（并仅在内存中存储）日志，直到用户关闭此页面或点按“停止记录”。</translation>
-<translation id="1654232554734641711">已启用麦克风使用权限</translation>
 <translation id="1657011748321897393">分享失败，因为您没有连接到网络。</translation>
 <translation id="1657641691196698092">已拦截的 Cookie</translation>
 <translation id="165877110639533037">没有已打开的标签页</translation>
@@ -323,7 +322,6 @@
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3904829425754749514">贵组织已关闭同步功能。您仍可在此设备上查看自己的书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的帐号。</translation>
-<translation id="3905353503976611311">在网络上搜索</translation>
 <translation id="3913386780052199712">已登录 Chrome</translation>
 <translation id="3915450441834151894">网站信息</translation>
 <translation id="3922310737605261887">搜索复制的文字</translation>
@@ -349,7 +347,6 @@
 <translation id="4121993058175073134">要发送净导出数据，请在“设置”应用中指定您的电子邮件帐号。</translation>
 <translation id="4124987746317609294">时间范围</translation>
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
-<translation id="4153925727916232411">这样一来，您就能拍摄并上传照片，还能扫描二维码。</translation>
 <translation id="4172051516777682613">一律显示</translation>
 <translation id="418156467088430727">在新标签页中查看离线版本</translation>
 <translation id="4181841719683918333">语言</translation>
@@ -386,7 +383,6 @@
 <translation id="4526249700380860531">通过 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> 查看和管理已保存的密码</translation>
 <translation id="4536418791685807335">请尝试重新登录。</translation>
 <translation id="4540780316273593836">出了点问题</translation>
-<translation id="4572065712096155137">访问</translation>
 <translation id="457386861538956877">更多...</translation>
 <translation id="4592368184551360546">键盘</translation>
 <translation id="461440297010471931">目前所用的搜索引擎是 Google</translation>
@@ -408,7 +404,6 @@
 <translation id="4689564913179979534">管理付款方式…</translation>
 <translation id="4697071790493980729">找不到任何结果</translation>
 <translation id="470966556546083668">请勿开启同步功能</translation>
-<translation id="4731472194328757163">已启用摄像头和麦克风使用权限</translation>
 <translation id="4737560986434232178">在最近打开的标签页中搜索</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">密码加密不包括 Google Pay 中的付款方式和地址。只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需重置同步设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -501,7 +496,6 @@
 <translation id="5580834567471114021">添加到阅读清单以供日后阅读？</translation>
 <translation id="5592679540098330836">为<ph name="NAME" />开启同步</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
-<translation id="560999923643681074">编辑权限</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
 <translation id="5626245204502895507">该文件目前无法下载。</translation>
 <translation id="5631164295104953411">添加付款方式</translation>
@@ -524,7 +518,6 @@
 <translation id="5803566855766646066">确定要舍弃这张新信用卡吗？</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5812974770859303494">添加到…</translation>
-<translation id="5816228676161003208">这样，您就可以使用语音更快速地进行搜索。</translation>
 <translation id="581659025233126501">开启同步功能</translation>
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">搜索引擎</translation>
@@ -563,7 +556,6 @@
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
 <translation id="6064824697233747382">贵单位要求您关闭同步功能。</translation>
 <translation id="6066301408025741299">点按可取消。</translation>
-<translation id="6077126322656614846">已启用摄像头使用权限</translation>
 <translation id="60829778314739003">接受并继续</translation>
 <translation id="6084848228346514841">选择标签页</translation>
 <translation id="6103540626693881831">设备上加密</translation>
@@ -827,7 +819,6 @@
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8323906514956095947">轻触并按住可查看更多的标签页选项</translation>
 <translation id="8328777765163860529">全部关闭</translation>
-<translation id="8364085047956854021">您离开“<ph name="SITE_NAME" />”后，这个网站的权限将重置为停用。</translation>
 <translation id="8378714024927312812">由贵单位管理</translation>
 <translation id="8386068868580335421">重置</translation>
 <translation id="8407669440184693619">未找到任何用于此网站的密码</translation>

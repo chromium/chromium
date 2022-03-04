@@ -570,6 +570,7 @@
 <translation id="1567993339577891801">JavaScript 控制台</translation>
 <translation id="1568323446248056064">開啟顯示裝置設定</translation>
 <translation id="1570604804919108255">開啟通知音效</translation>
+<translation id="1571304935088121812">複製使用者名稱</translation>
 <translation id="1571738973904005196">查看分頁：<ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (訪客)</translation>
 <translation id="1572266655485775982">啟用 Wi-Fi</translation>
@@ -1255,9 +1256,6 @@
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">未命名的媒體來源</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />為了提供最佳服務體驗，<ph name="DEVICE_OS" /> 會收集有關裝置的硬體資料並提供給 Google，以判斷要提供哪些更新內容。你可以選擇是否允許 Google 將這些資料用於其他用途，例如支援作業以及改善 <ph name="DEVICE_OS" /> 的使用體驗與服務。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你可以登入這部裝置，並造訪 chrome://system 查看 CLOUDREADY_HARDWARE_INFO 部分，瞭解傳送給 Google 供篩選更新項目的資料，以及你選擇將資料提供給 Google 的任何其他情況。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />如要進一步瞭解 <ph name="DEVICE_OS" /> 可能會將哪些資料提供給 Google，以及這些資料的用途，請造訪 g.co/CR2/HWDataCollection。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">這項設定屬於 <ph name="OWNER_EMAIL" />。</translation>
 <translation id="222447520299472966">請選取至少一個畫廊相簿</translation>
 <translation id="2224551243087462610">編輯資料夾名稱</translation>
@@ -1813,15 +1811,6 @@
 <translation id="2766161002040448006">詢問家長</translation>
 <translation id="2767077837043621282">無法更新 Chromebook。請稍後再試。</translation>
 <translation id="2767127727915954024">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以編輯「<ph name="FILENAME" />」</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />請試試下列疑難排解步驟：
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />確保裝置含有可用的內部儲存空間，例如 HDD、SSD 或 eMMC
-    <ph name="LIST_ITEM" />確認裝置內部儲存空間的容量大於 16 GB
-    <ph name="LIST_ITEM" />檢查內部儲存空間的連接狀態 (如果支援實體存取方式)
-    <ph name="LIST_ITEM" />務必使用通過認證的型號，並查看安裝注意事項
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/CR2/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">從清單中移除</translation>
 <translation id="2770690685823456775">將你的密碼匯出至其他資料夾</translation>
 <translation id="2770929488047004208">顯示器解析度</translation>
@@ -3089,7 +3078,6 @@
 <translation id="4005817994523282006">時區偵測方法</translation>
 <translation id="4007856537951125667">隱藏捷徑</translation>
 <translation id="4008291085758151621">無法在 VR 狀態下存取網站資訊</translation>
-<translation id="4009955655170295852">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。如要瞭解詳情，請前往 g.co/CR2/InstallGuide。</translation>
 <translation id="4010917659463429001">如要在行動裝置上取得你的書籤，請<ph name="GET_IOS_APP_LINK" />。</translation>
 <translation id="4014432863917027322">修復「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="4015163439792426608">你有使用擴充功能嗎？<ph name="BEGIN_LINK" />集中管理擴充功能<ph name="END_LINK" />，輕鬆又方便。</translation>
@@ -3803,7 +3791,6 @@
 <translation id="4781443161433589743">你啟用了 Chrome 最強大的安全防護功能</translation>
 <translation id="4785719467058219317">你目前使用的安全金鑰並未在這個網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>
-<translation id="478708757211772586">使用代表「下一個」的外接切換裝置，前往畫面上的下一個項目</translation>
 <translation id="4788092183367008521">請檢查你的網路連線，然後再試一次。</translation>
 <translation id="4789550509729954245">鄰近裝置分享內容時顯示通知</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 張相片</translation>
@@ -3838,9 +3825,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{已刪除 1 個書籤}other{已刪除 {COUNT} 個書籤}}</translation>
 <translation id="4819607494758673676">Google 助理通知</translation>
 <translation id="4820236583224459650">設為使用中票證</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />進行註冊前，你必須清除 TPM，<ph name="DEVICE_OS" /> 才能取得裝置的擁有權。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你也可以完全關閉 TPM 裝置。系統仍會透過軟體加密功能安全儲存你的資料，但會停用硬體支援憑證等特定安全性功能。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />只要重新啟動並進入系統 BIOS/UEFI 設定，即可變更 TPM 設定。操作步驟會因裝置型號而有所不同。如需更多資訊，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 說明文件：g.co/CR2/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">分析已啟用(&amp;P)</translation>
 <translation id="4823484602432206655">讀取及變更使用者和裝置設定</translation>
 <translation id="4824037980212326045">Linux 備份與還原</translation>
@@ -5819,7 +5803,6 @@
 <translation id="6834652994408928492">深色模式會在日落時自動開啟</translation>
 <translation id="6835762382653651563">請連線至網際網路，以更新您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
-<translation id="6839882458129755986">Google 不會對任何遺失的資料負責，而且 <ph name="DEVICE_OS" /> 可能不適用於未通過核准的型號。如要瞭解詳情，請前往 g.co/CR2/InstallGuide。</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6840155290835956714">傳送前詢問我</translation>
 <translation id="6840184929775541289">這不是憑證授權單位</translation>
@@ -6143,7 +6126,6 @@
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7182791023900310535">轉移你的密碼</translation>
-<translation id="7183193772170782394">允許 Google 使用硬體資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，這項資料仍會傳送給 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。如要瞭解詳情，請前往 g.co/CR2/HWDataCollection。</translation>
 <translation id="7183420126213758623">切換側邊搜尋面板。側邊搜尋面板未啟用。</translation>
 <translation id="7186088072322679094">固定在工具列中</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> 無法開啟這個資料夾，因為資料夾中包含系統檔案</translation>
@@ -7241,8 +7223,6 @@
 <translation id="8260864402787962391">滑鼠</translation>
 <translation id="8261378640211443080">這個擴充功能未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中，可能在你不知情的情況下加入瀏覽器。</translation>
 <translation id="8261506727792406068">刪除</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />發生錯誤，無法安裝 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/CR2/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">為這個群組命名</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> 已停用滑鼠游標。</translation>
 <translation id="8264024885325823677">這項設定是由系統管理員管理。</translation>
@@ -7914,7 +7894,7 @@
 <translation id="89667524227025535">請使用裝置攝影機掃描 QR 圖碼，或是輸入電信業者提供的啟用代碼</translation>
 <translation id="8966809848145604011">其他個人資料</translation>
 <translation id="8966870118594285808">你可以重新開啟不小心關閉的分頁</translation>
-<translation id="8967427617812342790">加到閱讀清單</translation>
+<translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8968766641738584599">儲存卡片</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">請與網路管理員聯絡，確認防火牆並未封鎖從 Google 伺服器下載的內容。</translation>

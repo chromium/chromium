@@ -571,6 +571,7 @@
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1568323446248056064">Obre la configuració de la pantalla</translation>
 <translation id="1570604804919108255">Deixa de silenciar les notificacions</translation>
+<translation id="1571304935088121812">Copia el nom d'usuari</translation>
 <translation id="1571738973904005196">Mostra la pestanya <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (convidat)</translation>
 <translation id="1572266655485775982">Activa la Wi-Fi</translation>
@@ -1255,9 +1256,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> i <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Font multimèdia sense nom</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Per oferir la millor experiència possible, <ph name="DEVICE_OS" /> recull dades de maquinari dels dispositius i les comparteix amb Google per determinar quines actualitzacions cal fer. De manera opcional, pots permetre que Google utilitzi aquestes dades per a finalitats addicionals, com ara oferir assistència i millores a l'experiència i el servei de <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pots iniciar la sessió en aquest dispositiu i visitar la secció CLOUDREADY_HARDWARE_INFO a chrome://system per veure les dades que s'han enviat a Google per filtrar actualitzacions, així com qualsevol altra vegada que hagis triat compartir dades amb Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Per obtenir més detalls sobre les dades que <ph name="DEVICE_OS" /> pot compartir amb Google i com s'utilitzen, visita g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Aquesta configuració pertany a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">S'ha de seleccionar un àlbum de la galeria d'art com a mínim</translation>
 <translation id="2224551243087462610">Edita el nom de la carpeta</translation>
@@ -1812,15 +1810,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2766161002040448006">Pregunta als teus pares</translation>
 <translation id="2767077837043621282">El Chromebook no s'ha pogut actualitzar. Torna-ho a provar més tard.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> podrà editar <ph name="FILENAME" /> mentre no tanquis totes les pestanyes d'aquest lloc web.</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Prova aquests passos per resoldre el problema:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Assegura't que el dispositiu contingui un emmagatzematge intern que funcioni, com ara un HDD, SSD o eMMC.
-    <ph name="LIST_ITEM" />Comprova que el dispositiu d'emmagatzematge intern tingui més de 16 GB.
-    <ph name="LIST_ITEM" />Comprova la connexió a l'emmagatzematge intern, si s'hi pot accedir físicament.
-    <ph name="LIST_ITEM" />Assegura't que utilitzis un model certificat i consulta les notes d'instal·lació.
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Per obtenir més ajuda, ves a g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Suprimeix de la llista</translation>
 <translation id="2770690685823456775">Exporta les contrasenyes a una altra carpeta</translation>
 <translation id="2770929488047004208">Resolució del monitor</translation>
@@ -3089,7 +3078,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4005817994523282006">Mètode de detecció de la zona horària</translation>
 <translation id="4007856537951125667">Amaga les dreceres</translation>
 <translation id="4008291085758151621">La informació del lloc web no està disponible en el mode RV</translation>
-<translation id="4009955655170295852">Abans de començar, assegura't que tinguis una còpia de seguretat de les teves dades. En instal·lar <ph name="DEVICE_OS" />, se sobreescriuran les dades de la unitat de disc dur. Obtén més informació a g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Per accedir a les teves adreces d'interès des del dispositiu mòbil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Voleu reparar <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Tens extensions? <ph name="BEGIN_LINK" />Gestiona-les<ph name="END_LINK" /> fàcilment des d'un sol lloc.</translation>
@@ -3803,7 +3791,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4781443161433589743">Utilitzes la seguretat més efectiva de Chrome</translation>
 <translation id="4785719467058219317">Estàs utilitzant una clau de seguretat que no està registrada en aquest lloc web</translation>
 <translation id="4785914069240823137">Cancel·la la retallada</translation>
-<translation id="478708757211772586">Utilitza Següent per avançar per la pantalla</translation>
 <translation id="4788092183367008521">Comprova la connexió a la xarxa i torna-ho a provar.</translation>
 <translation id="4789550509729954245">Mostra una notificació quan hi hagi dispositius compartint contingut a prop</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -3838,9 +3825,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{S'ha suprimit 1 adreça d'interès}other{S'han suprimit {COUNT} adreces d'interès}}</translation>
 <translation id="4819607494758673676">Notificacions de l'Assistent de Google</translation>
 <translation id="4820236583224459650">Estableix com a tiquet actiu</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Abans d'inscriure't, has d'esborrar el TPM perquè <ph name="DEVICE_OS" /> pugui assumir la propietat del dispositiu.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />També pots desactivar el dispositiu TPM completament. Les teves dades es continuaran emmagatzemant de manera segura amb encriptació de programari, però algunes funcions de seguretat, com ara els certificats emmagatzemats en maquinari, es desactivaran.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Per canviar la configuració del TPM, reinicia el dispositiu i accedeix a la configuració de la BIOS/UEFI del sistema. Els passos varien en funció del model de dispositiu. Per obtenir més informació, obre la documentació de <ph name="DEVICE_OS" /> en un altre dispositiu abans de reiniciar: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">Creació de &amp;perfils activada</translation>
 <translation id="4823484602432206655">Llegir i canviar la configuració d'usuari i del dispositiu</translation>
 <translation id="4824037980212326045">Còpia de seguretat i restauració de Linux</translation>
@@ -5822,7 +5806,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6834652994408928492">El mode fosc s'activarà automàticament al vespre</translation>
 <translation id="6835762382653651563">Connecteu-vos a Internet per actualitzar el dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Error de supressió del certificat</translation>
-<translation id="6839882458129755986">Google no es fa responsable de cap pèrdua de dades i és possible que <ph name="DEVICE_OS" /> no funcioni en models no certificats. Obtén més informació a g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">L'inici de sessió ha canviat</translation>
 <translation id="6840155290835956714">Pregunta abans d'enviar</translation>
 <translation id="6840184929775541289">No és una entitat emissora de certificats</translation>
@@ -6146,7 +6129,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7180865173735832675">Personalitza</translation>
 <translation id="7182791023900310535">Mou la contrasenya</translation>
-<translation id="7183193772170782394">Permet que Google utilitzi les dades del maquinari per ajudar a millorar <ph name="DEVICE_OS" />. Si rebutges aquesta opció, les dades es continuaran enviant a Google per veure si cal fer alguna actualització rellevant, però no s'emmagatzemaran ni s'utilitzaran de cap altra manera. Obtén més informació a g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Commuta la cerca lateral. La cerca lateral no està activada.</translation>
 <translation id="7186088072322679094">Conserva a la barra d'eines</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> no pot obrir aquesta carpeta perquè conté fitxers del sistema</translation>
@@ -7244,8 +7226,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8260864402787962391">Ratolí</translation>
 <translation id="8261378640211443080">Aquesta extensió no apareix a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i és possible que s'hagi afegit sense que ho sapigueu.</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />S'ha produït un error i no s'ha pogut instal·lar <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Per obtenir més ajuda, ves a g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Posa nom a aquest grup</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ha desactivat el cursor del ratolí.</translation>
 <translation id="8264024885325823677">El teu administrador gestiona aquesta opció de configuració.</translation>

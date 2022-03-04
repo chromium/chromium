@@ -345,7 +345,7 @@
 <translation id="1343920184519992513">Da weitermachen, wo Sie aufgehört haben, und bestimmte Seiten öffnen</translation>
 <translation id="1346630054604077329">Bestätigen und neu starten</translation>
 <translation id="1346748346194534595">Rechts</translation>
-<translation id="1347256498747320987">Updates und Apps installieren: Wenn du fortfährst, stimmst du zu, dass dieses Gerät automatisch Updates und Apps von Google, deinem Mobilfunkanbieter und dem Hersteller deines Geräts herunterladen und installieren darf, möglicherweise über eine mobile Datenverbindung. Einige dieser Apps bieten eventuell In-App-Käufe an. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
+<translation id="1347256498747320987">Updates und Apps installieren. Wenn Sie fortfahren, stimmen Sie zu, dass dieses Gerät automatisch Updates und Apps von Google, Ihrem Mobilfunkanbieter und dem Hersteller Ihres Geräts herunterladen und installieren darf, möglicherweise über eine mobile Datenverbindung. Einige dieser Apps bieten eventuell In-App-Käufe an. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-Speicher</translation>
 <translation id="1347975661240122359">Das Update wird ausgeführt, sobald der Akkustand <ph name="BATTERY_LEVEL" /> % erreicht.</translation>
 <translation id="1353275871123211385">Wenn Sie Jugendschutzeinstellungen wie das Genehmigen von Apps und Limits für die Gerätenutzungsdauer verwenden möchten, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Sie können später das Konto einer Bildungseinrichtung hinzufügen, damit Tools wie Google Classroom genutzt werden können.</translation>
@@ -568,6 +568,7 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1567993339577891801">JavaScript-Konsole</translation>
 <translation id="1568323446248056064">Displayeinstellungen öffnen</translation>
 <translation id="1570604804919108255">Stummschaltung von Benachrichtigungen aufheben</translation>
+<translation id="1571304935088121812">Nutzernamen kopieren</translation>
 <translation id="1571738973904005196">Tab <ph name="TAB_ORIGIN" /> ansehen</translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Gast)</translation>
 <translation id="1572266655485775982">WLAN-Aktivierung</translation>
@@ -1252,9 +1253,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Unbenannte Medienquelle</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Um eine optimale Nutzung zu ermöglichen, erhebt <ph name="DEVICE_OS" /> Hardwaredaten zu Geräten und teilt sie mit Google. So kann Google prüfen, welche Updates installiert werden sollten. Sie können Google optional erlauben, diese Daten auch zu anderen Zwecken zu verwenden, zum Beispiel für den Support oder zur Verbesserung von <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Für einen Überblick über die für die Updatefilterung erhobenen Daten können Sie sich auf diesem Gerät anmelden und unter chrome://system den Abschnitt CLOUDREADY_HARDWARE_INFO aufrufen. Dort sehen Sie auch, welche Daten Sie noch mit Google teilen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Weitere Informationen zu den Daten, die <ph name="DEVICE_OS" /> möglicherweise an Google sendet, und deren Verwendung finden Sie unter g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Inhaber dieser Einstellung ist <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Es muss mindestens ein Art Gallery-Album ausgewählt werden</translation>
 <translation id="2224551243087462610">Ordnername bearbeiten</translation>
@@ -1809,15 +1807,6 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2766161002040448006">Elternteil fragen</translation>
 <translation id="2767077837043621282">Ihr Chromebook konnte nicht aktualisiert werden. Bitte versuchen Sie es später noch einmal.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> kann dann <ph name="FILENAME" /> bearbeiten, solange Tabs dieser Website geöffnet sind</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />So können Sie versuchen, das Problem zu beheben:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Stellen Sie sicher, dass Ihr Gerät einen funktionierenden internen Speicher hat, z. B. eine HDD, eine SSD oder einen eMMC-Speicher
-    <ph name="LIST_ITEM" />Achten Sie darauf, dass der interne Speicher größer als 16 GB ist
-    <ph name="LIST_ITEM" />Prüfen Sie, ob der interne Speicher richtig angeschlossen ist (sofern Sie das Gerät selbst öffnen können)
-    <ph name="LIST_ITEM" />Vergewissern Sie sich, dass Sie ein zertifiziertes Modell verwenden, und lesen Sie sich die Installationshinweise durch
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Weitere Hilfestellung finden Sie hier: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Aus Liste entfernen</translation>
 <translation id="2770690685823456775">Exportieren Sie Ihre Passwörter in einen anderen Ordner</translation>
 <translation id="2770929488047004208">Monitorauflösung</translation>
@@ -3087,7 +3076,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4005817994523282006">Methode zur Zeitzonenerkennung</translation>
 <translation id="4007856537951125667">Verknüpfungen ausblenden</translation>
 <translation id="4008291085758151621">Im VR-Modus stehen keine Website-Informationen zur Verfügung</translation>
-<translation id="4009955655170295852">Erstellen Sie vor der Installation auf jeden Fall ein Back-up Ihrer Daten. Wenn Sie <ph name="DEVICE_OS" /> installieren, werden die Daten auf Ihrer Festplatte überschrieben. Weitere Informationen finden Sie unter g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Lesezeichen auf Ihrem Mobilgerät abrufen: <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" reparieren?</translation>
 <translation id="4015163439792426608">Sie nutzen Erweiterungen? Diese können Sie jetzt <ph name="BEGIN_LINK" />ganz einfach an einem Ort verwalten<ph name="END_LINK" />.</translation>
@@ -3433,7 +3421,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Alle &amp;öffnen}=1{Lesezeichen &amp;öffnen}other{Alle ({COUNT}) &amp;öffnen}}</translation>
 <translation id="439817266247065935">Ihr Gerät wurde nicht ordnungsgemäß heruntergefahren. Starten Sie Linux neu, um Linux-Apps zu verwenden.</translation>
 <translation id="4400367121200150367">Hier werden Websites angezeigt, für die keine Passwörter gespeichert werden</translation>
-<translation id="4400632832271803360">Halten Sie die Taste "Suche" gedrückt, um die Funktion der Tasten in der obersten Reihe zu ändern</translation>
+<translation id="4400632832271803360">Die Taste "Suche" gedrückt halten, um die Funktion der Tasten in der obersten Reihe zu ändern</translation>
 <translation id="4400963414856942668">Sie können auf den Stern klicken, um einen Tab als Lesezeichen zu speichern</translation>
 <translation id="4401912261345737180">Zum Streamen Verbindung per Code herstellen</translation>
 <translation id="4402755511846832236">Websites daran hindern, Informationen zu Ihrer aktiven Nutzung dieses Geräts abzurufen</translation>
@@ -3801,7 +3789,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4781443161433589743">Sie nutzen die höchste Sicherheit in Chrome</translation>
 <translation id="4785719467058219317">Sie verwenden einen Sicherheitsschlüssel, der nicht auf dieser Website registriert ist</translation>
 <translation id="4785914069240823137">Zuschneiden abbrechen</translation>
-<translation id="478708757211772586">Mit „Weiter“ bewegen Sie sich auf dem Bildschirm vorwärts</translation>
 <translation id="4788092183367008521">Bitte überprüfen Sie die Netzwerkverbindung und versuchen Sie es noch einmal.</translation>
 <translation id="4789550509729954245">Benachrichtigung anzeigen, wenn Geräte in der Nähe etwas teilen</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> Foto(s)</translation>
@@ -3836,9 +3823,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 Lesezeichen gelöscht}other{{COUNT} Lesezeichen gelöscht}}</translation>
 <translation id="4819607494758673676">Google Assistant-Benachrichtigungen</translation>
 <translation id="4820236583224459650">Als aktives Ticket festlegen</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Vor der Registrierung müssen Sie das TPM löschen, damit <ph name="DEVICE_OS" /> Inhaber des Geräts werden kann.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Sie können das TPM auch vollständig deaktivieren. Ihre Daten werden trotzdem sicher mit Softwareverschlüsselung gespeichert. Einige Sicherheitsfunktionen werden jedoch deaktiviert (z. B. hardwaregestützte Zertifikate).<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Zum Ändern der TPM-Einstellungen müssen Sie das Gerät neu starten und die BIOS/UEFI-Einstellungen aufrufen. Die genaue Vorgehensweise hängt vom Gerätemodell ab. Am besten öffnen Sie vor dem Neustart die Dokumentation von <ph name="DEVICE_OS" /> auf einem anderen Gerät: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Profilerstellung aktiviert</translation>
 <translation id="4823484602432206655">Nutzer- und Geräteeinstellungen lesen und ändern</translation>
 <translation id="4824037980212326045">Linux-Sicherung und ‑Wiederherstellung</translation>
@@ -3969,7 +3953,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4941246025622441835">Diese Geräteanforderung beim Registrieren des Geräts für die Unternehmensverwaltung verwenden:</translation>
 <translation id="4941627891654116707">Schriftgröße</translation>
 <translation id="494286511941020793">Proxy-Konfigurationshilfe</translation>
-<translation id="4943368462779413526">Fußball</translation>
+<translation id="4943368462779413526">American Football</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" möchte eine Verbindung mit einem seriellen Port herstellen</translation>
 <translation id="4944310289250773232">Dieser Authentifizierungsdienst wird von <ph name="SAML_DOMAIN" /> gehostet</translation>
 <translation id="4945439665401275950">Bitten Sie Ihr Kind, die Ein-/Aus-Taste zu berühren, um den Fingerabdruck einzurichten. Der Fingerabdruck Ihres Kindes wird möglichst sicher und niemals außerhalb dieses Geräts (<ph name="DEVICE_TYPE" />) gespeichert.</translation>
@@ -5542,7 +5526,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6551739526055143276">Verwaltet über Family Link</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> Nutzer</translation>
 <translation id="655483977608336153">Erneut versuchen</translation>
-<translation id="6555432686520421228">Alle Nutzerkonten entfernen und Ihr <ph name="IDS_SHORT_PRODUCT_NAME" />-Gerät auf die Werkseinstellungen zurücksetzen</translation>
+<translation id="6555432686520421228">Alle Nutzerkonten entfernen und das <ph name="IDS_SHORT_PRODUCT_NAME" />-Gerät auf die Werkseinstellungen zurücksetzen</translation>
 <translation id="6555810572223193255">Die Bereinigung ist derzeit nicht verfügbar</translation>
 <translation id="6556477848444788999">Die PIN bzw. das Passwort trägt zum Schutz der Daten auf diesem Gerät (<ph name="DEVICE_TYPE" />) bei, einschließlich der Inhalte, die Sie über Ihr Smartphone streamen.</translation>
 <translation id="6556866813142980365">Wiederholen</translation>
@@ -5816,7 +5800,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6834652994408928492">Dunkler Modus wird bei Sonnenuntergang automatisch aktiviert</translation>
 <translation id="6835762382653651563">Stellen Sie eine Internetverbindung her, um Ihr Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="6839225236531462745">Fehler beim Löschen des Zertifikats</translation>
-<translation id="6839882458129755986">Google übernimmt keine Verantwortung für Datenverluste. Auf nicht zertifizierten Modellen funktioniert <ph name="DEVICE_OS" /> möglicherweise nicht. Weitere Informationen finden Sie unter g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Anmeldung hat sich geändert</translation>
 <translation id="6840155290835956714">Vor dem Senden nachfragen</translation>
 <translation id="6840184929775541289">Ist keine Zertifizierungsstelle</translation>
@@ -6140,7 +6123,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7180865173735832675">Anpassen</translation>
 <translation id="7182791023900310535">Passwort verschieben</translation>
-<translation id="7183193772170782394">Google darf meine Hardwaredaten zur Verbesserung von <ph name="DEVICE_OS" /> verwenden. Wenn ich ablehne, werden meine Daten trotzdem zur Überprüfung der zu installierenden Updates an Google gesendet – sie werden jedoch nicht gespeichert oder anderweitig verwendet. Weitere Informationen sind hier zu finden: g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Suche in Seitenleiste ein-/ausschalten. Suche in Seitenleiste nicht aktiviert.</translation>
 <translation id="7186088072322679094">In Symbolleiste behalten</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kann diesen Ordner nicht öffnen, weil er Systemdateien enthält</translation>
@@ -7237,8 +7219,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8260864402787962391">Maus</translation>
 <translation id="8261378640211443080">Diese Erweiterung ist nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt und wurde möglicherweise ohne Ihr Wissen hinzugefügt.</translation>
 <translation id="8261506727792406068">Löschen</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Bei der Installation von <ph name="DEVICE_OS" /> ist ein Fehler aufgetreten.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Hier finden Sie Hilfestellung: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Gruppe benennen</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> hat Ihren Cursor deaktiviert.</translation>
 <translation id="8264024885325823677">Diese Einstellung wird von Ihrem Administrator verwaltet.</translation>

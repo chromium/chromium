@@ -570,6 +570,7 @@
 <translation id="1567993339577891801">JavaScript конзола</translation>
 <translation id="1568323446248056064">Отвори подешавања уређаја за екран</translation>
 <translation id="1570604804919108255">Укључите звук обавештења</translation>
+<translation id="1571304935088121812">Копирај корисничко име</translation>
 <translation id="1571738973904005196">Прикажи картицу: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гост)</translation>
 <translation id="1572266655485775982">Омогући WiFi</translation>
@@ -1255,9 +1256,6 @@
 <translation id="2220572644011485463">PIN или лозинка</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Неименовани извори медија</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Да би пружио најбољи доживљај, <ph name="DEVICE_OS" /> прикупља податке о хардверу са уређаја и дели их са Google-ом да би утврдио која ажурирања треба да пружи. Можете опционално да дозволите Google-у да користи те податке у додатне сврхе попут подршке и побољшања за <ph name="DEVICE_OS" /> доживљај и услугу.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Можете да се пријавите на овом уређају и посетите одељак CLOUDREADY_HARDWARE_INFO на chrome://system да бисте видели податке који се шаљу Google-у ради филтрирања ажурирања, као и све друге случајеве у којима одлучујете да делите податке са Google-ом.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Више детаља о подацима које <ph name="DEVICE_OS" /> може да дели са Google-ом, као и о томе како се они користе, потражите на g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Власник овог подешавања је <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Мора да буде изабран бар један албум ликовне галерије</translation>
 <translation id="2224551243087462610">Измена имена директоријума</translation>
@@ -1812,15 +1810,6 @@
 <translation id="2766161002040448006">Замоли родитеља</translation>
 <translation id="2767077837043621282">Ажурирање Chromebook-а није успело. Пробајте поново касније.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ће моћи да мења датотеку <ph name="FILENAME" /> док не затворите све картице овог сајта</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Испробајте ове кораке за решавање проблема:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Уверите се да уређај има исправну интерну меморију, као што је HDD, SSD или eMMC
-    <ph name="LIST_ITEM" />Уверите се да је интерна меморија већа од 16 GB
-    <ph name="LIST_ITEM" />Проверите везу са интерном меморијом ако је физички доступна
-    <ph name="LIST_ITEM" />Уверите се да користите сертификован модел и прегледајте напомене о инсталирању
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Додатну помоћ потражите на: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Уклони са листе</translation>
 <translation id="2770690685823456775">Извезите лозинке у други директоријум</translation>
 <translation id="2770929488047004208">Резолуција монитора</translation>
@@ -3096,7 +3085,6 @@
 <translation id="4005817994523282006">Метод откривања временске зоне</translation>
 <translation id="4007856537951125667">Сакриј пречице</translation>
 <translation id="4008291085758151621">Информације о сајтовима нису доступне у ВР-у</translation>
-<translation id="4009955655170295852">Пре него што почнете, уверите се да сте направили резервну копију података. Инсталирањем система <ph name="DEVICE_OS" /> замениће се подаци на хард-диску. Сазнајте више на g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Да би вам обележивачи били доступни на мобилном уређају, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Желите ли да поправите „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Имате додатке? <ph name="BEGIN_LINK" />Управљајте додацима<ph name="END_LINK" /> на једном практичном месту.</translation>
@@ -3810,7 +3798,6 @@
 <translation id="4781443161433589743">Ви користите најјачу Chrome заштиту</translation>
 <translation id="4785719467058219317">Користите безбедносни кључ који није регистрован за овај веб-сајт</translation>
 <translation id="4785914069240823137">Откажите опсецање</translation>
-<translation id="478708757211772586">Помоћу радње Следеће пређите на следећи екран</translation>
 <translation id="4788092183367008521">Проверите мрежну везу и пробајте поново.</translation>
 <translation id="4789550509729954245">Приказуј обавештење када уређаји деле садржај у близини</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> слика</translation>
@@ -3845,9 +3832,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 обележивач је избрисан}one{{COUNT} обележивач је избрисан}few{{COUNT} обележивача су избрисана}other{{COUNT} обележивача је избрисано}}</translation>
 <translation id="4819607494758673676">Обавештења Google помоћника</translation>
 <translation id="4820236583224459650">Подеси као активни тикет</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Пре него што се региструјете, треба да обришете TPM да би <ph name="DEVICE_OS" /> могао да преузме власништво над уређајем.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Можете и у потпуности да искључите TPM уређај. Ваши подаци ће се и даље безбедно чувати помоћу софтверског шифровања, али одређене безбедносне функције, попут хардверских сертификата, биће онемогућене.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Подешавања TPM-а можете да промените рестартовањем и уносом BIOS/UEFI подешавања. Кораци се разликују у зависности од модела уређаја. Да бисте пронашли више информација, отворите документацију за <ph name="DEVICE_OS" /> на посебном уређају пре рестартовања: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Профилисање је омогућено</translation>
 <translation id="4823484602432206655">Читање и мењање подешавања корисника и уређаја</translation>
 <translation id="4824037980212326045">Linux резервне копије и враћање</translation>
@@ -5829,7 +5813,6 @@
 <translation id="6834652994408928492">Тамни режим се аутоматски укључује када сунце зађе</translation>
 <translation id="6835762382653651563">Повежите се на интернет да бисте ажурирали <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Грешка при брисању сертификата</translation>
-<translation id="6839882458129755986">Google није одговоран ни за какав губитак података и <ph name="DEVICE_OS" /> можда неће радити на моделима без сертификата. Сазнајте више на g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Пријављивање је промењено</translation>
 <translation id="6840155290835956714">Питај пре слања</translation>
 <translation id="6840184929775541289">Није ауторитет за издавање сертификата</translation>
@@ -6154,7 +6137,6 @@
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7180865173735832675">Прилагоди</translation>
 <translation id="7182791023900310535">Преместите лозинку</translation>
-<translation id="7183193772170782394">Дозволите Google-у да користи податке о хардверу како би побољшао <ph name="DEVICE_OS" />. Ако одбијете, ти подаци се ипак шаљу Google-у да би се утврдила одговарајућа ажурирања, али се не чувају нити користе на неки други начин. Сазнајте више на g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Укључите/искључите бочну претрагу. Бочна претрага није активирана.</translation>
 <translation id="7186088072322679094">Задржи на траци с алаткама</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> не може да отвори овај фолдер јер он садржи системске фајлове</translation>
@@ -7251,8 +7233,6 @@
 <translation id="8260864402787962391">Миш</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи овај додатак и он је можда додат без вашег знања.</translation>
 <translation id="8261506727792406068">Избриши</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Дошло је до грешке и инсталирање система <ph name="DEVICE_OS" /> није успело.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Додатну помоћ потражите на: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Дајте назив овој групи</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> је онемогућио курсор.</translation>
 <translation id="8264024885325823677">Овим подешавањем управља администратор.</translation>

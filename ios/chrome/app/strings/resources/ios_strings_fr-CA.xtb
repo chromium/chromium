@@ -87,7 +87,6 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1650222530560417226">Touchez le bouton « Démarrer la journalisation » pour collecter les éventuels journaux et erreurs de la console JavaScript sur tous les onglets. Les journaux seront collectés (et stockés dans la mémoire uniquement) jusqu'à ce que cette page soit fermée ou que le bouton « Arrêter la journalisation » soit touché.</translation>
-<translation id="1654232554734641711">Accès au microphone autorisé</translation>
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté(e) au réseau.</translation>
 <translation id="1657641691196698092">Témoins bloqués</translation>
 <translation id="165877110639533037">Aucun onglet ouvert</translation>
@@ -323,7 +322,6 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="3892144330757387737">Vous trouverez votre historique ici</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">Votre organisation a désactivé la synchronisation. Vous pouvez tout de même voir vos favoris, votre historique, vos mots de passe et d'autres paramètres sur cet appareil. Si vous apportez des modifications, elles ne seront pas synchronisées avec votre compte.</translation>
-<translation id="3905353503976611311">Rechercher sur le Web</translation>
 <translation id="3913386780052199712">Connecté à Chrome</translation>
 <translation id="3915450441834151894">Information sur le site</translation>
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
@@ -349,7 +347,6 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4121993058175073134">Configurez votre compte de courriel dans l'application Paramètres pour envoyer des données d'exportation nette.</translation>
 <translation id="4124987746317609294">Intervalle de temps</translation>
 <translation id="4152011295694446843">Vous trouverez vos favoris ici</translation>
-<translation id="4153925727916232411">Ceci vous permet de prendre des photos et de les téléverser ainsi que de numériser des codes QR.</translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="418156467088430727">Afficher la version hors ligne dans un nouvel onglet</translation>
 <translation id="4181841719683918333">Langues</translation>
@@ -386,7 +383,6 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4526249700380860531">Afficher et gérer les mots de passe enregistrés à l'adresse <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Essayez de vous reconnecter.</translation>
 <translation id="4540780316273593836">Un problème est survenu</translation>
-<translation id="4572065712096155137">Accès</translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4592368184551360546">Clavier</translation>
 <translation id="461440297010471931">Recherche avec Google</translation>
@@ -408,7 +404,6 @@ Vos données sont chiffrées avec votre phrase de passe. Veuillez l'entrer pour 
 <translation id="4689564913179979534">Gérer vos modes de paiement…</translation>
 <translation id="4697071790493980729">Aucun résultat</translation>
 <translation id="470966556546083668">Ne pas activer la synchronisation</translation>
-<translation id="4731472194328757163">Accès à l'appareil photo et au microphone autorisé</translation>
 <translation id="4737560986434232178">Rechercher dans les onglets récents</translation>
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4747097190499141774">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay. Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit ni ne stocke la phrase de passe. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -501,7 +496,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5580834567471114021">Ajouter à la liste de lecture pour le lire plus tard?</translation>
 <translation id="5592679540098330836">Activez la synchronisation pour <ph name="NAME" /></translation>
 <translation id="560322036295180549">Option désactivée par votre organisation</translation>
-<translation id="560999923643681074">Modifier l'accès</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
 <translation id="5631164295104953411">Ajouter un mode de paiement</translation>
@@ -524,7 +518,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5803566855766646066">Voulez-vous vraiment supprimer cette nouvelle carte?</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5812974770859303494">Ajouter à…</translation>
-<translation id="5816228676161003208">Ceci vous permet d'effectuer des recherches plus rapides en utilisant votre voix.</translation>
 <translation id="581659025233126501">Activer la synchronisation</translation>
 <translation id="5819208479324046259">Géré par <ph name="MANAGER" />. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5846482154967366008">Moteur de recherche</translation>
@@ -563,7 +556,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6059830886158432458">Gérez vos histoires et votre activité ici</translation>
 <translation id="6064824697233747382">Votre organisation vous demande de désactiver la synchronisation.</translation>
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
-<translation id="6077126322656614846">Accès à l'appareil photo autorisé</translation>
 <translation id="60829778314739003">Accepter et continuer</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
 <translation id="6103540626693881831">Chiffrement sur l'appareil</translation>
@@ -827,7 +819,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Maintenez le doigt sur le bouton pour afficher plus d'options d'onglets</translation>
 <translation id="8328777765163860529">Tout fermer</translation>
-<translation id="8364085047956854021">Les autorisations de « <ph name="SITE_NAME" /> » seront désactivées lorsque vous quitterez ce site.</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8386068868580335421">Réinitialiser</translation>
 <translation id="8407669440184693619">Aucun mot de passé trouvé pour ce site</translation>

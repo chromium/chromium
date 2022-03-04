@@ -571,6 +571,7 @@
 <translation id="1567993339577891801">Конзола на JavaScript</translation>
 <translation id="1568323446248056064">Отваряне на настройките за дисплея</translation>
 <translation id="1570604804919108255">Включване на известията</translation>
+<translation id="1571304935088121812">Копиране на потребителското име</translation>
 <translation id="1571738973904005196">Преглед на раздела <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гост)</translation>
 <translation id="1572266655485775982">Активиране на Wi-Fi</translation>
@@ -1263,9 +1264,6 @@
 <translation id="2220572644011485463">ПИН код или парола</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Мултимедиен източник без име</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />За да работи по най-добрия начин, <ph name="DEVICE_OS" /> събира данни за хардуера на устройствата и ги споделя с Google с цел определяне на подходящите актуализации. По избор можете да разрешите на Google да използва тези данни за други цели, като например поддръжка и подобрения на функциите и услугите на <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Имате възможност да влезете в профила си на това устройство и да посетите секцията CLOUDREADY_HARDWARE_INFO в chrome://system, за да видите данните, които се изпращат до Google за филтриране на актуализациите, както и другите данни, които сте избрали да споделяте с Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />За повече подробности относно данните, които <ph name="DEVICE_OS" /> може да споделя с Google, и начините, по които се използват, посетете g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Тази настройка принадлежи на <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Трябва да изберете поне един албум от художествената галерия</translation>
 <translation id="2224551243087462610">Редактиране на името на папката</translation>
@@ -1823,15 +1821,6 @@
 <translation id="2766161002040448006">Питане на родител</translation>
 <translation id="2767077837043621282">Вашият Chromebook не бе актуализиран. Опитайте отново по-късно.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ще може да редактира <ph name="FILENAME" />, докато не затворите всички раздели със сайта</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Изпробвайте следните стъпки за отстраняване на неизправности:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Проверете дали устройството ви съдържа работещо вътрешно хранилище, като твърд диск, SSD или eMMC.
-    <ph name="LIST_ITEM" />Проверете дали вътрешното ви устройство за съхранение е по-голямо от 16 ГБ.
-    <ph name="LIST_ITEM" />Проверете връзката към вътрешното хранилище, ако е достъпна физически.
-    <ph name="LIST_ITEM" />Проверете дали използвате сертифициран модел и вижте бележките за инсталиране.
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />За повече помощ посетете g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Премахване от списъка</translation>
 <translation id="2770690685823456775">Експортирайте паролите си в друга папка.</translation>
 <translation id="2770929488047004208">Разделителна способност на монитора</translation>
@@ -3102,7 +3091,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4005817994523282006">Метод за установяване на часовата зона</translation>
 <translation id="4007856537951125667">Скриване на преките пътища</translation>
 <translation id="4008291085758151621">Информацията за сайта не е налична във VR</translation>
-<translation id="4009955655170295852">Преди да започнете, уверете се, че имате резервно копие на данните си. При инсталирането на <ph name="DEVICE_OS" /> твърдият ви диск ще бъде презаписан. Научете повече на адрес g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" />, за да получите отметките си на мобилното си устройство.</translation>
 <translation id="4014432863917027322">Да се поправи ли <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Използвате разширения? <ph name="BEGIN_LINK" />Управлявайте ги<ph name="END_LINK" /> от едно лесно място.</translation>
@@ -3817,7 +3805,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4781443161433589743">Използвате най-високото ниво на сигурност на Chrome</translation>
 <translation id="4785719467058219317">Използвате ключ за сигурност, който не е регистриран в този уебсайт</translation>
 <translation id="4785914069240823137">Отказ от подрязването</translation>
-<translation id="478708757211772586">Използвайте „Напред“ за придвижване напред по екрана</translation>
 <translation id="4788092183367008521">Моля, проверете връзката си с мрежата и опитайте отново.</translation>
 <translation id="4789550509729954245">Показване на известие, когато наблизо има споделящи устройства</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> снимка</translation>
@@ -3852,9 +3839,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4816336393325437908">{COUNT,plural, =1{Изтрихте 1 отметка}other{Изтрихте {COUNT} отметки}}</translation>
 <translation id="4819607494758673676">Известия от Google Асистент</translation>
 <translation id="4820236583224459650">Задаване като активен пропуск</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Преди да се регистрирате, трябва да изчистите TPM, така че <ph name="DEVICE_OS" /> да може да поеме собствеността върху устройството.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Можете също изцяло да изключите устройството за TPM. Данните ви пак ще се съхраняват безопасно с помощта на софтуерно шифроване, но някои функции за сигурност, като сертификати с хардуерна поддръжка, ще бъдат деактивирани.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Можете да промените настройките за TPM, като рестартирате и влезете в системните настройки на BIOS/UEFI. Стъпките варират според модела на устройството. За повече информация отворете документацията на <ph name="DEVICE_OS" /> на друго устройство, преди да рестартирате: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Профилирането е активирано</translation>
 <translation id="4823484602432206655">Четене и промяна на настройките на потребителите и устройството</translation>
 <translation id="4824037980212326045">Резервни копия и възстановяване на Linux</translation>
@@ -5834,7 +5818,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6834652994408928492">Тъмният режим ще се включи автоматично при залез</translation>
 <translation id="6835762382653651563">Моля, свържете се с интернет, за да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Грешка при изтриване на сертификат</translation>
-<translation id="6839882458129755986">Google не носи отговорност за евентуална загуба на данни. Възможно е <ph name="DEVICE_OS" /> да не работи на несертифицирани модели. Научете повече на адрес g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Функцията за влизане в профил е променена</translation>
 <translation id="6840155290835956714">Извеждане на запитване преди изпращане</translation>
 <translation id="6840184929775541289">Не е сертифициращ орган</translation>
@@ -6158,7 +6141,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7180611975245234373">Опресняване</translation>
 <translation id="7180865173735832675">Персонализиране</translation>
 <translation id="7182791023900310535">Преместване на паролата ви</translation>
-<translation id="7183193772170782394">Позволете на Google да използва данните за хардуера ви с цел подобряване на <ph name="DEVICE_OS" />. Ако откажете, данните пак се изпращат до Google, за да се определят подходящите актуализации, но не се съхраняват и не се използват за други цели. Научете повече на адрес g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Превключване на страничното търсене. То не е активирано.</translation>
 <translation id="7186088072322679094">Запазване в лентата с инструменти</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> не може да отваря тази папка, защото тя съдържа системни файлове</translation>
@@ -7256,8 +7238,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8260864402787962391">Мишка</translation>
 <translation id="8261378640211443080">Това разширение не е посочено в <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е било добавено без ваше знание.</translation>
 <translation id="8261506727792406068">Изтриване</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Нещо се обърка и <ph name="DEVICE_OS" /> не се инсталира.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />За още помощ посетете g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Наименувайте тази група</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> деактивира курсора на мишката ви.</translation>
 <translation id="8264024885325823677">Тази настройка се управлява от администратора ви.</translation>

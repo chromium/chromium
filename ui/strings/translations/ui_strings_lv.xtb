@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">Labā bulta</translation>
 <translation id="3897092660631435901">Izvēlne</translation>
 <translation id="3909791450649380159">Izgrie&amp;zt</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">Labā puse</translation>
 <translation id="3994749195054421561">Vienumi slejā “<ph name="COLUMN_NAME" />” ir sakārtoti augošā secībā.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nelasīts paziņojums}zero{# nelasīti paziņojumi}one{# nelasīts paziņojums}other{# nelasīti paziņojumi}}</translation>
 <translation id="4250229828105606438">Ekrānuzņēmums</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Pirms 1 mēneša}zero{Pirms # mēnešiem}one{Pirms # mēneša}other{Pirms # mēnešiem}}</translation>

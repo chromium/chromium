@@ -573,6 +573,7 @@
 <translation id="1567993339577891801">‏وحدة تحكم JavaScript</translation>
 <translation id="1568323446248056064">فتح إعدادات الجهاز للعرض</translation>
 <translation id="1570604804919108255">إعادة صوت الاشعارات</translation>
+<translation id="1571304935088121812">نسخ اسم المستخدم</translation>
 <translation id="1571738973904005196">عرض علامة التبويب <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (وضع الضيف)</translation>
 <translation id="1572266655485775982">‏تفعيل شبكة Wi-Fi</translation>
@@ -1257,9 +1258,6 @@
 <translation id="2220572644011485463">رقم التعريف الشخصي أو كلمة المرور</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">مصدر وسائط بلا اسم</translation>
-<translation id="2224173723542116248">‏<ph name="BEGIN_PARAGRAPH1" />لتوفير أفضل تجربة، يجمع نظام التشغيل <ph name="DEVICE_OS" /> بيانات الأجهزة ويشاركها مع Google لتحديد التحديثات التي يجب إطلاقها. اختياريًا، يمكنك السماح لشركة Google باستخدام هذه البيانات لأغراض إضافية مثل تقديم الدعم وإدخال تحسينات على تجربة استخدام <ph name="DEVICE_OS" /> والخدمات التي يقدّمها.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />يمكنك تسجيل الدخول على هذا الجهاز والانتقال إلى القسم CLOUDREADY_HARDWARE_INFO في chrome://system للاطّلاع على البيانات المُرسَلة إلى Google لفلترة التحديثات، بالإضافة إلى أي حالات أخرى تختار فيها مشاركة البيانات مع Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />وللاطّلاع على المزيد من التفاصيل حول البيانات التي قد يشاركها <ph name="DEVICE_OS" /> مع Google وطريقة استخدامها، يُرجى الانتقال إلى الرابط g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">ينتمي هذا الإعداد إلى <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">يجب اختيار ألبوم واحد على الأقل من "معرض الفنون".</translation>
 <translation id="2224551243087462610">تعديل اسم المجلد</translation>
@@ -1815,15 +1813,6 @@
 <translation id="2766161002040448006">طلب الإذن من أحد الوالدَين</translation>
 <translation id="2767077837043621282">‏تعذَر تحديث جهاز Chromebook. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2767127727915954024">سيتمكّن <ph name="ORIGIN" /> من تعديل <ph name="FILENAME" /> إلى أن يتم إغلاق جميع علامات تبويب هذا الموقع الإلكتروني.</translation>
-<translation id="2767821224812051905">‏<ph name="BEGIN_PARAGRAPH1" />جرِّب الخطوات التالية لتحديد المشاكل وحلّها:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />التأكّد من أنّ جهازك يحتوي على وحدة تخزين داخلية صالحة للعمل، مثل محرّك الأقراص الثابتة أو محرّك الأقراص ذي الحالة الصلبة أو بطاقة الوسائط المتعددة المضمنة (eMMC)
-    <ph name="LIST_ITEM" />التأكّد من أنّ سعة وحدة التخزين الداخلية في جهازك تزيد عن 16 غيغابايت
-    <ph name="LIST_ITEM" />التحقّق من الاتصال بوحدة التخزين الداخلية إذا أمكن الوصول إلى هيكلها الملموس
-    <ph name="LIST_ITEM" />التأكّد من استخدام طراز معتمَد ومراجعة ملاحظات التثبيت
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />للحصول على مزيد من المساعدة، يُرجى الانتقال إلى g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">إزالة من القائمة</translation>
 <translation id="2770690685823456775">تصدير كلمات المرور إلى مجلد آخر</translation>
 <translation id="2770929488047004208">درجة دقة شاشة العرض</translation>
@@ -3091,7 +3080,6 @@
 <translation id="4005817994523282006">طريقة رصد المنطقة الزمنية</translation>
 <translation id="4007856537951125667">إخفاء الاختصارات</translation>
 <translation id="4008291085758151621">‏معلومات الموقع غير متاحة في VR</translation>
-<translation id="4009955655170295852">‏احرص قبل البدء على الاحتفاظ بنسخة احتياطية من بياناتك. سيؤدي تثبيت نظام التشغيل <ph name="DEVICE_OS" /> إلى استبدال جميع البيانات على محرّك الأقراص الثابتة. تعرَّف على مزيد من المعلومات على الرابط g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">للحصول على الإشارات المرجعية على جهازك الجوّال، <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">هل ترغب في إصلاح "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="4015163439792426608">ألديك إضافات مثبَّتة؟ يمكنك <ph name="BEGIN_LINK" />إدارة الإضافات<ph name="END_LINK" /> في مكان واحد يسهُل الوصول إليه.</translation>
@@ -3805,7 +3793,6 @@
 <translation id="4781443161433589743">‏يتوفّر لك أعلى مستوى من الأمان في متصفِّح Chrome.</translation>
 <translation id="4785719467058219317">أنت تستخدم مفتاح أمان غير مُسجَّل مع هذا الموقع الإلكتروني</translation>
 <translation id="4785914069240823137">إلغاء الاقتصاص</translation>
-<translation id="478708757211772586">استخدام الزر "التالي" لنقل التركيز إلى العنصر التالي على الشاشة</translation>
 <translation id="4788092183367008521">يُرجى التحقُّق من الاتصال بالشبكة وإعادة المحاولة.</translation>
 <translation id="4789550509729954245">عرض الإشعارات عند محاولة الأجهزة المجاورة مشاركة محتوى</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> صورة</translation>
@@ -3840,9 +3827,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{تم حذف إشارة مرجعية واحدة.}zero{تم حذف {COUNT} إشارة مرجعية.}two{تم حذف إشارتَين مرجعيتَين ({COUNT}).}few{تم حذف {COUNT} إشارات مرجعية.}many{تم حذف {COUNT} إشارة مرجعية.}other{تم حذف {COUNT} إشارة مرجعية.}}</translation>
 <translation id="4819607494758673676">‏إشعارات "مساعد Google"</translation>
 <translation id="4820236583224459650">ضبط كتذكرة نشطة</translation>
-<translation id="4820771945393916447">‏<ph name="BEGIN_PARAGRAPH1" />قبل التسجيل، عليك محو وحدة النظام الأساسي الموثوق به (TPM) ليتمكّن نظام التشغيل <ph name="DEVICE_OS" /> من الحصول على ملكية الجهاز.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />يمكنك أيضًا إيقاف الجهاز الذي يتضمَّن وحدة TPM بالكامل. وستظل بياناتك مخزَّنة بشكل آمن من خلال برمجيات التشفير، إلا أنّ بعض ميزات الأمان، مثل الشهادات المستنِدة إلى الأجهزة، سيتم إيقافها.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />يمكنك تغيير إعدادات وحدة TPM من خلال إعادة التشغيل والدخول إلى إعدادات BIOS/UEFI للنظام، علمًا بأنّ الخطوات تختلف باختلاف طراز الجهاز. ولمزيد من المعلومات، افتح مستندات نظام التشغيل <ph name="DEVICE_OS" /> على جهاز منفصل قبل إعادة التشغيل: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;التوصيف مفعّل</translation>
 <translation id="4823484602432206655">قراءة إعدادات المستخدم والجهاز وتغييرها</translation>
 <translation id="4824037980212326045">‏النسخ الاحتياطي واستعادة البيانات من نظام التشغيل Linux</translation>
@@ -5822,7 +5806,6 @@
 <translation id="6834652994408928492">سيتم تفعيل الوضع المُعتِم تلقائيًا عند غروب الشمس.</translation>
 <translation id="6835762382653651563">يُرجى الاتصال بالإنترنت لتحديث <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">خطأ حذف الشهادة</translation>
-<translation id="6839882458129755986">‏لا تتحمّل Google مسؤولية فقدان أي بيانات، كما أنّ نظام التشغيل <ph name="DEVICE_OS" /> قد لا يعمل على طُرُز الأجهزة غير المعتمَدة. تعرَّف على مزيد من المعلومات على الرابط g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">تم تغيير تسجيل الدخول</translation>
 <translation id="6840155290835956714">السؤال قبل الإرسال</translation>
 <translation id="6840184929775541289">ليس مرجعًا مصدقًا</translation>
@@ -6147,7 +6130,6 @@
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7180865173735832675">تخصيص</translation>
 <translation id="7182791023900310535">نقل كلمة المرور الخاصة بك</translation>
-<translation id="7183193772170782394">‏يمكنك السماح لشركة Google باستخدام بيانات أجهزتك لتحسين <ph name="DEVICE_OS" />. وفي حال عدم موافقتك، سيستمر إرسال هذه البيانات إلى Google لتحديد التحديثات المناسبة، ولكن لن يتم تخزينها أو استخدامها بطريقة أخرى. تعرَّف على مزيد من المعلومات على الرابط g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">يمكنك إخفاء أشرطة البحث الجانبية أو عرضها، عندما يكون البحث الجانبي غير مفعَّل.</translation>
 <translation id="7186088072322679094">البقاء مثبتًا في شريط الأدوات</translation>
 <translation id="7186303001964993981">يتعذّر على <ph name="ORIGIN" /> فتح هذا المجلّد لأنّه يحتوي على ملفات النظام.</translation>
@@ -7246,8 +7228,6 @@
 <translation id="8260864402787962391">الماوس</translation>
 <translation id="8261378640211443080">هذه الإضافة غير مدرجة في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تمت إضافتها بدون علمك.</translation>
 <translation id="8261506727792406068">حذف</translation>
-<translation id="8262443362616648274">‏<ph name="BEGIN_PARAGRAPH1" />حدث خطأ وتعذَّر تثبيت نظام التشغيل <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />للحصول على مزيد من المساعدة، يُرجى الانتقال إلى g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">تسمية هذه المجموعة</translation>
 <translation id="8263744495942430914">أوقف <ph name="FULLSCREEN_ORIGIN" /> مؤشر الماوس.</translation>
 <translation id="8264024885325823677">يتولى مشرفك إدارة هذا الإعداد.</translation>

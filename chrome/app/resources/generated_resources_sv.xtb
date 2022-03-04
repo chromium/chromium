@@ -574,6 +574,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1567993339577891801">JavaScript-konsol</translation>
 <translation id="1568323446248056064">Öppna enhetsinställningarna för skärm</translation>
 <translation id="1570604804919108255">Slå på ljudet för aviseringar</translation>
+<translation id="1571304935088121812">Kopiera användarnamn</translation>
 <translation id="1571738973904005196">Visa fliken <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gäst)</translation>
 <translation id="1572266655485775982">Aktivera wifi</translation>
@@ -1107,6 +1108,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2060375639911876205">Ta bort eSIM-profilen</translation>
 <translation id="2062354623176996748">Surfa utan att någon webbhistorik sparas med ett inkognitofönster</translation>
 <translation id="2065405795449409761">Chrome kontrolleras av automatisk testprogramvara.</translation>
+<translation id="2069869989954932144">Föreslå en app när filer öppnas på datorn</translation>
 <translation id="2071393345806050157">Det finns ingen lokal loggfil.</translation>
 <translation id="2071692954027939183">Aviseringar blockerades automatiskt eftersom du vanligtvis inte tillåter dem</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Klicka för att installera tillägget}other{Klicka för att installera dessa tillägg}}</translation>
@@ -1266,9 +1268,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Namnlös mediekälla</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />För att bli så bra som möjligt samlar <ph name="DEVICE_OS" /> in maskinvarudata om enheter och delar den med Google för att avgöra vilka uppdateringar som bör levereras. Du kan välja att ge Google tillåtelse att använda denna data för ytterligare syften, som support och förbättringar kring upplevelsen och tjänsten relaterade till <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan logga in på den här enheten och besöka avsnittet CLOUDREADY_HARDWARE_INFO i chrome://system för att se vilken data som skickas till Google för uppdatering av filter, samt alla andra situationer där du väljer att dela data med Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Om du vill läsa mer om vilken data <ph name="DEVICE_OS" /> kan dela med Google och om hur den delas besöker du g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Den här inställningen tillhör <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Minst ett album i konstgalleriet måste vara markerat</translation>
 <translation id="2224551243087462610">Redigera mappnamn</translation>
@@ -1345,6 +1344,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2292848386125228270">Starta <ph name="PRODUCT_NAME" /> som vanlig användare. Om du behöver köra som systemadministratör startar du om med flaggan --no-sandbox.</translation>
 <translation id="2294081976975808113">Skärmintegritet</translation>
 <translation id="2294358108254308676">Vill du installera <ph name="PRODUCT_NAME" />?</translation>
+<translation id="229477815107578534">Granska dina inställningar</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultat</translation>
 <translation id="2296022312651137376"><ph name="DOMAIN_NAME" /> kräver att enheten är online när du loggar in på <ph name="EMAIL" /></translation>
 <translation id="2296099049346876573">{NUM_HOURS,plural, =1{Chrome har inte upptäckt skadlig programvara på datorn • Genomsöktes för 1 timme sedan}other{Chrome har inte upptäckt skadlig programvara på datorn • Genomsöktes för {NUM_HOURS} timmar sedan}}</translation>
@@ -1825,15 +1825,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2766161002040448006">Fråga en förälder</translation>
 <translation id="2767077837043621282">Det gick inte att uppdatera Chromebook. Försök igen senare.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> har redigeringsbehörighet till <ph name="FILENAME" /> tills du stänger alla flikar för den här webbplatsen</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Testa felsökningsåtgärderna nedan:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Se till att enheten har ett fungerande internt lagringsutrymme, som HDD, SSD eller eMMC
-    <ph name="LIST_ITEM" />Kontrollera att lagringsenheten är större än 16 GB
-    <ph name="LIST_ITEM" />Kontrollera anslutningen till det interna lagringsutrymmet om detta är fysiskt tillgängligt
-    <ph name="LIST_ITEM" />Se till att du använder en certifierad modell och läs installationsanteckningarna
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Besök g.co/CR2/InstallErrors om du vill ha mer hjälp<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Ta bort från listan</translation>
 <translation id="2770690685823456775">Exportera lösenorden till en annan mapp</translation>
 <translation id="2770929488047004208">Skärmupplösning</translation>
@@ -3103,7 +3094,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4005817994523282006">Metod för tidszonsidentifiering</translation>
 <translation id="4007856537951125667">Dölj genvägar</translation>
 <translation id="4008291085758151621">Information om webbplatsen är inte tillgänglig i VR-läget</translation>
-<translation id="4009955655170295852">Kontrollera att du har en säkerhetskopia av din data innan du börjar. All data på hårddisken skrivs över när du installerar <ph name="DEVICE_OS" />. Läs mer på g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> om du vill ha dina bokmärken på din mobila enhet.</translation>
 <translation id="4014432863917027322">Vill du reparera <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Använder du tillägg? <ph name="BEGIN_LINK" />Hantera tilläggen<ph name="END_LINK" /> enkelt på ett ställe.</translation>
@@ -3818,7 +3808,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4781443161433589743">Du använder Chromes starkaste skydd</translation>
 <translation id="4785719467058219317">Säkerhetsnyckeln som du använder är inte registrerad på den här webbplatsen</translation>
 <translation id="4785914069240823137">Avbryt beskärning</translation>
-<translation id="478708757211772586">Använd Nästa för att flytta framåt på skärmen</translation>
 <translation id="4788092183367008521">Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="4789550509729954245">Visa en avisering när enheter i närheten delar filer</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -3853,9 +3842,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bokmärke har raderats}other{{COUNT} bokmärken har raderats}}</translation>
 <translation id="4819607494758673676">Aviseringar från Google Assistent</translation>
 <translation id="4820236583224459650">Ställ in som aktiv biljett</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Innan du registrerar dig måste du rensa TPM så att <ph name="DEVICE_OS" /> kan ta ägarskap över enheten.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan även stänga av TPM-enheten helt. Din data lagras fortfarande säkert med mjukvarukryptering, men vissa säkerhetsfunktioner, till exempel maskinvarustödda certifikat, inaktiveras.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Du kan ändra TPM-ändringarna genom att starta om och öppna systeminställningarna för BIOS/UEFI. Stegen varierar beroende på enhetsmodellen. Du hittar mer information genom att öppna dokumentationen för <ph name="DEVICE_OS" /> på en separat enhet innan du startar om: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Profilering aktiverad</translation>
 <translation id="4823484602432206655">Läsa och ändra användarinställningar och enhetsinställningar</translation>
 <translation id="4824037980212326045">Säkerhetskopiering och återställning i Linux</translation>
@@ -5835,7 +5821,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6834652994408928492">Mörkt läge aktiveras automatiskt vid solnedgången</translation>
 <translation id="6835762382653651563">Anslut till internet om du vill uppdatera din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Fel vid borttagning av certifikat</translation>
-<translation id="6839882458129755986">Google ansvarar inte för dataförlust, och det kan hända att <ph name="DEVICE_OS" /> inte fungerar på ocertifierade modeller. Läs mer på g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Inloggning fungerar annorlunda</translation>
 <translation id="6840155290835956714">Fråga innan något skickas</translation>
 <translation id="6840184929775541289">Är inte en certifikatutfärdare</translation>
@@ -6081,6 +6066,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7077829361966535409">Det gick inte att läsa in inloggningssidan med de aktuella proxyinställningarna. <ph name="GAIA_RELOAD_LINK_START" />Försök logga in igen<ph name="GAIA_RELOAD_LINK_END" /> eller använd andra <ph name="PROXY_SETTINGS_LINK_START" />proxyinställningar<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Alla nätverk</translation>
 <translation id="708060913198414444">K&amp;opiera ljudadress</translation>
+<translation id="7082568314107259011"><ph name="NETWORK_NAME" /> hanteras av administratören</translation>
 <translation id="7085389578340536476">Tillåter du ljudinspelning i Chrome?</translation>
 <translation id="7086672505018440886">Ta med loggfiler från Chrome i arkivet.</translation>
 <translation id="7088434364990739311">Det gick inte att starta uppdateringskontrollen (felkod <ph name="ERROR" />).</translation>
@@ -6158,7 +6144,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7180865173735832675">Anpassa</translation>
 <translation id="7182791023900310535">Flytta lösenordet</translation>
-<translation id="7183193772170782394">Låt Google använda din maskinvarudata för att förbättra <ph name="DEVICE_OS" />. Om du nekar skickas denna data ändå till Google i syfte att fastställa lämpliga uppdateringar, men den varken lagras eller används på andra sätt. Läs mer på g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Aktivera och inaktivera sökningen på sidan. Sökning på sidan har inte aktiverats.</translation>
 <translation id="7186088072322679094">Spara i verktygsfältet</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan inte öppna den här mappen eftersom den innehåller systemfiler</translation>
@@ -7256,8 +7241,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8260864402787962391">Mus</translation>
 <translation id="8261378640211443080">Det här tillägget finns inte i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och kan ha lagts till utan att du vet om det.</translation>
 <translation id="8261506727792406068">Radera</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Något gick fel och <ph name="DEVICE_OS" /> kunde inte installeras.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Besök g.co/CR2/InstallErrors om du vill ha mer hjälp.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Namnge den här gruppen</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> har inaktiverat muspekaren.</translation>
 <translation id="8264024885325823677">Den här inställningen hanteras av administratören.</translation>
@@ -7321,6 +7304,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8325413836429495820">Får inte se urklippet</translation>
 <translation id="8326478304147373412">PKCS #7, certifikatkedja</translation>
 <translation id="8327676037044516220">Behörigheter och innehållsinställningar</translation>
+<translation id="8330689128072902965">Kontakter i närheten kan dela med dig. Klicka för att ändra.</translation>
 <translation id="833256022891467078">Delade mappar i Crostini</translation>
 <translation id="8335587457941836791">Ta bort från hyllan</translation>
 <translation id="8336407002559723354">Inga uppdateringar efter <ph name="MONTH_AND_YEAR" /></translation>

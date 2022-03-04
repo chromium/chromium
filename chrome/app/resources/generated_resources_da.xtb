@@ -575,6 +575,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1567993339577891801">JavaScript-konsol</translation>
 <translation id="1568323446248056064">Åbn enhedens skærmindstillinger</translation>
 <translation id="1570604804919108255">Slå lyden til for notifikationer</translation>
+<translation id="1571304935088121812">Kopiér brugernavnet</translation>
 <translation id="1571738973904005196">Se fanen: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gæst)</translation>
 <translation id="1572266655485775982">Aktivér Wi-Fi</translation>
@@ -1268,9 +1269,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2220572644011485463">Pin- eller adgangskode</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Unavngiven mediekilde</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> indsamler hardwaredata om enheder og deler dem med Google for at fastslå, hvilke opdateringer der skal leveres. Du kan vælge at give Google tilladelse til at bruge disse data til yderligere formål som f.eks. support til og forbedringer af <ph name="DEVICE_OS" />-oplevelsen og -kundeservicen.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan logge ind på denne enhed og gå til afsnittet CLOUDREADY_HARDWARE_INFO på chrome://system for at se de data, der er sendt til Google med henblik på filtrering af opdateringer, samt alle andre forekomster, hvor du har valgt at dele data med Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Du kan få flere oplysninger om, hvilke data <ph name="DEVICE_OS" /> kan dele med Google, og hvordan de anvendes, på g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Denne indstilling tilhører <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Der skal vælges mindst ét album i kunstgalleriet</translation>
 <translation id="2224551243087462610">Rediger mappenavn</translation>
@@ -1828,15 +1826,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2766161002040448006">Spørg en forælder</translation>
 <translation id="2767077837043621282">Din Chromebook kunne ikke opdateres. Prøv igen senere.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> vil kunne redigere <ph name="FILENAME" />, indtil du har lukket alle faner for dette website</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Prøv disse fejlfindingstrin:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Sørg for, at din enhed har fungerende intern lagerplads, f.eks. HDD, SDD eller eMMC
-    <ph name="LIST_ITEM" />Tjek, at du har mindst 16 GB intern lagerplads på din enhed
-    <ph name="LIST_ITEM" />Tjek forbindelsen til den interne lagerplads, hvis det er fysisk muligt
-    <ph name="LIST_ITEM" />Sørg for, at du bruger en certificeret model, og tjek bemærkningerne vedrørende installation
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan få mere hjælp ved at gå til: g.co/CR2/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Fjern fra listen</translation>
 <translation id="2770690685823456775">Eksportér dine adgangskoder til en anden mappe</translation>
 <translation id="2770929488047004208">Skærmopløsning</translation>
@@ -3106,7 +3095,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4005817994523282006">Metode til registrering af tidszone</translation>
 <translation id="4007856537951125667">Skjul genveje</translation>
 <translation id="4008291085758151621">Websiteoplysninger er ikke tilgængelige i VR</translation>
-<translation id="4009955655170295852">Før du går i gang, skal du sørge for, at du har sikkerhedskopieret dine data. Hvis du installerer <ph name="DEVICE_OS" />, overskrives din harddisk. Få flere oplysninger på g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> for at få dine bogmærker på alle dine mobilenheder.</translation>
 <translation id="4014432863917027322">Vil du reparere "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Har du nogen udvidelser? <ph name="BEGIN_LINK" />Administrer nemt dine udvidelser<ph name="END_LINK" /> fra ét sted.</translation>
@@ -3821,7 +3809,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4781443161433589743">Du anvender Chromes stærkeste beskyttelse</translation>
 <translation id="4785719467058219317">Du bruger en sikkerhedsnøgle, som ikke er registreret på dette website</translation>
 <translation id="4785914069240823137">Annuller beskæring</translation>
-<translation id="478708757211772586">Brug "Næste" til at gå fremad på skærmen</translation>
 <translation id="4788092183367008521">Tjek din netværksforbindelse, og prøv igen.</translation>
 <translation id="4789550509729954245">Vis en notifikation, når enheder i nærheden deler indhold</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> billede</translation>
@@ -3856,9 +3843,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bogmærke blev slettet}one{{COUNT} bogmærke blev slettet}other{{COUNT} bogmærker blev slettet}}</translation>
 <translation id="4819607494758673676">Google Assistent-notifikationer</translation>
 <translation id="4820236583224459650">Angiv som aktiv billet</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Før du tilmelder dig, skal du rydde TPM-enheden, så <ph name="DEVICE_OS" /> kan tage ejerskab over den.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan også deaktivere TPM-enheden helt. Dine data gemmes fortsat sikkert med softwarekryptering, men visse sikkerhedsfunktioner som f.eks. hardwarebaserede certifikater deaktiveres.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Du kan ændre dine TPM-indstillinger ved at genstarte og gå til systemindstillingerne for BIOS/UEFI. Trinene varierer afhængigt af, hvilken enhedsmodel du bruger. Du kan få flere oplysninger ved at åbne dokumentationen til <ph name="DEVICE_OS" /> på en separat enhed, inden du genstarter: g.co/CR2/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Profilering aktiveret</translation>
 <translation id="4823484602432206655">Læs og rediger bruger- og enhedsindstillinger</translation>
 <translation id="4824037980212326045">Backup og gendannelse i Linux</translation>
@@ -5838,7 +5822,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6834652994408928492">Mørk tilstand aktiveres automatisk ved solnedgang</translation>
 <translation id="6835762382653651563">Opret forbindelse til internettet for at opdatere din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Fejl under sletning af certifikat</translation>
-<translation id="6839882458129755986">Google er ikke ansvarlig for tab af data, og <ph name="DEVICE_OS" /> fungerer muligvis ikke på certificerede modeller. Få flere oplysninger på g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Login blev ændret</translation>
 <translation id="6840155290835956714">Spørg, før der sendes</translation>
 <translation id="6840184929775541289">Er ikke en certificeringsautoritet</translation>
@@ -6162,7 +6145,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7180865173735832675">Tilpas</translation>
 <translation id="7182791023900310535">Flyt din adgangskode</translation>
-<translation id="7183193772170782394">Giv Google tilladelse til at bruge dine hardwaredata til at hjælpe med at forbedre <ph name="DEVICE_OS" />. Hvis du afviser, bliver disse data stadig sendt til Google med henblik på at levere de rigtige opdateringer, men de bliver ikke gemt eller brugt udover det. Få flere oplysninger på g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Slå sideløbende søgning til/fra. Sideløbende søgning er ikke aktiveret.</translation>
 <translation id="7186088072322679094">Behold på værktøjslinjen</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan ikke åbne denne mappe, da den indeholder systemfiler</translation>
@@ -7259,8 +7241,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8260864402787962391">Mus</translation>
 <translation id="8261378640211443080">Denne udvidelse er ikke anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og er muligvis blevet tilføjet, uden at du vidste det.</translation>
 <translation id="8261506727792406068">Slet</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Der opstod en fejl, og <ph name="DEVICE_OS" /> kunne ikke installeres.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan få mere hjælp ved at gå til: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Navngiv denne gruppe</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> har deaktiveret din musemarkør.</translation>
 <translation id="8264024885325823677">Denne indstilling administreres af din administrator.</translation>

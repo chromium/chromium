@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">Strzałka w prawo</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3909791450649380159">Wy&amp;tnij</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">Krawędź po prawej</translation>
 <translation id="3994749195054421561">Kolumna <ph name="COLUMN_NAME" /> została posortowana rosnąco.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nieprzeczytane powiadomienie}few{# nieprzeczytane powiadomienia}many{# nieprzeczytanych powiadomień}other{# nieprzeczytanego powiadomienia}}</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{miesiąc temu}few{# miesiące temu}many{# miesięcy temu}other{# miesiąca temu}}</translation>

@@ -521,6 +521,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2539524384386349900">Detectar</translation>
 <translation id="2540701853218677861">Histórico de login/logout do dispositivo, incluindo carimbos de data/hora e tentativas falhas</translation>
 <translation id="2541219929084442027">As páginas que você acessa em guias anônimas não permanecem no histórico do navegador, no armazenamento de cookies ou no histórico de pesquisa depois que as guias são fechadas. Os downloads de arquivos ou favoritos criados são mantidos.</translation>
+<translation id="2544546346215446551">Seu administrador reiniciou o dispositivo</translation>
 <translation id="2544644783021658368">Documento avulso</translation>
 <translation id="2546283357679194313">Cookies e dados do site</translation>
 <translation id="254947805923345898">O valor da política não é válido.</translation>
@@ -934,7 +935,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3858027520442213535">Atualizar data e hora</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="3879224246272917991">Estatísticas do dispositivo, como uso de CPU/RAM e especificações de hardware</translation>
 <translation id="3881478300875776315">Mostrar menos linhas</translation>
 <translation id="3884278016824448484">Identificador de dispositivo em conflito</translation>
 <translation id="3885155851504623709">Município</translation>
@@ -968,6 +968,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Ajustar desvio</translation>
 <translation id="3996311196211510766">O site <ph name="ORIGIN" /> solicitou que uma política de origem seja aplicada a todas as solicitações feitas a ele, mas não é possível aplicá-la no momento.</translation>
+<translation id="4006465311664329701">Formas de pagamento, ofertas e endereços que usam o Google Pay</translation>
 <translation id="4009243425692662128">O conteúdo das páginas que você imprime é enviado ao Google Cloud ou a terceiros para análise. Por exemplo, ele pode ser verificado em busca de dados sensíveis.</translation>
 <translation id="4010758435855888356">Permitir acesso ao armazenamento?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
@@ -1243,6 +1244,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Planilhas Google</translation>
 <translation id="4825507807291741242">Intenso</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
+<translation id="4834250788637067901">Formas de pagamento, ofertas e endereços que usam o Google Pay</translation>
 <translation id="4838327282952368871">Sonho</translation>
 <translation id="4840250757394056958">Ver seu histórico do Chrome</translation>
 <translation id="484462545196658690">Automática</translation>

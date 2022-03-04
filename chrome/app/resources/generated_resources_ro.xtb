@@ -572,6 +572,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1567993339577891801">Consolă JavaScript</translation>
 <translation id="1568323446248056064">Deschide setările dispozitivului privind afișajul</translation>
 <translation id="1570604804919108255">Activează sunetul notificărilor</translation>
+<translation id="1571304935088121812">Copiază numele de utilizator</translation>
 <translation id="1571738973904005196">Vezi fila: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invitat)</translation>
 <translation id="1572266655485775982">Activează Wi-Fi</translation>
@@ -770,6 +771,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1744060673522309905">Dispozitivul nu a putut fi asociat domeniului. Asigură-te că nu ai depășit numărul de dispozitive pe care le poți adăuga.</translation>
 <translation id="1744108098763830590">pagină de fundal</translation>
 <translation id="1745732479023874451">Gestionează agenda</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}few{Deschizi și editezi # fișiere în această aplicație web?}other{Deschizi și editezi # de fișiere în această aplicație web?}}</translation>
 <translation id="1748563609363301860">Poți salva parola în Contul Google sau numai pe acest dispozitiv</translation>
 <translation id="1750048572964661931">Setează un cod PIN sau o parolă pe acest Chromebook pentru a proteja accesul la aplicațiile telefonului.</translation>
 <translation id="1750172676754093297">Cheia ta de securitate nu poate stoca amprente digitale</translation>
@@ -1256,9 +1258,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2220572644011485463">PIN sau parolă</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Sursă media nedenumită</translation>
-<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Pentru a asigura o experiență optimă, <ph name="DEVICE_OS" /> colectează date despre hardware de la dispozitive și le trimite la Google pentru a stabili ce actualizări vor fi livrate. Opțional, poți permite ca Google să folosească aceste date și în alte scopuri, cum ar fi asistență și îmbunătățiri ale experienței și serviciului <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Conectează-te pe acest dispozitiv și accesează secțiunea CLOUDREADY_HARDWARE_INFO de pe chrome://system pentru a vedea datele trimise la Google pentru filtrarea actualizărilor, precum și alte situații în care poți alege să trimiți date la Google.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Pentru detalii suplimentare despre datele pe care <ph name="DEVICE_OS" /> le poate trimite la Google și cum sunt folosite acestea, accesează g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Setarea aparține utilizatorului <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Trebuie să selectezi cel puțin un album din Galeria de imagini</translation>
 <translation id="2224551243087462610">Editați numele dosarului</translation>
@@ -1813,15 +1812,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2766161002040448006">Cere unui părinte</translation>
 <translation id="2767077837043621282">Nu s-a putut actualiza Chromebookul. Încearcă din nou mai târziu.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> va putea edita <ph name="FILENAME" /> până când închizi toate filele pentru acest site</translation>
-<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Încearcă următorii pași pentru remedierea problemelor:
-    <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />asigură-te că dispozitivul conține o unitate de memorie internă funcțională, de exemplu, HDD, SSD sau eMMC;
-    <ph name="LIST_ITEM" />asigură-te că dispozitivul de memorie internă are un spațiu liber de cel puțin 16 GB;
-    <ph name="LIST_ITEM" />verifică starea conexiunii la dispozitivul de memorie internă, dacă este accesibil fizic;
-    <ph name="LIST_ITEM" />asigură-te că folosești un model certificat și consultă notele de instalare.
-    <ph name="END_LIST" />
-    <ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pentru ajutor suplimentar, accesează g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Elimină din listă</translation>
 <translation id="2770690685823456775">Exportă parolele într-un alt dosar</translation>
 <translation id="2770929488047004208">Rezoluția monitorului</translation>
@@ -2251,6 +2241,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3201422919974259695">Dispozitivele USB disponibile vor apărea aici.</translation>
 <translation id="3202131003361292969">Cale</translation>
 <translation id="3202173864863109533">Sunetul acestei file este dezactivat.</translation>
+<translation id="3204648577100496185">Datele asociate acestei aplicații pot fi eliminate de pe dispozitiv</translation>
 <translation id="3208321278970793882">Aplicație</translation>
 <translation id="3208584281581115441">Verifică acum</translation>
 <translation id="3208703785962634733">Neconfirmat</translation>
@@ -2397,6 +2388,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="337286756654493126">Citește dosarele pe care le deschideți în aplicație</translation>
 <translation id="3374294321938930390">„<ph name="BOOKMARK_TITLE" />” a fost mutat în „<ph name="NEW_FOLDER_TITLE" />”.</translation>
 <translation id="3378572629723696641">Este posibil ca această extensie să fie deteriorată.</translation>
+<translation id="3378627645871606983">Permisiunile oferite pentru Steam se aplică pentru toate jocurile și aplicațiile Steam.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> va fi instalat.</translation>
 <translation id="3380365263193509176">Eroare necunoscută</translation>
 <translation id="3382073616108123819">Hopa! Sistemul nu a stabilit identificatorii de dispozitiv pentru acest dispozitiv.</translation>
@@ -2503,9 +2495,11 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="346298925039590474">Rețeaua mobilă va fi disponibilă tuturor utilizatorilor acestui dispozitiv</translation>
 <translation id="3464145797867108663">Adaugă un profil de serviciu</translation>
 <translation id="346431825526753">Acesta este un cont pentru copii gestionat de <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Primește reduceri pentru <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> și alți comercianți</translation>
 <translation id="3468298837301810372">Etichetă</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
 <translation id="3469583217479686109">Instrument de selecție</translation>
+<translation id="3470392222765168737">Urmărește site-ul</translation>
 <translation id="3471876058939596279">Porturile HDMI și USB Type-C nu pot fi folosite simultan pentru conținut video. Folosește alt port video.</translation>
 <translation id="3473241910002674503">Navighează la ecranul de pornire, înapoi și comută între aplicații folosind butoanele în modul tabletă.</translation>
 <translation id="3473479545200714844">Lupă de ecran</translation>
@@ -2889,6 +2883,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{O extensie a fost aprobată}few{# extensii au fost aprobate}other{# de extensii au fost aprobate}}</translation>
 <translation id="3823310065043511710">Pentru Linux, se recomandă un spațiu de cel puțin <ph name="INSTALL_SIZE" />.</translation>
 <translation id="3824621460022590830">Indicativul de înregistrare a dispozitivului nu este valid. Contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Reține alegerea mea pentru următorul tip de fișier: <ph name="FILE_TYPES" />}few{Reține alegerea mea pentru următoarele tipuri de fișiere: <ph name="FILE_TYPES" />}other{Reține alegerea mea pentru următoarele tipuri de fișiere: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">Au permisiunea de a folosi senzorii de mișcare</translation>
 <translation id="3826440694796503677">Administratorul a dezactivat adăugarea mai multor Conturi Google</translation>
 <translation id="3827774300009121996">&amp;Ecran complet</translation>
@@ -2946,6 +2941,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3879748587602334249">Manager de descărcări</translation>
 <translation id="3882165008614329320">Videoclip existent din camera foto sau din fișier</translation>
 <translation id="3883306461188700142">Introdu text folosind vocea. Apasă pe tasta de căutare + D, apoi începe să vorbești.</translation>
+<translation id="3883482240657453056">Primește reduceri pentru <ph name="MERCHANT_NAME_1" /> și <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Conținutul web care este disponibil în mai multe limbi va folosi prima limbă acceptată din această listă. Aceste preferințe se sincronizează cu setările browserului. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Actualizările sunt gestionate de administrator</translation>
 <translation id="3886446263141354045">Solicitarea de a accesa acest site a fost trimisă către <ph name="NAME" /></translation>
@@ -3091,7 +3087,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4005817994523282006">Metoda de detectare a fusului orar</translation>
 <translation id="4007856537951125667">Ascunde comenzile rapide</translation>
 <translation id="4008291085758151621">Informațiile despre site nu sunt disponibile în RV</translation>
-<translation id="4009955655170295852">Înainte de a începe, asigură-te că ai făcut backup pentru date. Instalarea <ph name="DEVICE_OS" /> va înlocui datele de pe hard disk. Află mai multe la g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Pentru a accesa marcajele pe dispozitivul mobil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Repari „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="4015163439792426608">Ai extensii? <ph name="BEGIN_LINK" />Gestionează extensiile<ph name="END_LINK" /> ușor, dintr-un singur loc.</translation>
@@ -3805,7 +3800,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4781443161433589743">Folosești cea mai eficientă securitate pentru Chrome</translation>
 <translation id="4785719467058219317">Folosești o cheie de securitate care nu este înregistrată pe acest site</translation>
 <translation id="4785914069240823137">Anulează decuparea</translation>
-<translation id="478708757211772586">Folosește Înainte pentru a naviga înainte pe ecran</translation>
 <translation id="4788092183367008521">Verifică conexiunea la rețea și încearcă din nou.</translation>
 <translation id="4789550509729954245">Afișează notificarea când există dispozitive în apropiere care trimit fișiere</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografie</translation>
@@ -3840,9 +3834,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Un marcaj șters}few{{COUNT} marcaje șterse}other{{COUNT} de marcaje șterse}}</translation>
 <translation id="4819607494758673676">Notificări privind Asistentul Google</translation>
 <translation id="4820236583224459650">Setează ca tichet activ</translation>
-<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Înainte să te înregistrezi, trebuie să ștergi TPM-ul pentru ca <ph name="DEVICE_OS" /> să preia controlul asupra dispozitivului.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Poți și să dezactivezi complet dispozitivul TPM. Datele tale vor fi stocate în siguranță prin criptarea software-ului, dar anumite funcții de securitate, cum ar fi certificatele stocate pe hardware, vor fi dezactivate.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Poți modifica setările TPM prin repornirea sistemului și accesarea setărilor BIOS / UEFI. Pașii variază în funcție de modelul dispozitivului. Pentru mai multe informații, deschide documentația <ph name="DEVICE_OS" /> pe alt dispozitiv înainte de repornire: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Analizare activată</translation>
 <translation id="4823484602432206655">Citește și modifică setările pentru dispozitiv și pentru utilizator</translation>
 <translation id="4824037980212326045">Backupul și restabilirea în Linux</translation>
@@ -3908,6 +3899,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4880827082731008257">Caută în istoric</translation>
 <translation id="4881685975363383806">Nu-mi reaminti data viitoare</translation>
 <translation id="4881695831933465202">Deschide</translation>
+<translation id="488211015466188466">Urmărește site-ul</translation>
 <translation id="4882312758060467256">Are acces la acest site</translation>
 <translation id="4882919381756638075">Site-urile folosesc de obicei microfonul pentru opțiuni de comunicare, cum ar fi chatul video</translation>
 <translation id="4883436287898674711">Toate site-urile <ph name="WEBSITE_1" /></translation>
@@ -5165,6 +5157,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6166185671393271715">Importă parolele în Chrome</translation>
 <translation id="6169040057125497443">Verifică microfonul.</translation>
 <translation id="6169666352732958425">Nu se poate proiecta desktopul.</translation>
+<translation id="6169967265765719844">Permisiunile pentru jocurile și aplicațiile instalate prin Steam se pot gestiona în <ph name="LINK_BEGIN" />setările aplicației Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sendviș</translation>
 <translation id="6170498031581934115">Nu s-a putut activa remedierea erorilor prin ADB. Accesează Setări și încearcă din nou.</translation>
 <translation id="617213288191670920">Nu s-au adăugat limbi</translation>
@@ -5822,7 +5815,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6834652994408928492">Modul întunecat se va activa automat la apus</translation>
 <translation id="6835762382653651563">Accesează internetul pentru a actualiza dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Eroare de ștergere a certificatului</translation>
-<translation id="6839882458129755986">Google nu răspunde pentru pierderea datelor și <ph name="DEVICE_OS" /> poate să nu funcționeze cu modele care nu sunt certificate. Află mai multe la g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Conectarea a fost schimbată</translation>
 <translation id="6840155290835956714">Întreabă înainte de a trimite</translation>
 <translation id="6840184929775541289">Nu este o Autoritate de certificare</translation>
@@ -5866,6 +5858,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6876469544038980967">Inutile</translation>
 <translation id="6878422606530379992">Folosirea senzorilor este permisă</translation>
 <translation id="6880587130513028875">Imaginile au fost blocate pe această pagină.</translation>
+<translation id="688312408602122936">Toate jocurile și aplicațiile instalate prin Steam vor fi eliminate de pe acest dispozitiv</translation>
 <translation id="6883319974225028188">Hopa! Sistemul nu a putut salva configurarea dispozitivului.</translation>
 <translation id="6884474387073389421">Sigur vrei să ștergi datele de conectare selectate?</translation>
 <translation id="6885771755599377173">Previzualizarea informațiilor de sistem</translation>
@@ -6146,7 +6139,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7180611975245234373">Actualizați</translation>
 <translation id="7180865173735832675">Personalizează</translation>
 <translation id="7182791023900310535">Mută parola</translation>
-<translation id="7183193772170782394">Permite ca Google să folosească datele despre hardware-ul tău pentru a îmbunătăți <ph name="DEVICE_OS" />. Chiar dacă refuzi, datele vor fi trimise la Google pentru a alege actualizările potrivite, dar nu vor fi stocate sau folosite în alte scopuri. Află mai multe la g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Activează / dezactivează căutarea laterală. Căutarea laterală nu este activată.</translation>
 <translation id="7186088072322679094">Păstrează în bara de instrumente</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> nu poate deschide acest dosar, deoarece conține fișiere de sistem</translation>
@@ -7243,8 +7235,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8260864402787962391">Mouse</translation>
 <translation id="8261378640211443080">Această extensie nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și este posibil să fi fost adăugată fără știrea dvs.</translation>
 <translation id="8261506727792406068">Șterge</translation>
-<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />A apărut o problemă și <ph name="DEVICE_OS" /> nu s-a putut instala.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pentru ajutor suplimentar, accesează g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Denumește acest grup</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> a dezactivat cursorul mouse-ului.</translation>
 <translation id="8264024885325823677">Această setare este gestionată de administrator.</translation>

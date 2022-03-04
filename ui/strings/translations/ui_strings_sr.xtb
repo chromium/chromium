@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">Стрелица надесно</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3909791450649380159">Ис&amp;еци</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">Десна ивица</translation>
 <translation id="3994749195054421561">Садржај колоне <ph name="COLUMN_NAME" /> је сортиран по растућем редоследу.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочитано обавештење}one{# непрочитано обавештење}few{# непрочитана обавештења}other{# непрочитаних обавештења}}</translation>
 <translation id="4250229828105606438">Снимак екрана</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Пре месец дана}one{Пре # месец}few{Пре # месеца}other{Пре # месеци}}</translation>

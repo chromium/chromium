@@ -143,7 +143,6 @@
 <translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1894023287452300670">Monitore o preço aqui</translation>
 <translation id="1900260903084164610">Ao continuar, você concorda com os <ph name="BEGIN_TOS_LINK" />Termos de Serviço<ph name="END_TOS_LINK" />.</translation>
-<translation id="1905320231301365059">Os arquivos transferidos por download no modo de navegação anônima ainda ficam visíveis para qualquer pessoa que esteja usando o dispositivo.</translation>
 <translation id="1910950723001426294">A lista de opções de compartilhamento está fechada.</translation>
 <translation id="1918175104945982129">IU de consentimento para a pesquisa por voz do Assistente aberta na metade da altura</translation>
 <translation id="1919130412786645364">Permitir login no Chrome</translation>
@@ -277,7 +276,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2604446170045642109">Nas configurações, é possível desativar o tema escuro para sites.</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="2625189173221582860">Senha copiada</translation>
-<translation id="2634905176438867146">Aprenda a definir o Chrome como o navegador padrão</translation>
 <translation id="2645657967708199252">Sua conexão <ph name="CONNECTION_TYPE" /> pode deixar o download mais lento</translation>
 <translation id="2647434099613338025">Adicionar idioma</translation>
 <translation id="2649068648233607930">Seu navegador é gerenciado por <ph name="DOMAIN" /></translation>
@@ -644,6 +642,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4818017973810341238">Falha na verificação do protocolo Digital Asset Links em <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Fazer o download de conteúdo</translation>
 <translation id="4834007576107377210">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável</translation>
+<translation id="4834250788637067901">Formas de pagamento, ofertas e endereços que usam o Google Pay</translation>
 <translation id="4835385943915508971">O Chrome não tem acesso ao recurso solicitado.</translation>
 <translation id="4837753911714442426">Abrir opções de impressão de página</translation>
 <translation id="4842092870884894799">Mostrando pop-up da criação de senhas</translation>

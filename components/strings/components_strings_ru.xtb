@@ -488,7 +488,7 @@
 <translation id="2430968933669123598">Параметры аккаунта Google. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Ввод.</translation>
 <translation id="2436186046335138073">Использовать <ph name="HANDLER_HOSTNAME" /> для обработки ссылок типа "<ph name="PROTOCOL" />"?</translation>
 <translation id="2438874542388153331">Четыре отверстия справа</translation>
-<translation id="2450021089947420533">Связи</translation>
+<translation id="2450021089947420533">Сеансы</translation>
 <translation id="2463739503403862330">Заполнить</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Выбрать способ доставки</translation>
@@ -521,6 +521,7 @@
 <translation id="2539524384386349900">Определять</translation>
 <translation id="2540701853218677861">История входа в аккаунт и выхода из него на устройстве, в том числе временные метки и неудачные попытки</translation>
 <translation id="2541219929084442027">Информация о страницах, открытых в режиме инкогнито, не сохраняется. Это касается файлов cookie, а также истории браузера или поиска. После того как вы закроете эти вкладки, останутся только скачанные файлы и добавленные закладки.</translation>
+<translation id="2544546346215446551">Устройство перезапущено администратором</translation>
 <translation id="2544644783021658368">Один документ</translation>
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
 <translation id="254947805923345898">Недопустимое значение правила.</translation>
@@ -881,7 +882,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Загрузка...</translation>
 <translation id="3709599264800900598">Скопированный текст</translation>
-<translation id="370972442370243704">Включить формирование связей</translation>
+<translation id="370972442370243704">Включить сеансы</translation>
 <translation id="3711895659073496551">Спящий режим</translation>
 <translation id="3712624925041724820">Недостаточно лицензий</translation>
 <translation id="3714633008798122362">веб-календарь</translation>
@@ -933,7 +934,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858027520442213535">Обновить дату и время</translation>
 <translation id="3858860766373142691">Название</translation>
-<translation id="3879224246272917991">данные о работе устройства, например об использовании ЦП и ОЗУ, а также аппаратные характеристики;</translation>
 <translation id="3881478300875776315">Показать меньше строк</translation>
 <translation id="3884278016824448484">Конфликт идентификаторов устройств</translation>
 <translation id="3885155851504623709">Округ</translation>
@@ -967,6 +967,7 @@
 <translation id="3987940399970879459">Менее 1 МБ</translation>
 <translation id="3990250421422698716">Смещение</translation>
 <translation id="3996311196211510766">Сайт <ph name="ORIGIN" />, на который вы переходите, требует применять правило источника ко всем запросам, однако это сейчас невозможно.</translation>
+<translation id="4006465311664329701">Способы оплаты, адреса и специальные предложения из Google Pay</translation>
 <translation id="4009243425692662128">Содержание страниц, которые вы печатаете, отправляется в Google Cloud или третьим лицам для анализа. В частности, оно может быть просканировано на наличие конфиденциальных данных.</translation>
 <translation id="4010758435855888356">Предоставить доступ к хранилищу?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-документ, состоящий из {COUNT} страницы}one{PDF-документ, состоящий из {COUNT} страницы}few{PDF-документ, состоящий из {COUNT} страниц}many{PDF-документ, состоящий из {COUNT} страниц}other{PDF-документ, состоящий из {COUNT} страницы}}</translation>
@@ -1145,7 +1146,7 @@
 <translation id="4508814173490746936">Не удалось использовать Touch ID</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы с помощью Google Переводчика ознакомиться с содержанием страницы.</translation>
 <translation id="4510487217173779431">Chou4 (конверт)</translation>
-<translation id="4514308731478712184">Отключить формирование связей</translation>
+<translation id="4514308731478712184">Отключить сеансы</translation>
 <translation id="4515275063822566619">Это карты и адреса, указанные в Chrome и вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />). Вы можете изменить их на странице <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (конверт)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>
@@ -1242,6 +1243,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать таблицу Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="4825507807291741242">Мощный</translation>
 <translation id="483241715238664915">Включить предупреждения</translation>
+<translation id="4834250788637067901">Способы оплаты, адреса и специальные предложения из Google Pay</translation>
 <translation id="4838327282952368871">Сказочный</translation>
 <translation id="4840250757394056958">Посмотреть историю Chrome</translation>
 <translation id="484462545196658690">Выбрать автоматически</translation>

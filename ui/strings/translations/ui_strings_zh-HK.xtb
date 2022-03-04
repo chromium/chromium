@@ -94,8 +94,10 @@
 <translation id="3889424535448813030">向右鍵</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3909791450649380159">剪下(&amp;T)</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">右邊緣</translation>
 <translation id="3994749195054421561">「<ph name="COLUMN_NAME" />」欄已經順序排。</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 個未睇嘅通知}other{# 個未睇嘅通知}}</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 個月前}other{# 個月前}}</translation>
