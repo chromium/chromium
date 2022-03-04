@@ -279,6 +279,9 @@ void WebAppToolbarButtonContainer::StartTitlebarAnimation() {
 }
 
 void WebAppToolbarButtonContainer::FadeInContentSettingIcons() {
+  if (!GetAnimate())
+    return;
+
   if (content_settings_container_)
     content_settings_container_->FadeIn();
 }
