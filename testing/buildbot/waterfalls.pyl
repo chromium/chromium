@@ -1705,7 +1705,7 @@
       },
       'CFI Linux ToT': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_and_gl_gtests',
@@ -1839,7 +1839,7 @@
         'browser_config': 'web-engine-shell',
         'os_type': 'fuchsia',
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'swarming': {
           'dimension_sets': [
@@ -1867,7 +1867,7 @@
       },
       'ToTLinux': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
@@ -1887,7 +1887,7 @@
       },
       'ToTLinuxASan': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'all',
@@ -1909,7 +1909,7 @@
       },
       'ToTLinuxMSan': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'all',
@@ -1923,7 +1923,7 @@
       'ToTLinuxOfficial': {
         'mixins': [
           'chrome-tester-service-account',
-          'linux-xenial',
+          'linux-bionic',
           'chrome-swarming-pool',
         ],
         'test_suites': {
@@ -1944,7 +1944,7 @@
       },
       'ToTLinuxTSan': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'all',
@@ -1956,7 +1956,7 @@
       },
       'ToTLinuxUBSanVptr': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'all',
