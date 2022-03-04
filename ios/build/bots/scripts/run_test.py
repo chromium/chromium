@@ -41,7 +41,30 @@ class UnitTest(unittest.TestCase):
     self.assertTrue(runner.args.app == './foo-Runner.app')
     self.assertTrue(runner.args.runtime_cache_prefix == 'some/dir')
     self.assertTrue(runner.args.xcode_path == 'some/Xcode.app')
-    self.assertTrue(runner.args.gtest_repeat == 2)
+    self.assertTrue(runner.args.repeat == 2)
+
+  def test_isolated_repeat_ok(self):
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--host-app',
+        './bar.app',
+        '--runtime-cache-prefix',
+        'some/dir',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--isolated-script-test-repeat',
+        '2',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertTrue(runner.args.repeat == 2)
 
   def test_parse_args_iossim_platform_version(self):
     """
@@ -195,6 +218,8 @@ class UnitTest(unittest.TestCase):
         'some/Xcode.app',
         '--gtest_filter',
         'TestClass3.TestCase4:TestClass4.TestCase5',
+        '--isolated-script-test-filter',
+        'TestClass6.TestCase6::TestClass7.TestCase7',
         '--test-cases',
         'TestClass1.TestCase2',
         '--args-json',
@@ -211,8 +236,12 @@ class UnitTest(unittest.TestCase):
     runner.parse_args(cmd)
     runner.resolve_test_cases()
     expected_test_cases = [
-        'TestClass1.TestCase2', 'TestClass3.TestCase4', 'TestClass4.TestCase5',
-        'TestClass2.TestCase3'
+        'TestClass1.TestCase2',
+        'TestClass3.TestCase4',
+        'TestClass4.TestCase5',
+        'TestClass6.TestCase6',
+        'TestClass7.TestCase7',
+        'TestClass2.TestCase3',
     ]
     self.assertEqual(runner.args.test_cases, expected_test_cases)
 
