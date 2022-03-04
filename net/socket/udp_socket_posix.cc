@@ -29,7 +29,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/features.h"
@@ -140,6 +140,18 @@ const unsigned int GUARD_CLOSE = 1u << 0;
 const unsigned int GUARD_DUP = 1u << 1;
 
 const guardid_t kSocketFdGuard = 0xD712BC0BC9A4EAD4;
+
+// Returns true if `socket` is connected to 0.0.0.0, false otherwise.
+// For detecting slow socket close due to a MacOS bug
+// (https://crbug.com/1194888).
+bool PeerIsZeroIPv4(const UDPSocketPosix& socket) {
+  IPEndPoint peer;
+  // Note this may call `getpeername` if the address is not cached, adding some
+  // overhead.
+  if (socket.GetPeerAddress(&peer) != OK)
+    return false;
+  return peer.address().IsIPv4() && peer.address().IsZero();
+}
 
 #endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
@@ -288,6 +300,13 @@ void UDPSocketPosix::Close() {
   // crbug.com/906005.
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
+  // A MacOS bug can cause sockets to 0.0.0.0 to take 1 second to close. Log a
+  // trace event for this case so that it can be correlated with jank in traces.
+  // Use the "base" category since "net" isn't enabled by default. See
+  // https://crbug.com/1194888.
+  TRACE_EVENT("base", "CloseSocketUDP", "connected_to_zero",
+              PeerIsZeroIPv4(*this));
+
   // Attempt to clear errors on the socket so that they are not returned by
   // close(). See https://crbug.com/1151048.
   int value = 0;
@@ -636,8 +655,8 @@ int UDPSocketPosix::AllowAddressSharingForMulticast() {
 }
 
 void UDPSocketPosix::ReadWatcher::OnFileCanReadWithoutBlocking(int) {
-  TRACE_EVENT0(NetTracingCategory(),
-               "UDPSocketPosix::ReadWatcher::OnFileCanReadWithoutBlocking");
+  TRACE_EVENT(NetTracingCategory(),
+              "UDPSocketPosix::ReadWatcher::OnFileCanReadWithoutBlocking");
   if (!socket_->read_callback_.is_null())
     socket_->DidCompleteRead();
 }

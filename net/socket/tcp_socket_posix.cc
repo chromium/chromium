@@ -23,6 +23,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
@@ -134,6 +135,18 @@ base::TimeDelta GetTransportRtt(SocketDescriptor fd) {
 }
 
 #endif  // defined(TCP_INFO)
+
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
+// Returns true if `socket` is connected to 0.0.0.0, false otherwise.
+// For detecting slow socket close due to a MacOS bug
+// (https://crbug.com/1194888).
+bool PeerIsZeroIPv4(const TCPSocketPosix& socket) {
+  IPEndPoint peer;
+  if (socket.GetPeerAddress(&peer) != OK)
+    return false;
+  return peer.address().IsIPv4() && peer.address().IsZero();
+}
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
 }  // namespace
 
@@ -443,6 +456,14 @@ bool TCPSocketPosix::SetNoDelay(bool no_delay) {
 }
 
 void TCPSocketPosix::Close() {
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
+  // A MacOS bug can cause sockets to 0.0.0.0 to take 1 second to close. Log a
+  // trace event for this case so that it can be correlated with jank in traces.
+  // Use the "base" category since "net" isn't enabled by default. See
+  // https://crbug.com/1194888.
+  TRACE_EVENT("base", "CloseSocketTCP", "connected_to_zero",
+              PeerIsZeroIPv4(*this));
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   socket_.reset();
   tag_ = SocketTag();
 }
