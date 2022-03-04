@@ -284,11 +284,6 @@ const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
-const char kFREMobileIdentityConsistencyName[] = "Display the MICe FRE";
-const char kFREMobileIdentityConsistencyDescription[] =
-    "When enabled, the FRE with MICe (the welcome screen and sign-in screen "
-    "are merged).";
-
 const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
@@ -373,6 +368,10 @@ const char kMuteCompromisedPasswordsName[] =
     "Mute & Unmute compromised passwords in bulk leak check";
 const char kMuteCompromisedPasswordsDescription[] =
     "Enables muting/unmuting compromised passwords in bulk leak check.";
+
+const char kNewMobileIdentityConsistencyFREName[] = "New MICE FRE";
+const char kNewMobileIdentityConsistencyFREDescription[] =
+    "New Mobile Identity Consistency FRE";
 
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";

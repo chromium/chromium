@@ -20,6 +20,18 @@ enum class SigninSyncScreenUIStringSet : int {
   kNew,
 };
 
+// Version of the new MICE FRE to show.
+enum class NewMobileIdentityConsistencyFRE : int {
+  // Old FRE with UMA dialog.
+  kUMADialog,
+  // New MICE FRE with 3 steps (welcome + sign-in + sync screens).
+  kThreeSteps,
+  // New MICE FRE with 2 steps (welcome with sign-in + sync screens).
+  kTwoSteps,
+  // Old FRE.
+  kOld,
+};
+
 namespace base {
 class FeatureList;
 }  // namespace base
@@ -53,6 +65,17 @@ extern const char kIdentitySwitcherInTopAndNewStringsSetGroup[];
 extern const char kIdentitySwitcherInBottomAndOldStringsSetGroup[];
 extern const char kIdentitySwitcherInBottomAndNewStringsSetGroup[];
 
+// Indicates which variant of the new MICE FRE to use.
+extern const char kNewMobileIdentityConsistencyFREParam[];
+extern const char kNewMobileIdentityConsistencyFREParamUMADialog[];
+extern const char kNewMobileIdentityConsistencyFREParamThreeSteps[];
+extern const char kNewMobileIdentityConsistencyFREParamTwoSteps[];
+
+// Group names for the new Mobile Identity Consistency FRE.
+extern const char kNewMICEFREWithUMADialogSetGroup[];
+extern const char kNewMICEFREWithThreeStepsSetGroup[];
+extern const char kNewMICEFREWithTwoStepsSetGroup[];
+
 namespace fre_field_trial {
 
 // Returns true if the user is in the group that will show the default browser
@@ -78,6 +101,10 @@ GetSigninSyncScreenUIIdentitySwitcherPosition();
 
 // Returns the UI option for the sign-in & sync screen strings set.
 SigninSyncScreenUIStringSet GetSigninSyncScreenUIStringSet();
+
+// Returns the FRE to display according to the feature flag and experiment.
+// See NewMobileIdentityConsistencyFRE.
+NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE();
 
 // Registers the local state pref used to manage grouping for this field trial.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

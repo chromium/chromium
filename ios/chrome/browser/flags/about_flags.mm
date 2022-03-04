@@ -315,6 +315,24 @@ const FeatureEntry::FeatureVariation kEnableFREUIModuleIOSVariations[] = {
          {kFREUIStringsSetParam, "new"}},
      2, nullptr}};
 
+const FeatureEntry::FeatureParam kNewMICEFREWithUMADialog[] = {
+    {kNewMobileIdentityConsistencyFREParam,
+     kNewMobileIdentityConsistencyFREParamUMADialog}};
+const FeatureEntry::FeatureParam kNewMICEFREWithThreeSteps[] = {
+    {kNewMobileIdentityConsistencyFREParam,
+     kNewMobileIdentityConsistencyFREParamThreeSteps}};
+const FeatureEntry::FeatureParam kNewMICEFREWithTwoSteps[] = {
+    {kNewMobileIdentityConsistencyFREParam,
+     kNewMobileIdentityConsistencyFREParamTwoSteps}};
+const FeatureEntry::FeatureVariation
+    kNewMobileIdentityConsistencyFREVariations[] = {
+        {"New FRE with UMA dialog", kNewMICEFREWithUMADialog,
+         std::size(kNewMICEFREWithUMADialog), nullptr},
+        {"new FRE with 3 steps", kNewMICEFREWithThreeSteps,
+         std::size(kNewMICEFREWithThreeSteps), nullptr},
+        {"new FRE with 2 steps", kNewMICEFREWithTwoSteps,
+         std::size(kNewMICEFREWithTwoSteps), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -458,6 +476,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFREUIModuleIOS,
                                     kEnableFREUIModuleIOSVariations,
                                     "EnableFREUIModuleIOS")},
+    {"new-mobile-identity-consistency-fre",
+     flag_descriptions::kNewMobileIdentityConsistencyFREName,
+     flag_descriptions::kNewMobileIdentityConsistencyFREDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(signin::kNewMobileIdentityConsistencyFRE,
+                                    kNewMobileIdentityConsistencyFREVariations,
+                                    "NewMobileIdentityConsistencyFRE")},
     {"enable-long-message-duration",
      flag_descriptions::kEnableLongMessageDurationName,
      flag_descriptions::kEnableLongMessageDurationDescription, flags_ui::kOsIos,
@@ -761,11 +786,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableUnicornAccountSupportDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(signin::kEnableUnicornAccountSupport)},
-    {"fre-mobile-identity-consistency",
-     flag_descriptions::kFREMobileIdentityConsistencyName,
-     flag_descriptions::kFREMobileIdentityConsistencyDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(signin::kFREMobileIdentityConsistency)},
     {"single-cell-content-suggestions",
      flag_descriptions::kSingleCellContentSuggestionsName,
      flag_descriptions::kSingleCellContentSuggestionsDescription,

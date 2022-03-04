@@ -23,8 +23,8 @@ const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
 const char kWaitThresholdMillisecondsForCapabilitiesApi[] =
     "wait-threshold-milliseconds-for-capabilities-api";
 
-const base::Feature kFREMobileIdentityConsistency{
-    "FREMobileIdentityConsistency", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kNewMobileIdentityConsistencyFRE{
+    "NewMobileIdentityConsistencyFRE", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kEnableUnicornAccountSupport{
     "EnableUnicornAccountSupport", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -3504,11 +3504,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "fre-mobile-identity-consistency",
-    "owners": [ "jlebel", "chrome-signin-team" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "full-restore-for-lacros",
     "owners": [ "dominickn", "nancylingwang", "sammiequon", "xdai" ],
     "expiry_milestone": 105
@@ -4247,6 +4242,11 @@
     "name": "new-content-suggestions-feed",
     "owners": [ "adamta@google.com", "sczs", "gogerald", "bling-flags@google.com" ],
     "expiry_milestone": 93
+  },
+  {
+    "name": "new-mobile-identity-consistency-fre",
+    "owners": [ "jlebel", "chrome-signin-team" ],
+    "expiry_milestone": 106
   },
   {
     "name": "new-overflow-menu",

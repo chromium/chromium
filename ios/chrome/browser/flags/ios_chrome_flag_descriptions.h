@@ -250,10 +250,6 @@ extern const char kForceDisableExtendedSyncPromosDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
-// Title and description for the flag to use MICe FRE.
-extern const char kFREMobileIdentityConsistencyName[];
-extern const char kFREMobileIdentityConsistencyDescription[];
-
 // Title and description for the flag to enable sign-in with a Unicorn account.
 extern const char kEnableUnicornAccountSupportName[];
 extern const char kEnableUnicornAccountSupportDescription[];
@@ -342,6 +338,10 @@ extern const char kModernTabStripDescription[];
 // passwords in bulk leak check.
 extern const char kMuteCompromisedPasswordsName[];
 extern const char kMuteCompromisedPasswordsDescription[];
+
+// Title and description for the flag to use the new MICe FRE.
+extern const char kNewMobileIdentityConsistencyFREName[];
+extern const char kNewMobileIdentityConsistencyFREDescription[];
 
 // Title and description for the flag to enable the new overflow menu.
 extern const char kNewOverflowMenuName[];
