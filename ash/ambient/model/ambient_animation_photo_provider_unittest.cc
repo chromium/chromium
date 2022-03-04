@@ -24,6 +24,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -139,7 +141,8 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
 
   std::vector<cc::SkottieFrameData> GetFrameDataForAssets(
       const std::vector<scoped_refptr<ImageAsset>>& assets,
-      float timestamp) {
+      float timestamp,
+      float scale = kTestScaleFactor) {
     // The timestamp for a given frame is not guaranteed to be the same for each
     // asset per Skottie's API. Apply jitter to ensure the provider handles this
     // correctly.
@@ -148,8 +151,7 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
     std::vector<cc::SkottieFrameData> all_frame_data;
     for (const scoped_refptr<ImageAsset>& asset : assets) {
       float jitter = add_jitter ? kTimestampJitter : 0.f;
-      all_frame_data.push_back(
-          asset->GetFrameData(timestamp + jitter, kTestScaleFactor));
+      all_frame_data.push_back(asset->GetFrameData(timestamp + jitter, scale));
       add_jitter = !add_jitter;
     }
     return all_frame_data;
@@ -475,6 +477,29 @@ TEST_F(AmbientAnimationPhotoProviderTest,
                             SizeIs(kNumDynamicAssets),
                             Each(Pair(_, TopicHasDetails("attribution-a"))))));
   GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+}
+
+TEST_F(AmbientAnimationPhotoProviderTest, LoadsDifferentImageScaleFactor) {
+  gfx::ImageSkia test_image =
+      gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10);
+  test_image.AddRepresentation(
+      gfx::ImageSkiaRep(gfx::test::CreateBitmap(/*width=*/20, /*height=*/20),
+                        /*scale=*/kTestScaleFactor * 2));
+  AddImageToModel(test_image);
+
+  std::vector<scoped_refptr<ImageAsset>> all_assets = LoadAllDynamicAssets();
+
+  // Load at 1x.
+  std::vector<cc::SkottieFrameData> frame_data =
+      GetFrameDataForAssets(all_assets, /*timestamp=*/0);
+  ASSERT_THAT(frame_data, SizeIs(kNumDynamicAssets));
+  EXPECT_THAT(frame_data, Each(HasImageDimensions(10, 10)));
+
+  // Cycle 0 Frame 1
+  frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/0.5,
+                                     /*scale=*/kTestScaleFactor * 2);
+  ASSERT_THAT(frame_data, SizeIs(kNumDynamicAssets));
+  EXPECT_THAT(frame_data, Each(HasImageDimensions(20, 20)));
 }
 
 }  // namespace ash

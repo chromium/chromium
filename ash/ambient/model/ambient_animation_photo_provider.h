@@ -8,6 +8,7 @@
 #include <functional>
 #include <vector>
 
+#include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,8 +20,6 @@
 namespace ash {
 
 class AmbientAnimationStaticResources;
-class AmbientBackendModel;
-struct PhotoWithDetails;
 
 // The |SkottieFrameDataProvider| implementation for ambient mode animations is
 // tied to a single animation instance for its lifetime. It has 2 purposes:
@@ -68,13 +67,19 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
  private:
   class DynamicImageAssetImpl;
 
-  void RefreshDynamicImageAssets();
+  PhotoWithDetails GenerateNextTopicForDynamicAsset(
+      const DynamicImageAssetImpl& asset);
+  PhotoWithDetails ExtractPendingTopicForDynamicAsset(
+      const DynamicImageAssetImpl& asset);
+  void NotifyObserverOfNewTopics();
 
   // Unowned pointers. Must outlive the |AmbientAnimationPhotoProvider|.
   const AmbientAnimationStaticResources* const static_resources_;
   const AmbientBackendModel* const backend_model_;
 
   std::vector<scoped_refptr<DynamicImageAssetImpl>> dynamic_assets_;
+  base::flat_map<const DynamicImageAssetImpl*, PhotoWithDetails>
+      pending_dynamic_asset_topics_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<AmbientAnimationPhotoProvider> weak_factory_;
 };
