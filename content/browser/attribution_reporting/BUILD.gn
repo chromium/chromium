@@ -32,7 +32,7 @@ mojom("mojo_bindings") {
         "common_source_info.h",
       ]
       traits_sources = [ "attribution_internals_mojom_traits.cc" ]
-      traits_deps = [":attribution_reporting_proto"]
+      traits_deps = [ ":attribution_reporting_proto" ]
     },
   ]
 }

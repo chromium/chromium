@@ -8,6 +8,7 @@
 #include <string>
 
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/common/content_export.h"
 
 namespace base {
 class Time;
@@ -15,6 +16,8 @@ class Value;
 }  // namespace base
 
 namespace content {
+
+class AttributionFilterData;
 
 // Calculates the report time for a conversion associated with a given
 // source.
@@ -29,6 +32,10 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source, int window_index);
 
 std::string SerializeAttributionJson(const base::Value& body,
                                      bool pretty_print = false);
+
+CONTENT_EXPORT bool AttributionFilterDataMatch(
+    const AttributionFilterData& source,
+    const AttributionFilterData& trigger);
 
 }  // namespace content
 

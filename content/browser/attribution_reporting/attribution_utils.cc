@@ -6,9 +6,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 
 namespace content {
 
@@ -119,6 +122,26 @@ std::string SerializeAttributionJson(const base::Value& body,
       base::JSONWriter::WriteWithOptions(body, options, &output_json);
   DCHECK(success);
   return output_json;
+}
+
+bool AttributionFilterDataMatch(const AttributionFilterData& source,
+                                const AttributionFilterData& trigger) {
+  // A filter is considered matched if the filter key is only present either on
+  // the source or trigger, or the intersection of the filter values is
+  // non-empty.
+  // Returns true if all the filters matched.
+  //
+  // TODO(apaseltiner, linnan): Figure out how to incorporate the implicitly
+  // generated source_type filter data.
+  return base::ranges::all_of(
+      trigger.filter_values(), [&](const auto& trigger_filter) {
+        auto source_filter = source.filter_values().find(trigger_filter.first);
+        return source_filter == source.filter_values().end() ||
+               base::ranges::any_of(
+                   trigger_filter.second, [&](const std::string& value) {
+                     return base::Contains(source_filter->second, value);
+                   });
+      });
 }
 
 }  // namespace content
