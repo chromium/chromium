@@ -49,7 +49,8 @@ def _WriteArray(fd, var_name, array, filter_list=[], last_entry=False):
 
 def _WriteGn(fd):
   fd.write(_COPYRIGHT)
-  _WriteArray(fd, "x86_asm_sources", _Glob("libdav1d/src/x86/*.asm"))
+  _WriteArray(fd, "x86_asm_sources", _Glob("libdav1d/src/x86/*.asm"),
+              ["libdav1d/src/x86/filmgrain_common.asm"])
   _WriteArray(fd, "x86_template_sources", _Glob("libdav1d/src/x86/*_tmpl.c"))
 
   _WriteArray(fd, "arm32_asm_sources", _Glob("libdav1d/src/arm/32/*.S"),
