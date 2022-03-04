@@ -44,12 +44,12 @@ class ExtensionsTabbedMenuViewInteractiveUITest
 
   std::vector<SiteAccessMenuItemView*> requests_access_items() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
-        ->GetRequestsAccessItemsForTesting();
+        ->GetVisibleRequestsAccessItemsForTesting();
   }
 
   std::vector<SiteAccessMenuItemView*> has_access_items() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
-        ->GetHasAccessItemsForTesting();
+        ->GetVisibleHasAccessItemsForTesting();
   }
 
   // Asserts there is exactly one installed menu item and then returns it.

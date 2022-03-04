@@ -70,22 +70,24 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
 
   // Returns the currently-showing `has_access_` extension items in the site
   // access tab, if any exists.
-  std::vector<SiteAccessMenuItemView*> GetHasAccessItemsForTesting() const;
+  std::vector<SiteAccessMenuItemView*> GetVisibleHasAccessItemsForTesting()
+      const;
 
   // Returns the currently-showing `requests_access_` extension items in the
   // site access tab, if any exists.
-  std::vector<SiteAccessMenuItemView*> GetRequestsAccessItemsForTesting() const;
+  std::vector<SiteAccessMenuItemView*> GetVisibleRequestsAccessItemsForTesting()
+      const;
 
-  // Returns the currently-showing `discover_more_button_` in the extensions
-  // tab, if any exists.
+  // Returns the site access message view in the site access tab.
+  views::Label* GetSiteAccessMessageForTesting() const;
+
+  // Returns the `discover_more_button_` in the extensions tab.
   HoverButton* GetDiscoverMoreButtonForTesting() const;
 
-  // Returns the currently-showing `site_settings_button_` in the site access
-  // tab, if any exists.
+  // Returns the `site_settings_button_` in the site access tab.
   HoverButton* GetSiteSettingsButtonForTesting() const;
 
-  // Returns the currently-showing `site_settings_` in the site access
-  // tab, if any exists.
+  // Returns the `site_settings_` in the site access tab.
   views::View* GetSiteSettingsForTesting() const;
 
   // Returns the index of the currently selected tab.
@@ -167,6 +169,11 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
   SiteAccessSection* GetSectionForSiteInteraction(
       extensions::SitePermissionsHelper::SiteInteraction site_interaction);
 
+  // Returns the currently-showing menu items for `section` in the
+  // site access tab, if any exists.
+  std::vector<SiteAccessMenuItemView*> GetVisibleMenuItemsOf(
+      SiteAccessSection section) const;
+
   // Shows or hides the site setting options when `site_settings_button_` is
   // pressed.
   void OnSiteSettingsButtonPressed();
@@ -192,6 +199,9 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
 
   // The button used to open the webstore page in the extensions tab.
   HoverButton* discover_more_button_ = nullptr;
+
+  // The view containing a message in the site access tab.
+  raw_ptr<views::Label> site_access_message_ = nullptr;
 
   // The button used to open the site settings in the site access tab.
   raw_ptr<SiteSettingsExpandButton> site_settings_button_ = nullptr;

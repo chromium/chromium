@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
@@ -117,11 +118,15 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
   }
   std::vector<SiteAccessMenuItemView*> has_access_items() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
-        ->GetHasAccessItemsForTesting();
+        ->GetVisibleHasAccessItemsForTesting();
   }
   std::vector<SiteAccessMenuItemView*> requests_access_items() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
-        ->GetRequestsAccessItemsForTesting();
+        ->GetVisibleRequestsAccessItemsForTesting();
+  }
+  views::Label* site_access_message() {
+    return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
+        ->GetSiteAccessMessageForTesting();
   }
 
   // Asserts there is exactly one installed menu item and then returns it.
@@ -130,6 +135,12 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
   SiteAccessMenuItemView* GetOnlyHasAccessMenuItem();
   // Asserts there is exactly one requests access menu item and then returns it.
   SiteAccessMenuItemView* GetOnlyRequestsAccessMenuItem();
+
+  // Returns whether the has access section is displayed on the site access tab.
+  bool IsHasAccessSectionDisplayed();
+  // Returns whether the requests access section is displayed on the site access
+  // tab.
+  bool IsRequestsAccessSectionDisplayed();
 
   // Opens the tabbed menu in the installed tab.
   void ShowInstalledTabInMenu();
@@ -198,6 +209,14 @@ ExtensionsTabbedMenuViewUnitTest::GetOnlyRequestsAccessMenuItem() {
     return nullptr;
   }
   return *items.begin();
+}
+
+bool ExtensionsTabbedMenuViewUnitTest::IsHasAccessSectionDisplayed() {
+  return has_access_items().size() != 0;
+}
+
+bool ExtensionsTabbedMenuViewUnitTest::IsRequestsAccessSectionDisplayed() {
+  return requests_access_items().size() != 0;
 }
 
 void ExtensionsTabbedMenuViewUnitTest::ShowInstalledTabInMenu() {
@@ -651,6 +670,26 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
+TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_NoExtensionsHaveAccess) {
+  InstallExtension("Test Extension A");
+  InstallExtension("Test Extension B");
+
+  const GURL url("http://www.url.com");
+  web_contents_tester()->NavigateAndCommit(url);
+  ShowSiteAccessTabInMenu();
+
+  auto no_extensions_have_access_text = l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_NO_EXTENSIONS_HAVE_ACCESS_TEXT,
+      base::UTF8ToUTF16(url.host()));
+
+  // Verify only the correct message is displayed when no extensions have access
+  // to the current site.
+  EXPECT_TRUE(site_access_message()->GetVisible());
+  EXPECT_EQ(site_access_message()->GetText(), no_extensions_have_access_text);
+  EXPECT_FALSE(IsHasAccessSectionDisplayed());
+  EXPECT_FALSE(IsRequestsAccessSectionDisplayed());
+}
+
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
        SiteAccessTab_ExtensionsInCorrectSiteAccessSection) {
   constexpr char kHasAccessName[] = "Has Access Extension";
@@ -661,6 +700,10 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   const GURL url_a("http://www.a.com");
   web_contents_tester()->NavigateAndCommit(url_a);
   ShowSiteAccessTabInMenu();
+
+  // Site access message should not be displayed since there is at least one
+  // extension with host permissions.
+  EXPECT_FALSE(site_access_message()->GetVisible());
 
   // Extension with <all_urls> permission has site access by default (except for
   // forbidden websites such as chrome:-scheme), and it should be in the has

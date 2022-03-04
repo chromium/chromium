@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -180,6 +181,14 @@ void UpdateSiteAccessMenuItem(views::View* parent_view,
   parent_view->ReorderChildView(site_access_view, new_index);
 }
 
+// Returns the active webcontent's host. This method should only be called when
+// web contents are present.
+std::u16string GetCurrentSite(Browser* browser) {
+  auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+  DCHECK(web_contents);
+  return base::UTF8ToUTF16(web_contents->GetLastCommittedURL().host());
+}
+
 }  // namespace
 
 ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
@@ -286,23 +295,17 @@ ExtensionsTabbedMenuView::GetInstalledItemsForTesting() const {
 }
 
 std::vector<SiteAccessMenuItemView*>
-ExtensionsTabbedMenuView::GetHasAccessItemsForTesting() const {
-  std::vector<SiteAccessMenuItemView*> menu_item_views;
-  if (IsShowing()) {
-    for (views::View* view : has_access_.items->children())
-      menu_item_views.push_back(GetAsSiteAccessMenuItem(view));
-  }
-  return menu_item_views;
+ExtensionsTabbedMenuView::GetVisibleHasAccessItemsForTesting() const {
+  return GetVisibleMenuItemsOf(has_access_);
 }
 
 std::vector<SiteAccessMenuItemView*>
-ExtensionsTabbedMenuView::GetRequestsAccessItemsForTesting() const {
-  std::vector<SiteAccessMenuItemView*> menu_item_views;
-  if (IsShowing()) {
-    for (views::View* view : requests_access_.items->children())
-      menu_item_views.push_back(GetAsSiteAccessMenuItem(view));
-  }
-  return menu_item_views;
+ExtensionsTabbedMenuView::GetVisibleRequestsAccessItemsForTesting() const {
+  return GetVisibleMenuItemsOf(requests_access_);
+}
+
+views::Label* ExtensionsTabbedMenuView::GetSiteAccessMessageForTesting() const {
+  return site_access_message_;
 }
 
 HoverButton* ExtensionsTabbedMenuView::GetDiscoverMoreButtonForTesting() const {
@@ -465,17 +468,14 @@ void ExtensionsTabbedMenuView::Update() {
 }
 
 void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
-  auto current_site = base::UTF8ToUTF16(browser_->tab_strip_model()
-                                            ->GetActiveWebContents()
-                                            ->GetLastCommittedURL()
-                                            .host());
+  auto current_site = GetCurrentSite(browser_);
+  const int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
+  const int vertical_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_CONTROL_LIST_VERTICAL);
 
   auto create_section_builder =
-      [current_site](ExtensionsTabbedMenuView::SiteAccessSection* section) {
-        const int horizontal_spacing =
-            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
-
+      [=](ExtensionsTabbedMenuView::SiteAccessSection* section) {
         return views::Builder<views::BoxLayoutView>()
             .CopyAddressTo(&section->container)
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -492,9 +492,8 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
                         ChromeTextStyle::STYLE_EMPHASIZED))
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                     .SetBorder(views::CreateEmptyBorder(
-                        ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            DISTANCE_CONTROL_LIST_VERTICAL),
-                        horizontal_spacing, 0, horizontal_spacing)),
+                        vertical_spacing, horizontal_spacing, vertical_spacing,
+                        horizontal_spacing)),
                 // Empty section for the menu items. Items
                 // will be populated later.
                 views::Builder<views::BoxLayoutView>()
@@ -502,11 +501,26 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
                     .SetOrientation(views::BoxLayout::Orientation::kVertical));
       };
 
-  auto site_access_items =
+  auto site_access_content =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .AddChildren(create_section_builder(&requests_access_),
-                       create_section_builder(&has_access_))
+          .AddChildren(
+              // Site access sections displayed when the extension has host
+              // permissions.
+              create_section_builder(&requests_access_),
+              create_section_builder(&has_access_),
+              // Label view displayed when the extension has no host
+              // permissions, or the user cannot customize them. Text and
+              // visibility is set dependent on the site settings selected.
+              views::Builder<views::Label>()
+                  .CopyAddressTo(&site_access_message_)
+                  .SetVisible(false)
+                  .SetBorder(views::CreateEmptyBorder(
+                      gfx::Insets(vertical_spacing, horizontal_spacing,
+                                  vertical_spacing, horizontal_spacing)))
+                  .SetTextContext(
+                      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL))
+
           .Build();
 
   const auto create_radio_button_builder =
@@ -550,7 +564,7 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
           .Build();
 
   CreateTab(tabbed_pane_, 0, IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_TITLE,
-            std::move(site_access_items), std::move(site_access_footer));
+            std::move(site_access_content), std::move(site_access_footer));
 }
 
 void ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed() {
@@ -670,6 +684,18 @@ void ExtensionsTabbedMenuView::MoveItemsBetweenSectionsIfNecessary() {
 }
 
 void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
+  // Site access tab should only display content related to the current site.
+  // Therefore, hide all the site access content views if this method is called
+  // when there are no active web contents (e.g tab strip update is closing its
+  // tabs).
+  // TODO(emiliapaz): Consider adding a message instead of hiding the views.
+  if (!browser_->tab_strip_model()->GetActiveWebContents()) {
+    has_access_.container->SetVisible(false);
+    requests_access_.container->SetVisible(false);
+    site_access_message_->SetVisible(false);
+    return;
+  }
+
   auto update_section = [](SiteAccessSection* section) {
     bool should_be_visible = !section->items->children().empty();
     if (section->container->GetVisible() != should_be_visible)
@@ -678,6 +704,17 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
 
   update_section(&has_access_);
   update_section(&requests_access_);
+
+  // Display a message when no extensions have or request access.
+  if (!has_access_.container->GetVisible() &&
+      !requests_access_.container->GetVisible()) {
+    site_access_message_->SetVisible(true);
+    site_access_message_->SetText(l10n_util::GetStringFUTF16(
+        IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_NO_EXTENSIONS_HAVE_ACCESS_TEXT,
+        GetCurrentSite(browser_)));
+  } else {
+    site_access_message_->SetVisible(false);
+  }
 
   // TODO(crbug.com/1263310): If no extensions have or request access to the
   // current site, show respective message.
@@ -699,6 +736,17 @@ ExtensionsTabbedMenuView::GetSectionForSiteInteraction(
     case extensions::SitePermissionsHelper::SiteInteraction::kActive:
       return &has_access_;
   }
+}
+
+std::vector<SiteAccessMenuItemView*>
+ExtensionsTabbedMenuView::GetVisibleMenuItemsOf(
+    ExtensionsTabbedMenuView::SiteAccessSection section) const {
+  std::vector<SiteAccessMenuItemView*> menu_items;
+  if (IsShowing() && section.container->GetVisible()) {
+    for (views::View* item : section.items->children())
+      menu_items.push_back(GetAsSiteAccessMenuItem(item));
+  }
+  return menu_items;
 }
 
 void ExtensionsTabbedMenuView::ConsistencyCheck() {
