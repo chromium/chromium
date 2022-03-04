@@ -7,7 +7,6 @@
 
 #include <ostream>
 
-#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
@@ -20,9 +19,6 @@ class PrefService;
 
 namespace ash {
 namespace eche_app {
-
-using AccessStatus =
-    ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
 
 // Implements AppsAccessManager by persisting the last-known
 // apps access value to user prefs.
@@ -64,7 +60,8 @@ class AppsAccessManagerImpl : public AppsAccessManager,
   void UpdateFeatureEnabledState(AccessStatus access_status);
   bool IsWaitingForAccessToInitiallyEnableApps() const;
 
-  AccessStatus ComputeAppsAccessState(proto::AppsAccessState apps_access_state);
+  AppsAccessManager::AccessStatus ComputeAppsAccessState(
+      proto::AppsAccessState apps_access_state);
 
   FeatureStatus current_feature_status_;
   EcheConnector* eche_connector_;

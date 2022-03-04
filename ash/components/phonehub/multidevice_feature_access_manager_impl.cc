@@ -8,7 +8,6 @@
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/util/histogram_util.h"
-#include "ash/webui/eche_app_ui/pref_names.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -72,15 +71,6 @@ MultideviceFeatureAccessManagerImpl::GetNotificationAccessStatus() const {
 MultideviceFeatureAccessManagerImpl::AccessStatus
 MultideviceFeatureAccessManagerImpl::GetCameraRollAccessStatus() const {
   int status = pref_service_->GetInteger(prefs::kCameraRollAccessStatus);
-  return static_cast<AccessStatus>(status);
-}
-
-MultideviceFeatureAccessManager::AccessStatus
-MultideviceFeatureAccessManagerImpl::GetAppsAccessStatus() const {
-  // TODO(samchiu): The AppsAccessStatus will be updated by eche_app_ui
-  // component only. We should listen to pref change and update it to
-  // MultiDeviceFeatureOptInView.
-  int status = pref_service_->GetInteger(eche_app::prefs::kAppsAccessStatus);
   return static_cast<AccessStatus>(status);
 }
 

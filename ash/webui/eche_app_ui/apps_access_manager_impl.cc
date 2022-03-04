@@ -4,7 +4,6 @@
 
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 
-#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "ash/webui/eche_app_ui/pref_names.h"
@@ -22,9 +21,6 @@ using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 
 }  // namespace
-
-using AccessStatus =
-    ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
 
 // static
 void AppsAccessManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -56,7 +52,7 @@ AppsAccessManagerImpl::~AppsAccessManagerImpl() {
   message_receiver_->RemoveObserver(this);
 }
 
-AccessStatus AppsAccessManagerImpl::GetAccessStatus() const {
+AppsAccessManager::AccessStatus AppsAccessManagerImpl::GetAccessStatus() const {
   int status = pref_service_->GetInteger(prefs::kAppsAccessStatus);
   return static_cast<AccessStatus>(status);
 }
@@ -202,14 +198,13 @@ void AppsAccessManagerImpl::SetAccessStatusInternal(
       SetAppsSetupOperationStatus(
           AppsAccessSetupOperation::Status::kCompletedSuccessfully);
       break;
-    case AccessStatus::kProhibited:
     case AccessStatus::kAvailableButNotGranted:
       // Intentionally blank; the operation status should not change.
       break;
   }
 }
 
-AccessStatus AppsAccessManagerImpl::ComputeAppsAccessState(
+AppsAccessManager::AccessStatus AppsAccessManagerImpl::ComputeAppsAccessState(
     proto::AppsAccessState apps_access_state) {
   if (apps_access_state == proto::AppsAccessState::ACCESS_GRANTED) {
     return AccessStatus::kAccessGranted;
@@ -231,7 +226,6 @@ void AppsAccessManagerImpl::UpdateFeatureEnabledState(
             base::DoNothing());
       }
       break;
-    case AccessStatus::kProhibited:
     case AccessStatus::kAvailableButNotGranted:
       // Disable Apps if apps access has been revoked
       // by the phone.

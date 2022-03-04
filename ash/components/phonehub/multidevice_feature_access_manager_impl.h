@@ -46,7 +46,6 @@ class MultideviceFeatureAccessManagerImpl
   void SetCameraRollAccessStatusInternal(
       AccessStatus camera_roll_access_status) override;
   AccessStatus GetCameraRollAccessStatus() const override;
-  AccessStatus GetAppsAccessStatus() const override;
   void OnSetupRequested() override;
 
   bool HasMultideviceFeatureSetupUiBeenDismissed() const override;

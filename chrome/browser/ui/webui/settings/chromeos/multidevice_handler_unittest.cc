@@ -8,11 +8,11 @@
 
 #include "ash/components/phonehub/fake_camera_roll_manager.h"
 #include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
-#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/webui/eche_app_ui/apps_access_manager.h"
 #include "ash/webui/eche_app_ui/fake_apps_access_manager.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
@@ -230,7 +230,7 @@ class MultideviceHandlerTest : public testing::Test {
         std::make_unique<android_sms::FakeAndroidSmsAppManager>();
     fake_apps_access_manager_ =
         std::make_unique<ash::eche_app::FakeAppsAccessManager>(
-            phonehub::MultideviceFeatureAccessManager::AccessStatus::
+            ash::eche_app::AppsAccessManager::AccessStatus::
                 kAvailableButNotGranted);
     fake_camera_roll_manager_ =
         std::make_unique<ash::phonehub::FakeCameraRollManager>();
@@ -338,10 +338,10 @@ class MultideviceHandlerTest : public testing::Test {
 
   void CallAttemptAppsSetup(bool has_access_been_granted) {
     fake_apps_access_manager()->SetAccessStatusInternal(
-        has_access_been_granted ? phonehub::MultideviceFeatureAccessManager::
-                                      AccessStatus::kAccessGranted
-                                : phonehub::MultideviceFeatureAccessManager::
-                                      AccessStatus::kAvailableButNotGranted);
+        has_access_been_granted
+            ? ash::eche_app::AppsAccessManager::AccessStatus::kAccessGranted
+            : ash::eche_app::AppsAccessManager::AccessStatus::
+                  kAvailableButNotGranted);
     base::ListValue empty_args;
     test_web_ui()->HandleReceivedMessage("attemptAppsSetup", &empty_args);
   }
@@ -451,11 +451,11 @@ class MultideviceHandlerTest : public testing::Test {
   void SimulateAppsAccessStatusChanged(bool has_access_been_granted) {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
-    phonehub::MultideviceFeatureAccessManager::AccessStatus apps_access_status =
-        has_access_been_granted ? phonehub::MultideviceFeatureAccessManager::
-                                      AccessStatus::kAccessGranted
-                                : phonehub::MultideviceFeatureAccessManager::
-                                      AccessStatus::kAvailableButNotGranted;
+    ash::eche_app::AppsAccessManager::AccessStatus apps_access_status =
+        has_access_been_granted
+            ? ash::eche_app::AppsAccessManager::AccessStatus::kAccessGranted
+            : ash::eche_app::AppsAccessManager::AccessStatus::
+                  kAvailableButNotGranted;
     fake_apps_access_manager()->SetAccessStatusInternal(apps_access_status);
     expected_is_phone_hub_apps_access_granted_ = has_access_been_granted;
 

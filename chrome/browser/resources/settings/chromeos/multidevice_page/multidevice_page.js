@@ -487,6 +487,11 @@ Polymer({
   onInitialPageContentDataFetched_(newData) {
     this.onPageContentDataChanged_(newData);
 
+    if (this.pageContentData.notificationAccessStatus !==
+        settings.PhoneHubNotificationAccessStatus.AVAILABLE_BUT_NOT_GRANTED) {
+      return;
+    }
+
     // Show the notification access dialog if the url contains the correct
     // param.
     const urlParams = settings.Router.getInstance().getQueryParameters();

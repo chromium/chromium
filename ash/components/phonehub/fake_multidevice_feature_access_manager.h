@@ -39,15 +39,10 @@ class FakeMultideviceFeatureAccessManager
   void SetCameraRollAccessStatusInternal(
       AccessStatus camera_roll_access_status) override;
   AccessStatus GetCameraRollAccessStatus() const override;
-  AccessStatus GetAppsAccessStatus() const override;
-
-  // Test-only.
-  void SetAppsAccessStatusInternal(AccessStatus apps_access_status);
 
  private:
   AccessStatus notification_access_status_;
   AccessStatus camera_roll_access_status_;
-  AccessStatus apps_access_status_;
   AccessProhibitedReason access_prohibited_reason_;
   bool has_notification_setup_ui_been_dismissed_ = false;
 };

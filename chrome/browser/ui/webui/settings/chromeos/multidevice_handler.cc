@@ -494,11 +494,11 @@ void MultideviceHandler::HandleAttemptAppsSetup(const base::Value::List& args) {
   DCHECK(features::IsEchePhoneHubPermissionsOnboarding());
   DCHECK(!apps_access_operation_);
 
-  phonehub::MultideviceFeatureAccessManager::AccessStatus apps_access_status =
+  ash::eche_app::AppsAccessManager::AccessStatus apps_access_status =
       apps_access_manager_->GetAccessStatus();
 
-  if (apps_access_status != phonehub::MultideviceFeatureAccessManager::
-                                AccessStatus::kAvailableButNotGranted) {
+  if (apps_access_status !=
+      ash::eche_app::AppsAccessManager::AccessStatus::kAvailableButNotGranted) {
     PA_LOG(WARNING) << "Cannot request apps access setup flow; current "
                     << "status: " << apps_access_status;
     return;
@@ -640,14 +640,13 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
   page_content_dictionary->SetInteger(
       kCameraRollAccessStatus, static_cast<int32_t>(camera_roll_access_status));
 
-  phonehub::MultideviceFeatureAccessManager::AccessStatus apps_access_status =
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::
-          kAvailableButNotGranted;
+  ash::eche_app::AppsAccessManager::AccessStatus apps_access_status =
+      ash::eche_app::AppsAccessManager::AccessStatus::kAvailableButNotGranted;
   if (apps_access_manager_)
     apps_access_status = apps_access_manager_->GetAccessStatus();
   bool is_apps_access_granted =
       apps_access_status ==
-      phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted;
+      ash::eche_app::AppsAccessManager::AccessStatus::kAccessGranted;
 
   page_content_dictionary->SetBoolKey(kIsPhoneHubAppsAccessGranted,
                                       is_apps_access_granted);
