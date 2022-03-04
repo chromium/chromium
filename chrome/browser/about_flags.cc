@@ -2720,8 +2720,8 @@ const FeatureEntry::FeatureVariation kSnoopingProtectionVariations[] = {
     {"Comprehensive", kSnoopingProtectionRecall,
      base::size(kSnoopingProtectionRecall), nullptr}};
 
-const FeatureEntry::FeatureParam kQuickDim120s[] = {
-    {"QuickDim_quick_dim_ms", "120000"},
+const FeatureEntry::FeatureParam kQuickDim6s[] = {
+    {"QuickDim_quick_dim_ms", "6000"},
     {"QuickDim_filter_config_case", "2"},
     {"QuickDim_positive_count_threshold", "1"},
     {"QuickDim_negative_count_threshold", "2"},
@@ -2730,8 +2730,31 @@ const FeatureEntry::FeatureParam kQuickDim120s[] = {
     {"QuickDim_negative_score_threshold", "0"},
 };
 
-const FeatureEntry::FeatureParam kQuickDim45s[] = {
+const FeatureEntry::FeatureParam kQuickDim6sQuickLock66s[] = {
+    {"QuickDim_quick_dim_ms", "6000"},
+    {"QuickDim_quick_lock_ms", "66000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "2"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+};
+
+const FeatureEntry::FeatureParam kQuickDim6sQuickLock126s[] = {
+    {"QuickDim_quick_dim_ms", "6000"},
+    {"QuickDim_quick_lock_ms", "126000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "2"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+};
+
+const FeatureEntry::FeatureParam kQuickDim45sQuickLock105s[] = {
     {"QuickDim_quick_dim_ms", "45000"},
+    {"QuickDim_quick_lock_ms", "105000"},
     {"QuickDim_filter_config_case", "2"},
     {"QuickDim_positive_count_threshold", "1"},
     {"QuickDim_negative_count_threshold", "2"},
@@ -2740,51 +2763,9 @@ const FeatureEntry::FeatureParam kQuickDim45s[] = {
     {"QuickDim_negative_score_threshold", "0"},
 };
 
-const FeatureEntry::FeatureParam kQuickDim10s[] = {
-    {"QuickDim_quick_dim_ms", "10000"},
-    {"QuickDim_filter_config_case", "2"},
-    {"QuickDim_positive_count_threshold", "1"},
-    {"QuickDim_negative_count_threshold", "2"},
-    {"QuickDim_uncertain_count_threshold", "2"},
-    {"QuickDim_positive_score_threshold", "0"},
-    {"QuickDim_negative_score_threshold", "0"},
-};
-
-const FeatureEntry::FeatureParam kQuickDimInstantly[] = {
-    {"QuickDim_quick_dim_ms", "1000"},
-    {"QuickDim_filter_config_case", "2"},
-    {"QuickDim_positive_count_threshold", "1"},
-    {"QuickDim_negative_count_threshold", "1"},
-    {"QuickDim_uncertain_count_threshold", "2"},
-    {"QuickDim_positive_score_threshold", "0"},
-    {"QuickDim_negative_score_threshold", "0"},
-};
-
-const FeatureEntry::FeatureParam kQuickDim10sQuickLock40s[] = {
-    {"QuickDim_quick_dim_ms", "10000"},
-    {"QuickDim_quick_lock_ms", "40000"},
-    {"QuickDim_filter_config_case", "2"},
-    {"QuickDim_positive_count_threshold", "1"},
-    {"QuickDim_negative_count_threshold", "2"},
-    {"QuickDim_uncertain_count_threshold", "2"},
-    {"QuickDim_positive_score_threshold", "0"},
-    {"QuickDim_negative_score_threshold", "0"},
-};
-
-const FeatureEntry::FeatureParam kQuickDim10sQuickLock70s[] = {
-    {"QuickDim_quick_dim_ms", "10000"},
-    {"QuickDim_quick_lock_ms", "70000"},
-    {"QuickDim_filter_config_case", "2"},
-    {"QuickDim_positive_count_threshold", "1"},
-    {"QuickDim_negative_count_threshold", "2"},
-    {"QuickDim_uncertain_count_threshold", "2"},
-    {"QuickDim_positive_score_threshold", "0"},
-    {"QuickDim_negative_score_threshold", "0"},
-};
-
-const FeatureEntry::FeatureParam kQuickDim45sQuickLock135s[] = {
+const FeatureEntry::FeatureParam kQuickDim45sQuickLock165s[] = {
     {"QuickDim_quick_dim_ms", "45000"},
-    {"QuickDim_quick_lock_ms", "135000"},
+    {"QuickDim_quick_lock_ms", "165000"},
     {"QuickDim_filter_config_case", "2"},
     {"QuickDim_positive_count_threshold", "1"},
     {"QuickDim_negative_count_threshold", "2"},
@@ -2805,19 +2786,18 @@ const FeatureEntry::FeatureParam kQuickDim120sQuickLock240s[] = {
 };
 
 const FeatureEntry::FeatureVariation kQuickDimVariations[] = {
-    {"QuickDim120s", kQuickDim120s, base::size(kQuickDim120s), nullptr},
-    {"QuickDim45s", kQuickDim45s, base::size(kQuickDim45s), nullptr},
-    {"QuickDim10s", kQuickDim10s, base::size(kQuickDim10s), nullptr},
-    {"QuickDimInstantly", kQuickDimInstantly, base::size(kQuickDimInstantly),
-     nullptr},
-    {"kQuickDim10sQuickLock40s", kQuickDim10sQuickLock40s,
-     base::size(kQuickDim10sQuickLock40s), nullptr},
-    {"kQuickDim10sQuickLock70s", kQuickDim10sQuickLock70s,
-     base::size(kQuickDim10sQuickLock70s), nullptr},
-    {"kQuickDim45sQuickLock135s", kQuickDim45sQuickLock135s,
-     base::size(kQuickDim45sQuickLock135s), nullptr},
-    {"kQuickDim120sQuickLock240s", kQuickDim120sQuickLock240s,
-     base::size(kQuickDim120sQuickLock240s), nullptr}};
+    {"Dim6sLock66s", kQuickDim6sQuickLock66s,
+     base::size(kQuickDim6sQuickLock66s), nullptr},
+    {"Dim6sLock126s", kQuickDim6sQuickLock126s,
+     base::size(kQuickDim6sQuickLock126s), nullptr},
+    {"Dim45sLock105s", kQuickDim45sQuickLock105s,
+     base::size(kQuickDim45sQuickLock105s), nullptr},
+    {"Dim45sLock165s", kQuickDim45sQuickLock165s,
+     base::size(kQuickDim45sQuickLock165s), nullptr},
+    {"Dim120sLock240s", kQuickDim120sQuickLock240s,
+     base::size(kQuickDim120sQuickLock240s), nullptr},
+    {"Dim6sNoLock", kQuickDim6s, base::size(kQuickDim6s), nullptr},
+};
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
