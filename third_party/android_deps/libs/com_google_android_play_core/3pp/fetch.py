@@ -16,7 +16,7 @@ _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'com/google/android/play'
 _MODULE_NAME = 'core'
 _FILE_EXT = 'aar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '1.10.0'
 _PATCH_VERSION = 'cr1'
 
 

@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/squareup'
 _MODULE_NAME = 'javawriter'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '2.1.1'
 _PATCH_VERSION = 'cr1'
 
 

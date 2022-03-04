@@ -16,7 +16,7 @@ _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'android/arch/lifecycle'
 _MODULE_NAME = 'livedata'
 _FILE_EXT = 'aar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '1.1.1'
 _PATCH_VERSION = 'cr1'
 
 

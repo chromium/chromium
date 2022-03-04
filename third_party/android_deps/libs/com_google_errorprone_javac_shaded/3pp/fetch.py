@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/google/errorprone'
 _MODULE_NAME = 'javac-shaded'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '9-dev-r4023-3'
 _PATCH_VERSION = 'cr1'
 
 

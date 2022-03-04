@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'org/robolectric'
 _MODULE_NAME = 'junit'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '4.7.3'
 _PATCH_VERSION = 'cr1'
 
 

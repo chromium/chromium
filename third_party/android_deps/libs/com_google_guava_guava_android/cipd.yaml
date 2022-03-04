@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@31.0-android.cr0
+# cipd create --pkg-def cipd.yaml -tag version:2@31.0-android.cr1
 package: chromium/third_party/android_deps/libs/com_google_guava_guava_android
 description: "Guava: Google Core Libraries for Java"
 data:

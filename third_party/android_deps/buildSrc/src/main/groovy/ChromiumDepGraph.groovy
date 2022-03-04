@@ -723,7 +723,7 @@ class ChromiumDepGraph {
         // When set overrides the version downloaded by the 3pp fetch script to
         // be, instead of the latest available, the resolved version by gradle
         // in this run.
-        Boolean overrideLatest
+        Boolean overrideLatest = true
 
     }
 

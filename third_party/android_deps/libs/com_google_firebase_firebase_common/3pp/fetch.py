@@ -16,7 +16,7 @@ _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'com/google/firebase'
 _MODULE_NAME = 'firebase-common'
 _FILE_EXT = 'aar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '19.5.0'
 _PATCH_VERSION = 'cr1'
 
 

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.10.0.cr0
+# cipd create --pkg-def cipd.yaml -tag version:2@1.10.0.cr1
 package: chromium/third_party/android_deps/libs/com_google_android_play_core
 description: "core"
 data:

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@4.4.1.201607150455-r.cr0
+# cipd create --pkg-def cipd.yaml -tag version:2@4.4.1.201607150455-r.cr1
 package: chromium/third_party/android_deps/libs/org_eclipse_jgit_org_eclipse_jgit
 description: "JGit - Core"
 data:

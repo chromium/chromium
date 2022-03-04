@@ -16,7 +16,7 @@ _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'com/google/android/gms'
 _MODULE_NAME = 'play-services-fido'
 _FILE_EXT = 'aar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '19.0.0-beta'
 _PATCH_VERSION = 'cr1'
 
 

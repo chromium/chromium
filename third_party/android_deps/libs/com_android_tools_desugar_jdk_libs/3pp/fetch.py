@@ -16,7 +16,7 @@ _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'com/android/tools'
 _MODULE_NAME = 'desugar_jdk_libs'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '1.1.5'
 _PATCH_VERSION = 'cr1'
 
 

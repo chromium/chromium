@@ -16,7 +16,7 @@ _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'com/android/support'
 _MODULE_NAME = 'multidex'
 _FILE_EXT = 'aar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '1.0.0'
 _PATCH_VERSION = 'cr1'
 
 

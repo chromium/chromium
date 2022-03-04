@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/squareup'
 _MODULE_NAME = 'javapoet'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '1.13.0'
 _PATCH_VERSION = 'cr1'
 
 

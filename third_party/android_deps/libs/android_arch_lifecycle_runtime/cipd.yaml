@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.1.1.cr0
+# cipd create --pkg-def cipd.yaml -tag version:2@1.1.1.cr1
 package: chromium/third_party/android_deps/libs/android_arch_lifecycle_runtime
 description: "Android Lifecycle Runtime"
 data:
