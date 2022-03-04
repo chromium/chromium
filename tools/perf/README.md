@@ -125,13 +125,6 @@ to cloud storage, and finally send a CL to review with the new recordings.
 
 [wpr]: https://github.com/catapult-project/catapult/tree/master/web_page_replay_go
 
-## pinpoint_cli
-
-A command line interface to the [pinpoint][] service. Allows to create new jobs,
-check the status of jobs, and fetch their measurements as csv files.
-
-[pinpoint]: https://pinpoint-dot-chromeperf.appspot.com
-
 ## flakiness_cli
 
 A command line interface to the [flakiness dashboard][].
