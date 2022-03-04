@@ -47,6 +47,42 @@ if (is_android) {
   import("//build/util/generate_wrapper.gni")
 }
 
+template("mixed_test") {
+  assert(defined(invoker.target_type) && invoker.target_type != "")
+  target("mixed_${invoker.target_type}", target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [ "target_type" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    if (!defined(rs_configs)) {
+      rs_configs = []
+    }
+    rs_configs += [ "//build/rust:test" ]
+
+    # We could automatically add `rs_deps += [ "//testing/rust_gtest_interop" ]`
+    # if `rs_sources` is non-empty. But we don't automatically provide
+    # //testing/gtest either so it would be asymmetric and could break in that
+    # case. So, we act instead as if //testing/rust_gtest_interop is part of the
+    # //testing/gtest dependency. If you add one, and have `rs_sources` listed,
+    # you get both.
+    _gtest_is_in_deps = false
+    if (defined(rs_sources) && rs_sources != [] && defined(deps) &&
+        deps != []) {
+      foreach(dep, deps) {
+        if (dep == "//testing/gtest") {
+          _gtest_is_in_deps = true
+        }
+      }
+    }
+    if (_gtest_is_in_deps) {
+      if (!defined(rs_deps)) {
+        rs_deps = []
+      }
+      rs_deps += [ "//testing/rust_gtest_interop" ]
+    }
+  }
+}
+
 # Define a test as an executable (or apk on Android) with the "testonly" flag
 # set.
 # Variable:
@@ -126,7 +162,9 @@ template("test") {
       _exec_output =
           "$target_out_dir/${invoker.target_name}/${invoker.target_name}"
 
-      mixed_executable(_exec_target) {
+      mixed_test(_exec_target) {
+        target_type = "executable"
+
         # Configs will always be defined since we set_defaults in
         # BUILDCONFIG.gn.
         configs = []
@@ -145,8 +183,6 @@ template("test") {
           "//build/config/android:hide_all_but_jni",
         ]
         configs += [ "//build/config:executable_config" ]
-
-        rs_configs = [ "//build/rust:test" ]
 
         if (defined(invoker.data_deps)) {
           data_deps = invoker.data_deps
@@ -223,14 +259,17 @@ template("test") {
         }
       }
 
-      mixed_shared_library(_library_target) {
+      mixed_test(_library_target) {
+        target_type = "shared_library"
+
         # Configs will always be defined since we set_defaults in
         # BUILDCONFIG.gn.
         configs = []  # Prevent list overwriting warning.
         configs = invoker.configs
 
+        # Use a crate name that avoids creating a warning due to double
+        # underscore (ie. `__`).
         rs_crate_name = _library_crate_name
-        rs_configs = [ "//build/rust:test" ]
 
         forward_variables_from(
             invoker,
@@ -505,10 +544,10 @@ template("test") {
       }
     }
 
-    mixed_executable(_exec_target) {
+    mixed_test(_exec_target) {
+      target_type = "executable"
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       output_name = _exec_target
-      rs_configs = [ "//build/rust:test" ]
     }
   } else if (is_ios) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
@@ -659,10 +698,10 @@ template("test") {
       }
     }
 
-    mixed_executable(target_name) {
+    mixed_test(target_name) {
+      target_type = "executable"
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
-      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
@@ -757,10 +796,10 @@ template("test") {
       }
     }
 
-    mixed_executable(target_name) {
+    mixed_test(target_name) {
+      target_type = "executable"
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
-      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
@@ -835,12 +874,12 @@ template("test") {
       }
     }
 
-    mixed_executable(target_name) {
+    mixed_test(target_name) {
+      target_type = "executable"
       forward_variables_from(invoker,
                              "*",
                              TESTONLY_AND_VISIBILITY + [ "use_xvfb" ])
       forward_variables_from(invoker, [ "visibility" ])
-      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
@@ -869,10 +908,10 @@ template("test") {
     # will just define the underlying executables.
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb,
            "use_xvfb should not be defined for a non-linux configuration")
-    mixed_executable(target_name) {
+    mixed_test(target_name) {
+      target_type = "executable"
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
-      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
