@@ -57,12 +57,6 @@ export class SettingsTextareaElement extends PolymerElement {
         type: Number,
       },
 
-      /**
-       * Whether the text area is read only. If read-only, content cannot be
-       * changed.
-       */
-      readonly: Boolean,
-
       /** Number of rows (lines) of the text area. */
       rows: {
         type: Number,

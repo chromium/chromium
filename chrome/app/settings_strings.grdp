@@ -592,11 +592,8 @@
   <message name="IDS_SETTINGS_PASSWORD_COPY" desc="Label for a context menu item that allows to copy the selected password into clipboard.">
     Copy password
   </message>
-  <message name="IDS_SETTINGS_PASSWORD_SEND" desc="Label for a context menu item that allows to send the selected password.">
+    <message name="IDS_SETTINGS_PASSWORD_SEND" desc="Label for a context menu item that allows to send the selected password.">
     Send password
-  </message>
-  <message name="IDS_SETTINGS_USERNAME_COPY" desc="Label for the button when copying a username in the password edit dialog.">
-    Copy username
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_WEBSITE" desc="Label for the website a password is for when editing a password.">
     Site
