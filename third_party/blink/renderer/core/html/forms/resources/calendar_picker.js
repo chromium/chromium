@@ -2488,101 +2488,99 @@ function dateRangeManagerMixin(baseClass) {
   return DateRangeManager;
 }
 
-/**
- * @constructor
- * @extends ListCell
- * @param {!Array} shortMonthLabels
- */
-function YearListCell(shortMonthLabels) {
-  ListCell.call(this);
-  this.element.classList.add(YearListCell.ClassNameYearListCell);
-  this.element.style.height = YearListCell.GetHeight() + 'px';
+// ----------------------------------------------------------------
 
+class YearListCell extends ListCell {
   /**
-   * @type {!Element}
-   * @const
+   * @param {!Array} shortMonthLabels
    */
-  this.label = createElement('div', YearListCell.ClassNameLabel, '----');
-  this.element.appendChild(this.label);
-  this.label.style.height =
-      (YearListCell.GetHeight() - YearListCell.BorderBottomWidth) + 'px';
-  this.label.style.lineHeight =
-      (YearListCell.GetHeight() - YearListCell.BorderBottomWidth) + 'px';
+  constructor(shortMonthLabels) {
+    super();
+    this.element.classList.add(YearListCell.ClassNameYearListCell);
+    this.element.style.height = YearListCell.GetHeight() + 'px';
 
-  /**
-   * @type {!Array} Array of the 12 month button elements.
-   * @const
-   */
-  this.monthButtons = [];
-  var monthChooserElement =
-      createElement('div', YearListCell.ClassNameMonthChooser);
-  for (var r = 0; r < YearListCell.ButtonRows; ++r) {
-    var buttonsRow =
-        createElement('div', YearListCell.ClassNameMonthButtonsRow);
-    buttonsRow.setAttribute('role', 'row');
-    for (var c = 0; c < YearListCell.ButtonColumns; ++c) {
-      var month = c + r * YearListCell.ButtonColumns;
-      var button = createElement(
-          'div', YearListCell.ClassNameMonthButton, shortMonthLabels[month]);
-      button.setAttribute('role', 'gridcell');
-      button.dataset.month = month;
-      buttonsRow.appendChild(button);
-      this.monthButtons.push(button);
+    /**
+     * @type {!Element}
+     * @const
+     */
+    this.label = createElement('div', YearListCell.ClassNameLabel, '----');
+    this.element.appendChild(this.label);
+    this.label.style.height =
+        (YearListCell.GetHeight() - YearListCell.BorderBottomWidth) + 'px';
+    this.label.style.lineHeight =
+        (YearListCell.GetHeight() - YearListCell.BorderBottomWidth) + 'px';
+
+    /**
+     * @type {!Array} Array of the 12 month button elements.
+     * @const
+     */
+    this.monthButtons = [];
+    var monthChooserElement =
+        createElement('div', YearListCell.ClassNameMonthChooser);
+    for (var r = 0; r < YearListCell.ButtonRows; ++r) {
+      var buttonsRow =
+          createElement('div', YearListCell.ClassNameMonthButtonsRow);
+      buttonsRow.setAttribute('role', 'row');
+      for (var c = 0; c < YearListCell.ButtonColumns; ++c) {
+        var month = c + r * YearListCell.ButtonColumns;
+        var button = createElement(
+            'div', YearListCell.ClassNameMonthButton, shortMonthLabels[month]);
+        button.setAttribute('role', 'gridcell');
+        button.dataset.month = month;
+        buttonsRow.appendChild(button);
+        this.monthButtons.push(button);
+      }
+      monthChooserElement.appendChild(buttonsRow);
     }
-    monthChooserElement.appendChild(buttonsRow);
+    this.element.appendChild(monthChooserElement);
+
+    /**
+     * @type {!boolean}
+     * @private
+     */
+    this._selected = false;
+    /**
+     * @type {!number}
+     * @private
+     */
+    this._height = 0;
   }
-  this.element.appendChild(monthChooserElement);
 
-  /**
-   * @type {!boolean}
-   * @private
-   */
-  this._selected = false;
-  /**
-   * @type {!number}
-   * @private
-   */
-  this._height = 0;
-}
-
-{
-  YearListCell.prototype = Object.create(ListCell.prototype);
-
-  YearListCell._Height = hasInaccuratePointingDevice() ? 31 : 25;
-  YearListCell._Height = 25;
-  YearListCell.GetHeight = function() {
+  static _Height = hasInaccuratePointingDevice() ? 31 : 25;
+  static _Height = 25;
+  static GetHeight() {
     return YearListCell._Height;
-  };
-  YearListCell.BorderBottomWidth = 1;
-  YearListCell.ButtonRows = 3;
-  YearListCell.ButtonColumns = 4;
-  YearListCell._SelectedHeight = 128;
-  YearListCell.GetSelectedHeight = function() {
+  }
+  static BorderBottomWidth = 1;
+  static ButtonRows = 3;
+  static ButtonColumns = 4;
+  static _SelectedHeight = 128;
+  static GetSelectedHeight() {
     return YearListCell._SelectedHeight;
-  };
-  YearListCell.ClassNameYearListCell = 'year-list-cell';
-  YearListCell.ClassNameLabel = 'label';
-  YearListCell.ClassNameMonthChooser = 'month-chooser';
-  YearListCell.ClassNameMonthButtonsRow = 'month-buttons-row';
-  YearListCell.ClassNameMonthButton = 'month-button';
-  YearListCell.ClassNameHighlighted = 'highlighted';
-  YearListCell.ClassNameSelected = 'selected';
-  YearListCell.ClassNameToday = 'today';
+  }
+  static ClassNameYearListCell = 'year-list-cell';
+  static ClassNameLabel = 'label';
+  static ClassNameMonthChooser = 'month-chooser';
+  static ClassNameMonthButtonsRow = 'month-buttons-row';
+  static ClassNameMonthButton = 'month-button';
+  static ClassNameHighlighted = 'highlighted';
+  static ClassNameSelected = 'selected';
+  static ClassNameToday = 'today';
 
-  YearListCell._recycleBin = [];
+  static _recycleBin = [];
 
   /**
    * @return {!Array}
    * @override
    */
-  YearListCell.prototype._recycleBin = function() {
+  _recycleBin() {
     return YearListCell._recycleBin;
-  };
+  }
 
   /**
    * @param {!number} row
    */
-  YearListCell.prototype.reset = function(row) {
+  reset(row) {
     this.row = row;
     this.label.textContent = row + 1;
     for (var i = 0; i < this.monthButtons.length; ++i) {
@@ -2591,25 +2589,27 @@ function YearListCell(shortMonthLabels) {
       this.monthButtons[i].classList.remove(YearListCell.ClassNameToday);
     }
     this.show();
-  };
+  }
 
   /**
    * @return {!number} The height in pixels.
    */
-  YearListCell.prototype.height = function() {
+  height() {
     return this._height;
-  };
+  }
 
   /**
    * @param {!number} height Height in pixels.
    */
-  YearListCell.prototype.setHeight = function(height) {
+  setHeight(height) {
     if (this._height === height)
       return;
     this._height = height;
     this.element.style.height = this._height + 'px';
-  };
+  }
 }
+
+// ----------------------------------------------------------------
 
 // clang-format off
 class YearListView extends dateRangeManagerMixin(ListView) {
@@ -3665,68 +3665,64 @@ function CalendarHeaderView(calendarPicker) {
   };
 }
 
-/**
- * @constructor
- * @extends ListCell
- */
-function DayCell() {
-  ListCell.call(this);
-  this.element.classList.add(DayCell.ClassNameDayCell);
-  this.element.style.width = DayCell.GetWidth() + 'px';
-  this.element.style.height = DayCell.GetHeight() + 'px';
-  this.element.style.lineHeight =
-      (DayCell.GetHeight() - DayCell.PaddingSize * 2) + 'px';
-  this.element.setAttribute('role', 'gridcell');
-  /**
-   * @type {?Day}
-   */
-  this.day = null;
-};
+// ----------------------------------------------------------------
 
-{
-  DayCell.prototype = Object.create(ListCell.prototype);
+class DayCell extends ListCell {
+  constructor() {
+    super();
+    this.element.classList.add(DayCell.ClassNameDayCell);
+    this.element.style.width = DayCell.GetWidth() + 'px';
+    this.element.style.height = DayCell.GetHeight() + 'px';
+    this.element.style.lineHeight =
+        (DayCell.GetHeight() - DayCell.PaddingSize * 2) + 'px';
+    this.element.setAttribute('role', 'gridcell');
+    /**
+     * @type {?Day}
+     */
+    this.day = null;
+  }
 
-  DayCell._Width = 28;
-  DayCell.GetWidth = function() {
+  static _Width = 28;
+  static GetWidth() {
     return DayCell._Width;
-  };
-  DayCell._Height = 28;
-  DayCell.GetHeight = function() {
+  }
+  static _Height = 28;
+  static GetHeight() {
     return DayCell._Height;
-  };
-  DayCell.PaddingSize = 1;
-  DayCell.ClassNameDayCell = 'day-cell';
-  DayCell.ClassNameHighlighted = 'highlighted';
-  DayCell.ClassNameDisabled = 'disabled';
-  DayCell.ClassNameCurrentMonth = 'current-month';
-  DayCell.ClassNameToday = 'today';
+  }
+  static PaddingSize = 1;
+  static ClassNameDayCell = 'day-cell';
+  static ClassNameHighlighted = 'highlighted';
+  static ClassNameDisabled = 'disabled';
+  static ClassNameCurrentMonth = 'current-month';
+  static ClassNameToday = 'today';
 
-  DayCell._recycleBin = [];
+  static _recycleBin = [];
 
-  DayCell.recycleOrCreate = function() {
+  static recycleOrCreate() {
     return DayCell._recycleBin.pop() || new DayCell();
-  };
+  }
 
   /**
    * @return {!Array}
    * @override
    */
-  DayCell.prototype._recycleBin = function() {
+  _recycleBin() {
     return DayCell._recycleBin;
-  };
+  }
 
   /**
    * @override
    */
-  DayCell.prototype.throwAway = function() {
-    ListCell.prototype.throwAway.call(this);
+  throwAway() {
+    super.throwAway();
     this.day = null;
-  };
+  }
 
   /**
    * @param {!boolean} highlighted
    */
-  DayCell.prototype.setHighlighted = function(highlighted) {
+  setHighlighted(highlighted) {
     if (highlighted) {
       this.element.classList.add(DayCell.ClassNameHighlighted);
       this.element.setAttribute('aria-selected', 'true');
@@ -3734,48 +3730,48 @@ function DayCell() {
       this.element.classList.remove(DayCell.ClassNameHighlighted);
       this.element.setAttribute('aria-selected', 'false');
     }
-  };
+  }
 
   /**
    * @param {!boolean} disabled
    */
-  DayCell.prototype.setDisabled = function(disabled) {
+  setDisabled(disabled) {
     if (disabled)
       this.element.classList.add(DayCell.ClassNameDisabled);
     else
       this.element.classList.remove(DayCell.ClassNameDisabled);
-  };
+  }
 
   /**
    * @param {!boolean} selected
    */
-  DayCell.prototype.setIsInCurrentMonth = function(selected) {
+  setIsInCurrentMonth(selected) {
     if (selected)
       this.element.classList.add(DayCell.ClassNameCurrentMonth);
     else
       this.element.classList.remove(DayCell.ClassNameCurrentMonth);
-  };
+  }
 
   /**
    * @param {!boolean} selected
    */
-  DayCell.prototype.setIsToday = function(selected) {
+  setIsToday(selected) {
     if (selected)
       this.element.classList.add(DayCell.ClassNameToday);
     else
       this.element.classList.remove(DayCell.ClassNameToday);
-  };
+  }
 
   /**
    * @param {!Day} day
    */
-  DayCell.prototype.reset = function(day) {
+  reset(day) {
     this.day = day;
     this.element.textContent = localizeNumber(this.day.date.toString());
     this.element.setAttribute('aria-label', this.day.format());
     this.element.id = this.day.toString();
     this.show();
-  };
+  }
 }
 
 // ----------------------------------------------------------------
@@ -5023,6 +5019,7 @@ if (window.dialogArguments) {
 // Necessary for some web tests.
 window.CalendarPicker = CalendarPicker;
 window.Day = Day;
+window.DayCell = DayCell;
 window.Month = Month;
 window.Week = Week;
 window.WeekNumberCell = WeekNumberCell;
