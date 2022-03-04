@@ -298,6 +298,40 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceWithPrefDisabledBrowserTest,
   EXPECT_FALSE(drive_service->is_enabled());
 }
 
+IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
+                       EnableMirrorSync_FeatureDisabled) {
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+
+  {
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    drive_service->ToggleMirroring(
+        /*enabled=*/true,
+        base::BindLambdaForTesting(
+            [quit_closure](drivefs::mojom::MirrorSyncStatus status) {
+              EXPECT_EQ(drivefs::mojom::MirrorSyncStatus::kFeatureNotEnabled,
+                        status);
+              quit_closure.Run();
+            }));
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    drive_service->ToggleMirroring(
+        /*enabled=*/false,
+        base::BindLambdaForTesting(
+            [quit_closure](drivefs::mojom::MirrorSyncStatus status) {
+              EXPECT_EQ(drivefs::mojom::MirrorSyncStatus::kFeatureNotEnabled,
+                        status);
+              quit_closure.Run();
+            }));
+    run_loop.Run();
+  }
+}
+
 class DriveMirrorSyncStatusObserver : public DriveIntegrationServiceObserver {
  public:
   explicit DriveMirrorSyncStatusObserver(bool expected_status)

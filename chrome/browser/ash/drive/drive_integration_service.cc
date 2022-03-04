@@ -1304,8 +1304,13 @@ void DriveIntegrationService::GetThumbnail(const base::FilePath& path,
 void DriveIntegrationService::ToggleMirroring(
     bool enabled,
     drivefs::mojom::DriveFs::ToggleMirroringCallback callback) {
-  if (chromeos::features::IsDriveFsMirroringEnabled() &&
-      GetDriveFsInterface()) {
+  if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+    std::move(callback).Run(
+        drivefs::mojom::MirrorSyncStatus::kFeatureNotEnabled);
+    return;
+  }
+
+  if (GetDriveFsInterface()) {
     GetDriveFsInterface()->ToggleMirroring(enabled, std::move(callback));
   }
 }
