@@ -1335,6 +1335,13 @@
         {}
        ]
       ],
+      "chrome-bug-1301281.html": [
+       "0c34e0889020d28cbf45254b2b853453de0f4cac",
+       [
+        null,
+        {}
+       ]
+      ],
       "multicol-block-in-inline-crash.html": [
        "037b558ac0be08da6dfa6868b06e7a03e44031de",
        [
@@ -1386,6 +1393,13 @@
       ],
       "nested-multicol-and-float-with-tall-padding.html": [
        "8eabef27f42df0178c01054bfa5644ce8cb52434",
+       [
+        null,
+        {}
+       ]
+      ],
+      "nested-oof-multicol-with-oof-needing-additional-columns.html": [
+       "52c44ff9e0ad0b7aedd5e51e7b6fad3d5075297a",
        [
         null,
         {}
@@ -2256,6 +2270,13 @@
      }
     },
     "css-ui": {
+     "neg-outline-offset-border-radius-crash.html": [
+      "eed5702e6229701dd5f6dd2ed6922459bf9cddc8",
+      [
+       null,
+       {}
+      ]
+     ],
      "outline-with-001-crash.html": [
       "d46ba8080c3ce4fddc55698e598707384ba810b1",
       [
@@ -83020,6 +83041,19 @@
        {}
       ]
      ],
+     "out-of-flow-in-multicolumn-082.html": [
+      "64080738706a77085d2a40fd63a1a476dc2caa5f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-clip-000.html": [
       "72b10f5cdd3092a042f1f90bff04e9428d61608e",
       [
@@ -84697,6 +84731,19 @@
        [
         [
          "/css/css-color/border-color-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "canvas-change-opacity.html": [
+      "1c1ea718bfd49dc70b32d22f3411145cf33237ae",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
          "=="
         ]
        ],
@@ -144685,6 +144732,32 @@
         ],
         [
          "/css/css-pseudo/highlight-painting-004-ref3.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "highlight-painting-currentcolor-001.html": [
+      "da79d2d0ffa5f66c816960d7b02d0a4f2316066f",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/highlight-painting-currentcolor-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "highlight-painting-currentcolor-002.html": [
+      "b3a27b72eda9f5e2546ff64bffd3cb0dc72d0fbc",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/highlight-painting-currentcolor-002-ref.html",
          "=="
         ]
        ],
@@ -235767,7 +235840,7 @@
       []
      ],
      "client_metadata.json": [
-      "0967ef424bce6791893e9a57bb952f80fd536e93",
+      "a20b90953f80e1a55ef1ae787600b603dec9b620",
       []
      ],
      "echoing-nester.html": [
@@ -264468,6 +264541,14 @@
      ],
      "highlight-painting-004-ref3.html": [
       "732f6bfe0dbfe2be32bfa225e53c1da84fa8a98b",
+      []
+     ],
+     "highlight-painting-currentcolor-001-ref.html": [
+      "979e54a0459cb281bcd619935e100efb01de095a",
+      []
+     ],
+     "highlight-painting-currentcolor-002-ref.html": [
+      "8a61e9cbc40d1ae7fca80ac1811c619e1a8d8a1c",
       []
      ],
      "highlight-paired-cascade-001-ref.html": [
@@ -360248,7 +360329,7 @@
      ]
     ],
     "fedcm-network-requests.sub.https.html": [
-     "09841893ae385f4c04e864db8f1a1d4fa0987d3e",
+     "ec58a11f5af1fce7bf44e9649f8614a2c32dcdee",
      [
       null,
       {}
@@ -360262,7 +360343,7 @@
      ]
     ],
     "fedcm.https.html": [
-     "9b21187a399eeaf6fb7b803881f277e7bb965c9c",
+     "688212e2ed2a306a0d588de197d94b46520c4a4c",
      [
       null,
       {}
@@ -425124,6 +425205,13 @@
       },
       "overlapping-navigations-and-traversals": {
        "tentative": {
+        "anchor-fragment-history-back-on-click.html": [
+         "fe59f17fa7fc83315f7e550e9ab34151741b7f8b",
+         [
+          null,
+          {}
+         ]
+        ],
         "cross-document-nav-cross-document-nav.html": [
          "99d9a8fbb19996e5f3afe074871783c86433d252",
          [
