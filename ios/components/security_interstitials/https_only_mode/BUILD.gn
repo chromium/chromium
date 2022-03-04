@@ -1,0 +1,22 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("https_only_mode") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "https_only_mode_blocking_page.h",
+    "https_only_mode_blocking_page.mm",
+    "https_only_mode_container.h",
+    "https_only_mode_container.mm",
+    "https_only_mode_controller_client.h",
+    "https_only_mode_controller_client.mm",
+    "https_only_mode_error.h",
+    "https_only_mode_error.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/security_interstitials/core",
+    "//ios/components/security_interstitials",
+  ]
+}

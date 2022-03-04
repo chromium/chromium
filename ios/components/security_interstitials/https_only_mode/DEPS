@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/security_interstitials/core",
+  "+components/url_formatter",
+]
