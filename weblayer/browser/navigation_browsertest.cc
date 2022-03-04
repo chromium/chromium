@@ -218,7 +218,14 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, HttpConnectivityError) {
   EXPECT_EQ(observer.navigation_state(), NavigationState::kFailed);
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Download) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// https://crbug.com/1296643
+#define MAYBE_Download DISABLED_Download
+#else
+#define MAYBE_Download Download
+#endif
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, MAYBE_Download) {
   EXPECT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/content-disposition.html"));
 

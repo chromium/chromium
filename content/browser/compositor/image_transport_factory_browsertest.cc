@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -63,6 +64,12 @@ IN_PROC_BROWSER_TEST_F(ImageTransportFactoryBrowserTest,
   run_loop.Run();
 
   context_provider->RemoveObserver(&observer);
+
+  // Close the channel to the GPU process. This is needed because the GPU
+  // channel is down by the time that the network service is flushed, but
+  // flushing the network service tries to bring it back up again and there are
+  // pending requests causing a DCHECK to hit.
+  BrowserGpuChannelHostFactory::instance()->CloseChannel();
 }
 
 }  // anonymous namespace
