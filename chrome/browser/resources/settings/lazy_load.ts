@@ -83,7 +83,7 @@ export {SettingsPasswordCheckElement} from './autofill_page/password_check.js';
 export {SettingsPasswordCheckEditDialogElement} from './autofill_page/password_check_edit_dialog.js';
 export {SettingsPasswordEditDisclaimerDialogElement} from './autofill_page/password_check_edit_disclaimer_dialog.js';
 export {PasswordCheckListItemElement} from './autofill_page/password_check_list_item.js';
-export {PasswordEditDialogElement} from './autofill_page/password_edit_dialog.js';
+export {PasswordDialogMode, PasswordEditDialogElement} from './autofill_page/password_edit_dialog.js';
 export {PasswordListItemElement} from './autofill_page/password_list_item.js';
 export {PasswordMoveMultiplePasswordsToAccountDialogElement} from './autofill_page/password_move_multiple_passwords_to_account_dialog.js';
 export {PasswordMoveToAccountDialogElement} from './autofill_page/password_move_to_account_dialog.js';
