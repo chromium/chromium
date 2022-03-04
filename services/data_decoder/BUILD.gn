@@ -31,7 +31,6 @@ source_set("lib") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//components/cbor",
     "//components/web_package",
     "//mojo/public/cpp/bindings",
     "//net",
