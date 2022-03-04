@@ -91,6 +91,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   base::Value GetNewShillProperties();
   const std::string& GetCurrentSmdpAddress() const;
   std::string GetCurrentPolicyGuid() const;
+  void OnRefreshProfileList(
+      const dbus::ObjectPath& euicc_path,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnConfigureESimService(absl::optional<dbus::ObjectPath> service_path);
   void OnESimProfileInstallAttemptComplete(
       HermesResponseStatus hermes_status,
@@ -109,6 +112,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       nullptr;
 
   bool is_installing_ = false;
+  bool need_refresh_profile_list_ = true;
   base::circular_deque<std::unique_ptr<InstallPolicyESimRequest>>
       remaining_install_requests_;
 

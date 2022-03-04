@@ -1054,6 +1054,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
             "policy/policy_allow_only_policy_cellular_networks.onc");
   SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
             "policy/policy_cellular.onc");
+  FastForwardProfileRefreshDelay();
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.

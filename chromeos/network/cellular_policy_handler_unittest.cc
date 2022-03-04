@@ -285,6 +285,8 @@ TEST_F(CellularPolicyHandlerTest, InstallWaitForEuicc) {
                     /*expect_install_success=*/false);
   CheckShillConfiguration(/*is_installed=*/false);
   SetupEuicc();
+  FastForwardProfileRefreshDelay();
+  base::RunLoop().RunUntilIdle();
   CheckShillConfiguration(/*is_installed=*/true);
 }
 
