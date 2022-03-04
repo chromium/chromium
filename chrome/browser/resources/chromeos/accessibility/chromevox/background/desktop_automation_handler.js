@@ -6,6 +6,7 @@
  * @fileoverview Handles automation from a desktop automation node.
  */
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
+import {TextEditHandler} from './editing/editing.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -23,7 +24,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
     /**
      * The object that speaks changes to an editable text field.
-     * @type {editing.TextEditHandler}
+     * @type {TextEditHandler}
      * @private
      */
     this.textEditHandler_ = null;
@@ -121,7 +122,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }.bind(this));
   }
 
-  /** @type {editing.TextEditHandler} */
+  /** @type {TextEditHandler} */
   get textEditHandler() {
     return this.textEditHandler_;
   }
@@ -785,7 +786,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     if (!this.textEditHandler_ || this.textEditHandler_.node !== target) {
-      this.textEditHandler_ = editing.TextEditHandler.createForNode(target);
+      this.textEditHandler_ = TextEditHandler.createForNode(target);
     }
 
     return !!this.textEditHandler_;

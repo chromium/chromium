@@ -7,23 +7,6 @@
  * appropriate spoken and braille feedback.
  */
 
-goog.provide('editing.TextEditHandler');
-
-goog.require('AutomationTreeWalker');
-goog.require('AutomationUtil');
-goog.require('Color');
-goog.require('IntentHandler');
-goog.require('Output');
-goog.require('OutputEventType');
-goog.require('TreePathRecoveryStrategy');
-goog.require('cursors.Cursor');
-goog.require('cursors.Range');
-goog.require('editing.EditableLine');
-goog.require('BrailleBackground');
-goog.require('ChromeVoxEditableTextBase');
-goog.require('LibLouis.FormType');
-
-goog.scope(function() {
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationIntent = chrome.automation.AutomationIntent;
 const AutomationNode = chrome.automation.AutomationNode;
@@ -41,7 +24,7 @@ const Unit = cursors.Unit;
  * A handler for automation events in a focused text field or editable root
  * such as a |contenteditable| subtree.
  */
-editing.TextEditHandler = class {
+export class TextEditHandler {
   /**
    * @param {!AutomationNode} node
    */
@@ -165,16 +148,16 @@ editing.TextEditHandler = class {
   /**
    * @param {!AutomationNode} node The root editable node, i.e. the root of a
    *     contenteditable subtree or a text field.
-   * @return {editing.TextEditHandler}
+   * @return {TextEditHandler}
    */
   static createForNode(node) {
     if (!node.state.editable) {
       throw new Error('Expected editable node.');
     }
 
-    return new editing.TextEditHandler(node);
+    return new TextEditHandler(node);
   }
-};
+}
 
 
 /**
@@ -976,7 +959,11 @@ editing.EditingChromeVoxStateObserver = class {
     ChromeVoxState.addObserver(this);
   }
 
-  /** @override */
+  /**
+   * @param {cursors.Range} range
+   * @param {boolean=} opt_fromEditing
+   * @override
+   */
   onCurrentRangeChanged(range, opt_fromEditing) {
     const inputType = range && range.start.node.inputType;
     if (inputType === 'email' || inputType === 'url') {
@@ -994,4 +981,3 @@ editing.EditingChromeVoxStateObserver = class {
  * @private {ChromeVoxStateObserver}
  */
 editing.observer_ = new editing.EditingChromeVoxStateObserver();
-});  // goog.scope

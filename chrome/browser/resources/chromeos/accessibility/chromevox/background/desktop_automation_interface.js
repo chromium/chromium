@@ -5,9 +5,10 @@
 /**
  * @fileoverview Interface to prevent circular dependencies.
  */
+import {TextEditHandler} from './editing/editing.js';
 
 export class DesktopAutomationInterface extends BaseAutomationHandler {
-  /** @type {editing.TextEditHandler} */
+  /** @type {TextEditHandler} */
   get textEditHandler() {}
 
   /**

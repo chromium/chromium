@@ -21,6 +21,9 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');
+    await importModule(
+        'TextEditHandler', '/chromevox/background/editing/editing.js');
+    await super.setUpDeferred();
   }
 
   press(keyCode, modifiers) {
@@ -1935,7 +1938,7 @@ TEST_F(
         let didThrow = false;
         let handler;
         try {
-          handler = editing.TextEditHandler(input);
+          handler = new TextEditHandler(input);
         } catch (e) {
           didThrow = true;
         }
@@ -1945,7 +1948,7 @@ TEST_F(
         htmlAttributes = {};
         htmlTag = '';
         state = {editable: true};
-        handler = new editing.TextEditHandler(input);
+        handler = new TextEditHandler(input);
         assertEquals(
             'AutomationEditableText', handler.editableText_.constructor.name,
             'Incorrect backing object for simple editable.');
@@ -1954,7 +1957,7 @@ TEST_F(
         htmlAttributes = {};
         htmlTag = '';
         state = {editable: true, multiline: true};
-        handler = new editing.TextEditHandler(input);
+        handler = new TextEditHandler(input);
         assertEquals(
             'AutomationEditableText', handler.editableText_.constructor.name,
             'Incorrect object for multiline editable.');
@@ -1963,7 +1966,7 @@ TEST_F(
         htmlAttributes = {};
         htmlTag = 'textarea';
         state = {editable: true};
-        handler = new editing.TextEditHandler(input);
+        handler = new TextEditHandler(input);
         assertEquals(
             'AutomationRichEditableText',
             handler.editableText_.constructor.name,
@@ -1973,7 +1976,7 @@ TEST_F(
         htmlAttributes = {};
         htmlTag = '';
         state = {editable: true, richlyEditable: true};
-        handler = new editing.TextEditHandler(input);
+        handler = new TextEditHandler(input);
         assertEquals(
             'AutomationRichEditableText',
             handler.editableText_.constructor.name,
@@ -1983,7 +1986,7 @@ TEST_F(
         htmlAttributes = {contenteditable: ''};
         htmlTag = '';
         state = {editable: true};
-        handler = new editing.TextEditHandler(input);
+        handler = new TextEditHandler(input);
         assertEquals(
             'AutomationRichEditableText',
             handler.editableText_.constructor.name,
@@ -1994,7 +1997,7 @@ TEST_F(
         htmlAttributes = {contenteditable: 'true'};
         htmlTag = '';
         state = {editable: true};
-        handler = new editing.TextEditHandler(input);
+        handler = new TextEditHandler(input);
         assertEquals(
             'AutomationRichEditableText',
             handler.editableText_.constructor.name,
