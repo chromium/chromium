@@ -52,6 +52,10 @@ PhysicalSize StyleAspectRatio::LayoutRatioFromSizeF(gfx::SizeF ratio) {
     x = 1 / (x - a);
   }
 
+  // Don't return an invalid ratio - instead just return the truncated ratio.
+  if (h1 == 0 || k1 == 0)
+    return {width, height};
+
   return {LayoutUnit::FromRawValue(h1.RawValue()),
           LayoutUnit::FromRawValue(k1.RawValue())};
 }
