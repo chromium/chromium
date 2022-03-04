@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -285,6 +286,8 @@ void Event::InitEventPath(Node& node) {
 }
 
 ScriptValue Event::path(ScriptState* script_state) const {
+  Deprecation::CountDeprecation(ExecutionContext::From(script_state),
+                                WebFeature::kEventPath);
   return ScriptValue(
       script_state->GetIsolate(),
       ToV8(PathInternal(script_state, kNonEmptyAfterDispatch), script_state));

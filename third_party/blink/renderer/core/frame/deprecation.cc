@@ -67,6 +67,9 @@ enum Milestone {
   kM104 = 104,
   kM105 = 105,
   kM106 = 106,
+  kM107 = 107,
+  kM108 = 108,
+  kM109 = 109,
 };
 
 // Returns estimated milestone dates as milliseconds since January 1, 1970.
@@ -157,6 +160,12 @@ base::Time::Exploded MilestoneDate(Milestone milestone) {
       return {2022, 8, 0, 30, 4};
     case kM106:
       return {2022, 9, 0, 27, 4};
+    case kM107:
+      return {2022, 10, 0, 25, 4};
+    case kM108:
+      return {2022, 11, 0, 29, 4};
+    case kM109:
+      return {2023, 1, 0, 10, 4};
   }
 
   NOTREACHED();
@@ -739,6 +748,11 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
               "Cookies containing a '\\0', '\\r', or '\\n' character will be "
               "rejected instead of truncated in %s.",
               MilestoneString(kM106).Ascii().c_str()));
+
+    case WebFeature::kEventPath:
+      return DeprecationInfo::WithFeatureAndReplacementAndChromeStatusID(
+          "WebFeature::kEventPath", kM109, "'Event.path'",
+          "'Event.composedPath()'", "5726124632965120");
 
     // Features that aren't deprecated don't have a deprecation message.
     default:
