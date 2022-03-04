@@ -197,6 +197,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadShelfButtonText] =
       ui::PickGoogleColor(ui::kColorAccent, kColorDownloadShelf,
                           color_utils::kMinimumReadableContrastRatio);
+  mixer[kColorDownloadShelfContentAreaSeparator] =
+      ui::AlphaBlend(kColorToolbarButtonIcon, kColorDownloadShelf, 0x3A);
   mixer[kColorDownloadToolbarButtonActive] = {ui::kColorThrobber};
   mixer[kColorDownloadToolbarButtonInactive] = {ui::kColorMidground};
   mixer[kColorDownloadToolbarButtonRingBackground] = {
@@ -212,6 +214,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                                           : gfx::kGoogleGrey700};
 #endif
   mixer[kColorInfoBarBackground] = {kColorToolbar};
+  mixer[kColorInfoBarContentAreaSeparator] =
+      ui::AlphaBlend(kColorToolbarButtonIcon, kColorInfoBarBackground, 0x3A);
   mixer[kColorInfoBarForeground] = {kColorToolbarText};
   mixer[kColorLocationBarBorder] = {SkColorSetA(SK_ColorBLACK, 0x4D)};
   mixer[kColorNewTabPageBackground] = {kColorToolbar};
@@ -232,6 +236,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxText] =
       ui::GetColorWithMaxContrast(kColorOmniboxBackground);
   mixer[kColorReadLaterButtonHighlight] = {kColorAvatarButtonHighlightNormal};
+  mixer[kColorSidePanelContentAreaSeparator] = {
+      kColorToolbarContentAreaSeparator};
   mixer[kColorStatusBubbleBackgroundFrameActive] = {
       kColorTabBackgroundInactiveFrameActive};
   mixer[kColorStatusBubbleBackgroundFrameInactive] = {
@@ -360,7 +366,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   // gfx::kGoogleGrey900, if needed.
   mixer[kColorToolbarButtonText] = ui::GetColorWithMaxContrast(kColorToolbar);
   mixer[kColorToolbarContentAreaSeparator] =
-      ui::SetAlpha(kColorToolbarButtonIcon, 0x3A);
+      ui::AlphaBlend(kColorToolbarButtonIcon, kColorToolbar, 0x3A);
   mixer[kColorToolbarFeaturePromoHighlight] = AdjustHighlightColorForContrast(
       kColorToolbarButtonBackground, gfx::kGoogleBlue600, gfx::kGoogleGrey100,
       gfx::kGoogleBlue900, SK_ColorWHITE);

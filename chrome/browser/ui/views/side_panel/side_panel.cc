@@ -98,12 +98,9 @@ class SidePanelBorder : public views::Border {
     const float stroke_thickness = views::Separator::kThickness * dsf;
 
     cc::PaintFlags flags;
-    const ui::ThemeProvider* const theme_provider = view.GetThemeProvider();
     flags.setStrokeWidth(stroke_thickness);
-    flags.setColor(color_utils::GetResultingPaintColor(
-        theme_provider->GetColor(
-            ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR),
-        theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR)));
+    flags.setColor(view.GetThemeProvider()->GetColor(
+        ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
 

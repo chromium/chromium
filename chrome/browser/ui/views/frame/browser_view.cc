@@ -454,19 +454,11 @@ class ContentsSeparator : public views::View {
         gfx::Size(views::Separator::kThickness, views::Separator::kThickness));
   }
 
-  // views::View:
-  void OnPaint(gfx::Canvas* canvas) override {
-    const ui::ThemeProvider* const tp = GetThemeProvider();
-    canvas->DrawColor(
-        tp->GetColor(ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR));
-  }
-
  private:
   // views::View:
   void OnThemeChanged() override {
-    const ui::ThemeProvider* const tp = GetThemeProvider();
-    SetBackground(views::CreateSolidBackground(
-        tp->GetColor(ThemeProperties::COLOR_TOOLBAR)));
+    SetBackground(views::CreateSolidBackground(GetThemeProvider()->GetColor(
+        ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR)));
     View::OnThemeChanged();
   }
 };

@@ -29,6 +29,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/controls/button/image_button.h"
@@ -40,6 +42,7 @@
 #include "ui/views/vector_icons.h"
 
 namespace {
+
 constexpr int kSidePanelContentViewId = 42;
 constexpr int kSidePanelContentWrapperViewId = 43;
 
@@ -59,6 +62,21 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
 
   return button;
 }
+
+class SidePanelSeparator : public views::Separator {
+ public:
+  METADATA_HEADER(SidePanelSeparator);
+
+  void OnThemeChanged() override {
+    views::Separator::OnThemeChanged();
+    SetColor(GetThemeProvider()->GetColor(
+        ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR));
+  }
+};
+
+BEGIN_METADATA(SidePanelSeparator, views::Separator)
+END_METADATA
+
 }  // namespace
 
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view,
@@ -174,20 +192,7 @@ void SidePanelCoordinator::InitializeSidePanel() {
   container->SetID(kSidePanelContentViewId);
 
   container->AddChildView(CreateHeader());
-  auto* separator =
-      container->AddChildView(std::make_unique<views::Separator>());
-  // TODO(pbos): Make sure this separator updates per theme changes and does not
-  // pull color provider from BrowserView directly. This is wrong (wrong
-  // provider, wrong to call this before we know it's added to widget and wrong
-  // not to update as the theme changes).
-  const ui::ThemeProvider* const theme_provider =
-      browser_view_->GetThemeProvider();
-  // TODO(pbos): Stop inlining this color (de-duplicate this, SidePanelBorder
-  // and BrowserView).
-  separator->SetColor(color_utils::GetResultingPaintColor(
-      theme_provider->GetColor(
-          ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR),
-      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR)));
+  container->AddChildView(std::make_unique<SidePanelSeparator>());
 
   auto content_wrapper = std::make_unique<views::View>();
   content_wrapper->SetUseDefaultFillLayout(true);

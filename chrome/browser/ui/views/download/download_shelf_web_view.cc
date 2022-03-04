@@ -55,7 +55,7 @@ void DownloadShelfWebView::OnThemeChanged() {
   SetBorder(views::CreateSolidSidedBorder(
       1, 0, 0, 0,
       GetThemeProvider()->GetColor(
-          ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR)));
+          ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR)));
 }
 
 void DownloadShelfWebView::DoShowDownload(

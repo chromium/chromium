@@ -49,7 +49,10 @@ bool IncreasedContrastThemeSupplier::GetColor(int id, SkColor* color) const {
     case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE:
       *color = is_dark_mode_ ? SK_ColorDKGRAY : SK_ColorLTGRAY;
       return true;
+    case ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR:
+    case ThemeProperties::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR:
     case ThemeProperties::COLOR_LOCATION_BAR_BORDER:
+    case ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR:
     case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
     case ThemeProperties::COLOR_TOOLBAR_TEXT:
       *color = foreground;

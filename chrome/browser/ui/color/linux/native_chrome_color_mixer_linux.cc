@@ -39,6 +39,10 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
     return;
 
   ui::ColorMixer& mixer = provider->AddMixer();
+  mixer[kColorDownloadShelfContentAreaSeparator] = {
+      kColorToolbarContentAreaSeparator};
+  mixer[kColorInfoBarContentAreaSeparator] = {
+      kColorToolbarContentAreaSeparator};
   mixer[kColorLocationBarBorder] =
       UseIfNonzeroAlpha(ui::kColorNativeTextfieldBorderUnfocused);
   mixer[kColorNewTabPageBackground] = {ui::kColorTextfieldBackground};

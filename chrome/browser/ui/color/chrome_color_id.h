@@ -43,6 +43,8 @@
     ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND) \
   E(kColorDownloadShelfButtonText, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT) \
+  E(kColorDownloadShelfContentAreaSeparator, \
+    ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR) \
   E_CPONLY(kColorDownloadToolbarButtonActive) \
   E_CPONLY(kColorDownloadToolbarButtonInactive) \
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \
@@ -58,6 +60,8 @@
   E_CPONLY(kColorGooglePayLogo) \
   /* InfoBar colors. */ \
   E(kColorInfoBarBackground, ThemeProperties::COLOR_INFOBAR) \
+  E(kColorInfoBarContentAreaSeparator, \
+    ThemeProperties::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR) \
   E(kColorInfoBarForeground, ThemeProperties::COLOR_INFOBAR_TEXT) \
   /* Location bar colors. */ \
   E(kColorLocationBarBorder, ThemeProperties::COLOR_LOCATION_BAR_BORDER) \
@@ -110,6 +114,9 @@
   /* Read Later button colors. */ \
   E(kColorReadLaterButtonHighlight, \
     ThemeProperties::COLOR_READ_LATER_BUTTON_HIGHLIGHT) \
+  /* Side panel colors. */ \
+  E(kColorSidePanelContentAreaSeparator, \
+    ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR) \
   /* Status bubble colors. */ \
   E(kColorStatusBubbleBackgroundFrameActive, \
     ThemeProperties::COLOR_STATUS_BUBBLE_ACTIVE) \

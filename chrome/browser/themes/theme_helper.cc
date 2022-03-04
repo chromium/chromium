@@ -515,10 +515,22 @@ SkColor ThemeHelper::GetDefaultColor(
                    theme_supplier),
           gfx::kGoogleBlue600, gfx::kGoogleGrey100, gfx::kGoogleBlue900,
           SK_ColorWHITE);
-    case TP::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
-      return SkColorSetA(
+    case TP::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR:
+      return color_utils::AlphaBlend(
           GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
-          0x3A);
+          GetColor(TP::COLOR_DOWNLOAD_SHELF, incognito, theme_supplier),
+          SkAlpha{0x3A});
+    case TP::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR:
+      return color_utils::AlphaBlend(
+          GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
+          GetColor(TP::COLOR_INFOBAR, incognito, theme_supplier),
+          SkAlpha{0x3A});
+    case TP::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR:
+    case TP::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
+      return color_utils::AlphaBlend(
+          GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
+          GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier),
+          SkAlpha{0x3A});
     case TP::COLOR_NTP_SECTION_BORDER:
       return SkColorSetA(
           GetColor(TP::COLOR_NTP_HEADER, incognito, theme_supplier), 0x50);
