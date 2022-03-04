@@ -459,6 +459,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // nullptr otherwise.
   LayoutBlock* ContainingNGBlock() const;
 
+  // Return the nearest fragmentation context root, if any.
+  LayoutBlock* ContainingFragmentationContextRoot() const;
+
   // Function to return our enclosing flow thread if we are contained inside
   // one. This function follows the containing block chain.
   LayoutFlowThread* FlowThreadContainingBlock() const {
@@ -1210,6 +1213,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Remove this object and all descendants from the containing
   // LayoutFlowThread.
   void RemoveFromLayoutFlowThread();
+
+  // Return true if this object might be inside a fragmentation context, or
+  // false if it's definitely *not* inside one.
+  bool MightBeInsideFragmentationContext() const {
+    NOT_DESTROYED();
+    return IsInsideFlowThread() || GetDocument().Printing();
+  }
 
   // FIXME: Until all SVG layoutObjects can be subclasses of
   // LayoutSVGModelObject we have to add SVG layoutObject methods to

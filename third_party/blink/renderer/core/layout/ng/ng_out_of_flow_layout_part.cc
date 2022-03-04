@@ -1955,6 +1955,17 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
   // isn't straight-forward if the containing block is a multicol container.
   LayoutBlock* containing_block = box.ContainingNGBlock();
 
+  if (box.IsOutOfFlowPositioned()) {
+    // If the inner multicol is out-of-flow positioned, its fragments will be
+    // found as direct children of fragmentainers in the nearest ancestor
+    // fragmentation context.
+    containing_block = containing_block->ContainingFragmentationContextRoot();
+
+    // Since this is treated as a nested multicol container, we should always
+    // find an outer fragmentation context.
+    DCHECK(containing_block);
+  }
+
   // Replace the old fragment with the new one, if it's inside |parent|.
   auto ReplaceChild = [&new_result, &old_fragment](
                           const NGPhysicalBoxFragment& parent) -> bool {

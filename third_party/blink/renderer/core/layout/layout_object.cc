@@ -1060,6 +1060,19 @@ LayoutBlock* LayoutObject::ContainingNGBlock() const {
   return containing_block;
 }
 
+LayoutBlock* LayoutObject::ContainingFragmentationContextRoot() const {
+  NOT_DESTROYED();
+  if (!MightBeInsideFragmentationContext())
+    return nullptr;
+  for (LayoutBlock* ancestor = ContainingBlock(); ancestor;
+       ancestor = ancestor->ContainingBlock()) {
+    if (ancestor->IsFragmentationContextRoot())
+      return ancestor;
+    // TODO(mstensho): Make sure that we return the LayoutView when printing.
+  }
+  return nullptr;
+}
+
 bool LayoutObject::IsFirstInlineFragmentSafe() const {
   NOT_DESTROYED();
   DCHECK(IsInline());
