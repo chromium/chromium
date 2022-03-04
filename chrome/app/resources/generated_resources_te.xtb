@@ -71,7 +71,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382"><ph name="COUNTDOWN_SECONDS" /> సెకన్లలో ప్రత్యామ్నాయ బ్రౌజర్‌లో తెరుస్తుంది</translation>
-<translation id="1071917609930274619">డేటా గుప్తీకరణ</translation>
+<translation id="1071917609930274619">డేటా ఎన్‌క్రిప్షన్‌</translation>
 <translation id="1072700771426194907">USB పరికరం కనుగొనబడింది</translation>
 <translation id="107278043869924952">పాస్‌వర్డ్‌తో పాటు పిన్‌ను ఉపయోగించండి</translation>
 <translation id="1076176485976385390">టెక్స్ట్ కర్సర్‌తో పేజీలను నావిగేట్ చేయండి</translation>
@@ -3157,7 +3157,7 @@
 <translation id="4267455501101322486">విద్యా సంబంధమైన వనరులకు యాక్సెస్ కోసం ఖాతాను యాడ్ చేయడానికి, మీకు అనుమతి ఇవ్వాల్సిందిగా తల్లి/తండ్రిని అడగండి</translation>
 <translation id="4267924571297947682">అనుమతి కోసం తల్లి/తండ్రిని అడగండి</translation>
 <translation id="4267953847983678297">ఆటోమేటిక్‌గా సెల్యులార్ నెట్‌వర్క్‌కు కనెక్ట్ చేయి</translation>
-<translation id="4268025649754414643">కీ గుప్తీకరణ</translation>
+<translation id="4268025649754414643">కీ ఎన్‌క్రిప్షన్‌</translation>
 <translation id="4268670020635416342">'ఆఫీస్', 'వ్యక్తిగతం' లేదా 'పిల్లల కోసం' వంటి లేబుల్‌ను లేదా ఏదైనా పేరును జోడించండి</translation>
 <translation id="4270393598798225102">వెర్షన్ <ph name="NUMBER" /></translation>
 <translation id="4272765551319099134">ఈ పేజీని చేరుకోవడం సాధ్యం కాదు</translation>

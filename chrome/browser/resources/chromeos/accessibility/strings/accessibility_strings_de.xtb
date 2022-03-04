@@ -83,7 +83,7 @@
 <translation id="146450394670219700">Grafikobjekt</translation>
 <translation id="1465097259579587977">Kurzanleitung neu starten</translation>
 <translation id="1480046233931937785">Mitwirkende</translation>
-<translation id="1487494366197411587">Auf Ihrem Chromebook befindet sich die Suchtaste direkt über der linken Umschalttaste-Taste.</translation>
+<translation id="1487494366197411587">Auf dem Chromebook befindet sich die Suchtaste direkt über der linken Umschalttaste.</translation>
 <translation id="1498498210836053409">Fixierten Modus beim Bearbeiten von Text deaktivieren (intelligenter fixierter Modus)</translation>
 <translation id="1499041187027566160">Lautstärke erhöhen</translation>
 <translation id="1502086903961450562">Vorherige Grafik</translation>
@@ -488,7 +488,7 @@
 <translation id="4225355998815256469">Formularsteuerelemente</translation>
 <translation id="4230834257931120629">Helles Schiefergrau</translation>
 <translation id="4231102694147661229">Entwickleroptionen aktivieren</translation>
-<translation id="423428485095722850">Drücken Sie zum Wechseln die Suchtaste + Leertaste</translation>
+<translation id="423428485095722850">Zum Wechseln die Suchtaste + Leertaste drücken</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, Grad <ph name="GRADE" /></translation>
 <translation id="4246217262268234757">Stahlblau</translation>
 <translation id="4253168017788158739">Notiz</translation>
