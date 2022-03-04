@@ -388,7 +388,9 @@ bool KeyframeEffect::CancelAnimationOnCompositor(
     CompositorAnimation* compositor_animation) {
   if (!HasActiveAnimationsOnCompositor())
     return false;
-  if (!effect_target_ || !effect_target_->GetLayoutObject())
+  // Don't check effect_target_->GetLayoutObject(); we might be here because
+  // it's *just* been set to null.
+  if (!effect_target_)
     return false;
   DCHECK(Model());
   for (const auto& compositor_keyframe_model_id :

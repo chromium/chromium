@@ -34,6 +34,7 @@
               "external/wpt/html/canvas/offscreen/manual/convert-to-blob",
               "external/wpt/scroll-animations",
               "external/wpt/requestidlecallback",
+              "external/wpt/web-animations/crashtests",
               "external/wpt/web-animations/timing-model/animations",
               "fast/events/pointerevents/pinch",
               "lifecycle",
