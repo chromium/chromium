@@ -25,6 +25,8 @@
     "Allow-CSP-From",
     "Attribution-Reporting-Filters",
     "Attribution-Reporting-Register-Aggregatable-Source",
+    "Attribution-Reporting-Register-Aggregatable-Trigger-Data",
+    "Attribution-Reporting-Register-Aggregatable-Values",
     "Attribution-Reporting-Register-Event-Trigger",
     "Attribution-Reporting-Register-Source",
     "Cache-Control",

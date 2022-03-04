@@ -291,9 +291,10 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const AggregatableSourcesSizeTestCase kTestCases[] = {
       {"empty", true, 0, 0},
-      {"max_keys", true, blink::kMaxAttributionAggregatableKeysPerSource, 1},
+      {"max_keys", true,
+       blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger, 1},
       {"too_many_keys", false,
-       blink::kMaxAttributionAggregatableKeysPerSource + 1, 1},
+       blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger + 1, 1},
       {"max_key_size", true, 1,
        blink::kMaxBytesPerAttributionAggregatableKeyId},
       {"excessive_key_size", false, 1,

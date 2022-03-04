@@ -31,6 +31,24 @@ struct AttributionAggregatableSources {
   map<string, AttributionAggregatableKey> sources;
 };
 
+// Struct containing the trigger-side aggregatable data.
+struct AttributionAggregatableTriggerData {
+  AttributionAggregatableKey key;
+  array<string> source_keys;
+  AttributionFilterData filters;
+  AttributionFilterData not_filters;
+};
+
+// Struct containing all the aggregatable trigger data.
+struct AttributionAggregatableTrigger {
+  array<AttributionAggregatableTriggerData> trigger_data;
+};
+
+// Struct containing the aggregatable values.
+struct AttributionAggregatableValues {
+  map<string, uint32> values;
+};
+
 struct AttributionSourceData {
   // Target site where this source will be triggered.
   //
@@ -109,6 +127,13 @@ struct AttributionTriggerData {
   // If non-empty, this trigger will be ignored unless the attributed source's
   // filter data matches.
   AttributionFilterData filters;
+
+  // Contains a list of trigger data that generates trigger-side aggregatable
+  // key pieces.
+  AttributionAggregatableTrigger aggregatable_trigger;
+
+  // Lists an amount of an abstract "value" to contribute to each key.
+  AttributionAggregatableValues aggregatable_values;
 };
 
 // Browser-process interface responsible for processing attribution

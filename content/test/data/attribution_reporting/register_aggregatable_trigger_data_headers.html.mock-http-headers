@@ -1,0 +1,3 @@
+HTTP/1.1 200 OK
+Attribution-Reporting-Register-Aggregatable-Trigger-Data:[{"key_piece":"0x1","source_keys":["key1"],"filters":{"a":["b"]},"not_filters":{"c":[]}},{"key_piece":"0x0","source_keys":[],"not_filters":{"d":["e","f"],"g":[]}}]
+Attribution-Reporting-Register-Aggregatable-Values:{"key1": 123, "key2": 456}

@@ -18,7 +18,7 @@ AttributionAggregatableSources::Create(
     proto::AttributionAggregatableSources proto) {
   bool is_valid =
       proto.sources().size() <=
-          blink::kMaxAttributionAggregatableKeysPerSource &&
+          blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger &&
       base::ranges::all_of(proto.sources(), [](const auto& source) {
         return source.first.size() <=
                    blink::kMaxBytesPerAttributionAggregatableKeyId &&

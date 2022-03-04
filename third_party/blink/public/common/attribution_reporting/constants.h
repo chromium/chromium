@@ -12,7 +12,9 @@ constexpr size_t kMaxValuesPerAttributionFilter = 50;
 constexpr size_t kMaxAttributionFiltersPerSource = 50;
 
 constexpr size_t kMaxBytesPerAttributionAggregatableKeyId = 25;
-constexpr size_t kMaxAttributionAggregatableKeysPerSource = 50;
+constexpr size_t kMaxAttributionAggregatableKeysPerSourceOrTrigger = 50;
+
+constexpr size_t kMaxAttributionAggregatableTriggerDataPerTrigger = 50;
 
 constexpr size_t kMaxAttributionEventTriggerData = 10;
 

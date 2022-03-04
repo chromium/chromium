@@ -38,6 +38,45 @@ class AggregatableSourcesBuilder {
   mojom::blink::AttributionAggregatableSources sources_;
 };
 
+class AttributionFilterDataBuilder {
+ public:
+  AttributionFilterDataBuilder() = default;
+  ~AttributionFilterDataBuilder() = default;
+
+  AttributionFilterDataBuilder& AddFilter(String filter_name,
+                                          Vector<String> filter_values) {
+    filters_.filter_values.insert(std::move(filter_name),
+                                  std::move(filter_values));
+    return *this;
+  }
+
+  mojom::blink::AttributionFilterDataPtr Build() const {
+    return filters_.Clone();
+  }
+
+ private:
+  mojom::blink::AttributionFilterData filters_;
+};
+
+class AggregatableTriggerBuilder {
+ public:
+  AggregatableTriggerBuilder() = default;
+  ~AggregatableTriggerBuilder() = default;
+
+  AggregatableTriggerBuilder& AddTriggerData(
+      mojom::blink::AttributionAggregatableTriggerDataPtr trigger) {
+    trigger_.trigger_data.push_back(std::move(trigger));
+    return *this;
+  }
+
+  mojom::blink::AttributionAggregatableTriggerPtr Build() const {
+    return trigger_.Clone();
+  }
+
+ private:
+  mojom::blink::AttributionAggregatableTrigger trigger_;
+};
+
 }  // namespace
 
 TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSources) {
@@ -134,8 +173,8 @@ TEST(AttributionResponseParsingTest,
    private:
     String GetKey(wtf_size_t index) const {
       // Note that this might not be robust as
-      // `blink::kMaxAttributionAggregatableKeysPerSource` varies which might
-      // generate invalid JSON.
+      // `blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger` varies which
+      // might generate invalid JSON.
       return String(
           std::string(key_size, 'A' + index % 26 + 32 * (index / 26)));
     }
@@ -143,9 +182,10 @@ TEST(AttributionResponseParsingTest,
 
   const AttributionAggregatableSourcesSizeTestCase kTestCases[] = {
       {"empty", true, 0, 0},
-      {"max_keys", true, blink::kMaxAttributionAggregatableKeysPerSource, 1},
+      {"max_keys", true,
+       blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger, 1},
       {"too_many_keys", false,
-       blink::kMaxAttributionAggregatableKeysPerSource + 1, 1},
+       blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger + 1, 1},
       {"max_key_size", true, 1,
        blink::kMaxBytesPerAttributionAggregatableKeyId},
       {"excessive_key_size", false, 1,
@@ -154,6 +194,266 @@ TEST(AttributionResponseParsingTest,
 
   for (const auto& test_case : kTestCases) {
     auto result = ParseAttributionAggregatableSources(test_case.GetHeader());
+    EXPECT_EQ(result.status, test_case.valid
+                                 ? ResponseParseStatus::kSuccess
+                                 : ResponseParseStatus::kInvalidFormat)
+        << test_case.description;
+    EXPECT_EQ(result.value, test_case.GetValue()) << test_case.description;
+  }
+}
+
+TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
+  const struct {
+    String description;
+    AtomicString header;
+    ResponseParseStatus status;
+    mojom::blink::AttributionAggregatableTriggerPtr value;
+  } kTestCases[] = {
+      {"No header", AtomicString(), ResponseParseStatus::kNotFound,
+       mojom::blink::AttributionAggregatableTrigger::New()},
+      {"Empty header", "", ResponseParseStatus::kParseError,
+       mojom::blink::AttributionAggregatableTrigger::New()},
+      {"Invalid JSON", "{", ResponseParseStatus::kParseError,
+       mojom::blink::AttributionAggregatableTrigger::New()},
+      {"Missing source_keys field", R"([{"key_piece":"0x400"}])",
+       ResponseParseStatus::kInvalidFormat,
+       mojom::blink::AttributionAggregatableTrigger::New()},
+      {"Missing key_piece field", R"([{"source_keys":["key"]}])",
+       ResponseParseStatus::kInvalidFormat,
+       mojom::blink::AttributionAggregatableTrigger::New()},
+      {"Invalid key", R"([{"key_piece":"0xG00","source_keys":["key"]}])",
+       ResponseParseStatus::kInvalidFormat,
+       mojom::blink::AttributionAggregatableTrigger::New()},
+      {"Valid trigger", R"([{"key_piece":"0x400","source_keys":["key"]}])",
+       ResponseParseStatus::kSuccess,
+       AggregatableTriggerBuilder()
+           .AddTriggerData(
+               mojom::blink::AttributionAggregatableTriggerData::New(
+                   mojom::blink::AttributionAggregatableKey::New(
+                       /*high_bits=*/0, /*low_bits=*/1024),
+                   /*source_keys=*/Vector<String>{"key"},
+                   /*filters=*/mojom::blink::AttributionFilterData::New(),
+                   /*not_filters=*/mojom::blink::AttributionFilterData::New()))
+           .Build()},
+      {"Valid trigger with filters",
+       AtomicString(R"([{"key_piece":"0x400","source_keys":["key"],)") +
+           R"("filters":{"filter":["value1"]},"not_filters":{"filter":["value2"]}}])",
+       ResponseParseStatus::kSuccess,
+       AggregatableTriggerBuilder()
+           .AddTriggerData(
+               mojom::blink::AttributionAggregatableTriggerData::New(
+                   mojom::blink::AttributionAggregatableKey::New(
+                       /*high_bits=*/0, /*low_bits=*/1024),
+                   /*source_keys=*/Vector<String>{"key"},
+                   /*filters=*/
+                   AttributionFilterDataBuilder()
+                       .AddFilter("filter", Vector<String>{"value1"})
+                       .Build(),
+                   /*not_filters=*/
+                   AttributionFilterDataBuilder()
+                       .AddFilter("filter", Vector<String>{"value2"})
+                       .Build()))
+           .Build()},
+      {"Two valid trigger data",
+       AtomicString(R"([{"key_piece":"0x400","source_keys":["key1"]},)") +
+           R"({"key_piece":"0xA80","source_keys":["key2"]}])",
+       ResponseParseStatus::kSuccess,
+       AggregatableTriggerBuilder()
+           .AddTriggerData(
+               mojom::blink::AttributionAggregatableTriggerData::New(
+                   mojom::blink::AttributionAggregatableKey::New(
+                       /*high_bits=*/0, /*low_bits=*/1024),
+                   /*source_keys=*/Vector<String>{"key1"},
+                   /*filters=*/mojom::blink::AttributionFilterData::New(),
+                   /*not_filters=*/mojom::blink::AttributionFilterData::New()))
+           .AddTriggerData(
+               mojom::blink::AttributionAggregatableTriggerData::New(
+                   mojom::blink::AttributionAggregatableKey::New(
+                       /*high_bits=*/0, /*low_bits=*/2688),
+                   /*source_keys=*/Vector<String>{"key2"},
+                   /*filters=*/mojom::blink::AttributionFilterData::New(),
+                   /*not_filters=*/mojom::blink::AttributionFilterData::New()))
+           .Build()},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    auto result = ParseAttributionAggregatableTrigger(test_case.header);
+    EXPECT_EQ(test_case.status, result.status) << test_case.description;
+    EXPECT_EQ(test_case.value, result.value) << test_case.description;
+  }
+}
+
+TEST(AttributionResponseParsingTest,
+     ParseAttributionAggregatableTrigger_CheckSize) {
+  struct AttributionAggregatableTriggerSizeTestCase {
+    String description;
+    bool valid;
+    wtf_size_t trigger_data_count;
+    wtf_size_t key_count;
+    wtf_size_t key_size;
+
+    AtomicString GetHeader() const {
+      StringBuilder builder;
+      String key = GetKey();
+
+      const char* separator = "";
+      for (wtf_size_t i = 0u; i < trigger_data_count; ++i) {
+        builder.Append(separator);
+        builder.Append("{\"key_piece\":\"0x1\",\"source_keys\":[");
+
+        const char* sub_separator = "";
+        for (wtf_size_t j = 0u; j < key_count; ++j) {
+          builder.Append(sub_separator);
+          builder.Append("\"");
+          builder.Append(key);
+          builder.Append("\"");
+          sub_separator = ",";
+        }
+
+        builder.Append("]}");
+        separator = ",";
+      }
+
+      return "[" + builder.ToAtomicString() + "]";
+    }
+
+    mojom::blink::AttributionAggregatableTriggerPtr GetValue() const {
+      AggregatableTriggerBuilder builder;
+      if (!valid)
+        return builder.Build();
+
+      for (wtf_size_t i = 0u; i < trigger_data_count; ++i) {
+        builder.AddTriggerData(
+            mojom::blink::AttributionAggregatableTriggerData::New(
+                mojom::blink::AttributionAggregatableKey::New(
+                    /*high_bits=*/0, /*low_bits=*/1),
+                /*source_keys=*/Vector<String>(key_count, GetKey()),
+                /*filters=*/mojom::blink::AttributionFilterData::New(),
+                /*not_filters=*/mojom::blink::AttributionFilterData::New()));
+      }
+      return builder.Build();
+    }
+
+   private:
+    String GetKey() const { return String(std::string(key_size, 'A')); }
+  };
+
+  const AttributionAggregatableTriggerSizeTestCase kTestCases[] = {
+      {"empty", true, 0, 0, 0},
+      {"max_trigger_data", true,
+       blink::kMaxAttributionAggregatableTriggerDataPerTrigger, 0, 0},
+      {"too_many_trigger_data", false,
+       blink::kMaxAttributionAggregatableTriggerDataPerTrigger + 1, 0, 0},
+      {"max_key_count", true, 1,
+       blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger, 0},
+      {"too many keys", false, 1,
+       blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger + 1, 0},
+      {"max_key_size", true, 1, 1, kMaxBytesPerAttributionAggregatableKeyId},
+      {"excessive_key_size", false, 1, 1,
+       kMaxBytesPerAttributionAggregatableKeyId + 1},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    auto result = ParseAttributionAggregatableTrigger(test_case.GetHeader());
+
+    EXPECT_EQ(result.status, test_case.valid
+                                 ? ResponseParseStatus::kSuccess
+                                 : ResponseParseStatus::kInvalidFormat)
+        << test_case.description;
+    EXPECT_EQ(result.value, test_case.GetValue()) << test_case.description;
+  }
+}
+
+TEST(AttributionResponseParsingTest, ParseAttributionAggregatableValues) {
+  const struct {
+    AtomicString description;
+    AtomicString header;
+    ResponseParseStatus status;
+    mojom::blink::AttributionAggregatableValuesPtr value;
+  } kTestCases[] = {
+      {"No header", AtomicString(), ResponseParseStatus::kNotFound,
+       mojom::blink::AttributionAggregatableValues::New()},
+      {"Empty header", "", ResponseParseStatus::kParseError,
+       mojom::blink::AttributionAggregatableValues::New()},
+      {"Invalid JSON", "{", ResponseParseStatus::kParseError,
+       mojom::blink::AttributionAggregatableValues::New()},
+      {"Invalid value", R"({"key":-1})", ResponseParseStatus::kInvalidFormat,
+       mojom::blink::AttributionAggregatableValues::New()},
+      {"Valid value", R"({"key":123})", ResponseParseStatus::kSuccess,
+       mojom::blink::AttributionAggregatableValues::New(
+           HashMap<String, uint32_t>{{"key", 123}})},
+      {"Two valid values", R"({"key1":123,"key2":456})",
+       ResponseParseStatus::kSuccess,
+       mojom::blink::AttributionAggregatableValues::New(
+           HashMap<String, uint32_t>{{"key1", 123}, {"key2", 456}})},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    auto result = ParseAttributionAggregatableValues(test_case.header);
+    EXPECT_EQ(test_case.status, result.status) << test_case.description;
+    EXPECT_EQ(test_case.value, result.value) << test_case.description;
+  }
+}
+
+TEST(AttributionResponseParsingTest,
+     ParseAttributionAggregatableValues_CheckSize) {
+  struct AttributionAggregatableValuesSizeTestCase {
+    String description;
+    bool valid;
+    wtf_size_t key_count;
+    wtf_size_t key_size;
+
+    AtomicString GetHeader() const {
+      StringBuilder builder;
+      const char* separator = "";
+      for (wtf_size_t i = 0u; i < key_count; ++i) {
+        builder.Append(separator);
+        builder.Append("\"");
+        builder.Append(GetKey(i));
+        builder.Append("\":");
+        builder.AppendNumber(i + 1);
+        separator = ",";
+      }
+      return "{" + builder.ToAtomicString() + "}";
+    }
+
+    mojom::blink::AttributionAggregatableValuesPtr GetValue() const {
+      auto aggregatable_values =
+          mojom::blink::AttributionAggregatableValues::New();
+      if (!valid)
+        return aggregatable_values;
+
+      for (wtf_size_t i = 0u; i < key_count; ++i) {
+        aggregatable_values->values.insert(GetKey(i), i + 1);
+      }
+      return aggregatable_values;
+    }
+
+   private:
+    String GetKey(wtf_size_t index) const {
+      // Note that this might not be robust as
+      // `blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger` varies which
+      // might generate invalid JSON characters.
+      return String(
+          std::string(key_size, 'A' + index % 26 + 32 * (index / 26)));
+    }
+  };
+
+  const AttributionAggregatableValuesSizeTestCase kTestCases[] = {
+      {"empty", true, 0, 0},
+      {"max_keys", true,
+       blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger, 1},
+      {"too_many_keys", false,
+       blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger + 1, 1},
+      {"max_key_size", true, 1,
+       blink::kMaxBytesPerAttributionAggregatableKeyId},
+      {"excessive_key_size", false, 1,
+       blink::kMaxBytesPerAttributionAggregatableKeyId + 1},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    auto result = ParseAttributionAggregatableValues(test_case.GetHeader());
+
     EXPECT_EQ(result.status, test_case.valid
                                  ? ResponseParseStatus::kSuccess
                                  : ResponseParseStatus::kInvalidFormat)

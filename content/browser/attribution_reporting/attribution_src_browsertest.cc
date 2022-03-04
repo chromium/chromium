@@ -29,15 +29,45 @@ namespace content {
 
 namespace {
 
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pair;
+using ::testing::Pointee;
 using ::testing::SizeIs;
 
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
   return std::make_unique<MockDataHost>(std::move(data_host));
+}
+
+MATCHER_P(AggregatableKeyIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.key, result_listener);
+}
+
+MATCHER_P(AggregatableKeyHighBitsIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.high_bits, result_listener);
+}
+
+MATCHER_P(AggregatableKeyLowBitsIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.low_bits, result_listener);
+}
+
+MATCHER_P(SourceKeysAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.source_keys, result_listener);
+}
+
+MATCHER_P(FiltersAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.filters, result_listener);
+}
+
+MATCHER_P(NotFiltersAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.not_filters, result_listener);
+}
+
+MATCHER_P(FilterValuesAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.filter_values, result_listener);
 }
 
 }  // namespace
@@ -380,6 +410,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(
       trigger_data.front()->event_triggers.front()->not_filters->filter_values,
       IsEmpty());
+  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->trigger_data,
+              IsEmpty());
+  EXPECT_THAT(trigger_data.front()->aggregatable_values->values, IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -434,6 +467,72 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(
       event_trigger_datas.back()->not_filters->filter_values,
       ElementsAre(Pair("d", ElementsAre("e", "f")), Pair("g", IsEmpty())));
+
+  EXPECT_THAT(
+      trigger_data.front()->aggregatable_trigger->trigger_data,
+      ElementsAre(Pointee(
+          AllOf(AggregatableKeyIs(Pointee(AllOf(AggregatableKeyHighBitsIs(0),
+                                                AggregatableKeyLowBitsIs(1)))),
+                SourceKeysAre(ElementsAre("key"))))));
+
+  EXPECT_THAT(trigger_data.front()->aggregatable_values->values,
+              ElementsAre(Pair("key", 123)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AttributionSrcBrowserTest,
+    AttributionSrcImg_TriggerRegisteredWithAggregatableTrigger) {
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  MockAttributionHost host(web_contents());
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(host, RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  GURL register_url = https_server()->GetURL(
+      "c.test", "/register_aggregatable_trigger_data_headers.html");
+
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+  if (!data_host)
+    loop.Run();
+  data_host->WaitForTriggerData(/*num_trigger_data=*/1);
+  const auto& trigger_data = data_host->trigger_data();
+
+  EXPECT_EQ(trigger_data.size(), 1u);
+  EXPECT_EQ(trigger_data.front()->reporting_origin,
+            url::Origin::Create(register_url));
+  EXPECT_THAT(trigger_data.front()->event_triggers, IsEmpty());
+
+  EXPECT_THAT(
+      trigger_data.front()->aggregatable_trigger->trigger_data,
+      ElementsAre(
+          Pointee(AllOf(
+              AggregatableKeyIs(Pointee(AllOf(AggregatableKeyHighBitsIs(0),
+                                              AggregatableKeyLowBitsIs(1)))),
+              SourceKeysAre(ElementsAre("key1")),
+              FiltersAre(Pointee(
+                  FilterValuesAre(ElementsAre(Pair("a", ElementsAre("b")))))),
+              NotFiltersAre(Pointee(
+                  FilterValuesAre(ElementsAre(Pair("c", IsEmpty()))))))),
+          Pointee(AllOf(
+              AggregatableKeyIs(Pointee(AllOf(AggregatableKeyHighBitsIs(0),
+                                              AggregatableKeyLowBitsIs(0)))),
+              SourceKeysAre(IsEmpty()),
+              FiltersAre(Pointee(FilterValuesAre(IsEmpty()))),
+              NotFiltersAre(Pointee(
+                  FilterValuesAre(ElementsAre(Pair("d", ElementsAre("e", "f")),
+                                              Pair("g", IsEmpty())))))))));
+
+  EXPECT_THAT(trigger_data.front()->aggregatable_values->values,
+              ElementsAre(Pair("key1", 123), Pair("key2", 456)));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -467,6 +566,66 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
             url::Origin::Create(register_url));
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
   EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 10u);
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       AttributionSrcImg_InvalidAggregatableTriggerDropped) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  SetupCrossSiteRedirector(https_server.get());
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_trigger");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  MockAttributionHost host(web_contents());
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(host, RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  GURL register_url = https_server->GetURL("d.test", "/register_trigger");
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader(
+      "Attribution-Reporting-Register-Aggregatable-Trigger-Data", "");
+  http_response->AddCustomHeader(
+      "Attribution-Reporting-Register-Aggregatable-Values", "");
+  http_response->AddCustomHeader(
+      "Location", "/register_aggregatable_trigger_data_headers.html");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  if (!data_host)
+    loop.Run();
+  data_host->WaitForTriggerData(/*num_trigger_data=*/1);
+  const auto& trigger_data = data_host->trigger_data();
+
+  // Only the second trigger is registered.
+  EXPECT_EQ(trigger_data.size(), 1u);
+  EXPECT_THAT(trigger_data.front()->aggregatable_trigger->trigger_data,
+              SizeIs(2));
+  EXPECT_THAT(trigger_data.front()->aggregatable_values->values, SizeIs(2));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
