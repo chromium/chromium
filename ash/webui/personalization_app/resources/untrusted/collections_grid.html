@@ -52,7 +52,8 @@
           <div class$="[[getClassForImagesContainer_(item)]]">
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
               <img is="cr-auto-img" auto-src="[[preview.url]]"
-                  aria-hidden="true" on-load="onImgLoad_" on-error="onImgLoad_">
+                  aria-hidden="true" on-load="onImgLoad_" on-error="onImgLoad_"
+                  with-cookies="[[isGooglePhotosTile_(item)]]">
             </template>
           </div>
           <div class="photo-text-container" hidden>
