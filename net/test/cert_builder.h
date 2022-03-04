@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "net/base/ip_address.h"
+#include "net/cert/internal/parse_certificate.h"
 #include "net/cert/internal/signature_algorithm.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -122,6 +123,10 @@ class CertBuilder {
   // Sets the SAN for the certificate to the given dns names and ip addresses.
   void SetSubjectAltNames(const std::vector<std::string>& dns_names,
                           const std::vector<IPAddress>& ip_addresses);
+
+  // Sets the keyUsage extension. |usages| should contain the KeyUsageBit
+  // values of the usages to set, and must not be empty.
+  void SetKeyUsages(const std::vector<KeyUsageBit>& usages);
 
   // Sets the extendedKeyUsage extension. |usages| should contain the DER OIDs
   // of the usage purposes to set, and must not be empty.

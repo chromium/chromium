@@ -28,6 +28,8 @@
 #include "base/task/task_runner_util.h"
 #include "crypto/mac_security_services_lock.h"
 #include "net/base/host_port_pair.h"
+#include "net/cert/internal/extended_key_usage.h"
+#include "net/cert/internal/parse_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_ios_and_mac.h"
 #include "net/cert/x509_util_mac.h"
@@ -147,55 +149,64 @@ bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
   return true;
 }
 
-// Returns true if |purpose| is listed as allowed in |usage|. This
-// function also considers the "Any" purpose. If the attribute is
-// present and empty, we return false.
-bool ExtendedKeyUsageAllows(const CE_ExtendedKeyUsage* usage,
-                            const CSSM_OID* purpose) {
-  for (unsigned p = 0; p < usage->numPurposes; ++p) {
-    if (x509_util::CSSMOIDEqual(&usage->purposes[p], purpose))
-      return true;
-    if (x509_util::CSSMOIDEqual(&usage->purposes[p],
-                                &CSSMOID_ExtendedKeyUsageAny))
-      return true;
-  }
-  return false;
-}
-
 // Does |cert|'s usage allow SSL client authentication?
-bool SupportsSSLClientAuth(SecCertificateRef cert) {
-  x509_util::CSSMCachedCertificate cached_cert;
-  OSStatus status = cached_cert.Init(cert);
-  if (status)
+bool SupportsSSLClientAuth(CRYPTO_BUFFER* cert) {
+  DCHECK(cert);
+
+  ParseCertificateOptions options;
+  options.allow_invalid_serial_numbers = true;
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
+  ParsedTbsCertificate tbs;
+  if (!ParseCertificate(
+          der::Input(CRYPTO_BUFFER_data(cert), CRYPTO_BUFFER_len(cert)),
+          &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
+          nullptr /* errors*/) ||
+      !ParseTbsCertificate(tbs_certificate_tlv, options, &tbs,
+                           nullptr /*errors*/)) {
+    return false;
+  }
+
+  if (!tbs.has_extensions)
+    return true;
+
+  std::map<der::Input, ParsedExtension> extensions;
+  if (!ParseExtensions(tbs.extensions_tlv, &extensions))
     return false;
 
   // RFC5280 says to take the intersection of the two extensions.
   //
-  // Our underlying crypto libraries don't expose
-  // ClientCertificateType, so for now we will not support fixed
-  // Diffie-Hellman mechanisms. For rsa_sign, we need the
+  // We only support signature-based client certificates, so we need the
   // digitalSignature bit.
   //
   // In particular, if a key has the nonRepudiation bit and not the
   // digitalSignature one, we will not offer it to the user.
-  x509_util::CSSMFieldValue key_usage;
-  status = cached_cert.GetField(&CSSMOID_KeyUsage, &key_usage);
-  if (status == CSSM_OK && key_usage.field()) {
-    const CSSM_X509_EXTENSION* ext = key_usage.GetAs<CSSM_X509_EXTENSION>();
-    const CE_KeyUsage* key_usage_value =
-        reinterpret_cast<const CE_KeyUsage*>(ext->value.parsedValue);
-    if (!((*key_usage_value) & CE_KU_DigitalSignature))
+  if (auto it = extensions.find(der::Input(kKeyUsageOid));
+      it != extensions.end()) {
+    der::BitString key_usage;
+    if (!ParseKeyUsage(it->second.value, &key_usage) ||
+        !key_usage.AssertsBit(KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
+      return false;
+    }
+  }
+
+  if (auto it = extensions.find(der::Input(kExtKeyUsageOid));
+      it != extensions.end()) {
+    std::vector<der::Input> extended_key_usage;
+    if (!ParseEKUExtension(it->second.value, &extended_key_usage))
+      return false;
+    bool found_acceptable_eku = false;
+    for (const auto& oid : extended_key_usage) {
+      if (oid == der::Input(kAnyEKU) || oid == der::Input(kClientAuth)) {
+        found_acceptable_eku = true;
+        break;
+      }
+    }
+    if (!found_acceptable_eku)
       return false;
   }
 
-  status = cached_cert.GetField(&CSSMOID_ExtendedKeyUsage, &key_usage);
-  if (status == CSSM_OK && key_usage.field()) {
-    const CSSM_X509_EXTENSION* ext = key_usage.GetAs<CSSM_X509_EXTENSION>();
-    const CE_ExtendedKeyUsage* ext_key_usage =
-        reinterpret_cast<const CE_ExtendedKeyUsage*>(ext->value.parsedValue);
-    if (!ExtendedKeyUsageAllows(ext_key_usage, &CSSMOID_ClientAuth))
-      return false;
-  }
   return true;
 }
 
@@ -223,8 +234,10 @@ void GetClientCertsImpl(
   selected_identities->clear();
   for (size_t i = 0; i < preliminary_list.size(); ++i) {
     std::unique_ptr<ClientCertIdentityMac>& cert = preliminary_list[i];
-    if (cert->certificate()->HasExpired())
+    if (cert->certificate()->HasExpired() ||
+        !SupportsSSLClientAuth(cert->certificate()->cert_buffer())) {
       continue;
+    }
 
     // Skip duplicates (a cert may be in multiple keychains).
     auto cert_iter = std::find_if(
@@ -273,9 +286,6 @@ void AddIdentity(ScopedCFTypeRef<SecIdentityRef> sec_identity,
   err = SecIdentityCopyCertificate(sec_identity.get(),
                                    cert_handle.InitializeInto());
   if (err != noErr)
-    return;
-
-  if (!SupportsSSLClientAuth(cert_handle.get()))
     return;
 
   // Allow UTF-8 inside PrintableStrings in client certificates. See
