@@ -235,6 +235,7 @@ crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Failure ]
 crbug.com/883500 [ android android-chromium android-nexus-5x ] Pixel_BackgroundImage [ RetryOnFailure ]
 crbug.com/1065514 [ android android-chromium android-nexus-5x ] Pixel_WebGLReadPixelsTabSwitch [ RetryOnFailure ]
 crbug.com/1278885 [ android android-chromium android-nexus-5x skia-renderer-gl ] Pixel_OffscreenCanvasTransferToImageBitmap [ RetryOnFailure ]
+crbug.com/1302406 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
 crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryOnFailure ]
