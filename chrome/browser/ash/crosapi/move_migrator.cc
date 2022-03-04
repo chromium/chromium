@@ -178,6 +178,14 @@ void MoveMigrator::ClearResumeAttemptCountForUser(
 }
 
 // static
+void MoveMigrator::ClearResumeStepForUser(PrefService* local_state,
+                                          const std::string& user_id_hash) {
+  DictionaryPrefUpdate update(local_state, kMoveMigrationResumeStepPref);
+  base::Value* dict = update.Get();
+  dict->RemoveKey(user_id_hash);
+}
+
+// static
 MoveMigrator::PreMigrationCleanUpResult MoveMigrator::PreMigrationCleanUp(
     const base::FilePath& original_profile_dir) {
   LOG(WARNING) << "Running PreMigrationCleanUp()";

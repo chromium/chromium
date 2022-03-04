@@ -101,6 +101,10 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   static void ClearResumeAttemptCountForUser(PrefService* local_state,
                                              const std::string& user_id_hash);
 
+  // Clears `ResumeStep` for user stored in `kMoveMigrationResumeStepPref`.
+  static void ClearResumeStepForUser(PrefService* local_state,
+                                     const std::string& user_id_hash);
+
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  private:

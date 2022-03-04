@@ -143,7 +143,8 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
                                       user_id_hash);
     crosapi::browser_util::ClearProfileMigrationCompletedForUser(
         g_browser_process->local_state(), user_id_hash);
-    // TODO(ythjkt): Also clear move migration resume step here.
+    MoveMigrator::ClearResumeStepForUser(g_browser_process->local_state(),
+                                         user_id_hash);
     MoveMigrator::ClearResumeAttemptCountForUser(
         g_browser_process->local_state(), user_id_hash);
     return false;
