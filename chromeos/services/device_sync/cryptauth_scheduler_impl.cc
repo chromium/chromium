@@ -7,13 +7,13 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_logging.h"
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/services/device_sync/pref_names.h"
-#include "chromeos/services/device_sync/proto/cryptauth_logging.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

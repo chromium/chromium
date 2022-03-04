@@ -7,13 +7,13 @@
 
 #include <string>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/containers/queue.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_device.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/services/device_sync/cryptauth_v2_device_manager.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

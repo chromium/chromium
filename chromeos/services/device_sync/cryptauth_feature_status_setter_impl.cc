@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,7 +16,6 @@
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/cryptauth_task_metrics_logger.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 
 namespace chromeos {
 

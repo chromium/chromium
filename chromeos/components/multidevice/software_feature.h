@@ -7,7 +7,7 @@
 
 #include <ostream>
 
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace chromeos {
 

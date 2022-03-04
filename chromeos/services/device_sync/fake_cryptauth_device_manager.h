@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_device_manager.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace chromeos {
 

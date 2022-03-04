@@ -4,11 +4,11 @@
 
 #include "chromeos/services/device_sync/cryptauth_gcm_manager_impl.h"
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/pref_names.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "components/prefs/testing_pref_service.h"

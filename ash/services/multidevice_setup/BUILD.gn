@@ -61,6 +61,7 @@ static_library("multidevice_setup") {
 
   deps = [
     "//ash/constants",
+    "//ash/services/device_sync/proto:util",
     "//ash/services/multidevice_setup/proto",
     "//ash/services/multidevice_setup/public/cpp:android_sms_app_helper_delegate",
     "//ash/services/multidevice_setup/public/cpp:android_sms_pairing_state_tracker",
@@ -72,7 +73,6 @@ static_library("multidevice_setup") {
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/services/device_sync/proto:util",
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/device_sync/public/mojom",
     "//components/pref_registry",

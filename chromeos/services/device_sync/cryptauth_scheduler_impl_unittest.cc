@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/simple_test_clock.h"
@@ -17,7 +18,6 @@
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/services/device_sync/fake_cryptauth_scheduler.h"
 #include "chromeos/services/device_sync/pref_names.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"

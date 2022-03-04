@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_enrollment.pb.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -19,8 +21,6 @@
 #include "chromeos/services/device_sync/cryptauth_key_creator.h"
 #include "chromeos/services/device_sync/cryptauth_v2_enroller.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {

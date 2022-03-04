@@ -4,6 +4,7 @@
 
 #include "chromeos/services/device_sync/software_feature_manager_impl.h"
 
+#include "ash/services/device_sync/proto/enum_util.h"
 #include "base/bind.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
@@ -11,7 +12,6 @@
 #include "chromeos/services/device_sync/fake_cryptauth_feature_status_setter.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/device_sync/mock_cryptauth_client.h"
-#include "chromeos/services/device_sync/proto/enum_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

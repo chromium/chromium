@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
@@ -22,8 +24,6 @@
 #include "chromeos/services/device_sync/fake_cryptauth_device_manager.h"
 #include "chromeos/services/device_sync/fake_cryptauth_v2_device_manager.h"
 #include "chromeos/services/device_sync/fake_remote_device_v2_loader.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "chromeos/services/device_sync/remote_device_loader.h"
 #include "chromeos/services/device_sync/remote_device_v2_loader_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"

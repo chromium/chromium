@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_enrollment.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_proto_to_query_parameters_util.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_proto_to_query_parameters_util.h"
 #include "chromeos/services/device_sync/switches.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"

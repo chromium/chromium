@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
@@ -16,7 +17,6 @@
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/cryptauth_key_creator.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "crypto/hkdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

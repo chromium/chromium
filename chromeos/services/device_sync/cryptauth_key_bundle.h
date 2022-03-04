@@ -5,11 +5,11 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_BUNDLE_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_BUNDLE_H_
 
+#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
-#include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

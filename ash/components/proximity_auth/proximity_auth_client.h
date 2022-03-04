@@ -10,8 +10,8 @@
 
 #include "ash/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "ash/public/cpp/smartlock_state.h"
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/callback_forward.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace proximity_auth {
 

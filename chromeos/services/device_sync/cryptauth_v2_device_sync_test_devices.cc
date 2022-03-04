@@ -4,14 +4,14 @@
 
 #include "chromeos/services/device_sync/cryptauth_v2_device_sync_test_devices.h"
 
+#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/services/device_sync/cryptauth_device.h"
 #include "chromeos/services/device_sync/fake_ecies_encryption.h"
-#include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 
 namespace chromeos {
 

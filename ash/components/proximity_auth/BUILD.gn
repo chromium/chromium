@@ -81,13 +81,13 @@ static_library("test_support") {
   public_deps = [ ":proximity_auth" ]
 
   deps = [
+    "//ash/services/device_sync/proto",
     "//ash/services/secure_channel:test_support",
     "//ash/services/secure_channel/public/cpp/client",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/services/device_sync/proto",
     "//testing/gmock",
   ]
 }

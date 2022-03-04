@@ -4,6 +4,7 @@
 
 #include "chromeos/services/device_sync/cryptauth_v2_enrollment_manager_impl.h"
 
+#include "ash/services/device_sync/proto/cryptauth_logging.h"
 #include "base/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
@@ -17,7 +18,6 @@
 #include "chromeos/services/device_sync/cryptauth_task_metrics_logger.h"
 #include "chromeos/services/device_sync/cryptauth_v2_enroller_impl.h"
 #include "chromeos/services/device_sync/pref_names.h"
-#include "chromeos/services/device_sync/proto/cryptauth_logging.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

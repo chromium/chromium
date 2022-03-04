@@ -5,6 +5,8 @@
 #include "chromeos/services/device_sync/device_sync_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/device_sync/proto/device_classifier_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
@@ -33,8 +35,6 @@
 #include "chromeos/services/device_sync/cryptauth_v2_device_manager_impl.h"
 #include "chromeos/services/device_sync/cryptauth_v2_enrollment_manager_impl.h"
 #include "chromeos/services/device_sync/device_sync_type_converters.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/device_sync/proto/device_classifier_util.h"
 #include "chromeos/services/device_sync/public/cpp/gcm_device_info_provider.h"
 #include "chromeos/services/device_sync/remote_device_provider_impl.h"
 #include "chromeos/services/device_sync/software_feature_manager_impl.h"

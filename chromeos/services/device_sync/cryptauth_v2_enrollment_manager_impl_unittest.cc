@@ -8,6 +8,12 @@
 #include <unordered_map>
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/no_destructor.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -25,12 +31,6 @@
 #include "chromeos/services/device_sync/fake_cryptauth_v2_enroller.h"
 #include "chromeos/services/device_sync/mock_cryptauth_client.h"
 #include "chromeos/services/device_sync/pref_names.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/gcm_constants.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/pref_service.h"

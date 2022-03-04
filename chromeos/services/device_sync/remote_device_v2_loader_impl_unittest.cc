@@ -7,12 +7,12 @@
 #include <string>
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/bind.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/services/device_sync/cryptauth_device.h"
-#include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "chromeos/services/device_sync/remote_device_v2_loader_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

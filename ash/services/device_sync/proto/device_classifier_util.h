@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_DEVICE_SYNC_PROTO_DEVICE_CLASSIFIER_UTIL_H_
-#define CHROMEOS_SERVICES_DEVICE_SYNC_PROTO_DEVICE_CLASSIFIER_UTIL_H_
+#ifndef ASH_SERVICES_DEVICE_SYNC_PROTO_DEVICE_CLASSIFIER_UTIL_H_
+#define ASH_SERVICES_DEVICE_SYNC_PROTO_DEVICE_CLASSIFIER_UTIL_H_
 
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace chromeos {
 
@@ -21,4 +21,4 @@ const cryptauth::DeviceClassifier& GetDeviceClassifier();
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_DEVICE_SYNC_PROTO_DEVICE_CLASSIFIER_UTIL_H_
+#endif  // ASH_SERVICES_DEVICE_SYNC_PROTO_DEVICE_CLASSIFIER_UTIL_H_

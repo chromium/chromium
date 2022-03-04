@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -16,8 +18,6 @@
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
 #include "chromeos/services/device_sync/pref_names.h"
-#include "chromeos/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"

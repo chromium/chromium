@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/constants",
-  '+components/keyed_service/core',
+  "+ash/services/device_sync",
+  "+components/keyed_service/core",
   "+components/session_manager/core",
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+mojo/public/cpp/bindings",

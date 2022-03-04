@@ -8,6 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
@@ -37,9 +40,6 @@
 #include "chromeos/services/device_sync/fake_synced_bluetooth_address_tracker.h"
 #include "chromeos/services/device_sync/mock_cryptauth_client.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

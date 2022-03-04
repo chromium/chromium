@@ -9,6 +9,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_enrollment.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
+#include "ash/services/device_sync/proto/enum_util.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -18,11 +23,6 @@
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/device_sync/cryptauth_api_call_flow.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
-#include "chromeos/services/device_sync/proto/enum_util.h"
 #include "chromeos/services/device_sync/switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "ash/services/secure_channel/ble_constants.h"
 #include "ash/services/secure_channel/ble_synchronizer_base.h"
 #include "base/bind.h"
@@ -16,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"

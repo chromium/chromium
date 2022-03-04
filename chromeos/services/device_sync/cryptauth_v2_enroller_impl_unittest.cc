@@ -9,6 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_enrollment.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -23,12 +29,6 @@
 #include "chromeos/services/device_sync/fake_cryptauth_key_proof_computer.h"
 #include "chromeos/services/device_sync/mock_cryptauth_client.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/gcm_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"

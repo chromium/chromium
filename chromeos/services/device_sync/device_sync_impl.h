@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -18,8 +20,6 @@
 #include "chromeos/services/device_sync/device_sync_base.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "chromeos/services/device_sync/remote_device_provider.h"
 #include "components/signin/public/identity_manager/account_info.h"

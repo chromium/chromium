@@ -9,13 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_notifier.h"
 #include "chromeos/services/device_sync/cryptauth_device_notifier_impl.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 
 namespace chromeos {
 

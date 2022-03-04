@@ -8,6 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
@@ -22,9 +25,6 @@
 #include "chromeos/services/device_sync/cryptauth_v2_device_sync_test_devices.h"
 #include "chromeos/services/device_sync/mock_cryptauth_client.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -30,8 +30,8 @@ mojom("mojom") {
         "//chromeos/components/multidevice",
       ]
       traits_deps = [
+        "//ash/services/device_sync/proto",
         "//chromeos/components/multidevice/logging",
-        "//chromeos/services/device_sync/proto",
         "//device/bluetooth/public/cpp",
       ]
     },

@@ -9,6 +9,8 @@
 #include <ostream>
 #include <string>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
@@ -16,8 +18,6 @@
 #include "chromeos/services/device_sync/cryptauth_device_notifier.h"
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 
 namespace chromeos {
 

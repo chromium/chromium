@@ -1,8 +1,11 @@
 include_rules = [
   "+ash/constants",
+  "+ash/services/device_sync",
   "+ash/services/multidevice_setup/public/cpp",
   "+crypto",
-  "+chromeos/services/device_sync",
   "+third_party/securemessage",
   "+third_party/ukey2",
+
+  # TODO(https://crbug.com/1164001): Remove this deps when migration is done.
+  "+chromeos/services/device_sync",
 ]

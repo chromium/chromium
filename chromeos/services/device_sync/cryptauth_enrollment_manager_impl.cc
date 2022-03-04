@@ -8,6 +8,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/services/device_sync/proto/enum_util.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/clock.h"
@@ -17,7 +18,6 @@
 #include "chromeos/components/multidevice/secure_message_delegate.h"
 #include "chromeos/services/device_sync/cryptauth_enroller.h"
 #include "chromeos/services/device_sync/pref_names.h"
-#include "chromeos/services/device_sync/proto/enum_util.h"
 #include "chromeos/services/device_sync/sync_scheduler_impl.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/pref_registry_simple.h"

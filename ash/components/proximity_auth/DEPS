@@ -1,4 +1,4 @@
 include_rules = [
-  "+chromeos/services/device_sync/proto",
+  "+ash/services/device_sync/proto",
   "+components/sync_preferences/testing_pref_service_syncable.h",
 ]

@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_MOCK_CRYPTAUTH_CLIENT_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_MOCK_CRYPTAUTH_CLIENT_H_
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_enrollment.pb.h"
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {

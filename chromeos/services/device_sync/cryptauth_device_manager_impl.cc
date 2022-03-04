@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <utility>
 
+#include "ash/services/device_sync/proto/enum_util.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -21,7 +22,6 @@
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
 #include "chromeos/services/device_sync/pref_names.h"
-#include "chromeos/services/device_sync/proto/enum_util.h"
 #include "chromeos/services/device_sync/sync_scheduler_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

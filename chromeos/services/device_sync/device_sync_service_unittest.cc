@@ -8,6 +8,9 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -45,9 +48,6 @@
 #include "chromeos/services/device_sync/fake_device_sync_observer.h"
 #include "chromeos/services/device_sync/fake_remote_device_provider.h"
 #include "chromeos/services/device_sync/fake_software_feature_manager.h"
-#include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
 #include "chromeos/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"

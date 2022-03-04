@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/default_clock.h"
@@ -17,8 +19,6 @@
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_result.h"
 #include "chromeos/services/device_sync/cryptauth_scheduler.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;

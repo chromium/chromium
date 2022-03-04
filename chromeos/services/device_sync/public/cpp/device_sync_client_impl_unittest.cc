@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -23,7 +24,6 @@
 #include "chromeos/services/device_sync/device_sync_impl.h"
 #include "chromeos/services/device_sync/fake_device_sync.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
 #include "chromeos/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"

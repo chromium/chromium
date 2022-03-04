@@ -7,10 +7,10 @@
 
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/cryptauth_device_syncer.h"
 #include "chromeos/services/device_sync/cryptauth_device_syncer_impl.h"
-#include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;

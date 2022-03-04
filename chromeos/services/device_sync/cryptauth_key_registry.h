@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_REGISTRY_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_REGISTRY_H_
 
+#include "ash/services/device_sync/proto/cryptauth_enrollment.pb.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
-#include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
 
 namespace chromeos {
 

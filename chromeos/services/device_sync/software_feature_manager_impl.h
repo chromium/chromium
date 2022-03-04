@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
@@ -16,7 +17,6 @@
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/services/device_sync/software_feature_manager.h"
 
 namespace chromeos {

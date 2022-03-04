@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
 namespace ash::secure_channel {

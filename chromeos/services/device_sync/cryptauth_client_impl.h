@@ -9,10 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/device_sync/cryptauth_api_call_flow.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

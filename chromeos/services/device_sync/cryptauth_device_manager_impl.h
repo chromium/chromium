@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -14,7 +15,6 @@
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_gcm_manager.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/services/device_sync/sync_scheduler.h"
 
 class PrefService;

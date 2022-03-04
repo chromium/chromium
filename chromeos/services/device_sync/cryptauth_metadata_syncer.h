@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include "ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
-#include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {

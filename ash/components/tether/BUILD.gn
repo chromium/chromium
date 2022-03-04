@@ -138,8 +138,8 @@ static_library("tether") {
   ]
 
   public_deps = [
+    "//ash/services/device_sync/proto",
     "//ash/services/multidevice_setup/public/mojom",
-    "//chromeos/services/device_sync/proto",
   ]
 }
 

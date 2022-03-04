@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "ash/services/multidevice_setup/fake_host_backend_delegate.h"
 #include "ash/services/multidevice_setup/fake_host_verifier.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,7 +18,6 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -4,6 +4,8 @@
 
 #include "chromeos/services/device_sync/cryptauth_v2_device_manager_impl.h"
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry_impl.h"
@@ -14,8 +16,6 @@
 #include "chromeos/services/device_sync/fake_cryptauth_scheduler.h"
 #include "chromeos/services/device_sync/fake_synced_bluetooth_address_tracker.h"
 #include "chromeos/services/device_sync/mock_cryptauth_client.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

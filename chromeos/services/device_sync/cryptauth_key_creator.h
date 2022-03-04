@@ -7,11 +7,11 @@
 
 #include <string>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

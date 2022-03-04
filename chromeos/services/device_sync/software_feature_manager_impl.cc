@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "ash/services/device_sync/proto/enum_util.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
 #include "chromeos/services/device_sync/cryptauth_feature_status_setter_impl.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/device_sync/proto/enum_util.h"
 
 namespace chromeos {
 

@@ -31,8 +31,8 @@ mojom("mojom") {
       traits_headers = [ "device_sync_mojom_traits.h" ]
       traits_sources = [ "device_sync_mojom_traits.cc" ]
       traits_public_deps = [
+        "//ash/services/device_sync/proto",
         "//chromeos/services/device_sync:feature_status_change",
-        "//chromeos/services/device_sync/proto",
       ]
     },
   ]
@@ -45,10 +45,10 @@ source_set("unit_tests") {
 
   deps = [
     ":mojom",
+    "//ash/services/device_sync/proto",
     "//base",
     "//base/test:test_support",
     "//chromeos/services/device_sync:feature_status_change",
-    "//chromeos/services/device_sync/proto",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
   ]

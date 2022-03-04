@@ -6,10 +6,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_proof_computer.h"
 #include "chromeos/services/device_sync/cryptauth_key_proof_computer_impl.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/ec_signature_creator.h"
 #include "crypto/hmac.h"

@@ -7,11 +7,11 @@
 
 #include <memory>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/device_sync/cryptauth_enroller.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace chromeos {
 

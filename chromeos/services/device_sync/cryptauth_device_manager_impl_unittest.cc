@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/services/device_sync/proto/enum_util.h"
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
@@ -24,7 +25,6 @@
 #include "chromeos/services/device_sync/mock_sync_scheduler.h"
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "chromeos/services/device_sync/pref_names.h"
-#include "chromeos/services/device_sync/proto/enum_util.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"

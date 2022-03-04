@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
+#include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -20,8 +22,6 @@
 #include "chromeos/services/device_sync/cryptauth_key_registry.h"
 #include "chromeos/services/device_sync/cryptauth_metadata_syncer_impl.h"
 #include "chromeos/services/device_sync/cryptauth_task_metrics_logger.h"
-#include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/synced_bluetooth_address_tracker.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 

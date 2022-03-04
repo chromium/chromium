@@ -6,11 +6,11 @@
 
 #include <sstream>
 
+#include "ash/services/device_sync/proto/cryptauth_logging.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/device_sync/proto/cryptauth_logging.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 
 namespace chromeos {

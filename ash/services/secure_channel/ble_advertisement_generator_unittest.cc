@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "ash/services/secure_channel/mock_foreground_eid_generator.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

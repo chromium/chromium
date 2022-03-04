@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "ash/services/secure_channel/raw_eid_generator_impl.h"
 #include "base/strings/string_util.h"
 #include "base/test/simple_test_clock.h"
@@ -14,7 +15,6 @@
 #include "chromeos/components/multidevice/beacon_seed.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
