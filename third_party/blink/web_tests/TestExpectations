@@ -7621,3 +7621,5 @@ crbug.com/1302571 virtual/threaded/http/tests/devtools/isolated-code-cache/cross
 
 # Sheriff 2022-03-04
 crbug.com/1302856 [ Mac11-arm64 ] virtual/exotic-color-space/images/rgb-png-with-cmyk-color-profile.html [ Failure Pass ]
+crbug.com/1297587 [ Mac10.14 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass ]
+crbug.com/1297587 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass ]
