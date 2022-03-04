@@ -22452,6 +22452,28 @@ Called by update_debug_scenarios.py.-->
   <int value="38" label="Settings - Shortcuts (custom)"/>
   <int value="39" label="CSS Overview"/>
   <int value="40" label="Recorder"/>
+  <int value="41" label="Application - Trust Tokens"/>
+  <int value="42" label="Application - Reporting API"/>
+  <int value="43" label="Application - Interest Groups"/>
+  <int value="44" label="Application - Back/forward cache"/>
+  <int value="45" label="Application - Cache Storage"/>
+  <int value="46" label="Application - Background Fetch"/>
+  <int value="47" label="Application - Background Sync"/>
+  <int value="48" label="Application - Push Messaging"/>
+  <int value="49" label="Application - Notifications"/>
+  <int value="50" label="Application - Payment Handler"/>
+  <int value="51" label="Application - Periodic Background Sync"/>
+  <int value="52" label="Application - Service Workers"/>
+  <int value="53" label="Application - Manifest"/>
+  <int value="54" label="Application - Storage"/>
+  <int value="55" label="Application - Cookies"/>
+  <int value="56" label="Application - Frame Details"/>
+  <int value="57" label="Application - Frame Resource"/>
+  <int value="58" label="Application - Frame Window"/>
+  <int value="59" label="Application - Frame Worker"/>
+  <int value="60" label="Application - Local/Session Storage"/>
+  <int value="61" label="Application - IndexedDB"/>
+  <int value="62" label="Application - Web SQL"/>
 </enum>
 
 <enum name="DevToolsRecordingEdited">
