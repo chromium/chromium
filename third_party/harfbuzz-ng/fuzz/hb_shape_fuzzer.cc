@@ -11,7 +11,8 @@
 #include <hb-ot.h>
 // clang-format on
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 
 constexpr size_t kMaxInputLength = 16800;
@@ -40,7 +41,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size > sizeof(text32)) {
     memcpy(text32, data + size - sizeof(text32), sizeof(text32));
     HbScoped<hb_buffer_t> buffer(hb_buffer_create());
-    hb_buffer_add_utf32(buffer.get(), text32, base::size(text32), 0, -1);
+    hb_buffer_add_utf32(buffer.get(), text32, std::size(text32), 0, -1);
     hb_buffer_guess_segment_properties(buffer.get());
     hb_shape(font.get(), buffer.get(), nullptr, 0);
   }

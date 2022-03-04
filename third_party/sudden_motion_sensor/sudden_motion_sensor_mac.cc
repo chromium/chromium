@@ -53,9 +53,9 @@
 #include <math.h>
 #include <sys/sysctl.h>
 
+#include <iterator>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
 
@@ -339,7 +339,7 @@ bool SuddenMotionSensor::Init() {
 
   // Look for the current model in the supported sensor list.
   base::ScopedCFTypeRef<CFDataRef> board_id_data;
-  const int kNumSensors = base::size(kSupportedSensors);
+  const int kNumSensors = std::size(kSupportedSensors);
 
   for (int i = 0; i < kNumSensors; ++i) {
     // Check if the supported sensor model name is a prefix

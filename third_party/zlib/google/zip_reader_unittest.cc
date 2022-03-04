@@ -8,12 +8,12 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <iterator>
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -516,7 +516,7 @@ TEST_F(ZipReaderTest, OpenFromString) {
       "\x50\x75\x78\x0b\x00\x01\x04\x8e\xf0\x00\x00\x04\x88\x13\x00\x00"
       "\x50\x4b\x05\x06\x00\x00\x00\x00\x01\x00\x01\x00\x4e\x00\x00\x00"
       "\x52\x00\x00\x00\x00\x00";
-  std::string data(kTestData, base::size(kTestData));
+  std::string data(kTestData, std::size(kTestData));
   ZipReader reader;
   ASSERT_TRUE(reader.OpenFromString(data));
   base::FilePath target_path(FILE_PATH_LITERAL("test.txt"));
