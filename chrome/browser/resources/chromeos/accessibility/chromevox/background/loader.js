@@ -31,7 +31,7 @@ goog.require('EventGenerator');
 goog.require('EventSourceState');
 goog.require('ExtensionBridge');
 goog.require('GestureCommandData');
-goog.require('GestureInterface');
+goog.require('GestureGranularity');
 goog.require('JaPhoneticMap');
 goog.require('KeyCode');
 goog.require('LocaleOutputHelper');

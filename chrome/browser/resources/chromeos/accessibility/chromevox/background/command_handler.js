@@ -5,6 +5,7 @@
 /**
  * @fileoverview ChromeVox commands.
  */
+import {GestureInterface} from './gesture_interface.js';
 import {SmartStickyMode} from './smart_sticky_mode.js';
 
 const ActionType = chrome.automation.ActionType;

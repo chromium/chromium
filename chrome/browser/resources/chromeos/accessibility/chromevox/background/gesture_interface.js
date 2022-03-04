@@ -7,11 +7,8 @@
  * CommandHandler and GestureCommandHandler.
  */
 
-goog.provide('GestureInterface');
+export const GestureInterface = {};
 
-goog.require('GestureGranularity');
-
-goog.scope(function() {
 /** @return {GestureGranularity} */
 GestureInterface.getGranularity = function() {
   if (GestureInterface.granularityGetter) {
@@ -35,4 +32,3 @@ GestureInterface.granularityGetter = null;
 
 /** @public {?function(GestureGranularity)} */
 GestureInterface.granularitySetter = null;
-});  // goog.scope
