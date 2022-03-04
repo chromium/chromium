@@ -6,12 +6,10 @@ package org.chromium.chrome.browser.download;
 
 import android.Manifest.permission;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.download.DownloadCollectionBridge;
-import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
@@ -167,15 +165,8 @@ public class DownloadController {
                 new DownloadItem(true, info), true);
     }
 
-    /**
-     * Called when a download is started.
-     */
     @CalledByNative
-    private static void onDownloadStarted() {
-        if (!BrowserStartupController.getInstance().isFullBrowserStarted()) return;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)) return;
-        DownloadUtils.showDownloadStartToast(ContextUtils.getApplicationContext());
-    }
+    private static void onDownloadStarted() {}
 
     @NativeMethods
     interface Natives {

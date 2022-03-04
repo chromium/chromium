@@ -1401,11 +1401,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "download-progress-message",
-    "owners": [ "shaktisahu" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "download-range",
     "owners": [ "xingliu" ],
     "expiry_milestone": 105

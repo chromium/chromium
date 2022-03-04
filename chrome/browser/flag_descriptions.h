@@ -651,9 +651,6 @@ extern const char kDownloadLaterDescription[];
 extern const char kDownloadLaterDebugOnWifiName[];
 extern const char kDownloadLaterDebugOnWifiNameDescription[];
 
-extern const char kDownloadProgressMessageName[];
-extern const char kDownloadProgressMessageDescription[];
-
 extern const char kDownloadRangeName[];
 extern const char kDownloadRangeDescription[];
 

@@ -1055,10 +1055,6 @@ const char kDownloadLaterDebugOnWifiName[] =
 const char kDownloadLaterDebugOnWifiNameDescription[] =
     "Show download later dialog on WIFI.";
 
-const char kDownloadProgressMessageName[] = "Show download progress message";
-const char kDownloadProgressMessageDescription[] =
-    "Shows download progress message UI.";
-
 const char kDownloadRangeName[] = "Enable download range support";
 const char kDownloadRangeDescription[] =
     "Enables arbitrary download range request support.";
