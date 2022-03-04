@@ -75,7 +75,7 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
     auto it = invalidations_.find(topic);
     if (it == invalidations_.end()) {
       ADD_FAILURE() << "No invalidations for topic " << topic;
-      return nullptr;
+      return "";
     } else {
       return it->second.back().payload();
     }
