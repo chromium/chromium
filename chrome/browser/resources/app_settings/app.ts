@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_components/app_management/file_handling_item.js';
 import 'chrome://resources/cr_components/app_management/more_permissions_item.js';

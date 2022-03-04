@@ -2386,7 +2386,6 @@ static_library("browser") {
     "//ui/surface",
     "//ui/web_dialogs",
     "//ui/webui",
-    "//ui/webui/resources/cr_components/app_management:mojo_bindings",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
     "//ui/webui/resources/cr_components/customize_themes:mojom",
     "//ui/webui/resources/cr_components/most_visited:mojom",
@@ -4472,6 +4471,7 @@ static_library("browser") {
       "//services/device/public/cpp/hid",
       "//third_party/sqlite",
       "//third_party/zxcvbn-cpp",
+      "//ui/webui/resources/cr_components/app_management:mojo_bindings",
     ]
     public_deps += [
       "//chrome/common:buildflags",

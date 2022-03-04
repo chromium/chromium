@@ -76,4 +76,5 @@ export enum AppManagementUserAction {
   RunOnOsLoginModeTurnedOff = 28,
   FileHandlingTurnedOn = 29,
   FileHandlingTurnedOff = 30,
+  FileHandlingOverflowShown = 31,
 }
