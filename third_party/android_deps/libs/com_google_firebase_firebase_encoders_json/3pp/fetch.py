@@ -17,7 +17,7 @@ _GROUP_NAME = 'com/google/firebase'
 _MODULE_NAME = 'firebase-encoders-json'
 _FILE_EXT = 'aar'
 _OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

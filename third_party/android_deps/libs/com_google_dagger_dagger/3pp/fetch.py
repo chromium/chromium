@@ -17,7 +17,7 @@ _GROUP_NAME = 'com/google/dagger'
 _MODULE_NAME = 'dagger'
 _FILE_EXT = 'jar'
 _OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

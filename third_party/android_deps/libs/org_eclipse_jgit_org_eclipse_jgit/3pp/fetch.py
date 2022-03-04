@@ -16,8 +16,8 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'org/eclipse/jgit'
 _MODULE_NAME = 'org.eclipse.jgit'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_OVERRIDE_LATEST = '4.4.1.201607150455-r'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

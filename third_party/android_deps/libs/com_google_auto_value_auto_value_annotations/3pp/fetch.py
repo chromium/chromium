@@ -16,8 +16,8 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/google/auto/value'
 _MODULE_NAME = 'auto-value-annotations'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_OVERRIDE_LATEST = '1.9'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

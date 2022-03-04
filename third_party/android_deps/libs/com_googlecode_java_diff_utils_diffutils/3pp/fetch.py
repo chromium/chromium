@@ -17,7 +17,7 @@ _GROUP_NAME = 'com/googlecode/java-diff-utils'
 _MODULE_NAME = 'diffutils'
 _FILE_EXT = 'jar'
 _OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

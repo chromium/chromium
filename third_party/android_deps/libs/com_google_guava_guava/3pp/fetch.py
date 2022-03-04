@@ -16,8 +16,8 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/google/guava'
 _MODULE_NAME = 'guava'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_OVERRIDE_LATEST = '31.0.1-jre'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

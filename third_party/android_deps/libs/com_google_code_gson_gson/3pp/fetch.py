@@ -17,7 +17,7 @@ _GROUP_NAME = 'com/google/code/gson'
 _MODULE_NAME = 'gson'
 _FILE_EXT = 'jar'
 _OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

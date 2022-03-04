@@ -17,7 +17,7 @@ _GROUP_NAME = 'com/google/flatbuffers'
 _MODULE_NAME = 'flatbuffers-java'
 _FILE_EXT = 'jar'
 _OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

@@ -17,7 +17,7 @@ _GROUP_NAME = 'com/android/support'
 _MODULE_NAME = 'support-annotations'
 _FILE_EXT = 'jar'
 _OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

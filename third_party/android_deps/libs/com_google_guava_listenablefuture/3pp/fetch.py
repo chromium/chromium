@@ -16,8 +16,8 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/google/guava'
 _MODULE_NAME = 'listenablefuture'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_OVERRIDE_LATEST = '1.0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

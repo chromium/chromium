@@ -16,8 +16,8 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/google/errorprone'
 _MODULE_NAME = 'error_prone_annotations'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_OVERRIDE_LATEST = '2.9.0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

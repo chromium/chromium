@@ -19,7 +19,7 @@ import org.gradle.api.logging.Logger
  */
 class ChromiumDepGraph {
 
-    private static final String DEFAULT_CIPD_SUFFIX = 'cr0'
+    private static final String DEFAULT_CIPD_SUFFIX = 'cr1'
 
     // Some libraries don't properly fill their POM with the appropriate licensing information. It is provided here from
     // manual lookups. Note that licenseUrl must provide textual content rather than be an html page.
@@ -29,13 +29,11 @@ class ChromiumDepGraph {
         com_android_tools_desugar_jdk_libs: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/google/desugar_jdk_libs/master/LICENSE',
             licenseName: 'GNU General Public License, version 2, with the Classpath Exception',
-            generateTarget: false,
-            cipdSuffix: 'cr1'),
+            generateTarget: false),
         com_android_tools_desugar_jdk_libs_configuration: new PropertyOverride(
             licensePath: 'licenses/desugar_jdk_libs_configuration.txt',
             licenseName: 'BSD 3-Clause',
-            generateTarget: false,
-            cipdSuffix: 'cr1'),
+            generateTarget: false),
         com_github_kevinstern_software_and_algorithms: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/KevinStern/software-and-algorithms/master/LICENSE',
             licenseName: 'MIT License'),
@@ -74,6 +72,8 @@ class ChromiumDepGraph {
             url: 'https://errorprone.info/',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
+        com_google_errorprone_error_prone_core: new PropertyOverride(
+            overrideLatest: true),
         com_google_firebase_firebase_annotations: new PropertyOverride(
             description: 'Common annotations for Firebase SKDs.'),
         com_google_firebase_firebase_common: new PropertyOverride(
@@ -157,90 +157,66 @@ class ChromiumDepGraph {
         org_checkerframework_dataflow_errorprone: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
             licenseName: 'GPL v2 with the classpath exception'),
-        // cipdSuffix is modified for org_ow2_asm_asm_X to force a new version
-        // to be downloaded due to a 3pp bug. Suffix can be removed on next
-        // package update as the bug is fixed.
         org_ow2_asm_asm: new PropertyOverride(
             licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD',
-            cipdSuffix: 'cr1'),
+            licenseName: 'BSD'),
         org_ow2_asm_asm_analysis: new PropertyOverride(
             licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD',
-            cipdSuffix: 'cr1'),
+            licenseName: 'BSD'),
         org_ow2_asm_asm_commons: new PropertyOverride(
             licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD',
-            cipdSuffix: 'cr1'),
+            licenseName: 'BSD'),
         org_ow2_asm_asm_tree: new PropertyOverride(
             licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD',
-            cipdSuffix: 'cr1'),
+            licenseName: 'BSD'),
         org_ow2_asm_asm_util: new PropertyOverride(
             licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
-            licenseName: 'BSD',
-            cipdSuffix: 'cr1'),
+            licenseName: 'BSD'),
         org_pcollections_pcollections: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/hrldcpr/pcollections/master/LICENSE',
             licenseName: 'The MIT License'),
         org_robolectric_annotations: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
-        // cipdSuffix for org_robolectric_X is to force a new version to be
-        // downloaded due to a 3pp bug. Suffix can be removed on next package
-        // update.
+            licenseName: 'MIT'),
         org_robolectric_junit: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_nativeruntime: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
         org_robolectric_pluginapi: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_plugins_maven_dependency_resolver: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_resources: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_robolectric: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_sandbox: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_shadowapi: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_shadows_framework: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_shadows_multidex: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_shadows_playservices: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_utils: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
         org_robolectric_utils_reflector: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT',
-            cipdSuffix: 'cr1'),
+            licenseName: 'MIT'),
     ]
 
     private static final Set<String> ALLOWED_EMPTY_DEPS = [

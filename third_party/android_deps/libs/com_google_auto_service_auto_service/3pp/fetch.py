@@ -17,7 +17,7 @@ _GROUP_NAME = 'com/google/auto/service'
 _MODULE_NAME = 'auto-service'
 _FILE_EXT = 'jar'
 _OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

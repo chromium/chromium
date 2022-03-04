@@ -16,8 +16,8 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'io/github/java-diff-utils'
 _MODULE_NAME = 'java-diff-utils'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_OVERRIDE_LATEST = '4.0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

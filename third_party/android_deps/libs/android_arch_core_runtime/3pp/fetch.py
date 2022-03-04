@@ -17,7 +17,7 @@ _GROUP_NAME = 'android/arch/core'
 _MODULE_NAME = 'runtime'
 _FILE_EXT = 'aar'
 _OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():
