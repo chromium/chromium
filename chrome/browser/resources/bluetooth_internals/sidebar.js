@@ -85,7 +85,13 @@ export class Sidebar extends PageManagerObserver {
   removeItem(pageName) {
     pageName = pageName.toLowerCase();
     const query = 'li[data-page-name="' + pageName + '"]';
-    this.sidebarList_.removeChild(this.sidebarList_.querySelector(query));
+    const selection = this.sidebarList_.querySelector(query);
+
+    // Devices are only added to the sidebar when the user pressed "Inspect" on
+    // them in the main table. Only try to remove the element if it exists.
+    if (selection) {
+      this.sidebarList_.removeChild(selection);
+    }
   }
 
   /**
