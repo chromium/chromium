@@ -115,10 +115,6 @@ void FloatRoundedRect::Radii::Shrink(const gfx::InsetsF& insets) {
 }
 
 void FloatRoundedRect::Radii::Expand(const gfx::OutsetsF& outsets) {
-  DCHECK_GE(outsets.top(), 0);
-  DCHECK_GE(outsets.bottom(), 0);
-  DCHECK_GE(outsets.left(), 0);
-  DCHECK_GE(outsets.right(), 0);
   if (top_left_.width() > 0 && top_left_.height() > 0) {
     top_left_.set_width(top_left_.width() + outsets.left());
     top_left_.set_height(top_left_.height() + outsets.top());
