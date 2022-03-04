@@ -7,4 +7,6 @@
  *
  */
 
-goog.require('LogPage');
+goog.require('LogStore');
+goog.require('Msgs');
+goog.require('TreeLog');

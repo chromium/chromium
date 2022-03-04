@@ -7,18 +7,10 @@
  *
  */
 
-goog.provide('LogPage');
-
-goog.require('LogStore');
-goog.require('TreeLog');
-goog.require('Msgs');
-
 /**
  * Class to manage the log page.
  */
-LogPage = class {
-  constructor() {}
-
+export class LogPage {
   static init() {
     LogPage.backgroundWindow = chrome.extension.getBackgroundPage();
     LogPage.LogStore = LogPage.backgroundWindow.LogStore.getInstance();
@@ -199,7 +191,7 @@ LogPage = class {
     timeStr += ('000' + time % 1000).slice(-3);
     return timeStr;
   }
-};
+}
 
 /**
  * The Background object.

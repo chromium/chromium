@@ -48,7 +48,6 @@ chromevox_modules = [
   "background/keymaps/key_map.js",
   "background/output/locale_output_helper.js",
   "background/logging/event_stream_logger.js",
-  "background/logging/log.js",
   "background/logging/log_store.js",
   "background/logging/log_types.js",
   "background/logging/output_logger.js",
@@ -133,6 +132,7 @@ chromevox_es6_modules = [
   "background/page_load_sound_handler.js",
   "background/pointer_handler.js",
   "background/smart_sticky_mode.js",
+  "background/logging/log.js",
 ]
 
 # Closure library modules needed by chromevox.
