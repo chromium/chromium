@@ -112,36 +112,88 @@ std::string H(std::string input, const std::string& salt) {
   return ret;
 }
 
-bool HasCorrectToken(const std::string& board,
-                     const std::string& hash_of_current_token) {
-  // If you are supposed to know the correct token, then you will be able to
-  // find it ~if you go to the place we all know and love~.
+enum class TokenAuthority {
+  kRejected,
+  kAllowedRequiresHardwareChecks,
+  kAllowedOverridesHardwareChecks,
+};
+
+// Returns the degree to which we authorize the user's provided token. Some
+// tokens are intended to allow developers/tests to avoid the hardware checks.
+//
+// If you are supposed to know the correct token, then you will be able to
+// find it ~if you go to the place we all know and love~.
+//
+// For the maintainer:
+//
+// H(H("token", kSaltForPrefStorage), "salt") =
+//   "aT79k1Uv7v7D5s2/rpYUJYRXTUq4EkPN2FK4JBQJWgw=";
+TokenAuthority GetAuthorityForToken(const std::string& board,
+                                    const std::string& hash_of_current_token) {
+  // The following table shows in what situations various boards require
+  // hardware checks or skip them, based on what token was provided:
   //
-  // For the maintainer:
+  //                  | super | test | /board
+  //    ------------------------------------
+  //    *-borealis    | skip  | skip | skip
+  //    volteer       | skip  | yes  | yes
+  //    brya          | skip  | yes  | skip
+  //    monkey_island | skip  | yes  | skip
   //
-  // H(H("token", kSaltForPrefStorage), "salt") =
-  //   "aT79k1Uv7v7D5s2/rpYUJYRXTUq4EkPN2FK4JBQJWgw=";
+  // TODO(b/222388986): The test and /board tokens are intended to do the same
+  // thing, so add hardware checks to brya/monkey_island once we know what those
+  // are.
+
+  // The "super" token.
+  if (H(hash_of_current_token, "i9n6HT3+3Bo:C1p^_qk!\\") ==
+      "X1391g+2yiuBQrceA3gRGrT7+DQcaYGR/GkmFscyOfQ=") {
+    LOG(WARNING) << "Super-token provided, bypassing hardware checks.";
+    return TokenAuthority::kAllowedOverridesHardwareChecks;
+  }
+
+  // The "test" token.
+  if (H(hash_of_current_token, "MpOI9+d58she4,97rI") ==
+      "Eec1m+UrIkLUu3L6mV+5zTYZId6HJ+vz+50MseJJaGw=") {
+    bool bypass_hardware =
+        base::EndsWith(board, kOverrideHardwareChecksBoardSuffix);
+    LOG(WARNING) << "Test-token provided, bypass_hardware=" << bypass_hardware;
+    return bypass_hardware ? TokenAuthority::kAllowedOverridesHardwareChecks
+                           : TokenAuthority::kAllowedRequiresHardwareChecks;
+  }
+
+  // The board-specific tokens.
   if (base::EndsWith(board, kOverrideHardwareChecksBoardSuffix)) {
     return H(hash_of_current_token, "MXlY+SFZ!2,P_k^02]hK") ==
-           "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=";
+                   "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4="
+               ? TokenAuthority::kAllowedOverridesHardwareChecks
+               : TokenAuthority::kRejected;
   } else if (board == "volteer") {
     return H(hash_of_current_token, "F9sOMmgrk9%C$poxLT.Eg") ==
-           "Gn5gDfMLbMrBI10zrVba6q/1QEGJilyEyUeNiOID0X8=";
+                   "Gn5gDfMLbMrBI10zrVba6q/1QEGJilyEyUeNiOID0X8="
+               ? TokenAuthority::kAllowedRequiresHardwareChecks
+               : TokenAuthority::kRejected;
+  } else if (board == "brya") {
+    return H(hash_of_current_token, "tPl24iMxXNR,w$h6,g") ==
+                   "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U="
+               ? TokenAuthority::kAllowedOverridesHardwareChecks
+               : TokenAuthority::kRejected;
+  } else if (board == "guybrush" || board == "majolica") {
+    return H(hash_of_current_token, "^_GkTVWDP.FQo5KclS") ==
+                   "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU="
+               ? TokenAuthority::kAllowedOverridesHardwareChecks
+               : TokenAuthority::kRejected;
   }
-  return false;
+  return TokenAuthority::kRejected;
 }
 
 AllowStatus GetAsyncAllowStatus(const std::string& hash_of_current_token) {
   // First, check the token.
   std::string board = GetBoardName();
-  if (!HasCorrectToken(board, hash_of_current_token)) {
+  TokenAuthority auth = GetAuthorityForToken(board, hash_of_current_token);
+  if (auth == TokenAuthority::kRejected) {
     LOG(WARNING) << "Incorrect token for board=" << board;
     return AllowStatus::kIncorrectToken;
-  }
-
-  // Then, avoid excluding -borealis variants, which are dev-only boards that
-  // get a free pass.
-  if (base::EndsWith(board, kOverrideHardwareChecksBoardSuffix)) {
+  } else if (auth == TokenAuthority::kAllowedOverridesHardwareChecks) {
     return AllowStatus::kAllowed;
   }
 
