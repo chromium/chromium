@@ -13,6 +13,7 @@
 
 namespace views {
 class ImageView;
+class Label;
 }  // namespace views
 
 namespace ash {
@@ -43,7 +44,7 @@ class ASH_EXPORT SearchResultInlineIconView : public views::View {
 
   views::ImageView* icon_image_ = nullptr;  // Owned by views hierarchy.
 
-  SizedLabel* label_ = nullptr;  // Owned by views hierarchy.
+  views::Label* label_ = nullptr;  // Owned by views hierarchy.
 };
 
 }  // namespace ash
