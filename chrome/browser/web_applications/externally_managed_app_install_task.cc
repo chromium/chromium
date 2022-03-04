@@ -27,6 +27,7 @@
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/installable_params.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
@@ -191,8 +192,8 @@ void ExternallyManagedAppInstallTask::UninstallPlaceholderApp(
 void ExternallyManagedAppInstallTask::OnPlaceholderUninstalled(
     content::WebContents* web_contents,
     ResultCallback result_callback,
-    bool uninstalled) {
-  if (!uninstalled) {
+    webapps::UninstallResultCode code) {
+  if (code != webapps::UninstallResultCode::kSuccess) {
     LOG(ERROR) << "Failed to uninstall placeholder for: "
                << install_options_.install_url;
     std::move(result_callback)

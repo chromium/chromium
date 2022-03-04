@@ -73,6 +73,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -487,8 +488,8 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
         DCHECK(app->CanUserUninstallWebApp());
         provider->install_finalizer().UninstallWebApp(
             app_id, webapps::WebappUninstallSource::kAppsPage,
-            base::BindLambdaForTesting([&](bool uninstalled) {
-              EXPECT_TRUE(uninstalled);
+            base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+              EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
               run_loop.Quit();
             }));
         run_loop.Run();

@@ -62,6 +62,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -621,8 +622,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
     ASSERT_TRUE(provider->install_finalizer().CanUserUninstallWebApp(app_id));
     provider->install_finalizer().UninstallWebApp(
         app_id, webapps::WebappUninstallSource::kAppMenu,
-        base::BindLambdaForTesting([&](bool uninstalled) {
-          EXPECT_TRUE(uninstalled);
+        base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+          EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
           run_loop.Quit();
         }));
 

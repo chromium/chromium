@@ -41,6 +41,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -188,10 +189,11 @@ class AppServiceWrapperTest : public ::testing::Test {
           .UninstallExternalWebApp(
               app_id.app_id(),
               webapps::WebappUninstallSource::kExternalPreinstalled,
-              base::BindLambdaForTesting([&](bool uninstalled) {
-                EXPECT_TRUE(uninstalled);
-                run_loop.Quit();
-              }));
+              base::BindLambdaForTesting(
+                  [&](webapps::UninstallResultCode code) {
+                    EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+                    run_loop.Quit();
+                  }));
       run_loop.Run();
       task_environment_.RunUntilIdle();
       return;

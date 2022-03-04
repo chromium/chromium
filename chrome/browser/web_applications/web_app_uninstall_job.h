@@ -72,7 +72,7 @@ class WebAppUninstallJob {
   void StopAppRegistryModification();
 
  private:
-  void OnSubAppUninstalled(bool success);
+  void OnSubAppUninstalled(webapps::UninstallResultCode code);
   void OnOsHooksUninstalled(OsHooksErrors errors);
   void OnIconDataDeleted(bool success);
   void MaybeFinishUninstall();

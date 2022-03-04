@@ -29,6 +29,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -371,8 +372,15 @@ void WebAppInstallManager::UninstallWithoutRegistryUpdateFromSync(
   if (!started_)
     return;
 
-  finalizer_->UninstallWithoutRegistryUpdateFromSync(std::move(web_apps),
-                                                     std::move(callback));
+  finalizer_->UninstallWithoutRegistryUpdateFromSync(
+      std::move(web_apps),
+      base::BindRepeating(
+          [](RepeatingUninstallCallback callback, const web_app::AppId& app_id,
+             webapps::UninstallResultCode code) {
+            callback.Run(app_id,
+                         code == webapps::UninstallResultCode::kSuccess);
+          },
+          std::move(callback)));
 }
 
 void WebAppInstallManager::RetryIncompleteUninstalls(

@@ -50,9 +50,11 @@ class WebAppInstallFinalizer {
       base::OnceCallback<void(const AppId& app_id,
                               webapps::InstallResultCode code,
                               OsHooksErrors os_hooks_errors)>;
-  using UninstallWebAppCallback = base::OnceCallback<void(bool uninstalled)>;
+  using UninstallWebAppCallback =
+      base::OnceCallback<void(webapps::UninstallResultCode code)>;
   using RepeatingUninstallCallback =
-      base::RepeatingCallback<void(const AppId& app_id, bool uninstalled)>;
+      base::RepeatingCallback<void(const AppId& app_id,
+                                   webapps::UninstallResultCode code)>;
 
   struct FinalizeOptions {
     FinalizeOptions();

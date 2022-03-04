@@ -38,6 +38,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -270,11 +271,12 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
     base::RunLoop run_loop;
     web_app::WebAppProvider::GetForTest(browser()->profile())
         ->install_finalizer()
-        .UninstallWebApp(app_id, webapps::WebappUninstallSource::kAppMenu,
-                         base::BindLambdaForTesting([&](bool uninstalled) {
-                           EXPECT_TRUE(uninstalled);
-                           run_loop.Quit();
-                         }));
+        .UninstallWebApp(
+            app_id, webapps::WebappUninstallSource::kAppMenu,
+            base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+              EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+              run_loop.Quit();
+            }));
     run_loop.Run();
 
     web_app::SetInstallBounceMetricTimeForTesting(absl::nullopt);

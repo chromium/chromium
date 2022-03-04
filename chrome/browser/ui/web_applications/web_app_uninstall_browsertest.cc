@@ -25,6 +25,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -46,8 +47,8 @@ class WebAppUninstallBrowserTest : public WebAppControllerBrowserTest {
     DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
     provider->install_finalizer().UninstallWebApp(
         app_id, webapps::WebappUninstallSource::kAppMenu,
-        base::BindLambdaForTesting([&](bool uninstalled) {
-          EXPECT_TRUE(uninstalled);
+        base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+          EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
           run_loop.Quit();
         }));
 
@@ -158,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindLambdaForTesting([&](bool uninstalled) {
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         if (quit_run_loop)
           run_loop.Quit();
         quit_run_loop = true;
@@ -172,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   // Trigger second uninstall call and wait for result.
   provider->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindLambdaForTesting([&](bool uninstalled) {
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         if (quit_run_loop)
           run_loop.Quit();
         quit_run_loop = true;

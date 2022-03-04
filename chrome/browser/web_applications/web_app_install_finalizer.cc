@@ -281,7 +281,8 @@ void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
     LOG(WARNING) << "Couldn't uninstall web app with url " << app_url
                  << "; No corresponding web app for url.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), /*uninstalled=*/false));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  webapps::UninstallResultCode::kError));
     return;
   }
 
@@ -481,7 +482,7 @@ void WebAppInstallFinalizer::UninstallWebAppInternal(
     UninstallWebAppCallback callback) {
   if (registrar_->GetAppById(app_id) == nullptr ||
       base::Contains(pending_uninstalls_, app_id)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(webapps::UninstallResultCode::kError);
     return;
   }
   auto uninstall_task = std::make_unique<WebAppUninstallJob>(
@@ -507,7 +508,7 @@ void WebAppInstallFinalizer::OnUninstallComplete(
     base::UmaHistogramBoolean("Webapp.SyncInitiatedUninstallResult",
                               code == webapps::UninstallResultCode::kSuccess);
   }
-  std::move(callback).Run(code == webapps::UninstallResultCode::kSuccess);
+  std::move(callback).Run(code);
 }
 
 void WebAppInstallFinalizer::UninstallExternalWebAppOrRemoveSource(
@@ -518,7 +519,7 @@ void WebAppInstallFinalizer::UninstallExternalWebAppOrRemoveSource(
   if (!app) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
-                                  /*uninstalled=*/false));
+                                  webapps::UninstallResultCode::kError));
     return;
   }
 
@@ -554,7 +555,7 @@ void WebAppInstallFinalizer::OnMaybeRegisterOsUninstall(
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                /*uninstalled=*/true));
+                                webapps::UninstallResultCode::kSuccess));
 }
 
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(

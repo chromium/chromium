@@ -79,6 +79,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/app_sorting.h"
@@ -911,24 +912,35 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
       return;
     }
 
-    auto uninstall_success_callback = base::BindOnce(
-        [](base::WeakPtr<AppLauncherHandler> app_launcher_handler,
-           bool success) {
-          if (app_launcher_handler)
-            app_launcher_handler->CleanupAfterUninstall();
-        },
-        weak_ptr_factory_.GetWeakPtr());
-
     extension_id_prompting_ = extension_id;
     const auto& list = args->GetListDeprecated();
     const bool dont_confirm =
         list.size() >= 2 && list[1].is_bool() && list[1].GetBool();
+
     if (dont_confirm) {
+      auto uninstall_success_callback = base::BindOnce(
+          [](base::WeakPtr<AppLauncherHandler> app_launcher_handler,
+             webapps::UninstallResultCode code) {
+            if (app_launcher_handler) {
+              app_launcher_handler->CleanupAfterUninstall();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr());
+
       base::AutoReset<bool> auto_reset(&ignore_changes_, true);
       web_app_provider_->install_finalizer().UninstallWebApp(
           extension_id_prompting_, webapps::WebappUninstallSource::kAppsPage,
           std::move(uninstall_success_callback));
     } else {
+      auto uninstall_success_callback = base::BindOnce(
+          [](base::WeakPtr<AppLauncherHandler> app_launcher_handler,
+             bool success) {
+            if (app_launcher_handler) {
+              app_launcher_handler->CleanupAfterUninstall();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr());
+
       Browser* browser =
           chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
       web_app::WebAppUiManagerImpl::Get(web_app_provider_)

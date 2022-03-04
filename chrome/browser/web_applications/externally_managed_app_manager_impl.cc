@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
@@ -86,7 +87,10 @@ void ExternallyManagedAppManagerImpl::UninstallApps(
         url, ConvertExternalInstallSourceToUninstallSource(install_source),
         base::BindOnce(
             [](const UninstallCallback& callback, const GURL& app_url,
-               bool uninstalled) { callback.Run(app_url, uninstalled); },
+               webapps::UninstallResultCode code) {
+              callback.Run(app_url,
+                           code == webapps::UninstallResultCode::kSuccess);
+            },
             callback, url));
   }
 }

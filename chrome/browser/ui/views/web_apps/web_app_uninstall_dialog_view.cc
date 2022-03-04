@@ -24,6 +24,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -288,7 +289,7 @@ void WebAppUninstallDialogViews::OnWebAppInstallManagerDestroyed() {
     view_->CancelDialog();
 }
 
-base::OnceCallback<void(bool uninstalled)>
+base::OnceCallback<void(webapps::UninstallResultCode code)>
 WebAppUninstallDialogViews::UninstallStarted() {
   DCHECK(closed_callback_);
   // Next OnWebAppWillBeUninstalled should be ignored. Unsubscribe:
@@ -296,7 +297,12 @@ WebAppUninstallDialogViews::UninstallStarted() {
   // The view can now be destroyed without us knowing, so clear it to prevent
   // UAF in the destructor.
   view_ = nullptr;
-  return std::move(closed_callback_);
+  return base::BindOnce(
+      [](OnWebAppUninstallDialogClosed callback,
+         webapps::UninstallResultCode code) {
+        std::move(callback).Run(code == webapps::UninstallResultCode::kSuccess);
+      },
+      std::move(closed_callback_));
 }
 
 void WebAppUninstallDialogViews::UninstallCancelled() {

@@ -90,8 +90,9 @@ void WebAppUninstallJob::StopAppRegistryModification() {
   delete_option_ = ModifyAppRegistry::kNo;
 }
 
-void WebAppUninstallJob::OnSubAppUninstalled(bool success) {
-  errors_ = errors_ || !success;
+void WebAppUninstallJob::OnSubAppUninstalled(
+    webapps::UninstallResultCode code) {
+  errors_ = errors_ || (code != webapps::UninstallResultCode::kSuccess);
   num_pending_sub_app_uninstalls_--;
   DCHECK_GE(num_pending_sub_app_uninstalls_, 0u);
   MaybeFinishUninstall();

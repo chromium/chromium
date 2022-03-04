@@ -30,6 +30,7 @@ class Profile;
 class WebAppUninstallDialogViews;
 
 namespace webapps {
+enum class UninstallResultCode;
 enum class WebappUninstallSource;
 }
 
@@ -110,7 +111,8 @@ class WebAppUninstallDialogViews
 
   // Called when the view is triggering an uninstallation with the
   // WebAppProvider system. Returns a callback to be passed to this system.
-  base::OnceCallback<void(bool uninstalled)> UninstallStarted();
+  base::OnceCallback<void(webapps::UninstallResultCode code)>
+  UninstallStarted();
 
   // Called to signify that the uninstall has been cancelled.
   void UninstallCancelled();

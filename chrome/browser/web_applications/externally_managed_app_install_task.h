@@ -28,6 +28,7 @@ class WebContents;
 
 namespace webapps {
 enum class InstallResultCode;
+enum class UninstallResultCode;
 }
 
 namespace web_app {
@@ -103,7 +104,7 @@ class ExternallyManagedAppInstallTask {
                                ResultCallback result_callback);
   void OnPlaceholderUninstalled(content::WebContents* web_contents,
                                 ResultCallback result_callback,
-                                bool uninstalled);
+                                webapps::UninstallResultCode code);
   void ContinueWebAppInstall(content::WebContents* web_contents,
                              ResultCallback result_callback);
   void OnWebAppInstalled(bool is_placeholder,

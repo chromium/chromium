@@ -47,6 +47,7 @@
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_test_utils.h"
@@ -356,7 +357,14 @@ void UninstallWebAppWithCallback(Profile* profile,
   DCHECK(provider);
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu, std::move(callback));
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindOnce(
+          [](UninstallWebAppCallback callback,
+             webapps::UninstallResultCode code) {
+            std::move(callback).Run(code ==
+                                    webapps::UninstallResultCode::kSuccess);
+          },
+          std::move(callback)));
 }
 
 BrowserWaiter::BrowserWaiter(Browser* filter) : filter_(filter) {

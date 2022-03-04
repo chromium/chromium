@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -435,8 +436,8 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
       base::RunLoop run_loop;
       provider_->install_finalizer().UninstallExternalWebApp(
           id, webapps::WebappUninstallSource::kArc,
-          base::BindLambdaForTesting([&](bool uninstalled) {
-            EXPECT_TRUE(uninstalled);
+          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+            EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
             run_loop.Quit();
           }));
       run_loop.Run();
