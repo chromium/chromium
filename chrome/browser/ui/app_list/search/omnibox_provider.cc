@@ -37,6 +37,10 @@ namespace {
 
 using chromeos::string_matching::TokenizedString;
 
+// Some omnibox answers overtrigger on short queries. This controls the minimum
+// query length before they are displayed.
+constexpr size_t kMinQueryLengthForCommonAnswers = 4u;
+
 bool IsDriveUrl(const GURL& url) {
   // Returns true if the |url| points to a Drive Web host.
   const std::string& host = url.host();
@@ -47,6 +51,25 @@ bool IsDriveUrl(const GURL& url) {
 bool IsAnswer(const AutocompleteMatch& match) {
   return match.answer.has_value() ||
          match.type == AutocompleteMatchType::CALCULATOR;
+}
+
+// Some answer result types overtrigger on short queries. Returns true if an
+// answer should be filtered.
+bool ShouldFilterAnswer(const AutocompleteMatch& match,
+                        const std::u16string& query) {
+  // TODO(crbug.com/1258415): Move this to the filtering ranker once more
+  // detailed result subtype info is exposed by ChromeSearchResult.
+  if (query.size() >= kMinQueryLengthForCommonAnswers || !match.answer) {
+    return false;
+  }
+
+  switch (match.answer.value().type()) {
+    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+      return true;
+    default:
+      return false;
+  }
 }
 
 int ProviderTypes() {
@@ -165,7 +188,8 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       continue;
     }
 
-    if (!is_zero_state_input_ && IsAnswer(match)) {
+    if (!is_zero_state_input_ && IsAnswer(match) &&
+        !ShouldFilterAnswer(match, last_query_)) {
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
           profile_, list_controller_, controller_.get(), match, last_query_));
     } else if (match.type == AutocompleteMatchType::OPEN_TAB) {

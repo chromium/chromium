@@ -45,11 +45,18 @@ bool ShouldIgnoreProvider(ProviderType type) {
 }
 
 bool ShouldIgnoreResult(const ChromeSearchResult* result) {
+  // Ignore:
+  // - answer results: ANSWER and CALCULATOR.
+  // - 'magnifying glass' results: WEB_QUERY, SEARCH_SUGGEST,
+  //   SEARCH_SUGGEST_PERSONALIZED.
+  //
   // TODO(crbug.com/1258415): We should have a more robust way of determining
   // omnibox subtypes than using the metrics type.
-  return result->metrics_type() == ash::OMNIBOX_WEB_QUERY ||
-         result->metrics_type() == ash::OMNIBOX_ANSWER ||
-         result->metrics_type() == ash::OMNIBOX_CALCULATOR;
+  return result->metrics_type() == ash::OMNIBOX_ANSWER ||
+         result->metrics_type() == ash::OMNIBOX_CALCULATOR ||
+         result->metrics_type() == ash::OMNIBOX_WEB_QUERY ||
+         result->metrics_type() == ash::OMNIBOX_SEARCH_SUGGEST ||
+         result->metrics_type() == ash::OMNIBOX_SUGGEST_PERSONALIZED;
 }
 
 }  // namespace
