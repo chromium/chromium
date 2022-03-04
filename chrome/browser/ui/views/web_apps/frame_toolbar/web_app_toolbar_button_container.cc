@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/system_app_accessible_name.h"
-#include "chrome/browser/ui/views/web_apps/frame_toolbar/terminal_system_app_menu_button_chromeos.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
@@ -33,6 +32,7 @@
 #include "ui/views/window/hit_test_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/terminal_system_app_menu_button_chromeos.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #endif
 

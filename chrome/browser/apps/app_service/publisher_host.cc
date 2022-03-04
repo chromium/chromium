@@ -8,8 +8,6 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
-#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/web_applications/app_service/web_apps.h"
 #include "chrome/common/chrome_features.h"
 
@@ -22,6 +20,8 @@
 #include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #endif
 

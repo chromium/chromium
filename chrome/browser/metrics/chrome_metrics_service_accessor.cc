@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -17,6 +16,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 // nogncheck needed for Lacros builds since header checker does not understand
 // preprocessor.
 #include "components/metrics/structured/neutrino_logging.h"  // nogncheck

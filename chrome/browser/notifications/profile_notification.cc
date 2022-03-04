@@ -9,10 +9,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "components/account_id/account_id.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#endif
 
 // static
 std::string ProfileNotification::GetProfileNotificationId(

@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -88,7 +89,9 @@ enum class BuiltInAppName {
 void RecordAppLaunch(const std::string& app_id,
                      apps::mojom::LaunchSource launch_source);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void RecordBuiltInAppSearchResult(const std::string& app_id);
+#endif
 
 void RecordAppBounce(const apps::AppUpdate& app);
 

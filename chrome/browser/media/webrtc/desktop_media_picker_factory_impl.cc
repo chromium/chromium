@@ -9,10 +9,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/current_tab_desktop_media_list.h"
-#include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 #include "content/public/browser/desktop_capture.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
+#endif
 
 DesktopMediaPickerFactoryImpl::DesktopMediaPickerFactoryImpl() = default;
 

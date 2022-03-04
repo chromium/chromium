@@ -4,11 +4,9 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 
-#include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/app_constants/constants.h"
@@ -17,6 +15,7 @@
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -150,6 +149,7 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void RecordBuiltInAppLaunch(apps::BuiltInAppName built_in_app_name,
                             apps::mojom::LaunchSource launch_source) {
   switch (launch_source) {
@@ -195,6 +195,7 @@ void RecordBuiltInAppLaunch(apps::BuiltInAppName built_in_app_name,
       break;
   }
 }
+#endif
 
 }  // namespace
 
@@ -232,11 +233,9 @@ void RecordAppLaunch(const std::string& app_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == arc::kGoogleDuoAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kDuo, launch_source);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == extension_misc::kFilesManagerAppId ||
              app_id == file_manager::kFileManagerSwaAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kFiles, launch_source);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == extension_misc::kGmailAppId ||
              app_id == arc::kGmailAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kGmail, launch_source);
@@ -298,6 +297,7 @@ void RecordAppLaunch(const std::string& app_id,
 
   // Above are default apps; below are built-in apps.
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (app_id == ash::kInternalAppIdKeyboardShortcutViewer) {
     RecordBuiltInAppLaunch(BuiltInAppName::kKeyboardShortcutViewer,
                            launch_source);
@@ -305,17 +305,18 @@ void RecordAppLaunch(const std::string& app_id,
     RecordBuiltInAppLaunch(BuiltInAppName::kSettings, launch_source);
   } else if (app_id == ash::kInternalAppIdContinueReading) {
     RecordBuiltInAppLaunch(BuiltInAppName::kContinueReading, launch_source);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == plugin_vm::kPluginVmShelfAppId) {
     RecordBuiltInAppLaunch(BuiltInAppName::kPluginVm, launch_source);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (app_id == web_app::kMockSystemAppId) {
+  if (app_id == web_app::kMockSystemAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kMockSystemApp, launch_source);
   } else if (app_id == web_app::kOsFeedbackAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kOsFeedbackApp, launch_source);
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void RecordBuiltInAppSearchResult(const std::string& app_id) {
   if (app_id == ash::kInternalAppIdKeyboardShortcutViewer) {
     base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
@@ -326,13 +327,12 @@ void RecordBuiltInAppSearchResult(const std::string& app_id) {
   } else if (app_id == ash::kInternalAppIdContinueReading) {
     base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
                                   BuiltInAppName::kContinueReading);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == plugin_vm::kPluginVmShelfAppId) {
     base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Show",
                                   BuiltInAppName::kPluginVm);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void RecordAppBounce(const apps::AppUpdate& app) {
   base::Time install_time = app.InstallTime();

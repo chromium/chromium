@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/webui/app_management/app_management_shelf_delegate_chromeos.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -18,7 +17,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
+#include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/app_management/app_management_shelf_delegate_chromeos.h"
+#endif
 
 class Profile;
 
