@@ -37,6 +37,10 @@
   _tapCounter += 1;
 }
 
+- (void)didTapSnoozeButton {
+  _tapCounter += 1;
+}
+
 @end
 
 // Fixture to test BubbleView.
@@ -88,6 +92,11 @@ class BubbleViewTest : public PlatformTest {
   UIImageView* GetImageView(BubbleView* bubbleView) {
     return base::mac::ObjCCastStrict<UIImageView>(GetViewOfClassWithIdentifier(
         [UIImageView class], kBubbleViewImageViewIdentifier, bubbleView));
+  }
+
+  UIButton* GetSnoozeButton(BubbleView* bubbleView) {
+    return base::mac::ObjCCastStrict<UIButton>(GetViewOfClassWithIdentifier(
+        [UIButton class], kBubbleViewSnoozeButtonIdentifier, bubbleView));
   }
 };
 
@@ -205,4 +214,33 @@ TEST_F(BubbleViewTest, ImageIsPresentAndCorrect) {
   UIImageView* imageView = GetImageView(bubble);
   ASSERT_TRUE(imageView);
   EXPECT_EQ(imageView.image, testImage);
+}
+
+// Tests that the snooze button is not showed when the option is set to hidden.
+TEST_F(BubbleViewTest, SnoozeButtonIsNotPresent) {
+  BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
+                                         arrowDirection:arrowDirection_
+                                              alignment:alignment_];
+  [bubble setShowsSnoozeButton:NO];
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [superview addSubview:bubble];
+  UIButton* snoozeButton = GetSnoozeButton(bubble);
+  ASSERT_FALSE(snoozeButton);
+}
+
+// Tests the snooze button action and its presence.
+TEST_F(BubbleViewTest, SnoozeButtonActionAndPresent) {
+  BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
+                                         arrowDirection:arrowDirection_
+                                              alignment:alignment_];
+  BubbleViewDelegateTest* delegate = [[BubbleViewDelegateTest alloc] init];
+  [bubble setShowsSnoozeButton:YES];
+  [bubble setDelegate:delegate];
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [superview addSubview:bubble];
+  UIButton* snoozeButton = GetSnoozeButton(bubble);
+  ASSERT_TRUE(snoozeButton);
+  // Tests snooze button action.
+  [snoozeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_EQ(delegate.tapCounter, 1);
 }

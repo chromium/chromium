@@ -14,6 +14,8 @@
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,6 +30,9 @@ NSString* const kBubbleViewTitleLabelIdentifier =
 // Accessibility identifier for the image view.
 NSString* const kBubbleViewImageViewIdentifier =
     @"BubbleViewImageViewIdentifier";
+// Accessibility identifier for the snooze button.
+NSString* const kBubbleViewSnoozeButtonIdentifier =
+    @"kBubbleViewSnoozeButtonIdentifier";
 
 namespace {
 // The color of the bubble (both circular background and arrow).
@@ -82,6 +87,11 @@ const CGFloat kImageViewAlpha = 0.3f;
 // Corner radius of imageView.
 const CGFloat kImageViewCornerRadius = 13.0f;
 
+// The top and bottom margin of the title in snooze button.
+const CGFloat kSnoozeButtonTitleVerticalMargin = 16.0f;
+const CGFloat kSnoozeButtonMinimumSize = 48.0f;
+const CGFloat kSnoozeButtonFontSize = 15.0f;
+
 }  // namespace
 
 @interface BubbleView ()
@@ -95,6 +105,8 @@ const CGFloat kImageViewCornerRadius = 13.0f;
 @property(nonatomic, strong, readonly) UIView* arrow;
 // Optional close button displayed at the trailing top corner of the bubble.
 @property(nonatomic, strong, readonly) UIButton* closeButton;
+// Optional snooze button displayed on the bubble.
+@property(nonatomic, strong, readonly) UIButton* snoozeButton;
 // Optional image displayed at the leading edge of the bubble.
 @property(nonatomic, strong) UIImageView* imageView;
 // Triangular shape, the backing layer for the arrow.
@@ -113,6 +125,7 @@ const CGFloat kImageViewCornerRadius = 13.0f;
 @synthesize alignment = _alignment;
 @synthesize needsAddSubviews = _needsAddSubviews;
 @synthesize closeButton = _closeButton;
+@synthesize snoozeButton = _snoozeButton;
 
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
@@ -124,6 +137,7 @@ const CGFloat kImageViewCornerRadius = 13.0f;
     _label = [BubbleView labelWithText:text];
     _needsAddSubviews = YES;
     _showsCloseButton = NO;
+    _showsSnoozeButton = NO;
   }
   return self;
 }
@@ -280,6 +294,31 @@ const CGFloat kImageViewCornerRadius = 13.0f;
   return _closeButton;
 }
 
+- (UIButton*)snoozeButton {
+  if (!_snoozeButton) {
+    UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+    [button setTitle:l10n_util::GetNSString(IDS_IOS_IPH_BUBBLE_SNOOZE)
+            forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+                 forState:UIControlStateNormal];
+    [button.titleLabel
+        setFont:[UIFont boldSystemFontOfSize:kSnoozeButtonFontSize]];
+    [button.titleLabel setNumberOfLines:0];
+    [button.titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
+    if (self.textAlignment == NSTextAlignmentNatural) {
+      [button setContentHorizontalAlignment:
+                  UIControlContentHorizontalAlignmentLeading];
+    }
+    [button addTarget:self
+                  action:@selector(snoozeButtonWasTapped:)
+        forControlEvents:UIControlEventTouchUpInside];
+    [button setAccessibilityIdentifier:kBubbleViewSnoozeButtonIdentifier];
+    [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+    _snoozeButton = button;
+  }
+  return _snoozeButton;
+}
+
 #pragma mark - Private class methods
 
 // Returns a label to be used for a BubbleView that displays white text.
@@ -328,6 +367,14 @@ const CGFloat kImageViewCornerRadius = 13.0f;
   }
 }
 
+// Handles taps on the snooze button.
+- (void)snoozeButtonWasTapped:(UIButton*)button {
+  DCHECK(self.showsSnoozeButton);
+  if ([self.delegate respondsToSelector:@selector(didTapSnoozeButton)]) {
+    [self.delegate didTapSnoozeButton];
+  }
+}
+
 // Add a drop shadow to the bubble.
 - (void)addShadow {
   [self.layer setShadowOffset:kShadowOffset];
@@ -358,6 +405,10 @@ const CGFloat kImageViewCornerRadius = 13.0f;
   // Add constraints for image view.
   if (self.imageView) {
     [constraints addObjectsFromArray:[self imageViewConstraints]];
+  }
+  // Add constriants for snooze button.
+  if (self.showsSnoozeButton) {
+    [constraints addObjectsFromArray:[self snoozeButtonConstraints]];
   }
   [NSLayoutConstraint activateConstraints:constraints];
 }
@@ -454,6 +505,38 @@ const CGFloat kImageViewCornerRadius = 13.0f;
   return constraints;
 }
 
+// Returns the constraint for the snooze button.
+- (NSArray<NSLayoutConstraint*>*)snoozeButtonConstraints {
+  UIView* background = self.background;
+  UIView* label = self.label;
+  UIButton* snoozeButton = self.snoozeButton;
+  NSMutableArray<NSLayoutConstraint*>* constraints =
+      [NSMutableArray arrayWithArray:@[
+        [snoozeButton.titleLabel.topAnchor
+            constraintEqualToAnchor:label.bottomAnchor
+                           constant:kSnoozeButtonTitleVerticalMargin],
+        [snoozeButton.leadingAnchor
+            constraintEqualToAnchor:label.leadingAnchor],
+        [background.bottomAnchor
+            constraintEqualToAnchor:snoozeButton.titleLabel.bottomAnchor
+                           constant:kSnoozeButtonTitleVerticalMargin],
+        [background.trailingAnchor
+            constraintGreaterThanOrEqualToAnchor:snoozeButton.trailingAnchor
+                                        constant:kBubbleHorizontalPadding],
+        [snoozeButton.heightAnchor
+            constraintGreaterThanOrEqualToConstant:kSnoozeButtonMinimumSize],
+        [snoozeButton.widthAnchor
+            constraintGreaterThanOrEqualToConstant:kSnoozeButtonMinimumSize],
+      ]];
+  if (self.showsCloseButton) {
+    [constraints
+        addObject:[snoozeButton.trailingAnchor
+                      constraintLessThanOrEqualToAnchor:self.closeButton
+                                                            .leadingAnchor]];
+  }
+  return constraints;
+}
+
 // Return the constraint that aligns the arrow to the bubble view. This depends
 // on the bubble's alignment.
 - (NSLayoutConstraint*)arrowAlignmentConstraint {
@@ -537,6 +620,9 @@ const CGFloat kImageViewCornerRadius = 13.0f;
     if (self.imageView) {
       [self addSubview:self.imageView];
     }
+    if (self.showsSnoozeButton) {
+      [self addSubview:self.snoozeButton];
+    }
     // Set |needsAddSubviews| to NO to ensure that the subviews are only added
     // to the view hierarchy once.
     self.needsAddSubviews = NO;
@@ -549,20 +635,33 @@ const CGFloat kImageViewCornerRadius = 13.0f;
   [super willMoveToSuperview:newSuperview];
 }
 
-// Calculates the optimal size of the text (label and title) with the available
-// size to minimize whitespace.
+// Calculates the optimal size of the text (label, title and snooze button's
+// label) with the available size to minimize whitespace. Returns the size of
+// the combined UI element including padding between texts.
 - (CGSize)optimalTextSize:(CGSize)size {
   // Calculate the maximum width the text is allowed to use, and ensure that
   // the text does not exceed the maximum line width.
   CGFloat textMaxWidth = MIN(size.width, kMaxLabelWidth);
   CGSize textMaxSize = CGSizeMake(textMaxWidth, size.height);
+  // Computes sizeThatFits for label, title and snoozeButton's label.
   CGSize labelSize = [self.label sizeThatFits:textMaxSize];
   CGSize titleSize = CGSizeZero;
   if (self.titleLabel) {
     titleSize = [self.titleLabel sizeThatFits:textMaxSize];
   }
+  CGSize snoozeButtonTitleSize = CGSizeZero;
+  if (self.showsSnoozeButton) {
+    snoozeButtonTitleSize =
+        [self.snoozeButton.titleLabel sizeThatFits:textMaxSize];
+    // Add padding to computed height.
+    snoozeButtonTitleSize.height += kSnoozeButtonTitleVerticalMargin;
+  }
+  // Optimal width is the maximum width between label, title and snoozeButton's
+  // label.
   CGFloat textWidth = MAX(labelSize.width, titleSize.width);
-  CGFloat textHeight = labelSize.height + titleSize.height;
+  textWidth = MAX(textWidth, snoozeButtonTitleSize.width);
+  CGFloat textHeight =
+      labelSize.height + titleSize.height + snoozeButtonTitleSize.height;
   CGSize textSize = CGSizeMake(textWidth, textHeight);
   return textSize;
 }
@@ -597,9 +696,14 @@ const CGFloat kImageViewCornerRadius = 13.0f;
   CGFloat bubbleWidth =
       MAX(optimalTextSize.width + textHorizontalInset, [self minBubbleWidth]);
   // Calculate the height needed to display the bubble.
-  // Combined height of title and label including all margins.
-  CGFloat textContentHeight =
-      2 * kBubbleVerticalPadding + optimalTextSize.height;
+  // Combined height of title, label and snooze button including all margins.
+  CGFloat textContentHeight = kBubbleVerticalPadding + optimalTextSize.height;
+  if (self.showsSnoozeButton) {
+    textContentHeight +=
+        MAX(kBubbleVerticalPadding, kSnoozeButtonTitleVerticalMargin);
+  } else {
+    textContentHeight += kBubbleVerticalPadding;
+  }
   // Height of image including all margins.
   CGFloat imageContentHeight =
       self.imageView ? 2 * kBubbleVerticalPadding + kImageViewSize : 0.0f;
