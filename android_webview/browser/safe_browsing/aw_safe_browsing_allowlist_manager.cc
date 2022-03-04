@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -158,12 +159,11 @@ bool AddRules(const std::vector<std::string>& rules, TrieNode* root) {
 
 bool IsAllowed(const GURL& url, const TrieNode* node) {
   std::vector<base::StringPiece> components = SplitHost(url);
-  for (auto component = components.rbegin(); component != components.rend();
-       ++component) {
+  for (const base::StringPiece& component : base::Reversed(components)) {
     if (node->match_prefix) {
       return true;
     }
-    auto child_node = node->children.find(std::string(*component));
+    auto child_node = node->children.find(std::string(component));
     if (child_node == node->children.end()) {
       return false;
     } else {
