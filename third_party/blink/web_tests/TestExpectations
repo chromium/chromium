@@ -26,6 +26,42 @@ external/wpt/infrastructure/reftest/reftest_multiple_mismatch-0.html [ Failure ]
 external/wpt/infrastructure/reftest/reftest_multiple_mismatch-1.html [ Failure ]
 accessibility/slot-poison.html [ Failure ]
 
+# Temporarily disabling to land fixes in DevTools.
+crbug.com/1300509 http/tests/devtools/console-xhr-logging-async.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/console/console-uncaught-exception-in-eval.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/console/console-uncaught-promise.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/elements/elements-img-tooltip.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/elements/elements-tab-stops.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/elements/event-listener-sidebar.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/elements/highlight/highlight-node-vertical-rl.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/network/network-initiator.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/sources/debugger-ui/scripts-with-same-source-url.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/sources/debugger-ui/watch-expressions-panel-switch.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/profiler/agents-disabled-check.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/text-autosizing-override.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/bindings/navigator-multiple-frames.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/bindings/sourcemap-bindings-multiple-frames.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/bindings/ignore-listed-sourcemap-detach.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/bindings/suspendtarget-bindings.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/bindings/suspendtarget-navigator.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/sources/sourcemap-hot-reload.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/sources/debugger-ui/monitor-console-command.js [ Skip ]
+# This is also mentioned as flaky here: crbug.com/1272380.
+crbug.com/1300509 http/tests/devtools/bindings/bindings-multiple-frames.js [ Skip ]
+
+
+# Need updates to the testing infrastructure and v8 breakpoint setting after landing crbug.com/1229541.
+# The following test is also mentioned as flaky here: crbug.com/1263709.
+crbug.com/1300509 http/tests/devtools/elements/node-xpath.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/runtime/evaluate-timeout.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints-reload.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/animation/animation-after-navigation.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/network/parse-form-data.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/console/console-eval-object-literal.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/elements/styles-1/dynamic-style-tag.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/network/resource-priority.js [ Skip ]
+crbug.com/1300509 http/tests/devtools/resource-parameters.js [ Skip ]
+
 # Expected to time out.
 external/wpt/infrastructure/expected-fail/timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_ref_timeout.html [ Timeout ]
@@ -7292,10 +7328,8 @@ crbug.com/1272017 [ Mac11-arm64 ] virtual/shared_array_buffer_on_desktop/http/te
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Skip ]
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Skip ]
 crbug.com/1272376 virtual/scroll-unification/plugins/plugin-document-back-forward.html [ Failure Pass ]
-crbug.com/1272380 http/tests/devtools/bindings/bindings-multiple-frames.js [ Failure Pass ]
 
 # Flaky on mac
-crbug.com/1263709 [ Mac ] http/tests/devtools/elements/node-xpath.js [ Failure ]
 crbug.com/1300772 [ Mac ] http/tests/devtools/oopif/oopif-elements-nesting-error-page.js [ Failure Pass ]
 crbug.com/1300772 [ Mac ] http/tests/devtools/coverage/coverage-view-unused.js [ Failure Pass ]
 
