@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/loader/font_preload_manager.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -27,14 +26,18 @@ class FontPreloadManagerTest : public SimTest {
 
  protected:
   FontPreloadManager& GetFontPreloadManager() {
-    return GetDocument().GetFontPreloadManager();
+    return *GetDocument().GetFontPreloadManager();
   }
 
-  using State = FontPreloadManager::State;
-  State GetState() { return GetFontPreloadManager().state_; }
+  bool HasRenderBlockingResources() {
+    return GetFontPreloadManager().HasRenderBlockingResources();
+  }
 
   void DisableFontPreloadManagerTimeout() {
     GetFontPreloadManager().DisableTimeoutForTest();
+  }
+  void SetRenderDelayTimeout(base::TimeDelta timeout) {
+    GetFontPreloadManager().SetRenderDelayTimeoutForTest(timeout);
   }
 
   Element* GetTarget() { return GetDocument().getElementById("target"); }
@@ -42,9 +45,6 @@ class FontPreloadManagerTest : public SimTest {
   const Font& GetTargetFont() {
     return GetTarget()->GetLayoutObject()->Style()->GetFont();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FontPreloadManagerTest, FastFontFinishBeforeBody) {
@@ -61,12 +61,12 @@ TEST_F(FontPreloadManagerTest, FastFontFinishBeforeBody) {
   )HTML");
 
   // Make sure timer doesn't fire in case the test runs slow.
-  GetFontPreloadManager().SetRenderDelayTimeoutForTest(base::TimeDelta::Max());
+  SetRenderDelayTimeout(base::TimeDelta::Max());
 
   // Rendering is blocked due to ongoing font preloading.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_TRUE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoading, GetState());
+  EXPECT_TRUE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   font_resource.Complete();
   test::RunPendingTasks();
@@ -74,15 +74,15 @@ TEST_F(FontPreloadManagerTest, FastFontFinishBeforeBody) {
   // Font preloading no longer blocks renderings. However, rendering is still
   // blocked, as we don't have BODY yet.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_FALSE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoaded, GetState());
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   main_resource.Complete("</head><body>some text</body>");
 
   // Rendering starts after BODY has arrived, as the font was loaded earlier.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_FALSE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 }
 
 TEST_F(FontPreloadManagerTest, FastFontFinishAfterBody) {
@@ -100,24 +100,24 @@ TEST_F(FontPreloadManagerTest, FastFontFinishAfterBody) {
 
   // Rendering is blocked due to ongoing font preloading.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_TRUE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoading, GetState());
+  EXPECT_TRUE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   main_resource.Complete("</head><body>some text</body>");
 
   // Rendering is still blocked by font, even if we already have BODY, because
   // the font was *not* loaded earlier.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_TRUE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoading, GetState());
+  EXPECT_TRUE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   font_resource.Complete();
   test::RunPendingTasks();
 
   // Rendering starts after font preloading has finished.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_FALSE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 }
 
 TEST_F(FontPreloadManagerTest, SlowFontTimeoutBeforeBody) {
@@ -135,23 +135,23 @@ TEST_F(FontPreloadManagerTest, SlowFontTimeoutBeforeBody) {
 
   // Rendering is blocked due to ongoing font preloading.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_TRUE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoading, GetState());
+  EXPECT_TRUE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   GetFontPreloadManager().FontPreloadingDelaysRenderingTimerFired(nullptr);
 
   // Font preloading no longer blocks renderings after the timeout fires.
   // However, rendering is still blocked, as we don't have BODY yet.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_FALSE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   main_resource.Complete("</head><body>some text</body>");
 
   // Rendering starts after BODY has arrived.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_FALSE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   font_resource.Complete();
 }
@@ -171,22 +171,22 @@ TEST_F(FontPreloadManagerTest, SlowFontTimeoutAfterBody) {
 
   // Rendering is blocked due to ongoing font preloading.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_TRUE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoading, GetState());
+  EXPECT_TRUE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   main_resource.Complete("</head><body>some text</body>");
 
   // Rendering is still blocked by font, even if we already have BODY.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_TRUE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoading, GetState());
+  EXPECT_TRUE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   GetFontPreloadManager().FontPreloadingDelaysRenderingTimerFired(nullptr);
 
   // Rendering starts after we've waited for the font preloading long enough.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_FALSE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   font_resource.Complete();
 }
@@ -214,7 +214,7 @@ TEST_F(FontPreloadManagerTest, RegularWebFont) {
 
   // Now rendering has started, as there's no blocking resources.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   font_resource.Complete(ReadAhemWoff2());
 
@@ -248,7 +248,7 @@ TEST_F(FontPreloadManagerTest, OptionalFontWithoutPreloading) {
 
   // Now rendering has started, as there's no blocking resources.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   font_resource.Complete(ReadAhemWoff2());
 
@@ -284,7 +284,7 @@ TEST_F(FontPreloadManagerTest, OptionalFontMissingFirstFrame) {
 
   // Now rendering has started, as there's no blocking resources.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   // We render visible fallback as the 'optional' web font hasn't loaded.
   Compositor().BeginFrame();
@@ -326,7 +326,7 @@ TEST_F(FontPreloadManagerTest, OptionalFontForcedLayoutNoLayoutShift) {
 
   // Now rendering has started, as there's no blocking resources.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   // Force layout update, which lays out target but doesn't paint anything.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
@@ -371,7 +371,7 @@ TEST_F(FontPreloadManagerTest, OptionalFontRemoveAndReadd) {
 
   // Now rendering has started, as there's no blocking resources.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   // The 'optional' web font isn't used, as it didn't finish loading before
   // rendering started. Text is rendered in visible fallback.
@@ -417,15 +417,15 @@ TEST_F(FontPreloadManagerTest, OptionalFontSlowPreloading) {
 
   // Rendering is blocked due to font being preloaded.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_TRUE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoading, GetState());
+  EXPECT_TRUE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   GetFontPreloadManager().FontPreloadingDelaysRenderingTimerFired(nullptr);
 
   // Rendering is unblocked after the font preloading has timed out.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_FALSE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   // First frame renders text with visible fallback, as the 'optional' web font
   // isn't loaded yet, and should be treated as in the failure period.
@@ -467,8 +467,8 @@ TEST_F(FontPreloadManagerTest, OptionalFontFastPreloading) {
 
   // Rendering is blocked due to font being preloaded.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_TRUE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoading, GetState());
+  EXPECT_TRUE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   // There are test flakes due to FontPreloadManager timeout firing before the
   // ResourceFinishObserver gets notified. So we disable the timeout.
@@ -479,8 +479,8 @@ TEST_F(FontPreloadManagerTest, OptionalFontFastPreloading) {
 
   // Rendering is unblocked after the font is preloaded.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_FALSE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   // The 'optional' web font should be used in the first paint.
   Compositor().BeginFrame();
@@ -514,15 +514,15 @@ TEST_F(FontPreloadManagerTest, OptionalFontSlowImperativeLoad) {
 
   // Rendering is blocked due to font being loaded via JavaScript API.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_TRUE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoading, GetState());
+  EXPECT_TRUE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   GetFontPreloadManager().FontPreloadingDelaysRenderingTimerFired(nullptr);
 
   // Rendering is unblocked after the font preloading has timed out.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_FALSE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   // First frame renders text with visible fallback, as the 'optional' web font
   // isn't loaded yet, and should be treated as in the failure period.
@@ -564,20 +564,20 @@ TEST_F(FontPreloadManagerTest, OptionalFontFastImperativeLoad) {
   )HTML");
 
   // Make sure timer doesn't fire in case the test runs slow.
-  GetFontPreloadManager().SetRenderDelayTimeoutForTest(base::TimeDelta::Max());
+  SetRenderDelayTimeout(base::TimeDelta::Max());
 
   // Rendering is blocked due to font being preloaded.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
-  EXPECT_TRUE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kLoading, GetState());
+  EXPECT_TRUE(HasRenderBlockingResources());
+  EXPECT_TRUE(GetFontPreloadManager().IsRenderBlocked());
 
   font_resource.Complete(ReadAhemWoff2());
   test::RunPendingTasks();
 
   // Rendering is unblocked after the font is preloaded.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
-  EXPECT_FALSE(GetFontPreloadManager().HasPendingRenderBlockingFonts());
-  EXPECT_EQ(State::kUnblocked, GetState());
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_FALSE(GetFontPreloadManager().IsRenderBlocked());
 
   // The 'optional' web font should be used in the first paint.
   Compositor().BeginFrame();

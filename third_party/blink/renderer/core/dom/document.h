@@ -1752,8 +1752,13 @@ class CORE_EXPORT Document : public ContainerNode,
                               const AtomicString& old_value,
                               const AtomicString& new_value);
 
-  FontPreloadManager& GetFontPreloadManager() { return *font_preload_manager_; }
-  void FontPreloadingFinishedOrTimedOut();
+  FontPreloadManager* GetFontPreloadManager() { return font_preload_manager_; }
+
+  // Called when a previously render-blocking resource is no longer render-
+  // blocking, due to it has finished loading or has given up render-blocking.
+  void RenderBlockingResourceUnblocked();
+
+  bool RenderingHasBegun() const { return rendering_has_begun_; }
 
   void IncrementAsyncScriptCount() { async_script_count_++; }
   void RecordAsyncScriptCount();
@@ -2405,6 +2410,8 @@ class CORE_EXPORT Document : public ContainerNode,
   bool supports_reduced_motion_ = false;
 
   Member<FontPreloadManager> font_preload_manager_;
+
+  bool rendering_has_begun_ = false;
 
   int async_script_count_ = 0;
 

@@ -770,7 +770,10 @@ Document::Document(const DocumentInit& initializer,
       fragment_directive_(MakeGarbageCollected<FragmentDirective>(*this)),
       display_lock_document_state_(
           MakeGarbageCollected<DisplayLockDocumentState>(this)),
-      font_preload_manager_(MakeGarbageCollected<FontPreloadManager>(*this)),
+      font_preload_manager_(
+          initializer.GetType() == DocumentInit::Type::kHTML
+              ? MakeGarbageCollected<FontPreloadManager>(*this)
+              : nullptr),
       data_(MakeGarbageCollected<DocumentData>(GetExecutionContext())) {
   if (GetFrame()) {
     DCHECK(GetFrame()->GetPage());
@@ -3316,6 +3319,8 @@ void Document::setBody(HTMLElement* prp_new_body,
 void Document::WillInsertBody() {
   if (Loader())
     fetcher_->LoosenLoadThrottlingPolicy();
+  if (font_preload_manager_)
+    font_preload_manager_->WillInsertBody();
 
   // If we get to the <body> try to resume commits since we should have content
   // to paint now.
@@ -6627,7 +6632,7 @@ void Document::BeginLifecycleUpdatesIfRenderingReady() {
     return;
   if (!HaveRenderBlockingResourcesLoaded())
     return;
-  font_preload_manager_->WillBeginRendering();
+  rendering_has_begun_ = true;
   // TODO(japhet): If IsActive() is true, View() should always be non-null.
   // Speculative fix for https://crbug.com/1171891
   if (auto* view = View()) {
@@ -7402,8 +7407,10 @@ bool Document::HaveScriptBlockingStylesheetsLoaded() const {
 }
 
 bool Document::HaveRenderBlockingResourcesLoaded() const {
+  // TODO(crbug.com/1271296): Unify the management of render-blocking
+  // stylesheets and other render-blocking resources.
   return style_engine_->HaveRenderBlockingStylesheetsLoaded() &&
-         !font_preload_manager_->HasPendingRenderBlockingFonts();
+         (!font_preload_manager_ || !font_preload_manager_->IsRenderBlocked());
 }
 
 Locale& Document::GetCachedLocale(const AtomicString& locale) {
@@ -8140,17 +8147,8 @@ void Document::ClearUseCounterForTesting(mojom::WebFeature feature) {
     loader->GetUseCounter().ClearMeasurementForTesting(feature);
 }
 
-void Document::FontPreloadingFinishedOrTimedOut() {
-  DCHECK(!font_preload_manager_->HasPendingRenderBlockingFonts());
-  if (IsA<HTMLDocument>(this) && body()) {
-    // For HTML, we resume only when we're past the body tag, so that we should
-    // have something to paint now.
-    BeginLifecycleUpdatesIfRenderingReady();
-  } else if (!IsA<HTMLDocument>(this) && documentElement()) {
-    // For non-HTML there is no body so resume as soon as font preloading is
-    // done or has timed out.
-    BeginLifecycleUpdatesIfRenderingReady();
-  }
+void Document::RenderBlockingResourceUnblocked() {
+  BeginLifecycleUpdatesIfRenderingReady();
 }
 
 void Document::SetFindInPageActiveMatchNode(Node* node) {

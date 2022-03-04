@@ -17,10 +17,8 @@ class FontResource;
 class FontFace;
 class ResourceFinishObserver;
 
-// This class monitors font preloading (via <link rel="preload"> or Font Loading
-// API) and notifies the relevant document, so that it can manage the first
-// rendering timing to work with preloaded fonts.
-// Design doc: https://bit.ly/36E8UKB
+// https://html.spec.whatwg.org/#render-blocking-mechanism with some extensions.
+// TODO(crbug.com/1271296): Rename this class to RenderBlockingResourceManager.
 class CORE_EXPORT FontPreloadManager final
     : public GarbageCollected<FontPreloadManager> {
  public:
@@ -30,43 +28,38 @@ class CORE_EXPORT FontPreloadManager final
   FontPreloadManager(const FontPreloadManager&) = delete;
   FontPreloadManager& operator=(const FontPreloadManager&) = delete;
 
-  bool HasPendingRenderBlockingFonts() const;
-  void WillBeginRendering();
-  bool RenderingHasBegun() const { return state_ == State::kUnblocked; }
+  void WillInsertBody() { awaiting_parser_inserted_body_ = false; }
 
+  // https://html.spec.whatwg.org/#render-blocked
+  bool IsRenderBlocked() const {
+    return awaiting_parser_inserted_body_ || HasRenderBlockingResources();
+  }
+
+  // TODO(crbug.com/1271296): Use this class to handle render-blocking scripts,
+  // stylesheets and preloads.
+
+  // We additionally allow font preloading (via <link rel="preload"> or Font
+  // Loading API) to block rendering for a short period, so that preloaded fonts
+  // have a higher chance to be used by the first paint.
+  // Design doc: https://bit.ly/36E8UKB
   void FontPreloadingStarted(FontResource*);
   void FontPreloadingFinished(FontResource*, ResourceFinishObserver*);
   void FontPreloadingDelaysRenderingTimerFired(TimerBase*);
-
   void ImperativeFontLoadingStarted(FontFace*);
   void ImperativeFontLoadingFinished();
-
-  // Exposed to web tests via internals.
-  void SetRenderDelayTimeoutForTest(base::TimeDelta timeout);
 
   void Trace(Visitor* visitor) const;
 
  private:
   friend class FontPreloadManagerTest;
 
+  bool HasRenderBlockingResources() const {
+    return finish_observers_.size() || imperative_font_loading_count_;
+  }
+
+  // Exposed to unit tests only.
+  void SetRenderDelayTimeoutForTest(base::TimeDelta timeout);
   void DisableTimeoutForTest();
-
-  // State of font preloading before lifecycle updates begin
-  enum class State {
-    // Rendering hasn't begun. No font preloading yet.
-    kInitial,
-    // Rendering hasn't begun. There are ongoing font preloadings.
-    kLoading,
-    // Rendering hasn't begun. At least one font has been preloaded,
-    // and all font preloading so far has finished.
-    kLoaded,
-    // Rendering will begin soon or has begun. Font preloading shouldn't block
-    // rendering any more.
-    kUnblocked
-  };
-
-  void RenderBlockingFontLoadingStarted();
-  void RenderBlockingFontLoadingFinished();
 
   Member<Document> document_;
 
@@ -78,10 +71,11 @@ class CORE_EXPORT FontPreloadManager final
 
   HeapTaskRunnerTimer<FontPreloadManager> render_delay_timer_;
   base::TimeDelta render_delay_timeout_;
+  bool render_delay_timer_has_fired_ = false;
 
-  State state_ = State::kInitial;
-
-  // TODO(xiaochengh): Do the same for fonts loaded for other reasons?
+  // https://html.spec.whatwg.org/#awaiting-parser-inserted-body-flag
+  // Initialized to true as FontPreloadManager is created only on HTML documents
+  bool awaiting_parser_inserted_body_ = true;
 };
 
 }  // namespace blink

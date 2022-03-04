@@ -117,7 +117,7 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
       // We simply skip the block period, as we should never render invisible
       // fallback for 'font-display: optional'.
 
-      if (GetDocument()->GetFontPreloadManager().RenderingHasBegun()) {
+      if (GetDocument()->RenderingHasBegun()) {
         if (FinishedFromMemoryCache() ||
             finished_before_document_rendering_begin_ ||
             !paint_requested_while_pending_)
@@ -207,7 +207,7 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   PruneTable();
 
   if (GetDocument()) {
-    if (!GetDocument()->GetFontPreloadManager().RenderingHasBegun())
+    if (!GetDocument()->RenderingHasBegun())
       finished_before_document_rendering_begin_ = true;
     if (!FontFaceSetDocument::From(*GetDocument())->HasReachedLCPLimit())
       finished_before_lcp_limit_ = true;
