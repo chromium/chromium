@@ -5,37 +5,22 @@
 #ifndef MEDIA_FORMATS_HLS_ITEMS_H_
 #define MEDIA_FORMATS_HLS_ITEMS_H_
 
-#include <cstddef>
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
+#include "media/formats/hls/tag_name.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace media {
-namespace hls {
+namespace media::hls {
 
 // An 'Item' is a lexical item in an HLS manifest which has been determined to
 // have some type based on its context, but has yet been fully parsed,
 // validated, or undergone variable substitution.
 
-enum class TagKind {
-  kUnknown,
-  kM3u,
-  kXVersion,
-  kInf,
-  kXIndependentSegments,
-  kXEndList,
-  kXIFramesOnly,
-  kXDiscontinuity,
-  kXGap,
-  kXDefine,
-  kMaxValue = kXDefine,
-};
-
 // An item which has been determined to of a known or unknown tag type, but not
 // a comment.
 struct MEDIA_EXPORT TagItem {
-  TagKind kind;
+  TagName name;
 
   // The content of the tag, not including the tag type prefix.
   SourceString content;
@@ -53,7 +38,6 @@ using GetNextLineItemResult = absl::variant<TagItem, UriItem>;
 MEDIA_EXPORT ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
     SourceLineIterator* src);
 
-}  // namespace hls
-}  // namespace media
+}  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_ITEMS_H_

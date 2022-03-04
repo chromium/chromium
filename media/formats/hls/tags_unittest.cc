@@ -4,17 +4,17 @@
 
 #include "media/formats/hls/tags.h"
 #include "base/location.h"
+#include "media/formats/hls/items.h"
 #include "media/formats/hls/source_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
-namespace hls {
+namespace media::hls {
 
 template <typename T>
 void ErrorTest(base::StringPiece content,
                ParseStatusCode expected_status,
                const base::Location& from = base::Location::Current()) {
-  auto tag = TagItem{.kind = T::kKind,
+  auto tag = TagItem{.name = ToTagName(T::kName),
                      .content = SourceString::CreateForTesting(content)};
   auto result = T::Parse(tag);
   ASSERT_TRUE(result.has_error()) << from.ToString();
@@ -25,7 +25,7 @@ void ErrorTest(base::StringPiece content,
 template <typename T>
 T OkTest(base::StringPiece content,
          const base::Location& from = base::Location::Current()) {
-  auto tag = TagItem{.kind = T::kKind,
+  auto tag = TagItem{.name = ToTagName(T::kName),
                      .content = SourceString::CreateForTesting(content)};
   auto result = T::Parse(tag);
   EXPECT_TRUE(result.has_value()) << from.ToString();
@@ -48,7 +48,7 @@ void RunTagIdenficationTest(
   auto item = std::move(item_result).value();
   auto* tag = absl::get_if<TagItem>(&item);
   ASSERT_NE(tag, nullptr) << from.ToString();
-  EXPECT_EQ(tag->kind, T::kKind);
+  EXPECT_EQ(tag->name, ToTagName(T::kName));
   ASSERT_EQ(tag->content.Str(), expected_content);
 }
 
@@ -226,5 +226,4 @@ TEST(HlsFormatParserTest, ParseXDefineTagTest) {
                         ParseStatusCode::kMalformedTag);
 }
 
-}  // namespace hls
-}  // namespace media
+}  // namespace media::hls

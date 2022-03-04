@@ -19,8 +19,9 @@ bool IsSubstring(base::StringPiece sub, base::StringPiece base) {
 
 media::hls::SourceString GetItemContent(media::hls::TagItem tag) {
   // Ensure the tag kind returned was valid
-  CHECK(tag.kind >= media::hls::TagKind::kUnknown &&
-        tag.kind <= media::hls::TagKind::kMaxValue);
+  auto kind = media::hls::GetTagKind(tag.name);
+  CHECK(kind >= media::hls::TagKind::kUnknown &&
+        kind <= media::hls::TagKind::kMaxValue);
 
   return tag.content;
 }

@@ -8,16 +8,16 @@
 #include <type_traits>
 #include <utility>
 #include "base/notreached.h"
+#include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
 
-namespace media {
-namespace hls {
+namespace media::hls {
 
 namespace {
 
 template <typename T>
 ParseStatus::Or<T> ParseEmptyTag(TagItem tag) {
-  DCHECK(tag.kind == T::kKind);
+  DCHECK(tag.name == ToTagName(T::kName));
   if (!tag.content.Str().empty()) {
     return ParseStatusCode::kMalformedTag;
   }
@@ -136,7 +136,7 @@ ParseStatus::Or<M3uTag> M3uTag::Parse(TagItem tag) {
 }
 
 ParseStatus::Or<XVersionTag> XVersionTag::Parse(TagItem tag) {
-  DCHECK(tag.kind == TagKind::kXVersion);
+  DCHECK(tag.name == ToTagName(XVersionTag::kName));
 
   auto value_result = types::ParseDecimalInteger(tag.content);
   if (value_result.has_error()) {
@@ -155,7 +155,7 @@ ParseStatus::Or<XVersionTag> XVersionTag::Parse(TagItem tag) {
 }
 
 ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
-  DCHECK(tag.kind == TagKind::kInf);
+  DCHECK(tag.name == ToTagName(InfTag::kName));
 
   // Inf tags have the form #EXTINF:<duration>,[<title>]
   // Find the comma.
@@ -269,5 +269,4 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   return ParseStatusCode::kMalformedTag;
 }
 
-}  // namespace hls
-}  // namespace media
+}  // namespace media::hls

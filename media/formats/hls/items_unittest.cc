@@ -7,8 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace media {
-namespace hls {
+namespace media::hls {
 
 namespace {
 
@@ -39,7 +38,7 @@ void RunTest(base::StringPiece manifest, const T& expectations) {
       static_assert(absl::variant_size<LineResult>::value == 2, "");
       if (auto* expected_tag = absl::get_if<TagItem>(&expected_value)) {
         auto tag = absl::get<TagItem>(std::move(value));
-        EXPECT_EQ(expected_tag->kind, tag.kind);
+        EXPECT_EQ(expected_tag->name, tag.name);
         CheckSourceString(expected_tag->content, tag.content);
       } else {
         auto expected_uri = absl::get<UriItem>(std::move(expected_value));
@@ -55,12 +54,13 @@ void RunTest(base::StringPiece manifest, const T& expectations) {
   }
 }
 
-ParseStatus::Or<LineResult> ExpectTag(TagKind kind,
+template <typename T>
+ParseStatus::Or<LineResult> ExpectTag(T name,
                                       size_t line,
                                       size_t col,
                                       base::StringPiece content) {
   return LineResult(
-      TagItem{.kind = kind,
+      TagItem{.name = ToTagName(name),
               .content = SourceString::CreateForTesting(line, col, content)});
 }
 
@@ -94,9 +94,9 @@ TEST(HlsFormatParserTest, GetNextLineItemTest1) {
       "#EXTINF:1234,\t\n";
 
   const ParseStatus::Or<LineResult> kExpectations[] = {
-      ExpectTag(TagKind::kM3u, 1, 8, ""),
+      ExpectTag(CommonTagName::kM3u, 1, 8, ""),
       // Unknown tag content should be entire line following "#EXT"
-      ExpectTag(TagKind::kUnknown, 5, 5, "asdf"),
+      ExpectTag(kUnknownTagName, 5, 5, "asdf"),
 
       // Lines without leading # should be considered URIs
       ExpectUri(7, 1, "EXTM3U"), ExpectUri(10, 1, "http://www.example.com"),
@@ -109,10 +109,10 @@ TEST(HlsFormatParserTest, GetNextLineItemTest1) {
       // Variable substitution is not this function's responsibility.
       ExpectUri(14, 1, "uri_with_{$variable}.mov"),
 
-      ExpectTag(TagKind::kXVersion, 15, 16, "7"),
-      ExpectTag(TagKind::kXVersion, 16, 16, ""),
-      ExpectTag(TagKind::kInf, 17, 9, "1234,\t"), ParseStatusCode::kReachedEOF,
-      ParseStatusCode::kReachedEOF};
+      ExpectTag(CommonTagName::kXVersion, 15, 16, "7"),
+      ExpectTag(CommonTagName::kXVersion, 16, 16, ""),
+      ExpectTag(MediaPlaylistTagName::kInf, 17, 9, "1234,\t"),
+      ParseStatusCode::kReachedEOF, ParseStatusCode::kReachedEOF};
 
   RunTest(kManifest, kExpectations);
 }
@@ -124,7 +124,7 @@ TEST(HlsFormatParserTest, GetNextLineItemTest2) {
       "#EXT-X-VERSION:3\n";
 
   const ParseStatus::Or<LineResult> kExpectations[] = {
-      ExpectTag(TagKind::kM3u, 1, 8, ""), ParseStatusCode::kInvalidEOL,
+      ExpectTag(CommonTagName::kM3u, 1, 8, ""), ParseStatusCode::kInvalidEOL,
       ParseStatusCode::kInvalidEOL};
 
   RunTest(kManifest, kExpectations);
@@ -157,5 +157,4 @@ TEST(HlsFormatParserTest, GetNextLineItemTest5) {
   RunTest(kManifest, kExpectations);
 }
 
-}  // namespace hls
-}  // namespace media
+}  // namespace media::hls

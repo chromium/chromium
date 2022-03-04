@@ -12,10 +12,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace media {
-namespace hls {
+namespace media::hls {
 
 namespace {
+
+template <typename T>
+constexpr std::pair<base::StringPiece, TagName> TagNameEntry(
+    base::StringPiece prefix,
+    T name) {
+  return std::make_pair(prefix, ToTagName(name));
+}
 
 // Attempts to determine tag type, if this line contains a tag.
 absl::optional<TagItem> GetTagItem(SourceString line) {
@@ -28,26 +34,27 @@ absl::optional<TagItem> GetTagItem(SourceString line) {
 
   auto content = line.Substr(kTagPrefix.size());
 
-  constexpr std::pair<base::StringPiece, TagKind> kTagKindPrefixes[] = {
-      {"M3U", TagKind::kM3u},
-      {"-X-VERSION:", TagKind::kXVersion},
-      {"INF:", TagKind::kInf},
-      {"-X-INDEPENDENT-SEGMENTS", TagKind::kXIndependentSegments},
-      {"-X-END-LIST", TagKind::kXEndList},
-      {"-X-I-FRAMES-ONLY", TagKind::kXIFramesOnly},
-      {"-X-DISCONTINUITY", TagKind::kXDiscontinuity},
-      {"-X-GAP", TagKind::kXGap},
-      {"-X-DEFINE:", TagKind::kXDefine},
+  constexpr std::pair<base::StringPiece, TagName> kTagNames[] = {
+      TagNameEntry("-X-DEFINE:", CommonTagName::kXDefine),
+      TagNameEntry("-X-DISCONTINUITY", MediaPlaylistTagName::kXDiscontinuity),
+      TagNameEntry("-X-END-LIST", MediaPlaylistTagName::kXEndList),
+      TagNameEntry("-X-GAP", MediaPlaylistTagName::kXGap),
+      TagNameEntry("-X-I-FRAMES-ONLY", MediaPlaylistTagName::kXIFramesOnly),
+      TagNameEntry("-X-INDEPENDENT-SEGMENTS",
+                   CommonTagName::kXIndependentSegments),
+      TagNameEntry("-X-VERSION:", CommonTagName::kXVersion),
+      TagNameEntry("INF:", MediaPlaylistTagName::kInf),
+      TagNameEntry("M3U", CommonTagName::kM3u),
   };
 
-  for (const auto& tag : kTagKindPrefixes) {
+  for (const auto& tag : kTagNames) {
     if (base::StartsWith(content.Str(), tag.first)) {
       content = content.Substr(tag.first.size());
-      return TagItem{.kind = tag.second, .content = content};
+      return TagItem{.name = tag.second, .content = content};
     }
   }
 
-  return TagItem{.kind = TagKind::kUnknown, .content = content};
+  return TagItem{.name = kUnknownTagName, .content = content};
 }
 
 }  // namespace
@@ -85,5 +92,4 @@ ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
   }
 }
 
-}  // namespace hls
-}  // namespace media
+}  // namespace media::hls
