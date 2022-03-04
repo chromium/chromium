@@ -9202,7 +9202,6 @@ test("chrome_app_unittests") {
     "//components/gwp_asan/buildflags",
     "//components/heap_profiling/in_process",
     "//components/safe_browsing:buildflags",
-    "//pdf:pdf_ppapi",
   ]
   if (!is_fuchsia) {
     deps += [ "//third_party/breakpad:client" ]

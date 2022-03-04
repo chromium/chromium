@@ -1399,7 +1399,6 @@ group("dependencies") {
     "//components/upload_list:upload_list",
     "//content/public/child",
     "//pdf",
-    "//pdf:pdf_ppapi",
     "//services/tracing/public/cpp",
     "//third_party/blink/public:blink_devtools_frontend_resources",
     "//third_party/blink/public:blink_devtools_inspector_resources",

@@ -102,12 +102,6 @@ namespace {
 #if BUILDFLAG(ENABLE_PDF)
 const char kPDFPluginExtension[] = "pdf";
 const char kPDFPluginDescription[] = "Portable Document Format";
-const uint32_t kPDFPluginPermissions = ppapi::PERMISSION_PDF |
-                                       ppapi::PERMISSION_DEV;
-
-content::PepperPluginInfo::GetInterfaceFunc g_pdf_get_interface;
-content::PepperPluginInfo::PPP_InitializeModuleFunc g_pdf_initialize_module;
-content::PepperPluginInfo::PPP_ShutdownModuleFunc g_pdf_shutdown_module;
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -123,6 +117,8 @@ content::PepperPluginInfo::PPP_ShutdownModuleFunc g_nacl_shutdown_module;
 // regular plugins).
 void ComputeBuiltInPlugins(std::vector<content::PepperPluginInfo>* plugins) {
 #if BUILDFLAG(ENABLE_PDF)
+  // TODO(thestig): Figure out how to make the PDF Viewer work without this
+  // PPAPI plugin registration.
   content::PepperPluginInfo pdf_info;
   pdf_info.is_internal = true;
   pdf_info.is_out_of_process = true;
@@ -132,10 +128,6 @@ void ComputeBuiltInPlugins(std::vector<content::PepperPluginInfo>* plugins) {
   content::WebPluginMimeType pdf_mime_type(
       pdf::kInternalPluginMimeType, kPDFPluginExtension, kPDFPluginDescription);
   pdf_info.mime_types.push_back(pdf_mime_type);
-  pdf_info.internal_entry_points.get_interface = g_pdf_get_interface;
-  pdf_info.internal_entry_points.initialize_module = g_pdf_initialize_module;
-  pdf_info.internal_entry_points.shutdown_module = g_pdf_shutdown_module;
-  pdf_info.permissions = kPDFPluginPermissions;
   plugins->push_back(pdf_info);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -182,17 +174,6 @@ void ChromeContentClient::SetNaClEntryFunctions(
   g_nacl_get_interface = get_interface;
   g_nacl_initialize_module = initialize_module;
   g_nacl_shutdown_module = shutdown_module;
-}
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_PDF)
-void ChromeContentClient::SetPDFEntryFunctions(
-    content::PepperPluginInfo::GetInterfaceFunc get_interface,
-    content::PepperPluginInfo::PPP_InitializeModuleFunc initialize_module,
-    content::PepperPluginInfo::PPP_ShutdownModuleFunc shutdown_module) {
-  g_pdf_get_interface = get_interface;
-  g_pdf_initialize_module = initialize_module;
-  g_pdf_shutdown_module = shutdown_module;
 }
 #endif
 

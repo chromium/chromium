@@ -177,10 +177,6 @@
 #include "components/nacl/renderer/plugin/ppapi_entrypoints.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "pdf/pdf_ppapi.h"
-#endif
-
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/child/pdf_child_init.h"
 #endif
@@ -1215,12 +1211,6 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
       nacl_plugin::PPP_GetInterface,
       nacl_plugin::PPP_InitializeModule,
       nacl_plugin::PPP_ShutdownModule);
-#endif
-#if BUILDFLAG(ENABLE_PLUGINS) && BUILDFLAG(ENABLE_PDF)
-  ChromeContentClient::SetPDFEntryFunctions(
-      chrome_pdf::PPP_GetInterface,
-      chrome_pdf::PPP_InitializeModule,
-      chrome_pdf::PPP_ShutdownModule);
 #endif
 }
 

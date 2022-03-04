@@ -44,20 +44,6 @@ if (enable_pdf) {
     ]
   }
 
-  # Stub PPAPI module that just provides no-op entry points.
-  static_library("pdf_ppapi") {
-    sources = [ "pdf_ppapi.cc" ]
-
-    configs += [ ":strict" ]
-
-    public = [ "pdf_ppapi.h" ]
-
-    deps = [
-      "//base",
-      "//ppapi/c",
-    ]
-  }
-
   source_set("features") {
     sources = [ "pdf_features.cc" ]
 
@@ -471,8 +457,6 @@ if (enable_pdf) {
   group("features") {
   }
   group("pdf") {
-  }
-  group("pdf_ppapi") {
   }
   group("pdf_view_web_plugin") {
   }
