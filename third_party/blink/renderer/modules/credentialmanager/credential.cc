@@ -9,6 +9,7 @@
 namespace blink {
 
 namespace {
+constexpr char kFederatedCredentialType[] = "federated";
 constexpr char kOtpCredentialType[] = "otp";
 }
 
@@ -16,7 +17,8 @@ Credential::~Credential() = default;
 
 Credential::Credential(const String& id, const String& type)
     : id_(id), type_(type) {
-  DCHECK(!id_.IsEmpty() || type == kOtpCredentialType);
+  DCHECK(!id_.IsEmpty() || type == kOtpCredentialType ||
+         type == kFederatedCredentialType);
   DCHECK(!type_.IsEmpty());
 }
 

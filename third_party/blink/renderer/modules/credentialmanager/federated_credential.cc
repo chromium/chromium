@@ -6,13 +6,20 @@
 
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_account_login_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_logout_rps_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_identity_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_tokens.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential_manager_type_converters.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -20,6 +27,7 @@ namespace blink {
 
 namespace {
 using mojom::blink::LogoutRpsStatus;
+using mojom::blink::RequestIdTokenStatus;
 using mojom::blink::RevokeStatus;
 
 constexpr char kFederatedCredentialType[] = "federated";
@@ -38,6 +46,56 @@ bool MaybeRejectDueToCSP(ContentSecurityPolicy* policy,
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNetworkError, error));
   return false;
+}
+
+// Abort an ongoing FederatedCredential login() operation.
+void AbortFederatedCredentialRequest(ScriptState* script_state) {
+  if (!script_state->ContextIsValid())
+    return;
+
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->CancelTokenRequest();
+}
+
+void OnRequestIdToken(ScriptPromiseResolver* resolver,
+                      RequestIdTokenStatus status,
+                      const WTF::String& id_token) {
+  // TODO(yigu): we should reject certain promise with unified message and delay
+  // to avoid fingerprinting.
+  switch (status) {
+    case RequestIdTokenStatus::kApprovalDeclined: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "User declined the sign-in attempt."));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorTooManyRequests: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError,
+          "Only one navigator.credentials.get request may be outstanding at "
+          "one time."));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorCanceled: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "The request has been aborted."));
+      return;
+    }
+    case RequestIdTokenStatus::kError: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError, "Error retrieving an id token."));
+      return;
+    }
+    case RequestIdTokenStatus::kSuccess: {
+      FederatedTokens* tokens = FederatedTokens::Create();
+      tokens->setIdToken(id_token);
+      resolver->Resolve(tokens);
+      return;
+    }
+    default: {
+      NOTREACHED();
+    }
+  }
 }
 
 void OnLogoutResponse(ScriptPromiseResolver* resolver, LogoutRpsStatus status) {
@@ -105,16 +163,39 @@ FederatedCredential* FederatedCredential::Create(
       id, provider, name, icon_url.IsEmpty() ? blink::KURL() : icon_url);
 }
 
+FederatedCredential* FederatedCredential::Create(
+    const KURL& provider_url,
+    const String& client_id,
+    const CredentialRequestOptions* options) {
+  return MakeGarbageCollected<FederatedCredential>(provider_url, client_id,
+                                                   options);
+}
+
 FederatedCredential::FederatedCredential(
     const String& id,
-    scoped_refptr<const SecurityOrigin> provider,
+    scoped_refptr<const SecurityOrigin> provider_origin,
     const String& name,
     const KURL& icon_url)
     : Credential(id, kFederatedCredentialType),
-      provider_(provider),
+      provider_origin_(provider_origin),
       name_(name),
       icon_url_(icon_url) {
-  DCHECK(provider);
+  DCHECK(provider_origin);
+}
+
+FederatedCredential::FederatedCredential(
+    const KURL& provider_url,
+    const String& client_id,
+    const CredentialRequestOptions* options)
+    : Credential(/* id = */ "", kFederatedCredentialType),
+      provider_origin_(SecurityOrigin::Create(provider_url)),
+      provider_url_(provider_url),
+      client_id_(client_id),
+      options_(options) {}
+
+void FederatedCredential::Trace(Visitor* visitor) const {
+  Credential::Trace(visitor);
+  visitor->Trace(options_);
 }
 
 bool FederatedCredential::IsFederatedCredential() const {
@@ -124,6 +205,44 @@ bool FederatedCredential::IsFederatedCredential() const {
 ScriptPromise FederatedCredential::logout() {
   // TODO(https://crbug.com/1266054): Implement.
   return ScriptPromise();
+}
+
+ScriptPromise FederatedCredential::login(
+    ScriptState* script_state,
+    FederatedAccountLoginRequest* request) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  if (provider_url_.IsEmpty() || !options_) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "FederatedCredential object must be created by "
+        "navigator.credentials.get for login"));
+  }
+
+  ContentSecurityPolicy* policy =
+      resolver->GetExecutionContext()
+          ->GetContentSecurityPolicyForCurrentWorld();
+  // We disallow redirects (in idp_network_request_manager.cc), so it is
+  // enough to check the initial URL here.
+  if (!MaybeRejectDueToCSP(policy, resolver, provider_url_))
+    return promise;
+  if (request->hasSignal()) {
+    if (request->signal()->aborted()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "Request has been aborted."));
+      return promise;
+    }
+    request->signal()->AddAlgorithm(WTF::Bind(&AbortFederatedCredentialRequest,
+                                              WrapPersistent(script_state)));
+  }
+  DCHECK(options_->federated()->hasPreferAutoSignIn());
+  bool prefer_auto_sign_in = options_->federated()->preferAutoSignIn();
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->RequestIdToken(
+      provider_url_, client_id_, request->getNonceOr(""), prefer_auto_sign_in,
+      WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver)));
+  return promise;
 }
 
 ScriptPromise FederatedCredential::logoutRps(
