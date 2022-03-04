@@ -3001,6 +3001,7 @@
                 {
                     "name": "Enabled_low_engaged_7_days",
                     "params": {
+                        "IPH_LowUserEngagementDetector_availability": ">=3",
                         "enable_feature_default_browser": "false",
                         "enable_feature_incognito_tab": "true",
                         "enable_feature_ntp_suggestion_card": "true",
@@ -3013,7 +3014,8 @@
                     },
                     "enable_features": [
                         "FeatureNotificationGuide",
-                        "SegmentationModelLowEngagedUsers"
+                        "SegmentationModelLowEngagedUsers",
+                        "UseFeatureEngagementForUserTargeting"
                     ]
                 }
             ]
