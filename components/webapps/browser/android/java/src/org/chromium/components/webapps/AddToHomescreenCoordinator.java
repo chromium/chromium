@@ -4,7 +4,6 @@
 
 package org.chromium.components.webapps;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -16,7 +15,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -80,16 +78,12 @@ public class AddToHomescreenCoordinator {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return 0;
 
-        Activity activity = windowAndroid.getActivity().get();
-        if (!(activity instanceof ModalDialogManagerHolder)) return 0;
-
-        ModalDialogManager modalDialogManager =
-                ((ModalDialogManagerHolder) activity).getModalDialogManager();
+        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
 
         if (modalDialogManager == null) return 0;
 
         AddToHomescreenCoordinator coordinator = new AddToHomescreenCoordinator(
-                webContents, activity, windowAndroid, modalDialogManager);
+                webContents, windowAndroid.getContext().get(), windowAndroid, modalDialogManager);
         return coordinator.buildMediatorAndShowDialog().getNativeMediator();
     }
 
