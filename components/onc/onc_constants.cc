@@ -514,8 +514,9 @@ const char kAllowOnlyPolicyNetworksToConnectIfAvailable[] =
 // AllowOnlyPolicyNetworksToConnectIfAvailable field are currently only applied
 // to WiFi networks. TODO(crbug.com/1234561): Fix this when ONC field is
 // updated.
-const char* kAllowOnlyPolicyWiFiToConnect = kAllowOnlyPolicyNetworksToConnect;
-const char* kAllowOnlyPolicyWiFiToConnectIfAvailable =
+const char* const kAllowOnlyPolicyWiFiToConnect =
+    kAllowOnlyPolicyNetworksToConnect;
+const char* const kAllowOnlyPolicyWiFiToConnectIfAvailable =
     kAllowOnlyPolicyNetworksToConnectIfAvailable;
 
 const char kBlacklistedHexSSIDs[] = "BlacklistedHexSSIDs";  // Deprecated
