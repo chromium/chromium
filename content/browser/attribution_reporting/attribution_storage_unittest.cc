@@ -15,10 +15,12 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -88,12 +90,19 @@ class AttributionStorageTest : public testing::Test {
   // the current timestamp.
   AttributionReport GetExpectedReport(const StoredSource& source,
                                       const AttributionTrigger& conversion) {
+    // TOO(apaseltiner): Replace this logic with explicit setting of expected
+    // values.
+    auto event_trigger = base::ranges::find(
+        conversion.event_triggers(), source.common_info().source_type(),
+        &AttributionTrigger::EventTriggerData::source_type);
+    CHECK(event_trigger != conversion.event_triggers().end());
+
     return ReportBuilder(AttributionInfoBuilder(source)
                              .SetTime(base::Time::Now())
                              .Build())
-        .SetTriggerData(conversion.trigger_data())
+        .SetTriggerData(event_trigger->data)
         .SetReportTime(source.common_info().impression_time() + kReportDelay)
-        .SetPriority(conversion.priority())
+        .SetPriority(event_trigger->priority)
         .Build();
   }
 
@@ -2178,6 +2187,37 @@ TEST_F(AttributionStorageTest, SourceFilterData_RoundTrips) {
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceFilterDataIs(AttributionFilterData()),
                           SourceFilterDataIs(*filter_data)));
+}
+
+TEST_F(AttributionStorageTest, NoMatchingTriggers) {
+  const auto origin = url::Origin::Create(GURL("https://r.test"));
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
+          .SetConversionOrigin(origin)
+          .SetReportingOrigin(origin)
+          .Build());
+
+  EXPECT_EQ(AttributionTrigger::Result::kNoMatchingEventTriggers,
+            MaybeCreateAndStoreReport(AttributionTrigger(
+                net::SchemefulSite(origin), origin,
+                /*debug_key=*/absl::nullopt,
+                {AttributionTrigger::EventTriggerData(
+                    /*data=*/0,
+                    /*priority=*/0,
+                    /*dedup_key=*/absl::nullopt,
+                    CommonSourceInfo::SourceType::kEvent)})));
+
+  EXPECT_EQ(AttributionTrigger::Result::kSuccess,
+            MaybeCreateAndStoreReport(AttributionTrigger(
+                net::SchemefulSite(origin), origin,
+                /*debug_key=*/absl::nullopt,
+                {AttributionTrigger::EventTriggerData(
+                    /*data=*/0,
+                    /*priority=*/0,
+                    /*dedup_key=*/absl::nullopt,
+                    CommonSourceInfo::SourceType::kNavigation)})));
 }
 
 }  // namespace content

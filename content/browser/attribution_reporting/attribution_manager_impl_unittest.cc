@@ -385,14 +385,14 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   builder.SetExpiry(kImpressionExpiry).SetSourceEventId(100);
   attribution_manager_->HandleSource(builder.Build());
 
-  auto conversion = DefaultTrigger();
+  auto conversion = TriggerBuilder().SetTriggerData(5).Build();
   attribution_manager_->HandleTrigger(conversion);
 
   AttributionReport expected_report =
       ReportBuilder(AttributionInfoBuilder(builder.BuildStored())
                         .SetTime(base::Time::Now())
                         .Build())
-          .SetTriggerData(conversion.trigger_data())
+          .SetTriggerData(5)
           .SetReportTime(base::Time::Now() + kFirstReportingWindow)
           .Build();
 

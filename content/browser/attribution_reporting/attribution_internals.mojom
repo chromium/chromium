@@ -43,6 +43,7 @@ struct WebUIAttributionReport {
     kProhibitedByBrowserPolicy,
     kSent,
     kNetworkError,
+    kNoMatchingEventTriggers,
   };
 
   Status status;

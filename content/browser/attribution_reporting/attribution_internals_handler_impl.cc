@@ -314,6 +314,9 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
       status = mojom::WebUIAttributionReport::Status::
           kNoReportCapacityForDestinationSite;
       break;
+    case AttributionTrigger::Result::kNoMatchingEventTriggers:
+      status = mojom::WebUIAttributionReport::Status::kNoMatchingEventTriggers;
+      break;
     case AttributionTrigger::Result::kInternalError:
       // `kInternalError` doesn't always have a dropped report.
       if (!result.dropped_report().has_value())

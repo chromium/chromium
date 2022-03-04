@@ -530,6 +530,9 @@ class AggregatableSourcesMojoBuilder {
   blink::mojom::AttributionAggregatableSources sources_;
 };
 
+bool operator==(const AttributionTrigger::EventTriggerData& a,
+                const AttributionTrigger::EventTriggerData& b);
+
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
 
 bool operator==(const AttributionFilterData& a, const AttributionFilterData& b);
@@ -576,6 +579,10 @@ std::ostream& operator<<(std::ostream& out, RateLimitResult result);
 
 std::ostream& operator<<(std::ostream& out,
                          CommonSourceInfo::SourceType source_type);
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionTrigger::EventTriggerData& event_trigger);
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionTrigger& conversion);

@@ -10,6 +10,29 @@
 
 namespace content {
 
+AttributionTrigger::EventTriggerData::EventTriggerData(
+    uint64_t data,
+    int64_t priority,
+    absl::optional<uint64_t> dedup_key,
+    CommonSourceInfo::SourceType source_type)
+    : data(data),
+      priority(priority),
+      dedup_key(dedup_key),
+      source_type(source_type) {}
+
+AttributionTrigger::AttributionTrigger(
+    net::SchemefulSite conversion_destination,
+    url::Origin reporting_origin,
+    absl::optional<uint64_t> debug_key,
+    std::vector<EventTriggerData> event_triggers)
+    : conversion_destination_(std::move(conversion_destination)),
+      reporting_origin_(std::move(reporting_origin)),
+      debug_key_(debug_key),
+      event_triggers_(std::move(event_triggers)) {
+  DCHECK(!reporting_origin_.opaque());
+  DCHECK(!conversion_destination_.opaque());
+}
+
 AttributionTrigger::AttributionTrigger(
     uint64_t trigger_data,
     net::SchemefulSite conversion_destination,
@@ -18,16 +41,19 @@ AttributionTrigger::AttributionTrigger(
     int64_t priority,
     absl::optional<uint64_t> dedup_key,
     absl::optional<uint64_t> debug_key)
-    : trigger_data_(trigger_data),
-      conversion_destination_(std::move(conversion_destination)),
-      reporting_origin_(std::move(reporting_origin)),
-      event_source_trigger_data_(event_source_trigger_data),
-      priority_(priority),
-      dedup_key_(dedup_key),
-      debug_key_(debug_key) {
-  DCHECK(!reporting_origin_.opaque());
-  DCHECK(!conversion_destination_.opaque());
-}
+    : AttributionTrigger(
+          std::move(conversion_destination),
+          std::move(reporting_origin),
+          debug_key,
+          std::vector<EventTriggerData>(
+              {EventTriggerData(trigger_data,
+                                priority,
+                                dedup_key,
+                                CommonSourceInfo::SourceType::kNavigation),
+               EventTriggerData(event_source_trigger_data,
+                                priority,
+                                dedup_key,
+                                CommonSourceInfo::SourceType::kEvent)})) {}
 
 AttributionTrigger::AttributionTrigger(const AttributionTrigger& other) =
     default;

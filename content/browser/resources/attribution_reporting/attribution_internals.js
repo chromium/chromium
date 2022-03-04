@@ -550,6 +550,9 @@ class Report extends Selectable {
       case WebUIAttributionReport_Status.kNetworkError:
         this.status = 'Network error';
         break;
+      case WebUIAttributionReport_Status.kNoMatchingEventTriggers:
+        this.status = 'Dropped due to no matching event triggers';
+        break;
     }
   }
 }

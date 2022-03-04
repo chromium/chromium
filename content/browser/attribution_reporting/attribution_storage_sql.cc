@@ -669,18 +669,22 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   const CommonSourceInfo::SourceType source_type =
       source_to_attribute->source.common_info().source_type();
 
-  uint64_t trigger_data;
-  switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
-      trigger_data = trigger.trigger_data();
-      break;
-    case CommonSourceInfo::SourceType::kEvent:
-      trigger_data = trigger.event_source_trigger_data();
-      break;
+  uint64_t trigger_data = 0;
+  int64_t priority = 0;
+  absl::optional<uint64_t> dedup_key;
+
+  auto event_trigger =
+      base::ranges::find(trigger.event_triggers(), source_type,
+                         &AttributionTrigger::EventTriggerData::source_type);
+
+  if (event_trigger != trigger.event_triggers().end()) {
+    // TODO(apaseltiner): Consider informing the manager if the trigger
+    // data was out of range for DevTools issue reporting.
+    trigger_data =
+        delegate_->SanitizeTriggerData(event_trigger->data, source_type);
+    priority = event_trigger->priority;
+    dedup_key = event_trigger->dedup_key;
   }
-  // TODO(apaseltiner): Consider informing the manager if the trigger
-  // data was out of range for DevTools issue reporting.
-  trigger_data = delegate_->SanitizeTriggerData(trigger_data, source_type);
 
   const base::Time report_time =
       delegate_->GetReportTime(source_to_attribute->source.common_info(),
@@ -704,11 +708,22 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                       /*time=*/current_time, trigger.debug_key()),
       /*report_time=*/report_time,
       /*external_report_id=*/delegate_->NewReportID(),
-      AttributionReport::EventLevelData(trigger_data, trigger.priority(),
+      AttributionReport::EventLevelData(trigger_data, priority,
                                         randomized_response_rate,
                                         /*id=*/absl::nullopt));
 
-  switch (ReportAlreadyStored(source_id_to_attribute, trigger.dedup_key())) {
+  // Note that this cannot currently occur outside of tests, because all
+  // triggers have two event triggers, one for each source type, one of which
+  // must match. In the future, when we have general filtering based on strings,
+  // this code path will be reachable and we return without performing
+  // attribution.
+  if (event_trigger == trigger.event_triggers().end()) {
+    return CreateReportResult(
+        AttributionTrigger::Result::kNoMatchingEventTriggers,
+        std::move(report));
+  }
+
+  switch (ReportAlreadyStored(source_id_to_attribute, dedup_key)) {
     case ReportAlreadyStoredStatus::kNotStored:
       break;
     case ReportAlreadyStoredStatus::kStored:
@@ -768,7 +783,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   absl::optional<AttributionReport> replaced_report;
   const auto maybe_replace_lower_priority_report_result =
       MaybeReplaceLowerPriorityEventLevelReport(
-          report, source_to_attribute->num_conversions, trigger.priority(),
+          report, source_to_attribute->num_conversions, priority,
           replaced_report);
   if (maybe_replace_lower_priority_report_result ==
       MaybeReplaceLowerPriorityEventLevelReportResult::kError) {
@@ -803,9 +818,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   if (create_report) {
     if (!StoreReport(attribution_info.source.source_id(), trigger_data,
-                     attribution_info.time, report.report_time(),
-                     trigger.priority(), report.external_report_id(),
-                     trigger.debug_key())) {
+                     attribution_info.time, report.report_time(), priority,
+                     report.external_report_id(), trigger.debug_key())) {
       return CreateReportResult(AttributionTrigger::Result::kInternalError,
                                 std::move(report));
     }
@@ -814,15 +828,14 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   // If a dedup key is present, store it. We do this regardless of whether
   // `create_report` is true to avoid leaking whether the report was actually
   // stored.
-  if (trigger.dedup_key().has_value()) {
+  if (dedup_key.has_value()) {
     static constexpr char kInsertDedupKeySql[] =
         "INSERT INTO dedup_keys(impression_id,dedup_key)VALUES(?,?)";
     sql::Statement insert_dedup_key_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertDedupKeySql));
     insert_dedup_key_statement.BindInt64(0,
                                          *attribution_info.source.source_id());
-    insert_dedup_key_statement.BindInt64(1,
-                                         SerializeUint64(*trigger.dedup_key()));
+    insert_dedup_key_statement.BindInt64(1, SerializeUint64(*dedup_key));
     if (!insert_dedup_key_statement.Run()) {
       return CreateReportResult(AttributionTrigger::Result::kInternalError,
                                 std::move(report));

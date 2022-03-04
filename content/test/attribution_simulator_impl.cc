@@ -237,6 +237,7 @@ class AttributionEventHandler : public AttributionObserver {
       case AttributionTrigger::Result::kPriorityTooLow:
       case AttributionTrigger::Result::kDroppedForNoise:
       case AttributionTrigger::Result::kExcessiveReportingOrigins:
+      case AttributionTrigger::Result::kNoMatchingEventTriggers:
         reason << result.status();
         break;
     }
