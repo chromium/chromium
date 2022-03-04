@@ -689,6 +689,9 @@ module.exports = {
 
     // go/tsstyle#constructors
     'new-parens': 'error',
+
+    // go/tsstyle#assignment-in-control-statements
+    'no-cond-assign': 'error',
   }),
   overrides: [{
     files: ['**/*.ts'],
