@@ -190,15 +190,14 @@
             "name": "options",
             "optional": true,
             "description": "The speech options."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called right away, before speech finishes. Check $(ref:runtime.lastError) to make sure there were no errors. Use options.onEvent to get more detailed feedback.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called right away, before speech finishes. Check $(ref:runtime.lastError) to make sure there were no errors. Use options.onEvent to get more detailed feedback.",
+          "parameters": []
+        }
       },
       {
         "name": "stop",
@@ -222,40 +221,36 @@
         "name": "isSpeaking",
         "type": "function",
         "description": "Checks whether the engine is currently speaking. On Mac OS X, the result is true whenever the system speech engine is speaking, even if the speech wasn't initiated by Chrome.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "speaking",
-                "type": "boolean",
-                "description": "True if speaking, false otherwise."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "speaking",
+              "type": "boolean",
+              "description": "True if speaking, false otherwise."
+            }
+          ]
+        }
       },
       {
         "name": "getVoices",
         "type": "function",
         "description": "Gets an array of all available voices.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "type": "array",
-                "name": "voices",
-                "items": { "$ref": "TtsVoice" },
-                "description": "Array of $(ref:tts.TtsVoice) objects representing the available voices for speech synthesis."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "type": "array",
+              "name": "voices",
+              "items": { "$ref": "TtsVoice" },
+              "description": "Array of $(ref:tts.TtsVoice) objects representing the available voices for speech synthesis."
+            }
+          ]
+        }
       }
     ],
     "events": [

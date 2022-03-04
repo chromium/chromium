@@ -19,7 +19,8 @@ namespace systemIndicator {
     // objects. These objects should have multiple resolutions so that an
     // appropriate size can be selected for the given icon size and DPI scaling
     // settings. Only square ImageData objects are accepted.
-    static void setIcon(SetIconDetails details, optional DoneCallback callback);
+    [supportsPromises] static void setIcon(SetIconDetails details,
+                                           optional DoneCallback callback);
 
     // Show the icon in the status tray.
     static void enable();

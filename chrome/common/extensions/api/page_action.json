@@ -31,18 +31,18 @@
         "type": "function",
         "description": "Shows the page action. The page action is shown whenever the tab is selected.",
         "parameters": [
-          {"type": "integer", "name": "tabId", "minimum": 0, "description": "The id of the tab for which you want to modify the page action."},
-          {"type": "function", "name": "callback", "parameters": [], "optional": true}
-        ]
+          {"type": "integer", "name": "tabId", "minimum": 0, "description": "The id of the tab for which you want to modify the page action."}
+        ],
+        "returns_async": {"name": "callback", "parameters": [], "optional": true}
       },
       {
         "name": "hide",
         "type": "function",
         "description": "Hides the page action. Hidden page actions still appear in the Chrome toolbar, but are grayed out.",
         "parameters": [
-          {"type": "integer", "name": "tabId", "minimum": 0, "description": "The id of the tab for which you want to modify the page action."},
-          {"type": "function", "name": "callback", "parameters": [], "optional": true}
-        ]
+          {"type": "integer", "name": "tabId", "minimum": 0, "description": "The id of the tab for which you want to modify the page action."}
+        ],
+        "returns_async": {"name": "callback", "parameters": [], "optional": true}
       },
       {
         "name": "setTitle",
@@ -56,9 +56,9 @@
               "tabId": {"type": "integer", "minimum": 0, "description": "The id of the tab for which you want to modify the page action."},
               "title": {"type": "string", "description": "The tooltip string."}
             }
-          },
-          {"type": "function", "name": "callback", "parameters": [], "optional": true}
-        ]
+          }
+        ],
+        "returns_async": {"name": "callback", "parameters": [], "optional": true}
       },
       {
         "name": "getTitle",
@@ -68,18 +68,17 @@
           {
             "name": "details",
             "$ref": "TabDetails"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "setIcon",
@@ -120,14 +119,13 @@
                 "optional": true
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "setPopup",
@@ -144,9 +142,9 @@
                 "description": "The relative path to the HTML file to show in a popup. If set to the empty string (<code>''</code>), no popup is shown."
               }
             }
-          },
-          {"type": "function", "name": "callback", "parameters": [], "optional": true}
-        ]
+          }
+        ],
+        "returns_async": {"name": "callback", "parameters": [], "optional": true}
       },
       {
         "name": "getPopup",
@@ -156,18 +154,17 @@
           {
             "name": "details",
             "$ref": "TabDetails"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "string"
+            }
+          ]
+        }
       }
     ],
     "events": [
