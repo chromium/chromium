@@ -122,8 +122,8 @@ void TutorialServiceImpl::FlushCachedApiCalls() {
   while (!cached_api_calls_.empty()) {
     auto api_call = std::move(cached_api_calls_.front());
     cached_api_calls_.pop_front();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(api_call)));
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(api_call));
   }
 }
 

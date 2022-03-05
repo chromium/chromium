@@ -579,8 +579,7 @@ void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
        expected_version_ == extension->version())) {
     delete_source_ = false;
     if (!content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(expectations_verified_callback_)))) {
+            FROM_HERE, std::move(expectations_verified_callback_))) {
       NOTREACHED();
     }
   }

@@ -280,7 +280,7 @@ void UtilWinImpl::CallExecuteSelectFile(
       type, title, default_path, filter, file_type_index,
       base::UTF16ToWide(default_extension),
       reinterpret_cast<HWND>(base::win::Uint32ToHandle(owner)),
-      base::BindOnce(std::move(callback)));
+      std::move(callback));
 }
 
 void UtilWinImpl::InspectModule(const base::FilePath& module_path,

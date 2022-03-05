@@ -250,8 +250,7 @@ void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   __block base::OnceClosure block_callback = std::move(callback);
   auto reply = ^() {
-    callback_runner_->PostTask(FROM_HERE,
-                               base::BindOnce(std::move(block_callback)));
+    callback_runner_->PostTask(FROM_HERE, std::move(block_callback));
   };
   [client_ runPeriodicTasksWithReply:reply];
 }

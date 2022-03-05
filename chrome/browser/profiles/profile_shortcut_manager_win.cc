@@ -891,7 +891,7 @@ void ProfileShortcutManagerWin::HasProfileShortcuts(
   base::PostTaskAndReplyWithResult(
       base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()}).get(),
       FROM_HERE, base::BindOnce(&HasAnyProfileShortcuts, profile_path),
-      base::BindOnce(std::move(callback)));
+      std::move(callback));
 }
 
 void ProfileShortcutManagerWin::GetShortcutProperties(

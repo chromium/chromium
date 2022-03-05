@@ -58,8 +58,8 @@ bool SkiaGraphics::Flush(base::OnceClosure callback) {
 
   client_->UpdateSnapshot(std::move(snapshot));
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback)));
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   std::move(callback));
   return true;
 }
 

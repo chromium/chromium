@@ -49,8 +49,7 @@ void IwlwifiDumpChecker::Fetch(SysLogsSourceCallback callback) {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&CheckExistenceOnBlockingTaskRunner),
-      base::BindOnce(std::move(callback)));
+      base::BindOnce(&CheckExistenceOnBlockingTaskRunner), std::move(callback));
 }
 
 IwlwifiDumpLogSource::IwlwifiDumpLogSource()
@@ -64,8 +63,7 @@ void IwlwifiDumpLogSource::Fetch(SysLogsSourceCallback callback) {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&ReadDumpOnBlockingTaskRunner),
-      base::BindOnce(std::move(callback)));
+      base::BindOnce(&ReadDumpOnBlockingTaskRunner), std::move(callback));
 }
 
 bool ContainsIwlwifiLogs(const FeedbackCommon::SystemLogsMap* sys_logs) {

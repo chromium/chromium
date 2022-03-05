@@ -28,14 +28,14 @@ class FakeKioskSessionServiceLacros : public KioskSessionServiceLacros {
   ~FakeKioskSessionServiceLacros() override = default;
 
   // KioskSessionServiceLacros:
-  void AttemptUserExit() override { std::move(after_attempt_user_exit).Run(); }
+  void AttemptUserExit() override { std::move(after_attempt_user_exit_).Run(); }
 
   void set_after_attempt_user_exit(base::OnceClosure closure) {
-    after_attempt_user_exit = base::BindOnce(std::move(closure));
+    after_attempt_user_exit_ = std::move(closure);
   }
 
  private:
-  base::OnceClosure after_attempt_user_exit;
+  base::OnceClosure after_attempt_user_exit_;
 };
 
 class KioskSessionServiceBrowserTest : public InProcessBrowserTest {
