@@ -580,16 +580,20 @@ void MediaEngagementContentsObserver::SetTaskRunnerForTest(
 
 void MediaEngagementContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* handle) {
-  // If the navigation is occuring in the main frame we should use the URL
+  // Do nothing if prerendering.
+  if (handle->GetRenderFrameHost()->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPrerendering)
+    return;
+
+  // If the navigation is occurring in the main frame we should use the URL
   // provided by |handle| as the navigation has not committed yet. If the
-  // navigation is in a sub frame then use the URL from the main frame.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  url::Origin origin = url::Origin::Create(
-      handle->IsInPrimaryMainFrame()
-          ? handle->GetURL()
-          : handle->GetWebContents()->GetLastCommittedURL());
+  // navigation is in a subframe or fenced frame, use the URL from the outermost
+  // main frame.
+  url::Origin origin = url::Origin::Create(handle->IsInPrimaryMainFrame()
+                                               ? handle->GetURL()
+                                               : handle->GetRenderFrameHost()
+                                                     ->GetOutermostMainFrame()
+                                                     ->GetLastCommittedURL());
   MediaEngagementScore score = service_->CreateEngagementScore(origin);
   bool has_high_engagement = score.high_score();
 
