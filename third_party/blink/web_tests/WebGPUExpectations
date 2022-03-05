@@ -86,10 +86,12 @@ crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_siz
 
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Shifted by about half a pixel
-crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque.https.html [ Failure ]
 crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_copy.https.html [ Failure ]
 crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_draw.https.html [ Failure ]
-crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied.https.html [ Failure ]
+crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque_copy.https.html [ Failure ]
+crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque_draw.https.html [ Failure ]
+crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied_copy.https.html [ Failure ]
+crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied_draw.https.html [ Failure ]
 
 # Spec was changed so BGLs should eagerly apply per-pipeline limits. Tests need fixing, then Dawn
 # needs to pass them. https://github.com/gpuweb/cts/issues/230
@@ -105,6 +107,9 @@ crbug.com/dawn/1003 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,oper
 crbug.com/dawn/1003 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rgb9e5ufloat";* [ Failure ]
 crbug.com/tint/1228 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:float_builtin_functions,abs_float:* [ Failure ]
 crbug.com/tint/1228 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:float_builtin_functions,abs_float:* [ Failure ]
+crbug.com/tint/1228 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,log:float_builtin_functions,log:* [ Failure ]
+crbug.com/tint/1228 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,log2:float_builtin_functions,log2:* [ Failure ]
+crbug.com/tint/1471 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,ldexp:float_builtin_functions,ldexp:* [ Failure ]
 
 # The copyTextureToTexture tests should allow information loss caused by some bit patterns having the same value.
 crbug.com/dawn/1047 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:srcFormat="r8snorm";* [ Failure ]
