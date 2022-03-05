@@ -198,6 +198,8 @@ crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.ht
 crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
 crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
 crbug.com/1041847 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-colorManaged-convertToBlob-roundtrip.html [ Slow ]
+crbug.com/1302791 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-pattern.html [ Slow ]
+crbug.com/1302791 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-pattern.html [ Slow ]
 
 # Slow canvas tests
 crbug.com/1170041 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-createImageBitmap-e_srgb.html [ Slow ]
