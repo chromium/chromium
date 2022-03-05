@@ -145,12 +145,26 @@ void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
     absl::optional<CGRect> rect =
         shared_highlighting::ParseRect(response->FindDictKey("rect"));
     const std::string* text = response->FindStringKey("text");
-    if (!rect || !text) {
+
+    const base::Value::List* fragment_values_list =
+        response->GetDict().FindList("fragments");
+    std::vector<shared_highlighting::TextFragment> fragments;
+    if (fragment_values_list) {
+      for (const base::Value& val : *fragment_values_list) {
+        absl::optional<shared_highlighting::TextFragment> fragment =
+            shared_highlighting::TextFragment::FromValue(&val);
+        if (fragment) {
+          fragments.push_back(*fragment);
+        }
+      }
+    }
+
+    if (!rect || !text || fragments.empty()) {
       return;
     }
     manager->OnClickWithSender(
         shared_highlighting::ConvertToBrowserRect(*rect, web_state),
-        base::SysUTF8ToNSString(*text));
+        base::SysUTF8ToNSString(*text), std::move(fragments));
   }
 }
 

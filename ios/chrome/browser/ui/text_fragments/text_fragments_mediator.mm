@@ -8,6 +8,7 @@
 
 #import "base/feature_list.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
+#import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/web/public/text_fragments/text_fragments_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -34,12 +35,16 @@
 
 - (void)userTappedTextFragmentInWebState:(web::WebState*)webState
                               withSender:(CGRect)rect
-                                withText:(NSString*)text {
+                                withText:(NSString*)text
+                           withFragments:
+                               (std::vector<shared_highlighting::TextFragment>)
+                                   fragments {
   if (base::FeatureList::IsEnabled(
           shared_highlighting::kIOSSharedHighlightingV2)) {
     [self.consumer userTappedTextFragmentInWebState:webState
                                          withSender:rect
-                                           withText:text];
+                                           withText:text
+                                      withFragments:std::move(fragments)];
   }
 }
 

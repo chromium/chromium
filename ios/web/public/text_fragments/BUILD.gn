@@ -5,7 +5,10 @@
 source_set("text_fragments") {
   deps = [ "//base" ]
 
-  public_deps = [ "//ios/web/public/" ]
+  public_deps = [
+    "//components/shared_highlighting/core/common",
+    "//ios/web/public/",
+  ]
 
   sources = [ "text_fragments_manager.h" ]
 

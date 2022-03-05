@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/web/public/web_state_user_data.h"
 
 // Protocol for clients which handle text fragments-related events.
@@ -19,7 +20,10 @@
 // Invoked on user tap in a particular text fragment. Default behavior is no-op.
 - (void)userTappedTextFragmentInWebState:(web::WebState*)webState
                               withSender:(CGRect)rect
-                                withText:(NSString*)text;
+                                withText:(NSString*)text
+                           withFragments:
+                               (std::vector<shared_highlighting::TextFragment>)
+                                   fragments;
 
 @end
 

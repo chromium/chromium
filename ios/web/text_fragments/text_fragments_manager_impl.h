@@ -48,7 +48,10 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
 
   // Event propagated when the user clicks on a highlighted text fragment.
   // CGRect indicates the coordinates of the text fragment sending the event.
-  void OnClickWithSender(CGRect rect, NSString* text);
+  void OnClickWithSender(
+      CGRect rect,
+      NSString* text,
+      std::vector<shared_highlighting::TextFragment> fragments);
 
   // WebStateObserver methods:
   void DidFinishNavigation(WebState* web_state,

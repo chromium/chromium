@@ -97,11 +97,15 @@ void TextFragmentsManagerImpl::OnClick() {
   }
 }
 
-void TextFragmentsManagerImpl::OnClickWithSender(CGRect rect, NSString* text) {
+void TextFragmentsManagerImpl::OnClickWithSender(
+    CGRect rect,
+    NSString* text,
+    std::vector<shared_highlighting::TextFragment> fragments) {
   if (delegate_) {
     [delegate_ userTappedTextFragmentInWebState:web_state_
                                      withSender:rect
-                                       withText:text];
+                                       withText:text
+                                  withFragments:std::move(fragments)];
   }
 }
 

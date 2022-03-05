@@ -31,7 +31,8 @@ const char kHTMLOfTestPage[] =
     "adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore "
     "magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco "
     "laboris nisi ut aliquip ex ea commodo consequat.</p>"
-    "<a href='/testPage2' id='link'>Link</a>"
+    "<a href='/testPage2' id='link1'>Link 1</a>"
+    "<a href='#target' id='link2'>Link 2</a>"
     "</body></html>";
 const char kTestPageTextSample[] = "Lorem ipsum";
 
@@ -73,6 +74,31 @@ void DismissMenu() {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
         performAction:grey_tap()];
   }
+}
+
+void ReshareToPasteboard(const GURL& expected) {
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_SHARED_HIGHLIGHT_RESHARE))]
+      performAction:grey_tap()];
+
+  // Wait for the Activity View to show up (look for the Copy action).
+  id<GREYMatcher> copyActivityButton = chrome_test_util::CopyActivityButton();
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:copyActivityButton];
+
+  // Tap on the Copy action.
+  [[EarlGrey selectElementWithMatcher:copyActivityButton]
+      performAction:grey_tap()];
+
+  // Wait for the value to be in the pasteboard.
+  GREYCondition* getPastedURL = [GREYCondition
+      conditionWithName:@"Could not get expected URL from the pasteboard."
+                  block:^{
+                    return expected == [ChromeEarlGrey pasteboardURL];
+                  }];
+  GREYAssert(
+      [getPastedURL waitWithTimeout:base::test::ios::kWaitForActionTimeout],
+      @"Could not get expected URL from pasteboard.");
 }
 
 }  // namespace
@@ -170,28 +196,7 @@ void DismissMenu() {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
   ClickMarkAndWaitForMenu();
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_SHARED_HIGHLIGHT_RESHARE))]
-      performAction:grey_tap()];
-
-  // Wait for the Activity View to show up (look for the Copy action).
-  id<GREYMatcher> copyActivityButton = chrome_test_util::CopyActivityButton();
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:copyActivityButton];
-
-  // Tap on the Copy action.
-  [[EarlGrey selectElementWithMatcher:copyActivityButton]
-      performAction:grey_tap()];
-
-  // Wait for the value to be in the pasteboard.
-  GREYCondition* getPastedURL = [GREYCondition
-      conditionWithName:@"Could not get expected URL from the pasteboard."
-                  block:^{
-                    return pageURL == [ChromeEarlGrey pasteboardURL];
-                  }];
-  GREYAssert(
-      [getPastedURL waitWithTimeout:base::test::ios::kWaitForActionTimeout],
-      @"Could not get expected URL from pasteboard.");
+  ReshareToPasteboard(pageURL);
 }
 
 // Verify that navigating away from the page and then coming back does not
@@ -204,7 +209,7 @@ void DismissMenu() {
 
   // Click link to navigate away, then return to where we started
   [ChromeEarlGrey evaluateJavaScriptForSideEffect:
-                      @"document.getElementById('link').click();"];
+                      @"document.getElementById('link1').click();"];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPage2TextSample];
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
@@ -243,8 +248,49 @@ void DismissMenu() {
   // same time. Verify that the menu either goes away or never shows up to begin
   // with.
   [ChromeEarlGrey evaluateJavaScriptForSideEffect:
-                      @"document.getElementById('link').click();"];
+                      @"document.getElementById('link1').click();"];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:GetMenuTitleMatcher()];
+}
+
+- (void)testReshareWorksAfterNavigation {
+  // Clear the pasteboard
+  UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
+  [pasteboard setValue:@"" forPasteboardType:UIPasteboardNameGeneral];
+
+  GURL pageURL = self.testServer->GetURL(kURLWithFragment);
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
+
+  // Click a link to an anchor in the document
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.getElementById('link2').click();"];
+  GREYCondition* finishedSameDocNavigation = [GREYCondition
+      conditionWithName:@"Did not navigate within document."
+                  block:^{
+                    return [ChromeEarlGrey webStateLastCommittedURL].ref() ==
+                           "target";
+                  }];
+  GREYAssert([finishedSameDocNavigation
+                 waitWithTimeout:base::test::ios::kWaitForActionTimeout],
+             @"Did not navigate within document.");
+
+  // When resharing, the text fragments should persist even though we've
+  // added a reference fragment.
+  GURL expected =
+      self.testServer->GetURL("/testPage/#target:~:text=lorem%20ipsum");
+  ClickMarkAndWaitForMenu();
+  ReshareToPasteboard(expected);
+
+  // When navigating back, the highlights persist even though the committed (and
+  // displayed) URL doesn't contain a text fragment. Resharing should still
+  // include the text fragments.
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.getElementById('link1').click();"];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPage2TextSample];
+  [ChromeEarlGrey goBack];
+
+  ClickMarkAndWaitForMenu();
+  ReshareToPasteboard(expected);
 }
 
 @end

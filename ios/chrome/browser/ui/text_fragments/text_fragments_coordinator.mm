@@ -7,6 +7,8 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/shared_highlighting/core/common/fragment_directives_utils.h"
+#import "components/shared_highlighting/core/common/text_fragment.h"
 #import "components/shared_highlighting/ios/shared_highlighting_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -73,7 +75,10 @@
 
 - (void)userTappedTextFragmentInWebState:(web::WebState*)webState
                               withSender:(CGRect)rect
-                                withText:(NSString*)text {
+                                withText:(NSString*)text
+                           withFragments:
+                               (std::vector<shared_highlighting::TextFragment>)
+                                   fragments {
   self.actionSheet = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:[self baseViewController]
                          browser:[self browser]
@@ -100,9 +105,17 @@
                   auto* webState =
                       weakSelf.browser->GetWebStateList()->GetActiveWebState();
 
+                  // Take the fragments from the vector and put them into the
+                  // last committed URL. In most cases this will yield the same
+                  // URL, but it's necessary in case same-document navigation
+                  // has cleared the fragments from the URL.
+                  GURL sharingURL =
+                      shared_highlighting::AppendFragmentDirectives(
+                          webState->GetLastCommittedURL(), fragments);
+
                   ShareHighlightCommand* command =
                       [[ShareHighlightCommand alloc]
-                           initWithURL:webState->GetLastCommittedURL()
+                           initWithURL:sharingURL
                                  title:base::SysUTF16ToNSString(
                                            webState->GetTitle())
                           selectedText:text
