@@ -32,17 +32,18 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -400,8 +401,15 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
     @VisibleForTesting
     boolean showToastForItem(CharSequence message, View view) {
-        Context context = ContextUtils.getApplicationContext();
-        return Toast.showAnchoredToast(context, view, message);
+        Context context = view.getContext();
+        final @ColorInt int backgroundColor =
+                ChromeColors.getSurfaceColor(context, R.dimen.toast_elevation);
+        return new Toast.Builder(context)
+                .withText(message)
+                .withAnchoredView(view)
+                .withBackgroundColor(backgroundColor)
+                .withTextAppearance(R.style.TextAppearance_TextSmall_Primary)
+                .buildAndShow();
     }
 
     @Override

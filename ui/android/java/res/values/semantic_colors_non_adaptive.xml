@@ -157,9 +157,6 @@
     <color name="adaptive_toolbar_preference_header_omnibox_light">@color/modern_grey_100</color>
     <color name="adaptive_toolbar_preference_header_omnibox_dark">@color/white_alpha_6</color>
 
-    <!-- Toast colors -->
-    <color name="toast_bg_color">@color/baseline_neutral_900_with_neutral_200_alpha_11_with_primary_200_alpha_2</color>
-
     <!-- Price-tracking colors -->
     <color name="price_drop_annotation_bg_color_light">@color/baseline_tertiary_100</color>
     <color name="price_drop_annotation_bg_color_dark">@color/baseline_tertiary_700</color>

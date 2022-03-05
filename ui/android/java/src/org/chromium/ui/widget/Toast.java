@@ -10,7 +10,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
-import android.content.res.Resources;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,6 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
 
 import org.chromium.base.SysUtils;
 import org.chromium.ui.R;
@@ -109,6 +112,25 @@ public class Toast {
         return mToast.getDuration();
     }
 
+    @SuppressLint("RtlHardcoded")
+    private void anchor(Context context, View anchoredView) {
+        final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        final int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+        final int[] screenPos = new int[2];
+        anchoredView.getLocationOnScreen(screenPos);
+        final int width = anchoredView.getWidth();
+        final int height = anchoredView.getHeight();
+
+        final int horizontalGravity =
+                (screenPos[0] < screenWidth / 2) ? Gravity.LEFT : Gravity.RIGHT;
+        final int xOffset = (screenPos[0] < screenWidth / 2)
+                ? screenPos[0] + width / 2
+                : screenWidth - screenPos[0] - width / 2;
+        final int yOffset = (screenPos[1] < screenHeight / 2) ? screenPos[1] + height / 2
+                                                              : screenPos[1] - height * 3 / 2;
+        setGravity(Gravity.TOP | horizontalGravity, xOffset, yOffset);
+    }
+
     public void setMargin(float horizontalMargin, float verticalMargin) {
         mToast.setMargin(horizontalMargin, verticalMargin);
     }
@@ -139,20 +161,104 @@ public class Toast {
 
     @SuppressLint("ShowToast")
     public static Toast makeText(Context context, CharSequence text, int duration) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        TextView textView = (TextView) inflater.inflate(R.layout.custom_toast_layout, null);
-        textView.setText(text);
-        textView.announceForAccessibility(text);
-
-        Toast toast = new Toast(context, textView);
-        toast.setDuration(duration);
-
-        return toast;
+        return new Builder(context).withText(text).withDuration(duration).build();
     }
 
-    public static Toast makeText(Context context, int resId, int duration)
-            throws Resources.NotFoundException {
-        return makeText(context, context.getResources().getText(resId), duration);
+    public static Toast makeText(Context context, int resId, int duration) {
+        return new Builder(context).withTextStringRes(resId).withDuration(duration).build();
+    }
+
+    /**
+     * Shows a toast anchored on a view.
+     * @param context The context to use for the toast.
+     * @param anchoredView The view to anchor the toast.
+     * @param description The string shown in the toast.
+     * @return Whether a toast has been shown successfully.
+     */
+    public static boolean showAnchoredToast(
+            Context context, View anchoredView, CharSequence description) {
+        return new Builder(context)
+                .withAnchoredView(anchoredView)
+                .withText(description)
+                .buildAndShow();
+    }
+
+    /** Builder pattern class to construct {@link Toast} with various arguments. */
+    public static class Builder {
+        private final Context mContext;
+        private CharSequence mText;
+        private View mAnchoredView;
+        private Integer mBackgroundColor;
+        private Integer mTextAppearance;
+        private int mDuration = LENGTH_SHORT;
+
+        public Builder(Context context) {
+            mContext = context;
+        }
+
+        public Builder withText(CharSequence text) {
+            mText = text;
+            return this;
+        }
+
+        public Builder withTextStringRes(@StringRes int textResId) {
+            mText = mContext.getResources().getText(textResId);
+            return this;
+        }
+
+        public Builder withAnchoredView(View anchoredView) {
+            mAnchoredView = anchoredView;
+            return this;
+        }
+
+        public Builder withBackgroundColor(@ColorInt int backgroundColor) {
+            mBackgroundColor = backgroundColor;
+            return this;
+        }
+
+        public Builder withTextAppearance(@StyleRes int textAppearance) {
+            mTextAppearance = textAppearance;
+            return this;
+        }
+
+        public Builder withDuration(int duration) {
+            mDuration = duration;
+            return this;
+        }
+
+        private TextView inflateTextView() {
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            TextView textView = (TextView) inflater.inflate(R.layout.custom_toast_layout, null);
+            if (mText != null) {
+                textView.setText(mText);
+                textView.announceForAccessibility(mText);
+            }
+            if (mBackgroundColor != null) {
+                textView.getBackground().setTint(mBackgroundColor);
+            }
+            if (mTextAppearance != null) {
+                textView.setTextAppearance(mTextAppearance);
+            }
+            return textView;
+        }
+
+        /** Builds and returns a toast, but does not show it. */
+        public Toast build() {
+            TextView textView = inflateTextView();
+            Toast toast = new Toast(mContext, textView);
+            if (mAnchoredView != null) {
+                toast.anchor(mContext, mAnchoredView);
+            }
+            toast.setDuration(mDuration);
+            return toast;
+        }
+
+        /** Builds and shows a toast, returning if it was successful. */
+        public boolean buildAndShow() {
+            if (mText == null) return false;
+            build().show();
+            return true;
+        }
     }
 
     /**
@@ -162,37 +268,5 @@ public class Toast {
      */
     public static void setGlobalExtraYOffset(int yOffsetPx) {
         sExtraYOffset = yOffsetPx;
-    }
-
-    /**
-     * Shows a toast anchored on a view.
-     * @param context The context to use for the toast.
-     * @param view The view to anchor the toast.
-     * @param description The string shown in the toast.
-     * @return Whether a toast has been shown successfully.
-     */
-    @SuppressLint("RtlHardcoded")
-    public static boolean showAnchoredToast(Context context, View view, CharSequence description) {
-        if (description == null) return false;
-
-        final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        final int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
-        final int[] screenPos = new int[2];
-        view.getLocationOnScreen(screenPos);
-        final int width = view.getWidth();
-        final int height = view.getHeight();
-
-        final int horizontalGravity =
-                (screenPos[0] < screenWidth / 2) ? Gravity.LEFT : Gravity.RIGHT;
-        final int xOffset = (screenPos[0] < screenWidth / 2)
-                ? screenPos[0] + width / 2
-                : screenWidth - screenPos[0] - width / 2;
-        final int yOffset = (screenPos[1] < screenHeight / 2) ? screenPos[1] + height / 2
-                                                              : screenPos[1] - height * 3 / 2;
-
-        Toast toast = Toast.makeText(context, description, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.TOP | horizontalGravity, xOffset, yOffset);
-        toast.show();
-        return true;
     }
 }

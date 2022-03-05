@@ -7,4 +7,6 @@
 <resources>
     <!-- TODO(crbug.com/1236215): Remove once dynamic color is ready for all cards -->
     <dimen name="card_elevation">@dimen/default_elevation_2</dimen>
+
+    <dimen name="toast_elevation">@dimen/default_elevation_1</dimen>
 </resources>

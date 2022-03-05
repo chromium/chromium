@@ -79,6 +79,9 @@
     <color name="menu_action_bar_bg_color_baseline">@color/menu_action_bar_bg_color_dark_baseline</color>
     <color name="menu_item_bg_color">@color/menu_item_bg_color_dark_baseline</color>
 
+    <!-- Toast colors -->
+    <color name="toast_bg_color_baseline">@color/default_bg_color_dark_elev_1_baseline</color>
+
     <!-- Other colors -->
     <color name="default_red">@color/default_red_light</color>
     <color name="default_green">@color/default_green_light</color>
