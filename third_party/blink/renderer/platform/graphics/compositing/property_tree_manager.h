@@ -277,7 +277,8 @@ class PropertyTreeManager {
   void CloseCcEffect();
   void PopulateCcEffectNode(cc::EffectNode&,
                             const EffectPaintPropertyNode& effect,
-                            int output_clip_id);
+                            int output_clip_id,
+                            bool can_be_shared_element_resource);
 
   bool IsCurrentCcEffectSynthetic() const { return current_.effect_type; }
   bool IsCurrentCcEffectSyntheticForNonTrivialClip() const {

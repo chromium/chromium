@@ -1021,7 +1021,8 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
       DCHECK(next_effect);
       DCHECK_EQ(cc_effect_id_for_backdrop_effect, cc::kInvalidPropertyNodeId);
       transform = &next_effect->LocalTransformSpace().Unalias();
-      PopulateCcEffectNode(synthetic_effect, *next_effect, clip_id);
+      PopulateCcEffectNode(synthetic_effect, *next_effect, clip_id,
+                           /*can_be_shared_element_resource=*/true);
       cc_effect_id_for_backdrop_effect = synthetic_effect.id;
       should_realize_backdrop_effect = false;
     } else {
@@ -1087,7 +1088,19 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
       effect_tree_.Insert(cc::EffectNode(), current_.effect_id));
   if (real_effect_node_id == cc::kInvalidPropertyNodeId) {
     real_effect_node_id = effect_node.id;
-    PopulateCcEffectNode(effect_node, next_effect, output_clip_id);
+
+    // |has_multiple_groups| implies that this paint effect node is split into
+    // multiple CC effect nodes. This happens when we have non-contiguous paint
+    // chunks which share the same paint effect node and as a result the same
+    // shared element resource ID.
+    // Since a shared element resource ID must be associated with a single CC
+    // effect node, the code ensures that only one CC effect node (associated
+    // with the first contigious set of chunks) is tagged with the shared
+    // element resource ID. The content excluded as a result is the root
+    // scrollbar. See crbug.com/1303081 for details.
+    bool can_be_shared_element_resource = !has_multiple_groups;
+    PopulateCcEffectNode(effect_node, next_effect, output_clip_id,
+                         can_be_shared_element_resource);
   } else {
     // We have used the outermost synthetic effect for |next_effect| in
     // SynthesizeCcEffectsForClipsIfNeeded(), so |effect_node| is just a dummy
@@ -1173,7 +1186,8 @@ static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
 void PropertyTreeManager::PopulateCcEffectNode(
     cc::EffectNode& effect_node,
     const EffectPaintPropertyNode& effect,
-    int output_clip_id) {
+    int output_clip_id,
+    bool can_be_shared_element_resource) {
   effect_node.stable_id = effect.GetCompositorElementId().GetStableId();
   effect_node.clip_id = output_clip_id;
   effect_node.render_surface_reason = RenderSurfaceReasonForEffect(effect);
@@ -1194,9 +1208,12 @@ void PropertyTreeManager::PopulateCcEffectNode(
   }
   effect_node.double_sided = !transform.IsBackfaceHidden();
   effect_node.effect_changed = effect.NodeChangeAffectsRaster();
-  effect_node.document_transition_shared_element_id =
-      effect.DocumentTransitionSharedElementId();
-  effect_node.shared_element_resource_id = effect.SharedElementResourceId();
+
+  if (can_be_shared_element_resource) {
+    effect_node.document_transition_shared_element_id =
+        effect.DocumentTransitionSharedElementId();
+    effect_node.shared_element_resource_id = effect.SharedElementResourceId();
+  }
 }
 
 void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
