@@ -506,5 +506,10 @@ void LogExpandButtonClickAction(ExpandButtonClickAction action) {
                                 action);
 }
 
+void LogGroupNotificationAddedType(GroupNotificationType type) {
+  base::UmaHistogramEnumeration("Ash.Notification.GroupNotificationAdded",
+                                type);
+}
+
 }  // namespace metrics_utils
 }  // namespace ash

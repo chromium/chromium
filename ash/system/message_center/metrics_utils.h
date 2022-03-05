@@ -95,6 +95,16 @@ enum class ExpandButtonClickAction {
   kMaxValue = COLLAPSE_GROUP,
 };
 
+// The types of group notification. These are used in histograms, do not
+// remove/renumber entries. If you're adding to this enum with the intention
+// that it will be logged, update the ExpandButtonClickAction token variant in
+// enums.xml.
+enum class GroupNotificationType {
+  GROUP_PARENT = 0,
+  GROUP_CHILD = 1,
+  kMaxValue = GROUP_CHILD,
+};
+
 // Returns the detailed notification type enum for a notification.
 NotificationTypeDetailed GetNotificationType(
     const message_center::Notification& notification);
@@ -151,6 +161,9 @@ void LogCountOfNotificationsInOneGroup(int notification_count);
 
 // Logs the action that was performed after an expand button is clicked,
 void LogExpandButtonClickAction(ExpandButtonClickAction action);
+
+// Logs the type of group notification added to the system.
+void LogGroupNotificationAddedType(GroupNotificationType type);
 
 }  // namespace metrics_utils
 

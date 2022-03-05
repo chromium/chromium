@@ -43611,6 +43611,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Got different aspect ratio JPEG thumbnail"/>
 </enum>
 
+<enum name="GroupNotificationType">
+  <int value="0" label="Group Parent"/>
+  <int value="1" label="Group Child"/>
+</enum>
+
 <enum name="GsaAccountChangeNotificationSource">
   <int value="0" label="Service"/>
   <int value="1" label="Broadcast"/>

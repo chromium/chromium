@@ -209,6 +209,12 @@ void NotificationGroupingController::SetupParentNotification(
   new_parent_notification->SetGroupParent();
   parent_notification->SetGroupChild();
 
+  // Record metrics for the new parent and new child added.
+  metrics_utils::LogGroupNotificationAddedType(
+      metrics_utils::GroupNotificationType::GROUP_PARENT);
+  metrics_utils::LogGroupNotificationAddedType(
+      metrics_utils::GroupNotificationType::GROUP_CHILD);
+
   auto* parent_view =
       GetActiveNotificationViewController()->GetMessageViewForNotificationId(
           new_parent_id);
@@ -331,6 +337,8 @@ void NotificationGroupingController::OnNotificationAdded(
   metrics_utils::LogCountOfNotificationsInOneGroup(
       grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)
           .size());
+  metrics_utils::LogGroupNotificationAddedType(
+      metrics_utils::GroupNotificationType::GROUP_CHILD);
 }
 
 void NotificationGroupingController::OnNotificationDisplayed(

@@ -30,6 +30,9 @@ constexpr char kNotificationViewTypeHistogramName[] =
 constexpr char kCountInOneGroupHistogramName[] =
     "Ash.Notification.CountOfNotificationsInOneGroup";
 
+constexpr char kGroupNotificationAddedHistogramName[] =
+    "Ash.Notification.GroupNotificationAdded";
+
 const gfx::Image CreateTestImage() {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(/*width=*/80, /*height=*/80);
@@ -332,6 +335,36 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordCountOfNotificationsInOneGroup) {
   message_center::MessageCenter::Get()->RemoveNotification(id1,
                                                            /*by_user=*/true);
   histograms.ExpectBucketCount(kCountInOneGroupHistogramName, 2, 2);
+}
+
+TEST_F(MessageCenterMetricsUtilsTest, RecordGroupNotificationAddedType) {
+  base::HistogramTester histograms;
+
+  auto notification1 = CreateTestNotification();
+  auto notification2 = CreateTestNotification();
+  auto notification3 = CreateTestNotification();
+
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification1));
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification2));
+
+  // There should be 1 group parent that contains 2 group child notifications.
+  histograms.ExpectBucketCount(
+      kGroupNotificationAddedHistogramName,
+      metrics_utils::GroupNotificationType::GROUP_PARENT, 1);
+  histograms.ExpectBucketCount(
+      kGroupNotificationAddedHistogramName,
+      metrics_utils::GroupNotificationType::GROUP_CHILD, 2);
+
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification3));
+  histograms.ExpectBucketCount(
+      kGroupNotificationAddedHistogramName,
+      metrics_utils::GroupNotificationType::GROUP_PARENT, 1);
+  histograms.ExpectBucketCount(
+      kGroupNotificationAddedHistogramName,
+      metrics_utils::GroupNotificationType::GROUP_CHILD, 3);
 }
 
 }  // namespace ash
