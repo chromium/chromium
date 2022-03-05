@@ -2,7 +2,7 @@ PRAGMA foreign_keys=OFF;
 
 BEGIN TRANSACTION;
 
-CREATE TABLE impressions(impression_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,impression_data INTEGER NOT NULL,impression_origin TEXT NOT NULL,conversion_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,impression_time INTEGER NOT NULL,expiry_time INTEGER NOT NULL,num_conversions INTEGER DEFAULT 0,active INTEGER DEFAULT 1,conversion_destination TEXT NOT NULL,source_type INTEGER NOT NULL,attributed_truthfully INTEGER NOT NULL,priority INTEGER NOT NULL,impression_site TEXT NOT NULL,debug_key INTEGER,aggregatable_budget_consumed INTEGER NOT NULL,aggregatable_sources BLOB NOT NULL);
+CREATE TABLE impressions(impression_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,impression_data INTEGER NOT NULL,impression_origin TEXT NOT NULL,conversion_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,impression_time INTEGER NOT NULL,expiry_time INTEGER NOT NULL,num_conversions INTEGER NOT NULL,active INTEGER NOT NULL,conversion_destination TEXT NOT NULL,source_type INTEGER NOT NULL,attributed_truthfully INTEGER NOT NULL,priority INTEGER NOT NULL,impression_site TEXT NOT NULL,debug_key INTEGER,aggregatable_budget_consumed INTEGER NOT NULL,aggregatable_sources BLOB NOT NULL,filter_data BLOB NOT NULL);
 
 CREATE TABLE conversions(conversion_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,impression_id INTEGER NOT NULL,conversion_data INTEGER NOT NULL,conversion_time INTEGER NOT NULL,report_time INTEGER NOT NULL,priority INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,external_report_id TEXT NOT NULL,debug_key INTEGER);
 
@@ -17,8 +17,8 @@ CREATE TABLE aggregatable_contributions(contribution_id INTEGER PRIMARY KEY AUTO
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','27');
-INSERT INTO meta VALUES('last_compatible_version','27');
+INSERT INTO meta VALUES('version','29');
+INSERT INTO meta VALUES('last_compatible_version','29');
 
 CREATE INDEX conversion_destination_idx ON impressions(active,conversion_destination,reporting_origin);
 
@@ -47,7 +47,5 @@ CREATE INDEX aggregate_trigger_time_idx ON aggregatable_report_metadata(trigger_
 CREATE INDEX contribution_aggregation_id_idx ON aggregatable_contributions(aggregation_id);
 
 CREATE INDEX contribution_report_time_idx ON aggregatable_contributions(report_time);
-
-INSERT INTO conversions VALUES (1,2,3,4,5,6,7,8,9);
 
 COMMIT;

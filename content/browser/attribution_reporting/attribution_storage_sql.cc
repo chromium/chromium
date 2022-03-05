@@ -52,18 +52,18 @@
 namespace content {
 
 // Version number of the database.
-const int AttributionStorageSql::kCurrentVersionNumber = 28;
+const int AttributionStorageSql::kCurrentVersionNumber = 29;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 28;
+const int AttributionStorageSql::kCompatibleVersionNumber = 29;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
 //
 // Note that all versions >=15 were introduced during the transitional state of
 // the Attribution Reporting API and can be removed when done.
-const int AttributionStorageSql::kDeprecatedVersionNumber = 27;
+const int AttributionStorageSql::kDeprecatedVersionNumber = 28;
 
 namespace {
 
@@ -1807,8 +1807,8 @@ bool AttributionStorageSql::CreateSchema() {
       "reporting_origin TEXT NOT NULL,"
       "impression_time INTEGER NOT NULL,"
       "expiry_time INTEGER NOT NULL,"
-      "num_conversions INTEGER DEFAULT 0,"
-      "active INTEGER DEFAULT 1,"
+      "num_conversions INTEGER NOT NULL,"
+      "active INTEGER NOT NULL,"
       "conversion_destination TEXT NOT NULL,"
       "source_type INTEGER NOT NULL,"
       "attributed_truthfully INTEGER NOT NULL,"
