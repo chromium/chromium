@@ -319,5 +319,97 @@ TEST_F(AdapterStateControllerImplTest, MultiplePowerChanges_DifferentChange) {
                                      1);
 }
 
+// Regression test for b/219596007.
+TEST_F(AdapterStateControllerImplTest,
+       MultiplePowerChanges_AdapterChangesAvailability) {
+  EXPECT_EQ(mojom::BluetoothSystemState::kEnabled, GetAdapterState());
+
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     0);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     0);
+
+  // Start with the adapter off.
+  SetAdapterPoweredState(/*powered=*/false);
+  EXPECT_EQ(mojom::BluetoothSystemState::kDisabled, GetAdapterState());
+  EXPECT_EQ(1u, GetNumObserverEvents());
+
+  // Initiate an enable state change.
+  SetBluetoothEnabledState(/*enabled=*/true);
+  EXPECT_EQ(mojom::BluetoothSystemState::kEnabling, GetAdapterState());
+  EXPECT_EQ(2u, GetNumObserverEvents());
+
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     0);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     1);
+
+  // Queue a disable state change.
+  SetBluetoothEnabledState(/*enabled=*/false);
+  EXPECT_EQ(mojom::BluetoothSystemState::kEnabling, GetAdapterState());
+  EXPECT_EQ(2u, GetNumObserverEvents());
+
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     0);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     1);
+
+  // Set the adapter to not present.
+  SetAdapterPresentState(/*present=*/false);
+  EXPECT_EQ(mojom::BluetoothSystemState::kUnavailable, GetAdapterState());
+  EXPECT_EQ(3u, GetNumObserverEvents());
+
+  // Set the adapter back to present. The in-progress enable state change should
+  // have been cleared.
+  SetAdapterPresentState(/*present=*/true);
+  EXPECT_EQ(mojom::BluetoothSystemState::kDisabled, GetAdapterState());
+  EXPECT_EQ(4u, GetNumObserverEvents());
+
+  // Finish the first enable state change callback. This should have no effect
+  // because the weak pointer has been invalidated.
+  InvokeSetPoweredCallback(/*expected_pending_state=*/true,
+                           /*success=*/false);
+  EXPECT_EQ(mojom::BluetoothSystemState::kDisabled, GetAdapterState());
+  EXPECT_EQ(4u, GetNumObserverEvents());
+
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", false, 0);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", false, 0);
+
+  // Set the adapter to enabled. This will trigger processing any queued state
+  // changes, if they exist. There should not be any because the queued disable
+  // state change should have been cleared when the adapter became unavailable.
+  SetAdapterPoweredState(/*powered=*/true);
+  EXPECT_EQ(mojom::BluetoothSystemState::kEnabled, GetAdapterState());
+  EXPECT_EQ(5u, GetNumObserverEvents());
+
+  // Initiate a disable state change. This should be the in-progress state
+  // change.
+  SetBluetoothEnabledState(/*enabled=*/false);
+  EXPECT_EQ(mojom::BluetoothSystemState::kDisabling, GetAdapterState());
+  EXPECT_EQ(6u, GetNumObserverEvents());
+
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     1);
+
+  // Finish the disable change.
+  InvokeSetPoweredCallback(/*expected_pending_state=*/false,
+                           /*success=*/true);
+  EXPECT_EQ(mojom::BluetoothSystemState::kDisabled, GetAdapterState());
+  EXPECT_EQ(7u, GetNumObserverEvents());
+
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", false, 0);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", false, 0);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
+}
+
 }  // namespace bluetooth_config
 }  // namespace chromeos

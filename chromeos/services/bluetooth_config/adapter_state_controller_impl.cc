@@ -47,6 +47,14 @@ void AdapterStateControllerImpl::SetBluetoothEnabledState(bool enabled) {
 void AdapterStateControllerImpl::AdapterPresentChanged(
     device::BluetoothAdapter* adapter,
     bool present) {
+  if (!present) {
+    BLUETOOTH_LOG(EVENT)
+        << "Adapter changed to not present; clearing state changes";
+    in_progress_state_change_ = PowerStateChange::kNoChange;
+    queued_state_change_ = PowerStateChange::kNoChange;
+    weak_ptr_factory_.InvalidateWeakPtrs();
+  }
+
   NotifyAdapterStateChanged();
 }
 
