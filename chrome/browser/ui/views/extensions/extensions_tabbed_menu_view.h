@@ -221,4 +221,11 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
   SiteAccessSection has_access_;
 };
 
+BEGIN_VIEW_BUILDER(/* no export */,
+                   ExtensionsTabbedMenuView,
+                   views::BubbleDialogDelegateView)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, ExtensionsTabbedMenuView)
+
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TABBED_MENU_VIEW_H_

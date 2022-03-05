@@ -220,27 +220,27 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
       has_access_{nullptr, nullptr, nullptr,
                   IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_HAS_ACCESS_SECTION_TITLE,
                   extensions::SitePermissionsHelper::SiteInteraction::kActive} {
+  views::Builder<ExtensionsTabbedMenuView>(this)
+      .SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical))
+      .SetTitle(IDS_EXTENSIONS_MENU_TITLE)
+      .set_margins(gfx::Insets(0))
+      .SetButtons(ui::DIALOG_BUTTON_NONE)
+      .SetShowCloseButton(true)
+      // Let anchor view's MenuButtonController handle the highlight.
+      .set_highlight_button_when_shown(false)
+      .SetEnableArrowKeyTraversal(true)
+      .BuildChildren();
+
   // Ensure layer masking is used for the extensions menu to ensure buttons with
   // layer effects sitting flush with the bottom of the bubble are clipped
   // appropriately.
   SetPaintClientToLayer(true);
 
-  toolbar_model_observation_.Observe(toolbar_model_.get());
-  browser_->tab_strip_model()->AddObserver(this);
-  set_margins(gfx::Insets(0));
-
-  SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetShowCloseButton(true);
-  SetTitle(IDS_EXTENSIONS_MENU_TITLE);
   GetViewAccessibility().OverrideName(GetAccessibleWindowTitle());
 
-  SetEnableArrowKeyTraversal(true);
-
-  // Let anchor view's MenuButtonController handle the highlight.
-  set_highlight_button_when_shown(false);
-
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  toolbar_model_observation_.Observe(toolbar_model_.get());
+  browser_->tab_strip_model()->AddObserver(this);
 
   Populate();
 
