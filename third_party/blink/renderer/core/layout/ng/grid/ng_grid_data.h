@@ -53,7 +53,7 @@ struct CORE_EXPORT NGGridLayoutData {
   USING_FAST_MALLOC(NGGridLayoutData);
 
  public:
-  using RangeData = NGGridLayoutAlgorithmTrackCollection::Range;
+  using RangeData = NGGridLayoutTrackCollection::Range;
 
   struct TrackCollectionGeometry {
     Vector<RangeData> ranges;

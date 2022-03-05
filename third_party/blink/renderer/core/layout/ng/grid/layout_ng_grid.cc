@@ -277,9 +277,8 @@ Vector<LayoutUnit> LayoutNGGrid::ComputeTrackSizeRepeaterForRange(
   Vector<LayoutUnit> track_sizes;
   track_sizes.ReserveInitialCapacity(range.set_count);
 
-  const wtf_size_t ending_set_index =
-      range.starting_set_index + range.set_count;
-  for (wtf_size_t set_index = range.starting_set_index;
+  const wtf_size_t ending_set_index = range.begin_set_index + range.set_count;
+  for (wtf_size_t set_index = range.begin_set_index;
        set_index < ending_set_index; ++set_index) {
     DCHECK_LT(set_index + 1, geometry.sets.size());
 

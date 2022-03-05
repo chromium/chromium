@@ -255,45 +255,44 @@ void GridItemData::SetAlignmentFallback(
 }
 
 void GridItemData::ComputeSetIndices(
-    const NGGridLayoutAlgorithmTrackCollection& track_collection) {
+    const NGGridLayoutTrackCollection& track_collection) {
   DCHECK(!IsOutOfFlow());
-  GridItemIndices range_indices = RangeIndices(track_collection.Direction());
+
+  const auto track_direction = track_collection.Direction();
+  GridItemIndices range_indices = RangeIndices(track_direction);
 
 #if DCHECK_IS_ON()
-  const wtf_size_t start_line = StartLine(track_collection.Direction());
-  const wtf_size_t end_line = EndLine(track_collection.Direction());
+  const wtf_size_t start_line = StartLine(track_direction);
+  const wtf_size_t end_line = EndLine(track_direction);
+
   DCHECK_LE(end_line, track_collection.EndLineOfImplicitGrid());
   DCHECK_LT(start_line, end_line);
 
   // Check the range index caching was correct by running a binary search.
-  DCHECK_EQ(track_collection.RangeIndexFromTrackNumber(start_line),
+  DCHECK_EQ(track_collection.RangeIndexFromGridLine(start_line),
             range_indices.begin);
-  DCHECK_EQ(track_collection.RangeIndexFromTrackNumber(end_line - 1),
+  DCHECK_EQ(track_collection.RangeIndexFromGridLine(end_line - 1),
             range_indices.end);
 #endif
 
   auto& set_indices =
-      track_collection.IsForColumns() ? column_set_indices : row_set_indices;
-  set_indices.begin =
-      track_collection.RangeStartingSetIndex(range_indices.begin);
-  set_indices.end = track_collection.RangeStartingSetIndex(range_indices.end) +
+      (track_direction == kForColumns) ? column_set_indices : row_set_indices;
+  set_indices.begin = track_collection.RangeBeginSetIndex(range_indices.begin);
+  set_indices.end = track_collection.RangeBeginSetIndex(range_indices.end) +
                     track_collection.RangeSetCount(range_indices.end);
-
-  DCHECK_LE(set_indices.end, track_collection.SetCount());
-  DCHECK_LT(set_indices.begin, set_indices.end);
 }
 
 void GridItemData::ComputeOutOfFlowItemPlacement(
-    const NGGridLayoutAlgorithmTrackCollection& track_collection,
+    const NGGridLayoutTrackCollection& track_collection,
     const NGGridPlacement& grid_placement) {
   DCHECK(IsOutOfFlow());
 
-  auto& start_offset = track_collection.IsForColumns()
-                           ? column_placement.offset_in_range.begin
-                           : row_placement.offset_in_range.begin;
-  auto& end_offset = track_collection.IsForColumns()
-                         ? column_placement.offset_in_range.end
-                         : row_placement.offset_in_range.end;
+  const bool is_for_columns = track_collection.Direction() == kForColumns;
+
+  auto& start_offset = is_for_columns ? column_placement.offset_in_range.begin
+                                      : row_placement.offset_in_range.begin;
+  auto& end_offset = is_for_columns ? column_placement.offset_in_range.end
+                                    : row_placement.offset_in_range.end;
 
   if (IsGridContainingBlock()) {
     grid_placement.ResolveOutOfFlowItemGridLines(track_collection, node.Style(),
@@ -318,9 +317,8 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
   // and it is within the bounds of the grid, since an out of flow item cannot
   // create grid lines.
   const wtf_size_t range_count = track_collection.RangeCount();
-  auto& start_range_index = track_collection.IsForColumns()
-                                ? column_placement.range_index.begin
-                                : row_placement.range_index.begin;
+  auto& start_range_index = is_for_columns ? column_placement.range_index.begin
+                                           : row_placement.range_index.begin;
   if (start_offset != kNotFound) {
     if (!range_count) {
       // An undefined and empty grid has a single start/end grid line and no
@@ -333,15 +331,14 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
       // we can just subtract one unit to the range count.
       start_range_index =
           (start_offset < track_collection.EndLineOfImplicitGrid())
-              ? track_collection.RangeIndexFromTrackNumber(start_offset)
+              ? track_collection.RangeIndexFromGridLine(start_offset)
               : range_count - 1;
-      start_offset -= track_collection.RangeTrackNumber(start_range_index);
+      start_offset -= track_collection.RangeStartLine(start_range_index);
     }
   }
 
-  auto& end_range_index = track_collection.IsForColumns()
-                              ? column_placement.range_index.end
-                              : row_placement.range_index.end;
+  auto& end_range_index = is_for_columns ? column_placement.range_index.end
+                                         : row_placement.range_index.end;
   if (end_offset != kNotFound) {
     if (!range_count) {
       // Similarly to the start offset, if we have an undefined, empty grid and
@@ -352,10 +349,9 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
       // If the end line of an out of flow item is the first line of the grid,
       // then |last_spanned_range| is set to zero.
       end_range_index =
-          end_offset
-              ? track_collection.RangeIndexFromTrackNumber(end_offset - 1)
-              : 0;
-      end_offset -= track_collection.RangeTrackNumber(end_range_index);
+          end_offset ? track_collection.RangeIndexFromGridLine(end_offset - 1)
+                     : 0;
+      end_offset -= track_collection.RangeStartLine(end_range_index);
     }
   }
 }

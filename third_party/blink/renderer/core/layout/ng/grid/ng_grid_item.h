@@ -61,14 +61,13 @@ struct CORE_EXPORT GridItemData {
   // For this item and track direction, computes the pair of indices |begin| and
   // |end| such that the item spans every set from the respective collection's
   // |sets_| with an index in the range [begin, end).
-  void ComputeSetIndices(
-      const NGGridLayoutAlgorithmTrackCollection& track_collection);
+  void ComputeSetIndices(const NGGridLayoutTrackCollection& track_collection);
 
   // For this out of flow item and track collection, computes and stores its
   // first and last spanned ranges, as well as the start and end track offset.
   // |grid_placement| is used to resolve the grid lines.
   void ComputeOutOfFlowItemPlacement(
-      const NGGridLayoutAlgorithmTrackCollection& track_collection,
+      const NGGridLayoutTrackCollection& track_collection,
       const NGGridPlacement& grid_placement);
 
   const GridItemIndices& SetIndices(

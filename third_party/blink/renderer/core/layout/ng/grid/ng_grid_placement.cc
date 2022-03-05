@@ -618,7 +618,7 @@ bool IsEndLineAuto(const GridTrackSizingDirection track_direction,
 }  // namespace
 
 void NGGridPlacement::ResolveOutOfFlowItemGridLines(
-    const NGGridLayoutAlgorithmTrackCollection& track_collection,
+    const NGGridLayoutTrackCollection& track_collection,
     const ComputedStyle& out_of_flow_item_style,
     wtf_size_t* start_line,
     wtf_size_t* end_line) const {

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

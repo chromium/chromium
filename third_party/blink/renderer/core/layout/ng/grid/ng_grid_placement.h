@@ -29,7 +29,7 @@ class CORE_EXPORT NGGridPlacement {
 
   // Helper function to resolve start and end lines of out of flow items.
   void ResolveOutOfFlowItemGridLines(
-      const NGGridLayoutAlgorithmTrackCollection& track_collection,
+      const NGGridLayoutTrackCollection& track_collection,
       const ComputedStyle& out_of_flow_item_style,
       wtf_size_t* start_line,
       wtf_size_t* end_line) const;
