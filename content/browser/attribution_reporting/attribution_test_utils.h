@@ -84,11 +84,6 @@ class MockAttributionHost : public AttributionHost {
   ~MockAttributionHost() override;
 
   MOCK_METHOD(void,
-              RegisterImpression,
-              (const blink::Impression& impression),
-              (override));
-
-  MOCK_METHOD(void,
               RegisterConversion,
               (blink::mojom::ConversionPtr conversion),
               (override));

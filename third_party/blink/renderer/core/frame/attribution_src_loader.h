@@ -25,6 +25,14 @@ class CORE_EXPORT AttributionSrcLoader
     : public GarbageCollected<AttributionSrcLoader>,
       private RawResourceClient {
  public:
+  enum class RegisterResult {
+    kSuccess,
+    kInvalidProtocol,
+    kNotAllowed,
+    kInsecureContext,
+    kUntrustworthyOrigin,
+  };
+
   explicit AttributionSrcLoader(LocalFrame* frame);
   AttributionSrcLoader(const AttributionSrcLoader&) = delete;
   AttributionSrcLoader& operator=(const AttributionSrcLoader&) = delete;
@@ -35,7 +43,8 @@ class CORE_EXPORT AttributionSrcLoader
   // Registers an attribution_src. This method handles fetching the attribution
   // src and notifying the browser process to begin tracking it. Must be invoked
   // prior to `Shutdown()`, otherwise is a no-op.
-  void Register(const KURL& attribution_src, HTMLImageElement* element);
+  RegisterResult Register(const KURL& attribution_src,
+                          HTMLImageElement* element);
 
   void Shutdown();
 

@@ -7,6 +7,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/public/common/content_switches.h"
@@ -114,8 +115,12 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       AttributionSrcImg_SourceRegistered) {
+class AttributionSrcBasicSourceRegisteredBrowserTest
+    : public AttributionSrcBrowserTest,
+      public ::testing::WithParamInterface<base::StringPiece> {};
+
+IN_PROC_BROWSER_TEST_P(AttributionSrcBasicSourceRegisteredBrowserTest,
+                       SourceRegistered) {
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
@@ -133,8 +138,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   GURL register_url =
       https_server()->GetURL("c.test", "/register_source_headers.html");
 
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     JsReplace("createAttributionSrcImg($1);", register_url)));
+  base::StringPiece create_source_js = GetParam();
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(create_source_js, register_url)));
   if (!data_host)
     loop.Run();
   data_host->WaitForSourceData(/*num_source_data=*/1);
@@ -150,6 +156,15 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
   EXPECT_THAT(source_data.front()->aggregatable_sources->sources, IsEmpty());
 }
+
+// Ensure that basic source registration works with both the img attributionsrc
+// attribute and the registerAttributionSource JS call.
+INSTANTIATE_TEST_SUITE_P(
+    AttributionSrcSourceRegistrations,
+    AttributionSrcBasicSourceRegisteredBrowserTest,
+    ::testing::Values(
+        "createAttributionSrcImg($1);",
+        "window.attributionReporting.registerAttributionSource($1);"));
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcImg_SourceRegisteredWithOptionalParams) {

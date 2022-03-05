@@ -80,7 +80,6 @@ class CONTENT_EXPORT AttributionHost
 
   // blink::mojom::ConversionHost:
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override;
-  void RegisterImpression(const blink::Impression& impression) override;
   void RegisterDataHost(mojo::PendingReceiver<blink::mojom::AttributionDataHost>
                             data_host) override;
 
