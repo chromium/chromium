@@ -26,8 +26,22 @@ class CORE_EXPORT FocusgroupController {
  private:
   // Entry point into Focusgroup advancement. Returns true if the key press
   // moved the focus.
-  static bool Advance(const Element* initial_element,
-                      FocusgroupDirection direction);
+  static bool Advance(Element* initial_element, FocusgroupDirection direction);
+
+  static bool AdvanceForward(Element* initial_element,
+                             FocusgroupDirection direction);
+  static bool CanExitFocusgroup(const Element* exiting_focusgroup,
+                                const Element* entering_focusgroup,
+                                const Element* initial_focusgroup,
+                                FocusgroupDirection direction);
+  static bool CanExitFocusgroupRecursive(const Element* exiting_focusgroup,
+                                         const Element* next_element,
+                                         FocusgroupDirection direction,
+                                         bool check_wrap);
+  static Element* Wrap(Element* nearest_focusgroup,
+                       const Element* initial_focusgroup,
+                       FocusgroupDirection direction);
+  static void Focus(Element* element, FocusgroupDirection direction);
 };
 
 }  // namespace blink
