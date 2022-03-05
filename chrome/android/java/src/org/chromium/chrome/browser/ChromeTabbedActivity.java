@@ -719,11 +719,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private void createStartSurface(CompositorViewHolder compositorViewHolder) {
         TabManagementDelegate tabManagementDelegate = TabManagementModuleProvider.getDelegate();
+        ViewGroup containerView = TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(this)
+                ? findViewById(R.id.grid_tab_switcher_view_holder)
+                : compositorViewHolder;
         if (tabManagementDelegate != null) {
             tabManagementDelegate.createStartSurface(this, mRootUiCoordinator.getScrimCoordinator(),
                     mRootUiCoordinator.getBottomSheetController(), mStartSurfaceSupplier,
                     mStartSurfaceParentTabSupplier, hadWarmStart(), getWindowAndroid(),
-                    compositorViewHolder, compositorViewHolder::getDynamicResourceLoader,
+                    containerView, compositorViewHolder::getDynamicResourceLoader,
                     getTabModelSelector(), getBrowserControlsManager(), getSnackbarManager(),
                     getShareDelegateSupplier(), getToolbarManager()::getOmniboxStub,
                     getTabContentManager(), getModalDialogManager(),

@@ -23,30 +23,37 @@
         android:layout_height="match_parent"
         android:layout_weight="1" >
 
-       <include layout="@layout/compositor_view_holder"/>
+        <include layout="@layout/compositor_view_holder"/>
 
-       <!-- Parent holder for the AR SurfaceView, used to render content when
+        <ViewStub
+            android:id="@+id/grid_tab_switcher_view_holder_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inflatedId="@+id/grid_tab_switcher_view_holder"
+            android:layout="@layout/grid_tab_switcher_view_holder" />
+
+        <!-- Parent holder for the AR SurfaceView, used to render content when
             in AR mode (which has some separate requirements preventing us from
             using the default compositor surface view). This needs to be in
             front of the compositor view (to obscure it), but behind any chrome
             UI elements that we may want to render in front of it. -->
-       <FrameLayout
+        <FrameLayout
             android:id="@+id/ar_view_holder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone" />
 
-       <!-- The capture overlay needs to be behind UI elements that aren't being
+        <!-- The capture overlay needs to be behind UI elements that aren't being
             captured, but can't be parented to the CompositorViewHolder because
             it also needs to be in front of the AR content. -->
-       <View
+        <View
             android:id="@+id/capture_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/capture_overlay_border"
             android:visibility="gone" />
 
-       <FrameLayout
+        <FrameLayout
             android:id="@+id/overview_list_layout_holder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

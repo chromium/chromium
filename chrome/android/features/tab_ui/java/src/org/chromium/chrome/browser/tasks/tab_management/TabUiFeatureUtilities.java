@@ -143,6 +143,15 @@ public class TabUiFeatureUtilities {
     }
 
     /**
+     * @return Whether the tablet Grid Tab Switcher Polish is enabled.
+     * @param context The activity context.
+     */
+    public static boolean isTabletGridTabSwitcherPolishEnabled(Context context) {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
+    }
+
+    /**
      * @return Whether the tab group feature is enabled and available for use.
      * @param context The activity context.
      */

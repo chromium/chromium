@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -35,7 +36,6 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -132,7 +132,7 @@ public class TopToolbarCoordinator implements Toolbar {
      *         toolbar and the logo click events are processed in NewTabPageLayout. So this callback
      *         will only be called on Start surface.
      */
-    public TopToolbarCoordinator(ToolbarControlContainer controlContainer,
+    public TopToolbarCoordinator(ToolbarControlContainer controlContainer, ViewStub toolbarStub,
             ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController, UserEducationHelper userEducationHelper,
             List<ButtonDataProvider> buttonDataProviders,
@@ -171,8 +171,7 @@ public class TopToolbarCoordinator implements Toolbar {
                     tabController.openHomepage();
                 }
             };
-            mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(
-                    controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
+            mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(toolbarStub,
                     userEducationHelper, identityDiscStateSupplier, overviewThemeColorProvider,
                     overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
                     isGridTabSwitcherEnabled, homepageEnabledSupplier,
@@ -181,8 +180,7 @@ public class TopToolbarCoordinator implements Toolbar {
                     isIncognitoModeEnabledSupplier, profileSupplier,
                     startSurfaceLogoClickedCallback);
         } else if (mToolbarLayout instanceof ToolbarPhone || isTabletGridTabSwitcherEnabled()) {
-                mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(
-                    controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
+            mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,
                     overviewModeMenuButtonCoordinator, isGridTabSwitcherEnabled,
                     isTabToGtsAnimationEnabled, isIncognitoModeEnabledSupplier);
         }

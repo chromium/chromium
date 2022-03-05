@@ -1008,11 +1008,21 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             boolean isTabGroupsAndroidContinuationEnabled, boolean initializeWithIncognitoColors,
             ObservableSupplier<Profile> profileSupplier,
             Callback<LoadUrlParams> logoClickedCallback) {
+        ViewStub tabSwitcherToolbarStub;
+        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(mActivity)) {
+            // Need to inflate grid_tab_switcher_view_holder_stub, as it contains
+            // fullscreen_tab_switcher_toolbar_stub.
+            ((ViewStub) mActivity.findViewById(R.id.grid_tab_switcher_view_holder_stub)).inflate();
+            tabSwitcherToolbarStub =
+                    mActivity.findViewById(R.id.fullscreen_tab_switcher_toolbar_stub);
+        } else {
+            tabSwitcherToolbarStub = mActivity.findViewById(R.id.tab_switcher_toolbar_stub);
+        }
         // clang-format off
-        TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer, toolbarLayout,
-                mLocationBarModel, mToolbarTabController,
-                new UserEducationHelper(mActivity, mHandler),
-                buttonDataProviders, mLayoutStateProviderSupplier, browsingModeThemeColorProvider,
+        TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer,
+                tabSwitcherToolbarStub, toolbarLayout, mLocationBarModel, mToolbarTabController,
+                new UserEducationHelper(mActivity, mHandler), buttonDataProviders,
+                mLayoutStateProviderSupplier, browsingModeThemeColorProvider,
                 mAppThemeColorProvider, mMenuButtonCoordinator, mOverviewModeMenuButtonCoordinator,
                 mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
                 mHomepageEnabledSupplier, mStartSurfaceAsHomepageSupplier,
