@@ -1757,6 +1757,13 @@
         {}
        ]
       ],
+      "large-aspect-ratio-crash.html": [
+       "a1e69cdd7c80bfa22f0f911c0b38ee27d5345496",
+       [
+        null,
+        {}
+       ]
+      ],
       "small-aspect-ratio-crash.html": [
        "07712542f179c5e83cc44f4f15130c48e030d8c0",
        [
@@ -3826,6 +3833,15 @@
        ]
       ]
      }
+    },
+    "crashtests": {
+     "reparent-animating-element-001.html": [
+      "49ee9c433cfe67a6aed4d3ab21938a2ffe1da273",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "interfaces": {
      "Animation": {
@@ -79711,7 +79727,7 @@
        ]
       ],
       "multi-line-row-flex-fragmentation-016.html": [
-       "fbd557cc3c3749b26847eefb34ce2d3e7e253452",
+       "7b690f11237f271affc8486c72305e2cdb553568",
        [
         null,
         [
@@ -79880,7 +79896,7 @@
        ]
       ],
       "multi-line-row-flex-fragmentation-029.html": [
-       "e4b14c3e87d53a99e268586a080e964b92978fc4",
+       "23f9defb5570626479e474a92cec026de60b9af9",
        [
         null,
         [
@@ -79906,7 +79922,7 @@
        ]
       ],
       "multi-line-row-flex-fragmentation-031.html": [
-       "d491417f606b9ce47c166b9ab3d4bf1e7796a0fb",
+       "e5780d254e1238d628a7487a3f5f1c25fe872a81",
        [
         null,
         [
@@ -80050,6 +80066,45 @@
       ],
       "multi-line-row-flex-fragmentation-042.tentative.html": [
        "45844c0d18e916133e96cc7d439b332a186bc1f7",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-043.html": [
+       "7d0500ad05d7b908fc173471ad45ab69e3d6b729",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-044.html": [
+       "8262b0e32f26ee48cf482083f94c48bb809b661d",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-045.html": [
+       "f5a43339478dbfea2baf600707197d4607d9f9dd",
        [
         null,
         [
@@ -80477,6 +80532,45 @@
         {}
        ]
       ],
+      "single-line-column-flex-fragmentation-033.html": [
+       "0a7e423e1165d7783c0d8b3177a615af1ba21275",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-column-flex-fragmentation-034.html": [
+       "e84e633878d7d1303a1545e2bcdc9408ac1ae3df",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-column-flex-fragmentation-035.html": [
+       "317336fa2c29235b9f406b8eb564ef9aa3725363",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "single-line-row-flex-fragmentation-001.html": [
        "379327a4aff584192f076d3f9d8f3ead232c0f5c",
        [
@@ -80752,6 +80846,45 @@
       ],
       "single-line-row-flex-fragmentation-022.html": [
        "4d64641e4c4cc8f95eef8a3f0f5162125ee7fcaf",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-row-flex-fragmentation-023.html": [
+       "d344e91f540eec58badb5d254ccd61e23eee284b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-row-flex-fragmentation-024.html": [
+       "7e5e3f206b210913bcb7f2e96e3d111ebfb3898b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-row-flex-fragmentation-025.html": [
+       "dd753039c1b908a0dfd17246b4e48d236cc325ee",
        [
         null,
         [
@@ -289812,6 +289945,10 @@
        "window-open-popup-target.html": [
         "a0588de82970afcf3cfc3bce63e443aebee231e8",
         []
+       ],
+       "windowFeature-values-target.html": [
+        "3a78ddf660544a7f9cb0765367512a102c7499a5",
+        []
        ]
       },
       "window-indexed-properties-expected.txt": [
@@ -360329,7 +360466,7 @@
      ]
     ],
     "fedcm-network-requests.sub.https.html": [
-     "ec58a11f5af1fce7bf44e9649f8614a2c32dcdee",
+     "09841893ae385f4c04e864db8f1a1d4fa0987d3e",
      [
       null,
       {}
@@ -360343,7 +360480,7 @@
      ]
     ],
     "fedcm.https.html": [
-     "688212e2ed2a306a0d588de197d94b46520c4a4c",
+     "9b21187a399eeaf6fb7b803881f277e7bb965c9c",
      [
       null,
       {}
@@ -363527,6 +363664,13 @@
     "css-cascade": {
      "all-prop-initial-xml.html": [
       "a04956a52d1f120583c26a462356ba8e47ac1277",
+      [
+       null,
+       {}
+      ]
+     ],
+     "all-prop-revert-layer-noop.html": [
+      "66aa2b9c736c1fc2a101c000340e3a9855378f77",
       [
        null,
        {}
@@ -427327,7 +427471,7 @@
         ]
        ],
        "open-features-is-popup-condition.html": [
-        "3959b618e1d0babd14c36c20fcfa6cb497397aa5",
+        "4f52e2e8de64fd5c63d35146c321e2de99d66afe",
         [
          "html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-is-popup-condition.html?combination",
          {
@@ -427740,7 +427884,7 @@
        ]
       ],
       "window-open-noopener.html": [
-       "c3c706605492c5c81bc296054eb98c280492527f",
+       "8d3a95df630eaee6f55401e3efa2447081f5708a",
        [
         "html/browsers/the-window-object/window-open-noopener.html?_parent",
         {
@@ -427775,6 +427919,15 @@
       ],
       "window-open-popup-behavior.html": [
        "258698d94d9ad2414344d29b0128c52937923890",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
+       ]
+      ],
+      "window-open-windowfeatures-values.html": [
+       "32551dd8d70f1e19b906b4ee228fd7807ecbb786",
        [
         null,
         {
