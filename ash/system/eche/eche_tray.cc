@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/eche/eche_tray.h"
+#include <algorithm>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/ash_web_view.h"
@@ -25,6 +26,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -48,6 +50,9 @@ constexpr int kIconWidth = 22;
 constexpr int kIconHeight = 22;
 
 constexpr gfx::Insets kBubblePadding(4, 4, kBubbleBottomPaddingDip, 4);
+
+constexpr float kDefaultAspectRatio = 16.0 / 9.0f;
+constexpr int kMinimumEcheWidth = 240;
 
 }  // namespace
 
@@ -222,8 +227,7 @@ void EcheTray::InitBubble() {
   header_view->layer()->SetFillsBoundsOpaquely(false);
 
   auto web_view = AshWebViewFactory::Get()->Create(AshWebView::InitParams());
-  // TODO(nayebi): Use GetDefaultBoundsForEche()
-  web_view->SetPreferredSize(gfx::Size(400, 600));
+  web_view->SetPreferredSize(GetSizeForEche());
   if (!url_.is_empty())
     web_view->Navigate(url_);
   bubble_view->AddChildView(std::move(web_view));
@@ -233,6 +237,21 @@ void EcheTray::InitBubble() {
 
   SetIsActive(true);
   bubble_->GetBubbleView()->UpdateBubble();
+}
+
+gfx::Size EcheTray::GetSizeForEche() const {
+  // Ensures the Eche bounds is always 16:9 portrait aspect ratio and not more
+  // than half of the windows.
+  gfx::Rect bounds = display::Screen::GetScreen()
+                         ->GetDisplayNearestWindow(
+                             tray_container()->GetWidget()->GetNativeWindow())
+                         .work_area();
+  const float bounds_aspect_ratio =
+      static_cast<float>(bounds.width()) / bounds.height();
+  const bool is_landscape = bounds_aspect_ratio >= 1;
+  int new_width = is_landscape ? (bounds.height() / 2) : (bounds.width() / 2);
+  new_width = std::min(new_width, kMinimumEcheWidth);
+  return gfx::Size(new_width, new_width * kDefaultAspectRatio);
 }
 
 void EcheTray::OnArrowBackActivated() {

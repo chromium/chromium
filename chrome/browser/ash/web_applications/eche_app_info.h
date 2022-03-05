@@ -27,6 +27,7 @@ class EcheSystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldAllowScriptsToCloseWindows() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;
   bool IsAppEnabled() const override;
+
   gfx::Rect GetDefaultBoundsForEche() const;
 };
 

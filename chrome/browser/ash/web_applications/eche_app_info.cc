@@ -88,6 +88,7 @@ bool EcheSystemAppDelegate::IsAppEnabled() const {
   return base::FeatureList::IsEnabled(chromeos::features::kEcheSWA);
 }
 
+// TODO(nayebi): Remove this after migrating completely from SWA to bubble.
 gfx::Rect EcheSystemAppDelegate::GetDefaultBoundsForEche() const {
   // Ensures the Eche bounds is always 16:9 portrait aspect ratio and not more
   // than half of the windows.

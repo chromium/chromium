@@ -27,6 +27,7 @@ class Event;
 
 namespace gfx {
 class Image;
+class Size;
 }  // namespace gfx
 
 namespace ash {
@@ -91,6 +92,10 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   TrayBubbleWrapper* get_bubble_wrapper_for_test() { return bubble_.get(); }
 
  private:
+  // Returns the size of the Exo bubble based on the screen size and
+  // orientation.
+  gfx::Size GetSizeForEche() const;
+
   // Handles the click on the "back" arrow in the header.
   void OnArrowBackActivated();
 
