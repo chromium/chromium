@@ -4,7 +4,8 @@
 
 #include "base/task/thread_pool/task_source_sort_key.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,14 +30,14 @@ const TaskSourceSortKey kTestKeys[] = {
 }  // namespace
 
 TEST(TaskSourceSortKeyTest, OperatorLessThan) {
-  for (size_t i = 0; i < size(kTestKeys); i++) {
+  for (size_t i = 0; i < std::size(kTestKeys); i++) {
     // All the entries before the index of the current key are smaller.
     for (size_t j = 0; j < i; j++)
       EXPECT_LT(kTestKeys[j], kTestKeys[i]);
 
     // All the other entries (including itself) are not smaller than the current
     // key.
-    for (size_t j = i; j < size(kTestKeys); j++)
+    for (size_t j = i; j < std::size(kTestKeys); j++)
       EXPECT_FALSE(kTestKeys[j] < kTestKeys[i]);
   }
 }
@@ -44,8 +45,8 @@ TEST(TaskSourceSortKeyTest, OperatorLessThan) {
 TEST(TaskSourceSortKeyTest, OperatorEqual) {
   // Compare each test key to every other key. They will be equal only when
   // their index is the same.
-  for (size_t i = 0; i < size(kTestKeys); i++) {
-    for (size_t j = 0; j < size(kTestKeys); j++) {
+  for (size_t i = 0; i < std::size(kTestKeys); i++) {
+    for (size_t j = 0; j < std::size(kTestKeys); j++) {
       if (i == j)
         EXPECT_EQ(kTestKeys[i], kTestKeys[j]);
       else
@@ -57,8 +58,8 @@ TEST(TaskSourceSortKeyTest, OperatorEqual) {
 TEST(TaskSourceSortKeyTest, OperatorNotEqual) {
   // Compare each test key to every other key. They will not be equal only when
   // their index is different.
-  for (size_t i = 0; i < size(kTestKeys); i++) {
-    for (size_t j = 0; j < size(kTestKeys); j++) {
+  for (size_t i = 0; i < std::size(kTestKeys); i++) {
+    for (size_t j = 0; j < std::size(kTestKeys); j++) {
       if (i != j)
         EXPECT_NE(kTestKeys[i], kTestKeys[j]);
       else

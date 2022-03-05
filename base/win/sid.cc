@@ -9,8 +9,9 @@
 #include <sddl.h>
 #include <stdlib.h>
 
+#include <iterator>
+
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/win/scoped_handle.h"
@@ -157,7 +158,7 @@ absl::optional<Sid> Sid::FromKnownCapability(WellKnownCapability capability) {
   SID_IDENTIFIER_AUTHORITY capability_authority = {
       SECURITY_APP_PACKAGE_AUTHORITY};
   DWORD sub_authorities[] = {SECURITY_CAPABILITY_BASE_RID, *capability_rid};
-  return FromSubAuthorities(&capability_authority, size(sub_authorities),
+  return FromSubAuthorities(&capability_authority, std::size(sub_authorities),
                             sub_authorities);
 }
 

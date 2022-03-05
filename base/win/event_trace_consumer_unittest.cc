@@ -8,9 +8,9 @@
 
 #include <objbase.h>
 
+#include <iterator>
 #include <list>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -157,7 +157,7 @@ class EtwTraceConsumerRealtimeTest : public EtwTraceConsumerBaseTest {
 
     HANDLE events[] = {consumer_ready_.get(), consumer_thread_.get()};
     DWORD result =
-        ::WaitForMultipleObjects(size(events), events, FALSE, INFINITE);
+        ::WaitForMultipleObjects(std::size(events), events, FALSE, INFINITE);
     switch (result) {
       case WAIT_OBJECT_0:
         // The event was set, the consumer_ is ready.

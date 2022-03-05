@@ -10,6 +10,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <iterator>
 #include <memory>
 
 #include "base/cxx17_backports.h"
@@ -26,12 +27,12 @@ const Feature kMacAllowBackgroundingProcesses{"MacAllowBackgroundingProcesses",
 Time Process::CreationTime() const {
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, Pid()};
   size_t len = 0;
-  if (sysctl(mib, size(mib), NULL, &len, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), NULL, &len, NULL, 0) < 0)
     return Time();
 
   std::unique_ptr<struct kinfo_proc, base::FreeDeleter> proc(
       static_cast<struct kinfo_proc*>(malloc(len)));
-  if (sysctl(mib, size(mib), proc.get(), &len, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), proc.get(), &len, NULL, 0) < 0)
     return Time();
   return Time::FromTimeVal(proc->kp_proc.p_un.__p_starttime);
 }

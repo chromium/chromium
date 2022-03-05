@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,7 +15,6 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
@@ -257,7 +257,7 @@ DWORD RegKey::GetValueCount() const {
 
 LONG RegKey::GetValueNameAt(int index, std::wstring* name) const {
   wchar_t buf[256];
-  DWORD bufsize = size(buf);
+  DWORD bufsize = std::size(buf);
   LONG r = ::RegEnumValue(key_, index, buf, &bufsize, nullptr, nullptr, nullptr,
                           nullptr);
   if (r == ERROR_SUCCESS)
@@ -650,7 +650,7 @@ void RegistryKeyIterator::operator++() {
 
 bool RegistryKeyIterator::Read() {
   if (Valid()) {
-    DWORD ncount = static_cast<DWORD>(size(name_));
+    DWORD ncount = static_cast<DWORD>(std::size(name_));
     FILETIME written;
     LONG r = ::RegEnumKeyEx(key_, index_, name_, &ncount, nullptr, nullptr,
                             nullptr, &written);
