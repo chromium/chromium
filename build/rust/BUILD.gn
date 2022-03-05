@@ -22,7 +22,7 @@ config("cxx_cppconfig") {
 
 # The required dependencies for cxx-generated bindings, that must be included
 # on the C++ side.
-source_set("cxx_cppdeps") {
+static_library("cxx_cppdeps") {
   sources = [
     "//third_party/rust/cxx/v1/crate/include/cxx.h",
     "//third_party/rust/cxx/v1/crate/src/cxx.cc",
@@ -45,7 +45,7 @@ source_set("cxx_cppdeps") {
 # The required dependencies for cxx-generated bindings, that must be included
 # on the Rust side.
 group("cxx_rustdeps") {
-  deps = [ "//third_party/rust/cxx/v1:lib" ]
+  public_deps = [ "//third_party/rust/cxx/v1:lib" ]
 }
 
 # Enables code behind #[cfg(test)]. This should only be used for targets where
