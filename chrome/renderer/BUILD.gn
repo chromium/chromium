@@ -333,7 +333,7 @@ static_library("renderer") {
       "printing/chrome_print_render_frame_helper_delegate.cc",
       "printing/chrome_print_render_frame_helper_delegate.h",
     ]
-    if (enable_print_preview) {
+    if (enable_print_preview && enable_plugins) {
       sources += [
         "pepper/chrome_pdf_print_client.cc",
         "pepper/chrome_pdf_print_client.h",

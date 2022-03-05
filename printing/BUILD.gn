@@ -201,7 +201,8 @@ component("printing") {
     ]
   }
 
-  if (is_linux) {
+  # TODO(crbug.com/1272828): Determine need for Fuchsia-specific implementation.
+  if (is_linux || is_fuchsia) {
     sources += [
       "printing_context_linux.cc",
       "printing_context_linux.h",
@@ -288,7 +289,7 @@ static_library("test_support") {
     sources += [ "image_android.cc" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos || is_fuchsia) {
     sources += [ "image_linux.cc" ]
   }
   if (is_mac) {

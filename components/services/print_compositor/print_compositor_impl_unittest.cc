@@ -365,7 +365,13 @@ TEST_F(PrintCompositorImplTest, NotifyUnavailableSubframe) {
   testing::Mock::VerifyAndClearExpectations(&impl);
 }
 
-TEST_F(PrintCompositorImplCrashKeyTest, SetCrashKey) {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1186718): Enable this test once CrashKeys are supported.
+#define MAYBE_SetCrashKey DISABLED_SetCrashKey
+#else
+#define MAYBE_SetCrashKey SetCrashKey
+#endif
+TEST_F(PrintCompositorImplCrashKeyTest, MAYBE_SetCrashKey) {
   PrintCompositorImpl impl(mojo::NullReceiver(),
                            false /* initialize_environment */,
                            nullptr /* io_task_runner */);

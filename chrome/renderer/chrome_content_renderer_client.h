@@ -43,7 +43,7 @@
 #endif
 
 class ChromeRenderThreadObserver;
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && BUILDFLAG(ENABLE_PLUGINS)
 class ChromePDFPrintClient;
 #endif
 #if BUILDFLAG(ENABLE_SPELLCHECK)
@@ -277,7 +277,7 @@ class ChromeContentRendererClient
 #endif
   std::unique_ptr<subresource_filter::UnverifiedRulesetDealer>
       subresource_filter_ruleset_dealer_;
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && BUILDFLAG(ENABLE_PLUGINS)
   std::unique_ptr<ChromePDFPrintClient> pdf_print_client_;
 #endif
 #if BUILDFLAG(ENABLE_PLUGINS)

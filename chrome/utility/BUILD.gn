@@ -206,7 +206,8 @@ static_library("utility") {
       "//components/services/print_compositor/public/mojom",
     ]
 
-    if (is_win || is_mac || is_linux || is_chromeos) {
+    # TODO(crbug.com/1302871): Simplify this. Is `!is_android` sufficient?
+    if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
       deps += [ "//chrome/services/printing:lib" ]
     }
 

@@ -35,6 +35,7 @@
 #include "headless/public/headless_devtools_client.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
+#include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +48,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(ENABLE_PDF)
 #include "base/strings/string_number_conversions.h"
 #include "pdf/pdf.h"
 #include "printing/pdf_render_settings.h"
@@ -274,7 +275,7 @@ INSTANTIATE_TEST_SUITE_P(HeadlessWebContentsScreenshotWindowPositionTests,
                          HeadlessWebContentsScreenshotWindowPositionTest,
                          ::testing::Bool());
 
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(ENABLE_PDF)
 class HeadlessWebContentsPDFTest : public HeadlessAsyncDevTooledBrowserTest {
  public:
   const double kPaperWidth = 10;
@@ -721,7 +722,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 #endif  // BUILDFLAG(ENABLE_TAGGED_PDF)
 
-#endif  // BUILDFLAG(ENABLE_PRINTING)
+#endif  // BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(ENABLE_PDF)
 
 class HeadlessWebContentsSecurityTest
     : public HeadlessAsyncDevTooledBrowserTest,

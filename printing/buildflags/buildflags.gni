@@ -11,7 +11,7 @@ import("//pdf/features.gni")
 
 declare_args() {
   # Enables basic printing support and UI.
-  enable_basic_printing = !is_chromecast && !is_ios && !is_fuchsia
+  enable_basic_printing = !is_chromecast && !is_ios
 }
 
 declare_args() {

@@ -219,7 +219,7 @@
 #include "printing/metafile_agent.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/renderer/pepper/chrome_pdf_print_client.h"
 #include "components/pdf/renderer/pepper_pdf_host.h"
 #endif
@@ -478,7 +478,7 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
       chrome_search_scheme);
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && BUILDFLAG(ENABLE_PLUGINS)
   pdf_print_client_ = std::make_unique<ChromePDFPrintClient>();
   pdf::PepperPDFHost::SetPrintClient(pdf_print_client_.get());
 #endif

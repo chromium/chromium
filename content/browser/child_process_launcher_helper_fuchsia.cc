@@ -10,6 +10,7 @@
 #include "content/browser/child_process_launcher.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace content {
@@ -43,6 +44,10 @@ const char* ProcessNameFromSandboxType(sandbox::mojom::Sandbox sandbox_type) {
       return "print-compositor";
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       return "speech-recognition";
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    case sandbox::mojom::Sandbox::kPrintBackend:
+      return "print-backend";
+#endif
   }
 }
 

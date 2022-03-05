@@ -334,7 +334,7 @@ base::FilePath PdfPrinterHandler::GetFileNameForPrintJobTitle(
   DCHECK(!job_title.empty());
 #if BUILDFLAG(IS_WIN)
   base::FilePath::StringType print_job_title(base::AsWString(job_title));
-#elif BUILDFLAG(IS_POSIX)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::FilePath::StringType print_job_title = base::UTF16ToUTF8(job_title);
 #endif
 

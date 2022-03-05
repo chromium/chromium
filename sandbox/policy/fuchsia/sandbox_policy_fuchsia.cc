@@ -40,6 +40,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 
@@ -156,6 +157,9 @@ const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
     // Remaining types receive no-access-to-anything.
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kCdm:
+#if BUILDFLAG(ENABLE_PRINTING)
+    case sandbox::mojom::Sandbox::kPrintBackend:
+#endif
     case sandbox::mojom::Sandbox::kPrintCompositor:
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kSpeechRecognition:

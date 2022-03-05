@@ -6363,6 +6363,9 @@ static_library("browser") {
     if (is_linux || is_chromeos) {
       sources += [ "printing/printer_manager_dialog_linux.cc" ]
     }
+    if (is_fuchsia) {
+      sources += [ "printing/printer_manager_dialog_fuchsia.cc" ]
+    }
     if (enable_oop_printing) {
       sources += [
         "printing/print_backend_service_manager.cc",
@@ -7860,17 +7863,15 @@ static_library("test_support") {
   }
 
   if (enable_oop_printing) {
-    if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [
-        "printing/print_backend_service_test_impl.cc",
-        "printing/print_backend_service_test_impl.h",
-      ]
-      deps += [
-        "//chrome/services/printing:lib",
-        "//chrome/services/printing/public/mojom",
-        "//printing:test_support",
-      ]
-    }
+    sources += [
+      "printing/print_backend_service_test_impl.cc",
+      "printing/print_backend_service_test_impl.h",
+    ]
+    deps += [
+      "//chrome/services/printing:lib",
+      "//chrome/services/printing/public/mojom",
+      "//printing:test_support",
+    ]
   }
 
   if (enable_extensions) {

@@ -9,6 +9,7 @@ import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//headless/headless.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -862,6 +863,7 @@ test("headless_browsertests") {
     "//content/test:test_support",
     "//gin",
     "//net:test_support",
+    "//pdf:buildflags",
     "//printing/buildflags",
     "//services/device/public/cpp:test_support",
     "//services/network/public/mojom",
@@ -881,9 +883,12 @@ test("headless_browsertests") {
   if (enable_basic_printing) {
     deps += [
       "//components/printing/browser",
-      "//pdf",
       "//printing",
     ]
+
+    if (enable_pdf) {
+      deps += [ "//pdf" ]
+    }
   }
 
   if (headless_use_policy) {
