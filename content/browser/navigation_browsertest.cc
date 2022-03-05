@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/network_service_instance_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -4521,14 +4520,6 @@ class SubresourceLoadingTest : public NavigationBrowserTest {
     EXPECT_EQ(target_frame->GetSiteInstance(),
               initiator_frame->GetSiteInstance());
 
-    // Start monitoring NetworkService for crashes.
-    //
-    // TODO(https://crbug.com/1169431): This should be part of BrowserTestBase.
-    // (with optional opt-out for things like NetworkServiceRestartBrowserTest).
-    bool did_network_service_crash = false;
-    base::CallbackListSubscription crash_monitoring_subscription =
-        RegisterNetworkServiceCrashHandler(base::BindLambdaForTesting(
-            [&]() { did_network_service_crash = true; }));
     // Ask for cookies in the `target_frame`.  One implicit verification here
     // is whether this step will hit any `cookie_url`-related NOTREACHED or DwoC
     // in RestrictedCookieManager::ValidateAccessToCookiesAt.  This verification
@@ -4537,21 +4528,6 @@ class SubresourceLoadingTest : public NavigationBrowserTest {
     // ignores possible Blink-side caching, but this is the first time the
     // renderer needs the cookies and so this is okay for this test).
     EXPECT_EQ("", EvalJs(target_frame, "document.cookie"));
-    // |network_context| might receive an error notification, but it's not
-    // guaranteed to have arrived at this point. Flush the remote to make sure
-    // the notification has been received.
-    //
-    // We flush via `initiator_frame`, because in the current set of tests, the
-    // `initiator_frame` always has a mojo connection to the NetworkService via
-    // the `network_service_disconnect_handler_holder_mojo` field of
-    // RenderFrameHostImpl.  (This is not true for the `target_frame` in tests
-    // where that frame uses the process-wide URLLoaderFactory fallback rather
-    // than creating a URLLoaderFactory via RenderFrameHostImpl.)
-    //
-    // TODO(https://crbug.com/1169431): This should be part of BrowserTestBase.
-    if (!IsInProcessNetworkService())
-      initiator_frame->FlushNetworkAndNavigationInterfacesForTesting();
-    EXPECT_FALSE(did_network_service_crash);
 
     // Verify that the "about:blank" frame is able to load an image.
     VerifyImageSubresourceLoads(target_frame);

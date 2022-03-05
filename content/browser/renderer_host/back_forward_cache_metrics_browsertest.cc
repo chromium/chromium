@@ -110,7 +110,7 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
             base::BindLambdaForTesting(
                 [&run_loop, feature](
                     blink::scheduler::WebSchedulerTrackedFeatures features) {
-                  if (features.Has(feature))
+                  if (features.Has(feature) && run_loop.running())
                     run_loop.Quit();
                 }));
     EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -120,6 +120,10 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
                   current_frame_host()->GetBackForwardCacheDisablingFeatures(),
                   kFeaturesToIgnore),
               blink::scheduler::WebSchedulerTrackedFeatures(feature));
+
+    // Close the web contents to ensure that no new notifications arrive to the
+    // function local callback above after this function has returned.
+    web_contents()->Close();
   }
 
   std::vector<int64_t> navigation_ids_;

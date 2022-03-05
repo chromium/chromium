@@ -16,8 +16,10 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_host_resolver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -75,6 +77,14 @@ class BrowserTestBase : public ::testing::Test {
   // racily start before the rules have been re-applied.
   void SimulateNetworkServiceCrash();
 
+  // Ignores all future NetworkService crashes that would be otherwise detected
+  // and flagged by the AssertThatNetworkServiceDidNotCrash method.
+  //
+  // The IgnoreNetworkServiceCrashes method is useful in a test that plans to
+  // trigger crashes. Note that calling IgnoreNetworkServiceCrashes is *not*
+  // needed when triggering the crash via SimulateNetworkServiceCrash method.
+  void IgnoreNetworkServiceCrashes();
+
   // Returns the host resolver being used for the tests. Subclasses might want
   // to configure it inside tests.
   net::RuleBasedHostResolverProc* host_resolver() {
@@ -97,6 +107,10 @@ class BrowserTestBase : public ::testing::Test {
   // Called after the BrowserMainParts have been created, and before
   // PreEarlyInitialization() has been called.
   virtual void CreatedBrowserMainParts(BrowserMainParts* browser_main_parts) {}
+
+  // GTest assertions that the connection to `network_service_test_` did not get
+  // dropped unexpectedly.
+  void AssertThatNetworkServiceDidNotCrash();
 
   // Sets flag to allow host resolutions to reach the network. Must be called
   // before Setup() to take effect.
@@ -242,6 +256,8 @@ class BrowserTestBase : public ::testing::Test {
   std::unique_ptr<storage::QuotaSettings> quota_settings_;
 
   std::unique_ptr<NoRendererCrashesAssertion> no_renderer_crashes_assertion_;
+
+  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
 
   bool initialized_network_process_ = false;
 

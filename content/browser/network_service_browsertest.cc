@@ -12,6 +12,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -467,19 +468,15 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, SyncXHROnCrash) {
   if (IsInProcessNetworkService())
     return;
 
-  mojo::PendingRemote<network::mojom::NetworkServiceTest>
-      pending_network_service_test;
-  GetNetworkService()->BindTestInterface(
-      pending_network_service_test.InitWithNewPipeAndPassReceiver());
-
   net::EmbeddedTestServer http_server;
   http_server.AddDefaultHandlers(GetTestDataFilePath());
   http_server.RegisterRequestMonitor(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request) {
         if (request.relative_url == "/hung") {
-          mojo::Remote<network::mojom::NetworkServiceTest> network_service_test(
-              std::move(pending_network_service_test));
-          network_service_test->SimulateCrash();
+          base::PostTask(
+              FROM_HERE, {BrowserThread::UI},
+              base::BindOnce(&BrowserTestBase::SimulateNetworkServiceCrash,
+                             base::Unretained(this)));
         }
       }));
   EXPECT_TRUE(http_server.Start());

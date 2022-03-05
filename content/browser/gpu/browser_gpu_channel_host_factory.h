@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/message_filter.h"
 
@@ -29,7 +30,9 @@ class BrowserGpuChannelHostFactory : public gpu::GpuChannelEstablishFactory {
  public:
   static void Initialize(bool establish_gpu_channel);
   static void Terminate();
-  static BrowserGpuChannelHostFactory* instance() { return instance_; }
+  CONTENT_EXPORT static BrowserGpuChannelHostFactory* instance() {
+    return instance_;
+  }
 
   BrowserGpuChannelHostFactory(const BrowserGpuChannelHostFactory&) = delete;
   BrowserGpuChannelHostFactory& operator=(const BrowserGpuChannelHostFactory&) =
@@ -45,7 +48,7 @@ class BrowserGpuChannelHostFactory : public gpu::GpuChannelEstablishFactory {
 
   // Closes the channel to the GPU process. This should be called before the IO
   // thread stops.
-  void CloseChannel();
+  CONTENT_EXPORT void CloseChannel();
 
   // Notify the BrowserGpuChannelHostFactory of visibility, used to prevent
   // timeouts while backgrounded.
@@ -84,7 +87,9 @@ class BrowserGpuChannelHostFactory : public gpu::GpuChannelEstablishFactory {
 
   base::OneShotTimer timeout_;
 
-  static BrowserGpuChannelHostFactory* instance_;
+  // instance() might be inlined at a call site so instance_ must also be
+  // exported.
+  CONTENT_EXPORT static BrowserGpuChannelHostFactory* instance_;
 };
 
 }  // namespace content
