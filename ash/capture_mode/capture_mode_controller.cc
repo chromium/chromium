@@ -678,7 +678,7 @@ void CaptureModeController::CheckFolderAvailability(
     base::OnceCallback<void(bool available)> callback) {
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&base::PathExists, folder),
-      base::BindOnce(std::move(callback)));
+      std::move(callback));
 }
 
 void CaptureModeController::SetWindowProtectionMask(aura::Window* window,

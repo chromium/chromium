@@ -310,8 +310,8 @@ class TraceConnection : public base::MessagePumpLibevent::FdWatcher {
     connection_fd_.reset();
     StopFtrace();
     ClearFtrace();
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_)));
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(callback_));
   }
 
   // Tracing state.

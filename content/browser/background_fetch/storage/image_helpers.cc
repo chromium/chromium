@@ -66,7 +66,7 @@ void DeserializeIcon(std::unique_ptr<std::string> serialized_icon,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
        base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&DeserializeAndConvertIcon, std::move(serialized_icon)),
-      base::BindOnce(std::move(callback)));
+      std::move(callback));
 }
 
 }  // namespace background_fetch

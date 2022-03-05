@@ -78,8 +78,7 @@ void FakeShillProfileClient::SetProperty(const dbus::ObjectPath& profile_path,
     return;
   }
   profile->properties.SetKey(name, property.Clone());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback)));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
 }
 
 void FakeShillProfileClient::SetObjectPathProperty(
@@ -94,8 +93,7 @@ void FakeShillProfileClient::SetObjectPathProperty(
     return;
   }
   profile->properties.SetStringKey(name, property.value());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback)));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
 }
 
 void FakeShillProfileClient::GetEntry(

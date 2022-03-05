@@ -26,8 +26,8 @@ void EmptyFileMonitor::DeleteUnknownFiles(
 void EmptyFileMonitor::CleanupFilesForCompletedEntries(
     const Model::EntryList& entries,
     base::OnceClosure completion_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(completion_callback)));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                std::move(completion_callback));
 }
 
 void EmptyFileMonitor::DeleteFiles(

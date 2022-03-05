@@ -45,8 +45,8 @@ class ImagePrefetcherImpl : public ImagePrefetcher {
                 base::OnceClosure done_callback) override {
     DCHECK(done_callback);
     if (mode_ == ImagePrefetchMode::kNone) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(done_callback)));
+      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                    std::move(done_callback));
       return;
     }
 
@@ -76,8 +76,8 @@ class ImagePrefetcherImpl : public ImagePrefetcher {
     // All image urls are fetched.
     if (urls_to_fetch.empty()) {
       DCHECK(done_callback);
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(done_callback)));
+      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                    std::move(done_callback));
       return;
     }
 
@@ -103,15 +103,13 @@ class ImagePrefetcherImpl : public ImagePrefetcher {
 
   void OnImageFetched(base::OnceClosure next, SkBitmap bitmap) {
     if (next) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(next)));
+      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(next));
     }
   }
 
   void OnImageFetchedInReducedMode(base::OnceClosure next, bool success) {
     if (next) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(next)));
+      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(next));
     }
   }
 

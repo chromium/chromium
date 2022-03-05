@@ -91,8 +91,7 @@ void ReadTraceAsJson(
     }
   }
   if (!args.has_more)
-    task_runner->PostTask(FROM_HERE,
-                          base::BindOnce(std::move(on_data_complete_callback)));
+    task_runner->PostTask(FROM_HERE, std::move(on_data_complete_callback));
 }
 
 void ReadTraceAsProtobuf(

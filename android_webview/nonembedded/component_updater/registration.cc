@@ -54,8 +54,8 @@ void RegisterComponentsForUpdate(
                                    ? kNumWebViewComponents
                                    : kNumWebViewComponents - 1;
 
-  base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      num_webview_components, base::BindOnce(std::move(on_finished)));
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(num_webview_components, std::move(on_finished));
 
   RegisterComponentInstallerPolicyShim(
       std::make_unique<

@@ -100,7 +100,7 @@ void DownloadImageFromUrl(
     return;
 
   ImageDownloader::Get()->Download(GURL(url), kAmbientPhotoControllerTag,
-                                   base::BindOnce(std::move(callback)));
+                                   std::move(callback));
 }
 
 base::TaskTraits GetTaskTraits() {

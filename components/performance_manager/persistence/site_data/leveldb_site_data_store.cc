@@ -459,7 +459,7 @@ void LevelDBSiteDataStore::ReadSiteDataFromStore(
       blocking_task_runner_.get(), FROM_HERE,
       base::BindOnce(&LevelDBSiteDataStore::AsyncHelper::ReadSiteDataFromDB,
                      base::Unretained(async_helper_.get()), origin),
-      base::BindOnce(std::move(callback)));
+      std::move(callback));
 }
 
 void LevelDBSiteDataStore::WriteSiteDataIntoStore(

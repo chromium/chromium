@@ -62,7 +62,7 @@ class FakeExchangerClient : public mojom::UidGenerator {
 
   // mojom::UidGenerator:
   void GetUid(base::OnceCallback<void(const std::string&)> callback) override {
-    remote_->GetUid(base::BindOnce(std::move(callback)));
+    remote_->GetUid(std::move(callback));
   }
 
  private:

@@ -149,8 +149,7 @@ void BluetoothLowEnergyAdvertisementManagerMac::UnregisterAdvertisement(
 
   active_advertisement_ = nullptr;
   [peripheral_manager_ stopAdvertising];
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(std::move(success_callback)));
+  ui_task_runner_->PostTask(FROM_HERE, std::move(success_callback));
 }
 
 void BluetoothLowEnergyAdvertisementManagerMac::DidStartAdvertising(
