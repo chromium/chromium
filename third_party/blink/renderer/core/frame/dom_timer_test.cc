@@ -147,6 +147,27 @@ TEST_F(DOMTimerTest, setTimeout_ClampsAfter4Nestings) {
   EXPECT_THAT(times, ElementsAreArray(kExpectedTimings));
 }
 
+TEST_F(DOMTimerTest, setTimeout_ClampsAfter5Nestings) {
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kMaxUnthrottledTimeoutNestingLevel, {{"nesting", "6"}});
+
+  ExecuteScriptAndWaitUntilIdle(kSetTimeoutNestedScriptText);
+
+  auto times(ToDoubleArray(EvalExpression("times"), scope));
+
+  EXPECT_THAT(times, ElementsAreArray({
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(4., kThreshold),
+                     }));
+}
+
 const char* const kSetIntervalScriptText =
     "var last = performance.now();"
     "var times = [];"

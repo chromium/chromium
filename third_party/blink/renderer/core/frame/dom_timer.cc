@@ -100,11 +100,11 @@ DOMTimer::DOMTimer(ExecutionContext* context,
 
   // Select TaskType based on nesting level.
   TaskType task_type;
-  if (timeout.is_zero()) {
+  if (nesting_level_ >= kMaxTimerNestingLevel) {
+    task_type = TaskType::kJavascriptTimerDelayedHighNesting;
+  } else if (timeout.is_zero()) {
     task_type = TaskType::kJavascriptTimerImmediate;
     DCHECK_LT(nesting_level_, max_nesting_level);
-  } else if (nesting_level_ >= kMaxTimerNestingLevel) {
-    task_type = TaskType::kJavascriptTimerDelayedHighNesting;
   } else {
     task_type = TaskType::kJavascriptTimerDelayedLowNesting;
   }
@@ -188,14 +188,16 @@ void DOMTimer::Fired() {
         features::IsMaxUnthrottledTimeoutNestingLevelEnabled()
             ? features::GetMaxUnthrottledTimeoutNestingLevel()
             : kMaxTimerNestingLevel;
-    if (nesting_level_ == max_nesting_level) {
+    // Step 11:
+    if (nesting_level_ == max_nesting_level &&
+        RepeatInterval() < kMinimumInterval) {
+      AugmentRepeatInterval(kMinimumInterval - RepeatInterval());
+    }
+    if (nesting_level_ == kMaxTimerNestingLevel) {
       // Move to the TaskType that corresponds to nesting level >=
       // |kMaxNestingLevel|.
       MoveToNewTaskRunner(
           context->GetTaskRunner(TaskType::kJavascriptTimerDelayedHighNesting));
-      // Step 11:
-      if (RepeatInterval() < kMinimumInterval)
-        AugmentRepeatInterval(kMinimumInterval - RepeatInterval());
     }
 
     DCHECK(nesting_level_ < max_nesting_level ||
