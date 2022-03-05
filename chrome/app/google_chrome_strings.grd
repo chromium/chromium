@@ -313,14 +313,14 @@ chromium_strings.grd. -->
       </if>
       <if expr="chromeos">
         <if expr="reven">
-          <message name="IDS_PRODUCT_OS_NAME" desc="The CloudReady 2.0 application name">
-            Google Chrome OS Flex
+          <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS Flex application name">
+            Google ChromeOS Flex
           </message>
-          <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The CloudReady 2.0 application short name">
-            Chrome OS Flex
+          <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The ChromeOS Flex application short name">
+            ChromeOS Flex
           </message>
           <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
-            Chrome OS Flex
+            ChromeOS Flex
           </message>
         </if>
         <if expr="not reven">
@@ -331,7 +331,7 @@ chromium_strings.grd. -->
             Chrome OS
           </message>
           <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
-            Chrome OS Flex
+            ChromeOS Flex
           </message>
         </if>
       </if>
@@ -408,11 +408,11 @@ chromium_strings.grd. -->
       </message>
       <if expr="chromeos">
         <if expr="reven">
-          <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for CloudReady 2.0.">
-            CloudReady 2.0 is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
+          <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS Flex.">
+            ChromeOS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
           </message>
-          <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for CloudReady 2.0 when Crostini is installed.">
-            CloudReady 2.0 is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
+          <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS Flex when Crostini is installed.">
+            ChromeOS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
           </message>
         </if>
         <if expr="not reven">
@@ -492,7 +492,7 @@ Google Chrome cannot read and write to its data directory:
       <if expr="chromeos">
         <if expr="reven">
           <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging on EULA screen.">
-            Optional: Help improve CloudReady 2.0 features and performance by automatically sending diagnostic and usage data to Google.
+            Optional: Help improve ChromeOS Flex features and performance by automatically sending diagnostic and usage data to Google.
           </message>
         </if>
         <if expr="not reven">
@@ -790,8 +790,8 @@ Permissions you've already given to websites and apps may apply to this account.
           About &amp;Google Chrome
         </message>
         <if expr="reven">
-          <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update CloudReady 2.0 menu item">
-            Relaunch to update &amp;CloudReady 2.0
+          <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update ChromeOS Flex menu item">
+            Relaunch to update &amp;ChromeOS Flex
           </message>
         </if>
         <if expr="not reven">
@@ -937,17 +937,17 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
       <if expr="chromeos">
         <if expr="reven">
-          <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for CloudReady 2.0 Secondary Accounts.">
-            CloudReady 2.0 System
+          <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for ChromeOS Flex Secondary Accounts.">
+            ChromeOS Flex System
           </message>
           <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
-            CloudReady 2.0 could not sync your data because your account sign-in details are out of date.
+            ChromeOS Flex could not sync your data because your account sign-in details are out of date.
           </message>
           <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
-            CloudReady 2.0 could not sync your data because Sync is not available for your domain.
+            ChromeOS Flex could not sync your data because Sync is not available for your domain.
           </message>
           <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when there's an error signing in.">
-            CloudReady 2.0 could not sync your data due to an error signing in.
+            ChromeOS Flex could not sync your data due to an error signing in.
           </message>
         </if>
         <if expr="not reven">
@@ -993,7 +993,7 @@ Permissions you've already given to websites and apps may apply to this account.
       <if expr="chromeos">
         <if expr="reven">
           <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
-            <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google CloudReady 2.0 Terms.
+            <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google ChromeOS Flex Terms.
           </message>
         </if>
         <if expr="not reven">
@@ -1159,10 +1159,10 @@ Permissions you've already given to websites and apps may apply to this account.
       <if expr="chromeos">
         <if expr="reven">
           <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
-            Restart CloudReady 2.0
+            Restart ChromeOS Flex
           </message>
           <message name="IDS_UPDATE_RECOMMENDED" desc="The main text of the Update Recommended dialog.">
-            CloudReady 2.0 needs to be restarted to apply the update.
+            ChromeOS Flex needs to be restarted to apply the update.
           </message>
         </if>
         <if expr="not reven">
@@ -1304,7 +1304,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <if expr="reven">
           <message name="IDS_EULA_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE EULA screen">
-            CloudReady 2.0 terms
+            ChromeOS Flex terms
           </message>
         </if>
         <if expr="not reven">
@@ -1465,7 +1465,7 @@ Permissions you've already given to websites and apps may apply to this account.
       <if expr="chromeos">
         <if expr="reven">
           <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
-            CloudReady 2.0 system
+            ChromeOS Flex system
           </message>
         </if>
         <if expr="not reven">

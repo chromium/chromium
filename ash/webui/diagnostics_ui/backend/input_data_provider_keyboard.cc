@@ -344,8 +344,8 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
   // Work out the physical layout.
   if (device_info->keyboard_type ==
       ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard) {
-    // TODO(crbug.com/1207678): set internal keyboard as unknown on CloudReady
-    // (board names chromeover64 or reven).
+    // TODO(crbug.com/1207678): set internal keyboard as unknown on ChromeOS
+    // Flex (board names chromeover64 or reven).
     if (device_info->keyboard_top_row_layout ==
         ui::EventRewriterChromeOS::KeyboardTopRowLayout::
             kKbdTopRowLayoutWilco) {

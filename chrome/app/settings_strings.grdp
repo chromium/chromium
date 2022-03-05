@@ -1309,8 +1309,8 @@
   </if>
   <if expr="chromeos">
     <if expr="reven">
-      <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in CloudReady 2.0.">
-        Manage languages in CloudReady 2.0 settings
+      <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in ChromeOS Flex.">
+        Manage languages in ChromeOS Flex settings
       </message>
     </if>
     <if expr="not reven">
@@ -1335,8 +1335,8 @@
   </message>
   <if expr="chromeos_ash or chromeos_lacros">
     <if expr="reven">
-      <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in CloudReady 2.0.">
-        Manage secure DNS in CloudReady 2.0 settings
+      <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in ChromeOS Flex.">
+        Manage secure DNS in ChromeOS Flex settings
       </message>
     </if>
     <if expr="not reven">

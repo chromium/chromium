@@ -100,8 +100,8 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(bool chrome_os,
     if (base::FeatureList::IsEnabled(ash::features::kRevenLogSource))
       handler->AddDataCollector(
           std::make_unique<SystemLogSourceDataCollectorAdaptor>(
-              "Collect Hardware data for cloudready devices via cros_healthd "
-              "calls.",
+              "Collect Hardware data for ChromeOS Flex devices via "
+              "cros_healthd calls.",
               std::make_unique<system_logs::RevenLogSource>()));
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

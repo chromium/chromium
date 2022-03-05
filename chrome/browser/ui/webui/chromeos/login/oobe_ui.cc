@@ -292,7 +292,7 @@ void AddTestAPIResources(content::WebUIDataSource* source) {
 // chrome://oobe/oobe
 void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
   if (features::IsOobePolymer3Enabled()) {
-    // TODO(crbug.com/1279339): Separate CloudReady screens resources.
+    // TODO(crbug.com/1279339): Separate ChromeOS Flex screens resources.
     source->SetDefaultResource(IDR_OOBE_POLY3_HTML);
   } else {
     if (switches::IsOsInstallAllowed()) {
@@ -313,7 +313,7 @@ void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
 // chrome://oobe/login
 void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
   if (features::IsOobePolymer3Enabled()) {
-    // TODO(crbug.com/1279339): Separate CloudReady screens resources.
+    // TODO(crbug.com/1279339): Separate ChromeOS Flex screens resources.
     source->SetDefaultResource(IDR_MD_LOGIN_POLY3_HTML);
   } else {
     if (switches::IsOsInstallAllowed()) {

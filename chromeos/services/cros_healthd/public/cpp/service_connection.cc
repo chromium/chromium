@@ -655,7 +655,7 @@ void ServiceConnectionImpl::SetBindNetworkDiagnosticsRoutinesCallback(
   BindAndSendNetworkDiagnosticsRoutines();
 }
 
-// This is a short-term solution for CloudReady. We should remove this work
+// This is a short-term solution for ChromeOS Flex. We should remove this work
 // around after cros_healthd team develop a healthier input telemetry approach.
 std::string ServiceConnectionImpl::FetchTouchpadLibraryName() {
 #if defined(USE_LIBINPUT)

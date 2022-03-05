@@ -214,7 +214,7 @@ cr.define('cr.ui.login.debug', function() {
             screen.updateCountdownString(
                 'Your device will shut down in 60 seconds. Remove the USB \
                  before turning your device back on. Then you can start using \
-                 CloudReady 2.0.');
+                 ChromeOS Flex.');
             screen.showStep('success');
           },
         },

@@ -3971,8 +3971,8 @@ are declared in tools/grit/grit_rule.gni.
       </if>
       <if expr="enable_extensions">
         <if expr="reven">
-          <message name="IDS_UTILITY_PROCESS_IMAGE_WRITER_NAME" desc="The name of the utility process used for writing CouldReady 2.0 system images.">
-            CouldReady 2.0 System Image Writer
+          <message name="IDS_UTILITY_PROCESS_IMAGE_WRITER_NAME" desc="The name of the utility process used for writing ChromeOS Flex system images.">
+            ChromeOS Flex System Image Writer
           </message>
         </if>
         <if expr="not reven">
@@ -4529,13 +4529,13 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <if expr="reven">
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
-            Run CloudReady 2.0 diagnostic tests.
+            Run ChromeOS Flex diagnostic tests.
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY" desc="Permission string for chrome.os.telemetry API.">
-            Read CloudReady 2.0 device information and device data.
+            Read ChromeOS Flex device information and device data.
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
-            Read CloudReady 2.0 device and component serial numbers.
+            Read ChromeOS Flex device and component serial numbers.
           </message>
         </if>
         <if expr="not reven">
@@ -4600,8 +4600,8 @@ are declared in tools/grit/grit_rule.gni.
         This can only be added from the <ph name="CHROME_WEB_STORE">$1<ex>Web Store</ex></ph>
       </message>
       <if expr="reven">
-        <message name="IDS_EXTENSION_INSTALL_KIOSK_MODE_ONLY" desc="Error displayed during installation of an app with 'kiosk_only' attribute but user is not in CloudReady 2.0 kiosk mode.">
-          App with 'kiosk_only' manifest attribute must be installed in CloudReady 2.0 kiosk mode
+        <message name="IDS_EXTENSION_INSTALL_KIOSK_MODE_ONLY" desc="Error displayed during installation of an app with 'kiosk_only' attribute but user is not in ChromeOS Flex kiosk mode.">
+          App with 'kiosk_only' manifest attribute must be installed in ChromeOS Flex kiosk mode
         </message>
       </if>
       <if expr="not reven">

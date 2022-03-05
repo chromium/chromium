@@ -12,10 +12,8 @@
 
 namespace system_logs {
 
-// Collect Hardware data for cloudready devices via cros_healthd calls
-// Currently, reven is the only board name for cloudready. The board name won't
-// change but cloudready will be replaced by a new official name. This is why
-// the new log source is named.
+// Collect Hardware data for ChromeOS Flex devices via cros_healthd calls
+// Currently, reven is the only board name for ChromeOS Flex.
 class RevenLogSource : public SystemLogsSource {
  public:
   RevenLogSource();

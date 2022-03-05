@@ -220,7 +220,7 @@
       </message>
       <if expr="reven">
         <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING" desc="Summary in the error page when the user tries to browse before the forced enrollment check has finished.">
-          CloudReady 2.0 hasn’t completed its initial setup.
+          ChromeOS Flex hasn’t completed its initial setup.
         </message>
       </if>
       <if expr="not reven">

@@ -246,8 +246,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ASH_SHELF_SIGNIN_BUTTON" desc="Text shown on sign in button on enrollment screen.">
         Use as personal device
       </message>
-      <message name="IDS_ASH_SHELF_OS_INSTALL_BUTTON" desc="Text shown on install Chrome OS Flex button on login screen.">
-        Install Chrome OS Flex
+      <message name="IDS_ASH_SHELF_OS_INSTALL_BUTTON" desc="Text shown on install ChromeOS Flex button on login screen.">
+        Install ChromeOS Flex
       </message>
 
       <message name="IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE" desc="The title used for the Ash Launcher in the Shelf (not mentioning 'Apps' since this is a general launcher).">

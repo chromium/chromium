@@ -487,7 +487,7 @@
     Welcome to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_WELCOME_SCREEN_GREETING_CLOUD_READY" desc="Greeting message on the OOBE welcome screen">
-    Welcome to <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+    Welcome to <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
   </message>
   <message name="IDS_WELCOME_SCREEN_GREETING_SUBTITLE" desc="Greeting message on the OOBE welcome screen">
     Fast. Secure. Effortless.
@@ -737,10 +737,10 @@
   </message>
   <if expr="reven">
     <message name="IDS_OOBE_EULA_IFRAME_LABEL" desc="Accessibility label on an iframe with full Chrome OS Terms text">
-      Google CloudReady 2.0 Terms contents
+      Google ChromeOS Flex Terms contents
     </message>
     <message name="IDS_OOBE_EULA_ADDITIONAL_TERMS" desc="Text of the Link to Google Chrome and Chrome OS additional terms">
-      Google Chrome and CloudReady 2.0 Additional Terms
+      Google Chrome and ChromeOS Flex Additional Terms
     </message>
   </if>
   <if expr="not reven">
@@ -1100,50 +1100,50 @@
   </message>
 
   <!-- Strings for OS trial screen-->
-  <message name="IDS_OS_TRIAL_TITLE" desc="Title of the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
-    Start using <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+  <message name="IDS_OS_TRIAL_TITLE" desc="Title of the install or try screen, the first screen of the ChromeOS Flex Installation flow">
+    Start using <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
   </message>
-  <message name="IDS_OS_TRIAL_SUBTITLE" desc="Subtitle of the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>For the best experience, install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+  <message name="IDS_OS_TRIAL_SUBTITLE" desc="Subtitle of the install or try screen, the first screen of the ChromeOS Flex Installation flow">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>For the best experience, install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>If you're not ready to install, you can run from USB to try it out. This will keep your existing OS and data, but you may see storage and performance limits.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_OS_TRIAL_INSTALL_TITLE" desc="Title of the try option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow.">
-    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+  <message name="IDS_OS_TRIAL_INSTALL_TITLE" desc="Title of the try option in the install or try screen, the first screen of the ChromeOS Flex Installation flow.">
+    Install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
   </message>
-  <message name="IDS_OS_TRIAL_INSTALL_SUBTITLE" desc="Subtitle of the try option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
-    Convert this device into a <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> device.
+  <message name="IDS_OS_TRIAL_INSTALL_SUBTITLE" desc="Subtitle of the try option in the install or try screen, the first screen of the ChromeOS Flex Installation flow">
+    Convert this device into a <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> device.
   </message>
-  <message name="IDS_OS_TRIAL_TRY_TITLE" desc="Title of the install option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
+  <message name="IDS_OS_TRIAL_TRY_TITLE" desc="Title of the install option in the install or try screen, the first screen of the ChromeOS Flex Installation flow">
     Try it first
   </message>
-  <message name="IDS_OS_TRIAL_TRY_SUBTITLE" desc="Subtitle of the install option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
-    Keep your OS and run <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> from USB.
+  <message name="IDS_OS_TRIAL_TRY_SUBTITLE" desc="Subtitle of the install option in the install or try screen, the first screen of the ChromeOS Flex Installation flow">
+    Keep your OS and run <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> from USB.
   </message>
-  <message name="IDS_OS_TRIAL_NEXT_BUTTON" desc="Text of the next button in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
+  <message name="IDS_OS_TRIAL_NEXT_BUTTON" desc="Text of the next button in the install or try screen, the first screen of the ChromeOS Flex Installation flow">
     Next
   </message>
 
   <!-- Strings for OS install -->
   <message name="IDS_OS_INSTALL_SCREEN_INTRO_TITLE" desc="Title of the introduction page in the OS install screen.">
-    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+    Install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE" desc="Subtitle text of the OS install screen's introduction step.">
-    Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> will overwrite all data on your device.
+    Installing <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> will overwrite all data on your device.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_0" desc="First part of body text of the OS install screen's introduction step.">
-    Before starting, make sure you have a backup of your data. Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> will overwrite your hard drive. Learn more at g.co/flex/InstallGuide.
+    Before starting, make sure you have a backup of your data. Installing <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> will overwrite your hard drive. Learn more at g.co/flex/InstallGuide.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_1" desc="Second part of body text of the OS install screen's introduction step.">
     Installation takes a few easy steps. You’ll have another chance to confirm before changes are made to your computer.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_INTRO_FOOTER" desc="Footer text of the OS install screen's introduction step.">
-    Google isn’t responsible for any data loss, and <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> may not work on uncertified models. Learn more at g.co/flex/InstallGuide.
+    Google isn’t responsible for any data loss, and <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> may not work on uncertified models. Learn more at g.co/flex/InstallGuide.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON" desc="Text of the next button on the introduction page of the OS install screen">
-    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+    Install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE" desc="Title of the confirmation dialog of the OS install screen">
-    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> and erase hard drive?
+    Install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> and erase hard drive?
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_BODY" desc="Body text of the OS install screen's confirmation dialog">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Installation <ph name="BEGIN_BOLD">&lt;b&gt;</ph>will erase your entire hard drive<ph name="END_BOLD">&lt;/b&gt;</ph>. Make sure your data is backed up.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
@@ -1153,7 +1153,7 @@
     Install
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE" desc="Title of the in-progress page of the OS install screen">
-    Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+    Installing <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_SUBTITLE" desc="Subtitle of the in-progress page of the OS install screen">
     Make sure your device is plugged in, and don’t turn it off. Installation may take up to 20 minutes. Your device will automatically shut down when installation is complete.
@@ -1162,14 +1162,14 @@
     Couldn’t complete installation
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_ERROR_FAILED_SUBTITLE" desc="Subtitle of the error page of the OS install screen for general failure.">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Something went wrong and <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> couldn’t be installed.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Something went wrong and <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> couldn’t be installed.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help, visit: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_ERROR_VIEW_LOGS" desc="Label for an actionable link that opens dialog with installation logs.">
     View logs
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE" desc="Subtitle of the error page of the OS install screen when no valid destination for installation was found.">
-    The installer couldn’t find a valid destination to install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>.
+    The installer couldn’t find a valid destination to install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_CONTENT" desc="Content of the error page of the OS install screen when no valid destination for installation was found.">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Try these troubleshooting steps:
@@ -1186,7 +1186,7 @@
     Installation complete
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE" desc="Subtitle of the success page of the OS install screen">
-    Your device will shut down in <ph name="TIME_LEFT">$1<ex>60 seconds</ex></ph>. Remove the USB before turning your device back on. Then you can start using <ph name="DEVICE_OS">$2<ex>CloudReady 2.0</ex></ph>.
+    Your device will shut down in <ph name="TIME_LEFT">$1<ex>60 seconds</ex></ph>. Remove the USB before turning your device back on. Then you can start using <ph name="DEVICE_OS">$2<ex>ChromeOS Flex</ex></ph>.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_SERVICE_LOGS_TITLE" desc="Title of service logs dialog of the OS install screen">
     Service logs
@@ -1243,13 +1243,13 @@
   </message>
   <if expr="reven">
     <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2" desc="Alternate subtitle of the dialog that explains Chrome Sync and privacy options on first login for non-split.">
-      Your saved preferences and activity will be ready on any CloudReady 2.0 device when you sign in with your Google Account. You can choose what to sync in Settings.
+      Your saved preferences and activity will be ready on any ChromeOS Flex device when you sign in with your Google Account. You can choose what to sync in Settings.
     </message>
     <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME" desc="Title of the 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-      CloudReady 2.0 settings sync
+      ChromeOS Flex settings sync
     </message>
     <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION" desc="Description of 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-      Your apps, settings, and other customizations will be synced across all CloudReady 2.0 devices signed in with your Google Account.
+      Your apps, settings, and other customizations will be synced across all ChromeOS Flex devices signed in with your Google Account.
     </message>
   </if>
   <if expr="not reven">
@@ -1807,7 +1807,7 @@
   </message>
   <if expr="reven">
     <message name="IDS_EULA_TPM_DESCRIPTION" desc="Dialog box text">
-      Your computer contains a Trusted Platform Module (TPM) security device, which is used to implement many critical security features in CloudReady 2.0. Visit the Chromebook Help Center to learn more: https://support.google.com/chromebook/?p=tpm
+      Your computer contains a Trusted Platform Module (TPM) security device, which is used to implement many critical security features in ChromeOS Flex. Visit the Chromebook Help Center to learn more: https://support.google.com/chromebook/?p=tpm
     </message>
   </if>
   <if expr="not reven">
@@ -1823,7 +1823,7 @@
   </message>
   <if expr="reven">
     <message name="IDS_EULA_SECURE_MODULE_DESCRIPTION" desc="Description of what a secure module does in the eula page.">
-      Your computer contains a secure module, which is used to implement many critical security features in CloudReady 2.0. Visit the Chromebook Help Center to learn more: https://support.google.com/chromebook/?p=sm
+      Your computer contains a secure module, which is used to implement many critical security features in ChromeOS Flex. Visit the Chromebook Help Center to learn more: https://support.google.com/chromebook/?p=sm
     </message>
   </if>
   <if expr="not reven">
@@ -1851,7 +1851,7 @@
   </message>
   <if expr="reven">
     <message name="IDS_ENABLE_DEBUGGING_SETUP_MESSAGE" desc="Setup message in dialog for enabling debugging features.">
-      You are enabling CloudReady 2.0 debugging features which will set up sshd daemon and enable booting from USB drives.
+      You are enabling ChromeOS Flex debugging features which will set up sshd daemon and enable booting from USB drives.
     </message>
   </if>
   <if expr="not reven">
@@ -1884,7 +1884,7 @@
     <message name="IDS_ENABLE_DEBUGGING_HELP" desc="Help content of the enable debugging features dialog.">
       <ph name="BEGIN_H3">&lt;h3&gt;</ph>Debugging Features<ph name="END_H3">&lt;/h3&gt;</ph>
       <ph name="BR">&lt;br&gt;</ph>
-      You can enable the debugging features on your CloudReady 2.0 Device in order to install and test custom code on your device.  This will allow you to:<ph name="BR">&lt;br&gt;</ph>
+      You can enable the debugging features on your ChromeOS Flex Device in order to install and test custom code on your device.  This will allow you to:<ph name="BR">&lt;br&gt;</ph>
       <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
         <ph name="LIST_ITEM">&lt;li&gt;</ph>Remove rootfs verification so you can modify OS files
         <ph name="LIST_ITEM">&lt;li&gt;</ph>Enable SSH access to the device using the standard test keys so you can use tools such as <ph name="BEGIN_CODE">&lt;span style=&quot;color:grey;font-family:monospace&quot;&gt;</ph>&apos;cros flash&apos;<ph name="END_CODE">&lt;/span&gt;</ph> to access the device
@@ -2005,7 +2005,7 @@
   </message>
   <if expr="reven">
     <message name="IDS_WRONG_HWID_SCREEN_MESSAGE_FIRST_PART" desc="Warning message shown on screen notifying about malformed hardware ID. First paragraph.">
-      Unfortunately, your computer is configured with a malformed hardware ID. This prevents CloudReady 2.0 from updating with the latest security fixes and your computer <ph name="BEGIN_BOLD">&lt;b&gt;</ph>may be vulnerable to malicious attacks<ph name="END_BOLD">&lt;/b&gt;</ph>.
+      Unfortunately, your computer is configured with a malformed hardware ID. This prevents ChromeOS Flex from updating with the latest security fixes and your computer <ph name="BEGIN_BOLD">&lt;b&gt;</ph>may be vulnerable to malicious attacks<ph name="END_BOLD">&lt;/b&gt;</ph>.
     </message>
   </if>
   <if expr="not reven">
@@ -2311,12 +2311,12 @@
     Trusted Platform Module (TPM) detected
   </message>
   <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_SUBTITLE" desc="Subtitile of the screen notifying user about TPM ownership error.">
-    <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> detected an active TPM which can store your data more securely.
+    <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> detected an active TPM which can store your data more securely.
   </message>
   <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_CONTENT" desc="Steps that can help users to properly setup TPM manually.">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before enrolling you need to clear the TPM so <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> can take ownership of the device.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before enrolling you need to clear the TPM so <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> can take ownership of the device.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can also turn off the TPM device entirely. Your data will still be stored safely with software encryption, but certain security features such as hardware-backed certificates will be disabled.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> documentation on a separate device before you reboot: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> documentation on a separate device before you reboot: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_LOGIN_ERROR_TPM_FAILURE_REBOOT_BUTTON" desc="Label on button that restarts device.">
     Restart
@@ -2693,7 +2693,7 @@
   </message>
   <if expr="reven">
     <message name="IDS_FILEMANAGER_APP_DESCRIPTION" desc="Description for the File Manager app.">
-      The Files app provides quick access to files that you've saved on Google Drive, external storage, or your CloudReady 2.0 device.
+      The Files app provides quick access to files that you've saved on Google Drive, external storage, or your ChromeOS Flex device.
     </message>
   </if>
   <if expr="not reven">
@@ -2855,7 +2855,7 @@
 
   <!-- Strings for the enterprise enrollment page -->
   <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED" desc="Error message shown on the enrollment screen if enrollment is not allowed because of OS installation flow.">
-    Enrollment is only supported after you install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>.
+    Enrollment is only supported after you install <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>.
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_REGISTRATION_FAILED" desc="Error message shown on the enrollment screen upon failed device registration.">
     Error when registering the device with the server: <ph name="CLIENT_ERROR">$1<ex>Failed to connect to the server</ex></ph>.
@@ -4190,15 +4190,15 @@
 
   <!-- HW data collection screen -->
   <message name="IDS_HW_DATA_COLLECTION_TITLE" desc="Title of the hardware data collection notice screen.">
-    <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> hardware data collection
+    <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> hardware data collection
   </message>
   <message name="IDS_HW_DATA_COLLECTION_CONTENT" desc="Content of the hardware data collection notice screen.">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>To provide the best experience, <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> collects hardware data about devices and shares it with Google to determine which updates should be delivered. Optionally, you can allow Google to use this data for additional purposes like support and improvements to the <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> experience and service.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>To provide the best experience, <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> collects hardware data about devices and shares it with Google to determine which updates should be delivered. Optionally, you can allow Google to use this data for additional purposes like support and improvements to the <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> experience and service.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can log in on this device and visit the CHROMEOSFLEX_HARDWARE_INFO section in chrome://system to see the data sent to Google for update filtering, as well as any other instances where you choose to share data with Google.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>For more details on data <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> may share with Google, and how it is used visit g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>For more details on data <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> may share with Google, and how it is used visit g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_HW_DATA_COLLECTION_USAGE_INFO" desc="Checkbox description for additional hardware data usage. This message is followed by a 'Learn more' link.">
-    Let Google use your hardware data to help improve <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>. If you decline, this data is still sent to Google to determine proper updates, but is not stored or used otherwise. Learn more at g.co/flex/HWDataCollection.
+    Let Google use your hardware data to help improve <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph>. If you decline, this data is still sent to Google to determine proper updates, but is not stored or used otherwise. Learn more at g.co/flex/HWDataCollection.
   </message>
   <message name="IDS_HW_DATA_COLLECTION_ACCEPT_AND_CONTINUE_BUTTON_TEXT" desc="Label on a button on the hardware data collection notice screen to accept the terms and continue.">
     Accept and continue
@@ -4532,10 +4532,10 @@
   </message>
   <if expr="reven">
     <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_TITLE" desc="Title shown in the Crostini installer dialog when the VM fails to install because the device must be updated">
-      CloudReady 2.0 update required
+      ChromeOS Flex update required
     </message>
     <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_ERROR" desc="Text shown in the Crostini installer dialog when the VM fails to install because the device must be updated first">
-      To finish setting up Linux, update CloudReady 2.0 and try again.
+      To finish setting up Linux, update ChromeOS Flex and try again.
     </message>
   </if>
   <if expr="not reven">
@@ -5206,13 +5206,13 @@
   </message>
   <if expr="reven">
     <message name="IDS_OOBE_CHROMEVOX_HINT_TEXT" desc="Text content in the ChromeVox hint dialog, asking the user if they would like to activate ChromeVox.">
-      Do you want to activate ChromeVox, the built-in screen reader for CloudReady 2.0?
+      Do you want to activate ChromeVox, the built-in screen reader for ChromeOS Flex?
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP" desc="The string spoken when the ChromeVox hint is activated when the device is in laptop mode." is_accessibility_with_no_ui="true">
-      Do you want to activate ChromeVox, the built-in screen reader for CloudReady 2.0? If so, press the space bar.
+      Do you want to activate ChromeVox, the built-in screen reader for ChromeOS Flex? If so, press the space bar.
     </message>
     <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_TABLET" desc="The string spoken when the ChromeVox hint is activated when the device is in tablet mode." is_accessibility_with_no_ui="true">
-      Do you want to activate ChromeVox, the built-in screen reader for CloudReady 2.0? If so, press and hold both volume keys for five seconds.
+      Do you want to activate ChromeVox, the built-in screen reader for ChromeOS Flex? If so, press and hold both volume keys for five seconds.
     </message>
   </if>
   <if expr="not reven">
@@ -5567,8 +5567,8 @@
     Camera &amp; microphone
   </message>
   <if expr="reven">
-    <message name="IDS_CHROME_OS_NOTIFICATION_SOURCE" desc="The name of the source of a CloudReady 2.0 notification">
-      CloudReady 2.0
+    <message name="IDS_CHROME_OS_NOTIFICATION_SOURCE" desc="The name of the source of a ChromeOS Flex notification">
+      ChromeOS Flex
     </message>
   </if>
   <if expr="not reven">
