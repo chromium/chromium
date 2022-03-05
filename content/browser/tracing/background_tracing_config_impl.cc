@@ -130,6 +130,10 @@ base::Value BackgroundTracingConfigImpl::ToDict() {
   return dict;
 }
 
+void BackgroundTracingConfigImpl::SetPackageNameFilteringEnabled(bool enabled) {
+  trace_config_.SetEventPackageNameFilterEnabled(enabled);
+}
+
 void BackgroundTracingConfigImpl::AddPreemptiveRule(const base::Value& dict) {
   AddRule(dict);
 }
@@ -173,6 +177,8 @@ TraceConfig BackgroundTracingConfigImpl::GetTraceConfig() const {
   }
 
   chrome_config.SetTraceBufferSizeInKb(GetMaximumTraceBufferSizeKb());
+  chrome_config.SetEventPackageNameFilterEnabled(
+      trace_config_.IsEventPackageNameFilterEnabled());
 
 #if BUILDFLAG(IS_ANDROID)
   // For legacy tracing backend, set low trace buffer size on Android in order

@@ -23,11 +23,11 @@ class CONTENT_EXPORT BackgroundTracingConfig {
   virtual ~BackgroundTracingConfig();
 
   enum TracingMode {
-    PREEMPTIVE,
-    REACTIVE,
+    PREEMPTIVE = 1 << 0,
+    REACTIVE = 1 << 1,
     // System means that we will inform the system service of triggered rules,
     // but won't manage the trace ourselves.
-    SYSTEM,
+    SYSTEM = 1 << 2,
   };
   TracingMode tracing_mode() const { return tracing_mode_; }
 
@@ -37,6 +37,8 @@ class CONTENT_EXPORT BackgroundTracingConfig {
   static std::unique_ptr<BackgroundTracingConfig> FromDict(base::Value&& dict);
 
   virtual base::Value ToDict() = 0;
+
+  virtual void SetPackageNameFilteringEnabled(bool) = 0;
 
  protected:
   std::string scenario_name_;

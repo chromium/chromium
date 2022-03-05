@@ -18,6 +18,7 @@ namespace {
 const char kCustomTraceConfigString[] =
     "{"
     "\"enable_argument_filter\":true,"
+    "\"enable_package_name_filter\":false,"
     "\"enable_systrace\":true,"
     "\"excluded_categories\":[\"excluded\",\"exc_pattern*\"],"
     "\"included_categories\":[\"included\","

@@ -646,6 +646,7 @@ public class TraceEvent implements AutoCloseable {
         }
     }
 
+    @CalledByNative
     public static void setEventNameFilteringEnabled(boolean enabled) {
         sEventNameFilteringEnabled = enabled;
     }

@@ -178,7 +178,7 @@ void AwBrowserMainParts::PostCreateThreads() {
   if (mode != heap_profiling::Mode::kNone)
     heap_profiling::Supervisor::GetInstance()->Start(base::NullCallback());
 
-  SetupBackgroundTracingFieldTrial();
+  MaybeSetupSystemTracing();
 }
 
 }  // namespace android_webview

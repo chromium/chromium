@@ -5,6 +5,7 @@
 #include "android_webview/browser/tracing/aw_background_tracing_metrics_provider.h"
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/browser/tracing/background_tracing_field_trial.h"
 #include "base/strings/string_piece.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_service.h"
@@ -17,10 +18,8 @@ AwBackgroundTracingMetricsProvider::~AwBackgroundTracingMetricsProvider() =
     default;
 
 void AwBackgroundTracingMetricsProvider::Init() {
-  BackgroundTracingMetricsProvider::Init();
+  android_webview::MaybeSetupWebViewOnlyTracing();
 
-  // TODO(crbug.com/1290887): SetupBackgroundTracingFieldTrial() should be
-  // called here.
   metrics::MetricsService* metrics =
       android_webview::AwMetricsServiceClient::GetInstance()
           ->GetMetricsService();

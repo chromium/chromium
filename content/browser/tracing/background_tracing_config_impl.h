@@ -32,6 +32,8 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   // From BackgroundTracingConfig
   base::Value ToDict() override;
 
+  void SetPackageNameFilteringEnabled(bool) override;
+
   enum CategoryPreset {
     CATEGORY_PRESET_UNSET,
     CUSTOM_CATEGORY_PRESET,

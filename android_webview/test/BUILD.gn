@@ -590,6 +590,7 @@ test("android_webview_unittests") {
     "../browser/scoped_add_feature_flags_unittests.cc",
     "../browser/state_serializer_unittest.cc",
     "../browser/tracing/aw_background_tracing_metrics_provider_unittest.cc",
+    "../browser/tracing/background_tracing_field_trial_unittest.cc",
     "../lib/webview_tests.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_shim_unittest.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_unittest.cc",

@@ -9,24 +9,47 @@
 #include "content/public/browser/background_tracing_manager.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 
-namespace android_webview {
+namespace {
 
 const char kBackgroundTracingFieldTrial[] = "BackgroundWebviewTracing";
 
-void SetupBackgroundTracingFieldTrial() {
+void SetupBackgroundTracingFieldTrial(int allowed_modes) {
   auto* manager = content::BackgroundTracingManager::GetInstance();
   DCHECK(manager);
   std::unique_ptr<content::BackgroundTracingConfig> config =
       manager->GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
 
-  if (config &&
-      config->tracing_mode() == content::BackgroundTracingConfig::SYSTEM &&
-      tracing::ShouldSetupSystemTracing()) {
-    // Only enable background tracing for system tracing if the system producer
-    // is enabled.
-    manager->SetActiveScenario(
-        std::move(config), content::BackgroundTracingManager::ANONYMIZE_DATA);
-  }
+  if (!config)
+    return;
+
+  if ((config->tracing_mode() & allowed_modes) == 0)
+    return;
+
+  // WebView-only tracing session has additional filtering of event names that
+  // include package names as a privacy requirement (see
+  // go/public-webview-trace-collection).
+  config->SetPackageNameFilteringEnabled(
+      config->tracing_mode() != content::BackgroundTracingConfig::SYSTEM);
+
+  manager->SetActiveScenario(std::move(config),
+                             content::BackgroundTracingManager::ANONYMIZE_DATA);
+}
+
+}  // namespace
+
+namespace android_webview {
+
+void MaybeSetupSystemTracing() {
+  if (!tracing::ShouldSetupSystemTracing())
+    return;
+
+  SetupBackgroundTracingFieldTrial(content::BackgroundTracingConfig::SYSTEM);
+}
+
+void MaybeSetupWebViewOnlyTracing() {
+  SetupBackgroundTracingFieldTrial(
+      content::BackgroundTracingConfig::PREEMPTIVE |
+      content::BackgroundTracingConfig::REACTIVE);
 }
 
 }  // namespace android_webview
