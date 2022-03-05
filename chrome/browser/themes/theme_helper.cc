@@ -415,8 +415,9 @@ SkColor ThemeHelper::GetDefaultColor(
           GetColor(TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND, incognito,
                    theme_supplier);
       return color_utils::PickGoogleColor(
-          gfx::kGoogleBlue500, download_shelf_color,
-          color_utils::kMinimumReadableContrastRatio);
+          color_utils::IsDark(download_shelf_color) ? gfx::kGoogleBlue300
+                                                    : gfx::kGoogleBlue600,
+          download_shelf_color, color_utils::kMinimumReadableContrastRatio);
     }
     case TP::COLOR_STATUS_BUBBLE_ACTIVE:
       return GetColor(TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE, incognito,

@@ -32,6 +32,9 @@ bool IncreasedContrastThemeSupplier::GetColor(int id, SkColor* color) const {
         COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO:
       *color = SK_ColorBLACK;
       return true;
+    case ThemeProperties::COLOR_DOWNLOAD_SHELF:
+    case ThemeProperties::COLOR_INFOBAR:
+    case ThemeProperties::COLOR_NTP_BACKGROUND:
     case ThemeProperties::COLOR_TOOLBAR:
     case ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE:
@@ -51,6 +54,7 @@ bool IncreasedContrastThemeSupplier::GetColor(int id, SkColor* color) const {
       return true;
     case ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR:
     case ThemeProperties::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR:
+    case ThemeProperties::COLOR_INFOBAR_TEXT:
     case ThemeProperties::COLOR_LOCATION_BAR_BORDER:
     case ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR:
     case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
