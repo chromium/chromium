@@ -64,7 +64,7 @@ def _find_test_executables(args):
 def _validate_if_test_executables_exist(exes):
     for exe in exes:
         if not os.path.isfile(exe):
-            raise ValueError("File not found: {}".format(exe_path))
+            raise ValueError("File not found: {}".format(exe))
 
 
 def _generate_script(args, should_validate_if_exes_exist=True):

@@ -32,7 +32,8 @@ group("deps") {
     deps += [
       "test_cpp_including_rust",
       "test_mixed_static_library",
-      "test_rlib_crate",
+      "test_rlib_crate:target1",
+      "test_rlib_crate:target2",
       "test_rust_static_library",
       "test_serde_jsonrc",
     ]
@@ -47,7 +48,8 @@ group("deps") {
         "test_cpp_including_rust:test_cpp_including_rust_unittests",
         "test_mixed_component:test_mixed_component_rs_unittests",
         "test_mixed_static_library:test_mixed_static_library_rs_unittests",
-        "test_rlib_crate:test_rlib_crate_unittests",
+        "test_rlib_crate:test_rlib_crate_target1_unittests",
+        "test_rlib_crate:test_rlib_crate_target2_unittests",
         "test_rust_exe:test_rust_exe_unittests",
         "test_rust_static_library:test_rust_static_library_unittests",
         "test_rust_static_library_non_standard_arrangement:foo_tests",

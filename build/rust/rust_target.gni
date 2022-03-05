@@ -48,6 +48,12 @@ template("rust_target") {
     _crate_root = "src/lib.rs"
   }
 
+  if (defined(invoker.output_dir) && invoker.output_dir != "") {
+    _out_dir = invoker.output_dir
+  } else {
+    _out_dir = target_out_dir
+  }
+
   _rustflags = []
   if (defined(invoker.rustflags)) {
     _rustflags += invoker.rustflags
@@ -221,18 +227,26 @@ template("rust_target") {
       forward_variables_from(invoker,
                              "*",
                              [
-                               "features",
+                               "configs",
                                "deps",
+                               "features",
                                "rustflags",
                                "rustenv",
-                               "configs",
-                               "output_name",
+                               "output_dir",
                                "unit_test_target",
                                "visibility",
                              ])
-      rustenv = [ "OUT_DIR=" + rebase_path(target_out_dir) ]
+      rustenv = [ "OUT_DIR=" + rebase_path(_out_dir) ]
       if (defined(invoker.rustenv)) {
         rustenv += invoker.rustenv
+      }
+
+      # The Rust tool() declarations, like C++ ones, use the output_name and
+      # output_dir, so that GN targets can override these if needed. Here we
+      # give them their default values, or allow them to be overridden.
+      output_dir = _out_dir
+      if (!defined(output_name) || output_name == "") {
+        output_name = crate_name
       }
       if (_create_cpp_groups) {
         visibility = [
@@ -264,6 +278,7 @@ template("rust_target") {
                  "_metadata",
                  "_crate_root",
                  "_crate_name",
+                 "_out_dir",
                ])
   }
 
@@ -277,6 +292,7 @@ template("rust_target") {
       forward_variables_from(invoker, [ "sources" ])
       crate_root = _crate_root
       rustflags = _rustflags
+      output_dir = _out_dir
       deps = _deps
       if (defined(invoker.test_deps)) {
         deps += invoker.test_deps
