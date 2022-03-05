@@ -3269,58 +3269,55 @@ function MonthPopupView(minimumMonth, maximumMonth) {
   };
 }
 
-/**
- * @constructor
- * @extends View
- * @param {!number} maxWidth Maximum width in pixels.
- */
-function MonthPopupButton(maxWidth) {
-  View.call(
-      this,
-      createElement('button', MonthPopupButton.ClassNameMonthPopupButton));
-  this.element.setAttribute('aria-label', global.params.axShowMonthSelector);
+// ----------------------------------------------------------------
 
+class MonthPopupButton extends View {
   /**
-   * @type {!Element}
-   * @const
+   * @extends View
+   * @param {!number} maxWidth Maximum width in pixels.
    */
-  this.labelElement = createElement(
-      'span', MonthPopupButton.ClassNameMonthPopupButtonLabel, '-----');
-  this.element.appendChild(this.labelElement);
+  constructor(maxWidth) {
+    super(createElement('button', MonthPopupButton.ClassNameMonthPopupButton));
+    this.element.setAttribute('aria-label', global.params.axShowMonthSelector);
 
-  /**
-   * @type {!Element}
-   * @const
-   */
-  this.disclosureTriangleIcon =
-      createElement('span', MonthPopupButton.ClassNameDisclosureTriangle);
-  this.disclosureTriangleIcon.innerHTML =
-      '<svg width=\'7\' height=\'5\'><polygon points=\'0,1 7,1 3.5,5\' style=\'fill:#000000;\' /></svg>';
-  this.element.appendChild(this.disclosureTriangleIcon);
+    /**
+     * @type {!Element}
+     * @const
+     */
+    this.labelElement = createElement(
+        'span', MonthPopupButton.ClassNameMonthPopupButtonLabel, '-----');
+    this.element.appendChild(this.labelElement);
 
-  /**
-   * @type {!boolean}
-   * @protected
-   */
-  this._useShortMonth = this._shouldUseShortMonth(maxWidth);
-  this.element.style.maxWidth = maxWidth + 'px';
+    /**
+     * @type {!Element}
+     * @const
+     */
+    this.disclosureTriangleIcon =
+        createElement('span', MonthPopupButton.ClassNameDisclosureTriangle);
+    this.disclosureTriangleIcon.innerHTML =
+        '<svg width=\'7\' height=\'5\'><polygon points=\'0,1 7,1 3.5,5\' style=\'fill:#000000;\' /></svg>';
+    this.element.appendChild(this.disclosureTriangleIcon);
 
-  this.element.addEventListener('click', this.onClick, false);
-}
+    /**
+     * @type {!boolean}
+     * @protected
+     */
+    this._useShortMonth = this._shouldUseShortMonth(maxWidth);
+    this.element.style.maxWidth = maxWidth + 'px';
 
-{
-  MonthPopupButton.prototype = Object.create(View.prototype);
+    this.element.addEventListener('click', this.onClick.bind(this), false);
+  }
 
-  MonthPopupButton.ClassNameMonthPopupButton = 'month-popup-button';
-  MonthPopupButton.ClassNameMonthPopupButtonLabel = 'month-popup-button-label';
-  MonthPopupButton.ClassNameDisclosureTriangle = 'disclosure-triangle';
-  MonthPopupButton.EventTypeButtonClick = 'buttonClick';
+  static ClassNameMonthPopupButton = 'month-popup-button';
+  static ClassNameMonthPopupButtonLabel = 'month-popup-button-label';
+  static ClassNameDisclosureTriangle = 'disclosure-triangle';
+  static EventTypeButtonClick = 'buttonClick';
 
   /**
    * @param {!number} maxWidth Maximum available width in pixels.
    * @return {!boolean}
    */
-  MonthPopupButton.prototype._shouldUseShortMonth = function(maxWidth) {
+  _shouldUseShortMonth(maxWidth) {
     document.body.appendChild(this.element);
     var month = Month.Maximum;
     for (var i = 0; i < MonthsPerYear; ++i) {
@@ -3331,158 +3328,160 @@ function MonthPopupButton(maxWidth) {
     }
     document.body.removeChild(this.element);
     return false;
-  };
+  }
 
   /**
    * @param {!Month} month
    */
-  MonthPopupButton.prototype.setCurrentMonth = function(month) {
+  setCurrentMonth(month) {
     this.labelElement.textContent = this._useShortMonth ?
         month.toShortLocaleString() :
         month.toLocaleString();
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  MonthPopupButton.prototype.onClick = function(event) {
+  onClick(event) {
     this.dispatchEvent(MonthPopupButton.EventTypeButtonClick, this);
-  };
+  }
 }
 
-/**
- * @constructor
- * @extends View
- */
-function ClearButton() {
-  View.call(this, createElement('button', ClearButton.ClassNameClearButton));
-  this.element.addEventListener('click', this.onClick, false);
-};
+// ----------------------------------------------------------------
 
-{
-  ClearButton.prototype = Object.create(View.prototype);
+class ClearButton extends View {
+  /**
+   * @extends View
+   */
+  constructor() {
+    super(createElement('button', ClearButton.ClassNameClearButton));
+    this.element.addEventListener('click', this.onClick.bind(this), false);
+  }
 
-  ClearButton.ClassNameClearButton = 'clear-button';
-  ClearButton.EventTypeButtonClick = 'buttonClick';
+  static ClassNameClearButton = 'clear-button';
+  static EventTypeButtonClick = 'buttonClick';
 
   /**
    * @param {?Event} event
    */
-  ClearButton.prototype.onClick = function(event) {
+  onClick(event) {
     this.dispatchEvent(ClearButton.EventTypeButtonClick, this);
-  };
+  }
 }
 
-/**
- * @constructor
- * @extends View
- */
-function CalendarNavigationButton() {
-  View.call(
-      this,
-      createElement(
-          'button',
-          CalendarNavigationButton.ClassNameCalendarNavigationButton));
-  /**
-   * @type {number} Threshold for starting repeating clicks in milliseconds.
-   */
-  this.repeatingClicksStartingThreshold =
-      CalendarNavigationButton.DefaultRepeatingClicksStartingThreshold;
-  /**
-   * @type {number} Interval between reapeating clicks in milliseconds.
-   */
-  this.reapeatingClicksInterval =
-      CalendarNavigationButton.DefaultRepeatingClicksInterval;
-  /**
-   * @type {?number} The ID for the timeout that triggers the repeating clicks.
-   */
-  this._timer = null;
-  this.element.addEventListener('click', this.onClick, false);
-  this.element.addEventListener('mousedown', this.onMouseDown, false);
-  this.element.addEventListener('touchstart', this.onTouchStart, false);
-};
+// ----------------------------------------------------------------
 
-{
-  CalendarNavigationButton.prototype = Object.create(View.prototype);
+class CalendarNavigationButton extends View {
+  /**
+   * @extends View
+   */
+  constructor() {
+    super(createElement(
+        'button', CalendarNavigationButton.ClassNameCalendarNavigationButton));
+    /**
+     * @type {number} Threshold for starting repeating clicks in milliseconds.
+     */
+    this.repeatingClicksStartingThreshold =
+        CalendarNavigationButton.DefaultRepeatingClicksStartingThreshold;
+    /**
+     * @type {number} Interval between repeating clicks in milliseconds.
+     */
+    this.repeatingClicksInterval =
+        CalendarNavigationButton.DefaultRepeatingClicksInterval;
+    /**
+     * @type {?number} The ID for the timeout that triggers the repeating clicks.
+     */
+    this._timer = null;
+    this.element.addEventListener('click', this.onClick.bind(this), false);
+    this.element.addEventListener(
+        'mousedown', this.onMouseDown.bind(this), false);
+    this.element.addEventListener(
+        'touchstart', this.onTouchStart.bind(this), false);
+  }
 
-  CalendarNavigationButton.DefaultRepeatingClicksStartingThreshold = 600;
-  CalendarNavigationButton.DefaultRepeatingClicksInterval = 300;
-  CalendarNavigationButton.LeftMargin = 4;
-  CalendarNavigationButton.Width = 24;
-  CalendarNavigationButton.ClassNameCalendarNavigationButton =
-      'calendar-navigation-button';
-  CalendarNavigationButton.EventTypeButtonClick = 'buttonClick';
-  CalendarNavigationButton.EventTypeRepeatingButtonClick =
-      'repeatingButtonClick';
+  static DefaultRepeatingClicksStartingThreshold = 600;
+  static DefaultRepeatingClicksInterval = 300;
+  static LeftMargin = 4;
+  static Width = 24;
+  static ClassNameCalendarNavigationButton = 'calendar-navigation-button';
+  static EventTypeButtonClick = 'buttonClick';
+  static EventTypeRepeatingButtonClick = 'repeatingButtonClick';
 
   /**
    * @param {!boolean} disabled
    */
-  CalendarNavigationButton.prototype.setDisabled = function(disabled) {
+  setDisabled(disabled) {
     this.element.disabled = disabled;
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  CalendarNavigationButton.prototype.onClick = function(event) {
+  onClick(event) {
     this.dispatchEvent(CalendarNavigationButton.EventTypeButtonClick, this);
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  CalendarNavigationButton.prototype.onTouchStart = function(event) {
+  onTouchStart(event) {
     if (this._timer !== null)
       return;
     this._timer = setTimeout(
-        this.onRepeatingClick, this.repeatingClicksStartingThreshold);
-    window.addEventListener('touchend', this.onWindowTouchEnd, false);
-  };
+        this.onRepeatingClick.bind(this),
+        this.repeatingClicksStartingThreshold);
+    window.addEventListener(
+        'touchend', this.onWindowTouchEnd.bind(this), false);
+  }
 
   /**
    * @param {?Event} event
    */
-  CalendarNavigationButton.prototype.onWindowTouchEnd = function(event) {
+  onWindowTouchEnd(event) {
     if (this._timer === null)
       return;
     clearTimeout(this._timer);
     this._timer = null;
-    window.removeEventListener('touchend', this.onWindowMouseUp, false);
-  };
+    window.removeEventListener(
+        'touchend', this.onWindowMouseUp.bind(this), false);
+  }
 
   /**
    * @param {?Event} event
    */
-  CalendarNavigationButton.prototype.onMouseDown = function(event) {
+  onMouseDown(event) {
     if (this._timer !== null)
       return;
     this._timer = setTimeout(
-        this.onRepeatingClick, this.repeatingClicksStartingThreshold);
-    window.addEventListener('mouseup', this.onWindowMouseUp, false);
-  };
+        this.onRepeatingClick.bind(this),
+        this.repeatingClicksStartingThreshold);
+    window.addEventListener('mouseup', this.onWindowMouseUp.bind(this), false);
+  }
 
   /**
    * @param {?Event} event
    */
-  CalendarNavigationButton.prototype.onWindowMouseUp = function(event) {
+  onWindowMouseUp(event) {
     if (this._timer === null)
       return;
     clearTimeout(this._timer);
     this._timer = null;
-    window.removeEventListener('mouseup', this.onWindowMouseUp, false);
-  };
+    window.removeEventListener(
+        'mouseup', this.onWindowMouseUp.bind(this), false);
+  }
 
   /**
    * @param {?Event} event
    */
-  CalendarNavigationButton.prototype.onRepeatingClick = function(event) {
+  onRepeatingClick(event) {
     this.dispatchEvent(
         CalendarNavigationButton.EventTypeRepeatingButtonClick, this);
-    this._timer =
-        setTimeout(this.onRepeatingClick, this.reapeatingClicksInterval);
-  };
+    this._timer = setTimeout(
+        this.onRepeatingClick.bind(this), this.repeatingClicksInterval);
+  }
 }
+
+// ----------------------------------------------------------------
 
 /**
  * @param {!Day} day
@@ -3504,111 +3503,108 @@ function isWeekOutsideOfRange(week, minWeek, maxWeek) {
   return week < minWeek || maxWeek < week;
 }
 
-/**
- * @constructor
- * @extends View
- * @param {!CalendarPicker} calendarPicker
- */
-function CalendarHeaderView(calendarPicker) {
-  View.call(
-      this,
-      createElement('div', CalendarHeaderView.ClassNameCalendarHeaderView));
-  this.calendarPicker = calendarPicker;
-  this.calendarPicker.on(
-      CalendarPicker.EventTypeCurrentMonthChanged, this.onCurrentMonthChanged);
+// ----------------------------------------------------------------
 
-  var titleElement =
-      createElement('div', CalendarHeaderView.ClassNameCalendarTitle);
-  this.element.appendChild(titleElement);
-
+class CalendarHeaderView extends View {
   /**
-   * @type {!MonthPopupButton}
+   * @extends View
+   * @param {!CalendarPicker} calendarPicker
    */
-  this.monthPopupButton = new MonthPopupButton(
-      this.calendarPicker.calendarTableView.width() -
-      CalendarTableView.GetBorderWidth() * 2 -
-      CalendarNavigationButton.Width * 3 -
-      CalendarNavigationButton.LeftMargin * 2);
-  this.monthPopupButton.attachTo(titleElement);
+  constructor(calendarPicker) {
+    super(createElement('div', CalendarHeaderView.ClassNameCalendarHeaderView));
+    this.calendarPicker = calendarPicker;
+    this.calendarPicker.on(
+        CalendarPicker.EventTypeCurrentMonthChanged,
+        this.onCurrentMonthChanged.bind(this));
 
-  /**
-   * @type {!CalendarNavigationButton}
-   * @const
-   */
-  this._previousMonthButton = new CalendarNavigationButton();
-  this._previousMonthButton.attachTo(this);
-  this._previousMonthButton.on(
-      CalendarNavigationButton.EventTypeButtonClick,
-      this.onNavigationButtonClick);
-  this._previousMonthButton.on(
-      CalendarNavigationButton.EventTypeRepeatingButtonClick,
-      this.onNavigationButtonClick);
-  this._previousMonthButton.element.setAttribute(
-      'aria-label', global.params.axShowPreviousMonth);
+    var titleElement =
+        createElement('div', CalendarHeaderView.ClassNameCalendarTitle);
+    this.element.appendChild(titleElement);
 
-  /**
-   * @type {!CalendarNavigationButton}
-   * @const
-   */
-  this._nextMonthButton = new CalendarNavigationButton();
-  this._nextMonthButton.attachTo(this);
-  this._nextMonthButton.on(
-      CalendarNavigationButton.EventTypeButtonClick,
-      this.onNavigationButtonClick);
-  this._nextMonthButton.on(
-      CalendarNavigationButton.EventTypeRepeatingButtonClick,
-      this.onNavigationButtonClick);
-  this._nextMonthButton.element.setAttribute(
-      'aria-label', global.params.axShowNextMonth);
+    /**
+     * @type {!MonthPopupButton}
+     */
+    this.monthPopupButton = new MonthPopupButton(
+        this.calendarPicker.calendarTableView.width() -
+        CalendarTableView.GetBorderWidth() * 2 -
+        CalendarNavigationButton.Width * 3 -
+        CalendarNavigationButton.LeftMargin * 2);
+    this.monthPopupButton.attachTo(titleElement);
 
-  if (global.params.isLocaleRTL) {
-    this._nextMonthButton.element.innerHTML =
-        CalendarHeaderView.GetBackwardTriangle();
-    this._previousMonthButton.element.innerHTML =
-        CalendarHeaderView.GetForwardTriangle();
-  } else {
-    this._nextMonthButton.element.innerHTML =
-        CalendarHeaderView.GetForwardTriangle();
-    this._previousMonthButton.element.innerHTML =
-        CalendarHeaderView.GetBackwardTriangle();
+    /**
+     * @type {!CalendarNavigationButton}
+     * @const
+     */
+    this._previousMonthButton = new CalendarNavigationButton();
+    this._previousMonthButton.attachTo(this);
+    this._previousMonthButton.on(
+        CalendarNavigationButton.EventTypeButtonClick,
+        this.onNavigationButtonClick.bind(this));
+    this._previousMonthButton.on(
+        CalendarNavigationButton.EventTypeRepeatingButtonClick,
+        this.onNavigationButtonClick.bind(this));
+    this._previousMonthButton.element.setAttribute(
+        'aria-label', global.params.axShowPreviousMonth);
+
+    /**
+     * @type {!CalendarNavigationButton}
+     * @const
+     */
+    this._nextMonthButton = new CalendarNavigationButton();
+    this._nextMonthButton.attachTo(this);
+    this._nextMonthButton.on(
+        CalendarNavigationButton.EventTypeButtonClick,
+        this.onNavigationButtonClick.bind(this));
+    this._nextMonthButton.on(
+        CalendarNavigationButton.EventTypeRepeatingButtonClick,
+        this.onNavigationButtonClick.bind(this));
+    this._nextMonthButton.element.setAttribute(
+        'aria-label', global.params.axShowNextMonth);
+
+    if (global.params.isLocaleRTL) {
+      this._nextMonthButton.element.innerHTML =
+          CalendarHeaderView.GetBackwardTriangle();
+      this._previousMonthButton.element.innerHTML =
+          CalendarHeaderView.GetForwardTriangle();
+    } else {
+      this._nextMonthButton.element.innerHTML =
+          CalendarHeaderView.GetForwardTriangle();
+      this._previousMonthButton.element.innerHTML =
+          CalendarHeaderView.GetBackwardTriangle();
+    }
   }
-}
 
-{
-  CalendarHeaderView.prototype = Object.create(View.prototype);
-
-  CalendarHeaderView.Height = 24;
-  CalendarHeaderView.BottomMargin = 10;
-  CalendarHeaderView.ClassNameCalendarNavigationButtonIcon =
-      'navigation-button-icon';
-  CalendarHeaderView._ForwardTriangle = `<svg class="${
+  static Height = 24;
+  static BottomMargin = 10;
+  static ClassNameCalendarNavigationButtonIcon = 'navigation-button-icon';
+  static _ForwardTriangle = `<svg class="${
       CalendarHeaderView
           .ClassNameCalendarNavigationButtonIcon}" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path class="${
       CalendarHeaderView
           .ClassNameCalendarNavigationButtonIcon}" d="M15.3516 8.60156L8 15.9531L0.648438 8.60156L1.35156 7.89844L7.5 14.0469V0H8.5V14.0469L14.6484 7.89844L15.3516 8.60156Z" fill="#101010"/>
     </svg>`;
-  CalendarHeaderView.GetForwardTriangle = function() {
+  static GetForwardTriangle() {
     return CalendarHeaderView._ForwardTriangle;
-  };
-  CalendarHeaderView._BackwardTriangle = `<svg class="${
+  }
+  static _BackwardTriangle = `<svg class="${
       CalendarHeaderView
           .ClassNameCalendarNavigationButtonIcon}" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path class="${
       CalendarHeaderView
           .ClassNameCalendarNavigationButtonIcon}" d="M14.6484 8.10156L8.5 1.95312V16H7.5V1.95312L1.35156 8.10156L0.648438 7.39844L8 0.046875L15.3516 7.39844L14.6484 8.10156Z" fill="#101010"/>
     </svg>`;
-  CalendarHeaderView.GetBackwardTriangle = function() {
+  static GetBackwardTriangle() {
     return CalendarHeaderView._BackwardTriangle;
-  };
-  CalendarHeaderView.ClassNameCalendarHeaderView = 'calendar-header-view';
-  CalendarHeaderView.ClassNameCalendarTitle = 'calendar-title';
-  CalendarHeaderView.ClassNameTodayButton = 'today-button';
-  CalendarHeaderView.GetClassNameTodayButton = function() {
+  }
+  static ClassNameCalendarHeaderView = 'calendar-header-view';
+  static ClassNameCalendarTitle = 'calendar-title';
+  static ClassNameTodayButton = 'today-button';
+  static GetClassNameTodayButton() {
     return CalendarHeaderView.ClassNameTodayButton;
-  };
+  }
 
-  CalendarHeaderView.prototype.onCurrentMonthChanged = function() {
+  onCurrentMonthChanged() {
     this.monthPopupButton.setCurrentMonth(this.calendarPicker.currentMonth());
     this._previousMonthButton.setDisabled(
         this.disabled ||
@@ -3616,9 +3612,9 @@ function CalendarHeaderView(calendarPicker) {
     this._nextMonthButton.setDisabled(
         this.disabled ||
         this.calendarPicker.currentMonth() >= this.calendarPicker.maximumMonth);
-  };
+  }
 
-  CalendarHeaderView.prototype.onNavigationButtonClick = function(sender) {
+  onNavigationButtonClick(sender) {
     if (sender === this._previousMonthButton) {
       this.calendarPicker.setCurrentMonth(
           this.calendarPicker.currentMonth().previous(),
@@ -3631,12 +3627,12 @@ function CalendarHeaderView(calendarPicker) {
       this.calendarPicker.ensureSelectionIsWithinCurrentMonth();
     } else
       this.calendarPicker.selectRangeContainingDay(Day.createFromToday());
-  };
+  }
 
   /**
    * @param {!boolean} disabled
    */
-  CalendarHeaderView.prototype.setDisabled = function(disabled) {
+  setDisabled(disabled) {
     this.disabled = disabled;
     this._previousMonthButton.element.style.visibility =
         this.disabled ? 'hidden' : 'visible';
@@ -3662,7 +3658,7 @@ function CalendarHeaderView(calendarPicker) {
             this.calendarPicker.config.maximum));
       }
     }
-  };
+  }
 }
 
 // ----------------------------------------------------------------
