@@ -90,7 +90,7 @@ Polymer({
    * @private
    */
   onSkipTap_() {
-    this.$['voice-match-lottie'].setPlay(false);
+    this.$['voice-match-lottie'].playing = false;
     this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['skip-pressed']);
   },
 
@@ -196,7 +196,7 @@ Polymer({
     }
 
     window.setTimeout(() => {
-      this.$['voice-match-lottie'].setPlay(false);
+      this.$['voice-match-lottie'].playing = false;
       this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['voice-match-done']);
     }, this.doneActionDelayMs_);
   },
@@ -213,7 +213,7 @@ Polymer({
     }
 
     this.browserProxy_.screenShown(VOICE_MATCH_SCREEN_ID);
-    this.$['voice-match-lottie'].setPlay(true);
+    this.$['voice-match-lottie'].playing = true;
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$['agree-button'].focus());
   },

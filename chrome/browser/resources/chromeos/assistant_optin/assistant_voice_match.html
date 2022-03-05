@@ -6,7 +6,6 @@
 
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
 <link rel="import" href="/components/behaviors/multi_step_behavior.html">
 <link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
@@ -15,6 +14,7 @@
 <link rel="import" href="/components/buttons/oobe_text_button.html">
 <link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
 <link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_cr_lottie.html">
 
 <dom-module id="assistant-voice-match">
   <template>
@@ -53,9 +53,9 @@
         [[getDialogTitle_(locale, uiStep, childName_)]]
       </h1>
       <div slot="subtitle" id="voice-match-animation">
-        <cr-lottie id="voice-match-lottie"
+        <oobe-cr-lottie id="voice-match-lottie"
             animation-url="voice_match_animation.json">
-        </cr-lottie>
+        </oobe-cr-lottie>
       </div>
       <div slot="content" class="landscape-vertical-centered">
         <div inner-h-t-m-l=

@@ -166,6 +166,8 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
   builder->Add("next", IDS_EULA_NEXT_BUTTON);
   builder->Add("assistantOobePopupOverlayLoading",
                IDS_ASSISTANT_OOBE_POPUP_OVERLAY_LOADING);
+  builder->Add("playAnimationAriaLabel", IDS_OOBE_PLAY_ANIMATION_MESSAGE);
+  builder->Add("pauseAnimationAriaLabel", IDS_OOBE_PAUSE_ANIMATION_MESSAGE);
 }
 
 void AssistantOptInFlowScreenHandler::RegisterMessages() {
