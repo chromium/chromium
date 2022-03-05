@@ -5,6 +5,7 @@
 
 import contextlib
 import collections
+import fnmatch
 import itertools
 import logging
 import math
@@ -911,6 +912,19 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           gtest_test_instance.TestNameWithoutDisabledPrefix(t))
     not_run_tests = tests_stripped_disabled_prefix.difference(
         set(r.GetName() for r in results))
+
+    if self._test_instance.extract_test_list_from_filter:
+      # A test string might end with a * in this mode, and so may not match any
+      # r.GetName() for the set difference. It's possible a filter like foo.*
+      # can match two tests, ie foo.baz and foo.foo.
+      # When running it's possible Foo.baz is ran, foo.foo is not, but the test
+      # list foo.* will not be reran as at least one result matched it.
+      not_run_tests = {
+          t
+          for t in not_run_tests
+          if not any(fnmatch.fnmatch(r.GetName(), t) for r in results)
+      }
+
     return results, list(not_run_tests) if results else None
 
   #override
