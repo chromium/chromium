@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://new-tab-page/new_tab_page.js';
+import 'chrome://new-tab-page/lazy_load.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
-import {DiscountConsentDialog} from 'chrome://new-tab-page/new_tab_page.js';
+
+import {DiscountConsentDialog} from 'chrome://new-tab-page/lazy_load.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

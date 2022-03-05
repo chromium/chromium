@@ -7,6 +7,7 @@
  */
 
 import {loadTimeData} from '../i18n_setup.js';
+import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import {chromeCartDescriptor} from './cart/module.js';
 import {chromeCartDescriptor as chromeCartV2Descriptor} from './cart_v2/module.js';
@@ -16,6 +17,7 @@ import {driveDescriptor as driveV2Descriptor} from './drive_v2/module.js';
 import {dummyV2Descriptor, dummyV2Descriptor02, dummyV2Descriptor03, dummyV2Descriptor04, dummyV2Descriptor05, dummyV2Descriptor06, dummyV2Descriptor07, dummyV2Descriptor08, dummyV2Descriptor09, dummyV2Descriptor10, dummyV2Descriptor11, dummyV2Descriptor12} from './dummy_v2/module.js';
 // </if>
 import {ModuleDescriptor, ModuleDescriptorV2} from './module_descriptor.js';
+import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
 import {recipeTasksDescriptor as recipeTasksV2Descriptor} from './recipes_v2/module.js';
 import {recipeTasksDescriptor, shoppingTasksDescriptor} from './task_module/module.js';
@@ -74,3 +76,17 @@ if (loadTimeData.getBoolean('dummyModulesEnabled')) {
   }
 }
 // </if>
+
+export async function counterfactualLoad() {
+  // Instantiate modules even if |modulesEnabled| is false to counterfactually
+  // trigger a HaTS survey in a potential control group.
+  if (!loadTimeData.getBoolean('modulesEnabled') &&
+      loadTimeData.getBoolean('modulesLoadEnabled')) {
+    const modules = await ModuleRegistry.getInstance().initializeModules(
+        loadTimeData.getInteger('modulesLoadTimeout'));
+    if (modules) {
+      NewTabPageProxy.getInstance().handler.onModulesLoadedWithData();
+    }
+  }
+}
+counterfactualLoad();

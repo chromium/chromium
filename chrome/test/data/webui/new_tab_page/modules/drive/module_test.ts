@@ -5,7 +5,8 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {DriveHandlerRemote} from 'chrome://new-tab-page/drive.mojom-webui.js';
-import {$$, CrAutoImgElement, DismissModuleEvent, driveDescriptor, DriveModuleElement, DriveProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {DismissModuleEvent, driveDescriptor, DriveModuleElement, DriveProxy} from 'chrome://new-tab-page/lazy_load.js';
+import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';

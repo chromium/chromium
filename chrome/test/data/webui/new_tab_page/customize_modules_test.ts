@@ -6,8 +6,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
 import {CartHandlerRemote} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
-import {CustomizeModulesElement} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, ChromeCartProxy, ModuleDescriptor, ModuleRegistry, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {ChromeCartProxy, CustomizeModulesElement, ModuleDescriptor, ModuleRegistry,} from 'chrome://new-tab-page/lazy_load.js';
+import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageInterface} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

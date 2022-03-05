@@ -4,7 +4,8 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {$$, AppElement, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, Module, ModuleDescriptor, ModuleRegistry, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {counterfactualLoad, Module, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
+import {$$, AppElement, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageInterface} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
@@ -523,10 +524,11 @@ suite('NewTabPageAppTest', () => {
           element: barElement,
         }
       ]);
+      await counterfactualLoad();
       await flushTasks();
 
       // Assert.
-      assertEquals(1, moduleRegistry.getCallCount('initializeModules'));
+      assertTrue(moduleRegistry.getCallCount('initializeModules') > 0);
       assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
       assertEquals(
           0, app.shadowRoot!.querySelectorAll('ntp-module-wrapper').length);

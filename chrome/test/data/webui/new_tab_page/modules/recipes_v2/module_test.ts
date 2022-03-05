@@ -4,7 +4,8 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {CrAutoImgElement, RecipeModuleElement, recipeTasksV2Descriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {RecipeModuleElement, recipeTasksV2Descriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/lazy_load.js';
+import {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {TaskModuleHandlerRemote} from 'chrome://new-tab-page/task_module.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

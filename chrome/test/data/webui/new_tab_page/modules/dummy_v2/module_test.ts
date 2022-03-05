@@ -5,7 +5,8 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {FooHandlerRemote} from 'chrome://new-tab-page/foo.mojom-webui.js';
-import {CrAutoImgElement, DummyModuleElement, dummyV2Descriptor, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {DummyModuleElement, dummyV2Descriptor, FooProxy} from 'chrome://new-tab-page/lazy_load.js';
+import {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

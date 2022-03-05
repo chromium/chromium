@@ -4,7 +4,8 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {ModuleDescriptor, ModuleRegistry, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
+import {NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';

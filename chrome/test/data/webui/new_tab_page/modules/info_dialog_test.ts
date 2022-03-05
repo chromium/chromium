@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {InfoDialogElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {InfoDialogElement} from 'chrome://new-tab-page/lazy_load.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('NewTabPageModulesInfoDialogTest', () => {
