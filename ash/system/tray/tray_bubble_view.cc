@@ -5,6 +5,7 @@
 #include "ash/system/tray/tray_bubble_view.h"
 
 #include <algorithm>
+#include <memory>
 #include <numeric>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -237,11 +238,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
       layout_(nullptr),
       delegate_(init_params.delegate),
       preferred_width_(init_params.preferred_width),
-      bubble_border_(new BubbleBorder(
-          arrow(),
-          BubbleBorder::NO_SHADOW,
-          init_params.bg_color.value_or(gfx::kPlaceholderColor))),
-      owned_bubble_border_(bubble_border_),
       is_gesture_dragging_(false),
       mouse_actively_entered_(false) {
   // We set the dialog role because views::BubbleDialogDelegate defaults this to
@@ -257,10 +253,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // anchor_widget() is computed by BubbleDialogDelegateView().
   DCHECK((init_params.anchor_mode != TrayBubbleView::AnchorMode::kView) ||
          anchor_widget());
-  bubble_border_->set_use_theme_background_color(!init_params.bg_color);
-  if (init_params.corner_radius)
-    bubble_border_->SetCornerRadius(init_params.corner_radius.value());
-  bubble_border_->set_avoid_shadow_overlap(true);
   set_parent_window(params_.parent_window);
   SetCanActivate(
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
@@ -292,8 +284,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   if (init_params.anchor_mode == AnchorMode::kRect) {
     SetAnchorView(nullptr);
     SetAnchorRect(init_params.anchor_rect);
-    if (init_params.insets.has_value())
-      bubble_border_->set_insets(init_params.insets.value());
   }
 }
 
@@ -347,7 +337,8 @@ void TrayBubbleView::SetPreferredWidth(int width) {
 }
 
 gfx::Insets TrayBubbleView::GetBorderInsets() const {
-  return bubble_border_ ? bubble_border_->GetInsets() : gfx::Insets();
+  auto* bubble_border = GetBubbleFrameView()->bubble_border();
+  return bubble_border ? bubble_border->GetInsets() : gfx::Insets();
 }
 
 absl::optional<AcceleratorAction> TrayBubbleView::GetAcceleratorAction() const {
@@ -418,9 +409,20 @@ ui::LayerType TrayBubbleView::GetLayerType() const {
 
 std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
     Widget* widget) {
+  // Create the customized bubble border.
+  std::unique_ptr<BubbleBorder> bubble_border = std::make_unique<BubbleBorder>(
+      arrow(), BubbleBorder::NO_SHADOW,
+      params_.bg_color.value_or(gfx::kPlaceholderColor));
+  bubble_border->set_use_theme_background_color(!params_.bg_color);
+  if (params_.corner_radius)
+    bubble_border->SetCornerRadius(params_.corner_radius.value());
+  bubble_border->set_avoid_shadow_overlap(true);
+  if (params_.anchor_mode == AnchorMode::kRect && params_.insets.has_value())
+    bubble_border->set_insets(params_.insets.value());
+
   auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
   static_cast<BubbleFrameView*>(frame.get())
-      ->SetBubbleBorder(std::move(owned_bubble_border_));
+      ->SetBubbleBorder(std::move(bubble_border));
   return frame;
 }
 
@@ -508,8 +510,8 @@ void TrayBubbleView::ChildPreferredSizeChanged(View* child) {
 }
 
 void TrayBubbleView::SetBubbleBorderInsets(gfx::Insets insets) {
-  if (bubble_border_)
-    bubble_border_->set_insets(insets);
+  if (GetBubbleFrameView()->bubble_border())
+    GetBubbleFrameView()->bubble_border()->set_insets(insets);
 }
 
 void TrayBubbleView::CloseBubbleView() {

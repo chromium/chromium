@@ -171,6 +171,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // See IsPossiblyUnintendedInteraction().
   void ResetViewShownTimeStampForTesting();
 
+  BubbleBorder* bubble_border() const { return bubble_border_; }
+
  protected:
   // Returns the available screen bounds if the frame were to show in |rect|.
   virtual gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const;
@@ -191,8 +193,6 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // inset present on the client view and the presence of header and footer
   // views.
   gfx::RoundedCornersF GetClientCornerRadii() const;
-
-  BubbleBorder* bubble_border_for_testing() const { return bubble_border_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BubbleFrameViewTest, RemoveFootnoteView);

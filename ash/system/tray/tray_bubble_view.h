@@ -230,10 +230,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   views::BoxLayout* layout_;
   Delegate* delegate_;
   int preferred_width_;
-  // |bubble_border_| and |owned_bubble_border_| point to the same thing, but
-  // the latter ensures we don't leak it before passing off ownership.
-  views::BubbleBorder* bubble_border_;
-  std::unique_ptr<views::BubbleBorder> owned_bubble_border_;
   bool is_gesture_dragging_;
 
   // True once the mouse cursor was actively moved by the user over the bubble.
