@@ -96,7 +96,8 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
 
         mNewTabImageButton.setGridTabSwitcherEnabled(isGridTabSwitcherEnabled);
         mNewTabImageButton.setStartSurfaceEnabled(false);
-        updateTabSwitchingElements(shouldShowIncognitoToggle());
+        setIncognitoToggleVisibility(shouldShowIncognitoToggle());
+        setToggleTabStackButtonVisibility(shouldShowTabStackButton());
         updateNewTabButtonVisibility();
     }
 
@@ -359,11 +360,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         mToggleTabStackButton.setVisibility(showToggleTabStackButton ? View.VISIBLE : View.GONE);
     }
 
-    private void updateTabSwitchingElements(boolean showIncognitoToggle) {
-        setIncognitoToggleVisibility(showIncognitoToggle);
-        setToggleTabStackButtonVisibility(!showIncognitoToggle);
-    }
-
     /**
      * @return Whether or not incognito toggle should be visible based on the enabled features,
      *         incognito status and form-factor.
@@ -371,6 +367,14 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private boolean shouldShowIncognitoToggle() {
         return mIsGridTabSwitcherEnabled && mIsIncognitoModeEnabledSupplier.getAsBoolean()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
+    }
+
+    /**
+     * @return Whether or not tab stack button should be visible based on the enabled features and
+     *         incognito status.
+     */
+    private boolean shouldShowTabStackButton() {
+        return !(mIsGridTabSwitcherEnabled && mIsIncognitoModeEnabledSupplier.getAsBoolean());
     }
 
     /**
