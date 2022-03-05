@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/system/eche/eche_tray.h"
+
 #include <algorithm>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -21,6 +21,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
 #include "components/account_id/account_id.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -31,7 +32,10 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
@@ -60,6 +64,7 @@ EcheTray::EcheTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
       icon_(tray_container()->AddChildView(
           std::make_unique<views::ImageView>())) {
+  observed_session_.Observe(Shell::Get()->session_controller());
   icon_->SetTooltipText(GetAccessibleNameForTray());
   tray_container()->SetMargin(kTrayIconMainAxisInset, kTrayIconCrossAxisInset);
 }
@@ -137,16 +142,6 @@ views::Widget* EcheTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
-void EcheTray::OnThemeChanged() {
-  // TODO(nayebi): Should we redraw the bubble?
-  TrayBackgroundView::OnThemeChanged();
-  // TODO(nayebi): Change this based on the final interaction model between the
-  // phone hub and Eche components.
-  icon_->SetImage(CreateVectorIcon(
-      kPhoneHubPhoneIcon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
-}
-
 std::u16string EcheTray::GetAccessibleNameForBubble() {
   return GetAccessibleNameForTray();
 }
@@ -159,13 +154,9 @@ void EcheTray::HideBubble(const TrayBubbleView* bubble_view) {
   HideBubbleWithView(bubble_view);
 }
 
-void EcheTray::OnSessionStateChanged(session_manager::SessionState state) {
-  icon_->SetImage(CreateVectorIcon(kPhoneHubPhoneIcon, TrayIconColor(state)));
-  // TODO(nayebi): Investigate if animations need to be stopped temporaily
-}
-
-void EcheTray::OnActiveUserSessionChanged(const AccountId& account_id) {
-  // TODO(nayebi): Investigate if animations need to be stopped temporaily
+void EcheTray::OnLockStateChanged(bool locked) {
+  if (bubble_ && locked)
+    PurgeAndClose();
 }
 
 void EcheTray::SetUrl(const GURL& url) {
@@ -208,8 +199,7 @@ void EcheTray::InitBubble() {
   init_params.anchor_rect = GetBubbleAnchor()->GetAnchorBoundsInScreen();
   init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = shelf()->alignment();
-  // TODO(nayebi): get the width relative to the screen size
-  init_params.preferred_width = 400;
+  init_params.preferred_width = GetSizeForEche().width();
   init_params.close_on_deactivate = false;
   init_params.has_shadow = false;
   init_params.translucent = true;
@@ -230,7 +220,7 @@ void EcheTray::InitBubble() {
   web_view->SetPreferredSize(GetSizeForEche());
   if (!url_.is_empty())
     web_view->Navigate(url_);
-  bubble_view->AddChildView(std::move(web_view));
+  web_view_ = bubble_view->AddChildView(std::move(web_view));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view.release(),
                                                 /*event_handling=*/false);
@@ -255,23 +245,16 @@ gfx::Size EcheTray::GetSizeForEche() const {
 }
 
 void EcheTray::OnArrowBackActivated() {
-  // TODO(nayebi): implement this
+  if (web_view_)
+    web_view_->GoBack();
 }
 
 std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(gfx::Insets(0, kIconColumnWidth));
-  // TODO(nayebi) Set the right IDS for this button
-  auto arrow_back_buttom = std::make_unique<IconButton>(
-      base::BindRepeating(&EcheTray::OnArrowBackActivated,
-                          weak_factory_.GetWeakPtr()),
-      IconButton::Type::kSmall, &kSystemMenuArrowBackIcon,
-      IDS_ASH_PHONE_HUB_CONNECTED_DEVICE_SETTINGS_LABEL);
-  // TODO(nayebi): Make it visible when we are ready to handle this.
-  // The theme of the button is also different from minimize and close
-  // see screen/BZApR32ACmrtHZi
-  arrow_back_buttom->SetVisible(false);
+  auto arrow_back_buttom = CreateArrowBackButton(base::BindRepeating(
+      &EcheTray::OnArrowBackActivated, weak_factory_.GetWeakPtr()));
   header->AddChildView(arrow_back_buttom.release());
 
   views::Label* title = header->AddChildView(std::make_unique<views::Label>(
@@ -310,6 +293,19 @@ std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
   header->AddChildView(close_button.release());
 
   return header;
+}
+
+std::unique_ptr<views::Button> EcheTray::CreateArrowBackButton(
+    Button::PressedCallback callback) {
+  auto arrow_back_button = views::CreateVectorImageButtonWithNativeTheme(
+      std::move(callback), vector_icons::kBackArrowIcon);
+  arrow_back_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_BACK));
+  arrow_back_button->SizeToPreferredSize();
+
+  views::InstallCircleHighlightPathGenerator(arrow_back_button.get());
+
+  return arrow_back_button;
 }
 
 BEGIN_METADATA(EcheTray, TrayBackgroundView)

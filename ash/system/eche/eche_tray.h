@@ -9,16 +9,18 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
 
-class AccountId;
-
 namespace views {
+
 class ImageView;
 class View;
 class Widget;
+
 }  // namespace views
 
 namespace ui {
@@ -35,6 +37,7 @@ namespace ash {
 class Shelf;
 class TrayBubbleView;
 class TrayBubbleWrapper;
+class AshWebView;
 
 // This class represents the Eche tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
@@ -59,7 +62,6 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   bool PerformAction(const ui::Event& event) override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
-  void OnThemeChanged() override;
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
@@ -67,8 +69,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // SessionObserver:
-  void OnSessionStateChanged(session_manager::SessionState state) override;
-  void OnActiveUserSessionChanged(const AccountId& account_id) override;
+  void OnLockStateChanged(bool locked) override;
 
   // Sets the url that will be passed to the webview.
   // Setting a new value will cause the current bubble be destroyed.
@@ -114,6 +115,17 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
+
+  // The webview shown in the bubble that contains the Eche SWA.
+  // owned by `bubble_`
+  AshWebView* web_view_ = nullptr;
+
+  base::ScopedObservation<SessionControllerImpl, SessionObserver>
+      observed_session_{this};
+
+  // Creates an arrow back button used in the corner of the dialog.
+  std::unique_ptr<views::Button> CreateArrowBackButton(
+      views::Button::PressedCallback callback);
 
   base::WeakPtrFactory<EcheTray> weak_factory_{this};
 };
