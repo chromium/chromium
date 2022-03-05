@@ -4,6 +4,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -52,6 +54,7 @@ class SmartPrivacyProtectionScreenTest
       disabled_features.push_back(features::kQuickDim);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
   }
 
   void SetUpOnMainThread() override {
@@ -96,6 +99,7 @@ class SmartPrivacyProtectionScreenTest
 
   base::OnceClosure quit_closure_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 };
 

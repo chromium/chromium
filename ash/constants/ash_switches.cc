@@ -581,6 +581,9 @@ const char kGuestWallpaperSmall[] = "guest-wallpaper-small";
 // that only use external keyboards.
 const char kHasChromeOSKeyboard[] = "has-chromeos-keyboard";
 
+// Whether this device that has hps.
+const char kHasHps[] = "has-hps";
+
 // Whether this device has an internal stylus.
 const char kHasInternalStylus[] = "has-internal-stylus";
 
@@ -972,6 +975,10 @@ bool IsUsingShelfAutoDim() {
 bool ShouldClearFastInkBuffer() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kAshClearFastInkBuffer);
+}
+
+bool HasHps() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kHasHps);
 }
 
 }  // namespace switches

@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
@@ -19,6 +20,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/hps/fake_hps_dbus_client.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
@@ -140,8 +142,9 @@ class HpsNotifyNotificationBlockerTest : public AshTestBase {
 
   // AshTestBase overrides:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kSnoopingProtection);
+    scoped_feature_list_.InitWithFeatures({ash::features::kSnoopingProtection},
+                                          {ash::features::kQuickDim});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
 
     // Simulate a working DBus client.
     chromeos::HpsDBusClient::InitializeFake();
@@ -170,6 +173,7 @@ class HpsNotifyNotificationBlockerTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 TEST_F(HpsNotifyNotificationBlockerTest, Snooping) {
