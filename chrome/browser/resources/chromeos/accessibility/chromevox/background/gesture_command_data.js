@@ -8,20 +8,38 @@ goog.provide('GestureGranularity');
 goog.require('KeyCode');
 
 /**
- * Map from gesture names (ax::mojom::Gesture defined in
- *     ui/accessibility/ax_enums.mojom.)  to commands.
- *
- * Note that only one of |command|, |acceleratorAction|, or |globalKey| is
- * expected.
- * @type {!Object<string, {msgId: string, command: (string|undefined),
+ * @typedef {{msgId: string, command: (string|undefined),
  *     commandDescriptionMsgId: (string|undefined),
  *     acceleratorAction:
  *     (chrome.accessibilityPrivate.AcceleratorAction|undefined),
  *     globalKey: ({keyCode: !KeyCode, modifiers:
  *     (chrome.accessibilityPrivate.SyntheticKeyboardModifiers|undefined)}|undefined),
  *     menuKeyOverride: ({keyCode: !KeyCode, modifiers:
- *     (chrome.accessibilityPrivate.SyntheticKeyboardModifiers|undefined)}|undefined)}>}
- * @const
+ *     (chrome.accessibilityPrivate.SyntheticKeyboardModifiers|undefined)}|undefined)}}
+ */
+GestureCommandData.Type;
+
+/**
+ * @param {string} command
+ * @return {?GestureCommandData.Type}
+ */
+GestureCommandData.getDataForCommand = function(command) {
+  for (const [gesture, data] of Object.entries(
+           GestureCommandData.GESTURE_COMMAND_MAP)) {
+    if (data.command === command) {
+      return /** @type {GestureCommandData.Type} */ (data);
+    }
+  }
+  return null;
+};
+
+/**
+ * Map from gesture names (ax::mojom::Gesture defined in
+ *     ui/accessibility/ax_enums.mojom.)  to commands.
+ *
+ * Note that only one of |command|, |acceleratorAction|, or |globalKey| is
+ * expected.
+ * @const {!Object<string, GestureCommandData.Type>}
  */
 GestureCommandData.GESTURE_COMMAND_MAP = {
   'click': {command: 'forceClickOnCurrentItem', msgId: 'click_gesture'},

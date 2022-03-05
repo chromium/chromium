@@ -151,12 +151,12 @@ KeyMap = class {
   /**
    * Gets a key given a command.
    * @param {string} command The command to query.
-   * @return {!Array<KeySequence>} The keys associated with that command,
+   * @return {!Array<!KeySequence>} The keys associated with that command,
    * if any.
    */
   keyForCommand(command) {
     let keySequenceArray;
-    if (this.commandToKey_ != null) {
+    if (this.commandToKey_ && this.commandToKey_[command]) {
       return [this.commandToKey_[command]];
     } else {
       keySequenceArray = [];

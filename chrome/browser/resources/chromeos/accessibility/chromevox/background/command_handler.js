@@ -1497,6 +1497,13 @@ export class CommandHandler extends CommandHandlerInterface {
   init() {
     ChromeVoxKbHandler.commandHandler = this.onCommand.bind(this);
 
+    chrome.runtime.onMessage.addListener(message => {
+      if (message.target === 'CommandHandler' &&
+          message.action === 'onCommand') {
+        this.onCommand(message.value);
+      }
+    });
+
     chrome.commandLinePrivate.hasSwitch(
         'enable-experimental-accessibility-language-detection', (enabled) => {
           if (enabled) {
