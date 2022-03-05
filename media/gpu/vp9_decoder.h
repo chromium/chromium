@@ -109,6 +109,11 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     // success, false otherwise.
     virtual bool GetFrameContext(scoped_refptr<VP9Picture> pic,
                                  Vp9FrameContext* frame_ctx) = 0;
+
+    // VP9Parser can update the context probabilities or can query the driver
+    // to get the updated numbers. By default drivers don't support it, and in
+    // particular it's true for legacy (unstable) V4L2 API versions.
+    virtual bool SupportsContextProbabilityReadback() const;
   };
 
   explicit VP9Decoder(

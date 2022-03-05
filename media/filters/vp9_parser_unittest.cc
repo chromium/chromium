@@ -70,7 +70,9 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
     context_file_.Close();
   }
 
-  void Initialize(const std::string& filename, bool parsing_compressed_header) {
+  void Initialize(const std::string& filename,
+                  bool parsing_compressed_header,
+                  bool needs_external_context_update) {
     base::FilePath file_path = GetTestDataFilePath(filename);
 
     stream_ = std::make_unique<base::MemoryMappedFile>();
@@ -82,7 +84,8 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
                                        &ivf_file_header));
     ASSERT_EQ(ivf_file_header.fourcc, 0x30395056u);  // VP90
 
-    vp9_parser_ = std::make_unique<Vp9Parser>(parsing_compressed_header);
+    vp9_parser_ = std::make_unique<Vp9Parser>(parsing_compressed_header,
+                                              needs_external_context_update);
 
     if (parsing_compressed_header) {
       base::FilePath context_path = GetTestDataFilePath(filename + ".context");
@@ -95,7 +98,7 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
   bool ReadShouldContextUpdate() {
     char should_update;
     int read_num = context_file_.ReadAtCurrentPos(&should_update, 1);
-    CHECK_EQ(1, read_num);
+    EXPECT_EQ(1, read_num);
     return should_update != 0;
   }
 
@@ -124,6 +127,11 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
   Vp9Parser::ContextRefreshCallback GetContextRefreshCb(
       const Vp9FrameHeader& frame_hdr) const {
     return vp9_parser_->GetContextRefreshCb(frame_hdr.frame_context_idx);
+  }
+
+  void VerifyNoContextManagersNeedUpdate() {
+    for (const auto& manager : vp9_parser_->context().frame_context_managers_)
+      ASSERT_FALSE(manager.needs_client_update());
   }
 
   IvfParser ivf_parser_;
@@ -563,7 +571,8 @@ TEST_F(Vp9ParserTest, TestIncrementIV) {
 }
 
 TEST_F(Vp9ParserTest, StreamFileParsingWithoutCompressedHeader) {
-  Initialize("test-25fps.vp9", false);
+  Initialize("test-25fps.vp9", /*parsing_compressed_header=*/false,
+             /*needs_external_context_update=*/false);
 
   // Number of frames in the test stream to be parsed.
   const int num_expected_frames = 269;
@@ -586,7 +595,8 @@ TEST_F(Vp9ParserTest, StreamFileParsingWithoutCompressedHeader) {
 }
 
 TEST_F(Vp9ParserTest, StreamFileParsingWithCompressedHeader) {
-  Initialize("test-25fps.vp9", true);
+  Initialize("test-25fps.vp9", /*parsing_compressed_header=*/true,
+             /*needs_external_context_update=*/true);
 
   // Number of frames in the test stream to be parsed.
   const int num_expected_frames = 269;
@@ -621,8 +631,9 @@ TEST_F(Vp9ParserTest, StreamFileParsingWithCompressedHeader) {
   EXPECT_EQ(num_expected_frames, num_parsed_frames);
 }
 
-TEST_F(Vp9ParserTest, StreamFileParsingWithContextUpdate) {
-  Initialize("bear-vp9.ivf", true);
+TEST_F(Vp9ParserTest, StreamFileParsingWithCompressedHeaderAndContextUpdate) {
+  Initialize("bear-vp9.ivf", /*parsing_compressed_header=*/true,
+             /*needs_external_context_update=*/true);
 
   // Number of frames in the test stream to be parsed.
   const int num_expected_frames = 82;
@@ -662,8 +673,37 @@ TEST_F(Vp9ParserTest, StreamFileParsingWithContextUpdate) {
   EXPECT_EQ(num_expected_frames, num_parsed_frames);
 }
 
+TEST_F(Vp9ParserTest, StreamFileParsingWithCompressedHeaderButNoContextUpdate) {
+  Initialize("bear-vp9.ivf", /*parsing_compressed_header=*/true,
+             /*needs_external_context_update=*/false);
+
+  // Number of frames in the test stream to be parsed.
+  constexpr int num_expected_frames = 82;
+  int num_parsed_frames = 0;
+
+  // Allow to parse twice as many frames in order to detect any extra frames
+  // parsed.
+  while (num_parsed_frames < num_expected_frames * 2) {
+    Vp9FrameHeader fhdr;
+    const auto parse_result = ParseNextFrame(&fhdr);
+    // We shouldn't be waiting for a refresh.
+    EXPECT_NE(Vp9Parser::kAwaitingRefresh, parse_result);
+    if (parse_result != Vp9Parser::kOk)
+      break;
+
+    VerifyNoContextManagersNeedUpdate();
+    ++num_parsed_frames;
+  }
+
+  DVLOG(1) << "Number of successfully parsed frames before EOS: "
+           << num_parsed_frames;
+
+  EXPECT_EQ(num_expected_frames, num_parsed_frames);
+}
+
 TEST_F(Vp9ParserTest, AwaitingContextUpdate) {
-  Initialize("bear-vp9.ivf", true);
+  Initialize("bear-vp9.ivf", /*parsing_compressed_header=*/true,
+             /*needs_external_context_update=*/true);
 
   Vp9FrameHeader fhdr;
   ASSERT_EQ(Vp9Parser::kOk, ParseNextFrame(&fhdr));
@@ -690,7 +730,8 @@ TEST_F(Vp9ParserTest, AwaitingContextUpdate) {
 }
 
 TEST_P(Vp9ParserTest, VerifyFirstFrame) {
-  Initialize(GetParam().file_name, false);
+  Initialize(GetParam().file_name, /*parsing_compressed_header=*/false,
+             /*needs_external_context_update=*/false);
   Vp9FrameHeader fhdr;
 
   ASSERT_EQ(Vp9Parser::kOk, ParseNextFrame(&fhdr));

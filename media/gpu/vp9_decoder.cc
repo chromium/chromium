@@ -92,6 +92,10 @@ VP9Decoder::VP9Accelerator::VP9Accelerator() {}
 
 VP9Decoder::VP9Accelerator::~VP9Accelerator() {}
 
+bool VP9Decoder::VP9Accelerator::SupportsContextProbabilityReadback() const {
+  return false;
+}
+
 VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
                        VideoCodecProfile profile,
                        const VideoColorSpace& container_color_space)
@@ -100,7 +104,8 @@ VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
       // TODO(hiroh): Set profile to UNKNOWN.
       profile_(profile),
       accelerator_(std::move(accelerator)),
-      parser_(accelerator_->IsFrameContextRequired()) {}
+      parser_(accelerator_->IsFrameContextRequired(),
+              accelerator_->SupportsContextProbabilityReadback()) {}
 
 VP9Decoder::~VP9Decoder() = default;
 

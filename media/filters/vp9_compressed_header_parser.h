@@ -21,8 +21,17 @@ class Vp9CompressedHeaderParser {
   // Parses VP9 compressed header in |stream| with |frame_size| into |fhdr|.
   // Returns true if no error.
   bool Parse(const uint8_t* stream, off_t frame_size, Vp9FrameHeader* fhdr);
+  // Similar to Parse() but will store the deltaProb in the context instead of
+  // updating existing probabilities. (see 6.3.3 Diff update prob syntax)
+  bool ParseNoContext(const uint8_t* stream,
+                      off_t frame_size,
+                      Vp9FrameHeader* fhdr);
 
  private:
+  bool ParseInternal(const uint8_t* stream,
+                     off_t frame_size,
+                     Vp9FrameHeader* fhdr);
+
   void ReadTxMode(Vp9FrameHeader* fhdr);
   uint8_t DecodeTermSubexp();
   void DiffUpdateProb(Vp9Prob* prob);
@@ -46,6 +55,10 @@ class Vp9CompressedHeaderParser {
 
   // Bool decoder for compressed frame header.
   Vp9BoolDecoder reader_;
+
+  // Used to change behaviour when parsing without previous frame context. Set
+  // by Parse()/ParseNoContext()
+  bool have_frame_context_ = true;
 };
 
 }  // namespace media
