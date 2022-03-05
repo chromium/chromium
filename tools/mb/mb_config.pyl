@@ -109,9 +109,9 @@
       'android-pie-arm64-coverage-experimental-rel': 'android_release_bot_arm64_webview_monochrome_expectations_reclient',
       'android-pie-arm64-rel': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
       'android-pie-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-      'android-weblayer-with-aosp-webview-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google_reclient',
+      'android-weblayer-with-aosp-webview-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google',
       # Use webview_monochrome as this builder triggers tests on Android O & P
-      'android-weblayer-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome_reclient',
+      'android-weblayer-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome',
       'android-10-arm64-rel': 'android_release_bot_minimal_symbols_arm64_fastbuild_webview_trichrome_reclient',
       'android-11-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient',
       'android-12-x64-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome_reclient',
@@ -1537,6 +1537,12 @@
       'no_secondary_abi',
     ],
 
+    'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google': [
+      'android', 'release_bot', 'minimal_symbols',
+      'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard',
+      'chrome_google'
+    ],
+
     'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google_reclient': [
       'android', 'release_bot_reclient', 'minimal_symbols',
       'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard',
@@ -1558,8 +1564,8 @@
       'strip_debug_info', 'android_fastbuild', 'webview_trichrome',
     ],
 
-    'android_release_bot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome_reclient': [
-      'android', 'release_bot_reclient', 'minimal_symbols', 'x86',
+    'android_release_bot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome': [
+      'android', 'release_bot', 'minimal_symbols', 'x86',
       'strip_debug_info', 'android_fastbuild', 'webview_monochrome',
       'disable_proguard'
     ],
