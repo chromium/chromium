@@ -96,6 +96,7 @@ constexpr int kCardifiedHorizontalPadding = 16;
 
 // The radius of the corner of the background cards in the apps grid.
 constexpr int kBackgroundCardCornerRadius = 12;
+constexpr int kBackgroundCardCornerRadiusProdLauncher = 16;
 
 // The opacity for the background cards when hidden.
 constexpr float kBackgroundCardOpacityHide = 0.0f;
@@ -119,6 +120,8 @@ constexpr int kBackgroundCardVerticalPadding = 8;
 // The amount of horizontal space between the edge of the background card and
 // the closest app tile.
 constexpr int kBackgroundCardHorizontalPadding = 16;
+
+constexpr int kBackgroundCardBorderStrokeWidth = 1.0f;
 
 int GetFadeoutMaskHeight() {
   // The fadeout mask layer is shown only if background blur is enabled - if
@@ -153,6 +156,62 @@ class CardifiedAnimationObserver : public ui::ImplicitAnimationObserver {
 };
 
 }  // namespace
+
+class PagedAppsGridView::BackgroundCardLayer : public ui::Layer,
+                                               public ui::LayerDelegate {
+ public:
+  BackgroundCardLayer() : Layer(ui::LAYER_TEXTURED) {
+    SetFillsBoundsOpaquely(false);
+    set_delegate(this);
+  }
+
+  BackgroundCardLayer(const BackgroundCardLayer&) = delete;
+  BackgroundCardLayer& operator=(const BackgroundCardLayer&) = delete;
+  ~BackgroundCardLayer() override = default;
+
+  void SetIsActivePage(bool is_active_page) {
+    is_active_page_ = is_active_page;
+    SchedulePaint(parent()->bounds());
+  }
+
+ private:
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    ui::PaintRecorder recorder(context, size());
+    gfx::Canvas* canvas = recorder.canvas();
+    gfx::RectF card_size((gfx::SizeF(size())));
+    const int corner_radius = features::IsProductivityLauncherEnabled()
+                                  ? kBackgroundCardCornerRadiusProdLauncher
+                                  : kBackgroundCardCornerRadius;
+
+    // Draw a solid rounded rect as the background.
+    cc::PaintFlags flags;
+    auto* color_provider = AppListColorProvider::Get();
+    SkColor fill_color =
+        is_active_page_ ? color_provider->GetGridBackgroundCardActiveColor()
+                        : color_provider->GetGridBackgroundCardInactiveColor();
+    flags.setColor(fill_color);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    canvas->DrawRoundRect(card_size, corner_radius, flags);
+
+    if (features::IsProductivityLauncherEnabled() && is_active_page_) {
+      // Draw a border around the active page.
+      flags.setColor(SK_ColorWHITE);
+      flags.setAlpha(0x66);
+      flags.setStyle(cc::PaintFlags::kStroke_Style);
+      flags.setStrokeWidth(kBackgroundCardBorderStrokeWidth);
+      flags.setAntiAlias(true);
+      card_size.Inset(gfx::InsetsF(kBackgroundCardBorderStrokeWidth / 2.0f));
+      canvas->DrawRoundRect(card_size, corner_radius, flags);
+    }
+  }
+
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {}
+
+  bool is_active_page_ = false;
+};
 
 PagedAppsGridView::PagedAppsGridView(
     ContentsView* contents_view,
@@ -505,6 +564,13 @@ void PagedAppsGridView::Layout() {
 void PagedAppsGridView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren, true);
   AppsGridView::GetAccessibleNodeData(node_data);
+}
+
+void PagedAppsGridView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  for (auto& card : background_cards_)
+    card.get()->SchedulePaint(card->parent()->bounds());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1186,11 +1252,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
       const bool is_active_page =
           background_cards_[pagination_model_.selected_page()] ==
           background_card;
-      auto* color_provider = AppListColorProvider::Get();
-      background_card->SetColor(
-          is_active_page
-              ? color_provider->GetGridBackgroundCardActiveColor()
-              : color_provider->GetGridBackgroundCardInactiveColor());
+      background_card->SetIsActivePage(is_active_page);
     } else {
       background_card->SetOpacity(kBackgroundCardOpacityHide);
     }
@@ -1281,13 +1343,10 @@ gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
 }
 
 void PagedAppsGridView::AppendBackgroundCard() {
-  background_cards_.push_back(
-      std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR));
+  background_cards_.push_back(std::make_unique<BackgroundCardLayer>());
   ui::Layer* current_layer = background_cards_.back().get();
   current_layer->SetBounds(BackgroundCardBounds(background_cards_.size() - 1));
   current_layer->SetVisible(true);
-  current_layer->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(kBackgroundCardCornerRadius));
   items_container()->layer()->Add(current_layer);
 }
 
@@ -1317,13 +1376,10 @@ void PagedAppsGridView::SetHighlightedBackgroundCard(int new_highlighted_page) {
     return;
 
   if (new_highlighted_page != highlighted_page_) {
-    auto* color_provider = AppListColorProvider::Get();
-    background_cards_[highlighted_page_]->SetColor(
-        color_provider->GetGridBackgroundCardInactiveColor());
+    background_cards_[highlighted_page_]->SetIsActivePage(false);
     if (static_cast<int>(background_cards_.size()) == new_highlighted_page)
       AppendBackgroundCard();
-    background_cards_[new_highlighted_page]->SetColor(
-        color_provider->GetGridBackgroundCardActiveColor());
+    background_cards_[new_highlighted_page]->SetIsActivePage(true);
 
     highlighted_page_ = new_highlighted_page;
   }

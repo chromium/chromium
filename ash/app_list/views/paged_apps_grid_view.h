@@ -106,6 +106,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // views::View:
   void Layout() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // AppsGridView:
   gfx::Size GetTileViewSize() const override;
@@ -198,6 +199,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
  private:
   friend class test::AppsGridViewTest;
+
+  class BackgroundCardLayer;
 
   // Gets the leading padding for app list item grid on the first app list page.
   // Includes the space reserved for the continue seaction of the app list UI,
@@ -311,7 +314,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // Layer array for apps grid background cards. Used to display the background
   // card during cardified state.
-  std::vector<std::unique_ptr<ui::Layer>> background_cards_;
+  std::vector<std::unique_ptr<BackgroundCardLayer>> background_cards_;
 
   // Whether the feature ProductivityLauncher is enabled.
   const bool is_productivity_launcher_enabled_;
