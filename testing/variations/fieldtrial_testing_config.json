@@ -3129,6 +3129,22 @@
             ]
         }
     ],
+    "FreeNonRequiredTileResourcesForInactiveWindows": [
+        {
+            "platforms": [
+                "chromeos",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FreeNonRequiredTileResourcesForInactiveWindows"
+                    ]
+                }
+            ]
+        }
+    ],
     "GMSCoreEmoji": [
         {
             "platforms": [
