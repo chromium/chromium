@@ -1,6 +1,7 @@
 <style include="cr-hidden-style">
   :host {
-    display: block;
+    display: flex;
+    justify-content: center;
     --ntp-module-container-padding-top: 16px;
   }
 
@@ -16,6 +17,11 @@
 
   .module-container + .module-container {
     padding-top: var(--ntp-module-container-padding-top);
+  }
+
+  #modules {
+    max-width: 100%;
+    width: fit-content;
   }
 
   :host([modules-redesigned-layout-enabled_]) #modules {
