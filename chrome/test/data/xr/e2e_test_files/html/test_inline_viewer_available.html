@@ -22,6 +22,7 @@ identity reference space
         }
 
         numFramesReceived++;
+        console.log('Received frame ' + numFramesReceived);
         if (numFramesReceived < testFrames) {
           session.requestAnimationFrame(onRequestAnimationFrame);
         } else {
@@ -32,16 +33,20 @@ identity reference space
       // TODO (crbug.com/934912): Consider improving flow once methods are
       // updated.
       let step = "supportsInline";
+      console.log('Checking inline support');
       navigator.xr.isSessionSupported('inline')
       .then((supported)=> {
         assert_true(supported);
         step = "requestSession";
+        console.log(
+            'Inline support found, requesting inline session');
         return navigator.xr.requestSession('inline');
       })
       .then((xrSession) => {
         session = xrSession;
 
         step = "requestReferenceSpace";
+        console.log('Got inline session, requesting viewer reference space');
         return xrSession.requestReferenceSpace('viewer');
       })
       .then((referenceSpace) => {
@@ -55,9 +60,11 @@ identity reference space
           throw 'Failed to get WebGL context';
         }
 
+        console.log('Got reference space, updating render state base layer');
         session.updateRenderState({
             baseLayer: new XRWebGLLayer(session, gl)
         });
+        console.log('Starting rAF loop');
         session.requestAnimationFrame(onRequestAnimationFrame);
       })
       .catch((err) => {

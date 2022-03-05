@@ -37,6 +37,7 @@ Tests that AR camera access returns non-empty GLTexture.
         const glBinding = new XRWebGLBinding(sessionInfo.currentSession, gl);
 
         onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame for storing texture callback');
           const pose = frame.getViewerPose(referenceSpace);
           if (pose) {
             numPosesFound++;
@@ -76,6 +77,7 @@ Tests that AR camera access returns non-empty GLTexture.
         const glBinding = new XRWebGLBinding(sessionInfo.currentSession, gl);
 
         onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame for store/delete texture callback');
           const pose = frame.getViewerPose(referenceSpace);
           if (pose) {
             numPosesFound++;
@@ -107,6 +109,7 @@ Tests that AR camera access returns non-empty GLTexture.
         const glBinding = new XRWebGLBinding(sessionInfo.currentSession, gl);
 
         onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame for non-null texture');
           const pose = frame.getViewerPose(referenceSpace);
           if (pose) {
             numPosesFound++;
@@ -159,6 +162,7 @@ Tests that AR camera access returns non-empty GLTexture.
         let numIterations = 0;
 
         onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame for lifetime limit callback');
           const pose = frame.getViewerPose(referenceSpace);
           if (pose) {
             numPosesFound++;

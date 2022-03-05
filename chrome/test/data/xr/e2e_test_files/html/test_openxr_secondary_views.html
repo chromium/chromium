@@ -48,6 +48,9 @@ Tests WebXR secondary views are correctly exposed when requested for a session.
       let viewLength = 2;
       onPoseCallback = function(pose) {
         assert_equals(pose.views.length, viewLength);
+        updateSingleTestProgressMessage(
+            'Got pose number ' + frameCount + ' with data ' +
+            JSON.stringify(pose));
 
         for (let i = 0; i < pose.views.length; i++) {
           let view = pose.views[i];

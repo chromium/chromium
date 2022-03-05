@@ -25,12 +25,15 @@ Tests that AR hit test returns results when a plane is present.
         const referenceSpace = sessionInfo.currentRefSpace;
 
         let lightProbe = null;
+        console.log('Requesting light probe');
         session.requestLightProbe({reflectionFormat: session.preferredReflectionFormat})
                .then((probe) => {
+          console.log('Got light probe');
           lightProbe = probe;
         });
 
         onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame');
           if (lightProbe != null) {
             const lightEstimate = frame.getLightEstimate(lightProbe);
             if (lightEstimate != null) {

@@ -65,10 +65,12 @@ Tests that anchor gets updated as the state of the session changes.
         const sessionInfo = sessionInfos[sessionTypes.AR];
         const referenceSpace = sessionInfo.currentRefSpace;
 
+        console.log('Requesting hit test source');
         sessionInfo.currentSession.requestHitTestSource({
           space: referenceSpace,
           offsetRay: new XRRay()
         }).then((hts) => {
+          console.log('Got hit test source');
           // Mark that the hit test source is available.
           hitTestSource = hts;
           testState = TestState.HitTestSourceAvailable;
@@ -77,7 +79,7 @@ Tests that anchor gets updated as the state of the session changes.
         });
 
         onARFrameCallback = (session, frame) => {
-
+          console.log('Got AR frame, test state is ' + testState);
           switch(testState) {
             case TestState.Initial: {
               // In initial state, there is nothing to do (we're waiting for hit test source).
@@ -88,7 +90,9 @@ Tests that anchor gets updated as the state of the session changes.
               const results = frame.getHitTestResults(hitTestSource);
               if (results.length) {
                 const result = results[0];
+                console.log('Creating anchor');
                 result.createAnchor().then((anchor) => {
+                  console.log('Anchor created');
                   createdAnchor = anchor;
                   testState = TestState.AnchorAvailable;
 

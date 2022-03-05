@@ -35,6 +35,7 @@ Tests that WebXR controller poses are properly surfaced.
         expectedMatrix = m;
         expectedIndex = index;
         onImmersiveXRFrameCallback = function(session, frame) {
+          console.log('Got immersive frame');
           let inputSources = session.inputSources;
           if (inputSources.length <= expectedIndex)
             return

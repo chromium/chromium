@@ -13,7 +13,10 @@ WebXR page without any code specific to one test
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
       var deviceChanges = 0;
-      navigator.xr.ondevicechange = () => { deviceChanges++; };
+      navigator.xr.ondevicechange = () => {
+        deviceChanges++;
+        console.log('Got new device change. Total changes: ' + deviceChanges);
+      };
 
       function resetDeviceChanges() {
         deviceChanges = 0;

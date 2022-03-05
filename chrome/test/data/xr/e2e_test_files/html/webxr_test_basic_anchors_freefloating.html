@@ -29,12 +29,15 @@ Tests that free-floating anchors can be created in an AR session.
 
         testState = TestState.Initial;
 
+        console.log('Requesting local reference space');
         sessionInfo.session.requestReferenceSpace("local").then(localSpace => {
+          console.log('Got local reference space');
           localReferenceSpace = localSpace;
           testState = TestState.SpaceObtained;
         });
 
         onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame, test state is ' + testState);
           switch(testState) {
             case TestState.SpaceObtained: {
               // We should attempt to create an anchor once the tracking is established.
@@ -43,6 +46,7 @@ Tests that free-floating anchors can be created in an AR session.
               // steady state.
               const viewerPose = frame.getViewerPose(localReferenceSpace);
               if(viewerPose && !viewerPose.emulatedPosition) {
+                console.log('Creating anchor');
                 frame.createAnchor(new XRRigidTransform(), referenceSpace).then((anchor) => {
                   done();
                   return;

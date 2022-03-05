@@ -13,6 +13,9 @@ WebXR page that only submits one frame.
     <script>
       var has_submitted = false;
       onImmersiveXRFrameCallback = function() {
+        console.log(
+            'Got immersive frame, has_submitted: ' + has_submitted +
+            ' shouldSubmitFrame: ' + shouldSubmitFrame);
         if (has_submitted && shouldSubmitFrame) {
           shouldSubmitFrame = false;
           finishJavaScriptStep();

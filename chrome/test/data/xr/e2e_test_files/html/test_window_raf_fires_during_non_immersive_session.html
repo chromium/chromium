@@ -15,6 +15,7 @@ Tests that window.rAF continues to fire during a non-immersive session.
       setup({single_test: true});
 
       onMagicWindowXRFrameCallback = function() {
+        console.log('Got magic window frame');
         window.requestAnimationFrame( () => {
           done();
         });

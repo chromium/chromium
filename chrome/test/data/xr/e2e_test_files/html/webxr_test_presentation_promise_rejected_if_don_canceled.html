@@ -16,10 +16,12 @@ the DON flow is canceled.
       setup({single_test: true});
 
       function onImmersiveRequestWithDon() {
+        console.log('Requesting immersive session');
         navigator.xr.requestSession('immersive-vr').then( (session) => {
           assert_unreached("requestPresent promise resolved");
         }, () => {
           // Do nothing when the promise is rejected
+          console.log('Promise rejected as expected');
         }).then( () => {
           done();
         });

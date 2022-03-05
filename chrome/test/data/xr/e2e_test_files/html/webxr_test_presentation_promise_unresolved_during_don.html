@@ -16,6 +16,7 @@ resolved or rejected while the DON flow is active.
       setup({single_test: true});
 
       function onImmersiveRequestWithDon() {
+        console.log('Requesting immersive VR session');
         navigator.xr.requestSession('immersive-vr').then( (session) => {
           assert_unreached("requestSession promise resolved");
         }, () => {

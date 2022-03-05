@@ -25,7 +25,10 @@ focus, that the presenting frame still receives input.
       }
 
       window.onblur = function() {
+        console.log('Blurred, setting second frame callback');
         onImmersiveXRFrameCallback = function() {
+          console.log(
+              'Got immersive frame while blurred. rafCount: ' + rafCount);
           if (rafCount == 3) {
             done();
           }

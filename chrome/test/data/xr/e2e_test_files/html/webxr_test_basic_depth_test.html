@@ -32,6 +32,8 @@ Tests that depth API returns non-zero results.
         let moreThan2mSeen = false;
 
         onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame. Seen <2m: ' + lessThan2mSeen +
+                      ' Seen >2m: ' + moreThan2mSeen);
           const pose = frame.getViewerPose(referenceSpace);
           if (pose) {
             for (const view of pose.views) {
