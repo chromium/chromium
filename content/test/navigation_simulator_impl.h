@@ -320,6 +320,10 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // prerendering/BFCache.
   bool NeedsPreCommitChecks() const;
 
+  // See comments of `force_before_unload_for_browser_initiated_` for details
+  // on what this does.
+  void AddBeforeUnloadHandlerIfNecessary();
+
   enum State {
     INITIALIZATION,
     WAITING_BEFORE_UNLOAD,
@@ -460,6 +464,12 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // renderer process side. This member interface will never be bound.
   mojo::PendingAssociatedReceiver<mojom::NavigationClient>
       navigation_client_receiver_;
+
+  // If true, the RenderFrameHost is told there is a before-unload handler. This
+  // is done for compat, as this code and consuming code was written assuming
+  // navigations would always result in querying for before-unload handlers even
+  // if one wasn't present.
+  const bool force_before_unload_for_browser_initiated_;
 
   base::WeakPtrFactory<NavigationSimulatorImpl> weak_factory_{this};
 };

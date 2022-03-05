@@ -440,8 +440,9 @@ class FakeLocalFrameWithBeforeUnload : public content::FakeLocalFrame {
 // unload handler present.
 TEST_F(RenderFrameHostImplTest, BeforeUnloadNotSentToRenderer) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAvoidUnnecessaryBeforeUnloadCheckPostTask);
+  scoped_feature_list.InitWithFeatures(
+      {features::kAvoidUnnecessaryBeforeUnloadCheckPostTask},
+      {features::kAvoidUnnecessaryBeforeUnloadCheckSync});
   FakeLocalFrameWithBeforeUnload local_frame(contents()->GetMainFrame());
   auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL("https://example.com/simple.html"), contents());

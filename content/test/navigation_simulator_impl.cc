@@ -7,6 +7,7 @@
 #include <utility>
 #include "base/bind.h"
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
@@ -19,6 +20,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_utils.h"
 #include "content/test/test_navigation_url_loader.h"
 #include "content/test/test_render_frame_host.h"
@@ -359,7 +361,9 @@ NavigationSimulatorImpl::NavigationSimulatorImpl(
       transition_(browser_initiated ? ui::PAGE_TRANSITION_TYPED
                                     : ui::PAGE_TRANSITION_LINK),
       contents_mime_type_("text/html"),
-      load_url_params_(nullptr) {
+      load_url_params_(nullptr),
+      force_before_unload_for_browser_initiated_(base::FeatureList::IsEnabled(
+          features::kAvoidUnnecessaryBeforeUnloadCheckSync)) {
   net::IPAddress address;
   CHECK(address.AssignFromIPLiteral("2001:db8::1"));
   remote_endpoint_ = net::IPEndPoint(address, 80);
@@ -1104,6 +1108,7 @@ content::GlobalRequestID NavigationSimulatorImpl::GetGlobalRequestID() {
 }
 
 void NavigationSimulatorImpl::BrowserInitiatedStartAndWaitBeforeUnload() {
+  AddBeforeUnloadHandlerIfNecessary();
   if (reload_type_ != ReloadType::NONE) {
     web_contents_->GetController().Reload(reload_type_,
                                           false /*check_for_repost */);
@@ -1633,6 +1638,31 @@ bool NavigationSimulatorImpl::NeedsThrottleChecks() const {
 bool NavigationSimulatorImpl::NeedsPreCommitChecks() const {
   DCHECK(request_);
   return NeedsThrottleChecks() || request_->IsPageActivation();
+}
+
+void NavigationSimulatorImpl::AddBeforeUnloadHandlerIfNecessary() {
+  if (!force_before_unload_for_browser_initiated_)
+    return;
+
+  RenderFrameHostImpl* target_frame_render_frame_host_impl;
+  if (load_url_params_ && load_url_params_->frame_tree_node_id !=
+                              RenderFrameHost::kNoFrameTreeNodeId) {
+    FrameTreeNode* target_frame_tree_node =
+        FrameTreeNode::GloballyFindByID(load_url_params_->frame_tree_node_id);
+    DCHECK(target_frame_tree_node);
+    target_frame_render_frame_host_impl =
+        target_frame_tree_node->current_frame_host();
+  } else {
+    target_frame_render_frame_host_impl =
+        static_cast<RenderFrameHostImpl*>(web_contents_->GetMainFrame());
+  }
+  if (target_frame_render_frame_host_impl &&
+      !target_frame_render_frame_host_impl->GetSuddenTerminationDisablerState(
+          blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler)) {
+    target_frame_render_frame_host_impl->SuddenTerminationDisablerChanged(
+        true,
+        blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+  }
 }
 
 }  // namespace content

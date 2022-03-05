@@ -1801,6 +1801,9 @@ TEST_P(RenderFrameHostManagerTest, CancelPendingProperlyDeletesOrSwaps) {
   TestRenderFrameHost* rfh1 = main_test_rfh();
   EXPECT_TRUE(rfh1->IsActive());
 
+  rfh1->SuddenTerminationDisablerChanged(
+      true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+
   // Navigate to a new site, starting a cross-site navigation.
   controller().LoadURL(kUrl2, Referrer(), ui::PAGE_TRANSITION_LINK,
                        std::string());
