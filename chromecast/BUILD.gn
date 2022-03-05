@@ -750,7 +750,10 @@ if (is_android) {
       loadable_modules = [ "$root_out_dir/libchrome_crashpad_handler.so" ]
 
       enable_multidex = true
-      proguard_enabled = !is_java_debug
+      
+      # TODO(b/222780347): Enable when compile errors are resolved on relase
+      # builds.
+      proguard_enabled = false
     }
   }
 }
