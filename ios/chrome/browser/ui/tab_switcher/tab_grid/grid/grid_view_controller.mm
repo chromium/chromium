@@ -254,14 +254,19 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self updateFractionVisibleOfLastItem];
 }
 
-#pragma mark - UITraitEnvironment
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  [self.suggestedActionsViewController
-      traitCollectionDidChange:previousTraitCollection];
-  [self.collectionView.collectionViewLayout invalidateLayout];
-  [self.collectionView layoutIfNeeded];
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+  [coordinator
+      animateAlongsideTransition:^(
+          id<UIViewControllerTransitionCoordinatorContext> context) {
+        [self.collectionView.collectionViewLayout invalidateLayout];
+      }
+      completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        [self.collectionView setNeedsLayout];
+        [self.collectionView layoutIfNeeded];
+      }];
 }
 
 #pragma mark - Public
@@ -576,8 +581,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (IsTabsSearchRegularResultsSuggestedActionsEnabled() &&
       indexPath.section == kSuggestedActionsSectionIndex) {
     UIEdgeInsets sectionInset = layout.sectionInset;
-    CGFloat width = layout.collectionView.contentSize.width -
-                    sectionInset.left - sectionInset.right;
+    UIEdgeInsets contentInset = layout.collectionView.adjustedContentInset;
+    CGFloat width = layout.collectionView.frame.size.width - sectionInset.left -
+                    sectionInset.right - contentInset.left - contentInset.right;
     CGFloat height = self.suggestedActionsViewController.contentHeight;
     return CGSizeMake(width, height);
   }

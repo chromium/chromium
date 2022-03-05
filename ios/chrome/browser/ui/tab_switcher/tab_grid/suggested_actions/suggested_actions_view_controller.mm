@@ -175,13 +175,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-#pragma mark - UITraitEnvironment
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [self.tableView setNeedsLayout];
-  [self.tableView layoutIfNeeded];
-}
-
 #pragma mark - Public
 
 - (void)setSearchText:(NSString*)searchText {
