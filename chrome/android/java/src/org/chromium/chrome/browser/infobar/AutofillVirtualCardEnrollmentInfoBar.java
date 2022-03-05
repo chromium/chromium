@@ -197,8 +197,14 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
                 layout.getContext().getString(
                         R.string.autofill_virtual_card_enrollment_infobar_card_prefix),
                 mCardLabel);
-        control.addIcon(
-                mIssuerIcon, 0, formattedCardLabel, null, R.dimen.infobar_descriptive_text_size);
+        Bitmap scaledIssuerIcon = Bitmap.createScaledBitmap(mIssuerIcon,
+                layout.getResources().getDimensionPixelSize(
+                        R.dimen.virtual_card_enrollment_dialog_card_art_width),
+                layout.getResources().getDimensionPixelSize(
+                        R.dimen.virtual_card_enrollment_dialog_card_art_height),
+                true);
+        control.addIcon(scaledIssuerIcon, 0, formattedCardLabel, null,
+                R.dimen.infobar_descriptive_text_size);
 
         addLegalMessageLines(mGoogleLegalMessageLines, control);
         addLegalMessageLines(mIssuerLegalMessageLines, control);
