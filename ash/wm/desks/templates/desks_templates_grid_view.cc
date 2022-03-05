@@ -25,6 +25,7 @@
 #include "base/i18n/string_compare.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -229,10 +230,18 @@ void DesksTemplatesGridView::AddOrUpdateTemplates(
                          b->name_view()->GetAccessibleName()) < 0;
             });
 
-  if (initializing_grid_view)
+  // A11y traverses views based on the order of the children, so we need to
+  // manually reorder the child views to match the order that they are
+  // displayed, which is the alphabetically sorted `grid_items_` order.
+  for (size_t i = 0; i < grid_items_.size(); i++)
+    ReorderChildView(grid_items_[i], i);
+
+  if (initializing_grid_view) {
     Layout();
-  else
+  } else {
     AnimateGridItems(new_grid_items);
+    NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+  }
 }
 
 void DesksTemplatesGridView::DeleteTemplates(
@@ -280,6 +289,7 @@ void DesksTemplatesGridView::DeleteTemplates(
   }
 
   AnimateGridItems(/*new_grid_items=*/{});
+  NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
 }
 
 DesksTemplatesItemView* DesksTemplatesGridView::GridItemBeingModified() {

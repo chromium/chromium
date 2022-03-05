@@ -2108,6 +2108,33 @@ TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorInViewingTemplate) {
   CheckA11yOverrides("desk", desk_widget, template_widget, focus_widget);
 }
 
+// Tests that the children of the overview grid matches the order they are
+// displayed so accessibility traverses it correctly.
+TEST_F(DesksTemplatesTest, AccessibilityGridItemTraversalOrder) {
+  auto window = CreateTestWindow(gfx::Rect(100, 100));
+
+  AddEntry(base::GUID::GenerateRandomV4(), "template_4", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template_3", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template_2", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  const auto* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+
+  // The grid items are sorted and displayed alphabetically.
+  std::vector<DesksTemplatesItemView*> grid_items =
+      templates_grid_view->grid_items();
+  views::View::Views grid_child_views = templates_grid_view->children();
+
+  // Verifies the order of the children matches what is displayed in the grid.
+  for (size_t i = 0; i < grid_items.size(); i++)
+    ASSERT_EQ(grid_items[i], grid_child_views[i]);
+}
+
 TEST_F(DesksTemplatesTest, LayoutItemsInLandscape) {
   UpdateDisplay("800x600");
 
