@@ -7,6 +7,7 @@
  * appropriate spoken and braille feedback.
  */
 import {Color} from '../color.js';
+import {IntentHandler} from './intent_handler.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationIntent = chrome.automation.AutomationIntent;
