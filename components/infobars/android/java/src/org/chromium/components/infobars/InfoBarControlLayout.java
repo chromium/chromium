@@ -306,13 +306,13 @@ public final class InfoBarControlLayout extends ViewGroup {
      */
     public View addIconTitle(int iconResourceId, CharSequence titleMessage) {
         LinearLayout layout = (LinearLayout) inflateLayout(
-                getContext(), R.layout.infobar_control_icon_with_description, this);
+                getContext(), R.layout.infobar_control_icon_with_title, this);
         addView(layout, new ControlLayoutParams());
 
-        ImageView iconView = (ImageView) layout.findViewById(R.id.control_icon);
+        ImageView iconView = (ImageView) layout.findViewById(R.id.control_title_icon);
         iconView.setImageResource(iconResourceId);
 
-        TextView titleView = (TextView) layout.findViewById(R.id.control_message);
+        TextView titleView = (TextView) layout.findViewById(R.id.control_title);
         titleView.setText(titleMessage);
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getContext().getResources().getDimension(R.dimen.infobar_text_size));
