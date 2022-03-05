@@ -17,11 +17,15 @@ import tempfile
 import time
 import webbrowser
 
+from chrome_telemetry_build import chromium_config
 from core import cli_helpers
 from core import path_util
 from core.services import luci_auth
 from core.services import pinpoint_service
 from core.services import request
+
+path_util.AddTelemetryToPath()
+from telemetry import record_wpr
 
 import py_utils
 from py_utils import binary_manager
@@ -197,7 +201,8 @@ def _PrintRunInfo(out_file, chrome_log_file=False, results_details=True):
 class WprUpdater(object):
   def __init__(self, args):
     self.story = args.story
-    # TODO(sergiyb): Impelement a method that auto-detects a single connected
+    self.bss = args.bss
+    # TODO(sergiyb): Implement a method that auto-detects a single connected
     # device when device_id is set to 'auto'. This should take advantage of the
     # method adb_wrapper.Devices in catapult repo.
     self.device_id = args.device_id
@@ -207,6 +212,13 @@ class WprUpdater(object):
     self.bug_id = args.bug_id
     self.reviewers = args.reviewers or DEFAULT_REVIEWERS
     self.wpr_go_bin = None
+
+    self._LoadArchiveInfo()
+
+  def _LoadArchiveInfo(self):
+    config = chromium_config.GetDefaultChromiumConfig()
+    tmp_recorder = record_wpr.WprRecorder(config, self.bss, parse_flags=False)
+    self.wpr_archive_info = tmp_recorder.story_set.wpr_archive_info
 
   def _CheckLog(self, command, log_name):
     # This is a wrapper around cli_helpers.CheckLog that adds timestamp to the
@@ -231,11 +243,7 @@ class WprUpdater(object):
       A 2-tuple with path to the current WPR archive for specified story and
       whether it is used by other benchmarks too.
     """
-    config_file = os.path.join(DATA_DIR, 'system_health_%s.json' % (
-        'desktop' if self._IsDesktop() else 'mobile'))
-    with open(config_file) as f:
-      config = json.load(f)
-    archives = config['archives']
+    archives = self.wpr_archive_info.data['archives']
     archive = archives.get(self.story)
     if archive is None:
       return None, False
@@ -273,14 +281,18 @@ class WprUpdater(object):
     else:
       return ['--browser=android-system-chrome']
 
-  def _RunSystemHealthMemoryBenchmark(self, log_name, live=False):
+  def _RunBenchmark(self, log_name, live=False):
     args = [RUN_BENCHMARK, 'run'] + self._BrowserArgs()
 
-    if self._IsDesktop():
-      args.append('system_health.memory_desktop')
-    else:
-      args.extend(['system_health.memory_mobile', '--device={device_id}'])
+    benchmark = self.bss
+    if self.bss == 'desktop_system_health_story_set':
+      benchmark = 'system_health.memory_desktop'
+    elif self.bss == 'mobile_system_health_story_set':
+      benchmark = 'system_health.memory_mobile'
+    args.append(benchmark)
 
+    if not self._IsDesktop():
+      args.append('--device={device_id}')
 
     args.extend([
         '--output-format=html', '--show-stdout', '--reset-results',
@@ -395,7 +407,7 @@ class WprUpdater(object):
 
   def LiveRun(self):
     cli_helpers.Step('LIVE RUN: %s' % self.story)
-    out_file = self._RunSystemHealthMemoryBenchmark(
+    out_file = self._RunBenchmark(
         log_name='live', live=True)
     _PrintRunInfo(out_file, chrome_log_file=self._IsDesktop())
     return out_file
@@ -411,18 +423,17 @@ class WprUpdater(object):
   def RecordWpr(self):
     cli_helpers.Step('RECORD WPR: %s' % self.story)
     self._DeleteExistingWpr()
-    args = [RECORD_WPR, '--story-filter={story}'] + self._BrowserArgs()
-    if self._IsDesktop():
-      args.append('desktop_system_health_story_set')
-    else:
-      args.extend(['--device={device_id}', 'mobile_system_health_story_set'])
+    args = ([RECORD_WPR, self.bss, '--story-filter={story}'] +
+            self._BrowserArgs())
+    if not self._IsDesktop():
+      args.append('--device={device_id}')
     out_file = self._CheckLog(args, log_name='record')
     _PrintRunInfo(
         out_file, chrome_log_file=self._IsDesktop(), results_details=False)
 
   def ReplayWpr(self):
     cli_helpers.Step('REPLAY WPR: %s' % self.story)
-    out_file = self._RunSystemHealthMemoryBenchmark(
+    out_file = self._RunBenchmark(
         log_name='replay', live=False)
     _PrintRunInfo(out_file, chrome_log_file=self._IsDesktop())
     return out_file
@@ -628,9 +639,20 @@ class WprUpdater(object):
 
 def Main(argv):
   parser = argparse.ArgumentParser()
+  parser.add_argument('-s',
+                      '--story',
+                      dest='story',
+                      required=True,
+                      help='Story to be recorded, replayed or uploaded. '
+                           'If you are recording a system_health benchmark, '
+                           'use desktop_system_health_story_set or '
+                           'mobile_system_health_story_set')
   parser.add_argument(
-      '-s', '--story', dest='story', required=True,
-      help='Benchmark story to be recorded, replayed or uploaded.')
+      '-bss',
+      '--benchmark-or-story-set',
+      dest='bss',
+      required=True,
+      help='Benchmark or story set to be recorded, replayed or uploaded.')
   parser.add_argument(
       '-d', '--device-id', dest='device_id',
       help='Specify the device serial number listed by `adb devices`. When not '

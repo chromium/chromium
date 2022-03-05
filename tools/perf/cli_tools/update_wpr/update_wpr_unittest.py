@@ -26,7 +26,6 @@ BUILTIN_MODULE = '__builtin__' if six.PY2 else 'builtins'
 # This is \\<story\\> in Python 2 and <story> in Python 3.
 ESCAPED_STORY = re.escape('<story>')
 
-
 class UpdateWprTest(unittest.TestCase):
   def setUp(self):
     self.maxDiff = None
@@ -53,13 +52,15 @@ class UpdateWprTest(unittest.TestCase):
     mock.patch(WPR_UPDATER + 'RUN_BENCHMARK', '.../run_benchmark').start()
     mock.patch(WPR_UPDATER + 'DATA_DIR', '.../data/dir').start()
     mock.patch(WPR_UPDATER + 'RECORD_WPR', '.../record_wpr').start()
+    mock.patch(WPR_UPDATER + 'WprUpdater._LoadArchiveInfo').start()
     mock.patch('os.path.join', lambda *parts: '/'.join(parts)).start()
     mock.patch('os.path.exists', return_value=True).start()
     mock.patch('time.sleep').start()
 
     self.wpr_updater = update_wpr.WprUpdater(argparse.Namespace(
       story='<story>', device_id=None, repeat=1, binary=None, bug_id=None,
-      reviewers=['someone@chromium.org']))
+      reviewers=['someone@chromium.org'],
+      bss='desktop_system_health_story_set'))
 
   def tearDown(self):
     mock.patch.stopall()
@@ -69,6 +70,7 @@ class UpdateWprTest(unittest.TestCase):
     update_wpr.Main([
       '-s', 'foo:bar:story:2019',
       '-d', 'H2345234FC33',
+      '-bss', 'mobile_system_health_story_set',
       '--binary', '<binary>',
       '-b', '1234',
       '-r', 'test_user1@chromium.org',
@@ -79,6 +81,7 @@ class UpdateWprTest(unittest.TestCase):
       mock.call(argparse.Namespace(
         binary='<binary>', command='live', device_id='H2345234FC33',
         repeat=1, story='foo:bar:story:2019', bug_id='1234',
+        bss='mobile_system_health_story_set',
         reviewers=['test_user1@chromium.org', 'test_user2@chromium.org'])),
       mock.call().LiveRun(),
       mock.call().Cleanup(),
@@ -175,7 +178,7 @@ class UpdateWprTest(unittest.TestCase):
     # Open the CL in browser,
     open_browser.assert_called_once_with('<issue-url>')
 
-  @mock.patch(WPR_UPDATER + 'WprUpdater._RunSystemHealthMemoryBenchmark',
+  @mock.patch(WPR_UPDATER + 'WprUpdater._RunBenchmark',
               return_value='<out-file>')
   @mock.patch(WPR_UPDATER + '_PrintRunInfo')
   def testLiveRun(self, print_run_info, run_benchmark):
@@ -187,7 +190,7 @@ class UpdateWprTest(unittest.TestCase):
   def testRunBenchmark(self, rename):
     self._check_output.return_value = '  <chrome-log>'
 
-    self.wpr_updater._RunSystemHealthMemoryBenchmark('<log_name>', True)
+    self.wpr_updater._RunBenchmark('<log_name>', True)
 
     # Check correct arguments when running benchmark.
     self._check_log.assert_called_once_with(
@@ -280,8 +283,14 @@ class UpdateWprTest(unittest.TestCase):
 
   @mock.patch('os.remove')
   def testDeleteExistingWpr(self, os_remove):
-    self._open.return_value.__enter__.return_value.read.return_value = (
-        '{"archives": {"<story>": {"DEFAULT": "<archive>"}}}')
+    wpr_archive_info = mock.Mock()
+    wpr_archive_info.data = {
+      'archives': {
+        "<story>": {"DEFAULT": "<archive>"},
+      }
+    }
+    self.wpr_updater.wpr_archive_info = wpr_archive_info
+
     self.wpr_updater._DeleteExistingWpr()
     self.assertListEqual(os_remove.mock_calls, [
       mock.call('.../data/dir/<archive>'),
@@ -290,9 +299,15 @@ class UpdateWprTest(unittest.TestCase):
 
   @mock.patch('os.remove')
   def testDoesNotDeleteReusedWpr(self, os_remove):
-    self._open.return_value.__enter__.return_value.read.return_value = (
-        '{"archives": {"<story>": {"DEFAULT": "<archive>"}, '
-        '"<other>": {"DEFAULT": "foo", "linux": "<archive>"}}}')
+    wpr_archive_info = mock.Mock()
+    wpr_archive_info.data = {
+      'archives': {
+        "<story>": {"DEFAULT": "<archive>"},
+        "<other>": {"DEFAULT": "foo", "linux": "<archive>"}
+      }
+    }
+    self.wpr_updater.wpr_archive_info = wpr_archive_info
+
     self.wpr_updater._DeleteExistingWpr()
     os_remove.assert_not_called()
 
@@ -315,8 +330,8 @@ class UpdateWprTest(unittest.TestCase):
     self.wpr_updater.RecordWpr()
     self._check_log.assert_called_once_with([
         '.../record_wpr',
-        '--story-filter=^%s$' % ESCAPED_STORY, '--browser=system',
-        'desktop_system_health_story_set'
+        'desktop_system_health_story_set',
+        '--story-filter=^%s$' % ESCAPED_STORY, '--browser=system'
     ],
                                             env={'LC_ALL': 'en_US.UTF-8'},
                                             log_path='/tmp/dir/record_<tstamp>')
@@ -327,13 +342,16 @@ class UpdateWprTest(unittest.TestCase):
   @mock.patch(WPR_UPDATER + 'WprUpdater._DeleteExistingWpr')
   def testRecordWprMobile(self, delete_existing_wpr, print_run_info):
     del delete_existing_wpr  # Unused.
+    self.wpr_updater = update_wpr.WprUpdater(argparse.Namespace(
+      story='<story>', device_id=None, repeat=1, binary=None, bug_id=None,
+      reviewers=['someone@chromium.org'], bss='mobile_system_health_story_set'))
     self.wpr_updater.device_id = '<serial>'
     self.wpr_updater.RecordWpr()
     self._check_log.assert_called_once_with([
         '.../record_wpr',
+        'mobile_system_health_story_set',
         '--story-filter=^%s$' % ESCAPED_STORY,
-        '--browser=android-system-chrome', '--device=<serial>',
-        'mobile_system_health_story_set'
+        '--browser=android-system-chrome', '--device=<serial>'
     ],
                                             env={'LC_ALL': 'en_US.UTF-8'},
                                             log_path='/tmp/dir/record_<tstamp>')
@@ -342,7 +360,7 @@ class UpdateWprTest(unittest.TestCase):
         results_details=False)
 
   @mock.patch(WPR_UPDATER + '_PrintRunInfo')
-  @mock.patch(WPR_UPDATER + 'WprUpdater._RunSystemHealthMemoryBenchmark',
+  @mock.patch(WPR_UPDATER + 'WprUpdater._RunBenchmark',
               return_value='<out-file>')
   def testReplayWpr(self, run_benchmark, print_run_info):
     self.wpr_updater.ReplayWpr()
