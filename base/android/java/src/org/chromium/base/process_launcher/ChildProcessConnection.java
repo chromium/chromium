@@ -25,6 +25,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.BuildConfig;
 
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -280,7 +281,9 @@ public class ChildProcessConnection {
                 BuildInfo.getInstance().packageName);
         mBindToCaller = bindToCaller;
         mInstanceName = instanceName;
-        mBindAsExternalService = bindAsExternalService;
+        // Incremental install does not work with isolatedProcess, and externalService requires
+        // isolatedProcess, so both need to be turned off for incremental install.
+        mBindAsExternalService = bindAsExternalService && !BuildConfig.IS_INCREMENTAL_INSTALL;
         if (connectionFactory == null) {
             mConnectionFactory = new ChildServiceConnectionFactory() {
                 @Override

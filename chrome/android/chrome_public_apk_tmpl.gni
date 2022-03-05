@@ -597,7 +597,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       } else if (!defined(invoker.target_type) ||
                  invoker.target_type == "android_apk") {
         # Incremental install doesn't work for monochrome. See crbug.com/663492.
-        never_incremental = true
       }
 
       # Strip xml namespaces for monochrome. This should only be done for apks

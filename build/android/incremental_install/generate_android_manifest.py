@@ -101,6 +101,9 @@ def _ProcessManifest(path, arsc_package_name, disable_isolated_processes):
   ret = ret.replace(b'extractNativeLibs="false"', b'extractNativeLibs="true"')
   if disable_isolated_processes:
     ret = ret.replace(b'isolatedProcess="true"', b'isolatedProcess="false"')
+    # externalService only matters for isolatedProcess="true". See:
+    # https://developer.android.com/reference/android/R.attr#externalService
+    ret = ret.replace(b'externalService="true"', b'externalService="false"')
   return ret
 
 
