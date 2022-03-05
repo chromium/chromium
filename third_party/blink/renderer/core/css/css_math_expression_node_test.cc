@@ -216,14 +216,14 @@ TEST(CSSCalculationValue, CSSLengthArrayUnits) {
   EXPECT_TRUE(AccumulateLengthArray("1ex", unused));
   EXPECT_TRUE(AccumulateLengthArray("1rem", unused));
   EXPECT_TRUE(AccumulateLengthArray("1ch", unused));
+  EXPECT_TRUE(AccumulateLengthArray("1vw", unused));
+  EXPECT_TRUE(AccumulateLengthArray("1vh", unused));
+  EXPECT_TRUE(AccumulateLengthArray("1vi", unused));
+  EXPECT_TRUE(AccumulateLengthArray("1vb", unused));
+  EXPECT_TRUE(AccumulateLengthArray("1vmin", unused));
+  EXPECT_TRUE(AccumulateLengthArray("1vmax", unused));
 
   // Unsupported units:
-  EXPECT_FALSE(AccumulateLengthArray("1vw", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1vh", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1vi", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1vb", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1vmin", unused));
-  EXPECT_FALSE(AccumulateLengthArray("1vmax", unused));
   EXPECT_FALSE(AccumulateLengthArray("1svw", unused));
   EXPECT_FALSE(AccumulateLengthArray("1svh", unused));
   EXPECT_FALSE(AccumulateLengthArray("1svi", unused));

@@ -156,14 +156,14 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kUnitTypeFontXSize,
     kUnitTypeRootFontSize,
     kUnitTypeZeroCharacterWidth,
-    // Units above this line are supported by CSSLengthArray.
-    // See CSSLengthArray::kSize.
     kUnitTypeViewportWidth,
     kUnitTypeViewportHeight,
     kUnitTypeViewportInlineSize,
     kUnitTypeViewportBlockSize,
     kUnitTypeViewportMin,
     kUnitTypeViewportMax,
+    // Units above this line are supported by CSSLengthArray.
+    // See CSSLengthArray::kSize.
     kUnitTypeSmallViewportWidth,
     kUnitTypeSmallViewportHeight,
     kUnitTypeSmallViewportInlineSize,
@@ -206,13 +206,19 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   //
   // [1] See AccumulateLengthArray.
   struct CSSLengthArray {
-    static const wtf_size_t kSize = kUnitTypeZeroCharacterWidth + 1u;
+    static const wtf_size_t kSize = kUnitTypeViewportMax + 1u;
     static_assert(kUnitTypePixels < kSize, "px unit supported");
     static_assert(kUnitTypePercentage < kSize, "percentage supported");
     static_assert(kUnitTypeFontSize < kSize, "em unit supported");
     static_assert(kUnitTypeFontXSize < kSize, "ex unit supported");
     static_assert(kUnitTypeRootFontSize < kSize, "rem unit supported");
     static_assert(kUnitTypeZeroCharacterWidth < kSize, "ch unit supported");
+    static_assert(kUnitTypeViewportWidth < kSize, "vw unit supported");
+    static_assert(kUnitTypeViewportHeight < kSize, "vh unit supported");
+    static_assert(kUnitTypeViewportInlineSize < kSize, "vi unit supported");
+    static_assert(kUnitTypeViewportBlockSize < kSize, "vb unit supported");
+    static_assert(kUnitTypeViewportMin < kSize, "vmin unit supported");
+    static_assert(kUnitTypeViewportMax < kSize, "vmax unit supported");
 
     std::array<double, kSize> values{{0}};
     // Indicates whether or not a given value is explicitly set in |values|.
