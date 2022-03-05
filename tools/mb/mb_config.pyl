@@ -287,6 +287,10 @@
         'goma': 'gpu_tests_release_bot_minimal_symbols',
         'reclient': 'gpu_tests_release_bot_minimal_symbols_reclient',
       },
+      'Comparison Simple Chrome (reclient)': {
+        'goma': 'chromeos_amd64-generic_use_fake_dbus_clients',
+        'reclient': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
+      },
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot',
       'Libfuzzer Upload Linux ASan': 'libfuzzer_asan_release_bot',
       'Libfuzzer Upload Linux ASan (reclient)': 'libfuzzer_asan_release_bot_reclient',

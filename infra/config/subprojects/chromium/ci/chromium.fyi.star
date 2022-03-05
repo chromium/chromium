@@ -671,6 +671,22 @@ ci.builder(
 )
 
 ci.builder(
+    name = "Comparison Simple Chrome (reclient)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "cros x64",
+        short_name = "cmp",
+    ),
+    goma_jobs = 250,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 10 * time.hour,
+    reclient_cache_silo = "Comparison Simple Chrome - cache siloed",
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = 250,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+)
+
+ci.builder(
     name = "Linux Builder (j-500) (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux",

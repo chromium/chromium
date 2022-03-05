@@ -11,6 +11,11 @@
       "all"
     ]
   },
+  "Comparison Simple Chrome (reclient)": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ]
+  },
   "Comparison Windows (reclient)": {
     "additional_compile_targets": [
       "all"

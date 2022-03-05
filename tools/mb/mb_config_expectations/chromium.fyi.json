@@ -74,6 +74,23 @@
       "use_remoteexec": true
     }
   },
+  "Comparison Simple Chrome (reclient)": {
+    "goma": {
+      "dcheck_always_on": false,
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "use_goma": true,
+      "use_real_dbus_clients": false
+    },
+    "reclient": {
+      "dcheck_always_on": false,
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "use_rbe": true,
+      "use_real_dbus_clients": false,
+      "use_remoteexec": true
+    }
+  },
   "Comparison Windows (reclient)": {
     "goma": {
       "dcheck_always_on": false,
