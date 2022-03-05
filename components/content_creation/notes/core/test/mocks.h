@@ -20,7 +20,7 @@ class MockTemplateStore : public TemplateStore {
   explicit MockTemplateStore();
   ~MockTemplateStore() override;
 
-  MOCK_METHOD1(GetTemplates, void(GetTemplatesCallback));
+  MOCK_METHOD(void, GetTemplates, (GetTemplatesCallback));
 };
 
 class MockNotesRepository : public NotesRepository {

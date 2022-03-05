@@ -42,12 +42,14 @@ KeyedService* NoteServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new NoteService(std::make_unique<TemplateStore>(profile->GetPrefs()),
-                         std::make_unique<NotesRepository>(
-                             IdentityManagerFactory::GetForProfile(profile),
-                             context->GetDefaultStoragePartition()
-                                 ->GetURLLoaderFactoryForBrowserProcess(),
-                             chrome::GetChannel()));
+  return new NoteService(
+      std::make_unique<TemplateStore>(profile->GetPrefs(),
+                                      profile->GetURLLoaderFactory()),
+      std::make_unique<NotesRepository>(
+          IdentityManagerFactory::GetForProfile(profile),
+          context->GetDefaultStoragePartition()
+              ->GetURLLoaderFactoryForBrowserProcess(),
+          chrome::GetChannel()));
 }
 
 }  // namespace content_creation

@@ -15,27 +15,49 @@
 #include "components/content_creation/notes/core/note_prefs.h"
 #include "components/content_creation/notes/core/templates/note_template.h"
 #include "components/content_creation/notes/core/templates/template_constants.h"
+#include "components/content_creation/notes/core/templates/template_fetcher.h"
 #include "components/content_creation/notes/core/templates/template_types.h"
 #include "components/prefs/pref_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace content_creation {
 
-TemplateStore::TemplateStore(PrefService* pref_service)
+TemplateStore::TemplateStore(
+    PrefService* pref_service,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING})),
-      pref_service_(pref_service) {}
+      pref_service_(pref_service) {
+  fetcher_ = std::make_unique<TemplateFetcher>(url_loader);
+}
 
 TemplateStore::~TemplateStore() = default;
 
-void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&TemplateStore::BuildTemplates, base::Unretained(this)),
-      base::BindOnce(&TemplateStore::OnTemplatesReceived,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+void TemplateStore::FetchTemplates(GetTemplatesCallback callback) {
+  fetcher_->Start(base::BindOnce(&TemplateStore::OnFetchTemplateComplete,
+                                 base::Unretained(this), std::move(callback)));
 }
 
-std::vector<NoteTemplate> TemplateStore::BuildTemplates() {
+void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
+  if (IsDynamicTemplatesEnabled()) {
+    FetchTemplates(std::move(callback));
+  } else {
+    base::PostTaskAndReplyWithResult(
+        task_runner_.get(), FROM_HERE,
+        base::BindOnce(&TemplateStore::BuildDefaultTemplates,
+                       base::Unretained(this)),
+        base::BindOnce(&TemplateStore::OnTemplatesReceived,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+}
+
+void TemplateStore::OnFetchTemplateComplete(GetTemplatesCallback callback,
+                                            std::string response_body) {
+  OnTemplatesReceived(std::move(callback),
+                      ParseTemplatesFromString(response_body));
+}
+
+std::vector<NoteTemplate> TemplateStore::BuildDefaultTemplates() {
   std::vector<NoteTemplate> templates = {
       GetClassicTemplate(),  GetFriendlyTemplate(),   GetFreshTemplate(),
       GetPowerfulTemplate(), GetImpactfulTemplate(),  GetLovelyTemplate(),
@@ -43,6 +65,12 @@ std::vector<NoteTemplate> TemplateStore::BuildTemplates() {
       GetDreamyTemplate()};
 
   return templates;
+}
+
+std::vector<NoteTemplate> TemplateStore::ParseTemplatesFromString(
+    std::string response_body) {
+  // TODO(graysonlafleur): implement dynamic templates here
+  return BuildDefaultTemplates();
 }
 
 void TemplateStore::OnTemplatesReceived(

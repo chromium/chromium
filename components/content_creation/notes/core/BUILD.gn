@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "note_service_unittest.cc",
     "server/note_data_unittest.cc",
     "server/notes_repository_unittest.cc",
+    "templates/template_fetcher_unittest.cc",
     "templates/template_store_unittest.cc",
   ]
 
@@ -60,6 +61,7 @@ source_set("unit_tests") {
     "//components/content_creation/notes/core/test:test_support",
     "//components/prefs:test_support",
     "//components/version_info",
+    "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
