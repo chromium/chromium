@@ -134,7 +134,8 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
           absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
 
   // Performs classification on a string input, returns classified results.
-  std::vector<core::Category> Classify(const std::string& text);
+  tflite::support::StatusOr<std::vector<core::Category>> Classify(
+      const std::string& text);
 
  protected:
   static constexpr int kOutputTensorIndex = 0;

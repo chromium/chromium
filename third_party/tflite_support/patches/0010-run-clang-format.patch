@@ -1,7 +1,7 @@
 From 7cfcaacefdb45b518ac5808eebbffe6cc7131121 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Mon, 7 Feb 2022 12:20:58 -0800
-Subject: [PATCH 10/12] run clang format
+Subject: [PATCH 10/13] run clang format
 
 ---
  .../configuration/edgetpu_coral_plugin.cc     |   20 +-

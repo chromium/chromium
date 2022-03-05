@@ -35,6 +35,7 @@ only available on POSIX systems.
 10) Run clang-format.
 11) Remove unbuilt files that triggered checkdeps warnings, and fix file perms.
 12) Remove an unneeded static initializer.
+13) Surface the error from NLClassifier::Classify.
 
 Update Process (internal: http://shortn/_nwz8liqimy):
 1) Clone the tflite-support github repo at the desired commit into src/

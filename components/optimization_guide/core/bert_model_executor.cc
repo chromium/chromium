@@ -27,9 +27,16 @@ BertModelExecutor::Execute(ModelExecutionTask* execution_task,
   TRACE_EVENT2("browser", "BertModelExecutor::Execute", "optimization_target",
                GetStringNameForOptimizationTarget(optimization_target_),
                "input_length", input.size());
+
+  auto status_or_result =
+      static_cast<tflite::task::text::BertNLClassifier*>(execution_task)
+          ->Classify(input);
+  if (!status_or_result.ok()) {
+    *out_status = ExecutionStatus::kErrorUnknown;
+    return absl::nullopt;
+  }
   *out_status = ExecutionStatus::kSuccess;
-  return static_cast<tflite::task::text::BertNLClassifier*>(execution_task)
-      ->Classify(input);
+  return *status_or_result;
 }
 
 std::unique_ptr<BertModelExecutor::ModelExecutionTask>

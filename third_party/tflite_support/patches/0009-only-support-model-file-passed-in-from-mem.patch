@@ -1,7 +1,7 @@
 From b5c9f0bb86abe933cada611e9d43f73280c5b227 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Mon, 7 Feb 2022 12:14:41 -0800
-Subject: [PATCH 09/12] only support model file passed in from mem
+Subject: [PATCH 09/13] only support model file passed in from mem
 
 ---
  .../cc/task/core/external_file_handler.cc     | 143 ++----------------

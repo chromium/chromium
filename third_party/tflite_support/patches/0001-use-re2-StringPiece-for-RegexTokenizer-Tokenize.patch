@@ -1,7 +1,7 @@
 From d421ebb9f37d777ab5315eb2c59a5e21e06459e0 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Mon, 7 Feb 2022 12:09:19 -0800
-Subject: [PATCH 01/12] use re2 StringPiece for RegexTokenizer Tokenize
+Subject: [PATCH 01/13] use re2 StringPiece for RegexTokenizer Tokenize
 
 ---
  .../cc/text/tokenizers/regex_tokenizer.cc                 | 8 ++++----

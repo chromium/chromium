@@ -1,7 +1,7 @@
 From 6ccec4e3baea4b7c14dcf404c97c68634c912910 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Mon, 7 Feb 2022 12:13:34 -0800
-Subject: [PATCH 07/12] do not use absl any
+Subject: [PATCH 07/13] do not use absl any
 
 ---
  .../cc/task/vision/core/frame_buffer.h        | 27 -------------------

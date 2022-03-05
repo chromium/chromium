@@ -109,12 +109,12 @@ bool LanguageDetectionModel::IsAvailable() const {
 std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
     const std::string& sampled_str) const {
   DCHECK(IsAvailable());
-  std::vector<tflite::task::core::Category> categories =
-      lang_detection_model_->Classify(sampled_str);
-  std::sort(categories.begin(), categories.end(), sort_category());
-
-  if (categories.empty())
+  auto status_or_categories = lang_detection_model_->Classify(sampled_str);
+  if (!status_or_categories.ok() || status_or_categories.value().empty()) {
     return std::make_pair(translate::kUnknownLanguageCode, 0.0);
+  }
+  auto categories = status_or_categories.value();
+  std::sort(categories.begin(), categories.end(), sort_category());
 
   return std::make_pair(categories[0].class_name, categories[0].score);
 }

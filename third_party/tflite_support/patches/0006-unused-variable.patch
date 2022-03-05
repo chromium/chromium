@@ -1,7 +1,7 @@
 From 09f5083d0c3b06b2cb32da9aa8eab503197015cb Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Mon, 7 Feb 2022 12:13:17 -0800
-Subject: [PATCH 06/12] unused variable
+Subject: [PATCH 06/13] unused variable
 
 ---
  .../src/tensorflow_lite_support/cc/task/core/task_utils.h   | 6 ++++--

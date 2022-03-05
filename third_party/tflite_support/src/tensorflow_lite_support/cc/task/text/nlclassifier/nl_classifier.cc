@@ -113,10 +113,9 @@ absl::Status NLClassifier::TrySetLabelFromMetadata(
   }
 }
 
-std::vector<Category> NLClassifier::Classify(const std::string& text) {
-  // The NLClassifier implementation for Preprocess() and Postprocess() never
-  // returns errors: just call value().
-  return Infer(text).value();
+StatusOr<std::vector<Category>> NLClassifier::Classify(
+    const std::string& text) {
+  return Infer(text);
 }
 
 absl::Status NLClassifier::Preprocess(

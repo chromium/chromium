@@ -1,7 +1,7 @@
 From 9a8667b3d3be2ef20a88dfe9d50a1345d136da3e Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Mon, 7 Feb 2022 12:09:58 -0800
-Subject: [PATCH 03/12] rm unused func
+Subject: [PATCH 03/13] rm unused func
 
 ---
  .../vision/utils/libyuv_frame_buffer_utils.cc | 201 +-----------------

@@ -1,7 +1,7 @@
 From d4667e60fd70c1f3dd51d8df9917007b8ffd05c4 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Mon, 7 Feb 2022 12:14:12 -0800
-Subject: [PATCH 11/12] remove unbuilt files and change exec bit where needed
+Subject: [PATCH 11/13] remove unbuilt files and change exec bit where needed
 
 ---
  .../cc/port/benchmark.h                       |  21 ---

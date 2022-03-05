@@ -1,7 +1,7 @@
 From 5272c338771a1057bc52d830c85ec325cf545b0e Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Mon, 7 Feb 2022 12:12:50 -0800
-Subject: [PATCH 05/12] use size_t in for loop
+Subject: [PATCH 05/13] use size_t in for loop
 
 ---
  .../cc/task/text/nlclassifier/nl_classifier.h                   | 2 +-

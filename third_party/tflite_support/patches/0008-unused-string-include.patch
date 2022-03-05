@@ -1,7 +1,7 @@
 From 731c17145b6421250793e49c72d384edc49edce4 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Mon, 7 Feb 2022 12:13:50 -0800
-Subject: [PATCH 08/12] unused string include
+Subject: [PATCH 08/13] unused string include
 
 ---
  .../cc/text/tokenizers/tokenizer_jni_lib.h                      | 2 --
