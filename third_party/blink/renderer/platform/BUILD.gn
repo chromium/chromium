@@ -340,8 +340,6 @@ component("platform") {
     "audio/down_sampler.h",
     "audio/dynamics_compressor.cc",
     "audio/dynamics_compressor.h",
-    "audio/dynamics_compressor_kernel.cc",
-    "audio/dynamics_compressor_kernel.h",
     "audio/equal_power_panner.cc",
     "audio/equal_power_panner.h",
     "audio/ffmpeg/fft_frame_ffmpeg.cc",
