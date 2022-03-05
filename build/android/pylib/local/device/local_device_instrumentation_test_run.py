@@ -547,8 +547,7 @@ class LocalDeviceInstrumentationTestRun(
     all_tests = []
     for _, btests in list(batched_tests.items()):
       # Ensure a consistent ordering across external shards.
-      if len(btests) > _TEST_BATCH_MAX_GROUP_SIZE:
-        btests.sort(key=dict2list)
+      btests.sort(key=dict2list)
       all_tests.extend([
           btests[i:i + _TEST_BATCH_MAX_GROUP_SIZE]
           for i in range(0, len(btests), _TEST_BATCH_MAX_GROUP_SIZE)
