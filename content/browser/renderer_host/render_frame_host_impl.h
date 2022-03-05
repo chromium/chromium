@@ -3724,18 +3724,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<service_manager::InterfaceProvider> java_interfaces_;
 #endif
 
-  // BrowserInterfaceBroker implementation through which this
-  // RenderFrameHostImpl exposes document-scoped Mojo services to the currently
-  // active document in the corresponding RenderFrame.
-  //
-  // The interfaces that can be requested from this broker are defined in the
-  // content/browser/browser_interface_binders.cc file, in the functions which
-  // take a `RenderFrameHostImpl*` parameter.
-  BrowserInterfaceBrokerImpl<RenderFrameHostImpl, RenderFrameHost*> broker_{
-      this};
-  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
-      &broker_};
-
   // Performs Mojo capability control on this RenderFrameHost when
   // `mojo_binder_policy_applier_` is not null. Mojo binder polices will be
   // applied to interfaces that are registered with BrowserInterfaceBrokerImpl
@@ -4138,6 +4126,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
       back_forward_cache_disabling_features_callback_for_testing_;
 
   int check_if_deleted_request_count_ = 0;
+
+  // BrowserInterfaceBroker implementation through which this
+  // RenderFrameHostImpl exposes document-scoped Mojo services to the currently
+  // active document in the corresponding RenderFrame.
+  //
+  // The interfaces that can be requested from this broker are defined in the
+  // content/browser/browser_interface_binders.cc file, in the functions which
+  // take a `RenderFrameHostImpl*` parameter.
+  //
+  // `broker_` is located below other members to avoid ordering issue by access
+  // them during initializing BrowserInterfaceBrokerImpl.
+  BrowserInterfaceBrokerImpl<RenderFrameHostImpl, RenderFrameHost*> broker_{
+      this};
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
+      &broker_};
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.
