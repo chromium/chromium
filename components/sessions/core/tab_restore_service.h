@@ -73,6 +73,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // session.
     SessionID id;
 
+    // The original id of the entry when it was saved.
+    SessionID original_id;
+
     // The type of the entry.
     const Type type;
 

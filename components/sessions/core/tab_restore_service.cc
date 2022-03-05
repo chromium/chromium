@@ -19,7 +19,9 @@ TabRestoreService::TimeFactory::~TimeFactory() {}
 TabRestoreService::Entry::~Entry() = default;
 
 TabRestoreService::Entry::Entry(Type type)
-    : id(SessionID::NewUnique()), type(type) {}
+    : id(SessionID::NewUnique()),
+      original_id(SessionID::InvalidValue()),
+      type(type) {}
 
 size_t TabRestoreService::Entry::EstimateMemoryUsage() const {
   return 0;

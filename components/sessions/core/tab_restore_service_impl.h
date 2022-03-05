@@ -61,6 +61,8 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   bool IsRestoring() const override;
   void Shutdown() override;
 
+  void CreateRestoredEntryCommandForTest(SessionID id);
+
  private:
   friend class ::TabRestoreServiceImplTest;
 
