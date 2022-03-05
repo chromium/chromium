@@ -674,6 +674,7 @@
 <translation id="1640235262200048077">Linux ಆ್ಯಪ್‌ಗಳಲ್ಲಿ <ph name="IME_NAME" /> ಈಗಲೂ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ</translation>
 <translation id="1640283014264083726">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 MD4</translation>
 <translation id="1641113438599504367">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್</translation>
+<translation id="1641496881756082050"><ph name="NETWORK_NAME" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> ಮತ್ತು ಇತರೆ <ph name="NUMBER_OF_DEVICES" /> ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1642494467033190216">Rootfs ರಕ್ಷಣೆ ಮತ್ತು ಪುನರಾರಂಭಿಸುವ ಮೊದಲು ಇತರ ದೋಷ ನಿವಾರಣಾ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="1643072738649235303">SHA-1 ಮೂಲಕ X9.62 ECDSA ಸಹಿ</translation>
@@ -1450,6 +1451,7 @@
 <translation id="2381499968174336913">ಹಂಚಿದ ಟ್ಯಾಬ್‌ನ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="2381756643783702095">ಕಳುಹಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="2387052489799050037">ಹೋಮ್‌ಗೆ ಹೋಗಿ</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (ಪ್ರಸ್ತುತ)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">ಪ್ರಾಕ್ಸಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ, ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2390782873446084770">ವೈ-ಫೈ ಸಿಂಕ್</translation>

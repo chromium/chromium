@@ -437,6 +437,7 @@
 <translation id="1427269577154060167">Country</translation>
 <translation id="142758023928848008">Enable sticky keys (to perform keyboard shortcuts by typing them sequentially)</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> licence has expired</translation>
+<translation id="1428373049397869723">You can open and edit supported files with this app from Finder or other apps. To control which files open this app by default, <ph name="BEGIN_LINK" />learn how to set default apps on your device<ph name="END_LINK" />.</translation>
 <translation id="1429300045468813835">Cleared all</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1431188203598586230">Final software update</translation>
@@ -3065,6 +3066,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3971764089670057203">Fingerprints on this security key</translation>
 <translation id="3973005893595042880">User is not allowed</translation>
 <translation id="3973660817924297510">Checking passwords (<ph name="CHECKED_PASSWORDS" /> of <ph name="TOTAL_PASSWORDS" />)…</translation>
+<translation id="3974514184580396500">Use 'Next' to move your focus forward on the screen</translation>
 <translation id="3975201861340929143">Explanation</translation>
 <translation id="3975565978598857337">Contacting server for realm failed</translation>
 <translation id="3976108569178263973">There are no available printers.</translation>
@@ -3897,6 +3899,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4868281708609571334">Teach Google Assistant to recognise <ph name="SUPERVISED_USER_NAME" />’s voice</translation>
 <translation id="4868284252360267853">This dialogue is not currently focused. Press Command-Shift-Option A to focus this dialogue.</translation>
 <translation id="48704129375571883">Add additional features</translation>
+<translation id="4870724079713069532">You can open and edit supported files with this app from File Explorer or other apps. To control which files open in this app by default, go to <ph name="BEGIN_LINK" />Windows settings<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Enter admin-provided password to get configuration info</translation>
 <translation id="4870903493621965035">No paired devices</translation>
 <translation id="4870995365819149457">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> and 1 other app.</translation>
@@ -4116,6 +4119,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA Encryption</translation>
 <translation id="5090637338841444533">Not allowed to track your camera position</translation>
 <translation id="5093569275467863761">Incognito back-forward cached subframe: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094176498302660097">You can open and edit supported files with this app from the Files app or other apps. To control which files open this app by default, <ph name="BEGIN_LINK" />learn how to set default apps on your device<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Communicate with cooperating native applications</translation>
 <translation id="5097002363526479830">Failed to connect to the network '<ph name="NAME" />': <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">Learn more about using location</translation>
@@ -4767,6 +4771,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="577322787686508614">Read operation is not permitted on: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5774295353725270860">Open Files app</translation>
 <translation id="577624874850706961">Search cookies</translation>
+<translation id="5776571780337000608">You can open and edit supported files with this app from your file browser or other apps. To control which files open this app by default, <ph name="BEGIN_LINK" />learn how to set default apps on your device<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Open Chrome</translation>
 <translation id="5778491106820461378">You can manage signed-in Google Accounts from <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" />. Permissions that you have granted to websites and apps may apply to all accounts. If you don't want sites or apps to access your account info, you can sign into your <ph name="DEVICE_TYPE" /> as a guest.</translation>
 <translation id="5780011244986845107">The folder that you selected contains sensitive files. Are you sure that you want to grant '<ph name="APP_NAME" />' permanent read access to this folder?</translation>
@@ -7317,6 +7322,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8326478304147373412">PKCS #7, certificate chain</translation>
 <translation id="8327676037044516220">Permissions and content settings</translation>
 <translation id="8330689128072902965">Nearby contacts can share with you. Click to change.</translation>
+<translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Supported file type: <ph name="FILE_TYPE1" />}=2{Supported file types: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Supported file types: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Supported file types: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Supported file types: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />and {OVERFLOW_COUNT} more<ph name="END_LINK" />)}}</translation>
 <translation id="833256022891467078">Crostini shared folders</translation>
 <translation id="8335587457941836791">Unpin from shelf</translation>
 <translation id="8336407002559723354">Updates end <ph name="MONTH_AND_YEAR" /></translation>

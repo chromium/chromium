@@ -521,6 +521,7 @@
 <translation id="2539524384386349900">አግኝ</translation>
 <translation id="2540701853218677861">የጊዜ ማህተሞችን እና ያልተሳኩ ሙከራዎችን ጨምሮ የመሣሪያ መግቢያ/መውጣት ታሪክ</translation>
 <translation id="2541219929084442027">ማንነትን በማያሳውቅ ትሮች ውስጥ የሚያዩዋቸው ገጾች ሁሉንም ማንነት የማያሳውቁ ትሮችዎን ከዘጉ በኋላ በአሳሽዎ ታሪክ፣ የኩኪ ማከማቻ፣ ወይም የፍለጋ ታሪክ ውስጥ አይቀመጡም። ማንነት በማያስውቅ ሁነታ መሥራት የሌሎች ሰዎች፣ አገልጋዮች፣ ሶፍትዌሮች ወይም ከጀርባዎ በቆሙ የሌሎች ሰዎች ባህሪ ላይ ለውጥ አያመጣም።</translation>
+<translation id="2544546346215446551">የእርስዎ አስተዳዳሪ መሣሪያዎን እንደገና አስጀምረውታል</translation>
 <translation id="2544644783021658368">ነጠላ ሰነድ</translation>
 <translation id="2546283357679194313">ኩኪዎች እና የጣቢያ ውሂብ</translation>
 <translation id="254947805923345898">የመመሪያ እሴት የሚሰራ አይደለም።</translation>
@@ -967,6 +968,7 @@
 <translation id="3990250421422698716">ሕትመት አጠናቅ</translation>
 <translation id="3996311196211510766">የ<ph name="ORIGIN" /> ጣቢያ የመጀመሪያ መመሪያ
     በሁሉም ወደ እሱ በተላኩ ጥያቄዎች ላይ ተፈጻሚ እንዲሆን ጠይቋል፣ ነገር ግን ይህ መመሪያ በአሁኑ ጊዜ ሊተገበር አይችልም።</translation>
+<translation id="4006465311664329701">Google Payን የሚጠቀሙ የመክፈያ ዘዴዎች፣ ቅናሾች እና አድራሻዎች</translation>
 <translation id="4009243425692662128">እርስዎ የሚያትሙት የገጾች ይዘት ለትንተና ወደ Google ደመና ወይም ሶስተኛ ወገኖች ይላካል። ለምሳሌ፣ አደጋን ሊያስከትል ለሚችል ውሂብ ሊቃኙ ይችላሉ።</translation>
 <translation id="4010758435855888356">የማከማቻ መዳረሻ ይፈቀድ?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ገጽ የያዘ የፒዲኤፍ ሰነድ}one{{COUNT} ገጾችን የያዘ የፒዲኤፍ ሰነድ}other{{COUNT} ገጾችን የያዘ የፒዲኤፍ ሰነድ}}</translation>
@@ -1243,6 +1245,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ አዲስ Google ሉህ በፍጥነት ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="4825507807291741242">ኃይለኛ</translation>
 <translation id="483241715238664915">ማስጠንቀቂያዎችን አብራ</translation>
+<translation id="4834250788637067901">Google Payን የሚጠቀሙ የመክፈያ ዘዴዎች፣ ቅናሾች እና አድራሻዎች</translation>
 <translation id="4838327282952368871">ህልመኛ</translation>
 <translation id="4840250757394056958">የChrome ታሪክዎን ይመልከቱ</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>

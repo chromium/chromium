@@ -781,6 +781,7 @@
 <translation id="1744060673522309905">無法將裝置加入網域。請確定您沒有超出可新增的裝置數量。</translation>
 <translation id="1744108098763830590">背景頁面</translation>
 <translation id="1745732479023874451">管理聯絡人</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{要在這個網頁應用程式中開啟並編輯 # 個檔案嗎？}}</translation>
 <translation id="1748563609363301860">您可將此密碼儲存在 Google 帳戶中，或只儲存在此裝置上</translation>
 <translation id="1750048572964661931">如要保護手機應用程式的存取權，請在此 Chromebook 上設定 PIN 或密碼。</translation>
 <translation id="1750172676754093297">您的安全密鑰無法儲存指紋</translation>
@@ -2255,6 +2256,7 @@
 <translation id="3201422919974259695">可用的 USB 裝置將會在這裡顯示。</translation>
 <translation id="3202131003361292969">路徑</translation>
 <translation id="3202173864863109533">此分頁的音效已設為靜音。</translation>
+<translation id="3204648577100496185">系統可能會從這部裝置中移除與這個應用程式相關聯的資料</translation>
 <translation id="3208321278970793882">應用程式</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3208703785962634733">尚未確認的</translation>
@@ -2401,6 +2403,7 @@
 <translation id="337286756654493126">讀取您在應用程式中開啟的資料夾</translation>
 <translation id="3374294321938930390"><ph name="BOOKMARK_TITLE" /> 移咗去「<ph name="NEW_FOLDER_TITLE" />」入面。</translation>
 <translation id="3378572629723696641">這個擴充功能可能已損毀。</translation>
+<translation id="3378627645871606983">Steam 擁有的權限適用於所有 Steam 遊戲和應用程式。</translation>
 <translation id="337920581046691015">系統將會安裝 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="3380365263193509176">未知的錯誤</translation>
 <translation id="3382073616108123819">糟糕！系統無法確定這部裝置的裝置識別碼。</translation>
@@ -2507,9 +2510,11 @@
 <translation id="346298925039590474">此裝置的所有使用者都可連接此流動網絡</translation>
 <translation id="3464145797867108663">新增工作設定檔</translation>
 <translation id="346431825526753">這是一個兒童帳戶 (由 <ph name="CUSTODIAN_EMAIL" /> 管理)。</translation>
+<translation id="346546413339447252">取得 <ph name="MERCHANT_NAME_1" />、<ph name="MERCHANT_NAME_2" /> 等商店的折扣</translation>
 <translation id="3468298837301810372">標籤</translation>
 <translation id="3468999815377931311">Android 手機</translation>
 <translation id="3469583217479686109">選取工具</translation>
+<translation id="3470392222765168737">追蹤網站</translation>
 <translation id="3471876058939596279">HDMI 和 USB Type-C 連接埠無法同時用於影片。請使用其他影片連接埠。</translation>
 <translation id="3473241910002674503">在平板電腦模式中，使用按鈕前往主畫面、返回及切換應用程式。</translation>
 <translation id="3473479545200714844">放大鏡</translation>
@@ -2893,6 +2898,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{已核准 1 個擴充程式}other{已核准 # 個擴充程式}}</translation>
 <translation id="3823310065043511710">Linux 需要至少 <ph name="INSTALL_SIZE" /> 的空間。</translation>
 <translation id="3824621460022590830">裝置註冊憑證無效。請聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{記住我對以下檔案類型的選擇：<ph name="FILE_TYPES" />}other{記住我對下列檔案類型的選擇：<ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">已允許使用動作感應器</translation>
 <translation id="3826440694796503677">您的管理員已停用新增更多 Google 帳戶的功能</translation>
 <translation id="3827774300009121996">全螢幕(&amp;F)</translation>
@@ -2950,6 +2956,7 @@
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3882165008614329320">相機或檔案中的現有影片</translation>
 <translation id="3883306461188700142">使用語音輸入。按下搜尋鍵 + D 鍵，然後開始說話。</translation>
+<translation id="3883482240657453056">取得 <ph name="MERCHANT_NAME_1" /> 和 <ph name="MERCHANT_NAME_2" /> 的折扣</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用此清單上的第一個支援語言。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新由您的管理員管理</translation>
 <translation id="3886446263141354045">您想存取此網站的要求已傳送至<ph name="NAME" /></translation>
@@ -3908,6 +3915,7 @@
 <translation id="4880827082731008257">搜尋記錄</translation>
 <translation id="4881685975363383806">下次不要提醒我</translation>
 <translation id="4881695831933465202">開啟</translation>
+<translation id="488211015466188466">追蹤網站</translation>
 <translation id="4882312758060467256">可以在此網站上執行</translation>
 <translation id="4882919381756638075">網站通常會使用麥克風來提供視像通訊等通訊功能</translation>
 <translation id="4883436287898674711">所有 <ph name="WEBSITE_1" /> 網站</translation>
@@ -5165,6 +5173,7 @@
 <translation id="6166185671393271715">將密碼匯入至 Chrome</translation>
 <translation id="6169040057125497443">請檢查麥克風。</translation>
 <translation id="6169666352732958425">無法投放桌面。</translation>
+<translation id="6169967265765719844">你可以在 <ph name="LINK_BEGIN" />Steam 應用程式設定<ph name="LINK_END" />中，管理透過 Steam 安裝的遊戲和應用程式權限。</translation>
 <translation id="6170470584681422115">三文治</translation>
 <translation id="6170498031581934115">無法啟用 ADB 偵錯。請前往「設定」，然後再試一次。</translation>
 <translation id="617213288191670920">沒有新增任何語言</translation>
@@ -5865,6 +5874,7 @@
 <translation id="6876469544038980967">沒有幫助</translation>
 <translation id="6878422606530379992">已允許使用感應器</translation>
 <translation id="6880587130513028875">系統已封鎖此網頁的圖片。</translation>
+<translation id="688312408602122936">任何透過 Steam 安裝的遊戲和應用程式也將從這部裝置中移除</translation>
 <translation id="6883319974225028188">抱歉！系統無法儲存裝置設定。</translation>
 <translation id="6884474387073389421">確定要刪除已選取的登入資料嗎？</translation>
 <translation id="6885771755599377173">預覽系統資訊</translation>

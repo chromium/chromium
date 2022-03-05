@@ -672,6 +672,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ఇంకా యాప్‌లలో పనిచేయడం లేదు</translation>
 <translation id="1640283014264083726">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 MD4</translation>
 <translation id="1641113438599504367">సురక్షిత బ్రౌజింగ్</translation>
+<translation id="1641496881756082050"><ph name="NETWORK_NAME" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" />కు, ఇంకా <ph name="NUMBER_OF_DEVICES" /> ఇతర బ్లూటూత్ పరికరాలకు కనెక్ట్ చేయబడింది</translation>
 <translation id="1642494467033190216">ఇతర డీబగ్గింగ్ ఫీచ‌ర్‌లను ప్రారంభించడానికి ముందు rootfs రక్షణను తీసివేసి, పునఃప్రారంభించాలి.</translation>
 <translation id="1643072738649235303">SHA-1తో X9.62 ECDSA సంతకం</translation>
@@ -1456,6 +1457,7 @@
 <translation id="2381499968174336913">షేర్ చేయబడిన ట్యాబ్ తాలూకు ప్రివ్యూ</translation>
 <translation id="2381756643783702095">పంపడానికి ముందు అడుగుతుంది (సిఫార్సు చేయబడింది)</translation>
 <translation id="2387052489799050037">హోమ్‌కు వెళ్లండి</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (ప్రస్తుతం)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">ప్రాక్సీకి కనెక్ట్ చేయడం సాధ్యపడలేదు, దయచేసి మళ్లీ సైన్ ఇన్ చేయండి</translation>
 <translation id="2390782873446084770">Wi-Fi సింక్</translation>
@@ -6151,7 +6153,7 @@
 <translation id="7175037578838465313"><ph name="NAME" />ని కాన్ఫిగర్ చేయండి</translation>
 <translation id="7175353351958621980">దీని నుండి లోడ్ అయ్యింది:</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
-<translation id="7180865173735832675">అనుకూలీకరించు</translation>
+<translation id="7180865173735832675">అనుకూలంగా మార్చండి</translation>
 <translation id="7182791023900310535">మీ పాస్‌వర్డ్‌ను తరలించండి</translation>
 <translation id="7183420126213758623">సైడ్ సెర్చ్‌ను టోగుల్ చేయండి. సైడ్ సెర్చ్ యాక్టివేట్ చేయబడలేదు.</translation>
 <translation id="7186088072322679094">సాధనపట్టీలో ఉంచండి</translation>

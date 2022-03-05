@@ -525,6 +525,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2539524384386349900">Oppdag</translation>
 <translation id="2540701853218677861">logg over pålogging og avlogging på enheten, inkludert tidsstempler og mislykkede forsøk</translation>
 <translation id="2541219929084442027">Sider du åpner i inkognitofaner, blir ikke værende i nettleserloggen, lageret for informasjonskapsler eller søkeloggen etter at du har lukket alle inkognitofanene. Filer du laster ned eller bokmerker du oppretter, blir lagret.</translation>
+<translation id="2544546346215446551">Administratoren din har startet enheten på nytt</translation>
 <translation id="2544644783021658368">Enkeltdokument</translation>
 <translation id="2546283357679194313">Informasjonskapsler og data fra nettsteder</translation>
 <translation id="254947805923345898">Regelverdien er ikke gyldig.</translation>
@@ -972,6 +973,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3990250421422698716">Støtforskyvning</translation>
 <translation id="3996311196211510766">Nettstedet <ph name="ORIGIN" /> har bedt om at en opphavsregel
     skal gjelde for alle forespørsler som sendes til det, men denne regelen kan ikke tas i bruk akkurat nå.</translation>
+<translation id="4006465311664329701">Betalingsmåter, tilbud og adresser som bruker Google Pay</translation>
 <translation id="4009243425692662128">Innholdet på sidene du skriver ut, blir sendt til Google Cloud eller tredjeparter for analyse. Sidene kan for eksempel bli skannet for sensitive data.</translation>
 <translation id="4010758435855888356">Vil du gi lagringstilgang?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument som inneholder {COUNT} side}other{PDF-dokument som inneholder {COUNT} sider}}</translation>
@@ -1251,6 +1253,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt Google-regneark raskt</translation>
 <translation id="4825507807291741242">Kraftfull</translation>
 <translation id="483241715238664915">Slå på varsler</translation>
+<translation id="4834250788637067901">Betalingsmåter, tilbud og adresser som bruker Google Pay</translation>
 <translation id="4838327282952368871">Drømmende</translation>
 <translation id="4840250757394056958">Se Chrome-loggen din</translation>
 <translation id="484462545196658690">Auto</translation>

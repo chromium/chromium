@@ -671,6 +671,7 @@
 <translation id="1640235262200048077">‏لا يعمل <ph name="IME_NAME" /> على تطبيقات Linux بعد.</translation>
 <translation id="1640283014264083726">‏PKCS #1 MD4 مع ترميز RSA</translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
+<translation id="1641496881756082050">مزيد من الإجراءات للشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="1642492862748815878">تم الاتصال بالجهاز <ph name="DEVICE" /> و<ph name="NUMBER_OF_DEVICES" /> جهاز آخر يتضمّن بلوتوث.</translation>
 <translation id="1642494467033190216">‏مطلوب إزالة الحماية من rootfs وإعادة التشغيل قبل تفعيل ميزات التصحيح الأخرى.</translation>
 <translation id="1643072738649235303">‏توقيع X9.62 ECDSA باستخدام SHA-1</translation>
@@ -772,6 +773,7 @@
 <translation id="1744060673522309905">يتعذَّر ضم الجهاز إلى النطاق. يُرجى التأكُّد من أنك لم تتجاوز عدد الأجهزة التي يمكنك إضافتها.</translation>
 <translation id="1744108098763830590">صفحة الخلفية</translation>
 <translation id="1745732479023874451">إدارة جهات الاتصال</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}zero{هل تريد فتح # ملف وتعديله في تطبيق الويب هذا؟}two{هل تريد فتح ملفَين وتعديلهما في تطبيق الويب هذا؟}few{هل تريد فتح # ملفات وتعديلها في تطبيق الويب هذا؟}many{هل تريد فتح # ملفًا وتعديلها في تطبيق الويب هذا؟}other{هل تريد فتح # ملف وتعديلها في تطبيق الويب هذا؟}}</translation>
 <translation id="1748563609363301860">‏يمكنك حفظ كلمة المرور هذه في حسابك على Google أو على هذا الجهاز فقط.</translation>
 <translation id="1750048572964661931">‏يجب ضبط رقم تعريف شخصي أو كلمة مرور على جهاز Chromebook هذا لحماية الوصول إلى تطبيقات هاتفك.</translation>
 <translation id="1750172676754093297">يتعذّر على مفتاح الأمان تخزين بصمات الإصبع.</translation>
@@ -1443,6 +1445,7 @@
 <translation id="2381499968174336913">معاينة علامة التبويب التي تمت مشاركتها</translation>
 <translation id="2381756643783702095">اسأل قبل الإرسال (موصى به)</translation>
 <translation id="2387052489799050037">الانتقال إلى الشاشة الرئيسية</translation>
+<translation id="2387602571959163792">سطح المكتب <ph name="DESK_NAME" /> (الحالي)</translation>
 <translation id="2389775852302560582">‏عنوان IP</translation>
 <translation id="2390347491606624519">يُرجى تسجيل الدخول مرة أخرى بسبب تعذُّر الاتصال بالخادم الوكيل</translation>
 <translation id="2390782873446084770">مزامنة الواي فاي</translation>
@@ -2242,6 +2245,7 @@
 <translation id="3201422919974259695">‏ستظهر أجهزة USB المتاحة هنا.</translation>
 <translation id="3202131003361292969">المسار</translation>
 <translation id="3202173864863109533">تم كتم صوت علامة التبويب.</translation>
+<translation id="3204648577100496185">قد تتم إزالة البيانات المرتبطة بهذا التطبيق من هذا الجهاز.</translation>
 <translation id="3208321278970793882">التطبيق</translation>
 <translation id="3208584281581115441">التحقّق الآن</translation>
 <translation id="3208703785962634733">لم يتم تأكيده</translation>
@@ -2389,6 +2393,7 @@
 <translation id="337286756654493126">قراءة المجلدات التي تفتحها في التطبيق</translation>
 <translation id="3374294321938930390">تم نقل الإشارة المرجعية "<ph name="BOOKMARK_TITLE" />" إلى المجلد "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3378572629723696641">قد تكون هذه الإضافة تالفة.</translation>
+<translation id="3378627645871606983">‏تسري الأذونات المسموح بها لتطبيق Steam على جميع ألعاب Steam وتطبيقاته.</translation>
 <translation id="337920581046691015">سيتم تثبيت <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3380365263193509176">خطأ غير معروف</translation>
 <translation id="3382073616108123819">عفوا! تعذّر النظام في تحديد معرفات هذا الجهاز.</translation>
@@ -2495,9 +2500,11 @@
 <translation id="346298925039590474">ستكون شبكة الجوّال هذه متاحة لجميع المستخدمين على هذا الجهاز.</translation>
 <translation id="3464145797867108663">إضافة ملف شخصي للعمل</translation>
 <translation id="346431825526753">هذا هو حساب للأطفال يديره <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">هل تريد الحصول على خصومات عند الشراء من <ph name="MERCHANT_NAME_1" /> و<ph name="MERCHANT_NAME_2" /> وغيرهما المزيد؟</translation>
 <translation id="3468298837301810372">الاسم</translation>
 <translation id="3468999815377931311">‏هاتف Android</translation>
 <translation id="3469583217479686109">أداة التحديد</translation>
+<translation id="3470392222765168737">متابعة الموقع الإلكتروني</translation>
 <translation id="3471876058939596279">‏لا يمكن استخدام منافذ USB من نوع C وHDMI لهذا الفيديو في الوقت نفسه. عليك استخدام منفذ فيديو مختلف.</translation>
 <translation id="3473241910002674503">يمكنك الانتقال إلى الصفحة الرئيسية والصفحة السابقة والتبديل بين التطبيقات باستخدام أزرار التنقل في وضع الجهاز اللوحي.</translation>
 <translation id="3473479545200714844">مكبّر الشاشة</translation>
@@ -2881,6 +2888,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{تمت الموافقة على إضافة واحدة.}zero{تمّت الموافقة على # إضافة.}two{تمت الموافقة على إضافتَين.}few{تمت الموافقة على # إضافات.}many{تمت الموافقة على # إضافةً.}other{تمت الموافقة على # إضافة.}}</translation>
 <translation id="3823310065043511710">‏يُنصَح بتوفير <ph name="INSTALL_SIZE" /> على الأقل من المساحة لنظام التشغيل Linux.</translation>
 <translation id="3824621460022590830">الرمز المميز لتسجيل الجهاز غير صالح. يُرجى التواصل مع مشرف الجهاز أو مالكه. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{تذكّر اختياري لنوع الملف هذا: <ph name="FILE_TYPES" />}zero{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}two{تذكّر اختياري لهذين النوعين من الملفات: <ph name="FILE_TYPES" />}few{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}many{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}other{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">المواقع الإلكترونية التي يُسمح لها باستخدام مستشعرات الحركة</translation>
 <translation id="3826440694796503677">‏لقد أوقف المشرف إمكانية إضافة المزيد من حسابات Google.</translation>
 <translation id="3827774300009121996">&amp;ملء الشاشة</translation>
@@ -2938,6 +2946,7 @@
 <translation id="3879748587602334249">تطبيق إدارة التنزيل</translation>
 <translation id="3882165008614329320">الفيديو الحالي من الكاميرا أو الملف</translation>
 <translation id="3883306461188700142">‏الكتابة باستخدام الصوت. اضغط على مفتاح البحث + D، ثم ابدأ التحدّث.</translation>
+<translation id="3883482240657453056">هل تريد الحصول على خصومات عند الشراء من <ph name="MERCHANT_NAME_1" /> و<ph name="MERCHANT_NAME_2" />؟</translation>
 <translation id="3884152383786131369">سيستخدم محتوى الويب المتوفّر بلغات متعدّدة أول لغة معتمَدة من القائمة. وستتم مزامنة هذه الإعدادات المفضّلة مع إعدادات المتصفّح. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">يتولّى مشرفك إدارة التحديثات.</translation>
 <translation id="3886446263141354045">تمّ إرسال طلبك للدخول إلى هذا الموقع إلى <ph name="NAME" /></translation>
@@ -3892,6 +3901,7 @@
 <translation id="4880827082731008257">سجلّ البحث</translation>
 <translation id="4881685975363383806">عدم تذكيري المرة القادمة</translation>
 <translation id="4881695831933465202">فتح</translation>
+<translation id="488211015466188466">متابعة الموقع الإلكتروني</translation>
 <translation id="4882312758060467256">يمكنها الوصول إلى الموقع الإلكتروني هذا</translation>
 <translation id="4882919381756638075">تستخدم المواقع الإلكترونية عادةً الميكروفون لتتيح ميزات التواصل، مثل محادثة الفيديو.</translation>
 <translation id="4883436287898674711">جميع مواقع <ph name="WEBSITE_1" /></translation>
@@ -5149,6 +5159,7 @@
 <translation id="6166185671393271715">‏استيراد كلمات المرور إلى Chrome</translation>
 <translation id="6169040057125497443">الرجاء التحقق من الميكروفون.</translation>
 <translation id="6169666352732958425">تعذر إرسال سطح المكتب.</translation>
+<translation id="6169967265765719844">‏يمكن إدارة الأذونات للألعاب والتطبيقات المثبَّتة عبر Steam في <ph name="LINK_BEGIN" />إعدادات تطبيق Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">ساندويتش</translation>
 <translation id="6170498031581934115">‏يتعذّر تفعيل خيار "تصحيح الأخطاء عبر ADB". انتقِل إلى "الإعدادات" وأعِد المحاولة.</translation>
 <translation id="617213288191670920">لم تتمّ إضافة أيّ لغة.</translation>
@@ -5849,6 +5860,7 @@
 <translation id="6876469544038980967">غير مفيد</translation>
 <translation id="6878422606530379992">استخدام أجهزة الاستشعار مسموح به</translation>
 <translation id="6880587130513028875">تم منع عرض الصور في هذه الصفحة.</translation>
+<translation id="688312408602122936">‏ستتم أيضًا إزالة أي ألعاب وتطبيقات مثبَّتة عبر Steam من هذا الجهاز.</translation>
 <translation id="6883319974225028188">عفوًا! تعذّر النظام في حفظ إعداد الجهاز.</translation>
 <translation id="6884474387073389421">هل تريد فعلاً حذف بيانات تسجيل الدخول المحدَّدة؟</translation>
 <translation id="6885771755599377173">معاينة معلومات النظام</translation>

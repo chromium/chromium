@@ -525,6 +525,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2539524384386349900">Bespeur</translation>
 <translation id="2540701853218677861">Toestel se aanmeld-/afmeldgeskiedenis, insluitend tydstempels en mislukte pogings</translation>
 <translation id="2541219929084442027">Bladsye wat jy in Incognito-oortjies bekyk, sal nie in jou blaaier se geskiedenis, webkoekiestoor of soekgeskiedenis bly nadat jy al jou Incognito-oortjies toegemaak het nie. Enige lêers wat jy aflaai of boekmerke wat jy skep, sal gehou word.</translation>
+<translation id="2544546346215446551">Jou administrateur het jou toestel herbegin</translation>
 <translation id="2544644783021658368">Een dokument</translation>
 <translation id="2546283357679194313">Webkoekies en werfdata</translation>
 <translation id="254947805923345898">Beleidwaarde is nie geldig nie.</translation>
@@ -972,6 +973,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3990250421422698716">Gelykskudafwyking</translation>
 <translation id="3996311196211510766">Die werf <ph name="ORIGIN" /> het versoek dat 'n oorsprongbeleid
     op alle versoeke daaraan toegepas word, maar hierdie beleid kan nie op die oomblik toegepas word nie.</translation>
+<translation id="4006465311664329701">Betaalmetodes, aanbiedings en adresse wat Google Pay gebruik</translation>
 <translation id="4009243425692662128">Die inhoud van bladsye wat jy druk, word na Google Wolk of derde partye toe gestuur vir ontleding. Dit kan byvoorbeeld vir sensitiewe data geskandeer word.</translation>
 <translation id="4010758435855888356">Laat bergingtoegang toe?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument met {COUNT} bladsy}other{PDF-dokument met {COUNT} bladsye}}</translation>
@@ -1251,6 +1253,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe Google Blad te skep</translation>
 <translation id="4825507807291741242">Kragtig</translation>
 <translation id="483241715238664915">Skakel waarskuwings aan</translation>
+<translation id="4834250788637067901">Betaalmetodes, aanbiedings en adresse wat Google Pay gebruik</translation>
 <translation id="4838327282952368871">Dromerig</translation>
 <translation id="4840250757394056958">Bekyk jou Chrome-geskiedenis</translation>
 <translation id="484462545196658690">Outo</translation>

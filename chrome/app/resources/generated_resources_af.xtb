@@ -672,6 +672,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1640235262200048077"><ph name="IME_NAME" /> werk nog nie in Linux-programme nie</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 met RSA-enkripsie</translation>
 <translation id="1641113438599504367">Veiligblaai</translation>
+<translation id="1641496881756082050">Meer handelinge vir <ph name="NETWORK_NAME" /></translation>
 <translation id="1642492862748815878">Gekoppel aan <ph name="DEVICE" /> en <ph name="NUMBER_OF_DEVICES" /> ander Bluetooth-toestelle</translation>
 <translation id="1642494467033190216">Die verwydering van rootfs-beskerming en 'n herbegin is nodig voordat ander ontfoutingkenmerke geaktiveer word.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA-handtekening met SHA-1</translation>
@@ -781,6 +782,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1744060673522309905">Kan nie die toestel aan die domein koppel nie. Maak seker dat jy nie die aantal toestelle oorskry het wat jy kan byvoeg nie.</translation>
 <translation id="1744108098763830590">agtergrondbladsy</translation>
 <translation id="1745732479023874451">Bestuur kontakte</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Maak # lêers in hierdie webprogram oop en wysig dit?}}</translation>
 <translation id="1748563609363301860">Jy kan hierdie wagwoord in jou Google-rekening of net op hierdie toestel stoor</translation>
 <translation id="1750048572964661931">Stel 'n PIN of wagwoord op hierdie Chromebook om toegang tot jou foon se programme te beskerm.</translation>
 <translation id="1750172676754093297">Jou sekuriteitsleutel kan nie vingerafdrukke berg nie</translation>
@@ -1456,6 +1458,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2381499968174336913">Voorskou van gedeelde oortjie</translation>
 <translation id="2381756643783702095">Vra voordat gestuur word (aanbeveel)</translation>
 <translation id="2387052489799050037">Gaan na tuisskerm</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (Tans)</translation>
 <translation id="2389775852302560582">IP:</translation>
 <translation id="2390347491606624519">Kan nie aan instaanbediener koppel nie; meld asseblief weer aan</translation>
 <translation id="2390782873446084770">Wi-fi-sinkronisering</translation>
@@ -2254,6 +2257,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3201422919974259695">Beskikbare USB-toestelle sal hier verskyn.</translation>
 <translation id="3202131003361292969">Pad</translation>
 <translation id="3202173864863109533">Hierdie oortjie se klank word gedemp.</translation>
+<translation id="3204648577100496185">Data wat met hierdie program geassosieer word, kan van hierdie toestel verwyder word</translation>
 <translation id="3208321278970793882">Program</translation>
 <translation id="3208584281581115441">Kontroleer nou</translation>
 <translation id="3208703785962634733">Onbevestigde</translation>
@@ -2400,6 +2404,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="337286756654493126">Lees vouers wat jy in die program oopmaak</translation>
 <translation id="3374294321938930390">"<ph name="BOOKMARK_TITLE" />" is geskuif na "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3378572629723696641">Hierdie uitbreiding kon dalk gekorrupteer gewees het.</translation>
+<translation id="3378627645871606983">Toestemmings wat vir Steam toegelaat is, geld vir alle Steam-speletjies en -programme.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> sal geïnstalleer word.</translation>
 <translation id="3380365263193509176">Onbekende fout</translation>
 <translation id="3382073616108123819">Oeps! Die stelsel kon nie toestelidentifiseerders vir hierdie toestel bepaal nie.</translation>
@@ -2506,9 +2511,11 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="346298925039590474">Hierdie selnetwerk sal vir alle gebruikers van hierdie toestel beskikbaar wees</translation>
 <translation id="3464145797867108663">Voeg werkprofiel by</translation>
 <translation id="346431825526753">Dit is 'n rekening vir kinders wat deur <ph name="CUSTODIAN_EMAIL" /> bestuur word.</translation>
+<translation id="346546413339447252">Kry afslag vir <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> en meer</translation>
 <translation id="3468298837301810372">Etiket</translation>
 <translation id="3468999815377931311">Android-foon</translation>
 <translation id="3469583217479686109">Selekteernutsding</translation>
+<translation id="3470392222765168737">Volg werf</translation>
 <translation id="3471876058939596279">HDMI- en USB Tipe C-poorte kan nie tegelyk vir video gebruik word nie. Gebruik 'n ander videopoort.</translation>
 <translation id="3473241910002674503">Navigeer tuis en terug, en wissel programme met knoppies in tabletmodus.</translation>
 <translation id="3473479545200714844">Skermvergrootglas</translation>
@@ -2892,6 +2899,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{'n Uitbreiding is goedgekeur}other{# uitbreidings is goedgekeur}}</translation>
 <translation id="3823310065043511710">Minstens <ph name="INSTALL_SIZE" /> se spasie word vir Linux aanbeveel.</translation>
 <translation id="3824621460022590830">Toestelinskrywingtoken is ongeldig. Kontak asseblief jou toesteleienaar of administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Onthou my keuse vir hierdie lêertipe: <ph name="FILE_TYPES" />}other{Onthou my keuse vir hierdie lêertipes: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">Mag bewegingsensors gebruik</translation>
 <translation id="3826440694796503677">Jou administrateur het die byvoeging van meer Google-rekeninge gedeaktiveer</translation>
 <translation id="3827774300009121996">Volskerm</translation>
@@ -2949,6 +2957,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3879748587602334249">Aflaaibestuurder</translation>
 <translation id="3882165008614329320">Bestaande video van kamera of lêer af</translation>
 <translation id="3883306461188700142">Tik met jou stem. Druk Search + D en begin praat.</translation>
+<translation id="3883482240657453056">Kry afslag vir <ph name="MERCHANT_NAME_1" /> en <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Webinhoud wat in veelvuldige tale beskikbaar is, sal die eerste gesteunde taal op hierdie lys gebruik. Hierdie voorkeure word met jou blaaierinstellings gesinkroniseer. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Jou administrateur bestuur opdaterings</translation>
 <translation id="3886446263141354045">Jou versoek om by hierdie werf in te gaan, is na <ph name="NAME" /> gestuur</translation>
@@ -3907,6 +3916,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4880827082731008257">Soekgeskiedenis</translation>
 <translation id="4881685975363383806">Moenie my volgende keer herinner nie</translation>
 <translation id="4881695831933465202">Maak oop</translation>
+<translation id="488211015466188466">Volg werf</translation>
 <translation id="4882312758060467256">Het toegang tot hierdie werf</translation>
 <translation id="4882919381756638075">Werwe gebruik gewoonlik jou mikrofoon vir kommunikasiekenmerke soos videoklets</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-werwe</translation>
@@ -5165,6 +5175,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6166185671393271715">Voer wagwoorde na Chrome in</translation>
 <translation id="6169040057125497443">Gaan jou mikrofoon na.</translation>
 <translation id="6169666352732958425">Kan nie werkskerm uitsaai nie.</translation>
+<translation id="6169967265765719844">Toestemmings vir speletjies en programme wat via Steam geïnstalleer is, kan in die <ph name="LINK_BEGIN" />Steam-programinstellings<ph name="LINK_END" /> bestuur word.</translation>
 <translation id="6170470584681422115">Toebroodjie</translation>
 <translation id="6170498031581934115">Kon nie ADB-ontfouting aktiveer nie. Gaan na Instellings toe en probeer weer.</translation>
 <translation id="617213288191670920">Geen tale bygevoeg nie</translation>
@@ -5865,6 +5876,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6876469544038980967">Nie nuttig nie</translation>
 <translation id="6878422606530379992">Sensors toegelaat</translation>
 <translation id="6880587130513028875">Prente is op hierdie bladsy geblokkeer.</translation>
+<translation id="688312408602122936">Enige speletjies en programme wat via Steam geïnstalleer is, sal ook van hierdie toestel verwyder word</translation>
 <translation id="6883319974225028188">Oeps! Die stelsel het nie toestelopstelling gestoor nie.</translation>
 <translation id="6884474387073389421">Is jy seker jy wil die geselekteerde aanmelddata uitvee?</translation>
 <translation id="6885771755599377173">Voorskou van stelselinligting</translation>

@@ -56,6 +56,13 @@
 <translation id="4828317641996116749">I-Chromium ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi emuva kwesikhathi.</translation>
 <translation id="4985291216379576555">Ayixhunyiwe kwi-inthanethi, i-Chromium ayikwazi ukuhlola izibuyekezo</translation>
 <translation id="4999538639245140991">Ngoba uphuma ku-akhawunti ephethwe ngu-<ph name="SIGNOUT_MANAGED_DOMAIN" />, idatha yakho ye-Chromium izosuswa kusuka kule divayisi. Idatha yakho izohlala ku-akhawunti yakho ye-Google.</translation>
+<translation id="5039881550736388123">Uma ivuliwe:
+<ph name="BEGIN_INDENT" />  • Siza ukwenza i-Chromium ibe ngcono kubantu abayisebenzisa ngendlela owenza ngayo.<ph name="END_INDENT" />
+
+Izinto okufanele uzicabangele:
+<ph name="BEGIN_INDENT" />  • Ulwazi luthunyelwa ku-Google mayelana nokusebenzisa kwakho i-Chromium, kodwa ayikubophi.
+  • Uma i-Chromium iphahlazeka, imininingwane mayelana nokuphahlazeka ingase ihlanganise ulwazi oluthile lomuntu siqu.
+  • Uma uvula ukuvumelanisa, ama-metrics angase futhi afake ulwazi olumayelana nama-URL owavakashelayo.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Ngena ngemvume ku-Chromium</translation>
 <translation id="5224391634244552924">Awekho amaphasiwedi alondoloziwe. I-Chromium ingahlola amaphasiwedi akho lapho uwalondoloza khona.</translation>
 <translation id="5308226104666789935">I-Chromium ayikwazi ukuhlola izibuyekezo</translation>

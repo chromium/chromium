@@ -782,6 +782,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1744060673522309905">Hindi maisama ang device sa domain. Tiyaking hindi mo nalampasan ang bilang ng mga device na maaari mong idagdag.</translation>
 <translation id="1744108098763830590">pahina ng background</translation>
 <translation id="1745732479023874451">Pamahalaan ang mga contact</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Buksan at i-edit ang # file sa web app na ito?}other{Buksan at i-edit ang # na file sa web app na ito?}}</translation>
 <translation id="1748563609363301860">Puwede mong i-save ang password na ito sa iyong Google Account o sa device lang na ito</translation>
 <translation id="1750048572964661931">Magtakda ng pin o password sa Chromebook na ito para protektahan ang access sa mga app ng iyong telepono.</translation>
 <translation id="1750172676754093297">Hindi puwedeng mag-store ng mga fingerprint ang iyong security key</translation>
@@ -2255,6 +2256,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3201422919974259695">Lalabas dito ang mga available na USB device.</translation>
 <translation id="3202131003361292969">Path</translation>
 <translation id="3202173864863109533">Iminu-mute ang audio ng tab na ito.</translation>
+<translation id="3204648577100496185">Posibleng alisin sa device na ito ang data na nauugnay sa app na ito</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Suriin ngayon</translation>
 <translation id="3208703785962634733">Hindi kumpirmado</translation>
@@ -2401,6 +2403,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="337286756654493126">Mag-read ng mga folder na iyong bubuksan sa application</translation>
 <translation id="3374294321938930390">Inilipat ang '<ph name="BOOKMARK_TITLE" />' sa '<ph name="NEW_FOLDER_TITLE" />'.</translation>
 <translation id="3378572629723696641">Maaaring nasira ang extension na ito.</translation>
+<translation id="3378627645871606983">Nalalapat ang mga pahintulot na pinayagan para sa Steam sa lahat ng laro at app ng Steam.</translation>
 <translation id="337920581046691015">Ang <ph name="PRODUCT_NAME" /> ay maiinstall.</translation>
 <translation id="3380365263193509176">Hindi kilalang error</translation>
 <translation id="3382073616108123819">Oops! Hindi nakatukoy ang system ng mga identifier ng device para sa device na ito.</translation>
@@ -2507,9 +2510,11 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="346298925039590474">Magiging available ang mobile network na ito sa lahat ng user sa device na ito</translation>
 <translation id="3464145797867108663">Magdagdag ng profile sa trabaho</translation>
 <translation id="346431825526753">Isa itong account para sa mga bata na pinamamahalaan ni <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Makakuha ng mga diskwento para sa <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> at iba pa</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android phone</translation>
 <translation id="3469583217479686109">Selection Tool</translation>
+<translation id="3470392222765168737">Magsubaybay ng site</translation>
 <translation id="3471876058939596279">Hindi magagamit ang HDMI at USB Type-C port para sa video nang sabay. Gumamit ng ibang port para sa video.</translation>
 <translation id="3473241910002674503">Mag-navigate sa home, pabalik, at lumipat ng app gamit ang mga button sa tablet mode.</translation>
 <translation id="3473479545200714844">Screen magnifier</translation>
@@ -2893,6 +2898,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Inaprubahan ang isang extension}one{# extension ang inaprubahan}other{# na extension ang inaprubahan}}</translation>
 <translation id="3823310065043511710">Hindi bababa sa <ph name="INSTALL_SIZE" /> na espasyo ang inirerekomenda para sa Linux.</translation>
 <translation id="3824621460022590830">Invalid ang token sa pag-enroll ng device. Makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Tandaan ang pinili ko para sa ganitong uri ng file: <ph name="FILE_TYPES" />}one{Tandaan ang pinili ko para sa mga ganitong uri ng file: <ph name="FILE_TYPES" />}other{Tandaan ang pinili ko para sa mga ganitong uri ng file: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">Pinapayagang gumamit ng mga sensor ng paggalaw</translation>
 <translation id="3826440694796503677">Na-disable ng iyong administrator ang pagdaragdag ng higit pang Google Account</translation>
 <translation id="3827774300009121996">&amp;Full Screen</translation>
@@ -2950,6 +2956,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3882165008614329320">Kasalukuyang video mula sa camera o file</translation>
 <translation id="3883306461188700142">Mag-type gamit ang iyong boses. Pindutin ang Hanapin + D, pagkatapos ay magsimulang magsalita.</translation>
+<translation id="3883482240657453056">Makakuha ng mga diskwento para sa <ph name="MERCHANT_NAME_1" /> at <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Gagamitin ng content sa web na nasa maraming wika ang unang sinusuportahang wika mula sa listahang ito. Naka-sync ang mga kagustuhang ito sa iyong mga setting ng browser. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Pinapamahalaan ng iyong administrator ang mga update</translation>
 <translation id="3886446263141354045">Ipinadala ang iyong kahilingang i-access ang site na ito kay <ph name="NAME" /></translation>
@@ -3908,6 +3915,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4880827082731008257">History ng paghahanap</translation>
 <translation id="4881685975363383806">Huwag nang ipaalala sa akin sa susunod</translation>
 <translation id="4881695831933465202">Buksan</translation>
+<translation id="488211015466188466">Magsubaybay ng Site</translation>
 <translation id="4882312758060467256">May access sa site na ito</translation>
 <translation id="4882919381756638075">Karaniwang ginagamit ng mga site ang iyong mikropono para sa mga feature sa pakikipag-ugnayan gaya ng pakikipag-video chat</translation>
 <translation id="4883436287898674711">Lahat ng site ng <ph name="WEBSITE_1" /></translation>
@@ -5165,6 +5173,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6166185671393271715">Mag-import ng Mga Password sa Chrome</translation>
 <translation id="6169040057125497443">Pakisuri ang iyong mikropono.</translation>
 <translation id="6169666352732958425">Hindi ma-cast ang desktop.</translation>
+<translation id="6169967265765719844">Mapapamahalaan ang mga pahintulot para sa mga laro at app na na-install sa pamamagitan ng Steam sa <ph name="LINK_BEGIN" />mga setting ng Steam app<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">Hindi ma-enable ang pag-debug ng ADB. Pumunta sa Mga Setting at subukan ulit.</translation>
 <translation id="617213288191670920">Walang idinagdag na wika</translation>
@@ -5865,6 +5874,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6876469544038980967">Hindi Nakatulong</translation>
 <translation id="6878422606530379992">Pinapayagan ang mga sensor</translation>
 <translation id="6880587130513028875">Hinarangan ang mga larawan sa pahinang ito.</translation>
+<translation id="688312408602122936">Aalisin din sa device na ito ang anumang laro at app na na-install sa pamamagitan ng Steam</translation>
 <translation id="6883319974225028188">Oops!  Hindi na-save ng system ang configuration ng device.</translation>
 <translation id="6884474387073389421">Sigurado ka bang gusto mong i-delete ang napiling data sa pag-sign in?</translation>
 <translation id="6885771755599377173">Preview ng Impormasyon ng System</translation>

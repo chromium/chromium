@@ -457,6 +457,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Request mobile site</translation>
+<translation id="3685860403008476208">Anyone using this device can see files that you download in Incognito</translation>
 <translation id="3687645719033307815">You are viewing a preview of this page</translation>
 <translation id="3690369331356918524">Warns you if passwords are exposed in a data breach</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>

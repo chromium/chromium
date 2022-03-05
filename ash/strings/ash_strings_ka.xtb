@@ -317,6 +317,7 @@
 <translation id="301282384882049174">გაზიარებულია ადმინისტრატორის მიერ</translation>
 <translation id="3017687597151988916">არჩევის არე დაყენებულია ფანჯარაზე</translation>
 <translation id="3033545621352269033">ჩართვა</translation>
+<translation id="3033912566804961911">„<ph name="DESK_NAME" />“-ით გაგრძელება</translation>
 <translation id="3036649622769666520">გახსენით ფაილები</translation>
 <translation id="3038571455154067151">სისტემაში შესასვლელად შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის</translation>
 <translation id="3039939407102840004">სტილუსის ბატარეა <ph name="PERCENTAGE" /> პროცენტზეა.</translation>
@@ -342,6 +343,7 @@
 <translation id="3153444934357957346">მრავალჯერადი შესვლის ფუნქციისთვის შესაძლებელია მხოლოდ <ph name="MULTI_PROFILE_USER_LIMIT" /> ანგარიშის გამოყენება.</translation>
 <translation id="3154351730702813399">მოწყობილობის ადმინისტრატორს თქვენ მიერ ვების დათვალიერების მონიტორინგი შეუძლია.</translation>
 <translation id="316086887565479535">მხარდაუჭერელი აპები შაბლონში</translation>
+<translation id="3161500364292033097">სამუშაო მაგიდისა და ფანჯრების დახურვა</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> აბრუნებს თქვენს <ph name="DEVICE_TYPE" />-ს წინა ვერსიაზე. თქვენი მოწყობილობა გადაყენდება და ყველა მონაცემი წაიშლება.</translation>
 <translation id="3181441307743005334">გადატვირთვას შეიძლება გარკვეული დრო დასჭირდეს</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{დაკავშირებულია მოწყობილობასთან}other{დაკავშირებულია # მოწყობილობასთან}}</translation>
@@ -1051,6 +1053,7 @@
 <translation id="7649070708921625228">დახმარება</translation>
 <translation id="7654687942625752712">გახმოვანებული უკუკავშირის გასათიშად დააჭირეთ ხმის ორივე ღილაკს ხუთი წამის განმავლობაში.</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
+<translation id="7659861092419699379">სამუშაო მაგიდა და ფანჯრები დაიხურა</translation>
 <translation id="7660160718439869192">თქვენი <ph name="NAME" /> გამოჩნდება <ph name="EMAIL" />-ით დაკავშირებულ მოწყობილობებზე</translation>
 <translation id="7662283695561029522">შეეხეთ პარამეტრების კონფიგურაციისთვის</translation>
 <translation id="7670953955701272011">ამ თარიღის Google Calendar-ში გახსნა</translation>

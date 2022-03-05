@@ -669,6 +669,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1640235262200048077"><ph name="IME_NAME" /> virker ikke i Linux-apper ennå</translation>
 <translation id="1640283014264083726"> PKCS #1 MD4 med RSA-kryptering</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1641496881756082050">Flere handlinger for <ph name="NETWORK_NAME" /></translation>
 <translation id="1642492862748815878">Koblet til <ph name="DEVICE" /> og <ph name="NUMBER_OF_DEVICES" /> andre Bluetooth-enheter</translation>
 <translation id="1642494467033190216">Fjerning av rootfs-beskyttelse og omstart er nødvendig før du slår på andre feilsøkingsfunksjoner.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA-signatur med SHA-1</translation>
@@ -1451,6 +1452,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2381499968174336913">Forhåndsvisning av delt fane</translation>
 <translation id="2381756643783702095">Spør før noe sendes (anbefales).</translation>
 <translation id="2387052489799050037">Gå til startsiden</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (gjeldende)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">Kan ikke koble til proxy-tjeneren – logg på på nytt</translation>
 <translation id="2390782873446084770">Wi-Fi-synkronisering</translation>

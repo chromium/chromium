@@ -772,6 +772,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1744060673522309905">Ierīci nevar saistīt ar domēnu. Nepārsniedziet pievienojamo ierīču skaitu.</translation>
 <translation id="1744108098763830590">fona lapa</translation>
 <translation id="1745732479023874451">Pārvaldīt kontaktpersonas</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}zero{Vai atvērt un rediģēt # failus šajā tīmekļa lietotnē?}one{Vai atvērt un rediģēt # failu šajā tīmekļa lietotnē?}other{Vai atvērt un rediģēt # failus šajā tīmekļa lietotnē?}}</translation>
 <translation id="1748563609363301860">Varat saglabāt šo paroli Google kontā vai tikai šajā ierīcē</translation>
 <translation id="1750048572964661931">Iestatiet PIN vai paroli šajā Chromebook datorā, lai aizsargātu piekļuvi sava tālruņa lietotnēm.</translation>
 <translation id="1750172676754093297">Jūsu drošības atslēgā nevar saglabāt pirkstu nospiedumus.</translation>
@@ -2241,6 +2242,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3201422919974259695">Šeit tiks rādītas pieejamās USB ierīces.</translation>
 <translation id="3202131003361292969">Ceļš</translation>
 <translation id="3202173864863109533">Šīs cilnes skaņa ir izslēgta.</translation>
+<translation id="3204648577100496185">Ar šo lietotni saistītie dati var tikt noņemti no šīs ierīces</translation>
 <translation id="3208321278970793882">Lietotne</translation>
 <translation id="3208584281581115441">Pārbaudīt tūlīt</translation>
 <translation id="3208703785962634733">Neapstiprināts</translation>
@@ -2387,6 +2389,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="337286756654493126">Rakstīt mapēs, kuras atverat lietojumprogrammā</translation>
 <translation id="3374294321938930390">Grāmatzīme <ph name="BOOKMARK_TITLE" /> pārvietota uz mapi <ph name="NEW_FOLDER_TITLE" />.</translation>
 <translation id="3378572629723696641">Iespējams, šis paplašinājums ir bojāts.</translation>
+<translation id="3378627645871606983">Lietotnei Steam piešķirtās atļaujas attiecas uz visām Steam spēlēm un lietotnēm.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> tiks instalēts.</translation>
 <translation id="3380365263193509176">Nezināma kļūda</translation>
 <translation id="3382073616108123819">Diemžēl sistēmai neizdevās noteikt šīs ierīces identifikatorus.</translation>
@@ -2493,9 +2496,11 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="346298925039590474">Šis mobilais tīkls būs pieejams visiem šīs ierīces lietotājiem</translation>
 <translation id="3464145797867108663">Pievienot darba profilu</translation>
 <translation id="346431825526753">Šis ir bērniem paredzēts konts, ko pārvalda <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Iegūstiet atlaides <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> u.c. tirgotāju precēm</translation>
 <translation id="3468298837301810372">Iezīme</translation>
 <translation id="3468999815377931311">Android tālrunis</translation>
 <translation id="3469583217479686109">Atlases rīks</translation>
+<translation id="3470392222765168737">Sekot vietnei</translation>
 <translation id="3471876058939596279">HDMI un USB Type-C pieslēgvietas nevar izmantot vienlaikus video rādīšanai. Izmantojiet citu video pieslēgvietu.</translation>
 <translation id="3473241910002674503">Pārejiet uz sākumu, atpakaļ un pārslēdziet lietotnes, izmantojot pogas planšetdatora režīmā.</translation>
 <translation id="3473479545200714844">Ekrāna lupa</translation>
@@ -2879,6 +2884,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Paplašinājums tika apstiprināts}zero{# paplašinājumi tika apstiprināti}one{# paplašinājums tika apstiprināts}other{# paplašinājumi tika apstiprināti}}</translation>
 <translation id="3823310065043511710">Sistēmai Linux ir ieteicams vismaz <ph name="INSTALL_SIZE" /> vietas krātuvē.</translation>
 <translation id="3824621460022590830">Ierīces reģistrācijas marķieris nav derīgs. Lūdzu, sazinieties ar ierīces īpašnieku vai administratoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Atcerēties manu izvēli šim failu tipam: <ph name="FILE_TYPES" />}zero{Atcerēties manu izvēli šiem failu tipiem: <ph name="FILE_TYPES" />}one{Atcerēties manu izvēli šiem failu tipiem: <ph name="FILE_TYPES" />}other{Atcerēties manu izvēli šiem failu tipiem: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">Drīkst izmantot kustību sensorus</translation>
 <translation id="3826440694796503677">Administrators ir atspējojis citu Google kontu pievienošanu.</translation>
 <translation id="3827774300009121996">Pil&amp;nekrāna režīms</translation>
@@ -2936,6 +2942,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3879748587602334249">Lejupielāžu pārvaldnieks</translation>
 <translation id="3882165008614329320">Esošs videoklips no kameras vai faila</translation>
 <translation id="3883306461188700142">Ievadiet tekstu ar balsi. Nospiediet meklēšanas taustiņu + D, pēc tam sāciet runāt.</translation>
+<translation id="3883482240657453056">Iegūstiet atlaides <ph name="MERCHANT_NAME_1" /> un <ph name="MERCHANT_NAME_2" /> precēm</translation>
 <translation id="3884152383786131369">Tīmekļa saturam, kas ir pieejams vairākās valodās, tiks izmantota pirmā atbalstītā valoda no šī saraksta. Šīs preferences tiek sinhronizētas ar jūsu pārlūkprogrammas iestatījumiem. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="3885112598747515383">Atjauninājumus pārvalda jūsu administrators</translation>
 <translation id="3886446263141354045">Pieprasījums piekļūt šai vietnei ir nosūtīts lietotājam <ph name="NAME" /></translation>
@@ -3893,6 +3900,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4880827082731008257">Meklēšanas vēsture</translation>
 <translation id="4881685975363383806">Nākamreiz vairs neatgādināt</translation>
 <translation id="4881695831933465202">Atvērt</translation>
+<translation id="488211015466188466">Sekot vietnei</translation>
 <translation id="4882312758060467256">Var piekļūt šai vietnei</translation>
 <translation id="4882919381756638075">Parasti vietnēs mikrofons tiek izmantots, lai nodrošinātu noteiktas saziņas funkcijas, piemēram, video tērzēšanu.</translation>
 <translation id="4883436287898674711">Visās <ph name="WEBSITE_1" /> vietnēs</translation>
@@ -5150,6 +5158,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6166185671393271715">Paroļu importēšana pārlūkā Chrome</translation>
 <translation id="6169040057125497443">Lūdzu, pārbaudiet savu mikrofonu.</translation>
 <translation id="6169666352732958425">Nevar apraidīt darbvirsmu.</translation>
+<translation id="6169967265765719844">Ja spēļu un lietotņu instalēšanai izmantojāt Steam, šo spēļu un lietotņu atļaujas varat pārvaldīt <ph name="LINK_BEGIN" />lietotnes Steam iestatījumos<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sviestmaize</translation>
 <translation id="6170498031581934115">Nevarēja iespējot ADB atkļūdošanu. Dodieties uz sadaļu Iestatījumi un mēģiniet vēlreiz.</translation>
 <translation id="617213288191670920">Nav pievienota neviena valoda</translation>
@@ -5850,6 +5859,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6876469544038980967">Nav noderīgi</translation>
 <translation id="6878422606530379992">Atļauti sensori</translation>
 <translation id="6880587130513028875">Attēli šajā lapā tika bloķēti.</translation>
+<translation id="688312408602122936">No šīs ierīces tiks noņemtas arī visas spēles un lietotnes, kuru instalēšanai izmantojāt Steam</translation>
 <translation id="6883319974225028188">Diemžēl sistēmai neizdevās saglabāt ierīces konfigurāciju.</translation>
 <translation id="6884474387073389421">Vai tiešām vēlaties izdzēst atlasītos pierakstīšanās datus?</translation>
 <translation id="6885771755599377173">Sistēmas informācijas priekšskatījums</translation>

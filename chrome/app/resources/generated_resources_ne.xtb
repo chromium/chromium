@@ -666,6 +666,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ले Linux का एपहरूमा अझै काम गर्दैन</translation>
 <translation id="1640283014264083726">RSA इन्क्रिप्शनको साथमा PKCS #1 MD4</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउजिङ</translation>
+<translation id="1641496881756082050"><ph name="NETWORK_NAME" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> र अन्य <ph name="NUMBER_OF_DEVICES" /> वटा ब्लुटुथ डिभाइसमा कनेक्ट गरिएको छ</translation>
 <translation id="1642494467033190216">अन्य डिबगिङ सुविधाहरू सक्षम गर्नुअघि rootfs संरक्षण हटाउनु र रिस्टार्ट गर्नु आवश्यक छ।</translation>
 <translation id="1643072738649235303">SHA-1 सहितको X9.62 ECDSA हस्ताक्षर</translation>
@@ -1439,6 +1440,7 @@
 <translation id="2381499968174336913">सेयर गरिएको ट्याबको प्रिभ्यू</translation>
 <translation id="2381756643783702095">पठाउनु अघि सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="2387052489799050037">गृहपृष्ठमा जानुहोस्</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (हालको)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">प्रोक्सीमा कनेक्ट गर्न सकिएन, कृपया फेरि साइन इन गर्नुहोस्</translation>
 <translation id="2390782873446084770">Wi-Fi सिंक</translation>

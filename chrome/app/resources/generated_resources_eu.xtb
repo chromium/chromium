@@ -435,6 +435,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1427269577154060167">Herrialdea</translation>
 <translation id="142758023928848008">Gaitu tekla itsaskorrak (laster-teklak gauzatzea bata bestearen ondoren idatzita)</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> aplikazioaren lizentzia iraungi egin da</translation>
+<translation id="1428373049397869723">Fitxategi bateragarriak aplikazio honekin ireki ditzakezu Finder-etik edo beste aplikazio batzuetatik. Aplikazio hau modu lehenetsian zein fitxategik irekitzen duten kontrolatzeko, <ph name="BEGIN_LINK" />ikusi gailuaren aplikazio lehenetsiak ezartzeko argibideak<ph name="END_LINK" />.</translation>
 <translation id="1429300045468813835">Garbitu dira guztiak</translation>
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1431188203598586230">Azken software-eguneratzea</translation>
@@ -3042,6 +3043,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3971764089670057203">Segurtasun-fitxa honetako hatz-markak</translation>
 <translation id="3973005893595042880">Ez da onartzen erabiltzailea</translation>
 <translation id="3973660817924297510">Pasahitzak egiaztatzen (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
+<translation id="3974514184580396500">Erabili Hurrengoa pantailako fokua aurreratzeko</translation>
 <translation id="3975201861340929143">Azalpena</translation>
 <translation id="3975565978598857337">Ezin izan da jarri domeinuaren zerbitzariarekin harremanetan</translation>
 <translation id="3976108569178263973">Ez dago inprimagailurik erabilgarri.</translation>
@@ -3873,6 +3875,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4868281708609571334">Irakatsi Google-ren Laguntzailea zerbitzuari <ph name="SUPERVISED_USER_NAME" /> erabiltzailearen ahotsa ezagutzen</translation>
 <translation id="4868284252360267853">Une honetan, leihoa ez dago fokuratuta. Leihoa fokuratzeko, sakatu Komandoa + Maius + Aukera + A.</translation>
 <translation id="48704129375571883">Gehitu eginbide gehiago</translation>
+<translation id="4870724079713069532">Fitxategi bateragarriak aplikazio honekin ireki ditzakezu fitxategi-esploratzailetik edo beste aplikazio batzuetatik. Aplikazio hau modu lehenetsian zein fitxategik irekitzen duten kontrolatzeko, joan <ph name="BEGIN_LINK" />Windows-en ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Konfigurazioari buruzko informazioa lortzeko, idatzi administratzaileak emandako pasahitza</translation>
 <translation id="4870903493621965035">Ez dago parekatutako gailurik</translation>
 <translation id="4870995365819149457">Laguntza emateko esteka batzuek <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> eta beste aplikazio batean irekitzen jarraituko dute.</translation>
@@ -4091,6 +4094,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="5088534251099454936">PKCS #1 SHA-512 RSA enkriptatzearekin</translation>
 <translation id="5090637338841444533">Ezin dute egin kameraren posizioaren jarraipena</translation>
 <translation id="5093569275467863761">Aurreko orria cachean gordetzeko eginbidean gordetako ezkutuko moduko azpimarkoa: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094176498302660097">Fitxategi bateragarriak aplikazio honekin ireki ditzakezu Fitxategiak aplikaziotik edo beste aplikazio batzuetatik. Aplikazio hau modu lehenetsian zein fitxategik irekitzen duten kontrolatzeko, <ph name="BEGIN_LINK" />ikusi gailuaren aplikazio lehenetsiak ezartzeko argibideak<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Komunikatu aplikazio lankide natiboekin</translation>
 <translation id="5097002363526479830">Ezin izan da "<ph name="NAME" />" sarera konektatu: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">Lortu kokapena erabiltzeari buruzko informazio gehiago</translation>
@@ -4742,6 +4746,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="577322787686508614">"<ph name="DEVICE_NAME" />" gailuak ez du irakurtzeko baimenik.</translation>
 <translation id="5774295353725270860">Ireki Fitxategiak aplikazioa</translation>
 <translation id="577624874850706961">Bilatu cookieak</translation>
+<translation id="5776571780337000608">Fitxategi bateragarriak aplikazio honekin ireki ditzakezu fitxategi-arakatzailetik edo beste aplikazio batzuetatik. Aplikazio hau modu lehenetsian zein fitxategik irekitzen duten kontrolatzeko, <ph name="BEGIN_LINK" />ikusi gailuaren aplikazio lehenetsiak ezartzeko argibideak<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Ireki Chrome</translation>
 <translation id="5778491106820461378"><ph name="LINK_BEGIN" />Ezarpenak<ph name="LINK_END" /> atalean kudea ditzakezu saioa hasita daukaten Google-ko kontuak. Baliteke webguneei eta aplikazioei emandako baimenak kontu guztiei aplikatzea. Webguneek eta aplikazioek zure kontuko informazioa atzitzerik nahi ez baduzu, hasi saioa gonbidatu gisa <ph name="DEVICE_TYPE" /> gailuan.</translation>
 <translation id="5780011244986845107">Kontuzko fitxategiak ditu hautatu duzun karpetak. Ziur "<ph name="APP_NAME" />" aplikazioari karpeta hori irakurtzeko behin betiko sarbidea eman nahi diozula?</translation>
@@ -7288,6 +7293,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8326478304147373412">PKCS #7, ziurtagiri-katea</translation>
 <translation id="8327676037044516220">Baimenak eta edukiaren ezarpenak</translation>
 <translation id="8330689128072902965">Inguruan dituzun kontaktuek edukia parteka dezakete zurekin. Sakatu hau aldatzeko.</translation>
+<translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Onartutako fitxategi mota: <ph name="FILE_TYPE1" />}=2{Onartutako fitxategi motak: <ph name="FILE_TYPE1" /> eta <ph name="FILE_TYPE2" />}=3{Onartutako fitxategi motak: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> eta <ph name="FILE_TYPE3" />}=4{Onartutako fitxategi motak: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> eta <ph name="FILE_TYPE4" />}other{Onartutako fitxategi motak: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> <ph name="LINK" />eta beste {OVERFLOW_COUNT} <ph name="END_LINK" />}}</translation>
 <translation id="833256022891467078">Crostini-ko karpeta partekatuak</translation>
 <translation id="8335587457941836791">Desainguratu apaletik</translation>
 <translation id="8336407002559723354">Data honetan amaituko dira eguneratzeak: <ph name="MONTH_AND_YEAR" /></translation>

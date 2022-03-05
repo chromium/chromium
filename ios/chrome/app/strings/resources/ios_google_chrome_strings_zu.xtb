@@ -83,6 +83,13 @@
 <translation id="6709398533399187136">Iphasiwedi yakho idalulwe ekwephulweni kwesivumelwano sedatha. I-Google Password Manager incoma ukuba uyishintshe manje.</translation>
 <translation id="6822673484890854830">I-Chrome ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi emuva kwesikhathi.</translation>
 <translation id="6964931465519938134">Manje ungasebenzisa i-Chrome noma nini uma uthepha izixhumanisi kumilayezo, amadokhumenti, nezinye izinhlelo zokusebenza.</translation>
+<translation id="7046845777663074840">Uma ivuliwe:
+<ph name="BEGIN_INDENT" />  • Siza ukwenza i-Chrome ibe ngcono kubantu abayisebenzisa ngendlela owenza ngayo.<ph name="END_INDENT" />
+
+Izinto okufanele uzicabangele:
+<ph name="BEGIN_INDENT" />  • Ulwazi luthunyelwa ku-Google mayelana nokusebenzisa kwakho i-Chrome, kodwa ayikubophi.
+  • Uma i-Chrome iphahlazeka, imininingwane mayelana nokuphahlazeka ingase ihlanganise ulwazi lomuntu siqu.
+  • Uma uvula ukuvumelanisa, ama-metrics angase futhi afake ulwazi olumayelana nama-URL owavakashelayo.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Yenza i-Chrome Ibe Ngeyakho</translation>
 <translation id="7124339256045485976">Gcina i-Chrome isesikhathini</translation>
 <translation id="7161390184744336561">I-Google Chrome iphelelwe yisikhathi</translation>

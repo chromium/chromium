@@ -668,6 +668,7 @@
 <translation id="1640235262200048077">Linux ആപ്പുകളിൽ ഇപ്പോഴും <ph name="IME_NAME" /> പ്രവർത്തിക്കില്ല</translation>
 <translation id="1640283014264083726">RSA എന്‍‌ക്രിപ്‌ഷനോടുകൂടിയ PKCS #1 MD4</translation>
 <translation id="1641113438599504367">സുരക്ഷിത ബ്രൗസിംഗ്</translation>
+<translation id="1641496881756082050"><ph name="NETWORK_NAME" /> എന്നയാൾക്കുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" />-ലേക്കും മറ്റ് <ph name="NUMBER_OF_DEVICES" /> Bluetooth ഉപകരണങ്ങളിലേക്കും കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="1642494467033190216">മറ്റ് ഡീബഗ് ചെയ്യൽ ഫീച്ചറുകൾ പ്രവർത്തനക്ഷമമാക്കുന്നതിന് മുമ്പ് റൂട്‌സ് പരിരക്ഷയുടെ നീക്കം ചെയ്യലും പുനഃരാരംഭിക്കലും ആവശ്യമാണ്.</translation>
 <translation id="1643072738649235303">SHA-1 ഉള്ള X9.62 ECDSA സിഗ്‌നേച്ചർ</translation>
@@ -1441,6 +1442,7 @@
 <translation id="2381499968174336913">പങ്കിട്ട ടാബിന്റെ പ്രിവ്യു</translation>
 <translation id="2381756643783702095">അയയ്‌ക്കുന്നതിന് മുമ്പ് ചോദിക്കുക (ശുപാർശചെയ്‌തത്)</translation>
 <translation id="2387052489799050037">ഹോമിലേക്ക് പോവുക</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (നിലവിലുള്ളത്)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">പ്രോക്‌സിയിലേക്ക് കണക്‌റ്റ് ചെയ്യാനാകുന്നില്ല, വീണ്ടും സെെൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2390782873446084770">Wi-Fi സമന്വയം</translation>

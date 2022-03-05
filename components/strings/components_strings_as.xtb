@@ -525,6 +525,7 @@
 <translation id="2539524384386349900">চিনাক্ত কৰক</translation>
 <translation id="2540701853218677861">টাইমষ্টেম্প আৰু ব্যৰ্থ প্ৰয়াসসমূহকে ধৰি ডিভাইচৰ লগইন/লগআউটৰ ইতিহাস</translation>
 <translation id="2541219929084442027">আপুনি আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰাৰ পাছত আপুনি তাত চোৱা পৃষ্ঠাসমূহ আপোনাৰ ব্ৰাউজাৰৰ ইতিহাস, কুকিৰ ষ্ট’ৰ অথবা সন্ধানৰ ইতিহাসত নাথাকে। আপুনি ডাউনল’ড কৰা যিকোনো ফাইল অথবা আপুনি সৃষ্টি কৰা বুকমার্কসমূহ ৰখা হ’ব।</translation>
+<translation id="2544546346215446551">আপোনাৰ প্ৰশাসকে আপোনাৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰিছে</translation>
 <translation id="2544644783021658368">একক নথি</translation>
 <translation id="2546283357679194313">কুকি আৰু ছাইট ডেটা</translation>
 <translation id="254947805923345898">নীতিৰ মান মান্য নহয়।</translation>
@@ -969,6 +970,7 @@
 <translation id="3990250421422698716">লাহেকৈ অফছেটক হেঁচক</translation>
 <translation id="3996311196211510766">এই <ph name="ORIGIN" /> ছাইটটোৱে অনুৰোধ কৰিছে যে এটা মূল নীতি
     ইয়াৰ সকলো অনুৰোধতে প্ৰযোজ্য কৰা হওক, কিন্তু এই নীতিটো বর্তমান প্ৰয়োগ কৰিব নোৱাৰি।</translation>
+<translation id="4006465311664329701">Google Pay ব্যৱহাৰ কৰা পৰিশোধ পদ্ধতি, অফাৰ আৰু ঠিকনা</translation>
 <translation id="4009243425692662128">আপুনি প্ৰিণ্ট কৰা পৃষ্ঠাখনৰ সমলখিনি বিশ্লেষণ কৰিবলৈ Google Cloud অথবা তৃতীয় পক্ষসমূহলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, সেইসমূহ সংবেদনশীল ডেটাৰ বাবে স্কেন কৰা হ’ব পাৰে।</translation>
 <translation id="4010758435855888356">ষ্ট’ৰেজ এক্সেছ কৰাৰ অনুমতি দিবনে?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} খন পৃষ্ঠা থকা PDF নথি}one{{COUNT} খন পৃষ্ঠা থকা PDF নথি}other{{COUNT} খন পৃষ্ঠা থকা PDF নথি}}</translation>
@@ -1247,6 +1249,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, এখন নতুন Google Sheet ক্ষিপ্ৰভাৱে সৃষ্টি কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="4825507807291741242">শক্তিশালী</translation>
 <translation id="483241715238664915">সকীয়নি অন কৰক</translation>
+<translation id="4834250788637067901">Google Pay ব্যৱহাৰ কৰা পৰিশোধ পদ্ধতি, অফাৰ আৰু ঠিকনা</translation>
 <translation id="4838327282952368871">স্বপ্নময়</translation>
 <translation id="4840250757394056958">আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
 <translation id="484462545196658690">স্বয়ংক্ৰিয়</translation>
