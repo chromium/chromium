@@ -2500,6 +2500,7 @@
 <translation id="346298925039590474">මෙම ජංගම ජාලය මෙම උපාංගයේ සියලු පරිශීලකයින්ට ලබා ගත හැකිය</translation>
 <translation id="3464145797867108663">කාර්යාල පැතිකඩ එක් කරන්න</translation>
 <translation id="346431825526753">මෙය <ph name="CUSTODIAN_EMAIL" /> මගින් පාලනය වන ළමුන් සඳහා වන ගිනුමකි.</translation>
+<translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> සහ තවත් අය සඳහා වට්ටම් ලබා ගන්න</translation>
 <translation id="3468298837301810372">ලේබලය</translation>
 <translation id="3468999815377931311">Android දුරකථනය</translation>
 <translation id="3469583217479686109">තේරීම් මෙවලම</translation>
@@ -2945,6 +2946,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3879748587602334249">බාගැනීමේ කළමනාකරු</translation>
 <translation id="3882165008614329320">කැමරාවෙන් හෝ ගොනුවෙන් පවතින වීඩියෝව</translation>
 <translation id="3883306461188700142">ඔබගේ කටහඬ සමග ටයිප් කරන්න. Search + D ඔබා, අනතුරුව කතා කිරීම ආරම්භ කරන්න.</translation>
+<translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> සහ <ph name="MERCHANT_NAME_2" /> සඳහා වට්ටම් ලබා ගන්න</translation>
 <translation id="3884152383786131369">භාෂා කිහිපයකින් ලබා ගත හැකි වෙබ් අන්තර්ගතය මෙම ලැයිස්තුවෙන් පළමු සහාය දක්වන භාෂාව භාවිත කරයි. මෙම මනාප ඔබගේ බ්‍රව්සර සැකසීම් සමඟ සමමුහුර්ත කර ඇත. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">යාවත්කාලීන කිරීම් කළමනාකරණය කරනු ලබන්නේ ඔබගේ පරිපාලක විසිනි</translation>
 <translation id="3886446263141354045">මෙම අඩවියට පිවිසීමට ඔබ කළ ඉල්ලීම <ph name="NAME" /> වෙත යවන ලදී</translation>

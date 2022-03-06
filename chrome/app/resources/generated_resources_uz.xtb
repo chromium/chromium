@@ -2499,6 +2499,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="346298925039590474">Bu mobil tarmoqdan qurilmadagi barcha foydalanuvchilar foydalana oladi</translation>
 <translation id="3464145797867108663">Ish profilini kiritish</translation>
 <translation id="346431825526753">Bu bolalar hisobi <ph name="CUSTODIAN_EMAIL" /> tomonidan boshqariladi.</translation>
+<translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> va boshqa xaridlar uchun chegirma olish</translation>
 <translation id="3468298837301810372">Yorliq</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3469583217479686109">Tanlash vositasi</translation>
@@ -2943,6 +2944,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3879748587602334249">Yuklanmalar menejeri</translation>
 <translation id="3882165008614329320">Kamera yoki galereyadan olingan video</translation>
 <translation id="3883306461188700142">Ovoz bilan yozing. Search + D tugmalarini bosing va gapiring.</translation>
+<translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> va <ph name="MERCHANT_NAME_2" /> xaridlari uchun chegirma olish</translation>
 <translation id="3884152383786131369">Bir nechta tilda chiqadigan veb kontent shu roʻyxatdagi birinchi mos tilni ishlatadi. Bu parametrlar brauzeringiz sozlamalari bilan sinxronlanadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Yangilanishlar administrator tomonidan boshqariladi</translation>
 <translation id="3886446263141354045">Bu saytni ochishga ruxsat so‘rovi <ph name="NAME" />ga yuborildi</translation>
