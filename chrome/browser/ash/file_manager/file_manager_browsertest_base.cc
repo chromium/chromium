@@ -1840,6 +1840,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kGuestOsFiles);
   }
 
+  if (options.enable_filters_in_recents) {
+    enabled_features.push_back(chromeos::features::kFiltersInRecents);
+  } else {
+    disabled_features.push_back(chromeos::features::kFiltersInRecents);
+  }
+
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual
   // method calls, but by convention subclasses of this fixture may initialize
@@ -2882,6 +2888,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isBannersFrameworkEnabled") {
     *output = options.enable_banners_framework ? "true" : "false";
+    return;
+  }
+
+  if (name == "isFiltersInRecentsEnabled") {
+    *output = options.enable_filters_in_recents ? "true" : "false";
     return;
   }
 

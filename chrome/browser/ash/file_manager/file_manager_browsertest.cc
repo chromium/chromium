@@ -125,6 +125,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableFiltersInRecents() {
+    options.enable_filters_in_recents = true;
+    return *this;
+  }
+
   TestCase& EnableTrash() {
     options.enable_trash = true;
     return *this;
@@ -177,6 +182,9 @@ struct TestCase {
 
     if (options.enable_trash)
       full_name += "_Trash";
+
+    if (options.enable_filters_in_recents)
+      full_name += "_FiltersInRecents";
 
     return full_name;
   }
@@ -1495,19 +1503,34 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Recents, /* recents.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("recentsDownloads"),
-                      TestCase("recentsDrive"),
-                      TestCase("recentsCrostiniNotMounted"),
-                      TestCase("recentsCrostiniMounted"),
-                      TestCase("recentsDownloadsAndDrive"),
-                      TestCase("recentsDownloadsAndDriveWithOverlap"),
-                      TestCase("recentsNested"),
-                      TestCase("recentAudioDownloads"),
-                      TestCase("recentAudioDownloadsAndDrive"),
-                      TestCase("recentImagesDownloads"),
-                      TestCase("recentImagesDownloadsAndDrive"),
-                      TestCase("recentVideosDownloads"),
-                      TestCase("recentVideosDownloadsAndDrive")));
+    ::testing::Values(
+        TestCase("recentsDownloads"),
+        TestCase("recentsDownloads").EnableFiltersInRecents(),
+        TestCase("recentsDrive"),
+        TestCase("recentsDrive").EnableFiltersInRecents(),
+        TestCase("recentsCrostiniNotMounted"),
+        TestCase("recentsCrostiniNotMounted").EnableFiltersInRecents(),
+        TestCase("recentsCrostiniMounted"),
+        TestCase("recentsCrostiniMounted").EnableFiltersInRecents(),
+        TestCase("recentsDownloadsAndDrive"),
+        TestCase("recentsDownloadsAndDrive").EnableFiltersInRecents(),
+        TestCase("recentsDownloadsAndDriveWithOverlap"),
+        TestCase("recentsDownloadsAndDriveWithOverlap")
+            .EnableFiltersInRecents(),
+        TestCase("recentsNested"),
+        TestCase("recentsNested").EnableFiltersInRecents(),
+        TestCase("recentAudioDownloads"),
+        TestCase("recentAudioDownloads").EnableFiltersInRecents(),
+        TestCase("recentAudioDownloadsAndDrive"),
+        TestCase("recentAudioDownloadsAndDrive").EnableFiltersInRecents(),
+        TestCase("recentImagesDownloads"),
+        TestCase("recentImagesDownloads").EnableFiltersInRecents(),
+        TestCase("recentImagesDownloadsAndDrive"),
+        TestCase("recentImagesDownloadsAndDrive").EnableFiltersInRecents(),
+        TestCase("recentVideosDownloads"),
+        TestCase("recentVideosDownloads").EnableFiltersInRecents(),
+        TestCase("recentVideosDownloadsAndDrive"),
+        TestCase("recentVideosDownloadsAndDrive").EnableFiltersInRecents()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metadata, /* metadata.js */

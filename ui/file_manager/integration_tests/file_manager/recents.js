@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, EntryType, RootPath, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {mountCrostini, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -19,7 +19,79 @@ const RECENTLY_MODIFIED_VIDEO = new TestEntryInfo({
   sizeText: '59 KB',
   typeText: 'OGG video'
 });
+const RECENTLY_MODIFIED_MOV_VIDEO = new TestEntryInfo({
+  type: EntryType.FILE,
+  sourceFileName: 'video.mov',
+  targetPath: 'mac.mov',
+  lastModifiedTime: 'Jul 4, 2038, 10:35 AM',
+  nameText: 'mac.mov',
+  sizeText: '875 bytes',
+  typeText: 'QuickTime video'
+});
 
+/**
+ * Enum for supported recent filter types.
+ * @enum {string}
+ */
+const RecentFilterType = {
+  ALL: 'all',
+  AUDIO: 'audio',
+  IMAGE: 'image',
+  VIDEO: 'video',
+};
+
+/**
+ * Checks if the #file-filters-in-recents flag has been enabled or not.
+ *
+ * @returns {!Promise<boolean>} Flag enabled or not.
+ */
+async function isFiltersInRecentsEnabled() {
+  const isFiltersInRecentsEnabled =
+      await sendTestMessage({name: 'isFiltersInRecentsEnabled'});
+  return isFiltersInRecentsEnabled === 'true';
+}
+
+/**
+ * Navigate to Recent folder with specific type and verify the breadcrumb path.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {!RecentFilterType=} type Recent file type.
+ */
+async function navigateToRecent(appId, type = RecentFilterType.ALL) {
+  const breadcrumbMap = {
+    [RecentFilterType.ALL]: '/Recent',
+    [RecentFilterType.AUDIO]: '/Audio',
+    [RecentFilterType.IMAGE]: '/Images',
+    [RecentFilterType.VIDEO]: '/Videos',
+  };
+
+  if (await isFiltersInRecentsEnabled()) {
+    await remoteCall.waitAndClickElement(
+        appId, ['span[root-type-icon="recent"]']);
+    // "All" button is activated by default, no need to click.
+    if (type !== RecentFilterType.ALL) {
+      await remoteCall.waitAndClickElement(
+          appId, [`button[file-type-filter="${type}"]`]);
+    }
+    // Check the corresponding filter button is activated.
+    await remoteCall.waitForElement(
+        appId, [`button[file-type-filter="${type}"].active`]);
+    // Breadcrumb should always be "/Recents" if the flag is on.
+    await verifyBreadcrumbsPath(appId, breadcrumbMap[RecentFilterType.ALL]);
+  } else {
+    await remoteCall.waitAndClickElement(
+        appId, [`span[root-type-icon="recent"][recent-file-type="${type}"]`]);
+    await verifyBreadcrumbsPath(appId, breadcrumbMap[type]);
+  }
+}
+
+/**
+ * Verifies the current folder has the expected entries and checks the
+ * delete button is hidden after selecting these files.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
+ */
 async function verifyCurrentEntries(appId, expectedEntries) {
   // Verify Recents contains the expected files - those with an mtime in the
   // future.
@@ -38,41 +110,62 @@ async function verifyCurrentEntries(appId, expectedEntries) {
   chrome.test.assertTrue(deleteButton.hidden, 'delete button should be hidden');
 }
 
+/**
+ * Opens the Recent folder and checks the expected entries are showing
+ * there.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {!Array<!TestEntryInfo>=} expectedEntries Expected file
+ *     entries, by default `RECENT_ENTRY_SET` is used.
+ */
 async function verifyRecents(appId, expectedEntries = RECENT_ENTRY_SET) {
-  // Navigate to Recents.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['span[root-type-icon=\'recent\']']));
-
+  await navigateToRecent(appId);
   await verifyCurrentEntries(appId, expectedEntries);
 }
 
+
+/**
+ * Opens the Recent Audio folder and checks the expected entries are
+ * showing there.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
+ */
 async function verifyRecentAudio(appId, expectedEntries) {
-  // Navigate to Audio.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId,
-      ['span[root-type-icon=\'recent\'][recent-file-type=\'audio\']']));
-
+  await navigateToRecent(appId, RecentFilterType.AUDIO);
   await verifyCurrentEntries(appId, expectedEntries);
 }
 
+/**
+ * Opens the Recent Image folder and checks the expected entries are
+ * showing there.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
+ */
 async function verifyRecentImages(appId, expectedEntries) {
-  // Navigate to Images.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId,
-      ['span[root-type-icon=\'recent\'][recent-file-type=\'image\']']));
-
+  await navigateToRecent(appId, RecentFilterType.IMAGE);
   await verifyCurrentEntries(appId, expectedEntries);
 }
 
+/**
+ * Opens the Recent Video folder and checks the expected entries are
+ * showing there.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
+ */
 async function verifyRecentVideos(appId, expectedEntries) {
-  // Navigate to Images.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId,
-      ['span[root-type-icon=\'recent\'][recent-file-type=\'video\']']));
-
+  await navigateToRecent(appId, RecentFilterType.VIDEO);
   await verifyCurrentEntries(appId, expectedEntries);
 }
 
+/**
+ * Verifies the breadcrumb has the expected path.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {string} expectedPath Expected breadcrumb path.
+ */
 async function verifyBreadcrumbsPath(appId, expectedPath) {
   const path =
       await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []);
@@ -100,6 +193,10 @@ async function goToFileLocation(appId, itemName) {
   remoteCall.waitAndClickElement(appId, goToLocationMenu);
 }
 
+/**
+ * Tests that file entries populated in the Downloads folder recently will be
+ * displayed in Recent folder.
+ */
 testcase.recentsDownloads = async () => {
   // Populate downloads.
   const appId = await setupAndWaitUntilReady(
@@ -116,6 +213,10 @@ testcase.recentsDownloads = async () => {
   await verifyBreadcrumbsPath(appId, '/My files/Downloads');
 };
 
+/**
+ * Tests that file entries populated in My Drive folder recently will be
+ * displayed in Recent folder.
+ */
 testcase.recentsDrive = async () => {
   // Populate drive.
   const appId =
@@ -132,6 +233,10 @@ testcase.recentsDrive = async () => {
   await verifyBreadcrumbsPath(appId, '/My Drive');
 };
 
+/**
+ * Tests that file entries populated in Crostini folder recently won't be
+ * displayed in Recent folder when Crostini has not been mounted.
+ */
 testcase.recentsCrostiniNotMounted = async () => {
   // Add entries to crostini volume, but do not mount.
   // The crostini entries should not show up in recents.
@@ -142,6 +247,10 @@ testcase.recentsCrostiniNotMounted = async () => {
   await verifyRecents(appId, [ENTRIES.beautiful]);
 };
 
+/**
+ * Tests that file entries populated in Downloads folder and Crostini folder
+ * recently will be displayed in Recent folder when Crostini has been mounted.
+ */
 testcase.recentsCrostiniMounted = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.photos], []);
@@ -150,6 +259,10 @@ testcase.recentsCrostiniMounted = async () => {
   await verifyRecents(appId);
 };
 
+/**
+ * Tests that file entries populated in Downloads folder and My Drive folder
+ * recently will be displayed in Recent folder.
+ */
 testcase.recentsDownloadsAndDrive = async () => {
   // Populate both downloads and drive with disjoint sets of files.
   const appId = await setupAndWaitUntilReady(
@@ -158,12 +271,22 @@ testcase.recentsDownloadsAndDrive = async () => {
   await verifyRecents(appId);
 };
 
+/**
+ * Tests that the same file entries populated in Downloads folder and My Drive
+ * folder recently will be displayed in Recent folder twice when the file
+ * entries are the same.
+ */
 testcase.recentsDownloadsAndDriveWithOverlap = async () => {
   // Populate both downloads and drive with overlapping sets of files.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await verifyRecents(appId, RECENT_ENTRY_SET.concat(RECENT_ENTRY_SET));
 };
 
+
+/**
+ * Tests that the nested file entries populated in Downloads folder recently
+ * will be displayed in Recent folder.
+ */
 testcase.recentsNested = async () => {
   // Populate downloads with nested folder structure. |desktop| is added to
   // ensure Recents has different files to Downloads/A/B/C
@@ -189,16 +312,22 @@ testcase.recentsNested = async () => {
           '.tree-row[selected][active]');
 };
 
+/**
+ * Tests that the audio file entries populated in Downloads folder recently
+ * will be displayed in Recent Audio folder.
+ */
 testcase.recentAudioDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   // ENTRIES.beautiful is recently-modified and has .ogg file extension.
   await verifyRecentAudio(appId, [ENTRIES.beautiful]);
-
-  // Breadcrumbs path should be '/Audio'.
-  await verifyBreadcrumbsPath(appId, '/Audio');
 };
 
+/**
+ * Tests that if the audio file entries without MIME type are being populated
+ * in both Downloads folder and My Drive folder, only the ones from Downloads
+ * folder will be displayed in Recent Audio folder.
+ */
 testcase.recentAudioDownloadsAndDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET);
@@ -207,18 +336,33 @@ testcase.recentAudioDownloadsAndDrive = async () => {
   // Downloads should be shown even though the Drive one also has .ogg file
   // extension.
   await verifyRecentAudio(appId, [ENTRIES.beautiful]);
+
+  // Tests that selecting "Go to file location" for the file navigates to
+  // Downloads since the same file from My Drive doesn't appear in Recent
+  // Audio folder.
+  await goToFileLocation(appId, ENTRIES.beautiful.nameText);
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET));
+  await verifyBreadcrumbsPath(appId, '/My files/Downloads');
 };
 
+/**
+ * Tests that the image file entries populated in Downloads folder recently will
+ * be displayed in Recents Image folder.
+ */
 testcase.recentImagesDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   // ENTRIES.desktop is recently-modified and has .png file extension.
   await verifyRecentImages(appId, [ENTRIES.desktop]);
-
-  // Breadcrumbs path should be '/Images'.
-  await verifyBreadcrumbsPath(appId, '/Images');
 };
 
+/**
+ * Tests that if the image file entries with MIME type are being populated
+ * in both Downloads folder and My Drive folder, the file entries will be
+ * displayed in Recent Audio folder regardless of whether it's from Downloads
+ * or My Drive.
+ */
 testcase.recentImagesDownloadsAndDrive = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   // ENTRIES.desktop has 'image/png' mime type, too. Both the file in Downloads
@@ -226,18 +370,28 @@ testcase.recentImagesDownloadsAndDrive = async () => {
   await verifyRecentImages(appId, [ENTRIES.desktop, ENTRIES.desktop]);
 };
 
+/**
+ * Tests that the video file entries populated in Downloads folder recently will
+ * be displayed in Recent Image folder.
+ */
 testcase.recentVideosDownloads = async () => {
   // RECENTLY_MODIFIED_VIDEO is recently-modified and has .ogv file extension.
   // It should be shown in Videos.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
-      BASIC_LOCAL_ENTRY_SET.concat([RECENTLY_MODIFIED_VIDEO]), []);
-  await verifyRecentVideos(appId, [RECENTLY_MODIFIED_VIDEO]);
-
-  // Breadcrumbs path should be '/Videos'.
-  await verifyBreadcrumbsPath(appId, '/Videos');
+      BASIC_LOCAL_ENTRY_SET.concat(
+          [RECENTLY_MODIFIED_VIDEO, RECENTLY_MODIFIED_MOV_VIDEO]),
+      []);
+  await verifyRecentVideos(
+      appId, [RECENTLY_MODIFIED_VIDEO, RECENTLY_MODIFIED_MOV_VIDEO]);
 };
 
+/**
+ * Tests that if the video file entries with MIME type are being populated
+ * in both Downloads folder and My Drive folder, the file entries will be
+ * displayed in Recent Video folder regardless of whether it's from Downloads
+ * or My Drive.
+ */
 testcase.recentVideosDownloadsAndDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
