@@ -13,7 +13,7 @@
 #include <unicode/uniset.h>
 
 namespace {
-base::Lock& GetFreezePatternMutex() {
+base::Lock& GetFreezePatternLock() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
   return lock;
 }
