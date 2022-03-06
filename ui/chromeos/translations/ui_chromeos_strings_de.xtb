@@ -252,7 +252,7 @@
 <translation id="3224239078034945833">Kanadisch – mehrsprachig</translation>
 <translation id="3236289833370040187">Die Eigentümerschaft geht auf <ph name="DESTINATION_DOMAIN" /> über.</translation>
 <translation id="3241720467332021590">Irisch</translation>
-<translation id="3245321423178950146">Unbekannter Musiker</translation>
+<translation id="3245321423178950146">Unbekannter Künstler</translation>
 <translation id="3248185426436836442">Ausstehend</translation>
 <translation id="3252266817569339921">Französisch</translation>
 <translation id="3253225298092156258">Nicht verfügbar</translation>
@@ -402,7 +402,7 @@
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> wurde zur Auswahl hinzugefügt.</translation>
 <translation id="4594543368593301662">Ergebnisse für <ph name="SEARCH_TERM" />.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> wird in den Ordner "<ph name="FOLDER_NAME" />" kopiert</translation>
-<translation id="4631887759990505102">Musiker</translation>
+<translation id="4631887759990505102">Künstler</translation>
 <translation id="4642769377300286600">Mobiles Profil wird installiert, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tschechisch mit Qwerty-Tastatur</translation>
 <translation id="4656293982926141856">Auf diesem Computer</translation>
@@ -446,7 +446,7 @@
 <translation id="4905417359854579806">Bereit zum Sichern von <ph name="FILE_COUNT" /></translation>
 <translation id="4906580650526544301">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Details</translation>
 <translation id="4935975195727477204">Mittagsgoldblume</translation>
-<translation id="4943368462779413526">Fußball</translation>
+<translation id="4943368462779413526">American Football</translation>
 <translation id="4961158930123534723">1 Ordner für Parallels Desktop freigegeben</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Der Name darf höchstens <ph name="MAX_LENGTH" /> Zeichen lang sein</translation>

@@ -591,7 +591,7 @@
 <translation id="4993152509206108683">Velocidad: <ph name="PERCENT" /> %</translation>
 <translation id="4994420463726586413">Anunciar el estado actual de la batería</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, botón de selección seleccionado</translation>
-<translation id="5011664330025416377">Presiona la tecla de búsqueda+barra espaciadora para activar una opción</translation>
+<translation id="5011664330025416377">Presiona la tecla de búsqueda y la barra espaciadora para activar la opción</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, botón de selección de elemento de menú seleccionado</translation>
 <translation id="5020651427400641814">Habilitar el acceso por voz</translation>
 <translation id="5041394372352067729">Mover la pantalla de braille a la parte superior de la página</translation>
@@ -1151,7 +1151,7 @@
 <translation id="9099429023611373837">cortar</translation>
 <translation id="9108370397979208512">expr mtmtc</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{porcentaje}other{# signos de porcentaje}}</translation>
+<translation id="911476240645808512">{COUNT,plural, =1{por ciento}other{# por ciento}}</translation>
 <translation id="9128414153595658330">dlg</translation>
 <translation id="9133928141873682933">Caqui</translation>
 <translation id="9149560530563164529">sctn</translation>
