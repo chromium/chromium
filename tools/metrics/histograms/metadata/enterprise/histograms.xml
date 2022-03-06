@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.ActiveDirectoryJoin"
     enum="ActiveDirectoryDomainJoinType" expires_after="M104">
   <owner>fsandrade@chromium.org</owner>
-  <owner>tomdobro@chromium.org</owner>
+  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
   <summary>
     The way device is joined to the Active Directory domain. This will be
     recorded during successful enterprise enrollment and domain join.
