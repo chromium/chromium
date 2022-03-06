@@ -409,6 +409,9 @@ const char kLinuxAppsLearnMoreURL[] =
 const char kNaturalScrollHelpURL[] =
     "https://support.google.com/chromebook/?p=simple_scrolling";
 
+const char kHapticFeedbackHelpURL[] =
+    "https://support.google.com/chromebook?p=haptic_feedback_m100";
+
 const char kOemEulaURLPath[] = "oem";
 
 const char kGoogleEulaOnlineURLPath[] =

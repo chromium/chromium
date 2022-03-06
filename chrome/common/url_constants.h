@@ -364,6 +364,9 @@ extern const char kLinuxAppsLearnMoreURL[];
 // The URL for the "Learn more" link for natural scrolling on ChromeOS.
 extern const char kNaturalScrollHelpURL[];
 
+// The URL for the "Learn more" link for touchpad haptic feedback on Chrome OS.
+extern const char kHapticFeedbackHelpURL[];
+
 // The URL path to offline OEM EULA.
 extern const char kOemEulaURLPath[];
 

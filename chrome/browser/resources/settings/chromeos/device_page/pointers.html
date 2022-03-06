@@ -212,7 +212,12 @@
           <div class="start settings-box-text">
             <div>$i18n{touchpadHapticFeedbackTitle}</div>
             <div class="secondary">
-              $i18n{touchpadHapticFeedbackSecondaryText}
+              <localized-link
+                on-click="onLearnMoreLinkClicked_"
+                id="touchpadHapticFeedbackSecondary"
+                localized-string="$i18n{touchpadHapticFeedbackSecondaryText}"
+                link-url="$i18n{hapticFeedbackLearnMoreLink}">
+              </localized-link>
             </div>
           </div>
           <cr-toggle id="touchpadHapticFeedbackToggle"

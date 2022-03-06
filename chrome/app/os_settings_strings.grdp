@@ -2293,7 +2293,7 @@ Press an assigned switch or key to remove assignment.
     Haptic feedback
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FEEDBACK_SECONDARY_TEXT" desc="In Device Settings, the text next to the toggle for enabling touchpad haptic feedback.">
-    Receive vibration confirmation for actions like split screen and switching desks.
+    Receive vibration confirmation for actions like split screen and switching desks. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY_LABEL" desc="In Device Settings, the text next to the slider for setting the touchpad haptic click sensitivity.">
     Click strength
