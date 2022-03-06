@@ -7,6 +7,13 @@ module app_management.mojom;
 import "components/services/app_service/public/mojom/types.mojom";
 import "url/mojom/url.mojom";
 
+// Augments a bool to include an 'unknown' value.
+enum OptionalBool {
+  kUnknown = 0,
+  kFalse,
+  kTrue,
+};
+
 // The types of permissions in App Service.
 enum PermissionType {
   kUnknown         = 0,
@@ -47,8 +54,8 @@ struct App {
   string? title;
 
   string? description;
-  apps.mojom.OptionalBool is_pinned;
-  apps.mojom.OptionalBool is_policy_pinned;
+  OptionalBool is_pinned;
+  OptionalBool is_policy_pinned;
   string? version;
   string? size;
   map<PermissionType, Permission> permissions;
@@ -86,7 +93,7 @@ interface PageHandler {
   GetExtensionAppPermissionMessages(string app_id) =>
       (array<ExtensionAppPermissionMessage> messages);
   // Pins or unpins for an app identified with `app_id`.
-  SetPinned(string app_id, apps.mojom.OptionalBool pinned);
+  SetPinned(string app_id, OptionalBool pinned);
   // Sets `permission` for an app identified with `app_id`.
   SetPermission(string app_id,
                 Permission permission);

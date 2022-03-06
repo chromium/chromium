@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
-using apps::mojom::OptionalBool;
+using app_management::mojom::OptionalBool;
 
 AppManagementShelfDelegate::AppManagementShelfDelegate(
     AppManagementPageHandler* page_handler,

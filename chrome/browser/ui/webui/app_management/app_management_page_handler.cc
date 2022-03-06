@@ -48,7 +48,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #endif
 
-using apps::mojom::OptionalBool;
+using app_management::mojom::OptionalBool;
 
 namespace {
 
@@ -256,7 +256,8 @@ void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
                                                bool locked) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
-      app_id, locked ? OptionalBool::kTrue : OptionalBool::kFalse);
+      app_id, locked ? apps::mojom::OptionalBool::kTrue
+                     : apps::mojom::OptionalBool::kFalse);
 #else
   NOTREACHED();
 #endif
@@ -385,7 +386,8 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->is_policy_pinned = shelf_delegate_.IsPolicyPinned(update.AppId())
                               ? OptionalBool::kTrue
                               : OptionalBool::kFalse;
-  app->resize_locked = update.ResizeLocked() == OptionalBool::kTrue;
+  app->resize_locked =
+      update.ResizeLocked() == apps::mojom::OptionalBool::kTrue;
   app->hide_resize_locked =
       update.ResizeLocked() == apps::mojom::OptionalBool::kUnknown;
 #endif

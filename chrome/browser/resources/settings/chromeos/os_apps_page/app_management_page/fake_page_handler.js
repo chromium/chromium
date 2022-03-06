@@ -97,8 +97,8 @@ export class FakePageHandler {
       description: '',
       version: '5.1',
       size: '9.0MB',
-      isPinned: apps.mojom.OptionalBool.kFalse,
-      isPolicyPinned: apps.mojom.OptionalBool.kFalse,
+      isPinned: OptionalBool.kFalse,
+      isPolicyPinned: OptionalBool.kFalse,
       installReason: apps.mojom.InstallReason.kUser,
       permissions: {},
       hideMoreSettings: false,
@@ -222,7 +222,7 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
-   * @param {apps.mojom.OptionalBool} pinnedValue
+   * @param {appManagement.mojom.OptionalBool} pinnedValue
    */
   setPinned(appId, pinnedValue) {
     const app = AppManagementStore.getInstance().data.apps[appId];

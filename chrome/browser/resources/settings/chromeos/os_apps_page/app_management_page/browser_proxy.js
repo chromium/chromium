@@ -13,7 +13,7 @@ import '/app-management/types.mojom-lite.js';
 import '/app-management/app_management.mojom-lite.js';
 
 import {BrowserProxy as ComponentBrowserProxy} from '//resources/cr_components/app_management/browser_proxy.js';
-import {AppType, InstallReason} from '//resources/cr_components/app_management/constants.js';
+import {AppType, InstallReason, OptionalBool} from '//resources/cr_components/app_management/constants.js';
 import {PermissionType, TriState} from '//resources/cr_components/app_management/permission_constants.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -100,8 +100,8 @@ export class BrowserProxy {
             {
               title: 'Web App, policy applied',
               type: AppType.kWeb,
-              isPinned: apps.mojom.OptionalBool.kTrue,
-              isPolicyPinned: apps.mojom.OptionalBool.kTrue,
+              isPinned: OptionalBool.kTrue,
+              isPolicyPinned: OptionalBool.kTrue,
               installReason: apps.mojom.InstallReason.kPolicy,
               permissions:
                   FakePageHandler.createWebPermissions(permissionOptions),

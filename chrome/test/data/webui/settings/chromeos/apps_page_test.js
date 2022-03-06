@@ -202,7 +202,8 @@ suite('AppsPageTests', function() {
    * @return {!chromeos.settings.appNotification.mojom.App}
    */
   function createApp(
-      id, title, permission, readiness = apps.mojom.Readiness.kReady) {
+      id, title, permission,
+      readiness = chromeos.settings.appNotification.mojom.Readiness.kReady) {
     return {
       id: id,
       title: title,
@@ -311,7 +312,8 @@ suite('AppsPageTests', function() {
 
       // Simulate an uninstalled app.
       const app3 = createApp(
-          '2', 'App2', permission2, apps.mojom.Readiness.kUninstalledByUser);
+          '2', 'App2', permission2,
+          chromeos.settings.appNotification.mojom.Readiness.kUninstalledByUser);
       simulateNotificationAppChanged(app3);
       await flushTasks();
       assertEquals('1 apps', rowLink.subLabel);
