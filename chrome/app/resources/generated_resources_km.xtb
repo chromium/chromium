@@ -672,6 +672,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> មិនទាន់ដំណើរការ​នៅក្នុង​កម្មវិធី Linux នៅឡើយទេ</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 ជាមួយនឹងការអ៊ីនគ្រីប RSA</translation>
 <translation id="1641113438599504367">ការរុករកសុវត្ថិភាព</translation>
+<translation id="1641496881756082050">សកម្មភាព​ច្រើន​ទៀត​សម្រាប់ <ph name="NETWORK_NAME" /></translation>
 <translation id="1642492862748815878">បានភ្ជាប់​ជាមួយ <ph name="DEVICE" /> និង​ឧបករណ៍​ប៊្លូធូស <ph name="NUMBER_OF_DEVICES" /> ទៀត</translation>
 <translation id="1642494467033190216">តម្រូវឲ្យមានការយកចេញការការពារ rootfs និងការចាប់ផ្តើមឡើងវិញ មុនពេលបើកដំណើរការលក្ខណៈពិសេសកម្ចាត់កំហុសផ្សេងទៀត។</translation>
 <translation id="1643072738649235303">ហត្ថលេខា X9.62 ECDSA ជាមួយ SHA-1</translation>
@@ -1457,6 +1458,7 @@
 <translation id="2381499968174336913">មើលផ្ទាំងដែលបានចែករំលែកសាកល្បង</translation>
 <translation id="2381756643783702095">សួរមុនពេលផ្ញើ (បានណែនាំ)</translation>
 <translation id="2387052489799050037">ចូលទំព័រ​ដើម</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (បច្ចុប្បន្ន)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">មិនអាចភ្ជាប់ទៅប្រូកស៊ីបានទេ សូមចូលម្ដងទៀត</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>

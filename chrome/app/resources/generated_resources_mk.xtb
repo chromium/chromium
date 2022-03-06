@@ -438,6 +438,7 @@
 <translation id="1427269577154060167">Држава</translation>
 <translation id="142758023928848008">Овозможи лепливи копчиња (за извршување кратенки на тастатура со нивно пишување секвенцијално)</translation>
 <translation id="142765311413773645">Лиценцата на <ph name="APP_NAME" /> е истечена</translation>
+<translation id="1428373049397869723">Со апликацијава може да отворате и уредувате поддржани датотеки од Finder или од други апликации. За да контролирате кои датотеки стандардно се отвораат во апликацијава, <ph name="BEGIN_LINK" />дознајте како да поставите стандардни апликации на вашиот уред<ph name="END_LINK" />.</translation>
 <translation id="1429300045468813835">Избришани се сите</translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1431188203598586230">Последно софтверско ажурирање</translation>
@@ -3066,6 +3067,7 @@
 <translation id="3971764089670057203">Отпечатоци на овој безбедносен клуч</translation>
 <translation id="3973005893595042880">Корисникот не е дозволен</translation>
 <translation id="3973660817924297510">Се проверуваат лозинките (<ph name="CHECKED_PASSWORDS" /> од <ph name="TOTAL_PASSWORDS" />)…</translation>
+<translation id="3974514184580396500">Користете „Следно“ за да го преместите фокусот нанапред на екранот</translation>
 <translation id="3975201861340929143">Објаснување</translation>
 <translation id="3975565978598857337">Контактирањето со серверот за домен не успеа</translation>
 <translation id="3976108569178263973">Нема достапни печатачи.</translation>
@@ -3898,6 +3900,7 @@
 <translation id="4868281708609571334">Обучете го „Помошникот на Google“ да го препознава гласот на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Дијалогов не е нагласен во моментов. Притиснете Command-Shift-Опција A за да го нагласите дијалогов.</translation>
 <translation id="48704129375571883">Додајте дополнителни функции</translation>
+<translation id="4870724079713069532">Со апликацијава може да отворате и уредувате поддржани датотеки од File Explorer или од други апликации. За да контролирате кои датотеки стандардно се отвораат во апликацијава, одете на <ph name="BEGIN_LINK" />поставките за Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Внесете лозинка што ви ја обезбедил администраторот за да добиете информации за конфигурацијата</translation>
 <translation id="4870903493621965035">Нема спарени уреди</translation>
 <translation id="4870995365819149457">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и 1 друга апликација.</translation>
@@ -4117,6 +4120,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 со RSA шифрирање</translation>
 <translation id="5090637338841444533">Не им е дозволено да ја следат позицијата на камерата</translation>
 <translation id="5093569275467863761">Подрамка за инкогнито за кеш за движење наназад/нанапред: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094176498302660097">Со апликацијава може да отворате и уредувате поддржани датотеки од апликацијата Files или од други апликации. За да контролирате кои датотеки стандардно се отвораат во апликацијава, <ph name="BEGIN_LINK" />дознајте како да поставите стандардни апликации на вашиот уред<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Комуницирај со матични апликации што соработуваат</translation>
 <translation id="5097002363526479830">Не успеа да се поврзе на мрежа „<ph name="NAME" />“: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">Дознајте повеќе за користењето локација</translation>
@@ -4768,6 +4772,7 @@
 <translation id="577322787686508614">Операцијата за читање не е дозволена на: „<ph name="DEVICE_NAME" />".</translation>
 <translation id="5774295353725270860">Отвори ја апликацијата Датотеки</translation>
 <translation id="577624874850706961">Барај колачиња</translation>
+<translation id="5776571780337000608">Со апликацијава може да отворате и уредувате поддржани датотеки од вашиот прелистувач за датотеки или од други апликации. За да контролирате кои датотеки стандардно се отвораат во апликацијава, <ph name="BEGIN_LINK" />дознајте како да поставите стандардни апликации на вашиот уред<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Отвори го Chrome</translation>
 <translation id="5778491106820461378">Може да управувате со најавените сметки на Google од <ph name="LINK_BEGIN" />Поставки<ph name="LINK_END" />. Дозволите што сте им ги одобриле на веб-сајтовите и апликациите можеби ќе важат за сите сметки. Ако не сакате сајтовите или апликациите да пристапуваат до податоците за сметката, може да се најавите на <ph name="DEVICE_TYPE" /> како гостин.</translation>
 <translation id="5780011244986845107">Папката што ја избравте содржи чувствителни датотеки. Дали сигурно сакате да ѝ доделите на <ph name="APP_NAME" /> постојан пристап за читање на оваа папка?</translation>
@@ -7320,6 +7325,7 @@
 <translation id="8326478304147373412">PKCS #7, ланец на сертификат</translation>
 <translation id="8327676037044516220">Дозволи и поставки за содржини</translation>
 <translation id="8330689128072902965">Контактите во близина може да споделуваат со вас. Кликнете за промена.</translation>
+<translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Поддржан тип датотека: <ph name="FILE_TYPE1" />}=2{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и уште {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и уште {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
 <translation id="833256022891467078">Споделени папки на Crostini</translation>
 <translation id="8335587457941836791">Откачи од полица</translation>
 <translation id="8336407002559723354">Ажурирањата ќе завршат во <ph name="MONTH_AND_YEAR" /></translation>

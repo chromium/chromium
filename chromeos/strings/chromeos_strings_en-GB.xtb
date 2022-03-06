@@ -154,6 +154,7 @@
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="291142119251986300">Unqualified components</translation>
 <translation id="2926057806159140518">Enter your username and password or scan your QR code</translation>
+<translation id="2927263920782234016">Install Chrome OS Flex</translation>
 <translation id="3008341117444806826">REFRESH</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3031560714565892478">Device is a video camera.</translation>
@@ -436,6 +437,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6319207335391420837">Update firmware on <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Failed</translation>
 <translation id="6340526405444716530">Personalisation</translation>
+<translation id="6348738456043757611">Username and password</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6388847657025262518">The scanner’s document feeder is jammed. Check the feeder and try again.</translation>
