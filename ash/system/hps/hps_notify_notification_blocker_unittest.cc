@@ -131,7 +131,13 @@ class IdPopupBlocker : public message_center::NotificationBlocker {
 // snooping events).
 class HpsNotifyNotificationBlockerTest : public AshTestBase {
  public:
-  HpsNotifyNotificationBlockerTest() = default;
+  HpsNotifyNotificationBlockerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitWithFeatures({ash::features::kSnoopingProtection},
+                                          {ash::features::kQuickDim});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kHasHps);
+  }
 
   HpsNotifyNotificationBlockerTest(const HpsNotifyNotificationBlockerTest&) =
       delete;
@@ -142,10 +148,6 @@ class HpsNotifyNotificationBlockerTest : public AshTestBase {
 
   // AshTestBase overrides:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({ash::features::kSnoopingProtection},
-                                          {ash::features::kQuickDim});
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
-
     // Simulate a working DBus client.
     chromeos::HpsDBusClient::InitializeFake();
     auto* dbus_client = chromeos::FakeHpsDBusClient::Get();
@@ -199,8 +201,10 @@ TEST_F(HpsNotifyNotificationBlockerTest, Snooping) {
   EXPECT_TRUE(InfoPopupVisible());
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 
-  // Simulate snooper absence.
+  // Simulate snooper absence. We wait for a moment to bypass the controller's
+  // hysteresis logic.
   controller_->OnHpsNotifyChanged(/*state=*/hps::HpsResult::NEGATIVE);
+  task_environment()->FastForwardBy(base::Seconds(10));
 
   // The unshown popups should appear since snooper has left.
   EXPECT_EQ(VisiblePopupCount(), 2u);

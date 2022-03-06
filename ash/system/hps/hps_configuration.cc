@@ -16,6 +16,11 @@
 namespace ash {
 namespace {
 
+// Default minimum amount of time for which a positive snooper presence will be
+// reported.
+constexpr base::TimeDelta kSnoopingProtectionPositiveWindowDefault =
+    base::Seconds(4);
+
 // Default quick dim delay to configure power_manager.
 constexpr base::TimeDelta kQuickDimDelayDefault = base::Seconds(45);
 
@@ -211,6 +216,13 @@ bool GetQuickDimFeedbackEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kQuickDim, "QuickDim_send_feedback_if_undimmed",
       kShouldSendFeedbackIfUndimmed);
+}
+
+base::TimeDelta GetSnoopingProtectionPositiveWindow() {
+  const int pos_window_ms = base::GetFieldTrialParamByFeatureAsInt(
+      features::kSnoopingProtection, "SnoopingProtection_pos_window_ms",
+      kSnoopingProtectionPositiveWindowDefault.InMilliseconds());
+  return base::Milliseconds(pos_window_ms);
 }
 
 }  // namespace ash

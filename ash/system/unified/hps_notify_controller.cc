@@ -16,6 +16,8 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -31,7 +33,8 @@ namespace ash {
 HpsNotifyController::HpsNotifyController()
     : notification_blocker_(std::make_unique<HpsNotifyNotificationBlocker>(
           message_center::MessageCenter::Get(),
-          this)) {
+          this)),
+      pos_window_(GetSnoopingProtectionPositiveWindow()) {
   // When the controller is initialized, we are never in an active user session
   // and we never have any user preferences active. Hence, our default state
   // values are correct.
@@ -57,7 +60,7 @@ HpsNotifyController::HpsNotifyController()
   // Orientation controller is instantiated before us in the shell.
   HpsOrientationController* orientation_controller =
       Shell::Get()->hps_orientation_controller();
-  orientation_suitable_ = orientation_controller->IsOrientationSuitable();
+  state_.orientation_suitable = orientation_controller->IsOrientationSuitable();
   orientation_observation_.Observe(orientation_controller);
 }
 
@@ -89,22 +92,25 @@ void HpsNotifyController::OnSessionStateChanged(
     session_manager::SessionState session_state) {
   const bool session_active =
       session_state == session_manager::SessionState::ACTIVE;
-  ReconfigureHps(hps_available_, session_active, pref_enabled_,
-                 orientation_suitable_);
-  UpdateSnooperStatus(session_active, hps_state_ && session_active,
-                      pref_enabled_, orientation_suitable_);
+
+  State new_state = state_;
+  new_state.session_active = session_active;
+
+  ReconfigureHps(&new_state);
+  UpdateSnooperStatus(new_state);
 }
 
 void HpsNotifyController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   DCHECK(pref_service);
-
   const bool pref_enabled =
       pref_service->GetBoolean(prefs::kSnoopingProtectionEnabled);
-  ReconfigureHps(hps_available_, session_active_, pref_enabled,
-                 orientation_suitable_);
-  UpdateSnooperStatus(session_active_, hps_state_ && pref_enabled, pref_enabled,
-                      orientation_suitable_);
+
+  State new_state = state_;
+  new_state.pref_enabled = pref_enabled;
+
+  ReconfigureHps(&new_state);
+  UpdateSnooperStatus(new_state);
 
   // Re-subscribe to pref changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -116,30 +122,47 @@ void HpsNotifyController::OnActiveUserPrefServiceChanged(
 }
 
 void HpsNotifyController::OnOrientationChanged(bool suitable_for_hps) {
-  ReconfigureHps(hps_available_, session_active_, pref_enabled_,
-                 suitable_for_hps);
-  UpdateSnooperStatus(session_active_, hps_state_ && suitable_for_hps,
-                      pref_enabled_, suitable_for_hps);
+  State new_state = state_;
+  new_state.orientation_suitable = suitable_for_hps;
+
+  ReconfigureHps(&new_state);
+  UpdateSnooperStatus(new_state);
 }
 
 void HpsNotifyController::OnHpsNotifyChanged(hps::HpsResult hps_state) {
-  UpdateSnooperStatus(session_active_,
-                      /*hps_state=*/hps_state == hps::HpsResult::POSITIVE,
-                      pref_enabled_, orientation_suitable_);
+  const bool present = hps_state == hps::HpsResult::POSITIVE;
+
+  State new_state = state_;
+  new_state.hps_state = present;
+
+  // Prevent snooping status from becoming negative within a window of time.
+  if (present) {
+    new_state.within_pos_window = true;
+
+    // Cancels previous task if it is already scheduled.
+    pos_window_timer_.Start(FROM_HERE, pos_window_, this,
+                            &HpsNotifyController::OnMinWindowExpired);
+  }
+
+  UpdateSnooperStatus(new_state);
 }
 
 void HpsNotifyController::OnRestart() {
-  DCHECK(!hps_state_);
+  DCHECK(!state_.hps_state);
 
-  ReconfigureHps(/*hps_available_=*/true, session_active_, pref_enabled_,
-                 orientation_suitable_);
+  State new_state = state_;
+  new_state.hps_available = true;
+
+  ReconfigureHps(&new_state);
+  UpdateSnooperStatus(new_state);
 }
 
 void HpsNotifyController::OnShutdown() {
-  ReconfigureHps(/*hps_available=*/false, session_active_, pref_enabled_,
-                 orientation_suitable_);
-  UpdateSnooperStatus(session_active_, /*hps_state=*/false, pref_enabled_,
-                      orientation_suitable_);
+  State new_state = state_;
+  new_state.hps_available = false;
+
+  ReconfigureHps(&new_state);
+  UpdateSnooperStatus(new_state);
 
   // We will be notified of the service starting back up again via our ongoing
   // observation of the DBus client.
@@ -154,52 +177,50 @@ void HpsNotifyController::RemoveObserver(Observer* observer) {
 }
 
 bool HpsNotifyController::SnooperPresent() const {
-  return session_active_ && hps_state_ && pref_enabled_ &&
-         orientation_suitable_;
+  return state_.within_pos_window ||
+         (state_.session_active && state_.hps_state && state_.pref_enabled &&
+          state_.orientation_suitable);
 }
 
-void HpsNotifyController::UpdateSnooperStatus(bool session_active,
-                                              bool hps_state,
-                                              bool pref_enabled,
-                                              bool orientation_suitable) {
-  // We should only receive a "present" signal if the service is available and
-  // configured.
-  DCHECK((hps_available_ && hps_configured_) || !hps_state);
+void HpsNotifyController::UpdateSnooperStatus(const State& new_state) {
+  // Clean up new state to be consistent.
+  const bool detection_active =
+      new_state.session_active && new_state.pref_enabled &&
+      new_state.hps_available && new_state.hps_configured &&
+      new_state.orientation_suitable;
 
-  const bool old_state = SnooperPresent();
+  State clean_state = new_state;
+  clean_state.hps_state = new_state.hps_state && detection_active;
+  clean_state.within_pos_window =
+      new_state.within_pos_window && detection_active;
 
-  session_active_ = session_active;
-  hps_state_ = hps_state;
-  pref_enabled_ = pref_enabled;
-  orientation_suitable_ = orientation_suitable;
+  const bool was_present = SnooperPresent();
+  state_ = clean_state;
+  const bool is_present = SnooperPresent();
 
-  const bool new_state = SnooperPresent();
-
-  if (old_state == new_state)
+  if (was_present == is_present)
     return;
 
   for (auto& observer : observers_)
-    observer.OnSnoopingStatusChanged(new_state);
+    observer.OnSnoopingStatusChanged(is_present);
 }
 
-void HpsNotifyController::ReconfigureHps(bool hps_available,
-                                         bool session_active,
-                                         bool pref_enabled,
-                                         bool orientation_suitable) {
+void HpsNotifyController::ReconfigureHps(State* new_state) {
   // Can't configure or de-configure the service if it's unavailable.
-  if (!hps_available) {
-    hps_available_ = false;
-    hps_configured_ = false;
+  if (!new_state->hps_available) {
+    new_state->hps_configured = false;
     return;
   }
-  hps_available_ = true;
 
   // We have correctly cached that the service is available; now handle
   // configuring its signal.
-  const bool want_configured =
-      pref_enabled && session_active && orientation_suitable;
-  if (hps_configured_ == want_configured)
+  const bool want_configured = new_state->pref_enabled &&
+                               new_state->session_active &&
+                               new_state->orientation_suitable;
+  if (state_.hps_configured == want_configured) {
+    new_state->hps_configured = want_configured;
     return;
+  }
 
   if (want_configured) {
     // Configure the snooping started/stopped signals that the service will
@@ -216,19 +237,19 @@ void HpsNotifyController::ReconfigureHps(bool hps_available,
     // Populate our initial HPS state for consistency with the service.
     chromeos::HpsDBusClient::Get()->GetResultHpsNotify(base::BindOnce(
         &HpsNotifyController::UpdateHpsState, weak_ptr_factory_.GetWeakPtr()));
-    hps_configured_ = true;
+    new_state->hps_configured = true;
 
     return;
   }
 
   // No longer need signals to be emitted.
   chromeos::HpsDBusClient::Get()->DisableHpsNotify();
-  hps_configured_ = false;
+  new_state->hps_configured = false;
 }
 
 void HpsNotifyController::StartHpsObservation(bool service_is_available) {
-  hps_available_ = service_is_available;
-  hps_configured_ = false;
+  state_.hps_available = service_is_available;
+  state_.hps_configured = false;
 
   if (!service_is_available) {
     LOG(ERROR) << "Could not make initial connection to HPS service";
@@ -244,8 +265,8 @@ void HpsNotifyController::StartHpsObservation(bool service_is_available) {
   hps_dbus_observation_.Observe(chromeos::HpsDBusClient::Get());
 
   // Configure the service and poll its initial value if necessary.
-  ReconfigureHps(/*hps_available_=*/true, session_active_, pref_enabled_,
-                 orientation_suitable_);
+  ReconfigureHps(&state_);
+  UpdateSnooperStatus(state_);
 }
 
 void HpsNotifyController::UpdateHpsState(
@@ -253,24 +274,43 @@ void HpsNotifyController::UpdateHpsState(
   LOG_IF(WARNING, !response.has_value())
       << "Polling the presence daemon failed";
 
-  UpdateSnooperStatus(
-      session_active_,
-      response.value_or(hps::HpsResult::NEGATIVE) == hps::HpsResult::POSITIVE,
-      pref_enabled_, orientation_suitable_);
+  const bool present =
+      response.value_or(hps::HpsResult::NEGATIVE) == hps::HpsResult::POSITIVE;
+
+  State new_state = state_;
+  new_state.hps_state = present;
+
+  // Prevent snooping status from becoming negative within a window of time.
+  if (present) {
+    new_state.within_pos_window = true;
+
+    // Cancels previous task if it is already scheduled.
+    pos_window_timer_.Start(FROM_HERE, pos_window_, this,
+                            &HpsNotifyController::OnMinWindowExpired);
+  }
+
+  UpdateSnooperStatus(new_state);
 }
 
 void HpsNotifyController::UpdatePrefState() {
   DCHECK(pref_change_registrar_);
   DCHECK(pref_change_registrar_->prefs());
-
   const bool pref_enabled = pref_change_registrar_->prefs()->GetBoolean(
       prefs::kSnoopingProtectionEnabled);
-  ReconfigureHps(hps_available_, session_active_, pref_enabled,
-                 orientation_suitable_);
-  UpdateSnooperStatus(session_active_, hps_state_ && pref_enabled, pref_enabled,
-                      orientation_suitable_);
+
+  State new_state = state_;
+  new_state.pref_enabled = pref_enabled;
+
+  ReconfigureHps(&new_state);
+  UpdateSnooperStatus(new_state);
   base::UmaHistogramBoolean("ChromeOS.HPS.SnoopingProtection.Enabled",
                             pref_enabled);
+}
+
+void HpsNotifyController::OnMinWindowExpired() {
+  State new_state = state_;
+  new_state.within_pos_window = false;
+  UpdateSnooperStatus(new_state);
 }
 
 }  // namespace ash

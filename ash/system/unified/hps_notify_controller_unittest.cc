@@ -13,9 +13,10 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/run_loop.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/hps/fake_hps_dbus_client.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
@@ -23,15 +24,13 @@
 #include "components/user_manager/user_type.h"
 
 namespace ash {
+namespace {
 
-// Enables or disables the user pref for the feature. Because this could
-// correctly or incorrectly trigger an asynchronous DBus call, waits for the run
-// loop to empty.
-void SetEnabledPref(bool enabled) {
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kSnoopingProtectionEnabled, enabled);
-  base::RunLoop().RunUntilIdle();
-}
+// The minimum positive window length will be in the range of a few seconds.
+// Here we define two windows that will surely be shorter and longer resp. than
+// the positive window length.
+constexpr base::TimeDelta kShortTime = base::Milliseconds(30);
+constexpr base::TimeDelta kLongTime = base::Seconds(30);
 
 // A fixture that provides access to a fake daemon and an instance of the
 // controller hooked up to the test environment.
@@ -43,19 +42,23 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
   HpsNotifyControllerTestBase(bool service_available,
                               bool service_state,
                               const std::map<std::string, std::string>& params)
-      : service_available_(service_available),
+      : NoSessionAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        service_available_(service_available),
         service_state_(service_state),
-        params_(params) {}
+        params_(params) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ash::features::kSnoopingProtection, params_);
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kHasHps);
+  }
+
   HpsNotifyControllerTestBase(const HpsNotifyControllerTestBase&) = delete;
   HpsNotifyControllerTestBase& operator=(const HpsNotifyControllerTestBase&) =
       delete;
   ~HpsNotifyControllerTestBase() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        ash::features::kSnoopingProtection, params_);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
-
     chromeos::HpsDBusClient::InitializeFake();
     dbus_client_ = chromeos::FakeHpsDBusClient::Get();
     dbus_client_->set_hps_service_is_available(service_available_);
@@ -69,7 +72,7 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
     // The controller has now been initialized, part of which entails sending a
     // method to the DBus service. Here we wait for the service to
     // asynchronously respond.
-    base::RunLoop().RunUntilIdle();
+    task_environment()->FastForwardBy(kShortTime);
   }
 
   void TearDown() override {
@@ -78,6 +81,9 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
+
   const bool service_available_;
   const bool service_state_;
   const std::map<std::string, std::string> params_;
@@ -85,14 +91,23 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
   chromeos::FakeHpsDBusClient* dbus_client_ = nullptr;
   HpsNotifyController* controller_ = nullptr;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-
-  // Simulates a login. Because this could correctly or incorrectly trigger an
-  // asynchronous DBus call, waits for the run loop to empty.
+  // Simulates a login. This will trigger a DBus call if and only if logging in
+  // was the final precondition required for the feature. Hence we wait for any
+  // asynchronous logic to complete, revealing whether a DBus call was correctly
+  // or incorrectly made.
   void SimulateLogin() {
     SimulateUserLogin("testuser@gmail.com");
-    base::RunLoop().RunUntilIdle();
+    task_environment()->FastForwardBy(kShortTime);
+  }
+
+  // Enables or disables the user pref for the feature. This will trigger a DBus
+  // call if and only if logging in was the final precondition required for the
+  // feature. Hence we wait for any asynchronous logic to complete, revealing
+  // whether a DBus call was correctly or incorrectly made.
+  void SetEnabledPref(bool enabled) {
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        prefs::kSnoopingProtectionEnabled, enabled);
+    task_environment()->FastForwardBy(kShortTime);
   }
 };
 
@@ -127,10 +142,12 @@ TEST_F(HpsNotifyControllerTestAbsent, HpsStateChange) {
   EXPECT_FALSE(controller_->SnooperPresent());
 
   controller_->OnHpsNotifyChanged(hps::HpsResult::POSITIVE);
+  task_environment()->FastForwardBy(kLongTime);
 
   EXPECT_TRUE(controller_->SnooperPresent());
 
   controller_->OnHpsNotifyChanged(hps::HpsResult::NEGATIVE);
+  task_environment()->FastForwardBy(kLongTime);
 
   EXPECT_FALSE(controller_->SnooperPresent());
 }
@@ -190,7 +207,7 @@ TEST_F(HpsNotifyControllerTestAbsent, ReconfigureOnRestarts) {
 
   // Should reconfigure as soon as the service becomes available again.
   controller_->OnRestart();
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(kLongTime);
   EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 2);
   EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 2);
@@ -271,7 +288,7 @@ TEST_F(HpsNotifyControllerTestPresent, Oobe) {
 
   // Triggers an asynchronous DBus method call.
   session->SetSessionState(session_manager::SessionState::ACTIVE);
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(kLongTime);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   EXPECT_TRUE(controller_->SnooperPresent());
@@ -308,14 +325,14 @@ TEST_F(HpsNotifyControllerTestPresent, Restarts) {
   // asynchronous DBus method call.
   dbus_client_->set_hps_service_is_available(false);
   controller_->OnShutdown();
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(kLongTime);
   EXPECT_FALSE(controller_->SnooperPresent());
 
   // Icon returns when service restarts. Controller now polls the DBus service
   // which responds asynchronously.
   dbus_client_->set_hps_service_is_available(true);
   controller_->OnRestart();
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(kLongTime);
 
   EXPECT_EQ(dbus_client_->hps_notify_count(), 2);
   EXPECT_TRUE(controller_->SnooperPresent());
@@ -351,7 +368,7 @@ TEST_F(HpsNotifyControllerTestPresent, Orientation) {
 
   // When the orientation becomes unsuitable, we should disable the daemon.
   controller_->OnOrientationChanged(/*suitable_for_hps=*/false);
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(kLongTime);
   EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
   EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 2);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
@@ -360,11 +377,42 @@ TEST_F(HpsNotifyControllerTestPresent, Orientation) {
   // When the orientation becomes suitable again, we should re-enable the
   // daemon.
   controller_->OnOrientationChanged(/*suitable_for_hps=*/true);
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(kLongTime);
   EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 2);
   EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 2);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 2);
   EXPECT_TRUE(controller_->SnooperPresent());
+}
+
+// Test that the minimum positive window is respected.
+TEST_F(HpsNotifyControllerTestPresent, PositiveWindow) {
+  SimulateLogin();
+  SetEnabledPref(true);
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
+
+  EXPECT_TRUE(controller_->SnooperPresent());
+  controller_->OnHpsNotifyChanged(hps::HpsResult::NEGATIVE);
+
+  // The snooping status shouldn't immediately change, since we have a minimum
+  // length that it should remain positive.
+  task_environment()->FastForwardBy(kShortTime);
+  EXPECT_TRUE(controller_->SnooperPresent());
+
+  // After the window, it should become false.
+  task_environment()->FastForwardBy(kLongTime);
+  EXPECT_FALSE(controller_->SnooperPresent());
+
+  // Snooping status should always immediately become true and stay true.
+  controller_->OnHpsNotifyChanged(hps::HpsResult::POSITIVE);
+  EXPECT_TRUE(controller_->SnooperPresent());
+  task_environment()->FastForwardBy(kLongTime);
+  EXPECT_TRUE(controller_->SnooperPresent());
+
+  // Snooping status should immediately become false if there is an HPS
+  // reconfiguration (v.s. state change).
+  controller_->OnShutdown();
+  task_environment()->FastForwardBy(kShortTime);
+  EXPECT_FALSE(controller_->SnooperPresent());
 }
 
 // Fixture with the DBus service initially unavailable (using a minimal set of
@@ -395,7 +443,7 @@ TEST_F(HpsNotifyControllerTestUnavailable, WaitForService) {
   // Triggers an asynchronous DBus method call.
   dbus_client_->set_hps_service_is_available(true);
   controller_->OnRestart();
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(kLongTime);
 
   // Should now configure and send the initial poll.
   EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
@@ -427,4 +475,5 @@ TEST_F(HpsNotifyControllerTestBadParams, BadParams) {
   EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
 }
 
+}  // namespace
 }  // namespace ash
