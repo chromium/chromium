@@ -127,9 +127,11 @@ void NeverCalled(int unused) {
 TEST_F(ArcContentFileSystemFileStreamWriterTest, Write) {
   std::string url =
       CreateFileWithContent("file_a", std::string(), true /* seekable */);
-  ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
-  EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "foo"));
-  EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "bar"));
+  {
+    ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
+    EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "foo"));
+    EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "bar"));
+  }
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("foobar", GetFileContent(url));
 }
@@ -137,8 +139,10 @@ TEST_F(ArcContentFileSystemFileStreamWriterTest, Write) {
 TEST_F(ArcContentFileSystemFileStreamWriterTest, WriteMiddle) {
   std::string url =
       CreateFileWithContent("file_a", "foobar", true /* seekable */);
-  ArcContentFileSystemFileStreamWriter writer(GURL(url), 2);
-  EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "xxx"));
+  {
+    ArcContentFileSystemFileStreamWriter writer(GURL(url), 2);
+    EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "xxx"));
+  }
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("foxxxr", GetFileContent(url));
 }
@@ -146,24 +150,31 @@ TEST_F(ArcContentFileSystemFileStreamWriterTest, WriteMiddle) {
 TEST_F(ArcContentFileSystemFileStreamWriterTest, WriteEnd) {
   std::string url =
       CreateFileWithContent("file_a", "foobar", true /* seekable */);
-  ArcContentFileSystemFileStreamWriter writer(GURL(url), 6);
-  EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "xxx"));
+  {
+    ArcContentFileSystemFileStreamWriter writer(GURL(url), 6);
+    EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "xxx"));
+  }
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("foobarxxx", GetFileContent(url));
 }
 
 TEST_F(ArcContentFileSystemFileStreamWriterTest, WriteFailForNonexistingFile) {
   std::string url = ArcUrl("file_a");
-  ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
-  EXPECT_EQ(net::ERR_FAILED, WriteStringToWriter(&writer, "foo"));
+  {
+    ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
+    EXPECT_EQ(net::ERR_INVALID_ARGUMENT, WriteStringToWriter(&writer, "foo"));
+  }
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(ArcContentFileSystemFileStreamWriterTest, WriteNonSeekable) {
   std::string url =
       CreateFileWithContent("file_a", std::string(), false /* not seekable */);
-  ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
-  EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "foo"));
-  EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "bar"));
+  {
+    ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
+    EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "foo"));
+    EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "bar"));
+  }
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("foobar", GetFileContent(url, 6));
 }
@@ -171,29 +182,36 @@ TEST_F(ArcContentFileSystemFileStreamWriterTest, WriteNonSeekable) {
 TEST_F(ArcContentFileSystemFileStreamWriterTest, WriteNonSeekableFailForSeek) {
   std::string url =
       CreateFileWithContent("file_a", "foobar", false /* not seekable */);
-  ArcContentFileSystemFileStreamWriter writer(GURL(url), 2);
-  EXPECT_EQ(net::ERR_FAILED, WriteStringToWriter(&writer, "xxx"));
+  {
+    ArcContentFileSystemFileStreamWriter writer(GURL(url), 2);
+    EXPECT_EQ(net::ERR_FAILED, WriteStringToWriter(&writer, "xxx"));
+  }
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(ArcContentFileSystemFileStreamWriterTest, CancelBeforeOperation) {
   std::string url =
       CreateFileWithContent("file_a", std::string(), true /* seekable */);
-  ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
-  // Cancel immediately fails when there's no in-flight operation.
-  int cancel_result = writer.Cancel(base::BindOnce(&NeverCalled));
-  EXPECT_EQ(net::ERR_UNEXPECTED, cancel_result);
+  {
+    ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
+    // Cancel immediately fails when there's no in-flight operation.
+    int cancel_result = writer.Cancel(base::BindOnce(&NeverCalled));
+    EXPECT_EQ(net::ERR_UNEXPECTED, cancel_result);
+  }
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(ArcContentFileSystemFileStreamWriterTest, CancelAfterFinishedOperation) {
   std::string url =
       CreateFileWithContent("file_a", std::string(), true /* seekable */);
-  ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
-  EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "foo"));
+  {
+    ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
+    EXPECT_EQ(net::OK, WriteStringToWriter(&writer, "foo"));
 
-  // Cancel immediately fails when there's no in-flight operation.
-  int cancel_result = writer.Cancel(base::BindOnce(&NeverCalled));
-  EXPECT_EQ(net::ERR_UNEXPECTED, cancel_result);
-
+    // Cancel immediately fails when there's no in-flight operation.
+    int cancel_result = writer.Cancel(base::BindOnce(&NeverCalled));
+    EXPECT_EQ(net::ERR_UNEXPECTED, cancel_result);
+  }
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("foo", GetFileContent(url, 6));
 }
@@ -201,18 +219,21 @@ TEST_F(ArcContentFileSystemFileStreamWriterTest, CancelAfterFinishedOperation) {
 TEST_F(ArcContentFileSystemFileStreamWriterTest, CancelWrite) {
   std::string url =
       CreateFileWithContent("file_a", "foobar", true /* seekable */);
-  ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
+  {
+    ArcContentFileSystemFileStreamWriter writer(GURL(url), 0);
 
-  scoped_refptr<net::StringIOBuffer> buffer(
-      base::MakeRefCounted<net::StringIOBuffer>("xxx"));
-  int result =
-      writer.Write(buffer.get(), buffer->size(), base::BindOnce(&NeverCalled));
-  ASSERT_EQ(net::ERR_IO_PENDING, result);
+    scoped_refptr<net::StringIOBuffer> buffer(
+        base::MakeRefCounted<net::StringIOBuffer>("xxx"));
+    int result = writer.Write(buffer.get(), buffer->size(),
+                              base::BindOnce(&NeverCalled));
+    ASSERT_EQ(net::ERR_IO_PENDING, result);
 
-  net::TestCompletionCallback callback;
-  writer.Cancel(callback.callback());
-  int cancel_result = callback.WaitForResult();
-  EXPECT_EQ(net::OK, cancel_result);
+    net::TestCompletionCallback callback;
+    writer.Cancel(callback.callback());
+    int cancel_result = callback.WaitForResult();
+    EXPECT_EQ(net::OK, cancel_result);
+  }
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace arc

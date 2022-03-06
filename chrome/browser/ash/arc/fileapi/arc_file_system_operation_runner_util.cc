@@ -7,8 +7,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
+#include "base/task/bind_post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -73,6 +75,37 @@ void OpenFileToWriteOnUIThread(const GURL& url,
   runner->OpenFileToWrite(url, std::move(callback));
 }
 
+void OpenFileSessionToWriteOnUIThread(const GURL& url,
+                                      OpenFileSessionToWriteCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* runner = GetArcFileSystemOperationRunner();
+  if (!runner) {
+    DLOG(ERROR) << "ArcFileSystemOperationRunner unavailable. "
+                << "File system operations are dropped.";
+    std::move(callback).Run(mojom::FileSessionPtr());
+    return;
+  }
+  runner->OpenFileSessionToWrite(url, std::move(callback));
+}
+
+void CloseFileSessionOnUIThread(const std::string& url_id,
+                                const CloseStatus status) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* runner = GetArcFileSystemOperationRunner();
+  if (!runner) {
+    DLOG(ERROR) << "ArcFileSystemOperationRunner unavailable. "
+                << "File system operations are dropped.";
+    return;
+  }
+  std::string message;
+  if (status == CloseStatus::kStatusError) {
+    message = "file operation exited with error";
+  } else if (status == CloseStatus::kStatusCancel) {
+    message = "file operation was cancelled";
+  }
+  runner->CloseFileSession(url_id, message);
+}
+
 }  // namespace
 
 void GetFileSizeOnIOThread(const GURL& url, GetFileSizeCallback callback) {
@@ -94,13 +127,29 @@ void OpenFileToReadOnIOThread(const GURL& url,
 }
 
 void OpenFileToWriteOnIOThread(const GURL& url,
-                               OpenFileToReadCallback callback) {
+                               OpenFileToWriteCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&OpenFileToWriteOnUIThread, url,
                      base::BindOnce(&PostToIOThread<mojo::ScopedHandle>,
                                     std::move(callback))));
+}
+
+void OpenFileSessionToWriteOnIOThread(const GURL& url,
+                                      OpenFileSessionToWriteCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OpenFileSessionToWriteOnUIThread, url,
+                     base::BindPostTask(content::GetIOThreadTaskRunner({}),
+                                        std::move(callback))));
+}
+
+// TODO(b/222823695): Consider using a mojo interface to disconnect remote.
+void CloseFileSession(const std::string& url_id, const CloseStatus status) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&CloseFileSessionOnUIThread, url_id, status));
 }
 
 }  // namespace file_system_operation_runner_util
