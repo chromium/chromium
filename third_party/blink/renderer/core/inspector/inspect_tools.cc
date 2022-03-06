@@ -254,8 +254,13 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
                   (WebInputEvent::kControlKey | WebInputEvent::kMetaKey);
 
   contrast_info_ = FetchContrast(node);
-  if (hovered_node_changed)
+  if (hovered_node_changed) {
+    if (auto* flexbox =
+            DynamicTo<LayoutNGFlexibleBox>(node->GetLayoutObject())) {
+      flexbox->SetNeedsLayoutForDevtools();
+    }
     NodeHighlightRequested(node);
+  }
   return true;
 }
 
