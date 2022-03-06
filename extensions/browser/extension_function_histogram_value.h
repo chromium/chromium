@@ -1695,6 +1695,7 @@ enum HistogramValue {
   OS_DIAGNOSTICS_RUNDISKREADROUTINE = 1632,
   FILEMANAGERPRIVATE_MOUNTGUEST = 1633,
   AUTOTESTPRIVATE_ISLACROSPRIMARYBROWSER = 1634,
+  INPUTMETHODPRIVATE_SWITCHTOLASTUSEDINPUTMETHOD = 1635,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

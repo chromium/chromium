@@ -83,6 +83,27 @@ class InputMethodPrivateSetCurrentInputMethodFunction
                              INPUTMETHODPRIVATE_SETCURRENTINPUTMETHOD)
 };
 
+// Implements the inputMethodPrivate.switchToLastUsedInputMethod method.
+class InputMethodPrivateSwitchToLastUsedInputMethodFunction
+    : public ExtensionFunction {
+ public:
+  InputMethodPrivateSwitchToLastUsedInputMethodFunction() {}
+
+  InputMethodPrivateSwitchToLastUsedInputMethodFunction(
+      const InputMethodPrivateSwitchToLastUsedInputMethodFunction&) = delete;
+  InputMethodPrivateSwitchToLastUsedInputMethodFunction& operator=(
+      const InputMethodPrivateSwitchToLastUsedInputMethodFunction&) = delete;
+
+ protected:
+  ~InputMethodPrivateSwitchToLastUsedInputMethodFunction() override {}
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.switchToLastUsedInputMethod",
+                             INPUTMETHODPRIVATE_SWITCHTOLASTUSEDINPUTMETHOD)
+};
+
 // Implements the inputMethodPrivate.getInputMethods method.
 class InputMethodPrivateGetInputMethodsFunction : public ExtensionFunction {
  public:

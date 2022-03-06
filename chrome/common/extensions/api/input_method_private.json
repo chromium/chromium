@@ -219,6 +219,19 @@
             "parameters": []
           }
         ]
+        }, {
+          "name": "switchToLastUsedInputMethod",
+          "type": "function",
+          "description": "Switches to the last used input method. If no last used input method, this is a no-op.",
+          "parameters": [
+            {
+              "name": "callback",
+              "type": "function",
+              "optional": true,
+              "description": "Callback which is called once the input method is swapped (if applicable). If unsuccessful $(ref:runtime.lastError) is set.",
+              "parameters": []
+            }
+          ]
       }, {
         "name": "fetchAllDictionaryWords",
         "type": "function",

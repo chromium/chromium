@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -190,6 +190,15 @@ chrome.inputMethodPrivate.getCurrentInputMethod = function(callback) {};
  *     input method is set. If unsuccessful $(ref:runtime.lastError) is set.
  */
 chrome.inputMethodPrivate.setCurrentInputMethod = function(inputMethodId, callback) {};
+
+/**
+ * Switches to the last used input method. If no last used input method, this is
+ * a no-op.
+ * @param {function(): void=} callback Callback which is called once the input
+ *     method is swapped (if applicable). If unsuccessful
+ *     $(ref:runtime.lastError) is set.
+ */
+chrome.inputMethodPrivate.switchToLastUsedInputMethod = function(callback) {};
 
 /**
  * Fetches a list of all the words currently in the dictionary.
@@ -483,7 +492,8 @@ chrome.inputMethodPrivate.onImeMenuItemsChanged;
 chrome.inputMethodPrivate.onFocus;
 
 /**
- * This event is sent when a touch occurs in a text field
+ * This event is sent when a touch occurs in a text field. Should only happen
+ * after onFocus()
  * @type {!ChromeEvent}
  */
 chrome.inputMethodPrivate.onTouch;

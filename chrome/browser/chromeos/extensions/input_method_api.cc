@@ -52,6 +52,8 @@ namespace AddWordToDictionary =
     extensions::api::input_method_private::AddWordToDictionary;
 namespace SetCurrentInputMethod =
     extensions::api::input_method_private::SetCurrentInputMethod;
+namespace SwitchToLastUsedInputMethod =
+    extensions::api::input_method_private::SwitchToLastUsedInputMethod;
 namespace SetXkbLayout = extensions::api::input_method_private::SetXkbLayout;
 namespace OpenOptionsPage =
     extensions::api::input_method_private::OpenOptionsPage;
@@ -166,6 +168,14 @@ InputMethodPrivateSetCurrentInputMethodFunction::Run() {
       base::StringPrintf("%s Input Method: %s", kErrorInvalidInputMethod,
                          params->input_method_id.c_str()),
       static_function_name())));
+}
+
+ExtensionFunction::ResponseAction
+InputMethodPrivateSwitchToLastUsedInputMethodFunction::Run() {
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
+      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
+  ime_state->SwitchToLastUsedInputMethod();
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
