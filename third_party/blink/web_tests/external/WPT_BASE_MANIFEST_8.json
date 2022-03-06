@@ -71023,6 +71023,19 @@
        {}
       ]
      ],
+     "inheritance-pseudo-element.html": [
+      "4ebcbc95dea2a66f2a3751aec74f932b97853b9d",
+      [
+       null,
+       [
+        [
+         "/css/css-animations/inheritance-pseudo-element-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nested-scale-animations.html": [
       "8793e044b703e1bc30a710142d310f1f28c3350a",
       [
@@ -243622,6 +243635,10 @@
      ],
      "idlharness-expected.txt": [
       "62fd2a7def53a7e4ebd1c3220c0945ed0afb5ca2",
+      []
+     ],
+     "inheritance-pseudo-element-ref.html": [
+      "a25f465fdf9c10d3d51e7576eb475d025516b2ad",
       []
      ],
      "nested-scale-animations-ref.html": [
