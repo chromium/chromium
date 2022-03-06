@@ -126,9 +126,10 @@ std::string TranslateKeyManagement(arc::mojom::KeyManagement management) {
     case arc::mojom::KeyManagement::kWpaEapSha256:
     case arc::mojom::KeyManagement::kWpaPsk:
     case arc::mojom::KeyManagement::kSae:
-    case arc::mojom::KeyManagement::kNone:
       // Currently these key managements are not handled.
       NET_LOG(ERROR) << "Key management is not supported";
+      return "";
+    case arc::mojom::KeyManagement::kNone:
       return "";
   }
   NET_LOG(ERROR) << "Unknown key management";
