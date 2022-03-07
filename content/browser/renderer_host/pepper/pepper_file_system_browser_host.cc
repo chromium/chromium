@@ -310,7 +310,7 @@ void PepperFileSystemBrowserHost::IOThreadState::ShouldCreateQuotaReservation(
   }
 
   // For file system types with quota, some origins have unlimited storage.
-  storage::QuotaManagerProxy* quota_manager_proxy =
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy =
       file_system_context_->quota_manager_proxy();
   CHECK(quota_manager_proxy);
   storage::FileSystemType file_system_type =
