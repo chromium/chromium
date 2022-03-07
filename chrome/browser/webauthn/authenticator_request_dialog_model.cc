@@ -704,6 +704,16 @@ std::vector<std::string> AuthenticatorRequestDialogModel::paired_phone_names()
   return names;
 }
 
+void AuthenticatorRequestDialogModel::ReplaceUserListForTesting(
+    std::vector<device::PublicKeyCredentialUserEntity> users) {
+  ephemeral_state_.users_ = std::move(users);
+}
+
+absl::optional<device::PublicKeyCredentialUserEntity>
+AuthenticatorRequestDialogModel::GetPreselectedAccountForTesting() {
+  return preselected_account_;
+}
+
 base::WeakPtr<AuthenticatorRequestDialogModel>
 AuthenticatorRequestDialogModel::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

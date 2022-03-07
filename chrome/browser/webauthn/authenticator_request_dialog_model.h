@@ -544,6 +544,11 @@ class AuthenticatorRequestDialogModel {
 
   bool offer_try_again_in_ui() const { return offer_try_again_in_ui_; }
 
+  void ReplaceUserListForTesting(
+      std::vector<device::PublicKeyCredentialUserEntity> users);
+  absl::optional<device::PublicKeyCredentialUserEntity>
+  GetPreselectedAccountForTesting();
+
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
 
  private:

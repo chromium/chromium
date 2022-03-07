@@ -786,6 +786,11 @@ void ChromeAuthenticatorRequestDelegate::OnManageDevicesClicked() {
   }
 }
 
+raw_ptr<AuthenticatorRequestDialogModel>
+ChromeAuthenticatorRequestDelegate::GetDialogModelForTesting() {
+  return weak_dialog_model_;
+}
+
 content::RenderFrameHost*
 ChromeAuthenticatorRequestDelegate::GetRenderFrameHost() const {
   content::RenderFrameHost* ret =

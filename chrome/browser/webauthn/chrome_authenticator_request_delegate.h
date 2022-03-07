@@ -182,6 +182,9 @@ class ChromeAuthenticatorRequestDelegate
   void OnCancelRequest() override;
   void OnManageDevicesClicked() override;
 
+  // A non-const version of dialog_model().
+  raw_ptr<AuthenticatorRequestDialogModel> GetDialogModelForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
                            TestTransportPrefType);
