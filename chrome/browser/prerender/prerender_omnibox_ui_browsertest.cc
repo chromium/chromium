@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
@@ -498,9 +499,8 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
           "pre": 0
         }
       }])";
-    for (auto it = search_suggestion_rules_.rbegin();
-         it != search_suggestion_rules_.rend(); it++) {
-      const SearchSuggestionTuple& suggestion_rule = *it;
+    for (const auto& suggestion_rule :
+         base::Reversed(search_suggestion_rules_)) {
       // Origin query matches a predefined rule.
       if (request.GetURL().spec().find(suggestion_rule.origin_query) !=
           std::string::npos) {
