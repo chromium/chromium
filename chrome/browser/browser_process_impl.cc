@@ -90,10 +90,8 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
-#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
-#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/crash/core/common/crash_key.h"
@@ -1208,17 +1206,9 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   DCHECK(result);
   if (BreadcrumbsStatus::IsEnabled()) {
-    breadcrumb_manager_ = std::make_unique<breadcrumbs::BreadcrumbManager>(
-        breadcrumbs::GetStartTime());
     application_breadcrumbs_logger_ =
         std::make_unique<breadcrumbs::ApplicationBreadcrumbsLogger>(
-            breadcrumb_manager_.get());
-
-    auto breadcrumb_persistent_storage_manager =
-        std::make_unique<breadcrumbs::BreadcrumbPersistentStorageManager>(
             user_data_dir);
-    application_breadcrumbs_logger_->SetPersistentStorageManager(
-        std::move(breadcrumb_persistent_storage_manager));
   } else {
     breadcrumbs::DeleteBreadcrumbFiles(user_data_dir);
   }

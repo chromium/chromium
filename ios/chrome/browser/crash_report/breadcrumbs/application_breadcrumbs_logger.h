@@ -10,6 +10,10 @@
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class FilePath;
+}
+
 // Name of event logged when device orientation is changed.
 extern const char kBreadcrumbOrientation[];
 
@@ -19,8 +23,7 @@ extern const char kBreadcrumbOrientation[];
 class ApplicationBreadcrumbsLogger
     : public breadcrumbs::ApplicationBreadcrumbsLogger {
  public:
-  explicit ApplicationBreadcrumbsLogger(
-      breadcrumbs::BreadcrumbManager* breadcrumb_manager);
+  explicit ApplicationBreadcrumbsLogger(const base::FilePath& storage_dir);
   ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
   ApplicationBreadcrumbsLogger& operator=(const ApplicationBreadcrumbsLogger&) =
       delete;

@@ -8,9 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
@@ -18,28 +22,33 @@ class TimeTicks;
 
 namespace breadcrumbs {
 
-class BreadcrumbManager;
 class BreadcrumbPersistentStorageManager;
 
 // Listens for and logs application wide breadcrumb events to the
 // BreadcrumbManager passed in the constructor.
 class ApplicationBreadcrumbsLogger {
  public:
+  // Breadcrumbs will be stored in a file in |storage_dir|. If
+  // |old_breadcrumbs_file_path| and |old_breadcrumbs_temp_file_path| are
+  // provided, the files at those paths will be migrated to the new filenames
+  // for breadcrumb files (only needed on iOS, which previously used different
+  // filenames).
   explicit ApplicationBreadcrumbsLogger(
-      breadcrumbs::BreadcrumbManager* breadcrumb_manager);
+      const base::FilePath& storage_dir,
+      const absl::optional<base::FilePath>& old_breadcrumbs_file_path =
+          absl::nullopt,
+      const absl::optional<base::FilePath>& old_breadcrumbs_temp_file_path =
+          absl::nullopt);
   ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
   ~ApplicationBreadcrumbsLogger();
-
-  // Sets a BreadcrumbPersistentStorageManager to persist application breadcrumb
-  // events logged by this ApplicationBreadcrumbsLogger instance.
-  void SetPersistentStorageManager(
-      std::unique_ptr<breadcrumbs::BreadcrumbPersistentStorageManager>
-          persistent_storage_manager);
 
   // Returns a pointer to the BreadcrumbPersistentStorageManager owned by this
   // instance. May be null.
   breadcrumbs::BreadcrumbPersistentStorageManager* GetPersistentStorageManager()
       const;
+
+  // Return the events stored by the application-wide breadcrumb manager.
+  std::list<std::string> GetEventsForTesting();
 
  protected:
   // Adds an event to |breadcrumb_manager_|.
@@ -58,8 +67,10 @@ class ApplicationBreadcrumbsLogger {
   // Returns true if |action| (UMA User Action) is user triggered.
   static bool IsUserTriggeredAction(const std::string& action);
 
-  // The BreadcrumbManager to log events.
-  raw_ptr<breadcrumbs::BreadcrumbManager> breadcrumb_manager_;
+  // Stores application-wide breadcrumb events.
+  breadcrumbs::BreadcrumbManager breadcrumb_manager_{
+      breadcrumbs::GetStartTime()};
+
   // The callback invoked whenever a user action is registered.
   base::ActionCallback user_action_callback_;
   // A memory pressure listener which observes memory pressure events.

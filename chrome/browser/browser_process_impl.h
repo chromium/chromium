@@ -63,7 +63,6 @@ class CommandLine;
 
 namespace breadcrumbs {
 class ApplicationBreadcrumbsLogger;
-class BreadcrumbManager;
 class BreadcrumbPersistentStorageManager;
 }  // namespace breadcrumbs
 
@@ -436,11 +435,8 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<base::android::ApplicationStatusListener> app_state_listener_;
 #endif
 
-  // Stores application-wide breadcrumb events. Null if breadcrumbs logging is
-  // disabled.
-  std::unique_ptr<breadcrumbs::BreadcrumbManager> breadcrumb_manager_;
-  // Observes application-wide events and logs them to |breadcrumb_manager_|.
-  // Null if breadcrumbs logging is disabled.
+  // Observes application-wide events and logs them to breadcrumbs. Null if
+  // breadcrumbs logging is disabled.
   std::unique_ptr<breadcrumbs::ApplicationBreadcrumbsLogger>
       application_breadcrumbs_logger_;
 
