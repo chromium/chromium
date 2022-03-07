@@ -47,17 +47,12 @@ void CreateCompositeClientIfNeeded(content::WebContents* web_contents,
 
 void RenderParamsFromPrintSettings(const PrintSettings& settings,
                                    mojom::PrintParams* params) {
-  params->page_size = settings.page_setup_device_units().physical_size();
-  params->content_size.SetSize(
-      settings.page_setup_device_units().content_area().width(),
-      settings.page_setup_device_units().content_area().height());
-  params->printable_area.SetRect(
-      settings.page_setup_device_units().printable_area().x(),
-      settings.page_setup_device_units().printable_area().y(),
-      settings.page_setup_device_units().printable_area().width(),
-      settings.page_setup_device_units().printable_area().height());
-  params->margin_top = settings.page_setup_device_units().content_area().y();
-  params->margin_left = settings.page_setup_device_units().content_area().x();
+  const auto& page_setup = settings.page_setup_device_units();
+  params->page_size = page_setup.physical_size();
+  params->content_size = page_setup.content_area().size();
+  params->printable_area = page_setup.printable_area();
+  params->margin_top = page_setup.content_area().y();
+  params->margin_left = page_setup.content_area().x();
   params->dpi = settings.dpi_size();
   params->scale_factor = settings.scale_factor();
   params->rasterize_pdf = settings.rasterize_pdf();
