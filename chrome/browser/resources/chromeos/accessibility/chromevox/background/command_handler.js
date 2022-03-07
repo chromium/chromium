@@ -5,6 +5,7 @@
 /**
  * @fileoverview ChromeVox commands.
  */
+import {ChromeVoxBackground} from './classic_background.js';
 import {Color} from './color.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {GestureInterface} from './gesture_interface.js';
