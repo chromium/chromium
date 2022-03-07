@@ -7,6 +7,14 @@
  * Braille is *not* handled in this module.
  */
 
+goog.provide('IntentHandler');
+
+goog.require('constants');
+goog.require('editing.EditableLine');
+goog.require('Msgs');
+goog.require('Output');
+
+goog.scope(function() {
 const AutomationIntent = chrome.automation.AutomationIntent;
 const Cursor = cursors.Cursor;
 const Dir = constants.Dir;
@@ -20,7 +28,7 @@ const Unit = cursors.Unit;
 /**
  * A stateless class that turns intents into speech.
  */
-export class IntentHandler {
+IntentHandler = class {
   /**
    * Called when intents are received from an AutomationEvent.
    * @param {!Array<AutomationIntent>} intents
@@ -195,4 +203,5 @@ export class IntentHandler {
 
     return false;
   }
-}
+};
+});  // goog.scope
