@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_DATA_STORE_H_
 #define CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_DATA_STORE_H_
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -58,6 +59,16 @@ class TabStatsDataStore : public TabStatsObserver {
 
     // The maximum total number of windows opened at the same time.
     size_t window_count_max;
+
+    // The number of tabs discarded, per discard reason.
+    std::array<size_t,
+               static_cast<size_t>(LifecycleUnitDiscardReason::kMaxValue) + 1>
+        tab_discard_counts;
+
+    // The number of tabs reloaded after a discard, per discard reason.
+    std::array<size_t,
+               static_cast<size_t>(LifecycleUnitDiscardReason::kMaxValue) + 1>
+        tab_reload_counts;
   };
 
   // Structure describing the state of a tab during an interval of time.
@@ -117,6 +128,16 @@ class TabStatsDataStore : public TabStatsObserver {
 
   // Reset |interval_map| with the list of current tabs.
   void ResetIntervalData(TabsStateDuringIntervalMap* interval_map);
+
+  // Updates discard/reload counts when the discarded state of a tab changes.
+  // Updates the discard count when is_discarded is true. Updates the reload
+  // count when is_discarded is false.
+  void OnTabDiscardStateChange(LifecycleUnitDiscardReason discard_reason,
+                               bool is_discarded);
+
+  // Clears the discard and reload counters. Called after reporting the counter
+  // values.
+  void ClearTabDiscardAndReloadCounts();
 
   const TabsStats& tab_stats() const { return tab_stats_; }
   absl::optional<TabID> GetTabIDForTesting(content::WebContents* web_contents);

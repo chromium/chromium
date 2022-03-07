@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_data_store.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker_delegate.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/metrics/daily_event.h"
@@ -39,7 +40,8 @@ FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
 //         std::make_unique<TabStatsTracker>(g_browser_process->local_state()));
 class TabStatsTracker : public TabStripModelObserver,
                         public BrowserListObserver,
-                        public base::PowerSuspendObserver {
+                        public base::PowerSuspendObserver,
+                        public resource_coordinator::TabLifecycleObserver {
  public:
   // Constructor. |pref_service| must outlive this object.
   explicit TabStatsTracker(PrefService* pref_service);
@@ -157,6 +159,14 @@ class TabStatsTracker : public TabStripModelObserver,
   // base::PowerSuspendObserver:
   void OnResume() override;
 
+  // resource_coordinator::TabLifecycleObserver:
+  void OnDiscardedStateChange(content::WebContents* contents,
+                              ::mojom::LifecycleUnitDiscardReason reason,
+                              bool is_discarded) override;
+
+  void OnAutoDiscardableStateChange(content::WebContents* contents,
+                                    bool is_auto_discardable) override;
+
   // Callback when an interval timer triggers.
   void OnInterval(base::TimeDelta interval,
                   TabStatsDataStore::TabsStateDuringIntervalMap* interval_map);
@@ -262,6 +272,13 @@ class TabStatsTracker::UmaStatsReportingDelegate {
 
   // The name of the histogram that records the number of collapsed tabs.
   static const char kCollapsedTabHistogramName[];
+
+  // The names of the histograms that record daily discard/reload counts caused
+  // by external/urgent event.
+  static const char kDailyDiscardsExternalHistogramName[];
+  static const char kDailyDiscardsUrgentHistogramName[];
+  static const char kDailyReloadsExternalHistogramName[];
+  static const char kDailyReloadsUrgentHistogramName[];
 
   UmaStatsReportingDelegate() = default;
 

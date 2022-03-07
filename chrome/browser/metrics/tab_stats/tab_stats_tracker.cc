@@ -133,6 +133,16 @@ const char
     TabStatsTracker::UmaStatsReportingDelegate::kCollapsedTabHistogramName[] =
         "TabGroups.CollapsedTabCount";
 
+// Daily discard/reload histograms.
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyDiscardsExternalHistogramName[] = "Discarding.DailyDiscards.External";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyDiscardsUrgentHistogramName[] = "Discarding.DailyDiscards.Urgent";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyReloadsExternalHistogramName[] = "Discarding.DailyReloads.External";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyReloadsUrgentHistogramName[] = "Discarding.DailyReloads.Urgent";
+
 const TabStatsDataStore::TabsStats& TabStatsTracker::tab_stats() const {
   return tab_stats_data_store_->tab_stats();
 }
@@ -205,12 +215,15 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
   heartbeat_timer_.Start(FROM_HERE, kTabsHeartbeatReportingInterval,
                          base::BindRepeating(&TabStatsTracker::OnHeartbeatEvent,
                                              base::Unretained(this)));
+
+  g_browser_process->GetTabManager()->AddObserver(this);
 }
 
 TabStatsTracker::~TabStatsTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserList::GetInstance()->RemoveObserver(this);
   base::PowerMonitor::RemovePowerSuspendObserver(this);
+  g_browser_process->GetTabManager()->RemoveObserver(this);
 }
 
 // static
@@ -252,6 +265,12 @@ void TabStatsTracker::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(::prefs::kTabStatsMaxTabsPerWindow, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsWindowCountMax, 0);
   DailyEvent::RegisterPref(registry, ::prefs::kTabStatsDailySample);
+
+  // Preferences for saving discard/reload counts.
+  registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsExternal, 0);
+  registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsUrgent, 0);
+  registry->RegisterIntegerPref(::prefs::kTabStatsReloadsExternal, 0);
+  registry->RegisterIntegerPref(::prefs::kTabStatsReloadsUrgent, 0);
 }
 
 void TabStatsTracker::SetDelegateForTesting(
@@ -263,6 +282,7 @@ void TabStatsTracker::TabStatsDailyObserver::OnDailyEvent(
     DailyEvent::IntervalType type) {
   reporting_delegate_->ReportDailyMetrics(data_store_->tab_stats());
   data_store_->ResetMaximumsToCurrentState();
+  data_store_->ClearTabDiscardAndReloadCounts();
 }
 
 class TabStatsTracker::WebContentsUsageObserver
@@ -442,6 +462,19 @@ void TabStatsTracker::OnResume() {
       tab_stats_data_store_->tab_stats().total_tab_count);
 }
 
+// resource_coordinator::TabLifecycleObserver:
+void TabStatsTracker::OnDiscardedStateChange(
+    content::WebContents* contents,
+    ::mojom::LifecycleUnitDiscardReason reason,
+    bool is_discarded) {
+  // Increment the count in the data store for tabs metrics reporting.
+  tab_stats_data_store_->OnTabDiscardStateChange(reason, is_discarded);
+}
+
+void TabStatsTracker::OnAutoDiscardableStateChange(
+    content::WebContents* contents,
+    bool is_auto_discardable) {}
+
 void TabStatsTracker::OnInterval(
     base::TimeDelta interval,
     TabStatsDataStore::TabsStateDuringIntervalMap* interval_map) {
@@ -509,6 +542,20 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportDailyMetrics(
       kMaxTabsPerWindowInADayHistogramName, tab_stats.max_tab_per_window);
   UmaHistogramCounts10000WithBatteryStateVariant(kMaxWindowsInADayHistogramName,
                                                  tab_stats.window_count_max);
+
+  // Reports the discard/reload counts.
+  const size_t external_index =
+      static_cast<size_t>(LifecycleUnitDiscardReason::EXTERNAL);
+  const size_t urgent_index =
+      static_cast<size_t>(LifecycleUnitDiscardReason::URGENT);
+  base::UmaHistogramCounts10000(kDailyDiscardsExternalHistogramName,
+                                tab_stats.tab_discard_counts[external_index]);
+  base::UmaHistogramCounts10000(kDailyDiscardsUrgentHistogramName,
+                                tab_stats.tab_discard_counts[urgent_index]);
+  base::UmaHistogramCounts10000(kDailyReloadsExternalHistogramName,
+                                tab_stats.tab_reload_counts[external_index]);
+  base::UmaHistogramCounts10000(kDailyReloadsUrgentHistogramName,
+                                tab_stats.tab_reload_counts[urgent_index]);
 }
 
 void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
