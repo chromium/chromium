@@ -16,8 +16,17 @@ import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isRecentHighlightsAlbum} from '../utils.js';
 
-import {setAlbumSelected} from './ambient_controller.js';
-import {getAmbientProvider} from './ambient_interface_provider.js';
+export type AlbumSelectedChangedEvent = CustomEvent<{album: AmbientModeAlbum}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'album_selected_changed': AlbumSelectedChangedEvent;
+  }
+}
+
+export interface AlbumItem {
+  $: {image: HTMLElement;};
+}
 
 export class AlbumItem extends WithPersonalizationStore {
   static get is() {
@@ -130,7 +139,9 @@ export class AlbumItem extends WithPersonalizationStore {
     event.preventDefault();
     event.stopPropagation();
     this.checked = !this.checked;
-    setAlbumSelected(this.album, getAmbientProvider());
+    this.dispatchEvent(new CustomEvent(
+        'album_selected_changed',
+        {bubbles: true, composed: true, detail: {album: this.album}}));
   }
 }
 

@@ -11,12 +11,18 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './album_list_element.js';
+import './art_album_dialog_element.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {AlbumSelectedChangedEvent} from './album_item_element.js';
+import {setAlbumSelected} from './ambient_controller.js';
+import {getAmbientProvider} from './ambient_interface_provider.js';
 
 export class AlbumsSubpage extends WithPersonalizationStore {
   static get is() {
@@ -35,11 +41,22 @@ export class AlbumsSubpage extends WithPersonalizationStore {
         // Set to null to differentiate from an empty album.
         value: null,
       },
+      showArtAlbumDialog_: {
+        type: Boolean,
+        value: false,
+      }
     };
   }
 
   topicSource: TopicSource;
   albums: AmbientModeAlbum[]|null = null;
+  private showArtAlbumDialog_: boolean;
+
+  ready() {
+    super.ready();
+    this.addEventListener(
+        'album_selected_changed', this.onAlbumSelectedChanged_.bind(this));
+  }
 
   private getTitleInnerHtml_(): string {
     if (this.topicSource === TopicSource.kGooglePhotos) {
@@ -58,6 +75,28 @@ export class AlbumsSubpage extends WithPersonalizationStore {
       return false;
     }
     return !isNonEmptyArray(this.albums);
+  }
+
+  private onAlbumSelectedChanged_(event: AlbumSelectedChangedEvent) {
+    const albumChanged = event.detail.album;
+    if (this.topicSource === TopicSource.kArtGallery) {
+      const anySelected = this.albums!.some(album => album.checked);
+      // For art gallery, cannot deselect all the albums. Show a dialog to users
+      // and select the album automatically.
+      if (!anySelected) {
+        this.showArtAlbumDialog_ = true;
+        const albumIndex =
+            this.albums!.findIndex(album => album.id === albumChanged.id);
+        assert(albumIndex >= 0);
+        this.set(`albums.${albumIndex}.checked`, true);
+        return;
+      }
+    }
+    setAlbumSelected(albumChanged, getAmbientProvider());
+  }
+
+  private onArtAlbumDialogClose_() {
+    this.showArtAlbumDialog_ = false;
   }
 }
 

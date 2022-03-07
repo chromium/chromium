@@ -354,4 +354,80 @@ export function AmbientSubpageTest() {
     assertTrue(albums[2].album!.checked);
     assertEquals(TopicSource.kArtGallery, albums[2].album!.topicSource);
   });
+
+  test('toggle album selection by clicking', async () => {
+    ambientSubpageElement = initElement(AmbientSubpage, {
+      path: Paths.AmbientAlbums,
+      queryParams: {topicSource: TopicSource.kArtGallery}
+    });
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
+    const action = await personalizationStore.waitForAction(
+                       AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
+    assertEquals(4, action.albums.length);
+
+    const albumsSubpage =
+        ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
+    assertTrue(!!albumsSubpage);
+    assertFalse(albumsSubpage.hidden);
+    await waitAfterNextRender(albumsSubpage);
+
+    const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
+    assertTrue(!!albumList);
+
+    const albums = albumList.shadowRoot!.querySelectorAll<AlbumItem>(
+        'album-item:not([hidden])');
+    assertEquals(3, albums.length);
+    assertTrue(!!albums[0]);
+    assertTrue(!!albums[1]);
+    assertTrue(!!albums[2]);
+    assertFalse(albums[0].album!.checked);
+    assertFalse(albums[1].album!.checked);
+    assertTrue(albums[2].album!.checked);
+
+    albums[1].$.image.click();
+    assertTrue(albums[1].album!.checked);
+  });
+
+  test('not deselect last art album', async () => {
+    ambientSubpageElement = initElement(AmbientSubpage, {
+      path: Paths.AmbientAlbums,
+      queryParams: {topicSource: TopicSource.kArtGallery}
+    });
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
+    const action = await personalizationStore.waitForAction(
+                       AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
+    assertEquals(4, action.albums.length);
+
+    const albumsSubpage =
+        ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
+    assertTrue(!!albumsSubpage);
+    assertFalse(albumsSubpage.hidden);
+    await waitAfterNextRender(albumsSubpage);
+
+    const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
+    assertTrue(!!albumList);
+
+    const albums = albumList.shadowRoot!.querySelectorAll<AlbumItem>(
+        'album-item:not([hidden])');
+    assertEquals(3, albums.length);
+    assertTrue(!!albums[0]);
+    assertTrue(!!albums[1]);
+    assertTrue(!!albums[2]);
+    assertFalse(albums[0].album!.checked);
+    assertFalse(albums[1].album!.checked);
+    assertTrue(albums[2].album!.checked);
+
+    // Click the last art album item image will not toggle the check and will
+    // show a dialog.
+    albums[2].$.image.click();
+    assertTrue(albums[2].album!.checked);
+
+    const artAlbumDialog =
+        albumsSubpage.shadowRoot!.querySelector('art-album-dialog');
+    assertTrue(!!artAlbumDialog);
+    await waitAfterNextRender(artAlbumDialog);
+    assertTrue(artAlbumDialog.$.dialog.open);
+  });
 }

@@ -22,5 +22,9 @@
     </localized-link>
   </template>
 
+  <template is="dom-if" if="[[showArtAlbumDialog_]]" restamp>
+    <art-album-dialog on-close="onArtAlbumDialogClose_"></art-album-dialog>
+  </template>
+
   <album-list albums="[[albums]]" topic-source="[[topicSource]]"></album-list>
 </template>
