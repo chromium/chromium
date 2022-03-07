@@ -2686,7 +2686,9 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   WaitForSessionStart();
 }
 
-IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, DeclineTermsOfService) {
+// TODO(crbug.com/1303612): Flaky test.
+IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest,
+                       DISABLED_DeclineTermsOfService) {
   // Specify Terms of Service URL.
   ASSERT_TRUE(embedded_test_server()->Start());
   device_local_account_policy_.payload().mutable_termsofserviceurl()->set_value(
