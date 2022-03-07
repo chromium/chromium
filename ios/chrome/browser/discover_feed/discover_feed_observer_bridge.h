@@ -16,11 +16,9 @@
 // callbacks in Objective-C.
 @protocol DiscoverFeedObserverBridgeDelegate <NSObject>
 
-@optional
-
 // Called whenever the FeedProvider Model has changed. At this point all
 // existing Feed ViewControllers are stale and need to be refreshed.
-- (void)onDiscoverFeedModelRecreated;
+- (void)discoverFeedModelWasCreated;
 
 @end
 

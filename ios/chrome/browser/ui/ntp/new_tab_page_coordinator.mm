@@ -759,7 +759,7 @@ namespace {
 
 #pragma mark - DiscoverFeedObserverBridge
 
-- (void)onDiscoverFeedModelRecreated {
+- (void)discoverFeedModelWasCreated {
   if (self.ntpViewController.viewDidAppear) {
     [self updateNTPForFeed];
   } else {

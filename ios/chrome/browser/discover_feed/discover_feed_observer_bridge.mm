@@ -18,6 +18,5 @@ DiscoverFeedObserverBridge::DiscoverFeedObserverBridge(
 DiscoverFeedObserverBridge::~DiscoverFeedObserverBridge() = default;
 
 void DiscoverFeedObserverBridge::OnDiscoverFeedModelRecreated() {
-  if ([observer_ respondsToSelector:@selector(onDiscoverFeedModelRecreated)])
-    [observer_ onDiscoverFeedModelRecreated];
+  [observer_ discoverFeedModelWasCreated];
 }
