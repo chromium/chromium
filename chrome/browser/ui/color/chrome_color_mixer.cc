@@ -214,13 +214,14 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
           : ui::ColorTransform(ui::kColorIcon);
   mixer[kColorBookmarkBarSeparator] = {kColorToolbarSeparator};
   mixer[kColorCaptionButtonBackground] = {SK_ColorTRANSPARENT};
-  mixer[kColorDownloadShelf] = {kColorToolbar};
-  mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelf};
+  mixer[kColorDownloadShelfBackground] = {kColorToolbar};
+  mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelfBackground};
   mixer[kColorDownloadShelfButtonText] =
-      ui::PickGoogleColor(ui::kColorAccent, kColorDownloadShelf,
+      ui::PickGoogleColor(ui::kColorAccent, kColorDownloadShelfBackground,
                           color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorDownloadShelfContentAreaSeparator] =
-      ui::AlphaBlend(kColorToolbarButtonIcon, kColorDownloadShelf, 0x3A);
+  mixer[kColorDownloadShelfContentAreaSeparator] = ui::AlphaBlend(
+      kColorToolbarButtonIcon, kColorDownloadShelfBackground, 0x3A);
+  mixer[kColorDownloadShelfForeground] = {kColorToolbarText};
   mixer[kColorDownloadToolbarButtonActive] = {ui::kColorThrobber};
   mixer[kColorDownloadToolbarButtonInactive] = {ui::kColorMidground};
   mixer[kColorDownloadToolbarButtonRingBackground] = {

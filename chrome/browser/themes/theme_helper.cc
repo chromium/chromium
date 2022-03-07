@@ -419,6 +419,13 @@ SkColor ThemeHelper::GetDefaultColor(
                                                     : gfx::kGoogleBlue600,
           download_shelf_color, color_utils::kMinimumReadableContrastRatio);
     }
+    case TP::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR:
+      return color_utils::AlphaBlend(
+          GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
+          GetColor(TP::COLOR_DOWNLOAD_SHELF, incognito, theme_supplier),
+          SkAlpha{0x3A});
+    case TP::COLOR_DOWNLOAD_SHELF_FOREGROUND:
+      return GetColor(TP::COLOR_TOOLBAR_TEXT, incognito, theme_supplier);
     case TP::COLOR_STATUS_BUBBLE_ACTIVE:
       return GetColor(TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE, incognito,
                       theme_supplier);
@@ -518,11 +525,6 @@ SkColor ThemeHelper::GetDefaultColor(
                    theme_supplier),
           gfx::kGoogleBlue600, gfx::kGoogleGrey100, gfx::kGoogleBlue900,
           SK_ColorWHITE);
-    case TP::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR:
-      return color_utils::AlphaBlend(
-          GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
-          GetColor(TP::COLOR_DOWNLOAD_SHELF, incognito, theme_supplier),
-          SkAlpha{0x3A});
     case TP::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR:
       return color_utils::AlphaBlend(
           GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),

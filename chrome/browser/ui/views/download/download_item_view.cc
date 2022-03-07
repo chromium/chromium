@@ -698,7 +698,7 @@ void DownloadItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   const SkColor background_color =
-      GetColorProvider()->GetColor(kColorDownloadShelf);
+      GetColorProvider()->GetColor(kColorDownloadShelfBackground);
   SetBackground(views::CreateSolidBackground(background_color));
 
   shelf_->ConfigureButtonForTheme(open_now_button_);

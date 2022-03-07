@@ -38,13 +38,15 @@
   E(kColorCaptionButtonBackground, \
     ThemeProperties::COLOR_CONTROL_BUTTON_BACKGROUND) \
   /* Download shelf colors. */ \
-  E(kColorDownloadShelf, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
+  E(kColorDownloadShelfBackground, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
   E(kColorDownloadShelfButtonBackground, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND) \
   E(kColorDownloadShelfButtonText, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT) \
   E(kColorDownloadShelfContentAreaSeparator, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR) \
+  E(kColorDownloadShelfForeground, \
+    ThemeProperties::COLOR_DOWNLOAD_SHELF_FOREGROUND) \
   E_CPONLY(kColorDownloadToolbarButtonActive) \
   E_CPONLY(kColorDownloadToolbarButtonInactive) \
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \

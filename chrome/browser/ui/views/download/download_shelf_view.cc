@@ -15,8 +15,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -31,7 +29,6 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/theme_provider.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -369,7 +366,8 @@ void DownloadShelfView::OnThemeChanged() {
 
   views::SetImageFromVectorIcon(
       close_button_, vector_icons::kCloseRoundedIcon,
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR_TEXT));
+      GetThemeProvider()->GetColor(
+          ThemeProperties::COLOR_DOWNLOAD_SHELF_FOREGROUND));
 }
 
 views::View* DownloadShelfView::GetDefaultFocusableChild() {
