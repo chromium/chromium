@@ -208,7 +208,8 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   void RecordFrameDisplayedStats(base::TimeTicks frame_displayed_time);
   void RecordFrameDecodedStats(
       absl::optional<base::TimeTicks> frame_received_time,
-      absl::optional<base::TimeDelta> frame_processing_time);
+      absl::optional<base::TimeDelta> frame_processing_time,
+      absl::optional<uint32_t> frame_rtp_timestamp);
 
   // Used for DCHECKs to ensure method calls executed in the correct thread,
   // which is renderer main thread in this class.
@@ -282,6 +283,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   absl::optional<base::TimeTicks> last_enqueued_frame_receive_time_;
   absl::optional<base::TimeTicks> last_enqueued_frame_decoded_time_;
   absl::optional<base::TimeTicks> last_presented_frame_display_time_;
+  absl::optional<uint32_t> last_enqueued_frame_rtp_timestamp_;
   absl::optional<base::TimeTicks> current_frame_receive_time_;
   absl::optional<uint32_t> last_presented_frame_rtp_timestamp_;
   absl::optional<uint32_t> current_frame_rtp_timestamp_;

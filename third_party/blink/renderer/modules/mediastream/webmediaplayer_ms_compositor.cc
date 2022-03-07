@@ -361,7 +361,8 @@ void WebMediaPlayerMSCompositor::SetVideoFrameProviderClient(
 
 void WebMediaPlayerMSCompositor::RecordFrameDecodedStats(
     absl::optional<base::TimeTicks> frame_received_time,
-    absl::optional<base::TimeDelta> frame_processing_time) {
+    absl::optional<base::TimeDelta> frame_processing_time,
+    absl::optional<uint32_t> frame_rtp_timestamp) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (frame_received_time && last_enqueued_frame_receive_time_) {
     base::TimeDelta frame_receive_time_delta =
@@ -384,6 +385,13 @@ void WebMediaPlayerMSCompositor::RecordFrameDecodedStats(
     LOCAL_HISTOGRAM_TIMES(UmaPrefix() + ".DecodeDuration",
                           frame_processing_time.value());
   }
+
+  if (frame_rtp_timestamp && last_enqueued_frame_rtp_timestamp_) {
+    LOCAL_HISTOGRAM_COUNTS_10000(
+        UmaPrefix() + ".FrameDecodedRtpTimestampDelta",
+        *frame_rtp_timestamp - *last_enqueued_frame_rtp_timestamp_);
+  }
+  last_enqueued_frame_rtp_timestamp_ = frame_rtp_timestamp;
 }
 
 void WebMediaPlayerMSCompositor::EnqueueFrame(
@@ -396,8 +404,14 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
                        frame->timestamp().InMicroseconds());
   ++total_frame_count_;
   ++frame_enqueued_since_last_vsync_;
+  absl::optional<uint32_t> enqueue_frame_rtp_timestamp;
+  if (frame->metadata().rtp_timestamp) {
+    enqueue_frame_rtp_timestamp =
+        static_cast<uint32_t>(frame->metadata().rtp_timestamp.value());
+  }
   RecordFrameDecodedStats(frame->metadata().receive_time,
-                          frame->metadata().processing_time);
+                          frame->metadata().processing_time,
+                          enqueue_frame_rtp_timestamp);
 
   // With algorithm off, just let |current_frame_| hold the incoming |frame|.
   if (!rendering_frame_buffer_) {
