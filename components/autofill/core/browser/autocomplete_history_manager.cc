@@ -50,7 +50,8 @@ bool IsTextField(const FormFieldData& field) {
 // totally different purpose.
 bool IsMeaningfulFieldName(const std::u16string& name) {
   return !MatchesPattern(
-      name, u"^(((field|input)(_|-)?\\d+)|tan|otp|title|captcha)$");
+      name,
+      u"^(((field|input)(_|-)?\\d+)|title|otp|tan)$|(cvc|cvn|cvv|captcha)");
 }
 
 }  // namespace

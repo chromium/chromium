@@ -483,6 +483,35 @@ TEST_F(AutocompleteHistoryManagerTest,
 }
 
 // Tests that no suggestions are queried if the field name is filtered because
+// it has a meaningless sub string that is allowed for sub string matches.
+TEST_F(AutocompleteHistoryManagerTest,
+       DoQuerySuggestionsForMeaninglessFieldNames_FilterSubStringName) {
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  int test_query_id = 2;
+  std::u16string test_name = u"payment_cvv_info";
+  std::u16string test_prefix;
+
+  // Only expect a call when the name is not filtered out.
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_name, test_prefix, _,
+                                          autocomplete_manager_.get()))
+      .Times(0);
+
+  // Simulate request for suggestions.
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_query_id, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
+      "Some Type", suggestions_handler->GetWeakPtr());
+
+  // Setting up mock to verify that DB response does not trigger a call to the
+  // handler's OnSuggestionsReturned.
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(test_query_id,
+                                    /*autoselect_first_suggestion=*/false, _))
+      .Times(0);
+}
+
+// Tests that no suggestions are queried if the field name is filtered because
 // it has a meaningless name.
 TEST_F(AutocompleteHistoryManagerTest,
        DoQuerySuggestionsForMeaninglessFieldNames_FilterName) {
@@ -511,6 +540,41 @@ TEST_F(AutocompleteHistoryManagerTest,
       .Times(0);
 }
 
+// Tests that the suggestions are queried if the field has meaningless substring
+// which is not allowed for substring matches.
+TEST_F(AutocompleteHistoryManagerTest,
+       DoQuerySuggestionsForMeaninglessFieldNames_PassNameWithSubstring) {
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  int test_query_id = 2;
+  std::u16string test_name = u"foOTPace";
+  std::u16string test_prefix;
+  int mocked_db_query_id = 100;
+
+  std::vector<AutofillEntry> expected_values;
+
+  std::unique_ptr<WDTypedResult> mocked_results =
+      GetMockedDbResults(expected_values);
+
+  // Expect a call because the name is not filtered.
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_name, test_prefix, _,
+                                          autocomplete_manager_.get()))
+      .WillOnce(Return(mocked_db_query_id));
+
+  // Simulate request for suggestions.
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_query_id, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
+      "Some Type", suggestions_handler->GetWeakPtr());
+
+  // Setting up mock to verify that DB response triggers a call to the handler's
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(test_query_id,
+                                    /*autoselect_first_suggestion=*/false, _));
+
+  autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
+                                                     std::move(mocked_results));
+}
 // Tests that the suggestions are queried if the field name is not filtered
 // because the field's name is meaningful.
 TEST_F(AutocompleteHistoryManagerTest,
