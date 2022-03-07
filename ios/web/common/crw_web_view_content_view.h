@@ -19,7 +19,7 @@
 #if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
 // The fullscreen state of this view
 @property(nonatomic, readonly)
-    WKFullscreenState fullscreenState API_AVAILABLE(ios(15.4));
+    WKFullscreenState fullscreenState API_AVAILABLE(ios(15));
 
 // Initializes the CRWWebViewContentView to display |webView| and passes state
 // of fullscreen mode. This should become the default constructor when we
@@ -30,7 +30,7 @@
 - (instancetype)initWithWebView:(UIView*)webView
                      scrollView:(UIScrollView*)scrollView
                 fullscreenState:(WKFullscreenState)fullscreenState
-    API_AVAILABLE(ios(15.4));
+    API_AVAILABLE(ios(15));
 #endif  // defined(__IPHONE_15_4)
 
 // Initializes the CRWWebViewContentView to display |webView|.
@@ -48,7 +48,7 @@
 
 #if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
 - (void)updateFullscreenState:(WKFullscreenState)fullscreenState
-    API_AVAILABLE(ios(15.4));
+    API_AVAILABLE(ios(15));
 #endif  // defined(__IPHONE_15_4)
 
 @end
