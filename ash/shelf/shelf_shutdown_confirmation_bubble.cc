@@ -39,7 +39,7 @@ constexpr int kBubblePreferredWidth = 175;
 constexpr int kShutdownConfirmationBubbleInsetsBottom = 12;
 constexpr int kShutdownConfirmationBubbleInsetsTop = 8;
 
-const gfx::Insets GetShutdownConfirmationBubbleInsets() {
+gfx::Insets GetShutdownConfirmationBubbleInsets() {
   gfx::Insets insets = GetTrayBubbleInsets();
   insets.set_top(kShutdownConfirmationBubbleInsetsTop);
   insets.set_bottom(kShutdownConfirmationBubbleInsetsBottom);

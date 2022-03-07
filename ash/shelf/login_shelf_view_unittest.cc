@@ -124,7 +124,7 @@ class LoginShelfViewTest : public LoginTestBase {
 
   // Checks if the shelf is only showing the buttons in the list. The IDs in
   // the specified list must be unique.
-  bool ShowsShelfButtons(std::vector<LoginShelfView::ButtonId> ids) {
+  bool ShowsShelfButtons(const std::vector<LoginShelfView::ButtonId>& ids) {
     for (LoginShelfView::ButtonId id : ids) {
       if (!login_shelf_view_->GetViewByID(id)->GetVisible())
         return false;
@@ -145,13 +145,13 @@ class LoginShelfViewTest : public LoginTestBase {
   }
 
   // Check whether the button is enabled.
-  bool IsButtonEnabled(LoginShelfView::ButtonId id) {
+  bool IsButtonEnabled(LoginShelfView::ButtonId id) const {
     return login_shelf_view_->GetViewByID(id)->GetEnabled();
   }
 
   TestTrayActionClient tray_action_client_;
 
-  LoginShelfView* login_shelf_view_;  // Unowned.
+  LoginShelfView* login_shelf_view_ = nullptr;  // Unowned.
 
   TestLockScreenActionBackgroundController* action_background_controller() {
     return action_background_controller_;

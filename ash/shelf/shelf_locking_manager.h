@@ -43,7 +43,7 @@ class ASH_EXPORT ShelfLockingManager : public SessionObserver,
   Shelf* const shelf_;
   bool session_locked_ = false;
   bool screen_locked_ = false;
-  ShelfAlignment stored_alignment_;
+  ShelfAlignment stored_alignment_ = ShelfAlignment::kBottomLocked;
 
   ScopedSessionObserver scoped_session_observer_;
 };

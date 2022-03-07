@@ -80,7 +80,7 @@ class ASH_EXPORT ShelfButtonPressedMetricTracker {
 
   // Stores the source button of the last window minimize action.
   // NOTE: This may become stale and should not be operated on. Not owned.
-  const views::Button* last_minimized_source_button_;
+  const views::Button* last_minimized_source_button_ = nullptr;
 };
 
 }  // namespace ash

@@ -150,7 +150,7 @@ class ShelfAppButton::AppStatusIndicatorView
     : public views::View,
       public ShelfAppButtonAnimation::Observer {
  public:
-  AppStatusIndicatorView() : show_attention_(false), active_(false) {
+  AppStatusIndicatorView() {
     // Make sure the events reach the parent view for handling.
     SetCanProcessEventsWithinSubtree(false);
   }
@@ -275,9 +275,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
     : ShelfButton(shelf_view->shelf(), shelf_button_delegate),
       icon_view_(new views::ImageView()),
       shelf_view_(shelf_view),
-      indicator_(new AppStatusIndicatorView()),
-      notification_indicator_(nullptr),
-      state_(STATE_NORMAL) {
+      indicator_(new AppStatusIndicatorView()) {
   const gfx::ShadowValue kShadows[] = {
       gfx::ShadowValue(gfx::Vector2d(0, 2), 0, SkColorSetARGB(0x1A, 0, 0, 0)),
       gfx::ShadowValue(gfx::Vector2d(0, 3), 1, SkColorSetARGB(0x1A, 0, 0, 0)),

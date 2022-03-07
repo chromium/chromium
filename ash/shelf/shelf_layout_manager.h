@@ -371,14 +371,14 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
     // appropriate.
     bool Equals(const State& other) const;
 
-    ShelfVisibilityState visibility_state;
-    ShelfAutoHideState auto_hide_state;
-    WorkspaceWindowState window_state;
-    HotseatState hotseat_state;
+    ShelfVisibilityState visibility_state = SHELF_VISIBLE;
+    ShelfAutoHideState auto_hide_state = SHELF_AUTO_HIDE_HIDDEN;
+    WorkspaceWindowState window_state = WorkspaceWindowState::kDefault;
 
     // True when the system is in the cancelable, pre-lock screen animation.
-    bool pre_lock_screen_animation_active;
-    session_manager::SessionState session_state;
+    bool pre_lock_screen_animation_active = false;
+    session_manager::SessionState session_state =
+        session_manager::SessionState::UNKNOWN;
   };
 
   // An enumration describing the various phases in which the shelf can be when
@@ -563,8 +563,8 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   float target_opacity_ = 0.0f;
 
-  ShelfWidget* shelf_widget_;
-  Shelf* shelf_;
+  ShelfWidget* const shelf_widget_;
+  Shelf* const shelf_;
 
   // Count of pending visibility update suspensions. Skip updating the shelf
   // visibility state if it is greater than 0.

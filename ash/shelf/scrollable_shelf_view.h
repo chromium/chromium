@@ -148,8 +148,8 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   LayoutStrategy layout_strategy_for_test() const { return layout_strategy_; }
   gfx::Vector2dF scroll_offset_for_test() const { return scroll_offset_; }
 
-  int first_tappable_app_index() { return first_tappable_app_index_; }
-  int last_tappable_app_index() { return last_tappable_app_index_; }
+  int first_tappable_app_index() const { return first_tappable_app_index_; }
+  int last_tappable_app_index() const { return last_tappable_app_index_; }
 
   void set_default_last_focusable_child(bool default_last_focusable_child) {
     default_last_focusable_child_ = default_last_focusable_child;

@@ -141,7 +141,7 @@ class ScrollableShelfView::ScrollableShelfArrowView
   }
 
  private:
-  Shelf* const shelf_ = nullptr;
+  Shelf* const shelf_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -406,10 +406,10 @@ views::View* ScrollableShelfView::GetDefaultFocusableChild() {
     ScrollToMainOffset(CalculateScrollUpperBound(GetSpaceForIcons()),
                        /*animating=*/true);
     return FindLastFocusableChild();
-  } else {
-    ScrollToMainOffset(/*target_offset=*/0.f, /*animating=*/true);
-    return FindFirstFocusableChild();
   }
+
+  ScrollToMainOffset(/*target_offset=*/0.f, /*animating=*/true);
+  return FindFirstFocusableChild();
 }
 
 gfx::Rect ScrollableShelfView::GetHotseatBackgroundBounds() const {

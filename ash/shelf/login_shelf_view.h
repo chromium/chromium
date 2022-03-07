@@ -70,7 +70,6 @@ class ASH_EXPORT LoginShelfView : public views::View,
     virtual void OnUiUpdate() = 0;
   };
 
- public:
   explicit LoginShelfView(
       LockScreenActionBackgroundController* lock_screen_action_background);
 

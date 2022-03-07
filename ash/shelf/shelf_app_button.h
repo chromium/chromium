@@ -181,21 +181,21 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   void MaybeHideInkDropWhenGestureEnds();
 
   // The icon part of a button can be animated independently of the rest.
-  views::ImageView* icon_view_;
+  views::ImageView* const icon_view_;
 
   // The ShelfView showing this ShelfAppButton. Owned by RootWindowController.
-  ShelfView* shelf_view_;
+  ShelfView* const shelf_view_;
 
   // Draws an indicator underneath the image to represent the state of the
   // application.
-  AppStatusIndicatorView* indicator_;
+  AppStatusIndicatorView* const indicator_;
 
   // Draws an indicator in the top right corner of the image to represent an
   // active notification.
-  views::DotIndicator* notification_indicator_;
+  views::DotIndicator* notification_indicator_ = nullptr;
 
   // The current application state, a bitfield of State enum values.
-  int state_;
+  int state_ = STATE_NORMAL;
 
   gfx::ShadowValues icon_shadows_;
 

@@ -87,7 +87,7 @@ class HideAnimationObserver : public ui::ImplicitAnimationObserver {
 
  private:
   // Unowned.
-  ui::Layer* layer_;
+  ui::Layer* const layer_;
 };
 
 }  // namespace
@@ -179,8 +179,8 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   // Prevents calls to UpdateOpaqueBackground from inadvertently showing
   // |opaque_background_| during animations.
   bool hide_background_for_transitions_ = false;
-  ShelfWidget* shelf_widget_;
-  FocusCycler* focus_cycler_;
+  ShelfWidget* const shelf_widget_;
+  FocusCycler* focus_cycler_ = nullptr;
 
   // Pointer to the login shelf view - visible only when the session is
   // inactive. The view is owned by this view's hierarchy.
@@ -210,7 +210,6 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
 
 ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
     : shelf_widget_(shelf_widget),
-      focus_cycler_(nullptr),
       opaque_background_(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)),
       animating_background_(ui::LAYER_SOLID_COLOR),
       animating_drag_handle_(ui::LAYER_SOLID_COLOR) {

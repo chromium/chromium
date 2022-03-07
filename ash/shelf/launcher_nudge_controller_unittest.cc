@@ -56,7 +56,7 @@ class TestNudgeAnimationObserver : public HomeButton::NudgeAnimationObserver {
   }
 
   // Returns the number of finished animation on this home_button_.
-  int GetShownCount() { return ended_animation_count_; }
+  int GetShownCount() const { return ended_animation_count_; }
 
  private:
   base::RunLoop run_loop_;

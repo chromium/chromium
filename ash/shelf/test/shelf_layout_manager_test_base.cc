@@ -42,8 +42,7 @@ class ShelfDragCallback {
   ShelfDragCallback(const gfx::Rect& auto_hidden_shelf_bounds,
                     const gfx::Rect& visible_shelf_bounds)
       : auto_hidden_shelf_bounds_(auto_hidden_shelf_bounds),
-        visible_shelf_bounds_(visible_shelf_bounds),
-        was_visible_on_drag_start_(false) {
+        visible_shelf_bounds_(visible_shelf_bounds) {
     EXPECT_EQ(auto_hidden_shelf_bounds_.size(), visible_shelf_bounds_.size());
   }
 
@@ -166,7 +165,7 @@ class ShelfDragCallback {
   const gfx::Rect auto_hidden_shelf_bounds_;
   const gfx::Rect visible_shelf_bounds_;
   gfx::Vector2dF scroll_;
-  bool was_visible_on_drag_start_;
+  bool was_visible_on_drag_start_ = false;
 };
 }  // namespace
 

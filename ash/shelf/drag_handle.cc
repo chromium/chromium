@@ -67,7 +67,7 @@ constexpr base::TimeDelta kShowNudgeDelay = base::Seconds(2);
 // This class is deleted after OnImplicitAnimationsCompleted() is called.
 class HideNudgeObserver : public ui::ImplicitAnimationObserver {
  public:
-  HideNudgeObserver(ContextualNudge* drag_handle_nudge)
+  explicit HideNudgeObserver(ContextualNudge* drag_handle_nudge)
       : drag_handle_nudge_(drag_handle_nudge) {}
   ~HideNudgeObserver() override = default;
 
@@ -79,7 +79,7 @@ class HideNudgeObserver : public ui::ImplicitAnimationObserver {
   }
 
  private:
-  ContextualNudge* drag_handle_nudge_;
+  ContextualNudge* const drag_handle_nudge_;
 };
 
 }  // namespace

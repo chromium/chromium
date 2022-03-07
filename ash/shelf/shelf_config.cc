@@ -74,7 +74,7 @@ void RecordReasonForShowingShelfControls() {
 
 class ShelfConfig::ShelfAccessibilityObserver : public AccessibilityObserver {
  public:
-  ShelfAccessibilityObserver(
+  explicit ShelfAccessibilityObserver(
       const base::RepeatingClosure& accessibility_state_changed_callback)
       : accessibility_state_changed_callback_(
             accessibility_state_changed_callback) {
@@ -417,7 +417,8 @@ SkColor ShelfConfig::GetShelfControlButtonColor() const {
   if (in_tablet_mode_ &&
       session_state == session_manager::SessionState::ACTIVE) {
     return is_in_app() ? SK_ColorTRANSPARENT : GetDefaultShelfColor();
-  } else if (session_state == session_manager::SessionState::OOBE) {
+  }
+  if (session_state == session_manager::SessionState::OOBE) {
     return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
   }
   return AshColorProvider::Get()->GetControlsLayerColor(

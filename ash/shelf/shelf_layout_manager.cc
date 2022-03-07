@@ -295,12 +295,7 @@ class HotseatEventHandler : public ui::EventHandler,
 
 }  // namespace
 
-ShelfLayoutManager::State::State()
-    : visibility_state(SHELF_VISIBLE),
-      auto_hide_state(SHELF_AUTO_HIDE_HIDDEN),
-      window_state(WorkspaceWindowState::kDefault),
-      pre_lock_screen_animation_active(false),
-      session_state(session_manager::SessionState::UNKNOWN) {}
+ShelfLayoutManager::State::State() = default;
 
 bool ShelfLayoutManager::State::IsAddingSecondaryUser() const {
   return session_state == session_manager::SessionState::LOGIN_SECONDARY;

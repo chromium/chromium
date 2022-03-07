@@ -36,7 +36,7 @@ namespace ash {
 
 class WidgetCloseObserver : public views::WidgetObserver {
  public:
-  WidgetCloseObserver(views::Widget* widget) : widget_(widget) {
+  explicit WidgetCloseObserver(views::Widget* widget) : widget_(widget) {
     if (widget_)
       widget_->AddObserver(this);
   }

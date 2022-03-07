@@ -459,7 +459,8 @@ class KioskAppsButton : public views::MenuButton,
 class LoginShelfView::ScopedGuestButtonBlockerImpl
     : public ScopedGuestButtonBlocker {
  public:
-  ScopedGuestButtonBlockerImpl(base::WeakPtr<LoginShelfView> shelf_view)
+  explicit ScopedGuestButtonBlockerImpl(
+      base::WeakPtr<LoginShelfView> shelf_view)
       : shelf_view_(shelf_view) {
     ++(shelf_view_->scoped_guest_button_blockers_);
     if (shelf_view_->scoped_guest_button_blockers_ == 1)

@@ -173,7 +173,7 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // manual user intervention (dragging the hotseat into its extended state).
   // This will return |false| after any visible change in the shelf
   // configuration.
-  bool is_manually_extended() { return is_manually_extended_; }
+  bool is_manually_extended() const { return is_manually_extended_; }
 
   void set_manually_extended(bool value) { is_manually_extended_ = value; }
 

@@ -321,7 +321,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
     return shelf_menu_model_adapter_.get();
   }
 
-  int current_ghost_view_index() { return current_ghost_view_index_; }
+  int current_ghost_view_index() const { return current_ghost_view_index_; }
 
  private:
   friend class ShelfViewTestAPI;
@@ -555,10 +555,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void RemoveGhostView();
 
   // The model; owned by Launcher.
-  ShelfModel* model_;
+  ShelfModel* const model_;
 
   // The shelf controller; owned by RootWindowController.
-  Shelf* shelf_;
+  Shelf* const shelf_;
 
   // Used to manage the set of active launcher buttons. There is a view per
   // item in |model_|.

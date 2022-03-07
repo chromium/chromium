@@ -149,7 +149,7 @@ class TestShelfObserver : public ShelfObserver {
   }
 
  private:
-  Shelf* shelf_;
+  Shelf* const shelf_;
   bool icon_positions_changed_ = false;
   base::TimeDelta icon_positions_animation_duration_;
 };
@@ -381,7 +381,7 @@ class ShelfViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  std::string GetNextAppId() { return base::NumberToString(id_); }
+  std::string GetNextAppId() const { return base::NumberToString(id_); }
 
  protected:
   // Add shelf items of various types, and optionally wait for animations.
@@ -423,7 +423,9 @@ class ShelfViewTest : public AshTestBase {
 
   ShelfItem GetItemByID(const ShelfID& id) { return *model_->ItemByID(id); }
 
-  bool IsAppPinned(const ShelfID& id) { return model_->IsAppPinned(id.app_id); }
+  bool IsAppPinned(const ShelfID& id) const {
+    return model_->IsAppPinned(id.app_id);
+  }
 
   void CheckModelIDs(
       const std::vector<std::pair<ShelfID, views::View*>>& id_map) {
@@ -590,7 +592,7 @@ class ShelfViewTest : public AshTestBase {
   }
 
   // Returns the item's ShelfID at |index|.
-  ShelfID GetItemId(int index) {
+  ShelfID GetItemId(int index) const {
     DCHECK_GE(index, 0);
     return model_->items()[index].id;
   }
@@ -620,7 +622,7 @@ class LtrRtlShelfViewTest : public ShelfViewTest,
   LtrRtlShelfViewTest() : scoped_locale_(GetParam() ? "he" : "") {}
   LtrRtlShelfViewTest(const LtrRtlShelfViewTest&) = delete;
   LtrRtlShelfViewTest& operator=(const LtrRtlShelfViewTest&) = delete;
-  ~LtrRtlShelfViewTest() = default;
+  ~LtrRtlShelfViewTest() override = default;
 
   bool IsRtlEnabled() const { return GetParam(); }
 
@@ -776,7 +778,7 @@ TEST_F(ShelfViewDragToPinTest, DragAppsToPinAndUnpin) {
   int pinned_apps_size = id_map.size();
 
   const ShelfID open_app_id = AddApp();
-  id_map.push_back(std::make_pair(open_app_id, GetButtonByID(open_app_id)));
+  id_map.emplace_back(open_app_id, GetButtonByID(open_app_id));
 
   // Run the pinned app at index 1.
   ShelfItem item = model_->items()[1];
@@ -834,7 +836,7 @@ TEST_F(ShelfViewDragToPinTest, BlockBrowserShortcutFromUnpinningByDragging) {
   const int pinned_apps_size = id_map.size();
 
   const ShelfID open_app_id = AddApp();
-  id_map.push_back(std::make_pair(open_app_id, GetButtonByID(open_app_id)));
+  id_map.emplace_back(open_app_id, GetButtonByID(open_app_id));
 
   EXPECT_TRUE(model_->items()[0].type == TYPE_BROWSER_SHORTCUT);
   EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
@@ -861,7 +863,7 @@ TEST_F(ShelfViewDragToPinTest, DragAppAroundSeparator) {
   const int pinned_apps_size = id_map.size();
 
   const ShelfID open_app_id = AddApp();
-  id_map.push_back(std::make_pair(open_app_id, GetButtonByID(open_app_id)));
+  id_map.emplace_back(open_app_id, GetButtonByID(open_app_id));
   EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
   const int button_width =
       GetButtonByID(open_app_id)->GetBoundsInScreen().width();
@@ -1056,7 +1058,7 @@ TEST_P(LtrRtlShelfViewTest, ShelfRipOffCancel) {
   std::vector<std::pair<ShelfID, views::View*>> id_map;
   for (size_t i = 0; i < model_->items().size(); ++i) {
     ShelfAppButton* button = test_api_->GetButton(i);
-    id_map.push_back(std::make_pair(model_->items()[i].id, button));
+    id_map.emplace_back(model_->items()[i].id, button);
   }
 
   // Verify that dragging an app off the shelf will trigger the app getting
