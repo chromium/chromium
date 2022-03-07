@@ -75,6 +75,7 @@ export class ViewerThumbnailBarElement extends PolymerElement {
     const thumbnailsDiv = this.shadowRoot!.querySelector('#thumbnails');
     assert(thumbnailsDiv);
 
+    // TODO(crbug.com/1260303): Change `any` to `IntersectionObserverEntry`.
     this.intersectionObserver_ =
         new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
           entries.forEach(entry => {

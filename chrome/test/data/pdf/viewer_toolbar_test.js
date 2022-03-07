@@ -207,7 +207,7 @@ const tests = [
   // Test that the overflow menu closes when an action is triggered.
   function testOverflowMenuCloses() {
     const toolbar = createToolbar();
-    const menu = toolbar.$.menu;
+    const menu = toolbar.shadowRoot.querySelector('cr-action-menu');
     chrome.test.assertFalse(menu.open);
 
     const more = toolbar.shadowRoot.querySelector('#more');

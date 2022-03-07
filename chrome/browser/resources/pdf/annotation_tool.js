@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export type AnnotationTool = {
-  tool: string,
-  size: number,
-  color?: string,
-};
+/**
+ * @typedef {{
+ *   tool: string,
+ *   size: number,
+ *   color: (string|undefined),
+ * }}
+ */
+let AnnotationTool;

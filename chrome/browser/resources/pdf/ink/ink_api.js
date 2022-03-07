@@ -6,7 +6,7 @@
  * Wraps the Ink component with an API that can be called
  * across an IFrame boundary.
  */
-export class InkAPI {
+class InkAPI {
   /** @param {!drawings.Canvas} canvas */
   constructor(canvas) {
     this.canvas_ = canvas;

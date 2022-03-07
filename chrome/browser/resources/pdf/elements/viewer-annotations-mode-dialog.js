@@ -7,15 +7,8 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-export interface ViewerAnnotationsModeDialogElement {
-  $: {
-    dialog: CrDialogElement,
-  };
-}
 
 export class ViewerAnnotationsModeDialogElement extends PolymerElement {
   static get is() {
@@ -33,20 +26,21 @@ export class ViewerAnnotationsModeDialogElement extends PolymerElement {
     };
   }
 
-  rotated: boolean;
-  twoUpViewEnabled: boolean;
-
-  /** @return Whether the dialog is open. */
-  isOpen(): boolean {
-    return this.$.dialog.hasAttribute('open');
+  /** @return {boolean} Whether the dialog is open. */
+  isOpen() {
+    return this.getDialog_().hasAttribute('open');
   }
 
-  /** @return Whether the dialog was confirmed */
-  wasConfirmed(): boolean {
-    return this.$.dialog.getNative().returnValue === 'success';
+  /** @return {boolean} Whether the dialog was confirmed */
+  wasConfirmed() {
+    return this.getDialog_().getNative().returnValue === 'success';
   }
 
-  private getBodyMessage_(): string {
+  /**
+   * @return {string}
+   * @private
+   */
+  getBodyMessage_() {
     if (this.rotated && this.twoUpViewEnabled) {
       return loadTimeData.getString('annotationResetRotateAndTwoPageView');
     }
@@ -56,18 +50,23 @@ export class ViewerAnnotationsModeDialogElement extends PolymerElement {
     return loadTimeData.getString('annotationResetTwoPageView');
   }
 
-  private onEditClick_() {
-    this.$.dialog.close();
+  /**
+   * @return {!CrDialogElement}
+   * @private
+   */
+  getDialog_() {
+    return /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#dialog'));
   }
 
-  private onCancelClick_() {
-    this.$.dialog.cancel();
+  /** @private */
+  onEditClick_() {
+    this.getDialog_().close();
   }
-}
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'viewer-annotations-mode-dialog': ViewerAnnotationsModeDialogElement;
+  /** @private */
+  onCancelClick_() {
+    this.getDialog_().cancel();
   }
 }
 
