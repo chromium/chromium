@@ -23,9 +23,6 @@ namespace password_manager {
 
 namespace {
 
-// Implicit index name create for faster lookups by a foreign key.
-constexpr char kForeignKeyIndex[] = "foreign_key_index";
-
 // Appends |name| to |list_of_names|, separating items with ", ".
 void Append(const std::string& name, std::string* list_of_names) {
   if (list_of_names->empty())
@@ -128,15 +125,19 @@ void SQLTableBuilder::AddPrimaryKeyColumn(std::string name) {
   columns_.back().is_primary_key = true;
 }
 
-void SQLTableBuilder::AddColumnToUniqueKey(std::string name,
-                                           std::string type,
-                                           std::string parent_table) {
+void SQLTableBuilder::AddColumnToUniqueKey(std::string name, std::string type) {
   AddColumn(std::move(name), std::move(type));
   columns_.back().part_of_unique_key = true;
-  if (!parent_table.empty()) {
-    columns_.back().parent_table = std::move(parent_table);
-    AddIndex(kForeignKeyIndex, {columns_.back().name});
-  }
+}
+
+void SQLTableBuilder::AddColumnToUniqueKey(std::string name,
+                                           std::string type,
+                                           std::string parent_table,
+                                           std::string index_name) {
+  AddColumnToUniqueKey(name, type);
+  columns_.back().parent_table = std::move(parent_table);
+
+  AddIndex(index_name, {columns_.back().name});
 }
 
 void SQLTableBuilder::RenameColumn(const std::string& old_name,

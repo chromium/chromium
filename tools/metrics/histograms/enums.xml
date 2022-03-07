@@ -57619,6 +57619,7 @@ from previous Chrome versions.
   <int value="9" label="Initialization of compromised credentials error"/>
   <int value="10" label="Init field info table error"/>
   <int value="11" label="Foreign key init error"/>
+  <int value="12" label="Password notes table failed initialization"/>
 </enum>
 
 <enum name="LoginDetectionType">

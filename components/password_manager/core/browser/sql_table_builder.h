@@ -64,12 +64,15 @@ class SQLTableBuilder {
   void AddPrimaryKeyColumn(std::string name);
 
   // As AddColumn but also adds column |name| to the unique key of the table.
-  // If 'parent_table' isn't empty then the column is a foreign key to
-  // 'parent_table' and an implicit index is created. Only one foreign key per
-  // table is allowed.
+  void AddColumnToUniqueKey(std::string name, std::string type);
+
+  // As AddColumn but also adds column |name| to the unique key of the table.
+  // The column |name| is a foreign key to 'parent_table' and an implicit index
+  // is created.
   void AddColumnToUniqueKey(std::string name,
                             std::string type,
-                            std::string parent_table = std::string());
+                            std::string parent_table,
+                            std::string index_name);
 
   // Renames column |old_name| to |new_name|. |new_name| can not exist already.
   // |old_name| must have been added in the past. Furthermore, there must be no

@@ -39,6 +39,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_notes_table.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sql_table_builder.h"
@@ -60,10 +61,10 @@ using autofill::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 32;
+constexpr int kCurrentVersionNumber = 33;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
-constexpr int kCompatibleVersionNumber = 31;
+constexpr int kCompatibleVersionNumber = 33;
 
 base::Pickle SerializeValueElementPairs(const ValueElementVector& vec) {
   base::Pickle p;
@@ -172,6 +173,7 @@ enum DatabaseInitError {
   INIT_COMPROMISED_CREDENTIALS_ERROR = 9,
   INIT_FIELD_INFO_ERROR = 10,
   FOREIGN_KEY_ERROR = 11,
+  INIT_PASSWORD_NOTES_ERROR = 12,
 
   DATABASE_INIT_ERROR_COUNT,
 };
@@ -181,6 +183,7 @@ enum DatabaseInitError {
 struct SQLTableBuilders {
   SQLTableBuilder* logins;
   SQLTableBuilder* insecure_credentials;
+  SQLTableBuilder* password_notes;
   SQLTableBuilder* sync_entities_metadata;
   SQLTableBuilder* sync_model_metadata;
 };
@@ -299,6 +302,9 @@ void SealVersion(SQLTableBuilders builders, unsigned expected_version) {
   unsigned insecure_credentials_version =
       builders.insecure_credentials->SealVersion();
   DCHECK_EQ(expected_version, insecure_credentials_version);
+
+  unsigned notes_version = builders.password_notes->SealVersion();
+  DCHECK_EQ(expected_version, notes_version);
 
   unsigned sync_entities_metadata_version =
       builders.sync_entities_metadata->SealVersion();
@@ -440,8 +446,8 @@ void InitializeBuilders(SQLTableBuilders builders) {
   // Version 29.
   // Migrate the compromised credentials from "compromised_credentials" to the
   // new table "insecure credentials" with a foreign key to the logins table.
-  builders.insecure_credentials->AddColumnToUniqueKey("parent_id", "INTEGER",
-                                                      "logins");
+  builders.insecure_credentials->AddColumnToUniqueKey(
+      "parent_id", "INTEGER", "logins", "foreign_key_index");
   builders.insecure_credentials->AddColumnToUniqueKey("insecurity_type",
                                                       "INTEGER NOT NULL");
   builders.insecure_credentials->AddColumn("create_time", "INTEGER NOT NULL");
@@ -461,6 +467,16 @@ void InitializeBuilders(SQLTableBuilders builders) {
   // Version 32. Set timestamps of uninitialized timestamps in
   // 'insecure_credentials' table.
   SealVersion(builders, /*expected_version=*/32u);
+
+  // Version 33. Introduce password notes table.
+  builders.password_notes->AddPrimaryKeyColumn("id");
+  builders.password_notes->AddColumnToUniqueKey(
+      "parent_id", "INTEGER NOT NULL", "logins", "foreign_key_index_notes");
+  builders.password_notes->AddColumnToUniqueKey("key", "VARCHAR NOT NULL");
+  builders.password_notes->AddColumn("value", "BLOB");
+  builders.password_notes->AddColumn("date_created", "INTEGER NOT NULL");
+  builders.password_notes->AddColumn("confidential", "INTEGER");
+  SealVersion(builders, /*expected_version=*/33u);
 
   DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
@@ -548,6 +564,20 @@ bool InsecureCredentialsPostMigrationStepCallback(
   return true;
 }
 
+bool PasswordNotesPostMigrationStepCallback(
+    SQLTableBuilder* password_notes_builder,
+    sql::Database* db,
+    unsigned new_version) {
+  if (new_version == 33) {
+    if (!password_notes_builder->CreateTable(db)) {
+      LOG(ERROR) << "Failed to create the 'password_notes' table";
+      LogDatabaseInitError(INIT_PASSWORD_NOTES_ERROR);
+      return false;
+    }
+  }
+  return true;
+}
+
 // Call this after having called InitializeBuilders(), to migrate the database
 // from the current version to kCurrentVersionNumber.
 bool MigrateDatabase(unsigned current_version,
@@ -562,6 +592,12 @@ bool MigrateDatabase(unsigned current_version,
           base::BindRepeating(&InsecureCredentialsPostMigrationStepCallback,
                               builders.insecure_credentials)))
     return false;
+  if (!builders.password_notes->MigrateFrom(
+          current_version, db,
+          base::BindRepeating(&PasswordNotesPostMigrationStepCallback,
+                              builders.password_notes))) {
+    return false;
+  }
 
   if (!builders.sync_entities_metadata->MigrateFrom(current_version, db))
     return false;
@@ -615,7 +651,6 @@ bool MigrateDatabase(unsigned current_version,
     if (!set_timestamp.Run())
       return false;
   }
-
   return true;
 }
 
@@ -752,11 +787,12 @@ bool LoginDatabase::Init() {
   SQLTableBuilder logins_builder("logins");
   SQLTableBuilder insecure_credentials_builder(
       InsecureCredentialsTable::kTableName);
+  SQLTableBuilder password_notes_builder(PasswordNotesTable::kTableName);
   SQLTableBuilder sync_entities_metadata_builder("sync_entities_metadata");
   SQLTableBuilder sync_model_metadata_builder("sync_model_metadata");
-  SQLTableBuilders builders = {&logins_builder, &insecure_credentials_builder,
-                               &sync_entities_metadata_builder,
-                               &sync_model_metadata_builder};
+  SQLTableBuilders builders = {
+      &logins_builder, &insecure_credentials_builder, &password_notes_builder,
+      &sync_entities_metadata_builder, &sync_model_metadata_builder};
   InitializeBuilders(builders);
   InitializeStatementStrings(logins_builder);
 
@@ -783,6 +819,7 @@ bool LoginDatabase::Init() {
 
   stats_table_.Init(&db_);
   insecure_credentials_table_.Init(&db_);
+  password_notes_table_.Init(&db_);
   field_info_table_.Init(&db_);
 
   int current_version = meta_table_.GetVersionNumber();
@@ -806,6 +843,20 @@ bool LoginDatabase::Init() {
     db_.Close();
     return false;
   }
+  // Enforce that 'password_notes' is created only after the 'logins' table was
+  // created and migrated to the latest version. This guarantees the existence
+  // of the `id` column in the `logins` table which was introduced only in
+  // version 20 and is referenced by 'password_notes' table. The table will be
+  // created here for a new profile. For an old profile it's created in
+  // MigrateDatabase above.
+  if (migration_success && !password_notes_builder.CreateTable(&db_)) {
+    LOG(ERROR) << "Failed to create the 'password_notes' table";
+    LogDatabaseInitError(INIT_PASSWORD_NOTES_ERROR);
+    transaction.Rollback();
+    db_.Close();
+    return false;
+  }
+
   if (migration_success && current_version <= 15) {
     migration_success = stats_table_.MigrateToVersion(16);
   }

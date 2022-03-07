@@ -99,7 +99,8 @@ void SQLTableBuilderTest::SetupChildTable() {
 
   child_builder_.AddColumn("name", "TEXT");
   child_builder_.AddColumnToUniqueKey("parent_id", "INTEGER",
-                                      /*parent_table=*/kMyLoginTable);
+                                      /*parent_table=*/kMyLoginTable,
+                                      "foreign_key_index");
   EXPECT_EQ(0u, child_builder_.SealVersion());
   EXPECT_TRUE(child_builder_.CreateTable(db()));
 }
