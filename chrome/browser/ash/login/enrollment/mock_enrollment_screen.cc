@@ -15,9 +15,9 @@ void MockEnrollmentScreen::ExitScreen(Result screen_result) {
   exit_callback()->Run(screen_result);
 }
 
-MockEnrollmentScreen::~MockEnrollmentScreen() {}
+MockEnrollmentScreen::~MockEnrollmentScreen() = default;
 
-MockEnrollmentScreenView::MockEnrollmentScreenView() {}
+MockEnrollmentScreenView::MockEnrollmentScreenView() = default;
 
 MockEnrollmentScreenView::~MockEnrollmentScreenView() {
   if (screen_)

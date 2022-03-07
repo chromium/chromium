@@ -180,6 +180,8 @@ void ActiveDirectoryMigrationManager::RetryToStartMigration() {
 }
 
 void ActiveDirectoryMigrationManager::StartPowerwash() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   local_state_->SetTime(prefs::kLastChromadMigrationAttemptTime,
                         base::Time::Now());
 

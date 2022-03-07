@@ -14,8 +14,6 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/policy/enrollment_status.h"
-#include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
@@ -41,7 +39,7 @@ class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
   HandsOffEnrollmentTest& operator=(const HandsOffEnrollmentTest&) = delete;
 
  protected:
-  HandsOffEnrollmentTest() {}
+  HandsOffEnrollmentTest() = default;
   ~HandsOffEnrollmentTest() override = default;
 
   // InProcessBrowserTest:
