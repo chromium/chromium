@@ -39,11 +39,6 @@ bool IsWebmOrProjectorFile(const base::FilePath& path) {
          path.MatchesExtension(GetMetadataFileExtension());
 }
 
-drive::DriveIntegrationService* GetDriveIntegrationServiceForActiveProfile() {
-  return drive::DriveIntegrationServiceFactory::FindForProfile(
-      ProfileManager::GetActiveUserProfile());
-}
-
 drivefs::DriveFsHost* GetDriveFsHostForActiveProfile() {
   auto* drivefs_integration = GetDriveIntegrationServiceForActiveProfile();
   return drivefs_integration ? drivefs_integration->GetDriveFsHost() : nullptr;

@@ -212,12 +212,12 @@ ProjectorControllerImpl::GetNewScreencastPrecondition() const {
 
     if (!client_->IsDriveFsMounted()) {
       result.state = NewScreencastPreconditionState::kDisabled;
-      result.reasons = {NewScreencastPreconditionReason::kOthers};
+      result.reasons = {
+          client_->IsDriveFsMountFailed()
+              ? NewScreencastPreconditionReason::kDriveFsMountFailed
+              : NewScreencastPreconditionReason::kDriveFsUnmounted};
       return result;
     }
-
-    // TODO(crbug.com/1165435) Disable New Screencast button when out of disk
-    // space or drive quota.
   }
 
   if (projector_session_->is_active()) {

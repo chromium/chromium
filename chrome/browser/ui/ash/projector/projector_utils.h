@@ -7,7 +7,13 @@
 
 class Profile;
 
+namespace drive {
+class DriveIntegrationService;
+}
+
 // Returns whether Projector is allowed for given `profile`.
 bool IsProjectorAllowedForProfile(const Profile* profile);
+
+drive::DriveIntegrationService* GetDriveIntegrationServiceForActiveProfile();
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_UTILS_H_

@@ -378,4 +378,16 @@ TEST_F(ProjectorControllerTest, TranscriptsTest) {
   EXPECT_LT(file.GetLength(), 500);
 }
 
+TEST_F(ProjectorControllerTest, OnDriveMountFailed) {
+  ON_CALL(mock_client_, IsDriveFsMountFailed())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_client_, IsDriveFsMounted())
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_EQ(NewScreencastPrecondition(
+                NewScreencastPreconditionState::kDisabled,
+                {NewScreencastPreconditionReason::kDriveFsMountFailed}),
+            controller_->GetNewScreencastPrecondition());
+}
+
 }  // namespace ash

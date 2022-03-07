@@ -32,6 +32,7 @@ class ASH_EXPORT MockProjectorClient : public ProjectorClient,
   MOCK_METHOD0(StopSpeechRecognition, void());
   bool GetDriveFsMountPointPath(base::FilePath* result) const override;
   MOCK_CONST_METHOD0(IsDriveFsMounted, bool());
+  MOCK_CONST_METHOD0(IsDriveFsMountFailed, bool());
   MOCK_METHOD0(ShowSelfieCam, void());
   MOCK_METHOD0(CloseSelfieCam, void());
   MOCK_CONST_METHOD0(OpenProjectorApp, void());

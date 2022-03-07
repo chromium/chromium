@@ -157,6 +157,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {
   ASSERT_TRUE(client()->IsDriveFsMounted());
+  ASSERT_FALSE(client()->IsDriveFsMountFailed());
 
   base::FilePath mounted_path;
   ASSERT_TRUE(client()->GetDriveFsMountPointPath(&mounted_path));

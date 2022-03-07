@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 
 namespace {
 
@@ -27,4 +29,9 @@ bool IsProjectorAllowedForProfile(const Profile* profile) {
     return false;
 
   return user->HasGaiaAccount();
+}
+
+drive::DriveIntegrationService* GetDriveIntegrationServiceForActiveProfile() {
+  return drive::DriveIntegrationServiceFactory::FindForProfile(
+      ProfileManager::GetActiveUserProfile());
 }

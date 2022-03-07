@@ -32,6 +32,9 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
   // Returns false if Drive is not enabled.
   virtual bool GetDriveFsMountPointPath(base::FilePath* result) const = 0;
   virtual bool IsDriveFsMounted() const = 0;
+  // Return true if Drive mount failed. Drive will not automatically retry to
+  // mount.
+  virtual bool IsDriveFsMountFailed() const = 0;
   // Opens Projector SWA. The app by default showing the Projector Gallery view.
   virtual void OpenProjectorApp() const = 0;
   // Minimizes Projector SWA.
