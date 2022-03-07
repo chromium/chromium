@@ -113,10 +113,10 @@ std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
   if (!status_or_categories.ok() || status_or_categories.value().empty()) {
     return std::make_pair(translate::kUnknownLanguageCode, 0.0);
   }
-  auto categories = status_or_categories.value();
-  std::sort(categories.begin(), categories.end(), sort_category());
-
-  return std::make_pair(categories[0].class_name, categories[0].score);
+  auto& categories = status_or_categories.value();
+  auto top_category =
+      std::min_element(categories.begin(), categories.end(), sort_category());
+  return std::make_pair(top_category->class_name, top_category->score);
 }
 
 std::string LanguageDetectionModel::DeterminePageLanguage(
