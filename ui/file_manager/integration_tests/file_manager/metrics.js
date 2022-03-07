@@ -62,7 +62,7 @@ testcase.metricsRecordDirectoryListLoad = async () => {
     return entries;
   };
 
-  const entries = createEntries(1000);
+  const entries = createEntries(100);
 
   // Open Files app on Downloads with 10 files loaded.
   // Expect a non-zero load time in the appropriate histogram.
@@ -89,19 +89,10 @@ testcase.metricsRecordDirectoryListLoad = async () => {
 
   // Open Files app on Downloads with 100 files loaded.
   // Expect a non-zero load time in the appropriate histogram.
-  appId = await setupAndWaitUntilReady(
-      RootPath.DOWNLOADS, entries.slice(0, 100), []);
+  appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
   const hundredFilesSum =
       await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.100');
   chrome.test.assertTrue(
       hundredFilesSum > 0, 'Load time for 100 files must exceed 0');
   await remoteCall.closeWindowAndWait(appId);
-
-  // Open Files app on Downloads with 1000 files loaded.
-  // Expect a non-zero load time in the appropriate histogram.
-  appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
-  const thousandFilesSum =
-      await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.1000');
-  chrome.test.assertTrue(
-      thousandFilesSum > 0, 'Load time for 1000 files must exceed 0');
 };
