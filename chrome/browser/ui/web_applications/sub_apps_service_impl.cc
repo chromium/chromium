@@ -73,8 +73,8 @@ SubAppsServiceImpl::~SubAppsServiceImpl() = default;
 void SubAppsServiceImpl::CreateIfAllowed(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::SubAppsService> receiver) {
-  // This class is created only on the main frame.
-  DCHECK(!render_frame_host->GetParent());
+  // This class is created only on the primary main frame.
+  DCHECK(!render_frame_host->GetParentOrOuterDocument());
 
   // Bail if Web Apps aren't enabled on current profile.
   if (!AreWebAppsEnabled(Profile::FromBrowserContext(

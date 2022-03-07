@@ -140,10 +140,11 @@ bool SubApps::CheckPreconditionsMaybeThrow(ExceptionState& exception_state) {
     return false;
   }
 
-  if (!navigator->DomWindow()->GetFrame()->IsMainFrame()) {
+  if (!navigator->DomWindow()->GetFrame()->IsMainFrame() ||
+      navigator->DomWindow()->GetFrame()->IsInFencedFrameTree()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "API is only supported in top-level browsing contexts.");
+        "API is only supported in primary top-level browsing contexts.");
     return false;
   }
 
