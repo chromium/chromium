@@ -106,7 +106,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   // navigation. When `early_hints` contains a preload Link header, starts
   // preloading it if preloading hasn't started for the same URL.
   void HandleEarlyHints(network::mojom::EarlyHintsPtr early_hints,
-                        const network::ResourceRequest& navigation_request);
+                        const network::ResourceRequest& request_for_navigation);
 
   // True when at least one preload or preconnect Link header was received via
   // Early Hints responses for main frame navigation.
@@ -138,7 +138,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   void MaybePreloadHintedResource(
       const network::mojom::LinkHeaderPtr& link,
-      const network::ResourceRequest& navigation_request,
+      const network::ResourceRequest& request_for_navigation,
       bool enabled_by_origin_trial);
 
   // Determines whether resource hints like preload and preconnect should be

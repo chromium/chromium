@@ -368,7 +368,7 @@ NavigationEarlyHintsManager::~NavigationEarlyHintsManager() = default;
 
 void NavigationEarlyHintsManager::HandleEarlyHints(
     network::mojom::EarlyHintsPtr early_hints,
-    const network::ResourceRequest& navigation_request) {
+    const network::ResourceRequest& request_for_navigation) {
   bool enabled_by_origin_trial = IsPreloadForNavigationEnabledByOriginTrial(
       early_hints->origin_trial_tokens);
 
@@ -378,7 +378,7 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
       MaybePreconnect(link, enabled_by_origin_trial);
     } else if (link->rel == network::mojom::LinkRelAttribute::kPreload ||
                link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
-      MaybePreloadHintedResource(link, navigation_request,
+      MaybePreloadHintedResource(link, request_for_navigation,
                                  enabled_by_origin_trial);
     }
   }
@@ -481,10 +481,10 @@ void NavigationEarlyHintsManager::MaybePreconnect(
 
 void NavigationEarlyHintsManager::MaybePreloadHintedResource(
     const network::mojom::LinkHeaderPtr& link,
-    const network::ResourceRequest& navigation_request,
+    const network::ResourceRequest& request_for_navigation,
     bool enabled_by_origin_trial) {
-  DCHECK(navigation_request.is_main_frame);
-  DCHECK(navigation_request.url.SchemeIsHTTPOrHTTPS());
+  DCHECK(request_for_navigation.is_main_frame);
+  DCHECK(request_for_navigation.url.SchemeIsHTTPOrHTTPS());
 
   was_resource_hints_received_ = true;
 
@@ -508,8 +508,9 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   request.site_for_cookies = site_for_cookies;
   request.request_initiator = origin_;
   request.referrer = net::URLRequestJob::ComputeReferrerForPolicy(
-      navigation_request.referrer_policy, navigation_request.url, request.url);
-  request.referrer_policy = navigation_request.referrer_policy;
+      request_for_navigation.referrer_policy, request_for_navigation.url,
+      request.url);
+  request.referrer_policy = request_for_navigation.referrer_policy;
   request.load_flags = net::LOAD_NORMAL;
   request.resource_type =
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
