@@ -247,7 +247,9 @@ PageListView.prototype = {
    */
   appMoved(appData) {
     const app = /** @type {App} */ ($(appData.id));
-    assert(app, 'trying to move an app that doesn\'t exist');
+    if (!app) {
+      return;
+    }
     app.remove(false);
 
     this.appsPages[appData.page_index].insertApp(appData, false);
@@ -264,7 +266,9 @@ PageListView.prototype = {
    */
   appRemoved(appData, isUninstall, fromPage) {
     const app = /** @type {App} */ ($(appData.id));
-    assert(app, 'trying to remove an app that doesn\'t exist');
+    if (!app) {
+      return;
+    }
 
     if (!isUninstall) {
       app.replaceAppData(appData);
