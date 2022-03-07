@@ -195,6 +195,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     return restart_job_reason_;
   }
 
+  void set_stop_session_callback(base::OnceClosure callback) {
+    stop_session_callback_ = std::move(callback);
+  }
+
   // If |force_failure| is true, forces StorePolicy() to fail.
   void ForceStorePolicyFailure(bool force_failure) {
     force_store_policy_failure_ = force_failure;
@@ -340,6 +344,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // If restart job was requested, and the client supports restart job, the
   // requested restart reason.
   absl::optional<RestartJobReason> restart_job_reason_;
+
+  // Callback that will be run, if set, when StopSession() is called.
+  base::OnceClosure stop_session_callback_;
 
   base::ObserverList<Observer>::Unchecked observers_{
       SessionManagerClient::kObserverListPolicy};

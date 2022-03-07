@@ -350,6 +350,8 @@ void FakeSessionManagerClient::StartSession(
 void FakeSessionManagerClient::StopSession(
     login_manager::SessionStopReason reason) {
   session_stopped_ = true;
+  if (stop_session_callback_)
+    std::move(stop_session_callback_).Run();
 }
 
 void FakeSessionManagerClient::LoadShillProfile(

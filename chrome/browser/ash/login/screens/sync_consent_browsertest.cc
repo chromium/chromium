@@ -185,12 +185,6 @@ class SyncConsentTest
 
   void TearDownOnMainThread() override {
     SyncConsentScreen::SetSyncConsentScreenExitTestDelegate(nullptr);
-    // If the login display is still showing, exit gracefully.
-    if (LoginDisplayHost::default_host()) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&chrome::AttemptExit));
-      RunUntilBrowserProcessQuits();
-    }
 
     OobeBaseTest::TearDownOnMainThread();
   }
@@ -590,9 +584,7 @@ IN_PROC_BROWSER_TEST_P(SyncConsentPolicyDisabledTest,
   waiter.Wait();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SyncConsentPolicyDisabledTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, SyncConsentPolicyDisabledTest, testing::Bool());
 
 // Tests for Active Directory accounts, which skip the dialog because they do
 // not use sync.
@@ -794,12 +786,15 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, AbortedSetup) {
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session_manager::SessionManager::Get()->session_state());
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  ASSERT_NE(profile, nullptr);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  ASSERT_NE(identity_manager, nullptr);
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   // Expect all data types are disabled when consent flow is abandoned without
   // user action.
   syncer::SyncUserSettings* settings = GetSyncUserSettings();
+  ASSERT_NE(settings, nullptr);
   EXPECT_FALSE(settings->IsSyncEverythingEnabled());
   EXPECT_TRUE(settings->GetSelectedTypes().Empty());
 }

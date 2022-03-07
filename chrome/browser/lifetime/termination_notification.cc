@@ -53,8 +53,7 @@ void NotifyAndTerminate(bool fast_path, RebootPolicy reboot_policy) {
   if (chromeos::PowerPolicyController::IsInitialized())
     chromeos::PowerPolicyController::Get()->NotifyChromeIsExiting();
 
-  if (chromeos::DBusThreadManager::IsInitialized() &&
-      !chromeos::DBusThreadManager::Get()->IsUsingFakes()) {
+  if (chromeos::DBusThreadManager::IsInitialized()) {
     // If we're on a ChromeOS device, reboot if an update has been applied,
     // or else signal the session manager to log out.
     chromeos::UpdateEngineClient* update_engine_client =
@@ -68,13 +67,6 @@ void NotifyAndTerminate(bool fast_path, RebootPolicy reboot_policy) {
       // from session manager.
       ash::SessionTerminationManager::Get()->StopSession(
           login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);
-    }
-  } else {
-    if (chrome::IsAttemptingShutdown()) {
-      // If running the Chrome OS build, but we're not on the device, act
-      // as if we received signal from SessionManager.
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&chrome::ExitIgnoreUnloadHandlers));
     }
   }
 #endif
