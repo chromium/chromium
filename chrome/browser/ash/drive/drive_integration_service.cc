@@ -1315,6 +1315,21 @@ void DriveIntegrationService::ToggleMirroring(
   }
 }
 
+void DriveIntegrationService::ToggleSyncForPath(
+    const base::FilePath& path,
+    drivefs::mojom::MirrorPathStatus status,
+    drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback) {
+  if (!chromeos::features::IsDriveFsMirroringEnabled() ||
+      !IsMirroringEnabled()) {
+    std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
+    return;
+  }
+
+  if (GetDriveFsInterface()) {
+    GetDriveFsInterface()->ToggleSyncForPath(path, status, std::move(callback));
+  }
+}
+
 //===================== DriveIntegrationServiceFactory =======================
 
 DriveIntegrationServiceFactory::FactoryCallback*

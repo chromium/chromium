@@ -111,6 +111,10 @@ interface DriveFs {
 
   // Toggle mirror sync capability.
   ToggleMirroring(bool enabled) => (MirrorSyncStatus status);
+
+  // Toggle syncing for supplied path.
+  ToggleSyncForPath(mojo_base.mojom.FilePath path,
+                    MirrorPathStatus status) => (FileError error);
 };
 
 // Implemented by Chrome, used from DriveFS.
@@ -213,6 +217,14 @@ enum MirrorSyncStatus {
   kFailure,
   // The mirror sync feature is disabled by feature flag.
   kFeatureNotEnabled,
+};
+
+[Extensible]
+enum MirrorPathStatus {
+  // Start syncing a particular path.
+  kStart,
+  // Stop syncing a particular path.
+  kStop,
 };
 
 enum DialogResult {

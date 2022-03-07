@@ -149,6 +149,11 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
       bool enabled,
       drivefs::mojom::DriveFs::ToggleMirroringCallback callback) override;
 
+  void ToggleSyncForPath(
+      const base::FilePath& path,
+      drivefs::mojom::MirrorPathStatus status,
+      drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback) override;
+
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;
 

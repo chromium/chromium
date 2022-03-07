@@ -243,6 +243,13 @@ class DriveIntegrationService : public KeyedService,
       bool enabled,
       drivefs::mojom::DriveFs::ToggleMirroringCallback callback);
 
+  // Toggle syncing for a specific path. Should only be called once mirroring
+  // has been enabled via |ToggleMirroring|.
+  void ToggleSyncForPath(
+      const base::FilePath& path,
+      drivefs::mojom::MirrorPathStatus status,
+      drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback);
+
   // Returns whether mirroring is enabled.
   bool IsMirroringEnabled();
 

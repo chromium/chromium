@@ -524,4 +524,11 @@ void FakeDriveFs::ToggleMirroring(
   std::move(callback).Run(drivefs::mojom::MirrorSyncStatus::kSuccess);
 }
 
+void FakeDriveFs::ToggleSyncForPath(
+    const base::FilePath& path,
+    drivefs::mojom::MirrorPathStatus status,
+    drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback) {
+  std::move(callback).Run(drive::FileError::FILE_ERROR_OK);
+}
+
 }  // namespace drivefs

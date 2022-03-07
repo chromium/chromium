@@ -418,15 +418,57 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
   auto* drive_service =
       DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
 
-  // Ensure the mirror syncing service is enabled.
+  // Ensure the mirror syncing service is disabled.
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kDriveFsEnableMirrorSync));
   EXPECT_FALSE(drive_service->IsMirroringEnabled());
+
+  // Enable mirror syncing.
   ToggleMirrorSync(true);
   EXPECT_TRUE(drive_service->IsMirroringEnabled());
+
   // Disable mirroring and ensure the integration service has it disabled.
   ToggleMirrorSync(false);
   EXPECT_FALSE(drive_service->IsMirroringEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
+                       ToggleSyncForPath_MirroringDisabled) {
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+
+  {
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    drive_service->ToggleSyncForPath(
+        base::FilePath("/fake/path"), drivefs::mojom::MirrorPathStatus::kStart,
+        base::BindLambdaForTesting([quit_closure](FileError status) {
+          EXPECT_EQ(FILE_ERROR_SERVICE_UNAVAILABLE, status);
+          quit_closure.Run();
+        }));
+    run_loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
+                       ToggleSyncForPath_MirroringEnabled) {
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+
+  // Enable mirror sync.
+  ToggleMirrorSync(true);
+
+  {
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    drive_service->ToggleSyncForPath(
+        base::FilePath("/fake/path"), drivefs::mojom::MirrorPathStatus::kStart,
+        base::BindLambdaForTesting([quit_closure](FileError status) {
+          EXPECT_EQ(FILE_ERROR_OK, status);
+          quit_closure.Run();
+        }));
+    run_loop.Run();
+  }
 }
 
 }  // namespace drive
