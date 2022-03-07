@@ -10,6 +10,7 @@
 #include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
@@ -27,7 +28,11 @@ using ime::TextSuggestionType;
 
 constexpr char kMultiWordFirstAcceptTimeDays[] = "multi_word_first_accept";
 constexpr char16_t kSuggestionShownMessage[] =
-    u"predictive writing candidate shown, press tab to accept";
+    u"predictive writing candidate shown, press down to select or "
+    u"press tab to accept";
+constexpr char kSuggestionSelectedMessage[] =
+    "predictive writing candidate selected, candidate text is %s, "
+    "press tab to accept or press up to deselect";
 constexpr char16_t kSuggestionAcceptedMessage[] =
     u"predictive writing candidate inserted";
 constexpr char16_t kSuggestionDismissedMessage[] =
@@ -256,6 +261,9 @@ void MultiWordSuggester::DisplaySuggestion(
   details.show_quick_accept_annotation = ShouldShowTabGuide(profile_);
   details.confirmed_length = suggestion.confirmed_length;
   details.show_setting_link = false;
+
+  suggestion_button_.announce_string = base::UTF8ToUTF16(base::StringPrintf(
+      kSuggestionSelectedMessage, base::UTF16ToUTF8(details.text).c_str()));
 
   std::string error;
   suggestion_handler_->SetSuggestion(focused_context_id_, details, &error);

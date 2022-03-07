@@ -802,7 +802,8 @@ TEST_F(MultiWordSuggesterTest, ShowingSuggestionsTriggersAnnouncement) {
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 1u);
   EXPECT_EQ(suggestion_handler_.GetAnnouncements().back(),
-            u"predictive writing candidate shown, press tab to accept");
+            u"predictive writing candidate shown, press down to select or "
+            u"press tab to accept");
 }
 
 TEST_F(MultiWordSuggesterTest,
@@ -826,7 +827,8 @@ TEST_F(MultiWordSuggesterTest,
 
   ASSERT_EQ(suggestion_handler_.GetAnnouncements().size(), 1u);
   EXPECT_EQ(suggestion_handler_.GetAnnouncements().back(),
-            u"predictive writing candidate shown, press tab to accept");
+            u"predictive writing candidate shown, press down to select or "
+            u"press tab to accept");
 }
 
 TEST_F(MultiWordSuggesterTest, AcceptingSuggestionTriggersAnnouncement) {
