@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="ChromeOS.HPS.Image.Invalidity" units="per1000"
+    expires_after="2022-07-01">
+  <owner>evanbenn@chromium.org</owner>
+  <owner>avg@chromium.org</owner>
+  <owner>chromeos-hps-swe@google.com</owner>
+  <summary>
+    Measures the fraction of invalid images per thousand images, in ten minute
+    blocks. This will be recorded only when an HPS feature is enabled and at
+    least 30 images are inferenced.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.HPS.QuickDim.Enabled" enum="BooleanEnabled"
     expires_after="2022-07-01">
   <owner>evanbenn@chromium.org</owner>
