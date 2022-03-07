@@ -133,14 +133,14 @@ uint32_t HandleXdgSurfaceConfigureCallback(
     wl_resource* resource,
     SerialTracker* serial_tracker,
     const XdgSurfaceConfigureCallback& callback,
-    const gfx::Rect& bounds,
+    const gfx::Size& size,
     chromeos::WindowStateType state_type,
     bool resizing,
     bool activated,
     const gfx::Vector2d& origin_offset) {
   uint32_t serial =
       serial_tracker->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
-  callback.Run(bounds.size(), state_type, resizing, activated);
+  callback.Run(size, state_type, resizing, activated);
   xdg_surface_send_configure(resource, serial);
   wl_client_flush(wl_resource_get_client(resource));
   return serial;
@@ -165,18 +165,16 @@ struct WaylandXdgSurface {
 // xdg surface resource is destroyed before the toplevel resource.
 class WaylandToplevel : public aura::WindowObserver {
  public:
-  WaylandToplevel(wl_resource* xdg_toplevel_resource,
-                  wl_resource* xdg_surface_resource)
-      : xdg_toplevel_resource_(xdg_toplevel_resource),
-        xdg_surface_resource_(xdg_surface_resource),
+  WaylandToplevel(wl_resource* resource, wl_resource* surface_resource)
+      : resource_(resource),
         shell_surface_data_(
-            GetUserDataAs<WaylandXdgSurface>(xdg_surface_resource)) {
+            GetUserDataAs<WaylandXdgSurface>(surface_resource)) {
     shell_surface_data_->shell_surface->host_window()->AddObserver(this);
     shell_surface_data_->shell_surface->set_close_callback(base::BindRepeating(
         &WaylandToplevel::OnClose, weak_ptr_factory_.GetWeakPtr()));
     shell_surface_data_->shell_surface->set_configure_callback(
         base::BindRepeating(
-            &HandleXdgSurfaceConfigureCallback, xdg_surface_resource,
+            &HandleXdgSurfaceConfigureCallback, surface_resource,
             shell_surface_data_->serial_tracker,
             base::BindRepeating(&WaylandToplevel::OnConfigure,
                                 weak_ptr_factory_.GetWeakPtr())));
@@ -279,16 +277,14 @@ class WaylandToplevel : public aura::WindowObserver {
       shell_surface_data_->shell_surface->OnSetFrame(type);
   }
 
-  ShellSurfaceData GetShellSurfaceData() {
-    return ShellSurfaceData(shell_surface_data_->shell_surface.get(),
-                            shell_surface_data_->serial_tracker,
-                            xdg_surface_resource_);
+  ShellSurfaceBase* GetShellSurface() {
+    return shell_surface_data_->shell_surface.get();
   }
 
  private:
   void OnClose() {
-    xdg_toplevel_send_close(xdg_toplevel_resource_);
-    wl_client_flush(wl_resource_get_client(xdg_toplevel_resource_));
+    xdg_toplevel_send_close(resource_);
+    wl_client_flush(wl_resource_get_client(resource_));
   }
 
   static void AddState(wl_array* states, xdg_toplevel_state state) {
@@ -314,13 +310,12 @@ class WaylandToplevel : public aura::WindowObserver {
       AddState(&states, XDG_TOPLEVEL_STATE_RESIZING);
     if (activated)
       AddState(&states, XDG_TOPLEVEL_STATE_ACTIVATED);
-    xdg_toplevel_send_configure(xdg_toplevel_resource_, size.width(),
-                                size.height(), &states);
+    xdg_toplevel_send_configure(resource_, size.width(), size.height(),
+                                &states);
     wl_array_release(&states);
   }
 
-  wl_resource* const xdg_toplevel_resource_;
-  wl_resource* const xdg_surface_resource_;
+  wl_resource* const resource_;
   WaylandXdgSurface* shell_surface_data_;
   base::WeakPtrFactory<WaylandToplevel> weak_ptr_factory_{this};
 };
@@ -555,13 +550,11 @@ void xdg_surface_destroy(wl_client* client, wl_resource* resource) {
 }
 
 void xdg_surface_get_toplevel(wl_client* client,
-                              wl_resource* xdg_surface_resource,
+                              wl_resource* resource,
                               uint32_t id) {
-  auto* shell_surface_data =
-      GetUserDataAs<WaylandXdgSurface>(xdg_surface_resource);
+  auto* shell_surface_data = GetUserDataAs<WaylandXdgSurface>(resource);
   if (shell_surface_data->shell_surface->GetEnabled()) {
-    wl_resource_post_error(xdg_surface_resource,
-                           XDG_SURFACE_ERROR_ALREADY_CONSTRUCTED,
+    wl_resource_post_error(resource, XDG_SURFACE_ERROR_ALREADY_CONSTRUCTED,
                            "surface has already been constructed");
     return;
   }
@@ -572,9 +565,9 @@ void xdg_surface_get_toplevel(wl_client* client,
   wl_resource* xdg_toplevel_resource =
       wl_resource_create(client, &xdg_toplevel_interface, 1, id);
 
-  SetImplementation(xdg_toplevel_resource, &xdg_toplevel_implementation,
-                    std::make_unique<WaylandToplevel>(xdg_toplevel_resource,
-                                                      xdg_surface_resource));
+  SetImplementation(
+      xdg_toplevel_resource, &xdg_toplevel_implementation,
+      std::make_unique<WaylandToplevel>(xdg_toplevel_resource, resource));
 }
 
 void xdg_surface_get_popup(wl_client* client,
@@ -813,9 +806,9 @@ void bind_xdg_shell(wl_client* client,
                                  nullptr);
 }
 
-ShellSurfaceData GetShellSurfaceFromToplevelResource(wl_resource* resource) {
+ShellSurfaceBase* GetShellSurfaceFromToplevelResource(wl_resource* resource) {
   auto* toplevel = GetUserDataAs<WaylandToplevel>(resource);
-  return toplevel->GetShellSurfaceData();
+  return toplevel->GetShellSurface();
 }
 
 ShellSurfaceBase* GetShellSurfaceFromPopupResource(wl_resource* resource) {

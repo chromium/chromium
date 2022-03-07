@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -32,9 +33,34 @@
 namespace exo {
 namespace {
 
+constexpr char kText[] = "test";
 constexpr char kTextMimeType[] = "text/plain";
 
 }  // namespace
+
+class TestDataSourceDelegate : public DataSourceDelegate {
+ public:
+  // DataSourceDelegate:
+  void OnDataSourceDestroying(DataSource* source) override {}
+
+  void OnTarget(const absl::optional<std::string>& mime_type) override {}
+
+  void OnSend(const std::string& mime_type, base::ScopedFD fd) override {
+    base::WriteFileDescriptor(fd.get(), kText);
+  }
+
+  void OnCancelled() override {}
+
+  void OnDndDropPerformed() override {}
+
+  void OnDndFinished() override {}
+
+  void OnAction(DndAction dnd_action) override {}
+
+  bool CanAcceptDataEventsForSurface(Surface* surface) const override {
+    return true;
+  }
+};
 
 class DragDropOperationTest : public test::ExoTestBase,
                               public aura::client::DragDropClientObserver {
@@ -59,10 +85,8 @@ class DragDropOperationTest : public test::ExoTestBase,
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override {
     drag_start_count_++;
-    if (!drag_blocked_callback_.is_null()) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, std::move(drag_blocked_callback_));
-    }
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(drag_blocked_callback_));
   }
 
   void OnDragCompleted(const ui::DropTargetEvent& event) override {
@@ -264,7 +288,6 @@ TEST_F(DragDropOperationTest, DragDropFromNestedPopup) {
   EXPECT_EQ(0, GetDragStartCountAndReset());
   EXPECT_EQ(1, GetDragEndCountAndReset());
 }
-
 #endif
 
 }  // namespace exo

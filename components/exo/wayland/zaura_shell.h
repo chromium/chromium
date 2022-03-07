@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -18,11 +17,9 @@ struct wl_resource;
 
 namespace exo {
 
-class ShellSurface;
 class ShellSurfaceBase;
 
 namespace wayland {
-class SerialTracker;
 
 constexpr uint32_t kZAuraShellVersion = 29;
 
@@ -103,34 +100,16 @@ class AuraSurface : public SurfaceObserver,
 // Provides an implementation for top level operations on the shell.
 class AuraToplevel {
  public:
-  AuraToplevel(ShellSurface* shell_surface,
-               SerialTracker* const serial_tracker,
-               wl_resource* aura_toplevel_resource,
-               wl_resource* xdg_toplevel_resource);
-
+  AuraToplevel(ShellSurfaceBase* shell_surface);
   AuraToplevel(const AuraToplevel&) = delete;
   AuraToplevel& operator=(const AuraToplevel&) = delete;
-
-  virtual ~AuraToplevel();
+  ~AuraToplevel();
 
   void SetOrientationLock(uint32_t lock_type);
   void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
-  void SetClientUsesScreenCoordinates();
-  void SetWindowBounds(int32_t x, int32_t y, int32_t width, int32_t height);
 
-  void OnConfigure(const gfx::Rect& bounds,
-                   chromeos::WindowStateType state_type,
-                   bool resizing,
-                   bool activated);
-  virtual void OnOriginChange(const gfx::Point& origin);
-
-  ShellSurface* shell_surface_;
-  SerialTracker* const serial_tracker_;
-  wl_resource* xdg_toplevel_resource_;
-  wl_resource* aura_toplevel_resource_;
-  bool supports_window_bounds_ = false;
-
-  base::WeakPtrFactory<AuraToplevel> weak_ptr_factory_{this};
+ private:
+  ShellSurfaceBase* shell_surface_;
 };
 
 class AuraPopup {

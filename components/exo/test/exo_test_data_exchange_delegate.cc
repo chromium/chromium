@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/pickle.h"
 #include "base/strings/string_split.h"
@@ -96,25 +95,6 @@ std::vector<ui::FileInfo> TestDataExchangeDelegate::ParseFileSystemSources(
       file_info.push_back(ui::FileInfo(std::move(path), base::FilePath()));
   }
   return file_info;
-}
-
-void TestDataSourceDelegate::OnSend(const std::string& mime_type,
-                                    base::ScopedFD fd) {
-  constexpr char kText[] = "test";
-  base::WriteFileDescriptor(fd.get(), kText);
-}
-
-void TestDataSourceDelegate::OnCancelled() {
-  cancelled_ = true;
-}
-
-void TestDataSourceDelegate::OnDndFinished() {
-  finished_ = true;
-}
-
-bool TestDataSourceDelegate::CanAcceptDataEventsForSurface(
-    Surface* surface) const {
-  return true;
 }
 
 }  // namespace exo

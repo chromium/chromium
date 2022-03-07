@@ -65,7 +65,7 @@ bool HasBackdrop() {
 }
 
 uint32_t ConfigureFullscreen(uint32_t serial,
-                             const gfx::Rect& bounds,
+                             const gfx::Size& size,
                              chromeos::WindowStateType state_type,
                              bool resizing,
                              bool activated,
@@ -674,7 +674,7 @@ TEST_F(ShellSurfaceTest, StartResizeAndDestroyShell) {
 
   uint32_t serial = 0;
   auto configure_callback = base::BindRepeating(
-      [](uint32_t* const serial_ptr, const gfx::Rect& bounds,
+      [](uint32_t* const serial_ptr, const gfx::Size& size,
          chromeos::WindowStateType state_type, bool resizing, bool activated,
          const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
       &serial);
@@ -694,7 +694,7 @@ TEST_F(ShellSurfaceTest, StartResizeAndDestroyShell) {
   surface->Commit();
 
   shell_surface->set_configure_callback(base::BindRepeating(
-      [](const gfx::Rect& bounds, chromeos::WindowStateType state_type,
+      [](const gfx::Size& size, chromeos::WindowStateType state_type,
          bool resizing, bool activated, const gfx::Vector2d& origin_offset) {
         ADD_FAILURE() << "Configure Should not be called";
         return uint32_t{0};
@@ -849,16 +849,16 @@ TEST_F(ShellSurfaceTest, ForceClose) {
   EXPECT_EQ(surface_destroyed_ctr, 1);
 }
 
-uint32_t Configure(gfx::Rect* suggested_bounds,
+uint32_t Configure(gfx::Size* suggested_size,
                    chromeos::WindowStateType* has_state_type,
                    bool* is_resizing,
                    bool* is_active,
-                   const gfx::Rect& bounds,
+                   const gfx::Size& size,
                    chromeos::WindowStateType state_type,
                    bool resizing,
                    bool activated,
                    const gfx::Vector2d& origin_offset) {
-  *suggested_bounds = bounds;
+  *suggested_size = size;
   *has_state_type = state_type;
   *is_resizing = resizing;
   *is_active = activated;
@@ -868,7 +868,7 @@ uint32_t Configure(gfx::Rect* suggested_bounds,
 TEST_F(ShellSurfaceTest, ConfigureCallback) {
   // Must be before shell_surface so it outlives it, for shell_surface's
   // destructor calls Configure() referencing these 4 variables.
-  gfx::Rect suggested_bounds;
+  gfx::Size suggested_size;
   chromeos::WindowStateType has_state_type = chromeos::WindowStateType::kNormal;
   bool is_resizing = false;
   bool is_active = false;
@@ -877,7 +877,7 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
 
   shell_surface->set_configure_callback(base::BindRepeating(
-      &Configure, base::Unretained(&suggested_bounds),
+      &Configure, base::Unretained(&suggested_size),
       base::Unretained(&has_state_type), base::Unretained(&is_resizing),
       base::Unretained(&is_active)));
 
@@ -887,7 +887,7 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   // Commit without contents should result in a configure callback with empty
   // suggested size as a mechanisms to ask the client size itself.
   surface->Commit();
-  EXPECT_TRUE(suggested_bounds.IsEmpty());
+  EXPECT_TRUE(suggested_size.IsEmpty());
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
@@ -900,8 +900,8 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   shell_surface->Maximize();
   shell_surface->AcknowledgeConfigure(0);
 
-  EXPECT_FALSE(suggested_bounds.IsEmpty());
-  EXPECT_EQ(maximized_bounds.size(), suggested_bounds.size());
+  EXPECT_FALSE(suggested_size.IsEmpty());
+  EXPECT_EQ(maximized_bounds.size(), suggested_size);
   EXPECT_EQ(chromeos::WindowStateType::kMaximized, has_state_type);
 
   gfx::Size buffer_size(64, 64);
@@ -911,7 +911,7 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   surface->Commit();
 
   EXPECT_TRUE(shell_surface->GetWidget());
-  EXPECT_EQ(maximized_bounds.size(), suggested_bounds.size());
+  EXPECT_EQ(maximized_bounds.size(), suggested_size);
   EXPECT_EQ(chromeos::WindowStateType::kMaximized, has_state_type);
   shell_surface->Restore();
   shell_surface->AcknowledgeConfigure(0);
@@ -920,7 +920,8 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
 
   shell_surface->SetFullscreen(true);
   shell_surface->AcknowledgeConfigure(0);
-  EXPECT_EQ(GetContext()->bounds().size(), suggested_bounds.size());
+  EXPECT_EQ(GetContext()->bounds().size().ToString(),
+            suggested_size.ToString());
   EXPECT_EQ(chromeos::WindowStateType::kFullscreen, has_state_type);
   shell_surface->SetFullscreen(false);
   shell_surface->AcknowledgeConfigure(0);
@@ -942,7 +943,7 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
 TEST_F(ShellSurfaceTest, CreateMinimizedWindow) {
   // Must be before shell_surface so it outlives it, for shell_surface's
   // destructor calls Configure() referencing these 4 variables.
-  gfx::Rect suggested_bounds;
+  gfx::Size suggested_size;
   chromeos::WindowStateType has_state_type = chromeos::WindowStateType::kNormal;
   bool is_resizing = false;
   bool is_active = false;
@@ -951,7 +952,7 @@ TEST_F(ShellSurfaceTest, CreateMinimizedWindow) {
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
 
   shell_surface->set_configure_callback(base::BindRepeating(
-      &Configure, base::Unretained(&suggested_bounds),
+      &Configure, base::Unretained(&suggested_size),
       base::Unretained(&has_state_type), base::Unretained(&is_resizing),
       base::Unretained(&is_active)));
 
@@ -965,14 +966,14 @@ TEST_F(ShellSurfaceTest, CreateMinimizedWindow) {
 
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
-  EXPECT_TRUE(suggested_bounds.IsEmpty());
+  EXPECT_TRUE(suggested_size.IsEmpty());
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
 }
 
 TEST_F(ShellSurfaceTest, CreateMinimizedWindow2) {
   // Must be before shell_surface so it outlives it, for shell_surface's
   // destructor calls Configure() referencing these 4 variables.
-  gfx::Rect suggested_bounds;
+  gfx::Size suggested_size;
   auto has_state_type = chromeos::WindowStateType::kNormal;
   bool is_resizing = false;
   bool is_active = false;
@@ -981,7 +982,7 @@ TEST_F(ShellSurfaceTest, CreateMinimizedWindow2) {
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
 
   shell_surface->set_configure_callback(base::BindRepeating(
-      &Configure, base::Unretained(&suggested_bounds),
+      &Configure, base::Unretained(&suggested_size),
       base::Unretained(&has_state_type), base::Unretained(&is_resizing),
       base::Unretained(&is_active)));
 
@@ -991,7 +992,7 @@ TEST_F(ShellSurfaceTest, CreateMinimizedWindow2) {
   // Commit without contents should result in a configure callback with empty
   // suggested size as a mechanisms to ask the client size itself.
   surface->Commit();
-  EXPECT_TRUE(suggested_bounds.IsEmpty());
+  EXPECT_TRUE(suggested_size.IsEmpty());
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
@@ -1009,14 +1010,14 @@ TEST_F(ShellSurfaceTest, CreateMinimizedWindow2) {
 
   // Once the initial empty size is sent in configure,
   // new configure should send the size requested.
-  EXPECT_EQ(geometry.size(), suggested_bounds.size());
+  EXPECT_EQ(geometry.size(), suggested_size);
 }
 
 TEST_F(ShellSurfaceTest,
        CreateMaximizedWindowWithRestoreBoundsWithoutInitialBuffer) {
   // Must be before shell_surface so it outlives it, for shell_surface's
   // destructor calls Configure() referencing these 4 variables.
-  gfx::Rect suggested_bounds;
+  gfx::Size suggested_size;
   chromeos::WindowStateType has_state_type = chromeos::WindowStateType::kNormal;
   bool is_resizing = false;
   bool is_active = false;
@@ -1028,7 +1029,7 @@ TEST_F(ShellSurfaceTest,
           .BuildShellSurface();
 
   shell_surface->set_configure_callback(base::BindRepeating(
-      &Configure, base::Unretained(&suggested_bounds),
+      &Configure, base::Unretained(&suggested_size),
       base::Unretained(&has_state_type), base::Unretained(&is_resizing),
       base::Unretained(&is_active)));
 
@@ -1074,7 +1075,7 @@ TEST_F(ShellSurfaceTest,
 TEST_F(ShellSurfaceTest, CreateMaximizedWindowWithRestoreBounds) {
   // Must be before shell_surface so it outlives it, for shell_surface's
   // destructor calls Configure() referencing these 4 variables.
-  gfx::Rect suggested_bounds;
+  gfx::Size suggested_size;
   chromeos::WindowStateType has_state_type = chromeos::WindowStateType::kNormal;
   bool is_resizing = false;
   bool is_active = false;
@@ -1086,7 +1087,7 @@ TEST_F(ShellSurfaceTest, CreateMaximizedWindowWithRestoreBounds) {
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
 
   shell_surface->set_configure_callback(base::BindRepeating(
-      &Configure, base::Unretained(&suggested_bounds),
+      &Configure, base::Unretained(&suggested_size),
       base::Unretained(&has_state_type), base::Unretained(&is_resizing),
       base::Unretained(&is_active)));
 
@@ -1130,8 +1131,9 @@ TEST_F(ShellSurfaceTest, ToggleFullscreen) {
   surface->Attach(buffer.get());
   surface->Commit();
   EXPECT_FALSE(HasBackdrop());
-  EXPECT_EQ(buffer_size,
-            shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+  EXPECT_EQ(
+      buffer_size.ToString(),
+      shell_surface->GetWidget()->GetWindowBoundsInScreen().size().ToString());
   shell_surface->Maximize();
   EXPECT_FALSE(HasBackdrop());
   EXPECT_EQ(GetContext()->bounds().width(),
@@ -1542,8 +1544,8 @@ TEST_F(ShellSurfaceTest, DragMaximizedWindow) {
   chromeos::WindowStateType configured_state =
       chromeos::WindowStateType::kDefault;
   shell_surface->set_configure_callback(base::BindLambdaForTesting(
-      [&](const gfx::Rect& bounds, chromeos::WindowStateType state,
-          bool resizing, bool activated, const gfx::Vector2d& origin_offset) {
+      [&](const gfx::Size& size, chromeos::WindowStateType state, bool resizing,
+          bool activated, const gfx::Vector2d& origin_offset) {
         configured_state = state;
         return uint32_t{0};
       }));
@@ -1757,7 +1759,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   gfx::Rect new_bounds(new_size);
   uint32_t serial = 0;
   auto configure_callback = base::BindRepeating(
-      [](uint32_t* const serial_ptr, const gfx::Rect& bounds,
+      [](uint32_t* const serial_ptr, const gfx::Size& size,
          chromeos::WindowStateType state_type, bool resizing, bool activated,
          const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
       &serial);
@@ -2130,64 +2132,6 @@ TEST_F(ShellSurfaceTest, ThrottleFrameRate) {
   window->SetProperty(ash::kFrameRateThrottleKey, false);
 
   shell_surface->root_surface()->RemoveSurfaceObserver(&observer);
-}
-
-namespace {
-
-struct ShellSurfaceCallbacks {
-  struct ConfigureState {
-    gfx::Rect bounds;
-    chromeos::WindowStateType state_type;
-    bool resizing;
-    bool activated;
-  };
-
-  uint32_t OnConfigure(const gfx::Rect& bounds,
-                       chromeos::WindowStateType state_type,
-                       bool resizing,
-                       bool activated,
-                       const gfx::Vector2d& origin_offset) {
-    configure_state.emplace();
-    *configure_state = {bounds, state_type, resizing, activated};
-    // The serial number is not used, not important in this test.
-    return 0;
-  }
-  void OnOriginChange(const gfx::Point& origin_) { origin = origin_; }
-  void Reset() {
-    configure_state.reset();
-    origin.reset();
-  }
-  absl::optional<ConfigureState> configure_state;
-  absl::optional<gfx::Point> origin;
-};
-
-}  // namespace
-
-TEST_F(ShellSurfaceTest, ScreenCoordinates) {
-  auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
-  ShellSurfaceCallbacks callbacks;
-
-  shell_surface->set_configure_callback(base::BindRepeating(
-      &ShellSurfaceCallbacks::OnConfigure, base::Unretained(&callbacks)));
-  shell_surface->set_origin_change_callback(base::BindRepeating(
-      &ShellSurfaceCallbacks::OnOriginChange, base::Unretained(&callbacks)));
-
-  shell_surface->SetWindowBounds(gfx::Rect(10, 10, 300, 300));
-  ASSERT_TRUE(!!callbacks.configure_state);
-  ASSERT_TRUE(!callbacks.origin);
-  EXPECT_EQ(callbacks.configure_state->bounds, gfx::Rect(10, 10, 300, 300));
-
-  callbacks.Reset();
-  shell_surface->SetWindowBounds(gfx::Rect(100, 100, 300, 300));
-  ASSERT_TRUE(!callbacks.configure_state);
-  ASSERT_TRUE(!!callbacks.origin);
-  EXPECT_EQ(*callbacks.origin, gfx::Point(100, 100));
-
-  callbacks.Reset();
-  shell_surface->SetWindowBounds(gfx::Rect(0, 0, 300000, 300000));
-  ASSERT_TRUE(!!callbacks.configure_state);
-  EXPECT_EQ(callbacks.configure_state->bounds,
-            display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
 }
 
 }  // namespace exo
