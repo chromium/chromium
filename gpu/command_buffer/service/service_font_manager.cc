@@ -168,7 +168,7 @@ bool ServiceFontManager::Deserialize(
     const volatile char* memory,
     uint32_t memory_size,
     std::vector<SkDiscardableHandleId>* locked_handles) {
-  base::AutoLock hold(lock_);
+  base::ReleasableAutoLock hold(&lock_);
   DCHECK_EQ(client_thread_id_, base::PlatformThread::CurrentId());
 
   DCHECK(locked_handles->empty());
@@ -217,11 +217,9 @@ bool ServiceFontManager::Deserialize(
   if (!deserializer.Read<uint32_t>(&skia_data_size))
     return false;
 
-  {
-    base::AutoUnlock release(lock_);
-    if (!deserializer.ReadStrikeData(strike_client_.get(), skia_data_size))
-      return false;
-  }
+  hold.Release();
+  if (!deserializer.ReadStrikeData(strike_client_.get(), skia_data_size))
+    return false;
 
   return true;
 }
@@ -229,11 +227,10 @@ bool ServiceFontManager::Deserialize(
 bool ServiceFontManager::AddHandle(SkDiscardableHandleId handle_id,
                                    ServiceDiscardableHandle handle) {
   lock_.AssertAcquired();
-
-  if (discardable_handle_map_.find(handle_id) != discardable_handle_map_.end())
-    return false;
-  discardable_handle_map_[handle_id] = std::move(handle);
-  return true;
+  bool inserted;
+  std::tie(std::ignore, inserted) =
+      discardable_handle_map_.try_emplace(handle_id, std::move(handle));
+  return inserted;
 }
 
 bool ServiceFontManager::Unlock(
