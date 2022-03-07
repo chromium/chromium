@@ -22,6 +22,84 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="DriveCommon.Lifecycle.FirstLaunchTime" units="ms"
+    expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    How long did it take to launch Google Drive for the first time.
+  </summary>
+</histogram>
+
+<histogram name="DriveCommon.Lifecycle.Mount" enum="DriveMountStatus"
+    expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Records outcomes of attempts to mount Google Drive.</summary>
+</histogram>
+
+<histogram name="DriveCommon.Lifecycle.MountTime" units="ms"
+    expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>How long did it take to mount Google Drive.</summary>
+</histogram>
+
+<histogram name="DriveCommon.Lifecycle.Unmount" enum="DriveMountStatus"
+    expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Records outcomes of attempts to unmount Google Drive.</summary>
+</histogram>
+
+<histogram name="DriveCommon.LocalSearch.OfflineSearchTime" units="ms"
+    expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    How long did it take to perform a lookup of pinned files in local Google
+    Drive cache.
+  </summary>
+</histogram>
+
+<histogram name="DriveCommon.LocalSearch.SharedSearchTime" units="ms"
+    expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    How long did it take to perform a search of shared files in local Google
+    Drive cache.
+  </summary>
+</histogram>
+
+<histogram name="DriveCommon.LocalSearch.TextSearchTime" units="ms"
+    expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    How long did it take to search a title in local Google Drive cache.
+  </summary>
+</histogram>
+
+<histogram name="DriveCommon.RemoteSearch.SharedSearchTime" units="ms"
+    expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    How long did it take to perform a search of shared files in online Google
+    Drive.
+  </summary>
+</histogram>
+
+<histogram name="DriveCommon.RemoteSearch.TextSearchTime" units="ms"
+    expires_after="M112">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    How long did it take to perform a search in online Google Drive.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.ArchiveSize.{Extension}" units="100MiB"
     expires_after="2022-12-01">
   <owner>msalomao@google.com</owner>
