@@ -7,6 +7,7 @@
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 
 using content::WebContents;
@@ -20,12 +21,9 @@ NoStatePrefetchTabHelper::NoStatePrefetchTabHelper(
 
 NoStatePrefetchTabHelper::~NoStatePrefetchTabHelper() = default;
 
-void NoStatePrefetchTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+void NoStatePrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
+  if (page.GetMainDocument().IsErrorDocument())
     return;
-  }
 
   NoStatePrefetchManager* no_state_prefetch_manager =
       NoStatePrefetchManagerFactory::GetForBrowserContext(
@@ -34,7 +32,8 @@ void NoStatePrefetchTabHelper::DidFinishNavigation(
     return;
   if (no_state_prefetch_manager->IsWebContentsPrefetching(web_contents()))
     return;
-  no_state_prefetch_manager->RecordNavigation(navigation_handle->GetURL());
+  no_state_prefetch_manager->RecordNavigation(
+      page.GetMainDocument().GetLastCommittedURL());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(NoStatePrefetchTabHelper);

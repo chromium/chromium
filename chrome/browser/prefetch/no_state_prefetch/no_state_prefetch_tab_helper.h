@@ -23,8 +23,7 @@ class NoStatePrefetchTabHelper
   NoStatePrefetchTabHelper& operator=(const NoStatePrefetchTabHelper&) = delete;
 
   // content::WebContentsObserver implementation.
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   explicit NoStatePrefetchTabHelper(content::WebContents* web_contents);
