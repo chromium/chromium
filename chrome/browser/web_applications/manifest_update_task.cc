@@ -268,7 +268,7 @@ void ManifestUpdateTask::DidFinishLoad(
   if (stage_ != Stage::kPendingPageLoad || hang_for_testing_)
     return;
 
-  if (render_frame_host->GetParent() != nullptr)
+  if (render_frame_host->GetParentOrOuterDocument())
     return;
 
   stage_ = Stage::kPendingInstallableData;
