@@ -56,6 +56,8 @@ class FakeIntentHelperHost : public mojom::IntentHelperHost {
                        const std::string& owner_package_name) override;
   void OnOpenAppWithIntent(const GURL& start_url,
                            arc::mojom::LaunchIntentPtr intent) override;
+  void OnOpenGlobalActions() override;
+  void OnCloseSystemDialogs() override;
 
  private:
   // The connection holder must outlive |this| object.

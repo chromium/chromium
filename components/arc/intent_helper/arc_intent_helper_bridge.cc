@@ -12,6 +12,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/system/power/power_button_controller_base.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -358,6 +359,14 @@ void ArcIntentHelperBridge::OnOpenAppWithIntent(
 
     g_open_url_delegate->OpenAppWithIntent(start_url, std::move(intent));
   }
+}
+
+void ArcIntentHelperBridge::OnOpenGlobalActions() {
+  ash::PowerButtonControllerBase::Get()->OnArcPowerButtonMenuEvent();
+}
+
+void ArcIntentHelperBridge::OnCloseSystemDialogs() {
+  ash::PowerButtonControllerBase::Get()->CancelPowerButtonEvent();
 }
 
 ArcIntentHelperBridge::GetResult ArcIntentHelperBridge::GetActivityIcons(

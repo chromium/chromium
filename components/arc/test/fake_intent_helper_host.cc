@@ -56,5 +56,7 @@ void FakeIntentHelperHost::OnDownloadAdded(
 void FakeIntentHelperHost::OnOpenAppWithIntent(
     const GURL& start_url,
     arc::mojom::LaunchIntentPtr intent) {}
+void FakeIntentHelperHost::OnOpenGlobalActions() {}
+void FakeIntentHelperHost::OnCloseSystemDialogs() {}
 
 }  // namespace arc

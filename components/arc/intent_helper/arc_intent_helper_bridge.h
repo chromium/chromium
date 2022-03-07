@@ -112,6 +112,8 @@ class ArcIntentHelperBridge : public KeyedService,
                        const std::string& owner_package_name) override;
   void OnOpenAppWithIntent(const GURL& start_url,
                            arc::mojom::LaunchIntentPtr intent) override;
+  void OnOpenGlobalActions() override;
+  void OnCloseSystemDialogs() override;
 
   // ArcIconCacheDelegete:
   GetResult GetActivityIcons(const std::vector<ActivityName>& activities,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 49
+// Next MinVersion: 50
 
 module arc.mojom;
 
@@ -276,7 +276,7 @@ interface CustomTabSession {
 
 // Handles intents from ARC in Chrome.
 // Deprecated method ID: 4, 9, 10, 16
-// Next method ID: 21
+// Next method ID: 23
 interface IntentHelperHost {
   // Called when icons associated with the package are no longer up to date.
   [MinVersion=3] OnIconInvalidated@1(string package_name);
@@ -374,6 +374,12 @@ interface IntentHelperHost {
   // actual URL which is loaded is based on the contents of |intent|.
   [MinVersion=45] OnOpenAppWithIntent@19(
       url.mojom.Url start_url, LaunchIntent intent);
+
+  // Opens the global actions dialog.
+  [MinVersion=49] OnOpenGlobalActions@21();
+
+  // Close any dialogs opened from ARC.
+  [MinVersion=49] OnCloseSystemDialogs@22();
 };
 
 // Sends intents to ARC on behalf of Chrome.
