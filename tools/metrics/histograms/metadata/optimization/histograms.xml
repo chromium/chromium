@@ -823,7 +823,7 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
-<histogram base="true"
+<histogram
     name="OptimizationGuide.PredictionManager.ModelAvailableAtRegistration.{OptimizationTarget}"
     units="BooleanAvailable" expires_after="M106">
   <owner>sophiechang@chromium.org</owner>
@@ -837,9 +837,12 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
-<histogram base="true"
+<histogram
     name="OptimizationGuide.PredictionManager.ModelTypeChanged.{OptimizationTarget}"
-    units="BooleanChanged" expires_after="M106">
+    units="BooleanChanged" expires_after="2022-03-07">
+  <obsolete>
+    Deprecated as of 2022-03-07.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
