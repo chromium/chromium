@@ -99,6 +99,12 @@ class TrainingDataCollectorImpl : public TrainingDataCollector {
       // immediately reported when the histogram is recorded.
       auto hash_index_map = ParseUmaOutputs(segment_info.model_metadata());
       for (const auto& hash_index : hash_index_map) {
+        const auto& output =
+            segment_info.model_metadata().training_outputs().outputs(
+                hash_index.second);
+        // Ignore continuous collection UMA.
+        if (output.uma_output().has_duration())
+          continue;
         immediate_collection_histograms_[hash_index.first].emplace(
             segment.first);
       }

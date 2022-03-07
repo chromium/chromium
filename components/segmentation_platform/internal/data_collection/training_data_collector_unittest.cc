@@ -163,6 +163,11 @@ TEST_F(TrainingDataCollectorTest, IrrelevantHistogramNotReported) {
   collector()->OnHistogramSignalUpdated("irrelevant_histogram", kSample);
   task_environment()->RunUntilIdle();
   ExpectUkmCount(0u);
+
+  // Continuous collection histogram |kHistogramName1| should not be reported.
+  collector()->OnHistogramSignalUpdated(kHistogramName1, kSample);
+  task_environment()->RunUntilIdle();
+  ExpectUkmCount(0u);
 }
 
 TEST_F(TrainingDataCollectorTest, HistogramImmediatelyReported) {
