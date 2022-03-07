@@ -6209,11 +6209,6 @@ static_library("browser") {
       "media_galleries/fileapi/mtp_file_stream_reader.cc",
       "media_galleries/fileapi/mtp_file_stream_reader.h",
     ]
-    if (is_chromeos_ash && use_dbus) {
-      # TODO(donna.wu@intel.com): push this into chrome/browser/chromeos
-      # and chrome/browser/media_galleries/chromeos
-      deps += [ "//services/device/public/mojom" ]
-    }
   }
 
   if (toolkit_views) {
@@ -6686,7 +6681,6 @@ static_library("browser") {
       "//extensions/components/javascript_dialog_extensions_client",
       "//google_apis/common",
       "//google_apis/drive",
-      "//services/device/public/mojom",
     ]
     if (is_chromeos_ash) {
       sources += [
@@ -6971,7 +6965,6 @@ static_library("browser") {
       "//media:media_buildflags",
       "//ppapi/host",
       "//ppapi/proxy:ipc",
-      "//services/device/public/mojom",
       "//services/network/public/mojom",
     ]
     if (is_chromeos_ash) {
