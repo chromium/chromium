@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as animate from '../../animation.js';
+import {assertInstanceof} from '../../assert.js';
 import {
   CameraConfig,
   CameraInfo,
@@ -14,7 +15,7 @@ import {I18nString} from '../../i18n_string.js';
 import * as localStorage from '../../models/local_storage.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
-import {Facing, ViewName} from '../../type.js';
+import {Facing, Mode, Resolution, ViewName} from '../../type.js';
 import * as util from '../../util.js';
 
 /**
@@ -94,9 +95,15 @@ export class Options implements CameraUI {
       }
     });
     this.toggleFps.addEventListener('change', () => {
+      if (this.videoDeviceId === null) {
+        return;
+      }
       const prefFps = this.toggleFps.checked ? 60 : 30;
       this.updateVideoConstFpsOption(prefFps);
-      const reconfiguring = this.cameraManager.setPrefVideoConstFps(prefFps);
+      const resolution = assertInstanceof(
+          this.cameraManager.getCaptureResolution(), Resolution);
+      const reconfiguring = this.cameraManager.setPrefVideoConstFps(
+          this.videoDeviceId, resolution, prefFps);
       if (reconfiguring === null) {
         return;
       }
@@ -125,7 +132,15 @@ export class Options implements CameraUI {
     this.audioTrack = this.cameraManager.getAudioTrack();
     this.updateAudioByMic();
 
+    for (const fps of SUPPORTED_CONSTANT_FPS) {
+      state.set(
+          state.assertState(`fps-${fps}`),
+          fps === this.cameraManager.getConstFps());
+    }
     this.toggleFps.hidden = (() => {
+      if (config.mode !== Mode.VIDEO) {
+        return true;
+      }
       if (config.facing !== Facing.EXTERNAL) {
         return true;
       }

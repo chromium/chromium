@@ -99,7 +99,6 @@ export class DeviceInfoUpdater {
    */
   private async doUpdate() {
     this.devicesInfo = this.pendingDevicesInfo.map((d) => d.v1Info);
-    // Update preferer if device supports HALv3.
     if (await DeviceOperator.isSupported()) {
       this.camera3DevicesInfo =
           this.pendingDevicesInfo.map((d) => assertExists(d.v3Info));

@@ -6,6 +6,7 @@ import {assert, assertInstanceof} from '../assert.js';
 import {Facing, Mode} from '../type.js';
 
 import {Camera3DeviceInfo} from './camera3_device_info.js';
+import {CaptureCandidate} from './capture_candidate.js';
 import {DeviceInfoUpdater} from './device_info_updater.js';
 import {CaptureHandler} from './mode/index.js';
 
@@ -56,6 +57,7 @@ export interface CameraConfig {
   deviceId: string;
   facing: Facing;
   mode: Mode;
+  captureCandidate: CaptureCandidate;
 }
 
 /**
@@ -73,6 +75,7 @@ export interface CameraConfigCandidate {
    */
   facing: Facing|null;
   mode: Mode;
+  captureCandidate: CaptureCandidate;
 }
 
 export interface CameraUI {

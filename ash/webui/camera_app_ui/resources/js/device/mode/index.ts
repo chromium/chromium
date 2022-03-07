@@ -11,17 +11,9 @@ import {DeviceOperator} from '../../mojo/device_operator.js';
 import {CaptureIntent} from '../../mojo/type.js';
 import * as state from '../../state.js';
 import {
-  Facing,
   Mode,
   Resolution,
 } from '../../type.js';
-import {assertEnumVariant} from '../../util.js';
-import {
-  CaptureCandidate,
-  ConstraintsPreferrer,
-  PhotoConstraintsPreferrer,
-  VideoConstraintsPreferrer,
-} from '../constraints_preferrer.js';
 import {StreamConstraints} from '../stream_constraints.js';
 
 import {
@@ -94,19 +86,9 @@ interface ModeConfig {
       Promise<void>;
 
   /**
-   * Get general stream constraints of this mode for fake cameras.
-   */
-  getConstraintsForFakeCamera(deviceId: string|null): StreamConstraints[];
-
-  /**
    * Gets factory to create capture object for this mode.
    */
   getCaptureFactory(): ModeFactory;
-
-  /**
-   * HALv3 constraints preferrer for this mode.
-   */
-  readonly constraintsPreferrer: ConstraintsPreferrer;
 
   /**
    * Mode to be fallbacked to when fail to configure this mode.
@@ -135,41 +117,7 @@ export class Modes {
 
   private handler: CaptureHandler|null = null;
 
-  constructor(
-      photoPreferrer: PhotoConstraintsPreferrer,
-      videoPreferrer: VideoConstraintsPreferrer,
-  ) {
-    /**
-     * Returns a set of general constraints for fake cameras.
-     *
-     * @param videoMode Is getting constraints for video mode.
-     * @param deviceId Id of video device.
-     * @return Result of constraints-candidates.
-     */
-    function getConstraintsForFakeCamera(
-        videoMode: boolean, deviceId: string): StreamConstraints[] {
-      const frameRate = {min: 20, ideal: 30};
-      return [
-        {
-          deviceId,
-          audio: videoMode,
-          video: {
-            aspectRatio: {ideal: videoMode ? 1.7777777778 : 1.3333333333},
-            width: {min: 1280},
-            frameRate,
-          },
-        },
-        {
-          deviceId,
-          audio: videoMode,
-          video: {
-            width: {min: 640},
-            frameRate,
-          },
-        },
-      ];
-    }
-
+  constructor() {
     // Workaround for b/184089334 on PTZ camera to use preview frame as photo
     // result.
     function checkSupportPTZForPhotoMode(
@@ -237,9 +185,6 @@ export class Modes {
           await deviceOperator.setFpsRange(
               deviceId, minFrameRate, maxFrameRate);
         },
-        constraintsPreferrer: videoPreferrer,
-        getConstraintsForFakeCamera:
-            getConstraintsForFakeCamera.bind(this, true),
         fallbackMode: Mode.PHOTO,
       },
       [Mode.PHOTO]: {
@@ -253,9 +198,6 @@ export class Modes {
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, CaptureIntent.STILL_CAPTURE),
-        constraintsPreferrer: photoPreferrer,
-        getConstraintsForFakeCamera:
-            getConstraintsForFakeCamera.bind(this, false),
         fallbackMode: Mode.SQUARE,
       },
       [Mode.SQUARE]: {
@@ -269,9 +211,6 @@ export class Modes {
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, CaptureIntent.STILL_CAPTURE),
-        constraintsPreferrer: photoPreferrer,
-        getConstraintsForFakeCamera:
-            getConstraintsForFakeCamera.bind(this, false),
         fallbackMode: Mode.PHOTO,
       },
       [Mode.PORTRAIT]: {
@@ -294,9 +233,6 @@ export class Modes {
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, CaptureIntent.STILL_CAPTURE),
-        constraintsPreferrer: photoPreferrer,
-        getConstraintsForFakeCamera:
-            getConstraintsForFakeCamera.bind(this, false),
         fallbackMode: Mode.PHOTO,
       },
       [Mode.SCAN]: {
@@ -310,9 +246,6 @@ export class Modes {
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, CaptureIntent.STILL_CAPTURE),
-        constraintsPreferrer: photoPreferrer,
-        getConstraintsForFakeCamera:
-            getConstraintsForFakeCamera.bind(this, false),
         fallbackMode: Mode.PHOTO,
       },
     };
@@ -334,19 +267,8 @@ export class Modes {
   }
 
   /**
-   * Gets current mode. Should only be called when mode is properly configured.
-   */
-  getMode(): Mode {
-    return assertEnumVariant(Mode, this.captureParams?.mode);
-  }
-
-  getCaptureResolution(): Resolution {
-    return assertInstanceof(this.captureParams?.captureResolution, Resolution);
-  }
-
-  /**
-   * @return Supported mode candidates for specific |deviceId| starting from
-   *     |startingMode| followed by its fallback modes.
+   * Gets all mode candidates. Desired trying sequence of candidate modes is
+   * reflected in the order of the returned array.
    */
   async getModeCandidates(deviceId: string|null, startingMode: Mode):
       Promise<Mode[]> {
@@ -361,26 +283,6 @@ export class Modes {
       mode = this.allModes[mode].fallbackMode;
     }
     return results;
-  }
-
-  /**
-   * Gets all available capture resolution and its corresponding preview
-   * constraints for the given |mode| and |deviceId|.
-   */
-  getResolutionCandidates(mode: Mode, deviceId: string): CaptureCandidate[] {
-    return this.allModes[mode].constraintsPreferrer.getSortedCandidates(
-        deviceId);
-  }
-
-  /**
-   * Gets a general set of resolution candidates given by |mode| and |deviceId|
-   * for fake cameras.
-   */
-  getFakeResolutionCandidates(mode: Mode, deviceId: string):
-      CaptureCandidate[] {
-    const previewCandidates =
-        this.allModes[mode].getConstraintsForFakeCamera(deviceId);
-    return [{resolution: null, previewCandidates}];
   }
 
   /**
@@ -433,23 +335,13 @@ export class Modes {
    * Creates and updates current mode object.
    *
    * @param factory The factory ready for producing mode capture object.
-   * @param stream Stream of the new switching mode.
-   * @param facing Camera facing of the current mode.
-   * @param deviceId Device id of currently working video device.
    */
-  async updateMode(
-      factory: ModeFactory, stream: MediaStream, facing: Facing,
-      deviceId: string|null): Promise<void> {
+  async updateMode(factory: ModeFactory): Promise<void> {
     if (this.current !== null) {
       await this.current.clear();
       await this.disableSaveMetadata();
     }
-    const {mode, captureResolution} = this.getCaptureParams();
     this.current = factory.produce();
-    if (deviceId !== null && captureResolution !== null) {
-      this.allModes[mode].constraintsPreferrer.updateValues(
-          deviceId, stream, facing, captureResolution);
-    }
     await this.updateSaveMetadata();
   }
 

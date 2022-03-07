@@ -31,7 +31,7 @@ import {WaitableEvent} from '../waitable_event.js';
 import {windowController} from '../window_controller.js';
 
 import {EventListener, OperationScheduler} from './camera_operation.js';
-import {ConstraintsPreferrer} from './constraints_preferrer.js';
+import {VideoCaptureCandidate} from './capture_candidate.js';
 import {DeviceInfoUpdater} from './device_info_updater.js';
 import {Preview} from './preview.js';
 import {
@@ -170,19 +170,18 @@ export class CameraManager implements EventListener {
     return new Resolution(videoWidth, videoHeight);
   }
 
-  getPrefPhotoResolution(deviceId: string): Resolution|null {
-    return this.scheduler.photoPreferrer.getPrefResolution(deviceId);
-  }
-
-  getPrefVideoResolution(deviceId: string): Resolution|null {
-    return this.scheduler.videoPreferrer.getPrefResolution(deviceId);
+  getCaptureResolution(): Resolution|null {
+    assert(this.scheduler.reconfigurer.config !== null);
+    return this.scheduler.reconfigurer.config.captureCandidate.resolution;
   }
 
   getConstFps(): number|null {
-    const deviceId = this.getDeviceId();
-    const resolution = this.scheduler.modes.getCaptureResolution();
-    return this.scheduler.videoPreferrer.getPreferredConstFps(
-        deviceId, resolution);
+    assert(this.scheduler.reconfigurer.config !== null);
+    const c = this.scheduler.reconfigurer.config.captureCandidate;
+    if (!(c instanceof VideoCaptureCandidate)) {
+      return null;
+    }
+    return c.constFps;
   }
 
   async getSupportedModes(deviceId: string|null): Promise<Mode[]> {
@@ -320,46 +319,55 @@ export class CameraManager implements EventListener {
     });
   }
 
-  private setPrefResolution(
-      preferer: ConstraintsPreferrer, deviceId: string,
-      resolution: Resolution): Promise<boolean>|null {
+  private async setCapturePref(deviceId: string, setPref: () => void):
+      Promise<boolean> {
     if (!this.cameraAvailable) {
-      return null;
+      return false;
     }
     if (deviceId !== this.getDeviceId()) {
       // Changing the configure of the camera not currently opened, thus no
       // reconfiguration are required.
-      preferer.changePreferredResolution(deviceId, resolution);
-      assert(this.scheduler.reconfigurer.config !== null);
-      return this.onUpdateConfig(this.scheduler.reconfigurer.config)
-          .then(() => true);
+      setPref();
+      return true;
     }
-    return this.tryReconfigure(() => {
-      preferer.changePreferredResolution(deviceId, resolution);
-    });
+    return this.tryReconfigure(setPref) ?? false;
+  }
+
+  getPrefPhotoResolution(deviceId: string): Resolution|null {
+    return this.scheduler.reconfigurer.capturePreferrer.getPrefPhotoResolution(
+        deviceId);
   }
 
   setPrefPhotoResolution(deviceId: string, r: Resolution):
       Promise<boolean>|null {
-    return this.setPrefResolution(this.scheduler.photoPreferrer, deviceId, r);
+    return this.setCapturePref(deviceId, () => {
+      this.scheduler.reconfigurer.capturePreferrer.setPrefPhotoResolution(
+          deviceId, r);
+    });
+  }
+
+  getPrefVideoResolution(deviceId: string): Resolution|null {
+    return this.scheduler.reconfigurer.capturePreferrer.getPrefVideoResolution(
+        deviceId);
   }
 
   setPrefVideoResolution(deviceId: string, r: Resolution):
       Promise<boolean>|null {
-    return this.setPrefResolution(this.scheduler.videoPreferrer, deviceId, r);
+    return this.setCapturePref(deviceId, () => {
+      this.scheduler.reconfigurer.capturePreferrer.setPrefVideoResolution(
+          deviceId, r);
+    });
   }
 
   /**
    * Sets fps of constant video recording on currently opened camera and
    * resolution.
    */
-  setPrefVideoConstFps(fps: number): Promise<boolean>|null {
-    if (!this.cameraAvailable) {
-      return null;
-    }
-    return this.tryReconfigure(() => {
-      this.scheduler.videoPreferrer.setPreferredConstFps(
-          this.getDeviceId(), this.scheduler.modes.getCaptureResolution(), fps);
+  setPrefVideoConstFps(deviceId: string, r: Resolution, fps: number):
+      Promise<boolean>|null {
+    return this.setCapturePref(deviceId, () => {
+      this.scheduler.reconfigurer.capturePreferrer.setPrefVideoConstFps(
+          deviceId, r, fps);
     });
   }
 

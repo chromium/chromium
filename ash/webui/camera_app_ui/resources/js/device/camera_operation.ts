@@ -22,9 +22,13 @@ import {CancelableEvent, WaitableEvent} from '../waitable_event.js';
 
 import {Camera3DeviceInfo} from './camera3_device_info.js';
 import {
-  PhotoConstraintsPreferrer,
-  VideoConstraintsPreferrer,
-} from './constraints_preferrer.js';
+  CaptureCandidate,
+  FakeCameraCaptureCandidate,
+} from './capture_candidate.js';
+import {
+  CaptureCandidatePreferrer,
+  DefaultPreferrer,
+} from './capture_candidate_preferrer.js';
 import {DeviceInfoUpdater} from './device_info_updater.js';
 import {Modes, Video} from './mode/index.js';
 import {Preview} from './preview.js';
@@ -42,7 +46,7 @@ import {
 interface ConfigureCandidate {
   deviceId: string;
   mode: Mode;
-  captureResolution: Resolution|null;
+  captureCandidate: CaptureCandidate;
   constraints: StreamConstraints;
   videoSnapshotResolution: Resolution|null;
 }
@@ -67,6 +71,8 @@ class Reconfigurer {
   private readonly initialMode: Mode;
 
   private shouldSuspend = false;
+
+  readonly capturePreferrer: CaptureCandidatePreferrer = new DefaultPreferrer();
 
   constructor(
       private readonly preview: Preview,
@@ -138,33 +144,32 @@ class Reconfigurer {
 
     for (const deviceId of this.getDeviceIdCandidates(cameraInfo)) {
       for (const mode of await this.getModeCandidates(deviceId)) {
-        let resolutionCandidates;
+        let candidates: CaptureCandidate[];
         let photoResolutions;
         if (deviceOperator !== null) {
-          resolutionCandidates =
-              this.modes.getResolutionCandidates(mode, deviceId);
+          candidates = this.capturePreferrer.getSortedCandidates(
+              assertInstanceof(
+                  cameraInfo.getCamera3DeviceInfo(deviceId), Camera3DeviceInfo),
+              mode);
           photoResolutions = await deviceOperator.getPhotoResolutions(deviceId);
         } else {
-          resolutionCandidates =
-              this.modes.getFakeResolutionCandidates(mode, deviceId);
-          photoResolutions = resolutionCandidates.map((c) => c.resolution);
+          candidates =
+              [new FakeCameraCaptureCandidate(deviceId, mode === Mode.VIDEO)];
+          photoResolutions = candidates.map((c) => c.resolution);
         }
         const maxResolution = photoResolutions.reduce(
             (maxR, r) =>
                 r !== null && (maxR === null || r.area > maxR.area) ? r : maxR);
-        for (const {
-               resolution: captureResolution,
-               previewCandidates,
-             } of resolutionCandidates) {
+        for (const c of candidates) {
           const videoSnapshotResolution =
               state.get(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
               maxResolution :
-              captureResolution;
-          for (const constraints of previewCandidates) {
+              c.resolution;
+          for (const constraints of c.getStreamConstraintsCandidates()) {
             yield {
               deviceId,
               mode,
-              captureResolution,
+              captureCandidate: c,
               constraints,
               videoSnapshotResolution,
             };
@@ -183,10 +188,10 @@ class Reconfigurer {
         return false;
       }
       const modeSupport = state.get(state.State.USE_FAKE_CAMERA) ||
-          (c.captureResolution !== null &&
+          (c.captureCandidate.resolution !== null &&
            this.modes.isSupportPTZ(
                c.mode,
-               c.captureResolution,
+               c.captureCandidate.resolution,
                this.preview.getResolution(),
                ));
       if (!modeSupport) {
@@ -225,14 +230,15 @@ class Reconfigurer {
             cameraInfo.getCamera3DeviceInfo(c.deviceId)?.facing ?? null :
             null,
         mode: c.mode,
+        captureCandidate: c.captureCandidate,
       });
       this.modes.setCaptureParams(
-          c.mode, c.constraints, c.captureResolution,
+          c.mode, c.constraints, c.captureCandidate.resolution,
           c.videoSnapshotResolution);
       try {
         await this.modes.prepareDevice();
         const factory = this.modes.getModeFactory(c.mode);
-        const stream = await this.preview.open(c.constraints);
+        await this.preview.open(c.constraints);
         // For non-ChromeOS VCD, the facing and device id can only be known
         // after preview is actually opened.
         const facing = this.preview.getFacing();
@@ -241,11 +247,12 @@ class Reconfigurer {
         await this.checkEnablePTZ(c);
         factory.setPreviewVideo(this.preview.getVideo());
         factory.setFacing(facing);
-        await this.modes.updateMode(factory, stream, facing, deviceId);
+        await this.modes.updateMode(factory);
         this.config = {
           deviceId,
           facing,
           mode: c.mode,
+          captureCandidate: c.captureCandidate,
         };
         await this.listener.onUpdateConfig(this.config);
 
@@ -335,15 +342,11 @@ export class OperationScheduler {
 
   readonly capturer: Capturer;
 
+  readonly modes = new Modes();
+
   private ongoingOperationType: OperationType|null = null;
 
   private pendingReconfigureWaiters: Array<CancelableEvent<boolean>> = [];
-
-  readonly photoPreferrer = new PhotoConstraintsPreferrer();
-
-  readonly videoPreferrer = new VideoConstraintsPreferrer();
-
-  readonly modes: Modes;
 
   constructor(
       private readonly infoUpdater: DeviceInfoUpdater,
@@ -352,7 +355,6 @@ export class OperationScheduler {
       defaultFacing: Facing|null,
       modeConstraints: ModeConstraints,
   ) {
-    this.modes = new Modes(this.photoPreferrer, this.videoPreferrer);
     this.reconfigurer = new Reconfigurer(
         preview,
         this.modes,
@@ -381,8 +383,8 @@ export class OperationScheduler {
     const isFirstUpdate = this.cameraInfo === null;
     this.cameraInfo = cameraInfo;
     if (cameraInfo.camera3DevicesInfo !== null) {
-      this.photoPreferrer.updateDevicesInfo(cameraInfo.camera3DevicesInfo);
-      this.videoPreferrer.updateDevicesInfo(cameraInfo.camera3DevicesInfo);
+      this.reconfigurer.capturePreferrer.updateCapability(
+          cameraInfo.camera3DevicesInfo);
     }
     this.listener.onUpdateCapability(cameraInfo);
     if (isFirstUpdate) {

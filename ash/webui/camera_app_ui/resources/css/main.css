@@ -666,11 +666,6 @@ body.timer-10s #toggle-timer:checked {
   background-image: url(/images/camera_button_mic_off.svg);
 }
 
-body:not(.multi-fps) #toggle-fps,
-body:not(.video) #toggle-fps {
-  display: none;
-}
-
 body.fps-30 #toggle-fps {
   background-image: url(/images/camera_button_fps_30.svg);
 }

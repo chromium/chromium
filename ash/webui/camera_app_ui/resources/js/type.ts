@@ -8,7 +8,16 @@ import {assertExists, assertInstanceof} from './assert.js';
  * Photo or video resolution.
  */
 export class Resolution {
-  constructor(readonly width: number, readonly height: number) {}
+  readonly width: number;
+
+  readonly height: number;
+
+  constructor();
+  constructor(width: number, height: number);
+  constructor(width?: number, height?: number) {
+    this.width = width ?? 0;
+    this.height = height ?? -1;
+  }
 
   /**
    * @return Total pixel number.
