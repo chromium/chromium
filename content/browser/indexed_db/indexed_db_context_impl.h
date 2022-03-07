@@ -175,8 +175,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void BlobFilesCleaned(const blink::StorageKey& storage_key);
 
   // Will be null in unit tests.
-  storage::QuotaManagerProxy* quota_manager_proxy() const {
-    return quota_manager_proxy_.get();
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy() const {
+    return quota_manager_proxy_;
   }
 
   // Returns a list of all storage_keys with backing stores.
