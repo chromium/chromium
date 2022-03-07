@@ -17,6 +17,7 @@ export interface SettingsTextareaElement {
   $: {
     input: HTMLTextAreaElement,
     label: HTMLElement,
+    mirror: HTMLElement,
   };
 }
 
@@ -79,12 +80,21 @@ export class SettingsTextareaElement extends PolymerElement {
       /**
        * Text inside the text area. If the text exceeds the bounds of the text
        * area, i.e. if it has more than |rows| lines, a scrollbar is shown by
-       * default.
+       * default when autogrow is not set.
        */
       value: {
         type: String,
         value: '',
         notify: true,
+      },
+
+      /**
+       * Whether the textarea can auto-grow vertically or not.
+       */
+      autogrow: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
       },
     };
   }
@@ -94,6 +104,7 @@ export class SettingsTextareaElement extends PolymerElement {
   rows: number;
   label: string;
   value: string;
+  autogrow: boolean;
 
   /**
    * 'change' event fires when <input> value changes and user presses 'Enter'.
@@ -103,6 +114,20 @@ export class SettingsTextareaElement extends PolymerElement {
   private onInputChange_(e: Event) {
     this.dispatchEvent(new CustomEvent(
         'change', {bubbles: true, composed: true, detail: {sourceEvent: e}}));
+  }
+
+  private calculateMirror_(): string {
+    if (!this.autogrow) {
+      return '';
+    }
+    // Browsers do not render empty divs. The extra space is used to render the
+    // div when empty.
+    const tokens = this.value ? this.value.split('\n') : [''];
+
+    while (this.rows > 0 && tokens.length < this.rows) {
+      tokens.push('');
+    }
+    return tokens.join('\n') + '&nbsp;';
   }
 
   private onInputFocusChange_() {
