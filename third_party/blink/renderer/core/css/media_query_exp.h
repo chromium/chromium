@@ -293,12 +293,24 @@ class CORE_EXPORT MediaQueryExpNode {
 
   enum class Type { kFeature, kNested, kFunction, kNot, kAnd, kOr, kUnknown };
 
+  enum FeatureFlag {
+    kFeatureUnknown = 1 << 1,
+    kFeatureWidth = 1 << 2,
+    kFeatureHeight = 1 << 3,
+    kFeatureInlineSize = 1 << 4,
+    kFeatureBlockSize = 1 << 5,
+  };
+
+  using FeatureFlags = unsigned;
+
   String Serialize() const;
+
+  bool HasUnknown() const { return CollectFeatureFlags() & kFeatureUnknown; }
 
   virtual Type GetType() const = 0;
   virtual void SerializeTo(StringBuilder&) const = 0;
   virtual void CollectExpressions(Vector<MediaQueryExp>&) const = 0;
-  virtual bool HasUnknown() const = 0;
+  virtual FeatureFlags CollectFeatureFlags() const = 0;
   virtual std::unique_ptr<MediaQueryExpNode> Copy() const = 0;
 
   // These helper functions return nullptr if any argument is nullptr.
@@ -328,7 +340,7 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
   Type GetType() const override { return Type::kFeature; }
   void SerializeTo(StringBuilder&) const override;
   void CollectExpressions(Vector<MediaQueryExp>&) const override;
-  bool HasUnknown() const override;
+  FeatureFlags CollectFeatureFlags() const override;
   std::unique_ptr<MediaQueryExpNode> Copy() const override;
 
  private:
@@ -345,7 +357,7 @@ class CORE_EXPORT MediaQueryUnaryExpNode : public MediaQueryExpNode {
   }
 
   void CollectExpressions(Vector<MediaQueryExp>&) const override;
-  bool HasUnknown() const override;
+  FeatureFlags CollectFeatureFlags() const override;
   const MediaQueryExpNode& Operand() const { return *operand_; }
 
  private:
@@ -404,7 +416,7 @@ class CORE_EXPORT MediaQueryCompoundExpNode : public MediaQueryExpNode {
   }
 
   void CollectExpressions(Vector<MediaQueryExp>&) const override;
-  bool HasUnknown() const override;
+  FeatureFlags CollectFeatureFlags() const override;
   const MediaQueryExpNode& Left() const { return *left_; }
   const MediaQueryExpNode& Right() const { return *right_; }
 
@@ -448,7 +460,7 @@ class CORE_EXPORT MediaQueryUnknownExpNode : public MediaQueryExpNode {
   Type GetType() const override { return Type::kUnknown; }
   void SerializeTo(StringBuilder&) const override;
   void CollectExpressions(Vector<MediaQueryExp>&) const override;
-  bool HasUnknown() const override;
+  FeatureFlags CollectFeatureFlags() const override;
   std::unique_ptr<MediaQueryExpNode> Copy() const override;
 
  private:

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/container_query.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -33,23 +34,40 @@ class ContainerQueryTest : public PageTestBase,
     return rule && rule->GetContainerQuery().Query().HasUnknown();
   }
 
-  // Note that these parsing utils treat "unknown" values as parse
-  // errors.
-  //
-  // https://drafts.csswg.org/mediaqueries-4/#evaluating
+  enum class UnknownHandling {
+    // No special handling of "unknown" values.
+    kAllow,
+    // Treats "unknown" values as parse errors.
+    kError
+  };
 
-  StyleRuleContainer* ParseAtContainer(String rule_string) {
+  StyleRuleContainer* ParseAtContainer(
+      String rule_string,
+      UnknownHandling unknown_handling = UnknownHandling::kError) {
     auto* rule = DynamicTo<StyleRuleContainer>(
         css_test_helpers::ParseRule(GetDocument(), rule_string));
-    return HasUnknown(rule) ? nullptr : rule;
+    if ((unknown_handling == UnknownHandling::kError) && HasUnknown(rule))
+      return nullptr;
+    return rule;
   }
 
-  ContainerQuery* ParseContainerQuery(String query) {
+  ContainerQuery* ParseContainerQuery(
+      String query,
+      UnknownHandling unknown_handling = UnknownHandling::kError) {
     String rule = "@container " + query + " {}";
-    StyleRuleContainer* container = ParseAtContainer(rule);
+    StyleRuleContainer* container = ParseAtContainer(rule, unknown_handling);
     if (!container)
       return nullptr;
     return &container->GetContainerQuery();
+  }
+
+  absl::optional<MediaQueryExpNode::FeatureFlags> FeatureFlagsFrom(
+      String query_string) {
+    ContainerQuery* query =
+        ParseContainerQuery(query_string, UnknownHandling::kAllow);
+    if (!query)
+      return absl::nullopt;
+    return GetInnerQuery(*query).CollectFeatureFlags();
   }
 
   String SerializeCondition(StyleRuleContainer* container) {
@@ -148,6 +166,36 @@ TEST_F(ContainerQueryTest, ValidFeatures) {
   EXPECT_FALSE(ParseAtContainer("@container (grid) {}"));
   EXPECT_FALSE(ParseAtContainer("@container (resolution: 150dpi) {}"));
   EXPECT_FALSE(ParseAtContainer("@container size(width) {}"));
+}
+
+TEST_F(ContainerQueryTest, FeatureFlags) {
+  EXPECT_EQ(MediaQueryExpNode::kFeatureUnknown,
+            FeatureFlagsFrom("(width: 100gil)"));
+  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+            FeatureFlagsFrom("(width: 100px)"));
+  EXPECT_EQ(MediaQueryExpNode::kFeatureHeight,
+            FeatureFlagsFrom("(height < 100px)"));
+  EXPECT_EQ(MediaQueryExpNode::kFeatureInlineSize,
+            FeatureFlagsFrom("(100px >= inline-size)"));
+  EXPECT_EQ(MediaQueryExpNode::kFeatureBlockSize,
+            FeatureFlagsFrom("(100px = block-size)"));
+  EXPECT_EQ(static_cast<MediaQueryExpNode::FeatureFlags>(
+                MediaQueryExpNode::kFeatureWidth |
+                MediaQueryExpNode::kFeatureBlockSize),
+            FeatureFlagsFrom("((width) and (100px = block-size))"));
+  EXPECT_EQ(static_cast<MediaQueryExpNode::FeatureFlags>(
+                MediaQueryExpNode::kFeatureUnknown |
+                MediaQueryExpNode::kFeatureBlockSize),
+            FeatureFlagsFrom("((unknown) and (100px = block-size))"));
+  EXPECT_EQ(
+      static_cast<MediaQueryExpNode::FeatureFlags>(
+          MediaQueryExpNode::kFeatureWidth | MediaQueryExpNode::kFeatureHeight |
+          MediaQueryExpNode::kFeatureInlineSize),
+      FeatureFlagsFrom("((width) or (height) or (inline-size))"));
+  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+            FeatureFlagsFrom("((width: 100px))"));
+  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+            FeatureFlagsFrom("not (width: 100px)"));
 }
 
 TEST_F(ContainerQueryTest, RuleParsing) {

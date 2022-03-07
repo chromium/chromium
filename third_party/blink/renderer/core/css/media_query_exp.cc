@@ -644,8 +644,20 @@ void MediaQueryFeatureExpNode::CollectExpressions(
   result.push_back(exp_);
 }
 
-bool MediaQueryFeatureExpNode::HasUnknown() const {
-  return false;
+MediaQueryExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
+    const {
+  FeatureFlags flags = 0;
+
+  if (exp_.IsWidthDependent())
+    flags |= kFeatureWidth;
+  if (exp_.IsHeightDependent())
+    flags |= kFeatureHeight;
+  if (exp_.IsInlineSizeDependent())
+    flags |= kFeatureInlineSize;
+  if (exp_.IsBlockSizeDependent())
+    flags |= kFeatureBlockSize;
+
+  return flags;
 }
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryFeatureExpNode::Copy() const {
@@ -657,8 +669,9 @@ void MediaQueryUnaryExpNode::CollectExpressions(
   operand_->CollectExpressions(result);
 }
 
-bool MediaQueryUnaryExpNode::HasUnknown() const {
-  return operand_->HasUnknown();
+MediaQueryExpNode::FeatureFlags MediaQueryUnaryExpNode::CollectFeatureFlags()
+    const {
+  return operand_->CollectFeatureFlags();
 }
 
 void MediaQueryNestedExpNode::SerializeTo(StringBuilder& builder) const {
@@ -697,8 +710,9 @@ void MediaQueryCompoundExpNode::CollectExpressions(
   right_->CollectExpressions(result);
 }
 
-bool MediaQueryCompoundExpNode::HasUnknown() const {
-  return left_->HasUnknown() || right_->HasUnknown();
+MediaQueryExpNode::FeatureFlags MediaQueryCompoundExpNode::CollectFeatureFlags()
+    const {
+  return left_->CollectFeatureFlags() | right_->CollectFeatureFlags();
 }
 
 void MediaQueryAndExpNode::SerializeTo(StringBuilder& builder) const {
@@ -728,8 +742,9 @@ void MediaQueryUnknownExpNode::SerializeTo(StringBuilder& builder) const {
 void MediaQueryUnknownExpNode::CollectExpressions(
     Vector<MediaQueryExp>&) const {}
 
-bool MediaQueryUnknownExpNode::HasUnknown() const {
-  return true;
+MediaQueryExpNode::FeatureFlags MediaQueryUnknownExpNode::CollectFeatureFlags()
+    const {
+  return kFeatureUnknown;
 }
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryUnknownExpNode::Copy() const {
