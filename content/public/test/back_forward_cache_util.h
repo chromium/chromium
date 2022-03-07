@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/back_forward_cache.h"
 
 namespace content {
@@ -56,6 +58,22 @@ class BackForwardCacheDisabledTester {
 void DisableBackForwardCacheForTesting(
     WebContents* web_contents,
     BackForwardCache::DisableForTestingReason reason);
+
+// Returns a vector of default parameters to set up the BackForwardCache for
+// testing (enables the cache, sets timeouts, etc.)
+// Optionally, |additional_params| can be passed to specify additional
+// features and parameters that will be in the returned structure.
+std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+DefaultEnabledBackForwardCacheParametersForTests();
+
+std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+DefaultEnabledBackForwardCacheParametersForTests(
+    const std::vector<base::test::ScopedFeatureList::FeatureAndParams>&
+        additional_params);
+
+// Returns a vector of features to disable by default when testing with the
+// BackForwardCache.
+std::vector<base::Feature> DefaultDisabledBackForwardCacheParametersForTests();
 
 }  // namespace content
 

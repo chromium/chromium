@@ -66,6 +66,12 @@ const base::Feature kBackForwardCacheMediaSessionPlaybackStateChange{
     "BackForwardCacheMediaSessionPlaybackStateChange",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables controlling the time to live for pages in the backforward cache.
+// The time to live is defined by the param 'time_to_live_seconds'; if this
+// param is not specified then this feature is ignored and the default is used.
+const base::Feature kBackForwardCacheTimeToLiveControl{
+    "BackForwardCacheTimeToLiveControl", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Combines a flattened list and a tree of the reasons why each document cannot
 // enter the back/forward cache (might be empty if it can). The tree saves the
 // reasons for each document in the tree (including those without the reasons)

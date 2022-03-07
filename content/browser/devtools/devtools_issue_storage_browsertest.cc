@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
@@ -162,17 +163,10 @@ class DevToolsIssueStorageWithBackForwardCacheBrowserTest
     : public DevToolsIssueStorageBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
-
     // Enable BackForwardCache, omitting this feature results in a crash.
-    std::map<std::string, std::string> params = {
-        {"TimeToLiveInBackForwardCacheInSeconds", "3600"}};
-    enabled_features.emplace_back(features::kBackForwardCache, params);
     feature_list_.InitWithFeaturesAndParameters(
-        enabled_features,
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        DefaultEnabledBackForwardCacheParametersForTests(),
+        DefaultDisabledBackForwardCacheParametersForTests());
   }
 
  protected:

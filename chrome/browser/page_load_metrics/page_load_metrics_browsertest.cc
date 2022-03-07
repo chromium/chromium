@@ -78,6 +78,7 @@
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/referrer.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
@@ -3240,21 +3241,8 @@ class PageLoadMetricsBrowserTestWithBackForwardCache
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PageLoadMetricsBrowserTest::SetUpCommandLine(command_line);
     feature_list.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          // Set a very long TTL before expiration (longer than the test
-          // timeout) so tests that are expecting deletion don't pass when they
-          // shouldn't.
-          //
-          // TODO(hajimehoshi): This value is used in various places. Define a
-          // constant and use it.
-          //
-          // Some features like the outstanding network requests are expected to
-          // appear in almost any output. Filter them out to make the tests
-          // simpler.
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-           {"ignore_outstanding_network_request_for_testing", "true"}}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        content::DefaultEnabledBackForwardCacheParametersForTests(),
+        content::DefaultDisabledBackForwardCacheParametersForTests());
   }
 
  private:

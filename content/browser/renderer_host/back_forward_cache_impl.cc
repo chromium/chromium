@@ -524,21 +524,46 @@ BackForwardCacheImpl::~BackForwardCacheImpl() {
   Shutdown();
 }
 
+absl::optional<int> GetFieldTrialParamByFeatureAsOptionalInt(
+    const base::Feature& feature,
+    const std::string& param_name) {
+  std::string value_as_string =
+      GetFieldTrialParamValueByFeature(feature, param_name);
+  int value_as_int = 0;
+  if (base::StringToInt(value_as_string, &value_as_int)) {
+    return absl::optional<int>(value_as_int);
+  }
+  return absl::optional<int>();
+}
+
 base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache() {
   // We use the following order of priority if multiple values exist:
   // - The programmatical value set in params. Used in specific tests.
+  //   The TTL set in BackForwardCacheTimeToLiveControl takes precedence over
+  //   the TTL set in the main BackForwardCache feature if both are present.
   // - Infinite if kBackForwardCacheNoTimeEviction is enabled.
   // - Default value otherwise, kDefaultTimeToLiveInBackForwardCacheInSeconds.
-  if (base::FeatureList::IsEnabled(kBackForwardCacheNoTimeEviction) &&
-      GetFieldTrialParamValueByFeature(features::kBackForwardCache,
-                                       "TimeToLiveInBackForwardCacheInSeconds")
-          .empty()) {
+
+  if (base::FeatureList::IsEnabled(kBackForwardCacheTimeToLiveControl)) {
+    absl::optional<int> time_to_live = GetFieldTrialParamByFeatureAsOptionalInt(
+        kBackForwardCacheTimeToLiveControl, "time_to_live_seconds");
+    if (time_to_live.has_value()) {
+      return base::Seconds(time_to_live.value());
+    }
+  }
+
+  absl::optional<int> old_time_to_live =
+      GetFieldTrialParamByFeatureAsOptionalInt(
+          features::kBackForwardCache, "TimeToLiveInBackForwardCacheInSeconds");
+  if (old_time_to_live.has_value()) {
+    return base::Seconds(old_time_to_live.value());
+  }
+
+  if (base::FeatureList::IsEnabled(kBackForwardCacheNoTimeEviction)) {
     return base::TimeDelta::Max();
   }
 
-  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
-      features::kBackForwardCache, "TimeToLiveInBackForwardCacheInSeconds",
-      kDefaultTimeToLiveInBackForwardCacheInSeconds));
+  return base::Seconds(kDefaultTimeToLiveInBackForwardCacheInSeconds);
 }
 
 // static
