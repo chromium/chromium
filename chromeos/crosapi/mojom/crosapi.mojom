@@ -98,7 +98,7 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 67
+// Next version: 68
 // Next method id: 71
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
@@ -480,6 +480,7 @@ enum SessionType {
   kPublicSession,
   [MinVersion=40] kWebKioskSession,
   [MinVersion=41] kChildSession,
+  [MinVersion=67] kAppKioskSession,
 };
 
 // Device mode (e.g. enterprise enrollment state). See policy::DeviceMode.

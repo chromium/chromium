@@ -20,6 +20,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "crypto/nss_util_internal.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -41,6 +42,9 @@ mojom::SessionType EnvironmentProvider::GetSessionType() {
   }
   if (user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {
     return mojom::SessionType::kWebKioskSession;
+  }
+  if (user->GetType() == user_manager::USER_TYPE_KIOSK_APP) {
+    return mojom::SessionType::kAppKioskSession;
   }
   if (user->GetType() == user_manager::USER_TYPE_CHILD) {
     return mojom::SessionType::kChildSession;

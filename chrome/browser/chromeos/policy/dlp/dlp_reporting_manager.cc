@@ -122,6 +122,7 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
     case crosapi::mojom::SessionType::kPublicSession:
       return DlpPolicyEvent_UserType_MANAGED_GUEST;
     case crosapi::mojom::SessionType::kWebKioskSession:
+    case crosapi::mojom::SessionType::kAppKioskSession:
       return DlpPolicyEvent_UserType_KIOSK;
     case crosapi::mojom::SessionType::kUnknown:
     case crosapi::mojom::SessionType::kGuestSession:
