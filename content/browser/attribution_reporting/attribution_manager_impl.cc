@@ -460,9 +460,13 @@ void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
     return;
   }
 
+  // TODO(linnan): Support sending debug aggregatable reports.
+  DCHECK(absl::holds_alternative<AttributionReport::EventLevelData>(
+      report.data()));
+
   // We don't fire observer callbacks or delete from storage for debug reports.
-  report_sender_->SendReport(std::move(report), /*is_debug_report=*/true,
-                             base::DoNothing());
+  PrepareToSendReport(std::move(report), /*is_debug_report=*/true,
+                      base::DoNothing());
 }
 
 void AttributionManagerImpl::GetActiveSourcesForWebUI(
@@ -581,21 +585,9 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
     if (log_metrics)
       LogMetricsOnReportSend(report, now);
 
-    using DispatchFunc =
-        void (AttributionManagerImpl::*)(AttributionReport, base::OnceClosure);
-
-    struct Visitor {
-      DispatchFunc operator()(const AttributionReport::EventLevelData&) {
-        return &AttributionManagerImpl::SendReport;
-      }
-      DispatchFunc operator()(
-          const AttributionReport::AggregatableContributionData&) {
-        return &AttributionManagerImpl::AssembleAggregateReport;
-      }
-    };
-
-    DispatchFunc func = absl::visit(Visitor{}, report.data());
-    (this->*func)(std::move(report), done);
+    PrepareToSendReport(std::move(report), /*is_debug_report=*/false,
+                        base::BindOnce(&AttributionManagerImpl::OnReportSent,
+                                       weak_factory_.GetWeakPtr(), done));
   }
 }
 
@@ -605,13 +597,31 @@ void AttributionManagerImpl::MarkReportCompleted(
   DCHECK_EQ(num_removed, 1u);
 }
 
+void AttributionManagerImpl::PrepareToSendReport(AttributionReport report,
+                                                 bool is_debug_report,
+                                                 ReportSentCallback callback) {
+  using DispatchFunc = void (AttributionManagerImpl::*)(AttributionReport, bool,
+                                                        ReportSentCallback);
+
+  struct Visitor {
+    DispatchFunc operator()(const AttributionReport::EventLevelData&) {
+      return &AttributionManagerImpl::SendReport;
+    }
+    DispatchFunc operator()(
+        const AttributionReport::AggregatableContributionData&) {
+      return &AttributionManagerImpl::AssembleAggregatableReport;
+    }
+  };
+
+  DispatchFunc func = absl::visit(Visitor{}, report.data());
+  (this->*func)(std::move(report), is_debug_report, std::move(callback));
+}
+
 void AttributionManagerImpl::SendReport(AttributionReport report,
-                                        base::OnceClosure done) {
-  report_sender_->SendReport(
-      std::move(report),
-      /*is_debug_report=*/false,
-      base::BindOnce(&AttributionManagerImpl::OnReportSent,
-                     weak_factory_.GetWeakPtr(), std::move(done)));
+                                        bool is_debug_report,
+                                        ReportSentCallback callback) {
+  report_sender_->SendReport(std::move(report), is_debug_report,
+                             std::move(callback));
 }
 
 void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
@@ -687,8 +697,10 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
     observer.OnReportSent(report, info);
 }
 
-void AttributionManagerImpl::AssembleAggregateReport(AttributionReport report,
-                                                     base::OnceClosure done) {
+void AttributionManagerImpl::AssembleAggregatableReport(
+    AttributionReport report,
+    bool is_debug_report,
+    ReportSentCallback callback) {
   // TODO(crbug.com/1285319): Add metrics for early exit.
 
   AggregationServiceImpl* aggregation_service = nullptr;
@@ -696,8 +708,8 @@ void AttributionManagerImpl::AssembleAggregateReport(AttributionReport report,
     aggregation_service = storage_partition_->GetAggregationService();
 
   if (!aggregation_service) {
-    OnReportSent(
-        std::move(done), std::move(report),
+    std::move(callback).Run(
+        std::move(report),
         SendResult(SendResult::Status::kDropped, /*http_response_code=*/0));
     return;
   }
@@ -728,27 +740,28 @@ void AttributionManagerImpl::AssembleAggregateReport(AttributionReport report,
               attribution_info.source.common_info().reporting_origin(),
               debug_mode));
   if (!request.has_value()) {
-    OnReportSent(
-        std::move(done), std::move(report),
+    std::move(callback).Run(
+        std::move(report),
         SendResult(SendResult::Status::kDropped, /*http_response_code=*/0));
     return;
   }
 
   aggregation_service->AssembleReport(
       std::move(*request),
-      base::BindOnce(&AttributionManagerImpl::OnAggregateReportAssembled,
-                     weak_factory_.GetWeakPtr(), std::move(done),
-                     std::move(report)));
+      base::BindOnce(&AttributionManagerImpl::OnAggregatableReportAssembled,
+                     weak_factory_.GetWeakPtr(), std::move(report),
+                     is_debug_report, std::move(callback)));
 }
 
-void AttributionManagerImpl::OnAggregateReportAssembled(
-    base::OnceClosure done,
+void AttributionManagerImpl::OnAggregatableReportAssembled(
     AttributionReport report,
+    bool is_debug_report,
+    ReportSentCallback callback,
     absl::optional<AggregatableReport> assembled_report,
     AggregationService::AssemblyStatus status) {
   if (!assembled_report.has_value()) {
-    OnReportSent(
-        std::move(done), std::move(report),
+    std::move(callback).Run(
+        std::move(report),
         SendResult(SendResult::Status::kDropped, /*http_response_code=*/0));
     return;
   }
@@ -759,7 +772,7 @@ void AttributionManagerImpl::OnAggregateReportAssembled(
   DCHECK(aggregate_data);
   aggregate_data->assembled_report = std::move(*assembled_report);
 
-  SendReport(std::move(report), std::move(done));
+  SendReport(std::move(report), is_debug_report, std::move(callback));
 }
 
 void AttributionManagerImpl::NotifySourcesChanged() {

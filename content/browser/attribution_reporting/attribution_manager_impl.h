@@ -21,6 +21,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_scheduler.h"
+#include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -43,7 +44,6 @@ namespace content {
 class AggregatableReport;
 class AttributionCookieChecker;
 class AttributionDataHostManager;
-class AttributionReportSender;
 class AttributionStorage;
 class AttributionStorageDelegate;
 class BrowserContext;
@@ -117,6 +117,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
  private:
   friend class AttributionManagerImplTest;
 
+  using ReportSentCallback = AttributionReportSender::ReportSentCallback;
+
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       IsReportAllowedCallback is_report_allowed_callback,
@@ -142,15 +144,22 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void SendReports(std::vector<AttributionReport> reports,
                    bool log_metrics,
                    base::RepeatingClosure done);
-  void SendReport(AttributionReport report, base::OnceClosure done);
+  void PrepareToSendReport(AttributionReport report,
+                           bool is_debug_report,
+                           ReportSentCallback callback);
+  void SendReport(AttributionReport report,
+                  bool is_debug_report,
+                  ReportSentCallback callback);
   void OnReportSent(base::OnceClosure done,
                     AttributionReport report,
                     SendResult info);
-  void AssembleAggregateReport(AttributionReport report,
-                               base::OnceClosure done);
-  void OnAggregateReportAssembled(
-      base::OnceClosure done,
+  void AssembleAggregatableReport(AttributionReport report,
+                                  bool is_debug_report,
+                                  ReportSentCallback callback);
+  void OnAggregatableReportAssembled(
       AttributionReport report,
+      bool is_debug_report,
+      ReportSentCallback callback,
       absl::optional<AggregatableReport> assembled_report,
       AggregationService::AssemblyStatus status);
   void MarkReportCompleted(AttributionReport::Id report_id);
