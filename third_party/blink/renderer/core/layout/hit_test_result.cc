@@ -245,6 +245,12 @@ void HitTestResult::SetToShadowHostIfInRestrictedShadowRoot() {
 
 CompositorElementId HitTestResult::GetScrollableContainer() const {
   DCHECK(InnerNode());
+  // TODO(1303411): Some users encounter InnerNode() == null here, but we don't
+  // know why. Return an invalid element ID in this case, which we check for in
+  // InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest.
+  if (!InnerNode())
+    return CompositorElementId();
+
   LayoutBox* cur_box = InnerNode()->GetLayoutObject()->EnclosingBox();
 
   // Scrolling propagates along the containing block chain and ends at the
