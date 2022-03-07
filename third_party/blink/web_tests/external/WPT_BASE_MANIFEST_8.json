@@ -146572,6 +146572,19 @@
        {}
       ]
      ],
+     "ruby-annotation-pairing-001.html": [
+      "453ba96ebdc51d4cccc5f3547cc656eac469f8d7",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/reference/ruby-annotation-pairing-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "ruby-autohide-001.html": [
       "61bc6706ba966e0a77d92539f45cd825cbc56dbc",
       [
@@ -265254,6 +265267,10 @@
       ],
       "rbc-rtc-basic-001-ref.html": [
        "2860c848b5a207cdf6292d0d29f9a4db621e174c",
+       []
+      ],
+      "ruby-annotation-pairing-001-ref.html": [
+       "2a8f9a836fff9106e1430649cae3ad9a57aea241",
        []
       ]
      },
