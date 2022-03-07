@@ -485,6 +485,11 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 return handleJavaCrash();
             }
 
+            if (isDestroyed()) {
+                // This will crash below, but we want to know if the tab was destroyed or just never
+                // initialize.
+                throw new RuntimeException("Tab.loadUrl called on a destroyed tab");
+            }
             if (mNativeTabAndroid == 0) {
                 // if mNativeTabAndroid is null then we are going to crash anyways on the
                 // native side. Lets crash on the java side so that we can have a better stack
