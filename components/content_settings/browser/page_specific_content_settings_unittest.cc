@@ -664,4 +664,20 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, ContentAllowedAndBlocked) {
   navigation->Commit();
 }
 
+TEST_F(PageSpecificContentSettingsTest, Topics) {
+  NavigateAndCommit(GURL("http://google.com"));
+  PageSpecificContentSettings* pscs =
+      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
+  EXPECT_FALSE(pscs->HasAccessedTopics());
+  EXPECT_THAT(pscs->GetAccessedTopics(), testing::IsEmpty());
+
+  privacy_sandbox::CanonicalTopic topic(
+      browsing_topics::Topic(1),
+      privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+  pscs->OnTopicAccessed(url::Origin::Create(GURL("https://foo.com")), false,
+                        topic);
+  EXPECT_TRUE(pscs->HasAccessedTopics());
+  EXPECT_THAT(pscs->GetAccessedTopics(), testing::Contains(topic));
+}
+
 }  // namespace content_settings

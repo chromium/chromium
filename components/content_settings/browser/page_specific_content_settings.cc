@@ -28,6 +28,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -635,6 +636,14 @@ void PageSpecificContentSettings::OnInterestGroupJoined(
   NotifySiteDataObservers();
 }
 
+void PageSpecificContentSettings::OnTopicAccessed(
+    const url::Origin api_origin,
+    bool blocked_by_policy,
+    privacy_sandbox::CanonicalTopic topic) {
+  // TODO(crbug.com/1286276): Add URL and Topic to local_shared_objects?
+  accessed_topics_.insert(topic);
+}
+
 void PageSpecificContentSettings::OnWebDatabaseAccessed(
     const GURL& url,
     bool blocked_by_policy) {
@@ -875,8 +884,19 @@ bool PageSpecificContentSettings::HasContentSettingChangedViaPageInfo(
 }
 
 bool PageSpecificContentSettings::HasAccessedTopics() const {
-  // TODO(crbug.com/1286276): Implement Topics access checks.
-  return false;
+  return !GetAccessedTopics().empty();
+}
+
+base::flat_set<privacy_sandbox::CanonicalTopic>
+PageSpecificContentSettings::GetAccessedTopics() const {
+  if (accessed_topics_.empty() &&
+      page().GetMainDocument().GetLastCommittedURL().host() == "example.com") {
+    // TODO(crbug.com/1286276): Remove sample topic when API is ready.
+    return {privacy_sandbox::CanonicalTopic(
+        browsing_topics::Topic(1),
+        privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY)};
+  }
+  return accessed_topics_;
 }
 
 bool PageSpecificContentSettings::HasJoinedUserToInterestGroup() const {

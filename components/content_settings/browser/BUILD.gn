@@ -18,6 +18,7 @@ source_set("browser") {
     "//components/content_settings/core/common",
     "//components/page_load_metrics/browser",
     "//components/prefs",
+    "//components/privacy_sandbox",
     "//components/security_state/core",
     "//components/url_formatter",
     "//content/public/browser",
