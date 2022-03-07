@@ -127,11 +127,13 @@ def Ask(question, answers=None, default=None):
 
   while True:
     print(Colored(question + prompt, 'cyan'), end=' ')
-    choice = input().strip().lower()
+    choice = input().strip()
     if default is not None and choice == '':
       return inputs[default]
     elif choice in inputs:
       return inputs[choice]
+    elif choice.lower() in inputs:
+      return inputs[choice.lower()]
     else:
       choices = sorted(['"%s"' % a for a in sorted(answers.keys())])
       Error('Please respond with %s or %s.' % (

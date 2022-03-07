@@ -5,6 +5,8 @@
 # Script to automate updating existing WPR benchmarks from live versions of the
 # sites. Only supported on Mac/Linux.
 
+from __future__ import print_function
+
 import argparse
 import datetime
 import json
@@ -236,34 +238,59 @@ class WprUpdater(object):
   def _IsDesktop(self):
     return self.device_id is None
 
-  def _ExistingWpr(self):
-    """Parses JSON story config to extract info about WPR archive.
+  def _GetAllWprArchives(self):
+    return self.wpr_archive_info.data['archives']
+
+  def _GetWprArchivesForStory(self):
+    archives = self._GetAllWprArchives()
+    return archives.get(self.story)
+
+  def _GetWprArchivePathsAndUsageForStory(self):
+    """Parses JSON story config to extract info about WPR archive
 
     Returns:
-      A 2-tuple with path to the current WPR archive for specified story and
-      whether it is used by other benchmarks too.
+      A list of 2-tuple with path to the current WPR archive for specified
+      story and whether it is used by other benchmarks too.
     """
-    archives = self.wpr_archive_info.data['archives']
-    archive = archives.get(self.story)
+    archives = self._GetAllWprArchives()
+    archive = self._GetWprArchivesForStory()
     if archive is None:
-      return None, False
-    archive = archive['DEFAULT']
-    used_in_other_stories = any(
-        archive in config.values() for story, config in archives.items()
-        if story != self.story)
-    return os.path.join(DATA_DIR, archive), used_in_other_stories
+      return []
+
+    existing = []
+    for a in archive.values():
+      used_in_other_stories = any(
+          a in config.values() for story, config in archives.items()
+          if story != self.story)
+      existing.append((os.path.join(DATA_DIR, a), used_in_other_stories))
+    return existing
 
   def _DeleteExistingWpr(self):
     """Deletes current WPR archive."""
-    archive, used_elsewhere = self._ExistingWpr()
-    if archive is None or used_elsewhere:
+    archive = self._GetWprArchivesForStory()
+    if archive is None:
       return
-    cli_helpers.Info('Deleting WPR: {archive}', archive=archive)
-    if os.path.exists(archive):
-      os.remove(archive)
-    archive_sha1 = archive + '.sha1'
-    if os.path.exists(archive_sha1):
-      os.remove(archive_sha1)
+
+    ans = cli_helpers.Ask(
+          'For this story, should I erase all existing recordings that '
+          'aren\'t used by other stories? Select yes if this is your '
+          'first time re-recording this story.',
+          ['yes', 'no'], default='no')
+    if ans == 'no':
+      return
+
+    for archive, used_in_other_stories in self._GetWprArchivePathsAndUsageForStory():
+      if used_in_other_stories:
+        continue
+
+      cli_helpers.Info('Deleting WPR: {archive}', archive=archive)
+      if os.path.exists(archive):
+        os.remove(archive)
+      archive_sha1 = archive + '.sha1'
+      if os.path.exists(archive_sha1):
+        os.remove(archive_sha1)
+
+    self.wpr_archive_info.RemoveStory(self.story)
 
   def _ExtractResultsFile(self, out_file):
     results_file = out_file + '.results.html'
@@ -391,9 +418,18 @@ class WprUpdater(object):
     return resp['jobUrl']
 
   def _AddMissingURLsToArchive(self, replay_out_file):
-    existing_wpr = self._ExistingWpr()
-    if not existing_wpr:
+    existing_wprs = self._GetWprArchivePathsAndUsageForStory()
+    if len(existing_wprs) == 0:
       return
+
+    if len(existing_wprs) == 1:
+      archive = existing_wprs[0][0]
+    else:
+      cli_helpers.Comment("WPR Archives for this story:")
+      print(str(self._GetWprArchivesForStory()))
+      archive = cli_helpers.Ask(
+          'Which archive should I add URLs to?',
+          [e[0] for e in existing_wprs])
 
     missing_urls = _ExtractMissingURLsFromLog(replay_out_file)
     if not missing_urls:
@@ -403,7 +439,7 @@ class WprUpdater(object):
       self.wpr_go_bin = (
         binary_manager.BinaryManager([TELEMETRY_BIN_DEPS_CONFIG]).FetchPath(
         'wpr_go', py_utils.GetHostArchName(), py_utils.GetHostOsName()))
-    subprocess.check_call([self.wpr_go_bin, 'add', existing_wpr] + missing_urls)
+    subprocess.check_call([self.wpr_go_bin, 'add', archive] + missing_urls)
 
   def LiveRun(self):
     cli_helpers.Step('LIVE RUN: %s' % self.story)
@@ -430,6 +466,7 @@ class WprUpdater(object):
     out_file = self._CheckLog(args, log_name='record')
     _PrintRunInfo(
         out_file, chrome_log_file=self._IsDesktop(), results_details=False)
+    self._LoadArchiveInfo() # record_wpr overwrote this file
 
   def ReplayWpr(self):
     cli_helpers.Step('REPLAY WPR: %s' % self.story)
@@ -439,12 +476,20 @@ class WprUpdater(object):
     return out_file
 
   def UploadWpr(self):
+    # Attempts to upload all archives used by a story.
+    # Note, if GoogleStorage already has the latest version
+    # of a story, upload will be skipped.
+
     cli_helpers.Step('UPLOAD WPR: %s' % self.story)
-    archive, _ = self._ExistingWpr()
-    if archive is None:
-      cli_helpers.Error('NO WPR FOUND, use the "record" subcommand')
-    _UploadArchiveToGoogleStorage(archive)
-    return _GitAddArtifactHash(archive)
+    archives = self._GetWprArchivePathsAndUsageForStory()
+    for archive in set([a[0] for a in archives]):
+      if not os.path.exists(archive):
+        continue
+
+      _UploadArchiveToGoogleStorage(archive)
+      if not _GitAddArtifactHash(archive):
+        return False
+    return True
 
   def UploadCL(self, short_description=False):
     cli_helpers.Step('UPLOAD CL: %s' % self.story)
@@ -652,7 +697,9 @@ def Main(argv):
       '--benchmark-or-story-set',
       dest='bss',
       required=True,
-      help='Benchmark or story set to be recorded, replayed or uploaded.')
+      help='Benchmark or story set to be recorded, replayed or uploaded. '
+      'If you are recording a system health story, use '
+      'desktop_system_health_story_set or mobile_system_health_story_set.')
   parser.add_argument(
       '-d', '--device-id', dest='device_id',
       help='Specify the device serial number listed by `adb devices`. When not '

@@ -26,6 +26,9 @@ BUILTIN_MODULE = '__builtin__' if six.PY2 else 'builtins'
 # This is \\<story\\> in Python 2 and <story> in Python 3.
 ESCAPED_STORY = re.escape('<story>')
 
+def mock_exists(path):
+    return '<archive>' in path
+
 class UpdateWprTest(unittest.TestCase):
   def setUp(self):
     self.maxDiff = None
@@ -186,17 +189,11 @@ class UpdateWprTest(unittest.TestCase):
     run_benchmark.assert_called_once_with(log_name='live', live=True)
     print_run_info.assert_called_once_with('<out-file>', chrome_log_file=True)
 
-  @mock.patch('os.rename')
-  def testRunBenchmark(self, rename):
-    self._check_output.return_value = '  <chrome-log>'
-
-    self.wpr_updater._RunBenchmark('<log_name>', True)
-
-    # Check correct arguments when running benchmark.
+  def checkRunBenchmark(self, benchmark):
     self._check_log.assert_called_once_with(
         [
             '.../run_benchmark', 'run', '--browser=system',
-            'system_health.memory_desktop', '--output-format=html',
+            benchmark, '--output-format=html',
             '--show-stdout', '--reset-results',
             '--story-filter=^%s$' % ESCAPED_STORY,
             '--browser-logging-verbosity=verbose', '--pageset-repeat=1',
@@ -206,12 +203,43 @@ class UpdateWprTest(unittest.TestCase):
         env={'LC_ALL': 'en_US.UTF-8'},
         log_path='/tmp/dir/<log_name>_<tstamp>')
 
+
+  @mock.patch('os.rename')
+  def testRunBenchmarkMemoryDesktop(self, rename):
+    self._check_output.return_value = '  <chrome-log>'
+
+    self.wpr_updater._RunBenchmark('<log_name>', True)
+
+    self.checkRunBenchmark('system_health.memory_desktop')
+
     # Check logs are correctly extracted.
     self.assertListEqual(rename.mock_calls, [
       mock.call(
         '/tmp/dir/results.html', '/tmp/dir/<log_name>_<tstamp>.results.html'),
       mock.call('<chrome-log>', '/tmp/dir/<log_name>_<tstamp>.chrome.log'),
     ])
+
+  @mock.patch('os.rename')
+  def testRunBenchmarkMemoryMobile(self, rename):
+    del rename
+    self.wpr_updater = update_wpr.WprUpdater(argparse.Namespace(
+      story='<story>', device_id=None, repeat=1, binary=None, bug_id=None,
+      reviewers=['someone@chromium.org'],
+      bss='mobile_system_health_story_set'))
+    self.wpr_updater._RunBenchmark('<log_name>', True)
+
+    self.checkRunBenchmark('system_health.memory_mobile')
+
+  @mock.patch('os.rename')
+  def testRunBenchmarkOther(self, rename):
+    del rename
+    self.wpr_updater = update_wpr.WprUpdater(argparse.Namespace(
+      story='<story>', device_id=None, repeat=1, binary=None, bug_id=None,
+      reviewers=['someone@chromium.org'],
+      bss='other'))
+    self.wpr_updater._RunBenchmark('<log_name>', True)
+
+    self.checkRunBenchmark('other')
 
   def testPrintResultsHTMLInfo(self):
     self._open.return_value.__enter__.return_value.readlines.return_value = [
@@ -281,12 +309,18 @@ class UpdateWprTest(unittest.TestCase):
     self._check_output.assert_called_once_with([
       'git', 'cl', 'issue', '--json', '/tmp/dir/git_cl_issue.json'])
 
+  @mock.patch('core.cli_helpers.Ask', side_effect=[
+      'yes'])
   @mock.patch('os.remove')
-  def testDeleteExistingWpr(self, os_remove):
+  def testDeleteExistingWprYes(self, os_remove, ask):
+    del ask
     wpr_archive_info = mock.Mock()
     wpr_archive_info.data = {
       'archives': {
-        "<story>": {"DEFAULT": "<archive>"},
+        '<story>': {
+          'DEFAULT': '<archive>',
+          'mac': 'other_archive'
+          },
       }
     }
     self.wpr_updater.wpr_archive_info = wpr_archive_info
@@ -295,15 +329,41 @@ class UpdateWprTest(unittest.TestCase):
     self.assertListEqual(os_remove.mock_calls, [
       mock.call('.../data/dir/<archive>'),
       mock.call('.../data/dir/<archive>.sha1'),
+      mock.call('.../data/dir/other_archive'),
+      mock.call('.../data/dir/other_archive.sha1')
     ])
+    self.wpr_updater.wpr_archive_info.RemoveStory.assert_called()
 
+  @mock.patch('core.cli_helpers.Ask', side_effect=[
+      'no'])
   @mock.patch('os.remove')
-  def testDoesNotDeleteReusedWpr(self, os_remove):
+  def testDeleteExistingWprNo(self, os_remove, ask):
+    del ask
     wpr_archive_info = mock.Mock()
     wpr_archive_info.data = {
       'archives': {
-        "<story>": {"DEFAULT": "<archive>"},
-        "<other>": {"DEFAULT": "foo", "linux": "<archive>"}
+        '<story>': {
+          'DEFAULT': '<archive>',
+          'mac': 'other_archive'
+          },
+      }
+    }
+    self.wpr_updater.wpr_archive_info = wpr_archive_info
+
+    self.wpr_updater._DeleteExistingWpr()
+    self.assertListEqual(os_remove.mock_calls, [])
+    self.wpr_updater.wpr_archive_info.RemoveStory.assert_not_called()
+
+  @mock.patch('core.cli_helpers.Ask', side_effect=[
+      'yes'])
+  @mock.patch('os.remove')
+  def testDoesNotDeleteReusedWpr(self, os_remove, ask):
+    del ask
+    wpr_archive_info = mock.Mock()
+    wpr_archive_info.data = {
+      'archives': {
+        '<story>': {'DEFAULT': '<archive>'},
+        '<other>': {'DEFAULT': 'foo', 'linux': '<archive>'}
       }
     }
     self.wpr_updater.wpr_archive_info = wpr_archive_info
@@ -313,15 +373,53 @@ class UpdateWprTest(unittest.TestCase):
 
   @mock.patch(WPR_UPDATER + '_ExtractMissingURLsFromLog',
               return_value=['foo', 'bar'])
-  @mock.patch(WPR_UPDATER + 'WprUpdater._ExistingWpr', return_value='<archive>')
+  @mock.patch(WPR_UPDATER + 'WprUpdater._GetWprArchivePathsAndUsageForStory',
+              return_value=[('<archive>', False)])
   @mock.patch('py_utils.binary_manager.BinaryManager', autospec=True)
   def testAddMissingURLsToArchive(self, bmanager, existing_wpr, extract_mock):
     del existing_wpr   # Unused.
+
+    wpr_archive_info = mock.Mock()
+    wpr_archive_info.data = {
+      'archives': {
+        '<story>': {'DEFAULT': '<archive>'},
+      }
+    }
+    self.wpr_updater.wpr_archive_info = wpr_archive_info
+
     bmanager.return_value.FetchPath.return_value = '<wpr-go-bin>'
     self.wpr_updater._AddMissingURLsToArchive('<replay-log>')
     extract_mock.assert_called_once_with('<replay-log>')
     self._check_call.assert_called_once_with(
         ['<wpr-go-bin>', 'add', '<archive>', 'foo', 'bar'])
+
+  @mock.patch('core.cli_helpers.Ask', side_effect=[
+      'other_archive'])
+  @mock.patch(WPR_UPDATER + '_ExtractMissingURLsFromLog',
+              return_value=['foo', 'bar'])
+  @mock.patch(WPR_UPDATER + 'WprUpdater._GetWprArchivePathsAndUsageForStory',
+              return_value=[('other_archive', False)])
+  @mock.patch('py_utils.binary_manager.BinaryManager', autospec=True)
+  def testAddMissingURLsToArchiveMulti(self, bmanager,
+                                       existing_wpr, extract_mock, ask):
+    del existing_wpr, ask   # Unused.
+
+    wpr_archive_info = mock.Mock()
+    wpr_archive_info.data = {
+      'archives': {
+        '<story>': {
+          'DEFAULT': '<archive>',
+          'mac': 'other_archive'
+        }
+      }
+    }
+    self.wpr_updater.wpr_archive_info = wpr_archive_info
+
+    bmanager.return_value.FetchPath.return_value = '<wpr-go-bin>'
+    self.wpr_updater._AddMissingURLsToArchive('<replay-log>')
+    extract_mock.assert_called_once_with('<replay-log>')
+    self._check_call.assert_called_once_with(
+        ['<wpr-go-bin>', 'add', 'other_archive', 'foo', 'bar'])
 
   @mock.patch(WPR_UPDATER + '_PrintRunInfo')
   @mock.patch(WPR_UPDATER + 'WprUpdater._DeleteExistingWpr')
@@ -367,10 +465,12 @@ class UpdateWprTest(unittest.TestCase):
     run_benchmark.assert_called_once_with(log_name='replay', live=False)
     print_run_info.assert_called_once_with('<out-file>', chrome_log_file=True)
 
-  @mock.patch(WPR_UPDATER + 'WprUpdater._ExistingWpr',
-              return_value=('<archive>', False))
-  def testUploadWPR(self, existing_wpr):
-    del existing_wpr  # Unused.
+  @mock.patch(WPR_UPDATER + 'WprUpdater._GetWprArchivePathsAndUsageForStory',
+              return_value=[('<archive>', False), ('other', False)])
+  @mock.patch('os.path.exists', side_effect=mock_exists)
+  def testUploadWPR(self, existing_wpr, exists):
+    del existing_wpr, exists  # Unused.
+
     self.wpr_updater.UploadWpr()
     self.assertListEqual(self._run.mock_calls, [
       mock.call(['upload_to_google_storage.py',
