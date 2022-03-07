@@ -738,6 +738,12 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
       setConstant:content_suggestions::doodleHeight(self.logoVendor.showingLogo,
                                                     doodleShowing,
                                                     self.traitCollection)];
+  if (IsContentSuggestionsHeaderMigrationEnabled()) {
+    self.headerViewHeightConstraint.constant =
+        content_suggestions::heightForLogoHeader(
+            self.logoIsShowing, self.logoVendor.isShowingDoodle,
+            self.promoCanShow, YES, [self topInset], self.traitCollection);
+  }
   [self.commandHandler updateForHeaderSizeChange];
 }
 
