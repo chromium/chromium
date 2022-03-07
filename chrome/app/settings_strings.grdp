@@ -2244,8 +2244,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CUSTOMIZED_BEHAVIORS_DESCRIPTION_SHORT" desc="Short description for the site settings exceptions.">
     Sites listed below follow a custom setting
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_DESCRIPTION" desc="Description of the ads content setting.">
-    Sites usually show ads so they can provide content or services for free. But, some sites are known to show intrusive or misleading ads.
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_DESCRIPTION" desc="Description of the ads content setting. In order to comply with the ND4C regulations the translations for this message should use one of the legally approved terms as an alternative to 'free'.">
+    Sites usually show ads so they can provide content or services free of charge. But, some sites are known to show intrusive or misleading ads.
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_ALLOWED" desc="Label for the enabled option of the ads content setting.">
     All sites can show any ads to you
