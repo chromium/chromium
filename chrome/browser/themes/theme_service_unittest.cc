@@ -791,10 +791,9 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
   EXPECT_TRUE(registry_->GetInstalledExtension(scoper.extension_id()));
 }
 
-// TODO(crbug.com/1056953): Enable on Mac, Ash Chrome, Fuchsia, and Linux GTK.
+// TODO(crbug.com/1056953): Enable on Ash Chrome, Fuchsia, and Linux GTK.
 // Flaky on linux-chromeos-rel crbug.com/1273727
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_GTK)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_GTK)
 #define MAYBE_GetColor DISABLED_GetColor
 #else
 #define MAYBE_GetColor GetColor
