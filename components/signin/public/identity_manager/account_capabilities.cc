@@ -16,8 +16,12 @@ AccountCapabilities::AccountCapabilities() = default;
 AccountCapabilities::~AccountCapabilities() = default;
 AccountCapabilities::AccountCapabilities(const AccountCapabilities& other) =
     default;
+AccountCapabilities::AccountCapabilities(AccountCapabilities&& other) noexcept =
+    default;
 AccountCapabilities& AccountCapabilities::operator=(
     const AccountCapabilities& other) = default;
+AccountCapabilities& AccountCapabilities::operator=(
+    AccountCapabilities&& other) noexcept = default;
 
 // static
 const std::vector<std::string>&

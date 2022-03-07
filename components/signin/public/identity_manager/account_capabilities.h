@@ -23,7 +23,9 @@ class AccountCapabilities {
   AccountCapabilities();
   ~AccountCapabilities();
   AccountCapabilities(const AccountCapabilities& other);
+  AccountCapabilities(AccountCapabilities&& other) noexcept;
   AccountCapabilities& operator=(const AccountCapabilities& other);
+  AccountCapabilities& operator=(AccountCapabilities&& other) noexcept;
 
   // Chrome can offer extended promos for turning on Sync to accounts with this
   // capability.
