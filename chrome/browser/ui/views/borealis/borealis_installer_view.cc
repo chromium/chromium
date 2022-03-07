@@ -276,11 +276,11 @@ gfx::Size BorealisInstallerView::CalculatePreferredSize() const {
 std::u16string BorealisInstallerView::GetPrimaryMessage() const {
   switch (state_) {
     case State::kConfirmInstall:
-      return l10n_util::GetStringFUTF16(
-          IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE, app_name_);
+      return l10n_util::GetStringUTF16(
+          IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE);
     case State::kInstalling:
-      return l10n_util::GetStringFUTF16(
-          IDS_BOREALIS_INSTALLER_ENVIRONMENT_SETTING_TITLE, app_name_);
+      return l10n_util::GetStringUTF16(
+          IDS_BOREALIS_INSTALLER_ENVIRONMENT_SETTING_TITLE);
     case State::kCompleted:
       return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_FINISHED_TITLE);
     case State::kError:
@@ -288,8 +288,11 @@ std::u16string BorealisInstallerView::GetPrimaryMessage() const {
       switch (*result_) {
         case borealis::BorealisInstallResult::kBorealisNotAllowed:
         case borealis::BorealisInstallResult::kDlcUnsupportedError:
-          return l10n_util::GetStringFUTF16(
-              IDS_BOREALIS_INSTALLER_NOT_ALLOWED_TITLE, app_name_);
+          return l10n_util::GetStringUTF16(
+              IDS_BOREALIS_INSTALLER_NOT_ALLOWED_TITLE);
+        case borealis::BorealisInstallResult::kDlcNeedSpaceError:
+          return l10n_util::GetStringUTF16(
+              IDS_BOREALIS_INSUFFICIENT_DISK_SPACE_TITLE);
         default:
           return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_TITLE);
       }
@@ -305,20 +308,19 @@ std::u16string BorealisInstallerView::GetSecondaryMessage() const {
       return l10n_util::GetStringUTF16(
           IDS_BOREALIS_INSTALLER_IMPORTING_MESSAGE);
     case State::kCompleted:
-      return l10n_util::GetStringFUTF16(IDS_BOREALIS_INSTALLER_IMPORTED_MESSAGE,
-                                        app_name_);
+      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_IMPORTED_MESSAGE);
     case State::kError:
       using ResultEnum = borealis::BorealisInstallResult;
       DCHECK(result_);
       switch (*result_) {
         default:
         case ResultEnum::kBorealisInstallInProgress:
-          return l10n_util::GetStringFUTF16(
-              IDS_BOREALIS_INSTALLER_IN_PROGRESS_ERROR_MESSAGE, app_name_);
+          return l10n_util::GetStringUTF16(
+              IDS_BOREALIS_INSTALLER_IN_PROGRESS_ERROR_MESSAGE);
         case ResultEnum::kBorealisNotAllowed:
         case ResultEnum::kDlcUnsupportedError:
           return l10n_util::GetStringFUTF16(
-              IDS_BOREALIS_INSTALLER_NOT_ALLOWED_MESSAGE, app_name_,
+              IDS_BOREALIS_INSTALLER_NOT_ALLOWED_MESSAGE,
               base::NumberToString16(
                   static_cast<std::underlying_type_t<ResultEnum>>(*result_)));
         case ResultEnum::kOffline:
@@ -329,11 +331,11 @@ std::u16string BorealisInstallerView::GetSecondaryMessage() const {
           return l10n_util::GetStringUTF16(
               IDS_BOREALIS_DLC_INTERNAL_FAILED_MESSAGE);
         case ResultEnum::kDlcBusyError:
-          return l10n_util::GetStringFUTF16(
-              IDS_BOREALIS_DLC_BUSY_FAILED_MESSAGE, app_name_);
+          return l10n_util::GetStringUTF16(
+              IDS_BOREALIS_DLC_BUSY_FAILED_MESSAGE);
         case ResultEnum::kDlcNeedRebootError:
-          return l10n_util::GetStringFUTF16(
-              IDS_BOREALIS_DLC_NEED_REBOOT_FAILED_MESSAGE, app_name_);
+          return l10n_util::GetStringUTF16(
+              IDS_BOREALIS_DLC_NEED_REBOOT_FAILED_MESSAGE);
         case ResultEnum::kDlcNeedSpaceError:
           return l10n_util::GetStringUTF16(
               IDS_BOREALIS_INSUFFICIENT_DISK_SPACE_MESSAGE);
@@ -342,7 +344,7 @@ std::u16string BorealisInstallerView::GetSecondaryMessage() const {
               IDS_BOREALIS_DLC_NEED_UPDATE_FAILED_MESSAGE);
         case ResultEnum::kDlcUnknownError:
           return l10n_util::GetStringFUTF16(
-              IDS_BOREALIS_GENERIC_ERROR_MESSAGE, app_name_,
+              IDS_BOREALIS_GENERIC_ERROR_MESSAGE,
               base::NumberToString16(
                   static_cast<std::underlying_type_t<ResultEnum>>(*result_)));
       }
