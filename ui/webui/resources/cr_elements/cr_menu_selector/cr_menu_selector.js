@@ -78,7 +78,7 @@ export class CrMenuSelector extends HTMLElement {
           // If pressing Tab, immediately focus the last element so that when
           // the event is finished processing, the browser automatically focuses
           // the next focusable element outside of the menu.
-          items[items.length - 1].focus();
+          items[items.length - 1].focus({preventScroll: true});
         }
         return;
       case 'ArrowDown':
