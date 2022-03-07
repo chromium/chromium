@@ -718,27 +718,19 @@ testcase.fileDisplayWithHiddenVolume = async () => {
   const dirTreeQuery = ['#directory-tree [dir-type]'];
   const elementsBefore = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, dirTreeQuery);
-  const visibleElementsBefore = [];
-  for (const element of elementsBefore) {
-    if (!element.hidden) {  // Ignore hidden elements.
-      visibleElementsBefore.push(element.attributes['entry-label']);
-    }
-  }
 
   // Mount a hidden volume.
   await sendTestMessage({name: 'mountHidden'});
 
   const elementsAfter = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, dirTreeQuery);
-  const visibleElementsAfter = [];
-  for (const element of elementsAfter) {
-    if (!element.hidden) {  // Ignore hidden elements.
-      visibleElementsAfter.push(element.attributes['entry-label']);
-    }
-  }
+  const visibleLabelsBefore = elementsBefore.filter(e => !e.hidden)
+                                  .map(e => e.attributes['entry-label']);
+  const visibleLabelsAfter = elementsAfter.filter(e => !e.hidden)
+                                 .map(e => e.attributes['entry-label']);
 
   // The directory tree should NOT display the hidden volume.
-  chrome.test.assertEq(elementsBefore, elementsAfter);
+  chrome.test.assertEq(visibleLabelsBefore, visibleLabelsAfter);
 
   // The hidden volume should not be counted in the number of volumes.
   chrome.test.assertEq(
