@@ -18,6 +18,7 @@ import androidx.core.util.AtomicFile;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StreamUtil;
@@ -101,6 +102,9 @@ public class TabPersistentStore {
 
     /** Prevents two TabPersistentStores from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
+    private static final int MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_DEFAULT_BATCH_SIZE = 5;
+    private static final String MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_BATCH_SIZE_PARAM =
+            "migrate_to_critical_persisted_tab_data_batch_size";
     private TabModelObserver mTabModelObserver;
 
     @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
@@ -280,6 +284,20 @@ public class TabPersistentStore {
     private final ObserverList<TabPersistentStoreObserver> mObservers;
 
     private final Deque<Tab> mTabsToSave;
+    // Tabs to migrate to CriticalPersistedTabData (i.e. save a CriticalPersistedTabData
+    // file for the Tab). When the CriticalPersistedTabData flag is on,
+    // CriticalPersistedTabData files are saved upon the first successful
+    // save of a TabState for a Tab. However, this only happens if a Tab attribute
+    // changes e.g. change of URL or move the Tab to a different group (changing the root
+    // id). Stale Tabs (i.e. Tabs which sit uninteracted with) stay unmigrated. This queue is used
+    // to migrate an additional MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_BATCH_SIZE Tabs for every 1
+    // save of a TabState. Considerations (especially in light of users who have a lot of Tabs):
+    // - Tabs should not be migrated directly on startup, as this may introduce a startup
+    //   metric regression. After a TabState save should be a time of relatively low
+    //   resource utilization.
+    // - MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_BATCH_SIZE should not be too large or
+    //   the system will be flooded with saves.
+    private final Deque<Tab> mTabsToMigrate;
     private final Deque<TabRestoreDetails> mTabsToRestore;
     private final Set<Integer> mTabIdsToRestore;
 
@@ -320,6 +338,7 @@ public class TabPersistentStore {
         mTabModelSelector = modelSelector;
         mTabCreatorManager = tabCreatorManager;
         mTabsToSave = new ArrayDeque<>();
+        mTabsToMigrate = new ArrayDeque<>();
         mTabsToRestore = new ArrayDeque<>();
         mTabIdsToRestore = new HashSet<>();
         mObservers = new ObserverList<>();
@@ -763,9 +782,12 @@ public class TabPersistentStore {
                                                : TabRestoreMethod.CRITICAL_PERSISTED_TAB_DATA;
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabRestoreMethod", tabRestoreMethod, TabRestoreMethod.NUM_ENTRIES);
-            mTabCreatorManager.getTabCreator(isIncognito)
-                    .createFrozenTab(tabState, serializedCriticalPersistedTabData, tabToRestore.id,
-                            isIncognito, restoredIndex);
+            Tab tab = mTabCreatorManager.getTabCreator(isIncognito)
+                              .createFrozenTab(tabState, serializedCriticalPersistedTabData,
+                                      tabToRestore.id, isIncognito, restoredIndex);
+            if (useTabState && isCriticalPersistedTabDataEnabled()) {
+                mTabsToMigrate.add(tab);
+            }
         } else {
             if (UrlUtilities.isNTPUrl(tabToRestore.url) && !setAsActive
                     && !tabToRestore.fromMerge) {
@@ -789,6 +811,9 @@ public class TabPersistentStore {
                 RecordHistogram.recordEnumeratedHistogram("Tabs.TabRestoreMethod",
                         TabRestoreMethod.FAILED_TO_RESTORE, TabRestoreMethod.NUM_ENTRIES);
                 return;
+            }
+            if (isCriticalPersistedTabDataEnabled()) {
+                mTabsToMigrate.add(fallbackTab);
             }
 
             RecordHistogram.recordEnumeratedHistogram("Tabs.TabRestoreMethod",
@@ -911,6 +936,8 @@ public class TabPersistentStore {
     public void removeTabFromQueues(Tab tab) {
         mTabsToSave.remove(tab);
         mTabsToRestore.remove(getTabToRestoreById(tab.getId()));
+
+        if (isCriticalPersistedTabDataEnabled()) mTabsToMigrate.remove(tab);
 
         if (mTabLoader != null && mTabLoader.mTabToRestore.id == tab.getId()) {
             mTabLoader.cancel(false);
@@ -1340,6 +1367,7 @@ public class TabPersistentStore {
             if (mStateSaved) {
                 if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).setIsTabStateDirty(false);
                 mTab.setIsTabSaveEnabled(isCriticalPersistedTabDataEnabled());
+                migrateSomeRemainingTabsToCriticalPersistedTabData();
             }
             mSaveTabTask = null;
             saveNextTab();
@@ -1429,7 +1457,6 @@ public class TabPersistentStore {
                     TAG, "Out of memory error while attempting to save tab state.  Erasing.");
             deleteTabState(tabId, encrypted);
         }
-
         return false;
     }
 
@@ -1877,6 +1904,16 @@ public class TabPersistentStore {
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.EMPTY);
     }
 
+    private static int getMigrateToCriticalPersistedTabDataBatchSize() {
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA,
+                    MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_BATCH_SIZE_PARAM,
+                    MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_DEFAULT_BATCH_SIZE);
+        }
+        return MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_DEFAULT_BATCH_SIZE;
+    }
+
     @VisibleForTesting
     SequencedTaskRunner getTaskRunnerForTests() {
         return mSequencedTaskRunner;
@@ -1906,5 +1943,18 @@ public class TabPersistentStore {
     public AsyncTask<SerializedCriticalPersistedTabData>
     getPrefetchCriticalPersistedTabDataActiveTabTaskForTesting() {
         return mPrefetchCriticalPersistedTabDataActiveTabTask;
+    }
+
+    private void migrateSomeRemainingTabsToCriticalPersistedTabData() {
+        if (!isCriticalPersistedTabDataEnabled()) return;
+        int numMigrated = 0;
+        while (numMigrated < getMigrateToCriticalPersistedTabDataBatchSize()
+                && !mTabsToMigrate.isEmpty()) {
+            Tab tabToMigrate = mTabsToMigrate.pollFirst();
+            if (tabToMigrate != null && !tabToMigrate.isDestroyed()) {
+                tabToMigrate.setIsTabSaveEnabled(true);
+            }
+            numMigrated++;
+        }
     }
 }
