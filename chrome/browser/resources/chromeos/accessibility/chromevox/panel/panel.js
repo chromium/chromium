@@ -367,95 +367,93 @@ Panel = class {
         'developer': null
       };
 
+      // TODO(accessibility): Commands should be based off of CommandStore and
+      // not the keymap. There are commands that don't have a key binding (e.g.
+      // commands for touch).
+
       // Get the key map.
-      const keyMap = KeyMap.get();
+      const keymap = KeyMap.get();
 
-      // Get the titles from their message IDs.
-      const sortedCommands =
-          Object.entries(CommandStore.CMD_ALLOWLIST)
-              .map(([command, data]) => {
-                if (!data.msgId) {
-                  return null;
-                }
-                let title = Msgs.getMsg(data.msgId);
-                // Convert to title case.
-                title = title.replace(/\w\S*/g, function(word) {
-                  return word.charAt(0).toUpperCase() + word.substr(1);
-                });
-                return [command, title];
-              })
-              .filter(value => value !== null);
-
-      // Sort lexicographically.
-      sortedCommands.sort(function([command1, title1], [command2, title2]) {
-        return title1.localeCompare(title2);
+      // Make a copy of the key bindings, get the localized title of each
+      // command, and then sort them.
+      const sortedBindings = keymap.bindings().slice();
+      for (let binding, i = 0; binding = sortedBindings[i]; i++) {
+        const command = binding.command;
+        const keySeq = binding.sequence;
+        binding.keySeq = await KeyUtil.keySequenceToString(keySeq, true);
+        const titleMsgId = CommandStore.messageForCommand(command);
+        if (!titleMsgId) {
+          console.error('No localization for: ' + command);
+          binding.title = '';
+          continue;
+        }
+        let title = Msgs.getMsg(titleMsgId);
+        // Convert to title case.
+        title = title.replace(/\w\S*/g, function(word) {
+          return word.charAt(0).toUpperCase() + word.substr(1);
+        });
+        binding.title = title;
+      }
+      sortedBindings.sort(function(binding1, binding2) {
+        return binding1.title.localeCompare(binding2.title);
       });
 
-      // Add the categorized commands.
-      for (const [command, title] of sortedCommands) {
-        const category = CommandStore.categoryForCommand(command);
-        if (!category) {
-          continue;
+      // Insert items from the bindings into the menus.
+      const sawBindingSet = {};
+      const gestures = Object.keys(GestureCommandData.GESTURE_COMMAND_MAP);
+      sortedBindings.forEach((binding) => {
+        const command = binding.command;
+        if (sawBindingSet[command]) {
+          return;
         }
-        const menu = categoryToMenu[category];
-        if (!menu) {
-          continue;
-        }
-
-        // Current behavior is to only show actions with a keyboard shortcut in
-        // the menu (even if it's tablet mode and the keyboard shortcuts are not
-        // shown).
-        const keySequences = keyMap.keyForCommand(command);
-        if (keySequences.length === 0) {
-          continue;
-        }
-
-        let keyText;
-        let brailleText;
-        let gestureText;
-
-        if (touchScreen) {
-          const gestureData = GestureCommandData.getDataForCommand(command);
-          if (gestureData) {
-            gestureText = Msgs.getMsg(gestureData.msgId);
+        sawBindingSet[command] = true;
+        const category = CommandStore.categoryForCommand(binding.command);
+        const menu = category ? categoryToMenu[category] : null;
+        if (binding.title && menu) {
+          let keyText;
+          let brailleText;
+          let gestureText;
+          if (touchScreen) {
+            for (let i = 0, gesture; gesture = gestures[i]; i++) {
+              const data = GestureCommandData.GESTURE_COMMAND_MAP[gesture];
+              if (data && data.command === command) {
+                gestureText = Msgs.getMsg(data.msgId);
+                break;
+              }
+            }
+          } else {
+            keyText = binding.keySeq;
+            brailleText =
+                BrailleCommandData.getDotShortcut(binding.command, true);
           }
-        } else {
-          // TODO(accessibility): It seems like this will search the entire
-          // dictionary for each command. Consider getting the entire object and
-          // sorting/searching, for better efficiency.
-          keyText = await KeyUtil.keySequenceToString(keySequences[0], true);
-          brailleText = BrailleCommandData.getDotShortcut(command, true);
+
+          menu.addMenuItem(
+              binding.title, keyText, brailleText, gestureText, function() {
+                const CommandHandler =
+                    chrome.extension
+                        .getBackgroundPage()['CommandHandlerInterface'];
+                CommandHandler.instance.onCommand(binding.command);
+              }, binding.command);
         }
-
-        const performActionCallback = () => {
-          chrome.runtime.sendMessage(
-              {target: 'CommandHandler', action: 'onCommand', value: command});
-        };
-
-        menu.addMenuItem(
-            title, keyText, brailleText, gestureText, performActionCallback,
-            command);
-      }
+      });
 
       // Add Touch Gestures menu items.
       if (touchScreen) {
         const touchGestureItems = [];
-        for (const [gesture, data] of Object.entries(
-                 GestureCommandData.GESTURE_COMMAND_MAP)) {
-          if (!data.command) {
+        for (const key in GestureCommandData.GESTURE_COMMAND_MAP) {
+          const command =
+              GestureCommandData.GESTURE_COMMAND_MAP[key]['command'];
+          if (!command) {
             continue;
           }
 
-          const titleMsgId = data.commandDescriptionMsgId ||
-              CommandStore.messageForCommand(data.command);
-          if (!titleMsgId) {
-            continue;
-          }
-
-          const command = data.command;
-          const gestureText = Msgs.getMsg(data.msgId);
-          const titleText = Msgs.getMsg(titleMsgId);
-
+          const gestureText =
+              Msgs.getMsg(GestureCommandData.GESTURE_COMMAND_MAP[key]['msgId']);
+          const msgForCmd =
+              GestureCommandData
+                  .GESTURE_COMMAND_MAP[key]['commandDescriptionMsgId'] ||
+              CommandStore.messageForCommand(command);
+          const titleText = Msgs.getMsg(msgForCmd);
           touchGestureItems.push({titleText, gestureText, command});
         }
 
@@ -463,37 +461,35 @@ Panel = class {
           return item1.titleText.localeCompare(item2.titleText);
         });
 
-        for (const {titleText, gestureText, command} of touchGestureItems) {
-          const performActionCallback = () => {
-            chrome.runtime.sendMessage({
-              target: 'CommandHandler',
-              action: 'onCommand',
-              value: command
-            });
-          };
+        for (const item of touchGestureItems) {
           touchMenu.addMenuItem(
-              titleText, '', '', gestureText, performActionCallback, command);
+              item.titleText, '', '', item.gestureText, function() {
+                const CommandHandler =
+                    chrome.extension
+                        .getBackgroundPage()['CommandHandlerInterface'];
+                CommandHandler.instance.onCommand(item.command);
+              }, item.command);
         }
       }
 
       // Add all open tabs to the Tabs menu.
       bkgnd.chrome.windows.getLastFocused(function(lastFocusedWindow) {
         bkgnd.chrome.windows.getAll({'populate': true}, function(windows) {
-          for (const currentWindow of windows) {
-            for (const tab of currentWindow.tabs || []) {
-              let title = tab.title;
-              if (tab.active && currentWindow.id === lastFocusedWindow.id) {
+          for (let i = 0; i < windows.length; i++) {
+            const tabs = windows[i].tabs;
+            for (let j = 0; j < tabs.length; j++) {
+              let title = tabs[j].title;
+              if (tabs[j].active && windows[i].id === lastFocusedWindow.id) {
                 title += ' ' + Msgs.getMsg('active_tab');
               }
-
-              const focusTabCallback = () => {
-                bkgnd.chrome.windows.update(
-                    currentWindow.id, {focused: true}, () => {
-                      bkgnd.chrome.tabs.update(tab.id, {active: true});
-                    });
-              };
-
-              tabsMenu.addMenuItem(title, '', '', '', focusTabCallback);
+              tabsMenu.addMenuItem(
+                  title, '', '', '', (function(win, tab) {
+                                       bkgnd.chrome.windows.update(
+                                           win.id, {focused: true}, function() {
+                                             bkgnd.chrome.tabs.update(
+                                                 tab.id, {active: true});
+                                           });
+                                     }).bind(this, windows[i], tabs[j]));
             }
           }
         });
@@ -502,8 +498,10 @@ Panel = class {
       if (Panel.sessionState !== 'IN_SESSION') {
         tabsMenu.disable();
         // Disable commands that contain the property 'denyOOBE'.
-        for (const menu of Panel.menus_) {
-          for (const item of menu.items || []) {
+        for (let i = 0; i < Panel.menus_.length; ++i) {
+          const menu = Panel.menus_[i];
+          for (let j = 0; j < menu.items.length; ++j) {
+            const item = menu.items[j];
             if (CommandStore.denyOOBE(item.element.id)) {
               item.disable();
             }
@@ -513,8 +511,9 @@ Panel = class {
 
       // Add a menu item that disables / closes ChromeVox.
       chromevoxMenu.addMenuItem(
-          Msgs.getMsg('disable_chromevox'), 'Ctrl+Alt+Z', '', '',
-          () => Panel.onClose());
+          Msgs.getMsg('disable_chromevox'), 'Ctrl+Alt+Z', '', '', function() {
+            Panel.onClose();
+          });
 
       const roleListMenuMapping = [
         {menuTitle: 'role_heading', predicate: AutomationPredicate.heading},
@@ -526,16 +525,19 @@ Panel = class {
         {menuTitle: 'role_table', predicate: AutomationPredicate.table}
       ];
 
-      for (const {menuTitle, predicate} of roleListMenuMapping) {
+      for (let i = 0; i < roleListMenuMapping.length; ++i) {
+        const menuTitle = roleListMenuMapping[i].menuTitle;
+        const predicate = roleListMenuMapping[i].predicate;
         // Create node menus asynchronously (because it may require
         // searching a long document) unless that's the specific menu the
         // user requested.
-        const asyncLoad = (menuTitle !== opt_activateMenuTitle);
-        Panel.addNodeMenu(menuTitle, node, predicate, asyncLoad);
+        const async = (menuTitle !== opt_activateMenuTitle);
+        Panel.addNodeMenu(menuTitle, node, predicate, async);
       }
 
       if (node && node.standardActions) {
-        for (const standardAction of node.standardActions) {
+        for (let i = 0; i < node.standardActions.length; i++) {
+          const standardAction = node.standardActions[i];
           const actionMsg = Panel.ACTION_TO_MSG_ID[standardAction];
           if (!actionMsg) {
             continue;
@@ -549,7 +551,8 @@ Panel = class {
       }
 
       if (node && node.customActions) {
-        for (const customAction of node.customActions) {
+        for (let i = 0; i < node.customActions.length; i++) {
+          const customAction = node.customActions[i];
           actionsMenu.addMenuItem(
               customAction.description, '' /* menuItemShortcut */,
               '' /* menuItemBraille */, '' /* gesture */,
@@ -560,9 +563,9 @@ Panel = class {
       // Activate either the specified menu or the search menu.
       // Search menu can be null, since it is hidden behind a flag.
       let selectedMenu = Panel.searchMenu || Panel.menus_[0];
-      for (const menu of Panel.menus_) {
-        if (menu.menuMsg === opt_activateMenuTitle) {
-          selectedMenu = menu;
+      for (let i = 0; i < Panel.menus_.length; i++) {
+        if (Panel.menus_[i].menuMsg === opt_activateMenuTitle) {
+          selectedMenu = Panel.menus_[i];
         }
       }
 
