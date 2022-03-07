@@ -34,7 +34,6 @@ PageInfoBubbleViewHistoryDialogBrowserTest.*
 PasswordReuseModalWarningTest.*
 PermissionRequestChipDialogBrowserTest.*
 *PermissionPromptBubbleViewBrowserTest.*
-PrivacySandboxDialogViewBrowserTest.*
 PromptForScanningModalDialogTest.*
 QRCodeGeneratorBubbleBrowserTest.*
 RelaunchRecommendedBubbleViewDialogTest.*
