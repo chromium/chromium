@@ -153,7 +153,7 @@ message ChunkTwoLastFieldStringPolicyProto {
 }
 
 // --------------------------------------------------
-// PBs for policies with ID > 979.
+// PBs for policies with ID > 1015.
 
 message ChromeSettingsSubProto1 {
   optional ChunkOneFirstFieldBooleanPolicyProto ChunkOneFirstFieldBooleanPolicy = 1;
@@ -175,9 +175,9 @@ message ChromeSettingsProto {
   optional ExampleBoolPrecedenceMetapolicyProto ExampleBoolPrecedenceMetapolicy = 6;
   optional CloudOnlyPolicyProto CloudOnlyPolicy = 7;
   optional CloudManagementEnrollmentTokenProto CloudManagementEnrollmentToken = 8;
-  optional ChunkZeroLastFieldBooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 981;
-  optional ChromeSettingsSubProto1 subProto1 = 982;
-  optional ChromeSettingsSubProto2 subProto2 = 983;
+  optional ChunkZeroLastFieldBooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 1017;
+  optional ChromeSettingsSubProto1 subProto1 = 1018;
+  optional ChromeSettingsSubProto2 subProto2 = 1019;
 }
 """
 

@@ -110,7 +110,7 @@ class PolicyGenerationTest(unittest.TestCase):
               "type": "boolean"
           },
           "supported_on": ["chrome_os:99-"],
-          "id": 979,
+          "id": 1015,
           "tags": [],
           "caption": "ChunkZeroLastFieldBooleanPolicy caption",
           "desc": "ChunkZeroLastFieldBooleanPolicy desc.",
@@ -121,7 +121,7 @@ class PolicyGenerationTest(unittest.TestCase):
               "type": "boolean"
           },
           "supported_on": ["chrome_os:99-"],
-          "id": 980,
+          "id": 1016,
           "tags": [],
           "caption": "ChunkOneFirstFieldBooleanPolicy caption",
           "desc": "ChunkOneFirstFieldBooleanPolicy desc.",
@@ -132,7 +132,7 @@ class PolicyGenerationTest(unittest.TestCase):
               "type": "boolean"
           },
           "supported_on": ["chrome_os:99-"],
-          "id": 1779,
+          "id": 1815,
           "tags": [],
           "caption": "ChunkOneLastFieldBooleanPolicy caption",
           "desc": "ChunkOneLastFieldBooleanPolicy desc.",
@@ -143,7 +143,7 @@ class PolicyGenerationTest(unittest.TestCase):
               "type": "string"
           },
           "supported_on": ["chrome_os:99-"],
-          "id": 1780,
+          "id": 1816,
           "tags": [],
           "caption": "ChunkTwoFirstFieldStringPolicy caption",
           "desc": "ChunkTwoFirstFieldStringPolicy desc"
@@ -154,7 +154,7 @@ class PolicyGenerationTest(unittest.TestCase):
               "type": "string"
           },
           "supported_on": ["chrome_os:99-"],
-          "id": 2579,
+          "id": 2615,
           "tags": [],
           "caption": "ChunkTwoLastFieldStringPolicy caption",
           "desc": "ChunkTwoLastFieldStringPolicy desc"
@@ -432,31 +432,31 @@ class PolicyGenerationTest(unittest.TestCase):
   def testChunkNumberAndFieldNumber(self):
     test_data = [
         # Last top-level policy
-        PolicyData(policy_id=979, chunk_number=0, field_number=981),
+        PolicyData(policy_id=1015, chunk_number=0, field_number=1017),
         # First policy in chunk 1
-        PolicyData(policy_id=980, chunk_number=1, field_number=1),
+        PolicyData(policy_id=1016, chunk_number=1, field_number=1),
         # Last policy in chunk 1
-        PolicyData(policy_id=1779, chunk_number=1, field_number=800),
+        PolicyData(policy_id=1815, chunk_number=1, field_number=800),
         # First policy in chunk 2
-        PolicyData(policy_id=1780, chunk_number=2, field_number=1),
+        PolicyData(policy_id=1816, chunk_number=2, field_number=1),
         # Last policy in chunk 2
-        PolicyData(policy_id=2579, chunk_number=2, field_number=800),
+        PolicyData(policy_id=2615, chunk_number=2, field_number=800),
         # First policy in chunk 3
-        PolicyData(policy_id=2580, chunk_number=3, field_number=1),
+        PolicyData(policy_id=2616, chunk_number=3, field_number=1),
         # Last policy in chunk 3
-        PolicyData(policy_id=3379, chunk_number=3, field_number=800),
+        PolicyData(policy_id=3415, chunk_number=3, field_number=800),
         # First policy in chunk 501
-        PolicyData(policy_id=400980, chunk_number=501, field_number=1),
+        PolicyData(policy_id=401016, chunk_number=501, field_number=1),
         # Last policy in chunk 501
-        PolicyData(policy_id=401779, chunk_number=501, field_number=800),
+        PolicyData(policy_id=401815, chunk_number=501, field_number=800),
         # First policy in chunk 502
-        PolicyData(policy_id=401780, chunk_number=502, field_number=1),
+        PolicyData(policy_id=401816, chunk_number=502, field_number=1),
         # Last policy in chunk 502
-        PolicyData(policy_id=402579, chunk_number=502, field_number=800),
+        PolicyData(policy_id=402615, chunk_number=502, field_number=800),
         # First policy in chunk 503
-        PolicyData(policy_id=402580, chunk_number=503, field_number=1),
+        PolicyData(policy_id=402616, chunk_number=503, field_number=1),
         # Last policy in chunk 503
-        PolicyData(policy_id=403379, chunk_number=503, field_number=800),
+        PolicyData(policy_id=403415, chunk_number=503, field_number=800),
     ]
 
     for policy_data in test_data:
