@@ -1748,7 +1748,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           TabSwitcherPageChangeInteraction::kControlDrag);
       break;
   }
-  self.pageChangeInteraction = PageChangeInteractionNone;
+  // Don't reset |self.pageChangeInteraction| here, because a drag may still be
+  // in process.
 }
 
 // Tells the appropriate delegate to create a new item, and then tells the
