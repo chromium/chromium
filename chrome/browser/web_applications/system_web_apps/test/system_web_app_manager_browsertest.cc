@@ -1245,17 +1245,6 @@ class SystemWebAppManagerOriginTrialsBrowserTest
   ~SystemWebAppManagerOriginTrialsBrowserTest() override = default;
 
  protected:
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. A caller in WebAppTabHelper was converted automatically to the
-  // primary main frame to preserve its semantics. This mock was also updated
-  // due to this rewrite. Follow up to confirm correctness.
-  class MockNavigationHandle : public content::MockNavigationHandle {
-   public:
-    explicit MockNavigationHandle(const GURL& url)
-        : content::MockNavigationHandle(url, nullptr) {}
-    bool IsInMainFrame() const override { return IsInPrimaryMainFrame(); }
-  };
-
   std::unique_ptr<content::WebContents> CreateTestWebContents() {
     content::WebContents::CreateParams create_params(browser()->profile());
     return content::WebContents::Create(create_params);
@@ -1282,7 +1271,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
 
   // Simulate when first navigating into app's launch url.
   {
-    MockNavigationHandle mock_nav_handle(main_url_);
+    content::MockNavigationHandle mock_nav_handle(main_url_, nullptr);
     mock_nav_handle.set_is_in_primary_main_frame(true);
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
@@ -1292,7 +1281,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
 
   // Simulate loading app's embedded child-frame that has origin trials.
   {
-    MockNavigationHandle mock_nav_handle(trial_url_);
+    content::MockNavigationHandle mock_nav_handle(trial_url_, nullptr);
     mock_nav_handle.set_is_in_primary_main_frame(false);
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(trial_url_trials_));
@@ -1301,7 +1290,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
 
   // Simulate loading app's embedded child-frame that has no origin trial.
   {
-    MockNavigationHandle mock_nav_handle(notrial_url_);
+    content::MockNavigationHandle mock_nav_handle(notrial_url_, nullptr);
     mock_nav_handle.set_is_in_primary_main_frame(false);
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials).Times(0);
@@ -1318,7 +1307,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
 
   // Simulate when first navigating into app's launch url.
   {
-    MockNavigationHandle mock_nav_handle(main_url_);
+    content::MockNavigationHandle mock_nav_handle(main_url_, nullptr);
     mock_nav_handle.set_is_in_primary_main_frame(true);
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
@@ -1328,7 +1317,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
 
   // Simulate same-document navigation.
   {
-    MockNavigationHandle mock_nav_handle(main_url_);
+    content::MockNavigationHandle mock_nav_handle(main_url_, nullptr);
     mock_nav_handle.set_is_in_primary_main_frame(true);
     mock_nav_handle.set_is_same_document(true);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials).Times(0);
@@ -1351,7 +1340,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
 
   // Simulate when first navigating into app's launch url.
   {
-    MockNavigationHandle mock_nav_handle(main_url_);
+    content::MockNavigationHandle mock_nav_handle(main_url_, nullptr);
     mock_nav_handle.set_is_in_primary_main_frame(true);
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
@@ -1361,7 +1350,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
 
   // Simulate navigating to a different site without origin trials.
   {
-    MockNavigationHandle mock_nav_handle(notrial_url_);
+    content::MockNavigationHandle mock_nav_handle(notrial_url_, nullptr);
     mock_nav_handle.set_is_in_primary_main_frame(true);
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials).Times(0);
@@ -1371,7 +1360,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
 
   // Simulatenavigating back to a SWA with origin trials.
   {
-    MockNavigationHandle mock_nav_handle(main_url_);
+    content::MockNavigationHandle mock_nav_handle(main_url_, nullptr);
     mock_nav_handle.set_is_in_primary_main_frame(true);
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
@@ -1383,7 +1372,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
   // origin trials when embedded by SWA. However, when this url is loaded in the
   // main frame, it should not get origin trials.
   {
-    MockNavigationHandle mock_nav_handle(trial_url_);
+    content::MockNavigationHandle mock_nav_handle(trial_url_, nullptr);
     mock_nav_handle.set_is_in_primary_main_frame(true);
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials).Times(0);
