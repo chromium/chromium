@@ -3900,8 +3900,6 @@ crbug.com/626703 external/wpt/websockets/cookies/007.html?wss&wpt_flags=https [ 
 crbug.com/626703 [ Mac ] virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/preload/download-resources.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/preload/download-resources.html [ Timeout ]
-crbug.com/626703 [ Linux ] wpt_internal/modal-close-watcher/basic.html [ Crash ]
-crbug.com/626703 [ Mac10.13 ] wpt_internal/modal-close-watcher/basic.html [ Crash ]
 crbug.com/626703 external/wpt/uievents/keyboard/modifier-keys-combinations.html [ Timeout ]
 crbug.com/626703 external/wpt/uievents/keyboard/modifier-keys.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Timeout ]
