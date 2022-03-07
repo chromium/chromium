@@ -176,6 +176,10 @@ public class Features {
     // WebSettingsCompat.getForceDarkBehavior
     public static final String FORCE_DARK_BEHAVIOR = "FORCE_DARK_BEHAVIOR";
 
+    // WebSettingsCompat.setAlgorithmicDarkeningAllowed
+    // WebSettingsCompat.isAlgorithmicDarkeningAllowed
+    public static final String ALGORITHMIC_DARKENING = "ALGORITHMIC_DARKENING";
+
     // WebViewCompat.addWebMessageListener
     // WebViewCompat.removeWebMessageListener
     public static final String WEB_MESSAGE_LISTENER = "WEB_MESSAGE_LISTENER";
