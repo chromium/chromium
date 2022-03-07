@@ -13,7 +13,9 @@
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
@@ -33,8 +35,10 @@
 #include "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/platform_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -130,31 +134,49 @@ class FakeChromePasswordProtectionService
   bool is_no_hosted_domain_found_;
 };
 
-class ChromePasswordProtectionServiceTest : public ChromeWebTest {
+class ChromePasswordProtectionServiceTest : public PlatformTest {
  public:
   ChromePasswordProtectionServiceTest() = default;
   ~ChromePasswordProtectionServiceTest() override = default;
 
   void SetUp() override {
-    ChromeWebTest::SetUp();
+    PlatformTest::SetUp();
+
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        IOSChromePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                            web::BrowserState,
+                            password_manager::MockPasswordStoreInterface>));
+    builder.AddTestingFactory(
+        IOSUserEventServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &ChromePasswordProtectionServiceTest::CreateFakeUserEventService,
+            base::Unretained(this)));
+    browser_state_ = builder.Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
 
     safe_browsing_service_ = base::MakeRefCounted<FakeSafeBrowsingService>();
 
     service_ = std::make_unique<FakeChromePasswordProtectionService>(
-        safe_browsing_service_.get(), GetBrowserState(),
+        safe_browsing_service_.get(), browser_state_.get(),
         ios::HistoryServiceFactory::GetForBrowserState(
-            GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS),
+            browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS),
         SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
-            GetBrowserState()),
+            browser_state_.get()),
         mock_add_callback_.Get(), mock_remove_callback_.Get());
 
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     fake_navigation_manager_ = navigation_manager.get();
     fake_web_state_.SetNavigationManager(std::move(navigation_manager));
-    fake_web_state_.SetBrowserState(GetBrowserState());
+    fake_web_state_.SetBrowserState(browser_state_.get());
   }
 
-  TestChromeBrowserState::TestingFactories GetTestingFactories() override {
+  TestChromeBrowserState::TestingFactories GetTestingFactories() {
     return {
         {IOSUserEventServiceFactory::GetInstance(),
          base::BindRepeating(
@@ -173,7 +195,7 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
 
   syncer::FakeUserEventService* GetUserEventService() {
     return static_cast<syncer::FakeUserEventService*>(
-        IOSUserEventServiceFactory::GetForBrowserState(GetBrowserState()));
+        IOSUserEventServiceFactory::GetForBrowserState(browser_state_.get()));
   }
 
   std::unique_ptr<KeyedService> CreateFakeUserEventService(
@@ -225,6 +247,12 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
   }
 
  protected:
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
+
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
   std::unique_ptr<FakeChromePasswordProtectionService> service_;
   web::FakeWebState fake_web_state_;
@@ -241,7 +269,7 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
 // All pinging is disabled when safe browsing is disabled.
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPingingDisabledWhenSafeBrowsingDisabled) {
-  GetBrowserState()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  browser_state_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
 
   LoginReputationClientRequest::TriggerType trigger_type;
   ReusedPasswordAccountType reused_password_type;
@@ -276,7 +304,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->SetIsIncognito(true);
   service_->SetIsNoHostedDomainFound(true);
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
-  GetBrowserState()->GetPrefs()->SetInteger(
+  browser_state_->GetPrefs()->SetInteger(
       prefs::kPasswordProtectionWarningTrigger, safe_browsing::PASSWORD_REUSE);
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
 }
@@ -339,20 +367,20 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->SetIsNoHostedDomainFound(true);
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
 
-  GetBrowserState()->GetPrefs()->SetInteger(
+  browser_state_->GetPrefs()->SetInteger(
       prefs::kPasswordProtectionWarningTrigger,
       safe_browsing::PASSWORD_PROTECTION_OFF);
   service_->SetIsIncognito(false);
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
 
-  GetBrowserState()->GetPrefs()->SetInteger(
+  browser_state_->GetPrefs()->SetInteger(
       prefs::kPasswordProtectionWarningTrigger, safe_browsing::PASSWORD_REUSE);
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
 }
 
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPingingIsSkippedIfMatchEnterpriseAllowlist) {
-  ASSERT_FALSE(GetBrowserState()->GetPrefs()->HasPrefPath(
+  ASSERT_FALSE(browser_state_->GetPrefs()->HasPrefPath(
       prefs::kSafeBrowsingAllowlistDomains));
 
   // If there's no allowlist, IsURLAllowlistedForPasswordEntry(_) should
@@ -364,18 +392,17 @@ TEST_F(ChromePasswordProtectionServiceTest,
   base::Value allowlist(base::Value::Type::LIST);
   allowlist.Append("mydomain.com");
   allowlist.Append("mydomain.net");
-  GetBrowserState()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                                     allowlist);
+  browser_state_->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
+                                  allowlist);
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
 
   // Verify change password URL (used for enterprise) is allowed (when set in
   // prefs), even when the domain is not allowed.
-  GetBrowserState()->GetPrefs()->ClearPref(
-      prefs::kSafeBrowsingAllowlistDomains);
+  browser_state_->GetPrefs()->ClearPref(prefs::kSafeBrowsingAllowlistDomains);
   EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
-  GetBrowserState()->GetPrefs()->SetString(
+  browser_state_->GetPrefs()->SetString(
       prefs::kPasswordProtectionChangePasswordURL,
       "https://mydomain.com/change_password.html");
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
@@ -383,16 +410,15 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   // Verify login URL (used for enterprise) is allowed (when set in prefs), even
   // when the domain is not allowed.
-  GetBrowserState()->GetPrefs()->ClearPref(
-      prefs::kSafeBrowsingAllowlistDomains);
-  GetBrowserState()->GetPrefs()->ClearPref(
+  browser_state_->GetPrefs()->ClearPref(prefs::kSafeBrowsingAllowlistDomains);
+  browser_state_->GetPrefs()->ClearPref(
       prefs::kPasswordProtectionChangePasswordURL);
   EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
   base::Value login_urls(base::Value::Type::LIST);
   login_urls.Append("https://mydomain.com/login.html");
-  GetBrowserState()->GetPrefs()->Set(prefs::kPasswordProtectionLoginURLs,
-                                     login_urls);
+  browser_state_->GetPrefs()->Set(prefs::kPasswordProtectionLoginURLs,
+                                  login_urls);
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://mydomain.com/login.html#ref?user_name=alice")));
 }
@@ -465,7 +491,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   NavigateAndCommit(GURL("https://www.example.com/"));
 
   // Case 1: safe_browsing_enabled = true
-  GetBrowserState()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  browser_state_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   service_->MaybeLogPasswordReuseDetectedEvent(&fake_web_state_);
   ASSERT_EQ(1ul, GetUserEventService()->GetRecordedUserEvents().size());
   GaiaPasswordReuse event = GetUserEventService()
@@ -474,7 +500,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   EXPECT_TRUE(event.reuse_detected().status().enabled());
 
   // Case 2: safe_browsing_enabled = false
-  GetBrowserState()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  browser_state_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   service_->MaybeLogPasswordReuseDetectedEvent(&fake_web_state_);
   ASSERT_EQ(2ul, GetUserEventService()->GetRecordedUserEvents().size());
   event = GetUserEventService()
@@ -531,7 +557,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
     ReusedPasswordAccountType reused_password_type;
     service_->SetIsIncognito(false);
     reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
-    GetBrowserState()->GetPrefs()->SetInteger(
+    browser_state_->GetPrefs()->SetInteger(
         prefs::kPasswordProtectionWarningTrigger,
         safe_browsing::PASSWORD_PROTECTION_OFF);
     EXPECT_EQ(RequestOutcome::TURNED_OFF_BY_ADMIN,
@@ -544,14 +570,14 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
     ReusedPasswordAccountType reused_password_type;
     service_->SetIsIncognito(false);
     reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
-    GetBrowserState()->GetPrefs()->SetInteger(
+    browser_state_->GetPrefs()->SetInteger(
         prefs::kPasswordProtectionWarningTrigger,
         safe_browsing::PHISHING_REUSE);
     base::Value allowlist(base::Value::Type::LIST);
     allowlist.Append("mydomain.com");
     allowlist.Append("mydomain.net");
-    GetBrowserState()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
-                                       allowlist);
+    browser_state_->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
+                                    allowlist);
     EXPECT_EQ(RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST,
               service_->GetPingNotSentReason(
                   LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
@@ -562,7 +588,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
     ReusedPasswordAccountType reused_password_type;
     service_->SetIsIncognito(false);
     reused_password_type.set_account_type(ReusedPasswordAccountType::UNKNOWN);
-    GetBrowserState()->GetPrefs()->SetInteger(
+    browser_state_->GetPrefs()->SetInteger(
         prefs::kPasswordProtectionWarningTrigger,
         safe_browsing::PASSWORD_REUSE);
     EXPECT_EQ(RequestOutcome::PASSWORD_ALERT_MODE,
