@@ -179,7 +179,9 @@ bool ContinueSectionView::ShouldShowPrivacyNotice() const {
 }
 
 bool ContinueSectionView::ShouldShowFilesSection() const {
-  return HasMinimumFilesToShow() && !ShouldShowPrivacyNotice() &&
+  return HasMinimumFilesToShow() &&
+         (nudge_controller_->IsPrivacyNoticeAccepted() ||
+          nudge_controller_->WasPrivacyNoticeShown()) &&
          !privacy_toast_;
 }
 

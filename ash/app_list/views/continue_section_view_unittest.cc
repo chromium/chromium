@@ -1063,6 +1063,64 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
             AppListToastContainerView::ToastType::kReorderNudge);
 }
 
+TEST_P(ContinueSectionViewWithReorderNudgeTest,
+       SearchResultsFetchedAfterLauncherShown) {
+  ResetPrivacyNoticePref();
+  // Open the launcher without any search result added.
+  EnsureLauncherShown();
+
+  // Reorder nudge should be showing and privacy notice should not.
+  EXPECT_FALSE(GetContinueSectionView()->ShouldShowPrivacyNotice());
+  EXPECT_FALSE(GetContinueSectionView()->GetPrivacyNoticeForTest());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kReorderNudge);
+  EXPECT_EQ(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
+
+  // Add some search results while the launcher is open.
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  VerifyResultViewsUpdated();
+
+  // Neither the privacy notice nor the search results should show.
+  EXPECT_FALSE(GetContinueSectionView()->ShouldShowPrivacyNotice());
+  EXPECT_FALSE(GetContinueSectionView()->ShouldShowFilesSection());
+  EXPECT_FALSE(GetContinueSectionView()->GetPrivacyNoticeForTest());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kReorderNudge);
+  EXPECT_EQ(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
+
+  // Wait for long enough for the reorder nudge to be considered shown.
+  task_environment()->AdvanceClock(base::Seconds(1));
+  HideLauncher();
+
+  // Open the launcher, wait for the reorder nudge to be shown and close it two
+  // more times. After the reorder nudge has been shown for three times, starts
+  // showing the privacy notice and removes the reorder nudge.
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+  // Wait for long enough for the reorder nudge to be considered shown.
+  task_environment()->AdvanceClock(base::Seconds(1));
+  HideLauncher();
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+  // Wait for long enough for the reorder nudge to be considered shown.
+  task_environment()->AdvanceClock(base::Seconds(1));
+  HideLauncher();
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+  EXPECT_NE(GetToastContainerView()->current_toast(),
+            AppListToastContainerView::ToastType::kReorderNudge);
+  HideLauncher();
+}
+
 TEST_F(ContinueSectionViewTabletModeTest, PrivacyNoticeIsShownInBackground) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
