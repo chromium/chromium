@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
     WidgetFocusWaiter waiter(bubble_view->GetWidget());
     waiter.WaitAfter(base::BindLambdaForTesting(
         [&]() { help_bubble->ToggleFocusForAccessibility(); }));
-    EXPECT_TRUE(bubble_view->GetButtonForTesting(0)->HasFocus());
+    EXPECT_TRUE(bubble_view->GetDefaultButtonForTesting()->HasFocus());
   }
 
   // Toggle focus to the anchor view and wait for it to become focused.

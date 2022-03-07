@@ -12,7 +12,6 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 
 BrowserFeaturePromoController::BrowserFeaturePromoController(
@@ -84,10 +83,6 @@ std::u16string BrowserFeaturePromoController::GetSnoozeButtonText() const {
 
 std::u16string BrowserFeaturePromoController::GetDismissButtonText() const {
   return l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
-}
-
-bool BrowserFeaturePromoController::IsOkButtonLeading() const {
-  return views::PlatformStyle::kIsOkButtonLeading;
 }
 
 std::u16string

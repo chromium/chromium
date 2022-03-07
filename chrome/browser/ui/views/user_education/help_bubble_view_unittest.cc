@@ -19,10 +19,9 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/test/data/grit/chrome_test_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/events/event.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/types/event_type.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/interaction/interaction_test_util.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/widget/widget_observer.h"
 
 class HelpBubbleViewTest : public TestWithBrowserView {
@@ -67,24 +66,65 @@ class MockWidgetObserver : public views::WidgetObserver {
   MOCK_METHOD(void, OnWidgetClosing, (views::Widget*), ());
 };
 
-TEST_F(HelpBubbleViewTest, CallButtonCallback) {
-  base::MockRepeatingClosure mock_callback;
-
-  EXPECT_CALL(mock_callback, Run()).Times(1);
+TEST_F(HelpBubbleViewTest, CallButtonCallback_Mouse) {
+  UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, mock_callback);
 
   HelpBubbleView* const bubble = CreateHelpBubbleView(mock_callback.Get());
 
   // Simulate clicks on dismiss button.
-  ui::MouseEvent mouse_press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                             ui::EF_LEFT_MOUSE_BUTTON);
-  ui::MouseEvent mouse_release(
-      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-  bubble->GetButtonForTesting(0)->OnMouseEvent(&mouse_press);
-  bubble->GetButtonForTesting(0)->OnMouseEvent(&mouse_release);
+  EXPECT_CALL_IN_SCOPE(
+      mock_callback, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(
+          bubble->GetDefaultButtonForTesting(),
+          ui::test::InteractionTestUtil::InputType::kMouse));
 
   bubble->GetWidget()->Close();
+}
+
+TEST_F(HelpBubbleViewTest, CallButtonCallback_Keyboard) {
+  UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, mock_callback);
+
+  HelpBubbleView* const bubble = CreateHelpBubbleView(mock_callback.Get());
+
+  // Simulate clicks on dismiss button.
+  EXPECT_CALL_IN_SCOPE(
+      mock_callback, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(
+          bubble->GetDefaultButtonForTesting(),
+          ui::test::InteractionTestUtil::InputType::kKeyboard));
+
+  bubble->GetWidget()->Close();
+}
+
+TEST_F(HelpBubbleViewTest, StableButtonOrder) {
+  HelpBubbleParams params;
+  params.body_text = u"To X, do Y";
+  params.arrow = HelpBubbleArrow::kTopRight;
+
+  constexpr char16_t kButton1Text[] = u"button 1";
+  constexpr char16_t kButton2Text[] = u"button 2";
+  constexpr char16_t kButton3Text[] = u"button 3";
+
+  HelpBubbleButtonParams button1;
+  button1.text = kButton1Text;
+  button1.is_default = false;
+  params.buttons.push_back(std::move(button1));
+
+  HelpBubbleButtonParams button2;
+  button2.text = kButton2Text;
+  button2.is_default = true;
+  params.buttons.push_back(std::move(button2));
+
+  HelpBubbleButtonParams button3;
+  button3.text = kButton3Text;
+  button3.is_default = false;
+  params.buttons.push_back(std::move(button3));
+
+  auto* bubble = new HelpBubbleView(browser_view()->contents_container(),
+                                    std::move(params));
+  EXPECT_EQ(kButton1Text, bubble->GetNonDefaultButtonForTesting(0)->GetText());
+  EXPECT_EQ(kButton2Text, bubble->GetDefaultButtonForTesting()->GetText());
+  EXPECT_EQ(kButton3Text, bubble->GetNonDefaultButtonForTesting(1)->GetText());
 }
 
 TEST_F(HelpBubbleViewTest, DismissOnTimeout) {

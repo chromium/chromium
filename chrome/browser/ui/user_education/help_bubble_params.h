@@ -63,6 +63,10 @@ struct HelpBubbleParams {
   // navigation.
   std::u16string keyboard_navigation_hint;
 
+  // The buttons to display. Depending on platform defaults, a
+  // HelpBubbleFactory may choose to move a default button to the leading or
+  // trailing edge of the bubble; however the order of non-default buttons is
+  // guaranteed to remain stable.
   std::vector<HelpBubbleButtonParams> buttons;
 
   // If set to true, a close button will always be shown.

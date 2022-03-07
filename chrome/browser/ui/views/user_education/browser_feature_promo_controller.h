@@ -84,7 +84,6 @@ class BrowserFeaturePromoController : public FeaturePromoControllerCommon {
   // These methods control how snooze buttons appear and function.
   std::u16string GetSnoozeButtonText() const override;
   std::u16string GetDismissButtonText() const override;
-  bool IsOkButtonLeading() const override;
 
   // This method returns an appropriate prompt for promoting using a navigation
   // accelerator to focus the help bubble.

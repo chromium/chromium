@@ -419,16 +419,35 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
       if (view && view->GetWidget() && !view->GetWidget()->IsClosed())
         view->GetWidget()->Close();
     };
+
+    // We will hold the default button to add later, since where we add it in
+    // the sequence depends on platform style.
+    std::unique_ptr<MdIPHBubbleButton> default_button;
     for (HelpBubbleButtonParams& button_params : params.buttons) {
-      MdIPHBubbleButton* const button =
-          button_container->AddChildView(std::make_unique<MdIPHBubbleButton>(
-              base::BindRepeating(
-                  run_callback_and_close, base::Unretained(this),
-                  base::Passed(std::move(button_params.callback))),
-              button_params.text, button_params.is_default));
-      buttons_.push_back(button);
+      auto button = std::make_unique<MdIPHBubbleButton>(
+          base::BindRepeating(run_callback_and_close, base::Unretained(this),
+                              base::Passed(std::move(button_params.callback))),
+          button_params.text, button_params.is_default);
       button->SetMinSize(gfx::Size(0, 0));
       button->SetCustomPadding(kBubbleButtonPadding);
+      if (button_params.is_default) {
+        DCHECK(!default_button);
+        default_button = std::move(button);
+      } else {
+        non_default_buttons_.push_back(
+            button_container->AddChildView(std::move(button)));
+      }
+    }
+
+    // Add the default button if there is one based on platform style.
+    if (default_button) {
+      if (views::PlatformStyle::kIsOkButtonLeading) {
+        default_button_ =
+            button_container->AddChildViewAt(std::move(default_button), 0);
+      } else {
+        default_button_ =
+            button_container->AddChildView(std::move(default_button));
+      }
     }
   } else {
     button_container->SetVisible(false);
@@ -633,8 +652,13 @@ bool HelpBubbleView::IsHelpBubble(views::DialogDelegate* dialog) {
   return contents && views::IsViewClass<HelpBubbleView>(contents);
 }
 
-views::Button* HelpBubbleView::GetButtonForTesting(int index) const {
-  return buttons_[index];
+views::LabelButton* HelpBubbleView::GetDefaultButtonForTesting() const {
+  return default_button_;
+}
+
+views::LabelButton* HelpBubbleView::GetNonDefaultButtonForTesting(
+    int index) const {
+  return non_default_buttons_[index];
 }
 
 BEGIN_METADATA(HelpBubbleView, views::BubbleDialogDelegateView)

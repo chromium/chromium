@@ -44,6 +44,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
@@ -649,18 +650,9 @@ TEST_F(BrowserFeaturePromoControllerTest, StartsTutorial) {
   // Simulate clicking the "Show Tutorial" button.
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
-  auto* const button = bubble->GetButtonForTesting(
-      views::PlatformStyle::kIsOkButtonLeading ? 0 : 1);
-  ASSERT_TRUE(button);
-  ui::MouseEvent mouse_press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                             ui::EF_LEFT_MOUSE_BUTTON);
-  ui::MouseEvent mouse_release(
-      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-  button->OnMouseEvent(&mouse_press);
-  button->OnMouseEvent(&mouse_release);
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      bubble->GetDefaultButtonForTesting());
   waiter.Wait();
 
   // We should be running the tutorial now.

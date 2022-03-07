@@ -249,7 +249,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // These methods control how snooze buttons appear and function.
   virtual std::u16string GetSnoozeButtonText() const = 0;
   virtual std::u16string GetDismissButtonText() const = 0;
-  virtual bool IsOkButtonLeading() const = 0;
 
   // This method returns an appropriate prompt for promoting using a navigation
   // accelerator to focus the help bubble.

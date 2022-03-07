@@ -481,9 +481,6 @@ FeaturePromoControllerCommon::CreateSnoozeButtons(
       weak_ptr_factory_.GetWeakPtr(), base::Unretained(&feature));
   buttons.push_back(std::move(dismiss_button));
 
-  if (IsOkButtonLeading())
-    std::swap(buttons[0], buttons[1]);
-
   return buttons;
 }
 
