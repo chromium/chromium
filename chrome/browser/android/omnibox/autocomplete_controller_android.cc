@@ -19,6 +19,7 @@
 #include "base/location.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
+#include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -345,6 +347,18 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   autocomplete_controller_->AddProviderAndTriggeringLogs(&log);
 
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
+
+  // Record the value if prerender for search suggestion was not started. Other
+  // values (kHitFinished, kUnused, kCancelled) are recorded in
+  // PrerenderManager.
+  if (web_contents) {
+    auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
+    if (!prerender_manager || !prerender_manager->search_prerender_handle()) {
+      base::UmaHistogramEnumeration(
+          internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+          PrerenderPredictionStatus::kNotStarted);
+    }
+  }
 
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
       ->OnOmniboxOpenedUrl(log);

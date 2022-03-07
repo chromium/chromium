@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -370,6 +372,17 @@ void ChromeOmniboxClient::OnRevert() {
 }
 
 void ChromeOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+  // Record the value if prerender for search suggestion was not started. Other
+  // values (kHitFinished, kUnused, kCancelled) are recorded in
+  // PrerenderManager.
+  content::WebContents* web_contents = controller_->GetWebContents();
+  auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
+  if (!prerender_manager || !prerender_manager->search_prerender_handle()) {
+    base::UmaHistogramEnumeration(
+        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+        PrerenderPredictionStatus::kNotStarted);
+  }
+
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
       ->OnOmniboxOpenedUrl(*log);
 }
@@ -413,9 +426,22 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents))
     return;
 
-  gfx::Rect container_bounds = web_contents->GetContainerBounds();
-  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-      ->StartPrerendering(match, *web_contents, container_bounds.size());
+  // Treat search hint differently, since AutocompleteActionPredictor does not
+  // prerender search results.
+  // TODO(https://crbug.com/1278634): Refactor relevant code to reuse common
+  // code, and ensure metrics are correctly recorded.
+  if (AutocompleteMatch::IsSearchType(match.type)) {
+    DCHECK(prerender_utils::IsSearchSuggestionPrerenderEnabled());
+    DCHECK(BaseSearchProvider::ShouldPrerender(match));
+    PrerenderManager::CreateForWebContents(web_contents);
+    auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
+    prerender_manager->StartPrerenderSearchSuggestion(match);
+  } else {
+    gfx::Rect container_bounds = web_contents->GetContainerBounds();
+    predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
+        ->StartPrerendering(match.destination_url, *web_contents,
+                            container_bounds.size());
+  }
 }
 
 void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
