@@ -1691,7 +1691,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Verifies that reports are sent to all children.
 // crbug.com/1189635: flaky on win and linux.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_HeavyAdInterventionFired_ReportsToAllChildren \
   DISABLED_HeavyAdInterventionFired_ReportsToAllChildren
 #else
