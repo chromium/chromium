@@ -14,7 +14,7 @@ def main():
     try:
       # The AndroidManifest.xml file will have the aapt2 output, and not XML.
       with z.open('AndroidManifest.xml') as f:
-        sys.stdout.write(f.read())
+        sys.stdout.write(f.read().decode('utf8'))
     except KeyError:
       pass
 
