@@ -174,6 +174,9 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 @property(nonatomic) CGPoint dragStart;
 @property(nonatomic) CGFloat dragStartPosition;
 @property(nonatomic) BOOL draggingSlider;
+// Gesture recognizer used to handle taps. Owned by |self| as a UIView, so this
+// property is just a weak pointer to refer to it in some touch logic.
+@property(nonatomic, weak) UIGestureRecognizer* tapRecognizer;
 @end
 
 @implementation TabGridPageControl
@@ -348,8 +351,13 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   DCHECK(!self.multipleTouchEnabled);
   DCHECK_EQ(1U, touches.count);
   self.draggingSlider = NO;
-  [self setSelectedPage:self.selectedPage animated:YES];
-  [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+  // The tap recognizer will cancel the touches it recognizes as the last step
+  // of handling the gesture, so in that case, control events have already been
+  // sent and don't need to be sent again here.
+  if (self.tapRecognizer.state != UIGestureRecognizerStateEnded) {
+    [self setSelectedPage:self.selectedPage animated:YES];
+    [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+  }
 }
 
 #pragma mark - UIView
@@ -591,6 +599,7 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
                                               action:@selector(handleTap:)];
   tapRecognizer.delegate = self;
   [self addGestureRecognizer:tapRecognizer];
+  self.tapRecognizer = tapRecognizer;
 }
 
 // Creates a label for use in this control.
