@@ -173,6 +173,67 @@ _ABIS_TO_BIT_MASK = {
     }
 }
 
+
+def TranslateVersionCode(version_code, is_webview=False):
+  """Translates a version code to its component parts.
+
+  Returns:
+    A 5-tuple with the form:
+      - Build number - integer
+      - Patch number - integer
+      - Package name - string
+      - ABI - string : if the build is 32_64 or 64_32 or 64, that is just
+                       appended to 'arm' or 'x86' with an underscore
+      - Whether the build is a "next" build - boolean
+
+    So, for build 100.0.5678.99, built for Monochrome on arm 64_32, not a next
+    build, you should get:
+      5678, 99, 'MONOCHROME', 'arm_64_32', False
+  """
+  if len(version_code) == 9:
+    build_number = int(version_code[:4])
+  else:
+    # At one branch per day, we'll hit 5 digits in the year 2035.
+    build_number = int(version_code[:5])
+
+  is_next_build = False
+  patch_number_plus_extra = int(version_code[-5:])
+  if patch_number_plus_extra >= _NEXT_BUILD_VERSION_CODE_DIFF:
+    is_next_build = True
+    patch_number_plus_extra -= _NEXT_BUILD_VERSION_CODE_DIFF
+  patch_number = patch_number_plus_extra // 100
+
+  # From branch 3992 the name and abi bits in the version code are swapped.
+  if build_number >= 3992:
+    abi_digit = int(version_code[-1])
+    package_digit = int(version_code[-2])
+  else:
+    abi_digit = int(version_code[-2])
+    package_digit = int(version_code[-1])
+
+  # Before branch 4844 we added 5 to the package digit to indicate a 'next'
+  # build.
+  if build_number < 4844 and package_digit >= 5:
+    is_next_build = True
+    package_digit -= 5
+
+  for package, number in _PACKAGE_NAMES.items():
+    if number == package_digit * 10:
+      if is_webview == ('WEBVIEW' in package):
+        package_name = package
+        break
+
+  for arch, bitness_to_number in _ABIS_TO_BIT_MASK.items():
+    for bitness, number in bitness_to_number.items():
+      if abi_digit == number:
+        abi = arch if arch != 'intel' else 'x86'
+        if bitness != '32':
+          abi += '_' + bitness
+        break
+
+  return build_number, patch_number, package_name, abi, is_next_build
+
+
 def GenerateVersionCodes(version_values, arch, is_next_build):
   """Build dict of version codes for the specified build architecture. Eg:
 
