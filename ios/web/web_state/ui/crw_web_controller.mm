@@ -482,7 +482,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   }
 
 #if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
-  if (@available(iOS 15, *)) {
+  if (@available(iOS 15.4, *)) {
     if (base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI)) {
       [observers addEntriesFromDictionary:@{
         @"fullscreenState" : @"fullscreenStateDidChange"
@@ -1645,7 +1645,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     return;
 
 #if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
-  if (@available(iOS 15, *)) {
+  if (@available(iOS 15.4, *)) {
     CRWWebViewContentView* webViewContentView = [[CRWWebViewContentView alloc]
         initWithWebView:self.webView
              scrollView:self.webScrollView
@@ -1819,7 +1819,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 }
 
 #if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
-- (void)fullscreenStateDidChange API_AVAILABLE(ios(15.0)) {
+- (void)fullscreenStateDidChange API_AVAILABLE(ios(15.4)) {
   [_containerView
       updateWebViewContentViewFullscreenState:self.webView.fullscreenState];
 }
