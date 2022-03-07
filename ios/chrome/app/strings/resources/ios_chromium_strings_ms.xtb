@@ -56,6 +56,15 @@
 <translation id="4828317641996116749">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi nanti.</translation>
 <translation id="4985291216379576555">Luar Talian, Chromium tidak dapat menyemak kemaskinian</translation>
 <translation id="4999538639245140991">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chromium anda akan dipadamkan daripada peranti ini. Data anda akan kekal dalam Akaun Google anda.</translation>
+<translation id="5039881550736388123">Apabila dihidupkan:
+<ph name="BEGIN_INDENT" />  • Bantu jadikan Chromium lebih baik untuk orang yang menggunakannya seperti yang anda lakukan.<ph name="END_INDENT" />
+
+Perkara yang perlu dipertimbangkan:
+<ph name="BEGIN_INDENT" />  • Maklumat tentang penggunaan Chromium anda dihantar kepada Google, tetapi maklumat ini tidak mengikat anda.
+
+  • Jika Chromium ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
+
+  • Jika anda menghidupkan penyegerakan, metrik juga mungkin merangkumi maklumat tentang URL yang anda lawati.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Log Masuk ke Chromium</translation>
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="5308226104666789935">Chromium tidak dapat menyemak kemaskinian</translation>

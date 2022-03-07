@@ -83,6 +83,13 @@
 <translation id="6709398533399187136">Parola a fost expusă în urma încălcării securității datelor. Managerul de parole Google îți recomandă să schimbi parola acum.</translation>
 <translation id="6822673484890854830">Chrome nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
 <translation id="6964931465519938134">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
+<translation id="7046845777663074840">Când opțiunea este activă
+<ph name="BEGIN_INDENT" />  • Contribui la îmbunătățirea Chrome pentru cei care-l folosesc în mod similar cu tine<ph name="END_INDENT" />
+
+De reținut
+<ph name="BEGIN_INDENT" />  • Google primește informații despre modul în care folosești Chrome, dar acestea nu pot fi asociate cu tine.
+  • Dacă Chrome se blochează, detaliile despre blocare pot include unele informații cu caracter personal.
+  • Dacă activezi sincronizarea, valorile pot să includă și informații despre adresele URL pe care le accesezi.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Personalizează Chrome</translation>
 <translation id="7124339256045485976">Menține browserul Chrome actualizat</translation>
 <translation id="7161390184744336561">Google Chrome este învechit</translation>

@@ -669,6 +669,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> още не работи в приложения за Linux</translation>
 <translation id="1640283014264083726">PKCS 1 MD4 с RSA шифроване</translation>
 <translation id="1641113438599504367">Безопасно сърфиране</translation>
+<translation id="1641496881756082050">Още действия за „<ph name="NETWORK_NAME" />“</translation>
 <translation id="1642492862748815878">Установена е връзка с(ъс) <ph name="DEVICE" /> и още <ph name="NUMBER_OF_DEVICES" /> устройства с Bluetooth</translation>
 <translation id="1642494467033190216">Преди активирането на останалите функции за отстраняване на грешки трябва да се премахне защитата на rootfs и да се рестартира.</translation>
 <translation id="1643072738649235303">Подпис по X9.62 ECDSA с SHA-1</translation>
@@ -777,6 +778,7 @@
 <translation id="1744060673522309905">Устройството не може да се присъедини към домейна. Проверете дали не сте надхвърлили броя устройства, които можете да добавите.</translation>
 <translation id="1744108098763830590">фонова страница</translation>
 <translation id="1745732479023874451">Управление на контактите</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Искате ли да отворите и редактирате # файла в това уеб приложение?}}</translation>
 <translation id="1748563609363301860">Можете да запазите тази парола в профила си в Google или само на това устройство</translation>
 <translation id="1750048572964661931">Задайте ПИН код или парола на този Chromebook, за да защитите достъпа до приложенията на телефона си.</translation>
 <translation id="1750172676754093297">В ключа ви за сигурност не могат да се съхраняват отпечатъци</translation>
@@ -1452,6 +1454,7 @@
 <translation id="2381499968174336913">Преглед на споделения шрифт</translation>
 <translation id="2381756643783702095">Извеждане на запитване преди изпращане (препоръчително)</translation>
 <translation id="2387052489799050037">Преминаване към началния екран</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (текущ)</translation>
 <translation id="2389775852302560582">IP адрес</translation>
 <translation id="2390347491606624519">Не може да се установи връзка с прокси сървъра. Моля, влезте отново</translation>
 <translation id="2390782873446084770">Синхронизиране на Wi-Fi</translation>
@@ -2250,6 +2253,7 @@
 <translation id="3201422919974259695">Наличните USB устройства ще се показват тук.</translation>
 <translation id="3202131003361292969">Път</translation>
 <translation id="3202173864863109533">Звукът на този раздел е спрян.</translation>
+<translation id="3204648577100496185">Данните, свързани с това приложение, може да бъдат премахнати от устройството</translation>
 <translation id="3208321278970793882">Приложение</translation>
 <translation id="3208584281581115441">Проверка сега</translation>
 <translation id="3208703785962634733">Непотвърдено</translation>
@@ -2396,6 +2400,7 @@
 <translation id="337286756654493126">Четене на папки, които сте отворили в приложението</translation>
 <translation id="3374294321938930390">Преместихте „<ph name="BOOKMARK_TITLE" />“ в папката „<ph name="NEW_FOLDER_TITLE" />“.</translation>
 <translation id="3378572629723696641">Това разширение може да е повредено.</translation>
+<translation id="3378627645871606983">Разрешенията, предоставени на Steam, се прилагат към всички игри и приложения на услугата.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> ще се инсталира.</translation>
 <translation id="3380365263193509176">Неизвестна грешка</translation>
 <translation id="3382073616108123819">Ами сега! Системата не успя да определи идентификаторите за това устройство.</translation>
@@ -2502,9 +2507,11 @@
 <translation id="346298925039590474">Тази мобилна мрежа ще бъде налице за всички потребители на устройството</translation>
 <translation id="3464145797867108663">Добавяне на служебен потребителски профил</translation>
 <translation id="346431825526753">Това е профил за деца, управляван от <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Получаване на отстъпки за <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> и др.</translation>
 <translation id="3468298837301810372">Етикет</translation>
 <translation id="3468999815377931311">Телефон с Android</translation>
 <translation id="3469583217479686109">Инструмент за избиране</translation>
+<translation id="3470392222765168737">Следване на сайта</translation>
 <translation id="3471876058939596279">HDMI и USB Type-C портовете не могат едновременно да се използват за видео. Използвайте друг порт за видео.</translation>
 <translation id="3473241910002674503">Преминавайте към началния екран, връщайте се и превключвайте между приложенията чрез бутони, когато сте в режим на таблет.</translation>
 <translation id="3473479545200714844">Екранна лупа</translation>
@@ -2888,6 +2895,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Разширение бе одобрено}other{# разширения бяха одобрени}}</translation>
 <translation id="3823310065043511710">За Linux е препоръчително да разполагате с поне <ph name="INSTALL_SIZE" /> свободно място.</translation>
 <translation id="3824621460022590830">Означението за регистриране на устройството е невалидно. Моля, свържете се със собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомняне на избора ми за този файлов тип: <ph name="FILE_TYPES" />}other{Запомняне на избора ми за следните файлови типове: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">Сайтове с разрешение за използване на сензорите за движение</translation>
 <translation id="3826440694796503677">Администраторът ви е деактивирал функцията за добавяне на профили в Google</translation>
 <translation id="3827774300009121996">&amp;На цял екран</translation>
@@ -2946,6 +2954,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3879748587602334249">Мениджър на изтеглянията</translation>
 <translation id="3882165008614329320">Съществуващ видеоклип от камерата или от файл</translation>
 <translation id="3883306461188700142">Въвеждайте текст с гласа си. Натиснете клавиша „търсене“ + D, след което започнете да говорите.</translation>
+<translation id="3883482240657453056">Получаване на отстъпки за <ph name="MERCHANT_NAME_1" /> и <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">За показване на уеб съдържанието, което се предлага на няколко езика, ще се използва първият поддържан от този списък. Тези предпочитания се синхронизират с настройките на браузъра. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Актуализациите се управляват от администратора ви</translation>
 <translation id="3886446263141354045">Заявката ви за достъп до този сайт бе изпратена до <ph name="NAME" /></translation>
@@ -3904,6 +3913,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4880827082731008257">Търсене в историята</translation>
 <translation id="4881685975363383806">Без повторно напомняне следващия път</translation>
 <translation id="4881695831933465202">Отваряне</translation>
+<translation id="488211015466188466">Следване на сайта</translation>
 <translation id="4882312758060467256">Има достъп до този сайт</translation>
 <translation id="4882919381756638075">Сайтовете обикновено използват микрофона, за да осигуряват функции за комуникация, като например видеочат</translation>
 <translation id="4883436287898674711">Всички <ph name="WEBSITE_1" /> сайта</translation>
@@ -5161,6 +5171,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6166185671393271715">Импортиране на пароли в Chrome</translation>
 <translation id="6169040057125497443">Моля, проверете микрофона си.</translation>
 <translation id="6169666352732958425">Предаването на работния плот не е възможно.</translation>
+<translation id="6169967265765719844">Разрешенията за игри и приложения, инсталирани чрез Steam, могат да бъдат управлявани от <ph name="LINK_BEGIN" />настройките на едноименното приложение<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Сандвич</translation>
 <translation id="6170498031581934115">Отстраняването на грешки през ADB не бе активирано. Отворете настройките и опитайте отново.</translation>
 <translation id="617213288191670920">Няма добавени езици</translation>
@@ -5861,6 +5872,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6876469544038980967">Не е полезно</translation>
 <translation id="6878422606530379992">Достъпът до сензорите е разрешен</translation>
 <translation id="6880587130513028875">Изображенията са блокирани на тази страница.</translation>
+<translation id="688312408602122936">Всички игри и приложения, инсталирани чрез Steam, също ще бъдат премахнати от устройството</translation>
 <translation id="6883319974225028188">Ами сега! Системата не успя да запази конфигурацията на устройството.</translation>
 <translation id="6884474387073389421">Наистина ли искате да изтриете избраните данни за вход?</translation>
 <translation id="6885771755599377173">Преглед на системната информация</translation>

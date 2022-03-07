@@ -670,6 +670,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ne fonctionne pas encore avec les applications Linux</translation>
 <translation id="1640283014264083726">PKCS n° 1 MD4 avec chiffrement RSA</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
+<translation id="1641496881756082050">Autres actions pour <ph name="NETWORK_NAME" /></translation>
 <translation id="1642492862748815878">Connecté à l'appareil <ph name="DEVICE" /> et à <ph name="NUMBER_OF_DEVICES" /> autres appareils Bluetooth</translation>
 <translation id="1642494467033190216">Vous devez supprimer la protection de la racine et redémarrer l’appareil avant d’activer d’autres fonctionnalités de débogage.</translation>
 <translation id="1643072738649235303">Signature X9.62 ECDSA avec SHA-1</translation>
@@ -1442,6 +1443,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2381499968174336913">Aperçu de l'onglet partagé</translation>
 <translation id="2381756643783702095">Demander avant d'envoyer (recommandé)</translation>
 <translation id="2387052489799050037">Retour à la page d'accueil</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (actuel)</translation>
 <translation id="2389775852302560582">Adresse IP</translation>
 <translation id="2390347491606624519">Impossible de se connecter au mandataire, veuillez vous connecter de nouveau</translation>
 <translation id="2390782873446084770">Synchronisation Wi-Fi</translation>

@@ -672,6 +672,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1640235262200048077"><ph name="IME_NAME" /> chưa hoạt động trên các ứng dụng Linux</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 Với Mã hóa RSA</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
+<translation id="1641496881756082050">Thao tác khác cho <ph name="NETWORK_NAME" /></translation>
 <translation id="1642492862748815878">Đã kết nối với <ph name="DEVICE" /> và <ph name="NUMBER_OF_DEVICES" /> thiết bị Bluetooth khác</translation>
 <translation id="1642494467033190216">Yêu cầu xóa bảo vệ rootfs và khởi động lại trước khi bật các tính năng gỡ lỗi khác.</translation>
 <translation id="1643072738649235303">Chữ ký X9.62 ECDSA với SHA-1</translation>
@@ -781,6 +782,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1744060673522309905">Không thể kết hợp thiết bị với miền. Hãy đảm bảo số thiết bị bạn thêm không vượt quá giới hạn.</translation>
 <translation id="1744108098763830590">trang nền</translation>
 <translation id="1745732479023874451">Quản lý danh bạ</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Mở và chỉnh sửa # tệp trong ứng dụng web này?}}</translation>
 <translation id="1748563609363301860">Bạn có thể lưu mật khẩu này trong Tài khoản Google của mình hoặc chỉ trên thiết bị này</translation>
 <translation id="1750048572964661931">Hãy đặt mã pin hoặc mật khẩu trên Chromebook này để bảo vệ quyền truy cập vào các ứng dụng trên điện thoại của bạn.</translation>
 <translation id="1750172676754093297">Khóa bảo mật của bạn không thể lưu trữ vân tay số</translation>
@@ -1456,6 +1458,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2381499968174336913">Bản xem trước của thẻ được chia sẻ</translation>
 <translation id="2381756643783702095">Hỏi trước khi gửi (được đề xuất)</translation>
 <translation id="2387052489799050037">Chuyển đến Màn hình chính</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (Hiện tại)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">Không thể kết nối với proxy, vui lòng đăng nhập lại</translation>
 <translation id="2390782873446084770">Đồng bộ hóa Wi-Fi</translation>
@@ -2254,6 +2257,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3201422919974259695">Các thiết bị USB có sẵn sẽ xuất hiện ở đây.</translation>
 <translation id="3202131003361292969">Đường dẫn</translation>
 <translation id="3202173864863109533">Âm thanh của thẻ này hiện bị tắt.</translation>
+<translation id="3204648577100496185">Dữ liệu liên kết với ứng dụng này có thể bị xoá khỏi thiết bị này</translation>
 <translation id="3208321278970793882">Ứng dụng</translation>
 <translation id="3208584281581115441">Kiểm tra ngay</translation>
 <translation id="3208703785962634733">Không được xác nhận</translation>
@@ -2400,6 +2404,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="337286756654493126">Đọc thư mục mà bạn mở trong ứng dụng</translation>
 <translation id="3374294321938930390">Đã di chuyển "<ph name="BOOKMARK_TITLE" />" vào "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3378572629723696641">Tiện ích này có thể đã bị hỏng.</translation>
+<translation id="3378627645871606983">Quyền cấp cho Steam áp dụng cho tất cả trò chơi và ứng dụng trên Steam.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> sẽ được cài đặt.</translation>
 <translation id="3380365263193509176">Lỗi không xác định</translation>
 <translation id="3382073616108123819">Rất tiếc! Hệ thống không thể xác định số nhận dạng thiết bị cho thiết bị này.</translation>
@@ -2506,9 +2511,11 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="346298925039590474">Tất cả người dùng trên thiết bị này đều có thể sử dụng mạng di động này</translation>
 <translation id="3464145797867108663">Thêm hồ sơ công việc</translation>
 <translation id="346431825526753">Đây là tài khoản cho trẻ em do <ph name="CUSTODIAN_EMAIL" /> quản lý.</translation>
+<translation id="346546413339447252">Nhận chiết khấu của <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" />, v.v.</translation>
 <translation id="3468298837301810372">Nhãn</translation>
 <translation id="3468999815377931311">Điện thoại Android</translation>
 <translation id="3469583217479686109">Công cụ lựa chọn</translation>
+<translation id="3470392222765168737">Theo dõi trang web</translation>
 <translation id="3471876058939596279">Không thể sử dụng đồng thời cổng USB Type-C và HDMI cho video. Hãy sử dụng một cổng video khác.</translation>
 <translation id="3473241910002674503">Chuyển về trang chủ, quay lại và chuyển đổi ứng dụng bằng các nút ở chế độ máy tính bảng.</translation>
 <translation id="3473479545200714844">Phóng to màn hình</translation>
@@ -2892,6 +2899,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{1 tiện ích đã được phê duyệt}other{# tiện ích đã được phê duyệt}}</translation>
 <translation id="3823310065043511710">Linux nên có dung lượng tối thiểu là <ph name="INSTALL_SIZE" />.</translation>
 <translation id="3824621460022590830">Mã đăng ký thiết bị là không hợp lệ. Vui lòng liên hệ với quản trị viên hoặc chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Ghi nhớ lựa chọn của tôi cho loại tệp này: <ph name="FILE_TYPES" />}other{Ghi nhớ lựa chọn của tôi cho những loại tệp này: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">Được phép sử dụng cảm biến chuyển động</translation>
 <translation id="3826440694796503677">Quản trị viên đã tắt tính năng thêm Tài khoản Google khác</translation>
 <translation id="3827774300009121996">&amp;Toàn Màn hình</translation>
@@ -2949,6 +2957,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3879748587602334249">Trình quản lý tải xuống</translation>
 <translation id="3882165008614329320">Video hiện có từ camera hoặc tệp</translation>
 <translation id="3883306461188700142">Nhập dữ liệu bằng giọng nói. Nhấn tổ hợp phím Tìm kiếm + D, sau đó bắt đầu nói.</translation>
+<translation id="3883482240657453056">Nhận chiết khấu của <ph name="MERCHANT_NAME_1" /> và <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Nội dung web có nhiều phiên bản ngôn ngữ sẽ dùng ngôn ngữ đầu tiên được hỗ trợ trong danh sách này. Những tùy chọn này được đồng bộ hóa với tùy chọn cài đặt của trình duyệt. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Quản trị viên của bạn quản lý các bản cập nhật</translation>
 <translation id="3886446263141354045">Yêu cầu truy cập trang web này của bạn đã được gửi tới <ph name="NAME" /></translation>
@@ -3907,6 +3916,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4880827082731008257">Nhật ký tìm kiếm</translation>
 <translation id="4881685975363383806">Không nhắc tôi vào lần tới</translation>
 <translation id="4881695831933465202">Mở</translation>
+<translation id="488211015466188466">Theo dõi trang web</translation>
 <translation id="4882312758060467256">Có quyền truy cập vào trang web này</translation>
 <translation id="4882919381756638075">Các trang web thường sử dụng micrô cho các tính năng giao tiếp như trò chuyện video</translation>
 <translation id="4883436287898674711">Tất cả trang web <ph name="WEBSITE_1" /></translation>
@@ -5164,6 +5174,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6166185671393271715">Nhập mật khẩu vào Chrome</translation>
 <translation id="6169040057125497443">Vui lòng kiểm tra micrô của bạn.</translation>
 <translation id="6169666352732958425">Không thể truyền màn hình nền.</translation>
+<translation id="6169967265765719844">Bạn có thể quản lý quyền cho trò chơi và ứng dụng cài đặt qua Steam trong phần <ph name="LINK_BEGIN" />cài đặt ứng dụng Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">Không thể bật tùy chọn gỡ lỗi ADB. Hãy chuyển đến phần Cài đặt rồi thử lại.</translation>
 <translation id="617213288191670920">Chưa thêm ngôn ngữ nào</translation>
@@ -5864,6 +5875,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6876469544038980967">Không hữu ích</translation>
 <translation id="6878422606530379992">Được phép sử dụng cảm biến</translation>
 <translation id="6880587130513028875">Hình ảnh đã bị chặn trên trang này.</translation>
+<translation id="688312408602122936">Mọi trò chơi và ứng dụng cài đặt qua Steam sẽ đều bị xoá khỏi thiết bị này</translation>
 <translation id="6883319974225028188">Rất tiếc! Hệ thống không lưu được cấu hình thiết bị.</translation>
 <translation id="6884474387073389421">Bạn có chắc chắn muốn xoá những dữ liệu đăng nhập này?</translation>
 <translation id="6885771755599377173">Xem trước thông tin hệ thống</translation>

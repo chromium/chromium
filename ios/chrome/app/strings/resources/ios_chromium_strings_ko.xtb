@@ -56,6 +56,15 @@
 <translation id="4828317641996116749">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4985291216379576555">오프라인 상태이므로 Chromium에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chromium 데이터가 기기에서 삭제되나 Google 계정에는 그대로 유지됩니다.</translation>
+<translation id="5039881550736388123">사용 설정되어 있을 때:
+<ph name="BEGIN_INDENT" />  • 나와 비슷한 사용자를 위한 Chromium 개선에 도움이 됩니다.<ph name="END_INDENT" />
+
+알아야 할 것:
+<ph name="BEGIN_INDENT" />  • Chromium 사용에 관한 정보가 Google로 전송되지만 나와 연결되지는 않습니다.
+
+  • Chromium이 다운되면 관련 세부정보에 일부 개인 정보가 포함될 수 있습니다.
+
+  • 동기화를 사용 설정하면 측정항목에 내가 방문한 URL에 관한 정보도 포함될 수 있습니다.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Chromium에 로그인</translation>
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
 <translation id="5308226104666789935">Chromium에서 업데이트를 확인할 수 없습니다.</translation>

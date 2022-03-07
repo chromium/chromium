@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
-<translation id="1009046985747440431">Drücken Sie die Pfeiltasten nach oben oder unten, um Elemente auszuwählen, und bestätigen Sie die Auswahl mit der Eingabetaste</translation>
+<translation id="1009046985747440431">Pfeiltasten oben oder unten drücken, um Elemente auszuwählen, und die Auswahl mit der Eingabetaste bestätigen</translation>
 <translation id="1011903154582639569">Um auf die gewählte Taste zu tippen, heben Sie den Finger an</translation>
 <translation id="1012173283529841972">Listenelement</translation>
 <translation id="1013742170491673792">srched</translation>
@@ -793,6 +793,7 @@
 <translation id="641759969622533235">{COUNT,plural, =1{Doppelpunkt}other{# Doppelpunkte}}</translation>
 <translation id="6444046323172968959">Benachrichtigungsdialogfeld</translation>
 <translation id="6452403590345320472">Inhaltsverzeichnis</translation>
+<translation id="6457542714329819968">eingeben</translation>
 <translation id="6468049171101508116">Nächste Schaltfläche</translation>
 <translation id="646954774886932461">Index</translation>
 <translation id="6475604559827479857">Farbe zum Hervorheben von Wörtern:</translation>

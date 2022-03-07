@@ -154,6 +154,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэггүй болсон.</translation>
 <translation id="291142119251986300">Шаардлага хангаагүй бүрэлдэхүүн хэсэг</translation>
 <translation id="2926057806159140518">Хэрэглэгчийн нэр болон нууц үгээ оруулах эсвэл QR кодыг скан хийнэ үү</translation>
+<translation id="2927263920782234016">Chrome OS Flex-г суулгах</translation>
 <translation id="3008341117444806826">ДАХИН ШИНЭЧЛЭХ</translation>
 <translation id="3009958530611748826">Хадгалах фолдероо сонгоно уу</translation>
 <translation id="3031560714565892478">Төхөөрөмж нь видео камер байна.</translation>
@@ -334,6 +335,7 @@
 <translation id="5051044138948155788">Энэ нь цорын ганц хуудас байна. Энэ нь таныг скан хийхийг эхлүүлэх дэлгэц рүү аваачна.</translation>
 <translation id="5088172560898466307">Серверийн хостын нэр</translation>
 <translation id="5089810972385038852">Муж</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">Баталгаажуулалт</translation>
 <translation id="5154917547274118687">Санах ойн</translation>
 <translation id="5160857336552977725">Өөрийн <ph name="DEVICE_TYPE" /> руу нэвтэрч орно уу</translation>
@@ -435,6 +437,7 @@
 <translation id="6319207335391420837">Жижиг программыг <ph name="DEVICE_NAME" /> дээр шинэчлэх</translation>
 <translation id="6325525973963619867">Амжилтгүй боллоо</translation>
 <translation id="6340526405444716530">Хувийн тохиргоо</translation>
+<translation id="6348738456043757611">Хэрэглэгчийн нэр болон нууц үг</translation>
 <translation id="636850387210749493">Байгууллагын бүртгэл</translation>
 <translation id="6379086450106841622">Мэдрэмтгий дэлгэц</translation>
 <translation id="6388847657025262518">Сканнерын документ дамжуулах тавиур гацсан байна. Дамжуулах тавиурыг шалгаад, дахин оролдоно уу.</translation>

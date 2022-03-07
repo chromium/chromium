@@ -521,6 +521,7 @@
 <translation id="2539524384386349900">検出</translation>
 <translation id="2540701853218677861">デバイスのログインとログアウトの履歴（タイムスタンプと失敗した試行を含む）</translation>
 <translation id="2541219929084442027">シークレット タブで表示したページの記録は、シークレット タブをすべて閉じた後、ブラウザの履歴、Cookie の保存場所、検索履歴から削除されます。ただし、ダウンロードしたファイルや作成したブックマークは保存されます。</translation>
+<translation id="2544546346215446551">管理者がデバイスを再起動しました</translation>
 <translation id="2544644783021658368">1 つのドキュメント</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="254947805923345898">ポリシーの値が無効です。</translation>
@@ -967,6 +968,7 @@
 <translation id="3987940399970879459">1 MB 未満</translation>
 <translation id="3990250421422698716">ジョグ オフセット</translation>
 <translation id="3996311196211510766">サイト <ph name="ORIGIN" /> では、サイトへのすべてのリクエストにオリジン ポリシーの適用を求めていますが、このポリシーは現在適用することができません。</translation>
+<translation id="4006465311664329701">Google Pay を使用したお支払方法、クーポン、住所</translation>
 <translation id="4009243425692662128">印刷するページのコンテンツは分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされます。</translation>
 <translation id="4010758435855888356">ストレージへのアクセスを許可しますか？</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ページの PDF ドキュメント}other{{COUNT} ページの PDF ドキュメント}}</translation>
@@ -1242,6 +1244,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しい Google スプレッドシートをすばやく作成します</translation>
 <translation id="4825507807291741242">パワフル</translation>
 <translation id="483241715238664915">警告をオンにする</translation>
+<translation id="4834250788637067901">Google Pay を使用したお支払方法、クーポン、住所</translation>
 <translation id="4838327282952368871">ドリーミー</translation>
 <translation id="4840250757394056958">Chrome 履歴を表示</translation>
 <translation id="484462545196658690">自動</translation>

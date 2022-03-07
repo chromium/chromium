@@ -525,6 +525,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2539524384386349900">Detectar</translation>
 <translation id="2540701853218677861">Historial de inicios o cierres de sesión en el dispositivo, incluidos intentos fallidos y marcas de tiempo</translation>
 <translation id="2541219929084442027">Las páginas que veas en las pestañas de incógnito no se guardarán en el historial del navegador, en el almacén de cookies ni en el historial de búsqueda una vez que hayas cerrado todas tus pestañas de incógnito. Se mantendrán los archivos que descargues o los marcadores que crees.</translation>
+<translation id="2544546346215446551">Tu administrador ha reiniciado tu dispositivo</translation>
 <translation id="2544644783021658368">Documento individual</translation>
 <translation id="2546283357679194313">Cookies y datos de sitios</translation>
 <translation id="254947805923345898">El valor de la política no es válido.</translation>
@@ -972,6 +973,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3990250421422698716">Agrupar</translation>
 <translation id="3996311196211510766">El sitio web <ph name="ORIGIN" /> ha solicitado que se aplique una política de origen
     a todas las solicitudes que reciba, pero esta política no se puede aplicar actualmente.</translation>
+<translation id="4006465311664329701">Métodos de pago, ofertas y direcciones con Google Pay</translation>
 <translation id="4009243425692662128">El contenido de las páginas que imprimes se envía a Google Cloud o a terceros para analizarlo. Por ejemplo, puede que se analice para buscar datos sensibles.</translation>
 <translation id="4010758435855888356">¿Permitir espacio de almacenamiento?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF que contiene {COUNT} página}other{Documento PDF que contiene {COUNT} páginas}}</translation>
@@ -1251,6 +1253,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear una nueva Hoja de cálculo de Google rápidamente</translation>
 <translation id="4825507807291741242">Potente</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
+<translation id="4834250788637067901">Métodos de pago, ofertas y direcciones con Google Pay</translation>
 <translation id="4838327282952368871">De ensueño</translation>
 <translation id="4840250757394056958">Ver tu historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>

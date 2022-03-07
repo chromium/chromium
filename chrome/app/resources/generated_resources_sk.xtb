@@ -437,6 +437,7 @@
 <translation id="1427269577154060167">Krajina</translation>
 <translation id="142758023928848008">Povoliť funkciu Jedným prstom (umožňuje uskutočňovať klávesové skratky ich postupným zadávaním)</translation>
 <translation id="142765311413773645">Platnosť licencie aplikácie <ph name="APP_NAME" /> vypršala</translation>
+<translation id="1428373049397869723">Pomocou tejto aplikácie môžete otvárať a upravovať podporované súbory z aplikácie Finder alebo iných. Ak chcete ovládať, ktoré súbory predvolene otvoria túto aplikáciu, prečítajte si, <ph name="BEGIN_LINK" />ako v zariadení nastaviť predvolené aplikácie<ph name="END_LINK" />.</translation>
 <translation id="1429300045468813835">Všetko bolo vymazané</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1431188203598586230">Posledná aktualizácia softvéru</translation>
@@ -3052,6 +3053,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3971764089670057203">Odltačky prsta v tomto bezpečnostnom kľúči</translation>
 <translation id="3973005893595042880">Používateľ nie je povolený</translation>
 <translation id="3973660817924297510">Kontrolujú sa heslá (<ph name="CHECKED_PASSWORDS" /> z <ph name="TOTAL_PASSWORDS" />)…</translation>
+<translation id="3974514184580396500">Pomocou prepínača Ďalej presuniete označenie ďalej na obrazovke</translation>
 <translation id="3975201861340929143">Vysvetlenie</translation>
 <translation id="3975565978598857337">Kontaktovanie servera pre oblasť zlyhalo</translation>
 <translation id="3976108569178263973">Nie sú k dispozícii žiadne tlačiarne.</translation>
@@ -3883,6 +3885,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4868281708609571334">Naučte Asistenta Google rozpoznávať hlas dieťaťa <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Toto dialógové okno nie je momentálne označené. Označíte ho stlačením kombinácie klávesov Command-Shift-Option A.</translation>
 <translation id="48704129375571883">Pridať ďalšie funkcie</translation>
+<translation id="4870724079713069532">Pomocou tejto aplikácie môžete otvárať a upravovať podporované súbory z Prieskumníka súborov alebo iných aplikácií. Ak chcete ovládať, ktoré súbory predvolene otvoria túto aplikáciu, prejdite do <ph name="BEGIN_LINK" />nastavení systému Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Ak chcete získať informácie o konfigurácii, zadajte heslo od správcu</translation>
 <translation id="4870903493621965035">Žiadne spárované zariadenia</translation>
 <translation id="4870995365819149457">Niektoré podporované odkazy sa budú stále otvárať v aplikáciách <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> a 1 ďalšej.</translation>
@@ -4102,6 +4105,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5088534251099454936">Štandard PKCS #1 SHA-512 so šifrovaním RSA</translation>
 <translation id="5090637338841444533">Nemôže sledovať pozíciu vašej kamery</translation>
 <translation id="5093569275467863761">Podrám v režime inkognito v spätnej vyrovnávacej pamäti: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094176498302660097">Pomocou tejto aplikácie môžete otvárať a upravovať podporované súbory z aplikácie Súbory alebo iných. Ak chcete ovládať, ktoré súbory predvolene otvoria túto aplikáciu, prečítajte si, <ph name="BEGIN_LINK" />ako v zariadení nastaviť predvolené aplikácie<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Komunikovať so spolupracujúcimi natívnymi aplikáciami</translation>
 <translation id="5097002363526479830">K sieti „<ph name="NAME" />“ sa nepodarilo pripojiť: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">Ďalšie informácie o používaní polohy</translation>
@@ -4753,6 +4757,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="577322787686508614">Operácia čítania je na zariadení <ph name="DEVICE_NAME" /> zakázaná.</translation>
 <translation id="5774295353725270860">Otvoriť aplikáciu Súbory</translation>
 <translation id="577624874850706961">Hľadať súbory cookie</translation>
+<translation id="5776571780337000608">Pomocou tejto aplikácie môžete otvárať a upravovať podporované súbory zo správcu súborov alebo iných aplikácií. Ak chcete ovládať, ktoré súbory predvolene otvoria túto aplikáciu, prečítajte si, <ph name="BEGIN_LINK" />ako v zariadení nastaviť predvolené aplikácie<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Otvoriť Chrome</translation>
 <translation id="5778491106820461378">Účty Google prihlásených používateľov môžete spravovať v <ph name="LINK_BEGIN" />Nastaveniach<ph name="LINK_END" />. Povolenia, ktoré ste udelili webom a aplikáciám, môžu platiť pre všetky účty. Ak nechcete, aby mali weby alebo aplikácie prístup k informáciám o vašom účte, môžete sa v zariadení <ph name="DEVICE_TYPE" /> prihlásiť ako hosť.</translation>
 <translation id="5780011244986845107">Vybraný priečinok obsahuje citlivé súbory. Naozaj chcete aplikácii <ph name="APP_NAME" /> povoliť trvalý prístup na čítanie pre tento priečinok?</translation>
@@ -7302,6 +7307,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8326478304147373412">Štandard PKCS #7, certifikačná reťaz</translation>
 <translation id="8327676037044516220">Povolenia a nastavenia obsahu</translation>
 <translation id="8330689128072902965">Kontakty v okolí s vami môžu zdieľať obsah. Zmeniť to môžete kliknutím.</translation>
+<translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Podporovaný typ súboru: <ph name="FILE_TYPE1" />}=2{Podporované typy súborov: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Podporované typy súborov: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Podporované typy súborov: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}many{Supported file types: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />and {OVERFLOW_COUNT} more<ph name="END_LINK" />)}other{Podporované typy súborov: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />a {OVERFLOW_COUNT} ďalších<ph name="END_LINK" />)}}</translation>
 <translation id="833256022891467078">Zdieľané priečinky v systéme Crostini</translation>
 <translation id="8335587457941836791">Odopnúť z poličky</translation>
 <translation id="8336407002559723354">Aktualizácie budú ukončené <ph name="MONTH_AND_YEAR" /></translation>

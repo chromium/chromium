@@ -83,6 +83,15 @@
 <translation id="6709398533399187136">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Google Password Manager na palitan na ito ngayon.</translation>
 <translation id="6822673484890854830">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6964931465519938134">Magagamit mo na ngayon ang Chrome sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
+<translation id="7046845777663074840">Kapag naka-on:
+<ph name="BEGIN_INDENT" />  • Tumulong na pahusayin ang Chrome para sa mga taong gumagamit nito gaya ng paggamit mo.<ph name="END_INDENT" />
+
+Mga bagay na dapat isaalang-alang:
+<ph name="BEGIN_INDENT" />  • Ipapadala sa Google ang impormasyon tungkol sa paggamit mo ng Chrome, pero hindi ito nauugnay sa iyo.
+
+  • Kung magka-crash ang Chrome, posibleng kasama sa mga detalye tungkol sa pag-crash ang ilang personal na impormasyon.
+
+  • Kung io-on mo ang pag-sync, posible ring kasama sa mga sukatan ang impormasyon tungkol sa mga URL na binibisita mo.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Gawing Iyo ang Chrome</translation>
 <translation id="7124339256045485976">Panatilihing up to date ang Chrome</translation>
 <translation id="7161390184744336561">Luma na ang Google Chrome</translation>

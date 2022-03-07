@@ -83,6 +83,13 @@
 <translation id="6709398533399187136">Ihr Passwort wurde durch eine Datenpanne preisgegeben. Der Passwortmanager von Google empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="6822673484890854830">Chrome konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
 <translation id="6964931465519938134">Sie können jetzt Chrome jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
+<translation id="7046845777663074840">Wenn aktiviert:
+<ph name="BEGIN_INDENT" />  • Sie helfen, Chrome für Nutzer zu optimieren, die es genauso verwenden wie Sie.<ph name="END_INDENT" />
+
+Wichtige Hinweise:
+<ph name="BEGIN_INDENT" />  • Daten zu Ihrer Chrome-Nutzung werden an Google gesendet, können aber nicht mit Ihnen in Verbindung gebracht werden.
+  • Falls Chrome abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
+  • Falls Sie die Synchronisierung aktivieren, können die Messwerte auch Informationen zu den von Ihnen besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Chrome personalisieren</translation>
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
 <translation id="7161390184744336561">Google Chrome ist veraltet</translation>

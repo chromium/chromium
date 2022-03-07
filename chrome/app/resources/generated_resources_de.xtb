@@ -666,6 +666,7 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1640235262200048077">"<ph name="IME_NAME" />" funktioniert noch nicht in Linux-Apps</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 mit RSA-Verschlüsselung</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1641496881756082050">Weitere Aktionen für <ph name="NETWORK_NAME" /></translation>
 <translation id="1642492862748815878">Mit „<ph name="DEVICE" />“ und <ph name="NUMBER_OF_DEVICES" /> weiteren Bluetooth-Geräten verbunden</translation>
 <translation id="1642494467033190216">Vor dem Aktivieren weiterer Debugging-Funktionen muss der rootfs-Schutz entfernt und ein Neustart ausgeführt werden.</translation>
 <translation id="1643072738649235303">X9.62-ECDSA-Signatur mit SHA-1</translation>
@@ -767,6 +768,7 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1744060673522309905">Das Gerät konnte der Domain nicht beitreten. Sie dürfen nicht mehr als die erlaubte Anzahl von Geräten hinzufügen.</translation>
 <translation id="1744108098763830590">Hintergrundseite</translation>
 <translation id="1745732479023874451">Kontakte verwalten</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# Dateien in dieser Web-App öffnen und bearbeiten?}}</translation>
 <translation id="1748563609363301860">Sie können dieses Passwort entweder in Ihrem Google-Konto oder nur auf diesem Gerät speichern</translation>
 <translation id="1750048572964661931">Sie können eine PIN oder ein Passwort für dieses Chromebook festlegen, um den unbefugten Zugriff auf die Apps Ihres Smartphones zu verhindern.</translation>
 <translation id="1750172676754093297">Auf Ihrem Sicherheitsschlüssel können keine Fingerabdrücke gespeichert werden</translation>
@@ -1438,6 +1440,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2381499968174336913">Vorschau des geteilten Tabs</translation>
 <translation id="2381756643783702095">Vor dem Senden nachfragen (empfohlen)</translation>
 <translation id="2387052489799050037">Zum Startbildschirm</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (aktiv)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">Keine Verbindung zum Proxy möglich, bitte noch einmal anmelden</translation>
 <translation id="2390782873446084770">WLAN-Synchronisation</translation>
@@ -2236,6 +2239,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3201422919974259695">Verfügbare USB-Geräte werden hier angezeigt.</translation>
 <translation id="3202131003361292969">Pfad</translation>
 <translation id="3202173864863109533">Der Ton dieses Tabs ist stummgeschaltet.</translation>
+<translation id="3204648577100496185">Daten, die dieser App zugewiesen sind, werden möglicherweise von diesem Gerät entfernt</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Jetzt prüfen</translation>
 <translation id="3208703785962634733">Nicht bestätigt</translation>
@@ -2382,6 +2386,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="337286756654493126">Ordner lesen, die Sie in der Anwendung öffnen</translation>
 <translation id="3374294321938930390">„<ph name="BOOKMARK_TITLE" />“ wurde in „<ph name="NEW_FOLDER_TITLE" />“ verschoben.</translation>
 <translation id="3378572629723696641">Diese Erweiterung ist möglicherweise beschädigt.</translation>
+<translation id="3378627645871606983">Berechtigungen, die Steam gewährt werden, gelten für alle Steam-Spiele und -Apps.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> wird installiert.</translation>
 <translation id="3380365263193509176">Unbekannter Fehler</translation>
 <translation id="3382073616108123819">Hoppla! Das System konnte die Geräte-IDs für dieses Gerät nicht ermitteln.</translation>
@@ -2488,9 +2493,11 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="346298925039590474">Dieses Mobilfunknetz steht nun allen Nutzern auf diesem Gerät zur Verfügung</translation>
 <translation id="3464145797867108663">Arbeitsprofil hinzufügen</translation>
 <translation id="346431825526753">Dies ist ein Konto für Kinder, das von <ph name="CUSTODIAN_EMAIL" /> verwaltet wird.</translation>
+<translation id="346546413339447252">Rabatte für <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> und weitere Händler erhalten</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android-Smartphone</translation>
 <translation id="3469583217479686109">Auswahltool</translation>
+<translation id="3470392222765168737">Website folgen</translation>
 <translation id="3471876058939596279">HDMI- und USB-Typ-C-Ports können nicht gleichzeitig für den Anschluss an Bildschirme verwendet werden. Verwenden Sie einen anderen Videoport.</translation>
 <translation id="3473241910002674503">Mit den Schaltflächen im Tablet-Modus zum Launcher, zurück und zwischen Apps wechseln.</translation>
 <translation id="3473479545200714844">Lupe</translation>
@@ -2874,6 +2881,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Eine Erweiterung wurde genehmigt}other{# Erweiterungen wurden genehmigt}}</translation>
 <translation id="3823310065043511710">Für Linux sind mindestens <ph name="INSTALL_SIZE" /> freier Speicherplatz erforderlich.</translation>
 <translation id="3824621460022590830">Geräteregistrierungstoken ist ungültig. Bitte an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Meine Auswahl für diesen Dateityp merken: <ph name="FILE_TYPES" />}other{Meine Auswahl für diese Dateitypen merken: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">Dürfen Bewegungssensoren verwenden</translation>
 <translation id="3826440694796503677">Ihr Administrator hat die Option zum Hinzufügen weiterer Google-Konten deaktiviert</translation>
 <translation id="3827774300009121996">&amp;Vollbildmodus</translation>
@@ -2931,6 +2939,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3879748587602334249">Download-Manager</translation>
 <translation id="3882165008614329320">Vorhandenes Video von der Kamera oder als Datei</translation>
 <translation id="3883306461188700142">Sie können Text diktieren. Drücken Sie die Suchtaste + D und beginnen Sie dann mit der Spracheingabe.</translation>
+<translation id="3883482240657453056">Rabatte für <ph name="MERCHANT_NAME_1" /> und <ph name="MERCHANT_NAME_2" /> erhalten</translation>
 <translation id="3884152383786131369">Für Webinhalte in mehreren Sprachen wird die erste unterstützte Sprache aus dieser Liste verwendet. Diese Einstellungen werden mit den Browsereinstellungen synchronisiert. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates werden von Ihrem Administrator verwaltet</translation>
 <translation id="3886446263141354045">Deine Anfrage zum Zugriff auf diese Website wurde an <ph name="NAME" /> gesendet</translation>
@@ -3888,6 +3897,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4880827082731008257">Im Verlauf suchen</translation>
 <translation id="4881685975363383806">Nicht mehr erinnern</translation>
 <translation id="4881695831933465202">Öffnen</translation>
+<translation id="488211015466188466">Website folgen</translation>
 <translation id="4882312758060467256">Hat Zugriff auf diese Website</translation>
 <translation id="4882919381756638075">Websites verwenden normalerweise Ihr Mikrofon für Kommunikationsfunktionen wie Videochats</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-Websites</translation>
@@ -5143,6 +5153,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6166185671393271715">Passwörter in Chrome importieren</translation>
 <translation id="6169040057125497443">Überprüfen Sie Ihr Mikrofon.</translation>
 <translation id="6169666352732958425">Der Desktop kann nicht übertragen werden</translation>
+<translation id="6169967265765719844">Berechtigungen für Spiele und Apps, die über Steam installiert wurden, können in den <ph name="LINK_BEGIN" />Einstellungen der Steam-App<ph name="LINK_END" /> verwaltet werden.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">Die ADB-Fehlerbehebung konnte nicht aktiviert werden. Öffnen Sie die Einstellungen und versuchen Sie es noch einmal.</translation>
 <translation id="617213288191670920">Keine Sprachen hinzugefügt</translation>
@@ -5843,6 +5854,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6876469544038980967">Nicht hilfreich</translation>
 <translation id="6878422606530379992">Sensorennutzung erlaubt</translation>
 <translation id="6880587130513028875">Bilder wurden auf dieser Seite blockiert.</translation>
+<translation id="688312408602122936">Spiele und Apps, die über Steam installiert wurden, werden ebenfalls von diesem Gerät entfernt</translation>
 <translation id="6883319974225028188">Hoppla! Das System konnte die Gerätekonfiguration nicht speichern.</translation>
 <translation id="6884474387073389421">Möchten Sie die ausgewählten Anmeldedaten wirklich löschen?</translation>
 <translation id="6885771755599377173">Vorschau der Systeminformationen</translation>

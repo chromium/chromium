@@ -56,6 +56,13 @@
 <translation id="4828317641996116749">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="4985291216379576555">Sense connexió; Chromium no pot cercar actualitzacions</translation>
 <translation id="4999538639245140991">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
+<translation id="5039881550736388123">Quan aquesta opció està activada:
+<ph name="BEGIN_INDENT" />  • Ajuda a millorar Chromium per a les persones que el fan servir igual que tu.<ph name="END_INDENT" />
+
+Aspectes que cal tenir en compte:
+<ph name="BEGIN_INDENT" />  • S'envia informació a Google sobre l'ús que fas de Chromium, però no es relaciona amb tu.
+  • Si Chromium falla, els detalls sobre el bloqueig poden incloure informació personal.
+  • Si actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Inicia la sessió a Chromium</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="5308226104666789935">Chromium no pot cercar actualitzacions</translation>

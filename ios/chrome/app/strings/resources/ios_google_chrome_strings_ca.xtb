@@ -83,6 +83,13 @@
 <translation id="6709398533399187136">La teva contrasenya ha quedat exposada en una violació de les dades. El gestor de contrasenyes de Google recomana que la canviïs ara.</translation>
 <translation id="6822673484890854830">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="6964931465519938134">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
+<translation id="7046845777663074840">Quan aquesta opció està activada:
+<ph name="BEGIN_INDENT" />  • Ajuda a millorar Chrome per a les persones que el fan servir igual que tu.<ph name="END_INDENT" />
+
+Aspectes que cal tenir en compte:
+<ph name="BEGIN_INDENT" />  • S'envia informació a Google sobre l'ús que fas de Chrome, però no es relaciona amb tu.
+  • Si Chrome falla, els detalls sobre el bloqueig poden incloure informació personal.
+  • Si actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Personalitza Chrome</translation>
 <translation id="7124339256045485976">Mantén Chrome actualitzat</translation>
 <translation id="7161390184744336561">Google Chrome no està actualitzat</translation>

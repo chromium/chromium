@@ -83,6 +83,15 @@
 <translation id="6709398533399187136">Tu contraseña se ha visto expuesta en una quiebra de seguridad de datos. El gestor de contraseñas de Google te recomienda que cambies esa contraseña ahora.</translation>
 <translation id="6822673484890854830">Chrome no ha podido comprobar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="6964931465519938134">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
+<translation id="7046845777663074840">Si esta opción está activada:
+<ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chrome para las personas que lo usan de la misma manera que tú.<ph name="END_INDENT" />
+
+Notas importantes:
+<ph name="BEGIN_INDENT" />  • Se envía información a Google sobre el uso que haces de Chrome, pero no está vinculada a ti.
+
+  • Si Chrome falla, puede que los detalles sobre el fallo incluyan alguna información personal.
+
+  • Si activas la sincronización, puede que las métricas también incluyan información sobre las URLs que visites.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Personaliza Chrome a tu gusto</translation>
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
 <translation id="7161390184744336561">Google Chrome no está actualizado</translation>

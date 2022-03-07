@@ -83,6 +83,13 @@
 <translation id="6709398533399187136">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Trình quản lý mật khẩu của Google khuyên bạn nên đổi mật khẩu này ngay.</translation>
 <translation id="6822673484890854830">Chrome không thể kiểm tra một số mật khẩu. Hãy thử lại sau.</translation>
 <translation id="6964931465519938134">Giờ đây, bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
+<translation id="7046845777663074840">Khi bật:
+<ph name="BEGIN_INDENT" />  • Giúp Chrome trở nên hiệu quả hơn cho những ai đang dùng Chrome giống bạn.<ph name="END_INDENT" />
+
+Những yếu tố cần xem xét:
+<ph name="BEGIN_INDENT" />  • Thông tin về mức sử dụng Chrome được gửi cho Google, tuy nhiên thông tin đó sẽ không gắn liền với bạn.
+  • Nếu Chrome gặp sự cố, thông tin chi tiết về sự cố có thể sẽ bao gồm một số thông tin cá nhân.
+  • Nếu bạn bật chế độ đồng bộ hoá, các chỉ số có thể sẽ còn bao gồm cả thông tin về các URL bạn từng truy cập.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Biến Chrome thành trình duyệt của riêng bạn</translation>
 <translation id="7124339256045485976">Giữ cho Chrome luôn cập nhật</translation>
 <translation id="7161390184744336561">Google Chrome đã lỗi thời</translation>

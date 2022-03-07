@@ -672,6 +672,7 @@
 <translation id="1640235262200048077">Linux 앱에서는 아직 <ph name="IME_NAME" />이(가) 지원되지 않습니다.</translation>
 <translation id="1640283014264083726">PKCS #1 MD4(RSA 암호화 사용)</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
+<translation id="1641496881756082050"><ph name="NETWORK_NAME" />의 작업 메뉴 더보기</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> 외 <ph name="NUMBER_OF_DEVICES" />개 블루투스 기기에 연결되었습니다</translation>
 <translation id="1642494467033190216">rootfs 보호를 삭제하고 다시 시작해야 다른 디버깅 기능을 사용 설정할 수 있습니다.</translation>
 <translation id="1643072738649235303">SHA-1을 포함한 X9.62 ECDSA 서명</translation>
@@ -781,6 +782,7 @@
 <translation id="1744060673522309905">기기가 도메인에 가입하지 못했습니다. 추가할 수 있는 기기 수를 초과하지 않았는지 확인하세요.</translation>
 <translation id="1744108098763830590">백그라운드 페이지</translation>
 <translation id="1745732479023874451">연락처 관리</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{이 웹 앱에서 # 파일을 열고 수정하시겠습니까?}}</translation>
 <translation id="1748563609363301860">이 비밀번호는 Google 계정이나 이 기기에만 저장할 수 있습니다.</translation>
 <translation id="1750048572964661931">Chromebook에 PIN 또는 비밀번호를 설정하여 휴대전화 앱 액세스를 보호하세요.</translation>
 <translation id="1750172676754093297">보안 키에 지문을 저장할 수 없습니다.</translation>
@@ -1456,6 +1458,7 @@
 <translation id="2381499968174336913">공유 탭 미리보기</translation>
 <translation id="2381756643783702095">보내기 전에 확인(권장)</translation>
 <translation id="2387052489799050037">홈으로 이동</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" />(현재)</translation>
 <translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">프록시에 연결할 수 없음: 다시 로그인해 주세요</translation>
 <translation id="2390782873446084770">Wi-Fi 동기화</translation>
@@ -2254,6 +2257,7 @@
 <translation id="3201422919974259695">사용 가능한 USB 기기가 여기에 표시됩니다.</translation>
 <translation id="3202131003361292969">경로</translation>
 <translation id="3202173864863109533">이 탭의 오디오가 음소거됩니다.</translation>
+<translation id="3204648577100496185">앱과 관련된 데이터가 기기에서 삭제될 수 있습니다.</translation>
 <translation id="3208321278970793882">앱</translation>
 <translation id="3208584281581115441">지금 확인</translation>
 <translation id="3208703785962634733">미확인</translation>
@@ -2400,6 +2404,7 @@
 <translation id="337286756654493126">애플리케이션에서 연 폴더 읽기</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' 항목을 '<ph name="NEW_FOLDER_TITLE" />' 색인으로 이동했습니다.</translation>
 <translation id="3378572629723696641">확장 프로그램이 손상되었을 수도 있습니다.</translation>
+<translation id="3378627645871606983">Steam에 부여된 권한은 모든 Steam 게임 및 앱에 적용됩니다.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" />이(가) 설치됩니다.</translation>
 <translation id="3380365263193509176">알 수 없는 오류가 발생했습니다.</translation>
 <translation id="3382073616108123819">시스템에서 이 기기의 기기 식별자를 확인하지 못했습니다.</translation>
@@ -2506,9 +2511,11 @@
 <translation id="346298925039590474">기기의 모든 사용자가 이 모바일 네트워크를 사용할 수 있습니다.</translation>
 <translation id="3464145797867108663">직장 프로필 추가</translation>
 <translation id="346431825526753"><ph name="CUSTODIAN_EMAIL" />님이 관리하는 어린이용 계정입니다.</translation>
+<translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> 등에서 할인받기</translation>
 <translation id="3468298837301810372">라벨</translation>
 <translation id="3468999815377931311">Android 휴대전화</translation>
 <translation id="3469583217479686109">선택 도구</translation>
+<translation id="3470392222765168737">사이트 팔로우</translation>
 <translation id="3471876058939596279">HDMI 및 USB 타입-C 포트를 동시에 비디오용으로 사용할 수 없습니다. 다른 비디오 포트를 사용하세요.</translation>
 <translation id="3473241910002674503">태블릿 모드에서 버튼을 사용하여 홈이나 뒤로 이동하고 앱 간에 전환합니다.</translation>
 <translation id="3473479545200714844">화면 돋보기</translation>
@@ -2892,6 +2899,7 @@
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 승인됨}other{확장 프로그램 #개 승인됨}}</translation>
 <translation id="3823310065043511710">Linux를 사용하려면 최소 <ph name="INSTALL_SIZE" />의 여유 공간이 권장됩니다.</translation>
 <translation id="3824621460022590830">기기 등록 토큰이 잘못되었습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{<ph name="FILE_TYPES" /> 파일 형식에 대한 내 선택사항 기억하기}other{<ph name="FILE_TYPES" /> 파일 형식에 대한 내 선택사항 기억하기}}</translation>
 <translation id="3826071569074535339">움직임 감지 센서 사용이 허용됨</translation>
 <translation id="3826440694796503677">관리자가 Google 계정 추가를 사용 중지했습니다.</translation>
 <translation id="3827774300009121996">전체화면(&amp;F)</translation>
@@ -2949,6 +2957,7 @@
 <translation id="3879748587602334249">다운로드 관리자</translation>
 <translation id="3882165008614329320">카메라 또는 파일의 기존 동영상</translation>
 <translation id="3883306461188700142">음성으로 입력할 수 있습니다. Search + D를 누른 다음 말하세요.</translation>
+<translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> 및 <ph name="MERCHANT_NAME_2" />에서 할인받기</translation>
 <translation id="3884152383786131369">여러 언어를 지원하는 웹 콘텐츠는 목록의 첫 번째 지원 언어를 사용합니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">업데이트는 관리자가 관리합니다</translation>
 <translation id="3886446263141354045">사용자의 사이트 액세스 요청이 <ph name="NAME" />님에게 전송되었습니다.</translation>
@@ -3904,6 +3913,7 @@
 <translation id="4880827082731008257">기록 검색</translation>
 <translation id="4881685975363383806">다음번에 알리지 않음</translation>
 <translation id="4881695831933465202">열기</translation>
+<translation id="488211015466188466">사이트 팔로우</translation>
 <translation id="4882312758060467256">이 사이트의 액세스 권한이 있습니다.</translation>
 <translation id="4882919381756638075">사이트에서는 일반적으로 영상 채팅 같은 커뮤니케이션 기능에 마이크를 사용합니다.</translation>
 <translation id="4883436287898674711">모든 <ph name="WEBSITE_1" /> 사이트</translation>
@@ -5161,6 +5171,7 @@
 <translation id="6166185671393271715">Chrome으로 비밀번호 가져오기</translation>
 <translation id="6169040057125497443">마이크를 확인하세요.</translation>
 <translation id="6169666352732958425">데스크톱을 전송할 수 없음</translation>
+<translation id="6169967265765719844">Steam을 통해 설치된 게임 및 앱에 대한 권한은 <ph name="LINK_BEGIN" />Steam 앱 설정<ph name="LINK_END" />에서 관리할 수 있습니다.</translation>
 <translation id="6170470584681422115">샌드위치</translation>
 <translation id="6170498031581934115">ADB 디버깅을 사용 설정할 수 없습니다. 설정으로 이동하여 다시 시도해 보세요.</translation>
 <translation id="617213288191670920">추가된 언어 없음</translation>
@@ -5861,6 +5872,7 @@
 <translation id="6876469544038980967">도움이 되지 않음</translation>
 <translation id="6878422606530379992">센서가 허용됨</translation>
 <translation id="6880587130513028875">이 페이지에서 이미지가 차단되었습니다.</translation>
+<translation id="688312408602122936">Steam을 통해 설치한 모든 게임 및 앱도 기기에서 삭제됩니다.</translation>
 <translation id="6883319974225028188">시스템에서 기기 구성을 저장하지 못했습니다.</translation>
 <translation id="6884474387073389421">선택한 로그인 데이터를 삭제하시겠습니까?</translation>
 <translation id="6885771755599377173">시스템 정보 미리보기</translation>

@@ -83,6 +83,15 @@
 <translation id="6709398533399187136">Sandi Anda terekspos dalam pelanggaran data. Pengelola Sandi Google merekomendasikan untuk mengubahnya sekarang.</translation>
 <translation id="6822673484890854830">Chrome tidak dapat memeriksa semua sandi. Coba lagi nanti.</translation>
 <translation id="6964931465519938134">Anda sekarang dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
+<translation id="7046845777663074840">Jika aktif:
+<ph name="BEGIN_INDENT" />  • Membantu Chrome menjadi lebih baik bagi pengguna lain seperti Anda.<ph name="END_INDENT" />
+
+Hal-hal yang perlu dipertimbangkan:
+<ph name="BEGIN_INDENT" />  • Info tentang penggunaan Chrome akan dikirim ke Google, tetapi tidak dikaitkan dengan Anda.
+
+  • Jika Chrome mengalami error, detail tentang error tersebut dapat menyertakan beberapa info pribadi.
+
+  • Jika Anda mengaktifkan sinkronisasi, metrik juga dapat menyertakan info tentang URL yang Anda buka.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Sesuaikan Chrome dengan Selera Anda</translation>
 <translation id="7124339256045485976">Pastikan Chrome selalu terupdate</translation>
 <translation id="7161390184744336561">Versi Google Chrome sudah usang</translation>

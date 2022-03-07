@@ -521,6 +521,7 @@
 <translation id="2539524384386349900">Détecter</translation>
 <translation id="2540701853218677861">Historique de connexion et de déconnexion de l'appareil, y compris les estampilles temporelles et les tentatives infructueuses</translation>
 <translation id="2541219929084442027">Les pages que vous consultez dans des onglets de navigation privée ne sont pas enregistrées dans l'historique du navigateur, ni dans le dossier des témoins, ni dans l'historique des recherches, une fois que vous avez fermé tous les onglets de navigation privée. Les fichiers téléchargés et vos favoris sont toutefois conservés.</translation>
+<translation id="2544546346215446551">Votre administrateur a redémarré votre appareil</translation>
 <translation id="2544644783021658368">Document simple</translation>
 <translation id="2546283357679194313">Témoins et données de site</translation>
 <translation id="254947805923345898">La valeur attribuée à la politique n'est pas valide.</translation>
@@ -967,6 +968,7 @@
 <translation id="3987940399970879459">Moins de 1 Mo</translation>
 <translation id="3990250421422698716">Décalage</translation>
 <translation id="3996311196211510766">Le site <ph name="ORIGIN" /> a exigé qu'une politique d'origine soit appliquée à toutes les demandes qu'il reçoit, mais cette politique ne peut pas être appliquée actuellement.</translation>
+<translation id="4006465311664329701">Modes de paiement, offres et adresses utilisant Google Pay</translation>
 <translation id="4009243425692662128">Le contenu des pages que vous imprimez est envoyé à Google Cloud ou à des tiers à des fins d'analyse. Par exemple, il pourrait être analysé pour déterminer s'il contient des données confidentielles.</translation>
 <translation id="4010758435855888356">Autoriser l'accès à l'espace de stockage?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF contenant {COUNT} page}one{Document PDF contenant {COUNT} page}other{Document PDF contenant {COUNT} pages}}</translation>
@@ -1242,6 +1244,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une feuille Google</translation>
 <translation id="4825507807291741242">Puissant</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
+<translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
 <translation id="4838327282952368871">Rêveur</translation>
 <translation id="4840250757394056958">Afficher votre historique de Chrome</translation>
 <translation id="484462545196658690">Auto</translation>

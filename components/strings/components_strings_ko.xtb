@@ -521,6 +521,7 @@
 <translation id="2539524384386349900">감지</translation>
 <translation id="2540701853218677861">타임스탬프와 실패한 시도를 포함한 기기 로그인/로그아웃 기록</translation>
 <translation id="2541219929084442027">시크릿 탭을 모두 닫으면 시크릿 탭에서 보는 페이지는 브라우저의 방문 기록, 쿠키 저장소, 검색 기록 어디에도 남지 않습니다. 단, 다운로드한 파일이나 생성한 북마크는 유지됩니다.</translation>
+<translation id="2544546346215446551">관리자가 기기를 다시 시작했습니다</translation>
 <translation id="2544644783021658368">단일 문서</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="254947805923345898">정책 값이 유효하지 않습니다.</translation>
@@ -967,6 +968,7 @@
 <translation id="3987940399970879459">1MB 미만</translation>
 <translation id="3990250421422698716">조그 오프셋</translation>
 <translation id="3996311196211510766">사이트 <ph name="ORIGIN" />에서 모든 요청에 출처 정책을 적용하도록 요청했으나 이 정책은 현재 적용할 수 없습니다.</translation>
+<translation id="4006465311664329701">Google Pay에 사용되는 결제 수단, 쿠폰, 주소</translation>
 <translation id="4009243425692662128">인쇄하는 페이지의 콘텐츠가 분석을 위해 Google Cloud 또는 타사로 전송됩니다. 예를 들어, 민감한 정보를 찾기 위해 텍스트를 스캔할 수 있습니다.</translation>
 <translation id="4010758435855888356">저장소 액세스 권한을 허용하시겠습니까?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT}페이지로 이루어진 PDF 문서}other{{COUNT}페이지로 이루어진 PDF 문서}}</translation>
@@ -1242,6 +1244,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 빠르게 새 Google 시트 만들기</translation>
 <translation id="4825507807291741242">강력함</translation>
 <translation id="483241715238664915">경고 켜기</translation>
+<translation id="4834250788637067901">Google Pay에 사용되는 결제 수단, 쿠폰, 주소</translation>
 <translation id="4838327282952368871">꿈</translation>
 <translation id="4840250757394056958">Chrome 방문 기록 보기</translation>
 <translation id="484462545196658690">자동</translation>

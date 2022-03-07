@@ -56,6 +56,15 @@
 <translation id="4828317641996116749">Chromium imeshindwa kukagua manenosiri yote. Jaribu tena baadaye.</translation>
 <translation id="4985291216379576555">Nje ya mtandao, Chromium imeshindwa kukagua kama kuna masasisho</translation>
 <translation id="4999538639245140991">Kwa sababu unaondoka kwenye akaunti inayodhibitiwa na <ph name="SIGNOUT_MANAGED_DOMAIN" />, data yako ya Chromium itafutwa kwenye kifaa hiki, lakini itasalia katika Akaunti yako ya Google.</translation>
+<translation id="5039881550736388123">Inapokuwa imewashwa:
+<ph name="BEGIN_INDENT" />  • Saidia kuboresha Chromium kwa ajili ya watumiaji wengine wanaoitumia kama wewe unavyoitumia.<ph name="END_INDENT" />
+
+Mambo ya kuzingatia:
+<ph name="BEGIN_INDENT" />  • Taarifa kuhusu matumizi yako ya Chromium zitatumwa kwenda Google, lakini bila kukupa masharti yoyote.
+
+  • Ikiwa Chromium itaacha kufanya kazi, maelezo kuhusu kutofanya kazi yanaweza kujumuisha taarifa binafsi.
+
+  • Iwapo utawasha usawazishaji, vipimo vinaweza pia kujumuisha taarifa kuhusu URL unazozitembelea.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Ingia Katika Akaunti kwenye Chromium</translation>
 <translation id="5224391634244552924">Hakuna manenosiri yaliyohifadhiwa. Chromium inaweza kukagua manenosiri yako ukiyahifadhi.</translation>
 <translation id="5308226104666789935">Chromium imeshindwa kukagua kama kuna masasisho</translation>

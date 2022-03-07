@@ -83,6 +83,15 @@
 <translation id="6709398533399187136">Votre mot de passe a été compromis lors d'une violation des données. Le Gestionnaire de mots de passe Google vous recommande de le modifier immédiatement.</translation>
 <translation id="6822673484890854830">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="6964931465519938134">Chaque fois que vous appuierez sur des liens dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chrome.</translation>
+<translation id="7046845777663074840">Si l'option est activée :
+<ph name="BEGIN_INDENT" />  • Contribuez à améliorer Chrome pour les personnes qui l'utilisent comme vous.<ph name="END_INDENT" />
+
+Éléments à prendre en compte :
+<ph name="BEGIN_INDENT" />  • Des infos sur l'utilisation de Chrome, mais qui ne sont pas rattachées à vous, sont transmises à Google.
+
+  • Si Chrome plante, les détails sur ce plantage peuvent contenir des infos personnelles.
+
+  • Si vous activez la synchronisation, les métriques peuvent aussi inclure des infos sur les URL que vous consultez.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Personnalisez Chrome</translation>
 <translation id="7124339256045485976">Pour garder Chrome à jour</translation>
 <translation id="7161390184744336561">La version de Google Chrome est obsolète</translation>

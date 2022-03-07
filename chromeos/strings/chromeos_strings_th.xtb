@@ -154,6 +154,7 @@
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="291142119251986300">คอมโพเนนต์ไม่ตรงตามข้อกำหนด</translation>
 <translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
+<translation id="2927263920782234016">ติดตั้ง Chrome OS Flex</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="3031560714565892478">อุปกรณ์เป็นกล้องวิดีโอ</translation>
@@ -435,6 +436,7 @@
 <translation id="6319207335391420837">อัปเดตเฟิร์มแวร์ใน <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">ล้มเหลว</translation>
 <translation id="6340526405444716530">การปรับเปลี่ยนในแบบของคุณ</translation>
+<translation id="6348738456043757611">ชื่อผู้ใช้และรหัสผ่าน</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>
 <translation id="6379086450106841622">หน้าจอสัมผัส</translation>
 <translation id="6388847657025262518">ตัวป้อนเอกสารของเครื่องสแกนมีกระดาษติด ตรวจสอบตัวป้อนเอกสารแล้วลองอีกครั้ง</translation>

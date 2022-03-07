@@ -437,6 +437,7 @@
 <translation id="1427269577154060167">Земља</translation>
 <translation id="142758023928848008">Омогући лепљиве тастере (да бисте користили тастерске пречице тако што ћете притискати један по један тастер)</translation>
 <translation id="142765311413773645">Лиценца за апликацију <ph name="APP_NAME" /> је истекла</translation>
+<translation id="1428373049397869723">Помоћу ове апликације можете да отварате и мењате подржане фајлове из Finder-а или других апликација. Да бисте контролисали који фајлови подразумевано отварају ову апликацију, <ph name="BEGIN_LINK" />сазнајте како да подесите подразумеване апликације на уређају<ph name="END_LINK" />.</translation>
 <translation id="1429300045468813835">Све је обрисано</translation>
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1431188203598586230">Последње ажурирање софтвера</translation>
@@ -3047,6 +3048,7 @@
 <translation id="3971764089670057203">Отисци прстију на овом безбедносном кључу</translation>
 <translation id="3973005893595042880">Корисник није дозвољен</translation>
 <translation id="3973660817924297510">Лозинке се проверавају (<ph name="CHECKED_PASSWORDS" /> од <ph name="TOTAL_PASSWORDS" />)…</translation>
+<translation id="3974514184580396500">Користите Даље да бисте померали фокус унапред на екрану</translation>
 <translation id="3975201861340929143">Објашњење</translation>
 <translation id="3975565978598857337">Повезивање са сервером за домен није успело</translation>
 <translation id="3976108569178263973">Нема доступних штампача.</translation>
@@ -3878,6 +3880,7 @@
 <translation id="4868281708609571334">Научите Google помоћник да препозна глас детета <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Овај дијалог тренутно није фокусиран. Притисните Command-Shift-опција A да бисте фокусирали овај дијалог.</translation>
 <translation id="48704129375571883">Додајте још функција</translation>
+<translation id="4870724079713069532">Помоћу ове апликације можете да отварате и мењате подржане фајлове из истраживача фајлова или других апликација. Да бисте контролисали који се фајлови подразумевано отварају у овој апликацији, идите на <ph name="BEGIN_LINK" />подешавања Windows-а<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Унесите лозинку коју сте добили од администратора да бисте добили информације о конфигурацији</translation>
 <translation id="4870903493621965035">Нема упарених уређаја</translation>
 <translation id="4870995365819149457">Неки подржани линкови ће се и даље отварати у апликацијама <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и још једној.</translation>
@@ -4097,6 +4100,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 са RSA шифровањем</translation>
 <translation id="5090637338841444533">Није им дозвољено да прате положај камере</translation>
 <translation id="5093569275467863761">Цео кеширани подоквир без архивирања: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094176498302660097">Помоћу ове апликације можете да отварате и мењате подржане фајлове из апликације Фајлови или других апликација. Да бисте контролисали који фајлови подразумевано отварају ову апликацију, <ph name="BEGIN_LINK" />сазнајте како да подесите подразумеване апликације на уређају<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Комуникација са основним апликацијама за сарадњу</translation>
 <translation id="5097002363526479830">Повезивање са мрежом „<ph name="NAME" />“ није успело: <ph name="DETAILS" /></translation>
 <translation id="5097306410549350357">Сазнајте више о коришћењу локације</translation>
@@ -4748,6 +4752,7 @@
 <translation id="577322787686508614">Операција читања није дозвољена на: „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="5774295353725270860">Отварање апликације Датотеке</translation>
 <translation id="577624874850706961">Претражите колачиће</translation>
+<translation id="5776571780337000608">Помоћу ове апликације можете да отварате и мењате подржане фајлове из прегледача фајлова или других апликација. Да бисте контролисали који фајлови подразумевано отварају ову апликацију, <ph name="BEGIN_LINK" />сазнајте како да подесите подразумеване апликације на уређају<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Отвори Chrome</translation>
 <translation id="5778491106820461378">Можете да управљате Google налозима на које сте пријављени у <ph name="LINK_BEGIN" />Подешавањима<ph name="LINK_END" />. Дозволе које сте дали веб-сајтовима и апликацијама могу да важе за све налоге. Ако не желите да сајтови или апликације приступају информацијама о налогу, можете да се пријавите на <ph name="DEVICE_TYPE" /> као гост.</translation>
 <translation id="5780011244986845107">Фолдер који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за читање за овај директоријум?</translation>
@@ -7297,6 +7302,7 @@
 <translation id="8326478304147373412">PKCS #7, ланац сертификата</translation>
 <translation id="8327676037044516220">Подешавања дозвола и садржаја</translation>
 <translation id="8330689128072902965">Контакти у близини могу да деле садржај са вама. Кликните да бисте променили.</translation>
+<translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Подржан тип фајла: <ph name="FILE_TYPE1" />}=2{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и још {OVERFLOW_COUNT}<ph name="END_LINK" />)}few{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и још {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Подржани типови фајлова: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и још {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
 <translation id="833256022891467078">Дељени Crostini директоријуми</translation>
 <translation id="8335587457941836791">Откачи са полице</translation>
 <translation id="8336407002559723354">Ажурирања ће бити доступна до <ph name="MONTH_AND_YEAR" /></translation>

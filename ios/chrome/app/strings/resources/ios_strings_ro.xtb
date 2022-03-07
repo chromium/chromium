@@ -46,6 +46,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1282311502488501110">Nu mă conectez</translation>
 <translation id="1283524564873030414">Ultimele 24 de ore</translation>
 <translation id="1285320974508926690">Nu traduce niciodată acest site</translation>
+<translation id="1291506870746876680">Permisiunile pentru <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> vor fi resetate la starea dezactivat când părăsești site-ul.</translation>
 <translation id="1321993286294231467">Eroare la salvarea imaginii.</translation>
 <translation id="1322735045095424339">Organizația ta solicită modul incognito</translation>
 <translation id="1323735185997015385">Șterge</translation>
@@ -210,6 +211,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871695793448672541">Parolă ascunsă</translation>
 <translation id="2876369937070532032">Trimite la Google adrese URL ale unor pagini pe care le accesezi, când securitatea este în pericol</translation>
+<translation id="2883151425485251736">Vezi și editează subiectele ascunse din contul tău</translation>
 <translation id="288655811176831528">Închide fila</translation>
 <translation id="2893180576842394309">Google poate folosi istoricul pentru a personaliza Căutarea și alte servicii Google</translation>
 <translation id="2898963176829412617">Dosar nou…</translation>
@@ -426,6 +428,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4833686396768033263">Nu sunt disponibile file recente</translation>
 <translation id="4833786495304741580">Trimite automat statistici de utilizare și rapoarte de blocare la Google.</translation>
 <translation id="4840495572919996524">Marcajele, istoricul, parolele și alte setări nu vor mai fi sincronizate cu Contul Google.</translation>
+<translation id="4844899002472726590">Vezi și editează subiectele care te interesează</translation>
 <translation id="4854345657858711387">Setează o parolă</translation>
 <translation id="4860895144060829044">Apelează</translation>
 <translation id="4872323082491632254">Verifică parolele</translation>
@@ -865,6 +868,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8750037785291841318">Aici vei vedea filele</translation>
 <translation id="8756969031206844760">Actualizezi parola?</translation>
 <translation id="8775144690796719618">Adresă URL nevalidă</translation>
+<translation id="8787968206789828143">Caută pe web</translation>
 <translation id="8803639129939845298">Securizat</translation>
 <translation id="8806823403540278281">Organizația îți solicită să navighezi în privat. Filele nu sunt salvate în modul incognito.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>

@@ -56,6 +56,12 @@
 <translation id="4828317641996116749">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại sau.</translation>
 <translation id="4985291216379576555">Không có kết nối mạng, Chromium không thể kiểm tra xem có bản cập nhật mới nào không</translation>
 <translation id="4999538639245140991">Vì bạn đăng xuất khỏi tài khoản do <ph name="SIGNOUT_MANAGED_DOMAIN" /> quản lý, nên dữ liệu Chromium của bạn sẽ bị xóa khỏi thiết bị này. Dữ liệu của bạn sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
+<translation id="5039881550736388123">Khi bật:
+<ph name="BEGIN_INDENT" />  • Giúp Chromium trở nên hiệu quả hơn cho những ai đang dùng Chromium giống bạn.<ph name="END_INDENT" />
+Những yếu tố cần xem xét:
+<ph name="BEGIN_INDENT" />  • Thông tin về mức sử dụng Chromium được gửi cho Google, tuy nhiên thông tin đó sẽ không gắn liền với bạn.
+  • Nếu Chromium gặp sự cố, thông tin chi tiết về sự cố có thể sẽ bao gồm một số thông tin cá nhân.
+  • Nếu bạn bật chế độ đồng bộ hoá, các chỉ số có thể sẽ còn bao gồm cả thông tin về các URL bạn từng truy cập.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Đăng nhập vào Chromium</translation>
 <translation id="5224391634244552924">Bạn chưa lưu mật khẩu nào. Chromium có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="5308226104666789935">Chromium không thể kiểm tra xem có bản cập nhật mới nào không</translation>

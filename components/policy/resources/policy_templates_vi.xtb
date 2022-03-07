@@ -1267,6 +1267,7 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
 <translation id="2355876547176311490">Cho phép máy chủ truy cập từ xa dùng máy chủ chuyển tiếp</translation>
 <translation id="2358176879566587521">Chính sách này đã bị xóa vì không tương thích với phiên bản <ph name="PRODUCT_NAME" /> này. Hãy đọc thêm tại https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Khoảng thời gian chạy lại</translation>
+<translation id="2362539163677485510">Mã thông báo đăng ký của chính sách đám mây</translation>
 <translation id="2363928351203698966">Nếu bạn đặt chính sách này thành một giá trị hợp lệ, thì <ph name="PRODUCT_NAME" /> sẽ không dùng phiên bản SSL/TLS thấp hơn phiên bản được chỉ định. Hệ thống sẽ bỏ qua những giá trị không nhận dạng được.
 
       Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ hiện lỗi đối với TLS 1.0 và TLS 1.1, nhưng người dùng có thể bỏ qua lỗi này.

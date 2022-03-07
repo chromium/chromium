@@ -771,6 +771,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1744060673522309905">Kan het apparaat niet aan het domein koppelen. Zorg ervoor dat je het aantal apparaten dat je kunt toevoegen niet overschrijdt.</translation>
 <translation id="1744108098763830590">achtergrondpagina</translation>
 <translation id="1745732479023874451">Contacten beheren</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# bestanden openen en bewerken in deze web-app?}}</translation>
 <translation id="1748563609363301860">Je kunt dit wachtwoord opslaan in je Google-account of alleen op dit apparaat</translation>
 <translation id="1750048572964661931">Stel een pincode of wachtwoord in op deze Chromebook om de toegang tot de apps op je telefoon te beveiligen.</translation>
 <translation id="1750172676754093297">Op deze beveiligingssleutel kunnen geen vingerafdrukken worden opgeslagen</translation>
@@ -2240,6 +2241,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3201422919974259695">Hier zie je beschikbare USB-apparaten.</translation>
 <translation id="3202131003361292969">Pad</translation>
 <translation id="3202173864863109533">De audio van dit tabblad wordt uitgezet.</translation>
+<translation id="3204648577100496185">Gegevens die aan deze app zijn gekoppeld, kunnen van dit apparaat worden verwijderd</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Nu checken</translation>
 <translation id="3208703785962634733">Niet bevestigd</translation>
@@ -2386,6 +2388,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="337286756654493126">Mappen lezen die je opent in de app</translation>
 <translation id="3374294321938930390"><ph name="BOOKMARK_TITLE" /> verplaatst naar <ph name="NEW_FOLDER_TITLE" />.</translation>
 <translation id="3378572629723696641">Deze extensie is mogelijk beschadigd.</translation>
+<translation id="3378627645871606983">Rechten die je toestaat voor Steam, gelden voor alle Steam-games en -apps.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> wordt geïnstalleerd.</translation>
 <translation id="3380365263193509176">Onbekende fout</translation>
 <translation id="3382073616108123819">Het systeem kan de apparaat-ID's voor dit apparaat niet bepalen.</translation>
@@ -2492,9 +2495,11 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="346298925039590474">Dit mobiele netwerk is beschikbaar voor alle gebruikers op dit apparaat</translation>
 <translation id="3464145797867108663">Werkprofiel toevoegen</translation>
 <translation id="346431825526753">Dit is een account voor kinderen dat wordt beheerd door <ph name="CUSTODIAN_EMAIL" />.</translation>
+<translation id="346546413339447252">Krijg kortingen voor <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> en meer</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android-telefoon</translation>
 <translation id="3469583217479686109">Tool Selectie</translation>
+<translation id="3470392222765168737">Site volgen</translation>
 <translation id="3471876058939596279">HDMI- en USB Type-C-poorten kunnen niet tegelijkertijd worden gebruikt voor video. Gebruik een andere videopoort.</translation>
 <translation id="3473241910002674503">Ga terug of naar de homepage en schakel tussen apps met knoppen in de tabletmodus.</translation>
 <translation id="3473479545200714844">Vergrootglas</translation>
@@ -2878,6 +2883,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Een extensie is goedgekeurd}other{# extensies zijn goedgekeurd}}</translation>
 <translation id="3823310065043511710">Er wordt ten minste <ph name="INSTALL_SIZE" /> vrije opslagruimte aanbevolen voor Linux.</translation>
 <translation id="3824621460022590830">Token voor apparaatinschrijving is ongeldig. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
+<translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Mijn keuze onthouden voor dit bestandstype: <ph name="FILE_TYPES" />}other{Mijn keuze onthouden voor deze bestandstypen: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3826071569074535339">Toestemming om bewegingssensoren te gebruiken</translation>
 <translation id="3826440694796503677">Je beheerder heeft het toevoegen van meer Google-accounts uitgezet</translation>
 <translation id="3827774300009121996">&amp;Volledig scherm</translation>
@@ -2935,6 +2941,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3879748587602334249">Downloadbeheer</translation>
 <translation id="3882165008614329320">Bestaande video van camera of uit bestand</translation>
 <translation id="3883306461188700142">Typ met je stem. Druk op Zoeken + D en begin met praten.</translation>
+<translation id="3883482240657453056">Krijg kortingen voor <ph name="MERCHANT_NAME_1" /> en <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Voor webcontent die in meerdere talen beschikbaar is, wordt de eerste ondersteunde taal in deze lijst gebruikt. Deze voorkeuren worden gesynchroniseerd met je browserinstellingen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates worden beheerd door je beheerder</translation>
 <translation id="3886446263141354045">Je verzoek voor toegang tot deze website is verzonden naar <ph name="NAME" /></translation>
@@ -3892,6 +3899,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4880827082731008257">Geschiedenis doorzoeken</translation>
 <translation id="4881685975363383806">Niet opnieuw herinneren</translation>
 <translation id="4881695831933465202">Openen</translation>
+<translation id="488211015466188466">Site volgen</translation>
 <translation id="4882312758060467256">Heeft toegang tot deze site</translation>
 <translation id="4882919381756638075">Sites gebruiken je microfoon vaak voor communicatiefuncties zoals videochatten</translation>
 <translation id="4883436287898674711">Alle sites op <ph name="WEBSITE_1" /></translation>
@@ -5147,6 +5155,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6166185671393271715">Wachtwoorden importeren in Chrome</translation>
 <translation id="6169040057125497443">Controleer je microfoon</translation>
 <translation id="6169666352732958425">Kan desktop niet casten.</translation>
+<translation id="6169967265765719844">Je kunt de rechten voor via Steam geïnstalleerde games en apps beheren in de <ph name="LINK_BEGIN" />instellingen van de Steam-app<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6170498031581934115">ADB-foutopsporing kan niet worden aangezet. Ga naar Instellingen en probeer het opnieuw.</translation>
 <translation id="617213288191670920">Geen talen toegevoegd</translation>
@@ -5847,6 +5856,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6876469544038980967">Niet nuttig</translation>
 <translation id="6878422606530379992">Sensoren toegestaan</translation>
 <translation id="6880587130513028875">Er zijn afbeeldingen op deze pagina geblokkeerd.</translation>
+<translation id="688312408602122936">Games en apps die je via Steam hebt geïnstalleerd, worden ook van dit apparaat verwijderd</translation>
 <translation id="6883319974225028188">Het systeem kan de apparaatconfiguratie niet opslaan.</translation>
 <translation id="6884474387073389421">Weet je zeker dat je de geselecteerde inloggegevens wilt verwijderen?</translation>
 <translation id="6885771755599377173">Voorbeeld van systeeminformatie</translation>
