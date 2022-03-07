@@ -10,6 +10,8 @@
 
 #include "ash/components/phonehub/phone_hub_manager.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
@@ -21,8 +23,6 @@
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"

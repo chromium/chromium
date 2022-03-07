@@ -7,9 +7,9 @@
 #include "ash/components/tether/disconnect_tethering_request_sender_impl.h"
 #include "ash/components/tether/network_configuration_remover.h"
 #include "ash/components/tether/wifi_hotspot_disconnector_impl.h"
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 
 namespace ash {
 

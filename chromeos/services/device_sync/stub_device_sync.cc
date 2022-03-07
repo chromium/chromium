@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -14,7 +15,6 @@
 #include "chromeos/components/multidevice/stub_multidevice_util.h"
 #include "chromeos/services/device_sync/device_sync_base.h"
 #include "chromeos/services/device_sync/device_sync_impl.h"
-#include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -2,6 +2,7 @@
 # //chromeos/services/device_sync should be updated as well. We need to sync
 # both files until the migration of //chromeos/services/device_sync is done.
 include_rules = [
+  "+ash/constants",
   "+components/gcm_driver",
   "+components/proximity_auth/logging",
   "+components/signin/public",
@@ -15,5 +16,5 @@ include_rules = [
   "+third_party/securemessage",
 
   # TODO(https://crbug.com/1164001): Remove this deps when migration is done.
-  "+chromeos/services/device_sync/public",
+  "+chromeos/services/device_sync",
 ]

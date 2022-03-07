@@ -9,9 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/multidevice_setup/multidevice_setup_base.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 class PrefService;

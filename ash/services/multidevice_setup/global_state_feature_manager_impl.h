@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
+#include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
 #include "ash/services/multidevice_setup/host_status_provider.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 
 class PrefRegistrySimple;
 class PrefService;

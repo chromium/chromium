@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
+#include "ash/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 #include "ash/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
 #include "ash/services/multidevice_setup/android_sms_app_installing_status_observer.h"
 #include "ash/services/multidevice_setup/eligible_host_devices_provider_impl.h"
@@ -42,8 +44,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

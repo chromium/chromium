@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "ash/services/multidevice_setup/host_backend_delegate.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 
 class PrefRegistrySimple;
 class PrefService;

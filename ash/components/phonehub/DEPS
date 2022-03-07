@@ -1,5 +1,5 @@
 include_rules = [
-  "+chromeos/services/device_sync/public/cpp",
+  "+ash/services/device_sync/public/cpp",
   "+chromeos/services/network_config/in_process_instance.h",
   "+components/keyed_service/core/keyed_service.h",
   "+components/session_manager/core",

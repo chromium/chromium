@@ -1,6 +1,6 @@
 include_rules = [
   # Do not add chrome here (use a delegate instead).
-  "+chromeos/services/device_sync/public/cpp",
+  "+ash/services/device_sync/public/cpp",
   "+components/keyed_service/core/keyed_service.h",
   "+crypto/random.h",
   "+third_party/boringssl/src/include",

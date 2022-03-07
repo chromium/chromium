@@ -8,6 +8,8 @@
 #include <memory>
 
 // TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt.h"
@@ -16,8 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 
 namespace ash::secure_channel {
 

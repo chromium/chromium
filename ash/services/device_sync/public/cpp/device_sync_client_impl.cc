@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/services/device_sync/public/cpp/device_sync_client_impl.h"
+
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "chromeos/services/device_sync/public/cpp/device_sync_client_impl.h"
-
 #include "ash/constants/ash_features.h"
+#include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/components/multidevice/expiring_remote_device_cache.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device.h"
-#include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 
 namespace chromeos {
 

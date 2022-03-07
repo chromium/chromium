@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/multidevice_setup/account_status_change_delegate_notifier.h"
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
 #include "ash/services/multidevice_setup/host_status_provider.h"
@@ -17,7 +18,6 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"

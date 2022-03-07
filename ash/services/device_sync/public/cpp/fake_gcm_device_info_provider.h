@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_GCM_DEVICE_INFO_PROVIDER_H_
-#define CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_GCM_DEVICE_INFO_PROVIDER_H_
+#ifndef ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_GCM_DEVICE_INFO_PROVIDER_H_
+#define ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_GCM_DEVICE_INFO_PROVIDER_H_
 
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/device_sync/public/cpp/gcm_device_info_provider.h"
+#include "ash/services/device_sync/public/cpp/gcm_device_info_provider.h"
 
 namespace chromeos {
 
@@ -35,4 +35,4 @@ class FakeGcmDeviceInfoProvider : public GcmDeviceInfoProvider {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_GCM_DEVICE_INFO_PROVIDER_H_
+#endif  // ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_GCM_DEVICE_INFO_PROVIDER_H_

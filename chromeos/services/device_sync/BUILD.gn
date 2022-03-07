@@ -146,9 +146,9 @@ static_library("device_sync") {
 
   public_deps = [
     ":feature_status_change",
+    "//ash/services/device_sync/public/mojom",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/services/device_sync/public/mojom",
     "//components/signin/public/identity_manager",
     "//services/network/public/cpp",
   ]
@@ -156,12 +156,12 @@ static_library("device_sync") {
   deps = [
     "//ash/constants",
     "//ash/services/device_sync/proto:util",
+    "//ash/services/device_sync/public/cpp",
+    "//ash/services/device_sync/public/mojom",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
     "//chromeos/network",
-    "//chromeos/services/device_sync/public/cpp",
-    "//chromeos/services/device_sync/public/mojom",
     "//components/gcm_driver",
     "//components/prefs",
     "//device/bluetooth",
@@ -171,10 +171,10 @@ static_library("device_sync") {
 
   visibility = [
     ":*",
+    "//ash/services/device_sync/public/cpp:prefs",
+    "//ash/services/device_sync/public/cpp:unit_tests",
     "//chrome/browser/chromeos",
     "//chrome/test:test_support_ui",
-    "//chromeos/services/device_sync/public/cpp:prefs",
-    "//chromeos/services/device_sync/public/cpp:unit_tests",
   ]
 }
 
@@ -239,9 +239,9 @@ static_library("test_support") {
   deps = [
     ":device_sync",
     "//ash/services/device_sync/proto:test_support",
+    "//ash/services/device_sync/public/cpp",
+    "//ash/services/device_sync/public/mojom",
     "//base",
-    "//chromeos/services/device_sync/public/cpp",
-    "//chromeos/services/device_sync/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -306,6 +306,11 @@ source_set("unit_tests") {
     "//ash/constants",
     "//ash/services/device_sync/proto:test_support",
     "//ash/services/device_sync/proto:util",
+    "//ash/services/device_sync/public/cpp:prefs",
+    "//ash/services/device_sync/public/cpp:test_support",
+    "//ash/services/device_sync/public/cpp:unit_tests",
+    "//ash/services/device_sync/public/mojom",
+    "//ash/services/device_sync/public/mojom:unit_tests",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
@@ -313,11 +318,6 @@ source_set("unit_tests") {
     "//chromeos/dbus:test_support",
     "//chromeos/network",
     "//chromeos/network:test_support",
-    "//chromeos/services/device_sync/public/cpp:prefs",
-    "//chromeos/services/device_sync/public/cpp:test_support",
-    "//chromeos/services/device_sync/public/cpp:unit_tests",
-    "//chromeos/services/device_sync/public/mojom",
-    "//chromeos/services/device_sync/public/mojom:unit_tests",
     "//components/gcm_driver:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
+#include "ash/services/device_sync/public/cpp/device_sync_client_impl.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
@@ -14,8 +16,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/components/multidevice/stub_multidevice_util.h"
 #include "chromeos/services/device_sync/device_sync_impl.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client_impl.h"
 #include "chromeos/services/device_sync/stub_device_sync.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

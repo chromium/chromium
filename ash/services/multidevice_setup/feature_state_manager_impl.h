@@ -5,6 +5,7 @@
 #ifndef ASH_SERVICES_MULTIDEVICE_SETUP_FEATURE_STATE_MANAGER_IMPL_H_
 #define ASH_SERVICES_MULTIDEVICE_SETUP_FEATURE_STATE_MANAGER_IMPL_H_
 
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/multidevice_setup/feature_state_manager.h"
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
 #include "ash/services/multidevice_setup/host_status_provider.h"
@@ -12,7 +13,6 @@
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/timer/timer.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_DEVICE_SYNC_CLIENT_H_
-#define CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_DEVICE_SYNC_CLIENT_H_
+#ifndef ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_DEVICE_SYNC_CLIENT_H_
+#define ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_DEVICE_SYNC_CLIENT_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
+#include "ash/services/device_sync/public/cpp/device_sync_client.h"
+#include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -209,4 +209,4 @@ using ::chromeos::device_sync::FakeDeviceSyncClient;
 }
 }  // namespace ash
 
-#endif  // CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_DEVICE_SYNC_CLIENT_H_
+#endif  // ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_FAKE_DEVICE_SYNC_CLIENT_H_
