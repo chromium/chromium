@@ -258,6 +258,13 @@ void StickyKeysOverlay::Show(bool visible) {
   overlay_widget_->GetLayer()->SetTransform(gfx::Transform());
 }
 
+void StickyKeysOverlay::UpdateBoundsIfVisible() {
+  if (!is_visible_)
+    return;
+
+  overlay_widget_->SetBounds(CalculateOverlayBounds());
+}
+
 void StickyKeysOverlay::SetModifierVisible(ui::EventFlags modifier,
                                            bool visible) {
   overlay_view_->SetModifierVisible(modifier, visible);

@@ -37,6 +37,8 @@ class ASH_EXPORT StickyKeysOverlay : public ui::ImplicitAnimationObserver {
   // Shows or hides the overlay.
   void Show(bool visible);
 
+  void UpdateBoundsIfVisible();
+
   void SetModifierVisible(ui::EventFlags modifier, bool visible);
 
   bool GetModifierVisible(ui::EventFlags modifier);

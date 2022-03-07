@@ -1897,6 +1897,14 @@ void AccessibilityControllerImpl::MagnifierBoundsChanged(
     client_->MagnifierBoundsChanged(bounds_in_screen);
 }
 
+void AccessibilityControllerImpl::UpdateFloatingPanelBoundsIfNeeded() {
+  Shell* shell = Shell::Get();
+  if (shell->accessibility_controller()->autoclick().enabled())
+    shell->autoclick_controller()->UpdateAutoclickMenuBoundsIfNeeded();
+  if (shell->accessibility_controller()->sticky_keys().enabled())
+    shell->sticky_keys_controller()->UpdateStickyKeysOverlayBoundsIfNeeded();
+}
+
 void AccessibilityControllerImpl::UpdateAutoclickMenuBoundsIfNeeded() {
   Shell::Get()->autoclick_controller()->UpdateAutoclickMenuBoundsIfNeeded();
 }

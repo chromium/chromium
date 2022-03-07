@@ -572,11 +572,7 @@ void WorkspaceLayoutManager::NotifySystemUiAreaChanged() const {
 }
 
 void WorkspaceLayoutManager::NotifyAccessibilityWorkspaceChanged() const {
-  if (Shell::Get()->accessibility_controller()->autoclick().enabled()) {
-    Shell::Get()
-        ->accessibility_controller()
-        ->UpdateAutoclickMenuBoundsIfNeeded();
-  }
+  Shell::Get()->accessibility_controller()->UpdateFloatingPanelBoundsIfNeeded();
 }
 
 void WorkspaceLayoutManager::UpdateWindowWorkspace(aura::Window* window) {

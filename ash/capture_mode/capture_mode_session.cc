@@ -338,8 +338,8 @@ int GetMessageIdForCaptureSource(CaptureModeSource source,
   }
 }
 
-void UpdateAutoclickMenuBoundsIfNeeded() {
-  Shell::Get()->accessibility_controller()->UpdateAutoclickMenuBoundsIfNeeded();
+void UpdateFloatingPanelBoundsIfNeeded() {
+  Shell::Get()->accessibility_controller()->UpdateFloatingPanelBoundsIfNeeded();
 }
 
 }  // namespace
@@ -576,7 +576,7 @@ void CaptureModeSession::Initialize() {
   aura::Env::GetInstance()->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kSystem);
 
-  UpdateAutoclickMenuBoundsIfNeeded();
+  UpdateFloatingPanelBoundsIfNeeded();
 
   MaybeCreateUserNudge();
 }
@@ -607,7 +607,7 @@ void CaptureModeSession::Shutdown() {
     capture_mode_util::TriggerAccessibilityAlert(
         IDS_ASH_SCREEN_CAPTURE_ALERT_CLOSE);
   }
-  UpdateAutoclickMenuBoundsIfNeeded();
+  UpdateFloatingPanelBoundsIfNeeded();
 
   if (!is_stopping_to_start_video_recording_) {
     // Stopping the session for any reason other than starting video recording

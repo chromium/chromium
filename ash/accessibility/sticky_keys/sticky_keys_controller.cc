@@ -96,6 +96,13 @@ void StickyKeysController::SetModifiersEnabled(bool mod3_enabled,
   }
 }
 
+void StickyKeysController::UpdateStickyKeysOverlayBoundsIfNeeded() {
+  if (!enabled_)
+    return;
+
+  overlay_->UpdateBoundsIfVisible();
+}
+
 StickyKeysOverlay* StickyKeysController::GetOverlayForTest() {
   return overlay_.get();
 }

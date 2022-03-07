@@ -73,6 +73,9 @@ class ASH_EXPORT StickyKeysController : public ui::EventRewriter {
 
   void SetModifiersEnabled(bool mod3_enabled, bool altgr_enabled);
 
+  // Update StickyKeysOverlay bounds (e.g. if the workspace area changed).
+  void UpdateStickyKeysOverlayBoundsIfNeeded();
+
   // Returns the StickyKeyOverlay used by the controller. Ownership is not
   // passed.
   StickyKeysOverlay* GetOverlayForTest();
