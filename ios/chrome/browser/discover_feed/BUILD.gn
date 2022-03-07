@@ -21,10 +21,6 @@ source_set("discover_feed") {
     "//ios/public/provider/chrome/browser/discover_feed",
   ]
   frameworks = [ "UIKit.framework" ]
-
-  # Remove once internal code has been converted to use the new path.
-  allow_circular_includes_from =
-      [ "//ios/public/provider/chrome/browser/discover_feed" ]
 }
 
 # This is a separate target because the factory depends on the provider

@@ -7,10 +7,6 @@ source_set("discover_feed") {
   sources = [
     "discover_feed_provider.h",
     "discover_feed_provider.mm",
-
-    # Remove once internal code has been converted to use the new path.
-    "discover_feed_configuration.h",
-    "discover_feed_view_controller_configuration.h",
   ]
   deps = [
     "//base",
