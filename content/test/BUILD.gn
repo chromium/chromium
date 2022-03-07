@@ -2267,6 +2267,8 @@ test("content_unittests") {
     "../browser/sms/sms_parser_unittest.cc",
     "../browser/sms/user_consent_handler_unittest.cc",
     "../browser/sms/webotp_service_unittest.cc",
+    "../browser/speculation_rules/prefetch/prefetch_document_manager_unittest.cc",
+    "../browser/speculation_rules/prefetch/prefetch_service_unittest.cc",
     "../browser/speculation_rules/speculation_host_impl_unittest.cc",
     "../browser/speech/tts_controller_unittest.cc",
     "../browser/startup_task_runner_unittest.cc",

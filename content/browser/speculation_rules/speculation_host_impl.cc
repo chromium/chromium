@@ -8,6 +8,8 @@
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/speculation_rules/prefetch/prefetch_document_manager.h"
+#include "content/browser/speculation_rules/prefetch/prefetch_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -101,6 +103,14 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
     return;
   if (render_frame_host()->GetParent())
     return;
+
+  if (base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor)) {
+    PrefetchDocumentManager* prefetch_document_manager =
+        PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+            render_frame_host());
+
+    prefetch_document_manager->ProcessCandidates(candidates);
+  }
 
   // Let `delegate_` process the candidates that it is interested in.
   if (delegate_)

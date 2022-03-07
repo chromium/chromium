@@ -31,12 +31,13 @@ class ExternalMountPoints;
 namespace content {
 
 class BackgroundSyncScheduler;
+class BrowserContextImpl;
 class BrowsingDataRemover;
 class BrowsingDataRemoverImpl;
 class DownloadManager;
-class StoragePartitionImplMap;
 class PermissionController;
-class BrowserContextImpl;
+class PrefetchService;
+class StoragePartitionImplMap;
 
 // content-internal parts of BrowserContext.
 //
@@ -91,6 +92,8 @@ class BrowserContextImpl {
     return background_sync_scheduler_.get();
   }
 
+  PrefetchService* GetPrefetchService();
+
  private:
   // Creates the media service for storing/retrieving WebRTC encoding and
   // decoding performance stats.  Exposed here rather than StoragePartition
@@ -116,6 +119,7 @@ class BrowserContextImpl {
   std::unique_ptr<DownloadManager> download_manager_;
   std::unique_ptr<PermissionController> permission_controller_;
   scoped_refptr<BackgroundSyncScheduler> background_sync_scheduler_;
+  std::unique_ptr<PrefetchService> prefetch_service_;
 
   std::unique_ptr<media::learning::LearningSessionImpl> learning_session_;
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;

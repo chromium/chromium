@@ -14,6 +14,7 @@
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/browser/speculation_rules/prefetch/prefetch_service.h"
 #include "content/browser/speech/tts_controller_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
 #include "content/public/browser/browser_context.h"
@@ -290,6 +291,13 @@ storage::ExternalMountPoints* BrowserContextImpl::GetMountPoints() {
 #else
   return nullptr;
 #endif
+}
+
+PrefetchService* BrowserContextImpl::GetPrefetchService() {
+  if (!prefetch_service_)
+    prefetch_service_ = PrefetchService::CreateIfPossible();
+
+  return prefetch_service_.get();
 }
 
 }  // namespace content
