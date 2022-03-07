@@ -58,16 +58,16 @@ class AccountSelectionProperties {
      */
     static class HeaderProperties {
         public enum HeaderType { AUTO_SIGN_IN, SIGN_IN, VERIFY }
-        static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
-                new ReadableObjectPropertyKey<>("close_on_click_listener");
-        static final ReadableObjectPropertyKey<String> FORMATTED_IDP_ETLD_PLUS_ONE =
-                new ReadableObjectPropertyKey<>("formatted_idp_etld_plus_one");
-        static final ReadableObjectPropertyKey<String> FORMATTED_RP_ETLD_PLUS_ONE =
-                new ReadableObjectPropertyKey<>("formatted_rp_etld_plus_one");
-        static final ReadableObjectPropertyKey<Bitmap> IDP_BRAND_ICON =
-                new ReadableObjectPropertyKey<>("brand_icon");
-        static final ReadableObjectPropertyKey<HeaderType> TYPE =
-                new ReadableObjectPropertyKey<>("type");
+        static final WritableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
+                new WritableObjectPropertyKey<>("close_on_click_listener");
+        static final WritableObjectPropertyKey<String> FORMATTED_IDP_ETLD_PLUS_ONE =
+                new WritableObjectPropertyKey<>("formatted_idp_etld_plus_one");
+        static final WritableObjectPropertyKey<String> FORMATTED_RP_ETLD_PLUS_ONE =
+                new WritableObjectPropertyKey<>("formatted_rp_etld_plus_one");
+        static final WritableObjectPropertyKey<Bitmap> IDP_BRAND_ICON =
+                new WritableObjectPropertyKey<>("brand_icon");
+        static final WritableObjectPropertyKey<HeaderType> TYPE =
+                new WritableObjectPropertyKey<>("type");
 
         static final PropertyKey[] ALL_KEYS = {CLOSE_ON_CLICK_LISTENER, FORMATTED_IDP_ETLD_PLUS_ONE,
                 FORMATTED_RP_ETLD_PLUS_ONE, IDP_BRAND_ICON, TYPE};
@@ -123,35 +123,30 @@ class AccountSelectionProperties {
         private AutoSignInCancelButtonProperties() {}
     }
 
-    @IntDef({ItemType.HEADER, ItemType.ACCOUNT, ItemType.CONTINUE_BUTTON,
-            ItemType.AUTO_SIGN_IN_CANCEL_BUTTON, ItemType.DATA_SHARING_CONSENT})
+    @IntDef({ItemType.ACCOUNT, ItemType.CONTINUE_BUTTON, ItemType.AUTO_SIGN_IN_CANCEL_BUTTON,
+            ItemType.DATA_SHARING_CONSENT})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         /**
-         * The header at the top of the accounts sheet.
-         */
-        int HEADER = 1;
-
-        /**
          * A section containing a user's name and email.
          */
-        int ACCOUNT = 2;
+        int ACCOUNT = 1;
 
         /**
          * The continue button at the end of the sheet when there is only one account.
          */
-        int CONTINUE_BUTTON = 3;
+        int CONTINUE_BUTTON = 2;
 
         /**
          * The cancel button at the end of the sheet with auto sign in.
          */
-        int AUTO_SIGN_IN_CANCEL_BUTTON = 4;
+        int AUTO_SIGN_IN_CANCEL_BUTTON = 3;
 
         /**
          * The user data sharing consent text when there is only one account and it is a sign-up
          * moment.
          */
-        int DATA_SHARING_CONSENT = 5;
+        int DATA_SHARING_CONSENT = 4;
     }
 
     private AccountSelectionProperties() {}

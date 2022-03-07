@@ -11,6 +11,8 @@
     android:layout_width="match_parent"
     android:orientation="vertical">
 
+    <include layout="@layout/account_selection_header_item"
+        android:id="@+id/header_view" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sheet_item_list"
         android:layout_width="match_parent"

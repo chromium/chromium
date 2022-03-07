@@ -25,6 +25,8 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.List;
@@ -48,9 +50,12 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         mBottomSheetController = sheetController;
         mContext = context;
 
+        PropertyModel headerModel =
+                new PropertyModel.Builder(AccountSelectionProperties.HeaderProperties.ALL_KEYS)
+                        .build();
         // Construct view and its related adaptor to be displayed in the bottom sheet.
         ModelList sheetItems = new ModelList();
-        View contentView = setupContentView(context, sheetItems);
+        View contentView = setupContentView(context, headerModel, sheetItems);
         mSheetItemListView = contentView.findViewById(R.id.sheet_item_list);
 
         // Setup the bottom sheet content view.
@@ -68,13 +73,17 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         @Px
         int avatarSize = context.getResources().getDimensionPixelSize(
                 R.dimen.account_selection_account_avatar_size);
-        mMediator = new AccountSelectionMediator(delegate, sheetItems, mBottomSheetController,
-                mBottomSheetContent, imageFetcher, avatarSize);
+        mMediator = new AccountSelectionMediator(delegate, headerModel, sheetItems,
+                mBottomSheetController, mBottomSheetContent, imageFetcher, avatarSize);
     }
 
-    static View setupContentView(Context context, ModelList sheetItems) {
+    static View setupContentView(Context context, PropertyModel headerModel, ModelList sheetItems) {
         View contentView = (LinearLayout) LayoutInflater.from(context).inflate(
                 R.layout.account_selection_sheet, null);
+
+        PropertyModelChangeProcessor.create(headerModel, contentView.findViewById(R.id.header_view),
+                AccountSelectionViewBinder::bindHeaderView);
+
         RecyclerView sheetItemListView = contentView.findViewById(R.id.sheet_item_list);
         sheetItemListView.setLayoutManager(new LinearLayoutManager(
                 sheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false));
@@ -82,9 +91,6 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
 
         // Setup the recycler view to be updated as we update the sheet items.
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(sheetItems);
-        adapter.registerType(AccountSelectionProperties.ItemType.HEADER,
-                AccountSelectionCoordinator::buildHeaderView,
-                AccountSelectionViewBinder::bindHeaderView);
         adapter.registerType(AccountSelectionProperties.ItemType.ACCOUNT,
                 AccountSelectionCoordinator::buildAccountView,
                 AccountSelectionViewBinder::bindAccountView);
@@ -100,11 +106,6 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         sheetItemListView.setAdapter(adapter);
 
         return contentView;
-    }
-
-    static View buildHeaderView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.account_selection_header_item, parent, false);
     }
 
     static View buildAccountView(ViewGroup parent) {

@@ -77,6 +77,7 @@ public class AccountSelectionViewTest {
     private Runnable mAutoSignInCancelCallback;
 
     private BlankUiTestActivity mActivity;
+    private PropertyModel mHeaderModel;
     private ModelList mSheetItems;
     private View mContentView;
     @Rule
@@ -90,8 +91,12 @@ public class AccountSelectionViewTest {
         mActivity = mActivityTestRule.getActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mHeaderModel =
+                    new PropertyModel.Builder(AccountSelectionProperties.HeaderProperties.ALL_KEYS)
+                            .build();
             mSheetItems = new ModelList();
-            mContentView = AccountSelectionCoordinator.setupContentView(mActivity, mSheetItems);
+            mContentView = AccountSelectionCoordinator.setupContentView(
+                    mActivity, mHeaderModel, mSheetItems);
             mActivity.setContentView(mContentView);
         });
     }
@@ -100,12 +105,9 @@ public class AccountSelectionViewTest {
     @MediumTest
     public void testSignInTitleDisplayed() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
-                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
-                            .build()));
+            mHeaderModel.set(HeaderProperties.TYPE, HeaderType.SIGN_IN);
+            mHeaderModel.set(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org");
+            mHeaderModel.set(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org");
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         TextView title = mContentView.findViewById(R.id.header_title);
@@ -120,12 +122,9 @@ public class AccountSelectionViewTest {
     @MediumTest
     public void testVerifyingTitleDisplayed() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
-                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.VERIFY)
-                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
-                            .build()));
+            mHeaderModel.set(HeaderProperties.TYPE, HeaderType.VERIFY);
+            mHeaderModel.set(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org");
+            mHeaderModel.set(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org");
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         TextView title = mContentView.findViewById(R.id.header_title);
@@ -216,12 +215,9 @@ public class AccountSelectionViewTest {
     @MediumTest
     public void testHeaderDisplayedForAutoSignIn() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
-                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.AUTO_SIGN_IN)
-                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
-                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
-                            .build()));
+            mHeaderModel.set(HeaderProperties.TYPE, HeaderType.AUTO_SIGN_IN);
+            mHeaderModel.set(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org");
+            mHeaderModel.set(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org");
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         TextView title = mContentView.findViewById(R.id.header_title);
