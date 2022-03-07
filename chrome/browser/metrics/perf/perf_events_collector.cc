@@ -156,13 +156,13 @@ const char kPerfFPCallgraphHGCmd[] =
     "perf record -a -e cycles:HG -g -c 4000037";
 
 const char kPerfLBRCallgraphCmd[] =
-    "perf record -a -e cycles -c 4000037 --call-graph lbr";
+    "perf record -a -e cycles -c 6000011 --call-graph lbr";
 
-const char kPerfLBRCmd[] = "perf record -a -e r20c4 -b -c 200011";
+const char kPerfLBRCmd[] = "perf record -a -e r20c4 -b -c 800011";
 
 // Silvermont, Airmont, Goldmont don't have a branches taken event. Therefore,
 // we sample on the branches retired event.
-const char kPerfLBRCmdAtom[] = "perf record -a -e rc4 -b -c 300001";
+const char kPerfLBRCmdAtom[] = "perf record -a -e rc4 -b -c 800011";
 
 // The following events count misses in the last level caches and level 2 TLBs.
 
@@ -171,21 +171,21 @@ const char kPerfITLBMissCyclesCmdIvyBridge[] =
     "perf record -a -e itlb_misses.walk_duration -c 30001";
 
 const char kPerfDTLBMissCyclesCmdIvyBridge[] =
-    "perf record -a -e dtlb_load_misses.walk_duration -g -c 160001";
+    "perf record -a -e dtlb_load_misses.walk_duration -g -c 350003";
 
 // TLB miss cycles for Skylake, Kabylake, Tigerlake.
 const char kPerfITLBMissCyclesCmdSkylake[] =
     "perf record -a -e itlb_misses.walk_pending -c 30001";
 
 const char kPerfDTLBMissCyclesCmdSkylake[] =
-    "perf record -a -e dtlb_load_misses.walk_pending -g -c 160001";
+    "perf record -a -e dtlb_load_misses.walk_pending -g -c 350003";
 
 // TLB miss cycles for Atom, including Silvermont, Airmont and Goldmont.
 const char kPerfITLBMissCyclesCmdAtom[] =
     "perf record -a -e page_walks.i_side_cycles -c 30001";
 
 const char kPerfDTLBMissCyclesCmdAtom[] =
-    "perf record -a -e page_walks.d_side_cycles -g -c 160001";
+    "perf record -a -e page_walks.d_side_cycles -g -c 350003";
 
 const char kPerfLLCMissesCmd[] = "perf record -a -e r412e -g -c 30007";
 // Precise events (request zero skid) for last level cache misses.

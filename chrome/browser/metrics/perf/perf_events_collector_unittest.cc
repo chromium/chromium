@@ -40,7 +40,7 @@ const char kPerfFPCallgraphCmd[] = "perf record -a -e cycles -g -c 4000037";
 const char kPerfFPCallgraphHGCmd[] =
     "perf record -a -e cycles:HG -g -c 4000037";
 const char kPerfLBRCallgraphCmd[] =
-    "perf record -a -e cycles -c 4000037 --call-graph lbr";
+    "perf record -a -e cycles -c 6000011 --call-graph lbr";
 const char kPerfCyclesPPPCmd[] = "perf record -a -e cycles:ppp -c 1000003";
 const char kPerfCyclesPPPHGCmd[] = "perf record -a -e cycles:pppHG -c 1000003";
 const char kPerfFPCallgraphPPPCmd[] =
@@ -49,8 +49,8 @@ const char kPerfFPCallgraphPPPHGCmd[] =
     "perf record -a -e cycles:pppHG -g -c 4000037";
 const char kPerfLBRCallgraphPPPCmd[] =
     "perf record -a -e cycles:ppp -c 4000037 --call-graph lbr";
-const char kPerfLBRCmd[] = "perf record -a -e r20c4 -b -c 200011";
-const char kPerfLBRCmdAtom[] = "perf record -a -e rc4 -b -c 300001";
+const char kPerfLBRCmd[] = "perf record -a -e r20c4 -b -c 800011";
+const char kPerfLBRCmdAtom[] = "perf record -a -e rc4 -b -c 800011";
 const char kPerfITLBMissCyclesCmdIvyBridge[] =
     "perf record -a -e itlb_misses.walk_duration -c 30001";
 const char kPerfITLBMissCyclesCmdSkylake[] =
