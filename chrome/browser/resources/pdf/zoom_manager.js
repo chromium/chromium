@@ -42,6 +42,7 @@ export class ZoomManager {
    * @param {function(number):Promise} setBrowserZoomFunction A function that
    *     sets the browser zoom to the provided value.
    * @param {number} initialZoom The initial browser zoom level.
+   * @return {ZoomManager}
    */
   static create(
       zoomBehavior, getViewportZoom, setBrowserZoomFunction, initialZoom) {

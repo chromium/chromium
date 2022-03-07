@@ -9,15 +9,6 @@ import {LayoutOptions} from './viewport.js';
 
 /**
  * @typedef {{
- *   source: Object,
- *   origin: string,
- *   data: !MessageData,
- * }}
- */
-export let MessageObject;
-
-/**
- * @typedef {{
  *   type: string,
  *   height: number,
  *   width: number,

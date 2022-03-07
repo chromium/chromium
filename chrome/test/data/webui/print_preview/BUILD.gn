@@ -129,7 +129,10 @@ ts_library("build_ts") {
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
   ]
-  definitions = [ "//chrome/browser/resources/pdf/source_capabilities.d.ts" ]
+  definitions = [
+    "//chrome/browser/resources/pdf/source_capabilities.d.ts",
+    "//tools/typescript/definitions/mime_handler_private.d.ts",
+  ]
   in_files = preprocessed_tests + non_preprocessed_tests
   deps = [
     "//chrome/browser/resources/pdf:build_ts",

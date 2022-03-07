@@ -310,7 +310,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   getToolbar_() {
-    return /** @type {!ViewerToolbarElement} */ (this.$$('#toolbar'));
+    return /** @type {!ViewerToolbarElement} */ (
+        this.shadowRoot.querySelector('#toolbar'));
   }
 
   /** @override */
@@ -321,9 +322,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   /** @param {!BrowserApi} browserApi */
   init(browserApi) {
     super.init(
-        browserApi, /** @type {!HTMLElement} */ (this.$$('#scroller')),
-        /** @type {!HTMLDivElement} */ (this.$$('#sizer')),
-        /** @type {!HTMLDivElement} */ (this.$$('#content')));
+        browserApi, /** @type {!HTMLElement} */
+        (this.shadowRoot.querySelector('#scroller')),
+        /** @type {!HTMLDivElement} */
+        (this.shadowRoot.querySelector('#sizer')),
+        /** @type {!HTMLDivElement} */
+        (this.shadowRoot.querySelector('#content')));
 
     this.pluginController_ = PluginController.getInstance();
 

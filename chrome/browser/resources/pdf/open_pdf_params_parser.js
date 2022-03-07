@@ -12,7 +12,8 @@ import {Size} from './viewport.js';
  *   zoom: (number|undefined),
  *   view: (!FittingType|undefined),
  *   viewPosition: (number|undefined),
- *   position: (!Object|undefined),
+ *   position: (!Point|undefined),
+ *   page: (number|undefined),
  * }}
  */
 export let OpenPdfParams;

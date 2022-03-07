@@ -25,7 +25,7 @@ if (enable_ink) {
 
 # Files that need to be passed to html_to_js() that are used only in PDF Viewer.
 pdf_webcomponents_files = [
-  "elements/shared-css.js",
+  "elements/shared-css.ts",
   "elements/viewer-bookmark.ts",
   "elements/viewer-document-outline.ts",
   "elements/viewer-download-controls.ts",
@@ -45,7 +45,7 @@ if (enable_ink) {
     "elements/viewer-annotations-mode-dialog.ts",
     "elements/viewer-ink-host.ts",
     "elements/viewer-pen-options.ts",
-    "elements/viewer-toolbar-dropdown.js",
+    "elements/viewer-toolbar-dropdown.ts",
   ]
 }
 
@@ -74,7 +74,7 @@ shared_non_webcomponents_files = [
   "metrics.ts",
   "open_pdf_params_parser.js",
   "pdf_scripting_api.js",
-  "pdf_viewer_base.js",
+  "pdf_viewer_base.ts",
   "pdf_viewer_utils.js",
   "viewport.js",
   "viewport_scroller.js",
@@ -84,9 +84,9 @@ shared_non_webcomponents_files = [
 # Files that need to be passed to html_to_js() that are shared by PDF Viewer
 # and Print Preview.
 shared_webcomponents_files = [
-  "elements/icons.js",
-  "elements/shared-vars.js",
-  "elements/viewer-error-dialog.js",
+  "elements/icons.ts",
+  "elements/shared-vars.ts",
+  "elements/viewer-error-dialog.ts",
   "pdf_viewer_shared_style.ts",
 ]
 

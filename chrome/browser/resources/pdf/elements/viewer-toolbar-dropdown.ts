@@ -12,13 +12,20 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 /**
  * Size of additional padding in the inner scrollable section of the dropdown.
  */
-const DROPDOWN_INNER_PADDING = 12;
+const DROPDOWN_INNER_PADDING: number = 12;
 
 /** Size of vertical padding on the outer #dropdown element. */
-const DROPDOWN_OUTER_PADDING = 2;
+const DROPDOWN_OUTER_PADDING: number = 2;
 
 /** Minimum height of toolbar dropdowns (px). */
-const MIN_DROPDOWN_HEIGHT = 200;
+const MIN_DROPDOWN_HEIGHT: number = 200;
+
+export interface ViewerToolbarDropdownElement {
+  $: {
+    dropdown: HTMLElement,
+    'scroll-container': HTMLElement,
+  };
+}
 
 export class ViewerToolbarDropdownElement extends PolymerElement {
   static get is() {
@@ -82,10 +89,7 @@ export class ViewerToolbarDropdownElement extends PolymerElement {
         value: false,
       },
 
-      /**
-       * Toolbar icon currently being displayed.
-       * @private
-       */
+      /** Toolbar icon currently being displayed. */
       dropdownIcon_: {
         type: String,
         computed: 'computeIcon_(dropdownOpen, closedIcon, openIcon)',
@@ -93,34 +97,35 @@ export class ViewerToolbarDropdownElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  closedIcon: string;
+  dropdownCentered: boolean;
+  dropdownOpen: boolean;
+  header: string;
+  hideHeader: boolean;
+  lowerBound: number;
+  openAfterSelect: boolean;
+  openIcon: string;
+  selected: boolean;
 
-    /**
-     * Current animation being played, or null if there is none.
-     * @private {?Object}
-     */
-    this.animation_ = null;
+  /** Current animation being played, or null if there is none. */
+  private animation_: Animation|null = null;
 
-    /**
-     * True if the max-height CSS property for the dropdown scroll container
-     * is valid. If false, the height will be updated the next time the
-     * dropdown is visible.
-     * @private {boolean}
-     */
-    this.maxHeightValid_ = false;
-  }
+  private dropdownIcon_: string;
 
   /**
-   * @return {string} Current icon for the dropdown.
-   * @private
+   * True if the max-height CSS property for the dropdown scroll container is
+   * valid. If false, the height will be updated the next time the dropdown is
+   * visible.
    */
-  computeIcon_(dropdownOpen, closedIcon, openIcon) {
+  private maxHeightValid_: boolean = false;
+
+  /** @return Current icon for the dropdown. */
+  private computeIcon_(
+      dropdownOpen: boolean, closedIcon: string, openIcon: string): string {
     return dropdownOpen ? openIcon : closedIcon;
   }
 
-  /** @private */
-  lowerBoundChanged_() {
+  private lowerBoundChanged_() {
     this.maxHeightValid_ = false;
     if (this.dropdownOpen) {
       this.updateMaxHeight();
@@ -139,8 +144,8 @@ export class ViewerToolbarDropdownElement extends PolymerElement {
         this.updateMaxHeight();
       }
 
-      const listener = (e) => {
-        if (e.path.includes(this)) {
+      const listener = (e: PointerEvent) => {
+        if (e.composedPath().includes(this)) {
           return;
         }
         if (this.dropdownOpen) {
@@ -167,11 +172,9 @@ export class ViewerToolbarDropdownElement extends PolymerElement {
 
   /**
    * Start an animation on the dropdown.
-   * @param {boolean} isEntry True to play entry animation, false to play
-   * exit.
-   * @private
+   * @param isEntry True to play entry animation, false to play exit.
    */
-  playAnimation_(isEntry) {
+  private playAnimation_(isEntry: boolean) {
     this.animation_ = isEntry ? this.animateEntry_() : this.animateExit_();
     this.animation_.onfinish = () => {
       this.animation_ = null;
@@ -181,11 +184,7 @@ export class ViewerToolbarDropdownElement extends PolymerElement {
     };
   }
 
-  /**
-   * @return {!Object} Animation
-   * @private
-   */
-  animateEntry_() {
+  private animateEntry_(): Animation {
     let maxHeight =
         this.$.dropdown.getBoundingClientRect().height - DROPDOWN_OUTER_PADDING;
 
@@ -193,12 +192,10 @@ export class ViewerToolbarDropdownElement extends PolymerElement {
       maxHeight = 0;
     }
 
-    this.$.dropdown.animate(
-        [{opacity: 0}, {opacity: 1}],
-        {
-          duration: 150,
-          easing: 'cubic-bezier(0, 0, 0.2, 1)',
-        });
+    this.$.dropdown.animate([{opacity: 0}, {opacity: 1}], {
+      duration: 150,
+      easing: 'cubic-bezier(0, 0, 0.2, 1)',
+    });
     return this.$.dropdown.animate(
         [
           {height: '20px', transform: 'translateY(-10px)'},
@@ -210,11 +207,7 @@ export class ViewerToolbarDropdownElement extends PolymerElement {
         });
   }
 
-  /**
-   * @return {!Object} Animation
-   * @private
-   */
-  animateExit_() {
+  private animateExit_(): Animation {
     return this.$.dropdown.animate(
         [
           {transform: 'translateY(0)', opacity: 1},

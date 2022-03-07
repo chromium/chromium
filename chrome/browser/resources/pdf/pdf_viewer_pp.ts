@@ -19,7 +19,7 @@ import {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
 import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
 import {PDFViewerBaseElement} from './pdf_viewer_base.js';
-import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, MessageObject, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
 
@@ -169,7 +169,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
     this.pluginController_!.viewportChanged();
   }
 
-  handleScriptingMessage(message: MessageObject) {
+  handleScriptingMessage(message: MessageEvent) {
     if (super.handleScriptingMessage(message)) {
       return true;
     }
@@ -201,7 +201,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
    * @param message the message to handle.
    * @return true if the message was handled, false otherwise.
    */
-  private handlePrintPreviewScriptingMessage_(message: MessageObject): boolean {
+  private handlePrintPreviewScriptingMessage_(message: MessageEvent): boolean {
     const messageData = message.data;
     switch (messageData.type.toString()) {
       case 'loadPreviewPage':
@@ -332,6 +332,8 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
   forceFit(view: FittingType) {
     this.$.zoomToolbar.forceFit(view);
   }
+
+  protected afterZoom(_viewportZoom: number) {}
 
   handleStrings(strings: {[key: string]: string}) {
     super.handleStrings(strings);

@@ -19,16 +19,22 @@ export class ViewerErrorDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {?function(): undefined} */
       reloadFn: Function,
     };
   }
 
-  /** @private */
-  onReload_() {
+  reloadFn: (() => void)|null;
+
+  private onReload_() {
     if (this.reloadFn) {
       this.reloadFn();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-error-dialog': ViewerErrorDialogElement;
   }
 }
 

@@ -5,8 +5,8 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 /**
- * @param {!Object} streamInfo The stream object pointing to the data contained
- *     in the PDF.
+ * @param {!chrome.mimeHandlerPrivate.StreamInfo} streamInfo The stream object
+ *     pointing to the data contained in the PDF.
  * @return {Promise<number>} A promise that will resolve to the default zoom
  *     factor.
  */
@@ -28,8 +28,8 @@ function lookupDefaultZoom(streamInfo) {
  * Returns a promise that will resolve to the initial zoom factor
  * upon starting the plugin. This may differ from the default zoom
  * if, for example, the page is zoomed before the plugin is run.
- * @param {!Object} streamInfo The stream object pointing to the data contained
- *     in the PDF.
+ * @param {!chrome.mimeHandlerPrivate.StreamInfo} streamInfo The stream object
+ *     pointing to the data contained in the PDF.
  * @return {Promise<number>} A promise that will resolve to the initial zoom
  *     factor.
  */
@@ -48,8 +48,8 @@ function lookupInitialZoom(streamInfo) {
 // A class providing an interface to the browser.
 export class BrowserApi {
   /**
-   * @param {!Object} streamInfo The stream object which points to the data
-   *     contained in the PDF.
+   * @param {!chrome.mimeHandlerPrivate.StreamInfo} streamInfo The stream object
+   *     which points to the data contained in the PDF.
    * @param {number} defaultZoom The default browser zoom.
    * @param {number} initialZoom The initial browser zoom
    *     upon starting the plugin.
@@ -63,8 +63,8 @@ export class BrowserApi {
   }
 
   /**
-   * @param {!Object} streamInfo The stream object pointing to the data
-   *     contained in the PDF.
+   * @param {!chrome.mimeHandlerPrivate.StreamInfo} streamInfo The stream object
+   *     pointing to the data contained in the PDF.
    * @param {ZoomBehavior} zoomBehavior How to manage zoom.
    * @return {Promise<BrowserApi>} A promise to a BrowserApi.
    */
@@ -78,8 +78,8 @@ export class BrowserApi {
   }
 
   /**
-   * @return {Object} The stream info object pointing to the data contained in
-   *     the PDF.
+   * @return {chrome.mimeHandlerPrivate.StreamInfo} The stream info object
+   *     pointing to the data contained in the PDF.
    */
   getStreamInfo() {
     return this.streamInfo_;

@@ -71,9 +71,9 @@ export class Viewport {
   /**
    * @param {!HTMLElement} container The element which contains the scrollable
    *     content.
-   * @param {!HTMLDivElement} sizer The element which represents the size of the
+   * @param {!HTMLElement} sizer The element which represents the size of the
    *     scrollable content in the viewport
-   * @param {!HTMLDivElement} content The element which is the parent of the
+   * @param {!HTMLElement} content The element which is the parent of the
    *     plugin in the viewer.
    * @param {number} scrollbarWidth The width of scrollbars on the page
    * @param {number} defaultZoom The default zoom level.

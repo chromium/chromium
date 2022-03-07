@@ -16,6 +16,19 @@ import {Bookmark} from '../bookmark_type.js';
 /** Amount that each level of bookmarks is indented by (px). */
 const BOOKMARK_INDENT: number = 20;
 
+type ChangePageAndXyEvent = CustomEvent<{
+  page: number,
+  x: number,
+  y: number,
+  origin: string,
+}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'change-page-and-xy': ChangePageAndXyEvent;
+  }
+}
+
 export interface ViewerBookmarkElement {
   $: {
     item: HTMLElement,
