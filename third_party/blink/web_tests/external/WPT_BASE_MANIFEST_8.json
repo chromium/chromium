@@ -143326,6 +143326,32 @@
       ]
      },
      "sticky": {
+      "position-sticky-bottom-002.html": [
+       "980de2e651b7ab5ed8ed06dadfcd9f89a138ba3d",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-bottom-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-bottom-003.html": [
+       "649dfc9d364817bcca8ade55c3612c3b3e0bf7e5",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-bottom-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "position-sticky-change-top.html": [
        "6a327ccd567818c2267d808a890796724384726e",
        [
@@ -143521,6 +143547,32 @@
         {}
        ]
       ],
+      "position-sticky-left-002.html": [
+       "868b58adb0430f03293edf7810d1b9245f010382",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-left-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-left-003.html": [
+       "3114981a69a250f94934b77cc4792a605f9a44cd",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-left-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "position-sticky-nested-inline.html": [
        "92eda147bd4e54cc70081eb36eb8bb9ae33f19c2",
        [
@@ -143567,6 +143619,32 @@
         [
          [
           "/css/css-position/sticky/position-sticky-rendering-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-right-002.html": [
+       "e83189a498ecf6974347564b4a0ac2a67d4c304a",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-right-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-right-003.html": [
+       "ea712a99daa6fcd457ee56c2b180ef82761ff082",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-right-002-ref.html",
           "=="
          ]
         ],
@@ -143775,6 +143853,32 @@
         [
          [
           "/css/css-position/sticky/position-sticky-table-tr-top-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-top-002.html": [
+       "e8025d679ed00b391df492b5d5a36b3d2ce82910",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-top-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-top-003.html": [
+       "574b1b359bc8eadf1d5ce237fa8cfb49f9b4a834",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-top-002-ref.html",
           "=="
          ]
         ],
@@ -264472,8 +264576,30 @@
        []
       ],
       "reference": {
+       "position-sticky-bottom-002-ref.html": [
+        "253ca7eebedb1e8c4216a969854bf57f9f3a0d50",
+        []
+       ],
+       "position-sticky-left-002-ref.html": [
+        "75aa9a4c1f4dc9fd5a13ea4f96f77d44491b598f",
+        []
+       ],
+       "position-sticky-right-002-ref.html": [
+        "3230e476b5ca25210490236b4d9909b683130d5d",
+        []
+       ],
+       "position-sticky-top-002-ref.html": [
+        "4a95591a56e80457b839aba3b7619d4fd392aadd",
+        []
+       ],
        "position-sticky-top-and-bottom-003-ref.html": [
         "36af9a33bc5bcd115de80b22c4cc698cb4768f6c",
+        []
+       ]
+      },
+      "support": {
+       "100x100-red.png": [
+        "57bf3ddc5213d06e0975de38f330ffb7c441b268",
         []
        ]
       }
