@@ -6,20 +6,14 @@ import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
 struct PopupMatchRowView: View {
-  enum Colors {
-    static let trailingButtonColor = Color(red: 0.769, green: 0.769, blue: 0.769)
-  }
-
   enum Dimensions {
     static let actionButtonOffset = CGSize(width: -5, height: 0)
     static let actionButtonOuterPadding = EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0)
-    static let extendedTouchTargetDiameter: CGFloat = 44
     static let leadingSpacing: CGFloat = 60
     static let minHeight: CGFloat = 58
     static let maxHeight: CGFloat = 98
     static let padding = EdgeInsets(top: 9, leading: 0, bottom: 9, trailing: 16)
     static let textHeight: CGFloat = 40
-    static let trailingButtonSize: CGFloat = 24
   }
 
   let match: PopupMatch
@@ -64,21 +58,7 @@ struct PopupMatchRowView: View {
         }
         Spacer()
         if match.isAppendable || match.isTabMatch {
-          Button(action: trailingButtonHandler) {
-            Image(systemName: match.isAppendable ? "arrow.up.backward" : "arrow.right.square")
-              .foregroundColor(Colors.trailingButtonColor)
-              .aspectRatio(contentMode: .fit)
-              .frame(
-                width: Dimensions.trailingButtonSize, height: Dimensions.trailingButtonSize,
-                alignment: .center
-              )
-              .contentShape(
-                Circle().size(
-                  width: Dimensions.extendedTouchTargetDiameter,
-                  height: Dimensions.extendedTouchTargetDiameter)
-              )
-          }
-          .buttonStyle(.plain)
+          PopupMatchTrailingButton(match: match, action: trailingButtonHandler)
         }
       }
       .padding(Dimensions.padding)
