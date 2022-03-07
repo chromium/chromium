@@ -230,7 +230,7 @@ public final class BrowserViewController
             }
         };
         mBottomSheetController.addObserver(mBottomSheetObserver);
-        mBottomSheetController.setAccssibilityUtil(WebLayerAccessibilityUtil.get());
+        mBottomSheetController.setAccessibilityUtil(WebLayerAccessibilityUtil.get());
     }
 
     public void destroy() {

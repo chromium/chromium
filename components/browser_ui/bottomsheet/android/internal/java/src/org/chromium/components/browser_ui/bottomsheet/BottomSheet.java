@@ -252,7 +252,7 @@ class BottomSheet extends FrameLayout
     }
 
     /** @param accessibilityUtil A mechanism for testing whether accessibility is enabled. */
-    void setAccssibilityUtil(AccessibilityUtil accessibilityUtil) {
+    void setAccessibilityUtil(AccessibilityUtil accessibilityUtil) {
         mAccessibilityUtil = accessibilityUtil;
     }
 

@@ -135,7 +135,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                 mCallbackController.makeCancelable(this::addStartSurfaceStateObserver));
 
         mSheetController.addObserver(this);
-        mSheetController.setAccssibilityUtil(ChromeAccessibilityUtil.get());
+        mSheetController.setAccessibilityUtil(ChromeAccessibilityUtil.get());
 
         // TODO(1092686): We should wait to instantiate all of these observers until the bottom
         //                sheet is actually used.

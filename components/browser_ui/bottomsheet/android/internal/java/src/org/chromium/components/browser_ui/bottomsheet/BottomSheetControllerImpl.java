@@ -120,7 +120,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         initializedCallback.onResult(mBottomSheet);
 
         mBottomSheet.init(window, keyboardDelegate);
-        mBottomSheet.setAccssibilityUtil(mAccessibilityUtil);
+        mBottomSheet.setAccessibilityUtil(mAccessibilityUtil);
 
         // Initialize the queue with a comparator that checks content priority.
         mContentQueue = new PriorityQueue<>(INITIAL_QUEUE_CAPACITY,
@@ -371,7 +371,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     }
 
     @Override
-    public void setAccssibilityUtil(AccessibilityUtil enabledSupplier) {
+    public void setAccessibilityUtil(AccessibilityUtil enabledSupplier) {
         mAccessibilityUtil = enabledSupplier;
     }
 

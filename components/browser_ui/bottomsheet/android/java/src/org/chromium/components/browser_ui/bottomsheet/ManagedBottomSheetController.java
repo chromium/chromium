@@ -48,7 +48,7 @@ public interface ManagedBottomSheetController
     void setBrowserControlsHiddenRatio(float ratio);
 
     /** @param accessibilityUtil A mechanism for testing whether accessibility is enabled. */
-    void setAccssibilityUtil(AccessibilityUtil accessibilityUtil);
+    void setAccessibilityUtil(AccessibilityUtil accessibilityUtil);
 
     /** Clean up any state maintained by the controller. */
     void destroy();
