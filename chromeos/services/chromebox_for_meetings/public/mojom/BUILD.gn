@@ -2,20 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "cfm_browser.mojom",
-    "cfm_network_settings.mojom",
-    "cfm_service_manager.mojom",
-    "external_display_brightness.mojom",
-    "meet_devices_diagnostics.mojom",
-    "meet_devices_info.mojom",
-    "meet_devices_logger.mojom",
-  ]
-  public_deps = [
-    "//chromeos/services/cros_healthd/public/mojom",
-    "//mojo/public/mojom/base",
-  ]
+  sources = [ "cfm_service_manager.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  if (is_cfm) {
+    sources += [
+      "cfm_browser.mojom",
+      "cfm_network_settings.mojom",
+      "external_display_brightness.mojom",
+      "meet_devices_diagnostics.mojom",
+      "meet_devices_info.mojom",
+      "meet_devices_logger.mojom",
+    ]
+    public_deps += [ "//chromeos/services/cros_healthd/public/mojom" ]
+  }
 }
