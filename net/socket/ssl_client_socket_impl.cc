@@ -940,6 +940,9 @@ int SSLClientSocketImpl::Init() {
     }
   }
 
+  SSL_set_permute_extensions(ssl_.get(), base::FeatureList::IsEnabled(
+                                             features::kPermuteTLSExtensions));
+
   return OK;
 }
 

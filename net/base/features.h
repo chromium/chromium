@@ -240,6 +240,11 @@ NET_EXPORT extern const base::FeatureParam<int> kExpectCTPruneDelaySecs;
 // servers.
 NET_EXPORT extern const base::Feature kTLS13KeyUpdate;
 
+// Enables permuting TLS extensions in the ClientHello, to reduce the risk of
+// non-compliant servers ossifying parts of the ClientHello and interfering with
+// deployment of future security improvements.
+NET_EXPORT extern const base::Feature kPermuteTLSExtensions;
+
 // Enables CECPQ2, a post-quantum key-agreement, in TLS 1.3 connections.
 NET_EXPORT extern const base::Feature kPostQuantumCECPQ2;
 
