@@ -392,9 +392,9 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
       flow_type_suffix = ".OtpFallbackFromFido";
       break;
     case UnmaskAuthFlowType::kNone:
-      // TODO(crbug.com/1300959): Fix Autofill.BetterAuth logging.
+      NOTREACHED();
       flow_type_suffix = "";
-      return;
+      break;
   }
   std::string card_type_suffix =
       latest_selected_card_was_virtual_card_ ? ".VirtualCard" : ".ServerCard";
