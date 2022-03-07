@@ -10,9 +10,14 @@ import {loadTimeData} from '../i18n_setup.js';
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
+import {PasswordListItemElement} from './password_list_item.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 type Constructor<T> = new (...args: any[]) => T;
+
+export type PasswordShowPasswordClickedEvent = Event&{
+  target: PasswordListItemElement,
+};
 
 /**
  * This mixin bundles functionality required to show a password to the user.
@@ -26,6 +31,18 @@ export const ShowPasswordMixin = dedupingMixin(
           return {
             entry: Object,
 
+            /**
+             * Whether password notes is enabled or not. If password notes is
+             * enabled, show password button should open the view dialog instead
+             * of showing inline.
+             */
+            isPasswordNotesEnabled_: {
+              type: Boolean,
+              value() {
+                return loadTimeData.getBoolean('enablePasswordNotes');
+              }
+            },
+
             // <if expr="chromeos_ash or chromeos_lacros">
             tokenRequestManager: Object
             // </if>
@@ -33,6 +50,8 @@ export const ShowPasswordMixin = dedupingMixin(
         }
 
         entry: MultiStorePasswordUiEntry;
+
+        private isPasswordNotesEnabled_: boolean;
 
         // <if expr="chromeos_ash or chromeos_lacros">
         tokenRequestManager: BlockingRequestManager;
@@ -64,7 +83,20 @@ export const ShowPasswordMixin = dedupingMixin(
               ' '.repeat(NUM_PLACEHOLDERS);
         }
 
-        onShowPasswordButtonTap() {
+        /**
+         * Handler for showing the passwords. If the password will be shown in
+         * view password dialog, it should be handled by the dialog via the
+         * event. If the password should be displayed inline, the method should
+         * update the text.
+         */
+        onShowPasswordButtonClick() {
+          if (this.isPasswordNotesEnabled_) {
+            this.dispatchEvent(new Event('password-show-password-clicked', {
+              bubbles: true,
+              composed: true,
+            }));
+            return;
+          }
           if (this.entry.password) {
             this.hide();
             return;
@@ -81,7 +113,7 @@ export const ShowPasswordMixin = dedupingMixin(
                     // <if expr="chromeos_ash or chromeos_lacros">
                     // If no password was found, refresh auth token and retry.
                     this.tokenRequestManager.request(
-                        () => this.onShowPasswordButtonTap());
+                        () => this.onShowPasswordButtonClick());
                     // </if>
                   });
         }
@@ -126,8 +158,8 @@ export interface ShowPasswordMixinInterface {
    */
   getPassword(): string;
 
-  /** Handler for tapping the show/hide button. */
-  onShowPasswordButtonTap(): void;
+  /** Handler for clicking the show/hide button. */
+  onShowPasswordButtonClick(): void;
 
   /** Hides the password. */
   hide(): void;

@@ -35,16 +35,19 @@ import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_p
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
+import {PasswordDialogMode} from './password_edit_dialog.js';
 import {PasswordListItemElement, PasswordMoreActionsClickedEvent} from './password_list_item.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
 import {getTemplate} from './passwords_list_handler.html.js';
+import {PasswordShowPasswordClickedEvent} from './show_password_mixin.js';
 
 declare global {
   interface HTMLElementEventMap {
     'password-more-actions-clicked': PasswordMoreActionsClickedEvent;
     'password-remove-dialog-passwords-removed':
         PasswordRemoveDialogPasswordsRemovedEvent;
+    'password-show-password-clicked': PasswordShowPasswordClickedEvent;
   }
 }
 
@@ -113,12 +116,9 @@ export class PasswordsListHandlerElement extends
       },
 
       /**
-       * Check if entry isn't federation credential.
+       * Request to specify how to open the password edit dialog.
        */
-      isEditDialog_: {
-        type: Boolean,
-        computed: 'computeIsEditDialog_(activePassword_)',
-      },
+      requestedDialogMode_: {type: Object, value: null},
 
       showPasswordEditDialog_: {type: Boolean, value: false},
 
@@ -167,7 +167,7 @@ export class PasswordsListHandlerElement extends
   // </if>
 
   private activePassword_: PasswordListItemElement|null;
-  private isEditDialog_: boolean;
+  private requestedDialogMode_: PasswordDialogMode|null;
   private showPasswordEditDialog_: boolean;
   private showPasswordMoveToAccountDialog_: boolean;
   private showPasswordRemoveDialog_: boolean;
@@ -187,6 +187,8 @@ export class PasswordsListHandlerElement extends
     this.addEventListener(
         'password-remove-dialog-passwords-removed',
         this.passwordRemoveDialogPasswordsRemovedHandler_);
+    this.addEventListener(
+        'password-show-password-clicked', this.onPasswordShowPasswordClicked_);
   }
 
   connectedCallback() {
@@ -226,17 +228,26 @@ export class PasswordsListHandlerElement extends
     this.activeDialogAnchor_ = target;
   }
 
+  /**
+   * Opens the password view dialog.
+   */
+  private onPasswordShowPasswordClicked_(event:
+                                             PasswordShowPasswordClickedEvent) {
+    const target = event.target;
+    this.activePassword_ = target;
+    this.requestActivePlaintextPassword_(
+        chrome.passwordsPrivate.PlaintextReason.VIEW, password => {
+          this.set('activePassword_.entry.password', password);
+          this.requestedDialogMode_ = PasswordDialogMode.PASSWORD_VIEW;
+          this.activeDialogAnchor_ = target;
+          this.showPasswordEditDialog_ = true;
+        });
+  }
+
   private passwordRemoveDialogPasswordsRemovedHandler_(
       event: PasswordRemoveDialogPasswordsRemovedEvent) {
     this.displayRemovalNotification_(
         event.detail.removedFromAccount, event.detail.removedFromDevice);
-  }
-
-  /**
-   * Helper function that checks if entry isn't federation credential.
-   */
-  private computeIsEditDialog_(): boolean {
-    return !this.activePassword_ || !this.activePassword_.entry.federationText;
   }
 
   /**
@@ -260,14 +271,20 @@ export class PasswordsListHandlerElement extends
         });
   }
 
+  private isPasswordEditable_() {
+    return !this.activePassword_ || !this.activePassword_.entry.federationText;
+  }
+
   private onMenuEditPasswordTap_() {
-    if (this.isEditDialog_) {
+    if (this.isPasswordEditable_()) {
       this.requestActivePlaintextPassword_(
           chrome.passwordsPrivate.PlaintextReason.EDIT, password => {
             this.set('activePassword_.entry.password', password);
+            this.requestedDialogMode_ = PasswordDialogMode.EDIT;
             this.showPasswordEditDialog_ = true;
           });
     } else {
+      this.requestedDialogMode_ = PasswordDialogMode.FEDERATED_VIEW;
       this.showPasswordEditDialog_ = true;
     }
     this.$.menu.close();
@@ -275,13 +292,14 @@ export class PasswordsListHandlerElement extends
   }
 
   private getMenuEditPasswordName_(): string {
-    return this.isEditDialog_ ? this.i18n('editPassword') :
-                                this.i18n('passwordViewDetails');
+    return this.isPasswordEditable_() ? this.i18n('editPassword') :
+                                        this.i18n('passwordViewDetails');
   }
 
   private onPasswordEditDialogClosed_() {
     this.showPasswordEditDialog_ = false;
     focusWithoutInk(assert(this.activeDialogAnchor_!));
+    this.requestedDialogMode_ = null;
     this.activeDialogAnchor_ = null;
     this.activePassword_!.hide();
     this.activePassword_ = null;
