@@ -70,6 +70,13 @@ export class PersonalizationRouter extends PolymerElement {
     window.location.replace(Paths.Collections);
   }
 
+  /**
+   * Reload the application at the ambient subpage.
+   */
+  static reloadAtAmbient() {
+    window.location.replace(Paths.Ambient);
+  }
+
   connectedCallback() {
     super.connectedCallback();
     // Force the user onto the wallpaper subpage if personalization hub feature

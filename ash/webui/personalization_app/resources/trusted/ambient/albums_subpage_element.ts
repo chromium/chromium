@@ -18,6 +18,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 
 import {isNonEmptyArray} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
+import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {AlbumSelectedChangedEvent} from './album_item_element.js';
@@ -41,6 +42,8 @@ export class AlbumsSubpage extends WithPersonalizationStore {
         // Set to null to differentiate from an empty album.
         value: null,
       },
+      disabled: Boolean,
+      path: Paths,
       showArtAlbumDialog_: {
         type: Boolean,
         value: false,
@@ -50,7 +53,17 @@ export class AlbumsSubpage extends WithPersonalizationStore {
 
   topicSource: TopicSource;
   albums: AmbientModeAlbum[]|null = null;
+  disabled: boolean;
+  path: Paths;
+
   private showArtAlbumDialog_: boolean;
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.disabled && this.path === Paths.AmbientAlbums) {
+      PersonalizationRouter.reloadAtAmbient();
+    }
+  }
 
   ready() {
     super.ready();

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AlbumItem} from 'chrome://personalization/trusted/ambient/album_item_element.js';
+import {AlbumsSubpage} from 'chrome://personalization/trusted/ambient/albums_subpage_element.js';
 import {AmbientActionName, SetAlbumsAction, SetAmbientModeEnabledAction, SetTemperatureUnitAction, SetTopicSourceAction} from 'chrome://personalization/trusted/ambient/ambient_actions.js';
 import {AmbientObserver} from 'chrome://personalization/trusted/ambient/ambient_observer.js';
 import {AmbientSubpage} from 'chrome://personalization/trusted/ambient/ambient_subpage_element.js';
@@ -273,6 +274,8 @@ export function AmbientSubpageTest() {
       path: Paths.AmbientAlbums,
       queryParams: {topicSource: TopicSource.kArtGallery}
     });
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpageElement);
 
     const mainSettings =
@@ -287,16 +290,29 @@ export function AmbientSubpageTest() {
     assertFalse(albumsSubpage.hidden);
   });
 
+  test(
+      'loading albums subpage redirects to ambient subpage if disabled',
+      async () => {
+        const reloadCalledPromise = new Promise<void>((resolve) => {
+          PersonalizationRouter.reloadAtAmbient = resolve;
+        });
+        initElement(AlbumsSubpage, {
+          path: Paths.AmbientAlbums,
+          disabled: true,
+        });
+
+        await reloadCalledPromise;
+      });
+
   test('has correct albums on Google Photos albums subpage', async () => {
     ambientSubpageElement = initElement(AmbientSubpage, {
       path: Paths.AmbientAlbums,
       queryParams: {topicSource: TopicSource.kGooglePhotos}
     });
-    personalizationStore.setReducersEnabled(true);
-    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
-    const action = await personalizationStore.waitForAction(
-                       AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
-    assertEquals(4, action.albums.length);
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
 
     const albumsSubpage =
         ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
@@ -322,11 +338,10 @@ export function AmbientSubpageTest() {
       path: Paths.AmbientAlbums,
       queryParams: {topicSource: TopicSource.kArtGallery}
     });
-    personalizationStore.setReducersEnabled(true);
-    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
-    const action = await personalizationStore.waitForAction(
-                       AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
-    assertEquals(4, action.albums.length);
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
 
     const albumsSubpage =
         ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');

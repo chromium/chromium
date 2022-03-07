@@ -27,7 +27,8 @@
 <iron-list id="topicSourceList" items="[[topicSources]]">
   <template>
     <topic-source-item topic-source="[[item]]"
-        tabindex$="[[tabIndex]]"
+        disabled$="[[disabled]]"
+        tabindex$="[[computeTabIndex_(tabIndex, disabled)]]"
         has-google-photos-albums="[[hasGooglePhotosAlbums]]"
         checked="[[isSelected_(item, selectedTopicSource)]]">
     </topic-source-item>

@@ -121,8 +121,8 @@ export class AmbientSubpage extends WithPersonalizationStore {
     return path === Paths.Ambient;
   }
 
-  private shouldShowAlbums_(path: Paths): boolean {
-    return path === Paths.AmbientAlbums;
+  private shouldShowAlbums_(path: Paths, ambientModeEnabled: boolean): boolean {
+    return path === Paths.AmbientAlbums && ambientModeEnabled;
   }
 }
 

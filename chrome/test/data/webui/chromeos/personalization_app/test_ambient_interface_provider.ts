@@ -7,6 +7,45 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAmbientProvider extends TestBrowserProxy implements
     AmbientProviderInterface {
+  public albums: AmbientModeAlbum[] = [
+    {
+      id: '0',
+      checked: false,
+      title: '0',
+      description: '0',
+      numberOfPhotos: 0,
+      topicSource: TopicSource.kArtGallery,
+      url: {url: 'http://test_url'}
+    },
+    {
+      id: '1',
+      checked: false,
+      title: '1',
+      description: '1',
+      numberOfPhotos: 0,
+      topicSource: TopicSource.kArtGallery,
+      url: {url: 'http://test_url'}
+    },
+    {
+      id: '2',
+      checked: true,
+      title: '2',
+      description: '2',
+      numberOfPhotos: 0,
+      topicSource: TopicSource.kArtGallery,
+      url: {url: 'http://test_url'}
+    },
+    {
+      id: '3',
+      checked: false,
+      title: '3',
+      description: '3',
+      numberOfPhotos: 1,
+      topicSource: TopicSource.kGooglePhotos,
+      url: {url: 'http://test_url'}
+    }
+  ]
+
   constructor() {
     super([
       'isAmbientModeEnabled',
@@ -35,45 +74,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
     // Add an arbitrary delay for simulation.
     window.setTimeout(() => {
-      const albums: AmbientModeAlbum[] = [
-        {
-          id: '0',
-          checked: false,
-          title: '0',
-          description: '0',
-          numberOfPhotos: 0,
-          topicSource: TopicSource.kArtGallery,
-          url: {url: 'http://test_url'}
-        },
-        {
-          id: '1',
-          checked: false,
-          title: '1',
-          description: '1',
-          numberOfPhotos: 0,
-          topicSource: TopicSource.kArtGallery,
-          url: {url: 'http://test_url'}
-        },
-        {
-          id: '2',
-          checked: true,
-          title: '2',
-          description: '2',
-          numberOfPhotos: 0,
-          topicSource: TopicSource.kArtGallery,
-          url: {url: 'http://test_url'}
-        },
-        {
-          id: '3',
-          checked: false,
-          title: '3',
-          description: '3',
-          numberOfPhotos: 1,
-          topicSource: TopicSource.kGooglePhotos,
-          url: {url: 'http://test_url'}
-        }
-      ];
-      this.ambientObserverRemote!.onAlbumsChanged(albums);
+      this.ambientObserverRemote!.onAlbumsChanged(this.albums);
       this.ambientObserverRemote!.onTopicSourceChanged(TopicSource.kArtGallery);
     }, 10);
 

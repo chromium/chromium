@@ -35,13 +35,16 @@
     <ambient-preview>Image Preview</ambient-preview>
     <topic-source-list hidden="[[!shouldShowMainSettings_(path)]]"
         selected-topic-source="[[topicSource_]]"
-        has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]">
+        has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]"
+        disabled="[[!ambientModeEnabled_]]">
     </topic-source-list>
     <ambient-weather-unit
-        selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]">
+        selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]"
+        disabled="[[!ambientModeEnabled_]]">
     </ambient-weather-unit>
   </div>
-  <albums-subpage hidden="[[!shouldShowAlbums_(path)]]"
+  <albums-subpage hidden="[[!shouldShowAlbums_(path, ambientModeEnabled_)]]"
+      disabled="[[!ambientModeEnabled_]]" path="[[path]]"
       topic-source="[[getTopicSource_(queryParams)]]"
       albums="[[getAlbums_(albums_, queryParams)]]">
   </albums-subpage>

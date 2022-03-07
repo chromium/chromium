@@ -40,6 +40,8 @@ export class TopicSourceList extends WithPersonalizationStore {
       selectedTopicSource: TopicSource,
 
       hasGooglePhotosAlbums: Boolean,
+
+      disabled: Boolean,
     };
   }
 
@@ -47,6 +49,8 @@ export class TopicSourceList extends WithPersonalizationStore {
   topicSources: Array<TopicSource>;
   selectedTopicSource: TopicSource;
   hasGooglePhotosAlbums: boolean;
+  disabled: boolean;
+
 
   private onHiddenChanged_(hidden: boolean) {
     if (hidden) {
@@ -64,6 +68,13 @@ export class TopicSourceList extends WithPersonalizationStore {
   private isSelected_(
       topicSource: TopicSource, selectedTopicSource: TopicSource) {
     return selectedTopicSource === topicSource;
+  }
+
+  private computeTabIndex_(tabIndex: number, disabled: boolean) {
+    if (disabled) {
+      return -1;
+    }
+    return tabIndex;
   }
 }
 
