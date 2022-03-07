@@ -331,12 +331,13 @@ void TaskModuleService::OnJsonParsed(
     }
     std::vector<task_module::mojom::TaskItemPtr> mojo_task_items;
     for (const auto& task_item : task_items->GetListDeprecated()) {
-      auto* name = task_item.FindStringPath("name");
-      auto* image_url = task_item.FindStringPath("image_url");
-      auto* price = task_item.FindStringPath("price");
-      auto viewed_timestamp = task_item.FindIntPath("viewed_timestamp.seconds");
-      auto* site_name = task_item.FindStringPath("site_name");
-      auto* target_url = task_item.FindStringPath("target_url");
+      const auto* name = task_item.FindStringPath("name");
+      const auto* image_url = task_item.FindStringPath("image_url");
+      const auto* price = task_item.FindStringPath("price");
+      const absl::optional<int> viewed_timestamp =
+          task_item.FindIntPath("viewed_timestamp.seconds");
+      const auto* site_name = task_item.FindStringPath("site_name");
+      const auto* target_url = task_item.FindStringPath("target_url");
       if (!name || !image_url || !target_url) {
         continue;
       }
@@ -347,9 +348,11 @@ void TaskModuleService::OnJsonParsed(
       auto mojom_task_item = task_module::mojom::TaskItem::New();
       mojom_task_item->name = *name;
       mojom_task_item->image_url = GURL(*image_url);
-      mojom_task_item->info = viewed_timestamp
-                                  ? GetViewedItemText(*viewed_timestamp)
-                                  : GetRecommendedItemText(task_module_type);
+      // GWS timestamps are relative to the Unix Epoch.
+      mojom_task_item->info =
+          viewed_timestamp ? GetViewedItemText(base::Time::UnixEpoch() +
+                                               base::Seconds(*viewed_timestamp))
+                           : GetRecommendedItemText(task_module_type);
       if (task_module_type == task_module::mojom::TaskModuleType::kRecipe &&
           site_name) {
         mojom_task_item->site_name = *site_name;

@@ -13,23 +13,16 @@ class TimeFormatUtilTest : public testing::Test {
   TimeFormatUtilTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-  int AsTimestamp(const base::Time& time) {
-    return (time - base::Time::UnixEpoch()).InSeconds();
-  }
-
  protected:
   content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(TimeFormatUtilTest, GetViewedItemText) {
   const auto now = base::Time::Now();
-  EXPECT_EQ("Viewed today", GetViewedItemText(AsTimestamp(now)));
-  EXPECT_EQ("Viewed yesterday",
-            GetViewedItemText(AsTimestamp(now - base::Days(1))));
-  EXPECT_EQ("Viewed in the past week",
-            GetViewedItemText(AsTimestamp(now - base::Days(2))));
+  EXPECT_EQ("Viewed today", GetViewedItemText(now));
+  EXPECT_EQ("Viewed yesterday", GetViewedItemText(now - base::Days(1)));
+  EXPECT_EQ("Viewed in the past week", GetViewedItemText(now - base::Days(2)));
   EXPECT_EQ("Viewed in the past month",
-            GetViewedItemText(AsTimestamp(now - base::Days(30))));
-  EXPECT_EQ("Viewed previously",
-            GetViewedItemText(AsTimestamp(now - base::Days(100))));
+            GetViewedItemText(now - base::Days(15)));
+  EXPECT_EQ("Viewed previously", GetViewedItemText(now - base::Days(100)));
 }
