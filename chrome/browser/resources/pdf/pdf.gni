@@ -16,7 +16,7 @@ pdf_non_webcomponents_files = [
 
 if (enable_ink) {
   pdf_non_webcomponents_files += [
-    "annotation_tool.js",
+    "annotation_tool.ts",
     "ink_controller.js",
     "ink/drawing_canvas_externs.js",
     "ink/ink_api.js",
@@ -35,16 +35,16 @@ pdf_webcomponents_files = [
   "elements/viewer-properties-dialog.ts",
   "elements/viewer-thumbnail-bar.ts",
   "elements/viewer-thumbnail.ts",
-  "elements/viewer-toolbar.js",
+  "elements/viewer-toolbar.ts",
   "pdf_viewer.js",
 ]
 
 if (enable_ink) {
   pdf_webcomponents_files += [
-    "elements/viewer-annotations-bar.js",
-    "elements/viewer-annotations-mode-dialog.js",
-    "elements/viewer-ink-host.js",
-    "elements/viewer-pen-options.js",
+    "elements/viewer-annotations-bar.ts",
+    "elements/viewer-annotations-mode-dialog.ts",
+    "elements/viewer-ink-host.ts",
+    "elements/viewer-pen-options.ts",
     "elements/viewer-toolbar-dropdown.js",
   ]
 }
