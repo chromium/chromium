@@ -715,13 +715,13 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
   base::ScopedTempDir temp_dir_;
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// Flaky on android-pie-x86-rel. https://crbug.com/1235367
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1235367): Test is flaky.
 IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest,
                        DISABLED_Test) {
 #else
 IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   MachineLevelUserCloudPolicyManager* manager =
       g_browser_process->browser_policy_connector()
           ->machine_level_user_cloud_policy_manager();
