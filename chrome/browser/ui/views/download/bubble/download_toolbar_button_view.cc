@@ -29,7 +29,7 @@
 
 namespace {
 
-constexpr int kProgressRingRadius = 7;
+constexpr int kProgressRingRadius = 9;
 constexpr float kProgressRingStrokeWidth = 1.7f;
 
 }  // namespace
