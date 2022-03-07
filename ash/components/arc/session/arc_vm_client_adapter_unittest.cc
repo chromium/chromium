@@ -73,6 +73,9 @@ constexpr char kArcVmPostVmStartServicesJobName[] =
     "arcvm_2dpost_2dvm_2dstart_2dservices";
 constexpr const char kArcVmDefaultOwner[] = "ARCVM_DEFAULT_OWNER";
 
+// Disk path contained in CreateDiskImageResponse().
+constexpr const char kCreatedDiskImagePath[] = "test/data.img";
+
 constexpr const char kUserIdHash[] = "this_is_a_valid_user_id_hash";
 constexpr const char kSerialNumber[] = "AAAABBBBCCCCDDDD1234";
 constexpr int64_t kCid = 123;
@@ -103,6 +106,14 @@ UpgradeParams GetPopulatedUpgradeParams() {
   return params;
 }
 
+vm_tools::concierge::CreateDiskImageResponse CreateDiskImageResponse(
+    vm_tools::concierge::DiskImageStatus status) {
+  vm_tools::concierge::CreateDiskImageResponse res;
+  res.set_status(status);
+  res.set_disk_path(base::FilePath(kCreatedDiskImagePath).AsUTF8Unsafe());
+  return res;
+}
+
 std::string GenerateAbstractAddress() {
   std::string address(kArcVmBootNotificationServerAddressPrefix,
                       sizeof(kArcVmBootNotificationServerAddressPrefix) - 1);
@@ -122,6 +133,15 @@ bool HasParameterWithPrefix(
       prefix_found = true;
   }
   return prefix_found;
+}
+
+bool HasDiskImage(const vm_tools::concierge::StartArcVmRequest& request,
+                  const std::string& disk_path) {
+  for (const auto& disk : request.disks()) {
+    if (disk.path() == disk_path)
+      return true;
+  }
+  return false;
 }
 
 // A debugd client that can fail to start Concierge.
@@ -1338,13 +1358,7 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DemoMode) {
   // Verify the request.
   auto request = GetTestConciergeClient()->start_arc_vm_request();
   // Make sure disks have the squashfs image.
-  EXPECT_TRUE(([&kDemoImage, &request]() {
-    for (const auto& disk : request.disks()) {
-      if (disk.path() == kDemoImage)
-        return true;
-    }
-    return false;
-  }()));
+  EXPECT_TRUE(HasDiskImage(request, kDemoImage));
 
   SetValidUserInfo();
   UpgradeParams params(GetPopulatedUpgradeParams());
@@ -1642,6 +1656,97 @@ TEST_F(ArcVmClientAdapterTest, SpecifyBlockSize) {
   EXPECT_EQ(
       4096u,
       GetTestConciergeClient()->start_arc_vm_request().rootfs_block_size());
+}
+
+TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_FlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kEnableVirtioBlkForData, false);
+
+  GetTestConciergeClient()->set_create_disk_image_response(
+      CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_CREATED));
+
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+
+  // CreateDiskImage() should NOT be called.
+  EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 0);
+
+  // StartArcVmRequest should NOT contain a disk created by CreateDiskImage().
+  auto req = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(HasDiskImage(req, kCreatedDiskImagePath));
+  EXPECT_TRUE(
+      base::Contains(req.params(), "androidboot.arcvm_virtio_blk_data=0"));
+}
+
+TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskimageResponseEmpty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kEnableVirtioBlkForData, true);
+
+  // CreateDiskImage() returns an empty response.
+  GetTestConciergeClient()->set_create_disk_image_response(absl::nullopt);
+
+  // StartArcVm should NOT be called.
+  SetValidUserInfo();
+  StartMiniArcWithParams(false, {});
+  EXPECT_EQ(GetTestConciergeClient()->start_arc_vm_call_count(), 0);
+
+  EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 1);
+}
+
+TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusFailed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kEnableVirtioBlkForData, true);
+
+  GetTestConciergeClient()->set_create_disk_image_response(
+      CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_FAILED));
+
+  // StartArcVm should NOT be called.
+  SetValidUserInfo();
+  StartMiniArcWithParams(false, {});
+  EXPECT_EQ(GetTestConciergeClient()->start_arc_vm_call_count(), 0);
+
+  EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 1);
+}
+
+TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusCreated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kEnableVirtioBlkForData, true);
+
+  GetTestConciergeClient()->set_create_disk_image_response(
+      CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_CREATED));
+
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+
+  EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 1);
+
+  // StartArcVmRequest should contain a disk path created by CreateDiskImage().
+  auto req = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(HasDiskImage(req, kCreatedDiskImagePath));
+  EXPECT_TRUE(
+      base::Contains(req.params(), "androidboot.arcvm_virtio_blk_data=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusExists) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kEnableVirtioBlkForData, true);
+
+  GetTestConciergeClient()->set_create_disk_image_response(
+      CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_EXISTS));
+
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+
+  EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 1);
+
+  // StartArcVmRequest should contain a disk path created by CreateDiskImage().
+  auto req = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(HasDiskImage(req, kCreatedDiskImagePath));
+  EXPECT_TRUE(
+      base::Contains(req.params(), "androidboot.arcvm_virtio_blk_data=1"));
 }
 
 TEST_F(ArcVmClientAdapterTest, VshdForTest) {

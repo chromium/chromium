@@ -95,6 +95,10 @@ constexpr int kLogdConfigSizeSmall = 256;   // kBytes
 constexpr int kLogdConfigSizeMed = 512;     // kBytes
 constexpr int kLogdConfigSizeLarge = 1024;  // kBytes
 
+// Disk size of virtio-blk image for /data.
+// TODO(b/217650747): Optimize this value.
+constexpr int64_t kDataDiskSizeBytes = 5LL * 1024 * 1024 * 1024;  // 5GB
+
 // The owner ID that ARCVM is started with for mini-ARCVM. On UpgradeArc,
 // the owner ID is set to the logged-in user.
 constexpr const char kArcVmDefaultOwner[] = "ARCVM_DEFAULT_OWNER";
@@ -276,7 +280,10 @@ std::vector<std::string> GenerateKernelCmdline(
   if (start_params.arc_generate_play_auto_install)
     result.push_back("androidboot.arc_generate_pai=1");
 
-  result.push_back("androidboot.arcvm_virtio_blk_data=0");
+  if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData))
+    result.push_back("androidboot.arcvm_virtio_blk_data=1");
+  else
+    result.push_back("androidboot.arcvm_virtio_blk_data=0");
 
   // Conditionally sets some properties based on |start_params|.
   switch (start_params.play_store_auto_update) {
@@ -365,6 +372,7 @@ std::vector<std::string> GenerateKernelCmdline(
 vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     uint32_t cpus,
     const base::FilePath& demo_session_apps_path,
+    const absl::optional<base::FilePath>& data_image_path,
     const FileSystemStatus& file_system_status,
     bool use_per_vm_core_scheduling,
     std::vector<std::string> kernel_cmdline,
@@ -441,6 +449,25 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     // apexd.payload_metadata.path is not set, and it should
     // always be set if the block apex payload exists.
     disk_image->set_path(kEmptyDiskPath);
+  }
+
+  // Add /home/root/<hash>/crosvm/YXJjdm0=.img as /dev/block/vde for mounting
+  // Android /data if kEnableVirtioBlkForData is enabled.
+  disk_image = request.add_disks();
+  disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
+  disk_image->set_do_mount(true);
+  if (data_image_path) {
+    disk_image->set_path(data_image_path->value());
+    disk_image->set_writable(true);
+    if (should_set_blocksize)
+      disk_image->set_block_size(kBlockSize);
+  } else {
+    // This should never be mounted as it's only mounted if
+    // ro.boot.arcvm_virtio_blk_data=1 is set.
+    disk_image->set_path(kEmptyDiskPath);
+    // Ensure to set writable to false, otherwise crosvm will exit with
+    // "failed to lock disk image" error.
+    disk_image->set_writable(false);
   }
 
   // Add Android fstab.
@@ -976,6 +1003,61 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   void OnDemoResourcesLoaded(chromeos::VoidDBusMethodCallback callback,
                              FileSystemStatus file_system_status) {
+    if (!base::FeatureList::IsEnabled(kEnableVirtioBlkForData)) {
+      // Use virtio-fs for /data.
+      StartArcVm(std::move(callback), std::move(file_system_status),
+                 /*data_image_path=*/absl::nullopt);
+      return;
+    }
+
+    // Use virtio-blk for /data.
+    vm_tools::concierge::CreateDiskImageRequest request;
+    request.set_cryptohome_id(user_id_hash_);
+    request.set_vm_name(kArcVmName);
+    request.set_disk_size(kDataDiskSizeBytes);
+    request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
+    request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
+
+    GetConciergeClient()->CreateDiskImage(
+        std::move(request),
+        base::BindOnce(&ArcVmClientAdapter::OnDataDiskImageCreated,
+                       weak_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(file_system_status)));
+  }
+
+  void OnDataDiskImageCreated(
+      chromeos::VoidDBusMethodCallback callback,
+      FileSystemStatus file_system_status,
+      absl::optional<vm_tools::concierge::CreateDiskImageResponse> res) {
+    if (!res) {
+      LOG(ERROR) << "Failed to create a disk image for /data. Empty response.";
+      std::move(callback).Run(false);
+      return;
+    }
+
+    switch (res->status()) {
+      case vm_tools::concierge::DISK_STATUS_CREATED:
+        VLOG(1) << "Created a disk image for /data at " << res->disk_path();
+        StartArcVm(std::move(callback), std::move(file_system_status),
+                   base::FilePath(res->disk_path()));
+        return;
+      case vm_tools::concierge::DISK_STATUS_EXISTS:
+        VLOG(1) << "Disk image for /data already exists: " << res->disk_path();
+        StartArcVm(std::move(callback), std::move(file_system_status),
+                   base::FilePath(res->disk_path()));
+        return;
+      // TODO(niwa): Also handle DISK_STATUS_NOT_ENOUGH_SPACE.
+      default:
+        LOG(ERROR) << "Failed to create a disk image for /data. Status:"
+                   << res->status() << " Reason:" << res->failure_reason();
+        std::move(callback).Run(false);
+        return;
+    }
+  }
+
+  void StartArcVm(chromeos::VoidDBusMethodCallback callback,
+                  FileSystemStatus file_system_status,
+                  absl::optional<base::FilePath> data_image_path) {
     const base::FilePath demo_session_apps_path =
         demo_mode_delegate_->GetDemoAppsPath();
     const bool use_per_vm_core_scheduling =
@@ -1000,7 +1082,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         start_params_, file_system_status, *is_dev_mode_, is_host_on_vm_,
         GetChromeOsChannelFromLsbRelease());
     auto start_request = CreateStartArcVmRequest(
-        cpus, demo_session_apps_path, file_system_status,
+        cpus, demo_session_apps_path, data_image_path, file_system_status,
         use_per_vm_core_scheduling, std::move(kernel_cmdline), delegate_.get());
 
     GetConciergeClient()->StartArcVm(
