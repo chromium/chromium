@@ -4,12 +4,10 @@
 
 #include "third_party/blink/renderer/core/html/conversion_measurement_parsing.h"
 
-#include <stdint.h>
-
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/platform/web_impression.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_attribution_source_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
@@ -65,27 +63,45 @@ absl::optional<int64_t> ParsePriority(const String& string,
       AttributionReportingIssueType::kInvalidAttributionSourcePriority);
 }
 
+absl::optional<WebImpression> WebImpressionOrErrorToWebImpression(
+    WebImpressionOrError v) {
+  if (auto* impression = absl::get_if<WebImpression>(&v))
+    return std::move(*impression);
+
+  return absl::nullopt;
+}
+
 LocalFrame* GetFrame(ExecutionContext* execution_context) {
   auto* window = DynamicTo<LocalDOMWindow>(execution_context);
   return window ? window->GetFrame() : nullptr;
 }
 
-absl::optional<WebImpression> GetImpression(
+// If `allow_invalid_impression_data` is `true` and `impression_data_string` is
+// not parsable as an unsigned 64-bit base-10 integer, the impression data is
+// defaulted to 0. If `allow_invalid_impression_data` is `false` and
+// `impression_data_string` fails to parse, `GetImpression()` returns an error.
+WebImpressionOrError GetImpression(
     ExecutionContext* execution_context,
     const String& impression_data_string,
     const String& conversion_destination_string,
     const String& reporting_origin_string,
     absl::optional<int64_t> impression_expiry_milliseconds,
     absl::optional<int64_t> attribution_source_priority,
-    HTMLAnchorElement* element) {
+    HTMLAnchorElement* element,
+    bool allow_invalid_impression_data) {
   if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(
           execution_context)) {
-    return absl::nullopt;
+    // TODO(crbug.com/1202170): It shouldn't be possible for this branch to be
+    // taken when this function is invoked from `registerAttributionSource` in
+    // JS, as that method is only supposed to exist when the runtime feature is
+    // enabled. Consider moving this check elsewhere to avoid redundancy.
+    return mojom::blink::RegisterImpressionError::kNotAllowed;
   }
 
   LocalFrame* frame = GetFrame(execution_context);
   if (!frame) {
-    return absl::nullopt;
+    // TODO(apaseltiner): Perhaps this should be something like `kUnknown`.
+    return mojom::blink::RegisterImpressionError::kNotAllowed;
   }
 
   const bool feature_policy_enabled = execution_context->IsFeatureEnabled(
@@ -98,7 +114,7 @@ absl::optional<WebImpression> GetImpression(
         frame->DomWindow(),
         AttributionReportingIssueType::kPermissionPolicyDisabled,
         frame->GetDevToolsFrameToken(), element);
-    return absl::nullopt;
+    return mojom::blink::RegisterImpressionError::kNotAllowed;
   }
 
   // Conversion measurement is only allowed in secure context.
@@ -108,7 +124,7 @@ absl::optional<WebImpression> GetImpression(
         AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
         frame->GetDevToolsFrameToken(), element, absl::nullopt,
         frame->GetSecurityContext()->GetSecurityOrigin()->ToString());
-    return absl::nullopt;
+    return mojom::blink::RegisterImpressionError::kInsecureContext;
   }
 
   scoped_refptr<const SecurityOrigin> conversion_destination =
@@ -118,7 +134,8 @@ absl::optional<WebImpression> GetImpression(
         frame->DomWindow(),
         AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
         absl::nullopt, element, absl::nullopt, conversion_destination_string);
-    return absl::nullopt;
+    return mojom::blink::RegisterImpressionError::
+        kInsecureAttributionDestination;
   }
 
   bool impression_data_is_valid = false;
@@ -134,6 +151,11 @@ absl::optional<WebImpression> GetImpression(
         AttributionReportingIssueType::kInvalidAttributionSourceEventId,
         frame->GetDevToolsFrameToken(), element, absl::nullopt,
         impression_data_string);
+
+    if (!allow_invalid_impression_data) {
+      return mojom::blink::RegisterImpressionError::
+          kInvalidAttributionSourceEventId;
+    }
   }
 
   // Provide a default of 0 if the impression data was not valid.
@@ -151,7 +173,8 @@ absl::optional<WebImpression> GetImpression(
           frame->DomWindow(),
           AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
           absl::nullopt, element, absl::nullopt, reporting_origin_string);
-      return absl::nullopt;
+      return mojom::blink::RegisterImpressionError::
+          kInsecureAttributionReportTo;
     }
   }
 
@@ -178,7 +201,7 @@ absl::optional<WebImpression> GetImpressionForAnchor(
 
   LocalFrame* frame = GetFrame(element->GetExecutionContext());
 
-  return GetImpression(
+  return WebImpressionOrErrorToWebImpression(GetImpression(
       element->GetExecutionContext(),
       element->FastGetAttribute(html_names::kAttributionsourceeventidAttr)
           .GetString(),
@@ -193,7 +216,7 @@ absl::optional<WebImpression> GetImpressionForAnchor(
           element->FastGetAttribute(html_names::kAttributionsourcepriorityAttr)
               .GetString(),
           frame, element),
-      element);
+      element, /*allow_invalid_impression_data=*/true));
 }
 
 absl::optional<WebImpression> GetImpressionFromWindowFeatures(
@@ -205,12 +228,31 @@ absl::optional<WebImpression> GetImpressionFromWindowFeatures(
 
   LocalFrame* frame = GetFrame(execution_context);
 
-  return GetImpression(execution_context, features.impression_data,
-                       features.conversion_destination,
-                       features.reporting_origin,
-                       ParseExpiry(features.expiry, frame),
-                       ParsePriority(features.priority, frame),
-                       /*element=*/nullptr);
+  return WebImpressionOrErrorToWebImpression(
+      GetImpression(execution_context, features.impression_data,
+                    features.conversion_destination, features.reporting_origin,
+                    ParseExpiry(features.expiry, frame),
+                    ParsePriority(features.priority, frame),
+                    /*element=*/nullptr,
+                    /*allow_invalid_impression_data=*/true));
+}
+
+WebImpressionOrError GetImpressionForParams(
+    ExecutionContext* execution_context,
+    const AttributionSourceParams* params) {
+  return GetImpression(
+      execution_context, params->attributionSourceEventId(),
+      params->attributionDestination(),
+      params->hasAttributionReportTo() ? params->attributionReportTo()
+                                       : String(),
+      params->hasAttributionExpiry()
+          ? absl::make_optional(params->attributionExpiry())
+          : absl::nullopt,
+      params->hasAttributionSourcePriority()
+          ? absl::make_optional(params->attributionSourcePriority())
+          : absl::nullopt,
+      /*element=*/nullptr,
+      /*allow_invalid_impression_data=*/false);
 }
 
 }  // namespace blink

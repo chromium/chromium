@@ -57,21 +57,20 @@ AttributionSrcLoader::AttributionSrcLoader(LocalFrame* frame)
 
 AttributionSrcLoader::~AttributionSrcLoader() = default;
 
-AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
-    const KURL& src_url,
-    HTMLImageElement* element) {
+void AttributionSrcLoader::Register(const KURL& src_url,
+                                    HTMLImageElement* element) {
   // Detached frames cannot/should not register new attributionsrcs.
   if (!local_frame_)
-    return RegisterResult::kSuccess;
+    return;
 
   if (!src_url.ProtocolIsInHTTPFamily())
-    return RegisterResult::kInvalidProtocol;
+    return;
 
   ExecutionContext* execution_context =
       local_frame_->GetDocument()->GetExecutionContext();
   if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(
           execution_context)) {
-    return RegisterResult::kNotAllowed;
+    return;
   }
 
   const bool feature_policy_enabled = execution_context->IsFeatureEnabled(
@@ -80,7 +79,7 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
   if (!feature_policy_enabled) {
     LogAuditIssue(AttributionReportingIssueType::kPermissionPolicyDisabled, "",
                   element);
-    return RegisterResult::kNotAllowed;
+    return;
   }
 
   // The API is only allowed in secure contexts.
@@ -89,7 +88,7 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
         AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
         local_frame_->GetSecurityContext()->GetSecurityOrigin()->ToString(),
         element);
-    return RegisterResult::kInsecureContext;
+    return;
   }
 
   auto reporting_origin = SecurityOrigin::CreateFromString(src_url);
@@ -98,10 +97,8 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
     LogAuditIssue(
         AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
         src_url.GetString(), element);
-    return RegisterResult::kUntrustworthyOrigin;
+    return;
   }
-
-  // TODO(crbug.com/1302680): Defer handling if the document is prerendering.
 
   ResourceRequest request(src_url);
   request.SetHttpMethod(http_names::kGET);
@@ -117,10 +114,8 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
 
   Resource* resource =
       RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), this);
-  // TODO(apaseltiner): Do we want to return an error to the promise instead of
-  // indicating success here?
   if (!resource)
-    return RegisterResult::kSuccess;
+    return;
 
   mojo::Remote<mojom::blink::AttributionDataHost> data_host;
 
@@ -131,8 +126,6 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
   resource_context_map_.insert(
       resource, AttributionSrcContext{.type = AttributionSrcType::kUndetermined,
                                       .data_host = std::move(data_host)});
-
-  return RegisterResult::kSuccess;
 }
 
 void AttributionSrcLoader::Shutdown() {

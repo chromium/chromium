@@ -8,7 +8,11 @@
 
 promise_test(t => {
   return promise_rejects_dom(t, 'NotAllowedError',
-    window.attributionReporting.registerAttributionSource('https://a.example'));
+    window.attributionReporting.registerAttributionSource({
+      attributionSourceEventId: '1',
+      attributionDestination: 'https://a.example',
+      attributionReportTo: 'https://b.example',
+    }));
 }, 'disabled by permissions policy');
 
 </script>

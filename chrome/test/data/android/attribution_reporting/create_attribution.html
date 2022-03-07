@@ -3,7 +3,11 @@
   <body>
     Creates an Attribution source on load.
     <script>
-      window.attributionReporting.registerAttributionSource('register_source.html');
+      window.attributionReporting.registerAttributionSource({
+        attributionSourceEventId: '1',
+        attributionDestination: 'https://a.example',
+        attributionReportTo: 'https://b.example',
+      });
     </script>
   </body>
 </html>
