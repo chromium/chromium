@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.external_intents.RedirectHandler;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -61,18 +62,16 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
      * Replace {@link RedirectHandler} instance for the Tab with the new one.
      * @return Old {@link RedirectHandler} associated with the Tab. Could be {@code null}.
      */
-    public static RedirectHandler swapHandlerFor(Tab tab, @Nullable RedirectHandler newHandler) {
-        UserDataHost host = tab.getUserDataHost();
-        RedirectHandlerTabHelper oldHelper = host.getUserData(USER_DATA_KEY);
-        if (newHandler != null) {
-            RedirectHandlerTabHelper newHelper = new RedirectHandlerTabHelper(tab, newHandler);
-            host.setUserData(USER_DATA_KEY, newHelper);
-        } else {
-            host.removeUserData(USER_DATA_KEY);
+    public static RedirectHandler swapHandlerFor(Tab tab, RedirectHandler newHandler) {
+        assert newHandler != null;
+        RedirectHandlerTabHelper helper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
+        if (helper == null) {
+            getOrCreateHandlerFor(tab);
+            helper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         }
-
-        if (oldHelper == null) return null;
-        return oldHelper.mRedirectHandler;
+        RedirectHandler oldHandler = helper.mRedirectHandler;
+        helper.mRedirectHandler = newHandler;
+        return oldHandler;
     }
 
     private RedirectHandlerTabHelper(Tab tab) {
@@ -94,6 +93,17 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
     @Override
     public void onHidden(Tab tab, @TabHidingType int type) {
         mRedirectHandler.clear();
+    }
+
+    @Override
+    public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+        if (navigation.isPageActivation()) {
+            // Page Activations (e.g. for back/forward cache or Prerender) don't trigger
+            // NavigationThrottles, so the RedirectHandler doesn't have insight into these
+            // navigations, and we don't want to consider navigations after a Page Activation to be
+            // part of the previous navigation chain.
+            mRedirectHandler.clear();
+        }
     }
 
     @Override

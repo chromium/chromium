@@ -129,7 +129,7 @@ public class MediaNotificationTestTabHolder {
                 true /* isInPrimaryMainFrame */, isSameDocument, false /* isRendererInitiated */,
                 null /* initiatorOrigin */, null /* impressionData */, 0 /* pageTransition */,
                 false /* isPost */, false /* hasUserGesture */, false /* isRedirect */,
-                false /* isExternalProtocol */, 0 /* navigationId */);
+                false /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver.didStartNavigation(
                 navigation);
 

@@ -44,6 +44,7 @@ public class NavigationHandle {
     private final boolean mIsRedirect;
     private final boolean mIsExternalProtocol;
     private final long mNavigationId;
+    private final boolean mIsPageActivation;
 
     @CalledByNative
     public NavigationHandle(long nativeNavigationHandleProxy, @NonNull GURL url,
@@ -51,7 +52,7 @@ public class NavigationHandle {
             boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
             Origin initiatorOrigin, ByteBuffer impressionData, @PageTransition int transition,
             boolean isPost, boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
-            long navigationId) {
+            long navigationId, boolean isPageActivation) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mReferrerUrl = referrerUrl;
@@ -67,6 +68,7 @@ public class NavigationHandle {
         mIsRedirect = isRedirect;
         mIsExternalProtocol = isExternalProtocol;
         mNavigationId = navigationId;
+        mIsPageActivation = isPageActivation;
     }
 
     /**
@@ -299,6 +301,14 @@ public class NavigationHandle {
      */
     public long getNavigationId() {
         return mNavigationId;
+    }
+
+    /*
+     * Whether this navigation is activating an existing page (e.g. served from
+     * the BackForwardCache or Prerender).
+     */
+    public boolean isPageActivation() {
+        return mIsPageActivation;
     }
 
     @NativeMethods

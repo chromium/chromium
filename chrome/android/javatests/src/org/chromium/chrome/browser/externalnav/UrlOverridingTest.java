@@ -33,6 +33,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.android.support.PackageManagerWrapper;
 import org.chromium.base.ApiCompatibilityUtils;
@@ -45,18 +50,22 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
+import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
+import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -70,6 +79,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Test suite for verifying the behavior of various URL overriding actions.
@@ -79,6 +89,9 @@ import java.util.concurrent.TimeoutException;
 public class UrlOverridingTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private static final String BASE_PATH = "/chrome/test/data/android/url_overriding/";
     private static final String NAVIGATION_FROM_TIMEOUT_PAGE =
@@ -118,9 +131,16 @@ public class UrlOverridingTest {
             BASE_PATH + "subframe_navigation_with_play_fallback.html";
     private static final String REDIRECT_TO_OTHER_BROWSER =
             BASE_PATH + "redirect_to_other_browser.html";
+    private static final String NAVIGATION_FROM_BFCACHE =
+            BASE_PATH + "navigation_from_bfcache-1.html";
+    private static final String NAVIGATION_FROM_PRERENDER =
+            BASE_PATH + "navigation_from_prerender.html";
 
     private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
     private static final String NON_BROWSER_PACKAGE = "not.a.browser";
+
+    @Mock
+    private RedirectHandler mRedirectHandler;
 
     private static class TestTabObserver extends EmptyTabObserver {
         private final CallbackHelper mFinishCallback;
@@ -720,5 +740,101 @@ public class UrlOverridingTest {
         Assert.assertEquals(0, pickActivityMonitor.getHits());
         InstrumentationRegistry.getInstrumentation().removeMonitor(pickActivityMonitor);
         InstrumentationRegistry.getInstrumentation().removeMonitor(viewMonitor);
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({"BackForwardCache<Study"})
+    @Features.DisableFeatures({"BackForwardCacheMemoryControls"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_same_site/true"})
+    public void
+    testNoRedirectWithBFCache() throws Exception {
+        final CallbackHelper finishCallback = new CallbackHelper();
+        final CallbackHelper syncHelper = new CallbackHelper();
+        AtomicReference<NavigationHandle> mLastNavigationHandle = new AtomicReference<>(null);
+        EmptyTabObserver observer = new EmptyTabObserver() {
+            @Override
+            public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+                int callCount = syncHelper.getCallCount();
+                mLastNavigationHandle.set(navigation);
+                finishCallback.notifyCalled();
+                try {
+                    syncHelper.waitForCallback(callCount);
+                } catch (Exception e) {
+                }
+            }
+        };
+        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(NAVIGATION_FROM_BFCACHE));
+
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+        final RedirectHandler spyHandler = Mockito.spy(TestThreadUtils.runOnUiThreadBlocking(
+                () -> RedirectHandlerTabHelper.getHandlerFor(tab)));
+
+        InterceptNavigationDelegateImpl delegate = getInterceptNavigationDelegate(tab);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.addObserver(observer);
+            RedirectHandlerTabHelper.swapHandlerFor(tab, spyHandler);
+        });
+
+        // Click link to go to second page.
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "link");
+        finishCallback.waitForCallback(0);
+        syncHelper.notifyCalled();
+
+        // Press back to go back to first page with BFCache.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().onBackPressed());
+        finishCallback.waitForCallback(1);
+        Assert.assertTrue(mLastNavigationHandle.get().isPageActivation());
+        // Page activations should clear the RedirectHandler so future navigations aren't part of
+        // the same navigation chain.
+        Mockito.verify(spyHandler, Mockito.times(1)).clear();
+        syncHelper.notifyCalled();
+
+        // Page redirects to intent: URL.
+        finishCallback.waitForCallback(2);
+        // With RedirectHandler state cleared, this should be treated as a navigation without a
+        // user gesture, and so should not allow external navigation.
+        Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE,
+                delegate.getLastOverrideUrlLoadingResultTypeForTests());
+        Assert.assertTrue(mLastNavigationHandle.get().getUrl().getSpec().startsWith("intent://"));
+        syncHelper.notifyCalled();
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ChromeFeatureList.PRERENDER2})
+    public void testClearRedirectHandlerOnPageActivation() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+        final CallbackHelper prerenderFinishCallback = new CallbackHelper();
+        EmptyTabObserver observer = new EmptyTabObserver() {
+            @Override
+            public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+                if (!navigation.isInPrimaryMainFrame()) prerenderFinishCallback.notifyCalled();
+            }
+        };
+        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.addObserver(observer); });
+
+        mActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_PRERENDER));
+
+        prerenderFinishCallback.waitForCallback(0);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> RedirectHandlerTabHelper.swapHandlerFor(tab, mRedirectHandler));
+
+        // Click page to load prerender.
+        TouchCommon.singleClickView(tab.getView());
+
+        // Page activations should clear the RedirectHandler so future navigations aren't part of
+        // the same navigation chain.
+        Mockito.verify(mRedirectHandler,
+                       Mockito.timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .clear();
     }
 }

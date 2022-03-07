@@ -48,7 +48,8 @@ public abstract class InterceptNavigationDelegate {
                 false /* isSameDocument*/, true /* isRendererInitiated */, initiatorOrigin,
                 null /* impressionData */, transition, false /* isPost */, hasUserGesture,
                 false /* isRedirect */, true /* isExternalProtocol */,
-                0 /* navigationId - doesn't correspond to a native NavigationHandle*/);
+                0 /* navigationId - doesn't correspond to a native NavigationHandle*/,
+                false /* isPageActivation */);
         shouldIgnoreNavigation(navigationHandle, escapedUrl);
     }
 }

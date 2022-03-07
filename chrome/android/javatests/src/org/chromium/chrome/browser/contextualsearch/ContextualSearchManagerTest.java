@@ -1695,15 +1695,15 @@ public class ContextualSearchManagerTest {
         final ExternalNavigationHandler externalNavHandler =
                 new ExternalNavigationHandler(delegate);
         GURL url = new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end");
-        final NavigationHandle navigationHandle =
-                new NavigationHandle(0 /* nativeNavigationHandleProxy*/,
-                        new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
-                        GURL.emptyGURL() /* referrerUrl */,
-                        GURL.emptyGURL() /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
-                        false /* isSameDocument*/, true /* isRendererInitiated */,
-                        null /* initiatorOrigin */, null /* impressionData */, PageTransition.LINK,
-                        false /* isPost */, true /* hasUserGesture */, false /* isRedirect */,
-                        true /* isExternalProtocol */, 0 /* navigationId */);
+        final NavigationHandle navigationHandle = new NavigationHandle(
+                0 /* nativeNavigationHandleProxy*/,
+                new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
+                GURL.emptyGURL() /* referrerUrl */, GURL.emptyGURL() /* baseUrlForDataUrl */,
+                true /* isInPrimaryMainFrame */, false /* isSameDocument*/,
+                true /* isRendererInitiated */, null /* initiatorOrigin */,
+                null /* impressionData */, PageTransition.LINK, false /* isPost */,
+                true /* hasUserGesture */, false /* isRedirect */, true /* isExternalProtocol */,
+                0 /* navigationId */, false /* isPageActivation */);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -1741,7 +1741,7 @@ public class ContextualSearchManagerTest {
                 false /* isSameDocument*/, true /* isRendererInitiated */,
                 null /* initiatorOrigin */, null /* impressionData */, PageTransition.LINK,
                 false /* isPost */, true /* hasUserGesture */, false /* isRedirect */,
-                false /* isExternalProtocol */, 0 /* navigationId */);
+                false /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
 
         GURL redirectUrl =
                 new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end");
@@ -1751,7 +1751,7 @@ public class ContextualSearchManagerTest {
                 false /* isSameDocument*/, true /* isRendererInitiated */,
                 null /* initiatorOrigin */, null /* impressionData */, PageTransition.LINK,
                 false /* isPost */, false /* hasUserGesture */, true /* isRedirect */,
-                true /* isExternalProtocol */, 0 /* navigationId */);
+                true /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
@@ -1790,7 +1790,7 @@ public class ContextualSearchManagerTest {
                 false /* isSameDocument*/, true /* isRendererInitiated */,
                 null /* initiatorOrigin */, null /* impressionData */, PageTransition.LINK,
                 false /* isPost */, false /* hasUserGesture */, false /* isRedirect */,
-                true /* isExternalProtocol */, 0 /* navigationId */);
+                true /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override

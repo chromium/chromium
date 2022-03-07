@@ -190,7 +190,7 @@ public class CurrentPageVerifierTest {
                 false /* isRendererInitiated */, null /* initiatorOrigin */,
                 null /* impressionData */, 0 /* pageTransition */, false /* isPost */,
                 false /* hasUserGesture */, false /* isRedirect */, false /* isExternalProtocol */,
-                0 /* navigationId */);
+                0 /* navigationId */, false /* isPageActivation */);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidStartNavigation(mTab, navigation);
         }

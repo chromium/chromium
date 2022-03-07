@@ -1,0 +1,26 @@
+<html>
+<head>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <script type="speculationrules">
+    {
+      "prerender":[
+        {
+          "source": "list",
+          "urls": ["hello.html"]
+        }
+      ]
+    }
+  </script>
+  <script>
+    function loadPrerender() {
+      window.location = 'hello.html';
+    };
+  </script>
+</head>
+<body style='height:10000px;' onclick='loadPrerender();'>
+  <div>
+    This page triggers a prerender of hello.html. Click to load the prerender.
+  </div>
+</body>
+</html>
