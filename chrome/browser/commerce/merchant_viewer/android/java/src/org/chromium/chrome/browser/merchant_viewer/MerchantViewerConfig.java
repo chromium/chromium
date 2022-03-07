@@ -55,6 +55,9 @@ public class MerchantViewerConfig {
     @VisibleForTesting
     public static final String TRUST_SIGNALS_MESSAGE_DESCRIPTION_UI_PARAM =
             "trust_signals_message_description_ui";
+    @VisibleForTesting
+    public static final String TRUST_SIGNALS_MESSAGE_DISABLED_FOR_IMPACT_STUDY_PARAM =
+            "trust_signals_message_disabled_for_impact_study";
 
     public static int getDefaultTrustSignalsMessageDelay() {
         int defaultDelay = (int) TimeUnit.SECONDS.toMillis(30);
@@ -193,5 +196,15 @@ public class MerchantViewerConfig {
                     TRUST_SIGNALS_MESSAGE_DESCRIPTION_UI_PARAM, defaultUI);
         }
         return defaultUI;
+    }
+
+    public static boolean isTrustSignalsMessageDisabledForImpactStudy() {
+        boolean defaultValue = false;
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                    TRUST_SIGNALS_MESSAGE_DISABLED_FOR_IMPACT_STUDY_PARAM, defaultValue);
+        }
+        return defaultValue;
     }
 }
