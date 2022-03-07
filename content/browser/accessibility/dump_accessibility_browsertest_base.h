@@ -95,6 +95,9 @@ class DumpAccessibilityTestBase
   // Helpers
   //
 
+  // Dump the accessibility tree with all provided filters into a string.
+  std::string DumpTreeAsString() const;
+
   // Dump the whole accessibility tree, without applying any filters,
   // and return it as a string.
   std::string DumpUnfilteredAccessibilityTreeAsString();

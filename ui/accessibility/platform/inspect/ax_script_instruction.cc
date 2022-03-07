@@ -13,6 +13,7 @@
 
 namespace ui {
 
+const char kPrintTree[] = "print tree";
 const char kWaitFor[] = "wait for ";
 const size_t kWaitForLength = sizeof(kWaitFor) / sizeof(kWaitFor[0]) - 1;
 
@@ -23,10 +24,13 @@ bool AXScriptInstruction::IsEvent() const {
   return !IsComment() && EventNameStartIndex() != std::string::npos;
 }
 bool AXScriptInstruction::IsScript() const {
-  return !IsComment() && !IsEvent();
+  return !IsComment() && !IsEvent() && !IsPrintTree();
 }
 bool AXScriptInstruction::IsComment() const {
   return base::StartsWith(instruction_, "//");
+}
+bool AXScriptInstruction::IsPrintTree() const {
+  return instruction_ == kPrintTree;
 }
 
 AXPropertyNode AXScriptInstruction::AsScript() const {

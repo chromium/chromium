@@ -82,10 +82,15 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     size_t length = scenario_.script_instructions.size();
     while (start_index < length) {
       std::string wait_for;
+      bool printTree = false;
       size_t index = start_index;
       for (; index < length; index++) {
         if (scenario_.script_instructions[index].IsEvent()) {
           wait_for = scenario_.script_instructions[index].AsEvent();
+          break;
+        }
+        if (scenario_.script_instructions[index].IsPrintTree()) {
+          printTree = true;
           break;
         }
       }
@@ -105,6 +110,10 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
             actual_contents += event + '\n';
           }
         }
+      }
+
+      if (printTree) {
+        actual_contents += DumpTreeAsString() + '\n';
       }
 
       auto chunk =

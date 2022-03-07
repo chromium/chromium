@@ -261,11 +261,11 @@ To pass a SEL as argument, you need to use the "@SEL:" prefix. For example:
   slider.isAccessibilitySelectorAllowed(@SEL:setAccessibilityValue:)
 ```
 
-You can use `waitfor` instruction to wait for a specific event before the script
-continues. For example:
+You can use the `wait for` instruction to wait for a specific event before
+the script scontinues. For example:
 
 ```
-@MAC-SCRIPT:
+@SCRIPT:
   button.AXPerformAction(AXPress)
   wait for AXFocusedUIElementChanged
 ```
@@ -274,6 +274,12 @@ will trigger `AXPress` action on a button and will wait for
 `AXFocusedUIElementChanged` event. You can also be more specific if you want to
 and provide the event target. For example:
 `wait for AXFocusedUIElementChanged on AXButton`
+
+You can use `print tree` to print a snapshot of an accessible tree. For example,
+```
+@SCRIPT:
+  print tree
+```
 
 ### Advanced directives
 
