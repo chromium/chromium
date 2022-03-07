@@ -125,6 +125,9 @@ class PasswordStore : public PasswordStoreInterface {
  protected:
   friend class base::RefCountedThreadSafe<PasswordStore>;
 
+  ~PasswordStore() override;
+
+ private:
   // Status of PasswordStore::Init().
   enum class InitStatus {
     // Initialization status is still not determined (init hasn't started or
@@ -138,14 +141,6 @@ class PasswordStore : public PasswordStoreInterface {
     kFailure,
   };
 
-  ~PasswordStore() override;
-
-  // This member is called to perform the actual interaction with the storage.
-  // TODO(crbug.com/1217071): Make private std::unique_ptr as soon as the
-  // backend is passed into the store instead of it being the store(_impl).
-  raw_ptr<PasswordStoreBackend> backend_ = nullptr;
-
- private:
   using InsecureCredentialsTask =
       base::OnceCallback<std::vector<InsecureCredential>()>;
 
@@ -195,13 +190,10 @@ class PasswordStore : public PasswordStoreInterface {
   void InjectAffiliationAndBrandingInformation(LoginsReply callback,
                                                LoginsResult forms);
 
-  // The local backend is a ref-counted type in tests because it still inherits
-  // from PasswordStore and this would be a self reference. So, if `this` is an
-  // instance of PasswordStoreImpl, this member is not used.
-  //
+  // This member is called to perform the actual interaction with the storage.
   // The backend is injected via the public constructor, this member owns the
   // instance and deletes it by calling PasswordStoreBackend::Shutdown on it.
-  std::unique_ptr<PasswordStoreBackend> backend_deleter_ = nullptr;
+  std::unique_ptr<PasswordStoreBackend> backend_;
 
   // TaskRunner for tasks that run on the main sequence (usually the UI thread).
   // TODO(crbug.com/1217071): Move into backend_.

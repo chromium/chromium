@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
 namespace password_manager {
@@ -23,9 +23,14 @@ using PasswordMap = std::
 class FakePasswordStoreBackend : public PasswordStoreBackend {
  public:
   FakePasswordStoreBackend();
+  explicit FakePasswordStoreBackend(IsAccountStore is_account_store);
   ~FakePasswordStoreBackend() override;
 
+  void Clear();
+
   const PasswordMap& stored_passwords() const { return stored_passwords_; }
+  int fill_matching_logins_calls() const { return fill_matching_logins_calls_; }
+  IsAccountStore is_account_store() const { return is_account_store_; }
 
  private:
   // Implements PasswordStoreBackend interface.
@@ -77,6 +82,10 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
   PasswordStoreChangeList RemoveLoginInternal(const PasswordForm& form);
 
+  const IsAccountStore is_account_store_{false};
+
+  // Number of calls of FillMatchingLogins() method.
+  int fill_matching_logins_calls_ = 0;
   PasswordMap stored_passwords_;
 };
 

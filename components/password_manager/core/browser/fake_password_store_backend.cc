@@ -14,7 +14,16 @@
 namespace password_manager {
 
 FakePasswordStoreBackend::FakePasswordStoreBackend() = default;
+
+FakePasswordStoreBackend::FakePasswordStoreBackend(
+    IsAccountStore is_account_store)
+    : is_account_store_(is_account_store) {}
+
 FakePasswordStoreBackend::~FakePasswordStoreBackend() = default;
+
+void FakePasswordStoreBackend::Clear() {
+  stored_passwords_.clear();
+}
 
 void FakePasswordStoreBackend::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
@@ -25,7 +34,10 @@ void FakePasswordStoreBackend::InitBackend(
 }
 
 void FakePasswordStoreBackend::Shutdown(base::OnceClosure shutdown_completed) {
-  std::move(shutdown_completed).Run();
+  // Ensure that the shutdown is only completed after any other backend task on
+  // the same task runner concluded. The backend always uses the same runner.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, std::move(shutdown_completed));
 }
 
 void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
@@ -92,14 +104,14 @@ void FakePasswordStoreBackend::RemoveLoginsByURLAndTimeAsync(
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
     PasswordStoreChangeListReply callback) {
-  NOTREACHED();
+  NOTIMPLEMENTED();
 }
 
 void FakePasswordStoreBackend::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
     PasswordStoreChangeListReply callback) {
-  NOTREACHED();
+  NOTIMPLEMENTED();
 }
 
 void FakePasswordStoreBackend::DisableAutoSignInForOriginsAsync(
@@ -169,6 +181,8 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsInternal(
 LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
     const PasswordFormDigest& form,
     bool include_psl) {
+  // Updating all matched forms is the equivalent of FillMatchingLogins();
+  ++fill_matching_logins_calls_;
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   for (const auto& elements : stored_passwords_) {
     // The code below doesn't support PSL federated credential. It's doable but
@@ -211,14 +225,16 @@ PasswordStoreChangeList FakePasswordStoreBackend::AddLoginInternal(
     changes.emplace_back(PasswordStoreChange::REMOVE, *iter);
     changes.emplace_back(PasswordStoreChange::ADD, form);
     *iter = form;
-    iter->in_store = PasswordForm::Store::kProfileStore;
+    iter->in_store = is_account_store() ? PasswordForm::Store::kAccountStore
+                                        : PasswordForm::Store::kProfileStore;
     return changes;
   }
 
   changes.emplace_back(PasswordStoreChange::ADD, form);
   passwords_for_signon_realm.push_back(form);
   passwords_for_signon_realm.back().in_store =
-      PasswordForm::Store::kProfileStore;
+      is_account_store() ? PasswordForm::Store::kAccountStore
+                         : PasswordForm::Store::kProfileStore;
   return changes;
 }
 
@@ -229,7 +245,9 @@ PasswordStoreChangeList FakePasswordStoreBackend::UpdateLoginInternal(
   for (auto& stored_form : forms) {
     if (ArePasswordFormUniqueKeysEqual(form, stored_form)) {
       stored_form = form;
-      stored_form.in_store = PasswordForm::Store::kProfileStore;
+      stored_form.in_store = is_account_store()
+                                 ? PasswordForm::Store::kAccountStore
+                                 : PasswordForm::Store::kProfileStore;
       changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE, form));
     }
   }

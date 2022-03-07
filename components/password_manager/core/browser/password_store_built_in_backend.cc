@@ -35,6 +35,7 @@ void PasswordStoreBuiltInBackend::Shutdown(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (helper_) {
     background_task_runner_->DeleteSoon(FROM_HERE, std::move(helper_));
+    std::move(shutdown_completed).Run();
   }
 }
 

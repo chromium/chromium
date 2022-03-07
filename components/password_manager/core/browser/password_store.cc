@@ -76,10 +76,8 @@ void InvokeCallbacksForSuspectedChanges(
 
 }  // namespace
 
-PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend) {
-  backend_deleter_ = std::move(backend);
-  backend_ = backend_deleter_.get();
-}
+PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
+    : backend_(std::move(backend)) {}
 
 bool PasswordStore::Init(
     PrefService* prefs,
@@ -239,12 +237,12 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
     auto branding_injection_for_affiliations_callback =
         base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
                        this, request_handler->AffiliatedLoginsClosure());
-    // The backend *is* the password_store and can therefore be passed with
-    // base::Unretained.
+    // `Shutdown` resets the affiliated_match_helper_ before shutting down the
+    // backend_. Therefore, base::Unretained is safe here.
     affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
         form, request_handler->AffiliationsClosure().Then(base::BindOnce(
                   &PasswordStoreBackend::FillMatchingLoginsAsync,
-                  base::Unretained(backend_),
+                  base::Unretained(backend_.get()),
                   std::move(branding_injection_for_affiliations_callback),
                   /*include_psl=*/false)));
   } else {
@@ -332,11 +330,12 @@ void PasswordStore::ShutdownOnUIThread() {
 
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
+
   if (backend_) {
     backend_->Shutdown(base::BindOnce(
         [](std::unique_ptr<PasswordStoreBackend> backend) { backend.reset(); },
-        std::move(backend_deleter_)));
-    backend_ = nullptr;
+        std::move(backend_)));
+    // Now, backend_ == nullptr (guaranteed by move).
   }
 }
 
@@ -346,7 +345,7 @@ PasswordStore::CreateSyncControllerDelegate() {
 }
 
 PasswordStoreBackend* PasswordStore::GetBackendForTesting() {
-  return backend_;
+  return backend_.get();
 }
 
 PasswordStore::~PasswordStore() {

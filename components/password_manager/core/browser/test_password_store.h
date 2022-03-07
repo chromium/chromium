@@ -6,15 +6,8 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_TEST_PASSWORD_STORE_H_
 
 #include <functional>
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
 
-#include "base/containers/flat_set.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -33,8 +26,11 @@ MATCHER_P(MatchesFormExceptStore, expected, "") {
 // is only used for testing, only the parts of the interface that are needed
 // for testing have been implemented.
 // TODO(crbug.com/1222591): Implement only the PasswordStoreInterface.
-class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
+class TestPasswordStore : public PasswordStore {
  public:
+  // TODO(crbug.com/1222591): Clean up all references using this.
+  using PasswordMap = PasswordMap;
+
   // We need to qualify password_manager::IsAccountStore with the full
   // namespace, otherwise, it's confused with the method
   // PasswordStoreSync::IsAccountStore().
@@ -44,12 +40,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   TestPasswordStore(const TestPasswordStore&) = delete;
   TestPasswordStore& operator=(const TestPasswordStore&) = delete;
 
-  using PasswordMap = std::map<std::string /* signon_realm */,
-                               std::vector<PasswordForm>,
-                               std::less<>>;
-
-  const PasswordMap& stored_passwords() const;
-
   void Clear();
 
   // Returns true if no passwords are stored in the store. Note that this is not
@@ -57,75 +47,17 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   // have entries of size 0.
   bool IsEmpty() const;
 
-  int fill_matching_logins_calls() const { return fill_matching_logins_calls_; }
-
-  bool IsAccountStore() const;
+  // TODO(crbug.com/1294735): Clean up non-essential methods.
+  int fill_matching_logins_calls() const;
+  const TestPasswordStore::PasswordMap& stored_passwords() const;
+  ::password_manager::IsAccountStore IsAccountStore() const;
 
  protected:
   ~TestPasswordStore() override;
 
-  // PasswordStoreBackend interface
-  void InitBackend(RemoteChangesReceived remote_form_changes_received,
-                   base::RepeatingClosure sync_enabled_or_disabled_cb,
-                   base::OnceCallback<void(bool)> completion) override;
-  void Shutdown(base::OnceClosure shutdown_completed) override;
-  void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
-  void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
-  void FillMatchingLoginsAsync(
-      LoginsReply callback,
-      bool include_psl,
-      const std::vector<PasswordFormDigest>& forms) override;
-  void AddLoginAsync(const PasswordForm& form,
-                     PasswordStoreChangeListReply callback) override;
-  void UpdateLoginAsync(const PasswordForm& form,
-                        PasswordStoreChangeListReply callback) override;
-  void RemoveLoginAsync(const PasswordForm& form,
-                        PasswordStoreChangeListReply callback) override;
-  void RemoveLoginsCreatedBetweenAsync(
-      base::Time delete_begin,
-      base::Time delete_end,
-      PasswordStoreChangeListReply callback) override;
-  void RemoveLoginsByURLAndTimeAsync(
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceCallback<void(bool)> sync_completion,
-      PasswordStoreChangeListReply callback) override;
-  void DisableAutoSignInForOriginsAsync(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      base::OnceClosure completion) override;
-  SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  FieldInfoStore* GetFieldInfoStore() override;
-  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-  CreateSyncControllerDelegate() override;
-  void ClearAllLocalPasswords() override;
-
  private:
-  LoginsResult GetAllLoginsInternal();
-  LoginsResult GetAutofillableLoginsInternal();
-  LoginsResult FillMatchingLogins(const PasswordFormDigest& form,
-                                  bool include_psl);
-  LoginsResult FillMatchingLoginsBulk(
-      const std::vector<PasswordFormDigest>& forms,
-      bool include_psl);
-  PasswordStoreChangeList AddLoginImpl(const PasswordForm& form);
-  PasswordStoreChangeList UpdateLoginImpl(const PasswordForm& form);
-  PasswordStoreChangeList RemoveLoginImpl(const PasswordForm& form);
-
-  const password_manager::IsAccountStore is_account_store_;
-
-  PasswordMap stored_passwords_;
-
-  const std::unique_ptr<PasswordStoreSync::MetadataStore> metadata_store_;
-
-  // TaskRunner for tasks that run on the main sequence (usually the UI thread).
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-
-  // TaskRunner for all the background operations.
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-
-  // Number of calls of FillMatchingLogins() method.
-  int fill_matching_logins_calls_ = 0;
+  FakePasswordStoreBackend* fake_backend();
+  const FakePasswordStoreBackend* fake_backend() const;
 };
 
 }  // namespace password_manager
