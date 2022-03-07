@@ -132,6 +132,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
                        ProfilePickerOpensOnStartup) {
+  Profile* main_profile = browser()->profile();
+
   // Create an additional profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath path_profile2 =
@@ -161,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   run_loop2.Run();
   EXPECT_FALSE(ProfilePicker::IsOpen());
   Profile* profile = BrowserList::GetInstance()->GetLastActive()->profile();
-  EXPECT_EQ(profile->GetPath(), path_profile2);
+  // Main profile should be always used.
+  EXPECT_EQ(profile->GetPath(), main_profile->GetPath());
   EXPECT_TRUE(profile->IsOffTheRecord());
 
   browser_service()->NewWindow(
