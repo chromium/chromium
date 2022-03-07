@@ -373,8 +373,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 
   app->install_reason =
       apps::ConvertMojomInstallReasonToInstallReason(update.InstallReason());
-  app->install_source =
-      apps::ConvertMojomInstallSourceToInstallSource(update.InstallSource());
+  app->install_source = update.InstallSource();
 
   app->description = update.Description();
 

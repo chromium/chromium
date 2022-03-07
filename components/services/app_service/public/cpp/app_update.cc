@@ -594,19 +594,21 @@ bool AppUpdate::InstallReasonChanged() const {
           (mojom_delta_->install_reason != mojom_state_->install_reason));
 }
 
-apps::mojom::InstallSource AppUpdate::InstallSource() const {
+apps::InstallSource AppUpdate::InstallSource() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_DEFAULT_VALUE(install_source, InstallSource::kUnknown)
+  }
+
   if (mojom_delta_ &&
       (mojom_delta_->install_source != apps::mojom::InstallSource::kUnknown)) {
-    return mojom_delta_->install_source;
+    return ConvertMojomInstallSourceToInstallSource(
+        mojom_delta_->install_source);
   }
   if (mojom_state_) {
-    return mojom_state_->install_source;
+    return ConvertMojomInstallSourceToInstallSource(
+        mojom_state_->install_source);
   }
-  return apps::mojom::InstallSource::kUnknown;
-}
-
-apps::InstallSource AppUpdate::GetInstallSource() const {
-  GET_VALUE_WITH_DEFAULT_VALUE(install_source, InstallSource::kUnknown)
+  return apps::InstallSource::kUnknown;
 }
 
 bool AppUpdate::InstallSourceChanged() const {

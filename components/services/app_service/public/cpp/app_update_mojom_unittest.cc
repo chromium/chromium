@@ -63,7 +63,7 @@ class AppUpdateMojomTest : public testing::Test {
   apps::mojom::InstallReason expect_install_reason_;
   bool expect_install_reason_changed_;
 
-  apps::mojom::InstallSource expect_install_source_;
+  apps::InstallSource expect_install_source_;
   bool expect_install_source_changed_;
 
   std::string expect_policy_id_;
@@ -271,7 +271,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_install_time_ = base::Time();
     expect_permissions_.clear();
     expect_install_reason_ = apps::mojom::InstallReason::kUnknown;
-    expect_install_source_ = apps::mojom::InstallSource::kUnknown;
+    expect_install_source_ = apps::InstallSource::kUnknown;
     expect_policy_id_ = "";
     expect_is_platform_app_ = absl::nullopt;
     expect_recommendable_ = absl::nullopt;
@@ -559,14 +559,14 @@ class AppUpdateMojomTest : public testing::Test {
     // InstallSource tests.
     if (state) {
       state->install_source = apps::mojom::InstallSource::kPlayStore;
-      expect_install_source_ = apps::mojom::InstallSource::kPlayStore;
+      expect_install_source_ = apps::InstallSource::kPlayStore;
       expect_install_source_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->install_source = apps::mojom::InstallSource::kSync;
-      expect_install_source_ = apps::mojom::InstallSource::kSync;
+      expect_install_source_ = apps::InstallSource::kSync;
       expect_install_source_changed_ = true;
       CheckExpects(u);
     }

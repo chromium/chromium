@@ -206,7 +206,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_install_reason_, u.GetInstallReason());
     EXPECT_EQ(expect_install_reason_changed_, u.InstallReasonChanged());
 
-    EXPECT_EQ(expect_install_source_, u.GetInstallSource());
+    EXPECT_EQ(expect_install_source_, u.InstallSource());
     EXPECT_EQ(expect_install_source_changed_, u.InstallSourceChanged());
 
     EXPECT_EQ(expect_policy_id_, u.PolicyId());
