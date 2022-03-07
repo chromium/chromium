@@ -32,6 +32,11 @@ _NON_BRANCHED_TESTERS = {
     # don't have sufficient capacity of devices with older Android versions, so
     # we do not run them on the branches
     "Marshmallow Tablet Tester": branches.STANDARD_MILESTONE,
+
+    # These Android testers are triggered by 'Android x64 Builder (dbg)', but
+    # they are FYI testers so we do not run them on the branches
+    "android-12-x64-dbg-tests": branches.STANDARD_MILESTONE,
+    "android-webview-12-x64-dbg-tests": branches.STANDARD_MILESTONE,
 }
 
 _TESTER_NOOP_JOBS = [scheduler_pb.Job(
