@@ -16,7 +16,7 @@ _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'android/arch/lifecycle'
 _MODULE_NAME = 'common'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '1.1.1'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

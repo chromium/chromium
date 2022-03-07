@@ -56,7 +56,8 @@ final class FakeUrlRequest extends UrlRequestBase {
     // The fake {@link CronetEngine} that should be notified when this request starts and stops.
     private final FakeCronetEngine mFakeCronetEngine;
     // Source of thread safety for this class.
-    private final Object mLock = new Object();
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    final Object mLock = new Object();
     // True if direct execution is allowed for this request.
     private final boolean mAllowDirectExecutor;
     // The chain of URL's this request has received.

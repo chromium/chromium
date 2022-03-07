@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/github/kevinstern'
 _MODULE_NAME = 'software-and-algorithms'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '1.0'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

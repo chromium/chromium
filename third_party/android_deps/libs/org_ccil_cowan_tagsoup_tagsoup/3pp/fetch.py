@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'org/ccil/cowan/tagsoup'
 _MODULE_NAME = 'tagsoup'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '1.2.1'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

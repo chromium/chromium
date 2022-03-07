@@ -72,7 +72,6 @@
     "libs/com_google_auto_service_auto_service",
     "libs/com_google_auto_service_auto_service_annotations",
     "libs/com_google_auto_value_auto_value_annotations",
-    "libs/com_google_code_findbugs_jformatstring",
     "libs/com_google_code_findbugs_jsr305",
     "libs/com_google_code_gson_gson",
     "libs/com_google_dagger_dagger",

@@ -935,7 +935,9 @@ public class FakeUrlRequestTest {
         request.start();
         callback.waitForNextStep();
         try {
-            request.mFakeDataSink.onReadSucceeded(false);
+            synchronized (request.mLock) {
+                request.mFakeDataSink.onReadSucceeded(false);
+            }
             fail("Cannot read before upload has started");
         } catch (IllegalStateException e) {
             assertEquals("onReadSucceeded() called when not awaiting a read result; in state: 2",
@@ -967,7 +969,9 @@ public class FakeUrlRequestTest {
         request.start();
         callback.waitForNextStep();
         try {
-            request.mFakeDataSink.onRewindSucceeded();
+            synchronized (request.mLock) {
+                request.mFakeDataSink.onRewindSucceeded();
+            }
             fail("Cannot rewind before upload has started");
         } catch (IllegalStateException e) {
             assertEquals("onRewindSucceeded() called when not awaiting a rewind; in state: 2",

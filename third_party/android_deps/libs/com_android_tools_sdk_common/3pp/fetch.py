@@ -16,7 +16,7 @@ _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'com/android/tools'
 _MODULE_NAME = 'sdk-common'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '30.2.0-beta01'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

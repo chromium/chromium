@@ -16,7 +16,7 @@ _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'com/android/support'
 _MODULE_NAME = 'collections'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '28.0.0'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

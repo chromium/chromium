@@ -110,7 +110,8 @@ public class EarlyTraceEvent {
     public static final String TRACE_EARLY_JAVA_IN_CHILD_SWITCH = "trace-early-java-in-child";
 
     // Protects the fields below.
-    private static final Object sLock = new Object();
+    @VisibleForTesting
+    static final Object sLock = new Object();
 
     // Not final because in many configurations these objects are not used.
     @GuardedBy("sLock")

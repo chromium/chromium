@@ -161,9 +161,9 @@ public class ContextualSearchEntityHeuristicTest {
         ContextualSearchEntityHeuristic entityHeuristicLuiz =
                 setupHeuristic(english, "The former president of Brazil, Lui", phrase);
         assertTrue(entityHeuristicLuiz.isProbablyEntityBasedOnCamelCase());
-        ContextualSearchEntityHeuristic entityHeuristicInácio =
+        ContextualSearchEntityHeuristic entityHeuristicInacio =
                 setupHeuristic(english, "The former president of Brazil, Luiz Inác", phrase);
-        assertTrue(entityHeuristicInácio.isProbablyEntityBasedOnCamelCase());
+        assertTrue(entityHeuristicInacio.isProbablyEntityBasedOnCamelCase());
         ContextualSearchEntityHeuristic entityHeuristicLula =
                 setupHeuristic(english, "The former president of Brazil, Luiz Inácio Lula", phrase);
         assertTrue(entityHeuristicLula.isProbablyEntityBasedOnCamelCase());

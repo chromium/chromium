@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/google/googlejavaformat'
 _MODULE_NAME = 'google-java-format'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '1.5'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

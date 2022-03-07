@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'net/ltgt/gradle/incap'
 _MODULE_NAME = 'incap'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '0.2'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

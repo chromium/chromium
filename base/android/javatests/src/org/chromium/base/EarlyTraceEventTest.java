@@ -82,9 +82,11 @@ public class EarlyTraceEventTest {
         long afterNanos = SystemClock.elapsedRealtimeNanos();
 
         List<AsyncEvent> matchingEvents = new ArrayList<AsyncEvent>();
-        for (AsyncEvent evt : EarlyTraceEvent.sAsyncEvents) {
-            if (evt.mName.equals(EVENT_NAME)) {
-                matchingEvents.add(evt);
+        synchronized (EarlyTraceEvent.sLock) {
+            for (AsyncEvent evt : EarlyTraceEvent.sAsyncEvents) {
+                if (evt.mName.equals(EVENT_NAME)) {
+                    matchingEvents.add(evt);
+                }
             }
         }
         Assert.assertEquals(2, matchingEvents.size());
@@ -148,7 +150,9 @@ public class EarlyTraceEventTest {
         try (TraceEvent e = TraceEvent.scoped(EVENT_NAME2)) {
             // Required comment to pass presubmit checks.
         }
-        Assert.assertNull(EarlyTraceEvent.sEvents);
+        synchronized (EarlyTraceEvent.sLock) {
+            Assert.assertNull(EarlyTraceEvent.sEvents);
+        }
     }
 
     @Test
@@ -157,7 +161,9 @@ public class EarlyTraceEventTest {
     public void testIgnoreAsyncEventsWhenDisabled() {
         EarlyTraceEvent.startAsync(EVENT_NAME, EVENT_ID);
         EarlyTraceEvent.finishAsync(EVENT_NAME, EVENT_ID);
-        Assert.assertNull(EarlyTraceEvent.sAsyncEvents);
+        synchronized (EarlyTraceEvent.sLock) {
+            Assert.assertNull(EarlyTraceEvent.sAsyncEvents);
+        }
     }
 
     @Test
@@ -259,6 +265,8 @@ public class EarlyTraceEventTest {
         CommandLine.getInstance().removeSwitch("trace-early-java-in-child");
         EarlyTraceEvent.onCommandLineAvailableInChildProcess();
         Assert.assertFalse(EarlyTraceEvent.enabled());
-        Assert.assertNull(EarlyTraceEvent.sEvents);
+        synchronized (EarlyTraceEvent.sLock) {
+            Assert.assertNull(EarlyTraceEvent.sEvents);
+        }
     }
 }

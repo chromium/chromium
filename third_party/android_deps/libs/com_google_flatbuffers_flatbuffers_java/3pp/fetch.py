@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/google/flatbuffers'
 _MODULE_NAME = 'flatbuffers-java'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '2.0.3'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

@@ -187,6 +187,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # The only time we trigger this is when it is better to be explicit in a
     # list of unicode characters, e.g. FindAddress.java
     'UnicodeEscape',
+    # Nice to have.
+    'AlreadyChecked',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns

@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/google/dagger'
 _MODULE_NAME = 'dagger-compiler'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '2.30'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

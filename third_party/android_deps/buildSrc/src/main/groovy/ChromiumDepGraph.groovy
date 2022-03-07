@@ -57,9 +57,6 @@ class ChromiumDepGraph {
         com_google_auto_value_auto_value_annotations: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
-        com_google_code_findbugs_jFormatString: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/spotbugs/spotbugs/master/spotbugs/licenses/LICENSE.txt',
-            licenseName: 'GNU Lesser Public License'),
         com_google_code_gson_gson: new PropertyOverride(
             url: 'https://github.com/google/gson',
             licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
@@ -72,8 +69,6 @@ class ChromiumDepGraph {
             url: 'https://errorprone.info/',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
-        com_google_errorprone_error_prone_core: new PropertyOverride(
-            overrideLatest: true),
         com_google_firebase_firebase_annotations: new PropertyOverride(
             description: 'Common annotations for Firebase SKDs.'),
         com_google_firebase_firebase_common: new PropertyOverride(
@@ -723,7 +718,7 @@ class ChromiumDepGraph {
         // When set overrides the version downloaded by the 3pp fetch script to
         // be, instead of the latest available, the resolved version by gradle
         // in this run.
-        Boolean overrideLatest = true
+        Boolean overrideLatest
 
     }
 

@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/github/ben-manes/caffeine'
 _MODULE_NAME = 'caffeine'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '2.8.8'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

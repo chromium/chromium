@@ -16,7 +16,7 @@ _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'com/google/android/gms'
 _MODULE_NAME = 'play-services-auth-api-phone'
 _FILE_EXT = 'aar'
-_OVERRIDE_LATEST = '17.5.0'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

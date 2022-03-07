@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'org/jetbrains'
 _MODULE_NAME = 'annotations'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '13.0'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

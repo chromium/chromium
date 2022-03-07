@@ -48,6 +48,7 @@ public class EarlyNativeTest {
 
     private class TestLibraryLoader extends LibraryLoader {
         @Override
+        @SuppressWarnings("GuardedBy") // ErrorProne: should be guarded by 'mLock'
         protected void loadMainDexAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
             mLoadMainDexStarted.notifyCalled();
             super.loadMainDexAlreadyLocked(appInfo, inZygote);
