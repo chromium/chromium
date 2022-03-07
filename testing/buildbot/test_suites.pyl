@@ -7216,8 +7216,8 @@
     'lacros_skylab_arm': {
       'lacros_skylab_arm_tests': {
         'variants': [
-          'CROS_KEVIN_LKGM',
-          'CROS_HANA_LKGM',
+          'CROS_KEVIN_RELEASE_LKGM',
+          'CROS_HANA_RELEASE_LKGM',
         ]
       },
     },
@@ -7226,14 +7226,14 @@
     'lacros_skylab_tests_amd64_generic': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_ATLAS_LKGM',
-          'CROS_ATLAS_DEV',
-          'CROS_ATLAS_BETA',
-          'CROS_ATLAS_STABLE',
-          'CROS_EVE_LKGM',
-          'CROS_EVE_DEV',
-          'CROS_EVE_BETA',
-          'CROS_EVE_STABLE',
+          'CROS_ATLAS_RELEASE_LKGM',
+          'CROS_ATLAS_RELEASE_DEV',
+          'CROS_ATLAS_RELEASE_BETA',
+          'CROS_ATLAS_RELEASE_STABLE',
+          'CROS_EVE_RELEASE_LKGM',
+          'CROS_EVE_RELEASE_DEV',
+          'CROS_EVE_RELEASE_BETA',
+          'CROS_EVE_RELEASE_STABLE',
         ]
       },
     },
@@ -7241,10 +7241,10 @@
     'lacros_skylab_tests_amd64_generic_fyi': {
       'lacros_skylab_poc': {
         'variants': [
-          'CROS_OCTOPUS_LKGM',
-          'CROS_OCTOPUS_DEV',
-          'CROS_OCTOPUS_BETA',
-          'CROS_OCTOPUS_STABLE',
+          'CROS_OCTOPUS_RELEASE_LKGM',
+          'CROS_OCTOPUS_RELEASE_DEV',
+          'CROS_OCTOPUS_RELEASE_BETA',
+          'CROS_OCTOPUS_RELEASE_STABLE',
         ]
       },
     },

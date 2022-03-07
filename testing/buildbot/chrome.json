@@ -1779,7 +1779,7 @@
         "args": [],
         "cros_board": "atlas",
         "cros_img": "atlas-release/R101-14542.0.0",
-        "name": "lacros_all_tast_tests_ATLAS_LKGM",
+        "name": "lacros_all_tast_tests_ATLAS_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1794,7 +1794,7 @@
         "args": [],
         "cros_board": "atlas",
         "cros_img": "atlas-release/R100-14526.6.0",
-        "name": "lacros_all_tast_tests_ATLAS_DEV",
+        "name": "lacros_all_tast_tests_ATLAS_RELEASE_DEV",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1809,7 +1809,7 @@
         "args": [],
         "cros_board": "atlas",
         "cros_img": "atlas-release/R99-14469.33.0",
-        "name": "lacros_all_tast_tests_ATLAS_BETA",
+        "name": "lacros_all_tast_tests_ATLAS_RELEASE_BETA",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1824,7 +1824,7 @@
         "args": [],
         "cros_board": "atlas",
         "cros_img": "atlas-release/R99-14469.41.0",
-        "name": "lacros_all_tast_tests_ATLAS_STABLE",
+        "name": "lacros_all_tast_tests_ATLAS_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1839,7 +1839,7 @@
         "args": [],
         "cros_board": "eve",
         "cros_img": "eve-release/R101-14542.0.0",
-        "name": "lacros_all_tast_tests_EVE_LKGM",
+        "name": "lacros_all_tast_tests_EVE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1854,7 +1854,7 @@
         "args": [],
         "cros_board": "eve",
         "cros_img": "eve-release/R101-14543.0.0",
-        "name": "lacros_all_tast_tests_EVE_DEV",
+        "name": "lacros_all_tast_tests_EVE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1869,7 +1869,7 @@
         "args": [],
         "cros_board": "eve",
         "cros_img": "eve-release/R99-14469.33.0",
-        "name": "lacros_all_tast_tests_EVE_BETA",
+        "name": "lacros_all_tast_tests_EVE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1884,7 +1884,7 @@
         "args": [],
         "cros_board": "eve",
         "cros_img": "eve-release/R99-14469.41.0",
-        "name": "lacros_all_tast_tests_EVE_STABLE",
+        "name": "lacros_all_tast_tests_EVE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1944,7 +1944,7 @@
         "args": [],
         "cros_board": "kevin",
         "cros_img": "kevin-release/R101-14542.0.0",
-        "name": "lacros_all_tast_tests_KEVIN_LKGM",
+        "name": "lacros_all_tast_tests_KEVIN_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1959,7 +1959,7 @@
         "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R101-14542.0.0",
-        "name": "lacros_all_tast_tests_HANA_LKGM",
+        "name": "lacros_all_tast_tests_HANA_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1974,7 +1974,7 @@
         "args": [],
         "cros_board": "kevin",
         "cros_img": "kevin-release/R101-14542.0.0",
-        "name": "ozone_unittests_KEVIN_LKGM",
+        "name": "ozone_unittests_KEVIN_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1988,7 +1988,7 @@
         "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R101-14542.0.0",
-        "name": "ozone_unittests_HANA_LKGM",
+        "name": "ozone_unittests_HANA_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2002,7 +2002,7 @@
         "args": [],
         "cros_board": "kevin",
         "cros_img": "kevin-release/R101-14542.0.0",
-        "name": "viz_unittests_KEVIN_LKGM",
+        "name": "viz_unittests_KEVIN_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2016,7 +2016,7 @@
         "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R101-14542.0.0",
-        "name": "viz_unittests_HANA_LKGM",
+        "name": "viz_unittests_HANA_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
