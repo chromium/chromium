@@ -830,6 +830,7 @@ if (is_android) {
       "../browser/subresource_filter/subresource_filter_browser_test_harness.cc",
       "../browser/subresource_filter/subresource_filter_browser_test_harness.h",
       "../browser/ui/autofill/payments/offer_notification_infobar_controller_impl_browsertest.cc",
+      "../browser/ui/webui/policy/policy_ui_browsertest.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.h",
       "../renderer/autofill/fake_password_generation_driver.cc",
@@ -919,6 +920,15 @@ if (is_android) {
       "//chrome/test/data/ssl/",
       "//content/test/data/",
     ]
+
+    if (dfmify_dev_ui) {
+      # If DevUI DFM is on, include Java classes and native resource split so
+      # that DevUI page tests would work.
+      deps += [
+        "//chrome/android/features/dev_ui:java",
+        "//chrome/android/modules/dev_ui/provider:java",
+      ]
+    }
   }
 
   test("android_sync_integration_tests") {
