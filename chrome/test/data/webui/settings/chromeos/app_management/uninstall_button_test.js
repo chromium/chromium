@@ -26,7 +26,7 @@ suite('<app-management-uninstall-button', () => {
   async function setupUninstallButton(installReason) {
     // Create an ARC app options.
     const arcOptions = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       installReason: installReason
     };
 

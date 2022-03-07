@@ -355,7 +355,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const apps::AppUpdate& update) {
   auto app = app_management::mojom::App::New();
   app->id = update.AppId();
-  app->type = update.AppType();
+  app->type = apps::ConvertMojomAppTypToAppType(update.AppType());
   app->title = update.Name();
 
   for (const auto& permission : update.Permissions()) {

@@ -25,7 +25,10 @@ suite('<app-management-pin-to-shelf-item>', () => {
   });
 
   test('Toggle pin to shelf', async () => {
-    const arcOptions = {type: apps.mojom.AppType.kArc, permissions: {}};
+    const arcOptions = {
+      type: appManagement.mojom.AppType.kArc,
+      permissions: {}
+    };
 
     // Add an arc app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app1', arcOptions);

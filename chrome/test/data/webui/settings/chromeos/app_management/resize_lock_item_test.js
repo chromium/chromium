@@ -27,7 +27,10 @@ suite('<app-management-resize-lock-item>', () => {
   test('Resize lock setting visibility', async () => {
     // Add an arc app with the default options, and make it the currently
     // selected app.
-    const defaultArcOptions = {type: apps.mojom.AppType.kArc, permissions: {}};
+    const defaultArcOptions = {
+      type: appManagement.mojom.AppType.kArc,
+      permissions: {}
+    };
     const defaultArcApp = await fakeHandler.addApp('app', defaultArcOptions);
     await fakeHandler.flushPipesForTesting();
     resizeLockItem.app = defaultArcApp;
@@ -36,7 +39,7 @@ suite('<app-management-resize-lock-item>', () => {
 
     // Enable resize lock, but it's still hidden.
     const arcOptionsWithResizeLocked = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       resizeLocked: true,
     };
     const appWithResizeLocked =
@@ -47,7 +50,7 @@ suite('<app-management-resize-lock-item>', () => {
 
     // Disable resize lock again, and it's still hidden.
     const arcOptionsWithoutResizeLocked = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       resizeLocked: false,
     };
     const appWithoutResizeLocked =
@@ -58,7 +61,7 @@ suite('<app-management-resize-lock-item>', () => {
 
     // Setting |hideResizeLocked| to false shows the setting.
     const arcOptionsWithHideResizeLockedFalse = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       hideResizeLocked: false,
     };
     const appWithHideResizeLockedFalse =
@@ -69,7 +72,7 @@ suite('<app-management-resize-lock-item>', () => {
 
     // Setting |hideResizeLocked| back to true hides the setting.
     const arcOptionsWithHideResizeLockedTrue = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       hideResizeLocked: true,
     };
     const appWithHideResizeLockedTrue =

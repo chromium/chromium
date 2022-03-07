@@ -41,7 +41,7 @@ suite('<app-management-arc-detail-view>', () => {
 
     // Create an ARC app without microphone permissions.
     const arcOptions = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       permissions: app_management.FakePageHandler.createArcPermissions([
         PermissionType.kCamera,
         PermissionType.kLocation,
@@ -140,7 +140,7 @@ suite('<app-management-arc-detail-view>', () => {
 
     // Create an ARC app without any permissions.
     const arcOptions = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       permissions: app_management.FakePageHandler.createArcPermissions([])
     };
 

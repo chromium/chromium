@@ -21,7 +21,7 @@ suite('<app-management-permission-item>', () => {
     replaceStore();
 
     const arcOptions = {
-      type: apps.mojom.AppType.kArc,
+      type: appManagement.mojom.AppType.kArc,
       permissions: app_management.FakePageHandler.createArcPermissions([
         PermissionType.kCamera,
         PermissionType.kLocation,

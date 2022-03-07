@@ -70,7 +70,7 @@ export class FakePageHandler {
   }
 
   /**
-   * @param {apps.mojom.AppType} appType
+   * @param {appManagement.mojom.AppType} appType
    * @return {!Object<number, appManagement.mojom.Permission>}
    */
   static createPermissions(appType) {
@@ -92,7 +92,7 @@ export class FakePageHandler {
   static createApp(id, optConfig) {
     const app = {
       id: id,
-      type: apps.mojom.AppType.kWeb,
+      type: AppType.kWeb,
       title: 'App Title',
       description: '',
       version: '5.1',

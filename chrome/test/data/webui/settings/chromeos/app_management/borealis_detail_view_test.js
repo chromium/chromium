@@ -47,7 +47,7 @@ suite('<app-management-borealis-detail-view>', function() {
 
     // Add main app, and make it the currently selected app.
     const mainOptions = {
-      type: apps.mojom.AppType.kBorealis,
+      type: appManagement.mojom.AppType.kBorealis,
       permissions: permissions
     };
     const mainApp = await fakeHandler.addApp(kBorealisClientAppId, mainOptions);
@@ -119,7 +119,7 @@ suite('<app-management-borealis-detail-view>', function() {
     // Add borealis (non main) app. Note that any tests after this will
     // have the borealis app selected as default.
     const options = {
-      type: apps.mojom.AppType.kBorealis,
+      type: appManagement.mojom.AppType.kBorealis,
     };
     const app = await fakeHandler.addApp('foo', options);
     app_management.AppManagementStore.getInstance().dispatch(

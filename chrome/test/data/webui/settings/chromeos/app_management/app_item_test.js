@@ -23,7 +23,7 @@ suite('<app-management-app-item>', () => {
     await test_util.flushTasks();
 
     // Create an ARC app.
-    const arcOptions = {type: apps.mojom.AppType.kArc};
+    const arcOptions = {type: appManagement.mojom.AppType.kArc};
 
     arcApp = app_management.FakePageHandler.createApp('app1_id', arcOptions);
     appItem.app = arcApp;

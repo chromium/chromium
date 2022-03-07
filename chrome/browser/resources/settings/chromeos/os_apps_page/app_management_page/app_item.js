@@ -54,7 +54,7 @@ Polymer({
   },
 
   /**
-   * @param {apps.mojom.AppType} appType
+   * @param {appManagement.mojom.AppType} appType
    * @return {AppManagementEntryPointType}
    */
   getAppManagementEntryPoint_(appType) {

@@ -21,7 +21,7 @@ suite('<app-management-chrome-app-detail-view>', () => {
     replaceStore();
 
     const chromeOptions = {
-      type: apps.mojom.AppType.kExtension,
+      type: appManagement.mojom.AppType.kExtension,
       permissions: {}
     };
 

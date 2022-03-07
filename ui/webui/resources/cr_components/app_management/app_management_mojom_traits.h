@@ -5,6 +5,7 @@
 #ifndef UI_WEBUI_RESOURCES_CR_COMPONENTS_APP_MANAGEMENT_APP_MANAGEMENT_MOJOM_TRAITS_H_
 #define UI_WEBUI_RESOURCES_CR_COMPONENTS_APP_MANAGEMENT_APP_MANAGEMENT_MOJOM_TRAITS_H_
 
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
@@ -12,12 +13,19 @@ namespace mojo {
 
 namespace {
 
+using AppType = app_management::mojom::AppType;
 using PermissionDataView = app_management::mojom::PermissionDataView;
 using PermissionType = app_management::mojom::PermissionType;
 using TriState = app_management::mojom::TriState;
 using PermissionValueDataView = app_management::mojom::PermissionValueDataView;
 
 }  // namespace
+
+template <>
+struct EnumTraits<AppType, apps::AppType> {
+  static AppType ToMojom(apps::AppType input);
+  static bool FromMojom(AppType input, apps::AppType* output);
+};
 
 template <>
 struct StructTraits<PermissionDataView, apps::PermissionPtr> {

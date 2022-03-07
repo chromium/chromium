@@ -8,6 +8,87 @@
 
 namespace mojo {
 
+AppType EnumTraits<AppType, apps::AppType>::ToMojom(apps::AppType input) {
+  switch (input) {
+    case apps::AppType::kUnknown:
+      return AppType::kUnknown;
+    case apps::AppType::kArc:
+      return AppType::kArc;
+    case apps::AppType::kBuiltIn:
+      return AppType::kBuiltIn;
+    case apps::AppType::kCrostini:
+      return AppType::kCrostini;
+    case apps::AppType::kChromeApp:
+      return AppType::kChromeApp;
+    case apps::AppType::kWeb:
+      return AppType::kWeb;
+    case apps::AppType::kMacOs:
+      return AppType::kMacOs;
+    case apps::AppType::kPluginVm:
+      return AppType::kPluginVm;
+    case apps::AppType::kStandaloneBrowser:
+      return AppType::kStandaloneBrowser;
+    case apps::AppType::kRemote:
+      return AppType::kRemote;
+    case apps::AppType::kBorealis:
+      return AppType::kBorealis;
+    case apps::AppType::kSystemWeb:
+      return AppType::kSystemWeb;
+    case apps::AppType::kStandaloneBrowserChromeApp:
+      return AppType::kStandaloneBrowserChromeApp;
+    case apps::AppType::kExtension:
+      return AppType::kExtension;
+  }
+}
+
+bool EnumTraits<AppType, apps::AppType>::FromMojom(AppType input,
+                                                   apps::AppType* output) {
+  switch (input) {
+    case AppType::kUnknown:
+      *output = apps::AppType::kUnknown;
+      return true;
+    case AppType::kArc:
+      *output = apps::AppType::kArc;
+      return true;
+    case AppType::kBuiltIn:
+      *output = apps::AppType::kBuiltIn;
+      return true;
+    case AppType::kCrostini:
+      *output = apps::AppType::kCrostini;
+      return true;
+    case AppType::kChromeApp:
+      *output = apps::AppType::kChromeApp;
+      return true;
+    case AppType::kWeb:
+      *output = apps::AppType::kWeb;
+      return true;
+    case AppType::kMacOs:
+      *output = apps::AppType::kMacOs;
+      return true;
+    case AppType::kPluginVm:
+      *output = apps::AppType::kPluginVm;
+      return true;
+    case AppType::kStandaloneBrowser:
+      *output = apps::AppType::kStandaloneBrowser;
+      return true;
+    case AppType::kRemote:
+      *output = apps::AppType::kRemote;
+      return true;
+    case AppType::kBorealis:
+      *output = apps::AppType::kBorealis;
+      return true;
+    case AppType::kSystemWeb:
+      *output = apps::AppType::kSystemWeb;
+      return true;
+    case AppType::kStandaloneBrowserChromeApp:
+      *output = apps::AppType::kStandaloneBrowserChromeApp;
+      return true;
+    case AppType::kExtension:
+      *output = apps::AppType::kExtension;
+      return true;
+  }
+}
+
 bool StructTraits<PermissionDataView, apps::PermissionPtr>::Read(
     PermissionDataView data,
     apps::PermissionPtr* out) {

@@ -22,7 +22,7 @@ suite('<app-management-app-detail-view>', () => {
     replaceStore();
 
     // Create an ARC app.
-    const arcOptions = {type: apps.mojom.AppType.kArc};
+    const arcOptions = {type: appManagement.mojom.AppType.kArc};
 
     // Add an app, and make it the currently selected app.
     arcApp = await fakeHandler.addApp('app1_id', arcOptions);
@@ -42,7 +42,7 @@ suite('<app-management-app-detail-view>', () => {
     assertEquals(arcApp.id, appDetailView.app_.id);
     assertTrue(!!appDetailView.$$('app-management-arc-detail-view'));
     assertFalse(!!appDetailView.$$('app-management-pwa-detail-view'));
-    const pwaOptions = {type: apps.mojom.AppType.kWeb};
+    const pwaOptions = {type: appManagement.mojom.AppType.kWeb};
     // Add an second pwa app, and make it the currently selected app.
     const pwaApp = await fakeHandler.addApp('app2_id', pwaOptions);
     app_management.AppManagementStore.getInstance().dispatch(

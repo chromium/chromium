@@ -7,6 +7,24 @@ module app_management.mojom;
 import "components/services/app_service/public/mojom/types.mojom";
 import "url/mojom/url.mojom";
 
+// The types of apps available in the registry.
+enum AppType {
+  kUnknown = 0,
+  kArc,                   // Android app.
+  kBuiltIn,               // Built-in app.
+  kCrostini,              // Linux (via Crostini) app.
+  kChromeApp,             // Chrome app.
+  kWeb,                   // Web app.
+  kMacOs,                 // Mac OS app.
+  kPluginVm,              // Plugin VM app, see go/pluginvm.
+  kStandaloneBrowser,     // Lacros browser app, see //docs/lacros.md.
+  kRemote,                // Remote app.
+  kBorealis,              // Borealis app, see go/borealis-app.
+  kSystemWeb,             // System web app.
+  kStandaloneBrowserChromeApp,  // Chrome app hosted in Lacros.
+  kExtension,             // Browser extension.
+};
+
 // Augments a bool to include an 'unknown' value.
 enum OptionalBool {
   kUnknown = 0,
@@ -47,7 +65,7 @@ struct Permission {
 struct App {
   string id;
 
-  apps.mojom.AppType type;
+  AppType type;
 
   // The fields below may be omitted because this struct is also used to signal
   // updates.

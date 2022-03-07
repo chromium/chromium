@@ -53,6 +53,10 @@ mojom("mojo_bindings") {
     {
       types = [
         {
+          mojom = "app_management.mojom.AppType"
+          cpp = "::apps::AppType"
+        },
+        {
           mojom = "app_management.mojom.Permission"
           cpp = "::apps::PermissionPtr"
           move_only = true
@@ -60,6 +64,7 @@ mojom("mojo_bindings") {
       ]
       traits_headers = [
         "//ui/webui/resources/cr_components/app_management/app_management_mojom_traits.h",
+        "//components/services/app_service/public/cpp/app_types.h",
         "//components/services/app_service/public/cpp/permission.h",
       ]
       traits_sources = [ "//ui/webui/resources/cr_components/app_management/app_management_mojom_traits.cc" ]
