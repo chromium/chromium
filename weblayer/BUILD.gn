@@ -476,6 +476,7 @@ source_set("weblayer_lib_base") {
     "//components/services/storage/public/mojom",
     "//components/sessions",
     "//components/signin/core/browser",
+    "//components/site_engagement/content",
     "//components/site_isolation",
     "//components/spellcheck:buildflags",
     "//components/ssl_errors",

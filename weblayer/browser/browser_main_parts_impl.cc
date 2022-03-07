@@ -71,6 +71,7 @@
 #include "weblayer/browser/media/media_router_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "weblayer/browser/site_engagement/site_engagement_service_factory.h"
 #include "weblayer/browser/webapps/weblayer_webapps_client.h"
 #include "weblayer/browser/weblayer_factory_impl_android.h"
 #include "weblayer/common/features.h"
@@ -128,6 +129,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   NoStatePrefetchManagerFactory::GetInstance();
   SubresourceFilterProfileContextFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
+  SiteEngagementServiceFactory::GetInstance();
   SafeBrowsingMetricsCollectorFactory::GetInstance();
   SafeBrowsingNavigationObserverManagerFactory::GetInstance();
   if (MediaRouterFactory::IsFeatureEnabled()) {

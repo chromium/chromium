@@ -55,6 +55,7 @@
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/unified_consent/pref_names.h"
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -290,6 +291,7 @@ void BrowserContextImpl::RegisterPrefs(
       translate::prefs::kOfferTranslateEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #if BUILDFLAG(IS_ANDROID)
+  site_engagement::SiteEngagementService::RegisterProfilePrefs(pref_registry);
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(pref_registry);
   permissions::GeolocationPermissionContextAndroid::RegisterProfilePrefs(
       pref_registry);

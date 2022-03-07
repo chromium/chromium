@@ -114,6 +114,8 @@
 #include "components/safe_browsing/android/remote_database_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
+#include "components/site_engagement/content/site_engagement_helper.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -401,6 +403,11 @@ TabImpl::TabImpl(ProfileImpl* profile,
     safe_browsing::SafeBrowsingTabObserver::CreateForWebContents(
         web_contents_.get(),
         std::make_unique<WebLayerSafeBrowsingTabObserverDelegate>());
+  }
+
+  if (site_engagement::SiteEngagementService::IsEnabled()) {
+    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
+        web_contents_.get());
   }
 
   auto* browser_context =
