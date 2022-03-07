@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 
@@ -17,7 +16,6 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
  * natively to {@link Profile}.
  */
 public class OfflineContentAggregatorFactory {
-    // TODO(crbug.com/857543): Remove this after downloads have implemented it.
     // We need only one provider, since OfflineContentAggregator lives in the original profile.
     private static OfflineContentProvider sProvider;
 
@@ -26,18 +24,12 @@ public class OfflineContentAggregatorFactory {
     /**
      * Allows tests to push a custom {@link OfflineContentProvider} to be used instead of the one
      * pulled from a {@link Profile}.
-     * @param provider The {@link OfflineContentProvider} to return.  If {@code null}, will revert
-     *                 to the non-overriding behavior and pull a {link OfflineContentProvider} from
-     *                 {@link Profile}.
+     * @param provider The {@link OfflineContentProvider} to return.
      */
     @VisibleForTesting
     public static void setOfflineContentProviderForTests(
             @Nullable OfflineContentProvider provider) {
-        if (provider == null) {
-            sProvider = null;
-        } else {
-            sProvider = getProvider(provider);
-        }
+        sProvider = provider;
     }
 
     /**
@@ -47,18 +39,9 @@ public class OfflineContentAggregatorFactory {
      */
     public static OfflineContentProvider get() {
         if (sProvider == null) {
-            sProvider = getProvider(
-                    OfflineContentAggregatorFactoryJni.get().getOfflineContentAggregator());
+            sProvider = OfflineContentAggregatorFactoryJni.get().getOfflineContentAggregator();
         }
         return sProvider;
-    }
-
-    private static OfflineContentProvider getProvider(OfflineContentProvider provider) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
-            return provider;
-        } else {
-            return new DownloadBlockedOfflineContentProvider(provider);
-        }
     }
 
     @NativeMethods

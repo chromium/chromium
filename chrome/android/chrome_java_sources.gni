@@ -556,7 +556,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java",
   "java/src/org/chromium/chrome/browser/download/OfflineContentAvailabilityStatusProvider.java",
   "java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java",
-  "java/src/org/chromium/chrome/browser/download/items/DownloadBlockedOfflineContentProvider.java",
   "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorFactory.java",
   "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUi.java",
   "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUiFactory.java",
