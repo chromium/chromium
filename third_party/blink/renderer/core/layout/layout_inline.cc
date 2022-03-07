@@ -538,6 +538,9 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
     before_child = LastChild();
 
   if (!new_child->IsInline() && !new_child->IsFloatingOrOutOfFlowPositioned() &&
+      // Table parts can be either inline or block. When creating its table
+      // wrapper, |CreateAnonymousTableWithParent| creates an inline table if
+      // the parent is |LayoutInline|.
       !new_child->IsTablePart()) {
     if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) &&
         !ForceLegacyLayout()) {
