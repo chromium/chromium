@@ -13,6 +13,7 @@ import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.network_session_configurator.NetworkSessionSwitches;
 import org.chromium.components.power_scheduler.PowerSchedulerFeatures;
 import org.chromium.components.viz.common.VizFeatures;
+import org.chromium.components.webrtc.ComponentsWebRtcFeatures;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.gpu.config.GpuFeatures;
@@ -279,5 +280,7 @@ public final class ProductionSupportedFlagList {
                     AwFeatures.WEBVIEW_SYNTHESIZE_PAGE_LOAD_ONLY_ON_INITIAL_MAIN_DOCUMENT_ACCESS,
                     "Only synthesize page load for URL spoof prevention at most once,"
                             + " on initial main document access."),
+            Flag.baseFeature(ComponentsWebRtcFeatures.THREAD_WRAPPER_USES_METRONOME,
+                    "Makes ThreadWrapper coalesce delayed tasks on metronome ticks."),
     };
 }

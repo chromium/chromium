@@ -51495,6 +51495,7 @@ from previous Chrome versions.
   <int value="-2088555929" label="EnableAppGridGhost:enabled"/>
   <int value="-2088472280" label="KeyboardShortcutViewerApp:disabled"/>
   <int value="-2088263177" label="EnableMixedContentDownloadDialog:enabled"/>
+  <int value="-2087444854" label="ThreadWrapperUsesMetronome:disabled"/>
   <int value="-2084849051" label="TabGroupsCollapseFreezing:disabled"/>
   <int value="-2083998415" label="VrLaunchIntent:enabled"/>
   <int value="-2083195884" label="enable-firewall-hole-punching"/>
@@ -55717,6 +55718,7 @@ from previous Chrome versions.
   <int value="834033186" label="enable-data-reduction-proxy-dev"/>
   <int value="834326277" label="enable-answers-in-suggest"/>
   <int value="835018878" label="disable-quic"/>
+  <int value="835399079" label="ThreadWrapperUsesMetronome:enabled"/>
   <int value="835726069" label="NtpWebUI:disabled"/>
   <int value="836406476" label="EnableTouchableAppContextMenu:enabled"/>
   <int value="837350465" label="SystemProxyForSystemServices:enabled"/>

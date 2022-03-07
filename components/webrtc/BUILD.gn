@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 if (!is_ios) {
   source_set("media_stream_device_enumerator") {
     sources = [
@@ -94,4 +98,17 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/webrtc_overrides:metronome_like_task_queue_test",
   ]
+}
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":components_webrtc_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//components/webrtc/thread_wrapper.cc" ]
+    template =
+        "//components/webrtc/java_templates/ComponentsWebRtcFeatures.java.tmpl"
+  }
+  android_library("components_webrtc_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
 }
