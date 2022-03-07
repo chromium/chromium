@@ -20,6 +20,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
@@ -271,7 +272,10 @@ void AwContentsIoThreadClient::SubFrameCreated(int render_process_id,
   IoThreadClientData client_data;
   if (!RfhToIoThreadClientMap::GetInstance()->Get(parent_rfh_id,
                                                   &client_data)) {
-    NOTREACHED();
+    // It is possible to not find a mapping for the parent rfh_id if the WebView
+    // is in the process of being destroyed, and the mapping has already been
+    // erased.
+    LOG(WARNING) << "No IoThreadClient associated with parent RenderFrameHost.";
     return;
   }
 

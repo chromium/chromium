@@ -52,7 +52,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
@@ -1142,7 +1141,6 @@ public class SafeBrowsingTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @FlakyTest(message = "Test is flaky, see crbug.com/1286902")
     public void testSafeBrowsingClickWhitePaperLink() throws Throwable {
         final String whitepaperUrl =
                 Uri.parse("https://www.google.com/chrome/browser/privacy/whitepaper.html")
