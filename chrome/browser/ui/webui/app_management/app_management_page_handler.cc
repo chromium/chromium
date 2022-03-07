@@ -400,10 +400,10 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->window_mode =
       apps::ConvertMojomWindowModeToWindowMode(update.WindowMode());
   app->supported_links = GetSupportedLinks(profile_, app->id);
-  const apps::mojom::RunOnOsLoginPtr& run_on_os_login = update.RunOnOsLogin();
-  if (run_on_os_login) {
-    app->run_on_os_login =
-        apps::ConvertMojomRunOnOsLoginToRunOnOsLogin(run_on_os_login);
+  auto run_on_os_login = update.RunOnOsLogin();
+  if (run_on_os_login.has_value()) {
+    app->run_on_os_login = std::make_unique<apps::RunOnOsLogin>(
+        std::move(run_on_os_login.value()));
   }
 
 // TODO(crbug/1245293): implement on Chrome OS.

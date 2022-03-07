@@ -181,8 +181,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::WindowMode GetWindowMode() const;
   bool WindowModeChanged() const;
 
-  apps::mojom::RunOnOsLoginPtr RunOnOsLogin() const;
-  absl::optional<apps::RunOnOsLogin> GetRunOnOsLogin() const;
+  absl::optional<apps::RunOnOsLogin> RunOnOsLogin() const;
   bool RunOnOsLoginChanged() const;
 
   const ::AccountId& AccountId() const;

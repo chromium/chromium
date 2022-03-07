@@ -111,7 +111,7 @@ class AppUpdateMojomTest : public testing::Test {
   apps::mojom::WindowMode expect_window_mode_;
   bool expect_window_mode_changed_;
 
-  apps::mojom::RunOnOsLoginPtr expect_run_on_os_login_;
+  absl::optional<apps::RunOnOsLogin> expect_run_on_os_login_;
   bool expect_run_on_os_login_changed_;
 
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
@@ -287,7 +287,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_intent_filters_.clear();
     expect_resize_locked_ = absl::nullopt;
     expect_window_mode_ = apps::mojom::WindowMode::kUnknown;
-    expect_run_on_os_login_ = nullptr;
+    expect_run_on_os_login_ = absl::nullopt;
     ExpectNoChange();
     CheckExpects(u);
 
@@ -964,19 +964,19 @@ class AppUpdateMojomTest : public testing::Test {
     // RunOnOsLogin tests.
 
     if (state) {
-      auto runOnOsLoginTestPtr = apps::mojom::RunOnOsLogin::New(
-          apps::mojom::RunOnOsLoginMode::kNotRun, false);
-      state->run_on_os_login = runOnOsLoginTestPtr.Clone();
-      expect_run_on_os_login_ = runOnOsLoginTestPtr.Clone();
+      apps::RunOnOsLogin value(apps::RunOnOsLoginMode::kNotRun, false);
+      state->run_on_os_login =
+          apps::ConvertRunOnOsLoginToMojomRunOnOsLogin(value);
+      expect_run_on_os_login_ = std::move(value);
       expect_run_on_os_login_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
-      auto runOnOsLoginTestPtr = apps::mojom::RunOnOsLogin::New(
-          apps::mojom::RunOnOsLoginMode::kWindowed, false);
-      delta->run_on_os_login = runOnOsLoginTestPtr.Clone();
-      expect_run_on_os_login_ = runOnOsLoginTestPtr.Clone();
+      apps::RunOnOsLogin value(apps::RunOnOsLoginMode::kWindowed, false);
+      delta->run_on_os_login =
+          apps::ConvertRunOnOsLoginToMojomRunOnOsLogin(value);
+      expect_run_on_os_login_ = std::move(value);
       expect_run_on_os_login_changed_ = true;
       CheckExpects(u);
     }

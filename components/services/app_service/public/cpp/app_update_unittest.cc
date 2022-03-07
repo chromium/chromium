@@ -254,12 +254,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_window_mode_, u.GetWindowMode());
     EXPECT_EQ(expect_window_mode_changed_, u.WindowModeChanged());
 
-    if (expect_run_on_os_login_.has_value()) {
-      ASSERT_TRUE(u.GetRunOnOsLogin().has_value());
-      EXPECT_EQ(expect_run_on_os_login_.value(), u.GetRunOnOsLogin().value());
-    } else {
-      ASSERT_FALSE(u.GetRunOnOsLogin().has_value());
-    }
+    EXPECT_EQ(expect_run_on_os_login_, u.RunOnOsLogin());
     EXPECT_EQ(expect_run_on_os_login_changed_, u.RunOnOsLoginChanged());
 
     EXPECT_EQ(account_id_, u.AccountId());
