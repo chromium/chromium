@@ -475,8 +475,8 @@ export class Camera extends View implements CameraViewUI {
         // what we need to rotate the captured video with.
         this.outputVideoRotation = (360 - cameraFrameRotation) % 360;
         await timertick.start();
-        const captureDone = await this.cameraManager.startCapture();
-        await captureDone();
+        const [captureDone] = await this.cameraManager.startCapture();
+        await captureDone;
       } catch (e) {
         hasError = true;
         if (e instanceof CanceledError) {

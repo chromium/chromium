@@ -386,7 +386,7 @@ export class Video extends ModeBase {
     return this.getRecordingStream().getVideoTracks()[0];
   }
 
-  async start(): Promise<() => Promise<void>> {
+  async start(): Promise<[Promise<void>]> {
     assert(this.snapshotting === null);
     this.togglePausedInternal = null;
     this.everPaused = false;
@@ -441,12 +441,12 @@ export class Video extends ModeBase {
 
       // TODO(b:191950622): Close capture stream before onGifCaptureDone()
       // opening preview page when multi-stream recording enabled.
-      return () => this.handler.onGifCaptureDone({
+      return [this.handler.onGifCaptureDone({
         name: gifName,
         gifSaver,
         resolution: this.captureResolution,
         duration: this.gifRecordTime.inMilliseconds(),
-      });
+      })];
     } else {
       this.recordTime.start({resume: false});
       let videoSaver: VideoSaver|null = null;
@@ -475,12 +475,10 @@ export class Video extends ModeBase {
         assert(videoSaver !== null);
         toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
         await videoSaver.cancel();
-        return async () => {
-          await this.snapshotting;
-        };
+        return [this.snapshotting ?? Promise.resolve()];
       }
 
-      return async () => {
+      return [(async () => {
         assert(videoSaver !== null);
         await this.handler.onVideoCaptureDone({
           resolution: this.captureResolution,
@@ -489,7 +487,7 @@ export class Video extends ModeBase {
           everPaused: this.everPaused,
         });
         await this.snapshotting;
-      };
+      })()];
     }
   }
 

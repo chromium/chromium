@@ -46,7 +46,7 @@ export class Portrait extends Photo {
     super(video, facing, captureResolution, portraitHandler);
   }
 
-  async start(): Promise<() => Promise<void>> {
+  async start(): Promise<[Promise<void>]> {
     const timestamp = Date.now();
     let photoSettings: PhotoSettings;
     if (this.captureResolution) {
@@ -80,8 +80,8 @@ export class Portrait extends Photo {
       const metadata = await pendingResult.pendingMetadata;
       return {blob, timestamp, resolution, metadata};
     }
-    return () => this.portraitHandler.onPortraitCaptureDone(
-               toPhotoResult(reference), toPhotoResult(portrait));
+    return [this.portraitHandler.onPortraitCaptureDone(
+        toPhotoResult(reference), toPhotoResult(portrait))];
   }
 }
 

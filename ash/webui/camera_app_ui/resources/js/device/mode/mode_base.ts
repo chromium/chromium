@@ -22,7 +22,7 @@ export abstract class ModeBase {
   /**
    * Promise for ongoing capture operation.
    */
-  private capture: Promise<() => Promise<void>>|null = null;
+  private capture: Promise<[Promise<void>]>|null = null;
 
   /**
    * CrosImageCapture object to capture still photos.
@@ -41,10 +41,11 @@ export abstract class ModeBase {
   /**
    * Initiates video/photo capture operation.
    *
-   * @return Promise for ongoing capture operation and resolved to handler
-   *     function which should be run after capture finished.
+   * @return Promise for the ongoing capture operation. The outer promise is
+   *     resolved after the camere usage is finished. The inner promise is
+   *     resolved after the post processing part are finished.
    */
-  startCapture(): Promise<() => Promise<void>> {
+  startCapture(): Promise<[Promise<void>]> {
     if (this.capture === null) {
       this.capture = (async () => {
         try {
@@ -114,7 +115,7 @@ export abstract class ModeBase {
   /**
    * Initiates video/photo capture operation under this mode.
    */
-  protected abstract start(): Promise<() => Promise<void>>;
+  protected abstract start(): Promise<[Promise<void>]>;
 
   /**
    * Stops the ongoing capture operation under this mode.

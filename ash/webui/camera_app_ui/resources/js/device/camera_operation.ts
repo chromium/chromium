@@ -303,7 +303,7 @@ class Reconfigurer {
 class Capturer {
   constructor(private readonly modes: Modes) {}
 
-  async start(): Promise<() => Promise<void>> {
+  async start(): Promise<[Promise<void>]> {
     assert(this.modes.current !== null);
     return this.modes.current.startCapture();
   }
@@ -438,7 +438,7 @@ export class OperationScheduler {
     }
   }
 
-  async startCapture(): Promise<(() => Promise<void>)|null> {
+  async startCapture(): Promise<[Promise<void>]|null> {
     if (this.ongoingOperationType !== null) {
       return null;
     }

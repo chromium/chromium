@@ -393,7 +393,7 @@ export class CameraManager implements EventListener {
         this.suspendRequested || this.screenOff || this.isTabletBackground();
   }
 
-  async startCapture(): Promise<() => Promise<void>> {
+  async startCapture(): Promise<[Promise<void>]> {
     this.setCameraAvailable(false);
     const captureDone = await this.scheduler.startCapture();
     this.setCameraAvailable(true);

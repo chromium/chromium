@@ -64,7 +64,7 @@ export class Photo extends ModeBase {
     super(video, facing);
   }
 
-  async start(): Promise<() => Promise<void>> {
+  async start(): Promise<[Promise<void>]> {
     const timestamp = Date.now();
     state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, true);
     const {blob, metadata} = await (async () => {
@@ -88,7 +88,7 @@ export class Photo extends ModeBase {
       return {resolution, blob, timestamp, metadata};
     })();
 
-    return async () => this.handler.onPhotoCaptureDone(pendingPhotoResult);
+    return [this.handler.onPhotoCaptureDone(pendingPhotoResult)];
   }
 
   private async waitPreviewReady(): Promise<void> {
