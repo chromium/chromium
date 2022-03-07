@@ -52,6 +52,9 @@ class FastPairHandshakeLookup {
   // Erases the FastPairHandshake instance for |device| if exists.
   bool Erase(scoped_refptr<Device> device);
 
+  // Erases the FastPairHandshake instance for |address| if exists.
+  bool Erase(const std::string& address);
+
   // Deletes all existing FastPairHandshake instances.
   void Clear();
 

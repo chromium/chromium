@@ -20,7 +20,15 @@
 namespace {
 
 constexpr base::TimeDelta kFilterDeviceFoundTimeout = base::Seconds(1);
-constexpr base::TimeDelta kFilterDeviceLostTimeout = base::Seconds(6);
+
+// We use a high value here for the time out because we want to give our E2E
+// flow enough time to complete during it. We do this because the platform will
+// consider the device 'lost' if it doesn't receive an advertisement within this
+// timeframe, BUT the E2E pairing flow will cause the device to stop
+// advertising (and therefore we can see false 'lost' events if this is too
+// short).
+constexpr base::TimeDelta kFilterDeviceLostTimeout = base::Seconds(40);
+
 constexpr uint8_t kFilterPatternStartPosition = 0;
 const std::vector<uint8_t> kFastPairFilterPatternValue = {0x2c, 0xfe};
 constexpr base::TimeDelta kRssiSamplingPeriod = base::Milliseconds(500);
@@ -241,23 +249,9 @@ void FastPairScannerImpl::NotifyDeviceFound(device::BluetoothDevice* device) {
 void FastPairScannerImpl::OnDeviceLost(
     device::BluetoothLowEnergyScanSession* scan_session,
     device::BluetoothDevice* device) {
-  QP_LOG(INFO) << __func__;
-
-  FastPairHandshake* handshake =
-      FastPairHandshakeLookup::GetInstance()->Get(device->GetAddress());
-
-  // If we have a connected handshake, it means that the device was lost because
-  // it stopped advertising while the GATT connection is active.
-  // We ignore this event in that case, and expect to get another OnDeviceFound
-  // event.
-  if (handshake && handshake->IsConnected()) {
-    QP_LOG(WARNING) << __func__
-                    << ": Active handshake exists, ignoring lost event.";
-    return;
-  }
-
-  QP_LOG(INFO) << __func__ << ": Notifying observers";
+  FastPairHandshakeLookup::GetInstance()->Erase(device->GetAddress());
   device_address_advertisement_data_map_.erase(device->GetAddress());
+
   for (auto& observer : observers_)
     observer.OnDeviceLost(device);
 }

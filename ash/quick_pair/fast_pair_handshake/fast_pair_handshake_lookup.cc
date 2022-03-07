@@ -54,6 +54,18 @@ bool FastPairHandshakeLookup::Erase(scoped_refptr<Device> device) {
   return fast_pair_handshakes_.erase(device) == 1;
 }
 
+bool FastPairHandshakeLookup::Erase(const std::string& address) {
+  for (const auto& pair : fast_pair_handshakes_) {
+    if (pair.first->classic_address() == address ||
+        pair.first->ble_address == address) {
+      fast_pair_handshakes_.erase(pair);
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void FastPairHandshakeLookup::Clear() {
   fast_pair_handshakes_.clear();
 }

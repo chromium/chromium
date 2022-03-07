@@ -350,10 +350,12 @@ TEST_F(FastPairScannerImplTest, IgnoresEventDuringActiveHandshake) {
       kTestBleDeviceAddress1));
   AddConnectedHandshake(kTestBleDeviceAddress1);
   TriggerOnDeviceLost(kTestBleDeviceAddress1);
-  EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
+  EXPECT_FALSE(scanner_observer().DoesDeviceListContainTestDevice(
       kTestBleDeviceAddress1));
   TriggerOnDeviceFound(kTestBleDeviceAddress1);
-  EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
+  EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
+      kTestBleDeviceAddress1));
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 2);
 }
 
 TEST_F(FastPairScannerImplTest, LowPowerMode) {
