@@ -1409,9 +1409,9 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
           Si estableces esta política como falsa, los usuarios no podrán habilitar
           la función en la página Configuración.</translation>
-<translation id="250151283451228612">Si habilitas <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> y, luego, estableces <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" />, se establecerá en porcentaje el umbral de la batería para la carga fuera del horario pico.
+<translation id="250151283451228612">Si habilitas <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> y, luego, estableces <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" />, se establecerá en porcentaje el umbral de la batería para la carga fuera del horario de mayor consumo.
 
-       Si no estableces la política, se mantendrá desactivada la carga fuera del horario pico.</translation>
+       Si no estableces la política, se mantendrá desactivada la carga fuera del horario de mayor consumo.</translation>
 <translation id="2502467045153796624">Comportamiento del cambio a una versión inferior del canal</translation>
 <translation id="250670737672448119">Habilita la función de accesibilidad de resaltar el signo de intercalación.
 
@@ -1623,11 +1623,11 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si la estableces como falsa, el visor de PDF no podrá agregar anotaciones en archivos PDF.</translation>
 <translation id="2769952903507981510">Configura el nombre de dominio requerido para los hosts de acceso remoto.</translation>
-<translation id="2772955711376920612">Si habilitas la política y estableces <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> y <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se mantendrá activada la carga fuera del horario pico (cuando lo admita el dispositivo). La política para la administración de carga fuera del horario pico es una política destinada a ahorrar energía que minimiza el uso de corriente alterna en horas pico. Puedes establecer una hora de inicio y finalización para ejecutar el modo de carga fuera del horario pico en cada día de la semana. Mientras la batería esté por encima del umbral especificado, el dispositivo funcionará con la batería en los horarios establecidos (incluso si está conectado a la corriente alterna). Después de la hora de finalización especificada, el dispositivo funcionará con corriente alterna (en caso de estar conectado), pero no cargará la batería. El dispositivo volverá a funcionar con normalidad usando corriente alterna y cargará la batería después de la hora de inicio de carga especificada.
+<translation id="2772955711376920612">Si habilitas la política y estableces <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> y <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se mantendrá activada la carga fuera del horario de mayor consumo (cuando lo admita el dispositivo). La política para la administración de carga fuera del horario de mayor consumo es una política destinada a ahorrar energía que minimiza el uso de corriente alterna en horas de mayor consumo. Puedes establecer una hora de inicio y finalización para ejecutar el modo de carga fuera del horario de mayor consumo en cada día de la semana. Mientras la batería esté por encima del umbral especificado, el dispositivo funcionará con la batería en los horarios establecidos (incluso si está conectado a la corriente alterna). Después de la hora de finalización especificada, el dispositivo funcionará con corriente alterna (en caso de estar conectado), pero no cargará la batería. El dispositivo volverá a funcionar con normalidad usando corriente alterna y cargará la batería después de la hora de inicio de carga especificada.
 
-      Si inhabilitas la política, la carga fuera del horario pico se mantendrá desactivada.
+      Si inhabilitas la política, la carga fuera del horario de mayor consumo se mantendrá desactivada.
 
-      Si no la estableces, la carga fuera del horario pico estará desactivada en primera instancia. Los usuarios no podrán cambiar esta configuración.</translation>
+      Si no la estableces, la carga fuera del horario de mayor consumo estará desactivada en primera instancia. Los usuarios no podrán cambiar esta configuración.</translation>
 <translation id="2773288106548584039">Compatibilidad con navegadores heredados</translation>
 <translation id="2780840673734667062">Inhabilitar el acceso con cuentas de Google adicionales</translation>
 <translation id="2784880732336446591">Borra los datos de navegación al salir</translation>
@@ -3015,7 +3015,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4442582539341804154">Habilitar el bloqueo cuando el dispositivo esté inactivo o suspendido</translation>
 <translation id="4443711908766051441">Habilitar el juego del huevo de pascua del dinosaurio</translation>
 <translation id="4447668084338250480">Comportamiento de la redirección de intranet</translation>
-<translation id="4449469846627734399">Establecer la configuración diurna para el cambio de pico de consumo de energía</translation>
+<translation id="4449469846627734399">Establecer la configuración diurna para el cambio de carga fuera del horario de mayor consumo</translation>
 <translation id="4449545651113180484">Rotar la pantalla hacia la derecha 270 grados</translation>
 <translation id="4450005376189179872">Si habilitas <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> y, luego, estableces <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />, podrás configurar un modo avanzado para la carga de la batería. El valor de <ph name="CHARGE_START_TIME_FIELD_NAME" /> debe ser inferior a <ph name="CHARGE_END_TIME_FIELD_NAME" />.
 
@@ -4297,7 +4297,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si la inhabilitas, los usuarios no podrán canjear esas ofertas.</translation>
 <translation id="6046615715547751255">No permitir los controles de informes detallados</translation>
-<translation id="6048199181629830227">Habilita la administración de carga fuera del horario pico</translation>
+<translation id="6048199181629830227">Habilita la administración de carga fuera del horario de mayor consumo</translation>
 <translation id="6052730367191220066">Habilitar la migración de los dispositivos administrados por <ph name="MS_AD_NAME" /> a la administración en la nube Esta política permite el comienzo remoto de una migración sin contacto de varios dispositivos pertenecientes a una empresa. Además, la migración será lo más transparente posible para los usuarios finales.
 
       Si se habilita esta política y ya se cargó la ID de inscripción al DMServer, se activará un Powerwash de dispositivo de manera remota.
@@ -4327,7 +4327,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       <ph name="PRODUCT_NAME" /> administra el contenido del directorio raíz de un volumen. Por lo tanto, para evitar pérdida de datos u otros errores, no establezcas esta política para el directorio raíz o cualquier directorio que se utilice para otros propósitos. Consulta las variables que puedes utilizar (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="6083631234867522991">Windows (clientes de Windows):</translation>
-<translation id="608788685013546076">Establecer en porcentaje el umbral de la batería para el cambio de pico de consumo de energía</translation>
+<translation id="608788685013546076">Establecer en porcentaje el umbral de la batería para el cambio de carga fuera del horario de mayor consumo</translation>
 <translation id="6089679180657323464">Supervisa la configuración del controlador de telemetría y diagnósticos wilco.</translation>
 <translation id="6091233616732024397">Forzar a los usuarios a acceder para usar el navegador</translation>
 <translation id="6093156968240188330">Permitir que los usuarios remotos interactúen con las ventanas con permisos elevados en sesiones de asistencia remota</translation>
@@ -5938,9 +5938,9 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
        Si la inhabilitas o no la estableces, seguirá disponible el Modo de desarrollador para el dispositivo.</translation>
 <translation id="782661371433719637">No permite que ningún sitio solicite acceso de lectura a archivos y directorios a través de la API de File System</translation>
 <translation id="7833148823006528332">Identificador de la app para Android, p. ej., "com.google.android.gm" para Gmail.</translation>
-<translation id="7839180815400079700">Si habilitas <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> y estableces <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se establecerá la configuración diurna de la carga fuera del horario pico.
+<translation id="7839180815400079700">Si habilitas <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> y estableces <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se establecerá la configuración diurna de la carga fuera del horario de mayor consumo.
 
-      Si no estableces la política, la carga fuera del horario pico permanecerá desactivada.
+      Si no estableces la política, la carga fuera del horario de mayor consumo permanecerá desactivada.
 
       Los valores válidos para el campo <ph name="MINUTE_FIELD_NAME" /> en <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> y <ph name="CHARGE_START_TIME_FIELD_NAME" /> son 0, 15, 30 y 45.</translation>
 <translation id="7841880500990419427">Versión mínima de TLS para resguardo</translation>
