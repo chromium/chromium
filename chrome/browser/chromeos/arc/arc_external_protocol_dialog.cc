@@ -721,6 +721,7 @@ void RunArcExternalProtocolDialog(
     base::WeakPtr<WebContents> web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
+    bool is_in_fenced_frame_tree,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     base::OnceCallback<void(bool)> handled_cb) {
   // This function is for external protocols that Chrome cannot handle.
@@ -732,9 +733,11 @@ void RunArcExternalProtocolDialog(
 
   if (apps::ShouldIgnoreNavigation(masked_page_transition,
                                    /*allow_form_submit=*/true,
-                                   /*allow_client_redirect=*/true)) {
+                                   is_in_fenced_frame_tree, has_user_gesture)) {
     LOG(WARNING) << "RunArcExternalProtocolDialog: ignoring " << url
-                 << " with PageTransition=" << masked_page_transition;
+                 << " with PageTransition=" << masked_page_transition
+                 << ", is_in_fenced_frame_tree=" << is_in_fenced_frame_tree
+                 << ", has_user_gesture=" << has_user_gesture;
     return std::move(handled_cb).Run(false);
   }
 

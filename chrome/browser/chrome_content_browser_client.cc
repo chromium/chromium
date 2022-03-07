@@ -1055,6 +1055,7 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
                content::WebContents::Getter web_contents_getter,
                ui::PageTransition page_transition,
                bool is_main_frame,
+               bool is_in_fenced_frame_tree,
                network::mojom::WebSandboxFlags sandbox_flags,
                bool has_user_gesture,
                const absl::optional<url::Origin>& initiating_origin,
@@ -1149,7 +1150,8 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
   } else {
     ExternalProtocolHandler::LaunchUrl(
         url, std::move(web_contents_getter), page_transition, has_user_gesture,
-        initiating_origin, std::move(initiator_document));
+        is_in_fenced_frame_tree, initiating_origin,
+        std::move(initiator_document));
   }
 }
 
@@ -5520,6 +5522,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
     int frame_tree_node_id,
     content::NavigationUIData* navigation_data,
     bool is_main_frame,
+    bool is_in_fenced_frame_tree,
     network::mojom::WebSandboxFlags sandbox_flags,
     ui::PageTransition page_transition,
     bool has_user_gesture,
@@ -5555,8 +5558,9 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
       FROM_HERE,
       base::BindOnce(&LaunchURL, weak_factory_.GetWeakPtr(), url,
                      std::move(web_contents_getter), page_transition,
-                     is_main_frame, sandbox_flags, has_user_gesture,
-                     initiating_origin, std::move(weak_initiator_document)));
+                     is_main_frame, is_in_fenced_frame_tree, sandbox_flags,
+                     has_user_gesture, initiating_origin,
+                     std::move(weak_initiator_document)));
   return true;
 }
 

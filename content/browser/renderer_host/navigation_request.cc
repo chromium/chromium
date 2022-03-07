@@ -6347,6 +6347,10 @@ bool NavigationRequest::IsPrerenderedPageActivation() {
   return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
 }
 
+bool NavigationRequest::IsInFencedFrameTree() {
+  return frame_tree_node()->IsInFencedFrameTree();
+}
+
 FrameType NavigationRequest::GetNavigatingFrameType() const {
   return frame_tree_node()->GetFrameType();
 }
