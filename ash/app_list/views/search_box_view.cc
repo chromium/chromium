@@ -299,7 +299,7 @@ void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {
   if (is_app_list_bubble_) {
     // When the search box is focused, paint a vertical focus bar along the left
     // edge, vertically aligned with the search icon.
-    if (search_box()->HasFocus() && search_box()->GetText().empty()) {
+    if (search_box()->HasFocus() && IsTrimmedQueryEmpty(current_query_)) {
       gfx::Point icon_origin;
       views::View::ConvertPointToTarget(search_icon(), this, &icon_origin);
       PaintFocusBar(canvas, gfx::Point(0, icon_origin.y()),
@@ -655,10 +655,17 @@ void SearchBoxView::OnBeforeUserAction(views::Textfield* sender) {
 
 void SearchBoxView::ContentsChanged(views::Textfield* sender,
                                     const std::u16string& new_contents) {
-  if (IsTrimmedQueryEmpty(current_query_) && !IsSearchBoxTrimmedQueryEmpty()) {
+  bool current_query_empty = IsTrimmedQueryEmpty(current_query_);
+  bool new_contents_empty = IsTrimmedQueryEmpty(new_contents);
+  if (current_query_empty && !new_contents_empty) {
     // User enters a new search query. Record the action.
     base::RecordAction(base::UserMetricsAction("AppList_SearchQueryStarted"));
   }
+
+  // Schedule paint to update the focus bar, a part of the search box background
+  // that is dependent on whether the query is empty.
+  if (current_query_empty != new_contents_empty)
+    SchedulePaint();
 
   current_query_ = new_contents;
 
