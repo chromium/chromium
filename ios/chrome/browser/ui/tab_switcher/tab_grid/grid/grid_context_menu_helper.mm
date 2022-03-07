@@ -151,7 +151,8 @@
     }
   }
 
-  if ([self.contextMenuDelegate respondsToSelector:@selector(selectTabs)]) {
+  if (scenario != MenuScenario::kTabGridSearchResult &&
+      [self.contextMenuDelegate respondsToSelector:@selector(selectTabs)]) {
     [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
                     [self.contextMenuDelegate selectTabs];
                   }]];
