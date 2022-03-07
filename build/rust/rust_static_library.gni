@@ -13,18 +13,6 @@ import("//build/rust/rust_target.gni")
 # independently into an intermediate linking target. The output contains the
 # object file(s) of the GN target's sources, and not its dependencies.
 #
-# Important: downstream C++ targets should NOT depend upon this
-# type of target. Instead they should append the suffix "_cpp_bindings"
-# when adding this to their deps:
-#
-#   deps += [ "//example:foo_bar_cpp_bindings" ]
-#
-# This arranges to ensure that any downstream C++ linker invocations
-# are supplied with the required extra bits to include Rust code; for
-# instance, the Rust standard library.
-#
-# Downstream Rust targets should depend on this rust_static_library directly.
-#
 # Parameters
 #
 #   sources
@@ -74,6 +62,9 @@ import("//build/rust/rust_target.gni")
 #     to deps.
 #
 #   mutually_dependent_target (optional)
+#   mutually_dependent_public_deps (optional)
+#     These is for use by the mixed_target() template.
+#
 #     If this Rust code is intrinsically paired with some C/C++ code,
 #     with bidirectional calls between the two, then this would
 #     be a circular dependency. GN does not allow circular dependencies,
@@ -82,29 +73,22 @@ import("//build/rust/rust_target.gni")
 #     code. You should structure things such that the C++ code depends
 #     on the Rust code in the normal way:
 #        static_library("cpp_stuff") {
-#          deps = [ "rust_stuff_cpp_bindings" ]
+#          deps = [ "rust_stuff" ]
 #          # ..
 #        }
 #     but that the Rust target also notes the C++ target using this
 #     'mutually_dependent_target' parameter.
 #        rust_static_library("rust_stuff") {
 #          mutually_dependent_target = "cpp_stuff"
+#          mutually_dependent_public_deps = _cpp_stuff_public_deps
 #          # ..
 #        }
 #
-#     The resultant behavior:
-#     * Downstream C++ targets should depend on the main C++ target
-#       ("cpp_stuff" in the above example). They'll come to depend on
-#       both Rust and C++ code (plus the Rust standard library,
-#       noted above).
-#     * Downstream Rust targets should depend on the Rust target
-#       ("rust_stuff"). They'll come to depend on both Rust and C++
-#       code, because this "mutually_dependent_target" will be put into
-#       their dependency list.
-#     * Rust unit tests, similarly, will depend on the Rust and C++
-#       code.
-#     Note that this arrangement carefully avoids actual circular
-#     dependencies.
+#     This causes the Rust unit tests, if generated, to depend on the mutually
+#     dependent target, since depending on the Rust code only would be
+#     insufficient. And it allows any C++ bindings generated from the Rust code
+#     to include headers from the mutually_dependent_target by depending on its
+#     public_deps.
 #
 #   skip_unit_tests (optional)
 #     Avoids building unit tests associated with this Rust crate. Normally,
@@ -130,10 +114,6 @@ import("//build/rust/rust_target.gni")
 #     therefore have C++ bindings generated. See https://cxx.rs.
 #     This will automatically add appropriate dependencies: there's no
 #     need to depend on the cxx crate or any generated bindings.
-#
-#   native_header_deps (optional)
-#     If cxx_bindings is defined, this dictates the C++ header
-#     targets on which the generated C++ code depends.
 #
 #   visibility (optional)
 #   rustflags (optional)
@@ -164,7 +144,6 @@ template("rust_static_library") {
       library_configs = invoker.configs
     }
     target_type = "rust_library"
-    create_cpp_groups = true
   }
 }
 

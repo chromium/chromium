@@ -32,13 +32,9 @@ set_defaults("rust_cxx") {
 # inputs:
 #   The .rs files containing a #[cxx::bridge] section.
 #
-# native_header_deps (optional)
+# deps (optional)
 #   C++ targets on which the headers depend in order to build
 #   successfully.
-#
-# generate_source_set (optional; default is true)
-#   Whether to generate a source_set target here.
-#   (See below for why you might choose false)
 #
 # export_symbols
 #   Whether the C++ side of the bindings should be exported
@@ -69,29 +65,24 @@ set_defaults("rust_cxx") {
 #          # but links against libfoo.so to get the C++
 #          # side bindings. So libfoo.so must make those
 #          # symbols visible.
-#
-# Consumers of this template may alternatively depend upon
-# the :${target_name}_gen target if you wish to include
-# the generated source code in an *existing* source set.
-# To do this:
-# * depend on the target name with a _gen suffix;
-# * for each of the inputs, include in your sources:
-#     file_name.rs.h
-#     file_name.rs.cc
-# * ensure you also depend upon //build/rust:cxx_cppdeps
-#
-# A good way to get the file names is:
-#   process_file_template(list-of-bindings-rs-files,
-#       [ "{{source_gen_dir}}/{{source_file_part}}.h",
-#         "{{source_gen_dir}}/{{source_file_part}}.cc" ]
-#
-# You might want to depend on this template in this mode if
-# you have an existing source_set which is referred to
-# using 'visibility' rules throughout the codebase.
-#
 template("rust_cxx") {
   assert(defined(invoker.inputs), "Must specify the Rust file to use as input.")
-  action_foreach("${target_name}_gen") {
+  _target_name = target_name
+  _testonly = false
+  if (defined(invoker.testonly)) {
+    _testonly = invoker.testonly
+  }
+  if (defined(invoker.visibility)) {
+    _visibility = invoker.visibility
+  }
+
+  action_foreach("${_target_name}_gen") {
+    testonly = _testonly
+    visibility = [ ":${_target_name}" ]
+    if (defined(_visibility)) {
+      visibility += _visibility
+    }
+
     sources = invoker.inputs
 
     output_h = "{{source_gen_dir}}/{{source_file_part}}.h"
@@ -154,12 +145,20 @@ template("rust_cxx") {
     public_configs = [ "//build/rust:cxx_cppconfig" ]
   }
 
-  if (!defined(invoker.generate_source_set) || invoker.generate_source_set) {
-    source_set(target_name) {
-      sources = get_target_outputs(":${target_name}_gen")
-      deps = [ "//build/rust:cxx_cppdeps" ]
-      deps += invoker.native_header_deps
-      public_deps = [ ":${target_name}_gen" ]
+  static_library(target_name) {
+    forward_variables_from(invoker, [ "deps" ])
+
+    testonly = _testonly
+    if (defined(invoker.visibility)) {
+      visibility = invoker.visibility
     }
+    sources = get_target_outputs(":${target_name}_gen")
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [
+      ":${target_name}_gen",
+      "//build/rust:cxx_cppdeps",
+    ]
   }
 }

@@ -17,7 +17,7 @@ rust_static_library("test_serde_jsonrc_rs") {
 test("test_serde_jsonrc") {
   sources = [ "unittests.cc" ]
   deps = [
-    ":test_serde_jsonrc_rs_cpp_bindings",
+    ":test_serde_jsonrc_rs",
     "//base",
     "//base/test:run_all_unittests",
     "//testing/gmock",

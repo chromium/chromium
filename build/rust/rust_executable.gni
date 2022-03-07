@@ -52,7 +52,6 @@ template("rust_executable") {
       library_configs = invoker.configs
     }
     target_type = "executable"
-    create_cpp_groups = false
     assert(!defined(cxx_bindings))
   }
 }

@@ -104,9 +104,6 @@ template("cargo_crate") {
       target_type = "rust_library"
     }
 
-    # C++ should never bind directly to a third party crate.
-    create_cpp_groups = false
-
     # We may generate multiple build rules for the same Cargo crate, as they may
     # have multiple build configurations: for use from deps, build-deps or
     # dev-deps. But that would try to build multiple crates with the same name,
@@ -242,7 +239,6 @@ template("cargo_crate") {
     if (current_toolchain == host_toolchain) {
       rust_target(build_script_name) {
         target_type = "executable"
-        create_cpp_groups = false
         skip_unit_tests = true
         sources = invoker.build_sources
         crate_root = invoker.build_root

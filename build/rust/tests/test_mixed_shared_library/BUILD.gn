@@ -12,10 +12,6 @@ if (rustc_can_link) {
     ]
     rs_sources = [ "src/lib.rs" ]
     rs_cxx_bindings = [ "src/lib.rs" ]
-    rs_visibility = [
-      "//build/rust/tests/test_rust_unittests:*",
-      "//build/rust/tests/test_rust_exe:*",
-    ]
     visibility = [
       "//build/rust/tests:*",
       "//build/rust/tests/test_cpp_including_rust:*",
