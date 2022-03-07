@@ -255,6 +255,14 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       IncreaseLightness(kColorNewTabPageText, 0.40);
   mixer[kColorOmniboxBackground] = {dark_mode ? gfx::kGoogleGrey900
                                               : gfx::kGoogleGrey100};
+  mixer[kColorOmniboxChipBackgroundLowVisibility] = {
+      kColorTabBackgroundActiveFrameActive};
+  mixer[kColorOmniboxChipBackgroundNormalVisibility] = {
+      ui::kColorButtonBackground};
+  mixer[kColorOmniboxChipForegroundLowVisibility] = {
+      kColorTabForegroundActiveFrameActive};
+  mixer[kColorOmniboxChipForegroundNormalVisibility] = {
+      ui::kColorButtonForeground};
   mixer[kColorOmniboxText] =
       ui::GetColorWithMaxContrast(kColorOmniboxBackground);
   mixer[kColorReadLaterButtonHighlight] = {kColorAvatarButtonHighlightNormal};

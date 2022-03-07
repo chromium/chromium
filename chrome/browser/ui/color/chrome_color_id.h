@@ -83,6 +83,10 @@
     ThemeProperties::COLOR_OMNIBOX_BUBBLE_OUTLINE) \
   E(kColorOmniboxBubbleOutlineExperimentalKeywordMode, \
     ThemeProperties::COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE) \
+  E_CPONLY(kColorOmniboxChipBackgroundLowVisibility) \
+  E_CPONLY(kColorOmniboxChipBackgroundNormalVisibility) \
+  E_CPONLY(kColorOmniboxChipForegroundLowVisibility) \
+  E_CPONLY(kColorOmniboxChipForegroundNormalVisibility) \
   E(kColorOmniboxKeywordSelected, \
     ThemeProperties::COLOR_OMNIBOX_SELECTED_KEYWORD) \
   E(kColorOmniboxResultsBackground, \
