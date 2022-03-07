@@ -23,6 +23,13 @@ using UrlId = base::IdType64<class UrlIdTag>;
 // metadata's feature processing. It can only hold one value at a time with the
 // corresponding type.
 struct ProcessedValue {
+  explicit ProcessedValue(bool val) : type(Type::BOOL), bool_val(val) {}
+  explicit ProcessedValue(int val) : type(Type::INT), int_val(val) {}
+  explicit ProcessedValue(float val) : type(Type::FLOAT), float_val(val) {}
+  explicit ProcessedValue(double val) : type(Type::DOUBLE), double_val(val) {}
+  explicit ProcessedValue(std::string val) : type(Type::STRING), str_val(val) {}
+  explicit ProcessedValue(base::Time val) : type(Type::TIME), time_val(val) {}
+
   enum Type {
     UNKNOWN = 0,
     BOOL = 1,

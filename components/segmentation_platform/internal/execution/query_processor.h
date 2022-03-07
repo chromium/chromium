@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_QUERY_PROCESSOR_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_QUERY_PROCESSOR_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 
 namespace segmentation_platform {
 class FeatureProcessorState;
@@ -20,8 +21,9 @@ class FeatureProcessorState;
 class QueryProcessor {
  public:
   using FeatureIndex = int;
-  using Tensor = std::vector<float>;
-  using IndexedTensors = std::map<FeatureIndex, Tensor>;
+  using Tensor = std::vector<ProcessedValue>;
+  // TODO(haileywang): Maybe use a unique_ptr<> here.
+  using IndexedTensors = base::flat_map<FeatureIndex, Tensor>;
   using QueryProcessorCallback =
       base::OnceCallback<void(std::unique_ptr<FeatureProcessorState>,
                               IndexedTensors)>;

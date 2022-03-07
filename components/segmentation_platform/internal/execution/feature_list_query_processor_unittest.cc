@@ -189,13 +189,8 @@ TEST_F(FeatureListQueryProcessorTest, SingleCustomInput) {
   AddCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {});
 
   // The next step should be to run the feature processor, the input tensor
-  // should contain the current time.
-  base::Time prediction_time = clock_.Now();
-  ExpectProcessedFeatureList(
-      false,
-      std::vector<float>{static_cast<float>(
-          prediction_time.ToDeltaSinceWindowsEpoch().InMicroseconds())},
-      prediction_time);
+  // should not allow non float type value such as TIME values.
+  ExpectProcessedFeatureList(true, std::vector<float>{});
 }
 
 TEST_F(FeatureListQueryProcessorTest, DefaultValueCustomInput) {
@@ -258,17 +253,11 @@ TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputs) {
   AddUserActionWithProcessingSetup(bucket_duration);
 
   // Set up a custom input.
-  AddCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {});
+  AddCustomInput(2, proto::CustomInput::UNKNOWN_FILL_POLICY, {1, 2});
 
   // The next step should be to run the feature processor, the input tensor
-  // should contain 3 and current time.
-  base::Time prediction_time = clock_.Now();
-  ExpectProcessedFeatureList(
-      false,
-      std::vector<float>{
-          3, static_cast<float>(
-                 prediction_time.ToDeltaSinceWindowsEpoch().InMicroseconds())},
-      prediction_time);
+  // should contain {3, 1, 2}.
+  ExpectProcessedFeatureList(false, std::vector<float>{3, 1, 2});
 }
 
 TEST_F(FeatureListQueryProcessorTest, UmaFeaturesAndCustomInputsInvalid) {

@@ -10,6 +10,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/feature_processor_state.h"
 #include "components/segmentation_platform/internal/execution/sql_feature_processor.h"
@@ -101,7 +102,17 @@ void FeatureListQueryProcessor::OnSqlQueryProcessed(
     std::unique_ptr<SqlFeatureProcessor> sql_feature_processor,
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
     QueryProcessor::IndexedTensors result) {
-  feature_processor_state->AppendInputTensor(result[kIndexNotUsed]);
+  std::vector<float> tensor_result;
+  for (auto& value : result[kIndexNotUsed]) {
+    if (value.type == ProcessedValue::Type::FLOAT) {
+      tensor_result.push_back(value.float_val);
+    } else {
+      feature_processor_state->SetError();
+      feature_processor_state->RunCallback();
+      return;
+    }
+  }
+  feature_processor_state->AppendInputTensor(tensor_result);
   ProcessNextInputFeature(std::move(feature_processor_state));
 }
 
