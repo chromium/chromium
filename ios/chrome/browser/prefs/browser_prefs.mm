@@ -308,6 +308,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
     registry->RegisterBooleanPref(kPrefReadingListMessagesNeverShow, false);
   }
 
+  registry->RegisterBooleanPref(prefs::kBackupDisallowedPolicy, false);
+
   // Preference related to the browser sign-in policy that is being deprecated.
   registry->RegisterBooleanPref(kSigninAllowedByPolicy, true);
 }

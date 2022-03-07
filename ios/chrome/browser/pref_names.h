@@ -50,6 +50,7 @@ extern const char kIosUserZoomMultipliers[];
 extern const char kIncognitoAuthenticationSetting[];
 
 extern const char kBrowserSigninPolicy[];
+extern const char kBackupDisallowedPolicy[];
 
 extern const char kNewTabPageLocationOverride[];
 

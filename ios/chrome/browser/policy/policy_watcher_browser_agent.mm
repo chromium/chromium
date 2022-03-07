@@ -6,9 +6,13 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/mac/backup_util.h"
+#include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
@@ -83,6 +87,18 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
       FROM_HERE,
       base::BindOnce(&PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded,
                      weak_factory_.GetWeakPtr()));
+
+  browser_prefs_change_observer_.Add(
+      prefs::kBackupDisallowedPolicy,
+      base::BindRepeating(
+          &PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion,
+          base::Unretained(this)));
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion,
+          weak_factory_.GetWeakPtr()));
 }
 
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
@@ -132,6 +148,26 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
   } else if (syncDisabledAlertShown && !isSyncDisabledByAdministrator) {
     // Will trigger again, if policy is turned back on.
     [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
+  }
+}
+
+void PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion() {
+  bool backup_disallowed = browser_->GetBrowserState()->GetPrefs()->GetBoolean(
+      prefs::kBackupDisallowedPolicy);
+  // TODO(crbug.com/1303652): If multiple profiles are supported on iOS, update
+  // this logic to work with multiple profiles having possibly-possibly
+  // conflicting preference values.
+  base::FilePath storage_dir = base::mac::GetUserLibraryPath();
+  if (backup_disallowed) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(base::IgnoreResult(&base::mac::SetBackupExclusion),
+                       std::move(storage_dir)));
+  } else {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(base::IgnoreResult(&base::mac::ClearBackupExclusion),
+                       std::move(storage_dir)));
   }
 }
 

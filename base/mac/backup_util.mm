@@ -41,7 +41,9 @@ bool GetBackupExclusion(const FilePath& file_path) {
 #endif
 }
 
-bool SetBackupExclusion(const FilePath& file_path) {
+namespace {
+
+bool SetBackupState(const FilePath& file_path, bool excluded) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -52,9 +54,9 @@ bool SetBackupExclusion(const FilePath& file_path) {
   // can be used in non-root (or admin as above) mode. We use false so that
   // non-root (or admin) users don't get their TimeMachine drive filled up with
   // unnecessary backups.
-  OSStatus os_err = CSBackupSetItemExcluded(FilePathToCFURL(file_path),
-                                            /*exclude=*/TRUE,
-                                            /*excludeByPath=*/FALSE);
+  OSStatus os_err =
+      CSBackupSetItemExcluded(FilePathToCFURL(file_path), excluded,
+                              /*excludeByPath=*/FALSE);
   OSSTATUS_DLOG_IF(WARNING, os_err != noErr, os_err)
       << "Failed to set backup exclusion for file '"
       << file_path.value().c_str() << "'";
@@ -64,12 +66,22 @@ bool SetBackupExclusion(const FilePath& file_path) {
   DCHECK([[NSFileManager defaultManager] fileExistsAtPath:file_url.path]);
 
   NSError* error = nil;
-  BOOL success = [file_url setResourceValue:@YES
+  BOOL success = [file_url setResourceValue:@(excluded)
                                      forKey:NSURLIsExcludedFromBackupKey
                                       error:&error];
   LOG_IF(WARNING, !success) << base::SysNSStringToUTF8([error description]);
   return success;
 #endif
+}
+
+}  // namespace
+
+bool SetBackupExclusion(const FilePath& file_path) {
+  return SetBackupState(file_path, true);
+}
+
+bool ClearBackupExclusion(const FilePath& file_path) {
+  return SetBackupState(file_path, false);
 }
 
 }  // namespace base::mac
