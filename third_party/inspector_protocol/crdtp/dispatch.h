@@ -150,8 +150,7 @@ class CRDTP_EXPORT Dispatchable {
 
 CRDTP_EXPORT std::unique_ptr<Serializable> CreateErrorResponse(
     int callId,
-    DispatchResponse dispatch_response,
-    const ErrorSupport* errors = nullptr);
+    DispatchResponse dispatch_response);
 
 CRDTP_EXPORT std::unique_ptr<Serializable> CreateErrorNotification(
     DispatchResponse dispatch_response);
@@ -230,13 +229,8 @@ class CRDTP_EXPORT DomainDispatcher {
                     const DispatchResponse&,
                     std::unique_ptr<Serializable> result = nullptr);
 
-  // Returns true if |errors| contains errors *and* reports these errors
-  // as a response on the frontend channel. Called from generated code,
-  // optimized for code size of the callee.
-  bool MaybeReportInvalidParams(const Dispatchable& dispatchable,
-                                const ErrorSupport& errors);
-  bool MaybeReportInvalidParams(const Dispatchable& dispatchable,
-                                const DeserializerState& state);
+  void ReportInvalidParams(const Dispatchable& dispatchable,
+                           const DeserializerState& state);
 
   FrontendChannel* channel() { return frontend_channel_; }
 

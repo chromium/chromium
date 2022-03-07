@@ -267,11 +267,11 @@ class DeserializableProtocolObject {
     std::unique_ptr<T> value(new T());
     auto deserializer = DeferredMessage::FromSpan(span<uint8_t>(bytes, size))
                             ->MakeDeserializer();
-    Deserialize(&deserializer, value.get());
+    std::ignore = Deserialize(&deserializer, value.get());
     return value;
   }
 
-  static bool Deserialize(DeserializerState* state, T* value) {
+  [[nodiscard]] static bool Deserialize(DeserializerState* state, T* value) {
     return T::deserializer_descriptor().Deserialize(state, value);
   }
 

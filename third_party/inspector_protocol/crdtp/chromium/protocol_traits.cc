@@ -72,6 +72,8 @@ bool ProtocolTypeTraits<Binary>::Deserialize(DeserializerState* state,
         base::StringPiece(reinterpret_cast<const char*>(str_span.data()),
                           str_span.size()),
         &success);
+    if (!success)
+      state->RegisterError(Error::BINDINGS_INVALID_BASE64_STRING);
     return success;
   }
   state->RegisterError(Error::BINDINGS_BINARY_VALUE_EXPECTED);

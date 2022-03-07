@@ -73,6 +73,19 @@ TEST(ProtocolTraits, BinarySerialization) {
   EXPECT_THAT(MakeVector(RoundTrip(binary)), Eq(MakeVector(binary)));
 }
 
+TEST(ProtocolTraits, BinaryInvalidBase64) {
+  std::vector<uint8_t> bytes;
+  ProtocolTypeTraits<std::string>::Serialize("@#%&", &bytes);
+  DeserializerState deserializer(std::move(bytes));
+  Binary binary;
+  bool rc = ProtocolTypeTraits<Binary>::Deserialize(&deserializer, &binary);
+  EXPECT_THAT(rc, Eq(false));
+  EXPECT_THAT(deserializer.status().ok(), Eq(false));
+  EXPECT_THAT(deserializer.ErrorMessage(MakeSpan("error")),
+              Eq("Failed to deserialize error - BINDINGS: invalid base64 "
+                 "string at position 0"));
+}
+
 TEST(ProtocolTraits, PrimitiveValueSerialization) {
   EXPECT_THAT(RoundTrip(base::Value()), IsJson(base::Value()));
 
