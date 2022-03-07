@@ -87,7 +87,6 @@ class MediaEngagementScore final {
  protected:
   friend class MediaEngagementAutoplayBrowserTest;
   friend class MediaEngagementContentsObserverTest;
-  friend class MediaEngagementContentsObserverMPArchBrowserTest;
   friend class MediaEngagementSessionTest;
   friend class MediaEngagementService;
 
