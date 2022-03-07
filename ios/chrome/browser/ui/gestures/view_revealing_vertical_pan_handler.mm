@@ -87,12 +87,8 @@ enum class ScrollViewTracking {
 @property(nonatomic, assign) ViewRevealState nextState;
 // The property animator for revealing the view.
 @property(nonatomic, strong) UIViewPropertyAnimator* animator;
-// Total distance between the Peeked state and Revealed state. Equal to
-// |revealedHeight| - |peekedHeight|.
+// Total distance between the Peeked state and Revealed state.
 @property(nonatomic, assign, readonly) CGFloat remainingHeight;
-// Height of the cover view (the view in front of the view that will be
-// revealed) that will still be visible after the remaining reveal transition.
-@property(nonatomic, assign, readonly) CGFloat revealedCoverHeight;
 // The progress of the animator.
 @property(nonatomic, assign) CGFloat progressWhenInterrupted;
 // Set of UI elements which are animated during view reveal transitions.
@@ -130,15 +126,12 @@ enum class ScrollViewTracking {
 @implementation ViewRevealingVerticalPanHandler
 
 - (instancetype)initWithPeekedHeight:(CGFloat)peekedHeight
-                 revealedCoverHeight:(CGFloat)revealedCoverHeight
                       baseViewHeight:(CGFloat)baseViewHeight
                         initialState:(ViewRevealState)initialState {
   if (self = [super init]) {
     _peekedHeight = peekedHeight;
-    _revealedCoverHeight = revealedCoverHeight;
     _baseViewHeight = baseViewHeight;
-    _revealedHeight = baseViewHeight - revealedCoverHeight;
-    _remainingHeight = _revealedHeight - peekedHeight;
+    _remainingHeight = baseViewHeight - peekedHeight;
     _currentState = initialState;
     _animatees = [NSHashTable weakObjectsHashTable];
     _layoutTransitionState = LayoutTransitionState::Inactive;
@@ -203,8 +196,7 @@ enum class ScrollViewTracking {
 
 - (void)setBaseViewHeight:(CGFloat)baseViewHeight {
   _baseViewHeight = baseViewHeight;
-  _revealedHeight = baseViewHeight - _revealedCoverHeight;
-  _remainingHeight = _revealedHeight - _peekedHeight;
+  _remainingHeight = baseViewHeight - _peekedHeight;
 }
 
 - (void)setNextState:(ViewRevealState)state
@@ -352,21 +344,18 @@ enum class ScrollViewTracking {
 
   switch (self.currentState) {
     case ViewRevealState::Hidden: {
-      nextLayoutState = (self.nextState == ViewRevealState::Revealed ||
-                         self.nextState == ViewRevealState::Fullscreen)
+      nextLayoutState = (self.nextState == ViewRevealState::Revealed)
                             ? LayoutSwitcherState::Grid
                             : LayoutSwitcherState::Horizontal;
       break;
     }
     case ViewRevealState::Peeked:
-      if (self.nextState == ViewRevealState::Revealed ||
-          self.nextState == ViewRevealState::Fullscreen) {
+      if (self.nextState == ViewRevealState::Revealed) {
         nextLayoutState = LayoutSwitcherState::Grid;
         animated = YES;
       }
       break;
     case ViewRevealState::Revealed:
-    case ViewRevealState::Fullscreen:
       if (self.nextState == ViewRevealState::Peeked) {
         nextLayoutState = LayoutSwitcherState::Horizontal;
         animated = YES;
@@ -505,9 +494,6 @@ enum class ScrollViewTracking {
         return ViewRevealState::Revealed;
       }
       return self.currentState;
-    case ViewRevealState::Fullscreen:
-      NOTREACHED();
-      return ViewRevealState::Fullscreen;
   }
 }
 
@@ -528,9 +514,6 @@ enum class ScrollViewTracking {
       break;
     case ViewRevealState::Revealed:
       progress = translation / (-self.remainingHeight);
-      break;
-    case ViewRevealState::Fullscreen:
-      progress = translation / (self.baseViewHeight - self.revealedHeight);
       break;
   }
 
@@ -629,11 +612,6 @@ enum class ScrollViewTracking {
                         targetContentOffset:targetContentOffset];
 }
 
-- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
-                  willDecelerate:(BOOL)decelerate {
-  // No-op.
-}
-
 - (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
   if (self.scrollViewTracking != ScrollViewTracking::NTP) {
     return;
@@ -707,7 +685,6 @@ enum class ScrollViewTracking {
       break;
     }
     case ViewRevealState::Revealed:
-    case ViewRevealState::Fullscreen:
       // The scroll views should be covered in Revealed state, so should not
       // be able to be scrolled.
       NOTREACHED();

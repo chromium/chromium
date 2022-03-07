@@ -154,8 +154,7 @@
 
 - (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
                                toState:(ViewRevealState)nextViewRevealState {
-  if (nextViewRevealState == ViewRevealState::Revealed ||
-      nextViewRevealState == ViewRevealState::Fullscreen) {
+  if (nextViewRevealState == ViewRevealState::Revealed) {
     self.regularOverlayPresentationContext->SetUIDisabled(true);
     if (self.incognitoOverlayPresentationContext) {
       self.incognitoOverlayPresentationContext->SetUIDisabled(true);

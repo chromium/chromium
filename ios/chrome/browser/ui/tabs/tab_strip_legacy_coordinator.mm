@@ -64,6 +64,10 @@
   self.tabStripController.panGestureHandler = panGestureHandler;
 }
 
+- (id<ViewRevealingAnimatee>)animatee {
+  return self.tabStripController.animatee;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {

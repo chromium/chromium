@@ -302,9 +302,6 @@
   _largeNewTabButton.page = self.page;
 
   CGFloat floatingButtonVerticalInset = kTabGridFloatingButtonVerticalInset;
-  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
-    floatingButtonVerticalInset += kBVCHeightTabGrid;
-  }
 
   _largeNewTabButtonBottomAnchor = [_largeNewTabButton.bottomAnchor
       constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor

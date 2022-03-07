@@ -104,18 +104,18 @@ void WaitForTabGridFullscreen() {
     return;
   }
 
-  // Check that the bvc hider is visible.
+  // Check that the kRegularTabGridIdentifier is visible.
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(@"BrowserViewHiderView")]
-        assertWithMatcher:grey_not(grey_sufficientlyVisible())
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kRegularTabGridIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
   };
   bool fullscreenAchieved = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, condition);
-  GREYAssertTrue(fullscreenAchieved, @"BrowserViewHiderView still shown");
+  GREYAssertTrue(fullscreenAchieved, @"kRegularTabGridIdentifier not visible");
 }
 
 // Returns a matcher for the scrim view on the tab search.
@@ -846,7 +846,7 @@ id<GREYMatcher> SearchScrim() {
     EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
   }
 #endif
-  
+
   // Setup first window with one incognito tab 1.
   [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGrey openNewIncognitoTab];

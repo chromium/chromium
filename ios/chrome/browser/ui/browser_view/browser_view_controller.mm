@@ -59,7 +59,6 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
-#import "ios/chrome/browser/ui/browser_view/hider/browser_view_hider_coordinator.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
@@ -506,11 +505,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // The coordinator that shows the Send Tab To Self UI.
 @property(nonatomic, strong) SendTabToSelfCoordinator* sendTabToSelfCoordinator;
 
-// Coordinator for the view that hides the web content when using the
-// ViewRevealingVerticalPanHandler.
-@property(nonatomic, strong)
-    BrowserViewHiderCoordinator* browserViewHiderCoordinator;
-
 // Whether the view has been translated for thumb strip usage when smooth
 // scrolling has been enabled. This allows the correct setup to be done when
 // displaying a new web state.
@@ -675,27 +669,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - Private Properties
-
-- (void)ensureBrowserViewHiderCoordinatorStarted {
-  if (self.browserViewHiderCoordinator) {
-    return;
-  }
-
-  DCHECK(self.locationBarModel);
-  DCHECK(self.isThumbStripEnabled);
-  DCHECK(self.thumbStripPanHandler);
-
-  ViewRevealingVerticalPanHandler* panHandler = self.thumbStripPanHandler;
-  BrowserViewHiderCoordinator* browserViewHiderCoordinator =
-      [[BrowserViewHiderCoordinator alloc]
-          initWithBaseViewController:self
-                             browser:self.browser];
-  browserViewHiderCoordinator.locationBarModel = self.locationBarModel;
-  [browserViewHiderCoordinator start];
-  [panHandler addAnimatee:browserViewHiderCoordinator.animatee];
-  browserViewHiderCoordinator.panGestureHandler = panHandler;
-  self.browserViewHiderCoordinator = browserViewHiderCoordinator;
-}
 
 - (KeyCommandsProvider*)keyCommandsProvider {
   if (!_keyCommandsProvider) {
@@ -1185,8 +1158,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.legacyTabStripCoordinator = nil;
     self.tabStripView = nil;
   }
-  [self.browserViewHiderCoordinator stop];
-  self.browserViewHiderCoordinator = nil;
 
   [self.commandDispatcher stopDispatchingToTarget:self.bubblePresenter];
   self.bubblePresenter = nil;
@@ -1324,11 +1295,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.contentAreaGestureRecognizer setCancelsTouchesInView:NO];
   [self.contentArea addGestureRecognizer:self.contentAreaGestureRecognizer];
 
-  if (self.isThumbStripEnabled) {
-    [self ensureBrowserViewHiderCoordinatorStarted];
-  } else {
-    self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  }
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1426,8 +1393,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.secondaryToolbarContainerCoordinator = nil;
     [self.secondaryToolbarCoordinator stop];
     self.secondaryToolbarCoordinator = nil;
-    [self.browserViewHiderCoordinator stop];
-    self.browserViewHiderCoordinator = nil;
     self.toolbarInterface = nil;
     _toolbarUIState = nil;
     _locationBarModelDelegate = nil;
@@ -2718,8 +2683,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK([self isViewLoaded]);
   DCHECK(self.primaryToolbarCoordinator.animatee);
 
-  [self ensureBrowserViewHiderCoordinatorStarted];
-
   [panHandler addAnimatee:self.primaryToolbarCoordinator.animatee];
 
   self.primaryToolbarCoordinator.panGestureHandler = panHandler;
@@ -2728,11 +2691,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   self.view.backgroundColor = UIColor.clearColor;
-  self.contentArea.alpha = 1;
 
   CGRect webStateViewFrame = self.contentArea.bounds;
-  if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed ||
-      self.thumbStripPanHandler.currentState == ViewRevealState::Fullscreen) {
+  if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed) {
     CGFloat toolbarHeight = [self expandedTopToolbarHeight];
     webStateViewFrame = UIEdgeInsetsInsetRect(
         webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
@@ -2754,18 +2715,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)thumbStripDisabled {
   DCHECK([self isThumbStripEnabled]);
 
-  [self.browserViewHiderCoordinator stop];
-  self.browserViewHiderCoordinator.locationBarModel = nil;
-  self.browserViewHiderCoordinator = nil;
-
   self.primaryToolbarCoordinator.panGestureHandler = nil;
   if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
     self.legacyTabStripCoordinator.panGestureHandler = nil;
   }
-  self.browserViewHiderCoordinator.panGestureHandler = nil;
 
   self.view.transform = CGAffineTransformIdentity;
-  self.contentArea.alpha = 1;
   if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
     self.tabStripSnapshot.transform =
         [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
@@ -2845,12 +2800,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                               0, self.tabStripView.frame.size
                                                      .height)];
       self.tabStripSnapshot.alpha =
-          currentViewRevealState == ViewRevealState::Revealed ||
-                  currentViewRevealState == ViewRevealState::Fullscreen
-              ? 0
-              : 1;
+          currentViewRevealState == ViewRevealState::Revealed ? 0 : 1;
       [self.contentArea addSubview:self.tabStripSnapshot];
       AddSameConstraints(self.tabStripSnapshot, self.tabStripView);
+
+      // Now let coordinator take care of hiding the tab strip.
+      [self.legacyTabStripCoordinator.animatee
+          willAnimateViewRevealFromState:currentViewRevealState
+                                 toState:nextViewRevealState];
     }
   }
 
@@ -2895,8 +2852,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   // Close all keyboards if the thumb strip is transitioning to the tab grid.
-  if (nextViewRevealState == ViewRevealState::Revealed ||
-      nextViewRevealState == ViewRevealState::Fullscreen) {
+  if (nextViewRevealState == ViewRevealState::Revealed) {
     [self.view endEditing:YES];
   }
 
@@ -2924,7 +2880,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         self.tabStripSnapshot.transform =
             [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
         self.tabStripSnapshot.alpha = 1;
-        self.contentArea.alpha = 1;
       }
       break;
     case ViewRevealState::Peeked:
@@ -2935,11 +2890,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         self.tabStripSnapshot.transform =
             [self.tabStripView adjustTransformForRTL:transform];
         self.tabStripSnapshot.alpha = 1;
-        self.contentArea.alpha = 1;
       }
       break;
     case ViewRevealState::Revealed:
-    case ViewRevealState::Fullscreen:
       self.view.transform = CGAffineTransformMakeTranslation(0, -hideHeight);
       if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
         CGAffineTransform transform =
@@ -2947,8 +2900,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         self.tabStripSnapshot.transform =
             [self.tabStripView adjustTransformForRTL:transform];
         self.tabStripSnapshot.alpha = 0;
-        self.contentArea.alpha =
-            nextViewRevealState == ViewRevealState::Revealed ? 1 : 0;
       }
       break;
   }
@@ -2958,8 +2909,15 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                               toState:(ViewRevealState)currentViewRevealState
                               trigger:(ViewRevealTrigger)trigger {
   [self.tabStripSnapshot removeFromSuperview];
-  self.bottomPosition = (currentViewRevealState == ViewRevealState::Revealed ||
-                         currentViewRevealState == ViewRevealState::Fullscreen);
+  self.bottomPosition = (currentViewRevealState == ViewRevealState::Revealed);
+
+  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
+    // Now let coordinator take care of showing the tab strip.
+    [self.legacyTabStripCoordinator.animatee
+        didAnimateViewRevealFromState:startViewRevealState
+                              toState:currentViewRevealState
+                              trigger:trigger];
+  }
 
   if (currentViewRevealState == ViewRevealState::Hidden) {
     // Stop disabling fullscreen.

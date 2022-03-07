@@ -70,9 +70,8 @@ enum class TabGridPageConfiguration {
 // Opens a link when the user clicks on the in-text link.
 - (void)openLinkWithURL:(const GURL&)URL;
 
-// YES to go fullscreen by hiding the thumbstrip bottom fake tab. NO to bring it
-// back.
-- (void)showFullscreen:(BOOL)fullscreen;
+// BVC is completely hidden, detach it from view.
+- (void)dismissBVC;
 
 // Asks the delegate to open history modal with results filtered by
 // |searchText|.

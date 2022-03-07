@@ -92,7 +92,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/browser_container",
     "//ios/chrome/browser/ui/browser_container:ui",
-    "//ios/chrome/browser/ui/browser_view/hider",
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",

@@ -80,7 +80,6 @@ enum class ThumbstripCloseByAction {
   CGFloat baseViewHeight = self.baseViewController.view.frame.size.height;
   self.panHandler = [[ViewRevealingVerticalPanHandler alloc]
       initWithPeekedHeight:kThumbStripHeight
-       revealedCoverHeight:kBVCHeightTabGrid
             baseViewHeight:baseViewHeight
               initialState:self.initialState];
 

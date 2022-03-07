@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_constants.h"
 
 @protocol PopupMenuLongPressDelegate;
@@ -36,6 +37,10 @@ class Browser;
 
 // Pan gesture handler for the tab strip.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
+
+// Animatee for this tab strip. It is not added to the |panGestureHandler| as
+// it needs to be run in sync with BVC.
+@property(nonatomic, readonly, strong) id<ViewRevealingAnimatee> animatee;
 
 // Designated initializer, |dispatcher| is not retained.
 - (instancetype)initWithBrowser:(Browser*)browser

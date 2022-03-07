@@ -266,7 +266,6 @@
   // A modal may be presented on top of the Recent Tabs or tab grid.
   [self.baseViewController dismissModals];
   self.baseViewController.tabGridMode = TabGridModeNormal;
-  [self showFullscreen:NO];
 
   [self dismissPopovers];
 
@@ -304,8 +303,7 @@
   if (self.isThumbStripEnabled) {
     ViewRevealState currentState =
         self.thumbStripCoordinator.panHandler.currentState;
-    return currentState == ViewRevealState::Revealed ||
-           currentState == ViewRevealState::Fullscreen;
+    return currentState == ViewRevealState::Revealed;
   }
   return self.bvcContainer == nil && !self.firstPresentation;
 }
@@ -928,22 +926,14 @@
   [handler openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:URL]];
 }
 
-- (void)showFullscreen:(BOOL)fullscreen {
+- (void)dismissBVC {
   if (![self isThumbStripEnabled]) {
     return;
   }
-  ViewRevealingVerticalPanHandler* panHandler =
-      self.thumbStripCoordinator.panHandler;
-  if (fullscreen && panHandler.currentState == ViewRevealState::Revealed) {
-    [panHandler setNextState:ViewRevealState::Fullscreen
-                    animated:YES
-                     trigger:ViewRevealTrigger::Fullscreen];
-  } else if (!fullscreen &&
-             panHandler.currentState == ViewRevealState::Fullscreen) {
-    [panHandler setNextState:ViewRevealState::Revealed
-                    animated:YES
-                     trigger:ViewRevealTrigger::Fullscreen];
-  }
+  [self showTabViewController:nil
+                    incognito:NO
+           shouldCloseTabGrid:NO
+                   completion:nil];
 }
 
 - (void)openSearchResultsPageForSearchText:(NSString*)searchText {
@@ -1088,7 +1078,6 @@
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridTabContextMenuSelectTabs"));
   self.baseViewController.tabGridMode = TabGridModeSelection;
-  [self showFullscreen:YES];
 }
 
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {

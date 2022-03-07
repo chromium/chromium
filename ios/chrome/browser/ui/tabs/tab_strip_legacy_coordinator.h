@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_highlighting.h"
 
 @protocol PopupMenuLongPressDelegate;
@@ -28,6 +29,10 @@
 // The duration to wait before starting tab strip animations. Used to
 // synchronize animations.
 @property(nonatomic, assign) NSTimeInterval animationWaitDuration;
+
+// Animatee for this tab strip. It is not added to the |panGestureHandler| as
+// it needs to be run in sync with BVC.
+@property(nonatomic, readonly, strong) id<ViewRevealingAnimatee> animatee;
 
 // Sets the pan gesture handler for the tab strip controller.
 - (void)setPanGestureHandler:

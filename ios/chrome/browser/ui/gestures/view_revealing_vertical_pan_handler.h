@@ -28,10 +28,8 @@
                 UIScrollViewDelegate>
 
 // |peekedHeight| is the height of the view when peeked (partially revealed).
-// |revealedCoverHeight| is the height of the cover view that remains visible
-// after the view is revealed. |baseViewHeight| is the height of the base view.
+// |baseViewHeight| is the height of the base view.
 - (instancetype)initWithPeekedHeight:(CGFloat)peekedHeight
-                 revealedCoverHeight:(CGFloat)revealedCoverHeight
                       baseViewHeight:(CGFloat)baseViewHeight
                         initialState:(ViewRevealState)initialState
     NS_DESIGNATED_INITIALIZER;
@@ -56,9 +54,6 @@
 // Height of the view that will be revealed after the transition to Peeked
 // state.
 @property(nonatomic, assign, readonly) CGFloat peekedHeight;
-
-// Height of the revealed view after the transition to Revealed state.
-@property(nonatomic, assign, readonly) CGFloat revealedHeight;
 
 // Height of the base view. It changes when the user rotates the screen.
 @property(nonatomic, assign) CGFloat baseViewHeight;

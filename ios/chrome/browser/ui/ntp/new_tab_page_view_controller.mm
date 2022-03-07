@@ -492,8 +492,6 @@
                   willDecelerate:(BOOL)decelerate {
   [self.overscrollActionsController scrollViewDidEndDragging:scrollView
                                               willDecelerate:decelerate];
-  [self.panGestureHandler scrollViewDidEndDragging:scrollView
-                                    willDecelerate:decelerate];
   [self.feedMetricsRecorder
       recordFeedScrolled:scrollView.contentOffset.y - self.scrollStartPosition];
 }

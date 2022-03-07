@@ -560,7 +560,6 @@ UIColor* BackgroundColor() {
 - (void)setPanGestureHandler:
     (ViewRevealingVerticalPanHandler*)panGestureHandler {
   _panGestureHandler = panGestureHandler;
-  [self.panGestureHandler addAnimatee:self];
 
   [self.view removeGestureRecognizer:self.panGestureRecognizer];
 
@@ -1807,6 +1806,11 @@ UIColor* BackgroundColor() {
 }
 
 #pragma mark - ViewRevealingAnimatee
+
+- (id<ViewRevealingAnimatee>)animatee {
+  return self;
+}
+
 - (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
                                toState:(ViewRevealState)nextViewRevealState {
   // Specifically when Smooth Scrolling is on, the background of the view

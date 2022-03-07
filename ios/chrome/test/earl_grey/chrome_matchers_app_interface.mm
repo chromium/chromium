@@ -310,10 +310,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)defocusedLocationView {
-  return grey_allOf(
-      grey_kindOfClass([LocationBarSteadyView class]),
-      grey_not(grey_ancestor(grey_accessibilityID(@"BrowserViewHiderView"))),
-      nil);
+  return grey_kindOfClass([LocationBarSteadyView class]);
 }
 
 + (id<GREYMatcher>)pageSecurityInfoButton {
