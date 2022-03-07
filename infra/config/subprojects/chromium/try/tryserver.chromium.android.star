@@ -61,6 +61,9 @@ try_.orchestrator_builder(
     # TODO(crbug.com/1225851): Enable it on branch after running on CQ
     # branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
 )
 
 try_.compilator_builder(
