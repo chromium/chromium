@@ -1190,11 +1190,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.ServiceErrors"
-    enum="NetworkServiceError" expires_after="2021-12-01">
+    enum="NetworkServiceError" expires_after="2023-01-01">
   <owner>kuabhs@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS connection manager service errors for cellular interface.
+    Chrome OS connection manager service errors for cellular interface. NOTE:
+    This metric was updated in M101. Data prior to that may be missing.
   </summary>
 </histogram>
 
@@ -1560,11 +1561,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.ServiceErrors"
-    enum="NetworkServiceError" expires_after="2021-12-01">
+    enum="NetworkServiceError" expires_after="2023-01-01">
   <owner>kuabhs@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS connection manager service errors for ethernet interface.
+    Chrome OS connection manager service errors for ethernet interface. NOTE:
+    This metric was updated in M101. Data prior to that may be missing.
   </summary>
 </histogram>
 
@@ -1656,6 +1658,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.ServiceErrors" enum="NetworkServiceError"
     expires_after="2021-12-01">
+  <obsolete>
+    Removed as of 02/2022. Now using Network.Shill.Cellular.ServiceErrors,
+    Network.Shill.Ethernet.ServiceErrors, Network.Shill.Wifi.ServiceErrors.
+  </obsolete>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2473,7 +2479,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.ServiceErrors" enum="NetworkServiceError"
-    expires_after="2022-04-17">
+    expires_after="2023-01-01">
   <owner>kuabhs@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
