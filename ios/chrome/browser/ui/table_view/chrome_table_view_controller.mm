@@ -207,14 +207,16 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
 
 - (void)reconfigureCellsForItems:(NSArray*)items {
   for (TableViewItem* item in items) {
-    NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
-    UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    if ([self.tableViewModel hasItem:item]) {
+      NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
+      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
 
-    // |cell| may be nil if the row is not currently on screen.
-    if (cell) {
-      TableViewCell* tableViewCell =
-          base::mac::ObjCCastStrict<TableViewCell>(cell);
-      [item configureCell:tableViewCell withStyler:self.styler];
+      // |cell| may be nil if the row is not currently on screen.
+      if (cell) {
+        TableViewCell* tableViewCell =
+            base::mac::ObjCCastStrict<TableViewCell>(cell);
+        [item configureCell:tableViewCell withStyler:self.styler];
+      }
     }
   }
 }

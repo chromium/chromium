@@ -62,6 +62,7 @@ using ::testing::Return;
     UISearchBarDelegate,
     PasswordsConsumer>
 - (void)updateExportPasswordsButton;
+- (void)setTableViewEditing:(BOOL)editing animated:(BOOL)animated;
 @end
 
 namespace {
@@ -277,7 +278,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
   void SetEditing(bool editing) {
     PasswordsTableViewController* passwords_controller =
         static_cast<PasswordsTableViewController*>(controller());
-    [passwords_controller setEditing:editing animated:NO];
+    [passwords_controller setTableViewEditing:editing animated:NO];
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -511,7 +512,7 @@ TEST_F(PasswordsTableViewControllerTest, TestExportButtonDisabledEditMode) {
   CheckTextCellTextWithId(IDS_IOS_EXPORT_PASSWORDS,
                           GetSectionIndex(ExportPasswordsButton), 0);
 
-  [passwords_controller setEditing:YES animated:NO];
+  [passwords_controller setTableViewEditing:YES animated:NO];
 
   EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor], exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
@@ -532,8 +533,8 @@ TEST_F(PasswordsTableViewControllerTest,
   CheckTextCellTextWithId(IDS_IOS_EXPORT_PASSWORDS,
                           GetSectionIndex(ExportPasswordsButton), 0);
 
-  [passwords_controller setEditing:YES animated:NO];
-  [passwords_controller setEditing:NO animated:NO];
+  [passwords_controller setTableViewEditing:YES animated:NO];
+  [passwords_controller setTableViewEditing:NO animated:NO];
 
   EXPECT_NSEQ([UIColor colorNamed:kBlueColor], exportButton.textColor);
   EXPECT_FALSE(exportButton.accessibilityTraits &
@@ -552,14 +553,14 @@ TEST_F(PasswordsTableViewControllerTest,
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(PasswordCheck), 1);
 
-  [passwords_controller setEditing:YES animated:NO];
+  [passwords_controller setTableViewEditing:YES animated:NO];
 
   EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor],
               checkPasswordButton.textColor);
   EXPECT_TRUE(checkPasswordButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 
-  [passwords_controller setEditing:NO animated:NO];
+  [passwords_controller setTableViewEditing:NO animated:NO];
   EXPECT_NSEQ([UIColor colorNamed:kBlueColor], checkPasswordButton.textColor);
   EXPECT_FALSE(checkPasswordButton.accessibilityTraits &
                UIAccessibilityTraitNotEnabled);

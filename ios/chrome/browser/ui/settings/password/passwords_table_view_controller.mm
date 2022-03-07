@@ -516,7 +516,7 @@ bool IsFaviconEnabled() {
   }
 }
 
-- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+- (void)setTableViewEditing:(BOOL)editing animated:(BOOL)animated {
   [super setEditing:editing animated:animated];
   if (editing) {
     [self setSavePasswordsSwitchItemEnabled:NO];
@@ -771,6 +771,13 @@ bool IsFaviconEnabled() {
 
 - (void)addButtonCallback {
   [self.handler showAddPasswordSheet];
+}
+
+- (void)editButtonPressed {
+  // No need to call super here because it is done in -setTableViewEditing
+  // already. Only consider the state to be editing when the Edit button is
+  // pressed (not when the user swiped to delete a password).
+  [self setTableViewEditing:!self.tableView.editing animated:YES];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -1217,7 +1224,7 @@ bool IsFaviconEnabled() {
                     withRowAnimation:UITableViewRowAnimationAutomatic];
       [self scrollToLastUpdatedItem];
     } else if (_savedForms.empty() && _blockedForms.empty()) {
-      [self setEditing:NO animated:YES];
+      [self setTableViewEditing:NO animated:YES];
     }
   }
 }
@@ -1817,7 +1824,7 @@ bool IsFaviconEnabled() {
         // If both lists are empty, exit editing mode.
         if (strongSelf->_savedForms.empty() &&
             strongSelf->_blockedForms.empty())
-          [strongSelf setEditing:NO animated:YES];
+          [strongSelf setTableViewEditing:NO animated:YES];
         [strongSelf updateUIForEditState];
         [strongSelf updateExportPasswordsButton];
       }];
