@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os", "xcode")
+load("//lib/structs.star", "structs")
 
 luci.bucket(
     name = "goma",
@@ -90,6 +92,17 @@ fyi_goma_rbe_canary_builder(
 
 fyi_goma_rbe_canary_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-canary",
+    builder_spec = builder_config.copy_from(
+        "ci/chromeos-amd64-generic-rel",
+        lambda spec: structs.evolve(
+            spec,
+            chromium_config = structs.extend(
+                spec.chromium_config,
+                apply_configs = "goma_canary",
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
     goma_enable_ats = True,
 )
 
@@ -207,6 +220,17 @@ fyi_goma_rbe_latest_client_builder(
 
 fyi_goma_rbe_latest_client_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-latest",
+    builder_spec = builder_config.copy_from(
+        "ci/chromeos-amd64-generic-rel",
+        lambda spec: structs.evolve(
+            spec,
+            chromium_config = structs.extend(
+                spec.chromium_config,
+                apply_configs = "goma_latest_client",
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
     goma_enable_ats = True,
 )
 
@@ -289,6 +313,7 @@ goma_builder(
 
 goma_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-staging",
+    builder_spec = builder_config.copy_from("ci/chromeos-amd64-generic-rel"),
     goma_backend = goma.backend.RBE_STAGING,
     goma_enable_ats = True,
 )
@@ -307,6 +332,16 @@ goma_builder(
 
 goma_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-tot",
+    builder_spec = builder_config.copy_from(
+        "ci/chromeos-amd64-generic-rel",
+        lambda spec: structs.evolve(
+            spec,
+            chromium_config = structs.extend(
+                spec.chromium_config,
+                apply_configs = ["goma_client_candidate"],
+            ),
+        ),
+    ),
     goma_backend = goma.backend.RBE_TOT,
     goma_enable_ats = True,
 )
