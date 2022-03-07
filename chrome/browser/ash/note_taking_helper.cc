@@ -23,7 +23,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
@@ -33,7 +32,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/note_taking_controller_client.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -426,15 +424,14 @@ bool NoteTakingHelper::IsAppAvailable(Profile* profile) {
   return stylus_utils::HasStylusInput() && !GetAvailableApps(profile).empty();
 }
 
-void NoteTakingHelper::LaunchAppForNewNote(Profile* profile,
-                                           const base::FilePath& path) {
+void NoteTakingHelper::LaunchAppForNewNote(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile);
 
   LaunchResult result = LaunchResult::NO_APP_SPECIFIED;
   std::string app_id = profile->GetPrefs()->GetString(prefs::kNoteTakingAppId);
   if (!app_id.empty())
-    result = LaunchAppInternal(profile, app_id, path);
+    result = LaunchAppInternal(profile, app_id);
   UMA_HISTOGRAM_ENUMERATION(kPreferredLaunchResultHistogramName,
                             static_cast<int>(result),
                             static_cast<int>(LaunchResult::MAX));
@@ -451,7 +448,7 @@ void NoteTakingHelper::LaunchAppForNewNote(Profile* profile,
   if (infos.empty())
     LOG(WARNING) << "Unable to launch note-taking app; none available";
   else
-    result = LaunchAppInternal(profile, infos[0].app_id, path);
+    result = LaunchAppInternal(profile, infos[0].app_id);
   UMA_HISTOGRAM_ENUMERATION(kDefaultLaunchResultHistogramName,
                             static_cast<int>(result),
                             static_cast<int>(LaunchResult::MAX));
@@ -706,25 +703,16 @@ void NoteTakingHelper::OnGotAndroidApps(
     observer.OnAvailableNoteTakingAppsUpdated();
 }
 
-arc::mojom::OpenUrlsRequestPtr CreateArcNoteRequest(const std::string& app_id,
-                                                    const GURL& clip_data_uri) {
+arc::mojom::OpenUrlsRequestPtr CreateArcNoteRequest(const std::string& app_id) {
   auto request = arc::mojom::OpenUrlsRequest::New();
   request->action_type = arc::mojom::ActionType::CREATE_NOTE;
   request->activity_name = AppIdToActivityName(app_id);
-  if (!clip_data_uri.is_empty()) {
-    auto url_with_type = arc::mojom::ContentUrlWithMimeType::New();
-    url_with_type->content_url = clip_data_uri;
-    url_with_type->mime_type = "image/png";
-    request->urls.push_back(std::move(url_with_type));
-  }
-
   return request;
 }
 
 NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
     Profile* profile,
-    const std::string& app_id,
-    const base::FilePath& path) {
+    const std::string& app_id) {
   DCHECK(profile);
 
   // Android app.
@@ -740,23 +728,6 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
     if (!helper)
       return LaunchResult::ANDROID_NOT_RUNNING;
 
-    GURL clip_data_uri;
-    bool requires_sharing = false;
-    if (!path.empty()) {
-      if (!file_manager::util::ConvertPathToArcUrl(path, &clip_data_uri,
-                                                   &requires_sharing) ||
-          !clip_data_uri.is_valid()) {
-        LOG(WARNING) << "Failed to convert " << path.value() << " to ARC URI";
-        return LaunchResult::ANDROID_FAILED_TO_CONVERT_PATH;
-      }
-      // TODO(b/177651157): To support annotating image from Google Drive.
-      if (requires_sharing) {
-        LOG(ERROR) << "Can't launch Android app with path " << path.value()
-                   << ". NoteTakingHelper does not handle path sharing yet.";
-        return LaunchResult::ANDROID_FAILED_TO_CONVERT_PATH;
-      }
-    }
-
     // Only set the package name: leaving the activity name unset enables the
     // app to rename its activities.
     arc::mojom::ActivityNamePtr activity = arc::mojom::ActivityName::New();
@@ -764,7 +735,7 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
 
     // TODO(derat): Is there some way to detect whether this fails due to the
     // package no longer being available?
-    auto request = CreateArcNoteRequest(app_id, clip_data_uri);
+    auto request = CreateArcNoteRequest(app_id);
     arc::mojom::FileSystemInstance* arc_file_system =
         ARC_GET_INSTANCE_FOR_METHOD(
             arc::ArcServiceManager::Get()->arc_bridge_service()->file_system(),
@@ -795,7 +766,7 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
   }
   auto action_data = std::make_unique<app_runtime::ActionData>();
   action_data->action_type = app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
-  launch_chrome_app_callback_.Run(profile, app, std::move(action_data), path);
+  launch_chrome_app_callback_.Run(profile, app, std::move(action_data));
   return LaunchResult::CHROME_SUCCESS;
 }
 

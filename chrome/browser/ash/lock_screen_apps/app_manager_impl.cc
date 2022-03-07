@@ -285,7 +285,7 @@ bool AppManagerImpl::LaunchLockScreenApp() {
       std::make_unique<bool>(primary_profile_->GetPrefs()->GetBoolean(
           prefs::kRestoreLastLockScreenNote));
   apps::LaunchPlatformAppWithAction(lock_screen_profile_, app,
-                                    std::move(action_data), base::FilePath());
+                                    std::move(action_data));
   return true;
 }
 

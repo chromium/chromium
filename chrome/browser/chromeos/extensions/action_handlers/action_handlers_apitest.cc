@@ -29,7 +29,6 @@ IN_PROC_BROWSER_TEST_F(ActionHandlersBrowserTest, LaunchAppWithNewNote) {
   ExtensionTestMessageListener new_note("hasNewNote = true", false);
   auto action_data = std::make_unique<app_runtime::ActionData>();
   action_data->action_type = app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
-  apps::LaunchPlatformAppWithAction(profile(), app, std::move(action_data),
-                                    base::FilePath());
+  apps::LaunchPlatformAppWithAction(profile(), app, std::move(action_data));
   EXPECT_TRUE(new_note.WaitUntilSatisfied());
 }

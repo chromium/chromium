@@ -158,9 +158,6 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     case DownloadCommands::Command::COPY_TO_CLIPBOARD:
       return clicked ? DownloadShelfContextMenuAction::kCopyToClipboardClicked
                      : DownloadShelfContextMenuAction::kCopyToClipboardEnabled;
-    case DownloadCommands::Command::ANNOTATE:
-      return clicked ? DownloadShelfContextMenuAction::kAnnotateClicked
-                     : DownloadShelfContextMenuAction::kAnnotateEnabled;
     case DownloadCommands::Command::DEEP_SCAN:
       return clicked ? DownloadShelfContextMenuAction::kDeepScanClicked
                      : DownloadShelfContextMenuAction::kDeepScanEnabled;

@@ -197,8 +197,7 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
       id = IDS_DOWNLOAD_MENU_LEARN_MORE_MIXED_CONTENT;
       break;
     case DownloadCommands::COPY_TO_CLIPBOARD:
-    case DownloadCommands::ANNOTATE:
-      // These commands are implemented only for the Download notification.
+      // This command is implemented only for the Download notification.
       NOTREACHED();
       break;
     case DownloadCommands::DEEP_SCAN:

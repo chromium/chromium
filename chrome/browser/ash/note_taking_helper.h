@@ -31,10 +31,6 @@ namespace apps {
 class AppUpdate;
 }
 
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -125,9 +121,9 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
     ANDROID_NOT_SUPPORTED_BY_PROFILE = 3,
     // An Android app couldn't be launched due to ARC not running.
     ANDROID_NOT_RUNNING = 4,
-    // An Android app couldn't be launched due to a failure to convert the
-    // supplied path to an ARC URL.
-    ANDROID_FAILED_TO_CONVERT_PATH = 5,
+    // Removed: An Android app couldn't be launched due to a failure to convert
+    // the supplied path to an ARC URL.
+    // ANDROID_FAILED_TO_CONVERT_PATH = 5,
     // No attempt was made due to a preferred app not being specified.
     NO_APP_SPECIFIED = 6,
     // No Android or Chrome apps were available.
@@ -145,8 +141,7 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   using LaunchChromeAppCallback = base::RepeatingCallback<void(
       content::BrowserContext* context,
       const extensions::Extension*,
-      std::unique_ptr<extensions::api::app_runtime::ActionData>,
-      const base::FilePath&)>;
+      std::unique_ptr<extensions::api::app_runtime::ActionData>)>;
 
   // Intent action used to launch Android apps.
   static const char kIntentAction[];
@@ -203,10 +198,9 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   // surfaces that call LaunchAppForNewNote() should be hidden otherwise.
   bool IsAppAvailable(Profile* profile);
 
-  // Launches the note-taking app to create a new note, optionally additionally
-  // passing a file (|path| may be empty). IsAppAvailable() must be called
-  // first.
-  void LaunchAppForNewNote(Profile* profile, const base::FilePath& path);
+  // Launches the note-taking app to create a new note. IsAppAvailable() must
+  // be called first.
+  void LaunchAppForNewNote(Profile* profile);
 
   // arc::ArcIntentHelperObserver:
   void OnIntentFiltersUpdated(
@@ -255,11 +249,8 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   void OnGotAndroidApps(std::vector<arc::mojom::IntentHandlerInfoPtr> handlers);
 
   // Helper method that launches |app_id| (either an Android package name or a
-  // Chrome extension ID) to create a new note with an optional attached file at
-  // |path|. Returns the attempt's result.
-  LaunchResult LaunchAppInternal(Profile* profile,
-                                 const std::string& app_id,
-                                 const base::FilePath& path);
+  // Chrome extension ID) to create a new note. Returns the attempt's result.
+  LaunchResult LaunchAppInternal(Profile* profile, const std::string& app_id);
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,

@@ -66,7 +66,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/note_taking_helper.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
 #endif
@@ -188,10 +187,6 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
     case DownloadCommands::COPY_TO_CLIPBOARD:
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_CopyToClipboard"));
-      break;
-    case DownloadCommands::ANNOTATE:
-      base::RecordAction(
-          UserMetricsAction("DownloadNotification.Button_Annotate"));
       break;
     case DownloadCommands::DEEP_SCAN:
       base::RecordAction(
@@ -792,14 +787,8 @@ DownloadItemNotification::GetExtraActions() const {
       break;
     case download::DownloadItem::COMPLETE:
       actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
-      if (!notification_->image().IsEmpty()) {
+      if (!notification_->image().IsEmpty())
         actions->push_back(DownloadCommands::COPY_TO_CLIPBOARD);
-// TODO(crbug.com/1267466): Support NoteTakingHelper in Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        if (ash::NoteTakingHelper::Get()->IsAppAvailable(profile()))
-          actions->push_back(DownloadCommands::ANNOTATE);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      }
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
       NOTREACHED();
@@ -903,9 +892,6 @@ std::u16string DownloadItemNotification::GetCommandLabel(
       break;
     case DownloadCommands::COPY_TO_CLIPBOARD:
       id = IDS_DOWNLOAD_NOTIFICATION_COPY_TO_CLIPBOARD;
-      break;
-    case DownloadCommands::ANNOTATE:
-      id = IDS_DOWNLOAD_NOTIFICATION_ANNOTATE;
       break;
     case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
       id = IDS_LEARN_MORE;

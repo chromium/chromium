@@ -2301,10 +2301,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="In the download notification, the text of 'Copy to clipboard' button, which is to copy the file content (eg. an image for image files) to the clipboard">
         Copy to clipboard
       </message>
-      <message name="IDS_DOWNLOAD_NOTIFICATION_ANNOTATE"
-               desc="In the download notification, the text of the button that opens the file (if it is an image) in the note-taking app so the user can annotate it">
-        Annotate image
-      </message>
 
       <!-- Download Context Menu Items -->
       <if expr="not is_android">

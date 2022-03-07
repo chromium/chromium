@@ -274,7 +274,6 @@ bool OfflineItemModel::IsCommandEnabled(
     case DownloadCommands::CANCEL:
     case DownloadCommands::RESUME:
     case DownloadCommands::COPY_TO_CLIPBOARD:
-    case DownloadCommands::ANNOTATE:
     case DownloadCommands::DISCARD:
     case DownloadCommands::KEEP:
     case DownloadCommands::LEARN_MORE_SCANNING:
@@ -311,7 +310,6 @@ bool OfflineItemModel::IsCommandChecked(
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
     case DownloadCommands::COPY_TO_CLIPBOARD:
-    case DownloadCommands::ANNOTATE:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       return false;
@@ -340,7 +338,6 @@ void OfflineItemModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::PAUSE:
     case DownloadCommands::RESUME:
     case DownloadCommands::COPY_TO_CLIPBOARD:
-    case DownloadCommands::ANNOTATE:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       DownloadUIModel::ExecuteCommand(download_commands, command);

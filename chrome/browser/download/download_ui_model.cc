@@ -31,10 +31,6 @@
 #include "chrome/browser/ui/browser.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/note_taking_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using download::DownloadItem;
 using offline_items_collection::FailState;
 using safe_browsing::DownloadFileType;
@@ -576,8 +572,6 @@ bool DownloadUIModel::IsCommandEnabled(
              (IsPaused() || GetState() != download::DownloadItem::IN_PROGRESS);
     case DownloadCommands::COPY_TO_CLIPBOARD:
       return download_commands->CanBeCopiedToClipboard();
-    case DownloadCommands::ANNOTATE:
-      return GetState() == download::DownloadItem::COMPLETE;
     case DownloadCommands::DISCARD:
     case DownloadCommands::KEEP:
     case DownloadCommands::LEARN_MORE_SCANNING:
@@ -612,7 +606,6 @@ bool DownloadUIModel::IsCommandChecked(
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
     case DownloadCommands::COPY_TO_CLIPBOARD:
-    case DownloadCommands::ANNOTATE:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       return false;
@@ -662,14 +655,6 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
       break;
     case DownloadCommands::COPY_TO_CLIPBOARD:
       download_commands->CopyFileAsImageToClipboard();
-      break;
-    case DownloadCommands::ANNOTATE:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      if (HasSupportedImageMimeType()) {
-        ash::NoteTakingHelper::Get()->LaunchAppForNewNote(profile(),
-                                                          GetTargetFilePath());
-      }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       break;
     case DownloadCommands::DEEP_SCAN:
       break;

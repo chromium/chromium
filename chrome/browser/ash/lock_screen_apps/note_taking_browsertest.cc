@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenNoteTakingTest, LaunchInNonLockScreenContext) {
   action_data->action_type =
       extensions::api::app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
   apps::LaunchPlatformAppWithAction(profile(), app.get(),
-                                    std::move(action_data), base::FilePath());
+                                    std::move(action_data));
 
   ASSERT_TRUE(result_catcher()->GetNextResult()) << result_catcher()->message();
 }

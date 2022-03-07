@@ -22,7 +22,7 @@ bool NoteTakingControllerClient::CanCreateNote() {
 }
 
 void NoteTakingControllerClient::CreateNote() {
-  helper_->LaunchAppForNewNote(profile_, base::FilePath());
+  helper_->LaunchAppForNewNote(profile_);
 }
 
 void NoteTakingControllerClient::ActiveUserChanged(

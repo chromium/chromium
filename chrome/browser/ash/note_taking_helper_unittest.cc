@@ -22,7 +22,6 @@
 #include "ash/public/cpp/note_taking_client.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -30,8 +29,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/note_taking_controller_client.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -115,15 +112,6 @@ IntentHandlerInfoPtr CreateIntentHandlerInfo(const std::string& name,
   return handler;
 }
 
-// Converts a filesystem path to an ARC URL.
-std::string GetArcUrl(const base::FilePath& path) {
-  GURL url;
-  bool requires_sharing = false;
-  EXPECT_TRUE(
-      file_manager::util::ConvertPathToArcUrl(path, &url, &requires_sharing));
-  return url.spec();
-}
-
 // Implementation of NoteTakingHelper::Observer for testing.
 class TestObserver : public NoteTakingHelper::Observer {
  public:
@@ -201,7 +189,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   // Information about a Chrome app passed to LaunchChromeApp().
   struct ChromeAppLaunchInfo {
     extensions::ExtensionId id;
-    base::FilePath path;
   };
 
   // Options that can be passed to Init().
@@ -462,12 +449,11 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   // Callback registered with the helper to record Chrome app launch requests.
   void LaunchChromeApp(content::BrowserContext* passed_context,
                        const extensions::Extension* extension,
-                       std::unique_ptr<app_runtime::ActionData> action_data,
-                       const base::FilePath& path) {
+                       std::unique_ptr<app_runtime::ActionData> action_data) {
     EXPECT_EQ(profile(), passed_context);
     EXPECT_EQ(app_runtime::ActionType::ACTION_TYPE_NEW_NOTE,
               action_data->action_type);
-    launched_chrome_apps_.push_back(ChromeAppLaunchInfo{extension->id(), path});
+    launched_chrome_apps_.push_back(ChromeAppLaunchInfo{extension->id()});
   }
 
   // Has Init() been called?
@@ -812,12 +798,10 @@ TEST_F(NoteTakingHelperTest, LaunchChromeApp) {
 
   // Check the Chrome app is launched with the correct parameters.
   HistogramTester histogram_tester;
-  const base::FilePath kPath("/foo/bar/photo.jpg");
-  helper()->LaunchAppForNewNote(profile(), kPath);
+  helper()->LaunchAppForNewNote(profile());
   ASSERT_EQ(1u, launched_chrome_apps_.size());
   EXPECT_EQ(NoteTakingHelper::kProdKeepExtensionId,
             launched_chrome_apps_[0].id);
-  EXPECT_EQ(kPath, launched_chrome_apps_[0].path);
 
   histogram_tester.ExpectUniqueSample(
       NoteTakingHelper::kPreferredLaunchResultHistogramName,
@@ -913,7 +897,7 @@ TEST_F(NoteTakingHelperTest, FallBackIfPreferredAppUnavailable) {
   // Set the prod app as preferred and check that it's launched.
   std::unique_ptr<HistogramTester> histogram_tester(new HistogramTester());
   helper()->SetPreferredApp(profile(), NoteTakingHelper::kProdKeepExtensionId);
-  helper()->LaunchAppForNewNote(profile(), base::FilePath());
+  helper()->LaunchAppForNewNote(profile());
   ASSERT_EQ(1u, launched_chrome_apps_.size());
   ASSERT_EQ(NoteTakingHelper::kProdKeepExtensionId,
             launched_chrome_apps_[0].id);
@@ -928,7 +912,7 @@ TEST_F(NoteTakingHelperTest, FallBackIfPreferredAppUnavailable) {
   UninstallExtension(prod_extension.get(), profile());
   launched_chrome_apps_.clear();
   histogram_tester = std::make_unique<HistogramTester>();
-  helper()->LaunchAppForNewNote(profile(), base::FilePath());
+  helper()->LaunchAppForNewNote(profile());
   ASSERT_EQ(1u, launched_chrome_apps_.size());
   EXPECT_EQ(NoteTakingHelper::kDevKeepExtensionId, launched_chrome_apps_[0].id);
 
@@ -943,7 +927,7 @@ TEST_F(NoteTakingHelperTest, FallBackIfPreferredAppUnavailable) {
   UninstallExtension(dev_extension.get(), profile());
   launched_chrome_apps_.clear();
   histogram_tester = std::make_unique<HistogramTester>();
-  helper()->LaunchAppForNewNote(profile(), base::FilePath());
+  helper()->LaunchAppForNewNote(profile());
   // Not a chrome app.
   EXPECT_EQ(0u, launched_chrome_apps_.size());
 
@@ -1072,7 +1056,7 @@ TEST_F(NoteTakingHelperTest, LaunchAndroidApp) {
 
   // The installed app should be launched.
   std::unique_ptr<HistogramTester> histogram_tester(new HistogramTester());
-  helper()->LaunchAppForNewNote(profile(), base::FilePath());
+  helper()->LaunchAppForNewNote(profile());
   ASSERT_EQ(1u, file_system_->handledUrlRequests().size());
   EXPECT_EQ(arc::mojom::ActionType::CREATE_NOTE,
             file_system_->handledUrlRequests().at(0)->action_type);
@@ -1105,7 +1089,7 @@ TEST_F(NoteTakingHelperTest, LaunchAndroidApp) {
   intent_helper_.clear_handled_intents();
   file_system_->clear_handled_requests();
   histogram_tester = std::make_unique<HistogramTester>();
-  helper()->LaunchAppForNewNote(profile(), base::FilePath());
+  helper()->LaunchAppForNewNote(profile());
   ASSERT_EQ(1u, file_system_->handledUrlRequests().size());
   EXPECT_EQ(arc::mojom::ActionType::CREATE_NOTE,
             file_system_->handledUrlRequests().at(0)->action_type);
@@ -1124,91 +1108,13 @@ TEST_F(NoteTakingHelperTest, LaunchAndroidApp) {
       NoteTakingHelper::kDefaultLaunchResultHistogramName, 0);
 }
 
-TEST_F(NoteTakingHelperTest, LaunchAndroidAppWithPath) {
-  disks::DiskMountManager::InitializeForTesting(
-      new file_manager::FakeDiskMountManager);
-
-  ASSERT_TRUE(disks::DiskMountManager::GetInstance()->AddDiskForTest(
-      disks::Disk::Builder()
-          .SetDevicePath("/device/source_path")
-          .SetFileSystemUUID("0123-abcd")
-          .Build()));
-  ASSERT_TRUE(disks::DiskMountManager::GetInstance()->AddMountPointForTest(
-      disks::DiskMountManager::MountPointInfo(
-          "/device/source_path", "/media/removable/UNTITLED",
-          chromeos::MOUNT_TYPE_DEVICE, disks::MOUNT_CONDITION_NONE)));
-
-  const std::string kPackage = "org.chromium.package";
-  std::vector<IntentHandlerInfoPtr> handlers;
-  handlers.emplace_back(CreateIntentHandlerInfo("App", kPackage));
-  intent_helper_.SetIntentHandlers(NoteTakingHelper::kIntentAction,
-                                   std::move(handlers));
-
-  Init(ENABLE_PALETTE | ENABLE_PLAY_STORE);
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(helper()->IsAppAvailable(profile()));
-
-  const base::FilePath kDownloadedPath(
-      file_manager::util::GetDownloadsFolderForProfile(profile()).Append(
-          "image.jpg"));
-  helper()->LaunchAppForNewNote(profile(), kDownloadedPath);
-  ASSERT_EQ(1u, file_system_->handledUrlRequests().size());
-  EXPECT_EQ(arc::mojom::ActionType::CREATE_NOTE,
-            file_system_->handledUrlRequests().at(0)->action_type);
-  EXPECT_EQ(
-      kPackage,
-      file_system_->handledUrlRequests().at(0)->activity_name->package_name);
-  EXPECT_EQ(
-      std::string(),
-      file_system_->handledUrlRequests().at(0)->activity_name->activity_name);
-  ASSERT_EQ(1u, file_system_->handledUrlRequests().at(0)->urls.size());
-  ASSERT_EQ(GetArcUrl(kDownloadedPath),
-            file_system_->handledUrlRequests().at(0)->urls.at(0)->content_url);
-
-  const base::FilePath kRemovablePath =
-      base::FilePath(file_manager::util::kRemovableMediaPath)
-          .Append("UNTITLED/image.jpg");
-  intent_helper_.clear_handled_intents();
-  file_system_->clear_handled_requests();
-  helper()->LaunchAppForNewNote(profile(), kRemovablePath);
-  ASSERT_EQ(1u, file_system_->handledUrlRequests().size());
-  EXPECT_EQ(arc::mojom::ActionType::CREATE_NOTE,
-            file_system_->handledUrlRequests().at(0)->action_type);
-  EXPECT_EQ(
-      kPackage,
-      file_system_->handledUrlRequests().at(0)->activity_name->package_name);
-  EXPECT_EQ(
-      std::string(),
-      file_system_->handledUrlRequests().at(0)->activity_name->activity_name);
-  ASSERT_EQ(1u, file_system_->handledUrlRequests().at(0)->urls.size());
-  ASSERT_EQ(GetArcUrl(kRemovablePath),
-            file_system_->handledUrlRequests().at(0)->urls.at(0)->content_url);
-
-  // When a path that isn't accessible to ARC is passed, the request should be
-  // dropped.
-  HistogramTester histogram_tester;
-  intent_helper_.clear_handled_intents();
-  file_system_->clear_handled_requests();
-  helper()->LaunchAppForNewNote(profile(), base::FilePath("/bad/path.jpg"));
-  EXPECT_TRUE(file_system_->handledUrlRequests().empty());
-
-  histogram_tester.ExpectUniqueSample(
-      NoteTakingHelper::kPreferredLaunchResultHistogramName,
-      static_cast<int>(LaunchResult::NO_APP_SPECIFIED), 1);
-  histogram_tester.ExpectUniqueSample(
-      NoteTakingHelper::kDefaultLaunchResultHistogramName,
-      static_cast<int>(LaunchResult::ANDROID_FAILED_TO_CONVERT_PATH), 1);
-
-  disks::DiskMountManager::Shutdown();
-}
-
 TEST_F(NoteTakingHelperTest, NoAppsAvailable) {
   Init(ENABLE_PALETTE | ENABLE_PLAY_STORE);
 
   // When no note-taking apps are installed, the histograms should just be
   // updated.
   HistogramTester histogram_tester;
-  helper()->LaunchAppForNewNote(profile(), base::FilePath());
+  helper()->LaunchAppForNewNote(profile());
   histogram_tester.ExpectUniqueSample(
       NoteTakingHelper::kPreferredLaunchResultHistogramName,
       static_cast<int>(LaunchResult::NO_APP_SPECIFIED), 1);
