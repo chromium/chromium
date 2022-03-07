@@ -1841,3 +1841,13 @@ fuzzer_test("permissions_policy_fuzzer") {
   dict = "//third_party/blink/renderer/core/permissions_policy/permissions_policy.dict"
   seed_corpus = "//third_party/blink/renderer/core/permissions_policy/permissions_policy_corpus"
 }
+
+fuzzer_test("attribution_source_registration_fuzzer") {
+  sources = [ "frame/attribution_source_registration_fuzzer.cc" ]
+  deps = [
+    ":core",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+  ]
+  dict = "//testing/libfuzzer/fuzzers/dicts/json.dict"
+  seed_corpus = "//third_party/blink/renderer/core/frame/attribution_src/attribution_source_registration_corpus"
+}

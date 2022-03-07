@@ -1,0 +1,1 @@
+{"source_event_id":"5","destination":"https://advertiser.example","priority":"10","expiry":"1000","debug_key":"789","filter_data":{"a":["x"],"b":["y","z"]}}
