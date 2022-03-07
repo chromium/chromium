@@ -3709,18 +3709,17 @@ if (enable_java_templates) {
                              ])
       test_name = invoker.target_name
       test_type = "instrumentation"
-      _apk_target_name = get_label_info(invoker.android_test_apk, "name")
-      apk_target = ":$_apk_target_name"
+      apk_target = invoker.android_test_apk
       test_jar = "$root_build_dir/test.lib.java/" +
                  invoker.android_test_apk_name + ".jar"
       incremental_apk = !(defined(invoker.never_incremental) &&
                           invoker.never_incremental) && incremental_install
 
       public_deps = [
-        ":$_apk_target_name",
+        apk_target,
 
         # Required by test runner to enumerate test list.
-        ":${_apk_target_name}_dist_ijar",
+        "${apk_target}_dist_ijar",
       ]
       if (defined(invoker.apk_under_test)) {
         public_deps += [ invoker.apk_under_test ]
