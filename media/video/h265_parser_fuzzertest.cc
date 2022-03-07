@@ -26,6 +26,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     media::H265SliceHeader shdr;
     media::H265SliceHeader prior_shdr;
     switch (nalu.nal_unit_type) {
+      case media::H265NALU::VPS_NUT:
+        int vps_id;
+        res = parser.ParseVPS(&vps_id);
+        break;
       case media::H265NALU::SPS_NUT:
         int sps_id;
         res = parser.ParseSPS(&sps_id);

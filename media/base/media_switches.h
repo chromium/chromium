@@ -234,8 +234,11 @@ MEDIA_EXPORT extern const base::Feature kUseAlternateVideoDecoderImplementation;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+MEDIA_EXPORT extern const base::Feature kVideoToolboxHEVCDecoding;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 MEDIA_EXPORT extern const base::Feature kMultiPlaneVideoToolboxSharedImages;
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT extern const base::Feature kDelayCopyNV12Textures;

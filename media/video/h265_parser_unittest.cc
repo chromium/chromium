@@ -79,6 +79,11 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
 
       H265SliceHeader shdr;
       switch (nalu.nal_unit_type) {
+        case H265NALU::VPS_NUT:
+          int vps_id;
+          res = parser_.ParseVPS(&vps_id);
+          EXPECT_TRUE(!!parser_.GetVPS(vps_id));
+          break;
         case H265NALU::SPS_NUT:
           int sps_id;
           res = parser_.ParseSPS(&sps_id);
@@ -113,6 +118,34 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
       EXPECT_EQ(res, H265Parser::kOk);
     }
   }
+}
+
+TEST_F(H265ParserTest, VpsParsing) {
+  LoadParserFile("bear.hevc");
+  H265NALU target_nalu;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::VPS_NUT));
+  int vps_id;
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseVPS(&vps_id));
+  const H265VPS* vps = parser_.GetVPS(vps_id);
+  EXPECT_TRUE(!!vps);
+  EXPECT_TRUE(vps->vps_base_layer_internal_flag);
+  EXPECT_TRUE(vps->vps_base_layer_available_flag);
+  EXPECT_EQ(vps->vps_max_layers_minus1, 0);
+  EXPECT_EQ(vps->vps_max_sub_layers_minus1, 0);
+  EXPECT_TRUE(vps->vps_temporal_id_nesting_flag);
+  EXPECT_EQ(vps->profile_tier_level.general_profile_idc, 1);
+  EXPECT_EQ(vps->profile_tier_level.general_level_idc, 60);
+  EXPECT_EQ(vps->vps_max_dec_pic_buffering_minus1[0], 4);
+  EXPECT_EQ(vps->vps_max_num_reorder_pics[0], 2);
+  EXPECT_EQ(vps->vps_max_latency_increase_plus1[0], 0);
+  for (int i = 1; i < kMaxSubLayers; ++i) {
+    EXPECT_EQ(vps->vps_max_dec_pic_buffering_minus1[i], 0);
+    EXPECT_EQ(vps->vps_max_num_reorder_pics[i], 0);
+    EXPECT_EQ(vps->vps_max_latency_increase_plus1[i], 0);
+  }
+  EXPECT_EQ(vps->vps_max_layer_id, 0);
+  EXPECT_EQ(vps->vps_num_layer_sets_minus1, 0);
+  EXPECT_FALSE(vps->vps_timing_info_present_flag);
 }
 
 TEST_F(H265ParserTest, SpsParsing) {
@@ -224,9 +257,12 @@ TEST_F(H265ParserTest, PpsParsing) {
 TEST_F(H265ParserTest, SliceHeaderParsing) {
   LoadParserFile("bear.hevc");
   H265NALU target_nalu;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::VPS_NUT));
+  int vps_id;
+  // We need to parse the VPS/SPS/PPS so the slice header can find them.
+  EXPECT_EQ(H265Parser::kOk, parser_.ParseVPS(&vps_id));
   EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::SPS_NUT));
   int sps_id;
-  // We need to parse the SPS/PPS so the slice header can find them.
   EXPECT_EQ(H265Parser::kOk, parser_.ParseSPS(&sps_id));
   EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H265NALU::PPS_NUT));
   int pps_id;

@@ -26,6 +26,10 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/h264_parser.h"
 #include "media/video/h264_poc.h"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#include "media/video/h265_parser.h"
+#include "media/video/h265_poc.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 #include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
@@ -180,8 +184,8 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // Methods for interacting with VideoToolbox. Run on |decoder_thread_|.
   //
 
-  // Set up VideoToolbox using the current SPS and PPS. Returns true or calls
-  // NotifyError() before returning false.
+  // Set up VideoToolbox using the current VPS (if codec is HEVC), SPS and PPS.
+  // Returns true or calls NotifyError() before returning false.
   bool ConfigureDecoder();
 
   // Wait for VideoToolbox to output all pending frames. Returns true or calls
@@ -189,8 +193,11 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   bool FinishDelayedFrames();
 
   // |frame| is owned by |pending_frames_|.
-  void DecodeTask(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
+  void DecodeTaskH264(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
   void DecodeTaskVp9(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+  void DecodeTaskHEVC(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   void DecodeDone(Frame* frame);
 
   //
@@ -259,7 +266,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
 
   // Frames that have not yet been decoded, keyed by bitstream ID; maintains
   // ownership of Frame objects while they flow through VideoToolbox.
-  std::map<int32_t, std::unique_ptr<Frame>> pending_frames_;
+  base::flat_map<int32_t, std::unique_ptr<Frame>> pending_frames_;
 
   // Set of assigned bitstream IDs, so that Destroy() can release them all.
   std::set<int32_t> assigned_bitstream_ids_;
@@ -270,7 +277,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   std::set<int32_t> assigned_picture_ids_;
 
   // Texture IDs and image buffers of assigned pictures.
-  std::map<int32_t, std::unique_ptr<PictureInfo>> picture_info_map_;
+  base::flat_map<int32_t, std::unique_ptr<PictureInfo>> picture_info_map_;
 
   // Pictures ready to be rendered to.
   std::vector<int32_t> available_picture_ids_;
@@ -281,12 +288,12 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   VTDecompressionOutputCallbackRecord callback_;
   base::ScopedCFTypeRef<CMFormatDescriptionRef> format_;
   base::ScopedCFTypeRef<VTDecompressionSessionRef> session_;
-  H264Parser parser_;
+  H264Parser h264_parser_;
 
   // SPSs and PPSs seen in the bitstream.
-  std::map<int, std::vector<uint8_t>> seen_sps_;
-  std::map<int, std::vector<uint8_t>> seen_spsext_;
-  std::map<int, std::vector<uint8_t>> seen_pps_;
+  base::flat_map<int, std::vector<uint8_t>> seen_sps_;
+  base::flat_map<int, std::vector<uint8_t>> seen_spsext_;
+  base::flat_map<int, std::vector<uint8_t>> seen_pps_;
 
   // SPS and PPS most recently activated by an IDR.
   // TODO(sandersd): Enable configuring with multiple PPSs.
@@ -299,6 +306,20 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   std::vector<uint8_t> configured_spsext_;
   std::vector<uint8_t> configured_pps_;
 
+  H264POC h264_poc_;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+  H265Parser hevc_parser_;
+
+  // VPSs seen in the bitstream.
+  base::flat_map<int, std::vector<uint8_t>> seen_vps_;
+  // VPS most recently activated by an IDR.
+  std::vector<uint8_t> active_vps_;
+  // VPS the decoder is currently confgured with.
+  std::vector<uint8_t> configured_vps_;
+
+  H265POC hevc_poc_;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+
   Config config_;
   VideoCodec codec_;
 
@@ -307,7 +328,10 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
 
   bool waiting_for_idr_ = true;
   bool missing_idr_logged_ = false;
-  H264POC poc_;
+
+  // Used to accumulate the output picture count as a workaround to solve
+  // the VT CRA/RASL bug
+  uint64_t output_count_for_cra_rasl_workaround_ = 0;
 
   // Id number for this instance for memory dumps.
   int memory_dump_id_ = 0;

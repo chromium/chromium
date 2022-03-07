@@ -185,6 +185,10 @@ H265PPS::H265PPS() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
+H265VPS::H265VPS() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
 H265RefPicListsModifications::H265RefPicListsModifications() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
@@ -325,6 +329,74 @@ H265Parser::Result H265Parser::ReadSE(int* val) {
   return kOk;
 }
 
+H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
+  DVLOG(4) << "Parsing VPS";
+  Result res = kOk;
+
+  DCHECK(vps_id);
+  *vps_id = -1;
+
+  std::unique_ptr<H265VPS> vps = std::make_unique<H265VPS>();
+
+  READ_BITS_OR_RETURN(4, &vps->vps_video_parameter_set_id);
+  IN_RANGE_OR_RETURN(vps->vps_video_parameter_set_id, 0, 16);
+  READ_BOOL_OR_RETURN(&vps->vps_base_layer_internal_flag);
+  READ_BOOL_OR_RETURN(&vps->vps_base_layer_available_flag);
+  READ_BITS_OR_RETURN(6, &vps->vps_max_layers_minus1);
+  IN_RANGE_OR_RETURN(vps->vps_max_layers_minus1, 0, 62);
+  READ_BITS_OR_RETURN(3, &vps->vps_max_sub_layers_minus1);
+  IN_RANGE_OR_RETURN(vps->vps_max_sub_layers_minus1, 0, 7);
+  READ_BOOL_OR_RETURN(&vps->vps_temporal_id_nesting_flag);
+  SKIP_BITS_OR_RETURN(16);  // vps_reserved_0xffff_16bits
+  res = ParseProfileTierLevel(true, vps->vps_max_sub_layers_minus1,
+                              &vps->profile_tier_level);
+  if (res != kOk) {
+    return res;
+  }
+
+  bool vps_sub_layer_ordering_info_present_flag;
+  READ_BOOL_OR_RETURN(&vps_sub_layer_ordering_info_present_flag);
+
+  for (int i = vps_sub_layer_ordering_info_present_flag
+                   ? 0
+                   : vps->vps_max_sub_layers_minus1;
+       i <= vps->vps_max_sub_layers_minus1; ++i) {
+    READ_UE_OR_RETURN(&vps->vps_max_dec_pic_buffering_minus1[i]);
+    IN_RANGE_OR_RETURN(vps->vps_max_dec_pic_buffering_minus1[i], 0, 15);
+    READ_UE_OR_RETURN(&vps->vps_max_num_reorder_pics[i]);
+    IN_RANGE_OR_RETURN(vps->vps_max_num_reorder_pics[i], 0,
+                       vps->vps_max_dec_pic_buffering_minus1[i]);
+    if (i > 0) {
+      TRUE_OR_RETURN(vps->vps_max_dec_pic_buffering_minus1[i] >=
+                     vps->vps_max_dec_pic_buffering_minus1[i - 1]);
+      TRUE_OR_RETURN(vps->vps_max_num_reorder_pics[i] >=
+                     vps->vps_max_num_reorder_pics[i - 1]);
+    }
+    READ_UE_OR_RETURN(&vps->vps_max_latency_increase_plus1[i]);
+  }
+  if (!vps_sub_layer_ordering_info_present_flag) {
+    for (int i = 0; i < vps->vps_max_sub_layers_minus1; ++i) {
+      vps->vps_max_dec_pic_buffering_minus1[i] =
+          vps->vps_max_dec_pic_buffering_minus1[vps->vps_max_sub_layers_minus1];
+      vps->vps_max_num_reorder_pics[i] =
+          vps->vps_max_num_reorder_pics[vps->vps_max_sub_layers_minus1];
+      vps->vps_max_latency_increase_plus1[i] =
+          vps->vps_max_latency_increase_plus1[vps->vps_max_sub_layers_minus1];
+    }
+  }
+
+  READ_BITS_OR_RETURN(6, &vps->vps_max_layer_id);
+  IN_RANGE_OR_RETURN(vps->vps_max_layer_id, 0, 62);
+  READ_UE_OR_RETURN(&vps->vps_num_layer_sets_minus1);
+  IN_RANGE_OR_RETURN(vps->vps_num_layer_sets_minus1, 0, 1023);
+
+  // If an VPS with the same id already exists, replace it.
+  *vps_id = vps->vps_video_parameter_set_id;
+  active_vps_[*vps_id] = std::move(vps);
+
+  return res;
+}
+
 H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   // 7.4.3.2
   DVLOG(4) << "Parsing SPS";
@@ -334,7 +406,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   *sps_id = -1;
 
   std::unique_ptr<H265SPS> sps = std::make_unique<H265SPS>();
-  SKIP_BITS_OR_RETURN(4);  // sps_video_parameter_set_id
+  READ_BITS_OR_RETURN(4, &sps->sps_video_parameter_set_id);
+  IN_RANGE_OR_RETURN(sps->sps_video_parameter_set_id, 0, 15);
   READ_BITS_OR_RETURN(3, &sps->sps_max_sub_layers_minus1);
   IN_RANGE_OR_RETURN(sps->sps_max_sub_layers_minus1, 0, 6);
   SKIP_BITS_OR_RETURN(1);  // sps_temporal_id_nesting_flag
@@ -771,6 +844,16 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
   active_pps_[*pps_id] = std::move(pps);
 
   return res;
+}
+
+const H265VPS* H265Parser::GetVPS(int vps_id) const {
+  auto it = active_vps_.find(vps_id);
+  if (it == active_vps_.end()) {
+    DVLOG(1) << "Requested a nonexistent VPS id " << vps_id;
+    return nullptr;
+  }
+
+  return it->second.get();
 }
 
 const H265SPS* H265Parser::GetSPS(int sps_id) const {

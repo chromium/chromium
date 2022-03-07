@@ -57,6 +57,8 @@ source_set("video") {
       sources += [
         "h265_parser.cc",
         "h265_parser.h",
+        "h265_poc.cc",
+        "h265_poc.h",
       ]
     }
   }
