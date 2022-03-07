@@ -54,6 +54,7 @@
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/can_commit_status.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/compute_pressure/compute_pressure_manager.h"
@@ -7580,6 +7581,72 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   return CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL;
 }
 
+bool RenderFrameHostImpl::CanSubframeCommitOriginAndUrl(
+    NavigationRequest* navigation_request) {
+  DCHECK(navigation_request);
+  DCHECK(!is_main_frame());
+
+  const int nav_entry_id = navigation_request->nav_entry_id();
+  // No validation of the main frame's origin is needed if the subframe
+  // navigation doesn't target a different existing NavigationEntry. In such
+  // cases, it's unlikely the wrong main frame origin could be displayed
+  // afterward.
+  if (nav_entry_id == 0)
+    return true;
+
+  const int last_nav_entry_index =
+      frame_tree_node_->navigator().controller().GetLastCommittedEntryIndex();
+  const int dest_nav_entry_index =
+      frame_tree_node_->navigator().controller().GetEntryIndexWithUniqueID(
+          nav_entry_id);
+  if (dest_nav_entry_index <= 0 || dest_nav_entry_index == last_nav_entry_index)
+    return true;
+
+  NavigationEntryImpl* dest_nav_entry =
+      frame_tree_node_->navigator().controller().GetEntryAtIndex(
+          dest_nav_entry_index);
+  auto dest_main_frame_fne = dest_nav_entry->root_node()->frame_entry;
+
+  // A subframe navigation should never lead to a NavigationEntry that looks
+  // like a cross-document navigation in the main frame, since cross-document
+  // navigations destroy all subframes.
+  int64_t dest_main_frame_dsn = dest_main_frame_fne->document_sequence_number();
+  int64_t actual_main_frame_dsn = frame_tree_node_->navigator()
+                                      .controller()
+                                      .GetLastCommittedEntry()
+                                      ->root_node()
+                                      ->frame_entry->document_sequence_number();
+  if (dest_main_frame_dsn != actual_main_frame_dsn)
+    return false;
+
+  // At this point in request handling RenderFrameHostImpl may not have enough
+  // information to derive an accurate value for what would be the new main
+  // frame origin if this request gets committed. One case this can happen is
+  // a NavigtionEntry from a restored session. To make the best of this
+  // situation, skip validation of main frame origin and assume it will be valid
+  // by assigning a known good value - i.e. the current main frame origin - then
+  // continue so at least CanCommitOriginAndUrl can perform its checks using
+  // dest_top_url.
+  url::Origin dest_top_origin =
+      dest_main_frame_fne->committed_origin().value_or(
+          GetMainFrame()->GetLastCommittedOrigin());
+
+  const GURL& dest_top_url = dest_nav_entry->GetURL();
+
+  // Assume the change in main frame FrameNavigationEntry won't affect whether
+  // the main frame is showing a PDF or a sandboxed document, since we don't
+  // track that in FrameNavigationEntry.
+  const bool is_top_pdf =
+      GetMainFrame()->GetSiteInstance()->GetSiteInfo().is_pdf();
+  const bool is_top_sandboxed =
+      GetMainFrame()->GetSiteInstance()->GetSiteInfo().is_sandboxed();
+
+  return GetMainFrame()->CanCommitOriginAndUrl(
+             dest_top_origin, dest_top_url,
+             true /* is_same_document_navigation */, is_top_pdf,
+             is_top_sandboxed) == CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL;
+}
+
 void RenderFrameHostImpl::Stop() {
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::Stop", "render_frame_host",
                this);
@@ -10473,6 +10540,17 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
         frame_tree_node_->render_manager()->current_frame_host()->GetProcess(),
         bad_message::NC_SAME_DOCUMENT_POST_COMMIT_ERROR);
     return false;
+  }
+
+  // Check(s) specific to sub-frame navigation.
+  if (navigation_request && !is_main_frame()) {
+    if (!CanSubframeCommitOriginAndUrl(navigation_request)) {
+      // TODO(crbug.com/1303184): Prefer to terminate a renderer process if
+      // it makes invalid requests, so switch DumpWithoutCrashing to
+      // ReportBadMessage if this looks stable.
+      base::debug::DumpWithoutCrashing();
+      return false;
+    }
   }
 
   return true;

@@ -2786,6 +2786,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                         bool is_pdf,
                                         bool is_sandboxed);
 
+  // Returns whether a subframe navigation request should be allowed to commit
+  // to the current RenderFrameHost.
+  bool CanSubframeCommitOriginAndUrl(NavigationRequest* navigation_request);
+
   // Asserts that the given RenderFrameHostImpl is part of the same browser
   // context (and crashes if not), then returns whether the given frame is
   // part of the same site instance.
