@@ -292,11 +292,12 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   // QuicTestPacketMaker::MakeNewConnectionIdPacket instead.
   void MaybeMakeNewConnectionIdAvailableToSession(
       const quic::QuicConnectionId& new_cid,
-      quic::QuicSession* session) {
+      quic::QuicSession* session,
+      uint64_t sequence_number = 1u) {
     if (version_.HasIetfQuicFrames()) {
       quic::QuicNewConnectionIdFrame new_cid_frame;
       new_cid_frame.connection_id = new_cid;
-      new_cid_frame.sequence_number = 1u;
+      new_cid_frame.sequence_number = sequence_number;
       new_cid_frame.retire_prior_to = 0u;
       new_cid_frame.stateless_reset_token =
           quic::QuicUtils::GenerateStatelessResetToken(
@@ -5387,7 +5388,11 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
 }
 
 // Regression test for https://crbug.com/1014092.
-TEST_P(QuicStreamFactoryTest, DISABLED_MultiplePortMigrationsExceedsMaxLimit) {
+TEST_P(QuicStreamFactoryTest,
+       MultiplePortMigrationsExceedsMaxLimit_gQUICStyle) {
+  if (version_.HasIetfQuicFrames()) {
+    return;
+  }
   quic_params_->allow_port_migration = true;
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
@@ -5404,10 +5409,6 @@ TEST_P(QuicStreamFactoryTest, DISABLED_MultiplePortMigrationsExceedsMaxLimit) {
   int packet_number = 1;
   MockQuicData quic_data1(version_);
   quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
-  if (VersionUsesHttp3(version_.transport_version)) {
-    quic_data1.AddWrite(SYNCHRONOUS,
-                        ConstructInitialSettingsPacket(packet_number++));
-  }
   quic_data1.AddWrite(
       SYNCHRONOUS,
       ConstructGetRequestPacket(packet_number++,
@@ -5533,7 +5534,189 @@ TEST_P(QuicStreamFactoryTest, DISABLED_MultiplePortMigrationsExceedsMaxLimit) {
     EXPECT_EQ(1u, session->GetNumActiveStreams());
 
     if (i < 4) {
-      // There's a pending task to complete migration to the new pot.
+      // There's a pending task to complete migration to the new port.
+      task_runner->RunUntilIdle();
+    } else {
+      // Last attempt to migrate will abort due to hitting the limit of max
+      // number of allowed migrations.
+      task_runner->FastForwardUntilNoTasksRemain();
+    }
+
+    EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+    // The last round of migration will abort upon reading the probing response.
+    // Future reads in the same socket is ignored.
+    EXPECT_EQ(i != 4, quic_data2.AllReadDataConsumed());
+  }
+
+  // Verify that the session is still alive.
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+
+  stream.reset();
+  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
+}
+
+TEST_P(QuicStreamFactoryTest,
+       MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
+  if (!version_.HasIetfQuicFrames()) {
+    return;
+  }
+  SetIetfConnectionMigrationFlagsAndConnectionOptions();
+  quic_params_->allow_port_migration = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  int packet_number = 1;
+  MockQuicData quic_data1(version_);
+  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  quic_data1.AddWrite(SYNCHRONOUS,
+                      ConstructInitialSettingsPacket(packet_number++));
+  quic_data1.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(packet_number++,
+                                GetNthClientInitiatedBidirectionalStreamId(0),
+                                true, true));
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+                true /* use_dns_aliases */,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = url_;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
+                                         net_log_, CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  int server_packet_num = 1;
+  // Perform 4 round of successful migration, and the 5th round will
+  // cancel after successful probing due to hitting the limit.
+  for (int i = 0; i <= 4; i++) {
+    // Set up a different socket data provider that is used for
+    // probing and migration.
+    MockQuicData quic_data2(version_);
+    // Connectivity probe to be sent on the new path.
+    uint64_t new_cid = 12345678;
+    quic::QuicConnectionId cid_on_new_path =
+        quic::test::TestConnectionId(new_cid + i);
+    if (FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2) {
+      client_maker_.set_connection_id(cid_on_new_path);
+      MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session,
+                                                 i + 1);
+    }
+    quic_data2.AddWrite(SYNCHRONOUS,
+                        client_maker_.MakeConnectivityProbingPacket(
+                            packet_number, packet_number == 2));
+    packet_number++;
+    quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+    // Connectivity probe to receive from the server.
+    quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(
+                                  server_packet_num++, false));
+    if (i == 0) {
+      // Retire old connection id and send ping packet after migration is
+      // completed.
+      quic_data2.AddWrite(SYNCHRONOUS,
+                          client_maker_.MakeRetireConnectionIdPacket(
+                              packet_number++, /*include_version=*/false,
+                              /*sequence_number=*/0u));
+      quic_data2.AddWrite(
+          SYNCHRONOUS, client_maker_.MakePingPacket(packet_number++,
+                                                    /*include_version=*/false));
+    } else if (i != 4) {
+      quic_data2.AddWrite(SYNCHRONOUS,
+                          client_maker_.MakeAckAndRetireConnectionIdPacket(
+                              packet_number++, false, 1 + 2 * i, 1 + 2 * i, i));
+      quic_data2.AddWrite(
+          SYNCHRONOUS, client_maker_.MakePingPacket(packet_number++,
+                                                    /*include_version=*/false));
+    }
+
+    if (i == 4) {
+      // Add one more synchronous read on the last probing reader. The
+      // reader should be deleted on the read before this one.
+      // The test will verify this read is not consumed.
+      quic_data2.AddRead(SYNCHRONOUS,
+                         server_maker_.MakeConnectivityProbingPacket(
+                             server_packet_num++, false));
+    } else {
+      quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(
+                                    server_packet_num++, false));
+    }
+
+    if (i == 3) {
+      // On the last allowed port migration, read one more packet so
+      // that ACK is sent. The next round of migration (which hits the limit)
+      // will not send any proactive ACK when reading the successful probing
+      // response.
+      quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(
+                                    server_packet_num++, false));
+      quic_data2.AddWrite(SYNCHRONOUS,
+                          client_maker_.MakeAckPacket(packet_number++, 9, 9));
+    }
+    quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // EOF.
+    quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+    EXPECT_EQ(0u,
+              QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+
+    // Cause the connection to report path degrading to the session.
+    // Session will start to probe a different port.
+    session->connection()->OnPathDegradingDetected();
+
+    EXPECT_EQ(1u,
+              QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+
+    // The retry mechanism is internal to path validator.
+    EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
+
+    // The connection should still be alive, and not marked as going away.
+    EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+    EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+    EXPECT_EQ(1u, session->GetNumActiveStreams());
+
+    // Resume quic data and a connectivity probe response will be read on the
+    // new socket.
+    quic_data2.Resume();
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+    EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+    EXPECT_EQ(1u, session->GetNumActiveStreams());
+
+    if (i < 4) {
+      // There's a pending task to complete migration to the new port.
       task_runner->RunUntilIdle();
     } else {
       // Last attempt to migrate will abort due to hitting the limit of max
