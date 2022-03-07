@@ -427,9 +427,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //     below.
   //
   //     In practice this means that the frame is guaranteed to be hosted in a
-  //     process that is isolated to the frame's origin. The process may also
-  //     host cross-origin frames and workers only if they have opted in to
-  //     being embedded by asserting CORS or CORP headers.
+  //     process that is isolated to the frame's origin. Additionally, the
+  //     frame may embed cross-origin frames and workers only if they have
+  //     opted in to being embedded by asserting CORS or CORP headers.
   //
   // 3.  The frame may be an "isolated application", corresponding to a mostly
   //     TBD set of restrictions we're exploring in https://crbug.com/1206150,
