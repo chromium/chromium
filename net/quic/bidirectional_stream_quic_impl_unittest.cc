@@ -825,8 +825,8 @@ class BidirectionalStreamQuicImplTest
     if (!version_.UsesHttp3()) {
       return "";
     }
-    quic::QuicBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
-        body_len, quic::SimpleBufferAllocator::Get());
+    quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
+        body_len, quiche::SimpleBufferAllocator::Get());
     return std::string(buffer.data(), buffer.size());
   }
 

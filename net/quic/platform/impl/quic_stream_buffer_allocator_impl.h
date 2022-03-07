@@ -5,11 +5,11 @@
 #ifndef NET_QUIC_PLATFORM_IMPL_QUIC_STREAM_BUFFER_ALLOCATOR_IMPL_H_
 #define NET_QUIC_PLATFORM_IMPL_QUIC_STREAM_BUFFER_ALLOCATOR_IMPL_H_
 
-#include "net/third_party/quiche/src/quic/core/quic_simple_buffer_allocator.h"
+#include "net/third_party/quiche/src/common/simple_buffer_allocator.h"
 
 namespace quic {
 
-using QuicStreamBufferAllocatorImpl = SimpleBufferAllocator;
+using QuicStreamBufferAllocatorImpl = quiche::SimpleBufferAllocator;
 
 }  // namespace quic
 

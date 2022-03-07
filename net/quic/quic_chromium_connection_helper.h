@@ -12,9 +12,9 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/socket/datagram_client_socket.h"
+#include "net/third_party/quiche/src/common/simple_buffer_allocator.h"
 #include "net/third_party/quiche/src/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_simple_buffer_allocator.h"
 #include "net/third_party/quiche/src/quic/core/quic_time.h"
 
 namespace quic {
@@ -39,7 +39,7 @@ class NET_EXPORT_PRIVATE QuicChromiumConnectionHelper
   // quic::QuicConnectionHelperInterface
   const quic::QuicClock* GetClock() const override;
   quic::QuicRandom* GetRandomGenerator() override;
-  quic::QuicBufferAllocator* GetStreamSendBufferAllocator() override;
+  quiche::QuicheBufferAllocator* GetStreamSendBufferAllocator() override;
 
  private:
   raw_ptr<const quic::QuicClock> clock_;

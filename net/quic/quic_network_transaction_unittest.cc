@@ -215,8 +215,8 @@ std::string ConstructDataFrameForVersion(base::StringPiece body,
   if (!version.HasIetfQuicFrames()) {
     return std::string(body);
   }
-  quic::QuicBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
-      body.size(), quic::SimpleBufferAllocator::Get());
+  quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
+      body.size(), quiche::SimpleBufferAllocator::Get());
   return base::StrCat({base::StringPiece(buffer.data(), buffer.size()), body});
 }
 

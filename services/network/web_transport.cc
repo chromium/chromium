@@ -407,7 +407,8 @@ void WebTransport::SendDatagram(base::span<const uint8_t> data,
 
   datagram_callbacks_.emplace(std::move(callback));
 
-  quic::QuicBuffer buffer(quic::SimpleBufferAllocator::Get(), data.size());
+  quiche::QuicheBuffer buffer(quiche::SimpleBufferAllocator::Get(),
+                              data.size());
   memcpy(buffer.data(), data.data(), data.size());
   quiche::QuicheMemSlice slice(std::move(buffer));
   transport_->session()->SendOrQueueDatagram(std::move(slice));

@@ -2026,10 +2026,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   // Write data to session.
   QuicChromiumClientStream* stream =
       QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get());
-  struct iovec iov[1];
-  iov[0].iov_base = data;
-  iov[0].iov_len = 4;
-  quic::test::QuicStreamPeer::SendBuffer(stream).SaveStreamData(iov, 1, 0, 4);
+  quic::test::QuicStreamPeer::SendBuffer(stream).SaveStreamData(data);
   quic::test::QuicStreamPeer::SetStreamBytesWritten(4, stream);
   session_->WritevData(stream->id(), 4, 0, quic::NO_FIN,
                        quic::NOT_RETRANSMISSION,

@@ -8,8 +8,8 @@
 namespace net {
 
 namespace {
-quic::QuicBufferAllocator* GetBufferAllocator() {
-  static base::NoDestructor<quic::SimpleBufferAllocator> allocator;
+quiche::QuicheBufferAllocator* GetBufferAllocator() {
+  static base::NoDestructor<quiche::SimpleBufferAllocator> allocator;
   return &*allocator;
 }
 }  // namespace
@@ -29,7 +29,7 @@ quic::QuicRandom* QuicChromiumConnectionHelper::GetRandomGenerator() {
   return random_generator_;
 }
 
-quic::QuicBufferAllocator*
+quiche::QuicheBufferAllocator*
 QuicChromiumConnectionHelper::GetStreamSendBufferAllocator() {
   return GetBufferAllocator();
 }

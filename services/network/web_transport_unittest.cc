@@ -58,7 +58,7 @@ class TestConnectionHelper : public quic::QuicConnectionHelperInterface {
   quic::QuicRandom* GetRandomGenerator() override {
     return quic::QuicRandom::GetInstance();
   }
-  quic::QuicBufferAllocator* GetStreamSendBufferAllocator() override {
+  quiche::QuicheBufferAllocator* GetStreamSendBufferAllocator() override {
     return &allocator_;
   }
 
@@ -66,7 +66,7 @@ class TestConnectionHelper : public quic::QuicConnectionHelperInterface {
 
  private:
   TestWallClock clock_;
-  quic::SimpleBufferAllocator allocator_;
+  quiche::SimpleBufferAllocator allocator_;
 };
 
 mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
