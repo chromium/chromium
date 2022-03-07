@@ -45,6 +45,13 @@ enum class LayoutTransitionState {
   Finishing,
 };
 
+// Defines which scrolling view is being tracked.
+enum class ScrollViewTracking {
+  None,
+  Gesture,
+  WebView,
+  NTP,
+};
 }  // namespace
 
 @interface ViewRevealingPanGestureRecognizer ()
@@ -115,6 +122,9 @@ enum class LayoutTransitionState {
 // gestures received while one is active will be ignored.
 @property(nonatomic, weak) UIGestureRecognizer* currentRecognizer;
 
+// Defines which scrolling view is being tracked to avoid crossing signals.
+@property(nonatomic, assign) ScrollViewTracking scrollViewTracking;
+
 @end
 
 @implementation ViewRevealingVerticalPanHandler
@@ -132,6 +142,7 @@ enum class LayoutTransitionState {
     _currentState = initialState;
     _animatees = [NSHashTable weakObjectsHashTable];
     _layoutTransitionState = LayoutTransitionState::Inactive;
+    _scrollViewTracking = ScrollViewTracking::None;
   }
   return self;
 }
@@ -145,6 +156,7 @@ enum class LayoutTransitionState {
   if (!self.gesturesEnabled)
     return;
   self.currentRecognizer = gesture;
+  self.scrollViewTracking = ScrollViewTracking::Gesture;
   CGFloat translationY = [gesture translationInView:gesture.view.superview].y;
 
   if ([gesture isKindOfClass:ViewRevealingPanGestureRecognizer.class]) {
@@ -583,15 +595,21 @@ enum class LayoutTransitionState {
   }
 }
 
-#pragma mark - UIScrollViewDelegate
+#pragma mark - UIScrollViewDelegate (NTP)
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
   PanHandlerScrollView* view =
       [[PanHandlerScrollView alloc] initWithScrollView:scrollView];
+  self.scrollViewTracking = ScrollViewTracking::NTP;
+  [self webViewIsDragging:YES viewRevealState:self.currentState];
   [self panHandlerScrollViewWillBeginDragging:view];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  if (self.scrollViewTracking != ScrollViewTracking::NTP) {
+    return;
+  }
+
   PanHandlerScrollView* view =
       [[PanHandlerScrollView alloc] initWithScrollView:scrollView];
   [self panHandlerScrollViewDidScroll:view];
@@ -600,6 +618,10 @@ enum class LayoutTransitionState {
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint*)targetContentOffset {
+  if (self.scrollViewTracking != ScrollViewTracking::NTP) {
+    return;
+  }
+
   PanHandlerScrollView* view =
       [[PanHandlerScrollView alloc] initWithScrollView:scrollView];
   [self panHandlerScrollViewWillEndDragging:view
@@ -612,18 +634,29 @@ enum class LayoutTransitionState {
   // No-op.
 }
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
+  if (self.scrollViewTracking != ScrollViewTracking::NTP) {
+    return;
+  }
+  [self webViewIsDragging:NO viewRevealState:self.currentState];
+}
+
 #pragma mark - CRWWebViewScrollViewProxyObserver
 
 - (void)webViewScrollViewWillBeginDragging:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   PanHandlerScrollView* view = [[PanHandlerScrollView alloc]
       initWithWebViewScrollViewProxy:webViewScrollViewProxy];
+  self.scrollViewTracking = ScrollViewTracking::WebView;
   [self webViewIsDragging:YES viewRevealState:self.currentState];
   [self panHandlerScrollViewWillBeginDragging:view];
 }
 
 - (void)webViewScrollViewDidScroll:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  if (self.scrollViewTracking != ScrollViewTracking::WebView) {
+    return;
+  }
   PanHandlerScrollView* view = [[PanHandlerScrollView alloc]
       initWithWebViewScrollViewProxy:webViewScrollViewProxy];
   [self panHandlerScrollViewDidScroll:view];
@@ -633,15 +666,26 @@ enum class LayoutTransitionState {
             (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
                             withVelocity:(CGPoint)velocity
                      targetContentOffset:(inout CGPoint*)targetContentOffset {
+  if (self.scrollViewTracking != ScrollViewTracking::WebView) {
+    return;
+  }
+
   PanHandlerScrollView* view = [[PanHandlerScrollView alloc]
       initWithWebViewScrollViewProxy:webViewScrollViewProxy];
   [self panHandlerScrollViewWillEndDragging:view
                                withVelocity:velocity
                         targetContentOffset:targetContentOffset];
+
+  if (!self.deferredScrollEnabled) {
+    self.scrollViewTracking = ScrollViewTracking::None;
+  }
 }
 
 - (void)webViewScrollViewDidEndDecelerating:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  if (self.scrollViewTracking != ScrollViewTracking::WebView) {
+    return;
+  }
   [self webViewIsDragging:NO viewRevealState:self.currentState];
 }
 

@@ -508,6 +508,7 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
   // TODO(crbug.com/1114792): Handle scrolling.
+  [self.panGestureHandler scrollViewDidEndDecelerating:scrollView];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
