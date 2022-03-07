@@ -21,10 +21,10 @@ class WPTManifestUnitTest(unittest.TestCase):
         WPTManifest.ensure_manifest(port)
         self.assertTrue(host.filesystem.exists(manifest_path))
         self.assertEqual(host.filesystem.written_files,
-                         {manifest_path: '{"manifest": "base"}'})
+                         {manifest_path: b'{"manifest": "base"}'})
 
         self.assertEqual(host.executive.calls, [[
-            'python3',
+            port.python3_command(),
             '/mock-checkout/third_party/wpt_tools/wpt/wpt',
             'manifest',
             '-v',
@@ -45,10 +45,10 @@ class WPTManifestUnitTest(unittest.TestCase):
         WPTManifest.ensure_manifest(port)
         self.assertTrue(host.filesystem.exists(manifest_path))
         self.assertEqual(host.filesystem.written_files,
-                         {manifest_path: '{"manifest": "base"}'})
+                         {manifest_path: b'{"manifest": "base"}'})
 
         self.assertEqual(host.executive.calls, [[
-            'python3',
+            port.python3_command(),
             '/mock-checkout/third_party/wpt_tools/wpt/wpt',
             'manifest',
             '-v',
@@ -70,7 +70,7 @@ class WPTManifestUnitTest(unittest.TestCase):
         port = TestPort(host)
         WPTManifest.ensure_manifest(port, 'wpt_internal')
         self.assertEqual(host.executive.calls, [[
-            'python3',
+            port.python3_command(),
             '/mock-checkout/third_party/wpt_tools/wpt/wpt',
             'manifest',
             '-v',

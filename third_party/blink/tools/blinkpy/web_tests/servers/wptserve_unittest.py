@@ -4,6 +4,7 @@
 
 import json
 import logging
+import six
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.log_testing import LoggingTestCase
@@ -24,8 +25,8 @@ class TestWPTServe(LoggingTestCase):
 
     def test_init_start_cmd_without_ws_handlers(self):
         server = WPTServe(self.port, '/foo')
-        self.assertEqual(server._start_cmd, [
-            'python3',
+        expected_start_cmd = [
+            self.port.python3_command(),
             '-u',
             '/mock-checkout/third_party/wpt_tools/wpt/wpt',
             'serve',
@@ -33,14 +34,18 @@ class TestWPTServe(LoggingTestCase):
             server._config_file,
             '--doc_root',
             '/test.checkout/wtests/external/wpt',
-        ])
+        ]
+        if six.PY3:
+            expected_start_cmd.append('--webtransport-h3')
+
+        self.assertEqual(server._start_cmd, expected_start_cmd)
 
     def test_init_start_cmd_with_ws_handlers(self):
         self.host.filesystem.maybe_make_directory(
             '/test.checkout/wtests/external/wpt/websockets/handlers')
         server = WPTServe(self.port, '/foo')
-        self.assertEqual(server._start_cmd, [
-            'python3',
+        expected_start_cmd = [
+            self.port.python3_command(),
             '-u',
             '/mock-checkout/third_party/wpt_tools/wpt/wpt',
             'serve',
@@ -50,7 +55,11 @@ class TestWPTServe(LoggingTestCase):
             '/test.checkout/wtests/external/wpt',
             '--ws_doc_root',
             '/test.checkout/wtests/external/wpt/websockets/handlers',
-        ])
+        ]
+        if six.PY3:
+            expected_start_cmd.append('--webtransport-h3')
+
+        self.assertEqual(server._start_cmd, expected_start_cmd)
 
     def test_init_env(self):
         server = WPTServe(self.port, '/foo')
@@ -65,7 +74,7 @@ class TestWPTServe(LoggingTestCase):
         server = WPTServe(self.port, '/foo')
         server._prepare_config()
         config = json.loads(
-            self.port._filesystem.read_text_file(server._config_file))
+            self.port._filesystem.files[server._config_file])
         self.assertEqual(len(config['aliases']), 1)
         self.assertDictEqual(config['aliases'][0], {
             'url-path': '/gen/',
@@ -88,9 +97,9 @@ class TestWPTServe(LoggingTestCase):
         server.start()
         # PID file should be overwritten (MockProcess.pid == 42)
         self.assertEqual(server._pid, 42)
-        self.assertEqual(self.host.filesystem.files[server._pid_file], '42')
+        self.assertEqual(self.host.filesystem.files[server._pid_file], b'42')
         # Config file should exist.
-        json.loads(self.port._filesystem.read_text_file(server._config_file))
+        json.loads(self.port._filesystem.files[server._config_file])
 
         logs = self.logMessages()
         self.assertEqual(len(logs), 4)
@@ -120,7 +129,7 @@ class TestWPTServe(LoggingTestCase):
 
         server.start()
         self.assertEqual(server._pid, 42)
-        self.assertEqual(self.host.filesystem.files[server._pid_file], '42')
+        self.assertEqual(self.host.filesystem.files[server._pid_file], b'42')
 
         # In this case, we'll try to kill the process repeatedly,
         # then give up and just try to start a new process anyway.

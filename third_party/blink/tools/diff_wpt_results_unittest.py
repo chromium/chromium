@@ -27,7 +27,13 @@ import copy
 import io
 import logging
 import json
+import six
 import unittest
+
+if six.PY3:
+    from io import StringIO as DataIO
+else:
+    from io import BytesIO as DataIO
 
 from blinkpy.common.host import Host
 from blinkpy.common.host_mock import MockHost
@@ -82,56 +88,56 @@ class JsonResultsCompressTest(unittest.TestCase):
 class CreateCsvTest(unittest.TestCase):
     def test_name_with_comma_escaped_in_csv(self):
         actual_mp = {'test, name.html': {'actual': 'PASS'}}
-        with io.BytesIO() as csv_out:
+        with DataIO() as csv_out:
             MockWPTResultsDiffer(actual_mp, actual_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
             heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
             self.assertEquals(content, heading +
                               ('"test, name.html",PASS,PASS,'
-                               'SAME RESULTS,"{FAIL, TIMEOUT, PASS}",'
+                               'SAME RESULTS,"{FAIL, PASS, TIMEOUT}",'
                                '"{CRASH, PASS}",Yes\n'))
 
     def test_create_csv_with_same_result(self):
         actual_mp = {'test.html': {'actual': 'PASS'}}
-        with io.BytesIO() as csv_out:
+        with DataIO() as csv_out:
             MockWPTResultsDiffer(actual_mp, actual_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
             heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
             self.assertEquals(content, heading +
                               ('test.html,PASS,PASS,SAME RESULTS,'
-                               '"{FAIL, TIMEOUT, PASS}","{CRASH, PASS}",Yes\n'))
+                               '"{FAIL, PASS, TIMEOUT}","{CRASH, PASS}",Yes\n'))
 
     def test_create_csv_with_reliable_different_result(self):
         actual_mp = {'test.html': {'actual': 'PASS'}}
         baseline_mp = copy.deepcopy(actual_mp)
         baseline_mp['test.html']['actual'] = 'FAIL'
-        with io.BytesIO() as csv_out:
+        with DataIO() as csv_out:
             MockWPTResultsDiffer(actual_mp, baseline_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
             heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
             self.assertEquals(content, heading +
                               ('test.html,PASS,FAIL,DIFFERENT RESULTS,'
-                               '"{FAIL, TIMEOUT, PASS}","{FAIL, CRASH}",No\n'))
+                               '"{FAIL, PASS, TIMEOUT}","{CRASH, FAIL}",No\n'))
 
     def test_create_csv_with_unreliable_different_result(self):
         actual_mp = {'test.html': {'actual': 'CRASH'}}
         baseline_mp = copy.deepcopy(actual_mp)
         baseline_mp['test.html']['actual'] = 'FAIL'
-        with io.BytesIO() as csv_out:
+        with DataIO() as csv_out:
             MockWPTResultsDiffer(actual_mp, baseline_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
             heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
             self.assertEquals(content, heading +
                               ('test.html,CRASH,FAIL,DIFFERENT RESULTS,'
-                               '"{FAIL, CRASH, TIMEOUT}","{FAIL, CRASH}",Yes\n'))
+                               '"{CRASH, FAIL, TIMEOUT}","{CRASH, FAIL}",Yes\n'))
 
     def test_create_csv_with_missing_result(self):
         actual_mp = {'test.html': {'actual': 'PASS'}}
-        with io.BytesIO() as csv_out:
+        with DataIO() as csv_out:
             MockWPTResultsDiffer(actual_mp, {}, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
@@ -159,14 +165,26 @@ class CreateCsvTest(unittest.TestCase):
             else:
                 return '{"number": 400, "id":"abcd"}'
 
+        def byteify(data):
+            if six.PY3:
+                return data
+            if isinstance(data, dict):
+                return {byteify(key): byteify(value) for key, value in data.iteritems()}
+            elif isinstance(data, list):
+                return [byteify(element) for element in data]
+            elif isinstance(data, unicode):
+                return data.encode('utf-8')
+            else:
+                return data
+
         host.executive = MockExecutive(run_command_fn=process_cmds)
 
-        with io.StringIO() as csv_out,                                                 \
+        with DataIO() as csv_out,                                                 \
                 _get_product_test_results(host, 'android_weblayer') as test_results,   \
                 _get_product_test_results(host, 'chrome_android') as baseline_results:
 
-            actual_results_json = json.loads(test_results.read())
-            baseline_results_json = json.loads(baseline_results.read())
+            actual_results_json = byteify(json.loads(test_results.read()))
+            baseline_results_json = byteify(json.loads(baseline_results.read()))
 
             tests_to_actual_results = {}
             tests_to_baseline_results = {}
@@ -183,7 +201,7 @@ class CreateCsvTest(unittest.TestCase):
             heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
             self.assertEquals(content, heading +
                               ('test.html,PASS,FAIL,DIFFERENT RESULTS,'
-                               '"{FAIL, TIMEOUT, PASS}","{FAIL, CRASH}",No\n'))
+                               '"{FAIL, PASS, TIMEOUT}","{CRASH, FAIL}",No\n'))
 
 if __name__ == '__main__':
     logging.basicConfig()

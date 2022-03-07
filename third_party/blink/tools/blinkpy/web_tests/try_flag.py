@@ -5,6 +5,7 @@
 
 For more information, see: http://bit.ly/flag-try-jobs
 """
+from __future__ import print_function
 
 import argparse
 import sys
@@ -140,7 +141,7 @@ class TryFlag(object):
         elif action == 'update':
             self.update()
         else:
-            print >> self._host.stderr, 'specify "trigger" or "update"'
+            print('specify "trigger" or "update"', file=self._host.stderr)
             return 1
         return 0
 

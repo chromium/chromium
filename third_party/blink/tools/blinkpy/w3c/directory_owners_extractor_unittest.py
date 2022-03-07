@@ -23,7 +23,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
         self.host = MockHost()
         self.host.filesystem = MockFileSystem(files={
             MOCK_WEB_TESTS + 'external/OWNERS':
-            'ecosystem-infra@chromium.org'
+            b'ecosystem-infra@chromium.org'
         })
         self.extractor = DirectoryOwnersExtractor(self.host)
 
@@ -163,14 +163,14 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
     def test_extract_owners(self):
         self.host.filesystem.files = {
             ABS_WPT_BASE + '/foo/OWNERS':
-            '#This is a comment\n'
-            '*\n'
-            'foo@chromium.org\n'
-            'bar@chromium.org\n'
-            'foobar\n'
-            '#foobar@chromium.org\n'
-            '# TEAM: some-team@chromium.org\n'
-            '# COMPONENT: Blink>Layout\n'
+            b'#This is a comment\n'
+            b'*\n'
+            b'foo@chromium.org\n'
+            b'bar@chromium.org\n'
+            b'foobar\n'
+            b'#foobar@chromium.org\n'
+            b'# TEAM: some-team@chromium.org\n'
+            b'# COMPONENT: Blink>Layout\n'
         }
         self.assertEqual(
             self.extractor.extract_owners(ABS_WPT_BASE + '/foo/OWNERS'),

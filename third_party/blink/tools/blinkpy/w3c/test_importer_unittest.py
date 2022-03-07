@@ -5,6 +5,7 @@
 from __future__ import print_function
 
 import json
+import six
 import unittest
 
 from blinkpy.common.checkout.git_mock import MockGit
@@ -37,6 +38,8 @@ class TestImporterTest(LoggingTestCase):
 
     def mock_host(self):
         host = MockHost()
+        port = host.port_factory.get()
+        MANIFEST_INSTALL_CMD[0] = port.python3_command()
         for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
             host.filesystem.write_text_file(path, '')
         host.filesystem.write_text_file(ANDROID_DISABLED_TESTS, '')
@@ -468,10 +471,16 @@ class TestImporterTest(LoggingTestCase):
         host = self.mock_host()
         importer = self._get_test_importer(host)
         self.assertEqual(SHERIFF_EMAIL_FALLBACK, importer.sheriff_email())
-        self.assertLog([
-            'ERROR: Exception while fetching current sheriff: '
-            'No JSON object could be decoded\n'
-        ])
+        if six.PY3:
+            self.assertLog([
+                'ERROR: Exception while fetching current sheriff: '
+                'Expecting value: line 1 column 1 (char 0)\n'
+            ])
+        else:
+            self.assertLog([
+                'ERROR: Exception while fetching current sheriff: '
+                'No JSON object could be decoded\n'
+            ])
 
     def test_sheriff_email_no_emails_field(self):
         host = self.mock_host()

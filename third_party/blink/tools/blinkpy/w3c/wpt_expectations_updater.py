@@ -316,7 +316,7 @@ class WPTExpectationsUpdater(object):
 
                 statuses = union_actual_sameos or union_actual_all
                 union_result = SimpleTestResult(expected="",
-                                                actual=" ".join(statuses),
+                                                actual=" ".join(sorted(statuses)),
                                                 bug=self.UMBRELLA_BUG)
                 _log.debug("Inheriting result for test %s on config %s. "
                            "Same-os? %s Result: %s." %
@@ -626,7 +626,7 @@ class WPTExpectationsUpdater(object):
                 if next_item == keys[-1]:
                     if found_match:
                         merged_dict[
-                            tuple(matching_value_keys)] = dictionary[current_key]
+                            tuple(sorted(matching_value_keys))] = dictionary[current_key]
                         keys = [
                             k for k in keys if k not in matching_value_keys
                         ]
