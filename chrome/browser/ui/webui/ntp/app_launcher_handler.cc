@@ -180,6 +180,10 @@ AppLauncherHandler::AppLauncherHandler(
 AppLauncherHandler::~AppLauncherHandler() {
   Profile* webui_profile = Profile::FromWebUI(web_ui());
   ExtensionRegistry::Get(webui_profile)->RemoveObserver(this);
+  // Destroy `extension_uninstall_dialog_` now, since `this` is an
+  // `ExtensionUninstallDialog::Delegate` and the dialog may call back into
+  // `this` when destroyed.
+  extension_uninstall_dialog_.reset();
 }
 
 void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
