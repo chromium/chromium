@@ -4864,11 +4864,22 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
        ProjectorSessionNeverStartsWhenVideoRecordingIsOnGoing) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
+  EXPECT_CALL(
+      projector_client_,
+      OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
+          NewScreencastPreconditionState::kDisabled,
+          {NewScreencastPreconditionReason::kScreenRecordingInProgress})));
   controller->StartVideoRecordingImmediatelyForTesting();
+
   EXPECT_TRUE(controller->is_recording_in_progress());
   EXPECT_FALSE(ProjectorSession::Get()->is_active());
   EXPECT_NE(ProjectorController::Get()->GetNewScreencastPrecondition().state,
             NewScreencastPreconditionState::kEnabled);
+  // There is another OnNewScreencastPreconditionChanged() call during tear
+  // down.
+  EXPECT_CALL(projector_client_,
+              OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
+                  NewScreencastPreconditionState::kEnabled, {})));
 }
 
 namespace {

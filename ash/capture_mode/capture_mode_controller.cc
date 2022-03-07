@@ -27,6 +27,7 @@
 #include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -1403,6 +1404,9 @@ void CaptureModeController::BeginVideoRecording(
   DCHECK(GetCaptureParams());
   DCHECK(!video_file_path.empty());
   DCHECK(video_file_path.MatchesExtension(".webm"));
+
+  base::AutoReset<bool> initializing_resetter(&is_initializing_recording_,
+                                              true);
 
   // Do not trigger an alert when exiting the session, since we end the session
   // to start recording.

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "base/files/scoped_temp_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -93,8 +93,9 @@ class ASH_EXPORT CaptureModeController
   gfx::Rect user_capture_region() const { return user_capture_region_; }
   bool enable_audio_recording() const { return enable_audio_recording_; }
   bool is_recording_in_progress() const {
-    return video_recording_watcher_ &&
-           !video_recording_watcher_->is_shutting_down();
+    return is_initializing_recording_ ||
+           (video_recording_watcher_ &&
+            !video_recording_watcher_->is_shutting_down());
   }
 
   // Returns true if a capture mode session is currently active. If you only
@@ -546,6 +547,9 @@ class ASH_EXPORT CaptureModeController
   // has passed since the last time the user changes the capture region when the
   // new capture session starts .
   base::TimeTicks last_capture_region_update_time_;
+
+  // True in the scope of BeginVideoRecording().
+  bool is_initializing_recording_ = false;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };
