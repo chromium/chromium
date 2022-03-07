@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -252,8 +252,8 @@ def _GeneratePerFileLineByLineCoverageInFormat(binary_paths, profdata_file_path,
   logging.debug('Finished running "llvm-cov show" command.')
 
 
-def _GeneratePerFileLineByLineCoverageInLcov(binary_paths, profdata_file_path, filters,
-                                             ignore_filename_regex):
+def _GeneratePerFileLineByLineCoverageInLcov(binary_paths, profdata_file_path,
+                                             filters, ignore_filename_regex):
   """Generates per file line-by-line coverage using "llvm-cov export".
 
   Args:
