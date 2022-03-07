@@ -91,6 +91,10 @@ void LayerTitleCache::UpdateFavicon(JNIEnv* env,
 void LayerTitleCache::ClearExcept(JNIEnv* env,
                                   const JavaParamRef<jobject>& obj,
                                   jint except_id) {
+  if (except_id == -1) {
+    layer_cache_.Clear();
+    return;
+  }
   base::IDMap<std::unique_ptr<DecorationTitle>>::iterator iter(&layer_cache_);
   for (; !iter.IsAtEnd(); iter.Advance()) {
     const int id = iter.GetCurrentKey();
