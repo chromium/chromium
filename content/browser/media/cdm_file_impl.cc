@@ -869,11 +869,6 @@ void CdmFileImpl::DeleteUsingMediaLicenseStorageDelegate() {
   DCHECK(write_callback_);
   DCHECK(host_);
 
-  if (!host_) {
-    std::move(write_callback_).Run(Status::kFailure);
-    return;
-  }
-
   host_->DeleteFile(
       cdm_type_, file_name_,
       base::BindOnce(&CdmFileImpl::DidDeleteUsingMediaLicenseStorageDelegate,
