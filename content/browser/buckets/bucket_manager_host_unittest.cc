@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -33,13 +34,20 @@ constexpr char kTestUrl[] = "https://www.google.com";
 
 class BucketManagerHostTest : public testing::Test {
  public:
+  BucketManagerHostTest()
+      : special_storage_policy_(
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {}
+  ~BucketManagerHostTest() override = default;
+
+  BucketManagerHostTest(const BucketManagerHostTest&) = delete;
+  BucketManagerHostTest& operator=(const BucketManagerHostTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
 
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*is_incognito=*/false, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(),
-        /*special storage policy=*/nullptr);
+        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
         quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
     bucket_manager_ =
@@ -51,9 +59,9 @@ class BucketManagerHostTest : public testing::Test {
     EXPECT_TRUE(bucket_manager_host_remote_.is_bound());
   }
 
-  ~BucketManagerHostTest() override = default;
-
  protected:
+  scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
+
   base::ScopedTempDir data_dir_;
 
   // These tests need a full TaskEnvironment because it uses the thread pool for

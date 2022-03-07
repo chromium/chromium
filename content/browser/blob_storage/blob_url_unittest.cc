@@ -47,6 +47,7 @@
 #include "storage/browser/test/mock_blob_registry_delegate.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -82,8 +83,10 @@ const storage::FileSystemType kFileSystemType =
 class BlobURLTest : public testing::Test {
  public:
   BlobURLTest()
-      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
-        blob_data_(new BlobDataBuilder("uuid")),
+      : special_storage_policy_(
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
+        task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
+        blob_data_(std::make_unique<BlobDataBuilder>("uuid")),
         response_error_code_(net::OK),
         expected_error_code_(net::OK),
         expected_status_code_(0) {}
@@ -114,10 +117,9 @@ class BlobURLTest : public testing::Test {
   void SetUpFileSystem() {
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*is_incognito=*/false, temp_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(),
-        /*special_storage_policy=*/nullptr);
+        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
     // Prepare file system.
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         quota_manager_proxy_.get(), temp_dir_.GetPath());
@@ -321,6 +323,7 @@ class BlobURLTest : public testing::Test {
     return blob_context_.AsWeakPtr();
   }
 
+  scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
   base::ScopedTempDir temp_dir_;
   base::FilePath temp_file1_;
   base::FilePath temp_file2_;

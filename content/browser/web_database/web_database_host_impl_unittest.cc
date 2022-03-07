@@ -33,6 +33,7 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "storage/common/database/database_identifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +53,9 @@ std::u16string ConstructVfsFileName(const url::Origin& origin,
 
 class WebDatabaseHostImplTest : public ::testing::Test {
  public:
-  WebDatabaseHostImplTest() = default;
+  WebDatabaseHostImplTest()
+      : special_storage_policy_(
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {}
   WebDatabaseHostImplTest(const WebDatabaseHostImplTest&) = delete;
   WebDatabaseHostImplTest& operator=(const WebDatabaseHostImplTest&) = delete;
   ~WebDatabaseHostImplTest() override = default;
@@ -64,8 +67,7 @@ class WebDatabaseHostImplTest : public ::testing::Test {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*is_incognito=*/false, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(),
-        /*special_storage_policy=*/nullptr);
+        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
         quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
 
@@ -146,8 +148,11 @@ class WebDatabaseHostImplTest : public ::testing::Test {
   }
 
  private:
+  scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
+
   base::ScopedTempDir data_dir_;
   BrowserTaskEnvironment task_environment_;
+
   TestBrowserContext browser_context_;
   std::unique_ptr<MockRenderProcessHost> render_process_host_;
   scoped_refptr<storage::DatabaseTracker> db_tracker_;

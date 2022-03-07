@@ -27,6 +27,7 @@
 #include "storage/browser/test/mock_blob_util.h"
 #include "storage/browser/test/mock_file_change_observer.h"
 #include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -51,7 +52,10 @@ void AssertStatusEq(base::File::Error expected, base::File::Error actual) {
 class FileSystemOperationImplWriteTest : public testing::Test {
  public:
   FileSystemOperationImplWriteTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+      : special_storage_policy_(
+            base::MakeRefCounted<MockSpecialStoragePolicy>()),
+        task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+        virtual_path_(FILE_PATH_LITERAL("temporary file")),
         status_(base::File::FILE_OK),
         cancel_status_(base::File::FILE_ERROR_FAILED),
         bytes_written_(0),
@@ -65,16 +69,14 @@ class FileSystemOperationImplWriteTest : public testing::Test {
       const FileSystemOperationImplWriteTest&) = delete;
 
   void SetUp() override {
-    ASSERT_TRUE(dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
 
     quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
-        /* is_incognito= */ false, dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(),
-        /* special storage policy= */ nullptr);
-    virtual_path_ = base::FilePath(FILE_PATH_LITERAL("temporary file"));
+        /* is_incognito= */ false, data_dir_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
 
     file_system_context_ = CreateFileSystemContextForTesting(
-        quota_manager_->proxy(), dir_.GetPath());
+        quota_manager_->proxy(), data_dir_.GetPath());
     blob_storage_context_ = std::make_unique<BlobStorageContext>();
 
     file_system_context_->operation_runner()->CreateFile(
@@ -147,13 +149,15 @@ class FileSystemOperationImplWriteTest : public testing::Test {
     return blob_storage_context_.get();
   }
 
+  scoped_refptr<MockSpecialStoragePolicy> special_storage_policy_;
+
+  base::ScopedTempDir data_dir_;
   base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<MockQuotaManager> quota_manager_;
 
-  base::ScopedTempDir dir_;
-  base::FilePath virtual_path_;
+  const base::FilePath virtual_path_;
 
   // For post-operation status.
   base::File::Error status_;

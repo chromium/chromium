@@ -28,6 +28,7 @@
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -57,7 +58,10 @@ const StorageType kPersistent = StorageType::kPersistent;
 
 class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
  public:
-  FileSystemQuotaClientTest() = default;
+  FileSystemQuotaClientTest()
+      : special_storage_policy_(
+            base::MakeRefCounted<MockSpecialStoragePolicy>()),
+        task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
   ~FileSystemQuotaClientTest() override = default;
 
   void SetUp() override {
@@ -72,8 +76,7 @@ class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
 
     quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
         /*is_incognito_=*/false, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(),
-        /*special_storage_policy=*/nullptr);
+        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
         quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
 
@@ -91,7 +94,6 @@ class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
     FileSystemType type;
   };
 
- protected:
   storage::FileSystemContext* GetFileSystemContext() {
     return file_system_context_.get();
   }
@@ -256,9 +258,13 @@ class FileSystemQuotaClientTest : public testing::TestWithParam<bool> {
     ++additional_callback_count_;
   }
 
+ protected:
+  scoped_refptr<MockSpecialStoragePolicy> special_storage_policy_;
+
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir data_dir_;
   base::test::TaskEnvironment task_environment_;
+
   scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;

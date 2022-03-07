@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "net/base/io_buffer.h"
@@ -41,17 +42,18 @@ const char kURLOrigin[] = "http://remote/";
 
 class SandboxFileStreamReaderTest : public FileStreamReaderTest {
  public:
-  SandboxFileStreamReaderTest() = default;
+  SandboxFileStreamReaderTest()
+      : special_storage_policy_(
+            base::MakeRefCounted<MockSpecialStoragePolicy>()) {}
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*is_incognito=*/false, dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(),
-        /*special_storage_policy=*/nullptr);
+        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
 
     file_system_context_ = CreateFileSystemContextForTesting(
         quota_manager_proxy_.get(), dir_.GetPath());
@@ -114,8 +116,9 @@ class SandboxFileStreamReaderTest : public FileStreamReaderTest {
         kFileSystemTypeTemporary, base::FilePath().AppendASCII(file_name));
   }
 
- private:
-  base::ScopedTempDir dir_;
+ protected:
+  scoped_refptr<MockSpecialStoragePolicy> special_storage_policy_;
+
   scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<MockQuotaManager> quota_manager_;
   scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;

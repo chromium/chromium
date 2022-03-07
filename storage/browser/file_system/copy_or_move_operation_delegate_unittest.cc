@@ -38,6 +38,7 @@
 #include "storage/browser/test/file_system_test_file_set.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_mount_option.h"
@@ -49,9 +50,9 @@
 
 namespace storage {
 
-using FileEntryList = FileSystemOperation::FileEntryList;
-
 namespace {
+
+using FileEntryList = FileSystemOperation::FileEntryList;
 
 constexpr int64_t kDefaultFileSize = 10;
 
@@ -183,6 +184,8 @@ class CopyOrMoveOperationTestHelper {
       : origin_(url::Origin::Create(GURL(origin))),
         src_type_(src_type),
         dest_type_(dest_type),
+        special_storage_policy_(
+            base::MakeRefCounted<MockSpecialStoragePolicy>()),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   CopyOrMoveOperationTestHelper(const CopyOrMoveOperationTestHelper&) = delete;
@@ -205,13 +208,12 @@ class CopyOrMoveOperationTestHelper {
     ASSERT_TRUE(base_.CreateUniqueTempDir());
     base::FilePath base_dir = base_.GetPath();
     quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
-        false /* is_incognito */, base_dir,
-        base::ThreadTaskRunnerHandle::Get().get(),
-        nullptr /* special storage policy */);
+        false /* is_incognito */, base_dir, base::ThreadTaskRunnerHandle::Get(),
+        special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<MockQuotaManagerProxy>(
         quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
     file_system_context_ =
-        CreateFileSystemContextForTesting(quota_manager_proxy_.get(), base_dir);
+        CreateFileSystemContextForTesting(quota_manager_proxy_, base_dir);
 
     // Prepare the origin's root directory.
     FileSystemBackend* backend =
@@ -397,13 +399,15 @@ class CopyOrMoveOperationTestHelper {
   }
 
  private:
-  base::ScopedTempDir base_;
-
   const url::Origin origin_;
   const FileSystemType src_type_;
   const FileSystemType dest_type_;
 
+  scoped_refptr<MockSpecialStoragePolicy> special_storage_policy_;
+
+  base::ScopedTempDir base_;
   base::test::TaskEnvironment task_environment_;
+
   scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<MockQuotaManager> quota_manager_;

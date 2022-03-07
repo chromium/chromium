@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker_impl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -35,6 +36,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,13 +54,15 @@ static const blink::mojom::StorageType kTemp =
 // Mocks DatabaseTracker methods used by DatabaseQuotaClient.
 class MockDatabaseTracker : public DatabaseTracker {
  public:
-  MockDatabaseTracker(const base::FilePath& path,
-                      bool is_incognito,
-                      scoped_refptr<QuotaManagerProxy> quota_manager_proxy)
+  MockDatabaseTracker(
+      const base::FilePath& path,
+      bool is_incognito,
+      scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+      scoped_refptr<SpecialStoragePolicy> special_storage_policy)
       : DatabaseTracker(path,
                         is_incognito,
-                        /*special_storage_policy=*/nullptr,
-                        quota_manager_proxy,
+                        std::move(special_storage_policy),
+                        std::move(quota_manager_proxy),
                         DatabaseTracker::CreatePassKey()) {}
 
   bool GetOriginInfo(const std::string& origin_identifier,
@@ -143,18 +147,24 @@ class DatabaseQuotaClientTest : public testing::TestWithParam<bool> {
       : kStorageKeyA(
             blink::StorageKey::CreateFromStringForTesting("http://host")),
         kStorageKeyB(
-            blink::StorageKey::CreateFromStringForTesting("http://host:8000")) {
-  }
+            blink::StorageKey::CreateFromStringForTesting("http://host:8000")),
+        special_storage_policy_(
+            base::MakeRefCounted<MockSpecialStoragePolicy>()) {}
+  ~DatabaseQuotaClientTest() override = default;
+
+  DatabaseQuotaClientTest(const DatabaseQuotaClientTest&) = delete;
+  DatabaseQuotaClientTest& operator=(const DatabaseQuotaClientTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     quota_manager_ = base::MakeRefCounted<QuotaManager>(
         /*is_incognito_=*/false, data_dir_.GetPath(),
         base::ThreadTaskRunnerHandle::Get(),
-        /*quota_change_callback=*/base::DoNothing(),
-        /*special_storage_policy=*/nullptr, GetQuotaSettingsFunc());
+        /*quota_change_callback=*/base::DoNothing(), special_storage_policy_,
+        GetQuotaSettingsFunc());
     mock_tracker_ = base::MakeRefCounted<MockDatabaseTracker>(
-        data_dir_.GetPath(), is_incognito(), quota_manager_->proxy());
+        data_dir_.GetPath(), is_incognito(), quota_manager_->proxy(),
+        special_storage_policy_);
   }
 
   void TearDown() override {
@@ -211,7 +221,10 @@ class DatabaseQuotaClientTest : public testing::TestWithParam<bool> {
     return delete_future.Get();
   }
 
+  scoped_refptr<MockSpecialStoragePolicy> special_storage_policy_;
+
   base::ScopedTempDir data_dir_;
+
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockDatabaseTracker> mock_tracker_;
   scoped_refptr<QuotaManager> quota_manager_;

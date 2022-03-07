@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -17,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -29,6 +31,11 @@ const char kGoogleStorageKey[] = "https://google.com";
 
 class CacheStorageContextTest : public testing::Test {
  public:
+  CacheStorageContextTest()
+      : special_storage_policy_(
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {}
+  ~CacheStorageContextTest() override = default;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
@@ -62,6 +69,8 @@ class CacheStorageContextTest : public testing::Test {
   storage::QuotaManagerProxy* quota_manager_proxy() {
     return quota_manager_proxy_.get();
   }
+
+  scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
 
   base::ScopedTempDir data_dir_;
 

@@ -52,7 +52,10 @@ class FileStreamReaderTest : public testing::Test {
 
   static void NeverCalled(int unused) { ADD_FAILURE(); }
 
- private:
+ protected:
+  // Must be listed before base::test::TaskEnvironment.
+  base::ScopedTempDir dir_;
+
   // FileSystemContext queries QuotaDatabase, and even with MockQuotaManager
   // (which really fakes parts of QuotaManagerImpl), a thread pool is created
   // that requires TaskEnvironment.

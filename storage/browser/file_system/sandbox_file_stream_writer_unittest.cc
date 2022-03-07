@@ -42,16 +42,19 @@ const char kURLOrigin[] = "http://remote/";
 
 class SandboxFileStreamWriterTest : public FileStreamWriterTest {
  public:
-  SandboxFileStreamWriterTest() = default;
+  SandboxFileStreamWriterTest()
+      : special_storage_policy_(
+            base::MakeRefCounted<MockSpecialStoragePolicy>()) {}
+  ~SandboxFileStreamWriterTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         is_incognito(), dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
-        nullptr);
+        special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
 
     file_system_context_ =
         CreateFileSystemContext(quota_manager_proxy_.get(), dir_);
@@ -75,7 +78,8 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
   }
 
  protected:
-  base::ScopedTempDir dir_;
+  scoped_refptr<MockSpecialStoragePolicy> special_storage_policy_;
+
   scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<MockQuotaManager> quota_manager_;
   scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;

@@ -39,7 +39,10 @@ class FileStreamWriterTest : public testing::Test {
 
   static void NeverCalled(int unused) { ADD_FAILURE(); }
 
- private:
+ protected:
+  // Must be listed before base::test::TaskEnvironment.
+  base::ScopedTempDir dir_;
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
 };

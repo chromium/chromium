@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -26,6 +27,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -235,20 +237,24 @@ const char kGoogleStorageKey[] = "https://google.com";
 
 class NativeIOManagerTest : public testing::TestWithParam<bool> {
  public:
+  NativeIOManagerTest()
+      : special_storage_policy_(
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {}
+  ~NativeIOManagerTest() override = default;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*is_incognito=*/false, data_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get().get(),
-        /*special storage policy=*/nullptr);
+        base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
         quota_manager(), base::ThreadTaskRunnerHandle::Get());
-    manager_ = std::make_unique<NativeIOManager>(
-        data_dir_.GetPath(),
+    manager_ = std::make_unique<NativeIOManager>(data_dir_.GetPath(),
 #if BUILDFLAG(IS_MAC)
-        allow_set_length_ipc(),
+                                                 allow_set_length_ipc(),
 #endif  // BUILDFLAG(IS_MAC)
-        /*special storage policy=*/nullptr, quota_manager_proxy());
+                                                 special_storage_policy_,
+                                                 quota_manager_proxy_);
 
     manager_->BindReceiver(
         StorageKey::CreateFromStringForTesting(kExampleStorageKey),
@@ -274,7 +280,6 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
     quota_manager_proxy_ = nullptr;
   }
 
- protected:
   storage::MockQuotaManager* quota_manager() {
     return static_cast<storage::MockQuotaManager*>(quota_manager_.get());
   }
@@ -291,26 +296,9 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
 
   void OnBadMessage(const std::string& reason) { NOTREACHED(); }
 
-  // This must be above NativeIOManager, to ensure that no file is accessed when
-  // the temporary directory is deleted.
-  base::ScopedTempDir data_dir_;
+  bool allow_set_length_ipc() { return GetParam(); }
 
-  // These tests need a full TaskEnvironment because NativeIOHost uses the
-  // thread pool for file I/O.
-  base::test::TaskEnvironment task_environment_;
-
-  // The NativeIOManager is on the heap because it requires the profile path at
-  // construction, and we only know the path during SetUp.
-  std::unique_ptr<NativeIOManager> manager_;
-
-  std::unique_ptr<NativeIOManagerSync> sync_manager_;
-
-  // Hosts for two different storage_keys, used for isolation testing.
-  mojo::Remote<blink::mojom::NativeIOHost> example_host_remote_;
-  mojo::Remote<blink::mojom::NativeIOHost> google_host_remote_;
-  std::unique_ptr<NativeIOHostSync> example_host_;
-  std::unique_ptr<NativeIOHostSync> google_host_;
-
+ protected:
   struct Filename {
     std::string name;
     bool valid;
@@ -330,11 +318,30 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
       {std::string(9999, 'x'), false},
   };
 
-  bool allow_set_length_ipc() { return GetParam(); }
+  scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
 
- private:
+  // This must be above NativeIOManager, to ensure that no file is accessed when
+  // the temporary directory is deleted.
+  base::ScopedTempDir data_dir_;
+
+  // These tests need a full TaskEnvironment because NativeIOHost uses the
+  // thread pool for file I/O.
+  base::test::TaskEnvironment task_environment_;
+
   scoped_refptr<storage::QuotaManager> quota_manager_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
+
+  // The NativeIOManager is on the heap because it requires the profile path at
+  // construction, and we only know the path during SetUp.
+  std::unique_ptr<NativeIOManager> manager_;
+
+  std::unique_ptr<NativeIOManagerSync> sync_manager_;
+
+  // Hosts for two different storage_keys, used for isolation testing.
+  mojo::Remote<blink::mojom::NativeIOHost> example_host_remote_;
+  mojo::Remote<blink::mojom::NativeIOHost> google_host_remote_;
+  std::unique_ptr<NativeIOHostSync> example_host_;
+  std::unique_ptr<NativeIOHostSync> google_host_;
 };
 
 TEST_P(NativeIOManagerTest, DefaultBucketCreatedOnBindReceiver) {
@@ -881,17 +888,16 @@ TEST_P(NativeIOManagerTest, GetStorageKeyUsage_NonexistingStorageKeyUsage) {
 TEST_P(NativeIOManagerTest, IncognitoQuota) {
   auto quota_manager = base::MakeRefCounted<storage::MockQuotaManager>(
       /*is_incognito=*/true, base::FilePath(),
-      base::ThreadTaskRunnerHandle::Get().get(),
-      /*special storage policy=*/nullptr);
+      base::ThreadTaskRunnerHandle::Get().get(), special_storage_policy_);
   auto quota_manager_proxy =
       base::MakeRefCounted<storage::MockQuotaManagerProxy>(
           quota_manager.get(), base::ThreadTaskRunnerHandle::Get());
-  auto manager = std::make_unique<NativeIOManager>(
-      base::FilePath(),
+  auto manager = std::make_unique<NativeIOManager>(base::FilePath(),
 #if BUILDFLAG(IS_MAC)
-      allow_set_length_ipc(),
+                                                   allow_set_length_ipc(),
 #endif  // BUILDFLAG(IS_MAC)
-      /*special storage policy=*/nullptr, quota_manager_proxy);
+                                                   special_storage_policy_,
+                                                   quota_manager_proxy);
   auto sync_manager = std::make_unique<NativeIOManagerSync>(manager.get());
 
   EXPECT_THAT(sync_manager->GetStorageKeysForType(
