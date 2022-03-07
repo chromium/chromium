@@ -7627,6 +7627,10 @@ crbug.com/1299946 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margi
 crbug.com/1299948 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
 
+# Temporarily disable this fenced frame test until it is fixed
+crbug.com/1123606 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/maxframes.https.html [ Crash ]
+crbug.com/1123606 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/maxframes.https.html [ Crash ]
+
 # Sheriff 2022-03-01
 crbug.com/1302043 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Pass Timeout ]
 
