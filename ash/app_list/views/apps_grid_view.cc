@@ -1943,12 +1943,26 @@ void AppsGridView::FadeInVisibleItemsForReorder(
             reorder_animation_status_);
   DCHECK(!bounds_animator_->IsAnimating());
 
+  // When `AppsGridView::OnListItemMoved()` is called due to item reorder,
+  // the layout updates asynchronously. Meanwhile, calculating the visible item
+  // range needs the up-to-date layout. Therefore update the layout explicitly
+  // before calculating `range`.
+  if (needs_layout())
+    Layout();
+
   reorder_animation_status_ = AppListReorderAnimationStatus::kFadeInAnimation;
   const absl::optional<VisibleItemIndexRange> range =
       GetVisibleItemIndexRange();
 
   // TODO(https://crbug.com/1289411): handle the case that `range` is null.
   DCHECK(range);
+
+  // Only show the visible items during animation to reduce the cost of painting
+  // that is triggered by view bounds changes due to reorder.
+  for (int visible_view_index = range->first_index;
+       visible_view_index <= range->last_index; ++visible_view_index) {
+    view_model_.view_at(visible_view_index)->SetVisible(true);
+  }
 
   views::AnimationBuilder animation_builder;
   reorder_animation_abort_handle_ = animation_builder.GetAbortHandle();
@@ -2390,6 +2404,10 @@ void AppsGridView::OnListItemMoved(size_t from_index,
   if (!updating_model_ && GetWidget() && GetWidget()->IsVisible() &&
       enable_item_move_animation_) {
     AnimateToIdealBounds();
+  } else if (IsUnderReorderAnimation()) {
+    // During reorder animation, multiple items could be moved subsequently so
+    // use the asynchronous layout to reduce painting cost.
+    InvalidateLayout();
   } else {
     Layout();
   }
@@ -2905,10 +2923,20 @@ void AppsGridView::OnFadeOutAnimationEnded(ReorderAnimationCallback callback,
   // differences.
   layer()->SetTransform(gfx::Transform());
 
-  // If the fade out animation is aborted, show the apps grid because the fade
-  // in animation should not be called when the fade out animation is aborted.
-  if (aborted)
+  if (aborted) {
+    // If the fade out animation is aborted, show the apps grid because the fade
+    // in animation should not be called when the fade out animation is aborted.
     layer()->SetOpacity(1.f);
+  } else {
+    // Hide all item views before the fade in animation in order to reduce the
+    // painting cost incurred by the bounds changes because of reorder. The
+    // fade in animation should be responsible for reshowing the item views that
+    // are within the visible view port after reorder.
+    for (int view_index = 0; view_index < view_model_.view_size();
+         ++view_index) {
+      view_model_.view_at(view_index)->SetVisible(false);
+    }
+  }
 
   // Before starting the fade in animation, the reordered items should be at
   // their final positions instantly.
@@ -2945,6 +2973,11 @@ void AppsGridView::OnFadeInAnimationEnded(ReorderAnimationCallback callback,
   // If the animation is aborted, reset the apps grid's layer.
   if (aborted)
     layer()->SetOpacity(1.f);
+
+  // Ensure that all item views are visible after fade in animation completes.
+  for (int view_index = 0; view_index < view_model_.view_size(); ++view_index) {
+    view_model_.view_at(view_index)->SetVisible(true);
+  }
 
   reorder_animation_status_ = AppListReorderAnimationStatus::kEmpty;
 

@@ -388,10 +388,28 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     expected_reorder_animation_stats_.push_back(target_status);
   }
 
+  // Verifies that all item views are visible.
+  void VerifyItemsVisibility() {
+    auto* view_model =
+        app_list_test_api_.GetTopLevelAppsGridView()->view_model();
+    std::vector<std::string> invisible_item_names;
+    for (int view_index = 0; view_index < view_model->view_size();
+         ++view_index) {
+      auto* item_view = view_model->view_at(view_index);
+      if (!item_view->GetVisible())
+        invisible_item_names.push_back(item_view->item()->name());
+    }
+
+    // Invisible items should be none.
+    EXPECT_EQ(std::vector<std::string>(), invisible_item_names);
+  }
+
   // Waits until the reorder animation completes.
   void WaitForReorderAnimation() {
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
+
+    VerifyItemsVisibility();
   }
 
   // Returns a list of app ids following the ordinal increasing order.
@@ -673,6 +691,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   // Therefore the remaining apps are placed following the alphabetical order.
   EXPECT_TRUE(model_updater->FindItem(app2_id_)->position().GreaterThan(
       model_updater->FindItem(app1_id_)->position()));
+
+  VerifyItemsVisibility();
 }
 
 // Verifies that clicking at the reorder undo toast should revert the temporary
