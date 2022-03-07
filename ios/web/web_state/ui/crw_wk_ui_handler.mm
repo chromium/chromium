@@ -5,6 +5,7 @@
 #import "ios/web/web_state/ui/crw_wk_ui_handler.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/wk_navigation_action_util.h"
 #import "ios/web/navigation/wk_navigation_util.h"
@@ -22,6 +23,23 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Histogram name that logs permission requests.
+const char kPermissionRequestsHistogram[] = "IOS.Permission.Requests";
+
+// Values for UMA permission histograms. These values are based on
+// WKMediaCaptureType and persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class PermissionRequest {
+  RequestCamera = 0,
+  RequestMicrophone = 1,
+  RequestCameraAndMicrophone = 2,
+  kMaxValue = RequestCameraAndMicrophone,
+};
+
+}  // namespace
 
 @interface CRWWKUIHandler () {
   // Backs up property with the same name.
@@ -57,6 +75,29 @@
 }
 
 #pragma mark - WKUIDelegate
+
+- (void)webView:(WKWebView*)webView
+    requestMediaCapturePermissionForOrigin:(WKSecurityOrigin*)origin
+                          initiatedByFrame:(WKFrameInfo*)frame
+                                      type:(WKMediaCaptureType)type
+                           decisionHandler:
+                               (void (^)(WKPermissionDecision decision))
+                                   decisionHandler API_AVAILABLE(ios(15.0)) {
+  PermissionRequest request;
+  switch (type) {
+    case WKMediaCaptureTypeCamera:
+      request = PermissionRequest::RequestCamera;
+      break;
+    case WKMediaCaptureTypeMicrophone:
+      request = PermissionRequest::RequestMicrophone;
+      break;
+    case WKMediaCaptureTypeCameraAndMicrophone:
+      request = PermissionRequest::RequestCameraAndMicrophone;
+      break;
+  }
+  base::UmaHistogramEnumeration(kPermissionRequestsHistogram, request);
+  decisionHandler(WKPermissionDecisionPrompt);
+}
 
 - (WKWebView*)webView:(WKWebView*)webView
     createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
