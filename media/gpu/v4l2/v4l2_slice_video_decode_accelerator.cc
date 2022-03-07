@@ -46,6 +46,7 @@
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264_legacy.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8_legacy.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_chromium.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -271,6 +272,8 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   reqbufs.memory = V4L2_MEMORY_MMAP;
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_REQBUFS, &reqbufs);
   if (reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS) {
+    // Implicitly this is a way to differentiate between old kernels (pre 5.x)
+    // where the request API was not present.
     supports_requests_ = true;
     VLOGF(1) << "Using request API";
   } else {
@@ -309,10 +312,24 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   } else if (video_profile_ >= VP9PROFILE_MIN &&
              video_profile_ <= VP9PROFILE_MAX) {
     if (supports_requests_) {
-      decoder_ = std::make_unique<VP9Decoder>(
-          std::make_unique<V4L2VideoDecoderDelegateVP9Chromium>(this,
-                                                                device_.get()),
-          video_profile_, config.container_color_space);
+      // TODO(mcasas): Remove this ifndef when V4L2_CID_STATELESS_VP9_FRAME is
+      // known in all kernels.
+#ifndef V4L2_CID_STATELESS_VP9_FRAME
+#define V4L2_CID_STATELESS_VP9_FRAME (0x00a40900 + 300)
+#endif
+      const bool supports_stable_api =
+          device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME);
+
+      if (supports_stable_api) {
+        decoder_ = std::make_unique<VP9Decoder>(
+            std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
+            video_profile_, config.container_color_space);
+      } else {
+        decoder_ = std::make_unique<VP9Decoder>(
+            std::make_unique<V4L2VideoDecoderDelegateVP9Chromium>(
+                this, device_.get()),
+            video_profile_, config.container_color_space);
+      }
     } else {
       decoder_ = std::make_unique<VP9Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP9Legacy>(this,
