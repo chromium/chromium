@@ -375,6 +375,13 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     ON_CALL(*client()->GetPasswordFeatureManager(),
             IsOptedInForAccountStorage())
         .WillByDefault(Return(is_enabled));
+    ON_CALL(*client()->GetPasswordFeatureManager(),
+            ComputePasswordAccountStorageUsageLevel)
+        .WillByDefault(
+            Return(is_enabled ? metrics_util::PasswordAccountStorageUsageLevel::
+                                    kUsingAccountStorage
+                              : metrics_util::PasswordAccountStorageUsageLevel::
+                                    kNotUsingAccountStorage));
   }
 
   void SetDefaultPasswordStore(const PasswordForm::Store& store) {
@@ -2015,6 +2022,22 @@ TEST_P(MultiStorePasswordSaveManagerGenerationConflictTest,
       Save(MatchesUsernameAndPassword(parsed_submitted_form_.username_value,
                                       parsed_submitted_form_.password_value),
            _, _));
+
+  password_save_manager_impl()->PresaveGeneratedPassword(
+      parsed_submitted_form_);
+}
+
+// Regression test for https://crbug.com/1275457
+TEST_P(
+    MultiStorePasswordSaveManagerGenerationConflictTest,
+    PresaveGeneratedPasswordInProfileStoreIfUserOptedInToAccountStoreBeforeAndNowSyncing) {
+  ON_CALL(*client()->GetPasswordFeatureManager(),
+          ComputePasswordAccountStorageUsageLevel)
+      .WillByDefault(
+          Return(metrics_util::PasswordAccountStorageUsageLevel::kSyncing));
+
+  EXPECT_CALL(*mock_profile_form_saver(), Save).Times(1);
+  EXPECT_CALL(*mock_account_form_saver(), Save).Times(0);
 
   password_save_manager_impl()->PresaveGeneratedPassword(
       parsed_submitted_form_);

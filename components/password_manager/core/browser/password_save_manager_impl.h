@@ -168,6 +168,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   bool IsOptedInForAccountStorage() const;
   bool AccountStoreIsDefault() const;
+  bool ShouldStoreGeneratedPasswordsInAccountStore() const;
 
   // Handles the user flows related to the generation.
   std::unique_ptr<PasswordGenerationManager> generation_manager_;

@@ -822,7 +822,7 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
 }
 
 FormSaver* PasswordSaveManagerImpl::GetFormSaverForGeneration() {
-  return (account_store_form_saver_ && IsOptedInForAccountStorage())
+  return (ShouldStoreGeneratedPasswordsInAccountStore())
              ? account_store_form_saver_.get()
              : profile_store_form_saver_.get();
 }
@@ -832,7 +832,7 @@ PasswordSaveManagerImpl::GetRelevantMatchesForGeneration(
     const std::vector<const PasswordForm*>& matches) {
   //  For account store users, only matches in the account store should be
   //  considered for conflict resolution during generation.
-  return (account_store_form_saver_ && IsOptedInForAccountStorage())
+  return (ShouldStoreGeneratedPasswordsInAccountStore())
              ? MatchesInStore(matches, PasswordForm::Store::kAccountStore)
              : matches;
 }
@@ -853,6 +853,18 @@ bool PasswordSaveManagerImpl::IsOptedInForAccountStorage() const {
 bool PasswordSaveManagerImpl::AccountStoreIsDefault() const {
   return client_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
          PasswordForm::Store::kAccountStore;
+}
+
+bool PasswordSaveManagerImpl::ShouldStoreGeneratedPasswordsInAccountStore()
+    const {
+  if (account_store_form_saver_ &&
+      client_->GetPasswordFeatureManager()
+              ->ComputePasswordAccountStorageUsageLevel() ==
+          metrics_util::PasswordAccountStorageUsageLevel::
+              kUsingAccountStorage) {
+    return true;
+  }
+  return false;
 }
 
 // static
