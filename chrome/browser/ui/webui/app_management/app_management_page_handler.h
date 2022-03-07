@@ -14,6 +14,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
+#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -79,7 +80,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
                      apps::WindowMode window_mode) override;
   void SetRunOnOsLoginMode(
       const std::string& app_id,
-      apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
+      apps::RunOnOsLoginMode run_on_os_login_mode) override;
   void SetFileHandlingEnabled(const std::string& app_id, bool enabled) override;
 
   // web_app::AppRegistrarObserver:

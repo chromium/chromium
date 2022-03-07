@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_RUN_ON_OS_LOGIN_TYPES_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_RUN_ON_OS_LOGIN_TYPES_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/component_export.h"
@@ -44,12 +45,14 @@ struct COMPONENT_EXPORT(LOGIN_MODE) RunOnOsLogin {
   bool is_managed;
 };
 
+using RunOnOsLoginPtr = std::unique_ptr<RunOnOsLogin>;
+
 COMPONENT_EXPORT(LOGIN_MODE)
 apps::mojom::RunOnOsLoginPtr ConvertRunOnOsLoginToMojomRunOnOsLogin(
     const RunOnOsLogin& run_on_os_login);
 
 COMPONENT_EXPORT(LOGIN_MODE)
-std::unique_ptr<RunOnOsLogin> ConvertMojomRunOnOsLoginToRunOnOsLogin(
+RunOnOsLoginPtr ConvertMojomRunOnOsLoginToRunOnOsLogin(
     const apps::mojom::RunOnOsLoginPtr& run_on_os_login);
 
 COMPONENT_EXPORT(LOGIN_MODE)

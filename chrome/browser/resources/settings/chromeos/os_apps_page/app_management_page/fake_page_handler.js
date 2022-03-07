@@ -309,7 +309,7 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
-   * @param {apps.mojom.RunOnOsLoginMode} runOnOsLoginMode
+   * @param {appManagement.mojom.RunOnOsLoginMode} runOnOsLoginMode
    */
   setRunOnOsLoginMode(appId, runOnOsLoginMode) {
     assertNotReached();

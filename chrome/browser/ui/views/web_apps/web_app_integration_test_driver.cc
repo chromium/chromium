@@ -935,8 +935,8 @@ void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
   EXPECT_EQ(app->id, app_state->id);
   EXPECT_EQ(app->title.value(), app_state->name);
   EXPECT_EQ(app->window_mode, app_state->window_mode);
-  EXPECT_EQ(apps::ConvertMojomRunOnOsLoginModeToRunOnOsLoginMode(
-                app->run_on_os_login->login_mode),
+  ASSERT_TRUE(app->run_on_os_login.has_value());
+  EXPECT_EQ(app->run_on_os_login.value()->login_mode,
             app_state->run_on_os_login_mode);
   AfterStateCheckAction();
 #else
@@ -2080,9 +2080,7 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
   web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
       run_loop.QuitClosure());
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetRunOnOsLoginMode(
-      app_state->id,
-      apps::ConvertRunOnOsLoginModeToMojomRunOnOsLoginMode(login_mode));
+  app_management_page_handler.SetRunOnOsLoginMode(app_state->id, login_mode);
   run_loop.Run();
 #endif
 }

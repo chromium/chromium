@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export {AppType, InstallReason, InstallSource, OptionalBool, WindowMode} from './app_management.mojom-webui.js';
-export {RunOnOsLogin, RunOnOsLoginMode} from './types.mojom-webui.js';
+export {AppType, InstallReason, InstallSource, OptionalBool, RunOnOsLogin, RunOnOsLoginMode, WindowMode} from './app_management.mojom-webui.js';
 
 /**
  * The number of apps displayed in app list in the main view before expanding.

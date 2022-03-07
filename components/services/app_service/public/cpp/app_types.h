@@ -109,6 +109,7 @@ enum class WindowMode {
   kTabbedWindow,
 };
 
+// Information about an app. See components/services/app_service/README.md.
 struct COMPONENT_EXPORT(APP_TYPES) App {
   App(AppType app_type, const std::string& app_id);
 

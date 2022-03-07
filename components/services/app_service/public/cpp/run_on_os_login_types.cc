@@ -31,7 +31,7 @@ apps::mojom::RunOnOsLoginPtr ConvertRunOnOsLoginToMojomRunOnOsLogin(
   return run_on_os_login_mojom;
 }
 
-std::unique_ptr<RunOnOsLogin> ConvertMojomRunOnOsLoginToRunOnOsLogin(
+RunOnOsLoginPtr ConvertMojomRunOnOsLoginToRunOnOsLogin(
     const apps::mojom::RunOnOsLoginPtr& run_on_os_login) {
   DCHECK(run_on_os_login);
   return std::make_unique<RunOnOsLogin>(

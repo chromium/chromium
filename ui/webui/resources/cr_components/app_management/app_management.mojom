@@ -4,7 +4,6 @@
 
 module app_management.mojom;
 
-import "components/services/app_service/public/mojom/types.mojom";
 import "url/mojom/url.mojom";
 
 // The types of apps available in the registry.
@@ -103,6 +102,25 @@ enum WindowMode {
   kTabbedWindow,
 };
 
+// The RunOnOsLoginModes must be kept in sync with RunOnOsLoginMode in
+// chrome/browser/web_applications/web_app_constants.h
+enum RunOnOsLoginMode {
+  kUnknown = 0,
+  // App won't run on OS Login.
+  kNotRun,
+  // App will run in windowed mode on OS Login.
+  kWindowed,
+};
+
+// RunOnOsLoginMode struct to be used to verify if the mode is set by policy
+// or not.
+struct RunOnOsLogin {
+  RunOnOsLoginMode login_mode;
+  // If the run on os login mode is policy
+  // controlled or not.
+  bool is_managed;
+};
+
 struct App {
   string id;
 
@@ -127,7 +145,7 @@ struct App {
   bool resize_locked;
   bool hide_resize_locked;
   array<string> supported_links;
-  apps.mojom.RunOnOsLogin? run_on_os_login;
+  RunOnOsLogin? run_on_os_login;
   FileHandlingState? file_handling_state;
 };
 
@@ -169,8 +187,7 @@ interface PageHandler {
   SetWindowMode(string app_id, WindowMode window_mode);
   // Used to set the Run On OS Login Modes from the frontend
   // of an app via app_management_page_handler.
-  SetRunOnOsLoginMode(string app_id,
-    apps.mojom.RunOnOsLoginMode run_on_os_login_mode);
+  SetRunOnOsLoginMode(string app_id, RunOnOsLoginMode run_on_os_login_mode);
   // Used to set the state of the File Handling API from the frontend inside
   // app_management_page_handler.
   SetFileHandlingEnabled(string app_id, bool enabled);

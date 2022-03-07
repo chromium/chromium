@@ -11,6 +11,8 @@ import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
 // Information about an app. See components/services/app_service/README.md.
+// Mojom App struct is DEPRECATED. When adding new fields, please use the App
+// struct in components/services/app_service/public/cpp/app_types.h.
 struct App {
   AppType app_type;
   string app_id;

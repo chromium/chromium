@@ -314,12 +314,13 @@ void AppManagementPageHandler::SetWindowMode(const std::string& app_id,
 
 void AppManagementPageHandler::SetRunOnOsLoginMode(
     const std::string& app_id,
-    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
+    apps::RunOnOsLoginMode run_on_os_login_mode) {
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetRunOnOsLoginMode(
-      app_id, run_on_os_login_mode);
+      app_id, apps::ConvertRunOnOsLoginModeToMojomRunOnOsLoginMode(
+                  run_on_os_login_mode));
 #endif
 }
 
@@ -401,7 +402,11 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->window_mode =
       apps::ConvertMojomWindowModeToWindowMode(update.WindowMode());
   app->supported_links = GetSupportedLinks(profile_, app->id);
-  app->run_on_os_login = update.RunOnOsLogin();
+  const apps::mojom::RunOnOsLoginPtr& run_on_os_login = update.RunOnOsLogin();
+  if (run_on_os_login) {
+    app->run_on_os_login =
+        apps::ConvertMojomRunOnOsLoginToRunOnOsLogin(run_on_os_login);
+  }
 
 // TODO(crbug/1245293): implement on Chrome OS.
 #if !BUILDFLAG(IS_CHROMEOS)

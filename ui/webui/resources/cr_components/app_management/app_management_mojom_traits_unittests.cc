@@ -6,6 +6,7 @@
 
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
@@ -189,5 +190,35 @@ TEST(AppManagementMojomTraitsTest, RoundTripWindowMode) {
                           apps::WindowMode>::FromMojom(serialized_window_mode,
                                                        &window_mode_out)));
     EXPECT_EQ(window_mode_in, window_mode_out);
+  }
+}
+
+TEST(AppManagementMojomTraitsTest, RoundTripRunOnOsLogin) {
+  {
+    auto run_on_os_login =
+        std::make_unique<apps::RunOnOsLogin>(apps::RunOnOsLoginMode::kUnknown,
+                                             /*is_managed=*/false);
+    apps::RunOnOsLoginPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                app_management::mojom::RunOnOsLogin>(run_on_os_login, output));
+    EXPECT_EQ(*run_on_os_login, *output);
+  }
+  {
+    auto run_on_os_login =
+        std::make_unique<apps::RunOnOsLogin>(apps::RunOnOsLoginMode::kNotRun,
+                                             /*is_managed=*/true);
+    apps::RunOnOsLoginPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                app_management::mojom::RunOnOsLogin>(run_on_os_login, output));
+    EXPECT_EQ(*run_on_os_login, *output);
+  }
+  {
+    auto run_on_os_login =
+        std::make_unique<apps::RunOnOsLogin>(apps::RunOnOsLoginMode::kWindowed,
+                                             /*is_managed=*/false);
+    apps::RunOnOsLoginPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                app_management::mojom::RunOnOsLogin>(run_on_os_login, output));
+    EXPECT_EQ(*run_on_os_login, *output);
   }
 }

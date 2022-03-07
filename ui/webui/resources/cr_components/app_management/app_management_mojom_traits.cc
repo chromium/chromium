@@ -345,4 +345,43 @@ bool EnumTraits<WindowMode, apps::WindowMode>::FromMojom(
   }
 }
 
+RunOnOsLoginMode EnumTraits<RunOnOsLoginMode, apps::RunOnOsLoginMode>::ToMojom(
+    apps::RunOnOsLoginMode input) {
+  switch (input) {
+    case apps::RunOnOsLoginMode::kUnknown:
+      return RunOnOsLoginMode::kUnknown;
+    case apps::RunOnOsLoginMode::kNotRun:
+      return RunOnOsLoginMode::kNotRun;
+    case apps::RunOnOsLoginMode::kWindowed:
+      return RunOnOsLoginMode::kWindowed;
+  }
+}
+
+bool EnumTraits<RunOnOsLoginMode, apps::RunOnOsLoginMode>::FromMojom(
+    RunOnOsLoginMode input,
+    apps::RunOnOsLoginMode* output) {
+  switch (input) {
+    case RunOnOsLoginMode::kUnknown:
+      *output = apps::RunOnOsLoginMode::kUnknown;
+      return true;
+    case RunOnOsLoginMode::kNotRun:
+      *output = apps::RunOnOsLoginMode::kNotRun;
+      return true;
+    case RunOnOsLoginMode::kWindowed:
+      *output = apps::RunOnOsLoginMode::kWindowed;
+      return true;
+  }
+}
+
+bool StructTraits<RunOnOsLoginDataView, apps::RunOnOsLoginPtr>::Read(
+    RunOnOsLoginDataView data,
+    apps::RunOnOsLoginPtr* out) {
+  apps::RunOnOsLoginMode login_mode;
+  if (!data.ReadLoginMode(&login_mode))
+    return false;
+
+  *out = std::make_unique<apps::RunOnOsLogin>(login_mode, data.is_managed());
+  return true;
+}
+
 }  // namespace mojo
