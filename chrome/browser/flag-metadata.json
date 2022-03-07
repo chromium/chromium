@@ -2843,7 +2843,7 @@
   {
     "name": "enable-system-notifications",
     "owners": [ "peter", "finnur", "knollr" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 110
   },
   {
     "name": "enable-system-proxy-for-system-services",
