@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedError2Helper;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
@@ -676,7 +677,7 @@ public class AwContentsClientShouldInterceptRequestTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testNoOnReceivedErrorCallback() throws Throwable {
+    public void testSubresourceError_NullMimeEncodingAndInputStream() throws Throwable {
         final String imagePath = "/" + CommonResources.FAVICON_FILENAME;
         final String imageUrl = mWebServer.setResponseBase64(imagePath,
                 CommonResources.FAVICON_DATA_BASE64, CommonResources.getImagePngHeaders(true));
@@ -685,7 +686,27 @@ public class AwContentsClientShouldInterceptRequestTest {
                         CommonResources.getOnImageLoadedHtml(CommonResources.FAVICON_FILENAME));
         mShouldInterceptRequestHelper.setReturnValueForUrl(
                 imageUrl, new WebResourceResponseInfo(null, null, null));
-        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
+        OnReceivedError2Helper onReceivedErrorHelper = mContentsClient.getOnReceivedError2Helper();
+        int onReceivedErrorHelperCallCount = onReceivedErrorHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithImage);
+        onReceivedErrorHelper.waitForCallback(onReceivedErrorHelperCallCount);
+        Assert.assertEquals(imageUrl, onReceivedErrorHelper.getRequest().url);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNoOnReceivedErrorCallback() throws Throwable {
+        final String imagePath = "/" + CommonResources.FAVICON_FILENAME;
+        final String imageUrl = mWebServer.setResponseBase64(imagePath,
+                CommonResources.FAVICON_DATA_BASE64, CommonResources.getImagePngHeaders(true));
+        final String pageWithImage = addPageToTestServer(mWebServer, "/page_with_image.html",
+                CommonResources.getOnImageLoadedHtml(CommonResources.FAVICON_FILENAME));
+        mShouldInterceptRequestHelper.setReturnValueForUrl(imageUrl,
+                new WebResourceResponseInfo(/* mimeType= */ null, /* encoding= */ null,
+                        /* data= */ new EmptyInputStream()));
+        OnReceivedError2Helper onReceivedErrorHelper = mContentsClient.getOnReceivedError2Helper();
         int onReceivedErrorHelperCallCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithImage);
