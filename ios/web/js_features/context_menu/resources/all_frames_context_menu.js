@@ -13,6 +13,9 @@ goog.provide('__crWeb.allFramesContextMenu');
 /** Beginning of anonymous object */
 (function() {
 
+// The maximum depth to search for elements at any point.
+var MAX_SEARCH_DEPTH = 8;
+
 /**
  * Returns an object representing the details of a given link element.
  * @param {HTMLElement} element The element whose details will be returned.
@@ -110,67 +113,169 @@ var getResponseForImageElement = function(element) {
  */
 __gCrWeb['findElementAtPointInPageCoordinates'] = function(requestId, x, y) {
   var hitCoordinates = spiralCoordinates_(x, y);
+  var processedElements = new Set();
   for (var index = 0; index < hitCoordinates.length; index++) {
     var coordinates = hitCoordinates[index];
 
     var coordinateDetails = newCoordinate(coordinates.x, coordinates.y);
-    var element = elementsFromCoordinates(window.document, coordinateDetails);
-    // if element is a frame, tell it to respond to this element request
-    if (element &&
-        (element.tagName.toLowerCase() === 'iframe' ||
-         element.tagName.toLowerCase() === 'frame')) {
-      var payload = {
-        type: 'org.chromium.contextMenuMessage',
-        requestId: requestId,
-        x: x - element.offsetLeft,
-        y: y - element.offsetTop
-      };
-      // The message will not be sent if |targetOrigin| is null, so use * which
-      // allows the message to be delievered to the contentWindow regardless of
-      // the origin.
-      var targetOrigin = element.src || '*';
-      element.contentWindow.postMessage(payload, targetOrigin);
+    coordinateDetails.useViewPortCoordinates =
+        coordinateDetails.useViewPortCoordinates ||
+        elementFromPointIsUsingViewPortCoordinates(coordinateDetails.window);
+
+    var coordinateX = coordinateDetails.useViewPortCoordinates ?
+        coordinateDetails.viewPortX :
+        coordinateDetails.x;
+    var coordinateY = coordinateDetails.useViewPortCoordinates ?
+        coordinateDetails.viewPortY :
+        coordinateDetails.y;
+    var elementWasFound = findElementAtPoint(
+        requestId, window.document, processedElements, coordinateX, coordinateY,
+        x, y);
+
+    // Exit early if an element was found.
+    if (elementWasFound) {
       return;
     }
+  }
 
-    if (!element || !element.tagName) {
-      // Nothing under the hit point. Try the next hit point.
-      continue;
+  // If no element was found, send an empty response.
+  sendFindElementAtPointResponse(requestId, /*response=*/ {});
+};
+
+/**
+ * Finds the topmost valid element at the given point.
+ * @param {string} requestId An identifier which will be returned in the result
+ *                 dictionary of this request.
+ * @param {Object} root The Document or ShadowRoot object to search within.
+ * @param {Object} processedElements A set to store processed elements in.
+ * @param {number} pointX The X coordinate of the target location.
+ * @param {number} pointY The Y coordinate of the target location.
+ * @param {number} centerX The X coordinate of the center of the target.
+ * @param {number} centerY The Y coordinate of the center of the target.
+ * @return {boolean} Whether or not an element was matched as a target of
+ *                   the touch.
+ */
+var findElementAtPoint = function(
+    requestId, root, processedElements, pointX, pointY, centerX, centerY) {
+  var elements = root.elementsFromPoint(pointX, pointY);
+  var foundLinkElement;
+  for (var elementIndex = 0;
+       elementIndex < elements.length && elementIndex < MAX_SEARCH_DEPTH;
+       elementIndex++) {
+    var element = elements[elementIndex];
+
+    // Element.closest will find link elements that are parents of the current
+    // element. It also works for SVGAElements, links within svg tags. However,
+    // we must still iterate through the elements at this position to find
+    // images.
+    if (!foundLinkElement) {
+      var closestLink = element.closest('a');
+      if (closestLink && closestLink.href &&
+          getComputedWebkitTouchCallout_(closestLink) !== 'none') {
+        foundLinkElement = closestLink;
+      }
     }
 
-    // Also check element's ancestors. A bound on the level is used here to
-    // avoid large overhead when no links or images are found.
-    var level = 0;
-    while (++level < 8 && element && element != document) {
-      var tagName = element.tagName;
-      if (!tagName) continue;
-      tagName = tagName.toLowerCase();
-
-      if (tagName === 'input' || tagName === 'textarea' ||
-          tagName === 'select' || tagName === 'option') {
-        // If the element is a known input element, stop the spiral search and
-        // return empty results.
-        sendFindElementAtPointResponse(requestId, /*response=*/{});
-        return;
-      }
-
-      if (getComputedWebkitTouchCallout_(element) !== 'none') {
-        if (tagName === 'a' && element.href) {
-          sendFindElementAtPointResponse(requestId,
-                                         getResponseForLinkElement(element));
-          return;
+    if (!processedElements.has(element)) {
+      processedElements.add(element);
+      if (element.shadowRoot) {
+        // The element's shadowRoot can be the same as |root| if the point is
+        // not on any child element. Break the recursion and return no found
+        // element.
+        if (element.shadowRoot == root) {
+          return false;
         }
 
-        if (tagName === 'img' && element.currentSrc) {
-          sendFindElementAtPointResponse(requestId,
-                                         getResponseForImageElement(element));
-          return;
+        // If an element is found in the shadow DOM, return true, otherwise
+        // keep iterating.
+        if (findElementAtPoint(
+                requestId, element.shadowRoot, processedElements, pointX,
+                pointY, centerX, centerY)) {
+          return true;
         }
       }
-      element = element.parentNode;
+
+      if (processElementForFindElementAtPoint(
+              requestId, centerX, centerY, element)) {
+        return true;
+      }
     }
   }
-  sendFindElementAtPointResponse(requestId, /*response=*/{});
+
+  // If no link was processed in the prior loop, but a link was found
+  // using element.closest, then return that link. This can occur if the
+  // link was a child of an <svg> element. This can also occur if the link
+  // element is too deep in the ancestor tree.
+  if (foundLinkElement) {
+    sendFindElementAtPointResponse(
+        requestId, getResponseForLinkElement(foundLinkElement));
+    return true;
+  }
+
+  return false;
+};
+
+/**
+ * Processes the element for a find element at point response.
+ * @param {string} requestId An identifier which will be returned in the result
+ *                 dictionary of this request.
+ * @param {number} centerX The X coordinate of the center of the target.
+ * @param {number} centerY The Y coordinate of the center of the target.
+ * @param {Element!} element Element in the page.
+ * @return {boolean} True if |element| was matched as the target of the touch.
+ */
+var processElementForFindElementAtPoint = function(
+    requestId, centerX, centerY, element) {
+  if (!element) {
+    return false;
+  }
+
+  var tagName = element.tagName;
+  if (!tagName) {
+    return false;
+  }
+
+  tagName = tagName.toLowerCase();
+
+  // if element is a frame, tell it to respond to this element request
+  if (tagName === 'iframe' || tagName === 'frame') {
+    var payload = {
+      type: 'org.chromium.contextMenuMessage',
+      requestId: requestId,
+      x: centerX - element.offsetLeft,
+      y: centerY - element.offsetTop
+    };
+    // The message will not be sent if |targetOrigin| is null, so use * which
+    // allows the message to be delievered to the contentWindow regardless of
+    // the origin.
+    var targetOrigin = element.src || '*';
+    element.contentWindow.postMessage(payload, targetOrigin);
+    return true;
+  }
+
+  if (tagName === 'input' || tagName === 'textarea' || tagName === 'select' ||
+      tagName === 'option') {
+    // If the element is a known input element, stop the spiral search and
+    // return empty results.
+    sendFindElementAtPointResponse(requestId, /*response=*/ {});
+    return true;
+  }
+
+  if (getComputedWebkitTouchCallout_(element) !== 'none') {
+    if (tagName === 'a' && element.href) {
+      sendFindElementAtPointResponse(
+          requestId, getResponseForLinkElement(element));
+      return true;
+    }
+
+    if (tagName === 'img' && element.currentSrc) {
+      sendFindElementAtPointResponse(
+          requestId, getResponseForImageElement(element));
+      return true;
+    }
+  }
+
+  return false;
 };
 
 /**
@@ -206,22 +311,6 @@ var elementFromPointIsUsingViewPortCoordinates = function(win) {
 };
 
 /**
- * Returns the coordinates of the upper left corner of |obj| in the
- * coordinates of the window that |obj| is in.
- * @param {HTMLElement} el The element whose coordinates will be returned.
- * @return {!Object} coordinates of the given object.
- */
-var getPositionInWindow = function(el) {
-  var coord = {x: 0, y: 0};
-  while (el.offsetParent) {
-    coord.x += el.offsetLeft;
-    coord.y += el.offsetTop;
-    el = el.offsetParent;
-  }
-  return coord;
-};
-
-/**
  * Returns details about a given coordinate in {@code window}.
  * @param {number} x The x component of the coordinate in {@code window}.
  * @param {number} y The y component of the coordinate in {@code window}.
@@ -237,46 +326,6 @@ var newCoordinate = function(x, y) {
     window: window
   };
   return coordinates;
-};
-
-/**
- * Returns the element at the given coordinates.
- * @param {Object} root The Document or ShadowRoot object to search within.
- * @param {Object} coordinates Page coordinates in the same format as the result
- *                             from {@code newCoordinate}.
- */
-var elementsFromCoordinates = function(root, coordinates) {
-  coordinates.useViewPortCoordinates = coordinates.useViewPortCoordinates ||
-      elementFromPointIsUsingViewPortCoordinates(coordinates.window);
-
-  var currentElement = null;
-  if (coordinates.useViewPortCoordinates) {
-    currentElement = root.elementFromPoint(
-        coordinates.viewPortX, coordinates.viewPortY);
-  } else {
-    currentElement = root.elementFromPoint(coordinates.x, coordinates.y);
-  }
-
-  // Check for tagName, because if a selection is made by the WebView, the
-  // element we will get won't have one.
-  if (!currentElement || !currentElement.tagName) {
-    return null;
-  }
-
-  if (currentElement.tagName.toLowerCase() === 'iframe' ||
-      currentElement.tagName.toLowerCase() === 'frame') {
-    return currentElement;
-  }
-
-  if (currentElement.shadowRoot) {
-    // The element's shadowRoot can be the same as |root| if the point is not
-    // on any child element. Break the recursion and return no found element.
-    if (currentElement.shadowRoot == root) {
-      return null;
-    }
-    return elementsFromCoordinates(currentElement.shadowRoot, coordinates);
-  }
-  return currentElement;
 };
 
 /** @private
@@ -349,31 +398,31 @@ var getReferrerPolicy_ = function(opt_linkElement) {
   return 'default';
 };
 
- /**
-  * Returns the href of the given element. Handles standard <a> links as well as
-  * xlink:href links as used within <svg> tags.
-  * @param {HTMLElement} element The link triggering the navigation.
-  * @return {string} The href of the given element.
-  * @private
-  */
+/**
+ * Returns the href of the given element. Handles standard <a> links as well as
+ * xlink:href links as used within <svg> tags.
+ * @param {HTMLElement} element The link triggering the navigation.
+ * @return {string} The href of the given element.
+ * @private
+ */
 var getElementHref_ = function(element) {
   var href = element.href;
   if (href instanceof SVGAnimatedString) {
-    return href.animVal
+    return href.animVal;
   }
-  return href
+  return href;
 };
 
-  /**
-   * Returns the client bounding box of the given element.
-   * @param {HTMLElement} element to retrieve the bounding box
-   * @return {!Object} An object of the form {
-   *                     {@code x} The x coordinate of the bounding box origin.
-   *                     {@code y} The y coordinate of the bounding box origin.
-   *                     {@code width} The width of the bounding box size.
-   *                     {@code height} The height of the bounding box size.
-   *                   }.
-   */
+/**
+ * Returns the client bounding box of the given element.
+ * @param {HTMLElement} element to retrieve the bounding box
+ * @return {!Object} An object of the form {
+ *                     {@code x} The x coordinate of the bounding box origin.
+ *                     {@code y} The y coordinate of the bounding box origin.
+ *                     {@code width} The width of the bounding box size.
+ *                     {@code height} The height of the bounding box size.
+ *                   }.
+ */
 var getElementBoundingBox_ = function(element) {
   var boundingBox = element.getBoundingClientRect();
   if (boundingBox) {
@@ -402,5 +451,4 @@ window.addEventListener('message', function(message) {
         payload.y + window.pageYOffset);
   }
 });
-
-}());  // End of anonymouse object
+}());  // End of anonymous object
