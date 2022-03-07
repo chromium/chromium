@@ -246,11 +246,12 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
     PA_CHECK(base::bits::IsPowerOfTwo(alignment));
     // TODO(bartekn): See if the compiler optimizes branches down the stack on
     // Mac, where PartitionPageSize() isn't constexpr.
-    return Allocator()->AllocFlagsNoHooks(0, size, base::PartitionPageSize());
+    return Allocator()->AllocWithFlagsNoHooks(0, size,
+                                              base::PartitionPageSize());
   }
 
-  return AlignedAllocator()->AlignedAllocFlags(base::PartitionAllocNoHooks,
-                                               alignment, size);
+  return AlignedAllocator()->AlignedAllocWithFlags(base::PartitionAllocNoHooks,
+                                                   alignment, size);
 }
 
 }  // namespace
@@ -284,7 +285,7 @@ void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value) {
 
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
   ScopedDisallowAllocations guard{};
-  return Allocator()->AllocFlagsNoHooks(
+  return Allocator()->AllocWithFlagsNoHooks(
       0 | g_alloc_flags, MaybeAdjustSize(size), PartitionPageSize());
 }
 
@@ -292,7 +293,7 @@ void* PartitionMallocUnchecked(const AllocatorDispatch*,
                                size_t size,
                                void* context) {
   ScopedDisallowAllocations guard{};
-  return Allocator()->AllocFlagsNoHooks(
+  return Allocator()->AllocWithFlagsNoHooks(
       base::PartitionAllocReturnNull | g_alloc_flags, MaybeAdjustSize(size),
       PartitionPageSize());
 }
@@ -303,7 +304,7 @@ void* PartitionCalloc(const AllocatorDispatch*,
                       void* context) {
   ScopedDisallowAllocations guard{};
   const size_t total = base::CheckMul(n, MaybeAdjustSize(size)).ValueOrDie();
-  return Allocator()->AllocFlagsNoHooks(
+  return Allocator()->AllocWithFlagsNoHooks(
       base::PartitionAllocZeroFill | g_alloc_flags, total, PartitionPageSize());
 }
 
@@ -328,8 +329,8 @@ void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
 // TODO(tasak): Expand the given memory block to the given size if possible.
 // This realloc always free the original memory block and allocates a new memory
 // block.
-// TODO(tasak): Implement PartitionRoot<thread_safe>::AlignedReallocFlags and
-// use it.
+// TODO(tasak): Implement PartitionRoot<thread_safe>::AlignedReallocWithFlags
+// and use it.
 void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
                               void* address,
                               size_t size,
@@ -376,8 +377,9 @@ void* PartitionRealloc(const AllocatorDispatch*,
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
-  return Allocator()->ReallocFlags(base::PartitionAllocNoHooks | g_alloc_flags,
-                                   address, MaybeAdjustSize(size), "");
+  return Allocator()->ReallocWithFlags(
+      base::PartitionAllocNoHooks | g_alloc_flags, address,
+      MaybeAdjustSize(size), "");
 }
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CHROMECAST)

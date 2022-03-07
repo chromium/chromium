@@ -1896,7 +1896,7 @@ bool SourceBuffer::AllocatePendingAppendData(wtf_size_t size) {
   DCHECK(!pending_append_data_offset_);
 
   pending_append_data_.reset(static_cast<unsigned char*>(
-      WTF::Partitions::BufferPartition()->AllocFlags(
+      WTF::Partitions::BufferPartition()->AllocWithFlags(
           base::PartitionAllocReturnNull, size, "MsePendingAppend")));
 
   if (!pending_append_data_)

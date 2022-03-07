@@ -136,7 +136,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   uintptr_t first = 0;
   uintptr_t last = 0;
   for (size_t i = 0; i < num_slots; ++i) {
-    void* ptr = root.AllocFlagsNoHooks(0, object_size, PartitionPageSize());
+    void* ptr = root.AllocWithFlagsNoHooks(0, object_size, PartitionPageSize());
     EXPECT_TRUE(ptr);
     if (i == 0)
       first = root.ObjectToSlotStart(ptr);
@@ -187,7 +187,7 @@ struct List final : ListBase {
     List* list;
     if (Alignment) {
       list = static_cast<List*>(
-          root.AlignedAllocFlags(0, Alignment, sizeof(List)));
+          root.AlignedAllocWithFlags(0, Alignment, sizeof(List)));
     } else {
       list = static_cast<List*>(root.Alloc(sizeof(List), nullptr));
     }
@@ -389,7 +389,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromFullPage) {
   // This allocation must go through the slow path and call SetNewActivePage(),
   // which will flush the full page from the active page list.
   void* value_buffer =
-      root().AllocFlagsNoHooks(0, sizeof(ValueList), PartitionPageSize());
+      root().AllocWithFlagsNoHooks(0, sizeof(ValueList), PartitionPageSize());
 
   // Assert that the first and the last objects are in different slot spans but
   // in the same bucket.
@@ -715,7 +715,7 @@ TEST_F(PartitionAllocPCScanTest, PointersToGuardPages) {
   };
 
   auto* const pointers = static_cast<Pointers*>(
-      root().AllocFlagsNoHooks(0, sizeof(Pointers), PartitionPageSize()));
+      root().AllocWithFlagsNoHooks(0, sizeof(Pointers), PartitionPageSize()));
 
   // Converting to slot start strips MTE tag.
   const uintptr_t super_page =

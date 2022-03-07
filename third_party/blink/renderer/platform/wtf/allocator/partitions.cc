@@ -386,8 +386,8 @@ void* Partitions::FastMalloc(size_t n, const char* type_name) {
 void* Partitions::FastZeroedMalloc(size_t n, const char* type_name) {
   auto* fast_malloc_partition = FastMallocPartition();
   if (UNLIKELY(fast_malloc_partition)) {
-    return fast_malloc_partition->AllocFlags(base::PartitionAllocZeroFill, n,
-                                             type_name);
+    return fast_malloc_partition->AllocWithFlags(base::PartitionAllocZeroFill,
+                                                 n, type_name);
   } else {
     return calloc(n, 1);
   }

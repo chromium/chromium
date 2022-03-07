@@ -437,7 +437,7 @@ void DrawPlatformFocusRing(const SkPath& path,
 }
 
 sk_sp<SkData> TryAllocateSkData(size_t size) {
-  void* buffer = WTF::Partitions::BufferPartition()->AllocFlags(
+  void* buffer = WTF::Partitions::BufferPartition()->AllocWithFlags(
       base::PartitionAllocReturnNull | base::PartitionAllocZeroFill, size,
       "SkData");
   if (!buffer)

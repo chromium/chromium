@@ -5,10 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONSTANTS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONSTANTS_H_
 
-#include <limits.h>
-#include <cstddef>
-
 #include <algorithm>
+#include <cstddef>
 #include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
@@ -342,7 +340,7 @@ MaxDirectMapped() {
   return (1UL << 31) - kSuperPageSize;
 }
 
-// Max alignment supported by AlignedAllocFlags().
+// Max alignment supported by AlignedAllocWithFlags().
 // kSuperPageSize alignment can't be easily supported, because each super page
 // starts with guard pages & metadata.
 constexpr size_t kMaxSupportedAlignment = kSuperPageSize / 2;

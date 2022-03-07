@@ -89,7 +89,7 @@ class PartitionAllocator : public Allocator {
   ~PartitionAllocator() override = default;
 
   void* Alloc(size_t size) override {
-    return alloc_.AllocFlagsNoHooks(0, size, PartitionPageSize());
+    return alloc_.AllocWithFlagsNoHooks(0, size, PartitionPageSize());
   }
   void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 
@@ -126,7 +126,8 @@ class PartitionAllocatorWithThreadCache : public Allocator {
   ~PartitionAllocatorWithThreadCache() override = default;
 
   void* Alloc(size_t size) override {
-    return g_partition_root->AllocFlagsNoHooks(0, size, PartitionPageSize());
+    return g_partition_root->AllocWithFlagsNoHooks(0, size,
+                                                   PartitionPageSize());
   }
   void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 };
