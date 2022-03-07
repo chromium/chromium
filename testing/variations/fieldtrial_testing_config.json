@@ -6306,6 +6306,21 @@
             ]
         }
     ],
+    "SuppressToolbarCaptures": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SuppressToolbarCaptures"
+                    ]
+                }
+            ]
+        }
+    ],
     "SurfaceSyncThrottling": [
         {
             "platforms": [
