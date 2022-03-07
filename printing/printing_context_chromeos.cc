@@ -104,8 +104,7 @@ gfx::Rect RepresentPrintableArea(const gfx::Size& media_size,
 
 void SetPrintableArea(PrintSettings* settings,
                       const PrintSettings::RequestedMedia& media,
-                      const CupsPrinter::CupsMediaMargins& margins,
-                      bool flip) {
+                      const CupsPrinter::CupsMediaMargins& margins) {
   if (!media.size_microns.IsEmpty()) {
     float device_microns_per_device_unit =
         static_cast<float>(kMicronsPerInch) / settings->device_units_per_inch();
@@ -115,7 +114,8 @@ void SetPrintableArea(PrintSettings* settings,
 
     gfx::Rect paper_rect = RepresentPrintableArea(
         paper_size, margins, device_microns_per_device_unit);
-    settings->SetPrinterPrintableArea(paper_size, paper_rect, flip);
+    settings->SetPrinterPrintableArea(paper_size, paper_rect,
+                                      /*landscape_needs_flip=*/true);
   }
 }
 
@@ -269,7 +269,7 @@ mojom::ResultCode PrintingContextChromeos::UseDefaultSettings() {
 
   CupsPrinter::CupsMediaMargins margins =
       printer_->GetMediaMarginsByName(paper.vendor_id);
-  SetPrintableArea(settings_.get(), media, margins, true /* flip landscape */);
+  SetPrintableArea(settings_.get(), media, margins);
 
   return mojom::ResultCode::kSuccess;
 }
@@ -330,7 +330,7 @@ mojom::ResultCode PrintingContextChromeos::UpdatePrinterSettings(
 
   CupsPrinter::CupsMediaMargins margins =
       printer_->GetMediaMarginsByName(media.vendor_id);
-  SetPrintableArea(settings_.get(), media, margins, true);
+  SetPrintableArea(settings_.get(), media, margins);
   cups_options_ = SettingsToCupsOptions(*settings_);
   send_user_info_ = settings_->send_user_info();
   if (send_user_info_) {
