@@ -11,7 +11,7 @@ ci.defaults.set(
     builder_group = "chromium.packager",
     cores = 8,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    os = os.LINUX_DEFAULT,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
@@ -22,7 +22,6 @@ consoles.console_view(
 
 ci.builder(
     name = "3pp-linux-amd64-packager",
-    os = os.LINUX_DEFAULT,
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "3pp|linux",
