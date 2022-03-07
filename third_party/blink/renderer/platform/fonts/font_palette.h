@@ -25,6 +25,35 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     kCustomPalette = 3
   };
 
+  // Data layout should match SkFontarguments::PaletteOverride::ColorOverride.
+  struct FontPaletteOverride {
+    int index;
+    SkColor color;
+
+    bool operator==(const FontPaletteOverride& other) const {
+      return index == other.index && color == other.color;
+    }
+    DISALLOW_NEW();
+  };
+
+  enum BasePaletteValueType {
+    kNoBasePalette,
+    kLightBasePalette,
+    kDarkBasePalette,
+    kIndexBasePalette,
+  };
+
+  struct BasePaletteValue {
+    BasePaletteValueType type;
+    int index;
+
+    bool hasValue() { return type != kNoBasePalette; }
+    bool operator==(const BasePaletteValue& other) const {
+      return type == other.type && index == other.index;
+    }
+    DISALLOW_NEW();
+  };
+
   static scoped_refptr<FontPalette> Create() {
     return base::AdoptRef(new FontPalette());
   }
@@ -39,6 +68,14 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     return base::AdoptRef(new FontPalette(std::move(palette_values_name)));
   }
 
+  void SetBasePalette(BasePaletteValue base_palette) {
+    base_palette_ = base_palette;
+  }
+
+  void SetColorOverrides(Vector<FontPaletteOverride>&& overrides) {
+    palette_overrides_ = overrides;
+  }
+
   bool IsNormalPalette() const { return palette_keyword_ == kNormalPalette; }
   bool IsCustomPalette() const { return palette_keyword_ == kCustomPalette; }
   KeywordPaletteName GetPaletteNameKind() const { return palette_keyword_; }
@@ -51,6 +88,18 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     return palette_values_name_;
   }
 
+  const Vector<FontPaletteOverride>* GetColorOverrides() const {
+    return &palette_overrides_;
+  }
+
+  BasePaletteValue GetBasePalette() const { return base_palette_; }
+
+  void SetMatchFamilyName(AtomicString family_name) {
+    match_font_family_ = family_name;
+  }
+
+  AtomicString GetMatchFamilyName() { return match_font_family_; }
+
   bool operator==(const FontPalette& other) const;
   bool operator!=(const FontPalette& other) const { return !(*this == other); }
 
@@ -58,14 +107,19 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
 
  private:
   explicit FontPalette(KeywordPaletteName palette_name)
-      : palette_keyword_(palette_name) {}
+      : palette_keyword_(palette_name), base_palette_({kNoBasePalette, 0}) {}
   explicit FontPalette(AtomicString palette_values_name)
       : palette_keyword_(kCustomPalette),
-        palette_values_name_(std::move(palette_values_name)) {}
-  FontPalette() = default;
+        palette_values_name_(palette_values_name),
+        base_palette_({kNoBasePalette, 0}) {}
+  FontPalette()
+      : palette_keyword_(kNormalPalette), base_palette_({kNoBasePalette, 0}) {}
 
-  KeywordPaletteName palette_keyword_{kNormalPalette};
-  AtomicString palette_values_name_{g_empty_atom};
+  KeywordPaletteName palette_keyword_;
+  AtomicString palette_values_name_;
+  BasePaletteValue base_palette_;
+  AtomicString match_font_family_;
+  Vector<FontPaletteOverride> palette_overrides_;
 };
 
 }  // namespace blink

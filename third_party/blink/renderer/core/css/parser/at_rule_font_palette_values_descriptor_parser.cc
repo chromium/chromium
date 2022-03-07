@@ -31,12 +31,7 @@ CSSValue* ConsumeBasePalette(CSSParserTokenRange& range,
     return ident;
   }
 
-  if (CSSValue* palette_index =
-          css_parsing_utils::ConsumeInteger(range, context, 0)) {
-    return palette_index;
-  }
-
-  return nullptr;
+  return css_parsing_utils::ConsumeInteger(range, context, 0);
 }
 
 CSSValue* ConsumeColorOverride(CSSParserTokenRange& range,
@@ -52,6 +47,10 @@ CSSValue* ConsumeColorOverride(CSSParserTokenRange& range,
         range, context, false,
         css_parsing_utils::AllowedColorKeywords::kNoSystemColor);
     if (!color)
+      return nullptr;
+    CSSIdentifierValue* color_identifier = DynamicTo<CSSIdentifierValue>(color);
+    if (color_identifier &&
+        color_identifier->GetValueID() == CSSValueID::kCurrentcolor)
       return nullptr;
     list->Append(*MakeGarbageCollected<CSSValuePair>(
         color_index, color, CSSValuePair::kKeepIdenticalValues));

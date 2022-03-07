@@ -2366,7 +2366,10 @@ void StyleEngine::AddFontPaletteValuesRules(const RuleSet& rule_set) {
       font_palette_values_rules = rule_set.FontPaletteValuesRules();
   for (auto& rule : font_palette_values_rules) {
     // TODO(https://crbug.com/1170794): Handle cascade layer reordering here.
-    font_palette_values_rule_map_.Set(rule->GetName(), rule);
+    font_palette_values_rule_map_.Set(
+        std::make_pair(rule->GetName(),
+                       String(rule->GetFontFamilyAsString()).FoldCase()),
+        rule);
   }
 }
 
@@ -2419,6 +2422,21 @@ StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(
 
   KeyframesRuleMap::iterator it = keyframes_rule_map_.find(animation_name);
   if (it == keyframes_rule_map_.end())
+    return nullptr;
+
+  return it->value.Get();
+}
+
+StyleRuleFontPaletteValues* StyleEngine::FontPaletteValuesForNameAndFamily(
+    AtomicString palette_name,
+    AtomicString family_name) {
+  if (font_palette_values_rule_map_.IsEmpty() || palette_name.IsEmpty()) {
+    return nullptr;
+  }
+
+  auto it = font_palette_values_rule_map_.find(
+      std::make_pair(palette_name, String(family_name).FoldCase()));
+  if (it == font_palette_values_rule_map_.end())
     return nullptr;
 
   return it->value.Get();

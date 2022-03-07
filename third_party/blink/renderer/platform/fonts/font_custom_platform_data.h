@@ -34,6 +34,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
+#include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/variable_axes_names.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -69,7 +70,8 @@ class PLATFORM_EXPORT FontCustomPlatformData
       const FontSelectionCapabilities&,
       const OpticalSizing& optical_sizing,
       FontOrientation = FontOrientation::kHorizontal,
-      const FontVariationSettings* = nullptr);
+      const FontVariationSettings* = nullptr,
+      const FontPalette* = nullptr);
 
   String FamilyNameForInspector() const;
 

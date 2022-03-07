@@ -1422,28 +1422,6 @@ crbug.com/1245722 external/wpt/css/css-overflow/orthogonal-flow-with-inline-end-
 crbug.com/481430 external/wpt/css/css-fonts/font-language-override-01.html [ Failure ]
 crbug.com/481430 external/wpt/css/css-fonts/font-language-override-02.html [ Failure ]
 
-# Support font-palette
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-3.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-4.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-5.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-6.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-7.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-8.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-9.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-13.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-16.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-17.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-18.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-19.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-22.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-add.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-modify.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/font-palette-remove.html [ Failure ]
-crbug.com/1170794 external/wpt/css/css-fonts/palette-values-rule-add-2.html [ Failure Timeout ]
-crbug.com/1170794 external/wpt/css/css-fonts/palette-values-rule-add.html [ Failure Timeout ]
-crbug.com/1170794 external/wpt/css/css-fonts/palette-values-rule-delete.html [ Failure Timeout ]
-crbug.com/1170794 external/wpt/css/css-fonts/palette-values-rule-delete-2.html [ Failure Timeout ]
-
 # Non standard -webkit-<generic font family name> values are web exposed
 crbug.com/1065468 [ Mac10.15 ] external/wpt/css/css-fonts/generic-family-keywords-002.html [ Failure Timeout ]
 

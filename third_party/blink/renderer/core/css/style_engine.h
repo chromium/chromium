@@ -462,6 +462,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
 
+  StyleRuleFontPaletteValues* FontPaletteValuesForNameAndFamily(
+      AtomicString palette_name,
+      AtomicString font_family);
+
   void UpdateTimelines();
 
   CSSScrollTimeline* FindScrollTimeline(const AtomicString& name);
@@ -839,8 +843,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
 
+  // Combined key consisting of the rule's name and the case-folded font-family
+  // name to which this @font-palette-values rule selectively applies to.
   using FontPaletteValuesRuleMap =
-      HeapHashMap<AtomicString, Member<StyleRuleFontPaletteValues>>;
+      HeapHashMap<std::pair<AtomicString, String>,
+                  Member<StyleRuleFontPaletteValues>>;
   FontPaletteValuesRuleMap font_palette_values_rule_map_;
 
   Member<CounterStyleMap> user_counter_style_map_;

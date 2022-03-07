@@ -104,11 +104,37 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
     const FontFamily& font_family) {
   const auto& family_name = font_family.FamilyName();
   Document& document = GetTreeScope()->GetDocument();
+
+  FontDescription request_description(font_description);
+  FontPalette* request_palette = request_description.GetFontPalette();
+
+  if (request_palette && request_palette->IsCustomPalette()) {
+    AtomicString requested_palette_values =
+        request_palette->GetPaletteValuesName();
+    StyleRuleFontPaletteValues* font_palette_values =
+        document.GetStyleEngine().FontPaletteValuesForNameAndFamily(
+            requested_palette_values, family_name);
+    if (font_palette_values) {
+      scoped_refptr<FontPalette> new_request_palette =
+          FontPalette::Create(requested_palette_values);
+      new_request_palette->SetMatchFamilyName(
+          font_palette_values->GetFontFamilyAsString());
+      new_request_palette->SetBasePalette(
+          font_palette_values->GetBasePaletteIndex());
+      Vector<FontPalette::FontPaletteOverride> override_colors =
+          font_palette_values->GetOverrideColorsAsVector();
+      if (override_colors.size()) {
+        new_request_palette->SetColorOverrides(std::move(override_colors));
+      }
+      request_description.SetFontPalette(new_request_palette);
+    }
+  }
+
   if (!font_family.FamilyIsGeneric()) {
     if (CSSSegmentedFontFace* face =
-            font_face_cache_->Get(font_description, family_name)) {
+            font_face_cache_->Get(request_description, family_name)) {
       document.GetFontMatchingMetrics()->ReportWebFontFamily(family_name);
-      return face->GetFontData(font_description);
+      return face->GetFontData(request_description);
     }
   }
 
@@ -116,20 +142,21 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
 
   // Try to return the correct font based off our settings, in case we were
   // handed the generic font family name.
-  AtomicString settings_family_name = FamilyNameFromSettings(
-      generic_font_family_settings_, font_description, font_family, &document);
+  AtomicString settings_family_name =
+      FamilyNameFromSettings(generic_font_family_settings_, request_description,
+                             font_family, &document);
   if (settings_family_name.IsEmpty())
     return nullptr;
 
   document.GetFontMatchingMetrics()->ReportFontFamilyLookupByGenericFamily(
-      family_name, font_description.GetScript(),
-      font_description.GenericFamily(), settings_family_name);
+      family_name, request_description.GetScript(),
+      request_description.GenericFamily(), settings_family_name);
 
   scoped_refptr<SimpleFontData> font_data =
-      FontCache::Get().GetFontData(font_description, settings_family_name);
+      FontCache::Get().GetFontData(request_description, settings_family_name);
 
   document.GetFontMatchingMetrics()->ReportFontLookupByUniqueOrFamilyName(
-      settings_family_name, font_description, font_data.get());
+      settings_family_name, request_description, font_data.get());
 
   return font_data;
 }

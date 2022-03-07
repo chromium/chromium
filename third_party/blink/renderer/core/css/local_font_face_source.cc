@@ -106,6 +106,8 @@ scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
   unstyled_description.SetStyle(NormalSlopeValue());
   unstyled_description.SetWeight(NormalWeightValue());
 #endif
+  // TODO(https://crbug.com/1302264): Enable passing down of font-palette
+  // information here (font_description.GetFontPalette()).
   scoped_refptr<SimpleFontData> font_data = FontCache::Get().GetFontData(
       unstyled_description, font_name_, AlternateFontName::kLocalUniqueFace);
   histograms_.Record(font_data.get());

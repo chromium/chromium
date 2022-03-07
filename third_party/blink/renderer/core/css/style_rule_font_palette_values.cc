@@ -33,6 +33,69 @@ StyleRuleFontPaletteValues::StyleRuleFontPaletteValues(
 
 StyleRuleFontPaletteValues::~StyleRuleFontPaletteValues() = default;
 
+AtomicString StyleRuleFontPaletteValues::GetFontFamilyAsString() const {
+  if (!font_family_ || !font_family_->IsFontFamilyValue())
+    return g_empty_atom;
+
+  return To<CSSFontFamilyValue>(*font_family_).Value();
+}
+
+FontPalette::BasePaletteValue StyleRuleFontPaletteValues::GetBasePaletteIndex()
+    const {
+  constexpr FontPalette::BasePaletteValue kNoBasePaletteValue = {
+      FontPalette::kNoBasePalette, 0};
+  if (!base_palette_) {
+    return kNoBasePaletteValue;
+  }
+
+  if (auto* base_palette_identifier =
+          DynamicTo<CSSIdentifierValue>(*base_palette_)) {
+    switch (base_palette_identifier->GetValueID()) {
+      case CSSValueID::kLight:
+        return FontPalette::BasePaletteValue(
+            {FontPalette::kLightBasePalette, 0});
+      case CSSValueID::kDark:
+        return FontPalette::BasePaletteValue(
+            {FontPalette::kDarkBasePalette, 0});
+      default:
+        NOTREACHED();
+        return kNoBasePaletteValue;
+    }
+  }
+
+  const CSSPrimitiveValue& palette_primitive =
+      To<CSSPrimitiveValue>(*base_palette_);
+  return FontPalette::BasePaletteValue(
+      {FontPalette::kIndexBasePalette, palette_primitive.GetIntValue()});
+}
+
+Vector<FontPalette::FontPaletteOverride>
+StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
+  if (!override_colors_ || !override_colors_->IsValueList())
+    return {};
+
+  const CSSValueList& overrides_list = To<CSSValueList>(*override_colors_);
+
+  Vector<FontPalette::FontPaletteOverride> return_overrides;
+  for (auto& item : overrides_list) {
+    const CSSValuePair& override_pair = To<CSSValuePair>(*item);
+
+    const CSSPrimitiveValue& palette_index =
+        To<CSSPrimitiveValue>(override_pair.First());
+    DCHECK(palette_index.IsInteger());
+
+    cssvalue::CSSColor override_color =
+        To<cssvalue::CSSColor>(override_pair.Second());
+
+    FontPalette::FontPaletteOverride palette_override{
+        palette_index.GetIntValue(),
+        static_cast<SkColor>(override_color.Value())};
+    return_overrides.push_back(palette_override);
+  }
+
+  return return_overrides;
+}
+
 void StyleRuleFontPaletteValues::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   visitor->Trace(font_family_);
