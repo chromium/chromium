@@ -503,10 +503,6 @@
       status: "experimental",
     },
     {
-      name: "ConversionMeasurementEventSources",
-      status: "test",
-    },
-    {
       name: "CooperativeScheduling"
     },
     {

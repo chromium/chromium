@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsOriginTrialBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(),
                          "document.featurePolicy.features().includes('"
                          "attribution-reporting')"));
-  EXPECT_EQ(true, EvalJs(shell(), "window.attributionReporting === undefined"));
+  EXPECT_EQ(true, EvalJs(shell(), "window.attributionReporting !== undefined"));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionsOriginTrialBrowserTest,
