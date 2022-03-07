@@ -2905,8 +2905,10 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // Also children of <label> elements, for accname calculation purposes.
   // This checks to see whether this is a child of one of those.
   if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*node)) {
-    if (parent_node->IsCustomElement() || IsA<HTMLSlotElement>(parent_node))
+    if (parent_node->IsCustomElement() ||
+        ToHTMLSlotElementIfSupportsAssignmentOrNull(parent_node)) {
       return true;
+    }
     // <span>s are ignored because they are considered uninteresting. Do not add
     // them back inside labels.
     if (IsA<HTMLLabelElement>(parent_node) && !IsA<HTMLSpanElement>(node))
@@ -2968,7 +2970,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // information with their original location in the DOM. Therefore, we need to
   // ensure that in the accessibility tree no remnant information from the
   // unflattened DOM tree remains, such as the cached parent.
-  if (IsA<HTMLSlotElement>(element))
+  if (ToHTMLSlotElementIfSupportsAssignmentOrNull(element))
     return true;
 
   // Include all pseudo element content. Any anonymous subtree is included
@@ -4935,8 +4937,8 @@ void AXObject::ClearChildren() const {
 
   // TODO(crbug.com/1209216): Figure out why removing this causes a
   // use-after-poison and possibly replace it with a better check.
-  HTMLSlotElement* slot = DynamicTo<HTMLSlotElement>(node);
-  if (slot && slot->SupportsAssignment())
+  HTMLSlotElement* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node);
+  if (slot)
     return;
 
   if (Node* map = GetMapForImage(node))
