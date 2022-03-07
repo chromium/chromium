@@ -1462,8 +1462,16 @@ class ChromeSitePerProcessTestWithVerifiedUserActivation
 };
 
 // Test mouse down activation notification with browser verification.
+// TODO(crbug.com/1303596): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UserActivationBrowserVerificationSameOriginSite \
+  DISABLED_UserActivationBrowserVerificationSameOriginSite
+#else
+#define MAYBE_UserActivationBrowserVerificationSameOriginSite \
+  UserActivationBrowserVerificationSameOriginSite
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTestWithVerifiedUserActivation,
-                       UserActivationBrowserVerificationSameOriginSite) {
+                       MAYBE_UserActivationBrowserVerificationSameOriginSite) {
   // Start on a page a.com with same-origin iframe on a.com and cross-origin
   // iframe b.com.
   GURL main_url(embedded_test_server()->GetURL(
