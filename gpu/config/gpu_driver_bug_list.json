@@ -3933,6 +3933,20 @@
       "features": [
         "disable_dynamic_video_encode_framerate_update"
       ]
+    },
+    {
+      "id": 391,
+      "description": "Skia ReduceOpsTaskSplitting causes artifacts on Intel Skylake",
+      "cr_bugs": [1298809],
+      "os": {
+        "type": "win"
+      },
+      "intel_gpu_series": [
+        "skylake"
+      ],
+      "features": [
+        "disable_skia_reduce_ops_task_splitting"
+      ]
     }
   ]
 }
