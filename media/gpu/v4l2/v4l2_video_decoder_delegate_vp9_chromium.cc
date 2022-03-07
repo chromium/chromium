@@ -173,12 +173,11 @@ void GetVP9ProbsParams(const struct v4l2_vp9_probabilities* v4l2_probs,
 V4L2VideoDecoderDelegateVP9Chromium::V4L2VideoDecoderDelegateVP9Chromium(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
-    : surface_handler_(surface_handler), device_(device) {
+    : surface_handler_(surface_handler),
+      device_(device),
+      device_needs_compressed_header_parsed_(
+          device->IsCtrlExposed(V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(0))) {
   DCHECK(surface_handler_);
-  DCHECK(device_);
-
-  device_needs_frame_context_ =
-      device_->IsCtrlExposed(V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(0));
 }
 
 V4L2VideoDecoderDelegateVP9Chromium::~V4L2VideoDecoderDelegateVP9Chromium() =
@@ -366,8 +365,8 @@ bool V4L2VideoDecoderDelegateVP9Chromium::GetFrameContext(
   return true;
 }
 
-bool V4L2VideoDecoderDelegateVP9Chromium::IsFrameContextRequired() const {
-  return device_needs_frame_context_;
+bool V4L2VideoDecoderDelegateVP9Chromium::NeedsCompressedHeaderParsed() const {
+  return device_needs_compressed_header_parsed_;
 }
 
 }  // namespace media
