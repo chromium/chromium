@@ -49,7 +49,7 @@ class IOSNTPTilesInternalsMessageHandlerBridge
   std::unique_ptr<ntp_tiles::MostVisitedSites> MakeMostVisitedSites() override;
   PrefService* GetPrefs() override;
   using MessageCallback =
-      base::RepeatingCallback<void(base::Value::ConstListView)>;
+      base::RepeatingCallback<void(const base::Value::List&)>;
   void RegisterMessageCallback(const std::string& message,
                                MessageCallback callback) override;
   using DeprecatedMessageCallback =
@@ -102,7 +102,7 @@ PrefService* IOSNTPTilesInternalsMessageHandlerBridge::GetPrefs() {
 void IOSNTPTilesInternalsMessageHandlerBridge::RegisterMessageCallback(
     const std::string& message,
     MessageCallback callback) {
-  web_ui()->RegisterDeprecatedMessageCallback2(message, std::move(callback));
+  web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
 void IOSNTPTilesInternalsMessageHandlerBridge::

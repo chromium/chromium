@@ -49,18 +49,7 @@ class WebUIIOS {
   virtual void RegisterMessageCallback(const std::string& message,
                                        MessageCallback callback) = 0;
 
-  // TODO(crbug.com/1300095): Instances of RegisterDeprecatedMessageCallback2()
-  // should be migrated to RegisterMessageCallback().
-  //
-  // Used by WebUIIOSMessageHandlers. If the given message is already
-  // registered, the call has no effect.
-  using DeprecatedMessageCallback2 =
-      base::RepeatingCallback<void(base::Value::ConstListView)>;
-  virtual void RegisterDeprecatedMessageCallback2(
-      const std::string& message,
-      DeprecatedMessageCallback2 callback) = 0;
-
-  // TODO(crbug.com/1300095): Instances of RegisterDeprecatedMessageCallback()
+  // TODO(crbug.com/1243386): Instances of RegisterDeprecatedMessageCallback()
   // should be migrated to RegisterMessageCallback().
   //
   // Used by WebUIIOSMessageHandlers. If the given message is already

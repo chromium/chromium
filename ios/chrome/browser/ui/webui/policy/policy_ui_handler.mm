@@ -130,22 +130,22 @@ void PolicyUIHandler::RegisterMessages() {
       ChromeBrowserState::FromWebUIIOS(web_ui());
   browser_state->GetPolicyConnector()->GetSchemaRegistry()->AddObserver(this);
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "listenPoliciesUpdates",
       base::BindRepeating(&PolicyUIHandler::HandleListenPoliciesUpdates,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "reloadPolicies",
       base::BindRepeating(&PolicyUIHandler::HandleReloadPolicies,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "copyPoliciesJSON",
       base::BindRepeating(&PolicyUIHandler::HandleCopyPoliciesJson,
                           base::Unretained(this)));
 }
 
-void PolicyUIHandler::HandleCopyPoliciesJson(base::Value::ConstListView args) {
+void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
   NSString* jsonString = base::SysUTF8ToNSString(GetPoliciesAsJson());
   [UIPasteboard generalPasteboard].string = jsonString;
 }
@@ -211,11 +211,11 @@ base::Value PolicyUIHandler::GetPolicyValues() const {
 }
 
 void PolicyUIHandler::HandleListenPoliciesUpdates(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   OnRefreshPoliciesDone();
 }
 
-void PolicyUIHandler::HandleReloadPolicies(base::Value::ConstListView args) {
+void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
   GetPolicyService()->RefreshPolicies(base::BindOnce(
       &PolicyUIHandler::OnRefreshPoliciesDone, weak_factory_.GetWeakPtr()));
 }

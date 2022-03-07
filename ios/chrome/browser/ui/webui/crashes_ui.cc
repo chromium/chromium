@@ -80,10 +80,10 @@ class CrashesDOMHandler : public web::WebUIIOSMessageHandler {
   void OnUploadListAvailable();
 
   // Asynchronously fetches the list of crashes. Called from JS.
-  void HandleRequestCrashes(base::Value::ConstListView args);
+  void HandleRequestCrashes(const base::Value::List& args);
 
   // Asynchronously requests a user triggered upload. Called from JS.
-  void HandleRequestSingleCrashUpload(base::Value::ConstListView args);
+  void HandleRequestSingleCrashUpload(const base::Value::List& args);
 
   // Sends the recent crashes list JS.
   void UpdateUI();
@@ -105,17 +105,17 @@ CrashesDOMHandler::~CrashesDOMHandler() {
 void CrashesDOMHandler::RegisterMessages() {
   upload_list_->Load(base::BindOnce(&CrashesDOMHandler::OnUploadListAvailable,
                                     base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       crash_reporter::kCrashesUIRequestCrashList,
       base::BindRepeating(&CrashesDOMHandler::HandleRequestCrashes,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       crash_reporter::kCrashesUIRequestSingleCrashUpload,
       base::BindRepeating(&CrashesDOMHandler::HandleRequestSingleCrashUpload,
                           base::Unretained(this)));
 }
 
-void CrashesDOMHandler::HandleRequestCrashes(base::Value::ConstListView args) {
+void CrashesDOMHandler::HandleRequestCrashes(const base::Value::List& args) {
   if (first_load_) {
     first_load_ = false;
     if (list_available_)
@@ -128,7 +128,7 @@ void CrashesDOMHandler::HandleRequestCrashes(base::Value::ConstListView args) {
 }
 
 void CrashesDOMHandler::HandleRequestSingleCrashUpload(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(crash_reporter::IsCrashpadRunning());
   if (!IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled()) {
     return;

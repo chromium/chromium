@@ -263,12 +263,6 @@ void WebUIImpl::RegisterMessageCallback(base::StringPiece message,
   message_callbacks_.emplace(message, std::move(callback));
 }
 
-void WebUIImpl::RegisterDeprecatedMessageCallback2(
-    base::StringPiece message,
-    DeprecatedMessageCallback2 callback) {
-  deprecated_message_callbacks_2_.emplace(message, std::move(callback));
-}
-
 void WebUIImpl::RegisterDeprecatedMessageCallback(
     base::StringPiece message,
     const DeprecatedMessageCallback& callback) {
@@ -285,15 +279,6 @@ void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
   if (callback_pair != message_callbacks_.end()) {
     // Forward this message and content on.
     callback_pair->second.Run(args.GetList());
-    return;
-  }
-
-  // Look up the deprecated callback for this message.
-  auto deprecated_callback_2_pair =
-      deprecated_message_callbacks_2_.find(message);
-  if (deprecated_callback_2_pair != deprecated_message_callbacks_2_.end()) {
-    // Forward this message and content on.
-    deprecated_callback_2_pair->second.Run(args.GetListDeprecated());
     return;
   }
 

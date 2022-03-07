@@ -54,13 +54,13 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   base::Value GetPolicyValues() const;
 
   // Called to handle the "listenPoliciesUpdates" WebUI message.
-  void HandleListenPoliciesUpdates(base::Value::ConstListView args);
+  void HandleListenPoliciesUpdates(const base::Value::List& args);
 
   // Called to handle the "copyPoliciesJSON" WebUI message.
-  void HandleCopyPoliciesJson(base::Value::ConstListView args);
+  void HandleCopyPoliciesJson(const base::Value::List& args);
 
   // Called to handle the "reloadPolicies" WebUI message.
-  void HandleReloadPolicies(base::Value::ConstListView args);
+  void HandleReloadPolicies(const base::Value::List& args);
 
   // Send information about the current policy values to the UI. For each policy
   // whose value has been set, dictionaries containing the value and additional

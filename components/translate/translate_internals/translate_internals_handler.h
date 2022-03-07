@@ -46,7 +46,7 @@ class TranslateInternalsHandler {
   virtual variations::VariationsService* GetVariationsService() = 0;
   // Registers to handle |message| from JavaScript with |callback|.
   using MessageCallback =
-      base::RepeatingCallback<void(base::Value::ConstListView)>;
+      base::RepeatingCallback<void(const base::Value::List&)>;
   virtual void RegisterMessageCallback(const std::string& message,
                                        MessageCallback callback) = 0;
 

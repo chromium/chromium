@@ -63,17 +63,17 @@ IndexedDBInternalsHandler::~IndexedDBInternalsHandler() = default;
 void IndexedDBInternalsHandler::RegisterMessages() {
   // TODO(https://crbug.com/1199077): Fix this name as part of storage key
   // migration.
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getAllOrigins",
       base::BindRepeating(&IndexedDBInternalsHandler::GetAllStorageKeys,
                           base::Unretained(this)));
   // TODO(https://crbug.com/1199077): Fix this name as part of storage key
   // migration.
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "downloadOriginData",
       base::BindRepeating(&IndexedDBInternalsHandler::DownloadStorageKeyData,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "forceClose",
       base::BindRepeating(&IndexedDBInternalsHandler::ForceCloseStorageKey,
                           base::Unretained(this)));
@@ -84,7 +84,7 @@ void IndexedDBInternalsHandler::OnJavascriptDisallowed() {
 }
 
 void IndexedDBInternalsHandler::GetAllStorageKeys(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   AllowJavascript();
@@ -134,7 +134,7 @@ static void FindControl(const base::FilePath& partition_path,
 }
 
 bool IndexedDBInternalsHandler::GetStorageKeyData(
-    base::Value::ConstListView args,
+    const base::Value::List& args,
     std::string* callback_id,
     base::FilePath* partition_path,
     blink::StorageKey* storage_key,
@@ -170,7 +170,7 @@ bool IndexedDBInternalsHandler::GetStorageKeyControl(
 }
 
 void IndexedDBInternalsHandler::DownloadStorageKeyData(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string callback_id;
@@ -215,7 +215,7 @@ void IndexedDBInternalsHandler::DownloadStorageKeyData(
 }
 
 void IndexedDBInternalsHandler::ForceCloseStorageKey(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string callback_id;

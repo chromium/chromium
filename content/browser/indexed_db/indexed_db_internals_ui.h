@@ -56,11 +56,11 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  void GetAllStorageKeys(base::Value::ConstListView args);
+  void GetAllStorageKeys(const base::Value::List& args);
   void OnStorageKeysReady(const base::Value& storage_keys,
                           const base::FilePath& path);
 
-  void DownloadStorageKeyData(base::Value::ConstListView args);
+  void DownloadStorageKeyData(const base::Value::List& args);
   void OnDownloadDataReady(const std::string& callback_id,
                            uint64_t connection_count,
                            bool success,
@@ -72,13 +72,13 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
                          download::DownloadItem* item,
                          download::DownloadInterruptReason interrupt_reason);
 
-  void ForceCloseStorageKey(base::Value::ConstListView args);
+  void ForceCloseStorageKey(const base::Value::List& args);
   void OnForcedClose(const std::string& callback_id, uint64_t connection_count);
 
   bool GetStorageKeyControl(const base::FilePath& path,
                             const blink::StorageKey& storage_key,
                             storage::mojom::IndexedDBControl** control);
-  bool GetStorageKeyData(base::Value::ConstListView args,
+  bool GetStorageKeyData(const base::Value::List& args,
                          std::string* callback_id,
                          base::FilePath* path,
                          blink::StorageKey* storage_key,

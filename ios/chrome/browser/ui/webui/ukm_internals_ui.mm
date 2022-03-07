@@ -47,7 +47,7 @@ class UkmMessageHandler : public web::WebUIIOSMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleRequestUkmData(base::Value::ConstListView args);
+  void HandleRequestUkmData(const base::Value::List& args);
 
   const ukm::UkmService* ukm_service_;
 };
@@ -58,13 +58,13 @@ UkmMessageHandler::UkmMessageHandler(const ukm::UkmService* ukm_service)
 UkmMessageHandler::~UkmMessageHandler() {}
 
 void UkmMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "requestUkmData",
       base::BindRepeating(&UkmMessageHandler::HandleRequestUkmData,
                           base::Unretained(this)));
 }
 
-void UkmMessageHandler::HandleRequestUkmData(base::Value::ConstListView args) {
+void UkmMessageHandler::HandleRequestUkmData(const base::Value::List& args) {
   base::Value ukm_debug_data =
       ukm::debug::UkmDebugDataExtractor::GetStructuredData(ukm_service_);
 

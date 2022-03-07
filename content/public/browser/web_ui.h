@@ -80,18 +80,7 @@ class CONTENT_EXPORT WebUI {
   virtual void RegisterMessageCallback(base::StringPiece message,
                                        MessageCallback callback) = 0;
 
-  // TODO(crbug.com/1300095): Instances of RegisterDeprecatedMessageCallback2()
-  // should be migrated to RegisterMessageCallback() above if possible.
-  //
-  // Used by WebUIMessageHandlers. If the given message is already registered,
-  // the call has no effect. Use RegisterMessageCallback() above in new code.
-  using DeprecatedMessageCallback2 =
-      base::RepeatingCallback<void(base::Value::ConstListView)>;
-  virtual void RegisterDeprecatedMessageCallback2(
-      base::StringPiece message,
-      DeprecatedMessageCallback2 callback) = 0;
-
-  // TODO(crbug.com/1300095): Instances of RegisterDeprecatedMessageCallback()
+  // TODO(crbug.com/1243386): Instances of RegisterDeprecatedMessageCallback()
   // should be migrated to RegisterMessageCallback() above if possible.
   //
   // Used by WebUIMessageHandlers. If the given message is already registered,

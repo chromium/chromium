@@ -38,17 +38,17 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
  private:
   // WebUIIOSMessageHandler implementation.
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback2(
+    web_ui()->RegisterMessageCallback(
         "getServiceStatus",
         base::BindRepeating(
             &DownloadInternalsUIMessageHandler::HandleGetServiceStatus,
             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterDeprecatedMessageCallback2(
+    web_ui()->RegisterMessageCallback(
         "getServiceDownloads",
         base::BindRepeating(
             &DownloadInternalsUIMessageHandler::HandleGetServiceDownloads,
             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterDeprecatedMessageCallback2(
+    web_ui()->RegisterMessageCallback(
         "startDownload",
         base::BindRepeating(
             &DownloadInternalsUIMessageHandler::HandleStartDownload,
@@ -96,7 +96,7 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
     web_ui()->FireWebUIListener("service-request-made", args);
   }
 
-  void HandleGetServiceStatus(base::Value::ConstListView args) {
+  void HandleGetServiceStatus(const base::Value::List& args) {
     if (!download_service_)
       return;
 
@@ -104,7 +104,7 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
         args[0], download_service_->GetLogger()->GetServiceStatus());
   }
 
-  void HandleGetServiceDownloads(base::Value::ConstListView args) {
+  void HandleGetServiceDownloads(const base::Value::List& args) {
     if (!download_service_)
       return;
 
@@ -112,7 +112,7 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
         args[0], download_service_->GetLogger()->GetServiceDownloads());
   }
 
-  void HandleStartDownload(base::Value::ConstListView args) {
+  void HandleStartDownload(const base::Value::List& args) {
     if (!download_service_)
       return;
 

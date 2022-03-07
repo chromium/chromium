@@ -79,16 +79,16 @@ class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
   void RegisterMessages() override;
 
   // Callback for the "requestExperimentFeatures" message.
-  void HandleRequestExperimentalFeatures(base::Value::ConstListView args);
+  void HandleRequestExperimentalFeatures(const base::Value::List& args);
 
   // Callback for the "enableExperimentalFeature" message.
-  void HandleEnableExperimentalFeatureMessage(base::Value::ConstListView args);
+  void HandleEnableExperimentalFeatureMessage(const base::Value::List& args);
 
   // Callback for the "restartBrowser" message. Restores all tabs on restart.
-  void HandleRestartBrowser(base::Value::ConstListView args);
+  void HandleRestartBrowser(const base::Value::List& args);
 
   // Callback for the "resetAllFlags" message.
-  void HandleResetAllFlags(base::Value::ConstListView args);
+  void HandleResetAllFlags(const base::Value::List& args);
 
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
@@ -96,20 +96,20 @@ class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
 };
 
 void FlagsDOMHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       flags_ui::kRequestExperimentalFeatures,
       base::BindRepeating(&FlagsDOMHandler::HandleRequestExperimentalFeatures,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       flags_ui::kEnableExperimentalFeature,
       base::BindRepeating(
           &FlagsDOMHandler::HandleEnableExperimentalFeatureMessage,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       flags_ui::kRestartBrowser,
       base::BindRepeating(&FlagsDOMHandler::HandleRestartBrowser,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       flags_ui::kResetAllFlags,
       base::BindRepeating(&FlagsDOMHandler::HandleResetAllFlags,
                           base::Unretained(this)));
@@ -123,7 +123,7 @@ void FlagsDOMHandler::Init(
 }
 
 void FlagsDOMHandler::HandleRequestExperimentalFeatures(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(flags_storage_);
   DCHECK(!args.empty());
   const base::Value& callback_id = args[0];
@@ -151,7 +151,7 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
 }
 
 void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(flags_storage_);
   DCHECK_EQ(2u, args.size());
   if (args.size() != 2)
@@ -167,13 +167,13 @@ void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
   flags_storage_->CommitPendingWrites();
 }
 
-void FlagsDOMHandler::HandleRestartBrowser(base::Value::ConstListView args) {
+void FlagsDOMHandler::HandleRestartBrowser(const base::Value::List& args) {
 #if BUILDFLAG(CHROMIUM_BRANDING)
   CHECK(false);
 #endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }
 
-void FlagsDOMHandler::HandleResetAllFlags(base::Value::ConstListView args) {
+void FlagsDOMHandler::HandleResetAllFlags(const base::Value::List& args) {
   DCHECK(flags_storage_);
   ResetAllFlags(flags_storage_.get());
   flags_storage_->CommitPendingWrites();

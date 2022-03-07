@@ -34,7 +34,7 @@ class SignInInternalsHandlerIOS : public web::WebUIIOSMessageHandler,
   // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
 
-  void HandleGetSignInInfo(base::Value::ConstListView args);
+  void HandleGetSignInInfo(const base::Value::List& args);
 
   // AboutSigninInternals::Observer::OnSigninStateChanged implementation.
   void OnSigninStateChanged(const base::Value* info) override;

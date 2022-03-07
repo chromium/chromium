@@ -44,7 +44,7 @@ class NTPTilesInternalsMessageHandlerClient {
   // Registers a callback in Javascript. See content::WebUI and web::WebUIIOS.
   virtual void RegisterMessageCallback(
       const std::string& message,
-      base::RepeatingCallback<void(base::Value::ConstListView)> callback) = 0;
+      base::RepeatingCallback<void(const base::Value::List&)> callback) = 0;
 
   // Always use RegisterMessageCallback() above in new code.
   //

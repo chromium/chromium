@@ -59,14 +59,14 @@ SignInInternalsHandlerIOS::~SignInInternalsHandlerIOS() {
 }
 
 void SignInInternalsHandlerIOS::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSigninInfo",
       base::BindRepeating(&SignInInternalsHandlerIOS::HandleGetSignInInfo,
                           base::Unretained(this)));
 }
 
 void SignInInternalsHandlerIOS::HandleGetSignInInfo(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_GE(args.size(), 1u);
   std::string callback_id = args[0].GetString();  // CHECKs if non-string.
   base::Value callback(callback_id);
