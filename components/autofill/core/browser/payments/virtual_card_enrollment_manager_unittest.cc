@@ -468,7 +468,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, UpstreamAnimationSync_AnimationFirst) {
 
 TEST_F(VirtualCardEnrollmentManagerTest, UpstreamAnimationSync_ResponseFirst) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAutofillEnableToolbarStatusChip);
+  feature_list.InitWithFeatures({features::kAutofillEnableToolbarStatusChip,
+                                 features::kAutofillCreditCardUploadFeedback},
+                                {});
   personal_data_manager_->ClearCreditCardArtImages();
   SetUpCard();
   SetValidCardArtImageForCard(*card_);
