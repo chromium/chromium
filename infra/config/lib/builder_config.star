@@ -509,6 +509,8 @@ def _set_builder_config_property(ctx):
     if cfg == None:
         fail("There is no buildbucket configuration file to update properties")
 
+    bc_state = _bc_state()
+
     for bucket in cfg.buckets:
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
@@ -516,8 +518,6 @@ def _set_builder_config_property(ctx):
             node = _BUILDER_CONFIG.get(bucket_name, builder_name)
             if not node:
                 continue
-
-            bc_state = _bc_state()
 
             entries = []
             builder_ids = []
