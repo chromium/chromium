@@ -327,7 +327,10 @@ IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesInteractiveTest, Recipe) {
       "autofill_captured_sites_interactive_uitest");
 
   // Prints the path of the test to be executed.
-  VLOG(1) << GetParam().site_name;
+  if (GetParam().bug_number.empty())
+    VLOG(1) << GetParam().site_name;
+  else
+    VLOG(1) << GetParam().site_name << ": crbug.com/" << GetParam().bug_number;
 
   base::FilePath src_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
