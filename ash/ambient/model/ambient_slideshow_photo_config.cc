@@ -18,6 +18,7 @@ AmbientPhotoConfig CreateAmbientSlideshowPhotoConfig() {
   // can alternate between the 2 topics indefinitely.
   config.num_topic_sets_to_buffer = 2;
   config.topic_set_size = 1;
+  config.min_total_topics_required = config.num_topic_sets_to_buffer;
 
   // The view for this UI listens for when a new topic has been committed to
   // the model and uses this as a signal to immediately update the UI. Thus,

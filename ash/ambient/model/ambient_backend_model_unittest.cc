@@ -30,6 +30,7 @@ namespace ash {
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Mock;
 using ::testing::Not;
 
 namespace {
@@ -88,7 +89,8 @@ MATCHER_P(MatchesPhotosInTopic, expected_topic, "") {
 
 class AmbientBackendModelTest : public AshTestBase {
  protected:
-  AmbientBackendModelTest() = default;
+  AmbientBackendModelTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   AmbientBackendModelTest(const AmbientBackendModelTest&) = delete;
   AmbientBackendModelTest& operator=(AmbientBackendModelTest&) = delete;
   ~AmbientBackendModelTest() override = default;
@@ -291,6 +293,20 @@ TEST_F(AmbientBackendModelTest, ShouldNotifyObserversOnImageAdded) {
 
   EXPECT_CALL(observer, OnImageAdded).Times(3);
   AddNTestImages(3);
+}
+
+TEST_F(AmbientBackendModelTest, DoesNotTimeoutIfMinimumTopicsUnavailable) {
+  testing::NiceMock<MockAmbientBackendModelObserver> observer;
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+      scoped_obs{&observer};
+  scoped_obs.Observe(ambient_backend_model());
+
+  AddNTestImages(1);
+  ASSERT_FALSE(ambient_backend_model_->ImagesReady());
+
+  EXPECT_CALL(observer, OnImagesReady).Times(0);
+  task_environment()->FastForwardBy(base::Minutes(1));
+  EXPECT_FALSE(ambient_backend_model_->ImagesReady());
 }
 
 TEST_F(AmbientBackendModelTest, ShouldPairLandscapeImages) {
@@ -525,6 +541,27 @@ TEST_F(AmbientBackendModelTestWithAnimationConfig, ImagesReady) {
   AddNTestImages(1);
   EXPECT_TRUE(ambient_backend_model_->ImagesReady());
   AddNTestImages(1);
+  EXPECT_TRUE(ambient_backend_model_->ImagesReady());
+}
+
+TEST_F(AmbientBackendModelTestWithAnimationConfig,
+       TimesOutWithMinimumTopicsAvailable) {
+  testing::NiceMock<MockAmbientBackendModelObserver> observer;
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+      scoped_obs{&observer};
+  scoped_obs.Observe(ambient_backend_model());
+
+  AddNTestImages(1);
+  ASSERT_FALSE(ambient_backend_model_->ImagesReady());
+
+  EXPECT_CALL(observer, OnImagesReady);
+  task_environment()->FastForwardBy(base::Seconds(15));
+  Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_TRUE(ambient_backend_model_->ImagesReady());
+
+  EXPECT_CALL(observer, OnImagesReady).Times(0);
+  AddNTestImages(1);
+  Mock::VerifyAndClearExpectations(&observer);
   EXPECT_TRUE(ambient_backend_model_->ImagesReady());
 }
 

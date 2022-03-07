@@ -73,6 +73,10 @@ ASH_EXPORT AmbientPhotoConfig CreateAmbientAnimationPhotoConfig(
       skottie_resource_metadata,
       /*num_total_positions_out=*/config.topic_set_size,
       /*num_assets_per_position_out=*/config.num_topic_sets_to_buffer);
+  // In the worst case scenario, the same topic can be replicated across all
+  // of the assets in the animation. The screen will not burn due to the jitter
+  // applied to the animation.
+  config.min_total_topics_required = 1;
 
   // Once an animation cycle starts rendering (including the very first
   // cycle), start preparing the next set of decoded topics for the next

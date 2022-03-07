@@ -15,10 +15,16 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 
 namespace ash {
 
 namespace {
+
+// Note this does not start until the minimum number of topics required in the
+// AmbientPhotoConfig is reached.
+constexpr base::TimeDelta kImagesReadyTimeout = base::Seconds(10);
+
 int TypeToIndex(::ambient::TopicType topic_type) {
   int index = static_cast<int>(topic_type);
   DCHECK_GE(index, 0);
@@ -171,11 +177,23 @@ void AmbientBackendModel::AppendTopics(
 bool AmbientBackendModel::ImagesReady() const {
   DCHECK_LE(all_decoded_topics_.size(),
             photo_config_.GetNumDecodedTopicsToBuffer());
-  // TODO(esum): Add a timeout (ex: 10 seconds) for the animated screensaver,
-  // after which we just start the UI anyways if at least 1 topic is buffered
-  // (duplicating that topic in the animation).
   return all_decoded_topics_.size() ==
-         photo_config_.GetNumDecodedTopicsToBuffer();
+             photo_config_.GetNumDecodedTopicsToBuffer() ||
+         images_ready_timed_out_;
+}
+
+void AmbientBackendModel::OnImagesReadyTimeoutFired() {
+  if (ImagesReady())
+    return;
+
+  DCHECK_GE(all_decoded_topics_.size(),
+            photo_config_.min_total_topics_required);
+  // TODO(esum): Add metrics for how often this case happens.
+  LOG(WARNING) << "Timed out trying to prepare "
+               << photo_config_.GetNumDecodedTopicsToBuffer()
+               << " topics. Starting UI with " << all_decoded_topics_.size();
+  images_ready_timed_out_ = true;
+  NotifyImagesReady();
 }
 
 void AmbientBackendModel::AddNextImage(
@@ -201,6 +219,13 @@ void AmbientBackendModel::AddNextImage(
   bool new_images_ready = ImagesReady();
   if (!old_images_ready && new_images_ready) {
     NotifyImagesReady();
+  } else if (!new_images_ready &&
+             all_decoded_topics_.size() >=
+                 photo_config_.min_total_topics_required &&
+             !images_ready_timeout_timer_.IsRunning()) {
+    images_ready_timeout_timer_.Start(
+        FROM_HERE, kImagesReadyTimeout, this,
+        &AmbientBackendModel::OnImagesReadyTimeoutFired);
   }
 }
 
@@ -237,6 +262,9 @@ base::TimeDelta AmbientBackendModel::GetPhotoRefreshInterval() const {
 void AmbientBackendModel::SetPhotoConfig(AmbientPhotoConfig photo_config) {
   photo_config_ = std::move(photo_config);
   DCHECK_GT(photo_config_.GetNumDecodedTopicsToBuffer(), 0u);
+  DCHECK_GT(photo_config_.min_total_topics_required, 0u);
+  DCHECK_LE(photo_config_.min_total_topics_required,
+            photo_config_.GetNumDecodedTopicsToBuffer());
   DCHECK(!photo_config_.refresh_topic_markers.empty());
   Clear();
 }
@@ -244,6 +272,8 @@ void AmbientBackendModel::SetPhotoConfig(AmbientPhotoConfig photo_config) {
 void AmbientBackendModel::Clear() {
   topics_.clear();
   all_decoded_topics_.clear();
+  images_ready_timeout_timer_.Stop();
+  images_ready_timed_out_ = false;
 }
 
 void AmbientBackendModel::GetCurrentAndNextImages(

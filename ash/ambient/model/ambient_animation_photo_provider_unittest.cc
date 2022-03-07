@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -157,6 +158,7 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
     return all_frame_data;
   }
 
+  base::test::TaskEnvironment task_environment_;
   AmbientBackendModel model_;
   FakeAmbientAnimationStaticResources static_resources_;
   AmbientAnimationPhotoProvider provider_;
