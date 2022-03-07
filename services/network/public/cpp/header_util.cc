@@ -4,9 +4,14 @@
 
 #include "services/network/public/cpp/header_util.h"
 
+#include <string>
+#include <vector>
+
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -94,6 +99,73 @@ bool AreRequestHeadersSafe(const net::HttpRequestHeaders& request_headers) {
   }
 
   return true;
+}
+
+// TODO(https://crbug.com/1302851): Consider merging this with
+// ProcessReferrerPolicyHeaderOnRedirect() in //net and/or
+// blink::SecurityPolicy::ReferrerPolicyFromString().
+mojom::ReferrerPolicy ParseReferrerPolicy(
+    const net::HttpResponseHeaders& response_headers) {
+  mojom::ReferrerPolicy policy = mojom::ReferrerPolicy::kDefault;
+
+  std::string referrer_policy_header;
+  if (!response_headers.GetNormalizedHeader("Referrer-Policy",
+                                            &referrer_policy_header)) {
+    return policy;
+  }
+
+  std::vector<base::StringPiece> policy_tokens =
+      base::SplitStringPiece(referrer_policy_header, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+
+  // Per https://w3c.github.io/webappsec-referrer-policy/#unknown-policy-values,
+  // use the last recognized policy value, and ignore unknown policies.
+  for (const auto& token : policy_tokens) {
+    if (base::CompareCaseInsensitiveASCII(token, "no-referrer") == 0) {
+      policy = mojom::ReferrerPolicy::kNever;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token,
+                                          "no-referrer-when-downgrade") == 0) {
+      policy = mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token, "origin") == 0) {
+      policy = mojom::ReferrerPolicy::kOrigin;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token, "origin-when-cross-origin") ==
+        0) {
+      policy = mojom::ReferrerPolicy::kOriginWhenCrossOrigin;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token, "unsafe-url") == 0) {
+      policy = mojom::ReferrerPolicy::kAlways;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token, "same-origin") == 0) {
+      policy = mojom::ReferrerPolicy::kSameOrigin;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token, "strict-origin") == 0) {
+      policy = mojom::ReferrerPolicy::kStrictOrigin;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(
+            token, "strict-origin-when-cross-origin") == 0) {
+      policy = mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
+      continue;
+    }
+  }
+
+  return policy;
 }
 
 bool ShouldSniffContent(const GURL& url,

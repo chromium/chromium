@@ -6,7 +6,9 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -101,6 +103,43 @@ TEST(HeaderUtilTest, AreRequestHeadersSafe) {
       EXPECT_EQ(header1.is_safe && header2.is_safe,
                 AreRequestHeadersSafe(request_headers2));
     }
+  }
+}
+
+TEST(HeaderUtilTest, ParseReferrerPolicy) {
+  struct TestCase {
+    const char* referrer_policy_value;
+    mojom::ReferrerPolicy expected_referrer_policy;
+  };
+  const TestCase kTests[] = {
+      {"", mojom::ReferrerPolicy::kDefault},
+      {"no-referrer", mojom::ReferrerPolicy::kNever},
+      {"no-referrer-when-downgrade",
+       mojom::ReferrerPolicy::kNoReferrerWhenDowngrade},
+      {"origin", mojom::ReferrerPolicy::kOrigin},
+      {"origin-when-cross-origin",
+       mojom::ReferrerPolicy::kOriginWhenCrossOrigin},
+      {"unsafe-url", mojom::ReferrerPolicy::kAlways},
+      {"same-origin", mojom::ReferrerPolicy::kSameOrigin},
+      {"strict-origin", mojom::ReferrerPolicy::kStrictOrigin},
+      {"strict-origin-when-cross-origin",
+       mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin},
+      // Unknown value.
+      {"unknown-value", mojom::ReferrerPolicy::kDefault},
+      // Multiple values.
+      {"no-referrer,unsafe-url", mojom::ReferrerPolicy::kAlways},
+  };
+
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(::testing::Message() << "referrer_policy_value: \""
+                                      << test.referrer_policy_value << "\"");
+
+    auto headers = net::HttpResponseHeaders::TryToCreate(base::StringPrintf(
+        "HTTP/1.1 200 OK\r\nReferrer-Policy: %s", test.referrer_policy_value));
+    ASSERT_TRUE(headers);
+
+    mojom::ReferrerPolicy parsed_policy = ParseReferrerPolicy(*headers);
+    EXPECT_EQ(parsed_policy, test.expected_referrer_policy);
   }
 }
 
