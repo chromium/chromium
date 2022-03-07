@@ -15,7 +15,6 @@ static_library("renderer") {
     "pdf_accessibility_tree.h",
     "pdf_ax_action_target.h",
     "pdf_internal_plugin_delegate.h",
-    "pepper_pdf_host.h",
   ]
 
   sources = [
@@ -25,7 +24,6 @@ static_library("renderer") {
     "pdf_internal_plugin_delegate.cc",
     "pdf_view_web_plugin_client.cc",
     "pdf_view_web_plugin_client.h",
-    "pepper_pdf_host.cc",
   ]
 
   deps = [

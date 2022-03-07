@@ -43,9 +43,6 @@
 #endif
 
 class ChromeRenderThreadObserver;
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && BUILDFLAG(ENABLE_PLUGINS)
-class ChromePDFPrintClient;
-#endif
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 class SpellCheck;
 #endif
@@ -277,9 +274,6 @@ class ChromeContentRendererClient
 #endif
   std::unique_ptr<subresource_filter::UnverifiedRulesetDealer>
       subresource_filter_ruleset_dealer_;
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && BUILDFLAG(ENABLE_PLUGINS)
-  std::unique_ptr<ChromePDFPrintClient> pdf_print_client_;
-#endif
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::set<std::string> allowed_camera_device_origins_;
 #endif
