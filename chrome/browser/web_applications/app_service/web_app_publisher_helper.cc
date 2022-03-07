@@ -1041,12 +1041,8 @@ void WebAppPublisherHelper::StopApp(const std::string& app_id) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!IsWebAppsCrosapiEnabled()) {
-    return;
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::LacrosService::Get()->init_params()->web_apps_enabled) {
     return;
   }
 #endif

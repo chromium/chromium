@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_service/web_apps_publisher_host.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -135,19 +136,21 @@ AppServiceProxyLacros::AppServiceProxyLacros(Profile* profile)
       outer_icon_loader_(&icon_coalescer_,
                          apps::IconCache::GarbageCollectionPolicy::kEager),
       profile_(profile) {
-  auto* service = chromeos::LacrosService::Get();
-  if (service && service->init_params()->web_apps_enabled &&
-      service->IsAvailable<crosapi::mojom::BrowserAppInstanceRegistry>()) {
-    browser_app_instance_tracker_ =
-        std::make_unique<apps::BrowserAppInstanceTracker>(profile_,
-                                                          app_registry_cache_);
-    auto& registry =
-        chromeos::LacrosService::Get()
-            ->GetRemote<crosapi::mojom::BrowserAppInstanceRegistry>();
-    DCHECK(registry);
-    browser_app_instance_forwarder_ =
-        std::make_unique<apps::BrowserAppInstanceForwarder>(
-            *browser_app_instance_tracker_, registry);
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    auto* service = chromeos::LacrosService::Get();
+    if (service &&
+        service->IsAvailable<crosapi::mojom::BrowserAppInstanceRegistry>()) {
+      browser_app_instance_tracker_ =
+          std::make_unique<apps::BrowserAppInstanceTracker>(
+              profile_, app_registry_cache_);
+      auto& registry =
+          chromeos::LacrosService::Get()
+              ->GetRemote<crosapi::mojom::BrowserAppInstanceRegistry>();
+      DCHECK(registry);
+      browser_app_instance_forwarder_ =
+          std::make_unique<apps::BrowserAppInstanceForwarder>(
+              *browser_app_instance_tracker_, registry);
+    }
   }
 }
 

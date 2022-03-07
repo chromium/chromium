@@ -39,6 +39,11 @@
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool g_enable_system_web_apps_in_lacros_for_testing = false;
@@ -320,10 +325,17 @@ std::vector<std::string> GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
   return extensions_for_display;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsWebAppsCrosapiEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(features::kWebAppsCrosapi) ||
          crosapi::browser_util::IsLacrosPrimaryBrowser();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* lacros_service = chromeos::LacrosService::Get();
+  return lacros_service && lacros_service->init_params()->web_apps_enabled &&
+         lacros_service->IsAvailable<crosapi::mojom::AppPublisher>();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 #endif
 

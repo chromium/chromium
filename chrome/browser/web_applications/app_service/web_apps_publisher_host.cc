@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -55,10 +56,7 @@ void WebAppsPublisherHost::Init() {
     if (!service) {
       return;
     }
-    if (!service->IsAvailable<crosapi::mojom::AppPublisher>()) {
-      return;
-    }
-    if (!service->init_params()->web_apps_enabled) {
+    if (!IsWebAppsCrosapiEnabled()) {
       return;
     }
 

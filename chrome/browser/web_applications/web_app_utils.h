@@ -166,7 +166,7 @@ AppId GetAppIdFromAppSettingsUrl(const GURL& url);
 // Check if |url|'s path is an installed web app.
 bool HasAppSettingsPage(Profile* profile, const GURL& url);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The kLacrosPrimary and kWebAppsCrosapi features are each independently
 // sufficient to enable the web apps Crosapi (used for Lacros web app
 // management).

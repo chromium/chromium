@@ -346,6 +346,10 @@ source_set("web_applications") {
     }
   }
 
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:lacros" ]
+  }
+
   public_deps = [
     "//chrome/browser/web_applications/proto",
     "//components/permissions:permissions",
