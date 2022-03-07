@@ -444,7 +444,8 @@ public abstract class XrTestFramework {
 
     /**
      * Loads the given file on an embedded server with the given timeout then
-     * waits for JavaScript to signal that it's ready for testing.
+     * waits for JavaScript to signal that it's ready for testing. Throws an
+     * assertion error if an improper page load is detected.
      *
      * @param file The name of the page to load.
      * @param timeoutSec The timeout of the page load in seconds.
@@ -452,9 +453,20 @@ public abstract class XrTestFramework {
      */
     public int loadFileAndAwaitInitialization(String url, int timeoutSec) {
         int result = mRule.loadUrl(getUrlForFile(url), timeoutSec);
-        Assert.assertTrue("Timed out waiting for JavaScript test initialization",
-                pollJavaScriptBoolean("isInitializationComplete()", POLL_TIMEOUT_LONG_MS,
-                        mRule.getWebContents()));
+        Assert.assertEquals(
+                "Page did not load correctly. Load result enum: " + String.valueOf(result), result,
+                Tab.TabLoadStatus.DEFAULT_PAGE_LOAD);
+        if (!pollJavaScriptBoolean(
+                    "isInitializationComplete()", POLL_TIMEOUT_LONG_MS, mRule.getWebContents())) {
+            Log.e(TAG,
+                    "Timed out waiting for JavaScript test initialization, attempting to get "
+                            + "additional debug information");
+            String initSteps = runJavaScriptOrFail(
+                    "initializationSteps", POLL_TIMEOUT_SHORT_MS, mRule.getWebContents());
+            Assert.fail(
+                    "Timed out waiting for JavaScript test initialization. Initialization steps "
+                    + "object: " + initSteps);
+        }
         return result;
     }
 
