@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SYSTEM_FLAGS_H_
 #define IOS_CHROME_BROWSER_SYSTEM_FLAGS_H_
 
-#include <string>
-
 #import <Foundation/Foundation.h>
 
 #include "base/feature_list.h"
@@ -32,7 +30,7 @@ bool AlwaysDisplayFirstRun();
 // Returns the host name for an alternative Origin Server host for use by
 // |BrandCode| startup ping. Returns empty string if there is no alternative
 // host specified.
-std::string GetOriginServerHost();
+NSString* GetOriginServerHost();
 NSString* GetOriginServerHostNSString();
 
 // Returns the promo force enabled, as determined by the experimental flags.
@@ -40,7 +38,6 @@ NSString* GetOriginServerHostNSString();
 WhatsNewPromoStatus GetWhatsNewPromoStatus();
 
 // Returns the URL for the alternative Discover Feed server.
-std::string getAlternateDiscoverFeedServerURL();
 NSString* GetAlternateDiscoverFeedServerURL();
 
 // Returns true if the prefs for the notice card views count and clicks count
