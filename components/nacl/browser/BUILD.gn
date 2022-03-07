@@ -36,7 +36,6 @@ static_library("browser") {
     "//components/url_formatter",
     "//content/public/browser",
     "//content/public/common",
-    "//native_client/src/trusted/service_runtime:sel_main_chrome",
     "//net",
     "//ppapi/host",
     "//ppapi/proxy:ipc",
@@ -56,6 +55,11 @@ static_library("browser") {
       "nacl_broker_host_win.h",
       "nacl_broker_service_win.cc",
       "nacl_broker_service_win.h",
+    ]
+
+    deps += [
+      # This is needed for the Windows debug exception handler.
+      "//native_client/src/trusted/service_runtime:sel",
     ]
   }
 
