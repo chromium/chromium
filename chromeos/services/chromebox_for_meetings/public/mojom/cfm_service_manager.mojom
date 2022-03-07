@@ -6,6 +6,27 @@
 
 module chromeos.cfm.mojom;
 
+// Interface used to store details regarding hotline mojom disconnect.
+interface DisconnectReason {
+ // Indicates that the reason for disconnection is unknown
+ // Code for unknown disconnect reason
+ const int32 kUnknownCode = 0;
+ // Message for unknown disconnect reason
+ const string kUnknownMessage = "unknown";
+
+ // Indicates that the disconnect occurred due to the service being unavailable.
+ // Code for unavailable service
+ const int32 kServiceUnavailableCode = 1;
+ // Message for unavailable service
+ const string kServiceUnavailableMessage = "Hotline Disabled";
+
+ // Indicates that the disconnect occurred due to a disabled finch experiment.
+ // Code for disabled finch experiment
+ const int32 kFinchDisabledCode = 2;
+ // Message for disabled finch experiment
+ const string kFinchDisabledMessage = "Finch Disabled";
+};
+
 // Interface used during bootstrapping in order to
 // 1. Add services to the primary interface broker.
 // 2. Obtain handle/s to the |CfmServiceRegistry|

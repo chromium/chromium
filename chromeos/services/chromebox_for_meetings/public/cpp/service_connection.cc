@@ -4,6 +4,8 @@
 
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
@@ -18,6 +20,8 @@ namespace chromeos {
 namespace cfm {
 
 namespace {
+
+constexpr char kPlatformErrorMessage[] = "CfmServiceContext bootstrap failed: ";
 
 // Real Impl of ServiceConnection.
 // Wraps |CfmServiceContext| to allow a single mojo invitation to facilitate
@@ -98,7 +102,7 @@ void ServiceConnectionImpl::CfMContextServiceStarted(
     bool is_available) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_available) {
-    LOG(WARNING) << "CfmServiceContext not available.";
+    LOG(WARNING) << kPlatformErrorMessage << "Service not available.";
     receiver.reset();
     return;
   }
@@ -129,7 +133,8 @@ void ServiceConnectionImpl::OnBootstrapMojoConnectionResponse(
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!success) {
-    LOG(WARNING) << "BootstrapMojoConnection D-Bus call failed";
+    LOG(WARNING) << kPlatformErrorMessage
+                 << "BootstrapMojoConnection D-Bus call failed";
     receiver.reset();
     return;
   }
@@ -137,7 +142,9 @@ void ServiceConnectionImpl::OnBootstrapMojoConnectionResponse(
   MojoResult result = mojo::FuseMessagePipes(receiver.PassPipe(),
                                              std::move(context_remote_pipe));
   if (result != MOJO_RESULT_OK) {
-    LOG(WARNING) << "Fusing message pipes failed.";
+    LOG(WARNING) << kPlatformErrorMessage << "Fusing message pipes failed.";
+  } else {
+    VLOG(2) << "Hotline Service Ready.";
   }
 }
 
