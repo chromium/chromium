@@ -10,6 +10,7 @@
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/system/power/power_button_controller_base.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/wm/lock_state_observer.h"
@@ -37,7 +38,8 @@ class PowerButtonScreenshotController;
 // devices. In tablet mode, power button may also be consumed to take a
 // screenshot.
 class ASH_EXPORT PowerButtonController
-    : public display::DisplayConfigurator::Observer,
+    : public PowerButtonControllerBase,
+      public display::DisplayConfigurator::Observer,
       public chromeos::PowerManagerClient::Observer,
       public AccelerometerReader::Observer,
       public ScreenBacklightObserver,
@@ -106,10 +108,6 @@ class ASH_EXPORT PowerButtonController
   // Handles lock button behavior.
   void OnLockButtonEvent(bool down, const base::TimeTicks& timestamp);
 
-  // Cancels the ongoing power button behavior. This can be called while the
-  // button is still held to prevent any action from being taken on release.
-  void CancelPowerButtonEvent();
-
   // True if the menu is opened.
   bool IsMenuOpened() const;
 
@@ -118,6 +116,10 @@ class ASH_EXPORT PowerButtonController
 
   // Do not force backlights to be turned off.
   void StopForcingBacklightsOff();
+
+  // PowerButtonControllerBase:
+  void OnArcPowerButtonMenuEvent() override;
+  void CancelPowerButtonEvent() override;
 
   // display::DisplayConfigurator::Observer:
   void OnDisplayModeChanged(
@@ -169,7 +171,9 @@ class ASH_EXPORT PowerButtonController
 
   // Starts the power menu animation. Called when a clamshell device's power
   // button is pressed or when |power_button_menu_timer_| fires.
-  void StartPowerMenuAnimation();
+  // |allow_pre_shutdown| determines whether PreShutdown action should be
+  // started when animation finished.
+  void StartPowerMenuAnimation(bool allow_pre_shutdown);
 
   // Called by |pre_shutdown_timer_| to start the cancellable pre-shutdown
   // animation.
@@ -186,6 +190,9 @@ class ASH_EXPORT PowerButtonController
   // Locks the screen if the "Show lock screen when waking from sleep" pref is
   // set and locking is possible.
   void LockScreenIfRequired();
+
+  // Sets |show_menu_animation_done_| to true and starts pre-shutdown process.
+  void SetShowMenuAnimationDoneWithPreShutdown();
 
   // Sets |show_menu_animation_done_| to true.
   void SetShowMenuAnimationDone();

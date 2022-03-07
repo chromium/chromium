@@ -291,6 +291,8 @@ component("cpp") {
     "style/color_provider.h",
     "stylus_utils.cc",
     "stylus_utils.h",
+    "system/power/power_button_controller_base.cc",
+    "system/power/power_button_controller_base.h",
     "system/toast_catalog.h",
     "system/toast_data.cc",
     "system/toast_data.h",

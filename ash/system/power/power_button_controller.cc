@@ -168,7 +168,7 @@ void PowerButtonController::OnLegacyPowerButtonEvent(bool down) {
   // button press. On a further press while the menu is open, simply shut down
   // (http://crbug.com/945005).
   if (!show_menu_animation_done_)
-    StartPowerMenuAnimation();
+    StartPowerMenuAnimation(/*allow_pre_shutdown=*/true);
   else
     lock_state_controller_->RequestShutdown(ShutdownReason::POWER_BUTTON);
 }
@@ -210,15 +210,16 @@ void PowerButtonController::OnPowerButtonEvent(
     }
 
     if (!UseTabletBehavior()) {
-      StartPowerMenuAnimation();
+      StartPowerMenuAnimation(/*allow_pre_shutdown=*/true);
     } else {
       base::TimeDelta timeout = screen_off_when_power_button_down_
                                     ? kShowMenuWhenScreenOffTimeout
                                     : kShowMenuWhenScreenOnTimeout;
 
       power_button_menu_timer_.Start(
-          FROM_HERE, timeout, this,
-          &PowerButtonController::StartPowerMenuAnimation);
+          FROM_HERE, timeout,
+          base::BindOnce(&PowerButtonController::StartPowerMenuAnimation,
+                         base::Unretained(this), true));
     }
   } else {
     uint32_t up_state = UP_NONE;
@@ -298,11 +299,6 @@ void PowerButtonController::OnLockButtonEvent(
     lock_state_controller_->CancelLockAnimation();
 }
 
-void PowerButtonController::CancelPowerButtonEvent() {
-  force_off_on_button_up_ = false;
-  StopTimersAndDismissMenu();
-}
-
 bool PowerButtonController::IsMenuOpened() const {
   return menu_widget_ && menu_widget_->GetLayer()->GetTargetVisibility();
 }
@@ -320,6 +316,15 @@ void PowerButtonController::DismissMenu() {
 
 void PowerButtonController::StopForcingBacklightsOff() {
   display_controller_->SetBacklightsForcedOff(false);
+}
+
+void PowerButtonController::OnArcPowerButtonMenuEvent() {
+  StartPowerMenuAnimation(/*allow_pre_shutdown=*/false);
+}
+
+void PowerButtonController::CancelPowerButtonEvent() {
+  force_off_on_button_up_ = false;
+  StopTimersAndDismissMenu();
 }
 
 void PowerButtonController::OnDisplayModeChanged(
@@ -443,7 +448,7 @@ void PowerButtonController::StopTimersAndDismissMenu() {
   DismissMenu();
 }
 
-void PowerButtonController::StartPowerMenuAnimation() {
+void PowerButtonController::StartPowerMenuAnimation(bool allow_pre_shutdown) {
   // Avoid a distracting deactivation animation on the formerly-active
   // window when the menu is activated.
   views::Widget* active_toplevel_widget =
@@ -455,10 +460,15 @@ void PowerButtonController::StartPowerMenuAnimation() {
 
   if (!menu_widget_) {
     menu_widget_ = CreateMenuWidget();
+    base::RepeatingClosure show_animation_done_callback = base::BindRepeating(
+        allow_pre_shutdown
+            ? &PowerButtonController::SetShowMenuAnimationDoneWithPreShutdown
+            : &PowerButtonController::SetShowMenuAnimationDone,
+        base::Unretained(this));
+
     menu_widget_->SetContentsView(std::make_unique<PowerButtonMenuScreenView>(
         power_button_position_, power_button_offset_percentage_,
-        base::BindRepeating(&PowerButtonController::SetShowMenuAnimationDone,
-                            base::Unretained(this))));
+        show_animation_done_callback));
   }
   auto* contents_view =
       static_cast<PowerButtonMenuScreenView*>(menu_widget_->GetContentsView());
@@ -502,12 +512,16 @@ void PowerButtonController::LockScreenIfRequired() {
   }
 }
 
-void PowerButtonController::SetShowMenuAnimationDone() {
+void PowerButtonController::SetShowMenuAnimationDoneWithPreShutdown() {
   show_menu_animation_done_ = true;
   if (button_type_ != ButtonType::LEGACY) {
     pre_shutdown_timer_.Start(FROM_HERE, kStartShutdownAnimationTimeout, this,
                               &PowerButtonController::OnPreShutdownTimeout);
   }
+}
+
+void PowerButtonController::SetShowMenuAnimationDone() {
+  show_menu_animation_done_ = true;
 }
 
 void PowerButtonController::ParsePowerButtonPositionSwitch() {

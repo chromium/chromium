@@ -1392,6 +1392,15 @@ TEST_F(PowerButtonControllerTest, DISABLED_LegacyPowerButtonIgnoreExtraPress) {
   ASSERT_FALSE(power_button_test_api_->ShowMenuAnimationDone());
 }
 
+TEST_F(PowerButtonControllerTest,
+       ArcPowerButtonEventShowMenuWithoutPreShutdown) {
+  LaunchArcPowerButtonEvent();
+  ASSERT_TRUE(power_button_test_api_->IsMenuOpened());
+  EXPECT_FALSE(power_button_test_api_->TriggerPreShutdownTimeout());
+  EXPECT_FALSE(lock_state_test_api_->shutdown_timer_is_running());
+  EXPECT_TRUE(power_button_test_api_->IsMenuOpened());
+}
+
 INSTANTIATE_TEST_SUITE_P(AshPowerButtonPosition,
                          PowerButtonControllerWithPositionTest,
                          testing::Values(PowerButtonPosition::LEFT,

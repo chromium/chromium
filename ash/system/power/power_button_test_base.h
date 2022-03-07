@@ -53,6 +53,9 @@ class PowerButtonTestBase : public AshTestBase {
   void SetTabletModeSwitchState(
       chromeos::PowerManagerClient::TabletMode tablet_mode_switch_state);
 
+  // Simulates ARC power button event.
+  void LaunchArcPowerButtonEvent();
+
   // Simulates a power button press.
   void PressPowerButton();
 
