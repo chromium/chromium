@@ -64,8 +64,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
       ScriptExecutorDelegate::NavigationListener* listener) override;
   void RemoveNavigationListener(
       ScriptExecutorDelegate::NavigationListener* listener) override;
-  void AddListener(ScriptExecutorDelegate::Listener* listener) override;
-  void RemoveListener(ScriptExecutorDelegate::Listener* listener) override;
   void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
   void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
@@ -107,8 +105,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
 
   bool HasNavigationListeners() { return !navigation_listeners_.empty(); }
 
-  bool HasListeners() { return !listeners_.empty(); }
-
   bool IsUIRequired() { return require_ui_; }
 
   std::vector<std::string>* GetCurrentBrowseDomainsList();
@@ -126,7 +122,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   bool navigation_error_ = false;
   base::flat_set<ScriptExecutorDelegate::NavigationListener*>
       navigation_listeners_;
-  base::flat_set<ScriptExecutorDelegate::Listener*> listeners_;
   ViewportMode viewport_mode_ = ViewportMode::NO_RESIZE;
   std::vector<std::string> browse_domains_;
   raw_ptr<UserModel> user_model_ = nullptr;

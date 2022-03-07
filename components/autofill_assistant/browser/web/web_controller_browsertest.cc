@@ -976,7 +976,7 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
     run_loop.Run();
     std::move(run_expectations).Run(&script_executor);
 
-    CHECK(captured_processed_actions.size() == 1);
+    CHECK_EQ(captured_processed_actions.size(), 1u);
     return ClientStatus(captured_processed_actions[0].status());
   }
 

@@ -368,15 +368,12 @@ message ClientSettingsProto {
   // specified size instead.
   optional float talkback_sheet_size_fraction = 18;
 
-  // Strings to define the back button behaviour. This will show the user a
-  // message with an Undo button. If this setting is not present, the back
-  // button will show a Snackbar with Undo option.
+  // Deprecated, should be moved into |display_strings|.
   message BackButtonSettings {
-    // The message being shown in the header.
-    optional string message = 1;
-
     // The label of the highlighted "Undo" action.
     optional string undo_label = 2;
+
+    reserved 1;
   }
   optional BackButtonSettings back_button_settings = 19;
 

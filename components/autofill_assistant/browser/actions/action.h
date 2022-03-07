@@ -55,10 +55,6 @@ class Action {
 
   const ActionProto& proto() const { return proto_; }
 
-  // Actions that can manipulate the UserActions should be interrupted, such
-  // that they do not overwrite the paused state.
-  virtual bool ShouldInterruptOnPause() const;
-
   // Returns the current action's ActionData.
   ActionData& GetActionData();
 

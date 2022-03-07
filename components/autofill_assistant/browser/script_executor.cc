@@ -93,7 +93,6 @@ ScriptExecutor::ScriptExecutor(
 
 ScriptExecutor::~ScriptExecutor() {
   delegate_->RemoveNavigationListener(this);
-  delegate_->RemoveListener(this);
 }
 
 ScriptExecutor::Result::Result() = default;
@@ -111,7 +110,6 @@ void ScriptExecutor::Run(const UserData* user_data,
   user_data_ = user_data;
 
   delegate_->AddNavigationListener(this);
-  delegate_->AddListener(this);
 
   callback_ = std::move(callback);
   DCHECK(delegate_->GetService());
@@ -141,7 +139,8 @@ UserModel* ScriptExecutor::GetUserModel() const {
 }
 
 void ScriptExecutor::OnNavigationStateChanged() {
-  Action::ActionData* current_action_data = GetCurrentActionData();
+  Action::ActionData* current_action_data =
+      current_action_ != nullptr ? &current_action_->GetActionData() : nullptr;
   if (current_action_data) {
     NavigationInfoProto& navigation_info = current_action_data->navigation_info;
     if (delegate_->IsNavigatingToNewDocument()) {
@@ -191,53 +190,6 @@ void ScriptExecutor::OnNavigationStateChanged() {
   }
 }
 
-void ScriptExecutor::OnPause(const std::string& message,
-                             const std::string& button_label) {
-  if (current_action_index_.has_value()) {
-    DCHECK_LT(*current_action_index_, actions_.size());
-    if (actions_[*current_action_index_]->ShouldInterruptOnPause()) {
-      actions_[*current_action_index_] = ProtocolUtils::CreateAction(
-          this, actions_[*current_action_index_]->proto());
-      current_action_index_.reset();
-    }
-  }
-
-  ui_delegate_->ClearInfoBox();
-  ui_delegate_->SetDetails(nullptr, base::TimeDelta());
-  ui_delegate_->SetCollectUserDataOptions(nullptr);
-  ui_delegate_->SetForm(nullptr, base::DoNothing(), base::DoNothing());
-
-  last_status_message_ = GetStatusMessage();
-  ui_delegate_->SetStatusMessage(message);
-
-  auto user_actions = std::make_unique<std::vector<UserAction>>();
-
-  UserAction undo_action;
-  Chip undo_chip;
-  undo_chip.type = ChipType::HIGHLIGHTED_ACTION;
-  undo_chip.text = button_label;
-  undo_action.chip() = undo_chip;
-  undo_action.SetCallback(base::BindOnce(&ScriptExecutor::OnResume,
-                                         weak_ptr_factory_.GetWeakPtr()));
-  user_actions->emplace_back(std::move(undo_action));
-
-  ui_delegate_->SetUserActions(std::move(user_actions));
-  delegate_->EnterState(AutofillAssistantState::STOPPED);
-  is_paused_ = true;
-}
-
-void ScriptExecutor::OnResume() {
-  DCHECK(is_paused_);
-  is_paused_ = false;
-
-  delegate_->EnterState(AutofillAssistantState::RUNNING);
-  ui_delegate_->SetStatusMessage(last_status_message_);
-
-  if (!current_action_index_.has_value()) {
-    ProcessNextAction();
-  }
-}
-
 void ScriptExecutor::RunElementChecks(BatchElementChecker* checker) {
   return checker->Run(delegate_->GetWebController());
 }
@@ -245,12 +197,12 @@ void ScriptExecutor::RunElementChecks(BatchElementChecker* checker) {
 void ScriptExecutor::ShortWaitForElement(
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
-  Action::ActionData* current_action_data = GetCurrentActionData();
-  if (!current_action_data) {
+  if (!current_action_) {
     NOTREACHED() << "must not be called outside of actions";
     return;
   }
-  current_action_data->wait_for_dom = std::make_unique<WaitForDomOperation>(
+  Action::ActionData& current_action_data = current_action_->GetActionData();
+  current_action_data.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_,
       delegate_->GetSettings().short_wait_for_element_deadline,
       /* allow_observer_mode */ true,
@@ -259,18 +211,18 @@ void ScriptExecutor::ShortWaitForElement(
                           weak_ptr_factory_.GetWeakPtr(), selector),
       base::BindOnce(&ScriptExecutor::OnShortWaitForElement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  current_action_data->wait_for_dom->Run();
+  current_action_data.wait_for_dom->Run();
 }
 
 void ScriptExecutor::ShortWaitForElementWithSlowWarning(
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
-  Action::ActionData* current_action_data = GetCurrentActionData();
-  if (!current_action_data) {
+  if (!current_action_) {
     NOTREACHED() << "must not be called outside of actions";
     return;
   }
-  current_action_data->wait_for_dom = std::make_unique<WaitForDomOperation>(
+  Action::ActionData& current_action_data = current_action_->GetActionData();
+  current_action_data.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_,
       delegate_->GetSettings().short_wait_for_element_deadline,
       /* allow_observer_mode */ true,
@@ -279,10 +231,10 @@ void ScriptExecutor::ShortWaitForElementWithSlowWarning(
                           weak_ptr_factory_.GetWeakPtr(), selector),
       base::BindOnce(&ScriptExecutor::OnShortWaitForElement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  current_action_data->wait_for_dom->SetTimeoutWarningCallback(
+  current_action_data.wait_for_dom->SetTimeoutWarningCallback(
       base::BindOnce(&ScriptExecutor::MaybeShowSlowWebsiteWarning,
                      weak_ptr_factory_.GetWeakPtr()));
-  current_action_data->wait_for_dom->Run();
+  current_action_data.wait_for_dom->Run();
 }
 
 void ScriptExecutor::WaitForDom(
@@ -294,17 +246,17 @@ void ScriptExecutor::WaitForDom(
                                  base::OnceCallback<void(const ClientStatus&)>)>
         check_elements,
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
-  Action::ActionData* current_action_data = GetCurrentActionData();
-  if (!current_action_data) {
+  if (!current_action_) {
     NOTREACHED() << "must not be called outside of actions";
     return;
   }
-  current_action_data->wait_for_dom = std::make_unique<WaitForDomOperation>(
+  Action::ActionData& current_action_data = current_action_->GetActionData();
+  current_action_data.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_, max_wait_time, allow_observer_mode,
       allow_interrupt, observer, check_elements,
       base::BindOnce(&ScriptExecutor::OnWaitForElementVisibleWithInterrupts,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  current_action_data->wait_for_dom->Run();
+  current_action_data.wait_for_dom->Run();
 }
 
 void ScriptExecutor::WaitForDomWithSlowWarning(
@@ -315,21 +267,21 @@ void ScriptExecutor::WaitForDomWithSlowWarning(
                                  base::OnceCallback<void(const ClientStatus&)>)>
         check_elements,
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
-  Action::ActionData* current_action_data = GetCurrentActionData();
-  if (!current_action_data) {
+  if (!current_action_) {
     NOTREACHED() << "must not be called outside of actions";
     return;
   }
-  current_action_data->wait_for_dom = std::make_unique<WaitForDomOperation>(
+  Action::ActionData& current_action_data = current_action_->GetActionData();
+  current_action_data.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, ui_delegate_, max_wait_time,
       /* allow_observer_mode= */ true, allow_interrupt, observer,
       check_elements,
       base::BindOnce(&ScriptExecutor::OnWaitForElementVisibleWithInterrupts,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  current_action_data->wait_for_dom->SetTimeoutWarningCallback(
+  current_action_data.wait_for_dom->SetTimeoutWarningCallback(
       base::BindOnce(&ScriptExecutor::MaybeShowSlowWebsiteWarning,
                      weak_ptr_factory_.GetWeakPtr()));
-  current_action_data->wait_for_dom->Run();
+  current_action_data.wait_for_dom->Run();
 }
 
 void ScriptExecutor::SetStatusMessage(const std::string& message) {
@@ -467,8 +419,7 @@ void ScriptExecutor::Prompt(
     base::OnceCallback<void()> end_on_navigation_callback,
     bool browse_mode,
     bool browse_mode_invisible) {
-  Action::ActionData* current_action_data = GetCurrentActionData();
-  if (!current_action_data) {
+  if (!current_action_) {
     NOTREACHED() << "must not be called outside of actions";
     return;
   }
@@ -492,7 +443,7 @@ void ScriptExecutor::Prompt(
     }
 
     if (end_on_navigation_callback) {
-      current_action_data->end_prompt_on_navigation_callback =
+      current_action_->GetActionData().end_prompt_on_navigation_callback =
           std::move(end_on_navigation_callback);
     }
   }
@@ -599,16 +550,16 @@ void ScriptExecutor::WaitForDocumentReadyState(
     base::OnceCallback<void(const ClientStatus&,
                             DocumentReadyState,
                             base::TimeDelta)> callback) {
-  Action::ActionData* current_action_data = GetCurrentActionData();
-  if (!current_action_data) {
+  if (!current_action_) {
     NOTREACHED() << "must not be called outside of actions";
     return;
   }
-  current_action_data->wait_for_document =
+  Action::ActionData& current_action_data = current_action_->GetActionData();
+  current_action_data.wait_for_document =
       std::make_unique<WaitForDocumentOperation>(
           delegate_, max_wait_time, min_ready_state, optional_frame_element,
           std::move(callback));
-  current_action_data->wait_for_document->Run();
+  current_action_data.wait_for_document->Run();
 }
 
 void ScriptExecutor::WaitUntilDocumentIsInReadyState(
@@ -851,17 +802,6 @@ bool ScriptExecutor::MaybeShowSlowWarning(const std::string& message,
   return true;
 }
 
-Action::ActionData* ScriptExecutor::GetCurrentActionData() {
-  if (!current_action_index_) {
-    return nullptr;
-  }
-  if (current_action_index_ >= actions_.size()) {
-    NOTREACHED() << "Invalid current_action_index";
-    return nullptr;
-  }
-  return &actions_.at(*current_action_index_)->GetActionData();
-}
-
 base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() const {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -969,11 +909,6 @@ void ScriptExecutor::RunCallbackWithResult(const Result& result) {
 }
 
 void ScriptExecutor::ProcessNextAction() {
-  current_action_index_.reset();
-  if (is_paused_) {
-    return;
-  }
-
   // We could get into a strange situation if ProcessNextAction is called before
   // the action was reported as processed, which should not happen. In that case
   // we could have more |processed_actions| than |actions_|.
@@ -984,31 +919,31 @@ void ScriptExecutor::ProcessNextAction() {
     return;
   }
 
-  current_action_index_ = processed_actions_.size();
-  Action* action = actions_[*current_action_index_].get();
-  should_clean_contextual_ui_on_finish_ = action->proto().clean_contextual_ui();
-  int delay_ms = action->proto().action_delay_ms();
+  current_action_ = actions_[processed_actions_.size()].get();
+  should_clean_contextual_ui_on_finish_ =
+      current_action_->proto().clean_contextual_ui();
+  int delay_ms = current_action_->proto().action_delay_ms();
   if (delay_ms > 0) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&ScriptExecutor::ProcessAction,
-                       weak_ptr_factory_.GetWeakPtr(), action),
+        base::BindOnce(&ScriptExecutor::ProcessCurrentAction,
+                       weak_ptr_factory_.GetWeakPtr()),
         base::Milliseconds(delay_ms));
   } else {
-    ProcessAction(action);
+    ProcessCurrentAction();
   }
 }
 
-void ScriptExecutor::ProcessAction(Action* action) {
-  DCHECK(GetCurrentActionData());
-  VLOG(2) << "Begin action: " << *action;
+void ScriptExecutor::ProcessCurrentAction() {
+  DCHECK(current_action_);
+  VLOG(2) << "Begin action: " << *current_action_;
 
-  GetCurrentActionData()->navigation_info.set_has_error(
+  current_action_->GetActionData().navigation_info.set_has_error(
       delegate_->HasNavigationError());
 
-  action->ProcessAction(base::BindOnce(&ScriptExecutor::OnProcessedAction,
-                                       weak_ptr_factory_.GetWeakPtr(),
-                                       base::TimeTicks::Now()));
+  current_action_->ProcessAction(
+      base::BindOnce(&ScriptExecutor::OnProcessedAction,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void ScriptExecutor::GetNextActions() {
@@ -1031,7 +966,7 @@ void ScriptExecutor::GetNextActions() {
 void ScriptExecutor::OnProcessedAction(
     base::TimeTicks start_time,
     std::unique_ptr<ProcessedActionProto> processed_action_proto) {
-  DCHECK(GetCurrentActionData());
+  DCHECK(current_action_);
   base::TimeDelta run_time = base::TimeTicks::Now() - start_time;
   previous_action_type_ = processed_action_proto->action().action_info_case();
   processed_actions_.emplace_back(*processed_action_proto);
@@ -1051,7 +986,7 @@ void ScriptExecutor::OnProcessedAction(
   auto& processed_action = processed_actions_.back();
   processed_action.set_run_time_ms(run_time.InMilliseconds());
   *processed_action.mutable_navigation_info() =
-      GetCurrentActionData()->navigation_info;
+      current_action_->GetActionData().navigation_info;
 
   if (processed_action.status() != ProcessedActionStatusProto::ACTION_APPLIED) {
     VLOG(1) << "Action failed: " << processed_action.status();
@@ -1059,6 +994,7 @@ void ScriptExecutor::OnProcessedAction(
     // to immediately ask for new actions.
     actions_.resize(processed_actions_.size());
   }
+  current_action_ = nullptr;
   ProcessNextAction();
 }
 

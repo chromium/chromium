@@ -51,13 +51,6 @@ class ScriptExecutorDelegate {
     virtual void OnNavigationStateChanged() = 0;
   };
 
-  class Listener : public base::CheckedObserver {
-   public:
-    // The execution flow is being stopped.
-    virtual void OnPause(const std::string& message,
-                         const std::string& button_label) = 0;
-  };
-
   virtual const ClientSettings& GetSettings() = 0;
   virtual const GURL& GetCurrentURL() = 0;
   virtual const GURL& GetDeeplinkURL() = 0;
@@ -138,13 +131,6 @@ class ScriptExecutorDelegate {
   // Removes a previously registered navigation listener. Does nothing if no
   // such listener exists.
   virtual void RemoveNavigationListener(NavigationListener* listener) = 0;
-
-  // Add a listener that can be told about changes. Duplicate calls are ignored.
-  virtual void AddListener(Listener* listener) = 0;
-
-  // Removes a previously registered listener. Does nothing if no such listener
-  // exists.
-  virtual void RemoveListener(Listener* listener) = 0;
 
   // Set the domains allowlist for browse mode.
   virtual void SetBrowseDomainsAllowlist(std::vector<std::string> domains) = 0;

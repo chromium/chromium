@@ -88,8 +88,6 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
               RemoveNavigationListener,
               (NavigationListener * listener),
               (override));
-  MOCK_METHOD(void, AddListener, (Listener * listener), (override));
-  MOCK_METHOD(void, RemoveListener, (Listener * listener), (override));
   MOCK_METHOD(void,
               SetBrowseDomainsAllowlist,
               (std::vector<std::string> domains),

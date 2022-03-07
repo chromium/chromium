@@ -43,8 +43,7 @@ class WebController;
 
 // Class to execute an assistant script.
 class ScriptExecutor : public ActionDelegate,
-                       public ScriptExecutorDelegate::NavigationListener,
-                       public ScriptExecutorDelegate::Listener {
+                       public ScriptExecutorDelegate::NavigationListener {
  public:
   // Listens to events on ScriptExecutor.
   // TODO(b/806868): Make global_payload a part of callback instead of the
@@ -116,10 +115,6 @@ class ScriptExecutor : public ActionDelegate,
 
   // Override ScriptExecutorDelegate::NavigationListener
   void OnNavigationStateChanged() override;
-
-  // Override ScriptExecutorDelegate::Listener
-  void OnPause(const std::string& message,
-               const std::string& button_label) override;
 
   // Override ActionDelegate:
   void RunElementChecks(BatchElementChecker* checker) override;
@@ -282,7 +277,7 @@ class ScriptExecutor : public ActionDelegate,
   void RunCallback(bool success);
   void RunCallbackWithResult(const Result& result);
   void ProcessNextAction();
-  void ProcessAction(Action* action);
+  void ProcessCurrentAction();
   void GetNextActions();
   void OnProcessedAction(base::TimeTicks start_time,
                          std::unique_ptr<ProcessedActionProto> action);
@@ -330,7 +325,6 @@ class ScriptExecutor : public ActionDelegate,
       const ClientStatus& status,
       DocumentReadyState ready_state,
       base::TimeDelta wait_time);
-  void OnResume();
   void OnRequestUserData(
       base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback,
       int http_status,
@@ -388,12 +382,9 @@ class ScriptExecutor : public ActionDelegate,
   base::OnceCallback<void(bool)> on_expected_navigation_done_;
 
   // Only set while an action is being executed.
-  absl::optional<size_t> current_action_index_;
+  raw_ptr<Action> current_action_ = nullptr;
 
   raw_ptr<const UserData> user_data_ = nullptr;
-
-  bool is_paused_ = false;
-  std::string last_status_message_;
 
   base::TimeTicks batch_start_time_;
   RoundtripTimingStats roundtrip_timing_stats_;

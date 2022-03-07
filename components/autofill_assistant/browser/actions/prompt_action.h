@@ -31,9 +31,6 @@ class PromptAction : public Action {
 
   ~PromptAction() override;
 
-  // Overrides Action:
-  bool ShouldInterruptOnPause() const override;
-
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;

@@ -143,8 +143,6 @@ class Controller : public ScriptExecutorDelegate,
       ScriptExecutorDelegate::NavigationListener* listener) override;
   void RemoveNavigationListener(
       ScriptExecutorDelegate::NavigationListener* listener) override;
-  void AddListener(ScriptExecutorDelegate::Listener* listener) override;
-  void RemoveListener(ScriptExecutorDelegate::Listener* listener) override;
 
   void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
 
@@ -161,8 +159,6 @@ class Controller : public ScriptExecutorDelegate,
 
   // Overrides ExecutionDelegate:
   bool NeedsUI() const override;
-  void OnStop(const std::string& message,
-              const std::string& button_label) override;
   void GetVisualViewport(RectF* visual_viewport) const override;
   ViewportMode GetViewportMode() override;
   bool IsTabSelected() override;
@@ -311,7 +307,6 @@ class Controller : public ScriptExecutorDelegate,
   std::unique_ptr<TriggerContext> trigger_context_;
 
   AutofillAssistantState state_ = AutofillAssistantState::INACTIVE;
-  bool can_recover_from_stopped_ = false;
 
   // The URL passed to Start(). Used only as long as there's no committed URL.
   // Note that this is the deeplink passed by a caller.
@@ -368,8 +363,6 @@ class Controller : public ScriptExecutorDelegate,
   bool navigation_error_ = false;
   base::ObserverList<ScriptExecutorDelegate::NavigationListener>
       navigation_listeners_;
-
-  base::ObserverList<ScriptExecutorDelegate::Listener> listeners_;
 
   // The next DidStartNavigation will not cause an error.
   bool expect_navigation_ = false;

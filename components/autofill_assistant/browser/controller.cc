@@ -199,14 +199,6 @@ void Controller::RemoveNavigationListener(
   navigation_listeners_.RemoveObserver(listener);
 }
 
-void Controller::AddListener(ScriptExecutorDelegate::Listener* listener) {
-  listeners_.AddObserver(listener);
-}
-
-void Controller::RemoveListener(ScriptExecutorDelegate::Listener* listener) {
-  listeners_.RemoveObserver(listener);
-}
-
 void Controller::SetBrowseDomainsAllowlist(std::vector<std::string> domains) {
   browse_domains_allowlist_ = std::move(domains);
 }
@@ -348,14 +340,9 @@ bool Controller::EnterState(AutofillAssistantState state) {
   VLOG(2) << __func__ << ": " << state_ << " -> " << state;
 
   // The only valid way of leaving the STOPPED state is to go back to tracking
-  // mode - or going back to RUNNING if it was a recoverable STOPPED state.
-  DCHECK(
-      state_ != AutofillAssistantState::STOPPED ||
-      (state == AutofillAssistantState::TRACKING && tracking_) ||
-      (state == AutofillAssistantState::RUNNING && can_recover_from_stopped_));
-  if (state_ == AutofillAssistantState::STOPPED) {
-    can_recover_from_stopped_ = false;
-  }
+  // mode.
+  DCHECK(state_ != AutofillAssistantState::STOPPED ||
+         (state == AutofillAssistantState::TRACKING && tracking_));
   state_ = state;
 
   bool should_suppress_keyboard = ShouldSuppressKeyboardForState(state_);
@@ -922,16 +909,6 @@ void Controller::RecordDropOutOrShutdown(Metrics::DropOutReason reason) {
   }
 }
 
-void Controller::OnStop(const std::string& message,
-                        const std::string& button_label) {
-  DCHECK(state_ != AutofillAssistantState::STOPPED);
-
-  can_recover_from_stopped_ = true;
-  for (auto& listener : listeners_) {
-    listener.OnPause(message, button_label);
-  }
-}
-
 void Controller::PerformDelayedShutdownIfNecessary() {
   if (delayed_shutdown_reason_ &&
       script_url_.host() != GetCurrentURL().host()) {
@@ -1074,15 +1051,6 @@ void Controller::DidStartNavigation(
   if (state_ == AutofillAssistantState::STOPPED &&
       is_user_initiated_or_back_forward &&
       !navigation_handle->WasServerRedirect()) {
-    if (can_recover_from_stopped_) {
-      // Usually when in STOPPED (e.g. through |OnScriptError|) the
-      // |DropOutReason| has been recorded. In the case of a recoverable stop,
-      // e.g. with the back button, this is not the case. Record the reason as
-      // |NAVIGATION| here.
-      client_->Shutdown(Metrics::DropOutReason::NAVIGATION);
-      return;
-    }
-
     ShutdownIfNecessary();
     return;
   }

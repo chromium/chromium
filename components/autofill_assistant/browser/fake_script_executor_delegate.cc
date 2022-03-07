@@ -127,16 +127,6 @@ void FakeScriptExecutorDelegate::RemoveNavigationListener(
   navigation_listeners_.erase(listener);
 }
 
-void FakeScriptExecutorDelegate::AddListener(
-    ScriptExecutorDelegate::Listener* listener) {
-  listeners_.insert(listener);
-}
-
-void FakeScriptExecutorDelegate::RemoveListener(
-    ScriptExecutorDelegate::Listener* listener) {
-  listeners_.erase(listener);
-}
-
 void FakeScriptExecutorDelegate::SetBrowseDomainsAllowlist(
     std::vector<std::string> domains) {
   browse_domains_ = std::move(domains);

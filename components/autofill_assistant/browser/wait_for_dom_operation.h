@@ -28,8 +28,8 @@ namespace autofill_assistant {
 
 class WaitForDomObserver;
 
-// Helper for WaitForElementVisible that keeps track of the state required to
-// run interrupts while waiting for a specific element.
+// Helper that keeps track of the state required to run interrupts while waiting
+// for a specific element.
 class WaitForDomOperation : public ScriptExecutor::Listener,
                             ScriptExecutorDelegate::NavigationListener {
  public:

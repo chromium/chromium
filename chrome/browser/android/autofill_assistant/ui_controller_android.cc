@@ -965,14 +965,7 @@ bool UiControllerAndroid::OnBackButtonClicked() {
   }
 
   // execution_delegate_ must never be nullptr here!
-  auto back_button_settings =
-      execution_delegate_->GetClientSettings().back_button_settings;
-  if (back_button_settings.has_value()) {
-    execution_delegate_->OnStop(back_button_settings->message(),
-                                back_button_settings->undo_label());
-  } else {
-    CloseOrCancel(-1, Metrics::DropOutReason::BACK_BUTTON_CLICKED);
-  }
+  CloseOrCancel(-1, Metrics::DropOutReason::BACK_BUTTON_CLICKED);
   return true;
 }
 

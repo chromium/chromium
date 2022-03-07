@@ -42,10 +42,6 @@ class ExecutionDelegate {
   virtual void OnFatalError(const std::string& error_message,
                             Metrics::DropOutReason reason) = 0;
 
-  // Reports that Autofill Assistant should be Stopped.
-  virtual void OnStop(const std::string& message,
-                      const std::string& button_label) = 0;
-
   // Adds the rectangles that correspond to the current touchable area to
   // the given vector.
   //

@@ -90,6 +90,7 @@ TEST(DisplayStringsUtilTest, FallbackToChromeStringsByDefault) {
 TEST(DisplayStringsUtilTest, ReturnValidDisplayString) {
   ClientSettingsProto proto;
   proto.set_display_strings_locale("en-US");
+  proto.mutable_back_button_settings()->set_undo_label("undo");
   AddDisplayStringToProto(ClientSettingsProto::GIVE_UP, "give_up", proto);
   AddDisplayStringToProto(ClientSettingsProto::MAYBE_GIVE_UP, "maybe_give_up",
                           proto);
@@ -103,6 +104,8 @@ TEST(DisplayStringsUtilTest, ReturnValidDisplayString) {
   EXPECT_EQ(
       GetDisplayStringUTF8(ClientSettingsProto::MAYBE_GIVE_UP, client_settings),
       "maybe_give_up");
+  EXPECT_EQ(GetDisplayStringUTF8(ClientSettingsProto::UNDO, client_settings),
+            "undo");
   // We should return empty string if set by the backend.
   EXPECT_EQ(
       GetDisplayStringUTF8(ClientSettingsProto::SEND_FEEDBACK, client_settings),

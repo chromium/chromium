@@ -18,10 +18,6 @@ Action::Action(ActionDelegate* delegate, const ActionProto& proto)
 
 Action::~Action() {}
 
-bool Action::ShouldInterruptOnPause() const {
-  return false;
-}
-
 Action::ActionData::ActionData() = default;
 Action::ActionData::~ActionData() = default;
 

@@ -40,10 +40,6 @@ ShowGenericUiAction::ShowGenericUiAction(ActionDelegate* delegate,
 
 ShowGenericUiAction::~ShowGenericUiAction() = default;
 
-bool ShowGenericUiAction::ShouldInterruptOnPause() const {
-  return true;
-}
-
 void ShowGenericUiAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);
