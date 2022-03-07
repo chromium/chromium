@@ -8460,6 +8460,7 @@ class AuthenticatorCableV2AuthenticatorTest
   void OnCompleted(
       absl::optional<device::cablev2::authenticator::Platform::Error> error)
       override {
+    CHECK(!did_complete_);
     did_complete_ = true;
     error_ = error;
   }

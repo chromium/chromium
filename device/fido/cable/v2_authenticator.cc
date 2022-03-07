@@ -511,7 +511,15 @@ class CTAP2Processor : public Transaction {
   void OnTransportUpdate(Transport::Update update) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    if (have_completed_) {
+      // If the owner of this object doesn't destroy it immediately after an
+      // error then the transport could continue to send updates. These should
+      // not be passed through.
+      return;
+    }
+
     if (auto* error = absl::get_if<Platform::Error>(&update)) {
+      have_completed_ = true;
       platform_->OnCompleted(*error);
       return;
     } else if (auto* status = absl::get_if<Platform::Status>(&update)) {
@@ -524,6 +532,7 @@ class CTAP2Processor : public Transaction {
       } else if (!transaction_done_) {
         maybe_error = Platform::Error::EOF_WHILE_PROCESSING;
       }
+      have_completed_ = true;
       platform_->OnCompleted(maybe_error);
       return;
     }
@@ -532,6 +541,7 @@ class CTAP2Processor : public Transaction {
     const absl::variant<std::vector<uint8_t>, Platform::Error> result =
         ProcessCTAPMessage(msg);
     if (const auto* error = absl::get_if<Platform::Error>(&result)) {
+      have_completed_ = true;
       platform_->OnCompleted(*error);
       return;
     }
@@ -861,6 +871,7 @@ class CTAP2Processor : public Transaction {
             base::Unretained(out)));
   }
 
+  bool have_completed_ = false;
   bool transaction_received_ = false;
   bool transaction_done_ = false;
   bool get_assertion_had_empty_allowlist_ = false;
