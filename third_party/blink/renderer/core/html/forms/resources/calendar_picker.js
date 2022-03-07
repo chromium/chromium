@@ -1478,101 +1478,105 @@ function View(element) {
   };
 }
 
-/**
- * @constructor
- * @extends View
- */
-function ScrollView() {
-  View.call(this, createElement('div', ScrollView.ClassNameScrollView));
-  /**
-   * @type {Element}
-   * @const
-   */
-  this.contentElement =
-      createElement('div', ScrollView.ClassNameScrollViewContent);
-  this.element.appendChild(this.contentElement);
-  /**
-   * @type {number}
-   */
-  this.minimumContentOffset = -Infinity;
-  /**
-   * @type {number}
-   */
-  this.maximumContentOffset = Infinity;
-  /**
-   * @type {number}
-   * @protected
-   */
-  this._contentOffset = 0;
-  /**
-   * @type {number}
-   * @protected
-   */
-  this._width = 0;
-  /**
-   * @type {number}
-   * @protected
-   */
-  this._height = 0;
-  /**
-   * @type {Animator}
-   * @protected
-   */
-  this._scrollAnimator = null;
-  /**
-   * @type {?Object}
-   */
-  this.delegate = null;
-  /**
-   * @type {!number}
-   */
-  this._lastTouchPosition = 0;
-  /**
-   * @type {!number}
-   */
-  this._lastTouchVelocity = 0;
-  /**
-   * @type {!number}
-   */
-  this._lastTouchTimeStamp = 0;
+// ----------------------------------------------------------------
 
-  this.element.addEventListener('mousewheel', this.onMouseWheel, false);
-  this.element.addEventListener('touchstart', this.onTouchStart, false);
-
+class ScrollView extends View {
   /**
-   * The content offset is partitioned so the it can go beyond the CSS limit
-   * of 33554433px.
-   * @type {number}
-   * @protected
+   * @extends View
    */
-  this._partitionNumber = 0;
-}
+  constructor() {
+    super(createElement('div', ScrollView.ClassNameScrollView));
+    /**
+     * @type {Element}
+     * @const
+     */
+    this.contentElement =
+        createElement('div', ScrollView.ClassNameScrollViewContent);
+    this.element.appendChild(this.contentElement);
+    /**
+     * @type {number}
+     */
+    this.minimumContentOffset = -Infinity;
+    /**
+     * @type {number}
+     */
+    this.maximumContentOffset = Infinity;
+    /**
+     * @type {number}
+     * @protected
+     */
+    this._contentOffset = 0;
+    /**
+     * @type {number}
+     * @protected
+     */
+    this._width = 0;
+    /**
+     * @type {number}
+     * @protected
+     */
+    this._height = 0;
+    /**
+     * @type {Animator}
+     * @protected
+     */
+    this._scrollAnimator = null;
+    /**
+     * @type {?Object}
+     */
+    this.delegate = null;
+    /**
+     * @type {!number}
+     */
+    this._lastTouchPosition = 0;
+    /**
+     * @type {!number}
+     */
+    this._lastTouchVelocity = 0;
+    /**
+     * @type {!number}
+     */
+    this._lastTouchTimeStamp = 0;
 
-{
-  ScrollView.prototype = Object.create(View.prototype);
+    this._onWindowTouchMoveBound = this.onWindowTouchMove.bind(this);
+    this._onWindowTouchEndBound = this.onWindowTouchEnd.bind(this);
 
-  ScrollView.PartitionHeight = 100000;
-  ScrollView.ClassNameScrollView = 'scroll-view';
-  ScrollView.ClassNameScrollViewContent = 'scroll-view-content';
+    this.element.addEventListener(
+        'mousewheel', this.onMouseWheel.bind(this), false);
+    this.element.addEventListener(
+        'touchstart', this.onTouchStart.bind(this), false);
+
+    /**
+     * The content offset is partitioned so the it can go beyond the CSS limit
+     * of 33554433px.
+     * @type {number}
+     * @protected
+     */
+    this._partitionNumber = 0;
+  }
+
+  static PartitionHeight = 100000;
+  static ClassNameScrollView = 'scroll-view';
+  static ClassNameScrollViewContent = 'scroll-view-content';
 
   /**
    * @param {!Event} event
    */
-  ScrollView.prototype.onTouchStart = function(event) {
+  onTouchStart(event) {
     var touch = event.touches[0];
     this._lastTouchPosition = touch.clientY;
     this._lastTouchVelocity = 0;
     this._lastTouchTimeStamp = event.timeStamp;
     if (this._scrollAnimator)
       this._scrollAnimator.stop();
-    window.addEventListener('touchmove', this.onWindowTouchMove, false);
-    window.addEventListener('touchend', this.onWindowTouchEnd, false);
-  };
+    window.addEventListener('touchmove', this._onWindowTouchMoveBound);
+    window.addEventListener('touchend', this._onWindowTouchEndBound);
+  }
 
   /**
    * @param {!Event} event
    */
-  ScrollView.prototype.onWindowTouchMove = function(event) {
+  onWindowTouchMove(event) {
     var touch = event.touches[0];
     var deltaTime = event.timeStamp - this._lastTouchTimeStamp;
     var deltaY = this._lastTouchPosition - touch.clientY;
@@ -1582,58 +1586,58 @@ function ScrollView() {
     this._lastTouchTimeStamp = event.timeStamp;
     event.stopPropagation();
     event.preventDefault();
-  };
+  }
 
   /**
    * @param {!Event} event
    */
-  ScrollView.prototype.onWindowTouchEnd = function(event) {
+  onWindowTouchEnd(event) {
     if (Math.abs(this._lastTouchVelocity) > 0.01) {
       this._scrollAnimator = new FlingGestureAnimator(
           this._lastTouchVelocity, this._contentOffset);
       this._scrollAnimator.step = this.onFlingGestureAnimatorStep;
       this._scrollAnimator.start();
     }
-    window.removeEventListener('touchmove', this.onWindowTouchMove, false);
-    window.removeEventListener('touchend', this.onWindowTouchEnd, false);
-  };
+    window.removeEventListener('touchmove', this._onWindowTouchMoveBound);
+    window.removeEventListener('touchend', this._onWindowTouchEndBound);
+  }
 
   /**
    * @param {!Animator} animator
    */
-  ScrollView.prototype.onFlingGestureAnimatorStep = function(animator) {
+  onFlingGestureAnimatorStep(animator) {
     this.scrollTo(animator.currentValue, false);
-  };
+  }
 
   /**
    * @return {!Animator}
    */
-  ScrollView.prototype.scrollAnimator = function() {
+  scrollAnimator() {
     return this._scrollAnimator;
-  };
+  }
 
   /**
    * @param {!number} width
    */
-  ScrollView.prototype.setWidth = function(width) {
+  setWidth(width) {
     console.assert(isFinite(width));
     if (this._width === width)
       return;
     this._width = width;
     this.element.style.width = this._width + 'px';
-  };
+  }
 
   /**
    * @return {!number}
    */
-  ScrollView.prototype.width = function() {
+  width() {
     return this._width;
-  };
+  }
 
   /**
    * @param {!number} height
    */
-  ScrollView.prototype.setHeight = function(height) {
+  setHeight(height) {
     console.assert(isFinite(height));
     if (this._height === height)
       return;
@@ -1641,27 +1645,27 @@ function ScrollView() {
     this.element.style.height = height + 'px';
     if (this.delegate)
       this.delegate.scrollViewDidChangeHeight(this);
-  };
+  }
 
   /**
    * @return {!number}
    */
-  ScrollView.prototype.height = function() {
+  height() {
     return this._height;
-  };
+  }
 
   /**
    * @param {!Animator} animator
    */
-  ScrollView.prototype.onScrollAnimatorStep = function(animator) {
+  onScrollAnimatorStep(animator) {
     this.setContentOffset(animator.currentValue);
-  };
+  }
 
   /**
    * @param {!number} offset
    * @param {?boolean} animate
    */
-  ScrollView.prototype.scrollTo = function(offset, animate) {
+  scrollTo(offset, animate) {
     console.assert(isFinite(offset));
     if (!animate) {
       this.setContentOffset(offset);
@@ -1670,42 +1674,41 @@ function ScrollView() {
     if (this._scrollAnimator)
       this._scrollAnimator.stop();
     this._scrollAnimator = new TransitionAnimator();
-    this._scrollAnimator.step = this.onScrollAnimatorStep;
+    this._scrollAnimator.step = this.onScrollAnimatorStep.bind(this);
     this._scrollAnimator.setFrom(this._contentOffset);
     this._scrollAnimator.setTo(offset);
     this._scrollAnimator.duration = 300;
     this._scrollAnimator.start();
-  };
+  }
 
   /**
    * @param {!number} offset
    * @param {?boolean} animate
    */
-  ScrollView.prototype.scrollBy = function(offset, animate) {
+  scrollBy(offset, animate) {
     this.scrollTo(this._contentOffset + offset, animate);
-  };
+  }
 
   /**
    * @return {!number}
    */
-  ScrollView.prototype.contentOffset = function() {
+  contentOffset() {
     return this._contentOffset;
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  ScrollView.prototype.onMouseWheel = function(event) {
+  onMouseWheel(event) {
     this.setContentOffset(this._contentOffset - event.wheelDelta / 30);
     event.stopPropagation();
     event.preventDefault();
-  };
-
+  }
 
   /**
    * @param {!number} value
    */
-  ScrollView.prototype.setContentOffset = function(value) {
+  setContentOffset(value) {
     console.assert(isFinite(value));
     value = Math.min(
         this.maximumContentOffset - this._height,
@@ -1716,76 +1719,74 @@ function ScrollView() {
     this._updateScrollContent();
     if (this.delegate)
       this.delegate.scrollViewDidChangeContentOffset(this);
-  };
+  }
 
-  ScrollView.prototype._updateScrollContent = function() {
+  _updateScrollContent() {
     var newPartitionNumber =
         Math.floor(this._contentOffset / ScrollView.PartitionHeight);
     var partitionChanged = this._partitionNumber !== newPartitionNumber;
     this._partitionNumber = newPartitionNumber;
     this.contentElement.style.webkitTransform = 'translate(0, ' +
-        (-this.contentPositionForContentOffset(this._contentOffset)) + 'px)';
+        -this.contentPositionForContentOffset(this._contentOffset) + 'px)';
     if (this.delegate && partitionChanged)
       this.delegate.scrollViewDidChangePartition(this);
-  };
+  }
 
   /**
    * @param {!View|Node} parent
    * @param {?View|Node=} before
    * @override
    */
-  ScrollView.prototype.attachTo = function(parent, before) {
+  attachTo(parent, before) {
     View.prototype.attachTo.call(this, parent, before);
     this._updateScrollContent();
-  };
+  }
 
   /**
    * @param {!number} offset
    */
-  ScrollView.prototype.contentPositionForContentOffset = function(offset) {
+  contentPositionForContentOffset(offset) {
     return offset - this._partitionNumber * ScrollView.PartitionHeight;
-  };
+  }
 }
 
-/**
- * @constructor
- * @extends View
- */
-function ListCell() {
-  View.call(this, createElement('div', ListCell.ClassNameListCell));
+// ----------------------------------------------------------------
 
+class ListCell extends View {
   /**
-   * @type {!number}
+   * @extends View
    */
-  this.row = NaN;
-  /**
-   * @type {!number}
-   */
-  this._width = 0;
-  /**
-   * @type {!number}
-   */
-  this._position = 0;
-}
+  constructor() {
+    super(createElement('div', ListCell.ClassNameListCell));
+    /**
+     * @type {!number}
+     */
+    this.row = NaN;
+    /**
+     * @type {!number}
+     */
+    this._width = 0;
+    /**
+     * @type {!number}
+     */
+    this._position = 0;
+  }
 
-{
-  ListCell.prototype = Object.create(View.prototype);
-
-  ListCell.DefaultRecycleBinLimit = 64;
-  ListCell.ClassNameListCell = 'list-cell';
-  ListCell.ClassNameHidden = 'hidden';
+  static DefaultRecycleBinLimit = 64;
+  static ClassNameListCell = 'list-cell';
+  static ClassNameHidden = 'hidden';
 
   /**
    * @return {!Array} An array to keep thrown away cells.
    */
-  ListCell.prototype._recycleBin = function() {
+  _recycleBin() {
     console.assert(
         false,
         'NOT REACHED: ListCell.prototype._recycleBin needs to be overridden.');
     return [];
-  };
+  }
 
-  ListCell.prototype.throwAway = function() {
+  throwAway() {
     this.hide();
     var limit = typeof this.constructor.RecycleBinLimit === 'undefined' ?
         ListCell.DefaultRecycleBinLimit :
@@ -1793,55 +1794,55 @@ function ListCell() {
     var recycleBin = this._recycleBin();
     if (recycleBin.length < limit)
       recycleBin.push(this);
-  };
+  }
 
-  ListCell.prototype.show = function() {
+  show() {
     this.element.classList.remove(ListCell.ClassNameHidden);
-  };
+  }
 
-  ListCell.prototype.hide = function() {
+  hide() {
     this.element.classList.add(ListCell.ClassNameHidden);
-  };
+  }
 
   /**
    * @return {!number} Width in pixels.
    */
-  ListCell.prototype.width = function() {
+  width() {
     return this._width;
-  };
+  }
 
   /**
    * @param {!number} width Width in pixels.
    */
-  ListCell.prototype.setWidth = function(width) {
+  setWidth(width) {
     if (this._width === width)
       return;
     this._width = width;
     this.element.style.width = this._width + 'px';
-  };
+  }
 
   /**
    * @return {!number} Position in pixels.
    */
-  ListCell.prototype.position = function() {
+  position() {
     return this._position;
-  };
+  }
 
   /**
    * @param {!number} y Position in pixels.
    */
-  ListCell.prototype.setPosition = function(y) {
+  setPosition(y) {
     if (this._position === y)
       return;
     this._position = y;
     this.element.style.webkitTransform =
         'translate(0, ' + this._position + 'px)';
-  };
+  }
 
   /**
    * @param {!boolean} selected
    */
-  ListCell.prototype.setSelected = function(selected) {
+  setSelected(selected) {
     if (this._selected === selected)
       return;
     this._selected = selected;
@@ -1852,7 +1853,7 @@ function ListCell() {
       this.element.classList.remove('selected');
       this.element.setAttribute('aria-selected', false);
     }
-  };
+  }
 }
 
 // ----------------------------------------------------------------
@@ -2140,103 +2141,102 @@ class ListView extends View {
 
 // ----------------------------------------------------------------
 
-/**
- * @constructor
- * @extends View
- * @param {!ScrollView} scrollView
- */
-function ScrubbyScrollBar(scrollView) {
-  View.call(
-      this, createElement('div', ScrubbyScrollBar.ClassNameScrubbyScrollBar));
-
+class ScrubbyScrollBar extends View {
   /**
-   * @type {!Element}
-   * @const
+   * @extends View
+   * @param {!ScrollView} scrollView
    */
-  this.thumb =
-      createElement('div', ScrubbyScrollBar.ClassNameScrubbyScrollThumb);
-  this.element.appendChild(this.thumb);
+  constructor(scrollView) {
+    super(createElement('div', ScrubbyScrollBar.ClassNameScrubbyScrollBar));
+    /**
+     * @type {!Element}
+     * @const
+     */
+    this.thumb =
+        createElement('div', ScrubbyScrollBar.ClassNameScrubbyScrollThumb);
+    this.element.appendChild(this.thumb);
 
-  /**
-   * @type {!ScrollView}
-   * @const
-   */
-  this.scrollView = scrollView;
+    /**
+     * @type {!ScrollView}
+     * @const
+     */
+    this.scrollView = scrollView;
 
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._height = 0;
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._thumbHeight = 0;
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._thumbPosition = 0;
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._height = 0;
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._thumbHeight = 0;
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._thumbPosition = 0;
 
-  this.setHeight(0);
-  this.setThumbHeight(ScrubbyScrollBar.ThumbHeight);
+    this.setHeight(0);
+    this.setThumbHeight(ScrubbyScrollBar.ThumbHeight);
 
-  /**
-   * @type {?Animator}
-   * @protected
-   */
-  this._thumbStyleTopAnimator = null;
+    /**
+     * @type {?Animator}
+     * @protected
+     */
+    this._thumbStyleTopAnimator = null;
 
-  /**
-   * @type {?number}
-   * @protected
-   */
-  this._timer = null;
+    /**
+     * @type {?number}
+     * @protected
+     */
+    this._timer = null;
 
-  this.element.addEventListener('mousedown', this.onMouseDown, false);
-  this.element.addEventListener('touchstart', this.onTouchStart, false);
-}
+    this.element.addEventListener(
+        'mousedown', this.onMouseDown.bind(this), false);
+    this.element.addEventListener(
+        'touchstart', this.onTouchStart.bind(this), false);
+  }
 
-{
-  ScrubbyScrollBar.prototype = Object.create(View.prototype);
-
-  ScrubbyScrollBar.ScrollInterval = 16;
-  ScrubbyScrollBar.ThumbMargin = 2;
-  ScrubbyScrollBar.ThumbHeight = 30;
-  ScrubbyScrollBar.ClassNameScrubbyScrollBar = 'scrubby-scroll-bar';
-  ScrubbyScrollBar.ClassNameScrubbyScrollThumb = 'scrubby-scroll-thumb';
+  static ScrollInterval = 16;
+  static ThumbMargin = 2;
+  static ThumbHeight = 30;
+  static ClassNameScrubbyScrollBar = 'scrubby-scroll-bar';
+  static ClassNameScrubbyScrollThumb = 'scrubby-scroll-thumb';
 
   /**
    * @param {?Event} event
    */
-  ScrubbyScrollBar.prototype.onTouchStart = function(event) {
+  onTouchStart(event) {
     var touch = event.touches[0];
     this._setThumbPositionFromEventPosition(touch.clientY);
     if (this._thumbStyleTopAnimator)
       this._thumbStyleTopAnimator.stop();
-    this._timer =
-        setInterval(this.onScrollTimer, ScrubbyScrollBar.ScrollInterval);
-    window.addEventListener('touchmove', this.onWindowTouchMove, false);
-    window.addEventListener('touchend', this.onWindowTouchEnd, false);
+    this._timer = setInterval(
+        this.onScrollTimer.bind(this), ScrubbyScrollBar.ScrollInterval);
+    window.addEventListener(
+        'touchmove', this.onWindowTouchMove.bind(this), false);
+    window.addEventListener(
+        'touchend', this.onWindowTouchEnd.bind(this), false);
     event.stopPropagation();
     event.preventDefault();
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  ScrubbyScrollBar.prototype.onWindowTouchMove = function(event) {
+  onWindowTouchMove(event) {
     var touch = event.touches[0];
     this._setThumbPositionFromEventPosition(touch.clientY);
     event.stopPropagation();
     event.preventDefault();
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  ScrubbyScrollBar.prototype.onWindowTouchEnd = function(event) {
+  onWindowTouchEnd(event) {
     this._thumbStyleTopAnimator = new TransitionAnimator();
     this._thumbStyleTopAnimator.step = this.onThumbStyleTopAnimationStep;
     this._thumbStyleTopAnimator.setFrom(this.thumb.offsetTop);
@@ -2249,44 +2249,43 @@ function ScrubbyScrollBar(scrollView) {
     window.removeEventListener('touchmove', this.onWindowTouchMove, false);
     window.removeEventListener('touchend', this.onWindowTouchEnd, false);
     clearInterval(this._timer);
-  };
+  }
 
   /**
    * @return {!number} Height of the view in pixels.
    */
-  ScrubbyScrollBar.prototype.height = function() {
+  height() {
     return this._height;
-  };
+  }
 
   /**
    * @param {!number} height Height of the view in pixels.
    */
-  ScrubbyScrollBar.prototype.setHeight = function(height) {
+  setHeight(height) {
     if (this._height === height)
       return;
     this._height = height;
     this.element.style.height = this._height + 'px';
-    this.thumb.style.top = ((this._height - this._thumbHeight) / 2) + 'px';
+    this.thumb.style.top = (this._height - this._thumbHeight) / 2 + 'px';
     this._thumbPosition = 0;
-  };
+  }
 
   /**
    * @param {!number} height Height of the scroll bar thumb in pixels.
    */
-  ScrubbyScrollBar.prototype.setThumbHeight = function(height) {
+  setThumbHeight(height) {
     if (this._thumbHeight === height)
       return;
     this._thumbHeight = height;
     this.thumb.style.height = this._thumbHeight + 'px';
-    this.thumb.style.top = ((this._height - this._thumbHeight) / 2) + 'px';
+    this.thumb.style.top = (this._height - this._thumbHeight) / 2 + 'px';
     this._thumbPosition = 0;
-  };
+  }
 
   /**
    * @param {number} position
    */
-  ScrubbyScrollBar.prototype._setThumbPositionFromEventPosition = function(
-      position) {
+  _setThumbPositionFromEventPosition(position) {
     var thumbMin = ScrubbyScrollBar.ThumbMargin;
     var thumbMax =
         this._height - this._thumbHeight - ScrubbyScrollBar.ThumbMargin * 2;
@@ -2297,36 +2296,37 @@ function ScrubbyScrollBar(scrollView) {
     thumbPosition = Math.min(thumbPosition, thumbMax);
     this.thumb.style.top = thumbPosition + 'px';
     this._thumbPosition =
-        1.0 - (thumbPosition - thumbMin) / (thumbMax - thumbMin) * 2;
-  };
+        1.0 - ((thumbPosition - thumbMin) / (thumbMax - thumbMin)) * 2;
+  }
 
   /**
    * @param {?Event} event
    */
-  ScrubbyScrollBar.prototype.onMouseDown = function(event) {
+  onMouseDown(event) {
     this._setThumbPositionFromEventPosition(event.clientY);
 
-    window.addEventListener('mousemove', this.onWindowMouseMove, false);
-    window.addEventListener('mouseup', this.onWindowMouseUp, false);
+    window.addEventListener(
+        'mousemove', this.onWindowMouseMove.bind(this), false);
+    window.addEventListener('mouseup', this.onWindowMouseUp.bind(this), false);
     if (this._thumbStyleTopAnimator)
       this._thumbStyleTopAnimator.stop();
-    this._timer =
-        setInterval(this.onScrollTimer, ScrubbyScrollBar.ScrollInterval);
+    this._timer = setInterval(
+        this.onScrollTimer.bind(this), ScrubbyScrollBar.ScrollInterval);
     event.stopPropagation();
     event.preventDefault();
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  ScrubbyScrollBar.prototype.onWindowMouseMove = function(event) {
+  onWindowMouseMove(event) {
     this._setThumbPositionFromEventPosition(event.clientY);
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  ScrubbyScrollBar.prototype.onWindowMouseUp = function(event) {
+  onWindowMouseUp(event) {
     this._thumbStyleTopAnimator = new TransitionAnimator();
     this._thumbStyleTopAnimator.step = this.onThumbStyleTopAnimationStep;
     this._thumbStyleTopAnimator.setFrom(this.thumb.offsetTop);
@@ -2339,22 +2339,24 @@ function ScrubbyScrollBar(scrollView) {
     window.removeEventListener('mousemove', this.onWindowMouseMove, false);
     window.removeEventListener('mouseup', this.onWindowMouseUp, false);
     clearInterval(this._timer);
-  };
+  }
 
   /**
    * @param {!Animator} animator
    */
-  ScrubbyScrollBar.prototype.onThumbStyleTopAnimationStep = function(animator) {
+  onThumbStyleTopAnimationStep(animator) {
     this.thumb.style.top = animator.currentValue + 'px';
-  };
+  }
 
-  ScrubbyScrollBar.prototype.onScrollTimer = function() {
+  onScrollTimer() {
     var scrollAmount = Math.pow(this._thumbPosition, 2) * 10;
     if (this._thumbPosition > 0)
       scrollAmount = -scrollAmount;
     this.scrollView.scrollBy(scrollAmount, false);
-  };
+  }
 }
+
+// ----------------------------------------------------------------
 
 // Mixin containing utilities for identifying and navigating between
 // valid day/week/month ranges.
