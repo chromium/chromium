@@ -19,6 +19,10 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+const CGFloat kSymbolImagePointSize = 18;
+}  // namespace
+
 @implementation BadgeButtonFactory
 
 - (BadgeButton*)badgeButtonForBadgeType:(BadgeType)badgeType {
@@ -219,6 +223,10 @@
 
 - (BadgeButton*)createButtonForType:(BadgeType)badgeType image:(UIImage*)image {
   BadgeButton* button = [BadgeButton badgeButtonWithType:badgeType];
+  [button setPreferredSymbolConfiguration:
+              [UIImageSymbolConfiguration
+                  configurationWithPointSize:kSymbolImagePointSize]
+                          forImageInState:UIControlStateNormal];
   button.image = image;
   button.fullScreenOn = NO;
   button.imageView.contentMode = UIViewContentModeScaleAspectFit;
