@@ -8,6 +8,6 @@ import("//tools/grit/grit_rule.gni")
 grit("strings") {
   source = "../fido_strings.grd"
   outputs = [ "grit/fido_strings.h" ] +
-            process_file_template(locales_with_pseudolocales,
+            process_file_template(all_chrome_locales,
                                   [ "fido_strings_{{source_name_part}}.pak" ])
 }

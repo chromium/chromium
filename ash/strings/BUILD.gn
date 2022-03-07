@@ -13,7 +13,7 @@ grit("strings") {
   source = "../ash_strings.grd"
   defines = [ "is_chrome_branded=$is_chrome_branded" ]
   outputs = [ "grit/ash_strings.h" ] +
-            process_file_template(locales_with_pseudolocales,
+            process_file_template(all_chrome_locales,
                                   [ "ash_strings_{{source_name_part}}.pak" ])
 }
 

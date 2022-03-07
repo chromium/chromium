@@ -8,7 +8,7 @@ import("//tools/grit/grit_rule.gni")
 grit("strings") {
   source = "blink_strings.grd"
   outputs = [ "grit/blink_strings.h" ] +
-            process_file_template(locales_with_pseudolocales,
+            process_file_template(all_chrome_locales,
                                   [ "blink_strings_{{source_name_part}}.pak" ])
 }
 
@@ -16,6 +16,6 @@ grit("accessibility_strings") {
   source = "blink_accessibility_strings.grd"
   outputs = [ "grit/blink_accessibility_strings.h" ] +
             process_file_template(
-                locales_with_pseudolocales,
+                all_chrome_locales,
                 [ "blink_accessibility_strings_{{source_name_part}}.pak" ])
 }

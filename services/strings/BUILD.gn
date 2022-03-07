@@ -9,6 +9,6 @@ grit("strings") {
   source = "../services_strings.grd"
   outputs =
       [ "grit/services_strings.h" ] +
-      process_file_template(locales_with_pseudolocales,
+      process_file_template(all_chrome_locales,
                             [ "services_strings_{{source_name_part}}.pak" ])
 }

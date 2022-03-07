@@ -13,85 +13,74 @@ are declared in tools/grit/grit_rule.gni.
     <output filename="grit/generated_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
-    <if expr="is_android">
-      <output filename="generated_resources_af.pak" type="data_package" lang="af" />
-      <output filename="generated_resources_as.pak" type="data_package" lang="as" />
-      <output filename="generated_resources_az.pak" type="data_package" lang="az" />
-      <output filename="generated_resources_be.pak" type="data_package" lang="be" />
-      <output filename="generated_resources_bs.pak" type="data_package" lang="bs" />
-      <output filename="generated_resources_eu.pak" type="data_package" lang="eu" />
-      <output filename="generated_resources_fr-CA.pak" type="data_package" lang="fr-CA" />
-      <output filename="generated_resources_gl.pak" type="data_package" lang="gl" />
-      <output filename="generated_resources_hy.pak" type="data_package" lang="hy" />
-      <output filename="generated_resources_is.pak" type="data_package" lang="is" />
-      <output filename="generated_resources_ka.pak" type="data_package" lang="ka" />
-      <output filename="generated_resources_kk.pak" type="data_package" lang="kk" />
-      <output filename="generated_resources_km.pak" type="data_package" lang="km" />
-      <output filename="generated_resources_ky.pak" type="data_package" lang="ky" />
-      <output filename="generated_resources_lo.pak" type="data_package" lang="lo" />
-      <output filename="generated_resources_mk.pak" type="data_package" lang="mk" />
-      <output filename="generated_resources_mn.pak" type="data_package" lang="mn" />
-      <output filename="generated_resources_my.pak" type="data_package" lang="my" />
-      <output filename="generated_resources_ne.pak" type="data_package" lang="ne" />
-      <output filename="generated_resources_or.pak" type="data_package" lang="or" />
-      <output filename="generated_resources_pa.pak" type="data_package" lang="pa" />
-      <output filename="generated_resources_si.pak" type="data_package" lang="si" />
-      <output filename="generated_resources_sq.pak" type="data_package" lang="sq" />
-      <output filename="generated_resources_sr-Latn.pak" type="data_package" lang="sr-Latn" />
-      <output filename="generated_resources_ur.pak" type="data_package" lang="ur" />
-      <output filename="generated_resources_uz.pak" type="data_package" lang="uz" />
-      <output filename="generated_resources_zh-HK.pak" type="data_package" lang="zh-HK" />
-      <output filename="generated_resources_zu.pak" type="data_package" lang="zu" />
-    </if>
-    <if expr="chromeos_ash or chromeos_lacros">
-      <output filename="generated_resources_af.pak" type="data_package" lang="af" />
-      <output filename="generated_resources_is.pak" type="data_package" lang="is" />
-      <output filename="generated_resources_zu.pak" type="data_package" lang="zu" />
-    </if>
+    <output filename="generated_resources_af.pak" type="data_package" lang="af" />
     <output filename="generated_resources_am.pak" type="data_package" lang="am" />
     <output filename="generated_resources_ar.pak" type="data_package" lang="ar" />
+    <output filename="generated_resources_as.pak" type="data_package" lang="as" />
+    <output filename="generated_resources_az.pak" type="data_package" lang="az" />
+    <output filename="generated_resources_be.pak" type="data_package" lang="be" />
     <output filename="generated_resources_bg.pak" type="data_package" lang="bg" />
     <output filename="generated_resources_bn.pak" type="data_package" lang="bn" />
+    <output filename="generated_resources_bs.pak" type="data_package" lang="bs" />
     <output filename="generated_resources_ca.pak" type="data_package" lang="ca" />
     <output filename="generated_resources_cs.pak" type="data_package" lang="cs" />
     <output filename="generated_resources_da.pak" type="data_package" lang="da" />
     <output filename="generated_resources_de.pak" type="data_package" lang="de" />
     <output filename="generated_resources_el.pak" type="data_package" lang="el" />
-    <output filename="generated_resources_en-US.pak" type="data_package" lang="en" />
     <output filename="generated_resources_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="generated_resources_en-US.pak" type="data_package" lang="en" />
     <output filename="generated_resources_es.pak" type="data_package" lang="es" />
     <output filename="generated_resources_es-419.pak" type="data_package" lang="es-419" />
     <output filename="generated_resources_et.pak" type="data_package" lang="et" />
+    <output filename="generated_resources_eu.pak" type="data_package" lang="eu" />
     <output filename="generated_resources_fa.pak" type="data_package" lang="fa" />
     <output filename="generated_resources_fi.pak" type="data_package" lang="fi" />
     <output filename="generated_resources_fil.pak" type="data_package" lang="fil" />
+    <output filename="generated_resources_fr-CA.pak" type="data_package" lang="fr-CA" />
     <output filename="generated_resources_fr.pak" type="data_package" lang="fr" />
+    <output filename="generated_resources_gl.pak" type="data_package" lang="gl" />
     <output filename="generated_resources_gu.pak" type="data_package" lang="gu" />
     <output filename="generated_resources_he.pak" type="data_package" lang="he" />
     <output filename="generated_resources_hi.pak" type="data_package" lang="hi" />
     <output filename="generated_resources_hr.pak" type="data_package" lang="hr" />
     <output filename="generated_resources_hu.pak" type="data_package" lang="hu" />
+    <output filename="generated_resources_hy.pak" type="data_package" lang="hy" />
     <output filename="generated_resources_id.pak" type="data_package" lang="id" />
+    <output filename="generated_resources_is.pak" type="data_package" lang="is" />
     <output filename="generated_resources_it.pak" type="data_package" lang="it" />
     <output filename="generated_resources_ja.pak" type="data_package" lang="ja" />
+    <output filename="generated_resources_ka.pak" type="data_package" lang="ka" />
+    <output filename="generated_resources_kk.pak" type="data_package" lang="kk" />
+    <output filename="generated_resources_km.pak" type="data_package" lang="km" />
     <output filename="generated_resources_kn.pak" type="data_package" lang="kn" />
     <output filename="generated_resources_ko.pak" type="data_package" lang="ko" />
+    <output filename="generated_resources_ky.pak" type="data_package" lang="ky" />
+    <output filename="generated_resources_lo.pak" type="data_package" lang="lo" />
     <output filename="generated_resources_lt.pak" type="data_package" lang="lt" />
     <output filename="generated_resources_lv.pak" type="data_package" lang="lv" />
+    <output filename="generated_resources_mk.pak" type="data_package" lang="mk" />
     <output filename="generated_resources_ml.pak" type="data_package" lang="ml" />
+    <output filename="generated_resources_mn.pak" type="data_package" lang="mn" />
     <output filename="generated_resources_mr.pak" type="data_package" lang="mr" />
     <output filename="generated_resources_ms.pak" type="data_package" lang="ms" />
+    <output filename="generated_resources_my.pak" type="data_package" lang="my" />
+    <output filename="generated_resources_ne.pak" type="data_package" lang="ne" />
     <output filename="generated_resources_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
          be 'nb'. -->
     <output filename="generated_resources_nb.pak" type="data_package" lang="no" />
+    <output filename="generated_resources_pa.pak" type="data_package" lang="pa" />
     <output filename="generated_resources_pl.pak" type="data_package" lang="pl" />
     <output filename="generated_resources_pt-BR.pak" type="data_package" lang="pt-BR" />
     <output filename="generated_resources_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="generated_resources_or.pak" type="data_package" lang="or" />
     <output filename="generated_resources_ro.pak" type="data_package" lang="ro" />
     <output filename="generated_resources_ru.pak" type="data_package" lang="ru" />
+    <output filename="generated_resources_si.pak" type="data_package" lang="si" />
     <output filename="generated_resources_sk.pak" type="data_package" lang="sk" />
     <output filename="generated_resources_sl.pak" type="data_package" lang="sl" />
+    <output filename="generated_resources_sq.pak" type="data_package" lang="sq" />
+    <output filename="generated_resources_sr-Latn.pak" type="data_package" lang="sr-Latn" />
     <output filename="generated_resources_sr.pak" type="data_package" lang="sr" />
     <output filename="generated_resources_sv.pak" type="data_package" lang="sv" />
     <output filename="generated_resources_sw.pak" type="data_package" lang="sw" />
@@ -100,9 +89,16 @@ are declared in tools/grit/grit_rule.gni.
     <output filename="generated_resources_th.pak" type="data_package" lang="th" />
     <output filename="generated_resources_tr.pak" type="data_package" lang="tr" />
     <output filename="generated_resources_uk.pak" type="data_package" lang="uk" />
+    <output filename="generated_resources_ur.pak" type="data_package" lang="ur" />
+    <output filename="generated_resources_uz.pak" type="data_package" lang="uz" />
     <output filename="generated_resources_vi.pak" type="data_package" lang="vi" />
     <output filename="generated_resources_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="generated_resources_zh-HK.pak" type="data_package" lang="zh-HK" />
     <output filename="generated_resources_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="generated_resources_zu.pak" type="data_package" lang="zu" />
+    <!-- Pseudolocales -->
+    <output filename="generated_resources_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="generated_resources_en-XA.pak" type="data_package" lang="en-XA" />
 
     <!-- On Android, output some strings into Android's xml string format.
          These strings are tagged with formatter_data="android_java" -->
@@ -192,10 +188,6 @@ are declared in tools/grit/grit_rule.gni.
       <output filename="java/res/values-ar-rXB/generated_resources.xml" lang="ar-XB" type="android" context="android_java" />
       <output filename="java/res/values-en-rXA/generated_resources.xml" lang="en-XA" type="android" context="android_java" />
     </if>
-
-    <!-- Pseudolocales -->
-    <output filename="generated_resources_ar-XB.pak" type="data_package" lang="ar-XB" />
-    <output filename="generated_resources_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="resources/generated_resources_af.xtb" lang="af" />

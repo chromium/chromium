@@ -9,8 +9,12 @@
     <output filename="ash_camera_app_strings_af.pak" type="data_package" lang="af" />
     <output filename="ash_camera_app_strings_am.pak" type="data_package" lang="am" />
     <output filename="ash_camera_app_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="ash_camera_app_strings_as.pak" type="data_package" lang="as" />
+    <output filename="ash_camera_app_strings_az.pak" type="data_package" lang="az" />
+    <output filename="ash_camera_app_strings_be.pak" type="data_package" lang="be" />
     <output filename="ash_camera_app_strings_bg.pak" type="data_package" lang="bg" />
     <output filename="ash_camera_app_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="ash_camera_app_strings_bs.pak" type="data_package" lang="bs" />
     <output filename="ash_camera_app_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="ash_camera_app_strings_cs.pak" type="data_package" lang="cs" />
     <output filename="ash_camera_app_strings_da.pak" type="data_package" lang="da" />
@@ -21,37 +25,55 @@
     <output filename="ash_camera_app_strings_es.pak" type="data_package" lang="es" />
     <output filename="ash_camera_app_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="ash_camera_app_strings_et.pak" type="data_package" lang="et" />
+    <output filename="ash_camera_app_strings_eu.pak" type="data_package" lang="eu" />
     <output filename="ash_camera_app_strings_fa.pak" type="data_package" lang="fa" />
     <output filename="ash_camera_app_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="ash_camera_app_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="ash_camera_app_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
     <output filename="ash_camera_app_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="ash_camera_app_strings_gl.pak" type="data_package" lang="gl" />
     <output filename="ash_camera_app_strings_gu.pak" type="data_package" lang="gu" />
     <output filename="ash_camera_app_strings_he.pak" type="data_package" lang="he" />
     <output filename="ash_camera_app_strings_hi.pak" type="data_package" lang="hi" />
     <output filename="ash_camera_app_strings_hr.pak" type="data_package" lang="hr" />
     <output filename="ash_camera_app_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="ash_camera_app_strings_hy.pak" type="data_package" lang="hy" />
     <output filename="ash_camera_app_strings_id.pak" type="data_package" lang="id" />
     <output filename="ash_camera_app_strings_is.pak" type="data_package" lang="is" />
     <output filename="ash_camera_app_strings_it.pak" type="data_package" lang="it" />
     <output filename="ash_camera_app_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="ash_camera_app_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="ash_camera_app_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="ash_camera_app_strings_km.pak" type="data_package" lang="km" />
     <output filename="ash_camera_app_strings_kn.pak" type="data_package" lang="kn" />
     <output filename="ash_camera_app_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="ash_camera_app_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="ash_camera_app_strings_lo.pak" type="data_package" lang="lo" />
     <output filename="ash_camera_app_strings_lt.pak" type="data_package" lang="lt" />
     <output filename="ash_camera_app_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="ash_camera_app_strings_mk.pak" type="data_package" lang="mk" />
     <output filename="ash_camera_app_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="ash_camera_app_strings_mn.pak" type="data_package" lang="mn" />
     <output filename="ash_camera_app_strings_mr.pak" type="data_package" lang="mr" />
     <output filename="ash_camera_app_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="ash_camera_app_strings_my.pak" type="data_package" lang="my" />
+    <output filename="ash_camera_app_strings_ne.pak" type="data_package" lang="ne" />
     <output filename="ash_camera_app_strings_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
          be 'nb'. -->
     <output filename="ash_camera_app_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="ash_camera_app_strings_pa.pak" type="data_package" lang="pa" />
     <output filename="ash_camera_app_strings_pl.pak" type="data_package" lang="pl" />
     <output filename="ash_camera_app_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
     <output filename="ash_camera_app_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="ash_camera_app_strings_or.pak" type="data_package" lang="or" />
     <output filename="ash_camera_app_strings_ro.pak" type="data_package" lang="ro" />
     <output filename="ash_camera_app_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="ash_camera_app_strings_si.pak" type="data_package" lang="si" />
     <output filename="ash_camera_app_strings_sk.pak" type="data_package" lang="sk" />
     <output filename="ash_camera_app_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="ash_camera_app_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="ash_camera_app_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
     <output filename="ash_camera_app_strings_sr.pak" type="data_package" lang="sr" />
     <output filename="ash_camera_app_strings_sv.pak" type="data_package" lang="sv" />
     <output filename="ash_camera_app_strings_sw.pak" type="data_package" lang="sw" />
@@ -60,11 +82,13 @@
     <output filename="ash_camera_app_strings_th.pak" type="data_package" lang="th" />
     <output filename="ash_camera_app_strings_tr.pak" type="data_package" lang="tr" />
     <output filename="ash_camera_app_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="ash_camera_app_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="ash_camera_app_strings_uz.pak" type="data_package" lang="uz" />
     <output filename="ash_camera_app_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="ash_camera_app_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="ash_camera_app_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
     <output filename="ash_camera_app_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
     <output filename="ash_camera_app_strings_zu.pak" type="data_package" lang="zu" />
-
     <!-- Pseudolocales -->
     <output filename="ash_camera_app_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
     <output filename="ash_camera_app_strings_en-XA.pak" type="data_package" lang="en-XA" />

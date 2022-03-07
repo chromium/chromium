@@ -12,6 +12,6 @@ grit("strings") {
   source = "extensions_strings.grd"
   outputs =
       [ "grit/extensions_strings.h" ] +
-      process_file_template(locales_with_pseudolocales,
+      process_file_template(all_chrome_locales,
                             [ "extensions_strings_{{source_name_part}}.pak" ])
 }

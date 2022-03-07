@@ -1036,7 +1036,7 @@ grit("generate_aw_resources") {
 grit("generate_aw_strings") {
   source = "ui/aw_strings.grd"
   outputs = [ "grit/aw_strings.h" ]
-  foreach(_locale, locales_with_pseudolocales) {
+  foreach(_locale, all_chrome_locales) {
     outputs += [ "aw_strings_${_locale}.pak" ]
   }
 }
@@ -1179,7 +1179,7 @@ grit("generate_components_strings") {
       process_file_template(
           android_bundle_locales_as_resources,
           [ "java/res/values-{{source_name_part}}/components_strings.xml" ]) +
-      process_file_template(locales_with_pseudolocales,
+      process_file_template(all_chrome_locales,
                             [ "components_strings_{{source_name_part}}.pak" ])
 }
 

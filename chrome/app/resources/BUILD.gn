@@ -16,7 +16,7 @@ grit("locale_settings") {
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/locale_settings.h" ] +
-      process_file_template(locales_with_pseudolocales,
+      process_file_template(all_chrome_locales,
                             [ "locale_settings_{{source_name_part}}.pak" ])
 }
 

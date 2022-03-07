@@ -166,6 +166,19 @@ android_bundle_only_locales = [
   "zu",
 ]
 
+# Chrome on iOS uses different names for "es-419" and "pt-BR" (called
+# respectively "es-MX" and "pt" on iOS).
+if (is_ios) {
+  all_chrome_locales -= [
+    "es-419",
+    "pt-BR",
+  ]
+  all_chrome_locales += [
+    "es-MX",
+    "pt",
+  ]
+}
+
 # New locales added to ChromeOS builds.
 chromeos_only_locales = [
   "af",
@@ -210,19 +223,6 @@ if (is_android) {
 } else {
   # Change if other platforms support more locales.
   platform_pak_locales = all_chrome_locales - android_bundle_only_locales
-}
-
-# Chrome on iOS uses different names for "es-419" and "pt-BR" (called
-# respectively "es-MX" and "pt" on iOS).
-if (is_ios) {
-  platform_pak_locales -= [
-    "es-419",
-    "pt-BR",
-  ]
-  platform_pak_locales += [
-    "es-MX",
-    "pt",
-  ]
 }
 
 locales_without_pseudolocales = platform_pak_locales - pseudolocales

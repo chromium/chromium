@@ -7,52 +7,22 @@
     <output filename="grit/omnibox_pedal_synonyms.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
-    <if expr="is_android">
-      <output filename="omnibox_pedal_synonyms_af.pak" type="data_package" lang="af" />
-      <output filename="omnibox_pedal_synonyms_as.pak" type="data_package" lang="as" />
-      <output filename="omnibox_pedal_synonyms_az.pak" type="data_package" lang="az" />
-      <output filename="omnibox_pedal_synonyms_be.pak" type="data_package" lang="be" />
-      <output filename="omnibox_pedal_synonyms_bs.pak" type="data_package" lang="bs" />
-      <output filename="omnibox_pedal_synonyms_eu.pak" type="data_package" lang="eu" />
-      <output filename="omnibox_pedal_synonyms_fr-CA.pak" type="data_package" lang="fr-CA" />
-      <output filename="omnibox_pedal_synonyms_gl.pak" type="data_package" lang="gl" />
-      <output filename="omnibox_pedal_synonyms_hy.pak" type="data_package" lang="hy" />
-      <output filename="omnibox_pedal_synonyms_is.pak" type="data_package" lang="is" />
-      <output filename="omnibox_pedal_synonyms_ka.pak" type="data_package" lang="ka" />
-      <output filename="omnibox_pedal_synonyms_kk.pak" type="data_package" lang="kk" />
-      <output filename="omnibox_pedal_synonyms_km.pak" type="data_package" lang="km" />
-      <output filename="omnibox_pedal_synonyms_ky.pak" type="data_package" lang="ky" />
-      <output filename="omnibox_pedal_synonyms_lo.pak" type="data_package" lang="lo" />
-      <output filename="omnibox_pedal_synonyms_mk.pak" type="data_package" lang="mk" />
-      <output filename="omnibox_pedal_synonyms_mn.pak" type="data_package" lang="mn" />
-      <output filename="omnibox_pedal_synonyms_my.pak" type="data_package" lang="my" />
-      <output filename="omnibox_pedal_synonyms_ne.pak" type="data_package" lang="ne" />
-      <output filename="omnibox_pedal_synonyms_or.pak" type="data_package" lang="or" />
-      <output filename="omnibox_pedal_synonyms_pa.pak" type="data_package" lang="pa" />
-      <output filename="omnibox_pedal_synonyms_si.pak" type="data_package" lang="si" />
-      <output filename="omnibox_pedal_synonyms_sq.pak" type="data_package" lang="sq" />
-      <output filename="omnibox_pedal_synonyms_sr-Latn.pak" type="data_package" lang="sr-Latn" />
-      <output filename="omnibox_pedal_synonyms_ur.pak" type="data_package" lang="ur" />
-      <output filename="omnibox_pedal_synonyms_uz.pak" type="data_package" lang="uz" />
-      <output filename="omnibox_pedal_synonyms_zh-HK.pak" type="data_package" lang="zh-HK" />
-      <output filename="omnibox_pedal_synonyms_zu.pak" type="data_package" lang="zu" />
-    </if>
-    <if expr="chromeos_ash or chromeos_lacros">
-      <output filename="omnibox_pedal_synonyms_af.pak" type="data_package" lang="af" />
-      <output filename="omnibox_pedal_synonyms_is.pak" type="data_package" lang="is" />
-      <output filename="omnibox_pedal_synonyms_zu.pak" type="data_package" lang="zu" />
-    </if>
+    <output filename="omnibox_pedal_synonyms_af.pak" type="data_package" lang="af" />
     <output filename="omnibox_pedal_synonyms_am.pak" type="data_package" lang="am" />
     <output filename="omnibox_pedal_synonyms_ar.pak" type="data_package" lang="ar" />
+    <output filename="omnibox_pedal_synonyms_as.pak" type="data_package" lang="as" />
+    <output filename="omnibox_pedal_synonyms_az.pak" type="data_package" lang="az" />
+    <output filename="omnibox_pedal_synonyms_be.pak" type="data_package" lang="be" />
     <output filename="omnibox_pedal_synonyms_bg.pak" type="data_package" lang="bg" />
     <output filename="omnibox_pedal_synonyms_bn.pak" type="data_package" lang="bn" />
+    <output filename="omnibox_pedal_synonyms_bs.pak" type="data_package" lang="bs" />
     <output filename="omnibox_pedal_synonyms_ca.pak" type="data_package" lang="ca" />
     <output filename="omnibox_pedal_synonyms_cs.pak" type="data_package" lang="cs" />
     <output filename="omnibox_pedal_synonyms_da.pak" type="data_package" lang="da" />
     <output filename="omnibox_pedal_synonyms_de.pak" type="data_package" lang="de" />
     <output filename="omnibox_pedal_synonyms_el.pak" type="data_package" lang="el" />
-    <output filename="omnibox_pedal_synonyms_en-US.pak" type="data_package" lang="en" />
     <output filename="omnibox_pedal_synonyms_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="omnibox_pedal_synonyms_en-US.pak" type="data_package" lang="en" />
     <output filename="omnibox_pedal_synonyms_es.pak" type="data_package" lang="es" />
     <if expr="is_ios">
       <!-- iOS uses es-MX for es-419 -->
@@ -62,29 +32,44 @@
       <output filename="omnibox_pedal_synonyms_es-419.pak" type="data_package" lang="es-419" />
     </if>
     <output filename="omnibox_pedal_synonyms_et.pak" type="data_package" lang="et" />
+    <output filename="omnibox_pedal_synonyms_eu.pak" type="data_package" lang="eu" />
     <output filename="omnibox_pedal_synonyms_fa.pak" type="data_package" lang="fa" />
     <output filename="omnibox_pedal_synonyms_fi.pak" type="data_package" lang="fi" />
     <output filename="omnibox_pedal_synonyms_fil.pak" type="data_package" lang="fil" />
+    <output filename="omnibox_pedal_synonyms_fr-CA.pak" type="data_package" lang="fr-CA" />
     <output filename="omnibox_pedal_synonyms_fr.pak" type="data_package" lang="fr" />
+    <output filename="omnibox_pedal_synonyms_gl.pak" type="data_package" lang="gl" />
     <output filename="omnibox_pedal_synonyms_gu.pak" type="data_package" lang="gu" />
     <output filename="omnibox_pedal_synonyms_he.pak" type="data_package" lang="he" />
     <output filename="omnibox_pedal_synonyms_hi.pak" type="data_package" lang="hi" />
     <output filename="omnibox_pedal_synonyms_hr.pak" type="data_package" lang="hr" />
     <output filename="omnibox_pedal_synonyms_hu.pak" type="data_package" lang="hu" />
+    <output filename="omnibox_pedal_synonyms_hy.pak" type="data_package" lang="hy" />
     <output filename="omnibox_pedal_synonyms_id.pak" type="data_package" lang="id" />
+    <output filename="omnibox_pedal_synonyms_is.pak" type="data_package" lang="is" />
     <output filename="omnibox_pedal_synonyms_it.pak" type="data_package" lang="it" />
     <output filename="omnibox_pedal_synonyms_ja.pak" type="data_package" lang="ja" />
+    <output filename="omnibox_pedal_synonyms_ka.pak" type="data_package" lang="ka" />
+    <output filename="omnibox_pedal_synonyms_kk.pak" type="data_package" lang="kk" />
+    <output filename="omnibox_pedal_synonyms_km.pak" type="data_package" lang="km" />
     <output filename="omnibox_pedal_synonyms_kn.pak" type="data_package" lang="kn" />
     <output filename="omnibox_pedal_synonyms_ko.pak" type="data_package" lang="ko" />
+    <output filename="omnibox_pedal_synonyms_ky.pak" type="data_package" lang="ky" />
+    <output filename="omnibox_pedal_synonyms_lo.pak" type="data_package" lang="lo" />
     <output filename="omnibox_pedal_synonyms_lt.pak" type="data_package" lang="lt" />
     <output filename="omnibox_pedal_synonyms_lv.pak" type="data_package" lang="lv" />
+    <output filename="omnibox_pedal_synonyms_mk.pak" type="data_package" lang="mk" />
     <output filename="omnibox_pedal_synonyms_ml.pak" type="data_package" lang="ml" />
+    <output filename="omnibox_pedal_synonyms_mn.pak" type="data_package" lang="mn" />
     <output filename="omnibox_pedal_synonyms_mr.pak" type="data_package" lang="mr" />
     <output filename="omnibox_pedal_synonyms_ms.pak" type="data_package" lang="ms" />
+    <output filename="omnibox_pedal_synonyms_my.pak" type="data_package" lang="my" />
+    <output filename="omnibox_pedal_synonyms_ne.pak" type="data_package" lang="ne" />
     <output filename="omnibox_pedal_synonyms_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
          be 'nb'. -->
     <output filename="omnibox_pedal_synonyms_nb.pak" type="data_package" lang="no" />
+    <output filename="omnibox_pedal_synonyms_pa.pak" type="data_package" lang="pa" />
     <output filename="omnibox_pedal_synonyms_pl.pak" type="data_package" lang="pl" />
     <if expr="is_ios">
       <!-- iOS uses pt for pt-BR -->
@@ -94,10 +79,14 @@
       <output filename="omnibox_pedal_synonyms_pt-BR.pak" type="data_package" lang="pt-BR" />
     </if>
     <output filename="omnibox_pedal_synonyms_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="omnibox_pedal_synonyms_or.pak" type="data_package" lang="or" />
     <output filename="omnibox_pedal_synonyms_ro.pak" type="data_package" lang="ro" />
     <output filename="omnibox_pedal_synonyms_ru.pak" type="data_package" lang="ru" />
+    <output filename="omnibox_pedal_synonyms_si.pak" type="data_package" lang="si" />
     <output filename="omnibox_pedal_synonyms_sk.pak" type="data_package" lang="sk" />
     <output filename="omnibox_pedal_synonyms_sl.pak" type="data_package" lang="sl" />
+    <output filename="omnibox_pedal_synonyms_sq.pak" type="data_package" lang="sq" />
+    <output filename="omnibox_pedal_synonyms_sr-Latn.pak" type="data_package" lang="sr-Latn" />
     <output filename="omnibox_pedal_synonyms_sr.pak" type="data_package" lang="sr" />
     <output filename="omnibox_pedal_synonyms_sv.pak" type="data_package" lang="sv" />
     <output filename="omnibox_pedal_synonyms_sw.pak" type="data_package" lang="sw" />
@@ -106,10 +95,13 @@
     <output filename="omnibox_pedal_synonyms_th.pak" type="data_package" lang="th" />
     <output filename="omnibox_pedal_synonyms_tr.pak" type="data_package" lang="tr" />
     <output filename="omnibox_pedal_synonyms_uk.pak" type="data_package" lang="uk" />
+    <output filename="omnibox_pedal_synonyms_ur.pak" type="data_package" lang="ur" />
+    <output filename="omnibox_pedal_synonyms_uz.pak" type="data_package" lang="uz" />
     <output filename="omnibox_pedal_synonyms_vi.pak" type="data_package" lang="vi" />
     <output filename="omnibox_pedal_synonyms_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="omnibox_pedal_synonyms_zh-HK.pak" type="data_package" lang="zh-HK" />
     <output filename="omnibox_pedal_synonyms_zh-TW.pak" type="data_package" lang="zh-TW" />
-
+    <output filename="omnibox_pedal_synonyms_zu.pak" type="data_package" lang="zu" />
     <!-- Pseudolocales -->
     <output filename="omnibox_pedal_synonyms_ar-XB.pak" type="data_package" lang="ar-XB" />
     <output filename="omnibox_pedal_synonyms_en-XA.pak" type="data_package" lang="en-XA" />

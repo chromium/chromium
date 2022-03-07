@@ -10,7 +10,7 @@ grit("strings") {
   source = "../chromeos_strings.grd"
   outputs =
       [ "grit/chromeos_strings.h" ] +
-      process_file_template(locales_with_pseudolocales,
+      process_file_template(all_chrome_locales,
                             [ "chromeos_strings_{{source_name_part}}.pak" ])
 }
 
