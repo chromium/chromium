@@ -227,7 +227,7 @@ void WriteTargetColorParams(
 bool ReadTargetColorParams(
     PaintOpReader& reader,
     absl::optional<TargetColorParams>& target_color_params) {
-  uint32_t has_target_color_params;
+  uint32_t has_target_color_params = 0;
   reader.Read(&has_target_color_params);
   if (!has_target_color_params) {
     target_color_params = absl::nullopt;
