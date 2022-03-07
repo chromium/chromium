@@ -60,6 +60,7 @@ constexpr int kPreferredWidth = 640;
 constexpr int kClassicViewHeight = 48;
 constexpr int kDefaultViewHeight = 40;
 constexpr int kAnswerCardViewHeight = 80;
+constexpr int kKeyboardShortcutViewHeight = 64;
 constexpr int kPreferredIconViewWidth = 56;
 constexpr int kTextTrailPadding = 16;
 // Extra margin at the right of the rightmost action icon.
@@ -77,6 +78,7 @@ constexpr int kImageIconCornerRadius = 4;
 
 constexpr int kSearchRatingStarPadding = 4;
 constexpr int kSearchRatingStarSize = 16;
+constexpr int kKeyboardShortcutTopMargin = 6;
 constexpr int kAnswerCardBorderMargin = 12;
 constexpr gfx::Insets kAnswerCardBorder(kAnswerCardBorderMargin,
                                         kAnswerCardBorderMargin,
@@ -269,6 +271,8 @@ SearchResultView::SearchResultView(
       std::make_unique<views::FlexLayoutView>());
   keyboard_shortcut_container_->SetCrossAxisAlignment(
       views::LayoutAlignment::kStretch);
+  keyboard_shortcut_container_->SetBorder(
+      views::CreateEmptyBorder(kKeyboardShortcutTopMargin, 0, 0, 0));
 
   title_container_ = title_and_details_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -365,6 +369,8 @@ int SearchResultView::PreferredHeight() const {
     case SearchResultViewType::kClassic:
       return kClassicViewHeight;
     case SearchResultViewType::kDefault:
+      if (has_keyboard_shortcut_contents_)
+        return kKeyboardShortcutViewHeight;
       return kDefaultViewHeight;
     case SearchResultViewType::kAnswerCard:
       return kAnswerCardViewHeight;
@@ -767,10 +773,12 @@ void SearchResultView::Layout() {
         // SearchResultView needs additional space when
         // `has_keyboard_shortcut_contents_` is set to accommodate the
         // `keyboard_shortcut_container_`.
-        gfx::Size label_size(text_bounds.width(),
-                             has_keyboard_shortcut_contents_
-                                 ? PrimaryTextHeight() + SecondaryTextHeight()
-                                 : PrimaryTextHeight());
+        gfx::Size label_size(
+            text_bounds.width(),
+            PrimaryTextHeight() +
+                (has_keyboard_shortcut_contents_
+                     ? kKeyboardShortcutTopMargin + SecondaryTextHeight()
+                     : 0));
         gfx::Rect centered_text_bounds(text_bounds);
         centered_text_bounds.ClampToCenteredSize(label_size);
         text_container_->SetBoundsRect(centered_text_bounds);
@@ -778,8 +786,11 @@ void SearchResultView::Layout() {
       }
       case SearchResultViewType::kClassic:
       case SearchResultViewType::kAnswerCard: {
-        gfx::Size label_size(text_bounds.width(),
-                             PrimaryTextHeight() + SecondaryTextHeight());
+        gfx::Size label_size(
+            text_bounds.width(),
+            PrimaryTextHeight() + SecondaryTextHeight() +
+                (has_keyboard_shortcut_contents_ ? kKeyboardShortcutTopMargin
+                                                 : 0));
         gfx::Rect centered_text_bounds(text_bounds);
         centered_text_bounds.ClampToCenteredSize(label_size);
         text_container_->SetBoundsRect(centered_text_bounds);
