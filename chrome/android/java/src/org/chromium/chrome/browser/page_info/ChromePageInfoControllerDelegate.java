@@ -261,8 +261,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             storeInfoRow.setId(PageInfoStoreInfoController.STORE_INFO_ROW_ID);
             rowWrapper.addView(storeInfoRow);
             controllers.add(new PageInfoStoreInfoController(mainController, storeInfoRow,
-                    mStoreInfoActionHandlerSupplier,
-                    mPageInfoHighlight.shouldHighlightStoreInfo()));
+                    mStoreInfoActionHandlerSupplier, mPageInfoHighlight.shouldHighlightStoreInfo(),
+                    mWebContents));
         }
         return controllers;
     }

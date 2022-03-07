@@ -62,6 +62,7 @@ android_library("java") {
     "//components/thin_webview:factory_java",
     "//components/thin_webview:java",
     "//components/thin_webview:thin_webview",
+    "//components/ukm/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
     "//components/version_info/android:version_constants_java",

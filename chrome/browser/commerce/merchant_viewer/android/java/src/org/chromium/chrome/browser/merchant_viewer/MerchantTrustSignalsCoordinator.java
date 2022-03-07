@@ -71,6 +71,7 @@ public class MerchantTrustSignalsCoordinator
     private final MerchantTrustSignalsStorageFactory mStorageFactory;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final WindowAndroid mWindowAndroid;
+    private final ObservableSupplier<Tab> mTabSupplier;
     private OmniboxIconController mOmniboxIconController;
 
     /** Creates a new instance. */
@@ -101,6 +102,7 @@ public class MerchantTrustSignalsCoordinator
         mStorageFactory = storageFactory;
         mProfileSupplier = profileSupplier;
         mWindowAndroid = windowAndroid;
+        mTabSupplier = tabSupplier;
 
         mMediator = new MerchantTrustSignalsMediator(
                 tabSupplier, this::onFinishEligibleNavigation, metrics);
@@ -151,6 +153,7 @@ public class MerchantTrustSignalsCoordinator
     void maybeDisplayMessage(MerchantTrustSignalsV2 trustSignals, MerchantTrustMessageContext item,
             boolean shouldExpediteMessage) {
         if (trustSignals == null) return;
+        mMetrics.recordUkmOnDataAvailable(item.getWebContents());
         NavigationHandle navigationHandle = item.getNavigationHandle();
         MerchantTrustSignalsEventStorage storage = mStorageFactory.getForLastUsedProfile();
         if (navigationHandle == null || navigationHandle.getUrl() == null || storage == null
@@ -230,6 +233,7 @@ public class MerchantTrustSignalsCoordinator
             return;
         }
 
+        mMetrics.recordUkmOnMessageSeen(messageContext.getWebContents());
         updateShownMessagesTimestamp();
         storage.save(new MerchantTrustSignalsEvent(
                 messageContext.getHostName(), System.currentTimeMillis()));
@@ -248,6 +252,12 @@ public class MerchantTrustSignalsCoordinator
     public void onMessagePrimaryAction(
             MerchantTrustSignalsV2 trustSignals, String messageAssociatedUrl) {
         mMetrics.recordMetricsForMessageTapped();
+
+        // TODO(crbug.com/1300971): Pass webContents directly to this method instead of using
+        // mTabSupplier.
+        if (mTabSupplier.hasValue()) {
+            mMetrics.recordUkmOnMessageClicked(mTabSupplier.get().getWebContents());
+        }
         launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()),
                 BottomSheetOpenedSource.FROM_MESSAGE, messageAssociatedUrl);
     }

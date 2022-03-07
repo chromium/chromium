@@ -85,6 +85,9 @@ public class MerchantTrustSignalsCoordinatorTest {
     private ObservableSupplier<Tab> mMockTabProvider;
 
     @Mock
+    private Tab mMockTab;
+
+    @Mock
     private ObservableSupplier<Profile> mMockProfileSupplier;
 
     @Mock
@@ -178,6 +181,9 @@ public class MerchantTrustSignalsCoordinatorTest {
         doReturn(mMockProfile).when(mMockProfileSupplier).get();
         doReturn(false).when(mMockProfile).isOffTheRecord();
         doReturn(FAKE_HOST).when(mMockGurl).getSpec();
+        doReturn(true).when(mMockTabProvider).hasValue();
+        doReturn(mMockTab).when(mMockTabProvider).get();
+        doReturn(mMockWebContents).when(mMockTab).getWebContents();
         doAnswer((Answer<String>) invocation -> mSerializedTimestamps)
                 .when(mMockPrefService)
                 .getString(eq(Pref.COMMERCE_MERCHANT_VIEWER_MESSAGES_SHOWN_TIME));
@@ -294,6 +300,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     public void testMaybeDisplayMessage_ShouldNotExpediteMessage() {
         mCoordinator.maybeDisplayMessage(mDummyMerchantTrustSignals, mMessageContext, false);
 
+        verify(mMockMetrics, times(1)).recordUkmOnDataAvailable(eq(mMockWebContents));
         verify(mMockMerchantTrustStorage, times(1)).delete(eq(mMockMerchantTrustSignalsEvent));
         verifySchedulingMessage(true, false);
     }
@@ -303,6 +310,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     public void testMaybeDisplayMessage_ShouldExpediteMessage() {
         mCoordinator.maybeDisplayMessage(mDummyMerchantTrustSignals, mMessageContext, true);
 
+        verify(mMockMetrics, times(1)).recordUkmOnDataAvailable(eq(mMockWebContents));
         verify(mMockMerchantTrustStorage, times(1)).delete(eq(mMockMerchantTrustSignalsEvent));
         verifySchedulingMessage(true, true);
     }
@@ -338,6 +346,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     public void testMaybeDisplayMessage_NoMerchantTrustData() {
         mCoordinator.maybeDisplayMessage(null, mMessageContext, false);
 
+        verify(mMockMetrics, times(0)).recordUkmOnDataAvailable(eq(mMockWebContents));
         verify(mMockMerchantTrustStorage, times(0)).delete(eq(mMockMerchantTrustSignalsEvent));
         verifySchedulingMessage(false, false);
     }
@@ -487,6 +496,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
         mCoordinator.onMessageEnqueued(
                 new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents));
+        verify(mMockMetrics, times(1)).recordUkmOnMessageSeen(eq(mMockWebContents));
         verify(mCoordinator, times(1)).updateShownMessagesTimestamp();
         verify(mMockMerchantTrustStorage, times(1)).save(any(MerchantTrustSignalsEvent.class));
     }
@@ -512,6 +522,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     public void testOnMessagePrimaryAction() {
         mCoordinator.onMessagePrimaryAction(mDummyMerchantTrustSignals, FAKE_URL);
         verify(mMockMetrics, times(1)).recordMetricsForMessageTapped();
+        verify(mMockMetrics, times(1)).recordUkmOnMessageClicked(eq(mMockWebContents));
         verify(mMockMetrics, times(1))
                 .recordMetricsForBottomSheetOpenedSource(eq(BottomSheetOpenedSource.FROM_MESSAGE));
         verify(mMockDetailsTabCoordinator, times(1))
