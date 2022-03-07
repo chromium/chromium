@@ -1348,10 +1348,11 @@ INSTANTIATE_TEST_SUITE_P(
     DictationUITest,
     ::testing::Values(speech::SpeechRecognitionType::kNetwork));
 
-INSTANTIATE_TEST_SUITE_P(
-    OnDevice,
-    DictationUITest,
-    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+// TODO(crbug.com/1303604): OnDevice tests are flaky.
+// INSTANTIATE_TEST_SUITE_P(
+//     OnDevice,
+//     DictationUITest,
+//     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, ShownWhenSpeechRecognitionStarts) {
   ToggleDictationWithKeystroke();
