@@ -49,6 +49,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -632,6 +633,15 @@ bool BrowserManager::GetActiveTabUrlSupported() const {
 void BrowserManager::GetActiveTabUrl(GetActiveTabUrlCallback callback) {
   DCHECK(GetActiveTabUrlSupported());
   browser_service_->service->GetActiveTabUrl(std::move(callback));
+}
+
+void BrowserManager::GetTabStripModelUrls(
+    const std::string& window_unique_id,
+    GetTabStripModelUrlsCallback callback) {
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->desk_template_ash()
+      ->GetTabStripModelUrls(window_unique_id, std::move(callback));
 }
 
 void BrowserManager::AddObserver(BrowserManagerObserver* observer) {

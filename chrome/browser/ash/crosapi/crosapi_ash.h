@@ -33,6 +33,7 @@ class ChromeAppWindowTrackerAsh;
 class ClipboardAsh;
 class ClipboardHistoryAsh;
 class ContentProtectionAsh;
+class DeskTemplateAsh;
 class DeviceAttributesAsh;
 class DeviceSettingsAsh;
 class DlpAsh;
@@ -126,6 +127,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ClipboardHistory> receiver) override;
   void BindContentProtection(
       mojo::PendingReceiver<mojom::ContentProtection> receiver) override;
+  void BindDeskTemplate(
+      mojo::PendingReceiver<mojom::DeskTemplate> receiver) override;
   void BindDeviceAttributes(
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
   void BindDeviceSettingsService(
@@ -240,6 +243,8 @@ class CrosapiAsh : public mojom::Crosapi {
 
   AutomationAsh* automation_ash() { return automation_ash_.get(); }
 
+  DeskTemplateAsh* desk_template_ash() { return desk_template_ash_.get(); }
+
   DownloadControllerAsh* download_controller_ash() {
     return download_controller_ash_.get();
   }
@@ -311,6 +316,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ClipboardAsh> clipboard_ash_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
   std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
+  std::unique_ptr<DeskTemplateAsh> desk_template_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceSettingsAsh> device_settings_ash_;
   std::unique_ptr<DlpAsh> dlp_ash_;

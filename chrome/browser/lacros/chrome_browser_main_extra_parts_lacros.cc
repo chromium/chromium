@@ -9,6 +9,7 @@
 #include "chrome/browser/lacros/arc/arc_icon_cache.h"
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
+#include "chrome/browser/lacros/desk_template_client_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_cache.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
@@ -70,6 +71,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   automation_manager_ = std::make_unique<AutomationManagerLacros>();
   browser_service_ = std::make_unique<BrowserServiceLacros>();
   butter_bar_ = std::make_unique<LacrosButterBar>();
+  desk_template_client_ = std::make_unique<DeskTemplateClientLacros>();
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();
   task_manager_provider_ = std::make_unique<crosapi::TaskManagerLacros>();

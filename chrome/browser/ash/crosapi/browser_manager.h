@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -198,6 +199,13 @@ class BrowserManager : public session_manager::SessionManagerObserver,
       base::OnceCallback<void(const absl::optional<GURL>&)>;
   // Gets Url of the active tab from lacros if there is any.
   void GetActiveTabUrl(GetActiveTabUrlCallback callback);
+
+  using GetTabStripModelUrlsCallback =
+      mojom::DeskTemplateClient::GetTabStripModelUrlsCallback;
+  // Gets URLs and active indices of the tab strip models from the Lacros
+  // browser window.
+  void GetTabStripModelUrls(const std::string& window_unique_id,
+                            GetTabStripModelUrlsCallback callback);
 
   void AddObserver(BrowserManagerObserver* observer);
   void RemoveObserver(BrowserManagerObserver* observer);

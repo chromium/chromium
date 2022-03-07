@@ -27,6 +27,7 @@
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/crosapi/mojom/content_protection.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
@@ -239,6 +240,8 @@ LacrosService::LacrosService()
   ConstructRemote<
       crosapi::mojom::ContentProtection, &Crosapi::BindContentProtection,
       Crosapi::MethodMinVersions::kBindContentProtectionMinVersion>();
+  ConstructRemote<crosapi::mojom::DeskTemplate, &Crosapi::BindDeskTemplate,
+                  Crosapi::MethodMinVersions::kBindDeskTemplateMinVersion>();
   ConstructRemote<
       crosapi::mojom::DeviceAttributes, &Crosapi::BindDeviceAttributes,
       Crosapi::MethodMinVersions::kBindDeviceAttributesMinVersion>();

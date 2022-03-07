@@ -1,0 +1,73 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/crosapi/desk_template_ash.h"
+
+namespace crosapi {
+
+DeskTemplateAsh::Call::Call(
+    uint32_t serial,
+    const std::string& window_unique_id,
+    uint32_t remote_count,
+    mojom::DeskTemplateClient::GetTabStripModelUrlsCallback callback)
+    : serial(serial),
+      window_unique_id(window_unique_id),
+      remote_count(remote_count),
+      callback(std::move(callback)) {}
+
+DeskTemplateAsh::Call::~Call() = default;
+
+DeskTemplateAsh::DeskTemplateAsh() = default;
+DeskTemplateAsh::~DeskTemplateAsh() = default;
+
+void DeskTemplateAsh::BindReceiver(
+    mojo::PendingReceiver<mojom::DeskTemplate> pending_receiver) {
+  receivers_.Add(this, std::move(pending_receiver));
+}
+
+void DeskTemplateAsh::GetTabStripModelUrls(
+    const std::string& window_unique_id,
+    mojom::DeskTemplateClient::GetTabStripModelUrlsCallback callback) {
+  const auto current_serial = serial_++;
+  calls_.emplace_back(current_serial, window_unique_id, remotes_.size(),
+                      std::move(callback));
+  for (const auto& remote : remotes_) {
+    remote->GetTabStripModelUrls(
+        current_serial, window_unique_id,
+        base::BindOnce(&DeskTemplateAsh::OnGetTabStripModelUrlsFromRemote,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void DeskTemplateAsh::AddDeskTemplateClient(
+    mojo::PendingRemote<mojom::DeskTemplateClient> client) {
+  remotes_.Add(mojo::Remote<mojom::DeskTemplateClient>(std::move(client)));
+}
+
+void DeskTemplateAsh::OnGetTabStripModelUrlsFromRemote(
+    uint32_t serial,
+    const std::string& window_unique_id,
+    mojom::DeskTemplateStatePtr state) {
+  auto call_it = calls_.begin();
+  while (call_it != calls_.end()) {
+    if (call_it->window_unique_id == window_unique_id &&
+        call_it->serial == serial) {
+      break;
+    }
+    ++call_it;
+  }
+  if (call_it == calls_.end()) {
+    DCHECK(state.is_null());
+    return;
+  }
+  Call& call = *call_it;
+  DCHECK(call.remote_count > 0);
+  --call.remote_count;
+  if (call.remote_count == 0 || !state.is_null()) {
+    std::move(call.callback).Run(serial, window_unique_id, std::move(state));
+    calls_.erase(call_it);
+  }
+}
+
+}  // namespace crosapi

@@ -12,6 +12,7 @@
 class ArcIconCache;
 class AutomationManagerLacros;
 class BrowserServiceLacros;
+class DeskTemplateClientLacros;
 class DriveFsCache;
 class DownloadControllerClientLacros;
 class ForceInstalledTrackerLacros;
@@ -59,6 +60,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles browser action requests from ash-chrome.
   std::unique_ptr<BrowserServiceLacros> browser_service_;
+
+  // Handles requests for desk template data from ash-chrome.
+  std::unique_ptr<DeskTemplateClientLacros> desk_template_client_;
 
   // Handles search queries from ash-chrome.
   std::unique_ptr<crosapi::SearchControllerLacros> search_controller_;
