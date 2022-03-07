@@ -91,6 +91,21 @@ TEST_F(ProjectorUiControllerTest, ShowAndCloseToolbar) {
   EXPECT_FALSE(projector_annotation_tray->visible_preferred());
 }
 
+TEST_F(ProjectorUiControllerTest, CloseToolbarWhenAnnotatorIsEnabled) {
+  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
+                                        ->GetStatusAreaWidget()
+                                        ->projector_annotation_tray();
+  controller_->ShowToolbar();
+  EXPECT_TRUE(projector_annotation_tray->visible_preferred());
+
+  controller_->OnMarkerPressed();
+  EXPECT_TRUE(controller_->is_annotator_enabled());
+
+  controller_->CloseToolbar();
+  EXPECT_FALSE(projector_annotation_tray->visible_preferred());
+  EXPECT_FALSE(controller_->is_annotator_enabled());
+}
+
 // Verifies that toggling on the marker on Projector tools enables the
 // annotator.
 TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {

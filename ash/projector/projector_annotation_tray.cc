@@ -222,6 +222,11 @@ void ProjectorAnnotationTray::OnThemeChanged() {
   UpdateIcon();
 }
 
+void ProjectorAnnotationTray::HideAnnotationTray() {
+  SetVisiblePreferred(false);
+  UpdateIcon();
+}
+
 void ProjectorAnnotationTray::ToggleAnnotator() {
   if (GetCurrentTool() == kToolNone) {
     EnableAnnotatorTool();

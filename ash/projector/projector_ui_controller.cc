@@ -131,12 +131,13 @@ void ProjectorUiController::ShowToolbar() {
 }
 
 void ProjectorUiController::CloseToolbar() {
+  ResetTools();
   // Hide the tray icon
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
   DCHECK(projector_annotation_tray);
-  projector_annotation_tray->SetVisiblePreferred(false);
+  projector_annotation_tray->HideAnnotationTray();
 }
 
 void ProjectorUiController::OnMarkerPressed() {

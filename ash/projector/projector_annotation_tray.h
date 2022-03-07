@@ -36,6 +36,8 @@ class ProjectorAnnotationTray : public TrayBackgroundView {
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
 
+  void HideAnnotationTray();
+
  private:
   void ToggleAnnotator();
   void EnableAnnotatorTool();
