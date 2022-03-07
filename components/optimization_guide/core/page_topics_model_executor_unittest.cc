@@ -272,6 +272,44 @@ TEST_F(PageTopicsModelExecutorTest,
                                         }));
 }
 
+// Regression test for crbug.com/1303304.
+TEST_F(PageTopicsModelExecutorTest, NoneCategoryBelowMinWeight) {
+  proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.set_version(123);
+  auto* category_params = model_metadata.mutable_output_postprocessing_params()
+                              ->mutable_category_params();
+  category_params->set_max_categories(4);
+  category_params->set_min_none_weight(0.8);
+  category_params->set_min_category_weight(0.01);
+  category_params->set_min_normalized_weight_within_top_n(0.25);
+
+  proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+  SendPageTopicsModelToExecutor(any_metadata);
+
+  std::vector<tflite::task::core::Category> model_output = {
+      {"-2", 0.001}, {"0", 0.001}, {"1", 0.25}, {"2", 0.4}, {"3", 0.05},
+  };
+
+  BatchAnnotationResult topics_result =
+      BatchAnnotationResult::CreateEmptyAnnotationsResult("");
+  model_executor()->PostprocessCategoriesToBatchAnnotationResult(
+      base::BindOnce(
+          [](BatchAnnotationResult* out_result,
+             const BatchAnnotationResult& in_result) {
+            *out_result = in_result;
+          },
+          &topics_result),
+      AnnotationType::kPageTopics, "input", model_output);
+  EXPECT_EQ(topics_result, BatchAnnotationResult::CreatePageTopicsResult(
+                               "input", std::vector<WeightedIdentifier>{
+                                            WeightedIdentifier(1, 0.25),
+                                            WeightedIdentifier(2, 0.4),
+                                        }));
+}
+
 TEST_F(PageTopicsModelExecutorTest,
        NullPostprocessCategoriesToBatchAnnotationResult) {
   proto::PageTopicsModelMetadata model_metadata;

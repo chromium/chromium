@@ -515,6 +515,32 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
+       GetContentModelAnnotationsFromOutputNoneCategoryBelowMin) {
+  proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.set_version(123);
+  auto* category_params = model_metadata.mutable_output_postprocessing_params()
+                              ->mutable_category_params();
+  category_params->set_max_categories(4);
+  category_params->set_min_none_weight(0.8);
+  category_params->set_min_category_weight(0.01);
+  category_params->set_min_normalized_weight_within_top_n(0.25);
+
+  std::vector<tflite::task::core::Category> model_output = {
+      {"-2", 0.001}, {"0", 0.3}, {"1", 0.25}, {"2", 0.4}, {"3", 0.05},
+  };
+  history::VisitContentModelAnnotations annotations =
+      GetContentModelAnnotationsFromOutput(model_metadata, model_output);
+  EXPECT_THAT(annotations.categories,
+              UnorderedElementsAre(
+                  history::VisitContentModelAnnotations::Category("0", 30),
+                  history::VisitContentModelAnnotations::Category("1", 25),
+                  history::VisitContentModelAnnotations::Category("2", 40)));
+  EXPECT_EQ(annotations.visibility_score, -1.0);
+  EXPECT_EQ(annotations.page_topics_model_version, 123);
+  EXPECT_TRUE(annotations.entities.empty());
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
        GetContentModelAnnotationsFromOutputCategoriesAndVisibility) {
   proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);

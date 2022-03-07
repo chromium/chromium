@@ -443,8 +443,14 @@ void PageContentAnnotationsModelManager::
       // None weight is too strong.
       return;
     }
-    // None weight doesn't matter, so prune it out.
-    categories.erase(categories.begin() + none_idx_and_weight->first);
+    // None weight doesn't matter, so prune it out. Note that it may have
+    // already been removed above if its weight was below the category min.
+    categories.erase(
+        std::remove_if(categories.begin(), categories.end(),
+                       [&](const std::pair<std::string, float>& category) {
+                         return category.first == kNoneCategoryId;
+                       }),
+        categories.end());
   }
 
   // Normalize category weights.
