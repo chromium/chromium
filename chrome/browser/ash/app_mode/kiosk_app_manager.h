@@ -14,7 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_external_loader.h"
+#include "chrome/browser/ash/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/extensions/external_cache.h"
@@ -180,37 +180,6 @@ class KioskAppManager : public KioskAppManagerBase,
   ChromeAppKioskAppInstaller::AppInstallData CreatePrimaryAppInstallData(
       const std::string& id) const;
 
-  // Initialized or updates the app whose prefs are available to primary kiosk
-  // app external extensions loader.
-  void UpdatePrimaryAppLoaderPrefs(
-      const ChromeAppKioskAppInstaller::AppInstallData& data);
-
-  // Returns the primary app prefs that can be used by external extensions
-  // loader - this will return null until |UpdatePrimaryAppLoaderPrefs| is
-  // called.
-  std::unique_ptr<base::DictionaryValue> GetPrimaryAppLoaderPrefs();
-
-  // Registers a callback called whenever the available primary app external
-  // extension prefs get updated (i.e. when UpdatePrimaryAppLoaderPrefs() is
-  // called).
-  void SetPrimaryAppLoaderPrefsChangedHandler(
-      KioskAppExternalLoader::InstallDataChangeCallback handler);
-
-  // Initialized or updates the apps whose prefs are available to secondary
-  // kiosk apps external extensions loader.
-  void UpdateSecondaryAppsLoaderPrefs(const std::vector<std::string>& ids);
-
-  // Returns the secondary apps prefs that can be used by external extensions
-  // loader - this will return null until |UpdateSecondaryAppsLoaderPrefs| is
-  // called.
-  std::unique_ptr<base::DictionaryValue> GetSecondaryAppsLoaderPrefs();
-
-  // Registers a callback called whenever the available secondary apps external
-  // extension prefs get updated (i.e. when UpdateSecondayAppsLoaderPrefs() is
-  // called).
-  void SetSecondaryAppsLoaderPrefsChangedHandler(
-      KioskAppExternalLoader::InstallDataChangeCallback handler);
-
   void UpdateExternalCache();
 
   // Monitors kiosk external update from usb stick.
@@ -335,21 +304,6 @@ class KioskAppManager : public KioskAppManagerBase,
   std::unique_ptr<chromeos::ExternalCache> external_cache_;
 
   std::unique_ptr<KioskExternalUpdater> usb_stick_updater_;
-
-  // Last AppInstallData set by UpdatePrimaryAppLoaderPrefs().
-  absl::optional<ChromeAppKioskAppInstaller::AppInstallData>
-      primary_app_install_data_;
-
-  // Callback registered using SetPrimaryAppLoaderPrefsChangedHandler().
-  KioskAppExternalLoader::InstallDataChangeCallback
-      primary_app_changed_handler_;
-
-  // Extensions id set by UpdateSecondatyAppsLoaderPrefs().
-  absl::optional<std::vector<std::string>> secondary_app_ids_;
-
-  // Callback registered using SetSecondaryAppsLoaderPrefsChangedHandler().
-  KioskAppExternalLoader::InstallDataChangeCallback
-      secondary_apps_changed_handler_;
 };
 
 }  // namespace ash

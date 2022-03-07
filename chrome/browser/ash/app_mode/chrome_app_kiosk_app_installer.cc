@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
 
 #include "base/syslog_logging.h"
+#include "chrome/browser/ash/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
@@ -55,7 +56,7 @@ void ChromeAppKioskAppInstaller::BeginInstall(InstallCallback callback) {
   }
 
   extensions::file_util::SetUseSafeInstallation(true);
-  KioskAppManager::Get()->UpdatePrimaryAppLoaderPrefs(
+  ChromeKioskExternalLoaderBroker::Get()->TriggerPrimaryAppInstall(
       primary_app_install_data_);
   if (IsAppInstallPending(primary_app_install_data_.id)) {
     ObserveActiveInstallations();
@@ -100,7 +101,8 @@ void ChromeAppKioskAppInstaller::MaybeInstallSecondaryApps() {
   for (const auto& app : info->secondary_apps)
     secondary_app_ids.push_back(app.id);
 
-  KioskAppManager::Get()->UpdateSecondaryAppsLoaderPrefs(secondary_app_ids);
+  ChromeKioskExternalLoaderBroker::Get()->TriggerSecondaryAppInstall(
+      secondary_app_ids);
   if (IsAnySecondaryAppPending()) {
     ObserveActiveInstallations();
     return;

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/chrome_kiosk_external_loader_broker.h"
 
 namespace ash {
 
@@ -19,7 +19,8 @@ KioskAppExternalLoader::KioskAppExternalLoader(AppClass app_class)
 
 KioskAppExternalLoader::~KioskAppExternalLoader() {
   if (state_ != State::kInitial)
-    SetPrefsChangedHandler(InstallDataChangeCallback());
+    SetPrefsChangedHandler(
+        ChromeKioskExternalLoaderBroker::InstallDataChangeCallback());
 }
 
 void KioskAppExternalLoader::StartLoading() {
@@ -30,31 +31,27 @@ void KioskAppExternalLoader::StartLoading() {
 }
 
 void KioskAppExternalLoader::SetPrefsChangedHandler(
-    InstallDataChangeCallback handler) {
+    ChromeKioskExternalLoaderBroker::InstallDataChangeCallback handler) {
   switch (app_class_) {
     case AppClass::kPrimary:
-      KioskAppManager::Get()->SetPrimaryAppLoaderPrefsChangedHandler(
-          std::move(handler));
+      ChromeKioskExternalLoaderBroker::Get()
+          ->RegisterPrimaryAppInstallDataObserver(std::move(handler));
       break;
     case AppClass::kSecondary:
-      KioskAppManager::Get()->SetSecondaryAppsLoaderPrefsChangedHandler(
-          std::move(handler));
+      ChromeKioskExternalLoaderBroker::Get()
+          ->RegisterSecondaryAppInstallDataObserver(std::move(handler));
       break;
   }
 }
 
-void KioskAppExternalLoader::SendPrefs(
-    std::unique_ptr<base::DictionaryValue> prefs) {
-  if (!prefs)
-    return;
-
+void KioskAppExternalLoader::SendPrefs(base::DictionaryValue prefs) {
   const bool initial_load = state_ == State::kLoading;
   state_ = State::kLoaded;
 
   if (initial_load) {
-    LoadFinished(std::move(prefs));
+    LoadFinished(std::make_unique<base::DictionaryValue>(std::move(prefs)));
   } else {
-    OnUpdated(std::move(prefs));
+    OnUpdated(std::make_unique<base::DictionaryValue>(std::move(prefs)));
   }
 }
 
