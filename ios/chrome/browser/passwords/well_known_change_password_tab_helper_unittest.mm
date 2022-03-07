@@ -6,6 +6,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,11 +16,11 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
-#include "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/navigation_test_util.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #include "net/cert/x509_certificate.h"
@@ -31,6 +32,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -74,20 +76,28 @@ void LoadUrlWithTransition(web::WebState* web_state,
 
 // This test uses a mockserver to simulate different response. To handle the
 // url_loader requests we also mock the response for the url_loader_factory.
-class WellKnownChangePasswordTabHelperTest : public ChromeWebTest {
+class WellKnownChangePasswordTabHelperTest : public PlatformTest,
+                                             public base::TaskObserver {
  public:
   using UkmBuilder =
       ukm::builders::PasswordManager_WellKnownChangePasswordResult;
   WellKnownChangePasswordTabHelperTest()
-      : ChromeWebTest(std::make_unique<web::FakeWebClient>(),
-                      web::WebTaskEnvironment::Options::IO_MAINLOOP) {
+      : web_client_(std::make_unique<web::FakeWebClient>()),
+        task_environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP) {
     test_server_->RegisterRequestHandler(base::BindRepeating(
         &WellKnownChangePasswordTabHelperTest::HandleRequest,
         base::Unretained(this)));
+
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
   }
 
   void SetUp() override {
-    ChromeWebTest::SetUp();
+    PlatformTest::SetUp();
     EXPECT_TRUE(test_server_->InitializeAndListen());
     test_server_->StartAcceptingConnections();
 
@@ -105,7 +115,7 @@ class WellKnownChangePasswordTabHelperTest : public ChromeWebTest {
     web_state()->SetDelegate(&delegate_);
     password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
         web_state());
-    GetBrowserState()->SetSharedURLLoaderFactory(
+    browser_state_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -142,6 +152,57 @@ class WellKnownChangePasswordTabHelperTest : public ChromeWebTest {
   std::unique_ptr<EmbeddedTestServer> test_server_ =
       std::make_unique<EmbeddedTestServer>();
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_recorder_;
+
+ protected:
+  // base::TaskObserver overide
+  void WillProcessTask(const base::PendingTask&, bool) override {
+    // Nothing to do.
+  }
+  void DidProcessTask(const base::PendingTask&) override {
+    processed_a_task_ = true;
+  }
+
+  void WaitForBackgroundTasks() {
+    // Because tasks can add new tasks to either queue, the loop continues until
+    // the first pass where no activity is seen from either queue.
+    bool activitySeen = false;
+    base::CurrentThread messageLoop = base::CurrentThread::Get();
+    messageLoop->AddTaskObserver(this);
+    do {
+      activitySeen = false;
+
+      // Yield to the iOS message queue, e.g. [NSObject performSelector:]
+      // events.
+      if (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, true) ==
+          kCFRunLoopRunHandledSource)
+        activitySeen = true;
+
+      // Yield to the Chromium message queue, e.g. WebThread::PostTask()
+      // events.
+      processed_a_task_ = false;
+      base::RunLoop().RunUntilIdle();
+      if (processed_a_task_)  // Set in TaskObserver method.
+        activitySeen = true;
+
+    } while (activitySeen);
+    messageLoop->RemoveTaskObserver(this);
+  }
+
+  bool WaitUntilLoaded() {
+    return WaitUntilConditionOrTimeout(base::test::ios::kWaitForPageLoadTimeout,
+                                       ^{
+                                         WaitForBackgroundTasks();
+                                         return !web_state()->IsLoading();
+                                       });
+  }
+
+  web::WebState* web_state() const { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
+  bool processed_a_task_ = false;
 
  private:
   // Returns a response for the given request. Uses |path_response_map_| to
