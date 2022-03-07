@@ -1190,6 +1190,54 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [self presentViewController:alertController animated:YES completion:nil];
 }
 
+- (void)webView:(CWVWebView*)webView
+    handleLookalikeURLWithHandler:(CWVLookalikeURLHandler*)handler {
+  NSLog(@"%@", NSStringFromSelector(_cmd));
+  NSString* html =
+      [NSString stringWithFormat:@"%@ requested, did you mean %@?",
+                                 handler.requestURL, handler.safeURL];
+  [handler displayInterstitialPageWithHTML:html];
+
+  UIAlertController* alertController =
+      [self actionSheetWithTitle:@"Lookalike URL encountered"
+                         message:@"Choose how to proceed."];
+  [alertController
+      addAction:
+          [UIAlertAction
+              actionWithTitle:@"Proceed to request URL"
+                        style:UIAlertActionStyleDefault
+                      handler:^(UIAlertAction* action) {
+                        CWVLookalikeURLHandlerDecision decision =
+                            CWVLookalikeURLHandlerDecisionProceedToRequestURL;
+                        [handler commitDecision:decision];
+                      }]];
+  [alertController
+      addAction:
+          [UIAlertAction
+              actionWithTitle:@"Proceed to safe URL"
+                        style:UIAlertActionStyleDefault
+                      handler:^(UIAlertAction* action) {
+                        [handler
+                            commitDecision:
+                                CWVLookalikeURLHandlerDecisionProceedToSafeURL];
+                      }]];
+  [alertController
+      addAction:
+          [UIAlertAction
+              actionWithTitle:@"Go back or close"
+                        style:UIAlertActionStyleDefault
+                      handler:^(UIAlertAction* action) {
+                        [handler
+                            commitDecision:
+                                CWVLookalikeURLHandlerDecisionGoBackOrClose];
+                      }]];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
 - (void)webViewWebContentProcessDidTerminate:(CWVWebView*)webView {
   NSLog(@"%@", NSStringFromSelector(_cmd));
 }

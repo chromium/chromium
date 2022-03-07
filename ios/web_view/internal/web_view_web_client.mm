@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#import "base/ios/ns_error_util.h"
 #include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
@@ -17,11 +18,14 @@
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
+#import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/security/ssl_status.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
+#import "ios/web_view/internal/cwv_lookalike_url_handler_internal.h"
 #import "ios/web_view/internal/cwv_ssl_error_handler_internal.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_ssl_util.h"
@@ -137,11 +141,31 @@ void WebViewWebClient::PrepareErrorPage(
     base::OnceCallback<void(NSString*)> callback) {
   DCHECK(error);
 
-  // TODO(crbug.com/1191799): Add support for handling legacy TLS.
   CWVWebView* web_view = [CWVWebView webViewForWebState:web_state];
-  if (info.has_value() &&
-      [web_view.navigationDelegate
-          respondsToSelector:@selector(webView:handleSSLErrorWithHandler:)]) {
+  id<CWVNavigationDelegate> navigation_delegate = web_view.navigationDelegate;
+
+  // |error| should be checked first for any specific error cases such as
+  // lookalikes and safebrowsing errors.
+  // |info| is only non-empty if this is a SSL related error.
+  NSError* final_underlying_error =
+      base::ios::GetFinalUnderlyingErrorFromError(error);
+  if ([final_underlying_error.domain isEqual:kLookalikeUrlErrorDomain] &&
+      [navigation_delegate respondsToSelector:@selector
+                           (webView:handleLookalikeURLWithHandler:)]) {
+    DCHECK_EQ(kLookalikeUrlErrorCode, final_underlying_error.code);
+    LookalikeUrlContainer* container =
+        LookalikeUrlContainer::FromWebState(web_state);
+    std::unique_ptr<LookalikeUrlContainer::LookalikeUrlInfo> lookalike_info =
+        container->ReleaseLookalikeUrlInfo();
+    CWVLookalikeURLHandler* handler = [[CWVLookalikeURLHandler alloc]
+        initWithWebState:web_state
+        lookalikeURLInfo:std::move(lookalike_info)
+            htmlCallback:std::move(callback)];
+    [navigation_delegate webView:web_view
+        handleLookalikeURLWithHandler:handler];
+  } else if (info.has_value() &&
+             [navigation_delegate respondsToSelector:@selector
+                                  (webView:handleSSLErrorWithHandler:)]) {
     __block base::OnceCallback<void(NSString*)> error_html_callback =
         std::move(callback);
     CWVSSLErrorHandler* handler =
@@ -152,8 +176,7 @@ void WebViewWebClient::PrepareErrorPage(
                                errorPageHTMLCallback:^(NSString* HTML) {
                                  std::move(error_html_callback).Run(HTML);
                                }];
-    [web_view.navigationDelegate webView:web_view
-               handleSSLErrorWithHandler:handler];
+    [navigation_delegate webView:web_view handleSSLErrorWithHandler:handler];
   } else {
     std::move(callback).Run(error.localizedDescription);
   }
