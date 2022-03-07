@@ -389,6 +389,7 @@ crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw
 crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.zero.html [ Pass Timeout ]
 crbug.com/1170337 [ Mac10.13 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.worker.html [ Timeout ]
 crbug.com/1170337 [ Mac10.13 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.worker.html [ Skip Timeout ]
+crbug.com/1302790 external/wpt/html/canvas/offscreen/text/2d.text.font.parse.system.worker.html [ Failure Pass ]
 
 # Off by one pixel error on ref test
 crbug.com/1259367 [ Mac ] printing/offscreencanvas-webgl-printing.html [ Failure ]
