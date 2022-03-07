@@ -165,6 +165,9 @@ public class OverviewListLayout extends Layout
         doneShowing();
         mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
         adjustForFullscreen();
+
+        final int currentTabId = TabModelUtils.getCurrentTabId(mTabModelSelector.getCurrentModel());
+        mTabModelWrapper.scrollToTabAndFocus(currentTabId);
     }
 
     @Override

@@ -232,6 +232,8 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
         mCloseAnimationDurationMs = CLOSE_ANIMATION_DURATION_MS;
         mDefaultAnimationDurationMs = DEFAULT_ANIMATION_DURATION_MS;
         mCloseTimeoutMs = CLOSE_TIMEOUT_MS;
+
+        setFocusableInTouchMode(true);
     }
 
     @Override

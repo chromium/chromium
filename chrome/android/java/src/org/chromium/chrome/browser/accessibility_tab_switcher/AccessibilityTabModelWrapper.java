@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -194,6 +195,16 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
 
     private AccessibilityTabModelAdapter getAdapter() {
         return (AccessibilityTabModelAdapter) mAccessibilityView.getAdapter();
+    }
+
+    /**
+     * Scroll to and focus a tab.
+     * @param tabId The id of the tab.
+     */
+    void scrollToTabAndFocus(int tabId) {
+        final int index = TabModelUtils.getTabIndexById(mTabModelSelector.getCurrentModel(), tabId);
+        mAccessibilityView.smoothScrollToPosition(index);
+        getAdapter().focusTabWithId(tabId);
     }
 
     /**
