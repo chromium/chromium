@@ -69,7 +69,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -344,8 +343,8 @@ bool BrowserState::operator==(const BrowserState& other) const {
 AppState::AppState(web_app::AppId app_id,
                    const std::string app_name,
                    const GURL app_scope,
-                   const apps::mojom::WindowMode& window_mode,
-                   const apps::mojom::RunOnOsLoginMode& run_on_os_login_mode,
+                   const apps::WindowMode window_mode,
+                   const apps::RunOnOsLoginMode& run_on_os_login_mode,
                    const blink::mojom::DisplayMode& effective_display_mode,
                    const blink::mojom::DisplayMode& user_display_mode,
                    bool installed_locally,
@@ -553,14 +552,14 @@ void WebAppIntegrationTestDriver::ClosePwa() {
 void WebAppIntegrationTestDriver::DisableRunOnOSLogin(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  SetRunOnOsLoginMode(site_mode, apps::mojom::RunOnOsLoginMode::kNotRun);
+  SetRunOnOsLoginMode(site_mode, apps::RunOnOsLoginMode::kNotRun);
   AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::EnableRunOnOSLogin(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  SetRunOnOsLoginMode(site_mode, apps::mojom::RunOnOsLoginMode::kWindowed);
+  SetRunOnOsLoginMode(site_mode, apps::RunOnOsLoginMode::kWindowed);
   AfterStateChangeAction();
 }
 
@@ -935,8 +934,11 @@ void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
 
   EXPECT_EQ(app->id, app_state->id);
   EXPECT_EQ(app->title.value(), app_state->name);
-  EXPECT_EQ(app->window_mode, app_state->window_mode);
-  EXPECT_EQ(app->run_on_os_login->login_mode, app_state->run_on_os_login_mode);
+  EXPECT_EQ(apps::ConvertMojomWindowModeToWindowMode(app->window_mode),
+            app_state->window_mode);
+  EXPECT_EQ(apps::ConvertMojomRunOnOsLoginModeToRunOnOsLoginMode(
+                app->run_on_os_login->login_mode),
+            app_state->run_on_os_login_mode);
   AfterStateCheckAction();
 #else
   NOTREACHED() << "Not implemented on Chrome OS.";
@@ -1439,7 +1441,7 @@ void WebAppIntegrationTestDriver::CheckAppTitleSiteA(const std::string& title) {
 
 void WebAppIntegrationTestDriver::CheckAppWindowMode(
     const std::string& site_mode,
-    apps::mojom::WindowMode window_mode) {
+    apps::WindowMode window_mode) {
   BeforeStateCheckAction(__FUNCTION__);
   absl::optional<AppState> app_state = GetAppBySiteMode(
       after_state_change_action_state_.get(), profile(), site_mode);
@@ -1548,8 +1550,7 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginEnabled(
   absl::optional<AppState> app_state = GetAppBySiteMode(
       after_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state);
-  EXPECT_EQ(app_state->run_on_os_login_mode,
-            apps::mojom::RunOnOsLoginMode::kWindowed);
+  EXPECT_EQ(app_state->run_on_os_login_mode, apps::RunOnOsLoginMode::kWindowed);
   AfterStateCheckAction();
 }
 
@@ -1559,8 +1560,7 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginDisabled(
   absl::optional<AppState> app_state = GetAppBySiteMode(
       after_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state);
-  EXPECT_EQ(app_state->run_on_os_login_mode,
-            apps::mojom::RunOnOsLoginMode::kNotRun);
+  EXPECT_EQ(app_state->run_on_os_login_mode, apps::RunOnOsLoginMode::kNotRun);
   AfterStateCheckAction();
 }
 
@@ -1810,7 +1810,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
                    registrar.GetAppScope(app_id),
                    web_app_publisher_helper.ConvertDisplayModeToWindowMode(
                        registrar.GetAppUserDisplayMode(app_id)),
-                   web_app_publisher_helper.ConvertOsLoginModeToMojom(
+                   web_app_publisher_helper.ConvertOsLoginMode(
                        registrar.GetAppRunOnOsLoginMode(app_id).value),
                    registrar.GetAppEffectiveDisplayMode(app_id),
                    registrar.GetAppUserDisplayMode(app_id),
@@ -2073,7 +2073,7 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
 
 void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
     const std::string& site_mode,
-    apps::mojom::RunOnOsLoginMode login_mode) {
+    apps::RunOnOsLoginMode login_mode) {
 #if !BUILDFLAG(IS_CHROMEOS)
   absl::optional<AppState> app_state = GetAppBySiteMode(
       before_state_change_action_state_.get(), profile(), site_mode);
@@ -2083,7 +2083,9 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
   web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
       run_loop.QuitClosure());
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetRunOnOsLoginMode(app_state->id, login_mode);
+  app_management_page_handler.SetRunOnOsLoginMode(
+      app_state->id,
+      apps::ConvertRunOnOsLoginModeToMojomRunOnOsLoginMode(login_mode));
   run_loop.Run();
 #endif
 }

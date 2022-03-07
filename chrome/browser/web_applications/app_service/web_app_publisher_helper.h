@@ -207,7 +207,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   void OpenNativeSettings(const std::string& app_id);
 
-  apps::mojom::WindowMode GetWindowMode(const std::string& app_id);
+  apps::WindowMode GetWindowMode(const std::string& app_id);
 
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
@@ -216,7 +216,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                            apps::mojom::RunOnOsLoginMode run_on_os_login_mode);
 
   // Converts |display_mode| to a |window_mode|.
-  apps::mojom::WindowMode ConvertDisplayModeToWindowMode(
+  apps::WindowMode ConvertDisplayModeToWindowMode(
       blink::mojom::DisplayMode display_mode);
 
   // Converts RunOnOsLoginMode from apps::mojom::RunOnOsLoginMode to
@@ -225,8 +225,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       apps::mojom::RunOnOsLoginMode login_mode);
 
   // Converts RunOnOsLoginMode from web_app::RunOnOsLoginMode to
-  // apps::mojom::RunOnOsLoginMode.
-  apps::mojom::RunOnOsLoginMode ConvertOsLoginModeToMojom(
+  // apps::RunOnOsLoginMode.
+  apps::RunOnOsLoginMode ConvertOsLoginMode(
       web_app::RunOnOsLoginMode login_mode);
 
   void PublishWindowModeUpdate(const std::string& app_id,

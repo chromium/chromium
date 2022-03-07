@@ -395,12 +395,12 @@ void WebApps::GetMenuModel(const std::string& app_id,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, &menu_items);
     }
   } else {
-    apps::CreateOpenNewSubmenu(menu_type,
-                               publisher_helper().GetWindowMode(app_id) ==
-                                       apps::mojom::WindowMode::kBrowser
-                                   ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
-                                   : IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,
-                               &menu_items);
+    apps::CreateOpenNewSubmenu(
+        menu_type,
+        publisher_helper().GetWindowMode(app_id) == apps::WindowMode::kBrowser
+            ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
+            : IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,
+        &menu_items);
   }
 
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
