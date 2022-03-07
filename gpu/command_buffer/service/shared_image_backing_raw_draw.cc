@@ -302,6 +302,7 @@ void SharedImageBackingRawDraw::EndRasterWriteAccess(
   AutoLock auto_lock(this);
   DCHECK_EQ(read_count_, 0);
   DCHECK(is_write_);
+  DCHECK(!paint_op_release_callback_);
 
   is_write_ = false;
 
@@ -316,12 +317,11 @@ void SharedImageBackingRawDraw::EndRasterWriteAccess(
     // If the raster task priority is high, we will execute paint ops
     // immediately.
     CreateBackendTextureAndFlushPaintOps(/*flush=*/true);
-    DCHECK(!paint_op_release_callback_);
-    std::move(callback).Run();
+    if (callback)
+      std::move(callback).Run();
   }
 
   if (callback) {
-    DCHECK(!paint_op_release_callback_);
     paint_op_release_callback_ = std::move(callback);
   }
 }
