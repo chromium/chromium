@@ -115,6 +115,7 @@ class DawnObjectImpl : public ScriptWrappable, public DawnObjectBase {
   ~DawnObjectImpl() override;
 
   WGPUDevice GetDeviceHandle();
+  GPUDevice* device() { return device_.Get(); }
 
   void Trace(Visitor* visitor) const override;
 

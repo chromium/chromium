@@ -94,6 +94,9 @@ class GPUMappedDOMArrayBuffer : public DOMArrayBuffer {
 
     // Copy the contents into the result.
     contents.CopyTo(result);
+    owner_->device()->AddConsoleWarning(
+        "ArrayBuffer backed by mapped GPUBuffer was copied and detached, not "
+        "transferred.");
     return true;
   }
 

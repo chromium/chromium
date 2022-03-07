@@ -169,9 +169,6 @@ wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,attachment_compatibil
 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:* [ Skip ] # Skipped because it conflicted with a Slow expectation.
 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:* [ Failure ]
 
-# Test is being updated in https://github.com/gpuweb/cts/pull/1027
-crbug.com/1243842 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,buffers,map_ArrayBuffer:postMessage:transfer=true;* [ Failure ]
-
 # Our automated build does not support mp4 currently (fails on Linux, Mac, and Win Intel)
 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:videoSource="red-green.mp4" [ Failure ]
 
