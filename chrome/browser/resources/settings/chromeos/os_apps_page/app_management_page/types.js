@@ -41,7 +41,7 @@ let AppManagementPageState;
 let WindowMode;
 
 /**
- * @typedef {apps.mojom.InstallSource}
+ * @typedef {appManagement.mojom.InstallSource}
  */
 let InstallSource;
 

@@ -372,8 +372,10 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
         apps::ConvertMojomPermissionToPermission(permission);
   }
 
-  app->install_reason = update.InstallReason();
-  app->install_source = update.InstallSource();
+  app->install_reason =
+      apps::ConvertMojomInstallReasonToInstallReason(update.InstallReason());
+  app->install_source =
+      apps::ConvertMojomInstallSourceToInstallSource(update.InstallSource());
 
   app->description = update.Description();
 

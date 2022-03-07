@@ -62,6 +62,36 @@ struct Permission {
   bool is_managed;
 };
 
+// How the app was installed.
+// This should be kept in sync with histogram.xml, and InstallReason in
+// enums.xml.
+// Note the enumeration is used in UMA histogram so entries should not be
+// re-ordered or removed. New entries should be added at the bottom.
+enum InstallReason {
+  kUnknown = 0,
+  kSystem,     // Installed with the system and is considered a part of the OS.
+  kPolicy,     // Installed by policy.
+  kOem,        // Installed by an OEM.
+  kDefault,    // Preinstalled by default, but is not considered a system app.
+  kSync,       // Installed by sync.
+  kUser,       // Installed by user action.
+  kSubApp,     // Installed by the SubApp API call.
+};
+
+// Where the app was installed from.
+// This should be kept in sync with histogram.xml, and InstallSource in
+// enums.xml.
+// Note the enumeration is used in UMA histogram so entries should not be
+// re-ordered or removed. New entries should be added at the bottom.
+enum InstallSource {
+  kUnknown = 0,
+  kSystem,          // Installed as part of Chrome OS.
+  kSync,            // Installed from sync.
+  kPlayStore,       // Installed from Play store.
+  kChromeWebStore,  // Installed from Chrome web store.
+  kBrowser,         // Installed from browser.
+};
+
 struct App {
   string id;
 
@@ -77,8 +107,8 @@ struct App {
   string? version;
   string? size;
   map<PermissionType, Permission> permissions;
-  apps.mojom.InstallReason install_reason;
-  apps.mojom.InstallSource install_source;
+  InstallReason install_reason;
+  InstallSource install_source;
   bool hide_more_settings;
   bool hide_pin_to_shelf;
   bool is_preferred_app;

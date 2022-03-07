@@ -61,6 +61,14 @@ mojom("mojo_bindings") {
           cpp = "::apps::PermissionPtr"
           move_only = true
         },
+        {
+          mojom = "app_management.mojom.InstallReason"
+          cpp = "::apps::InstallReason"
+        },
+        {
+          mojom = "app_management.mojom.InstallSource"
+          cpp = "::apps::InstallSource"
+        },
       ]
       traits_headers = [
         "//ui/webui/resources/cr_components/app_management/app_management_mojom_traits.h",

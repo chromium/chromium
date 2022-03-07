@@ -131,3 +131,44 @@ TEST(AppManagementMojomTraitsTest, RoundTripPermissions) {
     EXPECT_EQ(*permission, *output);
   }
 }
+
+TEST(AppManagementMojomTraitsTest, RoundTripInstallReason) {
+  static constexpr apps::InstallReason kTestInstallReason[] = {
+      apps::InstallReason::kUnknown, apps::InstallReason::kSystem,
+      apps::InstallReason::kPolicy,  apps::InstallReason::kOem,
+      apps::InstallReason::kDefault, apps::InstallReason::kSync,
+      apps::InstallReason::kUser,    apps::InstallReason::kSubApp};
+
+  for (auto install_reason_in : kTestInstallReason) {
+    apps::InstallReason install_reason_out;
+
+    app_management::mojom::InstallReason serialized_install_reason =
+        mojo::EnumTraits<app_management::mojom::InstallReason,
+                         apps::InstallReason>::ToMojom(install_reason_in);
+    ASSERT_TRUE((mojo::EnumTraits<
+                 app_management::mojom::InstallReason,
+                 apps::InstallReason>::FromMojom(serialized_install_reason,
+                                                 &install_reason_out)));
+    EXPECT_EQ(install_reason_in, install_reason_out);
+  }
+}
+
+TEST(AppManagementMojomTraitsTest, RoundTripInstallSource) {
+  static constexpr apps::InstallSource kTestInstallSource[] = {
+      apps::InstallSource::kUnknown,        apps::InstallSource::kSystem,
+      apps::InstallSource::kSync,           apps::InstallSource::kPlayStore,
+      apps::InstallSource::kChromeWebStore, apps::InstallSource::kBrowser};
+
+  for (auto install_source_in : kTestInstallSource) {
+    apps::InstallSource install_source_out;
+
+    app_management::mojom::InstallSource serialized_install_source =
+        mojo::EnumTraits<app_management::mojom::InstallSource,
+                         apps::InstallSource>::ToMojom(install_source_in);
+    ASSERT_TRUE((mojo::EnumTraits<
+                 app_management::mojom::InstallSource,
+                 apps::InstallSource>::FromMojom(serialized_install_source,
+                                                 &install_source_out)));
+    EXPECT_EQ(install_source_in, install_source_out);
+  }
+}

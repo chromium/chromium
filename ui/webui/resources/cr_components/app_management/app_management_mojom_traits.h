@@ -18,6 +18,8 @@ using PermissionDataView = app_management::mojom::PermissionDataView;
 using PermissionType = app_management::mojom::PermissionType;
 using TriState = app_management::mojom::TriState;
 using PermissionValueDataView = app_management::mojom::PermissionValueDataView;
+using InstallReason = app_management::mojom::InstallReason;
+using InstallSource = app_management::mojom::InstallSource;
 
 }  // namespace
 
@@ -73,6 +75,18 @@ struct UnionTraits<PermissionValueDataView, apps::PermissionValuePtr> {
   }
 
   static bool Read(PermissionValueDataView data, apps::PermissionValuePtr* out);
+};
+
+template <>
+struct EnumTraits<InstallReason, apps::InstallReason> {
+  static InstallReason ToMojom(apps::InstallReason input);
+  static bool FromMojom(InstallReason input, apps::InstallReason* output);
+};
+
+template <>
+struct EnumTraits<InstallSource, apps::InstallSource> {
+  static InstallSource ToMojom(apps::InstallSource input);
+  static bool FromMojom(InstallSource input, apps::InstallSource* output);
 };
 
 }  // namespace mojo

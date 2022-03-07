@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppType, OptionalBool} from '//resources/cr_components/app_management/constants.js';
+import {AppType, InstallReason, InstallSource, OptionalBool} from '//resources/cr_components/app_management/constants.js';
 import {PermissionType, PermissionValue, TriState} from '//resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from '//resources/cr_components/app_management/permission_util.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -99,7 +99,7 @@ export class FakePageHandler {
       size: '9.0MB',
       isPinned: OptionalBool.kFalse,
       isPolicyPinned: OptionalBool.kFalse,
-      installReason: apps.mojom.InstallReason.kUser,
+      installReason: InstallReason.kUser,
       permissions: {},
       hideMoreSettings: false,
       hidePinToShelf: false,
@@ -110,7 +110,7 @@ export class FakePageHandler {
       supportedLinks: [],
       runOnOsLogin: null,
       fileHandlingState: null,
-      installSource: apps.mojom.InstallSource.kUnknown,
+      installSource: InstallSource.kUnknown,
     };
 
     if (optConfig) {

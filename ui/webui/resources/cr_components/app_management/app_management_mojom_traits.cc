@@ -216,4 +216,100 @@ bool UnionTraits<PermissionValueDataView, apps::PermissionValuePtr>::Read(
   return false;
 }
 
+InstallReason EnumTraits<InstallReason, apps::InstallReason>::ToMojom(
+    apps::InstallReason input) {
+  switch (input) {
+    case apps::InstallReason::kUnknown:
+      return InstallReason::kUnknown;
+    case apps::InstallReason::kSystem:
+      return InstallReason::kSystem;
+    case apps::InstallReason::kPolicy:
+      return InstallReason::kPolicy;
+    case apps::InstallReason::kOem:
+      return InstallReason::kOem;
+    case apps::InstallReason::kDefault:
+      return InstallReason::kDefault;
+    case apps::InstallReason::kSync:
+      return InstallReason::kSync;
+    case apps::InstallReason::kUser:
+      return InstallReason::kUser;
+    case apps::InstallReason::kSubApp:
+      return InstallReason::kSubApp;
+  }
+}
+
+bool EnumTraits<InstallReason, apps::InstallReason>::FromMojom(
+    InstallReason input,
+    apps::InstallReason* output) {
+  switch (input) {
+    case InstallReason::kUnknown:
+      *output = apps::InstallReason::kUnknown;
+      return true;
+    case InstallReason::kSystem:
+      *output = apps::InstallReason::kSystem;
+      return true;
+    case InstallReason::kPolicy:
+      *output = apps::InstallReason::kPolicy;
+      return true;
+    case InstallReason::kOem:
+      *output = apps::InstallReason::kOem;
+      return true;
+    case InstallReason::kDefault:
+      *output = apps::InstallReason::kDefault;
+      return true;
+    case InstallReason::kSync:
+      *output = apps::InstallReason::kSync;
+      return true;
+    case InstallReason::kUser:
+      *output = apps::InstallReason::kUser;
+      return true;
+    case InstallReason::kSubApp:
+      *output = apps::InstallReason::kSubApp;
+      return true;
+  }
+}
+
+InstallSource EnumTraits<InstallSource, apps::InstallSource>::ToMojom(
+    apps::InstallSource input) {
+  switch (input) {
+    case apps::InstallSource::kUnknown:
+      return InstallSource::kUnknown;
+    case apps::InstallSource::kSystem:
+      return InstallSource::kSystem;
+    case apps::InstallSource::kSync:
+      return InstallSource::kSync;
+    case apps::InstallSource::kPlayStore:
+      return InstallSource::kPlayStore;
+    case apps::InstallSource::kChromeWebStore:
+      return InstallSource::kChromeWebStore;
+    case apps::InstallSource::kBrowser:
+      return InstallSource::kBrowser;
+  }
+}
+
+bool EnumTraits<InstallSource, apps::InstallSource>::FromMojom(
+    InstallSource input,
+    apps::InstallSource* output) {
+  switch (input) {
+    case InstallSource::kUnknown:
+      *output = apps::InstallSource::kUnknown;
+      return true;
+    case InstallSource::kSystem:
+      *output = apps::InstallSource::kSystem;
+      return true;
+    case InstallSource::kSync:
+      *output = apps::InstallSource::kSync;
+      return true;
+    case InstallSource::kPlayStore:
+      *output = apps::InstallSource::kPlayStore;
+      return true;
+    case InstallSource::kChromeWebStore:
+      *output = apps::InstallSource::kChromeWebStore;
+      return true;
+    case InstallSource::kBrowser:
+      *output = apps::InstallSource::kBrowser;
+      return true;
+  }
+}
+
 }  // namespace mojo

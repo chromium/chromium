@@ -43,7 +43,7 @@ suite('<app-management-uninstall-button', () => {
   }
 
   test('Click uninstall', async () => {
-    await setupUninstallButton(apps.mojom.InstallReason.kUser);
+    await setupUninstallButton(appManagement.mojom.InstallReason.kUser);
 
     uninstallButton.shadowRoot.querySelector('#uninstallButton').click();
     await fakeHandler.flushPipesForTesting();
@@ -52,7 +52,7 @@ suite('<app-management-uninstall-button', () => {
   });
 
   test('Disabled by policy', async () => {
-    await setupUninstallButton(apps.mojom.InstallReason.kPolicy);
+    await setupUninstallButton(appManagement.mojom.InstallReason.kPolicy);
     uninstallButton.shadowRoot.querySelector('#uninstallButton').click();
     await fakeHandler.flushPipesForTesting();
     // Disabled by policy, clicking should not remove app.
@@ -61,7 +61,7 @@ suite('<app-management-uninstall-button', () => {
   });
 
   test('System app, button hidden', async () => {
-    await setupUninstallButton(apps.mojom.InstallReason.kSystem);
+    await setupUninstallButton(appManagement.mojom.InstallReason.kSystem);
     assertFalse(!!uninstallButton.shadowRoot.querySelector('#uninstallButton'));
     await fakeHandler.flushPipesForTesting();
     // Disabled by policy, clicking should not remove app.

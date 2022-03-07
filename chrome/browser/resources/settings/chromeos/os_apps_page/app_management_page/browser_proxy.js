@@ -102,7 +102,7 @@ export class BrowserProxy {
               type: AppType.kWeb,
               isPinned: OptionalBool.kTrue,
               isPolicyPinned: OptionalBool.kTrue,
-              installReason: apps.mojom.InstallReason.kPolicy,
+              installReason: InstallReason.kPolicy,
               permissions:
                   FakePageHandler.createWebPermissions(permissionOptions),
             },

@@ -31,7 +31,7 @@ suite('<app-management-managed-apps>', () => {
       type: appManagement.mojom.AppType.kWeb,
       isPinned: appManagement.mojom.OptionalBool.kTrue,
       isPolicyPinned: appManagement.mojom.OptionalBool.kTrue,
-      installReason: apps.mojom.InstallReason.kPolicy,
+      installReason: appManagement.mojom.InstallReason.kPolicy,
       permissions: app_management.FakePageHandler.createWebPermissions(
           permissionOptions),
     };
