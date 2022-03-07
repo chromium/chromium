@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"

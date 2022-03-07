@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_CLIENT_H_
 
-#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-shared.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"

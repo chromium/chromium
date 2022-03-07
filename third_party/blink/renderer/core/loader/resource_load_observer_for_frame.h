@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "components/power_scheduler/power_mode_voter.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"

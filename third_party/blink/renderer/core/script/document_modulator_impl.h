@@ -7,8 +7,6 @@
 
 #include "third_party/blink/renderer/core/script/modulator_impl_base.h"
 
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
-
 namespace blink {
 
 class ModuleScriptFetcher;

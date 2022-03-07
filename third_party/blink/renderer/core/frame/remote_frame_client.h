@@ -7,9 +7,6 @@
 
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/policy_container.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_HANDWRITING_HANDWRITING_DRAWING_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_HANDWRITING_HANDWRITING_DRAWING_H_
 
-#include "third_party/blink/public/mojom/handwriting/handwriting.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_hints.h"

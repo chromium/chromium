@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_TEST_UTILS_H_
 
 #include "services/device/public/cpp/test/fake_sensor_and_provider.h"
-#include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

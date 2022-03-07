@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_JOINT_POSE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_JOINT_POSE_H_
 
-#include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/xr/xr_pose.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"

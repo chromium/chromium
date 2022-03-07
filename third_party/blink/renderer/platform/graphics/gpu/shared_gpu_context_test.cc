@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/null_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"

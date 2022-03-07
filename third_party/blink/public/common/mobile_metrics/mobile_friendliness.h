@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MOBILE_METRICS_MOBILE_FRIENDLINESS_H_
 
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-shared.h"
 
 namespace blink {
 
