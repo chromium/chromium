@@ -33,11 +33,9 @@ class CORE_EXPORT AttributionSrcLoader
   ~AttributionSrcLoader() override;
 
   // Registers an attribution_src. This method handles fetching the attribution
-  // src and notifying the browser process to begin tracking it. Must be invoked
-  // prior to `Shutdown()`, otherwise is a no-op.
+  // src and notifying the browser process to begin tracking it. It is a no-op
+  // if the frame is not attached.
   void Register(const KURL& attribution_src, HTMLImageElement* element);
-
-  void Shutdown();
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(local_frame_);
@@ -83,7 +81,7 @@ class CORE_EXPORT AttributionSrcLoader
                      const String& string,
                      HTMLElement* element = nullptr);
 
-  Member<LocalFrame> local_frame_;
+  const Member<LocalFrame> local_frame_;
   HeapHashMap<WeakMember<Resource>, AttributionSrcContext>
       resource_context_map_;
 };
