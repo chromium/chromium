@@ -660,8 +660,6 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
           navigation_ui_data_.get(),
           resource_request_->resource_type ==
               static_cast<int>(blink::mojom::ResourceType::kMainFrame),
-          FrameTreeNode::GloballyFindByID(frame_tree_node_id_)
-              ->IsInFencedFrameTree(),
           request_info_->sandbox_flags,
           static_cast<ui::PageTransition>(resource_request_->transition_type),
           resource_request_->has_user_gesture, initiating_origin,

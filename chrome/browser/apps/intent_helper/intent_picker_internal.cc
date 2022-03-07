@@ -183,11 +183,13 @@ bool IsNavigateFromLink(content::NavigationHandle* navigation_handle) {
   // such submissions anyway.
   constexpr bool kAllowFormSubmit = false;
 
+  // Ignore navigations with the CLIENT_REDIRECT qualifier on.
+  constexpr bool kAllowClientRedirect = true;
+
   ui::PageTransition page_transition = navigation_handle->GetPageTransition();
 
   return !ShouldIgnoreNavigation(page_transition, kAllowFormSubmit,
-                                 navigation_handle->IsInFencedFrameTree(),
-                                 navigation_handle->HasUserGesture()) &&
+                                 kAllowClientRedirect) &&
          !navigation_handle->WasStartedFromContextMenu() &&
          !navigation_handle->IsSameDocument();
 }

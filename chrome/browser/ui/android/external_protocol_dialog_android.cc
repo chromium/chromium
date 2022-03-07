@@ -16,7 +16,6 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     const GURL& url,
     WebContents* web_contents,
     ui::PageTransition page_transition,
-    bool is_in_fenced_frame_tree,
     bool has_user_gesture,
     const absl::optional<url::Origin>& initiating_origin,
     content::WeakDocumentPtr) {

@@ -12,8 +12,7 @@ namespace apps {
 // Returns true if ARC should ignore the navigation with the |page_transition|.
 bool ShouldIgnoreNavigation(ui::PageTransition page_transition,
                             bool allow_form_submit,
-                            bool is_in_fenced_frame_tree,
-                            bool has_user_gesture);
+                            bool allow_client_redirect);
 
 // Removes |mask| bits from |page_transition|.
 ui::PageTransition MaskOutPageTransition(ui::PageTransition page_transition,
