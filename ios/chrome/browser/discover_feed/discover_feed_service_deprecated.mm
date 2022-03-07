@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/discover_feed/discover_feed_service_deprecated.h"
 
+#import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_configuration.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -30,6 +31,8 @@ DiscoverFeedServiceDeprecated::DiscoverFeedServiceDeprecated(
   discover_config.authService = authentication_service;
   discover_config.prefService = pref_service;
   discover_config.metricsRecorder = feed_metrics_recorder_;
+  discover_config.identityManager = identity_manager;
+  discover_config.ssoService = GetApplicationContext()->GetSSOService();
 
   ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StartFeedService(
       discover_config);

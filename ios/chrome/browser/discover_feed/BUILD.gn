@@ -18,7 +18,7 @@ source_set("discover_feed") {
   deps = [
     "//base",
     "//components/keyed_service/core",
-    "//ios/public/provider/chrome/browser/discover_feed",
+    "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -40,6 +40,7 @@ source_set("discover_feed_factory") {
     "//base",
     "//components/keyed_service/ios",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/ntp:metrics",

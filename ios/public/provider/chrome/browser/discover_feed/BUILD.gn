@@ -13,3 +13,9 @@ source_set("discover_feed") {
     "//ios/public/provider/chrome/browser",
   ]
 }
+
+source_set("discover_feed_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "discover_feed_api.h" ]
+  deps = [ "//ios/chrome/browser/discover_feed" ]
+}

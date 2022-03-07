@@ -7,21 +7,33 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
+
 class AuthenticationService;
 @class FeedMetricsRecorder;
 class PrefService;
 
-// Configuration object used by the DiscoverFeedProvider.
+namespace signin {
+class IdentityManager;
+}
+
+// Configuration object used by the DiscoverFeedService.
 // TODO(crbug.com/1277504): Rename this to FeedConfiguration.
 @interface DiscoverFeedConfiguration : NSObject
 
-// AuthenticationService used by DiscoverFeedProvider.
+// AuthenticationService used by DiscoverFeedService.
 @property(nonatomic, assign) AuthenticationService* authService;
 
-// PrefService used by DiscoverFeedProvider.
+// PrefService used by DiscoverFeedService.
 @property(nonatomic, assign) PrefService* prefService;
 
-// Feed metrics recorder used by DiscoverFeedProvider.
+// IdentityManager used by DiscoverFeedService.
+@property(nonatomic, assign) signin::IdentityManager* identityManager;
+
+// SingleSignOnService used by DiscoverFeedService.
+@property(nonatomic, strong) id<SingleSignOnService> ssoService;
+
+// Feed metrics recorder used by DiscoverFeedService.
 @property(nonatomic, strong) FeedMetricsRecorder* metricsRecorder;
 
 @end
