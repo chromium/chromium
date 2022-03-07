@@ -62,8 +62,6 @@ class CORE_EXPORT PaintLayerPainter {
   void PaintForegroundPhases(GraphicsContext&, PaintFlags);
   void PaintOverlayOverflowControls(GraphicsContext&, PaintFlags);
 
-  bool ShouldUseInfiniteCullRectInternal(bool for_cull_rect_update);
-
   PaintLayer& paint_layer_;
 };
 

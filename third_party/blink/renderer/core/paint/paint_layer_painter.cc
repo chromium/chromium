@@ -140,11 +140,6 @@ static bool IsUnclippedLayoutView(const PaintLayer& layer) {
 }
 
 bool PaintLayerPainter::ShouldUseInfiniteCullRect() {
-  return ShouldUseInfiniteCullRectInternal(/*for_cull_rect_update*/ true);
-}
-
-bool PaintLayerPainter::ShouldUseInfiniteCullRectInternal(
-    bool for_cull_rect_update) {
   bool is_printing = paint_layer_.GetLayoutObject().GetDocument().Printing();
   if (IsUnclippedLayoutView(paint_layer_) && !is_printing)
     return true;
@@ -176,45 +171,31 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRectInternal(
     // See http://crbug.com/887558 for details.
     if (properties->Perspective())
       return true;
-    if (for_cull_rect_update) {
-      if (const auto* transform = properties->Transform()) {
-        // A CSS transform can also have perspective like
-        // "transform: perspective(100px) rotateY(45deg)". In these cases, we
-        // also want to skip cull rect mapping. See http://crbug.com/887558 for
-        // details.
-        if (!transform->IsIdentityOr2DTranslation() &&
-            transform->Matrix().HasPerspective()) {
-          return true;
-        }
 
-        // Ensure content under animating transforms is not culled out.
-        if (transform->HasActiveTransformAnimation())
-          return true;
+    if (const auto* transform = properties->Transform()) {
+      // A CSS transform can also have perspective like
+      // "transform: perspective(100px) rotateY(45deg)". In these cases, we
+      // also want to skip cull rect mapping. See http://crbug.com/887558 for
+      // details.
+      if (!transform->IsIdentityOr2DTranslation() &&
+          transform->Matrix().HasPerspective()) {
+        return true;
+      }
 
-        // As an optimization, skip cull rect updating for non-composited
-        // transforms which have already been painted. This is because the cull
-        // rect update, which needs to do complex mapping of the cull rect, can
-        // be more expensive than over-painting.
-        if (!transform->HasDirectCompositingReasons() &&
-            paint_layer_.PreviousPaintResult() == kFullyPainted) {
-          return true;
-        }
+      // Ensure content under animating transforms is not culled out.
+      if (transform->HasActiveTransformAnimation())
+        return true;
+
+      // As an optimization, skip cull rect updating for non-composited
+      // transforms which have already been painted. This is because the cull
+      // rect update, which needs to do complex mapping of the cull rect, can
+      // be more expensive than over-painting.
+      if (!transform->HasDirectCompositingReasons() &&
+          paint_layer_.PreviousPaintResult() == kFullyPainted) {
+        return true;
       }
     }
   }
-
-  // We do not apply cull rect optimizations across transforms for two
-  // reasons:
-  //   1) Performance: We can optimize transform changes by not repainting.
-  //   2) Complexity: Difficulty updating clips when ancestor transforms
-  //      change.
-  // For these reasons, we use an infinite dirty rect here.
-  // The reasons don't apply for CullRectUpdater.
-  if (!for_cull_rect_update && paint_layer_.Transform() &&
-      // The reasons don't apply for printing though, because when we enter and
-      // leaving printing mode, full invalidations occur.
-      !is_printing)
-    return true;
 
   return false;
 }
