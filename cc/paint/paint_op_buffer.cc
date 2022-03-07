@@ -1817,16 +1817,21 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
   if (op->node_id)
     SkPDF::SetNodeId(canvas, op->node_id);
 
-  bool need_analysis =
-      params.raw_draw_analysis && !op->slug && op->extra_slugs.empty();
-  size_t i = 0;
+  // The PaintOpBuffer could be rasterized with different global matrix. It is
+  // used for over scall on Android. So we cannot reuse slugs, they have to be
+  // recreated.
+  if (params.raw_draw_analysis) {
+    const_cast<DrawTextBlobOp*>(op)->slug.reset();
+    const_cast<DrawTextBlobOp*>(op)->extra_slugs.clear();
+  }
+
   // flags may contain SkDrawLooper for shadow effect, so we need to convert
   // SkTextBlob to slug for each run.
-  flags->DrawToSk(canvas, [op, need_analysis, &i](SkCanvas* c,
-                                                  const SkPaint& p) {
+  size_t i = 0;
+  flags->DrawToSk(canvas, [op, &params, &i](SkCanvas* c, const SkPaint& p) {
     if (op->blob) {
       c->drawTextBlob(op->blob.get(), op->x, op->y, p);
-      if (need_analysis) {
+      if (params.raw_draw_analysis) {
         auto s = GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
         if (i == 0) {
           const_cast<DrawTextBlobOp*>(op)->slug = std::move(s);
@@ -1835,9 +1840,10 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
         }
       }
     } else if (i < 1 + op->extra_slugs.size()) {
-      const auto& s = i == 0 ? op->slug : op->extra_slugs[i - 1];
-      if (s)
-        s->draw(c);
+      DCHECK(!params.raw_draw_analysis);
+      const auto& draw_slug = i == 0 ? op->slug : op->extra_slugs[i - 1];
+      if (draw_slug)
+        draw_slug->draw(c);
     }
     ++i;
   });
