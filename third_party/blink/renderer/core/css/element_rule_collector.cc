@@ -76,28 +76,16 @@ unsigned LinkMatchTypeFromInsideLink(EInsideLink inside_link) {
   }
 }
 
-ContainerQueryEvaluator* FindContainerQueryEvaluator(
-    const ContainerSelector& selector,
-    const StyleRecalcContext& style_recalc_context) {
-  if (auto* element = ContainerQueryEvaluator::FindContainer(
-          style_recalc_context, selector)) {
-    return element->GetContainerQueryEvaluator();
-  }
-
-  return nullptr;
-}
-
 bool EvaluateAndAddContainerQueries(
     const ContainerQuery& container_query,
     const StyleRecalcContext& style_recalc_context,
     MatchResult& result) {
   for (const ContainerQuery* current = &container_query; current;
        current = current->Parent()) {
-    auto* evaluator =
-        FindContainerQueryEvaluator(current->Selector(), style_recalc_context);
-
-    if (!evaluator || !evaluator->EvalAndAdd(*current, result))
+    if (!ContainerQueryEvaluator::EvalAndAdd(style_recalc_context, *current,
+                                             result)) {
       return false;
+    }
   }
 
   return true;

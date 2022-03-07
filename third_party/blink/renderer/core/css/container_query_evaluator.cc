@@ -75,6 +75,21 @@ Element* ContainerQueryEvaluator::FindContainer(
   return nullptr;
 }
 
+bool ContainerQueryEvaluator::EvalAndAdd(const StyleRecalcContext& context,
+                                         const ContainerQuery& query,
+                                         MatchResult& match_result) {
+  Element* container = FindContainer(context, query.Selector());
+  if (!container)
+    return false;
+  ContainerQueryEvaluator* evaluator = container->GetContainerQueryEvaluator();
+  if (!evaluator)
+    return false;
+  Change change = (context.container == container)
+                      ? Change::kNearestContainer
+                      : Change::kDescendantContainers;
+  return evaluator->EvalAndAdd(query, change, match_result);
+}
+
 double ContainerQueryEvaluator::Width() const {
   return size_.width.ToDouble();
 }
@@ -96,11 +111,8 @@ bool ContainerQueryEvaluator::Eval(const ContainerQuery& container_query,
          KleeneValue::kTrue;
 }
 
-void ContainerQueryEvaluator::Add(const ContainerQuery& query, bool result) {
-  results_.Set(&query, result);
-}
-
 bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
+                                         Change change,
                                          MatchResult& match_result) {
   MediaQueryResultList viewport_dependent;
   unsigned unit_flags = MediaQueryExpValue::UnitFlags::kNone;
@@ -112,7 +124,7 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
     match_result.SetDependsOnRemContainerQueries();
   if (unit_flags & MediaQueryExpValue::UnitFlags::kFontRelative)
     depends_on_font_ = true;
-  Add(query, result);
+  results_.Set(&query, Result{result, change});
   return result;
 }
 
@@ -189,11 +201,8 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
     return Change::kDescendantContainers;
 
   for (const auto& result : results_) {
-    if (Eval(*result.key) != result.value) {
-      change = std::max(change, result.key->Selector().IsNearest()
-                                    ? Change::kNearestContainer
-                                    : Change::kDescendantContainers);
-    }
+    if (Eval(*result.key) != result.value.value)
+      change = std::max(change, result.value.change);
   }
 
   return change;

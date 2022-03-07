@@ -27,6 +27,9 @@ class CORE_EXPORT ContainerQueryEvaluator final
  public:
   static Element* FindContainer(const StyleRecalcContext& context,
                                 const ContainerSelector&);
+  static bool EvalAndAdd(const StyleRecalcContext&,
+                         const ContainerQuery&,
+                         MatchResult&);
 
   // Creates an evaluator with no containment, hence all queries evaluated
   // against it will fail.
@@ -36,13 +39,6 @@ class CORE_EXPORT ContainerQueryEvaluator final
   double Width() const;
   double Height() const;
   void SetReferencedByUnit() { referenced_by_unit_ = true; }
-
-  // Add a dependent query to this evaluator. During calls to ContainerChanged,
-  // all dependent queries are checked to see if the new size/axis information
-  // causes a change in the evaluation result.
-  void Add(const ContainerQuery&, bool result);
-
-  bool EvalAndAdd(const ContainerQuery& query, MatchResult& match_result);
 
   enum class Change {
     // The update has no effect on the evaluation of queries associated with
@@ -84,10 +80,24 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool Eval(const ContainerQuery&) const;
   bool Eval(const ContainerQuery&, MediaQueryEvaluator::Results) const;
 
+  struct Result {
+    // Main evaluation result.
+    bool value = false;
+    // Indicates what we need to invalidate if the result value changes.
+    Change change = Change::kNone;
+  };
+
+  // Evaluate and add a dependent query to this evaluator. During calls to
+  // ContainerChanged, all dependent queries are checked to see if the new
+  // size/axis information causes a change in the evaluation result.
+  bool EvalAndAdd(const ContainerQuery& query,
+                  Change change,
+                  MatchResult& match_result);
+
   Member<MediaQueryEvaluator> media_query_evaluator_;
   PhysicalSize size_;
   PhysicalAxes contained_axes_;
-  HeapHashMap<Member<const ContainerQuery>, bool> results_;
+  HeapHashMap<Member<const ContainerQuery>, Result> results_;
   bool referenced_by_unit_ = false;
   bool depends_on_font_ = false;
   bool font_dirty_ = false;
