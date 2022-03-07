@@ -16,7 +16,10 @@ import tempfile
 import time
 import traceback
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(filename)s:%(lineno)-3d'
+                           ' %(levelname)s %(message)s',
+                    datefmt='%y%m%d %H:%M:%S')
 
 # Add src/testing/ into sys.path for importing xvfb and test_env.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -71,6 +74,7 @@ def set_lpac_acls(acl_dir, is_test_script=False):
   """Sets LPAC ACLs on a directory. Windows 10 only."""
   if platform.release() != '10':
     return
+  logging.info('Start setting LPAC ACLs.')
   try:
     existing_acls = subprocess.check_output(['icacls', acl_dir],
                                             stderr=subprocess.STDOUT,
@@ -85,40 +89,24 @@ def set_lpac_acls(acl_dir, is_test_script=False):
       acls_correct = True
   if not acls_correct:
     try:
-      existing_acls = subprocess.check_output(
-          ['icacls', acl_dir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)'],
-          stderr=subprocess.STDOUT)
+      if is_test_script:
+        # Bots can use hard links and protected ACLs so in this case always
+        # set the ACE recursively using '/t'.
+        subprocess.check_output(
+            ['icacls', acl_dir, '/grant',
+             '*S-1-15-2-2:(RX)', '/t', '/q', '/c'],
+            stderr=subprocess.STDOUT)
+      else:
+        subprocess.check_output(
+            ['icacls', acl_dir, '/grant',
+             '*S-1-15-2-2:(OI)(CI)(RX)'],
+            stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
       logging.error(
-          'Failed to retrieve existing ACLs for directory %s', acl_dir)
+          'Failed to set ACLs for directory %s', acl_dir)
       logging.error('Command output: %s', e.output)
       sys.exit(e.returncode)
-  if not is_test_script:
-    return
-  # Bots running on luci use hardlinks that do not have correct ACLs so these
-  # must be manually overridden here.
-  with temporary_file() as tempfile_path:
-    subprocess.check_output(
-        ['icacls', acl_dir, '/save', tempfile_path, '/t', '/q', '/c'],
-        stderr=subprocess.STDOUT)
-    # ACL files look like this, e.g. for c:\a\b\c\d\Release_x64
-    #
-    # Release_x64
-    # D:AI(A;OICI;0x1200a9;;;S-1-15-2-2)(A;OICIID;FA;;;BA)
-    # Release_x64\icudtl_extra.dat
-    # D:AI(A;ID;0x1200a9;;;S-1-15-2-2)(A;ID;FA;;;BA)(A;ID;0x1301bf;;;BU)
-    with codecs.open(tempfile_path, encoding='utf_16_le') as aclfile:
-      for filename in aclfile:
-        acl = next(aclfile).strip()
-        full_filename = os.path.abspath(
-            os.path.join(acl_dir, os.pardir, filename.strip()))
-        if 'S-1-15-2-2' in acl:
-          continue
-        if os.path.isdir(full_filename):
-          continue
-        subprocess.check_output(
-            ['icacls', full_filename, '/grant', '*S-1-15-2-2:(RX)'],
-            stderr=subprocess.STDOUT)
+  logging.info('Finish setting LPAC ACLs.')
 
 
 def run_script(argv, funcs):
