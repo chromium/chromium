@@ -357,7 +357,8 @@ TEST_P(CdmStorageTest, ParallelRead) {
   EXPECT_TRUE((status1 == CdmFile::Status::kSuccess &&
                status2 == CdmFile::Status::kFailure) ||
               (status1 == CdmFile::Status::kFailure &&
-               status2 == CdmFile::Status::kSuccess));
+               status2 == CdmFile::Status::kSuccess))
+      << "status 1: " << status1 << ", status2: " << status2;
 }
 
 TEST_P(CdmStorageTest, ParallelWrite) {
@@ -374,7 +375,8 @@ TEST_P(CdmStorageTest, ParallelWrite) {
   EXPECT_TRUE((status1 == CdmFile::Status::kSuccess &&
                status2 == CdmFile::Status::kFailure) ||
               (status1 == CdmFile::Status::kFailure &&
-               status2 == CdmFile::Status::kSuccess));
+               status2 == CdmFile::Status::kSuccess))
+      << "status 1: " << status1 << ", status2: " << status2;
 }
 
 }  // namespace content
