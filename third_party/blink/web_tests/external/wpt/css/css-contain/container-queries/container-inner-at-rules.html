@@ -21,14 +21,14 @@
 </script>
 
 <style>
-  @container size(width: 100px) {
+  @container (width: 100px) {
     @keyframes anim1 {
       from { --anim1:true; }
       to { --anim1:true; }
     }
   }
 
-  @container size(width: 200px) {
+  @container (width: 200px) {
     @keyframes anim2 {
       from { --anim2:true; }
       to { --anim2:true; }
@@ -46,7 +46,7 @@
 
 
 <style>
-  @container size(width: 100px) {
+  @container (width: 100px) {
     @property --prop1 {
       syntax: "<length>";
       inherits: false;
@@ -54,7 +54,7 @@
     }
   }
 
-  @container size(width: 200px) {
+  @container (width: 200px) {
     @property --prop2 {
       syntax: "<length>";
       inherits: false;
@@ -77,11 +77,11 @@
 
 
 <style>
-  @container size(width: 100px) {
+  @container (width: 100px) {
     @layer a;
   }
 
-  @container size(width: 200px) {
+  @container (width: 200px) {
     @layer b;
   }
 
@@ -102,7 +102,7 @@
 
 
 <style>
-  @container size(width: 100px) {
+  @container (width: 100px) {
     @font-face {
       font-family: Font1;
       font-stretch: 50% 200%;
@@ -110,7 +110,7 @@
     }
   }
 
-  @container size(width: 200px) {
+  @container (width: 200px) {
     @font-face {
       font-family: Font2;
       font-stretch: 40% 190%;
@@ -133,7 +133,7 @@
 
 
 <style>
-  @container size(width: 100px) {
+  @container (width: 100px) {
     /* Assumed to be false */
     @media (width: 0px) {
       #child { --media1:true; }
@@ -145,7 +145,7 @@
   }
 
   /* Same again, but with failing container query. */
-  @container size(width: 200px) {
+  @container (width: 200px) {
     @media (width: 0px) {
       #child { --media3:true; }
     }
@@ -166,7 +166,7 @@
 
 
 <style>
-  @container size(width: 100px) {
+  @container (width: 100px) {
     @supports (width: 500kg) {
       #child { --supports1:true; }
     }
@@ -176,7 +176,7 @@
   }
 
   /* Same again, but with failing container query. */
-  @container size(width: 200px) {
+  @container (width: 200px) {
     @supports (width: 500kg) {
       #child { --supports3:true; }
     }

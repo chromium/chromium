@@ -26,10 +26,10 @@
     range: {
       startColumn: 11,
       startLine: 1,
-      endColumn: 33,
+      endColumn: 29,
       endLine: 1,
     },
-    text: 'size(max-width: 300px)',
+    text: '(max-width: 300px)',
   });
 
   await cssHelper.loadAndDumpMatchingRulesForNode(itemNodeId);

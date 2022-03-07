@@ -1,4 +1,4 @@
-@container size((max-width: 200px) and (min-height: 100px)) {
+@container ((max-width: 200px) and (min-height: 100px)) {
   div {
     color: red;
   }

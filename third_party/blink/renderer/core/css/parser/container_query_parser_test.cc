@@ -38,6 +38,29 @@ class ContainerQueryParserTest : public PageTestBase {
     node->SerializeTo(builder);
     return builder.ReleaseString();
   }
+
+  class TestFeatureSet : public MediaQueryParser::FeatureSet {
+    STACK_ALLOCATED();
+
+   public:
+    bool IsAllowed(const String& name) const override {
+      return name == "width";
+    }
+  };
+
+  // E.g. https://drafts.csswg.org/css-contain-3/#typedef-style-query
+  String ParseFeatureQuery(String feature_query) {
+    const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
+    Vector<CSSParserToken, 32> tokens =
+        CSSTokenizer(feature_query).TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    std::unique_ptr<MediaQueryExpNode> node =
+        ContainerQueryParser(*context).ConsumeFeatureQuery(range,
+                                                           TestFeatureSet());
+    if (!node || !range.AtEnd())
+      return g_null_atom;
+    return node->Serialize();
+  }
 };
 
 TEST_F(ContainerQueryParserTest, ConsumeSelector) {
@@ -72,45 +95,59 @@ TEST_F(ContainerQueryParserTest, ConsumeSelector) {
 }
 
 TEST_F(ContainerQueryParserTest, ParseQuery) {
-  struct {
-    const char* input;
-    const char* output;
-  } tests[] = {
-      {"size(width)", nullptr},
-      {"size(width: 100px)", nullptr},
-      {"(not size(width))", nullptr},
-      {"((not size(width)) and size(width))", nullptr},
-      {"size((not (width)) and (width))", nullptr},
-      {"(size(width) and size(width))", nullptr},
-      {"(size(width) or (size(width) and (not size(width))))", nullptr},
-      {"size((width > 100px) and (width > 200px))", nullptr},
-      {"size((width) and (width) and (width))", nullptr},
-      {"size((width) or (width) or (width))", nullptr},
+  const char* tests[] = {
+      "(width)",
+      "(min-width: 100px)",
+      "(width > 100px)",
+      "(width: 100px)",
+      "(not (width))",
+      "((not (width)) and (width))",
+      "((not (width)) and (width))",
+      "((width) and (width))",
+      "((width) or ((width) and (not (width))))",
+      "((width > 100px) and (width > 200px))",
+      "((width) and (width) and (width))",
+      "((width) or (width) or (width))",
   };
 
-  for (const auto& test : tests) {
-    String actual = ParseQuery(test.input);
-    String expected(test.output ? test.output : test.input);
-    EXPECT_EQ(expected, actual);
-  }
+  for (const char* test : tests)
+    EXPECT_EQ(String(test), ParseQuery(test));
 
   // Invalid:
-  EXPECT_EQ("<unknown>", ParseQuery("(width)"));
   EXPECT_EQ("<unknown>", ParseQuery("(min-width)"));
-  EXPECT_EQ("<unknown>", ParseQuery("(min-width: 100px)"));
-  EXPECT_EQ("<unknown>", ParseQuery("(width > 100px)"));
-  EXPECT_EQ(g_null_atom, ParseQuery("size(width) and size(height)"));
-  EXPECT_EQ(g_null_atom, ParseQuery("size(width) or size(height)"));
-  EXPECT_EQ("<unknown>", ParseQuery("size((width) or (width) and (width))"));
-  EXPECT_EQ("<unknown>", ParseQuery("size((width) and (width) or (width))"));
-  EXPECT_EQ("<unknown>",
-            ParseQuery("(size(width) or size(height) and size(width))"));
-  EXPECT_EQ("<unknown>",
-            ParseQuery("(size(width) and size(height) or size(width))"));
-  EXPECT_EQ("<unknown>", ParseQuery("(size(width) and size(height) 50px)"));
-  EXPECT_EQ("<unknown>", ParseQuery("(size(width) and size(height 50px))"));
-  EXPECT_EQ("<unknown>", ParseQuery("(size(width) and 50px size(height))"));
+  EXPECT_EQ(g_null_atom, ParseQuery("(width) and (height)"));
+  EXPECT_EQ(g_null_atom, ParseQuery("(width) or (height)"));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) or (width) and (width))"));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (width) or (width))"));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) or (height) and (width))"));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height) or (width))"));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height) 50px)"));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and (height 50px))"));
+  EXPECT_EQ("<unknown>", ParseQuery("((width) and 50px (height))"));
   EXPECT_EQ("<unknown>", ParseQuery("foo(width)"));
+  EXPECT_EQ("<unknown>", ParseQuery("size(width)"));
+}
+
+// This test exists primarily to not lose coverage of
+// `ContainerQueryParser::ConsumeFeatureQuery`, which is unused until
+// style() queries are supported (crbug.com/1302630).
+TEST_F(ContainerQueryParserTest, ParseFeatureQuery) {
+  const char* tests[] = {
+      "width",
+      "width: 100px",
+      "(not (width)) and (width)",
+      "(width > 100px) and (width > 200px)",
+      "(width) and (width) and (width)",
+      "(width) or (width) or (width)",
+  };
+
+  for (const char* test : tests)
+    EXPECT_EQ(String(test), ParseFeatureQuery(test));
+
+  // Invalid:
+  EXPECT_EQ(g_null_atom, ParseFeatureQuery("unsupported"));
+  EXPECT_EQ(g_null_atom, ParseFeatureQuery("(width) or (width) and (width)"));
+  EXPECT_EQ(g_null_atom, ParseFeatureQuery("(width) and (width) or (width)"));
 }
 
 }  // namespace blink

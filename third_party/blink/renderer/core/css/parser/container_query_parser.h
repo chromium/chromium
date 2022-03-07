@@ -29,6 +29,8 @@ class CORE_EXPORT ContainerQueryParser {
   std::unique_ptr<MediaQueryExpNode> ParseQuery(CSSParserTokenRange);
 
  private:
+  friend class ContainerQueryParserTest;
+
   using FeatureSet = MediaQueryParser::FeatureSet;
 
   std::unique_ptr<MediaQueryExpNode> ConsumeContainerQuery(

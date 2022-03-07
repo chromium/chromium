@@ -74,7 +74,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
 
 TEST_F(ContainerQueryEvaluatorTest, ContainmentMatch) {
   {
-    String query = "size(min-width: 100px)";
+    String query = "(min-width: 100px)";
     EXPECT_TRUE(Eval(query, 100.0, 100.0, type_size, horizontal));
     EXPECT_TRUE(Eval(query, 100.0, 100.0, type_size, both));
     EXPECT_TRUE(Eval(query, 100.0, 100.0, type_inline_size, horizontal));
@@ -86,7 +86,7 @@ TEST_F(ContainerQueryEvaluatorTest, ContainmentMatch) {
   }
 
   {
-    String query = "size(min-height: 100px)";
+    String query = "(min-height: 100px)";
     EXPECT_TRUE(Eval(query, 100.0, 100.0, type_size, vertical));
     EXPECT_TRUE(Eval(query, 100.0, 100.0, type_size, both));
     EXPECT_FALSE(Eval(query, 100.0, 100.0, type_size, horizontal));
@@ -97,7 +97,7 @@ TEST_F(ContainerQueryEvaluatorTest, ContainmentMatch) {
   }
 
   {
-    String query = "size((min-width: 100px) and (min-height: 100px))";
+    String query = "((min-width: 100px) and (min-height: 100px))";
     EXPECT_TRUE(Eval(query, 100.0, 100.0, type_size, both));
     EXPECT_FALSE(Eval(query, 100.0, 100.0, type_size, vertical));
     EXPECT_FALSE(Eval(query, 100.0, 100.0, type_size, horizontal));
@@ -113,10 +113,8 @@ TEST_F(ContainerQueryEvaluatorTest, ContainerChanged) {
   PhysicalSize size_100(LayoutUnit(100), LayoutUnit(100));
   PhysicalSize size_200(LayoutUnit(200), LayoutUnit(200));
 
-  ContainerQuery* container_query_100 =
-      ParseContainer("size(min-width: 100px)");
-  ContainerQuery* container_query_200 =
-      ParseContainer("size(min-width: 200px)");
+  ContainerQuery* container_query_100 = ParseContainer("(min-width: 100px)");
+  ContainerQuery* container_query_200 = ParseContainer("(min-width: 200px)");
   ASSERT_TRUE(container_query_100);
   ASSERT_TRUE(container_query_200);
 
@@ -153,7 +151,7 @@ TEST_F(ContainerQueryEvaluatorTest, SizeInvalidation) {
         width: 500px;
         height: 500px;
       }
-      @container size(min-width: 500px) {
+      @container (min-width: 500px) {
         div { z-index:1; }
       }
     </style>
@@ -210,8 +208,8 @@ TEST_F(ContainerQueryEvaluatorTest, DependentQueries) {
   PhysicalSize size_300(LayoutUnit(300), LayoutUnit(300));
   PhysicalSize size_400(LayoutUnit(400), LayoutUnit(400));
 
-  ContainerQuery* query_min_200px = ParseContainer("size(min-width: 200px)");
-  ContainerQuery* query_max_300px = ParseContainer("size(max-width: 300px)");
+  ContainerQuery* query_min_200px = ParseContainer("(min-width: 200px)");
+  ContainerQuery* query_max_300px = ParseContainer("(max-width: 300px)");
   ASSERT_TRUE(query_min_200px);
 
   auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
@@ -254,7 +252,7 @@ TEST_F(ContainerQueryEvaluatorTest, EvaluatorDisplayNone) {
       main.none {
         display: none;
       }
-      @container size(min-width: 500px) {
+      @container (min-width: 500px) {
         div { --x:test; }
       }
     </style>

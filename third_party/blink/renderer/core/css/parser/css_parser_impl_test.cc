@@ -217,7 +217,7 @@ TEST(CSSParserImplTest, AtCounterStyleOffsets) {
 TEST(CSSParserImplTest, AtContainerOffsets) {
   ScopedCSSContainerQueriesForTest scoped_feature(true);
 
-  String sheet_text = "@container size(max-width: 100px) { }";
+  String sheet_text = "@container (max-width: 100px) { }";
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
@@ -229,13 +229,13 @@ TEST(CSSParserImplTest, AtContainerOffsets) {
   EXPECT_EQ(test_css_parser_observer.rule_type_,
             StyleRule::RuleType::kContainer);
   EXPECT_EQ(test_css_parser_observer.rule_header_start_, 11u);
-  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 34u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 35u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 36u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 30u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 31u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 32u);
 }
 
 TEST(CSSParserImplTest, AtContainerDisabled) {
-  String rule = "@container size(max-width: 100px) { }";
+  String rule = "@container (max-width: 100px) { }";
   {
     ScopedCSSContainerQueriesForTest scoped_feature(true);
     Document* document = Document::CreateForTest();

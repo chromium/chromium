@@ -26,7 +26,7 @@
   <div>
     <template shadowroot="open">
       <style>
-        @container size(width = 400px) {
+        @container (width = 400px) {
           #t1 { color: green; }
         }
       </style>
@@ -49,7 +49,7 @@
       </div>
     </template>
     <style>
-      @container size(width = 400px) {
+      @container (width = 400px) {
         #t2 { color: green; }
       }
     </style>
@@ -66,7 +66,7 @@
           width: 200px;
           container-type: inline-size;
         }
-        @container size(width = 200px) {
+        @container (width = 200px) {
           ::slotted(#t3) { color: green; }
         }
       </style>
@@ -80,7 +80,7 @@
   <div id="t4">
     <template shadowroot="open">
       <style>
-        @container size(width = 400px) {
+        @container (width = 400px) {
           :host(#t4) { color: green; }
         }
       </style>
@@ -102,7 +102,7 @@
       </div>
     </template>
     <style>
-      @container size(width = 400px) {
+      @container (width = 400px) {
         #inclusive-ancestor-part > div::part(part) { color: green; }
       }
     </style>
@@ -118,7 +118,7 @@
           width: 200px;
           container-type: inline-size;
         }
-        @container size(width = 200px) {
+        @container (width = 200px) {
           ::slotted(#t6)::before {
             content: "X";
             color: green;
@@ -145,7 +145,7 @@
           width: 200px;
           container-type: inline-size;
         }
-        @container size(width = 200px) {
+        @container (width = 200px) {
           :host(#t7)::before {
             content: "X";
             color: green;
@@ -158,7 +158,7 @@
 
 <div id="inclusive-ancestor-part-before">
   <style>
-    @container size(width = 400px) {
+    @container (width = 400px) {
       #inclusive-ancestor-part-before > div::part(part)::before {
         content: "X";
         color: green;
@@ -182,7 +182,7 @@
 
 <div id="inclusive-ancestor-inner-part">
   <style>
-    @container size(width = 400px) {
+    @container (width = 400px) {
       #inclusive-ancestor-inner-part > div::part(inner-part) { color: green; }
     }
   </style>
@@ -218,7 +218,7 @@
         width: 200px;
         container-type: inline-size;
       }
-      @container size(width = 200px) {
+      @container (width = 200px) {
         #t10 { color: green; }
       }
     </style>

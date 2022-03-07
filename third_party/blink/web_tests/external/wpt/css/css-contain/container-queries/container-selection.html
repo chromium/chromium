@@ -142,38 +142,38 @@
   // and the outer container has a size of 32x32px.
 
   // "Nearest" selection:
-  test_applied('size(width: 16px)',  '.size > .inline > span');
-  test_applied('size(height: 16px)', '.inline > .size > span');
-  test_applied('size(width: 16px)',  '.inline > .size > span');
-  test_rejected('size(height)', '.size > .inline > span');
+  test_applied('(width: 16px)',  '.size > .inline > span');
+  test_applied('(height: 16px)', '.inline > .size > span');
+  test_applied('(width: 16px)',  '.inline > .size > span');
+  test_rejected('(height)', '.size > .inline > span');
 
   // type():
-  test_applied('type(inline-size) size(width: 16px)', '.inline > .size > span');
-  test_applied('type(inline-size) size(width: 16px)', '.size > .inline > span');
+  test_applied('type(inline-size) (width: 16px)', '.inline > .size > span');
+  test_applied('type(inline-size) (width: 16px)', '.size > .inline > span');
 
-  test_applied('type(size) size(height: 16px)', '.inline > .size > span');
-  test_applied('type(size) size(height: 32px)', '.size > .inline > span');
-  test_rejected('type(size) size(height)', '.inline > .inline > span');
+  test_applied('type(size) (height: 16px)', '.inline > .size > span');
+  test_applied('type(size) (height: 32px)', '.size > .inline > span');
+  test_rejected('type(size) (height)', '.inline > .inline > span');
 
   // name():
-  test_applied('name(a) size(width: 32px)', '.a-size > .b-size > span');
-  test_applied('name(b) size(width: 16px)', '.a-size > .b-size > span');
-  test_rejected('name(c) size(width)','.a-size > .b-size > span');
-  test_applied('name(a) size(width: 16px)', '.a-size > .a-size > span');
+  test_applied('name(a) (width: 32px)', '.a-size > .b-size > span');
+  test_applied('name(b) (width: 16px)', '.a-size > .b-size > span');
+  test_rejected('name(c) (width)','.a-size > .b-size > span');
+  test_applied('name(a) (width: 16px)', '.a-size > .a-size > span');
 
   // Name as plain ident:
-  test_applied('a size(width: 32px)', '.a-size > .b-size > span');
-  test_applied('b size(width: 16px)', '.a-size > .b-size > span');
-  test_rejected('c size(width)', '.a-size > .b-size > span');
-  test_applied('a size(width: 16px)', '.a-size > .a-size > span');
+  test_applied('a (width: 32px)', '.a-size > .b-size > span');
+  test_applied('b (width: 16px)', '.a-size > .b-size > span');
+  test_rejected('c (width)', '.a-size > .b-size > span');
+  test_applied('a (width: 16px)', '.a-size > .a-size > span');
 
   // container-name alone does not establish a container:
-  test_applied('a size(width: 32px)', '.a-size > .a > span');
+  test_applied('a (width: 32px)', '.a-size > .a > span');
 
   // Can query container with multiple names:
-  test_applied('a size(width: 32px)', '.ab-size > .size > span');
-  test_applied('b size(width: 32px)', '.ab-size > .size > span');
-  test_rejected('c size(width)', '.ab-size > .size > span');
+  test_applied('a (width: 32px)', '.ab-size > .size > span');
+  test_applied('b (width: 32px)', '.ab-size > .size > span');
+  test_rejected('c (width)', '.ab-size > .size > span');
 
   // The following tests have three containers:
   //
@@ -182,14 +182,14 @@
   //  inner -> 8x8px
 
   // Mixing name() and type():
-  test_applied('name(a) type(inline-size) size(width: 8px)', '.a-size > .b-size > .a-inline > span');
-  test_applied('name(b) type(inline-size) size(width: 16px)', '.a-size > .b-size > .a-inline > span');
-  test_applied('name(a) type(size) size(width: 32px)', '.a-size > .b-size > .a-inline > span');
-  test_applied('name(b) type(size) size(width: 16px)', '.a-size > .b-size > .a-inline > span');
-  test_rejected('name(a) type(size) size(width)', '.a-inline > .b-size');
+  test_applied('name(a) type(inline-size) (width: 8px)', '.a-size > .b-size > .a-inline > span');
+  test_applied('name(b) type(inline-size) (width: 16px)', '.a-size > .b-size > .a-inline > span');
+  test_applied('name(a) type(size) (width: 32px)', '.a-size > .b-size > .a-inline > span');
+  test_applied('name(b) type(size) (width: 16px)', '.a-size > .b-size > .a-inline > span');
+  test_rejected('name(a) type(size) (width)', '.a-inline > .b-size');
 
   // type() first, then name():
-  test_applied('type(inline-size) name(a) size(width: 8px)', '.a-size > .b-size > .a-inline > span');
-  test_applied('type(size) name(a) size(height: 32px)', '.a-size > .b-size > .a-inline > span');
+  test_applied('type(inline-size) name(a) (width: 8px)', '.a-size > .b-size > .a-inline > span');
+  test_applied('type(size) name(a) (height: 32px)', '.a-size > .b-size > .a-inline > span');
 
 </script>

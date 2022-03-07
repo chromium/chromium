@@ -31,8 +31,8 @@
 
 
 <style>
-  @container size(width: 50px) {
-    @container size(height: 50px) {
+  @container (width: 50px) {
+    @container (height: 50px) {
       #child { --nearest:true; }
     }
   }
@@ -45,8 +45,8 @@
 
 
 <style>
-  @container size(width: 70px) {
-    @container size(height: 50px) {
+  @container (width: 70px) {
+    @container (height: 50px) {
       #child { --nearest-outer-fail:true; }
     }
   }
@@ -59,8 +59,8 @@
 
 
 <style>
-  @container size(width: 50px) {
-    @container size(height: 70px) {
+  @container (width: 50px) {
+    @container (height: 70px) {
       #child { --nearest-inner-fail:true; }
     }
   }
@@ -73,8 +73,8 @@
 
 
 <style>
-  @container outer size(width: 100px) {
-    @container inner size(height: 50px) {
+  @container outer (width: 100px) {
+    @container inner (height: 50px) {
       #child { --named-outer-inner:true; }
     }
   }
@@ -87,8 +87,8 @@
 
 
 <style>
-  @container inner size(width: 50px) {
-    @container outer size(height: 100px) {
+  @container inner (width: 50px) {
+    @container outer (height: 100px) {
       #child { --named-outer-inner-reverse:true; }
     }
   }
@@ -101,8 +101,8 @@
 
 
 <style>
-  @container unknown size(width: 100px) {
-    @container inner size(height: 50px) {
+  @container unknown (width: 100px) {
+    @container inner (height: 50px) {
       #child { --named-failing-outer:true; }
     }
   }
@@ -114,8 +114,8 @@
 </script>
 
 <style>
-  @container outer size(width: 100px) {
-    @container unknown size(height: 50px) {
+  @container outer (width: 100px) {
+    @container unknown (height: 50px) {
       #child { --named-failing-inner:true; }
     }
   }
@@ -128,8 +128,8 @@
 
 
 <style>
-  @container outer size(width: 100px) {
-    @container size(height: 50px) {
+  @container outer (width: 100px) {
+    @container (height: 50px) {
       #child { --named-outer-inner-nearest:true; }
     }
   }
@@ -142,8 +142,8 @@
 
 
 <style>
-  @container size(width: 50px) {
-    @container inner size(height: 50px) {
+  @container (width: 50px) {
+    @container inner (height: 50px) {
       #child { --nearest-outer-inner-named:true; }
     }
   }
@@ -156,8 +156,8 @@
 
 
 <style>
-  @container size(width: 50px) {
-    @container outer size(height: 100px) {
+  @container (width: 50px) {
+    @container outer (height: 100px) {
       #child { --nearest-outer-inner-named-reverse:true; }
     }
   }
@@ -170,9 +170,9 @@
 
 
 <style>
-  @container size(width > 1px) {
-    @container size(width > 2px) {
-      @container size(width > 3px) {
+  @container (width > 1px) {
+    @container (width > 2px) {
+      @container (width > 3px) {
         #child { --three-levels:true; }
       }
     }
@@ -186,9 +186,9 @@
 
 
 <style>
-  @container size(width > 1px) {
-    @container size(width > 2000px) {
-      @container size(width > 3px) {
+  @container (width > 1px) {
+    @container (width > 2000px) {
+      @container (width > 3px) {
         #child { --three-levels-middle-fail:true; }
       }
     }
@@ -202,8 +202,8 @@
 
 
 <style>
-  @container size(width: 50px) {
-    @container outer size(height: 100px) {
+  @container (width: 50px) {
+    @container outer (height: 100px) {
       #child { --inner-named-invalidation:true; }
     }
   }
@@ -219,8 +219,8 @@
 
 
 <style>
-  @container size(width: 50px) {
-    @container outer size(height: 100px) {
+  @container (width: 50px) {
+    @container outer (height: 100px) {
       #child { --outer-nearest-invalidation:true; }
     }
   }

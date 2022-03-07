@@ -101,7 +101,7 @@ TEST_F(CSSSelectorWatchCQTest, ContainerQueryDisplayNone) {
         container-type: inline-size;
       }
       .c #inner { display: none; }
-      @container c1 size(min-width: 200px) {
+      @container c1 (min-width: 200px) {
         .c #inner { display: inline }
       }
     </style>

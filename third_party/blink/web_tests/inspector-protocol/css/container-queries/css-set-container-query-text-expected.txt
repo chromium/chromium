@@ -1,6 +1,6 @@
 Tests CSS.setContainerQueryText method.
 ==== Initial style sheet text ====
-@container size((max-width: 200px) and (min-height: 100px)) {
+@container ((max-width: 200px) and (min-height: 100px)) {
   div {
     color: red;
   }
@@ -9,7 +9,7 @@ Tests CSS.setContainerQueryText method.
 
 Running test: testSimpleEdit
 ==== Style sheet text ====
-@container size((min-width: 100px) and (max-height: 200px)) {
+@container ((min-width: 100px) and (max-height: 200px)) {
   div {
     color: red;
   }
@@ -18,7 +18,7 @@ Running test: testSimpleEdit
 
 Running test: testFeatureChange
 ==== Style sheet text ====
-@container size(min-aspect-ratio: 1 / 1000) {
+@container (min-aspect-ratio: 1 / 1000) {
   div {
     color: red;
   }
@@ -33,14 +33,14 @@ Expected protocol error: SyntaxError Selector or container query text is not val
 
 Running test: testEditSequentially
 ==== Style sheet text ====
-@container size(min-width: 50px) {
+@container (min-width: 50px) {
   div {
     color: red;
   }
 }
 
 ==== Style sheet text ====
-@container size(min-height: 80px) {
+@container (min-height: 80px) {
   div {
     color: red;
   }
@@ -49,7 +49,7 @@ Running test: testEditSequentially
 
 Running test: testAfterSequentially
 ==== Style sheet text ====
-@container size(min-height: 20px) {
+@container (min-height: 20px) {
   div {
     color: red;
   }

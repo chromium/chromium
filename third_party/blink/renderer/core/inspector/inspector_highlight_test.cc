@@ -197,7 +197,7 @@ TEST_F(InspectorHighlightTest,
         height: 500px;
         container-type: inline-size;
       }
-      @container size(min-width: 100px) {
+      @container (min-width: 100px) {
         .item {
           width: 100px;
           height: 100px;

@@ -21,10 +21,10 @@ TEST_F(SVGElementTest, BaseComputedStyleForSMILWithContainerQueries) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #rect2 { display: none }
-      @container size(max-width: 200px) {
+      @container (max-width: 200px) {
         rect, g { color: green; }
       }
-      @container size(min-width: 300px) {
+      @container (min-width: 300px) {
         rect, g { background-color: red; }
       }
     </style>

@@ -813,7 +813,7 @@ TEST_F(StyleResolverTestCQ, CascadedValuesForElementInContainer) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container { container-type: inline-size; }
-      @container size(min-width: 1px) {
+      @container (min-width: 1px) {
         #inner {
           top: 1em;
         }
@@ -843,7 +843,7 @@ TEST_F(StyleResolverTestCQ, CascadedValuesForPseudoElementInContainer) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container { container-type: inline-size; }
-      @container size(min-width: 1px) {
+      @container (min-width: 1px) {
         #inner::before {
           top: 1em;
         }
@@ -1306,7 +1306,7 @@ TEST_F(StyleResolverTestCQ, DependsOnContainerQueries) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #a { color: red; }
-      @container size(min-width: 0px) {
+      @container (min-width: 0px) {
         #b { color: blue; }
         span { color: green; }
         #d { color: coral; }
@@ -1345,7 +1345,7 @@ TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesPseudo) {
     <style>
       main { container-type: size; width: 100px; }
       #a::before { content: "before"; }
-      @container size(min-width: 0px) {
+      @container (min-width: 0px) {
         #a::after { content: "after"; }
       }
     </style>
@@ -1374,7 +1374,7 @@ TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesPseudo) {
 TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesMPC) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
-      @container size(min-width: 9999999px) {
+      @container (min-width: 9999999px) {
         #a { color: green; }
       }
     </style>
@@ -2057,10 +2057,10 @@ TEST_F(StyleResolverTestCQ, StyleRulesForElementContainerQuery) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #container { container-type: inline-size }
-      @container size(min-width: 1px) {
+      @container (min-width: 1px) {
         #target { }
       }
-      @container size(min-width: 99999px) {
+      @container (min-width: 99999px) {
         #target { color: red }
       }
     </style>

@@ -19,7 +19,7 @@
     let container = outer;
     for (let width = 200; width > 100; --width) {
       sheet.insertRule(`
-        @container size(width = ${width}px) {
+        @container (width = ${width}px) {
           .container { max-width: ${width-1}px; }
         }
       `);

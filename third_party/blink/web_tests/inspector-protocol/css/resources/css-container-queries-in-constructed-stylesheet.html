@@ -8,7 +8,7 @@ sheet.replaceSync(`
     contain: layout style size;
   }
 
-  @container size(min-width: 100px) {
+  @container (min-width: 100px) {
     .item {
       font-size: 1px;
     }
@@ -20,7 +20,7 @@ sheet.replaceSync(`
     container-type: inline-size;
   }
 
-  @container container-1 size(max-width: 300px) {
+  @container container-1 (max-width: 300px) {
     .item {
       color: #abc;
     }

@@ -21,14 +21,14 @@
     startLine: 0,
     startColumn: 11,
     endLine: 0,
-    endColumn: 59,
+    endColumn: 55,
   };
 
   testRunner.runTestSuite([
     async function testSimpleEdit() {
       await setContainerQueryText({
         range: containerQueryRange,
-        text: 'size((min-width: 100px) and (max-height: 200px))',
+        text: '((min-width: 100px) and (max-height: 200px))',
       });
       await dp.DOM.undo();
     },
@@ -36,7 +36,7 @@
     async function testFeatureChange() {
       await setContainerQueryText({
         range: containerQueryRange,
-        text: 'size(min-aspect-ratio: 1 / 1000)',
+        text: '(min-aspect-ratio: 1 / 1000)',
       });
       await dp.DOM.undo();
     },
@@ -56,7 +56,7 @@
     },
 
     async function testEditSequentially() {
-      const newText = 'size(min-width: 50px)';
+      const newText = '(min-width: 50px)';
       const oldLength = containerQueryRange.endColumn - containerQueryRange.startColumn;
       const lengthDelta = newText.length - oldLength;
       await setContainerQueryText({
@@ -70,7 +70,7 @@
       };
       await setContainerQueryText({
         range: newRange,
-        text: 'size(min-height: 80px)'
+        text: '(min-height: 80px)'
       });
       await dp.DOM.undo();
     },
@@ -78,7 +78,7 @@
     async function testAfterSequentially() {
       await setContainerQueryText({
         range: containerQueryRange,
-        text: 'size(min-height: 20px)'
+        text: '(min-height: 20px)'
       });
       await dp.DOM.undo();
     },

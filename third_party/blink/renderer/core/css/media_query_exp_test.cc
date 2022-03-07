@@ -93,6 +93,12 @@ std::unique_ptr<MediaQueryExpNode> NestedNode(
   return MediaQueryExpNode::Nested(std::move(child));
 }
 
+std::unique_ptr<MediaQueryExpNode> FunctionNode(
+    std::unique_ptr<MediaQueryExpNode> child,
+    const AtomicString& name) {
+  return MediaQueryExpNode::Function(std::move(child), name);
+}
+
 std::unique_ptr<MediaQueryExpNode> NotNode(
     std::unique_ptr<MediaQueryExpNode> operand) {
   return MediaQueryExpNode::Not(std::move(operand));
@@ -232,6 +238,7 @@ TEST(MediaQueryExpTest, Copy) {
   nodes.push_back(EnclosedFeatureNode(width_lt10));
   nodes.push_back(NotNode(EnclosedFeatureNode(width_lt10)));
   nodes.push_back(NestedNode(EnclosedFeatureNode(width_lt10)));
+  nodes.push_back(FunctionNode(EnclosedFeatureNode(width_lt10), "special"));
   nodes.push_back(AndNode(EnclosedFeatureNode(width_lt10),
                           EnclosedFeatureNode(height_lt10)));
   nodes.push_back(OrNode(EnclosedFeatureNode(width_lt10),
@@ -287,6 +294,23 @@ TEST(MediaQueryExpTest, SerializeNode) {
       NotNode(NestedNode(AndNode(
                   EnclosedFeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
                   EnclosedFeatureNode(RightExp("height", EqCmp(PxValue(12)))))))
+          ->Serialize());
+
+  EXPECT_EQ("special(width < 10px)",
+            FunctionNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))),
+                         "special")
+                ->Serialize());
+  EXPECT_EQ(
+      "special((width < 10px))",
+      FunctionNode(EnclosedFeatureNode(RightExp("width", LtCmp(PxValue(10)))),
+                   "special")
+          ->Serialize());
+  EXPECT_EQ(
+      "special((11px >= thing) and (height = 12px))",
+      FunctionNode(
+          AndNode(EnclosedFeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
+                  EnclosedFeatureNode(RightExp("height", EqCmp(PxValue(12))))),
+          "special")
           ->Serialize());
 }
 

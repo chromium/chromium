@@ -97,61 +97,62 @@ class ContainerQueryTest : public PageTestBase,
 
 TEST_F(ContainerQueryTest, PreludeParsing) {
   // Valid:
-  EXPECT_EQ("size(min-width: 300px)",
-            SerializeCondition(
-                ParseAtContainer("@container size(min-width: 300px) {}")));
-  EXPECT_EQ("size(max-width: 500px)",
-            SerializeCondition(
-                ParseAtContainer("@container size(max-width: 500px) {}")));
-  EXPECT_EQ("(not size(max-width: 500px))",
-            SerializeCondition(ParseAtContainer(
-                "@container (not size(max-width: 500px)) {}")));
   EXPECT_EQ(
-      "(size(max-width: 500px) and size(max-height: 500px))",
-      SerializeCondition(ParseAtContainer("@container (size(max-width: 500px) "
-                                          "and size(max-height: 500px)) {}")));
+      "(min-width: 300px)",
+      SerializeCondition(ParseAtContainer("@container (min-width: 300px) {}")));
   EXPECT_EQ(
-      "(size(max-width: 500px) or size(max-height: 500px))",
-      SerializeCondition(ParseAtContainer("@container (size(max-width: 500px) "
-                                          "or size(max-height: 500px)) {}")));
-  EXPECT_EQ("size(width < 300px)", SerializeCondition(ParseAtContainer(
-                                       "@container size(width < 300px) {}")));
+      "(max-width: 500px)",
+      SerializeCondition(ParseAtContainer("@container (max-width: 500px) {}")));
+  EXPECT_EQ("(not (max-width: 500px))",
+            SerializeCondition(
+                ParseAtContainer("@container (not (max-width: 500px)) {}")));
+  EXPECT_EQ(
+      "((max-width: 500px) and (max-height: 500px))",
+      SerializeCondition(ParseAtContainer("@container ((max-width: 500px) "
+                                          "and (max-height: 500px)) {}")));
+  EXPECT_EQ(
+      "((max-width: 500px) or (max-height: 500px))",
+      SerializeCondition(ParseAtContainer("@container ((max-width: 500px) "
+                                          "or (max-height: 500px)) {}")));
+  EXPECT_EQ(
+      "(width < 300px)",
+      SerializeCondition(ParseAtContainer("@container (width < 300px) {}")));
 
   // Invalid:
   EXPECT_FALSE(ParseAtContainer("@container 100px {}"));
   EXPECT_FALSE(ParseAtContainer("@container calc(1) {}"));
   EXPECT_FALSE(ParseAtContainer("@container {}"));
-  EXPECT_FALSE(
-      ParseAtContainer("@container size(min-width: 300px) nonsense {}"));
-  EXPECT_FALSE(ParseAtContainer("@container somename not size(width) {}"));
-  EXPECT_FALSE(ParseAtContainer("@container size(width) and size(height) {}"));
-  EXPECT_FALSE(ParseAtContainer("@container size(width) or size(height) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container (min-width: 300px) nonsense {}"));
+  EXPECT_FALSE(ParseAtContainer("@container somename not (width) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container (width) and (height) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container (width) or (height) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container size(width) {}"));
 }
 
 TEST_F(ContainerQueryTest, ValidFeatures) {
   // https://drafts.csswg.org/css-contain-3/#size-container
-  EXPECT_TRUE(ParseAtContainer("@container size(width) {}"));
-  EXPECT_TRUE(ParseAtContainer("@container size(min-width: 0px) {}"));
-  EXPECT_TRUE(ParseAtContainer("@container size(max-width: 0px) {}"));
-  EXPECT_TRUE(ParseAtContainer("@container size(height) {}"));
-  EXPECT_TRUE(ParseAtContainer("@container size(min-height: 0px) {}"));
-  EXPECT_TRUE(ParseAtContainer("@container size(max-height: 0px) {}"));
-  EXPECT_TRUE(ParseAtContainer("@container size(aspect-ratio) {}"));
-  EXPECT_TRUE(ParseAtContainer("@container size(min-aspect-ratio: 1/2) {}"));
-  EXPECT_TRUE(ParseAtContainer("@container size(max-aspect-ratio: 1/2) {}"));
-  EXPECT_TRUE(ParseAtContainer("@container size(orientation: portrait) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container (width) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container (min-width: 0px) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container (max-width: 0px) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container (height) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container (min-height: 0px) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container (max-height: 0px) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container (aspect-ratio) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container (min-aspect-ratio: 1/2) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container (max-aspect-ratio: 1/2) {}"));
+  EXPECT_TRUE(ParseAtContainer("@container (orientation: portrait) {}"));
 
+  EXPECT_FALSE(ParseAtContainer("@container (color) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container (color-index) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container (color-index >= 1) {}"));
   EXPECT_FALSE(ParseAtContainer("@container (grid) {}"));
-  EXPECT_FALSE(ParseAtContainer("@container size(color) {}"));
-  EXPECT_FALSE(ParseAtContainer("@container size(color-index) {}"));
-  EXPECT_FALSE(ParseAtContainer("@container size(color-index >= 1) {}"));
-  EXPECT_FALSE(ParseAtContainer("@container size(grid) {}"));
-  EXPECT_FALSE(ParseAtContainer("@container size(resolution: 150dpi) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container (resolution: 150dpi) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container size(width) {}"));
 }
 
 TEST_F(ContainerQueryTest, RuleParsing) {
   StyleRuleContainer* container = ParseAtContainer(R"CSS(
-    @container size(min-width: 100px) {
+    @container (min-width: 100px) {
       div { width: 100px; }
       span { height: 100px; }
     }
@@ -175,7 +176,7 @@ TEST_F(ContainerQueryTest, RuleParsing) {
 
 TEST_F(ContainerQueryTest, RuleCopy) {
   StyleRuleContainer* container = ParseAtContainer(R"CSS(
-    @container size(min-width: 100px) {
+    @container (min-width: 100px) {
       div { width: 100px; }
     }
   )CSS");
@@ -218,11 +219,11 @@ TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {
 
       div { z-index:1; }
       /* Should apply: */
-      @container size(min-width: 500px) {
+      @container (min-width: 500px) {
         div { z-index:2; }
       }
       /* Should initially not apply: */
-      @container size(min-width: 600px) {
+      @container (min-width: 600px) {
         div { z-index:3; }
       }
     </style>
@@ -261,16 +262,16 @@ TEST_F(ContainerQueryTest, QueryZoom) {
         height: 400px;
         container-type: size;
       }
-      @container size(width: 100px) {
+      @container (width: 100px) {
         div { --w100:1; }
       }
-      @container size(width: 200px) {
+      @container (width: 200px) {
         div { --w200:1; }
       }
-      @container size(height: 200px) {
+      @container (height: 200px) {
         div { --h200:1; }
       }
-      @container size(height: 400px) {
+      @container (height: 400px) {
         div { --h400:1; }
       }
     </style>
@@ -318,13 +319,13 @@ TEST_F(ContainerQueryTest, QueryFontRelativeWithZoom) {
         width: 10ch;
         container-type: inline-size;
       }
-      @container size(width: 10em) {
+      @container (width: 10em) {
         #em-target { --em:1; }
       }
-      @container size(width: 10ex) {
+      @container (width: 10ex) {
         #ex-target { --ex:1; }
       }
-      @container size(width: 10ch) {
+      @container (width: 10ch) {
         #ch-target { --ch:1; }
       }
     </style>
@@ -440,13 +441,13 @@ TEST_F(ContainerQueryTest, OldStyleForTransitions) {
         height: 10px;
         transition: height steps(2, start) 100s;
       }
-      @container size(width: 120px) {
+      @container (width: 120px) {
         #target { height: 20px; }
       }
-      @container size(width: 130px) {
+      @container (width: 130px) {
         #target { height: 30px; }
       }
-      @container size(width: 140px) {
+      @container (width: 140px) {
         #target { height: 40px; }
       }
     </style>
@@ -510,13 +511,13 @@ TEST_F(ContainerQueryTest, TransitionAppearingInFinalPass) {
       #target {
         height: 10px;
       }
-      @container size(width: 120px) {
+      @container (width: 120px) {
         #target { height: 20px; }
       }
-      @container size(width: 130px) {
+      @container (width: 130px) {
         #target { height: 30px; }
       }
-      @container size(width: 140px) {
+      @container (width: 140px) {
         #target {
           height: 40px;
           transition: height steps(2, start) 100s;
@@ -583,16 +584,16 @@ TEST_F(ContainerQueryTest, TransitionTemporarilyAppearing) {
       #target {
         height: 10px;
       }
-      @container size(width: 120px) {
+      @container (width: 120px) {
         #target { height: 20px; }
       }
-      @container size(width: 130px) {
+      @container (width: 130px) {
         #target {
           height: 90px;
           transition: height steps(2, start) 100s;
         }
       }
-      @container size(width: 140px) {
+      @container (width: 140px) {
         #target { height: 40px; }
       }
     </style>
@@ -654,17 +655,17 @@ TEST_F(ContainerQueryTest, RedefiningAnimations) {
         container: inline-size;
         width: 10px;
       }
-      @container size(width: 120px) {
+      @container (width: 120px) {
         #target {
           animation: anim 10s -2s linear paused;
         }
       }
-      @container size(width: 130px) {
+      @container (width: 130px) {
         #target {
           animation: anim 10s -3s linear paused;
         }
       }
-      @container size(width: 140px) {
+      @container (width: 140px) {
         #target {
           animation: anim 10s -4s linear paused;
         }
@@ -733,7 +734,7 @@ TEST_F(ContainerQueryTest, UnsetAnimation) {
       #target {
         animation: anim 10s -2s linear paused;
       }
-      @container size(width: 130px) {
+      @container (width: 130px) {
         #target {
           animation: unset;
         }
@@ -832,7 +833,7 @@ TEST_F(ContainerQueryTest, OldStylesCount) {
         container-type: inline-size;
         width: 100px;
       }
-      @container size(width: 100px) {
+      @container (width: 100px) {
         #target {
           color: green;
         }
@@ -851,7 +852,7 @@ TEST_F(ContainerQueryTest, OldStylesCount) {
         container-type: inline-size;
         width: 100px;
       }
-      @container size(width: 200px) {
+      @container (width: 200px) {
         #target {
           color: green;
         }
@@ -889,7 +890,7 @@ TEST_F(ContainerQueryTest, OldStylesCount) {
         width: 100px;
         container-type: inline-size;
       }
-      @container size(width: 100px) {
+      @container (width: 100px) {
         #target {
           animation: anim 1s linear;
         }
@@ -908,7 +909,7 @@ TEST_F(ContainerQueryTest, OldStylesCount) {
         width: 100px;
         container-type: inline-size;
       }
-      @container size(width: 200px) {
+      @container (width: 200px) {
         #target {
           animation: anim 1s linear;
         }
@@ -955,7 +956,7 @@ TEST_F(ContainerQueryTest, AllAnimationAffectingPropertiesInConditional) {
     StringBuilder builder;
     builder.Append("<style>");
     builder.Append("#container { container-type: inline-size; }");
-    builder.Append("@container size(width: 100px) {");
+    builder.Append("@container (width: 100px) {");
     builder.Append("  #target {");
     builder.Append(String::Format(
         "%s:unset;", property.GetPropertyNameString().Utf8().c_str()));
@@ -986,7 +987,7 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #container { container-type: inline-size }
-      @container size(min-width: 200px) {
+      @container (min-width: 200px) {
         .locked { content-visibility: hidden }
       }
     </style>
@@ -1028,7 +1029,7 @@ TEST_F(ContainerQueryTest, NoContainerQueryEvaluatorWhenDisabled) {
       #container {
         container-type: size;
       }
-      @container size(min-width: 200px) {
+      @container (min-width: 200px) {
         span { color: pink; }
       }
     </style>

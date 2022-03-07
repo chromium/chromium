@@ -123,10 +123,10 @@ TEST_F(AnimationUtilsTest, ForEachInterpolatedPropertyValueWithContainerQuery) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #container { container-type: inline-size; }
-      @container size(min-width: 1px) {
+      @container (min-width: 1px) {
         #target { left: 10px; }
       }
-      @container size(min-width: 99999px) {
+      @container (min-width: 99999px) {
         #target { left: 10000px; }
       }
     </style>
