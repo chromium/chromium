@@ -625,6 +625,11 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
   devtools_instrumentation::PortalActivated(outer_contents->GetMainFrame());
   successor_contents_raw->set_portal(nullptr);
 
+  // It's important we call this before destroying the outer contents'
+  // RenderWidgetHostView, otherwise the dialog may not be cleaned up correctly.
+  // See crbug.com/1292261 for more details.
+  outer_contents->CancelActiveAndPendingDialogs();
+
   std::unique_ptr<WebContents> predecessor_web_contents =
       delegate->ActivatePortalWebContents(outer_contents,
                                           std::move(successor_contents));
