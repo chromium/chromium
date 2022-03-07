@@ -52,13 +52,16 @@ device::BluetoothAdapter* GetBluetoothAdapter() {
 class BluetoothPowerControllerTest : public AshTestBase {
  public:
   BluetoothPowerControllerTest() {
-    feature_list_.InitAndDisableFeature(features::kBluetoothRevamp);
+    if (ash::features::IsBluetoothRevampEnabled()) {
+      feature_list_.InitAndDisableFeature(features::kBluetoothRevamp);
 
-    // Manually register local state prefs because AshTestBase attempts to
-    // register local state prefs before this constructor is called when
-    // the kBluetoothRevamp flag is still enabled.
-    BluetoothPowerController::RegisterLocalStatePrefs(
-        local_state()->registry());
+      // Manually register local state prefs because AshTestBase attempts to
+      // register local state prefs before this constructor is called when
+      // the kBluetoothRevamp flag is still enabled.
+      BluetoothPowerController::RegisterLocalStatePrefs(
+          local_state()->registry());
+    }
+
     BluetoothPowerController::RegisterProfilePrefs(
         active_user_prefs_.registry());
   }
