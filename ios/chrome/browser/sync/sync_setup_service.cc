@@ -56,18 +56,19 @@ void SyncSetupService::SetDataTypeEnabled(syncer::ModelType datatype,
     model_types.Put(datatype);
   else
     model_types.Remove(datatype);
+  syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
   // TODO(crbug.com/950874): support syncer::UserSelectableType in ios code,
   // get rid of this workaround and consider getting rid of SyncableDatatype.
   syncer::UserSelectableTypeSet selected_types;
-  for (syncer::UserSelectableType type : syncer::UserSelectableTypeSet::All()) {
+  for (syncer::UserSelectableType type :
+       user_settings->GetRegisteredSelectableTypes()) {
     if (model_types.Has(syncer::UserSelectableTypeToCanonicalModelType(type))) {
       selected_types.Put(type);
     }
   }
   if (enabled && !CanSyncFeatureStart())
     SetSyncEnabledWithoutChangingDatatypes(true);
-  sync_service_->GetUserSettings()->SetSelectedTypes(IsSyncingAllDataTypes(),
-                                                     selected_types);
+  user_settings->SetSelectedTypes(IsSyncingAllDataTypes(), selected_types);
   if (GetPreferredDataTypes().Empty())
     SetSyncEnabled(false);
 }
