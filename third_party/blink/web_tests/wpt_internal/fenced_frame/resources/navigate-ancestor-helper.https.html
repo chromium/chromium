@@ -22,7 +22,7 @@
   const [navigate_ancestor_key, ancestor_type] = parseKeylist();
   const url = generateURL(`navigate-ancestor-destination.https.html`,
       [navigate_ancestor_key]);
-  await new Promise(resolve => simulateGesture(resolve));
+  await simulateGesture();
   try {
     window[ancestor_type].location = url;
   } catch (e) {

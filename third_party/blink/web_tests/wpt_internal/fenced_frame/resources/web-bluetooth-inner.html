@@ -8,27 +8,26 @@
 <body>
 <button id="button">Button</button>
 <script>
-window.onload = () => {
-  requestAnimationFrame(() => {
-    simulateGesture(async function() {
-      const [bluetooth_request_device_key] = parseKeylist();
-      try {
-        await navigator.bluetooth.requestDevice({filters: [{name: 'device'}]});
-        writeValueToServer(bluetooth_request_device_key,
-                          'Web Bluetooth requestDevice() succeeded');
-      } catch(e) {
-        if (e.name == 'NotAllowedError' &&
-            e.message.includes(
-              'Web Bluetooth is not allowed in a fenced frame tree.')) {
-          writeValueToServer(bluetooth_request_device_key,
-                            'Web Bluetooth requestDevice() failed');
-        } else {
-          writeValueToServer(bluetooth_request_device_key,
-                            `Web Bluetooth requestDevice() failed with unknown error - ${e.name}: ${e.message}`);
-        }
-      }
-    });
-  });
-};
+(async () => {
+  await simulateGesture();
+  const [bluetooth_request_device_key] = parseKeylist();
+  try {
+    await navigator.bluetooth.requestDevice({filters: [{name: 'device'}]});
+    writeValueToServer(bluetooth_request_device_key,
+                      'Web Bluetooth requestDevice() succeeded');
+  } catch(e) {
+    if (e.name == 'NotAllowedError' &&
+        e.message.includes(
+          'Web Bluetooth is not allowed in a fenced frame tree.')) {
+      writeValueToServer(bluetooth_request_device_key,
+                        'Web Bluetooth requestDevice() failed');
+    } else {
+      writeValueToServer(
+          bluetooth_request_device_key,
+          'Web Bluetooth requestDevice() failed with unknown error - ' +
+          `${e.name}: ${e.message}`);
+    }
+  }
+})();
 </script>
 </body>

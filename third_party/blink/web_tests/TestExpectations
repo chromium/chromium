@@ -3397,14 +3397,10 @@ crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-expor
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker.tentative.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/content-security-policy/inside-worker/serviceworker-connect-src.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/popups/opener-no-openee-yes-port.sub.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/resource-timing/object-not-found-adds-entry.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.13 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor.html [ Skip Timeout ]
-crbug.com/626703 [ Mac10.14 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/sandboxed-features.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
@@ -7257,11 +7253,6 @@ crbug.com/1259652 [ Mac10.13 ] external/wpt/streams/readable-streams/tee.any.sha
 # Data URL navigation within Fenced Frames currently crashed in the MPArch implementation.
 crbug.com/1243568 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-data-url-navigation.https.html [ Timeout ]
 
-# Gesture of WPT Test Driver doesn't work well in MPArch Fenced Frame on some Mac try bots.
-crbug.com/1275997 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/pointer-lock.https.html [ Pass Timeout ]
-crbug.com/1275997 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/web-bluetooth.https.html [ Pass Timeout ]
-crbug.com/1275997 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/web-share.https.html [ Pass Timeout ]
-
 # Sheriff 2021-10-15, 2021-12-07
 crbug.com/1256763 [ Win ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
 crbug.com/1256763 [ Mac ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
@@ -7658,11 +7649,6 @@ crbug.com/1299903 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prer
 crbug.com/1299946 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
-
-# Sheriff 2022-02-28
-crbug.com/1301238 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor-top-level-fenced-frame.https.html [ Pass Timeout ]
-
-crbug.com/1300487 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/hid.https.html [ Failure Pass ]
 
 # Sheriff 2022-03-01
 crbug.com/1302043 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Pass Timeout ]

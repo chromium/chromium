@@ -14,10 +14,9 @@
 
 <script>
 promise_test(async () => {
-  const frame = attachFencedFrameContext({html: '<button id="button">Button</button>'});
+  const frame = attachFencedFrameContext();
   const result = await frame.execute(async () => {
-    const button = document.getElementById("button");
-    await test_driver.click(button);
+    await simulateGesture();
     try {
       await navigator.hid.getDevices();
       return 'HID getDevice succeeded';

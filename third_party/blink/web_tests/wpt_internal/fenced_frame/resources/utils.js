@@ -199,24 +199,11 @@ async function writeValueToServer(key, value, origin = '') {
   await fetch(serverUrl, {"mode": "no-cors"});
 }
 
-// Simulates a user gesture and calls `callback` when `mouseup` happens.
-function simulateGesture(callback) {
-  // Get or create the target element.
-  let target = document.getElementById('target');
-  if (!target) {
-    target = document.createElement('button');
-    target.textContent = '\u2573';
-    target.id = 'target';
-    document.body.appendChild(target);
+// Simulates a user gesture.
+async function simulateGesture() {
+  // Wait until the window size is initialized.
+  while (window.innerWidth == 0) {
+    await new Promise(resolve => requestAnimationFrame(resolve));
   }
-  target.addEventListener('mouseup', callback);
-
-  requestAnimationFrame(() => {
-    if (eventSender) {
-      eventSender.mouseMoveTo(target.getBoundingClientRect().x,
-                              target.getBoundingClientRect().y);
-      eventSender.mouseDown();
-      eventSender.mouseUp();
-    }
-  });
+  await test_driver.bless('simulate gesture');
 }

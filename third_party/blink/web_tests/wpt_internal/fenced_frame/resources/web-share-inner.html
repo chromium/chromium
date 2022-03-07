@@ -7,18 +7,15 @@
 
 <body>
 <script>
-window.onload = () => {
-  requestAnimationFrame(() => {
-    simulateGesture(async function() {
-      const [navigator_share_key] = parseKeylist();
-      try {
-        await navigator.share({text: 'hello world'});
-        writeValueToServer(navigator_share_key, 'Web Share succeeded');
-      } catch(error) {
-        writeValueToServer(navigator_share_key, 'Web Share failed');
-      }
-    });
-  });
-};
+(async () => {
+  await simulateGesture();
+  const [navigator_share_key] = parseKeylist();
+  try {
+    await navigator.share({text: 'hello world'});
+    writeValueToServer(navigator_share_key, 'Web Share succeeded');
+  } catch(error) {
+    writeValueToServer(navigator_share_key, 'Web Share failed');
+  }
+})();
 </script>
 </body>

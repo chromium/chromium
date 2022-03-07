@@ -78,8 +78,7 @@ async function test_screen_orientation_lock() {
 }
 
 async function test_pointer_lock() {
-  await new Promise(resolve => requestAnimationFrame(resolve));
-  await new Promise(resolve => simulateGesture(resolve));
+  await simulateGesture();
 
   const canvas = document.createElement('canvas');
   document.body.appendChild(canvas);
