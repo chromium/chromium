@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -60,12 +62,15 @@ public class StripLayoutHelperTest {
     private static final String INCOGNITO_IDENTIFIER = "Incognito Tab";
     private static final String INCOGNITO_IDENTIFIER_SELECTED = "Selected Incognito Tab";
     private static final int SCREEN_BUCKET_TABLET = 2;
+    private static final float TAB_WIDTH = 140.f;
+    private static final float TAB_WIDTH_SMALL = 108.f;
 
     /** Reset the environment before each test. */
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        TabUiFeatureUtilities.setTabMinWidthForTesting(null);
     }
 
     /**
@@ -160,6 +165,26 @@ public class StripLayoutHelperTest {
         assertTrue(mStripLayoutHelper.getStripLayoutTabs().length == 0);
     }
 
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testStripStacker_UpdateCloseButtons() {
+        // Set fourth tab as selected
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_SMALL);
+        initializeTest(false, true, 3);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs();
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        mStripLayoutHelper.tabSelected(1, 3, 0);
+
+        // Close btn should be visible on the selected tab
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
+        // Close btn is hidden on unselected tabs
+        Mockito.verify(tabs[0]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(false);
+    }
+
     private void initializeTest(boolean rtl, boolean incognito, int tabIndex) {
         mStripLayoutHelper = createStripLayoutHelper(rtl, incognito);
         mIncognito = incognito;
@@ -221,6 +246,25 @@ public class StripLayoutHelperTest {
             expectedAccessibilityDescriptions[i] = expectedDescription + suffix;
         }
         return expectedAccessibilityDescriptions;
+    }
+
+    private StripLayoutTab[] getMockedStripLayoutTabs() {
+        StripLayoutTab[] tabs = new StripLayoutTab[mModel.getCount()];
+
+        tabs[0] = mockStripTab(0);
+        tabs[1] = mockStripTab(1);
+        tabs[2] = mockStripTab(2);
+        tabs[3] = mockStripTab(3);
+        tabs[4] = mockStripTab(4);
+
+        return tabs;
+    }
+
+    private StripLayoutTab mockStripTab(int id) {
+        StripLayoutTab tab = mock(StripLayoutTab.class);
+        when(tab.getWidth()).thenReturn(TAB_WIDTH);
+        when(tab.getId()).thenReturn(id);
+        return tab;
     }
 
     private static class TestTabModel extends EmptyTabModel {

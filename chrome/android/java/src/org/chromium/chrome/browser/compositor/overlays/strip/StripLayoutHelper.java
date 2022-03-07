@@ -96,9 +96,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float NEW_TAB_BUTTON_WIDTH_DP = 58.f;
     private static final float NEW_TAB_BUTTON_HEIGHT_DP = 32.5f;
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
+    private static final float TAB_WIDTH_SMALL = 108.f;
 
     private static final int MESSAGE_RESIZE = 1;
     private static final int MESSAGE_UPDATE_SPINNER = 2;
+    public static final float TAB_WIDTH_MEDIUM = 156.f;
 
     // External influences
     private final LayoutUpdateHost mUpdateHost;
@@ -504,6 +506,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             tabCreated(time, id, prevId, true);
         } else {
             updateVisualTabOrdering();
+            updateCloseButtons();
 
             // If the tab was selected through a method other than the user tapping on the strip, it
             // may not be currently visible. Scroll if necessary.
@@ -626,6 +629,24 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         mUpdateHost.requestUpdate();
+    }
+
+    /**
+     * Called to hide close tab buttons when tab width is <156dp. This is currently only used for
+     * the 108dp min tab width experiment.
+     */
+    private void updateCloseButtons() {
+        if (TabUiFeatureUtilities.getTabMinWidth() != TAB_WIDTH_SMALL) return;
+
+        Tab selectedTab = mModel.getTabAt(mModel.index());
+        final int count = mModel.getCount();
+        if (selectedTab == null) return;
+
+        for (int i = 0; i < count; i++) {
+            final StripLayoutTab tab = mStripTabs[i];
+            mStripTabs[i].setCanShowCloseButton(
+                    tab.getWidth() >= TAB_WIDTH_MEDIUM || tab.getId() == selectedTab.getId());
+        }
     }
 
     /**
@@ -1201,6 +1222,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 7. Invalidate the accessibility provider in case the visible virtual views have changed.
         mRenderHost.invalidateAccessibilityProvider();
+
+        // 8. Hide close buttons if tab width gets lower than 156dp
+        updateCloseButtons();
     }
 
     private void computeTabInitialPositions() {
@@ -1756,6 +1780,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     @VisibleForTesting
     StripLayoutTab[] getStripLayoutTabs() {
         return mStripTabs;
+    }
+
+    /**
+     * Set the value of mStripTabs for testing
+     */
+    @VisibleForTesting
+    void setStripLayoutTabsForTest(StripLayoutTab[] stripTabs) {
+        this.mStripTabs = stripTabs;
     }
 
     /**

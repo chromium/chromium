@@ -216,10 +216,23 @@ public class TabUiFeatureUtilities {
         return ENABLE_LAUNCH_POLISH.getValue();
     }
 
+    private static Float sTabMinWidthForTesting;
+
+    /**
+     * Set the min tab width for testing.
+     */
+    public static void setTabMinWidthForTesting(@Nullable Float minWidth) {
+        sTabMinWidthForTesting = minWidth;
+    }
+
     /**
      * @return The min tab width.
      */
     public static float getTabMinWidth() {
+        if (sTabMinWidthForTesting != null) {
+            return sTabMinWidthForTesting;
+        }
+
         return (float) TAB_STRIP_TAB_WIDTH.getValue();
     }
 

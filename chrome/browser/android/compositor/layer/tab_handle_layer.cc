@@ -4,17 +4,23 @@
 
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/field_trial_params.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "chrome/browser/android/compositor/decoration_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
 
 namespace android {
+
+const char TAB_WIDTH_SMALL[] = "108";
+const char TAB_STRIP_IMPROVEMENTS_FEATURE_PARAMETER[] = "min_tab_width";
 
 // static
 scoped_refptr<TabHandleLayer> TabHandleLayer::Create(
@@ -128,7 +134,18 @@ void TabHandleLayer::SetProperties(
   const float padding_right = tab_handle_resource->size().width() -
                               tab_handle_resource->padding().right();
   const float padding_left = tab_handle_resource->padding().x();
-  const float close_width = close_button_->bounds().width();
+
+  float close_width = close_button_->bounds().width();
+  // For the 108dp min_tab_width experiment, if close button is not shown, fill
+  // the remaining space with the title text
+  if (base::FeatureList::IsEnabled(chrome::android::kTabStripImprovements)) {
+    std::string tab_width_param = base::GetFieldTrialParamValueByFeature(
+        chrome::android::kTabStripImprovements,
+        TAB_STRIP_IMPROVEMENTS_FEATURE_PARAMETER);
+    if (tab_width_param == TAB_WIDTH_SMALL && close_button_alpha == 0.f)
+      close_width = 0.f;
+  }
+
   if (title_layer) {
     int title_y = tab_handle_resource->padding().y() / 2 + height / 2 -
                   title_layer->size().height() / 2;
