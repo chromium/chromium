@@ -90,7 +90,8 @@ END_METADATA
 // Currently using the UI specs that the Plugin VM installer use.
 BorealisInstallerView::BorealisInstallerView(Profile* profile)
     : app_name_(l10n_util::GetStringUTF16(IDS_BOREALIS_APP_NAME)),
-      profile_(profile) {
+      profile_(profile),
+      observation_(this) {
   // Layout constants from the spec used for the plugin vm installer.
   gfx::Insets kDialogInsets(60, 64, 0, 64);
   const int kPrimaryMessageHeight = views::style::GetLineHeight(
@@ -176,7 +177,6 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
 BorealisInstallerView::~BorealisInstallerView() {
   borealis::BorealisInstaller& installer =
       borealis::BorealisService::GetForProfile(profile_)->Installer();
-  installer.RemoveObserver(this);
   if (state_ == State::kConfirmInstall || state_ == State::kInstalling) {
     installer.Cancel();
   }
@@ -495,7 +495,9 @@ void BorealisInstallerView::StartInstallation() {
 
   borealis::BorealisInstaller& installer =
       borealis::BorealisService::GetForProfile(profile_)->Installer();
-  installer.AddObserver(this);
+  if (observation_.IsObserving())
+    observation_.Reset();
+  observation_.Observe(&installer);
   installer.Start();
 }
 

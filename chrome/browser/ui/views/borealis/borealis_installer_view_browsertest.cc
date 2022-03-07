@@ -60,6 +60,12 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
         {features::kBorealis, chromeos::features::kBorealisPermitted}, {});
   }
 
+  // Disallow copy and assign.
+  BorealisInstallerViewBrowserTest(const BorealisInstallerViewBrowserTest&) =
+      delete;
+  BorealisInstallerViewBrowserTest& operator=(
+      const BorealisInstallerViewBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void SetUpOnMainThread() override {
     app_launcher_ = std::make_unique<BorealisAppLauncher>(browser()->profile());
@@ -143,30 +149,20 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
   }
 
   void ClickCancel() {
-    EXPECT_CALL(mock_installer_, RemoveObserver(_));
     view_->CancelDialog();
-
     EXPECT_TRUE(view_->GetWidget()->IsClosed());
   }
 
   base::test::ScopedFeatureList feature_list_;
-  ::testing::StrictMock<BorealisInstallerMock> mock_installer_;
-  ::testing::StrictMock<BorealisContextManagerMock> mock_context_manager_;
+  ::testing::NiceMock<BorealisInstallerMock> mock_installer_;
+  ::testing::NiceMock<BorealisContextManagerMock> mock_context_manager_;
   std::unique_ptr<BorealisAppLauncher> app_launcher_;
   std::unique_ptr<BorealisFeatures> features_;
   BorealisInstallerView* view_;
-
- private:
-  // Disallow copy and assign.
-  BorealisInstallerViewBrowserTest(const BorealisInstallerViewBrowserTest&) =
-      delete;
-  BorealisInstallerViewBrowserTest& operator=(
-      const BorealisInstallerViewBrowserTest&) = delete;
 };
 
 // Test that the dialog can be launched.
 IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, InvokeUi_default) {
-  EXPECT_CALL(mock_installer_, RemoveObserver(_));
   EXPECT_CALL(mock_installer_, Cancel());
   ShowAndVerifyUi();
 }
