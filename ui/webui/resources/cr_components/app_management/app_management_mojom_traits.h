@@ -20,6 +20,7 @@ using TriState = app_management::mojom::TriState;
 using PermissionValueDataView = app_management::mojom::PermissionValueDataView;
 using InstallReason = app_management::mojom::InstallReason;
 using InstallSource = app_management::mojom::InstallSource;
+using WindowMode = app_management::mojom::WindowMode;
 
 }  // namespace
 
@@ -87,6 +88,12 @@ template <>
 struct EnumTraits<InstallSource, apps::InstallSource> {
   static InstallSource ToMojom(apps::InstallSource input);
   static bool FromMojom(InstallSource input, apps::InstallSource* output);
+};
+
+template <>
+struct EnumTraits<WindowMode, apps::WindowMode> {
+  static WindowMode ToMojom(apps::WindowMode input);
+  static bool FromMojom(WindowMode input, apps::WindowMode* output);
 };
 
 }  // namespace mojo

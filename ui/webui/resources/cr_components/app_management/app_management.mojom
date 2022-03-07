@@ -92,6 +92,17 @@ enum InstallSource {
   kBrowser,         // Installed from browser.
 };
 
+// The window mode that each app will open in.
+enum WindowMode {
+  kUnknown = 0,
+  // Opens in a standalone window
+  kWindow,
+  // Opens in the default web browser
+  kBrowser,
+  // Opens in a tabbed app window
+  kTabbedWindow,
+};
+
 struct App {
   string id;
 
@@ -112,7 +123,7 @@ struct App {
   bool hide_more_settings;
   bool hide_pin_to_shelf;
   bool is_preferred_app;
-  apps.mojom.WindowMode window_mode;
+  WindowMode window_mode;
   bool resize_locked;
   bool hide_resize_locked;
   array<string> supported_links;
@@ -155,7 +166,7 @@ interface PageHandler {
   GetOverlappingPreferredApps(string app_id) => (array<string> app_ids);
   // Used to set the Window Mode from the frontend inside
   // app_management_page_handler.
-  SetWindowMode(string app_id, apps.mojom.WindowMode window_mode);
+  SetWindowMode(string app_id, WindowMode window_mode);
   // Used to set the Run On OS Login Modes from the frontend
   // of an app via app_management_page_handler.
   SetRunOnOsLoginMode(string app_id,

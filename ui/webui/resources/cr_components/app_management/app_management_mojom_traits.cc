@@ -312,4 +312,37 @@ bool EnumTraits<InstallSource, apps::InstallSource>::FromMojom(
   }
 }
 
+WindowMode EnumTraits<WindowMode, apps::WindowMode>::ToMojom(
+    apps::WindowMode input) {
+  switch (input) {
+    case apps::WindowMode::kUnknown:
+      return WindowMode::kUnknown;
+    case apps::WindowMode::kWindow:
+      return WindowMode::kWindow;
+    case apps::WindowMode::kBrowser:
+      return WindowMode::kBrowser;
+    case apps::WindowMode::kTabbedWindow:
+      return WindowMode::kTabbedWindow;
+  }
+}
+
+bool EnumTraits<WindowMode, apps::WindowMode>::FromMojom(
+    WindowMode input,
+    apps::WindowMode* output) {
+  switch (input) {
+    case WindowMode::kUnknown:
+      *output = apps::WindowMode::kUnknown;
+      return true;
+    case WindowMode::kWindow:
+      *output = apps::WindowMode::kWindow;
+      return true;
+    case WindowMode::kBrowser:
+      *output = apps::WindowMode::kBrowser;
+      return true;
+    case WindowMode::kTabbedWindow:
+      *output = apps::WindowMode::kTabbedWindow;
+      return true;
+  }
+}
+
 }  // namespace mojo

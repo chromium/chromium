@@ -934,8 +934,7 @@ void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
 
   EXPECT_EQ(app->id, app_state->id);
   EXPECT_EQ(app->title.value(), app_state->name);
-  EXPECT_EQ(apps::ConvertMojomWindowModeToWindowMode(app->window_mode),
-            app_state->window_mode);
+  EXPECT_EQ(app->window_mode, app_state->window_mode);
   EXPECT_EQ(apps::ConvertMojomRunOnOsLoginModeToRunOnOsLoginMode(
                 app->run_on_os_login->login_mode),
             app_state->run_on_os_login_mode);
@@ -1070,8 +1069,7 @@ void WebAppIntegrationTestDriver::SetOpenInTab(const std::string& site_mode) {
                                     true);
 #else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetWindowMode(app_id,
-                                            apps::mojom::WindowMode::kBrowser);
+  app_management_page_handler.SetWindowMode(app_id, apps::WindowMode::kBrowser);
 #endif
   AfterStateChangeAction();
 }
@@ -1091,8 +1089,7 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(
       app_id, blink::mojom::DisplayMode::kStandalone, true);
 #else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetWindowMode(app_id,
-                                            apps::mojom::WindowMode::kWindow);
+  app_management_page_handler.SetWindowMode(app_id, apps::WindowMode::kWindow);
 #endif
   AfterStateChangeAction();
 }

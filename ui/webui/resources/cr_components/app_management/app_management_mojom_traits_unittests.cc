@@ -172,3 +172,22 @@ TEST(AppManagementMojomTraitsTest, RoundTripInstallSource) {
     EXPECT_EQ(install_source_in, install_source_out);
   }
 }
+
+TEST(AppManagementMojomTraitsTest, RoundTripWindowMode) {
+  static constexpr apps::WindowMode kTestWindowMode[] = {
+      apps::WindowMode::kUnknown, apps::WindowMode::kWindow,
+      apps::WindowMode::kBrowser, apps::WindowMode::kTabbedWindow};
+
+  for (auto window_mode_in : kTestWindowMode) {
+    apps::WindowMode window_mode_out;
+
+    app_management::mojom::WindowMode serialized_window_mode =
+        mojo::EnumTraits<app_management::mojom::WindowMode,
+                         apps::WindowMode>::ToMojom(window_mode_in);
+    ASSERT_TRUE(
+        (mojo::EnumTraits<app_management::mojom::WindowMode,
+                          apps::WindowMode>::FromMojom(serialized_window_mode,
+                                                       &window_mode_out)));
+    EXPECT_EQ(window_mode_in, window_mode_out);
+  }
+}

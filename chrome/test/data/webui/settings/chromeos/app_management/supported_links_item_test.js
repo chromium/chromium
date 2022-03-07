@@ -140,7 +140,7 @@ suite('<app-management-supported-links-item>', () => {
     const options = {
       type: appManagement.mojom.AppType.kWeb,
       isPreferredApp: true,
-      windowMode: apps.mojom.WindowMode.kBrowser,
+      windowMode: appManagement.mojom.WindowMode.kBrowser,
       supportedLinks: ['google.com'],
     };
 

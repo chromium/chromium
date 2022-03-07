@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppType, InstallReason, InstallSource, OptionalBool} from '//resources/cr_components/app_management/constants.js';
+import {AppType, InstallReason, InstallSource, OptionalBool, WindowMode} from '//resources/cr_components/app_management/constants.js';
 import {PermissionType, PermissionValue, TriState} from '//resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from '//resources/cr_components/app_management/permission_util.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -104,7 +104,7 @@ export class FakePageHandler {
       hideMoreSettings: false,
       hidePinToShelf: false,
       isPreferredApp: false,
-      windowMode: apps.mojom.WindowMode.kWindow,
+      windowMode: WindowMode.kWindow,
       resizeLocked: false,
       hideResizeLocked: true,
       supportedLinks: [],
@@ -301,7 +301,7 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
-   * @param {apps.mojom.WindowMode} windowMode
+   * @param {appManagement.mojom.WindowMode} windowMode
    */
   setWindowMode(appId, windowMode) {
     assertNotReached();

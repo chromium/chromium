@@ -8,7 +8,7 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 
-import {AppManagementUserAction, AppType} from '//resources/cr_components/app_management/constants.js';
+import {AppManagementUserAction, AppType, WindowMode} from '//resources/cr_components/app_management/constants.js';
 import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -132,8 +132,7 @@ Polymer({
    * @private
    */
   isDisabled_(app) {
-    return app.type === AppType.kWeb &&
-        app.windowMode === apps.mojom.WindowMode.kBrowser;
+    return app.type === AppType.kWeb && app.windowMode === WindowMode.kBrowser;
   },
 
   /**

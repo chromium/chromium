@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -75,7 +76,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
       const std::string& app_id,
       GetOverlappingPreferredAppsCallback callback) override;
   void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode) override;
+                     apps::WindowMode window_mode) override;
   void SetRunOnOsLoginMode(
       const std::string& app_id,
       apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;

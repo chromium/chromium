@@ -24,7 +24,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
@@ -301,16 +300,15 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
   std::move(callback).Run(std::move(app_ids).extract());
 }
 
-void AppManagementPageHandler::SetWindowMode(
-    const std::string& app_id,
-    apps::mojom::WindowMode window_mode) {
+void AppManagementPageHandler::SetWindowMode(const std::string& app_id,
+                                             apps::WindowMode window_mode) {
   // On ChromeOS, apps should always open in a new window,
   // hence window mode changes are not allowed.
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
-      app_id, window_mode);
+      app_id, apps::ConvertWindowModeToMojomWindowMode(window_mode));
 #endif
 }
 
@@ -400,7 +398,8 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->hide_pin_to_shelf =
       update.ShowInShelf() == apps::mojom::OptionalBool::kFalse ||
       ShouldHidePinToShelf(app->id);
-  app->window_mode = update.WindowMode();
+  app->window_mode =
+      apps::ConvertMojomWindowModeToWindowMode(update.WindowMode());
   app->supported_links = GetSupportedLinks(profile_, app->id);
   app->run_on_os_login = update.RunOnOsLogin();
 
