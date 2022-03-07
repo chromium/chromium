@@ -238,7 +238,9 @@ def _emulator(emulator_avd_name):
                         expected='no running emulators')
     avd_config = _AVD_CONFIG_DIR / emulator_avd_name
     is_debug = logging.getLogger().isEnabledFor(logging.DEBUG)
-    cmd = [_AVD_SCRIPT, 'start', '--avd-config', avd_config]
+    # Always start with --wipe-data to get consistent results. It takes around
+    # 20 seconds to finish starting from scratch.
+    cmd = [_AVD_SCRIPT, 'start', '--wipe-data', '--avd-config', avd_config]
     if not is_debug:
         cmd.append('-q')
     logging.debug('Starting emulator with cmd: %s', cmd)
