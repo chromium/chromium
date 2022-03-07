@@ -196,7 +196,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       gfx::BufferFormat format,
       bool mipmap,
       sk_sp<SkColorSpace> color_space,
-      bool is_root_render_pass);
+      bool is_root_render_pass,
+      bool is_overlay);
   void DidSwapBuffersComplete(gpu::SwapBuffersCompleteParams params,
                               const gfx::Size& pixel_size,
                               gfx::GpuFenceHandle release_fence);

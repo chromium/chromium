@@ -29,6 +29,7 @@
 #include "components/viz/service/display_embedder/image_context_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
@@ -316,8 +317,8 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
   size_ = size;
   format_ = format;
   characterization_ = CreateSkSurfaceCharacterization(
-      size, format, false /* mipmap */, color_space_.ToSkColorSpace(),
-      true /* is_root_render_pass */);
+      size, format, /*mipmap=*/false, color_space_.ToSkColorSpace(),
+      /*is_root_render_pass=*/true, /*is_overlay=*/false);
   RecreateRootRecorder();
 }
 
@@ -369,8 +370,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
 
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
       gfx::Size(characterization_.width(), characterization_.height()), format_,
-      false /* mipmap */, characterization_.refColorSpace(),
-      false /* is_root_render_pass */);
+      /*mipmap=*/false, characterization_.refColorSpace(),
+      /*is_root_render_pass=*/false, /*is_overlay=*/false);
   if (characterization.isValid()) {
     overdraw_surface_recorder_.emplace(characterization);
     overdraw_canvas_.emplace((overdraw_surface_recorder_->getCanvas()));
@@ -608,7 +609,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
 
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
       surface_size, BufferFormat(format), mipmap, std::move(color_space),
-      false /* is_root_render_pass */);
+      /*is_root_render_pass=*/false, /*is_overlay=*/false);
   if (!characterization.isValid())
     return nullptr;
 
@@ -628,7 +629,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPassOverlay(
 
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
       size, BufferFormat(format), mipmap, std::move(color_space),
-      true /* is_root_render_pass */);
+      /*is_root_render_pass=*/false, /*is_overlay=*/true);
   if (!characterization.isValid())
     return nullptr;
 
@@ -928,7 +929,8 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
     gfx::BufferFormat format,
     bool mipmap,
     sk_sp<SkColorSpace> color_space,
-    bool is_root_render_pass) {
+    bool is_root_render_pass,
+    bool is_overlay) {
   if (!gr_context_thread_safe_) {
     DLOG(ERROR) << "gr_context_thread_safe_ is null.";
     return SkSurfaceCharacterization();
@@ -937,6 +939,7 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
   auto cache_max_resource_bytes = impl_on_gpu_->max_resource_cache_bytes();
   SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
   if (is_root_render_pass) {
+    DCHECK(!is_overlay);
     const auto format_index = static_cast<int>(format);
     const auto& color_type = capabilities_.sk_color_types[format_index];
     const auto backend_format = gr_context_thread_safe_->defaultBackendFormat(
@@ -991,6 +994,16 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
   auto backend_format = gr_context_thread_safe_->defaultBackendFormat(
       color_type, GrRenderable::kYes);
   DCHECK(backend_format.isValid());
+#if BUILDFLAG(IS_MAC)
+  if (is_overlay) {
+    DCHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGL);
+    // For overlay, IOSurface will be used, and we may need using
+    // GL_TEXTURE_RECTANGLE_ARB as texture target.
+    backend_format =
+        GrBackendFormat::MakeGL(backend_format.asGLFormatEnum(),
+                                gpu::GetPlatformSpecificTextureTarget());
+  }
+#endif
   auto image_info =
       SkImageInfo::Make(surface_size.width(), surface_size.height(), color_type,
                         kPremul_SkAlphaType, std::move(color_space));
