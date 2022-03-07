@@ -105,7 +105,7 @@ class AppUpdateMojomTest : public testing::Test {
   std::vector<apps::mojom::IntentFilterPtr> expect_intent_filters_;
   bool expect_intent_filters_changed_;
 
-  apps::mojom::OptionalBool expect_resize_locked_;
+  absl::optional<bool> expect_resize_locked_;
   bool expect_resize_locked_changed_;
 
   apps::mojom::WindowMode expect_window_mode_;
@@ -285,7 +285,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_has_badge_ = absl::nullopt;
     expect_paused_ = absl::nullopt;
     expect_intent_filters_.clear();
-    expect_resize_locked_ = apps::mojom::OptionalBool::kUnknown;
+    expect_resize_locked_ = absl::nullopt;
     expect_window_mode_ = apps::mojom::WindowMode::kUnknown;
     expect_run_on_os_login_ = nullptr;
     ExpectNoChange();
@@ -921,14 +921,14 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (state) {
       state->resize_locked = apps::mojom::OptionalBool::kFalse;
-      expect_resize_locked_ = apps::mojom::OptionalBool::kFalse;
+      expect_resize_locked_ = false;
       expect_resize_locked_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->resize_locked = apps::mojom::OptionalBool::kTrue;
-      expect_resize_locked_ = apps::mojom::OptionalBool::kTrue;
+      expect_resize_locked_ = true;
       expect_resize_locked_changed_ = true;
       CheckExpects(u);
     }

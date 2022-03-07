@@ -387,10 +387,8 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->is_policy_pinned = shelf_delegate_.IsPolicyPinned(update.AppId())
                               ? OptionalBool::kTrue
                               : OptionalBool::kFalse;
-  app->resize_locked =
-      update.ResizeLocked() == apps::mojom::OptionalBool::kTrue;
-  app->hide_resize_locked =
-      update.ResizeLocked() == apps::mojom::OptionalBool::kUnknown;
+  app->resize_locked = update.ResizeLocked().value_or(false);
+  app->hide_resize_locked = !update.ResizeLocked().has_value();
 #endif
   app->is_preferred_app =
       preferred_apps_list_handle_.IsPreferredAppForSupportedLinks(

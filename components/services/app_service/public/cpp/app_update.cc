@@ -905,18 +905,12 @@ bool AppUpdate::IntentFiltersChanged() const {
           (mojom_delta_->intent_filters != mojom_state_->intent_filters));
 }
 
-apps::mojom::OptionalBool AppUpdate::ResizeLocked() const {
-  if (mojom_delta_ &&
-      (mojom_delta_->resize_locked != apps::mojom::OptionalBool::kUnknown)) {
-    return mojom_delta_->resize_locked;
+absl::optional<bool> AppUpdate::ResizeLocked() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(resize_locked, absl::nullopt);
   }
-  if (mojom_state_)
-    return mojom_state_->resize_locked;
-  return apps::mojom::OptionalBool::kUnknown;
-}
 
-absl::optional<bool> AppUpdate::GetResizeLocked() const {
-  GET_VALUE_WITH_FALLBACK(resize_locked, absl::nullopt);
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(resize_locked)
 }
 
 bool AppUpdate::ResizeLockedChanged() const {
@@ -1046,7 +1040,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
     out << filter << std::endl;
   }
 
-  out << "ResizeLocked: " << app.ResizeLocked() << std::endl;
+  out << "ResizeLocked: " << PRINT_OPTIONAL_VALUE(ResizeLocked) << std::endl;
   out << "WindowMode: " << app.WindowMode() << std::endl;
   if (app.RunOnOsLogin()) {
     out << "RunOnOsLoginMode: " << app.RunOnOsLogin()->login_mode << std::endl;

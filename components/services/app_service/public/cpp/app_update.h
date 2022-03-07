@@ -174,8 +174,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::IntentFilters GetIntentFilters() const;
   bool IntentFiltersChanged() const;
 
-  apps::mojom::OptionalBool ResizeLocked() const;
-  absl::optional<bool> GetResizeLocked() const;
+  absl::optional<bool> ResizeLocked() const;
   bool ResizeLockedChanged() const;
 
   apps::mojom::WindowMode WindowMode() const;
