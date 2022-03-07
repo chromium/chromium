@@ -240067,6 +240067,14 @@
        "cc5b6d24560351be10dc17ca6ec48e37d76932b6",
        []
       ],
+      "block-in-inline-insert-019-ref.html": [
+       "2cd5b5ab4ed6e630375a0e690beec419e4127be0",
+       []
+      ],
+      "block-in-inline-insert-020-ref.html": [
+       "3b3d4e8386d7daa36841caf01b3459ba1774f3e8",
+       []
+      ],
       "block-in-inline-margins-001-ref.xht": [
        "50926f8be0bd12c60a473523f5028f17c7ec9ab2",
        []
@@ -280096,7 +280104,7 @@
      ]
     },
     "requirements.txt": [
-     "02241970be789090b72cde69a553ef2ea9227517",
+     "20fb4cd39365c484094b61a36e88b4316d71f759",
      []
     ],
     "selectors": {
@@ -561138,6 +561146,20 @@
       ],
       "block-formatting-contexts-014.xht": [
        "6cd3d05c89897337f146e1e54e7718b8c753cd04",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-in-inline-insert-019.html": [
+       "0a2ea483e5d69e15410961bb92331405a685dc40",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-in-inline-insert-020.html": [
+       "2a3b15a8e8dfdcf5b26b05131639f7a436a2a4f4",
        [
         null,
         {}

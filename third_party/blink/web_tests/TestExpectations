@@ -3373,6 +3373,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/storage-foundation.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-006.https.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-no-port.sub.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/going-back.sub.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-ruby/ruby-annotation-pairing-001.html [ Failure ]
@@ -7665,4 +7666,4 @@ crbug.com/1302856 [ Mac11-arm64 ] virtual/exotic-color-space/images/rgb-png-with
 crbug.com/1297587 [ Mac10.14 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass ]
 crbug.com/1297587 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass ]
 
-crbug.com/1300352 http/tests/inspector-protocol/network/blocked-cookie-not-on-path.js [ Timeout Pass ]
+crbug.com/1300352 http/tests/inspector-protocol/network/blocked-cookie-not-on-path.js [ Pass Timeout ]
