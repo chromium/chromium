@@ -7157,10 +7157,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableWebAppUninstallFromOsSettings)},
 #endif
 
-    {"pwa-update-dialog-for-name-and-icon",
-     flag_descriptions::kPwaUpdateDialogForNameAndIconName,
-     flag_descriptions::kPwaUpdateDialogForNameAndIconDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForNameAndIcon)},
+    {"pwa-update-dialog-for-icon",
+     flag_descriptions::kPwaUpdateDialogForAppIconName,
+     flag_descriptions::kPwaUpdateDialogForAppIconDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForIcon)},
+
+    {"pwa-update-dialog-for-name",
+     flag_descriptions::kPwaUpdateDialogForAppTitleName,
+     flag_descriptions::kPwaUpdateDialogForAppTitleDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForName)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"sync-android-promos-revamp",

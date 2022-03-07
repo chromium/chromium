@@ -100,11 +100,6 @@ const base::Feature kPrewarmSearchResultsPageFonts{
     "PrewarmSearchResultsPageFonts", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Shows a confirmation dialog when updates to PWAs identity (name and icon)
-// have been detected.
-const base::Feature kPwaUpdateDialogForNameAndIcon{
-    "PwaUpdateDialogForNameAndIcon", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Gates sandboxed iframe navigation toward external protocol behind any of:
 // - allow-popups
 // - allow-top-navigation

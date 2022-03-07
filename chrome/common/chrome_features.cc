@@ -839,6 +839,14 @@ const base::Feature kPrivacyGuide{"PrivacyGuide",
 const base::Feature kPushMessagingBackgroundMode{
     "PushMessagingBackgroundMode", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Shows a confirmation dialog when updates to a PWAs icon has been detected.
+const base::Feature kPwaUpdateDialogForIcon{"PwaUpdateDialogForIcon",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Shows a confirmation dialog when updates to a PWAs name has been detected.
+const base::Feature kPwaUpdateDialogForName{"PwaUpdateDialogForName",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables using quiet prompts for notification permission requests.
 const base::Feature kQuietNotificationPrompts{"QuietNotificationPrompts",
                                               base::FEATURE_ENABLED_BY_DEFAULT};

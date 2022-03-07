@@ -580,6 +580,12 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPushMessagingBackgroundMode;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPwaUpdateDialogForIcon;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPwaUpdateDialogForName;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kQuietNotificationPrompts;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

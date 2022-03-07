@@ -560,8 +560,16 @@ class ManifestUpdateManagerBrowserTest_UpdateDialog
       public testing::WithParamInterface<UpdateDialogParam> {
  public:
   ManifestUpdateManagerBrowserTest_UpdateDialog() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kPwaUpdateDialogForNameAndIcon, IsUpdateDialogEnabled());
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    if (IsUpdateDialogEnabled()) {
+      enabled_features.push_back(features::kPwaUpdateDialogForName);
+      enabled_features.push_back(features::kPwaUpdateDialogForIcon);
+    } else {
+      disabled_features.push_back(features::kPwaUpdateDialogForName);
+      disabled_features.push_back(features::kPwaUpdateDialogForIcon);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool IsUpdateDialogEnabled() const {
@@ -764,8 +772,15 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
 class ManifestUpdateManagerAppIdentityBrowserTest
     : public ManifestUpdateManagerBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kPwaUpdateDialogForNameAndIcon};
+ public:
+  ManifestUpdateManagerAppIdentityBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPwaUpdateDialogForIcon, features::kPwaUpdateDialogForName},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
@@ -3888,18 +3903,19 @@ enum AppIdTestParam {
   kTypePolicyApp = 1 << 3,
   kWithFlagNone = 1 << 4,
   kWithFlagPolicyAppIdentity = 1 << 5,
-  kWithFlagAppIdDialog = 1 << 6,
-  kActionUpdateTitle = 1 << 7,
-  kActionUpdateTitleAndLauncherIcon = 1 << 8,
-  kActionUpdateLauncherIcon = 1 << 9,
-  kActionUpdateInstallIcon = 1 << 10,
-  kActionUpdateLauncherAndInstallIcon = 1 << 11,
-  kActionUpdateUnimportantIcon = 1 << 12,
-  kActionRemoveLauncherIcon = 1 << 13,
-  kActionRemoveInstallIcon = 1 << 14,
-  kActionRemoveUnimportantIcon = 1 << 15,
-  kActionSwitchFromLauncher = 1 << 16,
-  kActionSwitchToLauncher = 1 << 17,
+  kWithFlagAppIdDialogForIcon = 1 << 6,
+  kWithFlagAppIdDialogForName = 1 << 7,
+  kActionUpdateTitle = 1 << 8,
+  kActionUpdateTitleAndLauncherIcon = 1 << 9,
+  kActionUpdateLauncherIcon = 1 << 10,
+  kActionUpdateInstallIcon = 1 << 11,
+  kActionUpdateLauncherAndInstallIcon = 1 << 12,
+  kActionUpdateUnimportantIcon = 1 << 13,
+  kActionRemoveLauncherIcon = 1 << 14,
+  kActionRemoveInstallIcon = 1 << 15,
+  kActionRemoveUnimportantIcon = 1 << 16,
+  kActionSwitchFromLauncher = 1 << 17,
+  kActionSwitchToLauncher = 1 << 18,
 };
 
 class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
@@ -3910,10 +3926,15 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
   ManifestUpdateManagerBrowserTest_AppIdentityParameterized() {
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
-    if (IsAppIdentityUpdateDialogEnabled()) {
-      enabled_features.push_back(features::kPwaUpdateDialogForNameAndIcon);
+    if (IsAppIdentityUpdateDialogForIconEnabled()) {
+      enabled_features.push_back(features::kPwaUpdateDialogForIcon);
     } else {
-      disabled_features.push_back(features::kPwaUpdateDialogForNameAndIcon);
+      disabled_features.push_back(features::kPwaUpdateDialogForIcon);
+    }
+    if (IsAppIdentityUpdateDialogForNameEnabled()) {
+      enabled_features.push_back(features::kPwaUpdateDialogForName);
+    } else {
+      disabled_features.push_back(features::kPwaUpdateDialogForName);
     }
     if (IsPolicyAppIdentityOverrideEnabled()) {
       enabled_features.push_back(
@@ -3936,8 +3957,13 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
     return std::get<1>(GetParam()) & AppIdTestParam::kTypePolicyApp;
   }
 
-  bool IsAppIdentityUpdateDialogEnabled() const {
-    return std::get<2>(GetParam()) & AppIdTestParam::kWithFlagAppIdDialog;
+  bool IsAppIdentityUpdateDialogForIconEnabled() const {
+    return std::get<2>(GetParam()) &
+           AppIdTestParam::kWithFlagAppIdDialogForIcon;
+  }
+  bool IsAppIdentityUpdateDialogForNameEnabled() const {
+    return std::get<2>(GetParam()) &
+           AppIdTestParam::kWithFlagAppIdDialogForName;
   }
   bool IsPolicyAppIdentityOverrideEnabled() const {
     return std::get<2>(GetParam()) & AppIdTestParam::kWithFlagPolicyAppIdentity;
@@ -4006,9 +4032,12 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
 
     if (IsDefaultApp())
       return true;
-    if (IsPolicyApp() && IsPolicyAppIdentityOverrideEnabled())
-      return true;
-    return IsAppIdentityUpdateDialogEnabled();
+    if (IsPolicyApp())
+      return IsPolicyAppIdentityOverrideEnabled();
+
+    // User-installed apps don't get title updates unless App Id dialog is
+    // enabled for names.
+    return IsAppIdentityUpdateDialogForNameEnabled();
   }
 
   // This function describes in which scenarios the test should expect the icons
@@ -4020,17 +4049,12 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
 
     if (IsDefaultApp())
       return true;
-    if (IsPolicyApp() && IsPolicyAppIdentityOverrideEnabled())
-      return true;
-    // Changes to the install/launcher icon should be accepted if the app
-    // identity dialog is shown and accepted (auto-accepted in the case of the
-    // tests). Changes to unimportant icons should in the future not need the
-    // app identity dialog, but are included here now so that it is possible to
-    // get back to the current state by turning off the feature flag.
-    if (AnyIconUpdate() && !IsAppIdentityUpdateDialogEnabled())
-      return false;
+    if (IsPolicyApp())
+      return IsPolicyAppIdentityOverrideEnabled();
 
-    return true;
+    // User-installed apps don't get title updates unless App Id dialog is
+    // enabled for icons.
+    return IsAppIdentityUpdateDialogForIconEnabled();
   }
 
   static std::string ParamToString(
@@ -4077,8 +4101,10 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
       result += "None_";
     if (flags & AppIdTestParam::kWithFlagPolicyAppIdentity)
       result += "PolicyCanUpdate_";
-    if (flags & AppIdTestParam::kWithFlagAppIdDialog)
-      result += "WithAppIdDlg_";
+    if (flags & AppIdTestParam::kWithFlagAppIdDialogForIcon)
+      result += "WithAppIdDlgForIcon_";
+    if (flags & AppIdTestParam::kWithFlagAppIdDialogForName)
+      result += "WithAppIdDlgForName_";
 
     return result;
   }
@@ -4188,8 +4214,12 @@ IN_PROC_BROWSER_TEST_P(
     trace += "Default";
   if (IsWebApp())
     trace += "WebApp";
-  trace += (IsAppIdentityUpdateDialogEnabled() ? ", with AppIdDlg: YES\n"
-                                               : ", with AppIdDlg: NO\n");
+  trace += (IsAppIdentityUpdateDialogForIconEnabled()
+                ? ", with AppIdDlgForIcon: YES\n"
+                : ", with AppIdDlgForIcon: NO\n");
+  trace += (IsAppIdentityUpdateDialogForNameEnabled()
+                ? ", with AppIdDlgForName: YES\n"
+                : ", with AppIdDlgForName: NO\n");
 
   trace += base::ReplaceStringPlaceholders(
       "UPDATE: Title: $1 Launcher $2 Install $3 Other $4\n",
@@ -4225,7 +4255,8 @@ IN_PROC_BROWSER_TEST_P(
       nullptr);
   trace += "---------------------------\n";
 
-  if (IsAppIdentityUpdateDialogEnabled())
+  if (IsAppIdentityUpdateDialogForIconEnabled() ||
+      IsAppIdentityUpdateDialogForNameEnabled())
     chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
 
   std::string app_name = "Test app name";
@@ -4476,26 +4507,29 @@ IN_PROC_BROWSER_TEST_P(
 
   OverrideManifest(kManifestTemplate, {app_name, ending_stage});
   SCOPED_TRACE(trace + "Icons before: \n" + starting_stage + "\n" +
-               "Icons afer: \n" + ending_stage + "\n");
+               "Icons afer (requested): \n" + ending_stage + "\n");
 
-  bool expectations_match = (TitleUpdate() == ExpectTitleUpdate()) &&
-                            (AnyIconUpdate() == ExpectIconUpdate());
-  if ((TitleUpdate() || AnyIconUpdate()) && expectations_match) {
+  bool expect_update = (TitleUpdate() && ExpectTitleUpdate()) ||
+                       (AnyIconUpdate() && ExpectIconUpdate());
+  if ((TitleUpdate() || AnyIconUpdate()) && expect_update) {
     ASSERT_EQ(ManifestUpdateResult::kAppUpdated,
               GetResultAfterPageLoad(GetAppURL()));
     histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                         ManifestUpdateResult::kAppUpdated, 1);
-    ConfirmShortcutColors(app_id, expected_shortcut_colors_if_updated);
   } else {
     ASSERT_EQ(ManifestUpdateResult::kAppUpToDate,
               GetResultAfterPageLoad(GetAppURL()));
     histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                         ManifestUpdateResult::kAppUpdated, 0);
+  }
+
+  if (ExpectIconUpdate()) {
+    ConfirmShortcutColors(app_id, expected_shortcut_colors_if_updated);
+  } else {
     ConfirmShortcutColors(app_id, expected_shortcut_colors_before);
   }
 
-  EXPECT_EQ(ExpectTitleUpdate() && expectations_match ? "Different app name"
-                                                      : "Test app name",
+  EXPECT_EQ(ExpectTitleUpdate() ? "Different app name" : "Test app name",
             GetProvider().registrar().GetAppShortName(app_id));
 }
 
@@ -4518,10 +4552,14 @@ INSTANTIATE_TEST_SUITE_P(
                         AppIdTestParam::kTypePolicyApp,
                         AppIdTestParam::kTypeWebApp),
         testing::Values(AppIdTestParam::kWithFlagNone,
-                        AppIdTestParam::kWithFlagAppIdDialog,
+                        AppIdTestParam::kWithFlagAppIdDialogForIcon,
+                        AppIdTestParam::kWithFlagAppIdDialogForName,
+                        AppIdTestParam::kWithFlagAppIdDialogForIcon |
+                            AppIdTestParam::kWithFlagAppIdDialogForName,
                         AppIdTestParam::kWithFlagPolicyAppIdentity,
                         AppIdTestParam::kWithFlagPolicyAppIdentity |
-                            AppIdTestParam::kWithFlagAppIdDialog)),
+                            AppIdTestParam::kWithFlagAppIdDialogForIcon |
+                            AppIdTestParam::kWithFlagAppIdDialogForName)),
     ManifestUpdateManagerBrowserTest_AppIdentityParameterized::ParamToString);
 
 }  // namespace web_app
