@@ -40,12 +40,10 @@ import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
@@ -559,10 +557,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                         .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
-        SigninMetricsUtils.logProfileAccountManagementMenu(
-                ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
-                GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-
         SignOutDialogFragment signOutFragment =
                 SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
         signOutFragment.setTargetFragment(this, 0);

@@ -54,6 +54,8 @@ public class SignOutDialogFragment
     private @GAIAServiceType int mGaiaServiceType = GAIAServiceType.GAIA_SERVICE_TYPE_NONE;
 
     public static SignOutDialogFragment create(@GAIAServiceType int gaiaServiceType) {
+        SigninMetricsUtils.logProfileAccountManagementMenu(
+                ProfileAccountManagementMetrics.TOGGLE_SIGNOUT, gaiaServiceType);
         SignOutDialogFragment signOutFragment = new SignOutDialogFragment();
         Bundle args = new Bundle();
         args.putInt(SHOW_GAIA_SERVICE_TYPE_EXTRA, gaiaServiceType);

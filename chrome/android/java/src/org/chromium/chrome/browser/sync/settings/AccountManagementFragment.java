@@ -208,8 +208,6 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
                 if (!isVisible() || !isResumed() || mSignedInAccountName == null) {
                     return false;
                 }
-                SigninMetricsUtils.logProfileAccountManagementMenu(
-                        ProfileAccountManagementMetrics.TOGGLE_SIGNOUT, mGaiaServiceType);
 
                 if (IdentityServicesProvider.get()
                                 .getIdentityManager(Profile.getLastUsedRegularProfile())
