@@ -1540,6 +1540,11 @@ config("default_warnings") {
         "-Wno-ignored-pragma-optimize",
       ]
 
+      if (!is_nacl) {
+        # TODO(https://crbug.com/1300731) Clean up and enable.
+        cflags += [ "-Wno-unqualified-std-cast-call" ]
+      }
+
       if (is_chromeos || default_toolchain == "//build/toolchain/cros:target") {
         # TODO(https://crbug.com/1016945): Re-enable once ChromeOS toolchain is up to date
         cflags += [ "-Wno-builtin-assume-aligned-alignment" ]
@@ -1552,13 +1557,6 @@ config("default_warnings") {
 
       if (enable_wmax_tokens) {
         cflags += [ "-Wmax-tokens" ]
-      }
-
-      if (llvm_force_head_revision && !is_nacl) {
-        cflags += [
-          # TODO(https://crbug.com/1300731) Clean up and enable.
-          "-Wno-unqualified-std-cast-call",
-        ]
       }
     }
   }

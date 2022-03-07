@@ -138,6 +138,7 @@ EXPORTS
     ??0GraphCycles@synchronization_internal@absl@@QEAA@XZ
     ??0HashtablezInfo@container_internal@absl@@QEAA@XZ
     ??0Impl@time_zone@cctz@time_internal@absl@@AEAA@AEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
+    ??0KernelTimeout@synchronization_internal@absl@@QEAA@VTime@2@@Z
     ??0ParsedFormatBase@str_format_internal@absl@@QEAA@Vstring_view@2@_NV?$initializer_list@W4FormatConversionCharSet@absl@@@std@@@Z
     ??0Randen@random_internal@absl@@QEAA@XZ
     ??0Rep@GraphCycles@synchronization_internal@absl@@QEAA@XZ
@@ -568,7 +569,6 @@ EXPORTS
     ?LogFatalNodeType@cord_internal@absl@@YAXPEAUCordRep@12@@Z
     ?LowLevelHash@hash_internal@absl@@YA_KPEBX_K1QEB_K@Z
     ?LowLevelHashImpl@MixingHashState@hash_internal@absl@@CA_KPEBE_K@Z
-    ?MakeNs@KernelTimeout@synchronization_internal@absl@@CA_JVTime@3@@Z
     ?MakeSeedSeq@absl@@YA?AV?$SaltedSeedSeq@Vseed_seq@__1@std@@@random_internal@1@XZ
     ?MakeTime@TimeZoneInfo@cctz@time_internal@absl@@UEBA?AUcivil_lookup@time_zone@234@AEBV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@detail@234@@Z
     ?MakeTime@TimeZoneLibC@cctz@time_internal@absl@@UEBA?AUcivil_lookup@time_zone@234@AEBV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@detail@234@@Z
