@@ -251,6 +251,7 @@ try_.builder(
     name = "android-pie-arm64-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
+    check_for_flakiness = True,
     cores = 16,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
