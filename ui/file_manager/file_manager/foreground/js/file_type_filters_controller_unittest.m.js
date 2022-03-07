@@ -153,18 +153,24 @@ export function testButtonInitialActiveState() {
 }
 
 /**
- * Tests that click events can only change button state from inactive to active,
- * if the button is already active, nothing happens.
+ * Tests that click events can toggle button state (active <-> inactive),
+ * if the button is already active, make it inactive and make "All" button
+ * active.
  */
 export function testButtonToggleState() {
   const buttons = container.children;
   assertEquals(buttons.length, 4);
 
+  // State change: inactive -> active -> inactive.
   assertFalse(buttons[1].classList.contains('active'));
   buttons[1].click();
   assertTrue(buttons[1].classList.contains('active'));
   buttons[1].click();
-  assertTrue(buttons[1].classList.contains('active'));
+  assertFalse(buttons[1].classList.contains('active'));
+  assertTrue(buttons[0].classList.contains('active'));
+  // Clicking active "All" does nothing.
+  buttons[0].click();
+  assertTrue(buttons[0].classList.contains('active'));
 }
 
 /**
@@ -267,6 +273,13 @@ export function testAppliedFilters() {
   assertEquals(
       recentEntry.recentFileType,
       chrome.fileManagerPrivate.RecentFileType.AUDIO);
+  assertTrue(window.isRescanCalled);
+  window.isRescanCalled = false;
+
+  // Clicking an active button will trigger a scan for "All".
+  buttons[1].click();
+  assertEquals(
+      recentEntry.recentFileType, chrome.fileManagerPrivate.RecentFileType.ALL);
   assertTrue(window.isRescanCalled);
   window.isRescanCalled = false;
 
