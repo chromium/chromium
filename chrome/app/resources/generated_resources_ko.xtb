@@ -2512,6 +2512,7 @@
 <translation id="346298925039590474">기기의 모든 사용자가 이 모바일 네트워크를 사용할 수 있습니다.</translation>
 <translation id="3464145797867108663">직장 프로필 추가</translation>
 <translation id="346431825526753"><ph name="CUSTODIAN_EMAIL" />님이 관리하는 어린이용 계정입니다.</translation>
+<translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> 등에서 할인받기</translation>
 <translation id="3468298837301810372">라벨</translation>
 <translation id="3468999815377931311">Android 휴대전화</translation>
 <translation id="3469583217479686109">선택 도구</translation>
@@ -2956,6 +2957,7 @@
 <translation id="3879748587602334249">다운로드 관리자</translation>
 <translation id="3882165008614329320">카메라 또는 파일의 기존 동영상</translation>
 <translation id="3883306461188700142">음성으로 입력할 수 있습니다. Search + D를 누른 다음 말하세요.</translation>
+<translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> 및 <ph name="MERCHANT_NAME_2" />에서 할인받기</translation>
 <translation id="3884152383786131369">여러 언어를 지원하는 웹 콘텐츠는 목록의 첫 번째 지원 언어를 사용합니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">업데이트는 관리자가 관리합니다</translation>
 <translation id="3886446263141354045">사용자의 사이트 액세스 요청이 <ph name="NAME" />님에게 전송되었습니다.</translation>

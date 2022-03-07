@@ -1262,6 +1262,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2355876547176311490">Nonaktifkan penggunaan server relai oleh host akses jarak jauh</translation>
 <translation id="2358176879566587521">Kebijakan ini dihapus. Kebijakan ini tidak kompatibel dengan versi <ph name="PRODUCT_NAME" /> ini. Baca selengkapnya di https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Interval waktu peluncuran kembali</translation>
+<translation id="2362539163677485510">Token pendaftaran kebijakan cloud</translation>
 <translation id="2363928351203698966">Jika kebijakan disetel ke nilai yang valid, <ph name="PRODUCT_NAME" /> tidak akan menggunakan versi SSL/TLS lebih rendah dari versi yang ditentukan. Nilai yang tidak dikenal akan diabaikan.
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan menampilkan error untuk TLS 1.0 dan TLS 1.1, tetapi pengguna dapat mengabaikannya.
