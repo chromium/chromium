@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/cert_db_initializer_io_impl.h"
+#include "chrome/browser/lacros/cert/cert_db_initializer_io_impl.h"
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"

@@ -10,7 +10,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/cert_db_initializer_factory.h"
+#include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 NssService* NssServiceFactory::GetForContext(

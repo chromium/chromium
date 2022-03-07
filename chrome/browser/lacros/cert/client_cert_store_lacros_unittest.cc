@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/client_cert_store_lacros.h"
+#include "chrome/browser/lacros/cert/client_cert_store_lacros.h"
 
 #include <memory>
 
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/lacros/cert_db_initializer.h"
+#include "chrome/browser/lacros/cert/cert_db_initializer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "testing/gmock/include/gmock/gmock.h"

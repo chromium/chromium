@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/cert_db_initializer_factory.h"
+#include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/lacros/cert_db_initializer_impl.h"
+#include "chrome/browser/lacros/cert/cert_db_initializer_impl.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

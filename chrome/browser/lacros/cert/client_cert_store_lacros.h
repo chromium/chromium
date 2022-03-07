@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LACROS_CLIENT_CERT_STORE_LACROS_H_
-#define CHROME_BROWSER_LACROS_CLIENT_CERT_STORE_LACROS_H_
+#ifndef CHROME_BROWSER_LACROS_CERT_CLIENT_CERT_STORE_LACROS_H_
+#define CHROME_BROWSER_LACROS_CERT_CLIENT_CERT_STORE_LACROS_H_
 
 #include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
@@ -49,4 +49,4 @@ class ClientCertStoreLacros final : public net::ClientCertStore {
   base::WeakPtrFactory<ClientCertStoreLacros> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_LACROS_CLIENT_CERT_STORE_LACROS_H_
+#endif  // CHROME_BROWSER_LACROS_CERT_CLIENT_CERT_STORE_LACROS_H_

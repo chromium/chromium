@@ -107,8 +107,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/cert_db_initializer_factory.h"
-#include "chrome/browser/lacros/client_cert_store_lacros.h"
+#include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
+#include "chrome/browser/lacros/cert/client_cert_store_lacros.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/net/nss_service.h"
 
-#include "chrome/browser/lacros/cert_db_initializer.h"
-#include "chrome/browser/lacros/cert_db_initializer_factory.h"
+#include "chrome/browser/lacros/cert/cert_db_initializer.h"
+#include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "content/public/browser/browser_thread.h"
 
 NssService::NssService(content::BrowserContext* context) : context_(context) {}

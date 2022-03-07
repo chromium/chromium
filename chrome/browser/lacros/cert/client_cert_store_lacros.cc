@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/client_cert_store_lacros.h"
+#include "chrome/browser/lacros/cert/client_cert_store_lacros.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/lacros/cert_db_initializer.h"
+#include "chrome/browser/lacros/cert/cert_db_initializer.h"
 #include "net/ssl/client_cert_store_nss.h"
 #include "net/ssl/ssl_cert_request_info.h"
 
