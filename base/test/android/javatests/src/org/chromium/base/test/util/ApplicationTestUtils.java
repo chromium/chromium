@@ -18,6 +18,7 @@ import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -28,6 +29,8 @@ public class ApplicationTestUtils {
     private static final ActivityLifecycleMonitor sMonitor =
             ActivityLifecycleMonitorRegistry.getInstance();
 
+    private static final long ACTIVITY_TIMEOUT = 10000;
+
     /** Waits until the given activity transitions to the given state. */
     public static void waitForActivityState(Activity activity, Stage stage) {
         waitForActivityState(null, activity, stage);
@@ -37,7 +40,7 @@ public class ApplicationTestUtils {
     public static void waitForActivityState(String failureReason, Activity activity, Stage stage) {
         CriteriaHelper.pollUiThread(() -> {
             return sMonitor.getLifecycleStageOf(activity) == stage;
-        }, failureReason, 10000, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }, failureReason, ACTIVITY_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /** Finishes the given activity and waits for its onDestroy() to be called. */
@@ -134,7 +137,8 @@ public class ApplicationTestUtils {
                 ThreadUtils.runOnUiThreadBlocking(() -> uiThreadTrigger.run());
             }
             if (backgroundThreadTrigger != null) backgroundThreadTrigger.run();
-            activityCallback.waitForCallback("No Activity reached target state.", 0);
+            activityCallback.waitForFirst(
+                    "No Activity reached target state.", ACTIVITY_TIMEOUT, TimeUnit.MILLISECONDS);
             T createdActivity = activityRef.get();
             Assert.assertNotNull("Activity reference is null.", createdActivity);
             return createdActivity;
