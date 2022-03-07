@@ -34,23 +34,6 @@
 
 namespace {
 
-class ReadErrorHandler : public PersistentPrefStore::ReadErrorDelegate {
- public:
-  using ErrorCallback =
-      base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>;
-  explicit ReadErrorHandler(ErrorCallback cb) : callback_(cb) {}
-
-  ReadErrorHandler(const ReadErrorHandler&) = delete;
-  ReadErrorHandler& operator=(const ReadErrorHandler&) = delete;
-
-  void OnError(PersistentPrefStore::PrefReadError error) override {
-    callback_.Run(error);
-  }
-
- private:
-  ErrorCallback callback_;
-};
-
 // Returns the WriteablePrefStore::PrefWriteFlags for the pref with the given
 // |path|.
 uint32_t GetWriteFlags(const PrefService::Preference* pref) {
