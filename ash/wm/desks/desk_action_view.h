@@ -18,12 +18,18 @@ class DeskActionView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(DeskActionView);
 
-  DeskActionView(base::RepeatingClosure combine_desks_callback,
+  DeskActionView(std::u16string initial_combine_desks_target_name,
+                 base::RepeatingClosure combine_desks_callback,
                  base::RepeatingClosure close_all_callback);
 
   CloseButton* close_all_button() { return close_all_button_; }
 
   CloseButton* combine_desks_button() { return combine_desks_button_; }
+
+  // Changes the tooltip assigned to `combine_desks_button_` to use
+  // `new_combine_desks_target_name` as the name of the target desk where
+  // windows will be moved if `combine_desks_button_` is pressed.
+  void UpdateCombineDesksTooltip(std::u16string new_combine_desks_target_name);
 
  private:
   CloseButton* close_all_button_;
