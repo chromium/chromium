@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 
 #include "base/syslog_logging.h"
-#include "chrome/browser/ash/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/startup_app_launcher.h"
-#include "chrome/browser/ash/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
+#include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,15 +22,15 @@
 
 namespace ash {
 
-ChromeAppKioskAppInstaller::AppInstallData::AppInstallData() = default;
-ChromeAppKioskAppInstaller::AppInstallData::AppInstallData(
+ChromeKioskAppInstaller::AppInstallData::AppInstallData() = default;
+ChromeKioskAppInstaller::AppInstallData::AppInstallData(
     const AppInstallData& other) = default;
-ChromeAppKioskAppInstaller::AppInstallData&
-ChromeAppKioskAppInstaller::AppInstallData::operator=(
+ChromeKioskAppInstaller::AppInstallData&
+ChromeKioskAppInstaller::AppInstallData::operator=(
     const AppInstallData& other) = default;
-ChromeAppKioskAppInstaller::AppInstallData::~AppInstallData() = default;
+ChromeKioskAppInstaller::AppInstallData::~AppInstallData() = default;
 
-ChromeAppKioskAppInstaller::ChromeAppKioskAppInstaller(
+ChromeKioskAppInstaller::ChromeKioskAppInstaller(
     Profile* profile,
     const AppInstallData& install_data,
     KioskAppLauncher::Delegate* delegate,
@@ -41,9 +40,9 @@ ChromeAppKioskAppInstaller::ChromeAppKioskAppInstaller(
       delegate_(delegate),
       finalize_only_(finalize_only) {}
 
-ChromeAppKioskAppInstaller::~ChromeAppKioskAppInstaller() {}
+ChromeKioskAppInstaller::~ChromeKioskAppInstaller() {}
 
-void ChromeAppKioskAppInstaller::BeginInstall(InstallCallback callback) {
+void ChromeKioskAppInstaller::BeginInstall(InstallCallback callback) {
   DCHECK(!install_complete_);
 
   SYSLOG(INFO) << "BeginInstall";
@@ -67,14 +66,14 @@ void ChromeAppKioskAppInstaller::BeginInstall(InstallCallback callback) {
   if (!primary_app) {
     // The extension is skipped for installation due to some error.
     ReportInstallFailure(
-        ChromeAppKioskAppInstaller::InstallResult::kUnableToInstall);
+        ChromeKioskAppInstaller::InstallResult::kUnableToInstall);
     return;
   }
 
   if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
     // The installed primary app is not kiosk enabled.
     ReportInstallFailure(
-        ChromeAppKioskAppInstaller::InstallResult::kNotKioskEnabled);
+        ChromeKioskAppInstaller::InstallResult::kNotKioskEnabled);
     return;
   }
 
@@ -82,13 +81,13 @@ void ChromeAppKioskAppInstaller::BeginInstall(InstallCallback callback) {
   MaybeInstallSecondaryApps();
 }
 
-void ChromeAppKioskAppInstaller::MaybeInstallSecondaryApps() {
+void ChromeKioskAppInstaller::MaybeInstallSecondaryApps() {
   if (install_complete_)
     return;
 
   if (!AreSecondaryAppsInstalled() && !delegate_->IsNetworkReady()) {
     RetryWhenNetworkIsAvailable(
-        base::BindOnce(&ChromeAppKioskAppInstaller::MaybeInstallSecondaryApps,
+        base::BindOnce(&ChromeKioskAppInstaller::MaybeInstallSecondaryApps,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
@@ -113,11 +112,11 @@ void ChromeAppKioskAppInstaller::MaybeInstallSecondaryApps() {
     MaybeCheckExtensionUpdate();
   } else {
     ReportInstallFailure(
-        ChromeAppKioskAppInstaller::InstallResult::kUnableToInstall);
+        ChromeKioskAppInstaller::InstallResult::kUnableToInstall);
   }
 }
 
-void ChromeAppKioskAppInstaller::MaybeCheckExtensionUpdate() {
+void ChromeKioskAppInstaller::MaybeCheckExtensionUpdate() {
   DCHECK(!install_complete_);
 
   SYSLOG(INFO) << "MaybeCheckExtensionUpdate";
@@ -132,7 +131,7 @@ void ChromeAppKioskAppInstaller::MaybeCheckExtensionUpdate() {
   // compatible with the new chromeos. See crbug.com/555083.
   update_checker_ = std::make_unique<StartupAppLauncherUpdateChecker>(profile_);
   if (!update_checker_->Run(base::BindOnce(
-          &ChromeAppKioskAppInstaller::OnExtensionUpdateCheckFinished,
+          &ChromeKioskAppInstaller::OnExtensionUpdateCheckFinished,
           weak_ptr_factory_.GetWeakPtr()))) {
     update_checker_.reset();
     FinalizeAppInstall();
@@ -142,7 +141,7 @@ void ChromeAppKioskAppInstaller::MaybeCheckExtensionUpdate() {
   SYSLOG(INFO) << "Extension update check run.";
 }
 
-void ChromeAppKioskAppInstaller::OnExtensionUpdateCheckFinished(
+void ChromeKioskAppInstaller::OnExtensionUpdateCheckFinished(
     bool update_found) {
   DCHECK(!install_complete_);
 
@@ -166,7 +165,7 @@ void ChromeAppKioskAppInstaller::OnExtensionUpdateCheckFinished(
   FinalizeAppInstall();
 }
 
-void ChromeAppKioskAppInstaller::FinalizeAppInstall() {
+void ChromeKioskAppInstaller::FinalizeAppInstall() {
   DCHECK(!install_complete_);
 
   const extensions::Extension* primary_app = GetPrimaryAppExtension();
@@ -176,7 +175,7 @@ void ChromeAppKioskAppInstaller::FinalizeAppInstall() {
   // the case, bail out from the app launch.
   if (!primary_app || !AreSecondaryAppsInstalled()) {
     ReportInstallFailure(
-        ChromeAppKioskAppInstaller::InstallResult::kUnableToLaunch);
+        ChromeKioskAppInstaller::InstallResult::kUnableToLaunch);
     return;
   }
 
@@ -197,7 +196,7 @@ void ChromeAppKioskAppInstaller::FinalizeAppInstall() {
   ReportInstallSuccess();
 }
 
-void ChromeAppKioskAppInstaller::MaybeUpdateAppData() {
+void ChromeKioskAppInstaller::MaybeUpdateAppData() {
   // Skip copying meta data from the current installed primary app when
   // there is a pending update.
   if (PrimaryAppHasPendingUpdate())
@@ -208,7 +207,7 @@ void ChromeAppKioskAppInstaller::MaybeUpdateAppData() {
                                                    profile_, NULL);
 }
 
-void ChromeAppKioskAppInstaller::OnFinishCrxInstall(
+void ChromeKioskAppInstaller::OnFinishCrxInstall(
     const std::string& extension_id,
     bool success) {
   DCHECK(!install_complete_);
@@ -219,7 +218,7 @@ void ChromeAppKioskAppInstaller::OnFinishCrxInstall(
   if (DidPrimaryOrSecondaryAppFailedToInstall(success, extension_id)) {
     install_observation_.Reset();
     ReportInstallFailure(
-        ChromeAppKioskAppInstaller::InstallResult::kUnableToInstall);
+        ChromeKioskAppInstaller::InstallResult::kUnableToInstall);
     return;
   }
 
@@ -240,13 +239,13 @@ void ChromeAppKioskAppInstaller::OnFinishCrxInstall(
   const extensions::Extension* primary_app = GetPrimaryAppExtension();
   if (!primary_app) {
     ReportInstallFailure(
-        ChromeAppKioskAppInstaller::InstallResult::kUnableToInstall);
+        ChromeKioskAppInstaller::InstallResult::kUnableToInstall);
     return;
   }
 
   if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
     ReportInstallFailure(
-        ChromeAppKioskAppInstaller::InstallResult::kNotKioskEnabled);
+        ChromeKioskAppInstaller::InstallResult::kNotKioskEnabled);
     return;
   }
 
@@ -256,40 +255,40 @@ void ChromeAppKioskAppInstaller::OnFinishCrxInstall(
     MaybeCheckExtensionUpdate();
 }
 
-void ChromeAppKioskAppInstaller::ReportInstallSuccess() {
+void ChromeKioskAppInstaller::ReportInstallSuccess() {
   DCHECK(install_complete_);
   SYSLOG(INFO) << "Kiosk app is ready to launch.";
 
   std::move(on_ready_callback_)
-      .Run(ChromeAppKioskAppInstaller::InstallResult::kSuccess);
+      .Run(ChromeKioskAppInstaller::InstallResult::kSuccess);
 }
 
-void ChromeAppKioskAppInstaller::ReportInstallFailure(
-    ChromeAppKioskAppInstaller::InstallResult error) {
+void ChromeKioskAppInstaller::ReportInstallFailure(
+    ChromeKioskAppInstaller::InstallResult error) {
   SYSLOG(ERROR) << "App launch failed, error: " << static_cast<int>(error);
-  DCHECK_NE(ChromeAppKioskAppInstaller::InstallResult::kSuccess, error);
+  DCHECK_NE(ChromeKioskAppInstaller::InstallResult::kSuccess, error);
 
   std::move(on_ready_callback_).Run(error);
 }
 
-void ChromeAppKioskAppInstaller::RetryWhenNetworkIsAvailable(
+void ChromeKioskAppInstaller::RetryWhenNetworkIsAvailable(
     base::OnceClosure callback) {
   DelayNetworkCall(base::Milliseconds(kDefaultNetworkRetryDelayMS),
                    std::move(callback));
 }
 
-void ChromeAppKioskAppInstaller::ObserveActiveInstallations() {
+void ChromeKioskAppInstaller::ObserveActiveInstallations() {
   install_observation_.Observe(
       extensions::InstallTrackerFactory::GetForBrowserContext(profile_));
 }
 
-const extensions::Extension*
-ChromeAppKioskAppInstaller::GetPrimaryAppExtension() const {
+const extensions::Extension* ChromeKioskAppInstaller::GetPrimaryAppExtension()
+    const {
   return extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
       primary_app_install_data_.id);
 }
 
-bool ChromeAppKioskAppInstaller::AreSecondaryAppsInstalled() const {
+bool ChromeKioskAppInstaller::AreSecondaryAppsInstalled() const {
   const extensions::Extension* extension = GetPrimaryAppExtension();
   DCHECK(extension);
   extensions::KioskModeInfo* info = extensions::KioskModeInfo::Get(extension);
@@ -302,15 +301,14 @@ bool ChromeAppKioskAppInstaller::AreSecondaryAppsInstalled() const {
   return true;
 }
 
-bool ChromeAppKioskAppInstaller::IsAppInstallPending(
-    const std::string& id) const {
+bool ChromeKioskAppInstaller::IsAppInstallPending(const std::string& id) const {
   return extensions::ExtensionSystem::Get(profile_)
       ->extension_service()
       ->pending_extension_manager()
       ->IsIdPending(id);
 }
 
-bool ChromeAppKioskAppInstaller::IsAnySecondaryAppPending() const {
+bool ChromeKioskAppInstaller::IsAnySecondaryAppPending() const {
   const extensions::Extension* extension = GetPrimaryAppExtension();
   DCHECK(extension);
   extensions::KioskModeInfo* info = extensions::KioskModeInfo::Get(extension);
@@ -322,13 +320,13 @@ bool ChromeAppKioskAppInstaller::IsAnySecondaryAppPending() const {
   return false;
 }
 
-bool ChromeAppKioskAppInstaller::PrimaryAppHasPendingUpdate() const {
+bool ChromeKioskAppInstaller::PrimaryAppHasPendingUpdate() const {
   return extensions::ExtensionSystem::Get(profile_)
       ->extension_service()
       ->GetPendingExtensionUpdate(primary_app_install_data_.id);
 }
 
-bool ChromeAppKioskAppInstaller::DidPrimaryOrSecondaryAppFailedToInstall(
+bool ChromeKioskAppInstaller::DidPrimaryOrSecondaryAppFailedToInstall(
     bool success,
     const std::string& id) const {
   if (success)
@@ -355,7 +353,7 @@ bool ChromeAppKioskAppInstaller::DidPrimaryOrSecondaryAppFailedToInstall(
   return false;
 }
 
-void ChromeAppKioskAppInstaller::SetSecondaryAppsEnabledState(
+void ChromeKioskAppInstaller::SetSecondaryAppsEnabledState(
     const extensions::Extension* primary_app) {
   extensions::KioskModeInfo* info = extensions::KioskModeInfo::Get(primary_app);
   for (const auto& app_info : info->secondary_apps) {
@@ -368,7 +366,7 @@ void ChromeAppKioskAppInstaller::SetSecondaryAppsEnabledState(
   }
 }
 
-void ChromeAppKioskAppInstaller::SetAppEnabledState(
+void ChromeKioskAppInstaller::SetAppEnabledState(
     const extensions::ExtensionId& id,
     bool new_enabled_state) {
   extensions::ExtensionService* service =

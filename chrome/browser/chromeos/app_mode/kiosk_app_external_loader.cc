@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/kiosk_app_external_loader.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
 
 #include <memory>
 #include <utility>
@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/chrome_kiosk_external_loader_broker.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 
 namespace ash {
 

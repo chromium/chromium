@@ -25,7 +25,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
-#include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/chromeos/extensions/external_cache_impl.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
@@ -591,11 +591,11 @@ bool KioskAppManager::GetCachedCrx(const std::string& app_id,
   return external_cache_->GetExtension(app_id, file_path, version);
 }
 
-ChromeAppKioskAppInstaller::AppInstallData
+ChromeKioskAppInstaller::AppInstallData
 KioskAppManager::CreatePrimaryAppInstallData(const std::string& id) const {
   const base::DictionaryValue* extension = nullptr;
   if (!external_cache_->GetCachedExtensions()->GetDictionary(id, &extension)) {
-    ChromeAppKioskAppInstaller::AppInstallData data;
+    ChromeKioskAppInstaller::AppInstallData data;
     data.id = id;
     return data;
   }
@@ -615,7 +615,7 @@ KioskAppManager::CreatePrimaryAppInstallData(const std::string& id) const {
       extensions::ExternalProviderImpl::kExternalVersion);
   DCHECK(external_version);
 
-  ChromeAppKioskAppInstaller::AppInstallData data;
+  ChromeKioskAppInstaller::AppInstallData data;
   data.id = id;
   data.is_store_app = is_store_app_bool;
   data.crx_file_location = *crx_file_location;

@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_CHROME_KIOSK_EXTERNAL_LOADER_BROKER_H_
-#define CHROME_BROWSER_ASH_APP_MODE_CHROME_KIOSK_EXTERNAL_LOADER_BROKER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_EXTERNAL_LOADER_BROKER_H_
+#define CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_EXTERNAL_LOADER_BROKER_H_
 
 #include <memory>
 #include <string>
 
 #include "base/callback.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 // Singleton broker that stands in the middle between the
-// ChromeAppKioskAppInstaller and the KioskAppExternalLoader. The external
+// ChromeKioskAppInstaller and the KioskAppExternalLoader. The external
 // loader registers here when created and will be triggered by the app installer
 // when the apps to be installed are known.
 class ChromeKioskExternalLoaderBroker {
@@ -41,14 +41,14 @@ class ChromeKioskExternalLoaderBroker {
       InstallDataChangeCallback callback);
 
   void TriggerPrimaryAppInstall(
-      const ChromeAppKioskAppInstaller::AppInstallData& install_data);
+      const ChromeKioskAppInstaller::AppInstallData& install_data);
   void TriggerSecondaryAppInstall(std::vector<std::string> secondary_app_ids);
 
  private:
   base::DictionaryValue CreatePrimaryAppLoaderPrefs() const;
   base::DictionaryValue CreateSecondaryAppLoaderPrefs() const;
 
-  absl::optional<ChromeAppKioskAppInstaller::AppInstallData>
+  absl::optional<ChromeKioskAppInstaller::AppInstallData>
       primary_app_install_data_;
   absl::optional<std::vector<std::string>> secondary_app_ids_;
 
@@ -61,4 +61,4 @@ class ChromeKioskExternalLoaderBroker {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_CHROME_KIOSK_EXTERNAL_LOADER_BROKER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_EXTERNAL_LOADER_BROKER_H_

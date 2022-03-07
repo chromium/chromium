@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_EXTERNAL_LOADER_H_
-#define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_EXTERNAL_LOADER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_APP_EXTERNAL_LOADER_H_
+#define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_APP_EXTERNAL_LOADER_H_
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/chrome_kiosk_external_loader_broker.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/extensions/external_loader.h"
 
 namespace ash {
@@ -59,4 +59,4 @@ class KioskAppExternalLoader : public extensions::ExternalLoader {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_EXTERNAL_LOADER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_APP_EXTERNAL_LOADER_H_

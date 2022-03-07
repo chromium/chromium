@@ -15,11 +15,11 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -245,7 +245,7 @@ void StartupAppLauncher::BeginInstall(bool finalize_only) {
   if (!finalize_only) {
     delegate_->OnAppInstalling();
   }
-  installer_ = std::make_unique<ChromeAppKioskAppInstaller>(
+  installer_ = std::make_unique<ChromeKioskAppInstaller>(
       profile_, KioskAppManager::Get()->CreatePrimaryAppInstallData(app_id_),
       delegate_, finalize_only);
   installer_->BeginInstall(base::BindOnce(
@@ -253,27 +253,27 @@ void StartupAppLauncher::BeginInstall(bool finalize_only) {
 }
 
 void StartupAppLauncher::OnInstallComplete(
-    ChromeAppKioskAppInstaller::InstallResult result) {
+    ChromeKioskAppInstaller::InstallResult result) {
   DCHECK(state_ == LaunchState::kInstallingApp);
 
   switch (result) {
-    case ChromeAppKioskAppInstaller::InstallResult::kSuccess:
+    case ChromeKioskAppInstaller::InstallResult::kSuccess:
       state_ = LaunchState::kReadyToLaunch;
       // Updates to cached primary app crx will be ignored after this point, so
       // there is no need to observe the kiosk app manager any longer.
       kiosk_app_manager_observation_.Reset();
       delegate_->OnAppPrepared();
       return;
-    case ChromeAppKioskAppInstaller::InstallResult::kUnableToInstall:
+    case ChromeKioskAppInstaller::InstallResult::kUnableToInstall:
       OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
       return;
-    case ChromeAppKioskAppInstaller::InstallResult::kNotKioskEnabled:
+    case ChromeKioskAppInstaller::InstallResult::kNotKioskEnabled:
       OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
       return;
-    case ChromeAppKioskAppInstaller::InstallResult::kUnableToLaunch:
+    case ChromeKioskAppInstaller::InstallResult::kUnableToLaunch:
       OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
       return;
-    case ChromeAppKioskAppInstaller::InstallResult::kNetworkMissing:
+    case ChromeKioskAppInstaller::InstallResult::kNetworkMissing:
       ++launch_attempt_;
       if (launch_attempt_ < kMaxLaunchAttempt) {
         base::ThreadTaskRunnerHandle::Get()->PostTask(

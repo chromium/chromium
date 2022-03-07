@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/chrome_kiosk_external_loader_broker.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 
 #include "base/values.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
@@ -49,7 +49,7 @@ void ChromeKioskExternalLoaderBroker::RegisterSecondaryAppInstallDataObserver(
 }
 
 void ChromeKioskExternalLoaderBroker::TriggerPrimaryAppInstall(
-    const ChromeAppKioskAppInstaller::AppInstallData& install_data) {
+    const ChromeKioskAppInstaller::AppInstallData& install_data) {
   primary_app_install_data_ = install_data;
 
   if (primary_app_changed_handler_)

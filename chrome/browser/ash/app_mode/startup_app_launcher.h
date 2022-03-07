@@ -11,10 +11,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -68,7 +68,7 @@ class StartupAppLauncher : public KioskAppLauncher,
 
   void FinalizeAppInstall();
   void BeginInstall(bool finalize_only = false);
-  void OnInstallComplete(ChromeAppKioskAppInstaller::InstallResult result);
+  void OnInstallComplete(ChromeKioskAppInstaller::InstallResult result);
 
   void MaybeInitializeNetwork();
   void OnKioskAppDataLoadStatusChanged(const std::string& app_id);
@@ -87,7 +87,7 @@ class StartupAppLauncher : public KioskAppLauncher,
   int launch_attempt_ = 0;
   LaunchState state_ = LaunchState::kNotStarted;
 
-  std::unique_ptr<ChromeAppKioskAppInstaller> installer_;
+  std::unique_ptr<ChromeKioskAppInstaller> installer_;
 
   extensions::AppWindowRegistry* window_registry_;
 

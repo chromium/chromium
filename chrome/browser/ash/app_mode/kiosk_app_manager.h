@@ -13,10 +13,10 @@
 #include "base/callback_forward.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
-#include "chrome/browser/ash/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
 #include "chromeos/tpm/install_attributes.h"
@@ -177,7 +177,7 @@ class KioskAppManager : public KioskAppManagerBase,
                     base::FilePath* file_path,
                     std::string* version) const;
 
-  ChromeAppKioskAppInstaller::AppInstallData CreatePrimaryAppInstallData(
+  ChromeKioskAppInstaller::AppInstallData CreatePrimaryAppInstallData(
       const std::string& id) const;
 
   void UpdateExternalCache();

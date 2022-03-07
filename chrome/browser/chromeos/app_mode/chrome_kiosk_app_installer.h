@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_CHROME_APP_KIOSK_APP_INSTALLER_H_
-#define CHROME_BROWSER_ASH_APP_MODE_CHROME_APP_KIOSK_APP_INSTALLER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_APP_INSTALLER_H_
+#define CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_APP_INSTALLER_H_
 
 #include "base/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
-#include "chrome/browser/ash/app_mode/startup_app_launcher_update_checker.h"
+#include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
 
@@ -16,7 +16,7 @@ class Profile;
 
 namespace ash {
 
-class ChromeAppKioskAppInstaller : private extensions::InstallObserver {
+class ChromeKioskAppInstaller : private extensions::InstallObserver {
  public:
   enum class InstallResult {
     kSuccess,
@@ -40,14 +40,13 @@ class ChromeAppKioskAppInstaller : private extensions::InstallObserver {
 
   using InstallCallback = base::OnceCallback<void(InstallResult result)>;
 
-  ChromeAppKioskAppInstaller(Profile* profile,
-                             const AppInstallData& install_data,
-                             KioskAppLauncher::Delegate* delegate,
-                             bool finalize_only);
-  ChromeAppKioskAppInstaller(const ChromeAppKioskAppInstaller&) = delete;
-  ChromeAppKioskAppInstaller& operator=(const ChromeAppKioskAppInstaller&) =
-      delete;
-  ~ChromeAppKioskAppInstaller() override;
+  ChromeKioskAppInstaller(Profile* profile,
+                          const AppInstallData& install_data,
+                          KioskAppLauncher::Delegate* delegate,
+                          bool finalize_only);
+  ChromeKioskAppInstaller(const ChromeKioskAppInstaller&) = delete;
+  ChromeKioskAppInstaller& operator=(const ChromeKioskAppInstaller&) = delete;
+  ~ChromeKioskAppInstaller() override;
 
   void BeginInstall(InstallCallback callback);
 
@@ -107,9 +106,9 @@ class ChromeAppKioskAppInstaller : private extensions::InstallObserver {
   base::ScopedObservation<extensions::InstallTracker,
                           extensions::InstallObserver>
       install_observation_{this};
-  base::WeakPtrFactory<ChromeAppKioskAppInstaller> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ChromeKioskAppInstaller> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_CHROME_APP_KIOSK_APP_INSTALLER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_APP_INSTALLER_H_
