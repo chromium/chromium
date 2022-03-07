@@ -3394,6 +3394,9 @@ class CalendarNavigationButton extends View {
      * @type {?number} The ID for the timeout that triggers the repeating clicks.
      */
     this._timer = null;
+
+    this._onWindowMouseUpBound = this.onWindowMouseUp.bind(this);
+
     this.element.addEventListener('click', this.onClick.bind(this), false);
     this.element.addEventListener(
         'mousedown', this.onMouseDown.bind(this), false);
@@ -3444,8 +3447,7 @@ class CalendarNavigationButton extends View {
       return;
     clearTimeout(this._timer);
     this._timer = null;
-    window.removeEventListener(
-        'touchend', this.onWindowMouseUp.bind(this), false);
+    window.removeEventListener('touchend', this._onWindowMouseUpBound);
   }
 
   /**
@@ -3457,7 +3459,7 @@ class CalendarNavigationButton extends View {
     this._timer = setTimeout(
         this.onRepeatingClick.bind(this),
         this.repeatingClicksStartingThreshold);
-    window.addEventListener('mouseup', this.onWindowMouseUp.bind(this), false);
+    window.addEventListener('mouseup', this._onWindowMouseUpBound);
   }
 
   /**
@@ -3468,8 +3470,7 @@ class CalendarNavigationButton extends View {
       return;
     clearTimeout(this._timer);
     this._timer = null;
-    window.removeEventListener(
-        'mouseup', this.onWindowMouseUp.bind(this), false);
+    window.removeEventListener('mouseup', this._onWindowMouseUpBound);
   }
 
   /**
