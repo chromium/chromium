@@ -163,6 +163,12 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarRemoved(
 void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarReplaced(
     infobars::InfoBar* old_infobar,
     infobars::InfoBar* new_infobar) {
+  // New permission infobar in the same tab should keep preserve previous
+  // states.
+  if (GetInfobarType(old_infobar) == InfobarType::kInfobarTypePermissions &&
+      GetInfobarType(new_infobar) == InfobarType::kInfobarTypePermissions) {
+    return;
+  }
   OnInfoBarRemoved(old_infobar, /*animate=*/false);
   OnInfoBarAdded(new_infobar);
 }
