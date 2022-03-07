@@ -5818,7 +5818,7 @@
   },
   {
     "name": "trust-tokens",
-    "owners": [ "davidvc", "privacy-sandbox-dev" ],
+    "owners": [ "svaldez", "privacy-sandbox-dev" ],
     "expiry_milestone": 105
   },
   {
