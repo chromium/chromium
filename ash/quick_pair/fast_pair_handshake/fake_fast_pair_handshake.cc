@@ -32,14 +32,6 @@ FakeFastPairHandshake::FakeFastPairHandshake(
 
 FakeFastPairHandshake::~FakeFastPairHandshake() = default;
 
-bool FakeFastPairHandshake::IsConnected() {
-  return is_connected_;
-}
-
-void FakeFastPairHandshake::SetConnected(bool is_connected) {
-  is_connected_ = is_connected;
-}
-
 void FakeFastPairHandshake::InvokeCallback(
     absl::optional<PairFailure> failure) {
   bool has_failure = failure.has_value();

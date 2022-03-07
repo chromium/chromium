@@ -206,11 +206,8 @@ class FastPairScannerImplTest : public testing::Test {
   std::unique_ptr<FastPairHandshake> CreateConnectedHandshake(
       scoped_refptr<Device> device,
       FastPairHandshakeLookup::OnCompleteCallback callback) {
-    std::unique_ptr<FakeFastPairHandshake> handshake =
-        std::make_unique<FakeFastPairHandshake>(adapter_, std::move(device),
-                                                std::move(callback));
-    handshake->SetConnected(true);
-    return handshake;
+    return std::make_unique<FakeFastPairHandshake>(adapter_, std::move(device),
+                                                   std::move(callback));
   }
 
   void SetUpFactoryScanner() {

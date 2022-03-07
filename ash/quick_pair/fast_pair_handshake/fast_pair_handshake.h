@@ -63,9 +63,6 @@ class FastPairHandshake {
     return fast_pair_gatt_service_client_.get();
   }
 
-  // Returns whether or not this handshake has an active GATT connection.
-  virtual bool IsConnected() = 0;
-
  protected:
   bool completed_successfully_ = false;
   scoped_refptr<device::BluetoothAdapter> adapter_;
