@@ -4735,26 +4735,6 @@ void HTMLMediaElement::ReportCurrentTimeToMediaSource() {
   media_source_attachment_->OnElementTimeUpdate(currentTime());
 }
 
-WebMediaPlayerClient::Features HTMLMediaElement::GetFeatures() {
-  WebMediaPlayerClient::Features features;
-
-  features.id = FastGetAttribute(html_names::kIdAttr);
-  features.width = FastGetAttribute(html_names::kWidthAttr);
-
-  if (auto* parent = parentElement())
-    features.parent_id = parent->FastGetAttribute(html_names::kIdAttr);
-
-  features.alt_text = AltText();
-  features.is_page_visible = GetDocument().IsPageVisible();
-  features.is_in_main_frame = GetDocument().IsInMainFrame();
-
-  const KURL& url = GetDocument().Url();
-  features.url_host = url.Host();
-  features.url_path = url.GetPath();
-
-  return features;
-}
-
 HTMLMediaElement::OpenerContextObserver::OpenerContextObserver(
     HTMLMediaElement* element)
     : element_(element) {}

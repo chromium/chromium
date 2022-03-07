@@ -213,21 +213,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // See https://wicg.github.io/video-rvfc/.
   virtual void OnRequestVideoFrameCallback() {}
 
-  struct Features {
-    WebString id;
-    WebString width;
-    WebString parent_id;
-    WebString alt_text;
-    bool is_page_visible;
-    bool is_in_main_frame;
-    WebString url_host;
-    WebString url_path;
-  };
-
-  // Compute and return features for this media element for the media local
-  // learning experiment.
-  virtual Features GetFeatures() = 0;
-
  protected:
   ~WebMediaPlayerClient() = default;
 };

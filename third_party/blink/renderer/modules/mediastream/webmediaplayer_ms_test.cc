@@ -587,8 +587,6 @@ class WebMediaPlayerMSTest
   void DidUseAudioServiceChange(bool uses_audio_service) override {}
   void DidPlayerSizeChange(const gfx::Size& size) override {}
 
-  Features GetFeatures() override { return Features(); }
-
   // Implementation of cc::VideoFrameProvider::Client
   void StopUsingProvider() override;
   void StartRendering() override;

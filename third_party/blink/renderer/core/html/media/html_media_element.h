@@ -658,8 +658,6 @@ class CORE_EXPORT HTMLMediaElement
   void SetError(MediaError* error);
   void ReportCurrentTimeToMediaSource();
 
-  Features GetFeatures() override;
-
   void ResetMojoState();
 
   // Adds a new MediaPlayerObserver remote that will be notified about media
