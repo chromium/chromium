@@ -451,6 +451,8 @@ NGPhysicalBoxFragment::~NGPhysicalBoxFragment() {
 }
 
 void NGPhysicalBoxFragment::Dispose() {
+  if (HasInkOverflow())
+    ink_overflow_type_ = ink_overflow_.Reset(InkOverflowType());
   if (const_has_fragment_items_)
     ComputeItemsAddress()->~NGFragmentItems();
   if (const_has_rare_data_)
