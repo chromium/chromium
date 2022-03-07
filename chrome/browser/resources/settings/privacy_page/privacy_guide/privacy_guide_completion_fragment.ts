@@ -20,6 +20,7 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../../metrics_browser_proxy.js';
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
+import {Router} from '../../router.js';
 
 import {getTemplate} from './privacy_guide_completion_fragment.html.js';
 
@@ -71,10 +72,12 @@ export class PrivacyGuideCompletionFragmentElement extends
         new CustomEvent('back-button-click', {bubbles: true, composed: true}));
   }
 
-  private onLeaveButtonClick_(e: Event) {
-    e.stopPropagation();
-    this.dispatchEvent(
-        new CustomEvent('leave-button-click', {bubbles: true, composed: true}));
+  private onLeaveButtonClick_() {
+    this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
+        PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON);
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacyGuide.NextClickCompletion');
+    Router.getInstance().navigateToPreviousRoute();
   }
 
   private onPrivacySandboxClick_() {

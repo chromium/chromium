@@ -191,13 +191,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       [
         PrivacyGuideStep.COMPLETION,
         {
-          onForwardNavigation: () => {
-            this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
-                PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON);
-            this.metricsBrowserProxy_.recordAction(
-                'Settings.PrivacyGuide.NextClickCompletion');
-            Router.getInstance().navigateToPreviousRoute();
-          },
           onBackwardNavigation: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickCompletion');
