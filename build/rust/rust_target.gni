@@ -103,6 +103,10 @@ template("rust_target") {
   if (defined(invoker.deps)) {
     _deps += invoker.deps
   }
+  _public_deps = []
+  if (defined(invoker.public_deps)) {
+    _public_deps += invoker.public_deps
+  }
 
   _build_unit_tests = build_rust_unit_tests
   if (defined(invoker.skip_unit_tests) && invoker.skip_unit_tests == true) {
@@ -193,7 +197,11 @@ template("rust_target") {
       }
 
       not_needed(invoker, "*")
-      not_needed([ "proc_macro_target" ])
+      not_needed([
+                   "_deps",
+                   "_public_deps",
+                   "proc_macro_target",
+                 ])
       _generate_target = false
     } else {
       # We're in the host toolchain, so just generate an alias.
@@ -215,6 +223,7 @@ template("rust_target") {
       configs = []
       configs = _configs
       deps = _deps
+      public_deps = _public_deps
       if (defined(_cxx_bindings)) {
         deps += [ "//build/rust:cxx_rustdeps" ]
       }
@@ -230,6 +239,7 @@ template("rust_target") {
                                "configs",
                                "deps",
                                "features",
+                               "public_deps",
                                "rustflags",
                                "rustenv",
                                "output_dir",
@@ -261,7 +271,7 @@ template("rust_target") {
     if (defined(_cxx_bindings)) {
       rust_cxx("${_target_name}_cxx") {
         inputs = _cxx_bindings
-        native_header_deps = _deps
+        native_header_deps = _deps + _public_deps
         if (is_component_build) {
           # In a component_build the cxx bindings may be linked into a shared
           # library at any point up the dependency tree, so always export.
@@ -293,7 +303,7 @@ template("rust_target") {
       crate_root = _crate_root
       rustflags = _rustflags
       output_dir = _out_dir
-      deps = _deps
+      deps = _deps + _public_deps
       if (defined(invoker.test_deps)) {
         deps += invoker.test_deps
       }

@@ -36,6 +36,7 @@ import("//build/rust/rust_target.gni")
 #   rs_edition
 #   rs_configs
 #   rs_deps
+#   rs_public_deps
 #   rs_test_deps
 #   rs_skip_unit_tests
 #   rs_unit_test_target
@@ -79,6 +80,7 @@ template("mixed_target") {
     "rs_edition",
     "rs_configs",
     "rs_deps",
+    "rs_public_deps",
     "rs_test_deps",
     "rs_sources",
     "rs_features",
@@ -127,6 +129,9 @@ template("mixed_target") {
       }
       if (defined(invoker.rs_deps)) {
         deps = invoker.rs_deps
+      }
+      if (defined(invoker.rs_public_deps)) {
+        public_deps = invoker.rs_public_deps
       }
       if (defined(invoker.rs_crate_root)) {
         crate_root = invoker.rs_crate_root

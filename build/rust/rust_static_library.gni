@@ -64,6 +64,11 @@ import("//build/rust/rust_target.gni")
 #     List of GN targets on which this crate depends. These may be Rust
 #     or non-Rust targets.
 #
+#   public_deps (optional)
+#     List of GN targets on which this crate depends, and which are exported
+#     into the dependency list of any crate that depends on it. Dependency
+#     crates that appear in the public API should be included here.
+#
 #   test_deps (optional)
 #     List of GN targets on which this crate's tests depend, in addition
 #     to deps.
