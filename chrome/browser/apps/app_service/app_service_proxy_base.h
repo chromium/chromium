@@ -248,6 +248,9 @@ class AppServiceProxyBase : public KeyedService,
   // |app_id|.
   void RemoveSupportedLinksPreference(const std::string& app_id);
 
+  // Sets the window display mode for the app identified by `app_id`.
+  // `window_mode` represents how the app will be open in (e.g. in a
+  // standalone window or in a browser tab).
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
 

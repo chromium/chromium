@@ -516,7 +516,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
         return;
       }
       if (exclude_browser_tab_apps &&
-          update.WindowMode() == mojom::WindowMode::kBrowser) {
+          update.WindowMode() == WindowMode::kBrowser) {
         return;
       }
       // |activity_label| -> {index, is_generic}

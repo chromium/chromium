@@ -54,16 +54,16 @@ bool MenuItemHasLauncherContext(const extensions::MenuItem* item) {
   return item->contexts().Contains(extensions::MenuItem::LAUNCHER);
 }
 
-apps::mojom::WindowMode ConvertLaunchTypeCommandToWindowMode(int command_id) {
+apps::WindowMode ConvertLaunchTypeCommandToWindowMode(int command_id) {
   switch (command_id) {
     case ash::LAUNCH_TYPE_REGULAR_TAB:
-      return apps::mojom::WindowMode::kBrowser;
+      return apps::WindowMode::kBrowser;
     case ash::LAUNCH_TYPE_WINDOW:
-      return apps::mojom::WindowMode::kWindow;
+      return apps::WindowMode::kWindow;
     case ash::LAUNCH_TYPE_TABBED_WINDOW:
-      return apps::mojom::WindowMode::kTabbedWindow;
+      return apps::WindowMode::kTabbedWindow;
     default:
-      return apps::mojom::WindowMode::kUnknown;
+      return apps::WindowMode::kUnknown;
   }
 }
 
@@ -232,14 +232,14 @@ bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
       if ((command_id >= ash::LAUNCH_TYPE_PINNED_TAB &&
            command_id <= ash::LAUNCH_TYPE_WINDOW) ||
           command_id == ash::LAUNCH_TYPE_TABBED_WINDOW) {
-        auto user_window_mode = apps::mojom::WindowMode::kUnknown;
+        auto user_window_mode = apps::WindowMode::kUnknown;
         apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
             ->AppRegistryCache()
             .ForOneApp(item().id.app_id,
                        [&user_window_mode](const apps::AppUpdate& update) {
                          user_window_mode = update.WindowMode();
                        });
-        return user_window_mode != apps::mojom::WindowMode::kUnknown &&
+        return user_window_mode != apps::WindowMode::kUnknown &&
                user_window_mode ==
                    ConvertLaunchTypeCommandToWindowMode(command_id);
       }
@@ -475,11 +475,13 @@ void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb: {
       // Web apps can only toggle between kWindow, kTabbed and kBrowser.
-      apps::mojom::WindowMode user_window_mode =
+      apps::WindowMode user_window_mode =
           ConvertLaunchTypeCommandToWindowMode(command_id);
-      if (user_window_mode != apps::mojom::WindowMode::kUnknown) {
+      if (user_window_mode != apps::WindowMode::kUnknown) {
         apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
-            ->SetWindowMode(item().id.app_id, user_window_mode);
+            ->SetWindowMode(
+                item().id.app_id,
+                apps::ConvertWindowModeToMojomWindowMode(user_window_mode));
       }
       return;
     }

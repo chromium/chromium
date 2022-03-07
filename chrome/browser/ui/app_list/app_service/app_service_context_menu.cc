@@ -59,21 +59,20 @@ bool MenuItemHasLauncherContext(const extensions::MenuItem* item) {
   return item->contexts().Contains(extensions::MenuItem::LAUNCHER);
 }
 
-apps::mojom::WindowMode ConvertUseLaunchTypeCommandToWindowMode(
-    int command_id) {
+apps::WindowMode ConvertUseLaunchTypeCommandToWindowMode(int command_id) {
   DCHECK(command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
          command_id < ash::USE_LAUNCH_TYPE_COMMAND_END);
   switch (command_id) {
     case ash::USE_LAUNCH_TYPE_REGULAR:
-      return apps::mojom::WindowMode::kBrowser;
+      return apps::WindowMode::kBrowser;
     case ash::USE_LAUNCH_TYPE_WINDOW:
-      return apps::mojom::WindowMode::kWindow;
+      return apps::WindowMode::kWindow;
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
-      return apps::mojom::WindowMode::kTabbedWindow;
+      return apps::WindowMode::kTabbedWindow;
     case ash::USE_LAUNCH_TYPE_PINNED:
     case ash::USE_LAUNCH_TYPE_FULLSCREEN:
     default:
-      return apps::mojom::WindowMode::kUnknown;
+      return apps::WindowMode::kUnknown;
   }
 }
 
@@ -290,12 +289,12 @@ bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
     case apps::AppType::kWeb:
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
-        auto user_window_mode = apps::mojom::WindowMode::kUnknown;
+        auto user_window_mode = apps::WindowMode::kUnknown;
         proxy_->AppRegistryCache().ForOneApp(
             app_id(), [&user_window_mode](const apps::AppUpdate& update) {
               user_window_mode = update.WindowMode();
             });
-        return user_window_mode != apps::mojom::WindowMode::kUnknown &&
+        return user_window_mode != apps::WindowMode::kUnknown &&
                user_window_mode ==
                    ConvertUseLaunchTypeCommandToWindowMode(command_id);
       }
@@ -454,10 +453,13 @@ void AppServiceContextMenu::SetLaunchType(int command_id) {
   switch (app_type_) {
     case apps::AppType::kWeb: {
       // Web apps can only toggle between kWindow and kBrowser.
-      apps::mojom::WindowMode user_window_mode =
+      apps::WindowMode user_window_mode =
           ConvertUseLaunchTypeCommandToWindowMode(command_id);
-      if (user_window_mode != apps::mojom::WindowMode::kUnknown)
-        proxy_->SetWindowMode(app_id(), user_window_mode);
+      if (user_window_mode != apps::WindowMode::kUnknown) {
+        proxy_->SetWindowMode(
+            app_id(),
+            apps::ConvertWindowModeToMojomWindowMode(user_window_mode));
+      }
       return;
     }
     case apps::AppType::kChromeApp: {

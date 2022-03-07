@@ -176,8 +176,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<bool> ResizeLocked() const;
   bool ResizeLockedChanged() const;
 
-  apps::mojom::WindowMode WindowMode() const;
-  apps::WindowMode GetWindowMode() const;
+  apps::WindowMode WindowMode() const;
   bool WindowModeChanged() const;
 
   absl::optional<apps::RunOnOsLogin> RunOnOsLogin() const;

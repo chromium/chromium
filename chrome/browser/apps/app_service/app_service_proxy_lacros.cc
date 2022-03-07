@@ -480,7 +480,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForIntent(
             return;
           }
           if (exclude_browser_tab_apps &&
-              update.WindowMode() == mojom::WindowMode::kBrowser) {
+              update.WindowMode() == WindowMode::kBrowser) {
             return;
           }
           std::set<std::string> existing_activities;

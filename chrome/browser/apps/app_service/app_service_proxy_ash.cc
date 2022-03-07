@@ -375,6 +375,19 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
   return false;
 }
 
+void AppServiceProxyAsh::OnLaunched(LaunchCallback callback,
+                                    LaunchResult&& launch_result) {
+  bool exists = false;
+  InstanceRegistry().ForOneInstance(
+      launch_result.instance_id,
+      [&exists](const apps::InstanceUpdate& update) { exists = true; });
+  if (exists) {
+    std::move(callback).Run(std::move(launch_result));
+  } else {
+    callback_list_[launch_result.instance_id].push_back(std::move(callback));
+  }
+}
+
 void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
                                            apps::LoadIconCallback callback) {
   auto icon_key = update.IconKey();
@@ -535,19 +548,6 @@ void AppServiceProxyAsh::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 void AppServiceProxyAsh::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* cache) {
   instance_registry_observer_.Reset();
-}
-
-void AppServiceProxyAsh::OnLaunched(LaunchCallback callback,
-                                    LaunchResult&& launch_result) {
-  bool exists = false;
-  InstanceRegistry().ForOneInstance(
-      launch_result.instance_id,
-      [&exists](const apps::InstanceUpdate& update) { exists = true; });
-  if (exists) {
-    std::move(callback).Run(std::move(launch_result));
-  } else {
-    callback_list_[launch_result.instance_id].push_back(std::move(callback));
-  }
 }
 
 }  // namespace apps

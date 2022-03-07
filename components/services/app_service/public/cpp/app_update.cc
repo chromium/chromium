@@ -925,19 +925,19 @@ bool AppUpdate::ResizeLockedChanged() const {
           (mojom_delta_->resize_locked != mojom_state_->resize_locked));
 }
 
-apps::mojom::WindowMode AppUpdate::WindowMode() const {
+apps::WindowMode AppUpdate::WindowMode() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_DEFAULT_VALUE(window_mode, WindowMode::kUnknown)
+  }
+
   if (mojom_delta_ &&
       (mojom_delta_->window_mode != apps::mojom::WindowMode::kUnknown)) {
-    return mojom_delta_->window_mode;
+    return ConvertMojomWindowModeToWindowMode(mojom_delta_->window_mode);
   }
   if (mojom_state_) {
-    return mojom_state_->window_mode;
+    return ConvertMojomWindowModeToWindowMode(mojom_state_->window_mode);
   }
-  return apps::mojom::WindowMode::kUnknown;
-}
-
-apps::WindowMode AppUpdate::GetWindowMode() const {
-  GET_VALUE_WITH_DEFAULT_VALUE(window_mode, WindowMode::kUnknown)
+  return WindowMode::kUnknown;
 }
 
 bool AppUpdate::WindowModeChanged() const {
@@ -1048,7 +1048,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   }
 
   out << "ResizeLocked: " << PRINT_OPTIONAL_VALUE(ResizeLocked) << std::endl;
-  out << "WindowMode: " << app.WindowMode() << std::endl;
+  out << "WindowMode: " << static_cast<int>(app.WindowMode()) << std::endl;
   if (app.RunOnOsLogin().has_value()) {
     out << "RunOnOsLoginMode: "
         << static_cast<int>(app.RunOnOsLogin().value().login_mode) << std::endl;

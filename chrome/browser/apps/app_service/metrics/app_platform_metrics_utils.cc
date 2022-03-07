@@ -113,7 +113,7 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     const std::string& app_id,
                                     apps::mojom::LaunchContainer container) {
   apps::AppTypeName type_name = apps::AppTypeName::kChromeBrowser;
-  apps::mojom::WindowMode window_mode = apps::mojom::WindowMode::kBrowser;
+  WindowMode window_mode = WindowMode::kBrowser;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(
@@ -144,7 +144,7 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
       break;
   }
 
-  if (window_mode == apps::mojom::WindowMode::kBrowser) {
+  if (window_mode == WindowMode::kBrowser) {
     return apps::AppTypeName::kChromeBrowser;
   }
 

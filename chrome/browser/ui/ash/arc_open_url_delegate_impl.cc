@@ -227,7 +227,7 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
 
   proxy->AppRegistryCache().ForOneApp(
       *app_id, [&event_flags](const apps::AppUpdate& update) {
-        if (update.WindowMode() == apps::mojom::WindowMode::kBrowser) {
+        if (update.WindowMode() == apps::WindowMode::kBrowser) {
           event_flags = apps::GetEventFlags(
               apps::mojom::LaunchContainer::kLaunchContainerTab,
               WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -366,7 +366,7 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&launch_container, &disposition](const apps::AppUpdate& update) {
-        if (update.WindowMode() == apps::mojom::WindowMode::kBrowser) {
+        if (update.WindowMode() == apps::WindowMode::kBrowser) {
           launch_container = apps::mojom::LaunchContainer::kLaunchContainerTab;
           disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
         }

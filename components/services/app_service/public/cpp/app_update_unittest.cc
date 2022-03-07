@@ -251,7 +251,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_resize_locked_, u.ResizeLocked());
     EXPECT_EQ(expect_resize_locked_changed_, u.ResizeLockedChanged());
 
-    EXPECT_EQ(expect_window_mode_, u.GetWindowMode());
+    EXPECT_EQ(expect_window_mode_, u.WindowMode());
     EXPECT_EQ(expect_window_mode_changed_, u.WindowModeChanged());
 
     EXPECT_EQ(expect_run_on_os_login_, u.RunOnOsLogin());

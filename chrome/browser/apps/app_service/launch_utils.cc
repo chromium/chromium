@@ -125,14 +125,14 @@ WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
 }
 
 apps::mojom::LaunchContainer ConvertWindowModeToAppLaunchContainer(
-    apps::mojom::WindowMode window_mode) {
+    apps::WindowMode window_mode) {
   switch (window_mode) {
-    case apps::mojom::WindowMode::kBrowser:
+    case apps::WindowMode::kBrowser:
       return apps::mojom::LaunchContainer::kLaunchContainerTab;
-    case apps::mojom::WindowMode::kWindow:
-    case apps::mojom::WindowMode::kTabbedWindow:
+    case apps::WindowMode::kWindow:
+    case apps::WindowMode::kTabbedWindow:
       return apps::mojom::LaunchContainer::kLaunchContainerWindow;
-    case apps::mojom::WindowMode::kUnknown:
+    case apps::WindowMode::kUnknown:
       return apps::mojom::LaunchContainer::kLaunchContainerNone;
   }
 }
@@ -439,7 +439,7 @@ crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
     int event_flags,
     apps::mojom::LaunchSource launch_source,
     int64_t display_id) {
-  apps::mojom::WindowMode window_mode = apps::mojom::WindowMode::kUnknown;
+  WindowMode window_mode = WindowMode::kUnknown;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&window_mode](const apps::AppUpdate& update) {
         window_mode = update.WindowMode();
