@@ -424,7 +424,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       CloseTabSearch(browser_);
       break;
 
-      // Window management commands
+    // Window management commands
     case IDC_NEW_WINDOW:
       NewWindow(browser_);
       break;
