@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -146,17 +147,26 @@ void FullscreenController::EnterFullscreen(LocalFrame& frame,
                                            FullscreenRequestType request_type) {
   const auto& screen_info = frame.GetChromeClient().GetScreenInfo(frame);
 
-  bool requesting_other_screen =
+  const bool requesting_other_screen =
       options->hasScreen() &&
       options->screen()->DisplayId() != Screen::kInvalidDisplayId &&
       options->screen()->DisplayId() != screen_info.display_id;
+  bool requesting_fullscreen_screen_change =
+      state_ == State::kFullscreen && requesting_other_screen;
+#if BUILDFLAG(IS_MAC)
+  // Moving a fullscreen window from one screen to another is gated by the
+  // Window Placement V2 feature state on Mac. See crbug.com/1303048
+  requesting_fullscreen_screen_change &=
+      RuntimeEnabledFeatures::WindowPlacementV2Enabled(frame.DomWindow());
+#endif  // BUILDFLAG(IS_MAC)
+
   // TODO(dtapuska): If we are already in fullscreen. If the options are
   // different than the currently requested one we may wish to request
   // fullscreen mode again.
   // If already fullscreen or exiting fullscreen, synchronously call
   // |DidEnterFullscreen()|. When exiting, the coming |DidExitFullscreen()| call
   // will again notify all frames.
-  if ((state_ == State::kFullscreen && !requesting_other_screen) ||
+  if ((state_ == State::kFullscreen && !requesting_fullscreen_screen_change) ||
       state_ == State::kExitingFullscreen) {
     State old_state = state_;
     state_ = State::kEnteringFullscreen;
@@ -179,8 +189,7 @@ void FullscreenController::EnterFullscreen(LocalFrame& frame,
     return;
   }
 
-  DCHECK(state_ == State::kInitial ||
-         state_ == State::kFullscreen && requesting_other_screen);
+  DCHECK(state_ == State::kInitial || requesting_fullscreen_screen_change);
   auto fullscreen_options = ToMojoOptions(&frame, options, request_type);
 
 #if DCHECK_IS_ON()
