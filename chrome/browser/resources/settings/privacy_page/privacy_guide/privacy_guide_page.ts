@@ -330,7 +330,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
              .isAvailable()) {
       // This card is currently shown but is no longer available. Navigate to
       // the next card in the flow.
-      this.navigateForward_(true);
+      this.navigateForward_();
     }
   }
 
@@ -350,10 +350,10 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   }
 
   private onNextButtonClick_() {
-    this.navigateForward_(true);
+    this.navigateForward_();
   }
 
-  private navigateForward_(playAnimation: boolean) {
+  private navigateForward_() {
     const components =
         this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!;
     assert(components.onForwardNavigation || components.nextStep);
@@ -361,15 +361,15 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       components.onForwardNavigation();
     }
     if (components.nextStep) {
-      this.navigateToCard_(components.nextStep, false, playAnimation);
+      this.navigateToCard_(components.nextStep, false, true);
     }
   }
 
   private onBackButtonClick_() {
-    this.navigateBackward_(true);
+    this.navigateBackward_();
   }
 
-  private navigateBackward_(playAnimation: boolean) {
+  private navigateBackward_() {
     const components =
         this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!;
     if (components.onBackwardNavigation) {
@@ -378,7 +378,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     this.navigateToCard_(
         this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!
             .previousStep!,
-        true, playAnimation);
+        true, true);
   }
 
   private navigateToCard_(
@@ -392,9 +392,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       // This card is currently not available. Navigate to the next one, or
       // the previous one if this was a back navigation.
       if (isBackwardNavigation) {
-        this.navigateBackward_(playAnimation);
+        this.navigateBackward_();
       } else {
-        this.navigateForward_(playAnimation);
+        this.navigateForward_();
       }
     } else {
       if (this.animationsEnabled_ && playAnimation) {
