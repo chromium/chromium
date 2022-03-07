@@ -298,13 +298,13 @@ def _run_autoninja(out_dir: str, target: str) -> float:
     return _run_and_time_cmd(['autoninja', '-C', out_dir, target])
 
 
-def _run_install(out_dir: str, target: str) -> float:
+def _run_install(out_dir: str, target: str, device_serial: str) -> float:
     # Example script path: out/Debug/bin/chrome_public_apk
     script_path = os.path.join(out_dir, 'bin', target)
     # Disable first run to get a more accurate timing of startup.
     cmd = [
-        script_path, 'run', '--args=--disable-fre', '--exit-on-match',
-        '^Successfully loaded native library$'
+        script_path, 'run', '--device', device_serial, '--args=--disable-fre',
+        '--exit-on-match', '^Successfully loaded native library$'
     ]
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         cmd += ['-vv']
@@ -360,7 +360,7 @@ def _run_and_maybe_install(out_dir: str, target: str,
                            ) -> float:
     total_time = _run_autoninja(out_dir, target)
     if emulator:
-        total_time += _run_install(out_dir, target)
+        total_time += _run_install(out_dir, target, emulator.serial)
         _remove_deleted_files(emulator)
     return total_time
 
@@ -368,7 +368,10 @@ def _run_and_maybe_install(out_dir: str, target: str,
 def _maybe_uninstall(out_dir: str, target: str,
                      emulator: Optional[device_utils.DeviceUtils]):
     if emulator:
-        _run_and_time_cmd([os.path.join(out_dir, 'bin', target), 'uninstall'])
+        _run_and_time_cmd([
+            os.path.join(out_dir, 'bin', target), 'uninstall', '--device',
+            emulator.serial
+        ])
 
 
 def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
