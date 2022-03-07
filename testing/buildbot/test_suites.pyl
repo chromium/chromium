@@ -7176,6 +7176,15 @@
       },
     },
 
+    'lacros_amd64_generic_rel_skylab_fyi': {
+      'lacros_skylab_poc': {
+        'variants': [
+          'CROS_OCTOPUS_FULL',
+          'CROS_EVE_FULL',
+        ]
+      },
+    },
+
     'lacros_device_or_vm_tests': {
       'lacros_all_tast_tests': {
         'variants': [

@@ -276,6 +276,15 @@ ci.builder(
 )
 
 ci.builder(
+    name = "lacros-amd64-generic-rel-skylab-fyi",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros",
+        short_name = "lsf",
+    ),
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+)
+
+ci.builder(
     name = "linux-annotator-rel",
     console_view_entry = consoles.console_view_entry(
         category = "network|traffic|annotations",

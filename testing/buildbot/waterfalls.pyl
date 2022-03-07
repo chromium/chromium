@@ -3232,6 +3232,18 @@
         },
         'os_type': 'chromeos'
       },
+      'lacros-amd64-generic-rel-skylab-fyi': {
+        'additional_compile_targets': [
+          'chrome',
+          'linux_symbols',
+          'symupload',
+          'strip_chrome_binary',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_amd64_generic_rel_skylab_fyi',
+        },
+        'os_type': 'chromeos'
+      },
       'linux-annotator-rel': {
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',

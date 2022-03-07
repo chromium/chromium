@@ -74999,6 +74999,58 @@
       }
     ]
   },
+  "lacros-amd64-generic-rel-skylab-fyi": {
+    "additional_compile_targets": [
+      "chrome",
+      "linux_symbols",
+      "symupload",
+      "strip_chrome_binary"
+    ],
+    "skylab_tests": [
+      {
+        "args": [],
+        "cros_board": "octopus",
+        "cros_img": "octopus-full/R101-14543.0.0-rc1",
+        "name": "lacros_fyi_tast_tests_OCTOPUS_FULL",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_fyi_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "eve",
+        "cros_img": "eve-full/R100-14495.0.0-rc1",
+        "name": "lacros_fyi_tast_tests_EVE_FULL",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_fyi_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "octopus",
+        "cros_img": "octopus-full/R101-14543.0.0-rc1",
+        "name": "ozone_unittests_OCTOPUS_FULL",
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [],
+        "cros_board": "eve",
+        "cros_img": "eve-full/R100-14495.0.0-rc1",
+        "name": "ozone_unittests_EVE_FULL",
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600
+      }
+    ]
+  },
   "linux-annotator-rel": {
     "scripts": [
       {

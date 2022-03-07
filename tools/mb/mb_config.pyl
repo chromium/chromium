@@ -304,6 +304,7 @@
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux Viz': 'release_trybot_minimal_symbols_reclient',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel',
+      'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot',
       'linux-lacros-dbg-fyi': 'lacros_on_linux_debug_bot',
@@ -1912,6 +1913,10 @@
 
     'chromeos_amd64-generic_lacros_rel': [
       'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'release',
+    ],
+
+    'chromeos_amd64-generic_lacros_rel_fyi': [
+      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'release', 'is_skylab',
     ],
 
     'chromeos_amd64-generic_lacros_rel_dchecks': [
