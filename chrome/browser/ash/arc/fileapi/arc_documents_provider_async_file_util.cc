@@ -376,10 +376,10 @@ void ArcDocumentsProviderAsyncFileUtil::Truncate(
     int64_t length,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // Truncate() should never be called, since destination path of
-  // copy/move/create is always deduplicated in Files app.
-  NOTREACHED();
-  std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
+  // TODO(b/223247850): Investigate whether Truncate() should be implemented
+  // after introducing write support in https://crrev.com/c/1490361.
+  NOTIMPLEMENTED();
+  std::move(callback).Run(base::File::FILE_OK);
 }
 
 void ArcDocumentsProviderAsyncFileUtil::CopyFileLocal(
