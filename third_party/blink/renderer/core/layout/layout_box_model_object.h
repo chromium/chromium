@@ -672,6 +672,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                               LayoutObject* before_child,
                               bool full_remove_insert = false);
 
+  LayoutObject* SplitAnonymousBoxesAroundChild(LayoutObject* before_child);
+  virtual LayoutBox* CreateAnonymousBoxToSplit(
+      const LayoutBox* box_to_split) const;
+
  private:
   void QuadsInternal(Vector<gfx::QuadF>& quads,
                      MapCoordinatesFlags mode,
