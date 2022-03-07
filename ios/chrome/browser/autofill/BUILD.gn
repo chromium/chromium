@@ -541,6 +541,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:test_support",
     "//components/infobars/core",
     "//components/keyed_service/core",
+    "//components/password_manager/core/browser:test_support",
     "//components/password_manager/ios",
     "//components/security_state/ios",
     "//ios/chrome/app/application_delegate:app_state_header",

@@ -12,6 +12,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/current_thread.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -29,10 +30,13 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "ios/chrome/browser/autofill/form_suggestion_controller.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
@@ -44,8 +48,12 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest_mac.h"
+#include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -182,10 +190,22 @@ class TestConsumer : public WebDataServiceConsumer {
 };
 
 // Text fixture to test autofill.
-class AutofillControllerTest : public ChromeWebTest {
+class AutofillControllerTest : public PlatformTest, base::TaskObserver {
  public:
-  AutofillControllerTest()
-      : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+  AutofillControllerTest() : web_client_(std::make_unique<ChromeWebClient>()) {
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        IOSChromePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                            web::BrowserState,
+                            password_manager::MockPasswordStoreInterface>));
+    browser_state_ = builder.Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+  }
 
   AutofillControllerTest(const AutofillControllerTest&) = delete;
   AutofillControllerTest& operator=(const AutofillControllerTest&) = delete;
@@ -228,6 +248,23 @@ class AutofillControllerTest : public ChromeWebTest {
     return suggestion_controller_;
   }
 
+  // base::TaskObserver overide
+  void WillProcessTask(const base::PendingTask&, bool) override;
+  void DidProcessTask(const base::PendingTask&) override;
+
+  void WaitForBackgroundTasks();
+
+  void WaitForCondition(ConditionBlock condition);
+
+ protected:
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
+  bool processed_a_task_ = false;
+
  private:
   // Histogram tester for these tests.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -246,12 +283,12 @@ class AutofillControllerTest : public ChromeWebTest {
 };
 
 void AutofillControllerTest::SetUp() {
-  ChromeWebTest::SetUp();
+  PlatformTest::SetUp();
 
   // Profile import requires a PersonalDataManager which itself needs the
   // WebDataService; this is not initialized on a TestChromeBrowserState by
   // default.
-  GetBrowserState()->CreateWebDataService();
+  browser_state_->CreateWebDataService();
 
   // Create a PasswordController instance that will handle set up for renderer
   // ids.
@@ -260,7 +297,7 @@ void AutofillControllerTest::SetUp() {
       [[PasswordController alloc] initWithWebState:web_state()];
 
   autofill_agent_ =
-      [[AutofillAgent alloc] initWithPrefService:GetBrowserState()->GetPrefs()
+      [[AutofillAgent alloc] initWithPrefService:browser_state_->GetPrefs()
                                         webState:web_state()];
   suggestion_controller_ =
       [[TestSuggestionController alloc] initWithWebState:web_state()
@@ -270,7 +307,7 @@ void AutofillControllerTest::SetUp() {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
   autofill_client_.reset(new autofill::ChromeAutofillClientIOS(
-      GetBrowserState(), web_state(), infobar_manager, autofill_agent_,
+      browser_state_.get(), web_state(), infobar_manager, autofill_agent_,
       /*password_generation_manager=*/nullptr));
 
   std::string locale("en");
@@ -296,7 +333,8 @@ void AutofillControllerTest::SetUp() {
 void AutofillControllerTest::TearDown() {
   [suggestion_controller_ detachFromWebState];
 
-  ChromeWebTest::TearDown();
+  WaitForBackgroundTasks();
+  web_state_.reset();
 }
 
 void AutofillControllerTest::WaitForSuggestionRetrieval(BOOL wait_for_trigger) {
@@ -326,7 +364,7 @@ bool AutofillControllerTest::WaitForFormFetched(
 bool AutofillControllerTest::LoadHtmlAndWaitForFormFetched(
     NSString* html,
     size_t expected_number_of_forms) {
-  ChromeWebTest::LoadHtml(html);
+  web::test::LoadHtml(html, web_state());
   web::WebFrame* main_frame =
       web_state()->GetWebFramesManager()->GetMainWebFrame();
   BrowserAutofillManager* autofill_manager =
@@ -343,6 +381,43 @@ void AutofillControllerTest::ExpectMetric(const std::string& histogram_name,
 void AutofillControllerTest::ExpectHappinessMetric(
     AutofillMetrics::UserHappinessMetric metric) {
   histogram_tester_->ExpectBucketCount("Autofill.UserHappiness", metric, 1);
+}
+
+void AutofillControllerTest::WillProcessTask(const base::PendingTask&, bool) {
+  // Nothing to do.
+}
+void AutofillControllerTest::DidProcessTask(const base::PendingTask&) {
+  processed_a_task_ = true;
+}
+
+void AutofillControllerTest::WaitForBackgroundTasks() {
+  // Because tasks can add new tasks to either queue, the loop continues until
+  // the first pass where no activity is seen from either queue.
+  bool activity_seen = false;
+  base::CurrentThread message_loop = base::CurrentThread::Get();
+  message_loop->AddTaskObserver(this);
+  do {
+    activity_seen = false;
+
+    // Yield to the iOS message queue, e.g. [NSObject performSelector:]
+    // events.
+    if (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, true) ==
+        kCFRunLoopRunHandledSource)
+      activity_seen = true;
+
+    // Yield to the Chromium message queue, e.g. WebThread::PostTask()
+    // events.
+    processed_a_task_ = false;
+    base::RunLoop().RunUntilIdle();
+    if (processed_a_task_)  // Set in TaskObserver method.
+      activity_seen = true;
+
+  } while (activity_seen);
+  message_loop->RemoveTaskObserver(this);
+}
+
+void AutofillControllerTest::WaitForCondition(ConditionBlock condition) {
+  base::test::ios::WaitUntilCondition(condition, true, base::Seconds(1000));
 }
 
 // Checks that viewing an HTML page containing a form results in the form being
@@ -386,17 +461,22 @@ TEST_F(AutofillControllerTest, ReadFormName) {
 TEST_F(AutofillControllerTest, ProfileImport) {
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(GetBrowserState()));
+          ChromeBrowserState::FromBrowserState(browser_state_.get()));
   personal_data_manager->set_auto_accept_address_imports_for_testing(true);
   // Check there are no registered profiles already.
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
-  ExecuteJavaScript(@"document.forms[0].name.value = 'Homer Simpson'");
-  ExecuteJavaScript(@"document.forms[0].address.value = '123 Main Street'");
-  ExecuteJavaScript(@"document.forms[0].city.value = 'Springfield'");
-  ExecuteJavaScript(@"document.forms[0].state.value = 'IL'");
-  ExecuteJavaScript(@"document.forms[0].zip.value = '55123'");
-  ExecuteJavaScript(@"submit.click()");
+  web::test::ExecuteJavaScript(
+      @"document.forms[0].name.value = 'Homer Simpson'", web_state());
+  web::test::ExecuteJavaScript(
+      @"document.forms[0].address.value = '123 Main Street'", web_state());
+  web::test::ExecuteJavaScript(@"document.forms[0].city.value = 'Springfield'",
+                               web_state());
+  web::test::ExecuteJavaScript(@"document.forms[0].state.value = 'IL'",
+                               web_state());
+  web::test::ExecuteJavaScript(@"document.forms[0].zip.value = '55123'",
+                               web_state());
+  web::test::ExecuteJavaScript(@"submit.click()", web_state());
   WaitForCondition(^bool {
     return personal_data_manager->GetProfiles().size();
   });
@@ -420,7 +500,7 @@ void AutofillControllerTest::SetUpForSuggestions(
     size_t expected_number_of_forms) {
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(GetBrowserState()));
+          ChromeBrowserState::FromBrowserState(browser_state_.get()));
   AutofillProfile profile(base::GenerateGUID(), "https://www.example.com/");
   profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Main Street");
@@ -441,7 +521,7 @@ void AutofillControllerTest::SetUpForSuggestions(
 TEST_F(AutofillControllerTest, ProfileSuggestions) {
   SetUpForSuggestions(kProfileFormHtml, 1);
   ForceViewRendering(web_state()->GetView());
-  ExecuteJavaScript(@"document.forms[0].name.focus()");
+  web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.AddressSuggestionsCount", 1);
   ExpectHappinessMetric(AutofillMetrics::SUGGESTIONS_SHOWN);
@@ -457,7 +537,7 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsTwoAnonymousForms) {
       [NSString stringWithFormat:@"%@%@", kProfileFormHtml, kProfileFormHtml],
       2);
   ForceViewRendering(web_state()->GetView());
-  ExecuteJavaScript(@"document.forms[0].name.focus()");
+  web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.AddressSuggestionsCount", 1);
   ExpectHappinessMetric(AutofillMetrics::SUGGESTIONS_SHOWN);
@@ -472,7 +552,7 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsTwoAnonymousForms) {
 TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
   SetUpForSuggestions(kProfileFormHtml, 1);
   ForceViewRendering(web_state()->GetView());
-  ExecuteJavaScript(@"document.forms[0].state.focus()");
+  web::test::ExecuteJavaScript(@"document.forms[0].state.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.AddressSuggestionsCount", 1);
   ExpectHappinessMetric(AutofillMetrics::SUGGESTIONS_SHOWN);
@@ -485,7 +565,7 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
 TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(GetBrowserState()));
+          ChromeBrowserState::FromBrowserState(browser_state_.get()));
   personal_data_manager->OnSyncServiceInitialized(nullptr);
   PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
 
@@ -511,7 +591,7 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   EXPECT_EQ(2U, personal_data_manager->GetProfiles().size());
   EXPECT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
   ForceViewRendering(web_state()->GetView());
-  ExecuteJavaScript(@"document.forms[0].name.focus()");
+  web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.AddressSuggestionsCount", 2);
   ExpectHappinessMetric(AutofillMetrics::SUGGESTIONS_SHOWN);
@@ -523,10 +603,11 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
 // successfully registered.
 TEST_F(AutofillControllerTest, KeyValueImport) {
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kKeyValueFormHtml, 1));
-  ExecuteJavaScript(@"document.forms[0].greeting.value = 'Hello'");
+  web::test::ExecuteJavaScript(@"document.forms[0].greeting.value = 'Hello'",
+                               web_state());
   scoped_refptr<AutofillWebDataService> web_data_service =
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-          GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
+          browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   TestConsumer consumer;
   const int limit = 1;
   consumer.result_ = {CreateAutofillEntry(u"Should"),
@@ -538,7 +619,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
   WaitForBackgroundTasks();
   // No value should be returned before anything is loaded via form submission.
   ASSERT_EQ(0U, consumer.result_.size());
-  ExecuteJavaScript(@"submit.click()");
+  web::test::ExecuteJavaScript(@"submit.click()", web_state());
   // We can't make |consumer| a __block variable because TestConsumer lacks copy
   // construction. We just pass a pointer instead as we know that the callback
   // is executed within the life-cyle of |consumer|.
@@ -558,7 +639,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
 void AutofillControllerTest::SetUpKeyValueData() {
   scoped_refptr<AutofillWebDataService> web_data_service =
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-          GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
+          browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   // Load value into database.
   std::vector<FormFieldData> values;
   FormFieldData fieldData;
@@ -579,8 +660,10 @@ TEST_F(AutofillControllerTest, KeyValueSuggestions) {
   SetUpKeyValueData();
 
   // Focus element.
-  ExecuteJavaScript(@"document.forms[0].greeting.value='B'");
-  ExecuteJavaScript(@"document.forms[0].greeting.focus()");
+  web::test::ExecuteJavaScript(@"document.forms[0].greeting.value='B'",
+                               web_state());
+  web::test::ExecuteJavaScript(@"document.forms[0].greeting.focus()",
+                               web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
@@ -592,12 +675,16 @@ TEST_F(AutofillControllerTest, KeyValueSuggestions) {
 // happen in practice and should not result in a crash or incorrect behavior.
 TEST_F(AutofillControllerTest, KeyValueTypedSuggestions) {
   SetUpKeyValueData();
-  ExecuteJavaScript(@"document.forms[0].greeting.focus()");
+  web::test::ExecuteJavaScript(@"document.forms[0].greeting.focus()",
+                               web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
-  ExecuteJavaScript(@"event = document.createEvent('TextEvent');");
-  ExecuteJavaScript(
-      @"event.initTextEvent('textInput', true, true, window, 'B');");
-  ExecuteJavaScript(@"document.forms[0].greeting.dispatchEvent(event);");
+  web::test::ExecuteJavaScript(@"event = document.createEvent('TextEvent');",
+                               web_state());
+  web::test::ExecuteJavaScript(
+      @"event.initTextEvent('textInput', true, true, window, 'B');",
+      web_state());
+  web::test::ExecuteJavaScript(
+      @"document.forms[0].greeting.dispatchEvent(event);", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
@@ -610,26 +697,33 @@ TEST_F(AutofillControllerTest, KeyValueFocusChange) {
   SetUpKeyValueData();
 
   // Focus the dummy field and confirm no suggestions are presented.
-  ExecuteJavaScript(@"document.forms[0].dummy.focus()");
+  web::test::ExecuteJavaScript(@"document.forms[0].dummy.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ASSERT_EQ(0U, [suggestion_controller() suggestions].count);
 
   // Enter 'B' in the dummy field and confirm no suggestions are presented.
-  ExecuteJavaScript(@"event = document.createEvent('TextEvent');");
-  ExecuteJavaScript(
-      @"event.initTextEvent('textInput', true, true, window, 'B');");
-  ExecuteJavaScript(@"document.forms[0].dummy.dispatchEvent(event);");
+  web::test::ExecuteJavaScript(@"event = document.createEvent('TextEvent');",
+                               web_state());
+  web::test::ExecuteJavaScript(
+      @"event.initTextEvent('textInput', true, true, window, 'B');",
+      web_state());
+  web::test::ExecuteJavaScript(@"document.forms[0].dummy.dispatchEvent(event);",
+                               web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ASSERT_EQ(0U, [suggestion_controller() suggestions].count);
 
   // Enter 'B' in the greeting field and confirm that one suggestion ("Bonjour")
   // is presented.
-  ExecuteJavaScript(@"document.forms[0].greeting.focus()");
+  web::test::ExecuteJavaScript(@"document.forms[0].greeting.focus()",
+                               web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
-  ExecuteJavaScript(@"event = document.createEvent('TextEvent');");
-  ExecuteJavaScript(
-      @"event.initTextEvent('textInput', true, true, window, 'B');");
-  ExecuteJavaScript(@"document.forms[0].greeting.dispatchEvent(event);");
+  web::test::ExecuteJavaScript(@"event = document.createEvent('TextEvent');",
+                               web_state());
+  web::test::ExecuteJavaScript(
+      @"event.initTextEvent('textInput', true, true, window, 'B');",
+      web_state());
+  web::test::ExecuteJavaScript(
+      @"document.forms[0].greeting.dispatchEvent(event);", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ASSERT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
@@ -643,7 +737,8 @@ TEST_F(AutofillControllerTest, NoKeyValueSuggestionsWithoutTyping) {
   SetUpKeyValueData();
 
   // Focus element.
-  ExecuteJavaScript(@"document.forms[0].greeting.focus()");
+  web::test::ExecuteJavaScript(@"document.forms[0].greeting.focus()",
+                               web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   EXPECT_EQ(0U, [suggestion_controller() suggestions].count);
 }
@@ -655,17 +750,21 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   InfoBarManagerImpl::CreateForWebState(web_state());
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(GetBrowserState()));
+          ChromeBrowserState::FromBrowserState(browser_state_.get()));
   personal_data_manager->OnSyncServiceInitialized(nullptr);
 
   // Check there are no registered profiles already.
   EXPECT_EQ(0U, personal_data_manager->GetCreditCards().size());
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kCreditCardFormHtml, 1));
-  ExecuteJavaScript(@"document.forms[0].name.value = 'Superman'");
-  ExecuteJavaScript(@"document.forms[0].CCNo.value = '4000-4444-4444-4444'");
-  ExecuteJavaScript(@"document.forms[0].CCExpiresMonth.value = '11'");
-  ExecuteJavaScript(@"document.forms[0].CCExpiresYear.value = '2999'");
-  ExecuteJavaScript(@"submit.click()");
+  web::test::ExecuteJavaScript(@"document.forms[0].name.value = 'Superman'",
+                               web_state());
+  web::test::ExecuteJavaScript(
+      @"document.forms[0].CCNo.value = '4000-4444-4444-4444'", web_state());
+  web::test::ExecuteJavaScript(@"document.forms[0].CCExpiresMonth.value = '11'",
+                               web_state());
+  web::test::ExecuteJavaScript(
+      @"document.forms[0].CCExpiresYear.value = '2999'", web_state());
+  web::test::ExecuteJavaScript(@"submit.click()", web_state());
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
   WaitForCondition(^bool() {
