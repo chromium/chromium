@@ -18,6 +18,16 @@ class ServiceRequestSender {
   using ResponseCallback =
       base::OnceCallback<void(int http_status, const std::string& response)>;
 
+  enum class AuthMode {
+    // Requires an OAuth token for the request.
+    OAUTH_STRICT,
+    // Tries to get an OAuth token for the request but allows to fall back to
+    // the API key if the fetch failed.
+    OAUTH_WITH_API_KEY_FALLBACK,
+    // Does not get an OAuth token and uses the API key directly.
+    API_KEY
+  };
+
   ServiceRequestSender();
   virtual ~ServiceRequestSender();
 
@@ -25,6 +35,7 @@ class ServiceRequestSender {
   // response itself.
   virtual void SendRequest(const GURL& url,
                            const std::string& request_body,
+                           AuthMode auth_mode,
                            ResponseCallback response_callback,
                            RpcType rpc_type) = 0;
 };

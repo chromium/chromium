@@ -36,9 +36,7 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
       AccessTokenFetcher* access_token_fetcher,
       std::unique_ptr<cup::CUPFactory> cup_factory,
       std::unique_ptr<SimpleURLLoaderFactory> loader_factory,
-      const std::string& api_key,
-      bool auth_enabled,
-      bool disable_auth_if_no_access_token);
+      const std::string& api_key);
   ~ServiceRequestSenderImpl() override;
   ServiceRequestSenderImpl(const ServiceRequestSenderImpl&) = delete;
   ServiceRequestSenderImpl& operator=(const ServiceRequestSenderImpl&) = delete;
@@ -54,6 +52,7 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
   // is considered failed and the callback is invoked.
   void SendRequest(const GURL& url,
                    const std::string& request_body,
+                   ServiceRequestSender::AuthMode auth_mode,
                    ResponseCallback callback,
                    RpcType rpc_type) override;
 
@@ -63,25 +62,31 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
   // |callback|.
   void InternalSendRequest(const GURL& url,
                            const std::string& request_body,
+                           ServiceRequestSender::AuthMode auth_mode,
                            ResponseCallback callback);
 
   void SendRequestAuth(const GURL& url,
                        const std::string& request_body,
                        const std::string& access_token,
+                       ServiceRequestSender::AuthMode auth_mode,
                        ResponseCallback callback);
 
   void RetryIfUnauthorized(const GURL& url,
                            const std::string& access_token,
                            const std::string& request_body,
+                           ServiceRequestSender::AuthMode auth_mode,
                            ResponseCallback callback,
                            int http_status,
                            const std::string& response);
 
   void OnFetchAccessToken(GURL url,
                           std::string request_body,
+                          ServiceRequestSender::AuthMode auth_mode,
                           ResponseCallback callback,
                           bool access_token_fetched,
                           const std::string& access_token);
+
+  bool OAuthEnabled(ServiceRequestSender::AuthMode auth_mode);
 
   raw_ptr<content::BrowserContext> context_ = nullptr;
   raw_ptr<AccessTokenFetcher> access_token_fetcher_ = nullptr;
@@ -91,10 +96,11 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
   // API key to add to the URL of unauthenticated requests.
   std::string api_key_;
 
-  // Whether requests should be authenticated.
-  bool auth_enabled_ = true;
+  // Getting the OAuth token failed. For requests with auth mode allowing to
+  // fall back to API key, it will not be retried. For requests forcing auth,
+  // the OAuth token will tried to be re-fetched.
+  bool failed_to_fetch_oauth_token_ = false;
 
-  bool disable_auth_if_no_access_token_ = true;
   bool retried_with_fresh_access_token_ = false;
   base::WeakPtrFactory<ServiceRequestSenderImpl> weak_ptr_factory_{this};
 };

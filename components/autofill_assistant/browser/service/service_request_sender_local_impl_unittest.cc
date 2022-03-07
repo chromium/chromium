@@ -29,9 +29,11 @@ TEST_F(ServiceRequestSenderLocalImplTest, SendRequestAlwaysReturnsResponse) {
   ServiceRequestSenderLocalImpl service_request_sender = {"response"};
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response")).Times(2);
   service_request_sender.SendRequest(
-      GURL(), "request_1", mock_response_callback_.Get(), RpcType::UNKNOWN);
+      GURL(), "request_1", ServiceRequestSender::AuthMode::OAUTH_STRICT,
+      mock_response_callback_.Get(), RpcType::UNKNOWN);
   service_request_sender.SendRequest(
-      GURL(), "request_2", mock_response_callback_.Get(), RpcType::UNKNOWN);
+      GURL(), "request_2", ServiceRequestSender::AuthMode::OAUTH_STRICT,
+      mock_response_callback_.Get(), RpcType::UNKNOWN);
 }
 
 }  // namespace

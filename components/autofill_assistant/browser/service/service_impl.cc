@@ -28,6 +28,20 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace autofill_assistant {
+namespace {
+
+bool AuthEnabled() {
+  return "false" != base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                        switches::kAutofillAssistantAuth);
+}
+
+ServiceRequestSender::AuthMode GetDefaultAuthMode() {
+  return AuthEnabled()
+             ? ServiceRequestSender::AuthMode::OAUTH_WITH_API_KEY_FALLBACK
+             : ServiceRequestSender::AuthMode::API_KEY;
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ServiceImpl> ServiceImpl::Create(
@@ -47,11 +61,7 @@ std::unique_ptr<ServiceImpl> ServiceImpl::Create(
       context, client->GetAccessTokenFetcher(),
       std::make_unique<cup::CUPImplFactory>(),
       std::make_unique<NativeURLLoaderFactory>(),
-      ApiKeyFetcher().GetAPIKey(client->GetChannel()),
-      /* auth_enabled = */ "false" !=
-          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-              switches::kAutofillAssistantAuth),
-      /* disable_auth_if_no_access_token = */ true);
+      ApiKeyFetcher().GetAPIKey(client->GetChannel()));
 
   return std::make_unique<ServiceImpl>(
       client, std::move(request_sender),
@@ -93,7 +103,8 @@ void ServiceImpl::GetScriptsForUrl(const GURL& url,
                                ProtocolUtils::CreateGetScriptsRequest(
                                    url, client_context_->AsProto(),
                                    trigger_context.GetScriptParameters()),
-                               std::move(callback), RpcType::SUPPORTS_SCRIPT);
+                               GetDefaultAuthMode(), std::move(callback),
+                               RpcType::SUPPORTS_SCRIPT);
 }
 
 void ServiceImpl::GetActions(const std::string& script_path,
@@ -110,7 +121,7 @@ void ServiceImpl::GetActions(const std::string& script_path,
           script_path, url, global_payload, script_payload,
           client_context_->AsProto(), trigger_context.GetScriptParameters(),
           script_store_config_),
-      std::move(callback), RpcType::GET_ACTIONS);
+      GetDefaultAuthMode(), std::move(callback), RpcType::GET_ACTIONS);
 }
 
 void ServiceImpl::GetNextActions(
@@ -126,7 +137,7 @@ void ServiceImpl::GetNextActions(
       ProtocolUtils::CreateNextScriptActionsRequest(
           previous_global_payload, previous_script_payload, processed_actions,
           timing_stats, client_context_->AsProto()),
-      std::move(callback), RpcType::GET_ACTIONS);
+      GetDefaultAuthMode(), std::move(callback), RpcType::GET_ACTIONS);
 }
 
 void ServiceImpl::GetUserData(const CollectUserDataOptions& options,
@@ -167,7 +178,8 @@ void ServiceImpl::SendUserDataRequest(
       ProtocolUtils::CreateGetUserDataRequest(
           run_id, request_name, request_email, request_phone, request_shipping,
           request_payment_methods, supported_card_networks, client_token),
-      std::move(callback), RpcType::GET_USER_DATA);
+      ServiceRequestSender::AuthMode::OAUTH_STRICT, std::move(callback),
+      RpcType::GET_USER_DATA);
 }
 
 }  // namespace autofill_assistant

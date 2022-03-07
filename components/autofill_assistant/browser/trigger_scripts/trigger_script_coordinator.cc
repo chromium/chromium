@@ -77,6 +77,7 @@ void TriggerScriptCoordinator::Start(
       ProtocolUtils::CreateGetTriggerScriptsRequest(
           deeplink_url_, client_context,
           trigger_context_->GetScriptParameters()),
+      ServiceRequestSender::AuthMode::API_KEY,
       base::BindOnce(&TriggerScriptCoordinator::OnGetTriggerScripts,
                      weak_ptr_factory_.GetWeakPtr()),
       autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);

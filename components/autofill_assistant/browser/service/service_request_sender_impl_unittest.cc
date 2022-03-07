@@ -34,10 +34,8 @@
 namespace autofill_assistant {
 
 using ::base::test::RunOnceCallback;
-using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
-using ::testing::WithArgs;
 
 namespace {
 
@@ -100,7 +98,7 @@ TEST_F(ServiceRequestSenderImplTest, SendUnauthenticatedRequest) {
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         EXPECT_FALSE(resource_request->headers.HasHeader("Authorization"));
@@ -110,27 +108,21 @@ TEST_F(ServiceRequestSenderImplTest, SendUnauthenticatedRequest) {
       });
   EXPECT_CALL(*loader,
               AttachStringForUpload(std::string("request"),
-                                    std::string("application/x-protobuffer")))
-      .Times(1);
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(std::make_unique<std::string>("response"));
-      }));
+                                    std::string("application/x-protobuffer")));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
 
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
   ServiceRequestSenderImpl request_sender{
       &context_,
-      /* access_token_fetcher = */ nullptr,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      std::string("fake_api_key"),
-      /* auth_enabled = */ false,
-      /* disable_auth_if_no_access_token = */ true};
+      /* access_token_fetcher = */ nullptr, std::move(cup_factory),
+      std::move(loader_factory), std::string("fake_api_key")};
   request_sender.SendRequest(
       GURL("https://www.example.com"), std::string("request"),
-      mock_response_callback_.Get(), RpcType::GET_TRIGGER_SCRIPTS);
+      ServiceRequestSender::AuthMode::API_KEY, mock_response_callback_.Get(),
+      RpcType::GET_TRIGGER_SCRIPTS);
 }
 
 TEST_F(ServiceRequestSenderImplTest, SendAuthenticatedRequest) {
@@ -140,7 +132,7 @@ TEST_F(ServiceRequestSenderImplTest, SendAuthenticatedRequest) {
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         std::string authorization;
@@ -152,16 +144,12 @@ TEST_F(ServiceRequestSenderImplTest, SendAuthenticatedRequest) {
       });
   EXPECT_CALL(*loader,
               AttachStringForUpload(std::string("request"),
-                                    std::string("application/x-protobuffer")))
-      .Times(1);
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(std::make_unique<std::string>("response"));
-      }));
+                                    std::string("application/x-protobuffer")));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
-      .Times(1)
       .WillOnce(RunOnceCallback<0>(true, "access_token"));
   EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
 
@@ -169,21 +157,58 @@ TEST_F(ServiceRequestSenderImplTest, SendAuthenticatedRequest) {
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      /* api_key = */ std::string(""),
-      /* auth_enabled = */ true,
-      /* disable_auth_if_no_access_token = */ true};
+      std::move(cup_factory), std::move(loader_factory),
+      /* api_key = */ std::string("")};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      ServiceRequestSender::AuthMode::OAUTH_WITH_API_KEY_FALLBACK,
+      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+}
+
+TEST_F(ServiceRequestSenderImplTest, ForceAuthenticatedRequest) {
+  auto cup_factory =
+      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        std::string authorization;
+        EXPECT_TRUE(resource_request->headers.GetHeader("Authorization",
+                                                        &authorization));
+        EXPECT_EQ(authorization, "Bearer access_token");
+        EXPECT_EQ(resource_request->url, GURL("https://www.example.com"));
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader,
+              AttachStringForUpload(std::string("request"),
+                                    std::string("application/x-protobuffer")));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
+      .WillOnce(RunOnceCallback<0>(true, "access_token"));
+  EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
+
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  ServiceRequestSenderImpl request_sender{
+      &context_,
+      /* access_token_fetcher = */ &mock_access_token_fetcher_,
+      std::move(cup_factory), std::move(loader_factory),
+      /* api_key = */ std::string("fake_api_key")};
   request_sender.SendRequest(GURL("https://www.example.com"),
                              std::string("request"),
+                             ServiceRequestSender::AuthMode::OAUTH_STRICT,
                              mock_response_callback_.Get(),
-                             autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);
+                             autofill_assistant::RpcType::GET_USER_DATA);
 }
 
 TEST_F(ServiceRequestSenderImplTest,
        AuthRequestFallsBackToApiKeyOnEmptyAccessToken) {
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
-      .Times(1)
       .WillOnce(RunOnceCallback<0>(true, /*access_token = */ ""));
 
   auto cup_factory =
@@ -191,7 +216,7 @@ TEST_F(ServiceRequestSenderImplTest,
   auto loader_factory =
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         EXPECT_FALSE(resource_request->headers.HasHeader("Authorization"));
@@ -201,12 +226,9 @@ TEST_F(ServiceRequestSenderImplTest,
       });
   EXPECT_CALL(*loader,
               AttachStringForUpload(std::string("request"),
-                                    std::string("application/x-protobuffer")))
-      .Times(1);
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(std::make_unique<std::string>("response"));
-      }));
+                                    std::string("application/x-protobuffer")));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
@@ -215,21 +237,17 @@ TEST_F(ServiceRequestSenderImplTest,
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      /* api_key = */ std::string("fake_api_key"),
-      /* auth_enabled = */ true,
-      /* disable_auth_if_no_access_token = */ true};
-  request_sender.SendRequest(GURL("https://www.example.com"),
-                             std::string("request"),
-                             mock_response_callback_.Get(),
-                             autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);
+      std::move(cup_factory), std::move(loader_factory),
+      /* api_key = */ std::string("fake_api_key")};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      ServiceRequestSender::AuthMode::OAUTH_WITH_API_KEY_FALLBACK,
+      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
 }
 
 TEST_F(ServiceRequestSenderImplTest,
        AuthRequestFallsBackToApiKeyIfFetchingAccessTokenFails) {
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
-      .Times(1)
       .WillOnce(
           RunOnceCallback<0>(/*success = */ false, /*access_token = */ ""));
 
@@ -238,7 +256,7 @@ TEST_F(ServiceRequestSenderImplTest,
   auto loader_factory =
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         EXPECT_FALSE(resource_request->headers.HasHeader("Authorization"));
@@ -248,12 +266,9 @@ TEST_F(ServiceRequestSenderImplTest,
       });
   EXPECT_CALL(*loader,
               AttachStringForUpload(std::string("request"),
-                                    std::string("application/x-protobuffer")))
-      .Times(1);
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(std::make_unique<std::string>("response"));
-      }));
+                                    std::string("application/x-protobuffer")));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
@@ -262,15 +277,41 @@ TEST_F(ServiceRequestSenderImplTest,
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      /* api_key = */ std::string("fake_api_key"),
-      /* auth_enabled = */ true,
-      /* disable_auth_if_no_access_token = */ true};
+      std::move(cup_factory), std::move(loader_factory),
+      /* api_key = */ std::string("fake_api_key")};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      ServiceRequestSender::AuthMode::OAUTH_WITH_API_KEY_FALLBACK,
+      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+}
+
+TEST_F(ServiceRequestSenderImplTest,
+       AuthRequestFailsOnFetchErrorForForcedAuthentication) {
+  auto cup_factory =
+      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  EXPECT_CALL(*loader_factory, OnCreateLoader).Times(0);
+  EXPECT_CALL(*loader, AttachStringForUpload).Times(0);
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .Times(0);
+  EXPECT_CALL(*loader, ResponseInfo).Times(0);
+  EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
+      .WillOnce(RunOnceCallback<0>(false, /*access_token = */ ""));
+  EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
+
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_UNAUTHORIZED, ""));
+  ServiceRequestSenderImpl request_sender{
+      &context_,
+      /* access_token_fetcher = */ &mock_access_token_fetcher_,
+      std::move(cup_factory), std::move(loader_factory),
+      /* api_key = */ std::string("fake_api_key")};
   request_sender.SendRequest(GURL("https://www.example.com"),
                              std::string("request"),
+                             ServiceRequestSender::AuthMode::OAUTH_STRICT,
                              mock_response_callback_.Get(),
-                             autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);
+                             autofill_assistant::RpcType::GET_USER_DATA);
 }
 
 TEST_F(ServiceRequestSenderImplTest, SignsGetActionsRequestWhenFeatureEnabled) {
@@ -282,7 +323,7 @@ TEST_F(ServiceRequestSenderImplTest, SignsGetActionsRequestWhenFeatureEnabled) {
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         EXPECT_FALSE(resource_request->headers.HasHeader("Authorization"));
@@ -292,12 +333,9 @@ TEST_F(ServiceRequestSenderImplTest, SignsGetActionsRequestWhenFeatureEnabled) {
       });
   EXPECT_CALL(*loader,
               AttachStringForUpload(std::string("signed_request"),
-                                    std::string("application/x-protobuffer")))
-      .Times(1);
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(std::make_unique<std::string>("response"));
-      }));
+                                    std::string("application/x-protobuffer")));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
@@ -308,18 +346,15 @@ TEST_F(ServiceRequestSenderImplTest, SignsGetActionsRequestWhenFeatureEnabled) {
   EXPECT_CALL(*cup, PackAndSignRequest("request")).WillOnce([&]() {
     return "signed_request";
   });
-  EXPECT_CALL(*cup, UnpackResponse(_)).Times(0);
+  EXPECT_CALL(*cup, UnpackResponse).Times(0);
   ServiceRequestSenderImpl request_sender{
       &context_,
-      /* access_token_fetcher = */ nullptr,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      std::string("fake_api_key"),
-      /* auth_enabled = */ false,
-      /* disable_auth_if_no_access_token = */ true};
+      /* access_token_fetcher = */ nullptr, std::move(cup_factory),
+      std::move(loader_factory), std::string("fake_api_key")};
   request_sender.SendRequest(
       GURL("https://www.example.com"), std::string("request"),
-      mock_response_callback_.Get(), RpcType::GET_ACTIONS);
+      ServiceRequestSender::AuthMode::API_KEY, mock_response_callback_.Get(),
+      RpcType::GET_ACTIONS);
 }
 
 TEST_F(ServiceRequestSenderImplTest, ValidatesGetActionsResponsesWhenEnabled) {
@@ -331,7 +366,7 @@ TEST_F(ServiceRequestSenderImplTest, ValidatesGetActionsResponsesWhenEnabled) {
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         EXPECT_FALSE(resource_request->headers.HasHeader("Authorization"));
@@ -341,13 +376,10 @@ TEST_F(ServiceRequestSenderImplTest, ValidatesGetActionsResponsesWhenEnabled) {
       });
   EXPECT_CALL(*loader,
               AttachStringForUpload(std::string("signed_request"),
-                                    std::string("application/x-protobuffer")))
-      .Times(1);
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(
-            std::make_unique<std::string>("packed_response"));
-      }));
+                                    std::string("application/x-protobuffer")));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(
+          RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
@@ -363,15 +395,12 @@ TEST_F(ServiceRequestSenderImplTest, ValidatesGetActionsResponsesWhenEnabled) {
   });
   ServiceRequestSenderImpl request_sender{
       &context_,
-      /* access_token_fetcher = */ nullptr,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      std::string("fake_api_key"),
-      /* auth_enabled = */ false,
-      /* disable_auth_if_no_access_token = */ true};
+      /* access_token_fetcher = */ nullptr, std::move(cup_factory),
+      std::move(loader_factory), std::string("fake_api_key")};
   request_sender.SendRequest(
       GURL("https://www.example.com"), std::string("request"),
-      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+      ServiceRequestSender::AuthMode::API_KEY, mock_response_callback_.Get(),
+      autofill_assistant::RpcType::GET_ACTIONS);
 }
 
 TEST_F(ServiceRequestSenderImplTest, RecordsCupSigningDisabledEvent) {
@@ -383,13 +412,13 @@ TEST_F(ServiceRequestSenderImplTest, RecordsCupSigningDisabledEvent) {
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         return std::move(loader);
       });
-  EXPECT_CALL(*loader, AttachStringForUpload(_, _));
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
+  EXPECT_CALL(*loader, AttachStringForUpload);
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
@@ -400,13 +429,11 @@ TEST_F(ServiceRequestSenderImplTest, RecordsCupSigningDisabledEvent) {
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      /* api_key = */ std::string(""),
-      /* auth_enabled = */ true,
-      /* disable_auth_if_no_access_token = */ true};
+      std::move(cup_factory), std::move(loader_factory),
+      /* api_key = */ std::string("")};
   request_sender.SendRequest(
       GURL("https://www.example.com"), std::string("request"),
+      ServiceRequestSender::AuthMode::OAUTH_WITH_API_KEY_FALLBACK,
       mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
   histogram_tester.ExpectUniqueSample(
       "Android.AutofillAssistant.CupRpcVerificationEvent",
@@ -423,15 +450,13 @@ TEST_F(ServiceRequestSenderImplTest, RecordsCupVerificationDisabledEvent) {
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         return std::move(loader);
       });
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(std::make_unique<std::string>("response"));
-      }));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
@@ -443,15 +468,12 @@ TEST_F(ServiceRequestSenderImplTest, RecordsCupVerificationDisabledEvent) {
       .WillOnce(Return(std::string("signed_request")));
   ServiceRequestSenderImpl request_sender{
       &context_,
-      /* access_token_fetcher = */ nullptr,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      std::string("fake_api_key"),
-      /* auth_enabled = */ false,
-      /* disable_auth_if_no_access_token = */ true};
+      /* access_token_fetcher = */ nullptr, std::move(cup_factory),
+      std::move(loader_factory), std::string("fake_api_key")};
   request_sender.SendRequest(
       GURL("https://www.example.com"), std::string("request"),
-      mock_response_callback_.Get(), RpcType::GET_ACTIONS);
+      ServiceRequestSender::AuthMode::API_KEY, mock_response_callback_.Get(),
+      RpcType::GET_ACTIONS);
   histogram_tester.ExpectUniqueSample(
       "Android.AutofillAssistant.CupRpcVerificationEvent",
       Metrics::CupRpcVerificationEvent::VERIFICATION_DISABLED, 1);
@@ -467,21 +489,19 @@ TEST_F(ServiceRequestSenderImplTest, RecordsHttpFailureEventWithCupEnabled) {
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   auto response_info = CreateResponseInfo(net::HTTP_NOT_FOUND, "Not found");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         return std::move(loader);
       });
-  EXPECT_CALL(*loader, AttachStringForUpload(_, _)).Times(1);
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(
-            std::make_unique<std::string>("packed_response"));
-      }));
+  EXPECT_CALL(*loader, AttachStringForUpload);
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(
+          RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_NOT_FOUND, ""));
-  EXPECT_CALL(*cup_factory, CreateInstance(_)).WillOnce([&]() {
+  EXPECT_CALL(*cup_factory, CreateInstance).WillOnce([&]() {
     return std::move(cup);
   });
   EXPECT_CALL(*cup, PackAndSignRequest("request")).WillOnce([&]() {
@@ -490,15 +510,12 @@ TEST_F(ServiceRequestSenderImplTest, RecordsHttpFailureEventWithCupEnabled) {
 
   ServiceRequestSenderImpl request_sender{
       &context_,
-      /* access_token_fetcher = */ nullptr,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      std::string("fake_api_key"),
-      /* auth_enabled = */ false,
-      /* disable_auth_if_no_access_token = */ true};
+      /* access_token_fetcher = */ nullptr, std::move(cup_factory),
+      std::move(loader_factory), std::string("fake_api_key")};
   request_sender.SendRequest(
       GURL("https://www.example.com"), std::string("request"),
-      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+      ServiceRequestSender::AuthMode::API_KEY, mock_response_callback_.Get(),
+      autofill_assistant::RpcType::GET_ACTIONS);
 
   histogram_tester.ExpectBucketCount(
       "Android.AutofillAssistant.CupRpcVerificationEvent",
@@ -515,34 +532,29 @@ TEST_F(ServiceRequestSenderImplTest, RecordsHttpFailureEventWithCupDisabled) {
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   auto response_info = CreateResponseInfo(net::HTTP_NOT_FOUND, "Not found");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         return std::move(loader);
       });
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(
-            std::make_unique<std::string>("packed_response"));
-      }));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(
+          RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_NOT_FOUND, ""));
-  EXPECT_CALL(*cup_factory, CreateInstance(_)).WillOnce([&]() {
+  EXPECT_CALL(*cup_factory, CreateInstance).WillOnce([&]() {
     return std::move(cup);
   });
 
   ServiceRequestSenderImpl request_sender{
       &context_,
-      /* access_token_fetcher = */ nullptr,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      std::string("fake_api_key"),
-      /* auth_enabled = */ false,
-      /* disable_auth_if_no_access_token = */ true};
+      /* access_token_fetcher = */ nullptr, std::move(cup_factory),
+      std::move(loader_factory), std::string("fake_api_key")};
   request_sender.SendRequest(
       GURL("https://www.example.com"), std::string("request"),
-      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+      ServiceRequestSender::AuthMode::API_KEY, mock_response_callback_.Get(),
+      autofill_assistant::RpcType::GET_ACTIONS);
 
   histogram_tester.ExpectBucketCount(
       "Android.AutofillAssistant.CupRpcVerificationEvent",
@@ -560,21 +572,19 @@ TEST_F(ServiceRequestSenderImplTest,
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         return std::move(loader);
       });
-  EXPECT_CALL(*loader, AttachStringForUpload(_, _));
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(
-            std::make_unique<std::string>("packed_response"));
-      }));
+  EXPECT_CALL(*loader, AttachStringForUpload);
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(
+          RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
-  EXPECT_CALL(*cup_factory, CreateInstance(_)).WillOnce([&]() {
+  EXPECT_CALL(*cup_factory, CreateInstance).WillOnce([&]() {
     return std::move(cup);
   });
   EXPECT_CALL(*cup, PackAndSignRequest("request")).WillOnce([&]() {
@@ -586,15 +596,12 @@ TEST_F(ServiceRequestSenderImplTest,
 
   ServiceRequestSenderImpl request_sender{
       &context_,
-      /* access_token_fetcher = */ nullptr,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      std::string("fake_api_key"),
-      /* auth_enabled = */ false,
-      /* disable_auth_if_no_access_token = */ true};
+      /* access_token_fetcher = */ nullptr, std::move(cup_factory),
+      std::move(loader_factory), std::string("fake_api_key")};
   request_sender.SendRequest(
       GURL("https://www.example.com"), std::string("request"),
-      mock_response_callback_.Get(), autofill_assistant::RpcType::GET_ACTIONS);
+      ServiceRequestSender::AuthMode::API_KEY, mock_response_callback_.Get(),
+      autofill_assistant::RpcType::GET_ACTIONS);
 
   histogram_tester.ExpectUniqueSample(
       "Android.AutofillAssistant.CupRpcVerificationEvent",
@@ -616,34 +623,27 @@ TEST_F(ServiceRequestSenderImplTest, DoesNotRecordCupEventForNonSupportedRpcs) {
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
-  EXPECT_CALL(*loader_factory, OnCreateLoader(_, _))
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
       .WillOnce([&](::network::ResourceRequest* resource_request,
                     const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
         return std::move(loader);
       });
-  EXPECT_CALL(*loader, AttachStringForUpload(_, _));
-  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie(_, _))
-      .WillOnce(WithArgs<1>([&](auto&& callback) {
-        std::move(callback).Run(std::make_unique<std::string>("response"));
-      }));
+  EXPECT_CALL(*loader, AttachStringForUpload);
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
-  EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
-      .WillOnce(RunOnceCallback<0>(true, "access_token"));
 
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
-      std::move(cup_factory),
-      std::move(loader_factory),
-      /* api_key = */ std::string(""),
-      /* auth_enabled = */ true,
-      /* disable_auth_if_no_access_token = */ true};
-  request_sender.SendRequest(GURL("https://www.example.com"),
-                             std::string("request"),
-                             mock_response_callback_.Get(),
-                             autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);
+      std::move(cup_factory), std::move(loader_factory),
+      /* api_key = */ std::string("fake_api_key")};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      ServiceRequestSender::AuthMode::API_KEY, mock_response_callback_.Get(),
+      autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);
 
   histogram_tester.ExpectUniqueSample(
       "Android.AutofillAssistant.CupRpcVerificationEvent",

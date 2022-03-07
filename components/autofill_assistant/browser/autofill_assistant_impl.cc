@@ -73,9 +73,7 @@ std::unique_ptr<AutofillAssistantImpl> AutofillAssistantImpl::Create(
       /* access_token_fetcher = */ nullptr,
       std::make_unique<cup::CUPImplFactory>(),
       std::make_unique<NativeURLLoaderFactory>(),
-      ApiKeyFetcher().GetAPIKey(channel),
-      /* auth_enabled = */ false,
-      /* disable_auth_if_no_access_token = */ true);
+      ApiKeyFetcher().GetAPIKey(channel));
   const ServerUrlFetcher& url_fetcher =
       ServerUrlFetcher(ServerUrlFetcher::GetDefaultServerUrl());
   return std::make_unique<AutofillAssistantImpl>(
@@ -114,6 +112,7 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
       script_server_url_,
       ProtocolUtils::CreateCapabilitiesByHashRequest(
           hash_prefix_length, hash_prefixes, client_context, parameters),
+      ServiceRequestSender::AuthMode::API_KEY,
       base::BindOnce(&OnCapabilitiesResponse, std::move(callback)),
       RpcType::GET_CAPABILITIES_BY_HASH_PREFIX);
   return;

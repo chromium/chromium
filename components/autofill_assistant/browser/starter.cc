@@ -90,9 +90,7 @@ std::unique_ptr<ServiceRequestSender> CreateRpcTriggerScriptRequestSender(
       /* access_token_fetcher = */ nullptr,
       std::make_unique<cup::CUPImplFactory>(),
       std::make_unique<NativeURLLoaderFactory>(),
-      ApiKeyFetcher().GetAPIKey(delegate->GetChannel()),
-      /* auth_enabled = */ false,
-      /* disable_auth_if_no_access_token = */ true);
+      ApiKeyFetcher().GetAPIKey(delegate->GetChannel()));
 }
 
 // Returns whether |trigger_context| contains either the REQUEST_TRIGGER_SCRIPT

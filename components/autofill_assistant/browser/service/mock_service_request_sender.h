@@ -20,6 +20,7 @@ class MockServiceRequestSender : public ServiceRequestSender {
 
   void SendRequest(const GURL& url,
                    const std::string& request_body,
+                   ServiceRequestSender::AuthMode auth_mode,
                    ResponseCallback callback,
                    RpcType rpc_type) override {
     OnSendRequest(url, request_body, callback, rpc_type);

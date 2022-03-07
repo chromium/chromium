@@ -1132,8 +1132,6 @@ void ScriptExecutor::RequestUserData(
   auto* service = delegate_->GetService();
   DCHECK(service);
 
-  // TODO(b/218838411): Make sure we always send the OAuth token and disable
-  // the auth-less path. Enable retry options.
   service->GetUserData(
       options, run_id_,
       base::BindOnce(&ScriptExecutor::OnRequestUserData,
