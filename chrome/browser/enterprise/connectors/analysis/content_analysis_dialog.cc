@@ -237,7 +237,7 @@ void ContentAnalysisDialog::AcceptButtonCallback() {
   DCHECK(delegate_);
   DCHECK(is_warning());
   absl::optional<std::u16string> justification = absl::nullopt;
-  if (delegate_->BypassRequiresJustification())
+  if (delegate_->BypassRequiresJustification() && bypass_justification_)
     justification = bypass_justification_->GetText();
   delegate_->BypassWarnings(justification);
 }
@@ -273,21 +273,27 @@ void ContentAnalysisDialog::SuccessCallback() {
 void ContentAnalysisDialog::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  bypass_justification_text_length_->SetText(l10n_util::GetStringFUTF16(
-      IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
-      base::NumberToString16(new_contents.size()),
-      base::NumberToString16(kMaxBypassJustificationLength)));
+  if (bypass_justification_text_length_) {
+    bypass_justification_text_length_->SetText(l10n_util::GetStringFUTF16(
+        IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
+        base::NumberToString16(new_contents.size()),
+        base::NumberToString16(kMaxBypassJustificationLength)));
+  }
 
   if (new_contents.size() == 0 ||
       new_contents.size() > kMaxBypassJustificationLength) {
     DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
-    bypass_justification_text_length_->SetEnabledColor(
-        bypass_justification_text_length_->GetColorProvider()->GetColor(
-            ui::kColorAlertHighSeverity));
+    if (bypass_justification_text_length_) {
+      bypass_justification_text_length_->SetEnabledColor(
+          bypass_justification_text_length_->GetColorProvider()->GetColor(
+              ui::kColorAlertHighSeverity));
+    }
   } else {
     DialogDelegate::SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
-    bypass_justification_text_length_->SetEnabledColor(
-        justification_text_label_->GetEnabledColor());
+    if (bypass_justification_text_length_ && justification_text_label_) {
+      bypass_justification_text_length_->SetEnabledColor(
+          justification_text_label_->GetEnabledColor());
+    }
   }
 }
 
@@ -309,9 +315,9 @@ views::View* ContentAnalysisDialog::GetContentsView() {
         std::make_unique<DeepScanningTopImageView>(this));
 
     // Create message area layout.
-    auto* message_container = contents_view_->AddChildView(
+    contents_layout_ = contents_view_->AddChildView(
         std::make_unique<views::TableLayoutView>());
-    message_container
+    contents_layout_
         ->AddPaddingColumn(views::TableLayout::kFixedSize,
                            kMessageAndIconRowLeadingPadding)
         .AddColumn(views::LayoutAlignment::kStart,
@@ -325,14 +331,15 @@ views::View* ContentAnalysisDialog::GetContentsView() {
                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
         .AddPaddingColumn(views::TableLayout::kFixedSize,
                           kMessageAndIconRowTrailingPadding)
-        .AddRows(5, views::TableLayout::kFixedSize);
+        // There is initially only 1 row in the table for the side icon and
+        // message. Rows are added later when other elements are needed.
+        .AddRows(1, views::TableLayout::kFixedSize);
 
     // Add the side icon.
-    message_container->AddChildView(CreateSideIcon());
+    contents_layout_->AddChildView(CreateSideIcon());
 
     // Add the message.
-    message_ =
-        message_container->AddChildView(std::make_unique<views::Label>());
+    message_ = contents_layout_->AddChildView(std::make_unique<views::Label>());
     message_->SetText(GetDialogMessage());
     message_->SetLineHeight(kLineHeight);
     message_->SetMultiLine(true);
@@ -341,49 +348,6 @@ views::View* ContentAnalysisDialog::GetContentsView() {
 
     // Add the Learn More link but hide it so it can only be displayed when
     // required.
-    message_container->AddChildView(
-        std::make_unique<views::View>());  // Skip a column
-    learn_more_link_ = message_container->AddChildView(
-        std::make_unique<views::Link>(l10n_util::GetStringUTF16(
-            IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE_LEARN_MORE_LINK)));
-    learn_more_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    learn_more_link_->SetCallback(base::BindRepeating(
-        &ContentAnalysisDialog::LearnMoreLinkClickedCallback,
-        base::Unretained(this)));
-    learn_more_link_->SetVisible(false);
-
-    message_container->AddChildView(
-        std::make_unique<views::View>());  // Skip a column
-    justification_text_label_ =
-        message_container->AddChildView(std::make_unique<views::Label>());
-    justification_text_label_->SetText(
-        delegate_->GetBypassJustificationLabel());
-    justification_text_label_->SetBorder(
-        views::CreateEmptyBorder(kPaddingBeforeBypassJustification, 0, 0, 0));
-    justification_text_label_->SetLineHeight(kLineHeight);
-    justification_text_label_->SetMultiLine(true);
-    justification_text_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
-    justification_text_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    justification_text_label_->SetVisible(false);
-
-    message_container->AddChildView(
-        std::make_unique<views::View>());  // Skip a column
-    bypass_justification_ =
-        message_container->AddChildView(std::make_unique<views::Textarea>());
-    bypass_justification_->SetAssociatedLabel(justification_text_label_);
-    bypass_justification_->SetController(this);
-    bypass_justification_->SetVisible(false);
-
-    message_container->AddChildView(
-        std::make_unique<views::View>());  // Skip a column
-    bypass_justification_text_length_ =
-        message_container->AddChildView(std::make_unique<views::Label>());
-    bypass_justification_text_length_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    bypass_justification_text_length_->SetText(l10n_util::GetStringFUTF16(
-        IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
-        base::NumberToString16(0),
-        base::NumberToString16(kMaxBypassJustificationLength)));
-    bypass_justification_text_length_->SetVisible(false);
 
     // If the dialog was started in a state other than pending, setup the views
     // accordingly.
@@ -491,22 +455,18 @@ void ContentAnalysisDialog::UpdateViews() {
   message_->SetText(new_message);
   message_->GetViewAccessibility().AnnounceText(std::move(new_message));
 
-  // Update the visibility of the Learn More link, which should only be visible
-  // if the dialog is in the warning or failure state, and there's a link to
-  // display.
-  learn_more_link_->SetVisible((is_failure() || is_warning()) &&
-                               has_learn_more_url());
-  bool requires_justification = is_warning() && bypass_requires_justification();
-  justification_text_label_->SetVisible(requires_justification);
-  bypass_justification_->SetVisible(requires_justification);
-  bypass_justification_text_length_->SetVisible(requires_justification);
-  if (requires_justification) {
-    // Set the color to red here because a 0 length message is invalid, but the
-    // label doesn't have a Color Provider yet when it's created in
-    // GetContentsView.
-    bypass_justification_text_length_->SetEnabledColor(
-        bypass_justification_text_length_->GetColorProvider()->GetColor(
-            ui::kColorAlertHighSeverity));
+  // Add a "Learn More" link for warnings/failures when one is provided.
+  if ((is_failure() || is_warning()) && has_learn_more_url()) {
+    AddLearnMoreLinkToDialog();
+  }
+
+  // Add bypass justification views when required on warning verdicts. The order
+  // of the helper functions needs to be preserved for them to appear in the
+  // correct order.
+  if (is_warning() && bypass_requires_justification()) {
+    AddJustificationTextLabelToDialog();
+    AddJustificationTextAreaToDialog();
+    AddJustificationTextLengthToDialog();
   }
 }
 
@@ -815,6 +775,92 @@ std::u16string ContentAnalysisDialog::GetCustomMessage() const {
   return *(delegate_->GetCustomMessage());
 }
 
+void ContentAnalysisDialog::AddLearnMoreLinkToDialog() {
+  DCHECK(contents_view_);
+  DCHECK(contents_layout_);
+  DCHECK(!learn_more_link_);
+  DCHECK(is_warning() || is_failure());
+
+  // Add a row for the new element, and add an empty view to skip the first
+  // column.
+  contents_layout_->AddRows(1, views::TableLayout::kFixedSize);
+  contents_layout_->AddChildView(std::make_unique<views::View>());
+
+  learn_more_link_ = contents_layout_->AddChildView(
+      std::make_unique<views::Link>(l10n_util::GetStringUTF16(
+          IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE_LEARN_MORE_LINK)));
+  learn_more_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  learn_more_link_->SetCallback(
+      base::BindRepeating(&ContentAnalysisDialog::LearnMoreLinkClickedCallback,
+                          base::Unretained(this)));
+}
+
+void ContentAnalysisDialog::AddJustificationTextLabelToDialog() {
+  DCHECK(contents_view_);
+  DCHECK(contents_layout_);
+  DCHECK(!justification_text_label_);
+  DCHECK(is_warning());
+
+  // Add a row for the new element, and add an empty view to skip the first
+  // column.
+  contents_layout_->AddRows(1, views::TableLayout::kFixedSize);
+  contents_layout_->AddChildView(std::make_unique<views::View>());
+
+  justification_text_label_ =
+      contents_layout_->AddChildView(std::make_unique<views::Label>());
+  justification_text_label_->SetText(delegate_->GetBypassJustificationLabel());
+  justification_text_label_->SetBorder(
+      views::CreateEmptyBorder(kPaddingBeforeBypassJustification, 0, 0, 0));
+  justification_text_label_->SetLineHeight(kLineHeight);
+  justification_text_label_->SetMultiLine(true);
+  justification_text_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
+  justification_text_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+}
+
+void ContentAnalysisDialog::AddJustificationTextAreaToDialog() {
+  DCHECK(contents_view_);
+  DCHECK(contents_layout_);
+  DCHECK(!bypass_justification_);
+  DCHECK(justification_text_label_);
+  DCHECK(is_warning());
+
+  // Add a row for the new element, and add an empty view to skip the first
+  // column.
+  contents_layout_->AddRows(1, views::TableLayout::kFixedSize);
+  contents_layout_->AddChildView(std::make_unique<views::View>());
+
+  bypass_justification_ =
+      contents_layout_->AddChildView(std::make_unique<views::Textarea>());
+  bypass_justification_->SetAssociatedLabel(justification_text_label_);
+  bypass_justification_->SetController(this);
+}
+
+void ContentAnalysisDialog::AddJustificationTextLengthToDialog() {
+  DCHECK(contents_view_);
+  DCHECK(contents_layout_);
+  DCHECK(!bypass_justification_text_length_);
+  DCHECK(is_warning());
+
+  // Add a row for the new element, and add an empty view to skip the first
+  // column.
+  contents_layout_->AddRows(1, views::TableLayout::kFixedSize);
+  contents_layout_->AddChildView(std::make_unique<views::View>());
+
+  bypass_justification_text_length_ =
+      contents_layout_->AddChildView(std::make_unique<views::Label>());
+  bypass_justification_text_length_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  bypass_justification_text_length_->SetText(l10n_util::GetStringFUTF16(
+      IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
+      base::NumberToString16(0),
+      base::NumberToString16(kMaxBypassJustificationLength)));
+
+  // Set the color to red initially because a 0 length message is invalid, but
+  // the label doesn't have a Color Provider yet when it's created.
+  bypass_justification_text_length_->SetEnabledColor(
+      bypass_justification_text_length_->GetColorProvider()->GetColor(
+          ui::kColorAlertHighSeverity));
+}
+
 const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
   const bool use_dark = color_utils::IsDark(GetBackgroundColor(contents_view_));
   return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -870,6 +916,10 @@ views::Label* ContentAnalysisDialog::GetMessageForTesting() const {
   return message_;
 }
 
+views::Link* ContentAnalysisDialog::GetLearnMoreLinkForTesting() const {
+  return learn_more_link_;
+}
+
 views::Label* ContentAnalysisDialog::GetBypassJustificationLabelForTesting()
     const {
   return justification_text_label_;
@@ -878,6 +928,11 @@ views::Label* ContentAnalysisDialog::GetBypassJustificationLabelForTesting()
 views::Textarea*
 ContentAnalysisDialog::GetBypassJustificationTextareaForTesting() const {
   return bypass_justification_;
+}
+
+views::Label* ContentAnalysisDialog::GetJustificationTextLengthForTesting()
+    const {
+  return bypass_justification_text_length_;
 }
 
 }  // namespace enterprise_connectors

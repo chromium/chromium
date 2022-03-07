@@ -31,6 +31,7 @@ class BoxLayoutView;
 class ImageView;
 class Label;
 class Link;
+class TableLayoutView;
 class Textarea;
 class Throbber;
 class Widget;
@@ -54,27 +55,27 @@ class ContentAnalysisDialog : public views::DialogDelegate,
    public:
     virtual ~TestObserver() {}
 
-    // Called at the start of ContentAnalysisDialog's constructor. |dialog| is
+    // Called at the start of ContentAnalysisDialog's constructor. `dialog` is
     // a pointer to the newly constructed ContentAnalysisDialog and should be
     // kept in memory by the test in order to validate its state.
     virtual void ConstructorCalled(ContentAnalysisDialog* dialog,
                                    base::TimeTicks timestamp) {}
 
-    // Called at the end of ContentAnalysisDialog::Show. |timestamp| is the
+    // Called at the end of ContentAnalysisDialog::Show. `timestamp` is the
     // time used by ContentAnalysisDialog to decide whether the pending state
     // has been shown for long enough. The test can keep this time in memory and
     // validate the pending time was sufficient in DialogUpdated.
     virtual void ViewsFirstShown(ContentAnalysisDialog* dialog,
                                  base::TimeTicks timestamp) {}
 
-    // Called at the end of ContentAnalysisDialog::UpdateDialog. |result| is
+    // Called at the end of ContentAnalysisDialog::UpdateDialog. `result` is
     // the value that UpdatedDialog used to transition from the pending state to
     // the success/failure/warning state.
     virtual void DialogUpdated(
         ContentAnalysisDialog* dialog,
         ContentAnalysisDelegateBase::FinalResult result) {}
 
-    // Called at the end of ContentAnalysisDialog's destructor. |dialog| is a
+    // Called at the end of ContentAnalysisDialog's destructor. `dialog` is a
     // pointer to the ContentAnalysisDialog being destructed. It can be used
     // to compare it to the pointer obtained from ConstructorCalled to ensure
     // which view is being destroyed.
@@ -112,7 +113,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // nothing should be shown.
   void ShowResult(ContentAnalysisDelegateBase::FinalResult result);
 
-  // Accessors to simplify |dialog_state_| checking.
+  // Accessors to simplify `dialog_state_` checking.
   inline bool is_success() const { return dialog_state_ == State::SUCCESS; }
 
   inline bool is_failure() const { return dialog_state_ == State::FAILURE; }
@@ -135,22 +136,24 @@ class ContentAnalysisDialog : public views::DialogDelegate,
     return delegate_->BypassRequiresJustification();
   }
 
-  // Returns the side image's logo color depending on |dialog_state_|.
+  // Returns the side image's logo color depending on `dialog_state_`.
   SkColor GetSideImageLogoColor() const;
 
   // Returns the side image's background circle color depending on
-  // |dialog_state_|.
+  // `dialog_state_`.
   SkColor GetSideImageBackgroundColor() const;
 
-  // Returns the appropriate top image depending on |dialog_state_|.
+  // Returns the appropriate top image depending on `dialog_state_`.
   const gfx::ImageSkia* GetTopImage() const;
 
   // Accessors used to validate the views in tests.
   views::ImageView* GetTopImageForTesting() const;
   views::Throbber* GetSideIconSpinnerForTesting() const;
   views::Label* GetMessageForTesting() const;
+  views::Link* GetLearnMoreLinkForTesting() const;
   views::Label* GetBypassJustificationLabelForTesting() const;
   views::Textarea* GetBypassJustificationTextareaForTesting() const;
+  views::Label* GetJustificationTextLengthForTesting() const;
 
  private:
   // Friend the unit test class for this so it can call the private dtor.
@@ -184,12 +187,12 @@ class ContentAnalysisDialog : public views::DialogDelegate,
       ContentAnalysisDelegateBase::FinalResult final_result);
 
   // Updates the views in the dialog to put them in the correct state for
-  // |dialog_state_|. This doesn't trigger the same events/resizes as
+  // `dialog_state_`. This doesn't trigger the same events/resizes as
   // UpdateDialog(), and doesn't require the presence of a widget. This is safe
   // to use in the first GetContentsView() call, before the dialog is shown.
   void UpdateViews();
 
-  // Update the UI depending on |dialog_state_|. This also triggers resizes and
+  // Update the UI depending on `dialog_state_`. This also triggers resizes and
   // fires some events. It's meant to be called to update the entire dialog when
   // it's already showing.
   void UpdateDialog();
@@ -197,38 +200,45 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Resizes the already shown dialog to accommodate changes in its content.
   void Resize(int height_to_add);
 
-  // Setup the appropriate buttons depending on |dialog_state_|.
+  // Setup the appropriate buttons depending on `dialog_state_`.
   void SetupButtons();
 
   // Returns a newly created side icon.
   std::unique_ptr<views::View> CreateSideIcon();
 
-  // Returns the appropriate dialog message depending on |dialog_state_|.
+  // Returns the appropriate dialog message depending on `dialog_state_`.
   std::u16string GetDialogMessage() const;
 
-  // Returns the text for the Cancel button depending on |dialog_state_|.
+  // Returns the text for the Cancel button depending on `dialog_state_`.
   std::u16string GetCancelButtonText() const;
 
   // Returns the text for the Ok button for the warning case.
   std::u16string GetBypassWarningButtonText() const;
 
-  // Returns the appropriate top image ID depending on |dialog_state_|.
+  // Returns the appropriate top image ID depending on `dialog_state_`.
   int GetTopImageId(bool use_dark) const;
 
-  // Returns the appropriate pending message depending on |files_count_|.
+  // Returns the appropriate pending message depending on `files_count_`.
   std::u16string GetPendingMessage() const;
 
-  // Returns the appropriate failure message depending on |final_result_| and
-  // |files_count_|.
+  // Returns the appropriate failure message depending on `final_result_` and
+  // `files_count_`.
   std::u16string GetFailureMessage() const;
 
-  // Returns the appropriate warning message depending on |files_count_|.
+  // Returns the appropriate warning message depending on `files_count_`.
   std::u16string GetWarningMessage() const;
 
-  // Returns the appropriate success message depending on |files_count_|.
+  // Returns the appropriate success message depending on `files_count_`.
   std::u16string GetSuccessMessage() const;
 
   std::u16string GetCustomMessage() const;
+
+  // Helper methods to add views to `contents_view_` and `contents_layout_` that
+  // are not used for every state of the dialog.
+  void AddLearnMoreLinkToDialog();
+  void AddJustificationTextLabelToDialog();
+  void AddJustificationTextAreaToDialog();
+  void AddJustificationTextLengthToDialog();
 
   // Helper that indicates if the dialog corresponds to a print scan.
   bool is_print_scan() const;
@@ -249,16 +259,22 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   raw_ptr<content::WebContents> web_contents_;
 
-  // Views above the buttons. |contents_view_| owns every other view.
+  // Views above the buttons. `contents_view_` owns every other view.
   raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
   raw_ptr<DeepScanningTopImageView> image_ = nullptr;
   raw_ptr<DeepScanningSideIconImageView> side_icon_image_ = nullptr;
   raw_ptr<DeepScanningSideIconSpinnerView> side_icon_spinner_ = nullptr;
   raw_ptr<views::Label> message_ = nullptr;
+
+  // The following views are also owned by `contents_view_`, but remain nullptr
+  // if they aren't required to be initialized.
   raw_ptr<views::Link> learn_more_link_ = nullptr;
   raw_ptr<views::Label> justification_text_label_ = nullptr;
   raw_ptr<views::Textarea> bypass_justification_ = nullptr;
   raw_ptr<views::Label> bypass_justification_text_length_ = nullptr;
+
+  // Table layout owned by `contents_view_`.
+  raw_ptr<views::TableLayoutView> contents_layout_ = nullptr;
 
   base::TimeTicks first_shown_timestamp_;
 
