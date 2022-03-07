@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 16
+// Next MinVersion: 17
 
 module crosapi.mojom;
 
@@ -193,6 +193,7 @@ enum PatternMatchType {
   kMimeType,
   [MinVersion=1] kFileExtension,
   [MinVersion=6] kIsDirectory,
+  [MinVersion=16] kSuffix
 };
 
 // For pattern type of condition, the value match will be based on the pattern

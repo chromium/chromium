@@ -188,6 +188,27 @@ TEST_F(IntentFilterUtilTest, ManyHostsAndManyPaths) {
   EXPECT_EQ(links.count(kUrlGmailGlob), 1u);
 }
 
+TEST_F(IntentFilterUtilTest, WildcardHost) {
+  std::string host = ".google.com";
+  auto intent_filter = apps::mojom::IntentFilter::New();
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kScheme, url::kHttpScheme,
+      apps::mojom::PatternMatchType::kNone, intent_filter);
+  apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kHost, host,
+                                     apps::mojom::PatternMatchType::kSuffix,
+                                     intent_filter);
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kPattern, kPathLiteral,
+      apps::mojom::PatternMatchType::kLiteral, intent_filter);
+
+  std::set<std::string> links =
+      apps_util::AppManagementGetSupportedLinks(intent_filter);
+
+  EXPECT_EQ(links.size(), 1u);
+  EXPECT_EQ(links.count("*.google.com/a"), 1u);
+}
+
 TEST_F(IntentFilterUtilTest, HttpsScheme) {
   std::set<std::string> links = apps_util::AppManagementGetSupportedLinks(
       MakeFilter(url::kHttpsScheme, kHostUrlGoogle, kPathLiteral,

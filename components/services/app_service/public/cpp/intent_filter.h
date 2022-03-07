@@ -35,6 +35,7 @@ enum class PatternMatchType {
   kMimeType,
   kFileExtension,
   kIsDirectory,
+  kSuffix
 };
 
 // For pattern type of condition, the value match will be based on the pattern

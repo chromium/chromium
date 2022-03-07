@@ -579,6 +579,9 @@ TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
   apps_util::AddSingleValueCondition(apps::ConditionType::kFile, "7",
                                      apps::PatternMatchType::kFileExtension,
                                      intent_filter);
+  apps_util::AddSingleValueCondition(apps::ConditionType::kHost, "8",
+                                     apps::PatternMatchType::kSuffix,
+                                     intent_filter);
   input->intent_filters.push_back(std::move(intent_filter));
 
   apps::AppPtr output;
@@ -587,7 +590,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
 
   ASSERT_EQ(output->intent_filters.size(), 1U);
   auto& filter = output->intent_filters[0];
-  ASSERT_EQ(filter->conditions.size(), 7U);
+  ASSERT_EQ(filter->conditions.size(), 8U);
   {
     auto& condition = filter->conditions[0];
     EXPECT_EQ(condition->condition_type, apps::ConditionType::kScheme);
@@ -643,6 +646,14 @@ TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
     EXPECT_EQ(condition->condition_values[0]->match_type,
               apps::PatternMatchType::kFileExtension);
     EXPECT_EQ(condition->condition_values[0]->value, "7");
+  }
+  {
+    auto& condition = filter->conditions[7];
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kHost);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::PatternMatchType::kSuffix);
+    EXPECT_EQ(condition->condition_values[0]->value, "8");
   }
 }
 

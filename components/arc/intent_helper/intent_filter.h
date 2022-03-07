@@ -34,6 +34,7 @@ class IntentFilter {
 
     const std::string& host() const { return host_; }
     int port() const { return port_; }
+    bool wild() const { return wild_; }
 
    private:
     std::string host_;

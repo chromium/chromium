@@ -167,6 +167,8 @@ PatternMatchType ConvertMojomPatternMatchTypeToPatternMatchType(
       return PatternMatchType::kFileExtension;
     case apps::mojom::PatternMatchType::kIsDirectory:
       return PatternMatchType::kIsDirectory;
+    case apps::mojom::PatternMatchType::kSuffix:
+      return PatternMatchType::kSuffix;
   }
 }
 
@@ -187,6 +189,8 @@ apps::mojom::PatternMatchType ConvertPatternMatchTypeToMojomPatternMatchType(
       return apps::mojom::PatternMatchType::kFileExtension;
     case PatternMatchType::kIsDirectory:
       return apps::mojom::PatternMatchType::kIsDirectory;
+    case PatternMatchType::kSuffix:
+      return apps::mojom::PatternMatchType::kSuffix;
   }
 }
 

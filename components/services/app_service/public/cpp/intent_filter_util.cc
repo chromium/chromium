@@ -238,14 +238,20 @@ std::set<std::string> AppManagementGetSupportedLinks(
       }
     }
 
-    // For host conditions we add each value to the the |hosts| set.
+    // For host conditions we add each value to the |hosts| set.
     if (condition->condition_type == apps::mojom::ConditionType::kHost) {
       for (auto& condition_value : condition->condition_values) {
-        hosts.insert(condition_value->value);
+        // Prepend the wildcard to indicate any subdomain in the hosts
+        std::string host = condition_value->value;
+        if (condition_value->match_type ==
+            apps::mojom::PatternMatchType::kSuffix) {
+          host = "*" + host;
+        }
+        hosts.insert(host);
       }
     }
 
-    // For path conditions we add each value to the the |paths| set.
+    // For path conditions we add each value to the |paths| set.
     if (condition->condition_type == apps::mojom::ConditionType::kPattern) {
       for (auto& condition_value : condition->condition_values) {
         std::string value = condition_value->value;
@@ -339,6 +345,7 @@ namespace apps {
 // activity_name: FooActivity
 // activity_label: Foo
 // conditions:
+// - kHost: *.wikipedia.org
 // - kAction: view
 // - kPattern: /a /b*
 std::ostream& operator<<(std::ostream& out,
@@ -355,6 +362,9 @@ std::ostream& operator<<(std::ostream& out,
   for (const auto& condition : intent_filter->conditions) {
     out << "- " << condition->condition_type << ": ";
     for (const auto& value : condition->condition_values) {
+      if (value->match_type == apps::mojom::PatternMatchType::kSuffix) {
+        out << "*";
+      }
       out << value->value;
       if (value->match_type == apps::mojom::PatternMatchType::kPrefix) {
         out << "*";

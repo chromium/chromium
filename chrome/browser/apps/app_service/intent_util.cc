@@ -776,6 +776,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
             case apps::mojom::PatternMatchType::kMimeType:
             case apps::mojom::PatternMatchType::kFileExtension:
             case apps::mojom::PatternMatchType::kIsDirectory:
+            case apps::mojom::PatternMatchType::kSuffix:
               NOTREACHED();
               return arc::IntentFilter();
           }
@@ -842,8 +843,10 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
 
   std::vector<apps::mojom::ConditionValuePtr> host_condition_values;
   for (auto& authority : arc_intent_filter.authorities()) {
-    host_condition_values.push_back(MakeConditionValue(
-        authority.host(), apps::mojom::PatternMatchType::kNone));
+    auto match_type = authority.wild() ? apps::mojom::PatternMatchType::kSuffix
+                                       : apps::mojom::PatternMatchType::kNone;
+    host_condition_values.push_back(
+        MakeConditionValue(authority.host(), match_type));
   }
   if (!host_condition_values.empty()) {
     // It's common for Android apps to include duplicate host conditions, we can

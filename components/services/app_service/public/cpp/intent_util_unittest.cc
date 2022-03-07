@@ -130,6 +130,20 @@ TEST_F(IntentUtilTest, PrefixMatchType) {
   EXPECT_FALSE(apps_util::ConditionValueMatches("/d", condition_value));
 }
 
+TEST_F(IntentUtilTest, SuffixMatchType) {
+  auto condition_value = apps_util::MakeConditionValue(
+      ".google.com", apps::mojom::PatternMatchType::kSuffix);
+  EXPECT_TRUE(
+      apps_util::ConditionValueMatches("en.google.com", condition_value));
+  EXPECT_TRUE(
+      apps_util::ConditionValueMatches("es.google.com", condition_value));
+  EXPECT_TRUE(apps_util::ConditionValueMatches(".google.com", condition_value));
+  EXPECT_FALSE(
+      apps_util::ConditionValueMatches("es.google.org", condition_value));
+  EXPECT_FALSE(apps_util::ConditionValueMatches("google.com", condition_value));
+  EXPECT_FALSE(apps_util::ConditionValueMatches("other", condition_value));
+}
+
 TEST_F(IntentUtilTest, GlobMatchType) {
   auto condition_value_star = apps_util::MakeConditionValue(
       "/a*b", apps::mojom::PatternMatchType::kGlob);

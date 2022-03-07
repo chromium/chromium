@@ -869,6 +869,42 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHosts) {
   }
 }
 
+TEST_F(IntentUtilsTest, ConvertArcIntentFilter_WildcardHostPatternMatchType) {
+  const char* kPackageName = "com.foo.bar";
+  const char* kPath = "/";
+  const char* kScheme = "https";
+  const char* kHostWildcard = "*.google.com";
+  const char* kHostNoWildcard = "google.com";
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
+  authorities.emplace_back(kHostWildcard, 0);
+  authorities.emplace_back(kHostNoWildcard, 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns;
+  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+
+  arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView},
+                               std::move(authorities), std::move(patterns),
+                               {kScheme}, {});
+
+  apps::mojom::IntentFilterPtr app_service_filter =
+      apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
+
+  for (auto& condition : app_service_filter->conditions) {
+    if (condition->condition_type == apps::mojom::ConditionType::kHost) {
+      ASSERT_EQ(condition->condition_values.size(), 2U);
+
+      // Check wildcard host
+      EXPECT_EQ(condition->condition_values[0]->match_type,
+                ConvertPatternMatchTypeToMojomPatternMatchType(
+                    apps::PatternMatchType::kSuffix));
+      // Check non-wildcard host
+      EXPECT_EQ(condition->condition_values[1]->match_type,
+                ConvertPatternMatchTypeToMojomPatternMatchType(
+                    apps::PatternMatchType::kNone));
+    }
+  }
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
   apps::mojom::IntentPtr original_intent =
