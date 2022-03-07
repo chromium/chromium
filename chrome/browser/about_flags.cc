@@ -8264,6 +8264,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableVariableRefreshRateName,
      flag_descriptions::kEnableVariableRefreshRateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableVariableRefreshRate)},
+
+    {"enable-app-provisioning-static-server",
+     flag_descriptions::kAppProvisioningStaticName,
+     flag_descriptions::kAppProvisioningStaticDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAppProvisioningStatic)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

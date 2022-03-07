@@ -1526,6 +1526,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "enable-app-provisioning-static-server",
+    "owners": ["melzhang", "mxcai", "chromeos-apps-foundation-team"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-aria-element-reflection",
     "owners": [ "aleventhal", "//third_party/blink/renderer/modules/accessibility/OWNERS" ],
     "expiry_milestone": 98

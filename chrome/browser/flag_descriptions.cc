@@ -4128,6 +4128,12 @@ const char kAppDiscoveryRemoteUrlSearchName[] =
 const char kAppDiscoveryRemoteUrlSearchDescription[] =
     "Surface results from a URL in the app discovery service.";
 
+const char kAppProvisioningStaticName[] =
+    "App Provisioning with static server setup.";
+const char kAppProvisioningStaticDescription[] =
+    "Enables pulling apps from a static server setup to enable new app serving "
+    "possibilities. ";
+
 const char kArcAccountRestrictionsName[] = "Enable ARC account restrictions";
 const char kArcAccountRestrictionsDescription[] =
     "ARC account restrictions feature for multi-profile account consistency";

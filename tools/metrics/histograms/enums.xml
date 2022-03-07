@@ -52490,6 +52490,7 @@ from previous Chrome versions.
   <int value="-1426150007" label="ignore-previews-blacklist"/>
   <int value="-1426034869" label="NoCreditCardAbort:enabled"/>
   <int value="-1425919952" label="EnableLauncherSearchNormalization:enabled"/>
+  <int value="-1425697035" label="AppProvisioningStatic:enabled"/>
   <int value="-1423348289" label="NupPrinting:disabled"/>
   <int value="-1423193305"
       label="AutofillRationalizeRepeatedServerPredictions:enabled"/>
@@ -55933,6 +55934,7 @@ from previous Chrome versions.
   <int value="994317727"
       label="AutofillSaveCreditCardUsesStrikeSystem:disabled"/>
   <int value="995112715" label="AutoDisableAccessibility:disabled"/>
+  <int value="995285843" label="AppProvisioningStatic:disabled"/>
   <int value="996637686" label="NativeFileSystemAPI:enabled"/>
   <int value="996643125" label="EnableAppShortcutSearch:disabled"/>
   <int value="996701528" label="SystemKeyboardLock:enabled"/>
