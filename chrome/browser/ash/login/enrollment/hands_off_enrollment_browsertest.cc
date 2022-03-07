@@ -89,7 +89,9 @@ class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
   test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
 };
 
-IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, NetworkConnectionReady) {
+// TODO(crbug.com/1303608): Test is flaky.
+IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest,
+                       DISABLED_NetworkConnectionReady) {
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED);
   enrollment_helper_.ExpectAttestationEnrollmentSuccess();
@@ -134,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, WaitForNetworkConnection) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, EnrollmentError) {
+// TODO(crbug.com/1303608): Test is flaky.
+IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, DISABLED_EnrollmentError) {
   enrollment_helper_.SetupClearAuth();
   const policy::EnrollmentStatus enrollment_status =
       policy::EnrollmentStatus::ForRegistrationError(
