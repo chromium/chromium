@@ -61,6 +61,9 @@ std::string GenerateDocumentId() {
 // Maximum size in bytes to read FD from PIPE.
 constexpr size_t kMaxBytesToReadFromPipe = 8 * 1024;  // 8KB;
 
+// URL ID used by OpenFileSessionToWrite() and OpenFileSessionToRead().
+constexpr char kUrlId[] = "url_id";
+
 }  // namespace
 
 constexpr base::FilePath::CharType FakeFileSystemInstance::kFakeAndroidPath[];
@@ -365,8 +368,9 @@ void FakeFileSystemInstance::GetMimeType(const std::string& url,
       FROM_HERE, base::BindOnce(std::move(callback), file.mime_type));
 }
 
-void FakeFileSystemInstance::OpenFileToRead(const std::string& url,
-                                            OpenFileToReadCallback callback) {
+void FakeFileSystemInstance::DEPRECATED_OpenFileToRead(
+    const std::string& url,
+    DEPRECATED_OpenFileToReadCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto iter = files_.find(url);
   if (iter == files_.end()) {
@@ -426,7 +430,6 @@ void FakeFileSystemInstance::OpenFileSessionToWrite(
     const GURL& url,
     OpenFileSessionToWriteCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  constexpr char kUrlId[] = "url_id";
   auto iter = files_.find(url.spec());
   if (iter == files_.end()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -440,6 +443,35 @@ void FakeFileSystemInstance::OpenFileSessionToWrite(
           ? CreateRegularFileDescriptor(file, base::File::Flags::FLAG_OPEN |
                                                   base::File::Flags::FLAG_WRITE)
           : CreateStreamFileDescriptorToWrite(file.url);
+  DCHECK(fd.is_valid());
+  AddOpenSession(kUrlId, fd.get());
+  mojo::ScopedHandle wrapped_handle =
+      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
+  DCHECK(wrapped_handle.is_valid());
+  mojom::FileSessionPtr file_session = mojom::FileSession::New();
+  file_session->url_id = kUrlId;
+  file_session->fd = std::move(wrapped_handle);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(file_session)));
+}
+
+void FakeFileSystemInstance::OpenFileSessionToRead(
+    const GURL& url,
+    OpenFileSessionToReadCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto iter = files_.find(url.spec());
+  if (iter == files_.end()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), mojom::FileSessionPtr()));
+    return;
+  }
+  const File& file = iter->second;
+  base::ScopedFD fd =
+      file.seekable == File::Seekable::YES
+          ? CreateRegularFileDescriptor(file, base::File::Flags::FLAG_OPEN |
+                                                  base::File::Flags::FLAG_READ)
+          : CreateStreamFileDescriptorToRead(file.content);
   DCHECK(fd.is_valid());
   AddOpenSession(kUrlId, fd.get());
   mojo::ScopedHandle wrapped_handle =

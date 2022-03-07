@@ -32,9 +32,9 @@ namespace arc {
 // Content URL based functions are:
 // - GetFileSize()
 // - GetMimeType()
-// - OpenFileToRead()
 // - CloseFileSession()
 // - OpenFileSessionToWrite()
+// - OpenFileSessionToRead()
 // Fake files for those functions can be set up by AddFile().
 //
 // Documents provider based functions are:
@@ -56,8 +56,8 @@ namespace arc {
 //   added with AddDocument().
 // - GetRecentDocuments() returns recent documents in the same order as they
 //   were added with AddRecentDocument().
-// - OpenFileToRead(), OpenFileSessionToWrite() will fail unless AddFile() for
-//   the file to open is called beforehand.
+// - OpenFileSessionToRead(), OpenFileSessionToWrite() will fail unless
+//   AddFile() for the file to open is called beforehand.
 // - Callbacks are never invoked synchronously.
 // - All member functions must be called on the same thread.
 class FakeFileSystemInstance : public mojom::FileSystemInstance {
@@ -346,8 +346,9 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
                     MoveDocumentCallback callback) override;
   void Init(mojo::PendingRemote<mojom::FileSystemHost> host,
             InitCallback callback) override;
-  void OpenFileToRead(const std::string& url,
-                      OpenFileToReadCallback callback) override;
+  void DEPRECATED_OpenFileToRead(
+      const std::string& url,
+      DEPRECATED_OpenFileToReadCallback callback) override;
   // TODO(b/220547241): Remove DEPRECATED function from file_system.mojom.
   void DEPRECATED_OpenFileToWrite(
       const std::string& url,
@@ -356,6 +357,8 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
                         const std::string& error_message) override;
   void OpenFileSessionToWrite(const GURL& url,
                               OpenFileSessionToWriteCallback callback) override;
+  void OpenFileSessionToRead(const GURL& url,
+                             OpenFileSessionToReadCallback callback) override;
   void OpenThumbnail(const std::string& url,
                      const gfx::Size& size_hint,
                      OpenThumbnailCallback callback) override;

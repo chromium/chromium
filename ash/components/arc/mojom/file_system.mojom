@@ -335,8 +335,8 @@ interface FileSystemHost {
 
 // The browser process is using this interface in ArcFileSystemOperationRunner,
 // the ARC process implements this interface used by ArcFileSystemService.
-// Deprecated method IDs: 5, 18
-// Next method ID: 26
+// Deprecated method IDs: 2, 5, 18
+// Next method ID: 27
 interface FileSystemInstance {
   // Notes about Android Documents Provider:
   //
@@ -448,9 +448,8 @@ interface FileSystemInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=7] Init@10(pending_remote<FileSystemHost> host_remote) => ();
 
-  // Asks the ContentResolver to get a FD to read the file specified by the
-  // URL.
-  [MinVersion=1] OpenFileToRead@2(string url) => (handle? fd);
+  // DEPRECATED. Use OpenFileSessionToRead() instead.
+  [MinVersion=1] DEPRECATED_OpenFileToRead@2(string url) => (handle? fd);
 
   // DEPRECATED. Use OpenFileSessionToWrite() instead.
   [MinVersion=13] DEPRECATED_OpenFileToWrite@18(string url) => (handle? fd);
@@ -468,6 +467,12 @@ interface FileSystemInstance {
   // URL. FileSession is returned with a unique ID corresponding to the open
   // session so the file can be closed properly after remote write operation.
   [MinVersion=21] OpenFileSessionToWrite@25(url.mojom.Url url) =>
+      (FileSession? file_session);
+
+  // Asks the ContentResolver to get a FD to read the file specified by the
+  // URL. FileSession is returned with a unique ID corresponding to the open
+  // session so the file can be closed properly after remote read operation.
+  [MinVersion=21] OpenFileSessionToRead@26(url.mojom.Url url) =>
       (FileSession? file_session);
 
   // Uninstalls a document watcher.
