@@ -89,7 +89,7 @@ void WaylandToplevelWindow::ApplyPendingBounds() {
     return;
   DCHECK(shell_toplevel_);
 
-  SetBoundsDip(pending_configures_.back().bounds_dip);
+  WaylandWindow::ApplyPendingBounds();
 }
 
 void WaylandToplevelWindow::DispatchHostWindowDragMovement(

@@ -205,7 +205,7 @@ void WaylandPopup::ApplyPendingBounds() {
     return;
 
   base::AutoReset<bool> auto_reset(&wayland_sets_bounds_, true);
-  SetBoundsDip(pending_configures_.back().bounds_dip);
+  WaylandWindow::ApplyPendingBounds();
 }
 
 void WaylandPopup::OnCloseRequest() {

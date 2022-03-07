@@ -451,7 +451,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   }
 }
 
-TEST_P(WaylandWindowTest, ShuffledUpdateVisualSizeOrder) {
+TEST_P(WaylandWindowTest, DisregardUnpassedWindowConfigure) {
   const auto kNormalBounds1 = gfx::Rect{0, 0, 500, 300};
   const auto kNormalBounds2 = gfx::Rect{0, 0, 800, 600};
   const auto kNormalBounds3 = gfx::Rect{0, 0, 700, 400};
@@ -459,15 +459,17 @@ TEST_P(WaylandWindowTest, ShuffledUpdateVisualSizeOrder) {
 
   window_->set_update_visual_size_immediately(false);
 
-  // Send 3 configures and only ack the second one, the first pending configure
-  // is cleared. The second can still be ack'ed.
+  // Send 3 configures, and call UpdateVisualSize out of order. The out-of-order
+  // UpdateVisualSize(kNormalBounds2) should disregarded b/c kNormalBounds2
+  // never reached UI Compositor when UpdateVisualSize(kNormalBounds2) is
+  // called.
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds1.width(),
-                                               kNormalBounds1.height()))
-      .Times(0);
-  EXPECT_CALL(*xdg_surface_, AckConfigure(2)).Times(0);
+                                               kNormalBounds1.height()));
+  EXPECT_CALL(*xdg_surface_, AckConfigure(2));
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds2.width(),
-                                               kNormalBounds2.height()));
-  EXPECT_CALL(*xdg_surface_, AckConfigure(3));
+                                               kNormalBounds2.height()))
+      .Times(0);
+  EXPECT_CALL(*xdg_surface_, AckConfigure(3)).Times(0);
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds3.width(),
                                                kNormalBounds3.height()));
   EXPECT_CALL(*xdg_surface_, AckConfigure(4));
@@ -528,8 +530,10 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeClearsPreviousUnackedConfigures) {
 
   window_->set_update_visual_size_immediately(false);
 
-  // Send 3 configures and only ack the second one, the first pending configure
-  // is cleared. The second can still be ack'ed.
+  // Send 3 configures. Calling UpdateVisualSize(kNormalBounds3) will cause the
+  // kNormalBounds3 to be passed onto UI compositor. Hence, kNormalBounds1/2/3
+  // configs will be acknowledgeable. The next UpdateVisualSize(kNormalBounds3)
+  // wiil ack kNormalBounds3 and skip kNormalBounds1/2.
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds1.width(),
                                                kNormalBounds1.height()))
       .Times(0);
@@ -539,8 +543,9 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeClearsPreviousUnackedConfigures) {
   Sync();
 
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds2.width(),
-                                               kNormalBounds2.height()));
-  EXPECT_CALL(*xdg_surface_, AckConfigure(3));
+                                               kNormalBounds2.height()))
+      .Times(0);
+  EXPECT_CALL(*xdg_surface_, AckConfigure(3)).Times(0);
   state = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(xdg_surface_, kNormalBounds2.width(),
                      kNormalBounds2.height(), ++serial, state.get());
@@ -554,8 +559,7 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeClearsPreviousUnackedConfigures) {
                      kNormalBounds3.height(), ++serial, state.get());
   Sync();
 
-  window_->UpdateVisualSize(kNormalBounds2.size(), 1.0f);
-  window_->UpdateVisualSize(kNormalBounds1.size(), 1.0f);
+  window_->UpdateVisualSize(kNormalBounds3.size(), 1.0f);
   window_->UpdateVisualSize(kNormalBounds3.size(), 1.0f);
 }
 

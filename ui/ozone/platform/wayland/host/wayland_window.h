@@ -328,7 +328,7 @@ class WaylandWindow : public PlatformWindow,
   bool ProcessVisualSizeUpdate(const gfx::Size& size_px, float scale_factor);
 
   // Applies pending bounds.
-  virtual void ApplyPendingBounds() = 0;
+  virtual void ApplyPendingBounds();
 
   // These bounds attributes below have suffixes that indicate units used.
   // Wayland operates in DIP but the platform operates in physical pixels so
@@ -347,6 +347,8 @@ class WaylandWindow : public PlatformWindow,
   struct PendingConfigure {
     gfx::Rect bounds_dip;
     uint32_t serial;
+    // True if this configure has been passed to the compositor for rendering.
+    bool set = false;
   };
   base::circular_deque<PendingConfigure> pending_configures_;
 

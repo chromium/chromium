@@ -991,17 +991,26 @@ bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px,
       pending_configures_.begin(), pending_configures_.end(),
       [&size_px, &scale_factor](auto& configure) {
         return gfx::ScaleToRoundedRect(configure.bounds_dip, scale_factor)
-                   .size() == size_px;
+                       .size() == size_px &&
+               configure.set;
       });
 
   if (result != pending_configures_.end()) {
+    auto serial = result->serial;
     SetWindowGeometry(result->bounds_dip);
-    AckConfigure(result->serial);
+    AckConfigure(serial);
     connection()->ScheduleFlush();
     pending_configures_.erase(pending_configures_.begin(), ++result);
     return true;
   }
   return false;
+}
+
+void WaylandWindow::ApplyPendingBounds() {
+  DCHECK(!pending_configures_.empty());
+  for (auto& configure : pending_configures_)
+    configure.set = true;
+  SetBoundsDip(pending_configures_.back().bounds_dip);
 }
 
 }  // namespace ui
