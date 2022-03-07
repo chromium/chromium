@@ -47,10 +47,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
       std::unique_ptr<EventStream<size_t>> contact_device_stream,
       const std::vector<CableDiscoveryData>& extension_contents,
       // pairing_callback will be called when a QR-initiated connection
-      // receives pairing information from the peer, or when an existing
-      // pairing is found to be invalid.
-      absl::optional<base::RepeatingCallback<void(PairingEvent)>>
-          pairing_callback);
+      // receives pairing information from the peer.
+      absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+          pairing_callback,
+      // invalidated_pairing_callback will be called when a pairing is reported
+      // to be invalid by the tunnel server.
+      absl::optional<base::RepeatingCallback<void(size_t)>>
+          invalidated_pairing_callback);
   ~Discovery() override;
   Discovery(const Discovery&) = delete;
   Discovery& operator=(const Discovery&) = delete;
@@ -69,7 +72,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
 
   void OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert);
   void OnContactDevice(size_t pairing_index);
-  void AddPairing(std::unique_ptr<Pairing> pairing);
   void PairingIsInvalid(size_t pairing_index);
   static absl::optional<UnpairedKeys> KeysFromQRGeneratorKey(
       absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key);
@@ -83,8 +85,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   std::unique_ptr<AdvertEventStream> advert_stream_;
   std::vector<std::unique_ptr<Pairing>> pairings_;
   std::unique_ptr<EventStream<size_t>> contact_device_stream_;
-  const absl::optional<base::RepeatingCallback<void(PairingEvent)>>
+  const absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
       pairing_callback_;
+  const absl::optional<base::RepeatingCallback<void(size_t)>>
+      invalidated_pairing_callback_;
   std::vector<std::unique_ptr<FidoTunnelDevice>> tunnels_pending_advert_;
   base::flat_set<std::array<uint8_t, kAdvertSize>> observed_adverts_;
   bool started_ = false;

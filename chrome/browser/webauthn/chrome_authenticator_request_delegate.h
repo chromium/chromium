@@ -204,7 +204,8 @@ class ChromeAuthenticatorRequestDelegate
   // information that will be broadcast by the device.
   bool ShouldPermitCableExtension(const url::Origin& origin);
 
-  void HandleCablePairingEvent(device::cablev2::PairingEvent pairing);
+  void OnNewCablePairing(std::unique_ptr<device::cablev2::Pairing> pairing);
+  void OnInvalidatedCablePairing(size_t failed_contact_index);
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   // Holds ownership of AuthenticatorRequestDialogModel until

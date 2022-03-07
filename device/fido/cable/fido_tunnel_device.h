@@ -36,7 +36,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   // This constructor is used for QR-initiated connections.
   FidoTunnelDevice(
       network::mojom::NetworkContext* network_context,
-      base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback,
+      absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+          pairing_callback,
       base::span<const uint8_t> secret,
       base::span<const uint8_t, kQRSeedSize> local_identity_seed,
       const CableEidArray& decrypted_eid);
@@ -135,7 +136,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
 
     CableEidArray decrypted_eid;
     std::array<uint8_t, 32> psk;
-    base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback;
+    absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+        pairing_callback;
     std::array<uint8_t, kQRSeedSize> local_identity_seed;
     tunnelserver::KnownDomainID tunnel_server_domain;
   };

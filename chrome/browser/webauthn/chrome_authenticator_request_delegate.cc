@@ -563,8 +563,12 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     qr_string = device::cablev2::qr::Encode(*qr_generator_key);
 
     discovery_factory->set_cable_pairing_callback(base::BindRepeating(
-        &ChromeAuthenticatorRequestDelegate::HandleCablePairingEvent,
+        &ChromeAuthenticatorRequestDelegate::OnNewCablePairing,
         weak_ptr_factory_.GetWeakPtr()));
+    discovery_factory->set_cable_invalidated_pairing_callback(
+        base::BindRepeating(
+            &ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing,
+            weak_ptr_factory_.GetWeakPtr()));
     discovery_factory->set_network_context(
         SystemNetworkContextManager::GetInstance()->GetContext());
   }
@@ -838,25 +842,10 @@ bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
 #endif
 }
 
-void ChromeAuthenticatorRequestDelegate::HandleCablePairingEvent(
-    device::cablev2::PairingEvent event) {
+void ChromeAuthenticatorRequestDelegate::OnNewCablePairing(
+    std::unique_ptr<device::cablev2::Pairing> pairing) {
   PrefService* const prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-
-  if (auto* failed_contact_index = absl::get_if<size_t>(&event)) {
-    // A pairing was reported to be invalid. Delete it unless it came from Sync,
-    // in which case there's nothing to be done.
-    cablev2::DeletePairingByPublicKey(
-        prefs, phone_public_keys_[*failed_contact_index]);
-
-    if (weak_dialog_model_) {
-      // Contact the next phone with the same name, if any, given that no
-      // notification has been sent.
-      weak_dialog_model_->OnPhoneContactFailed(
-          phone_names_[*failed_contact_index]);
-    }
-    return;
-  }
 
   // `existing_names` is built without calling `cablev2::MergeDevices` because
   // that function will discard linked entries with duplicate public keys, which
@@ -865,7 +854,23 @@ void ChromeAuthenticatorRequestDelegate::HandleCablePairingEvent(
       cablev2::KnownDevices::FromProfile(
           Profile::FromBrowserContext(GetBrowserContext()));
 
-  auto& pairing =
-      *absl::get_if<std::unique_ptr<device::cablev2::Pairing>>(&event);
   cablev2::AddPairing(prefs, std::move(pairing), known_devices->Names());
+}
+
+void ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing(
+    size_t failed_contact_index) {
+  PrefService* const prefs =
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+
+  // A pairing was reported to be invalid. Delete it unless it came from Sync,
+  // in which case there's nothing to be done.
+  cablev2::DeletePairingByPublicKey(
+      prefs, phone_public_keys_.at(failed_contact_index));
+
+  if (weak_dialog_model_) {
+    // Contact the next phone with the same name, if any, given that no
+    // notification has been sent.
+    weak_dialog_model_->OnPhoneContactFailed(
+        phone_names_.at(failed_contact_index));
+  }
 }

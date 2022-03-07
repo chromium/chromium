@@ -75,7 +75,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   // called when a QR handshake results in a phone wishing to pair with this
   // browser.
   virtual void set_cable_pairing_callback(
-      base::RepeatingCallback<void(cablev2::PairingEvent)>);
+      base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>);
+
+  // set_cable_invalidated_pairing_callback installs a repeating callback that
+  // will be called when a pairing is reported to be invalid by the
+  // tunnelserver. It is passed the index of the invalid pairing.
+  virtual void set_cable_invalidated_pairing_callback(
+      base::RepeatingCallback<void(size_t)>);
 
   // get_cable_contact_callback returns a callback that can be called with
   // indexes into the vector of pairings passed to |set_cable_data| in order
@@ -143,8 +149,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings_;
   std::unique_ptr<FidoDeviceDiscovery::EventStream<size_t>>
       contact_device_stream_;
-  absl::optional<base::RepeatingCallback<void(cablev2::PairingEvent)>>
+  absl::optional<
+      base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>>
       cable_pairing_callback_;
+  absl::optional<base::RepeatingCallback<void(size_t)>>
+      cable_invalidated_pairing_callback_;
 #if BUILDFLAG(IS_WIN)
   raw_ptr<WinWebAuthnApi> win_webauthn_api_ = nullptr;
 #endif  // BUILDFLAG(IS_WIN)

@@ -175,10 +175,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   int channel_priority = 0;
 };
 
-// A PairingEvent is either a new `Pairing`, learnt from a device, or else the
-// index of a pairing has been discovered to be invalid.
-using PairingEvent = absl::variant<std::unique_ptr<Pairing>, size_t>;
-
 }  // namespace cablev2
 
 }  // namespace device

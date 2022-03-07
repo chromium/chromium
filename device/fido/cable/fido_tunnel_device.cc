@@ -95,7 +95,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 FidoTunnelDevice::FidoTunnelDevice(
     network::mojom::NetworkContext* network_context,
-    base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback,
+    absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+        pairing_callback,
     base::span<const uint8_t> secret,
     base::span<const uint8_t, kQRSeedSize> local_identity_seed,
     const CableEidArray& decrypted_eid)
@@ -420,7 +421,9 @@ void FidoTunnelDevice::OnTunnelData(
           }
 
           FIDO_LOG(DEBUG) << "Linking information processed from caBLE device";
-          std::move(info->pairing_callback).Run(std::move(*maybe_pairing));
+          if (info->pairing_callback) {
+            info->pairing_callback->Run(std::move(*maybe_pairing));
+          }
         }
       } else {
         FIDO_LOG(DEBUG)

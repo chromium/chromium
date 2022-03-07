@@ -52,8 +52,10 @@ Discovery::Discovery(
     std::vector<std::unique_ptr<Pairing>> pairings,
     std::unique_ptr<EventStream<size_t>> contact_device_stream,
     const std::vector<CableDiscoveryData>& extension_contents,
-    absl::optional<base::RepeatingCallback<void(PairingEvent)>>
-        pairing_callback)
+    absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+        pairing_callback,
+    absl::optional<base::RepeatingCallback<void(size_t)>>
+        invalidated_pairing_callback)
     : FidoDeviceDiscovery(
           FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy),
       request_type_(request_type),
@@ -63,7 +65,8 @@ Discovery::Discovery(
       advert_stream_(std::move(advert_stream)),
       pairings_(std::move(pairings)),
       contact_device_stream_(std::move(contact_device_stream)),
-      pairing_callback_(std::move(pairing_callback)) {
+      pairing_callback_(std::move(pairing_callback)),
+      invalidated_pairing_callback_(std::move(invalidated_pairing_callback)) {
   static_assert(EXTENT(*qr_generator_key) == kQRSecretSize + kQRSeedSize, "");
   advert_stream_->Connect(
       base::BindRepeating(&Discovery::OnBLEAdvertSeen, base::Unretained(this)));
@@ -142,9 +145,8 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
                       << " matches QR code)";
       RecordEvent(CableV2DiscoveryEvent::kQRMatch);
       AddDevice(std::make_unique<cablev2::FidoTunnelDevice>(
-          network_context_,
-          base::BindOnce(&Discovery::AddPairing, weak_factory_.GetWeakPtr()),
-          qr_keys_->qr_secret, qr_keys_->local_identity_seed, *plaintext));
+          network_context_, pairing_callback_, qr_keys_->qr_secret,
+          qr_keys_->local_identity_seed, *plaintext));
       return;
     }
   }
@@ -180,20 +182,12 @@ void Discovery::OnContactDevice(size_t pairing_index) {
                      pairing_index)));
 }
 
-void Discovery::AddPairing(std::unique_ptr<Pairing> pairing) {
-  if (!pairing_callback_) {
-    return;
-  }
-
-  pairing_callback_->Run(std::move(pairing));
-}
-
 void Discovery::PairingIsInvalid(size_t pairing_index) {
-  if (!pairing_callback_) {
+  if (!invalidated_pairing_callback_) {
     return;
   }
 
-  pairing_callback_->Run(pairing_index);
+  invalidated_pairing_callback_->Run(pairing_index);
 }
 
 // static
