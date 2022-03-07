@@ -1640,9 +1640,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies.{PolicyLevel}" enum="EnterprisePolicies"
-    expires_after="2022-03-15">
-  <owner>qiutanw@google.com</owner>
+    expires_after="2023-03-01">
   <owner>zmin@chromium.org</owner>
+  <owner>qiutanw@google.com</owner>
   <summary>
     A set of {PolicyLevel} enterprise policy rules that are in use. This is
     recorded for each {PolicyLevel} policy every 24 hours and at startup, if the
