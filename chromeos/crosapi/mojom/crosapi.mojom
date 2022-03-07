@@ -679,8 +679,8 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 37
-// Next id: 37
+// Next version: 38
+// Next id: 38
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -913,6 +913,19 @@ struct BrowserInitParams {
   // Whether the device is either enterprise managed or in demo mode.
   [MinVersion=35]
   bool is_device_enterprised_managed@35;
+
+  [Stable, Extensible]
+  enum DeviceType {
+    [Default] kUnknown,
+    kChromebook,
+    kChromebase,
+    kChromebit,
+    kChromebox,
+  };
+
+  // The form factor of the device.
+  [MinVersion=37]
+  DeviceType device_type@37;
 };
 
 // Parameters to specify OpenUrl behavior.

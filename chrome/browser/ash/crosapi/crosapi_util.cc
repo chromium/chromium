@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
+#include "chromeos/constants/devicetype.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
@@ -240,6 +241,24 @@ constexpr bool HasDuplicatedUuid() {
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");
 
+crosapi::mojom::BrowserInitParams::DeviceType ConvertDeviceType(
+    chromeos::DeviceType device_type) {
+  switch (device_type) {
+    case chromeos::DeviceType::kChromebook:
+      return crosapi::mojom::BrowserInitParams::DeviceType::kChromebook;
+    case chromeos::DeviceType::kChromebase:
+      return crosapi::mojom::BrowserInitParams::DeviceType::kChromebase;
+    case chromeos::DeviceType::kChromebit:
+      return crosapi::mojom::BrowserInitParams::DeviceType::kChromebit;
+    case chromeos::DeviceType::kChromebox:
+      return crosapi::mojom::BrowserInitParams::DeviceType::kChromebox;
+    case chromeos::DeviceType::kUnknown:
+      [[fallthrough]];
+    default:
+      return crosapi::mojom::BrowserInitParams::DeviceType::kUnknown;
+  }
+}
+
 }  // namespace
 
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
@@ -400,6 +419,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 
   params->is_device_enterprised_managed =
       chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+
+  params->device_type = ConvertDeviceType(chromeos::GetDeviceType());
 
   return params;
 }

@@ -104,7 +104,10 @@ test("chromeos_unittests") {
   sources = [ "test/run_all_unittests.cc" ]
 
   # Tests that common to Ash and Lacros.
-  deps += [ "//chromeos/system:unit_tests" ]
+  deps += [
+    "//chromeos/constants:unit_tests",
+    "//chromeos/system:unit_tests",
+  ]
 
   if (is_chromeos_ash) {
     deps += [
