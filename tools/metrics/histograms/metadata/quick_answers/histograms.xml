@@ -1,0 +1,262 @@
+<!--
+Copyright 2022 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms owned
+by the Commercial Identity team along with a detailed description for
+each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="QuickAnswersClickResultType">
+  <variant name=".Definition" summary="Definition result type"/>
+  <variant name=".NoResult" summary="Result is not available"/>
+  <variant name=".Translation" summary="Translation result type"/>
+  <variant name=".UnitConversion" summary="UnitConversion result type"/>
+</variants>
+
+<variants name="QuickAnswersV2ConsentResultType">
+  <variant name=".Allow" summary="Clicks on the allow button"/>
+  <variant name=".Dismiss" summary="Dismisses or ignores the consent"/>
+  <variant name=".NoThanks" summary="Clicks on the no thanks button"/>
+</variants>
+
+<histogram name="QuickAnswers.ActiveImpression" enum="QuickAnswersResultType"
+    expires_after="2022-05-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>llin@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For quick answer impression that fulfills a user's intent, records the
+    result type. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram
+    name="QuickAnswers.ActiveImpression.Duration{QuickAnswersClickResultType}"
+    units="ms" expires_after="2023-01-16">
+  <owner>updowndota@chromium.org</owner>
+  <owner>llin@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For quick answer impression that fulfills a user's intent, records the
+    impression duration. ChromeOS only. {QuickAnswersClickResultType}
+  </summary>
+  <token key="QuickAnswersClickResultType"
+      variants="QuickAnswersClickResultType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
+    expires_after="2022-04-24">
+  <owner>updowndota@chromium.org</owner>
+  <owner>llin@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answer click event, records the result type. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="QuickAnswers.Click.Duration{QuickAnswersClickResultType}"
+    units="ms" expires_after="2022-11-21">
+  <owner>updowndota@chromium.org</owner>
+  <owner>llin@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answer click event, records the duration between fetch
+    finish and user clicks. ChromeOS only. {QuickAnswersClickResultType}
+  </summary>
+  <token key="QuickAnswersClickResultType"
+      variants="QuickAnswersClickResultType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="QuickAnswers.ContextMenu.Close" enum="BooleanClicked"
+    expires_after="2022-04-10">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Records whether or not the user interacted (via clicking) with a context
+    menu, whether or not that menu included any Quick Answers. Recorded when the
+    menu is closed. This metric can be used as a baseline for Quick Answers
+    engagement metrics, which record whether users click on context menus that
+    *do* include a Quick Answers card. Recorded on ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="QuickAnswers.ContextMenu.Close.Duration{InteractionType}"
+    units="ms" expires_after="2022-12-31">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Records the amount of time the context menu was shown before close if the
+    user {InteractionType} (via clicking) with the context menu. Recorded on
+    ChromeOS only.
+  </summary>
+  <token key="InteractionType">
+    <variant name="WithClick" summary="has interacted"/>
+    <variant name="WithoutClick" summary="has not interacted"/>
+  </token>
+</histogram>
+
+<histogram name="QuickAnswers.ExitPoint" enum="QuickAnswersExitPoint"
+    expires_after="2022-09-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Record the Quick Answers exit point point when the Quick Answers UI is
+    dismissed. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="QuickAnswers.Intent" enum="QuickAnswersIntentType"
+    expires_after="2023-03-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>llin@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For quick answer fetch, records the intent generated on-device. ChromeOS
+    only.
+  </summary>
+</histogram>
+
+<histogram name="QuickAnswers.Loading.Duration" units="ms"
+    expires_after="2023-01-23">
+  <owner>updowndota@chromium.org</owner>
+  <owner>llin@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answers fetch, records the duration between fetch start and
+    fetch finish. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="QuickAnswers.Loading.Status" enum="QuickAnswersLoadStatus"
+    expires_after="2022-12-31">
+  <owner>updowndota@chromium.org</owner>
+  <owner>llin@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answers fetch, records the result status. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="QuickAnswers.NetworkError.IntentType"
+    enum="QuickAnswersIntentType" expires_after="2022-05-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Records the intent type when network error occurs during the quick answers
+    fetch. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="QuickAnswers.RequestTextLength.{IntentType}"
+    units="characters" expires_after="2022-09-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answer request, records the length of the selected text that
+    is being used for fetching {IntentType} results. ChromeOS only.
+  </summary>
+  <token key="IntentType">
+    <variant name="Definition" summary="definition"/>
+    <variant name="Translation" summary="translation"/>
+    <variant name="UnitConversion" summary="unit conversion"/>
+  </token>
+</histogram>
+
+<histogram name="QuickAnswers.Result" enum="QuickAnswersResultType"
+    expires_after="2022-04-03">
+  <owner>updowndota@chromium.org</owner>
+  <owner>llin@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answer result received event, records the result type.
+    ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="QuickAnswers.Result.Duration{QuickAnswersClickResultType}"
+    units="ms" expires_after="2022-12-31">
+  <owner>updowndota@chromium.org</owner>
+  <owner>llin@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answer result received event, records the duration between
+    fetch start and fetch finish. ChromeOS only. {QuickAnswersClickResultType}
+  </summary>
+  <token key="QuickAnswersClickResultType"
+      variants="QuickAnswersClickResultType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="QuickAnswers.SelectedContent.Length" units="characters"
+    expires_after="2023-03-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>llin@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answer request, records the length of the selected text that
+    is being considered for fetching quick answers. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="QuickAnswers.V2.Consent" units="impressions"
+    expires_after="2022-09-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answers consent impression, records how many times the user
+    has seen the consent. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram
+    name="QuickAnswers.V2.Consent.Duration{QuickAnswersV2ConsentResultType}"
+    units="ms" expires_after="2022-09-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answers consent result event, records how long the user has
+    seen the consent before. ChromeOS only. {QuickAnswersV2ConsentResultType}
+  </summary>
+  <token key="QuickAnswersV2ConsentResultType"
+      variants="QuickAnswersV2ConsentResultType"/>
+</histogram>
+
+<histogram
+    name="QuickAnswers.V2.Consent.Impression{QuickAnswersV2ConsentResultType}"
+    units="impressions" expires_after="2022-09-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answers consent result event, records how many times the
+    user has seen the consent before. ChromeOS only.
+    {QuickAnswersV2ConsentResultType}
+  </summary>
+  <token key="QuickAnswersV2ConsentResultType"
+      variants="QuickAnswersV2ConsentResultType"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
