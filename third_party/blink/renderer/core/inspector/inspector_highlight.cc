@@ -1047,8 +1047,8 @@ DevtoolsFlexInfo GetFlexLinesAndItems(LayoutBox* layout_box,
   if (auto* layout_ng_flex = DynamicTo<LayoutNGFlexibleBox>(layout_box)) {
     const DevtoolsFlexInfo* flex_info_from_layout =
         layout_ng_flex->FlexLayoutData();
-    DCHECK(flex_info_from_layout);
-    return *flex_info_from_layout;
+    if (flex_info_from_layout)
+      return *flex_info_from_layout;
   }
 
   DevtoolsFlexInfo flex_info;
