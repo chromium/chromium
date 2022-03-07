@@ -48,9 +48,4 @@ struct TextCompletionCandidate {
 }  // namespace ime
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::ime {
-using ::ash::ime::TextSuggestion;
-}
-
 #endif  // ASH_SERVICES_IME_PUBLIC_CPP_SUGGESTIONS_H_

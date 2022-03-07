@@ -71,13 +71,4 @@ class Engine {
 }  // namespace ime
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::ime::rulebased {
-using ::ash::ime::rulebased::Engine;
-using ::ash::ime::rulebased::MODIFIER_ALTGR;
-using ::ash::ime::rulebased::MODIFIER_CAPSLOCK;
-using ::ash::ime::rulebased::MODIFIER_SHIFT;
-using ::ash::ime::rulebased::ProcessKeyResult;
-}  // namespace chromeos::ime::rulebased
-
 #endif  // ASH_SERVICES_IME_PUBLIC_CPP_RULEBASED_ENGINE_H_

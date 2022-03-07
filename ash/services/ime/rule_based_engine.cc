@@ -10,13 +10,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::ime::mojom;
 
 std::u16string ConvertToUtf16AndNormalize(const std::string& str) {
   // TODO(https://crbug.com/1185629): Add a new helper in
@@ -178,4 +175,4 @@ RuleBasedEngine::RuleBasedEngine(
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

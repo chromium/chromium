@@ -21,13 +21,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/thunks.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::ime::mojom;
 
 enum SimpleDownloadError {
   SIMPLE_DOWNLOAD_ERROR_OK = 0,
@@ -281,4 +278,4 @@ void ImeService::Unused1() {
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

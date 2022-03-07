@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
@@ -120,4 +120,4 @@ ImeDecoderImpl* ImeDecoderImpl::GetInstance() {
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

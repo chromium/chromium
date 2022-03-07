@@ -15,20 +15,20 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 // Handles rule-based input methods such as Arabic and Vietnamese.
 // Rule-based input methods are based off deterministic rules and do not
 // provide features such as suggestions.
 class AssociatedRuleBasedEngine : public InputEngine,
-                                  public ash::ime::mojom::InputMethod {
+                                  public mojom::InputMethod {
  public:
   // Returns nullptr if |ime_spec| is not valid for this RuleBasedEngine.
   static std::unique_ptr<AssociatedRuleBasedEngine> Create(
       const std::string& ime_spec,
-      mojo::PendingAssociatedReceiver<ash::ime::mojom::InputMethod> receiver,
-      mojo::PendingAssociatedRemote<ash::ime::mojom::InputMethodHost> host);
+      mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+      mojo::PendingAssociatedRemote<mojom::InputMethodHost> host);
 
   AssociatedRuleBasedEngine(const AssociatedRuleBasedEngine& other) = delete;
   AssociatedRuleBasedEngine& operator=(const AssociatedRuleBasedEngine& other) =
@@ -41,19 +41,18 @@ class AssociatedRuleBasedEngine : public InputEngine,
   // mojom::InputMethod overrides:
   // Most of these methods are deliberately empty because rule-based input
   // methods do not need to listen to these events.
-  void OnFocusDeprecated(
-      ash::ime::mojom::InputFieldInfoPtr input_field_info,
-      ash::ime::mojom::InputMethodSettingsPtr settings) override {}
-  void OnFocus(ash::ime::mojom::InputFieldInfoPtr input_field_info,
-               ash::ime::mojom::InputMethodSettingsPtr settings,
+  void OnFocusDeprecated(mojom::InputFieldInfoPtr input_field_info,
+                         mojom::InputMethodSettingsPtr settings) override {}
+  void OnFocus(mojom::InputFieldInfoPtr input_field_info,
+               mojom::InputMethodSettingsPtr settings,
                OnFocusCallback callback) override;
   void OnBlur() override {}
   void OnSurroundingTextChanged(
       const std::string& text,
       uint32_t offset,
-      ash::ime::mojom::SelectionRangePtr selection_range) override {}
+      mojom::SelectionRangePtr selection_range) override {}
   void OnCompositionCanceledBySystem() override;
-  void ProcessKeyEvent(ash::ime::mojom::PhysicalKeyEventPtr event,
+  void ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
                        ProcessKeyEventCallback callback) override;
   void OnCandidateSelected(uint32_t selected_candidate_index) override;
 
@@ -62,11 +61,11 @@ class AssociatedRuleBasedEngine : public InputEngine,
  private:
   AssociatedRuleBasedEngine(
       const std::string& ime_spec,
-      mojo::PendingAssociatedReceiver<ash::ime::mojom::InputMethod> receiver,
-      mojo::PendingAssociatedRemote<ash::ime::mojom::InputMethodHost> host);
+      mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+      mojo::PendingAssociatedRemote<mojom::InputMethodHost> host);
 
-  mojo::AssociatedReceiver<ash::ime::mojom::InputMethod> receiver_;
-  mojo::AssociatedRemote<ash::ime::mojom::InputMethodHost> host_;
+  mojo::AssociatedReceiver<mojom::InputMethod> receiver_;
+  mojo::AssociatedRemote<mojom::InputMethodHost> host_;
 
   rulebased::Engine engine_;
 
@@ -75,6 +74,6 @@ class AssociatedRuleBasedEngine : public InputEngine,
 };
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_IME_ASSOCIATED_RULE_BASED_ENGINE_H_

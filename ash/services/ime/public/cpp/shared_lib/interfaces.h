@@ -266,13 +266,4 @@ __attribute__((visibility("default"))) bool IsInputMethodConnected();
 
 }  // extern "C"
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::ime {
-using ::ash::ime::ChromeLoggerFunc;
-using ::ash::ime::ImeClientDelegate;
-using ::ash::ime::ImeCrosPlatform;
-using ::ash::ime::ImeSequencedTask;
-using ::ash::ime::SimpleDownloadCallbackV2;
-}  // namespace chromeos::ime
-
 #endif  // ASH_SERVICES_IME_PUBLIC_CPP_SHARED_LIB_INTERFACES_H_

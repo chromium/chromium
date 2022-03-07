@@ -25,13 +25,10 @@
 
 using testing::_;
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::ime::mojom;
 
 const char kInvalidImeSpec[] = "ime_spec_never_support";
 constexpr char kValidImeSpec[] = "valid_spec";
@@ -843,4 +840,4 @@ TEST_F(ImeServiceAssociatedTest, GetFieldTrialParamValueByFeatureConsidered) {
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

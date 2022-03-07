@@ -54,9 +54,4 @@ class SystemEngine : public InputEngine {
 }  // namespace ime
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::ime {
-using ::ash::ime::SystemEngine;
-}
-
 #endif  // ASH_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_

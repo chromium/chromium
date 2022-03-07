@@ -4,11 +4,8 @@
 
 #include "ash/services/ime/mock_input_channel.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::ash::ime::mojom;
 
 MockInputChannel::MockInputChannel() : receiver_(this) {}
 
@@ -33,4 +30,4 @@ void MockInputChannel::ProcessMessage(const std::vector<uint8_t>& message,
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

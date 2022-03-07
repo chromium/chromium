@@ -168,7 +168,7 @@ int UtilityMain(MainFunctionParams parameters) {
           base::BindOnce(&media::HardwareVideoDecodingPreSandboxHook);
       break;
     case sandbox::mojom::Sandbox::kIme:
-      pre_sandbox_hook = base::BindOnce(&chromeos::ime::ImePreSandboxHook);
+      pre_sandbox_hook = base::BindOnce(&ash::ime::ImePreSandboxHook);
       break;
     case sandbox::mojom::Sandbox::kTts:
       pre_sandbox_hook = base::BindOnce(&chromeos::tts::TtsPreSandboxHook);
