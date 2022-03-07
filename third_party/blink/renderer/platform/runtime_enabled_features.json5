@@ -1143,7 +1143,7 @@
     },
     {
       name: "FontPalette",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "FontSrcLocalMatching",
