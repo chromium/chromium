@@ -85,7 +85,13 @@ class TabCaptureApiPixelTest : public TabCaptureApiTest {
 };
 
 // Tests API behaviors, including info queries, and constraints violations.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/): Flaky on Mac.
+#define MAYBE_ApiTests DISABLED_ApiTests
+#else
+#define MAYBE_ApiTests ApiTests
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_ApiTests) {
   AddExtensionToCommandLineAllowlist();
   ASSERT_TRUE(
       RunExtensionTest("tab_capture/api_tests", {.page_url = "api_tests.html"}))
