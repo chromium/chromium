@@ -86,8 +86,7 @@ CFTimeInterval kGREYConditionPollInterval = 0.1;
 // Returns the GREYMatcher for an element which is visible, interactable, and
 // enabled.
 id<GREYMatcher> VisibleInteractableEnabled() {
-  return grey_allOf(grey_sufficientlyVisible(), grey_interactable(),
-                    grey_enabled(), nil);
+  return grey_allOf(grey_enabled(), grey_sufficientlyVisible(), nil);
 }
 
 // Returns the GREYMatcher for the button that closes the QR Scanner.
@@ -266,8 +265,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Checks that the torch off button is visible and disabled.
 - (void)assertTorchButtonIsDisabled {
   [[EarlGrey selectElementWithMatcher:QrScannerTorchOffButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 }
 
 // Checks that the camera viewport caption is visible.

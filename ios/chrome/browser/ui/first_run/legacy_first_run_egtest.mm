@@ -220,9 +220,8 @@ id<GREYMatcher> SkipSigninButton() {
               grey_text(l10n_util::GetNSString(
                   IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION)))]
       assertWithMatcher:grey_allOf(
-                            grey_sufficientlyVisible(),
                             grey_ancestor(grey_kindOfClassName(@"UIButton")),
-                            nil)];
+                            grey_sufficientlyVisible(), nil)];
 
   // Finish FRE.
   [[EarlGrey selectElementWithMatcher:MatchInWindowWithNumber(

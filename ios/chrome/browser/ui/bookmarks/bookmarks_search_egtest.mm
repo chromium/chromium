@@ -60,8 +60,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify the search bar is shown.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_userInteractionEnabled(), nil)];
+      assertWithMatcher:grey_allOf(grey_userInteractionEnabled(),
+                                   grey_sufficientlyVisible(), nil)];
 }
 
 // Tests that the search bar is shown on mobile list.
@@ -72,8 +72,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify the search bar is shown.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_userInteractionEnabled(), nil)];
+      assertWithMatcher:grey_allOf(grey_userInteractionEnabled(),
+                                   grey_sufficientlyVisible(), nil)];
 }
 
 // Tests the search.

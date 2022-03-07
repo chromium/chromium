@@ -678,8 +678,8 @@ id<GREYMatcher> EditDoneButton() {
   // Finally, verify that the Edit button is visible and disabled, because there
   // are no other password entries left for deletion via the "Edit" mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -739,8 +739,8 @@ id<GREYMatcher> EditDoneButton() {
   // Finally, verify that the Edit button is visible and disabled, because there
   // are no other password entries left for deletion via the "Edit" mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -788,8 +788,8 @@ id<GREYMatcher> EditDoneButton() {
   // Finally, verify that the Edit button is visible and disabled, because there
   // are no other password entries left for deletion via the "Edit" mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -1304,8 +1304,8 @@ id<GREYMatcher> EditDoneButton() {
 
   // Verify that the Edit button is visible and disabled.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -1361,10 +1361,10 @@ id<GREYMatcher> EditDoneButton() {
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(
                                      ButtonWithAccessibilityLabel(dismissLabel),
-                                     grey_interactable(),
                                      grey_not(grey_accessibilityTrait(
                                          UIAccessibilityTraitNotEnabled)),
-                                     nullptr)] performAction:grey_tap()];
+                                     grey_interactable(), nullptr)]
+        performAction:grey_tap()];
   }
 
   // Wait until the activity view is dismissed.
@@ -1550,8 +1550,8 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_replaceText(@"")];
 
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"new password")];
@@ -1672,8 +1672,8 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_replaceText(@"concrete username2")];
 
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
@@ -1758,8 +1758,8 @@ id<GREYMatcher> EditDoneButton() {
   // Finally, verify that the Edit button is visible and disabled, because there
   // are no other password entries left for deletion via the "Edit" mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];

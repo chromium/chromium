@@ -38,8 +38,7 @@ id<GREYMatcher> SwitchTabElementForUrl(const GURL& url) {
   return grey_allOf(
       grey_ancestor(PopupRowWithUrl(url)),
       grey_accessibilityID(kOmniboxPopupRowSwitchTabAccessibilityIdentifier),
-      grey_sufficientlyVisible(), grey_interactable(),
-      nil);
+      grey_sufficientlyVisible(), nil);
 }
 
 // Web page 1.

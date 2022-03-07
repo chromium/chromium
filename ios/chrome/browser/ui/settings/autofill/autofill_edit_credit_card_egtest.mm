@@ -92,7 +92,7 @@ id<GREYMatcher> YearOfExpiryTextField() {
   [self typeNickname:@"Nickname"];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(), grey_enabled(),
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
                                    nil)];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
@@ -104,8 +104,8 @@ id<GREYMatcher> YearOfExpiryTextField() {
   [self typeNickname:@"1233"];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 }
 
 // Tests that clearing a nickname is allowed.
@@ -116,7 +116,7 @@ id<GREYMatcher> YearOfExpiryTextField() {
       performAction:grey_replaceText(@"")];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(), grey_enabled(),
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
                                    nil)];
 }
 
@@ -129,8 +129,8 @@ id<GREYMatcher> YearOfExpiryTextField() {
       performAction:grey_replaceText(@"2000")];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
-      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
-                                   grey_not(grey_enabled()), nil)];
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
 }
 
 #pragma mark - Helper methods

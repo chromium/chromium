@@ -45,9 +45,9 @@ id<GREYMatcher> WebSigninContinueButtonMatcher() {
 }
 
 id<GREYMatcher> GoogleSyncSettingsButton() {
-  return grey_allOf(
-      grey_kindOfClass([UITableViewCell class]), grey_sufficientlyVisible(),
-      grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId), nil);
+  return grey_allOf(grey_kindOfClass([UITableViewCell class]),
+                    grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 id<GREYMatcher> UpgradeSigninPromoMatcher() {
