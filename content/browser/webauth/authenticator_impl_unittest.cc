@@ -51,6 +51,7 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
+#include "device/fido/cable/fido_tunnel_device.h"
 #include "device/fido/cable/v2_authenticator.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_discovery.h"
@@ -8001,6 +8002,11 @@ class AuthenticatorCableV2Test : public AuthenticatorImplTest {
   void TearDown() override {
     SetBrowserClientForTesting(old_client_);
     AuthenticatorImplTest::TearDown();
+
+    // All `EstablishedConnection` instances should have been destroyed.
+    CHECK_EQ(device::cablev2::FidoTunnelDevice::
+                 GetNumEstablishedConnectionInstancesForTesting(),
+             0);
   }
 
   base::RepeatingCallback<void(device::cablev2::PairingEvent)>

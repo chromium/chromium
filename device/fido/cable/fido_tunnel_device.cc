@@ -198,6 +198,9 @@ FidoTunnelDevice::FidoTunnelDevice(
 
 FidoTunnelDevice::~FidoTunnelDevice() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == State::kReady) {
+    established_connection_->Close();
+  }
 }
 
 bool FidoTunnelDevice::MatchAdvert(
@@ -229,17 +232,16 @@ FidoDevice::CancelToken FidoTunnelDevice::DeviceTransact(
     std::vector<uint8_t> command,
     DeviceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback_);
 
   if (state_ == State::kError) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
-  } else {
+  } else if (state_ != State::kReady) {
+    DCHECK(!pending_callback_);
     pending_message_ = std::move(command);
-    callback_ = std::move(callback);
-    if (state_ == State::kReady) {
-      MaybeFlushPendingMessage();
-    }
+    pending_callback_ = std::move(callback);
+  } else {
+    DeviceTransactReady(std::move(command), std::move(callback));
   }
 
   // TODO: cancelation would be useful, but it depends on the GMSCore action
@@ -428,57 +430,182 @@ void FidoTunnelDevice::OnTunnelData(
       FIDO_LOG(DEBUG) << GetId() << ": established";
       RecordEvent(CableV2TunnelEvent::kTunnelEstablished);
       state_ = State::kReady;
-      MaybeFlushPendingMessage();
+
+      established_connection_ = base::MakeRefCounted<EstablishedConnection>(
+          std::move(websocket_client_), GetId(), std::move(crypter_));
+
+      if (pending_callback_) {
+        DeviceTransactReady(std::move(pending_message_),
+                            std::move(pending_callback_));
+      }
       break;
     }
 
     case State::kReady: {
-      if (!callback_) {
-        OnError();
-        return;
-      }
-
-      std::vector<uint8_t> plaintext;
-      if (!crypter_->Decrypt(*data, &plaintext)) {
-        FIDO_LOG(ERROR) << GetId() << ": decryption failed for caBLE message";
-        RecordEvent(CableV2TunnelEvent::kDecryptFailed);
-        OnError();
-        return;
-      }
-
-      std::move(callback_).Run(std::move(plaintext));
+      // In |kReady| the connection is handled by |established_connection_| and
+      // so this should never happen.
+      NOTREACHED();
       break;
     }
   }
 }
 
 void FidoTunnelDevice::OnError() {
+  const State previous_state = state_;
   state_ = State::kError;
-  websocket_client_.reset();
-  if (callback_) {
-    std::move(callback_).Run(absl::nullopt);
+
+  if (previous_state == State::kReady) {
+    DCHECK(!pending_callback_);
+    DCHECK(!websocket_client_);
+    established_connection_->Close();
+    established_connection_.reset();
+  } else {
+    websocket_client_.reset();
+    if (pending_callback_) {
+      std::move(pending_callback_).Run(absl::nullopt);
+    }
   }
 }
 
-void FidoTunnelDevice::MaybeFlushPendingMessage() {
-  if (pending_message_.empty()) {
+void FidoTunnelDevice::DeviceTransactReady(std::vector<uint8_t> command,
+                                           DeviceCallback callback) {
+  DCHECK_EQ(state_, State::kReady);
+
+  if (command.size() != 1 ||
+      command[0] !=
+          static_cast<uint8_t>(CtapRequestCommand::kAuthenticatorGetInfo)) {
+    established_connection_->Transact(std::move(command), std::move(callback));
     return;
   }
-  std::vector<uint8_t> pending(std::move(pending_message_));
 
-  if (pending.size() == 1 &&
-      pending[0] ==
-          static_cast<uint8_t>(CtapRequestCommand::kAuthenticatorGetInfo)) {
-    DCHECK(!getinfo_response_bytes_.empty());
-    std::vector<uint8_t> reply;
-    reply.reserve(1 + getinfo_response_bytes_.size());
-    reply.push_back(static_cast<uint8_t>(CtapDeviceResponseCode::kSuccess));
-    reply.insert(reply.end(), getinfo_response_bytes_.begin(),
-                 getinfo_response_bytes_.end());
+  DCHECK(!getinfo_response_bytes_.empty());
+  std::vector<uint8_t> reply;
+  reply.reserve(1 + getinfo_response_bytes_.size());
+  reply.push_back(static_cast<uint8_t>(CtapDeviceResponseCode::kSuccess));
+  reply.insert(reply.end(), getinfo_response_bytes_.begin(),
+               getinfo_response_bytes_.end());
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
+}
+
+// g_num_established_connection_instances is incremented when an
+// `EstablishedConnection` is created and decremented during its destructor.
+// This is purely for checking that none leak in tests.
+static int g_num_established_connection_instances;
+
+int FidoTunnelDevice::GetNumEstablishedConnectionInstancesForTesting() {
+  return g_num_established_connection_instances;
+}
+
+FidoTunnelDevice::EstablishedConnection::EstablishedConnection(
+    std::unique_ptr<WebSocketAdapter> websocket_client,
+    std::string id_for_logging,
+    std::unique_ptr<Crypter> crypter)
+    : self_reference_(this),
+      websocket_client_(std::move(websocket_client)),
+      id_for_logging_(std::move(id_for_logging)),
+      crypter_(std::move(crypter)) {
+  g_num_established_connection_instances++;
+  websocket_client_->Reparent(base::BindRepeating(
+      &EstablishedConnection::OnTunnelData, base::Unretained(this)));
+}
+
+FidoTunnelDevice::EstablishedConnection::~EstablishedConnection() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  g_num_established_connection_instances--;
+}
+
+void FidoTunnelDevice::EstablishedConnection::Transact(
+    std::vector<uint8_t> message,
+    DeviceCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == State::kRemoteShutdown || !crypter_->Encrypt(&message)) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), std::move(reply)));
-  } else if (crypter_->Encrypt(&pending)) {
-    websocket_client_->Write(pending);
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+    return;
+  }
+
+  DCHECK(!callback_);
+  callback_ = std::move(callback);
+  websocket_client_->Write(message);
+}
+
+void FidoTunnelDevice::EstablishedConnection::Close() {
+  switch (state_) {
+    case State::kRunning:
+      // This call makes splitting `EstablishedConnection` from
+      // `FidoTunnelDevice` pointless. I.e. as soon as the local side is
+      // finished we throw away the connection anyway. This will change in the
+      // future.
+      OnRemoteClose();
+      DCHECK_EQ(state_, State::kRemoteShutdown);
+      break;
+
+    case State::kRemoteShutdown:
+      break;
+
+    case State::kLocallyShutdown:
+    case State::kClosed:
+      NOTREACHED();
+  }
+
+  state_ = State::kClosed;
+  self_reference_.reset();
+}
+
+void FidoTunnelDevice::EstablishedConnection::OnTunnelData(
+    absl::optional<base::span<const uint8_t>> data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(state_ == State::kRunning || state_ == State::kLocallyShutdown);
+
+  if (!data) {
+    OnRemoteClose();
+    // `this` may be invalid now.
+    return;
+  }
+
+  std::vector<uint8_t> plaintext;
+  if (!crypter_->Decrypt(*data, &plaintext)) {
+    FIDO_LOG(ERROR) << id_for_logging_
+                    << ": decryption failed for caBLE message";
+    RecordEvent(CableV2TunnelEvent::kDecryptFailed);
+    OnRemoteClose();
+    // `this` may be invalid now.
+    return;
+  }
+
+  if (!callback_) {
+    FIDO_LOG(ERROR) << id_for_logging_
+                    << ": unsolicited message from caBLE device";
+    OnRemoteClose();
+    // `this` may be invalid now.
+    return;
+  }
+
+  std::move(callback_).Run(std::move(plaintext));
+}
+
+void FidoTunnelDevice::EstablishedConnection::OnRemoteClose() {
+  websocket_client_.reset();
+
+  switch (state_) {
+    case State::kRunning:
+      state_ = State::kRemoteShutdown;
+      if (callback_) {
+        std::move(callback_).Run(absl::nullopt);
+      }
+      break;
+
+    case State::kLocallyShutdown:
+      state_ = State::kClosed;
+      self_reference_.reset();
+      // `this` may be invalid now.
+      return;
+
+    case State::kRemoteShutdown:
+    case State::kClosed:
+      NOTREACHED();
+      break;
   }
 }
 

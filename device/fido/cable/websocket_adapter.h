@@ -61,6 +61,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
   // defaults to 64KiB. Exceeding that will cause the function to return false.
   bool Write(base::span<const uint8_t> data);
 
+  // Reparent updates the data callback. This is only valid to call after the
+  // tunnel is established.
+  void Reparent(TunnelDataCallback on_tunnel_data);
+
   // WebSocketHandshakeClient:
 
   void OnOpeningHandshakeStarted(
@@ -104,7 +108,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
   bool pending_message_finished_ = false;
 
   TunnelReadyCallback on_tunnel_ready_;
-  const TunnelDataCallback on_tunnel_data_;
+  TunnelDataCallback on_tunnel_data_;
   mojo::Receiver<network::mojom::WebSocketHandshakeClient> handshake_receiver_{
       this};
   mojo::Receiver<network::mojom::WebSocketClient> client_receiver_{this};

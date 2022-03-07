@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/websocket_adapter.h"
@@ -65,6 +67,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   std::string GetId() const override;
   FidoTransportProtocol DeviceTransport() const override;
   base::WeakPtr<FidoDevice> GetWeakPtr() override;
+
+  // GetNumEstablishedConnectionInstancesForTesting returns the current number
+  // of live |EstablishedConnection| objects. This is only for testing that
+  // they aren't leaking.
+  static int GetNumEstablishedConnectionInstancesForTesting();
 
  private:
   enum class State {
@@ -148,23 +155,66 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     base::OnceClosure pairing_is_invalid;
   };
 
+  // EstablishedConnection represents a connection where the handshake has
+  // completed.
+  class EstablishedConnection : public base::RefCounted<EstablishedConnection> {
+   public:
+    EstablishedConnection(std::unique_ptr<WebSocketAdapter> websocket_client,
+                          std::string id_for_logging,
+                          std::unique_ptr<Crypter> crypter);
+    EstablishedConnection(const EstablishedConnection&) = delete;
+    EstablishedConnection& operator=(const EstablishedConnection&) = delete;
+
+    void Transact(std::vector<uint8_t> message, DeviceCallback callback);
+    void Close();
+
+   private:
+    enum class State {
+      kRunning,
+      kLocallyShutdown,
+      kRemoteShutdown,
+      kClosed,
+    };
+
+    friend class base::RefCounted<EstablishedConnection>;
+    ~EstablishedConnection();
+
+    void OnTunnelData(absl::optional<base::span<const uint8_t>> data);
+    void OnRemoteClose();
+
+    scoped_refptr<EstablishedConnection> self_reference_;
+    State state_ = State::kRunning;
+    std::unique_ptr<WebSocketAdapter> websocket_client_;
+    const std::string id_for_logging_;
+    const std::unique_ptr<Crypter> crypter_;
+    DeviceCallback callback_;
+    SEQUENCE_CHECKER(sequence_checker_);
+  };
+
   void OnTunnelReady(
       WebSocketAdapter::Result result,
       absl::optional<std::array<uint8_t, kRoutingIdSize>> routing_id);
   void OnTunnelData(absl::optional<base::span<const uint8_t>> data);
   void OnError();
-  void MaybeFlushPendingMessage();
+  void DeviceTransactReady(std::vector<uint8_t> command,
+                           DeviceCallback callback);
 
   State state_ = State::kConnecting;
   absl::variant<QRInfo, PairedInfo> info_;
   const std::array<uint8_t, 8> id_;
-  std::unique_ptr<WebSocketAdapter> websocket_client_;
+  std::vector<uint8_t> pending_message_;
+  DeviceCallback pending_callback_;
   absl::optional<HandshakeInitiator> handshake_;
   absl::optional<HandshakeHash> handshake_hash_;
-  std::unique_ptr<Crypter> crypter_;
   std::vector<uint8_t> getinfo_response_bytes_;
-  std::vector<uint8_t> pending_message_;
-  DeviceCallback callback_;
+
+  // These fields are |nullptr| when in state |kReady|.
+  std::unique_ptr<WebSocketAdapter> websocket_client_;
+  std::unique_ptr<Crypter> crypter_;
+
+  // This is only valid when in state |kReady|.
+  scoped_refptr<EstablishedConnection> established_connection_;
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FidoTunnelDevice> weak_factory_{this};
 };
