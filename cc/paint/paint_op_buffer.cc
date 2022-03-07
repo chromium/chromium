@@ -783,10 +783,11 @@ size_t DrawTextBlobOp::Serialize(const PaintOp* base_op,
   helper.AlignMemory(alignof(SkScalar));
   helper.Write(op->x);
   helper.Write(op->y);
-  int count = options.raw_draw ? op->slugs.size() : -1;
+  unsigned int count = options.raw_draw ? (op->extra_slugs.size() + 1) : 0;
   helper.Write(count);
   if (options.raw_draw) {
-    for (const auto& slug : op->slugs) {
+    helper.Write(op->slug);
+    for (const auto& slug : op->extra_slugs) {
       helper.Write(slug);
     }
   } else {
@@ -1356,11 +1357,12 @@ PaintOp* DrawTextBlobOp::Deserialize(const volatile void* input,
   deserializer.AlignMemory(alignof(SkScalar));
   deserializer.Read(&deserializer->x);
   deserializer.Read(&deserializer->y);
-  int count = -1;
+  unsigned int count = 0;
   deserializer.Read(&count);
-  if (count >= 0) {
-    deserializer->slugs.resize(count);
-    for (auto& slug : deserializer->slugs) {
+  if (count) {
+    deserializer.Read(&deserializer->slug);
+    deserializer->extra_slugs.resize(count - 1);
+    for (auto& slug : deserializer->extra_slugs) {
       deserializer.Read(&slug);
     }
   } else {
@@ -1815,21 +1817,29 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
   if (op->node_id)
     SkPDF::SetNodeId(canvas, op->node_id);
 
-  bool analysis = params.raw_draw_analysis && op->slugs.empty();
+  bool need_analysis =
+      params.raw_draw_analysis && !op->slug && op->extra_slugs.empty();
   size_t i = 0;
   // flags may contain SkDrawLooper for shadow effect, so we need to convert
   // SkTextBlob to slug for each run.
-  flags->DrawToSk(canvas, [op, analysis, &i](SkCanvas* c, const SkPaint& p) {
+  flags->DrawToSk(canvas, [op, need_analysis, &i](SkCanvas* c,
+                                                  const SkPaint& p) {
     if (op->blob) {
       c->drawTextBlob(op->blob.get(), op->x, op->y, p);
-      if (analysis) {
-        const_cast<DrawTextBlobOp*>(op)->slugs.push_back(
-            GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p));
+      if (need_analysis) {
+        auto s = GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
+        if (i == 0) {
+          const_cast<DrawTextBlobOp*>(op)->slug = std::move(s);
+        } else {
+          const_cast<DrawTextBlobOp*>(op)->extra_slugs.push_back(std::move(s));
+        }
       }
-    } else if (i < op->slugs.size() && op->slugs[i]) {
-      op->slugs[i]->draw(c);
-      ++i;
+    } else if (i < 1 + op->extra_slugs.size()) {
+      const auto& s = i == 0 ? op->slug : op->extra_slugs[i - 1];
+      if (s)
+        s->draw(c);
     }
+    ++i;
   });
 
   if (op->node_id)
