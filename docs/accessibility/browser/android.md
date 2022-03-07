@@ -731,15 +731,15 @@ Piece of cake!
     The way touch exploration works on Android is complicated. The process that happens
     during any hover event is:
 
-      * User begins dragging their finger
-      * Java-side View receives a hover event and passes this through to C++
-      * Accessibility code sends a hit test action to the renderer process
-      * The renderer process fires a HOVER accessibility event on the accessibility
-        node at that coordinate
-      * [WebContentsAccessibilityImpl#handleHover](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22private%20void%20handleHover%22) is called for that node.
-      * We fire a TYPE\_VIEW\_HOVER\_ENTER AccessibilityEvent on that node.
-      * We fire a TYPE\_VIEW\_HOVER\_EXIT AccessibilityEvent on the previous node.
-      * TalkBack sets accessibility focus to the targeted node.
+    1. User begins dragging their finger
+    2. Java-side View receives a hover event and passes this through to C++
+    3. Accessibility code sends a hit test action to the renderer process
+    4. The renderer process fires a HOVER accessibility event on the accessibility
+      node at that coordinate
+    5. [WebContentsAccessibilityImpl#handleHover](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java?q=%22private%20void%20handleHover%22) is called for that node.
+    6. We fire a TYPE\_VIEW\_HOVER\_ENTER AccessibilityEvent on that node.
+    7. We fire a TYPE\_VIEW\_HOVER\_EXIT AccessibilityEvent on the previous node.
+    8. TalkBack sets accessibility focus to the targeted node.
 
 - WebView and Custom Tabs
 
