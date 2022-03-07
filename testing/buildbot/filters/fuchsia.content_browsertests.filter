@@ -15,7 +15,6 @@
 -DirectSocketsTcpBrowserTest.OpenTcp_MDNS
 -DohHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
 -DohHttpsProtocolUpgradeBrowserTest.NoProtocolUpgrade
--MemoryTracingTest.BrowserInitiatedDump
 -MojoSandboxTest.NotIsProcessSandboxed
 -NetworkServiceDataMigrationBrowserTest.LegacyDataDir
 -NetworkServiceDataMigrationBrowserTest.MigrateThenNoMigrate
