@@ -771,7 +771,8 @@ class AuraOutput : public WaylandDisplayObserver {
 // propagated to clients on aura_shell bind and can be used to gate client
 // logic on the presence of certain fixes.
 const uint32_t kFixedBugIds[] = {
-  1151508, // Do not remove, used for sanity checks by |wayland_simple_client|
+    1151508,  // Do not remove, used for sanity checks by
+              // |wayland_simple_client|
 };
 
 // Implements aura shell interface and monitors workspace state needed
@@ -890,8 +891,10 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     if (wl_resource_get_version(aura_shell_resource_) <
         ZAURA_SHELL_ACTIVATED_SINCE_VERSION)
       return;
-    if (gained_active_surface == lost_active_surface)
+    if (gained_active_surface == lost_active_surface &&
+        last_has_focused_client_ == has_focused_client)
       return;
+    last_has_focused_client_ = has_focused_client;
 
     wl_resource* gained_active_surface_resource =
         gained_active_surface ? GetSurfaceResource(gained_active_surface)
@@ -925,6 +928,8 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   // The aura shell resource associated with observer.
   wl_resource* const aura_shell_resource_;
   Seat* const seat_;
+
+  bool last_has_focused_client_ = false;
 
   base::WeakPtrFactory<WaylandAuraShell> weak_ptr_factory_{this};
 };
