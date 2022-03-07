@@ -34,6 +34,7 @@ namespace {
 
 const char kAbortedFromCaptureAndHold[] =
     "Aborted due to captureAndHold() call";
+const char kAbortedFromStart[] = "Aborted due to start() call";
 const char kAbortedFromScript[] = "Aborted due to abort() call";
 
 uint32_t NextDocumentTag() {
@@ -97,7 +98,12 @@ void DocumentTransition::setElement(
     const AtomicString& tag,
     const DocumentTransitionSetElementOptions* opts,
     ExceptionState& exception_state) {
-  DCHECK(style_tracker_);
+  if (!style_tracker_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Transition is aborted.");
+    return;
+  }
+
   if (tag.IsNull())
     style_tracker_->RemoveSharedElement(element);
   else
@@ -107,28 +113,40 @@ void DocumentTransition::setElement(
 ScriptPromise DocumentTransition::captureAndHold(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  // Reject any previous prepare promises.
-  if (state_ == State::kCapturing || state_ == State::kCaptured)
-    CancelPendingTransition(kAbortedFromCaptureAndHold);
+  switch (state_) {
+    case State::kIdle:
+      if (!document_ || !document_->View()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            "The document must be connected to a window.");
+        return ScriptPromise();
+      }
+      if (!style_tracker_) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                          "Transition is aborted.");
+        return ScriptPromise();
+      }
+      break;
+    case State::kCapturing:
+    case State::kCaptured:
+    case State::kStarted:
+      CancelPendingTransition(kAbortedFromCaptureAndHold);
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Transition aborted, invalid captureAndHold call");
+      return ScriptPromise();
+  }
 
   // Get the sequence id before any early outs so we will correctly process
   // callbacks from previous requests.
   last_prepare_sequence_id_ = next_sequence_id_++;
 
-  // If we are not attached to a view, then we can't prepare a transition.
-  // Reject the promise.
-  if (!document_ || !document_->View()) {
+  bool capture_succeeded = style_tracker_->Capture();
+  if (!capture_succeeded) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The document must be connected to a window.");
-    return ScriptPromise();
-  }
-
-  // We also reject the promise if we're in any state other than idle.
-  if (state_ != State::kIdle) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The document is already executing a transition.");
+        "Capture failed: invalid element configuration.");
+    ResetState();
     return ScriptPromise();
   }
 
@@ -137,12 +155,11 @@ ScriptPromise DocumentTransition::captureAndHold(
 
   state_ = State::kCapturing;
   pending_request_ = DocumentTransitionRequest::CreateCapture(
-      document_tag_, style_tracker_->PendingSharedElementCount() + 1,
+      document_tag_, style_tracker_->CapturedTagCount(),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyCaptureFinished,
           WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));
 
-  style_tracker_->Capture();
   NotifyHasChangesToCommit();
 
   return capture_promise_resolver_->Promise();
@@ -150,14 +167,36 @@ ScriptPromise DocumentTransition::captureAndHold(
 
 ScriptPromise DocumentTransition::start(ScriptState* script_state,
                                         ExceptionState& exception_state) {
-  if (state_ != State::kCaptured) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Transition must be prepared before it can be started.");
-    return ScriptPromise();
+  switch (state_) {
+    case State::kIdle:
+    case State::kCapturing:
+      CancelPendingTransition(kAbortedFromStart);
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Transition must be prepared before it can be started.");
+      return ScriptPromise();
+    case State::kCaptured:
+      // We expect this case in a proper transition.
+      DCHECK(style_tracker_);
+      break;
+    case State::kStarted:
+      CancelPendingTransition(kAbortedFromStart);
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Transition aborted, invalid start call");
+      return ScriptPromise();
   }
 
   StopDeferringCommits();
+
+  bool start_succeeded = style_tracker_->Start();
+  if (!start_succeeded) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Start failed: invalid element configuration.");
+    ResetState();
+    return ScriptPromise();
+  }
 
   last_start_sequence_id_ = next_sequence_id_++;
   state_ = State::kStarted;
@@ -165,7 +204,6 @@ ScriptPromise DocumentTransition::start(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   pending_request_ =
       DocumentTransitionRequest::CreateAnimateRenderer(document_tag_);
-  style_tracker_->Start();
 
   NotifyHasChangesToCommit();
   return start_promise_resolver_->Promise();
@@ -400,6 +438,8 @@ void DocumentTransition::StopDeferringCommits() {
 }
 
 void DocumentTransition::CancelPendingTransition(const char* abort_message) {
+  ResetState();
+
   if (capture_promise_resolver_) {
     capture_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, abort_message));
@@ -409,20 +449,21 @@ void DocumentTransition::CancelPendingTransition(const char* abort_message) {
     start_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, abort_message));
     start_promise_resolver_ = nullptr;
-  }
 
-  ResetState();
+    pending_request_ = DocumentTransitionRequest::CreateRelease(document_tag_);
+    NotifyHasChangesToCommit();
+  }
 }
 
 void DocumentTransition::ResetState(bool abort_style_tracker) {
-  if (style_tracker_ && abort_style_tracker)
-    style_tracker_->Abort();
+  if (abort_style_tracker) {
+    if (style_tracker_)
+      style_tracker_->Abort();
+    pending_request_.reset();
+  }
   style_tracker_ = nullptr;
   StopDeferringCommits();
   state_ = State::kIdle;
-  // If script mutations are still allowed, we recreate the style tracker.
-  if (script_mutations_allowed_)
-    StartNewTransition();
 }
 
 }  // namespace blink

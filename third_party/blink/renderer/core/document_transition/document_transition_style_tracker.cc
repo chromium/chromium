@@ -23,15 +23,18 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 namespace {
 
 const char* kElementSetModificationError =
     "The element set cannot be modified at this transition state.";
-
 const char* kPaintContainmentNotSatisfied =
     "Dropping element from transition. Shared element must contain paint";
+const char* kDuplicateTagBaseError =
+    "Unexpected duplicate page transition tag: ";
+const char* kReservedTagBaseError = "Unexpected reserved page transition tag: ";
 
 const AtomicString& RootTag() {
   DEFINE_STATIC_LOCAL(AtomicString, kRootTag, ("root"));
@@ -108,7 +111,7 @@ DocumentTransitionStyleTracker::DocumentTransitionStyleTracker(
 DocumentTransitionStyleTracker::~DocumentTransitionStyleTracker() = default;
 
 void DocumentTransitionStyleTracker::AddConsoleError(
-    AtomicString message,
+    String message,
     Vector<DOMNodeId> related_nodes) {
   auto* console_message = MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kRendering,
@@ -126,60 +129,145 @@ void DocumentTransitionStyleTracker::AddSharedElement(Element* element,
     return;
   }
 
-  // TODO(vmpstr): One element can have multiple tags associated with it, but
-  // it isn't currently allowed to have one tag be associated with more than one
-  // element. The explainer dictates to abandon the transition. We need to
-  // detect that case and abandon the transition.
-  pending_shared_elements_.push_back(element);
-  pseudo_document_transition_tags_.push_back(tag);
+  // Insert an empty hash set for the element if it doesn't exist, or get it if
+  // it does.
+  auto& value = pending_shared_element_tags_
+                    .insert(element, HashSet<std::pair<AtomicString, int>>())
+                    .stored_value->value;
+  // Find the existing tag if one is there.
+  auto it = std::find_if(
+      value.begin(), value.end(),
+      [&tag](const std::pair<AtomicString, int>& p) { return p.first == tag; });
+  // If it is there, do nothing.
+  if (it != value.end())
+    return;
+  // Otherwise, insert a new sequence id with this tag. We'll use the sequence
+  // to sort later.
+  value.insert(std::make_pair(tag, set_element_sequence_id_));
+  ++set_element_sequence_id_;
 }
 
 void DocumentTransitionStyleTracker::RemoveSharedElement(Element* element) {
-  // TODO(vmpstr): Log a console warning if we're modifying elements in a state
-  // that does not permit to do so.
   if (state_ == State::kCapturing || state_ == State::kStarted) {
     AddConsoleError(kElementSetModificationError,
                     {DOMNodeIds::IdForNode(element)});
     return;
   }
-  for (wtf_size_t i = 0; i < pending_shared_elements_.size(); ++i) {
-    if (pending_shared_elements_[i] == element) {
-      pending_shared_elements_.EraseAt(i);
-      pseudo_document_transition_tags_.EraseAt(i);
-    }
-  }
+
+  pending_shared_element_tags_.erase(element);
 }
 
-void DocumentTransitionStyleTracker::Capture() {
-  DCHECK_EQ(state_, State::kIdle);
+bool DocumentTransitionStyleTracker::FlattenAndVerifyElements(
+    VectorOf<Element>& elements,
+    VectorOf<AtomicString>& transition_tags) {
+  // We need to flatten the data first, and sort it by ordering which reflects
+  // the setElement ordering.
+  struct FlatData : public GarbageCollected<FlatData> {
+    FlatData(Element* element, const AtomicString& tag, int ordering)
+        : element(element), tag(tag), ordering(ordering) {}
+    Member<Element> element;
+    AtomicString tag;
+    int ordering;
 
-  state_ = State::kCapturing;
+    void Trace(Visitor* visitor) const { visitor->Trace(element); }
+  };
+  VectorOf<FlatData> flat_list;
 
-  // The order of IDs in this list defines the DOM order and as a result the
-  // paint order of these elements. This is why root needs to be first in the
-  // list.
-  old_root_snapshot_id_ = viz::SharedElementResourceId::Generate();
-  element_data_map_.ReserveCapacityForSize(pending_shared_elements_.size());
-  for (wtf_size_t i = 0; i < pending_shared_elements_.size(); ++i) {
-    const auto& document_transition_tag = pseudo_document_transition_tags_[i];
-
-    auto* element_data = MakeGarbageCollected<ElementData>();
-    element_data->target_element = pending_shared_elements_[i];
-    DCHECK_NE(root_index, static_cast<int>(i + 1));
-    element_data->element_index = i + 1;
-    if (pending_shared_elements_[i])
-      element_data->old_snapshot_id = viz::SharedElementResourceId::Generate();
-    element_data_map_.insert(document_transition_tag, std::move(element_data));
+  // Flatten it.
+  for (auto& [element, tags] : pending_shared_element_tags_) {
+    for (auto& tag_pair : tags) {
+      flat_list.push_back(MakeGarbageCollected<FlatData>(
+          element, tag_pair.first, tag_pair.second));
+    }
   }
 
-  // TODO(vmpstr): This is a bit awkward. push/set/pop
-  pseudo_document_transition_tags_.push_front(RootTag());
-  document_->GetStyleEngine().SetDocumentTransitionTags(
-      pseudo_document_transition_tags_);
-  pseudo_document_transition_tags_.EraseAt(0);
+  // Sort it.
+  std::sort(flat_list.begin(), flat_list.end(),
+            [](const FlatData* a, const FlatData* b) {
+              return a->ordering < b->ordering;
+            });
+
+  // Verify it.
+  for (auto& flat_data : flat_list) {
+    auto& tag = flat_data->tag;
+    auto& element = flat_data->element;
+
+    if (UNLIKELY(transition_tags.Contains(tag))) {
+      StringBuilder message;
+      message.Append(kDuplicateTagBaseError);
+      message.Append(tag);
+      AddConsoleError(message.ReleaseString());
+      return false;
+    }
+    if (UNLIKELY(tag == RootTag())) {
+      StringBuilder message;
+      message.Append(kReservedTagBaseError);
+      message.Append(tag);
+      AddConsoleError(message.ReleaseString());
+      return false;
+    }
+    transition_tags.push_back(tag);
+    elements.push_back(element);
+  }
+  return true;
+}
+
+bool DocumentTransitionStyleTracker::Capture() {
+  DCHECK_EQ(state_, State::kIdle);
+
+  // Flatten `pending_shared_element_tags_` into a vector of tags and elements.
+  // This process also verifies that the tag-element combinations are valid.
+  VectorOf<AtomicString> transition_tags;
+  VectorOf<Element> elements;
+  bool success = FlattenAndVerifyElements(elements, transition_tags);
+  if (!success)
+    return false;
+
+  // Now we know that we can start a transition. Update the state and populate
+  // `element_data_map_`.
+  state_ = State::kCapturing;
+  captured_tag_count_ = transition_tags.size();
+
+  old_root_snapshot_id_ = viz::SharedElementResourceId::Generate();
+  element_data_map_.ReserveCapacityForSize(captured_tag_count_);
+  HeapHashMap<Member<Element>, viz::SharedElementResourceId>
+      element_snapshot_ids;
+  int next_index = root_index + 1;
+  for (int i = 0; i < captured_tag_count_; ++i) {
+    const auto& tag = transition_tags[i];
+    const auto& element = elements[i];
+
+    // Reuse any previously generated snapshot_id for this element. If there was
+    // none yet, then generate the resource id.
+    auto& snapshot_id =
+        element_snapshot_ids.insert(element, viz::SharedElementResourceId())
+            .stored_value->value;
+    if (!snapshot_id.IsValid())
+      snapshot_id = viz::SharedElementResourceId::Generate();
+
+    auto* element_data = MakeGarbageCollected<ElementData>();
+    element_data->target_element = element;
+    element_data->element_index = next_index++;
+    element_data->old_snapshot_id = snapshot_id;
+    element_data_map_.insert(tag, std::move(element_data));
+  }
+
+  // Don't forget to add the root tag!
+  transition_tags.push_front(RootTag());
+
+  // Add one to the captured tag count to account for root. We don't add it
+  // earlier, since we're doing an iteration over captured tag counts from the
+  // shared non-root elements.
+  ++captured_tag_count_;
+
+  // This informs the style engine the set of tags we have, which will be used
+  // to create the pseudo element tree.
+  document_->GetStyleEngine().SetDocumentTransitionTags(transition_tags);
 
   // We need a style invalidation to generate the pseudo element tree.
   InvalidateStyle();
+
+  return true;
 }
 
 void DocumentTransitionStyleTracker::CaptureResolved() {
@@ -203,30 +291,49 @@ void DocumentTransitionStyleTracker::CaptureResolved() {
   root_effect_node_ = nullptr;
 }
 
-void DocumentTransitionStyleTracker::Start() {
+bool DocumentTransitionStyleTracker::Start() {
   DCHECK_EQ(state_, State::kCaptured);
+
+  // Flatten `pending_shared_element_tags_` into a vector of tags and elements.
+  // This process also verifies that the tag-element combinations are valid.
+  VectorOf<AtomicString> transition_tags;
+  VectorOf<Element> elements;
+  bool success = FlattenAndVerifyElements(elements, transition_tags);
+  if (!success)
+    return false;
 
   state_ = State::kStarted;
   new_root_snapshot_id_ = viz::SharedElementResourceId::Generate();
-  for (wtf_size_t i = 0; i < pending_shared_elements_.size(); ++i) {
-    const auto& document_transition_tag = pseudo_document_transition_tags_[i];
+  HeapHashMap<Member<Element>, viz::SharedElementResourceId>
+      element_snapshot_ids;
+  for (wtf_size_t i = 0; i < elements.size(); ++i) {
+    const auto& tag = transition_tags[i];
+    const auto& element = elements[i];
 
     // TODO(vmpstr): Support new elements during start. It requires us to figure
     // out what the new document tag set is as well as creating new element
     // data.
-    if (element_data_map_.find(document_transition_tag) ==
-        element_data_map_.end())
+    if (element_data_map_.find(tag) == element_data_map_.end())
       continue;
 
-    auto& element_data = element_data_map_.find(document_transition_tag)->value;
-    element_data->target_element = pending_shared_elements_[i];
-    if (pending_shared_elements_[i])
-      element_data->new_snapshot_id = viz::SharedElementResourceId::Generate();
+    // Reuse any previously generated snapshot_id for this element. If there was
+    // none yet, then generate the resource id.
+    auto& snapshot_id =
+        element_snapshot_ids.insert(element, viz::SharedElementResourceId())
+            .stored_value->value;
+    if (!snapshot_id.IsValid())
+      snapshot_id = viz::SharedElementResourceId::Generate();
+
+    auto& element_data = element_data_map_.find(tag)->value;
+    element_data->target_element = element;
+    element_data->new_snapshot_id = snapshot_id;
   }
 
   // We need a style invalidation to generate new content pseudo elements for
   // new elements in the DOM.
   InvalidateStyle();
+
+  return true;
 }
 
 void DocumentTransitionStyleTracker::StartFinished() {
@@ -242,8 +349,8 @@ void DocumentTransitionStyleTracker::EndTransition() {
   state_ = State::kFinished;
 
   element_data_map_.clear();
-  pseudo_document_transition_tags_.clear();
-  pending_shared_elements_.clear();
+  pending_shared_element_tags_.clear();
+  set_element_sequence_id_ = 0;
   document_->GetStyleEngine().SetDocumentTransitionTags({});
 
   // We need a style invalidation to remove the pseudo element tree.
@@ -259,14 +366,15 @@ void DocumentTransitionStyleTracker::UpdateElementIndicesAndSnapshotId(
   for (const auto& entry : element_data_map_) {
     if (entry.value->target_element == element) {
       index.AddIndex(entry.value->element_index);
-      resource_id = HasLiveNewContent() ? entry.value->new_snapshot_id
-                                        : entry.value->old_snapshot_id;
-      DCHECK(resource_id.IsValid());
-      return;
+      const auto& snapshot_id = HasLiveNewContent()
+                                    ? entry.value->new_snapshot_id
+                                    : entry.value->old_snapshot_id;
+      DCHECK(!resource_id.IsValid() || resource_id == snapshot_id);
+      if (!resource_id.IsValid())
+        resource_id = snapshot_id;
     }
   }
-
-  NOTREACHED();
+  DCHECK(resource_id.IsValid());
 }
 
 void DocumentTransitionStyleTracker::UpdateRootIndexAndSnapshotId(
@@ -660,7 +768,7 @@ bool DocumentTransitionStyleTracker::HasLiveNewContent() const {
 void DocumentTransitionStyleTracker::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(element_data_map_);
-  visitor->Trace(pending_shared_elements_);
+  visitor->Trace(pending_shared_element_tags_);
 }
 
 void DocumentTransitionStyleTracker::ElementData::Trace(

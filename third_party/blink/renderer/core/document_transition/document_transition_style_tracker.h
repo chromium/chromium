@@ -40,17 +40,20 @@ class DocumentTransitionStyleTracker
   void AddSharedElement(Element*, const AtomicString&);
   void RemoveSharedElement(Element*);
 
-  // Notifies when the transition is initiated.
-  void Capture();
+  // Indicate that capture was requested. This verifies that the combination of
+  // set elements and tags is valid. Returns true if capture phase started, and
+  // false if the transition should be aborted.
+  bool Capture();
 
   // Notifies when caching snapshots for elements in the old DOM finishes. This
   // is dispatched before script is notified to ensure this class releases any
   // references to elements in the old DOM before it is mutated by script.
   void CaptureResolved();
 
-  // Notifies when the new DOM has finished loading and a transition can be
-  // started.
-  void Start();
+  // Indicate that start was requested. This verifies that the combination of
+  // set elements and tags is valid. Returns true if start phase started, and
+  // false if the transition should be aborted.
+  bool Start();
 
   // Notifies when the animation setup for the transition during Start have
   // finished executing.
@@ -102,9 +105,7 @@ class DocumentTransitionStyleTracker
 
   void VerifySharedElements();
 
-  int PendingSharedElementCount() const {
-    return pending_shared_elements_.size();
-  }
+  int CapturedTagCount() const { return captured_tag_count_; }
 
   bool IsSharedElement(Element* element) const;
 
@@ -149,12 +150,15 @@ class DocumentTransitionStyleTracker
   bool HasLiveNewContent() const;
   void EndTransition();
 
-  void AddConsoleError(AtomicString message, Vector<DOMNodeId> related_nodes);
+  void AddConsoleError(String message, Vector<DOMNodeId> related_nodes = {});
+  bool FlattenAndVerifyElements(VectorOf<Element>&, VectorOf<AtomicString>&);
 
   Member<Document> document_;
   State state_ = State::kIdle;
-  VectorOf<AtomicString> pseudo_document_transition_tags_;
-  VectorOf<Element> pending_shared_elements_;
+  int captured_tag_count_ = 0;
+  int set_element_sequence_id_ = 0;
+  HeapHashMap<Member<Element>, HashSet<std::pair<AtomicString, int>>>
+      pending_shared_element_tags_;
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;
   viz::SharedElementResourceId old_root_snapshot_id_;
   viz::SharedElementResourceId new_root_snapshot_id_;

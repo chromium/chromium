@@ -130,6 +130,7 @@ class DocumentTransitionTest : public testing::Test,
 
     PseudoElement* previous_container = nullptr;
     for (const auto& document_transition_tag : document_transition_tags) {
+      SCOPED_TRACE(document_transition_tag);
       auto* container_pseudo = transition_pseudo->GetPseudoElement(
           kPseudoIdPageTransitionContainer, document_transition_tag);
       ASSERT_TRUE(container_pseudo);
@@ -205,7 +206,7 @@ TEST_P(DocumentTransitionTest, TransitionPreparePromiseResolves) {
   EXPECT_EQ(GetState(transition), State::kCaptured);
 }
 
-TEST_P(DocumentTransitionTest, AdditionalPrepareRejectsPreviousPromise) {
+TEST_P(DocumentTransitionTest, AdditionalPrepareAbortsTransition) {
   auto* transition =
       DocumentTransitionSupplement::EnsureDocumentTransition(GetDocument());
   auto scope = transition->CreateScriptMutationsAllowedScope();
@@ -218,17 +219,16 @@ TEST_P(DocumentTransitionTest, AdditionalPrepareRejectsPreviousPromise) {
       script_state, transition->captureAndHold(script_state, exception_state));
   EXPECT_EQ(GetState(transition), State::kCapturing);
 
-  ScriptPromiseTester second_promise_tester(
-      script_state, transition->captureAndHold(script_state, exception_state));
-  EXPECT_EQ(GetState(transition), State::kCapturing);
+  EXPECT_FALSE(exception_state.HadException());
+  transition->captureAndHold(script_state, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(GetState(transition), State::kIdle);
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
   first_promise_tester.WaitUntilSettled();
-  second_promise_tester.WaitUntilSettled();
 
   EXPECT_TRUE(first_promise_tester.IsRejected());
-  EXPECT_TRUE(second_promise_tester.IsFulfilled());
-  EXPECT_EQ(GetState(transition), State::kCaptured);
+  EXPECT_EQ(GetState(transition), State::kIdle);
 }
 
 TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
@@ -384,7 +384,7 @@ TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
   EXPECT_FALSE(ShouldCompositeForDocumentTransition(e3));
 }
 
-TEST_P(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
+TEST_P(DocumentTransitionTest, AdditionalPrepareAfterPreparedAbortsTransition) {
   auto* transition =
       DocumentTransitionSupplement::EnsureDocumentTransition(GetDocument());
   auto scope = transition->CreateScriptMutationsAllowedScope();
@@ -402,14 +402,10 @@ TEST_P(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
   EXPECT_TRUE(first_promise_tester.IsFulfilled());
   EXPECT_EQ(GetState(transition), State::kCaptured);
 
-  ScriptPromiseTester second_promise_tester(
-      script_state, transition->captureAndHold(script_state, exception_state));
-  EXPECT_EQ(GetState(transition), State::kCapturing);
-
-  UpdateAllLifecyclePhasesAndFinishDirectives();
-  second_promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(second_promise_tester.IsFulfilled());
-  EXPECT_EQ(GetState(transition), State::kCaptured);
+  EXPECT_FALSE(exception_state.HadException());
+  transition->captureAndHold(script_state, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(GetState(transition), State::kIdle);
 }
 
 TEST_P(DocumentTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
@@ -473,16 +469,18 @@ TEST_P(DocumentTransitionTest, StartAfterPrepare) {
   EXPECT_TRUE(start_request);
   EXPECT_EQ(GetState(transition), State::kStarted);
 
-  // Subsequent starts should get an exception.
+  // Subsequent starts should get an exception and cancel an existing
+  // transition.
   EXPECT_FALSE(exception_state.HadException());
   transition->start(script_state, exception_state);
   EXPECT_TRUE(exception_state.HadException());
-  EXPECT_FALSE(transition->TakePendingRequest());
+  // We will have a release request at this point.
+  EXPECT_TRUE(transition->TakePendingRequest());
 
   start_request->TakeFinishedCallback().Run();
   FinishTransition();
   start_tester.WaitUntilSettled();
-  EXPECT_TRUE(start_tester.IsFulfilled());
+  EXPECT_TRUE(start_tester.IsRejected());
 }
 
 TEST_P(DocumentTransitionTest, StartPromiseIsResolved) {
