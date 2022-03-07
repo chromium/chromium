@@ -55,6 +55,12 @@ class RealboxActionElement extends PolymerElement {
         type: String,
         computed: `computeHintHtml_(action)`,
       },
+
+      /** Rendered tooltip from action. */
+      tooltip_: {
+        type: String,
+        computed: `computeTooltip_(action)`,
+      },
     };
   }
 
@@ -62,6 +68,7 @@ class RealboxActionElement extends PolymerElement {
   matchIndex: number;
   ariaLabel: string;
   private hintHtml_: string;
+  private tooltip_: string;
 
   //============================================================================
   // Helpers
@@ -77,6 +84,13 @@ class RealboxActionElement extends PolymerElement {
   private computeHintHtml_(): string {
     if (this.action.hint) {
       return decodeString16(this.action.hint);
+    }
+    return '';
+  }
+
+  private computeTooltip_(): string {
+    if (this.action.suggestionContents) {
+      return decodeString16(this.action.suggestionContents);
     }
     return '';
   }
