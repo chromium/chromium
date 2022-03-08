@@ -63,7 +63,7 @@ class CORE_EXPORT MobileFriendlinessChecker
   base::TimeTicks last_evaluated_;
   TextAreaWithFontSize text_area_sizes_;
   bool viewport_device_width_ = false;
-  bool allow_user_zoom_ = -1;
+  bool allow_user_zoom_ = true;
   int viewport_initial_scale_x10_ = -1;
   int viewport_hardcoded_width_ = -1;
 };
