@@ -219,7 +219,7 @@ SkColor ParseHexColor(const std::string& color) {
   SkColor result;
   if (color.size() == 7 && color[0] == '#' &&
       base::HexStringToUInt(color.substr(1), &result)) {
-    return SkColorSetA(result, 255);
+    return SkColorSetA(result, SK_AlphaOPAQUE);
   }
   return SK_ColorTRANSPARENT;
 }
@@ -256,9 +256,9 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
     doodle->share_button->y = share_button_y;
     doodle->share_button->icon_url = GURL(base::StringPrintf(
         "data:image/png;base64,%s", share_button_icon.c_str()));
-    doodle->share_button->background_color =
-        SkColorSetA(ParseHexColor(share_button_bg),
-                    base::clamp(share_button_opacity, 0.0, 1.0) * 255.0);
+    doodle->share_button->background_color = SkColorSetA(
+        ParseHexColor(share_button_bg),
+        base::clamp(share_button_opacity, 0.0, 1.0) * SK_AlphaOPAQUE);
   }
   if (type == search_provider_logos::LogoType::ANIMATED) {
     doodle->image_impression_log_url = cta_log_url;

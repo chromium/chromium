@@ -30,6 +30,7 @@ enum class OmniboxPart {
   RESULTS_TEXT_SECONDARY,
   RESULTS_TEXT_URL,
   RESULTS_BUTTON_BORDER,
+  RESULTS_BUTTON_INK_DROP,
 };
 
 // An optional state for a given |OmniboxPart|.

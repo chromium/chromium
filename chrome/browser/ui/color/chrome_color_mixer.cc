@@ -241,6 +241,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::AlphaBlend(kColorToolbarButtonIcon, kColorInfoBarBackground, 0x3A);
   mixer[kColorInfoBarForeground] = {kColorToolbarText};
   mixer[kColorLocationBarBorder] = {SkColorSetA(SK_ColorBLACK, 0x4D)};
+  mixer[kColorLocationBarBorderOpaque] =
+      ui::GetResultingPaintColor(kColorLocationBarBorder, kColorToolbar);
   mixer[kColorNewTabPageBackground] = {kColorToolbar};
   mixer[kColorNewTabPageHeader] = {SkColorSetRGB(0x96, 0x96, 0x96)};
   mixer[kColorNewTabPageLink] = {dark_mode ? gfx::kGoogleBlue300

@@ -325,8 +325,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
         OmniboxPart::RESULTS_TEXT_DIMMED);
   }
 
-  button_row_->OnOmniboxBackgroundChange(GetOmniboxColor(
-      GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND, GetThemeState()));
+  button_row_->SetThemeState(GetThemeState());
 
   // The selection indicator indicates when the suggestion is focused. Do not
   // show the selection indicator if an auxiliary button is selected.

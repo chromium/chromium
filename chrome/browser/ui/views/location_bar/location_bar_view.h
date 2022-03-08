@@ -120,10 +120,6 @@ class LocationBarView : public LocationBar,
   // Helper to get the color for |part| using the current ThemeProvider.
   SkColor GetColor(OmniboxPart part) const;
 
-  // Returns the location bar border color blended with the toolbar color.
-  // It's guaranteed to be opaque.
-  SkColor GetOpaqueBorderColor() const;
-
   // Returns a background that paints an (optionally stroked) rounded rect with
   // the given color.
   std::unique_ptr<views::Background> CreateRoundRectBackground(
@@ -292,9 +288,6 @@ class LocationBarView : public LocationBar,
 
   // Returns the amount of space required to the right of the omnibox text.
   int GetMinimumTrailingWidth() const;
-
-  // The border color, drawn on top of the toolbar.
-  SkColor GetBorderColor() const;
 
   // The LocationBarView bounds, without the ends which have a border radius.
   // E.g., if the LocationBarView was 50dip long, and the border radius was 2,

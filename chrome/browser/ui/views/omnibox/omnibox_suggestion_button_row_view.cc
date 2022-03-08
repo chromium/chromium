@@ -65,8 +65,9 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
         GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
     views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
         [](OmniboxSuggestionRowButton* host) {
-          return color_utils::GetColorWithMaxContrast(
-              host->omnibox_bg_color_.value());
+          return GetOmniboxColor(host->GetThemeProvider(),
+                                 OmniboxPart::RESULTS_BUTTON_INK_DROP,
+                                 host->theme_state_);
         },
         this));
 
@@ -82,9 +83,9 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
 
   ~OmniboxSuggestionRowButton() override = default;
 
-  void OnOmniboxBackgroundChange(SkColor omnibox_bg_color) {
+  void SetThemeState(OmniboxPartState theme_state) {
     views::FocusRing::Get(this)->SchedulePaint();
-    omnibox_bg_color_ = omnibox_bg_color;
+    theme_state_ = theme_state;
     UpdateBackgroundColor();
   }
 
@@ -98,26 +99,24 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
         icon_color_ != SK_ColorTRANSPARENT
             ? icon_color_
             : GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_ICON,
-                              OmniboxPartState::NORMAL);
+                              theme_state_);
     SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(*icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
                               icon_color));
-    SetEnabledTextColors(GetOmniboxColor(GetThemeProvider(),
-                                         OmniboxPart::RESULTS_TEXT_DEFAULT,
-                                         OmniboxPartState::NORMAL));
+    SetEnabledTextColors(GetOmniboxColor(
+        GetThemeProvider(), OmniboxPart::RESULTS_TEXT_DEFAULT, theme_state_));
   }
 
   void UpdateBackgroundColor() override {
-    if (!omnibox_bg_color_.has_value())
-      return;
-
-    SkColor stroke_color =
-        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BUTTON_BORDER,
-                        OmniboxPartState::NORMAL);
+    const auto* const theme_provider = GetThemeProvider();
+    SkColor stroke_color = GetOmniboxColor(
+        theme_provider, OmniboxPart::RESULTS_BUTTON_BORDER, theme_state_);
+    SkColor fill_color = GetOmniboxColor(
+        theme_provider, OmniboxPart::RESULTS_BACKGROUND, theme_state_);
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
-            omnibox_bg_color_.value(), stroke_color, GetCornerRadius())));
+            fill_color, stroke_color, GetCornerRadius())));
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
@@ -140,7 +139,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   raw_ptr<const gfx::VectorIcon> icon_;
   raw_ptr<OmniboxPopupContentsView> popup_contents_view_;
   OmniboxPopupSelection selection_;
-  absl::optional<SkColor> omnibox_bg_color_;
+  OmniboxPartState theme_state_ = OmniboxPartState::NORMAL;
   SkColor icon_color_;
 };
 
@@ -237,11 +236,11 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   SetVisible(is_any_button_visible);
 }
 
-void OmniboxSuggestionButtonRowView::OnOmniboxBackgroundChange(
-    SkColor omnibox_bg_color) {
-  keyword_button_->OnOmniboxBackgroundChange(omnibox_bg_color);
-  pedal_button_->OnOmniboxBackgroundChange(omnibox_bg_color);
-  tab_switch_button_->OnOmniboxBackgroundChange(omnibox_bg_color);
+void OmniboxSuggestionButtonRowView::SetThemeState(
+    OmniboxPartState theme_state) {
+  keyword_button_->SetThemeState(theme_state);
+  pedal_button_->SetThemeState(theme_state);
+  tab_switch_button_->SetThemeState(theme_state);
 }
 
 views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {

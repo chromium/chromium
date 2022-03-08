@@ -107,6 +107,15 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
       system_theme_color = ui::NativeTheme::SystemThemeColor::kHighlight;
       break;
 
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP_SELECTED:
+      *color = color_utils::GetColorWithMaxContrast(
+          ui::NativeTheme::GetInstanceForNativeUi()
+              ->GetSystemThemeColor(
+                  ui::NativeTheme::SystemThemeColor::kHighlight)
+              .value());
+      return true;
+
     // Highlight/Selected Text Foreground
     case ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED:
     case ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_PRESSED:

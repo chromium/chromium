@@ -485,6 +485,10 @@ SkColor ThemeHelper::GetDefaultColor(
           gfx::kGoogleGreyAlpha500);
     case TP::COLOR_LOCATION_BAR_BORDER:
       return SkColorSetA(SK_ColorBLACK, 0x4D);
+    case TP::COLOR_LOCATION_BAR_BORDER_OPAQUE:
+      return color_utils::GetResultingPaintColor(
+          GetColor(TP::COLOR_LOCATION_BAR_BORDER, incognito, theme_supplier),
+          GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier));
     case TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE:
     case TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE: {
       const SkColor toolbar_color =
@@ -610,6 +614,7 @@ absl::optional<SkColor> ThemeHelper::GetOmniboxColor(
   const bool invert =
       high_contrast &&
       (id == TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED ||
+       id == TP::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP_SELECTED ||
        id == TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED ||
        id == TP::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE_SELECTED ||
        id == TP::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE_SELECTED ||
@@ -728,6 +733,10 @@ absl::optional<SkColor> ThemeHelper::GetOmniboxColor(
       return url_color(results_bg_selected_color());
     case TP::COLOR_OMNIBOX_RESULTS_BUTTON_BORDER:
       return color_utils::BlendTowardMaxContrast(bg, gfx::kGoogleGreyAlpha400);
+    case TP::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP:
+      return color_utils::GetColorWithMaxContrast(results_bg_hovered_color());
+    case TP::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP_SELECTED:
+      return color_utils::GetColorWithMaxContrast(results_bg_selected_color());
     case TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT:
     case TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE:
       return blend_for_min_contrast(

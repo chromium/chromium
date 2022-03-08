@@ -242,6 +242,15 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxResultsTextDimmed] = {kColorOmniboxText};
   mixer[kColorOmniboxResultsTextDimmedSelected] = {
       kColorOmniboxResultsTextSelected};
+  mixer[kColorOmniboxResultsTextNegative] = {kColorOmniboxText};
+  mixer[kColorOmniboxResultsTextNegativeSelected] = {
+      kColorOmniboxResultsTextSelected};
+  mixer[kColorOmniboxResultsTextPositive] = {kColorOmniboxText};
+  mixer[kColorOmniboxResultsTextPositiveSelected] = {
+      kColorOmniboxResultsTextSelected};
+  mixer[kColorOmniboxResultsTextSecondary] = {kColorOmniboxText};
+  mixer[kColorOmniboxResultsTextSecondarySelected] = {
+      kColorOmniboxResultsTextSelected};
   mixer[kColorOmniboxResultsTextSelected] = {ui::kColorNativeHighlightText};
   mixer[kColorOmniboxResultsUrl] = {kColorOmniboxText};
   mixer[kColorOmniboxResultsUrlSelected] = {kColorOmniboxResultsTextSelected};

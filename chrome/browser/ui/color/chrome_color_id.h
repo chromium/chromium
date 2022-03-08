@@ -67,6 +67,8 @@
   E(kColorInfoBarForeground, ThemeProperties::COLOR_INFOBAR_TEXT) \
   /* Location bar colors. */ \
   E(kColorLocationBarBorder, ThemeProperties::COLOR_LOCATION_BAR_BORDER) \
+  E(kColorLocationBarBorderOpaque, \
+    ThemeProperties::COLOR_LOCATION_BAR_BORDER_OPAQUE) \
   /* New Tab Page colors. */ \
   E(kColorNewTabPageBackground, ThemeProperties::COLOR_NTP_BACKGROUND) \
   E(kColorNewTabPageHeader, ThemeProperties::COLOR_NTP_HEADER) \
@@ -99,6 +101,10 @@
     ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_SELECTED) \
   E(kColorOmniboxResultsButtonBorder, \
     ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_BORDER) \
+  E(kColorOmniboxResultsButtonInkDrop, \
+    ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP) \
+  E(kColorOmniboxResultsButtonInkDropSelected, \
+    ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP_SELECTED) \
   E(kColorOmniboxResultsIcon, ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON) \
   E(kColorOmniboxResultsIconSelected, \
     ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON_SELECTED) \
@@ -106,6 +112,18 @@
     ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED) \
   E(kColorOmniboxResultsTextDimmedSelected, \
     ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED) \
+  E(kColorOmniboxResultsTextNegative, \
+    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE) \
+  E(kColorOmniboxResultsTextNegativeSelected, \
+    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE_SELECTED) \
+  E(kColorOmniboxResultsTextPositive, \
+    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE) \
+  E(kColorOmniboxResultsTextPositiveSelected, \
+    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE_SELECTED) \
+  E(kColorOmniboxResultsTextSecondary, \
+    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY) \
+  E(kColorOmniboxResultsTextSecondarySelected, \
+    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY_SELECTED) \
   E(kColorOmniboxResultsTextSelected, \
     ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED) \
   E(kColorOmniboxResultsUrl, ThemeProperties::COLOR_OMNIBOX_RESULTS_URL) \

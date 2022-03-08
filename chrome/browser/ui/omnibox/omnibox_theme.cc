@@ -68,6 +68,9 @@ int GetThemePropertyId(OmniboxPart part, OmniboxPartState state) {
                  : TP::COLOR_OMNIBOX_BUBBLE_OUTLINE;
     case OmniboxPart::RESULTS_BUTTON_BORDER:
       return TP::COLOR_OMNIBOX_RESULTS_BUTTON_BORDER;
+    case OmniboxPart::RESULTS_BUTTON_INK_DROP:
+      return selected ? TP::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP_SELECTED
+                      : TP::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP;
     default:
       NOTREACHED();
       return -1;
