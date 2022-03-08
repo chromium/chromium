@@ -28,6 +28,7 @@
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_delegate.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
+#include "media/capture/video/chromeos/camera_trace_utils.h"
 #include "media/capture/video/chromeos/request_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -887,6 +888,8 @@ void CameraDeviceDelegate::ConfigureStreams(
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(device_context_->GetState(),
             CameraDeviceContext::State::kInitialized);
+  TRACE_EVENT_BEGIN("camera", "ConfigureStreams",
+                    GetTraceTrack(CameraTraceEvent::kConfigureStreams));
 
   cros::mojom::Camera3StreamConfigurationPtr stream_config =
       cros::mojom::Camera3StreamConfiguration::New();
@@ -1010,6 +1013,7 @@ void CameraDeviceDelegate::OnConfiguredStreams(
     int32_t result,
     cros::mojom::Camera3StreamConfigurationPtr updated_config) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT_END("camera", GetTraceTrack(CameraTraceEvent::kConfigureStreams));
 
   if (device_context_->GetState() != CameraDeviceContext::State::kInitialized) {
     DCHECK_EQ(device_context_->GetState(),
@@ -1291,9 +1295,17 @@ void CameraDeviceDelegate::ProcessCaptureRequest(
     cros::mojom::Camera3CaptureRequestPtr request,
     base::OnceCallback<void(int32_t)> callback) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT_BEGIN(
+      "camera", "Capture Request",
+      GetTraceTrack(CameraTraceEvent::kCaptureRequest, request->frame_number),
+      "frame_number", request->frame_number);
   for (const auto& output_buffer : request->output_buffers) {
-    TRACE_EVENT("camera", "Capture Request", "frame_number",
-                request->frame_number, "stream_id", output_buffer->stream_id);
+    TRACE_EVENT_BEGIN(
+        "camera", "Capture Stream",
+        GetTraceTrack(CameraTraceEvent::kCaptureStream, request->frame_number,
+                      output_buffer->stream_id),
+        "frame_number", request->frame_number, "stream_id",
+        output_buffer->stream_id);
   }
   current_request_frame_number_ = request->frame_number;
 

@@ -9,8 +9,10 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
-
+#include "base/trace_event/typed_macros.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
+#include "media/capture/video/chromeos/camera_trace_utils.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -192,6 +194,16 @@ Camera3AController::~Camera3AController() {
 void Camera3AController::Stabilize3AForStillCapture(
     base::OnceClosure on_3a_stabilized_callback) {
   DCHECK(task_runner_->BelongsToCurrentThread());
+
+  auto track = GetTraceTrack(CameraTraceEvent::kStabilize3A, request_id_);
+  TRACE_EVENT_BEGIN("camera", "Stabilize3AForStillCapture", track);
+  on_3a_stabilized_callback = base::BindOnce(
+      [](base::OnceClosure callback, perfetto::Track track) {
+        TRACE_EVENT_END("camera", std::move(track));
+        std::move(callback).Run();
+      },
+      std::move(on_3a_stabilized_callback), std::move(track));
+  ++request_id_;
 
   if (set_point_of_interest_running_) {
     // Use the settings from point of interest.

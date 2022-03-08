@@ -135,6 +135,8 @@ class CAPTURE_EXPORT Camera3AController final
 
   bool ae_locked_for_point_of_interest_;
 
+  int32_t request_id_ = 0;
+
   base::TimeDelta latest_sensor_timestamp_;
 
   std::unordered_set<cros::mojom::CameraMetadataTag> repeating_metadata_tags_;

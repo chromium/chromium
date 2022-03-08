@@ -11,6 +11,10 @@ namespace media {
 
 enum class CameraTraceEvent {
   kJpegDecoding,
+  kStabilize3A,
+  kConfigureStreams,
+  kCaptureStream,
+  kCaptureRequest,
 };
 
 // Generates unique track by given |event|, |primary_id| and |secondary_id|. For

@@ -22,6 +22,7 @@
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
+#include "media/capture/video/chromeos/camera_trace_utils.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -641,16 +642,17 @@ void RequestManager::ProcessCaptureResult(
     }
 
     for (auto& stream_buffer : result->output_buffers.value()) {
+      auto stream_id = stream_buffer->stream_id;
       DVLOG(2) << "Received capture result for frame " << frame_number
-               << " stream_id: " << stream_buffer->stream_id;
-      StreamType stream_type = StreamIdToStreamType(stream_buffer->stream_id);
+               << " stream_id: " << stream_id;
+      StreamType stream_type = StreamIdToStreamType(stream_id);
       if (stream_type == StreamType::kUnknown) {
         device_context_->SetErrorState(
             media::VideoCaptureError::
                 kCrosHalV3BufferManagerInvalidTypeOfOutputBuffersReceived,
             FROM_HERE,
             std::string("Invalid type of output buffers received: ") +
-                base::NumberToString(stream_buffer->stream_id));
+                base::NumberToString(stream_id));
         return;
       }
 
@@ -668,7 +670,7 @@ void RequestManager::ProcessCaptureResult(
               std::string("Received multiple result buffers for frame ") +
                   base::NumberToString(frame_number) +
                   std::string(" for stream ") +
-                  base::NumberToString(stream_buffer->stream_id));
+                  base::NumberToString(stream_id));
           return;
         } else if (last_received_frame_number_map_[stream_type] >
                    frame_number) {
@@ -697,6 +699,8 @@ void RequestManager::ProcessCaptureResult(
       } else {
         pending_result.buffers[stream_type] = std::move(stream_buffer);
       }
+      TRACE_EVENT_END("camera", GetTraceTrack(CameraTraceEvent::kCaptureStream,
+                                              frame_number, stream_id));
     }
   }
 
@@ -732,6 +736,8 @@ void RequestManager::TrySubmitPendingBuffers(uint32_t frame_number) {
       SubmitCaptureResult(frame_number, it.first, std::move(it.second));
     }
   }
+  TRACE_EVENT_END(
+      "camera", GetTraceTrack(CameraTraceEvent::kCaptureRequest, frame_number));
 }
 
 void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {
