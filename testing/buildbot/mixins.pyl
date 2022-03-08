@@ -428,6 +428,14 @@
       },
     },
   },
+  'gtest_run_disabled_only': {
+    '$mixin_append': {
+      'args': [
+        '--gtest_also_run_disabled_tests',
+        '--gtest_filter=*DISABLE*',
+      ],
+    },
+  },
   'hammerhead': {
     # Nexus 5
     'swarming': {
