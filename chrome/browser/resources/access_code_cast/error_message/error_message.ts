@@ -28,7 +28,10 @@ export class ErrorMessageElement extends PolymerElement {
           [
             AddSinkResultCode.UNKNOWN_ERROR,
             AddSinkResultCode.SINK_CREATION_ERROR,
-            AddSinkResultCode.CHANNEL_OPEN_ERROR
+            AddSinkResultCode.CHANNEL_OPEN_ERROR,
+            // TODO(b/216529759): Make a new ErrorMessage for profile sync
+            // error.
+            AddSinkResultCode.PROFILE_SYNC_ERROR
           ]
         ],
         [
@@ -82,7 +85,7 @@ export class ErrorMessageElement extends PolymerElement {
       new Map(ErrorMessageElement.ADD_RESULT_MESSAGE_CODES);
 
   private static readonly CAST_RESULT_MESSAGE_MAP =
-        new Map(ErrorMessageElement.CAST_RESULT_MESSAGE_CODES);
+      new Map(ErrorMessageElement.CAST_RESULT_MESSAGE_CODES);
 
   // Needed for Polymer data binding
   private errorMessageEnum = ErrorMessage;
@@ -124,8 +127,8 @@ export class ErrorMessageElement extends PolymerElement {
   }
 
   private findErrorMessage(
-    resultCode: AddSinkResultCode|RouteRequestResultCode,
-    messageCodes: Map<ErrorMessage, any[]>) {
+      resultCode: AddSinkResultCode|RouteRequestResultCode,
+      messageCodes: Map<ErrorMessage, any[]>) {
     for (const key of messageCodes.keys()) {
       if (messageCodes.get(key)!.includes(resultCode)) {
         return key;

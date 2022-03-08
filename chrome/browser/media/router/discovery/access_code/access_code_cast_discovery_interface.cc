@@ -217,6 +217,10 @@ bool HasServerError(const std::string& response) {
   return response == "There was a response error";
 }
 
+bool HasSyncError(const std::string& response) {
+  return response == "No primary accounts found";
+}
+
 }  // namespace
 
 void AccessCodeCastDiscoveryInterface::EnableCommandLineSupportForTesting() {
@@ -318,6 +322,12 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
     LOG(ERROR) << "CAST2CLASS: Did not receive a response from server while "
                   "attempting to validate discovery device.";
     ReportError(AddSinkResultCode::SERVER_ERROR);
+    return;
+  }
+
+  if (HasSyncError(response_string)) {
+    LOG(ERROR) << "CAST2CLASS: The account needs to have sync enabled.";
+    ReportError(AddSinkResultCode::PROFILE_SYNC_ERROR);
     return;
   }
 
