@@ -467,6 +467,10 @@ const char kColorModeThemed[] = "ash.dark_mode.color_mode_themed";
 // A boolean pref that indicates whether dark mode is enabled.
 const char kDarkModeEnabled[] = "ash.dark_mode.enabled";
 
+// A boolean pref that indicates whether dark mode is automatically
+// turned on at sunset and turned off at sunrise.
+const char kDarkModeAutoScheduled[] = "ash.dark_mode.auto_scheduled";
+
 // A boolean pref storing the enabled status of the NightLight feature.
 const char kNightLightEnabled[] = "ash.night_light.enabled";
 
