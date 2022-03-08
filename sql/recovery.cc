@@ -13,14 +13,12 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/types/pass_key.h"
 #include "sql/database.h"
 #include "sql/recover_module/module.h"
 #include "sql/statement.h"
@@ -91,11 +89,9 @@ Recovery::~Recovery() {
 }
 
 bool Recovery::Init(const base::FilePath& db_path) {
-#if DCHECK_IS_ON()
   // Prevent the possibility of re-entering this code due to errors
   // which happen while executing this code.
-  DCHECK(!db_->HasErrorCallback(base::PassKey<Recovery>()));
-#endif  // DCHECK_IS_ON()
+  DCHECK(!db_->has_error_callback());
 
   // Break any outstanding transactions on the original database to
   // prevent deadlocks reading through the attached version.

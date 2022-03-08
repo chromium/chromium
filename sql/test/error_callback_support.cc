@@ -4,20 +4,20 @@
 
 #include "sql/test/error_callback_support.h"
 
-#include "sql/database.h"
-#include "sql/statement.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace sql {
 
-void CaptureErrorCallback(int* error_pointer, int error, Statement* stmt) {
+void CaptureErrorCallback(int* error_pointer, int error, sql::Statement* stmt) {
   *error_pointer = error;
 }
 
-ScopedErrorCallback::ScopedErrorCallback(Database* db,
-                                         Database::ErrorCallback callback)
+ScopedErrorCallback::ScopedErrorCallback(sql::Database* db,
+                                         const sql::Database::ErrorCallback& cb)
     : db_(db) {
-  DCHECK(!callback.is_null());
-  db_->set_error_callback(std::move(callback));
+  // Make sure someone isn't trying to nest things.
+  EXPECT_FALSE(db_->has_error_callback());
+  db_->set_error_callback(cb);
 }
 
 ScopedErrorCallback::~ScopedErrorCallback() {

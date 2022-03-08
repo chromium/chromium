@@ -10,22 +10,21 @@
 
 namespace sql {
 
-class Statement;
-
 // Helper to capture any errors into a local variable for testing.
 // For instance:
 //   int error = SQLITE_OK;
-//   sql::ScopedErrorCallback scoped_error_callback(
-//       db, base::BindRepeating(&sql::CaptureErrorCallback, &error));
+//   ScopedErrorCallback sec(db, base::BindRepeating(&CaptureErrorCallback,
+//                                                   &error));
 //   // Provoke SQLITE_CONSTRAINT on db.
 //   EXPECT_EQ(SQLITE_CONSTRAINT, error);
-void CaptureErrorCallback(int* error_pointer, int error, Statement* stmt);
+void CaptureErrorCallback(int* error_pointer, int error, sql::Statement* stmt);
 
 // Helper to set db's error callback and then reset it when it goes
 // out of scope.
 class ScopedErrorCallback {
  public:
-  ScopedErrorCallback(Database* db, Database::ErrorCallback callback);
+  ScopedErrorCallback(sql::Database* db,
+                      const sql::Database::ErrorCallback& cb);
   ScopedErrorCallback(const ScopedErrorCallback&) = delete;
   ScopedErrorCallback& operator=(const ScopedErrorCallback&) = delete;
   ~ScopedErrorCallback();
