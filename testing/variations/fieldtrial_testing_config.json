@@ -1217,6 +1217,25 @@
             ]
         }
     ],
+    "BackForwardDedicatedWorker": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BackForwardDedicatedWorker"
+                    ]
+                }
+            ]
+        }
+    ],
     "BaseAssistantIntegration": [
         {
             "platforms": [
