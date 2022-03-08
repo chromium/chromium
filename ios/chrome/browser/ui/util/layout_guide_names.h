@@ -21,7 +21,7 @@ extern GuideName* const kContentAreaGuide;
 extern GuideName* const kPrimaryToolbarGuide;
 // A guide that is constrained to match the frame of the secondary toolbar.
 extern GuideName* const kSecondaryToolbarGuide;
-// A guide that is constrainted to match the frame of the displayedBadge in the
+// A guide that is constrained to match the frame of the displayedBadge in the
 // Badge View.
 extern GuideName* const kBadgeOverflowMenuGuide;
 // A guide that is constrained to match the frame of the omnibox.
@@ -29,7 +29,7 @@ extern GuideName* const kOmniboxGuide;
 // A guide that is constrained to match the frame of the leading image view in
 // the omnibox.
 extern GuideName* const kOmniboxLeadingImageGuide;
-// A guide that is constrainted to match the frame of the text field in the
+// A guide that is constrained to match the frame of the text field in the
 // omnibox.
 extern GuideName* const kOmniboxTextFieldGuide;
 // A guide that is constrained to match the frame of the back button's image.
