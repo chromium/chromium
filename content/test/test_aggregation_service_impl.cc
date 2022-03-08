@@ -131,7 +131,9 @@ void TestAggregationServiceImpl::AssembleReport(
     AssembleRequest request,
     base::OnceCallback<void(base::Value::DictStorage)> callback) {
   AggregationServicePayloadContents payload_contents(
-      ConvertToOperation(request.operation), request.bucket, request.value,
+      ConvertToOperation(request.operation),
+      {AggregationServicePayloadContents::HistogramContribution{
+          .bucket = request.bucket, .value = request.value}},
       ConvertToProcessingType(request.processing_type));
 
   AggregatableReportSharedInfo shared_info(

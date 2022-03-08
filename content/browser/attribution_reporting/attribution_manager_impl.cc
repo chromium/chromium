@@ -731,8 +731,10 @@ void AttributionManagerImpl::AssembleAggregatableReport(
       AggregatableReportRequest::Create(
           AggregationServicePayloadContents(
               AggregationServicePayloadContents::Operation::kHistogram,
-              aggregate_data->contribution.key(),
-              aggregate_data->contribution.value(),
+              {AggregationServicePayloadContents::HistogramContribution{
+                  .bucket = aggregate_data->contribution.key(),
+                  .value =
+                      static_cast<int>(aggregate_data->contribution.value())}},
               AggregationServicePayloadContents::ProcessingType::kSingleServer),
           AggregatableReportSharedInfo(
               report.report_time(), report.PrivacyBudgetKey(),

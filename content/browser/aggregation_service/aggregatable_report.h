@@ -43,14 +43,27 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
     kMaxValue = kSingleServer,
   };
 
-  AggregationServicePayloadContents(Operation operation,
-                                    absl::uint128 bucket,
-                                    int value,
-                                    ProcessingType processing_type);
+  struct HistogramContribution {
+    absl::uint128 bucket;
+    int value;
+  };
+
+  AggregationServicePayloadContents(
+      Operation operation,
+      std::vector<HistogramContribution> contributions,
+      ProcessingType processing_type);
+
+  AggregationServicePayloadContents(
+      const AggregationServicePayloadContents& other);
+  AggregationServicePayloadContents& operator=(
+      const AggregationServicePayloadContents& other);
+  AggregationServicePayloadContents(AggregationServicePayloadContents&& other);
+  AggregationServicePayloadContents& operator=(
+      AggregationServicePayloadContents&& other);
+  ~AggregationServicePayloadContents();
 
   Operation operation;
-  absl::uint128 bucket;
-  int value;
+  std::vector<HistogramContribution> contributions;
   ProcessingType processing_type;
 };
 
@@ -114,8 +127,9 @@ class CONTENT_EXPORT AggregatableReport {
     //   "data": [{
     //     "bucket": <128-bit integer encoded as a big-endian bytestring>,
     //     "value": <integer>,
-    //   }],
+    //   }, ...],
     // }
+    // Note that the "data" array may contain multiple contributions.
     // For the `kTwoParty` processing type, the "data" field is replaced with:
     //   "dpf_key": <binary serialization of the DPF key>
     std::vector<uint8_t> payload;
@@ -206,6 +220,12 @@ class CONTENT_EXPORT AggregatableReport {
       size_t number,
       AggregationServicePayloadContents::ProcessingType processing_type);
 
+  // Returns whether `number` is a valid number of histogram contributions for
+  // the `processing_type`.
+  static bool IsNumberOfHistogramContributionsValid(
+      size_t number,
+      AggregationServicePayloadContents::ProcessingType processing_type);
+
  private:
   // This vector should have an entry for each processing URL specified in
   // the original AggregatableReportRequest.
@@ -219,17 +239,22 @@ class CONTENT_EXPORT AggregatableReport {
 // processing URL.
 class CONTENT_EXPORT AggregatableReportRequest {
  public:
-  // Returns `absl::nullopt` if `payload_contents` has a negative value. Also
-  // returns `absl::nullopt` if `shared_info.report_id` is not valid.
+  // Returns `absl::nullopt` if `payload_contents.contributions.size()` is not
+  // valid for the `payload_contents.processing_type` (see
+  // `IsNumberOfHistogramContributionsValid()` above). Also returns
+  // `absl::nullopt` if any contribution has a negative value or if
+  // `shared_info.report_id` is not valid.
   static absl::optional<AggregatableReportRequest> Create(
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info);
 
-  // Returns `absl::nullopt` if `payload_contents` has a negative value. Also
-  // returns `absl::nullopt` if `processing_url.size()` is not valid for the
-  // `payload_contents.processing_type` (see `IsNumberOfProcessingUrlsValid`
-  // above). Also returns `absl::nullopt` if `shared_info.report_id` is not
-  // valid.
+  // Returns `absl::nullopt` if `payload_contents.contributions.size()` or
+  // `processing_url.size()` is not valid for the
+  // `payload_contents.processing_type` (see
+  // `IsNumberOfHistogramContributionsValid()` and
+  // `IsNumberOfProcessingUrlsValid`, respectively). Also returns
+  // `absl::nullopt` if any contribution has a negative value or if
+  // `shared_info.report_id` is not valid.
   static absl::optional<AggregatableReportRequest> CreateForTesting(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,

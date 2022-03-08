@@ -83,6 +83,7 @@ std::vector<DpfKey> GenerateDpfKeys(
             AggregationServicePayloadContents::Operation::kHistogram);
   DCHECK_EQ(contents.processing_type,
             AggregationServicePayloadContents::ProcessingType::kTwoParty);
+  DCHECK_EQ(contents.contributions.size(), 1u);
 
   // absl::StatusOr is not allowed in the codebase, but this minimal usage is
   // necessary to interact with //third_party/distributed_point_functions/.
@@ -97,9 +98,10 @@ std::vector<DpfKey> GenerateDpfKeys(
   // We want the same beta, no matter which prefix length is used.
   absl::StatusOr<std::pair<DpfKey, DpfKey>> status_or_dpf_keys =
       dpf->GenerateKeysIncremental(
-          /*alpha=*/contents.bucket,
+          /*alpha=*/contents.contributions[0].bucket,
           /*beta=*/std::vector<absl::uint128>(
-              AggregatableReport::kBucketDomainBitLength, contents.value));
+              AggregatableReport::kBucketDomainBitLength,
+              contents.contributions[0].value));
   if (!status_or_dpf_keys.ok()) {
     return {};
   }
@@ -168,12 +170,14 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedSingleServerPayload(
   cbor::Value::MapValue value;
   value.emplace(kOperationKey, kHistogramValue);
 
-  // TODO(crbug.com/1272030): Support multiple contributions in one payload.
   cbor::Value::ArrayValue data;
-  cbor::Value::MapValue data_map;
-  data_map.emplace("bucket", EncodeBucketForPayload(payload_contents.bucket));
-  data_map.emplace("value", payload_contents.value);
-  data.push_back(cbor::Value(std::move(data_map)));
+  for (AggregationServicePayloadContents::HistogramContribution contribution :
+       payload_contents.contributions) {
+    cbor::Value::MapValue data_map;
+    data_map.emplace("bucket", EncodeBucketForPayload(contribution.bucket));
+    data_map.emplace("value", contribution.value);
+    data.push_back(cbor::Value(std::move(data_map)));
+  }
   value.emplace("data", std::move(data));
 
   absl::optional<std::vector<uint8_t>> unencrypted_payload =
@@ -240,13 +244,24 @@ std::vector<uint8_t> EncryptWithHpke(
 
 AggregationServicePayloadContents::AggregationServicePayloadContents(
     Operation operation,
-    absl::uint128 bucket,
-    int value,
+    std::vector<AggregationServicePayloadContents::HistogramContribution>
+        contributions,
     ProcessingType processing_type)
     : operation(operation),
-      bucket(bucket),
-      value(value),
+      contributions(std::move(contributions)),
       processing_type(processing_type) {}
+
+AggregationServicePayloadContents::AggregationServicePayloadContents(
+    const AggregationServicePayloadContents& other) = default;
+AggregationServicePayloadContents& AggregationServicePayloadContents::operator=(
+    const AggregationServicePayloadContents& other) = default;
+AggregationServicePayloadContents::AggregationServicePayloadContents(
+    AggregationServicePayloadContents&& other) = default;
+AggregationServicePayloadContents& AggregationServicePayloadContents::operator=(
+    AggregationServicePayloadContents&& other) = default;
+
+AggregationServicePayloadContents::~AggregationServicePayloadContents() =
+    default;
 
 AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     base::Time scheduled_report_time,
@@ -340,7 +355,16 @@ AggregatableReportRequest::CreateInternal(
     return absl::nullopt;
   }
 
-  if (payload_contents.value < 0) {
+  if (!AggregatableReport::IsNumberOfHistogramContributionsValid(
+          payload_contents.contributions.size(),
+          payload_contents.processing_type)) {
+    return absl::nullopt;
+  }
+
+  if (base::ranges::any_of(
+          payload_contents.contributions,
+          [](const AggregationServicePayloadContents::HistogramContribution&
+                 contribution) { return contribution.value < 0; })) {
     return absl::nullopt;
   }
 
@@ -535,6 +559,19 @@ bool AggregatableReport::IsNumberOfProcessingUrlsValid(
       return number == 2u;
     case AggregationServicePayloadContents::ProcessingType::kSingleServer:
       return number == 1u;
+  }
+}
+
+// static
+bool AggregatableReport::IsNumberOfHistogramContributionsValid(
+    size_t number,
+    AggregationServicePayloadContents::ProcessingType processing_type) {
+  // Note: APIs using the aggregation service may impose their own limits.
+  switch (processing_type) {
+    case AggregationServicePayloadContents::ProcessingType::kTwoParty:
+      return number == 1u;
+    case AggregationServicePayloadContents::ProcessingType::kSingleServer:
+      return number >= 1u;
   }
 }
 

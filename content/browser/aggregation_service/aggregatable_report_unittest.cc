@@ -158,28 +158,30 @@ void VerifyReport(
         const cbor::Value::ArrayValue& data_array =
             payload_map.at(cbor::Value("data")).GetArray();
 
-        // TODO(crbug.com/1272030): Support multiple contributions in one
-        // payload.
-        EXPECT_EQ(data_array.size(), 1u);
-        ASSERT_TRUE(data_array[0].is_map());
-        const cbor::Value::MapValue& data_map = data_array[0].GetMap();
+        ASSERT_EQ(data_array.size(),
+                  expected_payload_contents.contributions.size());
+        for (size_t i = 0; i < data_array.size(); ++i) {
+          ASSERT_TRUE(data_array[i].is_map());
+          const cbor::Value::MapValue& data_map = data_array[i].GetMap();
 
-        ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "bucket",
-                                              cbor::Value::Type::BYTE_STRING));
-        const cbor::Value::BinaryValue& bucket_byte_string =
-            data_map.at(cbor::Value("bucket")).GetBytestring();
-        EXPECT_EQ(bucket_byte_string.size(), 16u);  // 16 bytes = 128 bits
+          ASSERT_TRUE(CborMapContainsKeyAndType(
+              data_map, "bucket", cbor::Value::Type::BYTE_STRING));
+          const cbor::Value::BinaryValue& bucket_byte_string =
+              data_map.at(cbor::Value("bucket")).GetBytestring();
+          EXPECT_EQ(bucket_byte_string.size(), 16u);  // 16 bytes = 128 bits
 
-        // TODO(crbug.com/1298196): Replace with `base::ReadBigEndian()` when
-        // available.
-        absl::uint128 bucket;
-        base::HexStringToUInt128(base::HexEncode(bucket_byte_string), &bucket);
-        EXPECT_EQ(bucket, expected_payload_contents.bucket);
+          // TODO(crbug.com/1298196): Replace with `base::ReadBigEndian()` when
+          // available.
+          absl::uint128 bucket;
+          base::HexStringToUInt128(base::HexEncode(bucket_byte_string),
+                                   &bucket);
+          EXPECT_EQ(bucket, expected_payload_contents.contributions[i].bucket);
 
-        ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "value",
-                                              cbor::Value::Type::UNSIGNED));
-        EXPECT_EQ(data_map.at(cbor::Value("value")).GetInteger(),
-                  expected_payload_contents.value);
+          ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "value",
+                                                cbor::Value::Type::UNSIGNED));
+          EXPECT_EQ(data_map.at(cbor::Value("value")).GetInteger(),
+                    expected_payload_contents.contributions[i].value);
+        }
 
         EXPECT_FALSE(payload_map.contains(cbor::Value("dpf_key")));
         break;
@@ -231,6 +233,40 @@ TEST(AggregatableReportTest, ValidSingleServerRequest_ValidReportReturned) {
                    expected_num_processing_urls, {hpke_key}));
 }
 
+TEST(AggregatableReportTest,
+     ValidMultipleContributionsRequest_ValidReportReturned) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest(
+          AggregationServicePayloadContents::ProcessingType::kSingleServer);
+
+  AggregationServicePayloadContents expected_payload_contents =
+      example_request.payload_contents();
+  expected_payload_contents.contributions = {
+      AggregationServicePayloadContents::HistogramContribution{.bucket = 123,
+                                                               .value = 456},
+      AggregationServicePayloadContents::HistogramContribution{.bucket = 7890,
+                                                               .value = 1234}};
+
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(expected_payload_contents,
+                                        example_request.shared_info());
+  ASSERT_TRUE(request.has_value());
+
+  AggregatableReportSharedInfo expected_shared_info = request->shared_info();
+  size_t expected_num_processing_urls = request->processing_urls().size();
+
+  aggregation_service::TestHpkeKey hpke_key =
+      aggregation_service::GenerateKey("id123");
+
+  absl::optional<AggregatableReport> report =
+      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
+          std::move(*request), {hpke_key.public_key});
+
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyReport(report, expected_payload_contents, expected_shared_info,
+                   expected_num_processing_urls, {hpke_key}));
+}
+
 TEST(AggregatableReportTest, ValidDebugModeEnabledRequest_ValidReportReturned) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
@@ -271,7 +307,7 @@ TEST(AggregatableReportTest,
 
   AggregationServicePayloadContents zero_value_payload_contents =
       payload_contents;
-  zero_value_payload_contents.value = 0;
+  zero_value_payload_contents.contributions[0].value = 0;
   absl::optional<AggregatableReportRequest> zero_value_request =
       AggregatableReportRequest::Create(zero_value_payload_contents,
                                         shared_info);
@@ -279,7 +315,7 @@ TEST(AggregatableReportTest,
 
   AggregationServicePayloadContents negative_value_payload_contents =
       payload_contents;
-  negative_value_payload_contents.value = -1;
+  negative_value_payload_contents.contributions[0].value = -1;
   absl::optional<AggregatableReportRequest> negative_value_request =
       AggregatableReportRequest::Create(negative_value_payload_contents,
                                         shared_info);
@@ -297,6 +333,40 @@ TEST(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
                                         std::move(shared_info));
 
   EXPECT_FALSE(request.has_value());
+}
+
+TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest(
+          AggregationServicePayloadContents::ProcessingType::kSingleServer);
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+
+  payload_contents.contributions.clear();
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info());
+  ASSERT_FALSE(request.has_value());
+}
+
+TEST(AggregatableReportTest, RequestCreatedWithTooManyContributions) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest(
+          AggregationServicePayloadContents::ProcessingType::kTwoParty);
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.contributions = {
+      AggregationServicePayloadContents::HistogramContribution{.bucket = 123,
+                                                               .value = 456},
+      AggregationServicePayloadContents::HistogramContribution{.bucket = 7890,
+                                                               .value = 1234}};
+
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info());
+  ASSERT_FALSE(request.has_value());
 }
 
 TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {

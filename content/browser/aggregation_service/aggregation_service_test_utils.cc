@@ -123,13 +123,24 @@ testing::AssertionResult PayloadContentsEqual(
            << "Expected operation " << expected.operation
            << ", actual: " << actual.operation;
   }
-  if (expected.bucket != actual.bucket) {
-    return testing::AssertionFailure() << "Expected bucket " << expected.bucket
-                                       << ", actual: " << actual.bucket;
+  if (expected.contributions.size() != actual.contributions.size()) {
+    return testing::AssertionFailure()
+           << "Expected contributions.size() " << expected.contributions.size()
+           << ", actual: " << actual.contributions.size();
   }
-  if (expected.value != actual.value) {
-    return testing::AssertionFailure() << "Expected value " << expected.value
-                                       << ", actual: " << actual.value;
+  for (size_t i = 0; i < expected.contributions.size(); ++i) {
+    if (expected.contributions[i].bucket != actual.contributions[i].bucket) {
+      return testing::AssertionFailure()
+             << "Expected contribution " << i << " bucket "
+             << expected.contributions[i].bucket
+             << ", actual: " << actual.contributions[i].bucket;
+    }
+    if (expected.contributions[i].value != actual.contributions[i].value) {
+      return testing::AssertionFailure()
+             << "Expected contribution " << i << " value "
+             << expected.contributions[i].value
+             << ", actual: " << actual.contributions[i].value;
+    }
   }
   if (expected.processing_type != actual.processing_type) {
     return testing::AssertionFailure()
@@ -173,7 +184,9 @@ AggregatableReportRequest CreateExampleRequest(
   return AggregatableReportRequest::Create(
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
-                 /*bucket=*/123, /*value=*/456, processing_type),
+                 {AggregationServicePayloadContents::HistogramContribution{
+                     .bucket = 123, .value = 456}},
+                 processing_type),
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/base::Time::Now(),
                  /*privacy_budget_key=*/"example_budget_key",
