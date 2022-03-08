@@ -170,6 +170,12 @@
   [self.view.collapsedToolbarButton addTarget:self
                                        action:@selector(exitFullscreen)
                              forControlEvents:UIControlEventTouchUpInside];
+  UIHoverGestureRecognizer* hoverGestureRecognizer =
+      [[UIHoverGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(exitFullscreen)];
+  [self.view.collapsedToolbarButton
+      addGestureRecognizer:hoverGestureRecognizer];
 }
 
 - (void)viewDidLoad {
