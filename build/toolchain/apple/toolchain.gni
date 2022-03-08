@@ -170,7 +170,8 @@ template("apple_toolchain") {
 
     # Specify an explicit path for the strip binary.
     _strippath = invoker.bin_path + "strip"
-    linker_driver += " -Wcrl,strippath," + _strippath
+    _installnametoolpath = invoker.bin_path + "install_name_tool"
+    linker_driver += " -Wcrl,strippath,${_strippath} -Wcrl,installnametoolpath,${_installnametoolpath}"
 
     # On iOS, the final applications are assembled using lipo (to support fat
     # builds). The correct flags are passed to the linker_driver.py script

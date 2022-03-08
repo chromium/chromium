@@ -95,3 +95,33 @@ if (is_component_build) {
     ]
   }
 }
+
+if (is_mac) {
+  import("//build/util/version.gni")
+  shared_library("aperitif") {
+    sources = [ "aperitif_mac.h" ]
+
+    public_deps = [ "//content/app:aperitif" ]
+
+    ldflags = [
+      "-Wl,-install_name,libaperitif.dylib",
+      "-compatibility_version",
+      chrome_dylib_version,
+      "-current_version",
+      chrome_dylib_version,
+    ]
+
+    if (is_component_build) {
+      # Typically packaged at Content Shell.app/Contents/Frameworks/Content
+      #     Shell Framework.framework/Versions/C/Libraries/libaperitif.dylib
+      # so set rpath up to the root out directory.
+      ldflags += [ "-Wl,-rpath,@loader_path/../../../../../../.." ]
+    }
+
+    allow_circular_includes_from = [
+      # This target is a pair with the non-public version. They always go
+      # together and include headers from each other.
+      "//content/app:aperitif",
+    ]
+  }
+}

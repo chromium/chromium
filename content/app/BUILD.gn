@@ -133,6 +133,17 @@ source_set("app") {
   }
 }
 
+if (is_mac) {
+  source_set("aperitif") {
+    sources = [ "aperitif_mac.cc" ]
+    deps = [
+      "//base/allocator:early_zone_registration_mac",
+      "//sandbox/mac:seatbelt",
+    ]
+    visibility = [ "//content/public/app:aperitif" ]
+  }
+}
+
 # See comment at the top of //content/BUILD.gn for how this works.
 group("for_content_tests") {
   visibility = [ "//content/test/*" ]

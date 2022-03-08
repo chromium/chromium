@@ -27,6 +27,13 @@ def verify_image_libraries(image_path, allowed_libraries, binary_path):
     links against allowed libraries, and otherwise returns False with an error
     printed.
     """
+    # If |image_path| is a dynamic library, allow the LC_DYLIB_ID implicitly.
+    output = subprocess.check_output(
+        [binary_path + 'llvm-objdump', '--macho', '--dylib-id', image_path])
+    dylib_id = output.decode('utf8').split('\n')[1]
+    if dylib_id:
+        allowed_libraries.append(dylib_id)
+
     output = subprocess.check_output(
         [binary_path + 'llvm-objdump', '--macho', '--dylibs-used', image_path])
     output = output.decode('utf8').strip()

@@ -480,39 +480,9 @@ if (is_android) {
     deps = [ "//content/shell/android:content_shell_apk" ]
   }
 } else if (is_mac) {
-  tweak_info_plist("content_shell_plist") {
+  group("content_shell") {
     testonly = true
-    info_plist = "app/app-Info.plist"
-    args = [
-      "--scm=1",
-      "--version",
-      content_shell_version,
-    ]
-  }
-  mac_app_bundle("content_shell") {
-    testonly = true
-    output_name = content_shell_product_name
-    sources = [ "app/shell_main_mac.cc" ]
-    defines = [ "SHELL_PRODUCT_NAME=\"$content_shell_product_name\"" ]
-
-    # Must have minimal dependencies. In particular cannot depend on //base.
-    # Depending on //base leads to loading //base twice (once in the exe, once
-    # in the main framework).
-    deps = [
-      ":content_shell_framework_bundle_data",
-      ":content_shell_resources_bundle_data",
-
-      # Despite its path, this does not add a //base dependency, see comments in
-      # the .cc file.
-      "//base/allocator:early_zone_registration_mac",
-      "//sandbox/mac:seatbelt",
-    ]
-    info_plist_target = ":content_shell_plist"
-    data_deps = [ ":content_shell_app" ]
-
-    if (is_component_build) {
-      ldflags = [ "-Wl,-rpath,@executable_path/../Frameworks" ]
-    }
+    deps = [ ":content_shell_mac_app" ]
   }
 } else {
   executable("content_shell") {
@@ -589,6 +559,51 @@ if (is_android) {
 }
 
 if (is_mac) {
+  content_shell_framework_name = "$content_shell_product_name Framework"
+  content_shell_helper_name = "$content_shell_product_name Helper"
+
+  tweak_info_plist("content_shell_plist") {
+    testonly = true
+    info_plist = "app/app-Info.plist"
+    args = [
+      "--scm=1",
+      "--version",
+      content_shell_version,
+    ]
+  }
+
+  mac_app_bundle("content_shell_mac_app") {
+    testonly = true
+    output_name = content_shell_product_name
+    sources = [ "app/shell_main_mac.c" ]
+    defines = [ "SHELL_PRODUCT_NAME=\"$content_shell_product_name\"" ]
+
+    # No libc++ needed, there’s only C code in this module.
+    no_default_deps = true
+
+    # Must have minimal dependencies. In particular cannot depend on //base.
+    # Depending on //base leads to loading //base twice (once in the exe, once
+    # in the main framework).
+    deps = [
+      ":content_shell_framework_bundle_data",
+      ":content_shell_resources_bundle_data",
+      "//content/public/app:aperitif",
+    ]
+    info_plist_target = ":content_shell_plist"
+    data_deps = [ ":content_shell_app" ]
+
+    ldflags = [
+      # Needed for lld: https://github.com/llvm/llvm-project/issues/53550.
+      "-Wl,-headerpad_max_install_names",
+      "-Wcrl,installnametool,-change,libaperitif.dylib,@executable_path/../Frameworks/$content_shell_framework_name.framework/Libraries/libaperitif.dylib",
+    ]
+
+    if (is_component_build) {
+      ldflags += [ "-Wl,-rpath,@executable_path/../Frameworks" ]
+      data_deps += [ "//content/public/app:aperitif" ]
+    }
+  }
+
   bundle_data("content_shell_framework_resources") {
     testonly = true
     sources = [ "$root_out_dir/content_shell.pak" ]
@@ -628,9 +643,6 @@ if (is_mac) {
       ]
     }
   }
-
-  content_shell_framework_name = "$content_shell_product_name Framework"
-  content_shell_helper_name = "$content_shell_product_name Helper"
 
   bundle_data("content_shell_framework_helpers") {
     testonly = true
@@ -681,11 +693,13 @@ if (is_mac) {
       ":content_shell_angle_library",
       ":content_shell_app",
       "//content/public/app",
+      "//content/public/app:aperitif",
       "//content/public/common",
       "//third_party/icu:icudata",
     ]
 
     bundle_deps = [
+      ":content_shell_aperitif_library",
       ":content_shell_framework_helpers",
       ":content_shell_framework_resources",
       ":content_shell_swiftshader_library",
@@ -695,10 +709,12 @@ if (is_mac) {
       deps += [ ":content_shell_framework_plugins" ]
     }
 
+    ldflags = [ "-Wcrl,installnametool,-change,libaperitif.dylib,@loader_path/Libraries/libaperitif.dylib" ]
+
     if (!is_component_build) {
       # Specify a sensible install_name for static builds. The library is
       # dlopen()ed so this is not used to resolve the module.
-      ldflags = [ "-Wl,-install_name,@executable_path/../Frameworks/$output_name.framework/$output_name" ]
+      ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$output_name.framework/$output_name" ]
     } else {
       # Both the main :content_shell and :content_shell_helper_app executables
       # need to link the framework. Because they are at different directory
@@ -706,7 +722,7 @@ if (is_mac) {
       # install_name_tool on one of the executables. However install_name_tool
       # only operates in-place, which is problematic to express in GN. Instead,
       # use rpath-based loading.
-      ldflags =
+      ldflags +=
           [ "-Wl,-install_name,@rpath/$output_name.framework/$output_name" ]
 
       # Set up the rpath for the framework so that it can find dylibs in the
@@ -740,7 +756,7 @@ if (is_mac) {
 
       output_name = content_shell_helper_name + invoker.helper_name_suffix
 
-      sources = [ "app/shell_main_mac.cc" ]
+      sources = [ "app/shell_main_mac.c" ]
       defines = [
         "HELPER_EXECUTABLE",
         "SHELL_PRODUCT_NAME=\"$content_shell_product_name\"",
@@ -749,15 +765,21 @@ if (is_mac) {
         "CONTENT_SHELL_HELPER_SUFFIX=${invoker.helper_name_suffix}",
         "CONTENT_SHELL_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
       ]
-      deps = [
-        "//base/allocator:early_zone_registration_mac",
-        "//sandbox/mac:seatbelt",
-      ]
+      deps = [ "//content/public/app:aperitif" ]
+
+      # No libc++ needed, there’s only C code in this module.
+      no_default_deps = true
 
       info_plist_target = ":content_shell_helper_plist"
 
+      ldflags = [
+        # Needed for lld: https://github.com/llvm/llvm-project/issues/53550.
+        "-Wl,-headerpad_max_install_names",
+        "-Wcrl,installnametool,-change,libaperitif.dylib,@executable_path/../../../../Libraries/libaperitif.dylib",
+      ]
+
       if (is_component_build) {
-        ldflags = [
+        ldflags += [
           # The helper is in Content Shell.app/Contents/Frameworks/
           #     Content Shell Framework.framework/Versions/C/Helpers/
           #     Content Shell Helper.app/Contents/MacOS/
@@ -843,6 +865,12 @@ if (is_mac) {
     if (use_egl) {
       deps = [ ":content_shell_swiftshader_binaries" ]
     }
+  }
+
+  bundle_data("content_shell_aperitif_library") {
+    sources = [ "$root_out_dir/libaperitif.dylib" ]
+    outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+    public_deps = [ "//content/public/app:aperitif" ]
   }
 }
 

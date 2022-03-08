@@ -467,18 +467,27 @@ if (is_win) {
       "CHROMIUM_CREATOR=$chrome_mac_creator_code",
     ]
 
-    sources = [ "app/chrome_exe_main_mac.cc" ]
+    sources = [ "app/chrome_exe_main_mac.c" ]
 
     extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+
+    # No libc++ needed, there’s only C code in this module.
+    no_default_deps = true
 
     deps = [
       ":chrome_app_strings_bundle_data",
       ":chrome_resources",
       ":chrome_versioned_bundle_data",
-      "//base/allocator:early_zone_registration_mac",
       "//build:branding_buildflags",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
+      "//content/public/app:aperitif",
+    ]
+
+    ldflags = [
+      # Needed for lld: https://github.com/llvm/llvm-project/issues/53550.
+      "-Wl,-headerpad_max_install_names",
+      "-Wcrl,installnametool,-change,libaperitif.dylib,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/Libraries/libaperitif.dylib",
     ]
 
     if (enable_stripping) {
@@ -486,8 +495,8 @@ if (is_win) {
       # file. All other global symbols will be marked as private. The default
       # //build/config/mac:strip_all config will then remove the remaining
       # local and debug symbols.
-      ldflags = [ "-Wl,-exported_symbols_list," +
-                  rebase_path("app/app.exports", root_build_dir) ]
+      ldflags += [ "-Wl,-exported_symbols_list," +
+                   rebase_path("app/app.exports", root_build_dir) ]
     }
 
     if (is_component_build) {
@@ -495,7 +504,7 @@ if (is_win) {
       # executable because dlopen() and loading all the dependent dylibs
       # is time-consuming, see https://crbug.com/1197495.
       deps += [ ":chrome_framework+link" ]
-      ldflags = [ "-Wl,-rpath,@executable_path/../Frameworks" ]
+      ldflags += [ "-Wl,-rpath,@executable_path/../Frameworks" ]
 
       # The Framework is packaged inside the .app bundle. But when using the
       # component build, all the dependent shared libraries of :chrome_dll are
@@ -508,6 +517,39 @@ if (is_win) {
 
     if (enable_chromium_updater) {
       deps += [ ":chromium_updater_privileged_helper" ]
+    }
+  }
+
+  if (verify_dynamic_libraries) {
+    action("verify_libraries_aperitif") {
+      script = "//chrome/tools/build/mac/verify_dynamic_libraries.py"
+      inputs = [ "$root_out_dir/libaperitif.dylib" ]
+      outputs = [ "$target_out_dir/run_$target_name.stamp" ]
+      args = [
+        "--stamp",
+        rebase_path(outputs[0], root_out_dir),
+        "-B",
+        objdump_path,
+        "--image",
+        rebase_path(inputs[0], root_out_dir),
+
+        # Do not --allow more libraries here without consulting with the
+        # security team (security-dev@chromium.org).
+        "--allow",
+        "/usr/lib/libsandbox.1.dylib",
+        "--allow",
+        "/usr/lib/libSystem.B.dylib",
+      ]
+      deps = [ "//content/public/app:aperitif" ]
+    }
+  }
+
+  bundle_data("aperitif_library") {
+    sources = [ "$root_out_dir/libaperitif.dylib" ]
+    outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+    public_deps = [ "//content/public/app:aperitif" ]
+    if (verify_dynamic_libraries) {
+      public_deps += [ ":verify_libraries_aperitif" ]
     }
   }
 
@@ -525,6 +567,8 @@ if (is_win) {
         rebase_path(inputs[0], root_out_dir),
         "--allow",
         "/usr/lib/libSystem.B.dylib",
+        "--allow",
+        "@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/Libraries/libaperitif.dylib",
       ]
       deps = [ ":chrome_app" ]
     }
@@ -709,24 +753,30 @@ if (is_win) {
         "CHROMIUM_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
       ]
 
-      sources = [ "app/chrome_exe_main_mac.cc" ]
+      sources = [ "app/chrome_exe_main_mac.c" ]
 
       extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 
       defines = [ "HELPER_EXECUTABLE" ]
 
+      # No libc++ needed, there’s only C code in this module.
+      no_default_deps = true
+
       deps = [
-        "//base/allocator:early_zone_registration_mac",
         "//build:branding_buildflags",
         "//chrome/common:version_header",
-        "//sandbox/mac:seatbelt",
+        "//content/public/app:aperitif",
       ]
 
       if (defined(invoker.deps)) {
         deps += invoker.deps
       }
 
-      ldflags = []
+      ldflags = [
+        # Needed for lld: https://github.com/llvm/llvm-project/issues/53550.
+        "-Wl,-headerpad_max_install_names",
+        "-Wcrl,installnametool,-change,libaperitif.dylib,@executable_path/../../../../Libraries/libaperitif.dylib",
+      ]
 
       if (is_component_build) {
         # In a component build, the framework is directly linked to the
@@ -841,9 +891,9 @@ if (is_win) {
           # Do not --allow more libraries here without consulting with the
           # security team (security-dev@chromium.org).
           "--allow",
-          "/usr/lib/libsandbox.1.dylib",
-          "--allow",
           "/usr/lib/libSystem.B.dylib",
+          "--allow",
+          "@executable_path/../../../../Libraries/libaperitif.dylib",
         ]
         deps = [ ":chrome_helper_app_${_helper_target}" ]
       }
@@ -1176,6 +1226,7 @@ if (is_win) {
 
     bundle_deps = [
       ":angle_library",
+      ":aperitif_library",
       ":chrome_framework_helpers",
       ":chrome_framework_plugins",
       ":chrome_framework_resources",
@@ -1199,9 +1250,12 @@ if (is_win) {
     ]
 
     if (!is_component_build) {
-      # Specify a sensible install_name for static builds. The library is
-      # dlopen()ed so this is not used to resolve the module.
-      ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name" ]
+      ldflags += [
+        # Specify a sensible install_name for static builds. The library is
+        # dlopen()ed so this is not used to resolve the module.
+        "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name",
+        "-Wcrl,installnametool,-change,libaperitif.dylib,@loader_path/Libraries/libaperitif.dylib",
+      ]
     } else {
       # In the component build, both the :chrome_app and various
       # :chrome_helper* targets directly link to the Framework target. Use
@@ -1213,7 +1267,10 @@ if (is_win) {
         "-Wl,-reexport_library,libchrome_dll.dylib",
       ]
 
-      data_deps = [ ":chrome_dll" ]
+      data_deps = [
+        ":chrome_dll",
+        "//content/public/app:aperitif",
+      ]
     }
   }
 
@@ -1269,6 +1326,7 @@ if (is_win) {
       "$root_out_dir/chrome_crashpad_handler",
       "$root_out_dir/libEGL.dylib",
       "$root_out_dir/libGLESv2.dylib",
+      "$root_out_dir/libaperitif.dylib",
       "$root_out_dir/libswiftshader_libEGL.dylib",
       "$root_out_dir/libswiftshader_libGLESv2.dylib",
       "$root_out_dir/libvk_swiftshader.dylib",
@@ -1305,6 +1363,7 @@ if (is_win) {
         ":chrome_app",
         ":chrome_framework",
         "//components/crash/core/app:chrome_crashpad_handler",
+        "//content/public/app:aperitif",
         "//third_party/angle:libEGL",
         "//third_party/angle:libGLESv2",
         "//third_party/breakpad:dump_syms",
@@ -1332,6 +1391,7 @@ if (is_win) {
         "$root_out_dir/$chrome_framework_name.dSYM",
         "$root_out_dir/$chrome_product_full_name.dSYM",
         "$root_out_dir/chrome_crashpad_handler.dSYM",
+        "$root_out_dir/libaperitif.dylib.dSYM",
         "$root_out_dir/libEGL.dylib.dSYM",
         "$root_out_dir/libGLESv2.dylib.dSYM",
         "$root_out_dir/libswiftshader_libEGL.dylib.dSYM",
@@ -1346,6 +1406,7 @@ if (is_win) {
         ":chrome_app",
         ":chrome_framework",
         "//components/crash/core/app:chrome_crashpad_handler",
+        "//content/public/app:aperitif",
         "//third_party/angle:libEGL",
         "//third_party/angle:libGLESv2",
         "//third_party/swiftshader/src/OpenGL/libEGL:swiftshader_libEGL",

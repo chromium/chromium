@@ -97,8 +97,10 @@ class SEATBELT_EXPORT SeatbeltExecServer {
     bool sandbox_required = false;
     std::unique_ptr<SeatbeltExecServer> server;
   };
-  static CreateFromArgumentsResult
-  CreateFromArguments(const char* executable_path, int argc, char** argv);
+  static CreateFromArgumentsResult CreateFromArguments(
+      const char* executable_path,
+      int argc,
+      const char* const* argv);
 
   // Reads the policy from the client, applies the profile, and returns whether
   // or not the operation succeeds.

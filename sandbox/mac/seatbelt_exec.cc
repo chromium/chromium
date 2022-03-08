@@ -169,7 +169,7 @@ sandbox::SeatbeltExecServer::CreateFromArgumentsResult::
 sandbox::SeatbeltExecServer::CreateFromArgumentsResult
 SeatbeltExecServer::CreateFromArguments(const char* executable_path,
                                         int argc,
-                                        char** argv) {
+                                        const char* const* argv) {
   CreateFromArgumentsResult result;
   int seatbelt_client_fd = -1;
   for (int i = 1; i < argc; ++i) {

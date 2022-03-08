@@ -358,7 +358,8 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
 #elif BUILDFLAG(IS_MAC)
   sandbox::SeatbeltExecServer::CreateFromArgumentsResult seatbelt =
       sandbox::SeatbeltExecServer::CreateFromArguments(
-          command_line->GetProgram().value().c_str(), argc, argv);
+          command_line->GetProgram().value().c_str(), argc,
+          const_cast<const char**>(argv));
   if (seatbelt.sandbox_required) {
     CHECK(seatbelt.server->InitializeSandbox());
   }

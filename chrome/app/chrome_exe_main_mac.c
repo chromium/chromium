@@ -8,35 +8,17 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <libgen.h>
+#include <limits.h>
 #include <mach-o/dyld.h>
-#include <stdarg.h>
-#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
-#include <memory>
-
-#include "base/allocator/early_zone_registration_mac.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_version.h"
-
-#if defined(HELPER_EXECUTABLE)
-#include "sandbox/mac/seatbelt_exec.h"  // nogncheck
-#endif
-
-extern "C" {
-// abort_report_np() records the message in a special section that both the
-// system CrashReporter and Crashpad collect in crash reports. Using a Crashpad
-// Annotation would be preferable, but this executable cannot depend on
-// Crashpad directly.
-void abort_report_np(const char* fmt, ...);
-}
-
-namespace {
+#include "content/public/app/aperitif_mac.h"
 
 typedef int (*ChromeMainPtr)(int, char**);
 
@@ -125,85 +107,57 @@ typedef int (*ChromeMainPtr)(int, char**);
 // If the main executable has a significant change in size, this will need to be
 // revised. Hopefully a more elegant solution will become apparent before that's
 // required.
-__attribute__((used)) const char kGrossPaddingForCrbug1300598[68 * 1024] = {};
+static __attribute__((used))
+const char kGrossPaddingForCrbug1300598[68 * 1024] = {};
 #endif
 
-[[noreturn]] void FatalError(const char* format, ...) {
-  va_list valist;
-  va_start(valist, format);
-  char message[4096];
-  if (vsnprintf(message, sizeof(message), format, valist) >= 0) {
-    fputs(message, stderr);
-    abort_report_np("%s", message);
-  }
-  va_end(valist);
-  abort();
-}
-
-}  // namespace
-
 __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
-  partition_alloc::EarlyMallocZoneRegistration();
+  AperitifInitializePartitionAlloc();
 
-  uint32_t exec_path_size = 0;
-  int rv = _NSGetExecutablePath(NULL, &exec_path_size);
-  if (rv != -1) {
-    FatalError("_NSGetExecutablePath: get length failed.");
-  }
-
-  std::unique_ptr<char[]> exec_path(new char[exec_path_size]);
-  rv = _NSGetExecutablePath(exec_path.get(), &exec_path_size);
+  char exec_path[PATH_MAX];
+  uint32_t exec_path_size = sizeof(exec_path);
+  int rv = _NSGetExecutablePath(exec_path, &exec_path_size);
   if (rv != 0) {
-    FatalError("_NSGetExecutablePath: get path failed.");
+    AperitifFatalError("_NSGetExecutablePath: get path failed.");
   }
 
 #if defined(HELPER_EXECUTABLE)
-  sandbox::SeatbeltExecServer::CreateFromArgumentsResult seatbelt =
-      sandbox::SeatbeltExecServer::CreateFromArguments(exec_path.get(), argc,
-                                                       argv);
-  if (seatbelt.sandbox_required) {
-    if (!seatbelt.server) {
-      FatalError("Failed to create seatbelt sandbox server.");
-    }
-    if (!seatbelt.server->InitializeSandbox()) {
-      FatalError("Failed to initialize sandbox.");
-    }
-  }
+  // Start the sandbox before loading the framework.
+  AperitifInitializeSandbox(exec_path, argc, (const char**)argv);
 
   // The helper lives within the versioned framework directory, so simply
   // go up to find the main dylib.
-  const char rel_path[] = "../../../../" PRODUCT_FULLNAME_STRING " Framework";
+  static const char rel_path[] =
+      "../../../../" PRODUCT_FULLNAME_STRING " Framework";
 #else
-  const char rel_path[] = "../Frameworks/" PRODUCT_FULLNAME_STRING
-                          " Framework.framework/Versions/" CHROME_VERSION_STRING
-                          "/" PRODUCT_FULLNAME_STRING " Framework";
+  static const char rel_path[] =
+      "../Frameworks/" PRODUCT_FULLNAME_STRING
+      " Framework.framework/Versions/" CHROME_VERSION_STRING
+      "/" PRODUCT_FULLNAME_STRING " Framework";
 #endif  // defined(HELPER_EXECUTABLE)
 
   // Slice off the last part of the main executable path, and append the
   // version framework information.
-  const char* parent_dir = dirname(exec_path.get());
+  const char* parent_dir = dirname(exec_path);
   if (!parent_dir) {
-    FatalError("dirname %s: %s.", exec_path.get(), strerror(errno));
+    AperitifFatalError("dirname %s: %s.", exec_path, strerror(errno));
   }
 
-  const size_t parent_dir_len = strlen(parent_dir);
-  const size_t rel_path_len = strlen(rel_path);
-  // 2 accounts for a trailing NUL byte and the '/' in the middle of the paths.
-  const size_t framework_path_size = parent_dir_len + rel_path_len + 2;
-  std::unique_ptr<char[]> framework_path(new char[framework_path_size]);
-  snprintf(framework_path.get(), framework_path_size, "%s/%s", parent_dir,
-           rel_path);
+  char framework_path[PATH_MAX];
+  rv = snprintf(framework_path, sizeof(framework_path), "%s/%s", parent_dir,
+                rel_path);
+  if (rv < 0 || (size_t)rv >= sizeof(framework_path)) {
+    AperitifFatalError("snprintf: %d.", rv);
+  }
 
-  void* library =
-      dlopen(framework_path.get(), RTLD_LAZY | RTLD_LOCAL | RTLD_FIRST);
+  void* library = dlopen(framework_path, RTLD_LAZY | RTLD_LOCAL | RTLD_FIRST);
   if (!library) {
-    FatalError("dlopen %s: %s.", framework_path.get(), dlerror());
+    AperitifFatalError("dlopen %s: %s.", framework_path, dlerror());
   }
 
-  const ChromeMainPtr chrome_main =
-      reinterpret_cast<ChromeMainPtr>(dlsym(library, "ChromeMain"));
+  const ChromeMainPtr chrome_main = dlsym(library, "ChromeMain");
   if (!chrome_main) {
-    FatalError("dlsym ChromeMain: %s.", dlerror());
+    AperitifFatalError("dlsym ChromeMain: %s.", dlerror());
   }
   rv = chrome_main(argc, argv);
 

@@ -28,6 +28,15 @@ LINKER_DRIVER_ARG_PREFIX = '-Wcrl,'
 # removal of the special driver arguments, described below). Then the driver
 # performs additional actions, based on these arguments:
 #
+# -Wcrl,installnametoolpath,<install_name_tool_path>
+#    Sets the path to the `install_name_tool` to run with
+#    -Wcrl,installnametool, in which case `xcrun` is not used to invoke it.
+#
+# -Wcrl,installnametool,<arguments,...>
+#    After invoking the linker, this will run install_name_tool on the linker's
+#    output. |arguments| are comma-separated arguments to be passed to the
+#    install_name_tool command.
+#
 # -Wcrl,dsym,<dsym_path_prefix>
 #    After invoking the linker, this will run `dsymutil` on the linker's
 #    output, producing a dSYM bundle, stored at dsym_path_prefix. As an
@@ -69,6 +78,8 @@ class LinkerDriver(object):
         # The first item in the tuple is the argument's -Wcrl,<sub_argument>
         # and the second is the function to invoke.
         self._actions = [
+            ('installnametoolpath,', self.set_install_name_tool_path),
+            ('installnametool,', self.run_install_name_tool),
             ('dsymutilpath,', self.set_dsymutil_path),
             ('dsym,', self.run_dsymutil),
             ('unstripped,', self.run_save_unstripped),
@@ -77,6 +88,7 @@ class LinkerDriver(object):
         ]
 
         # Linker driver actions can modify the these values.
+        self._install_name_tool_cmd = ['xcrun', 'install_name_tool']
         self._dsymutil_cmd = ['xcrun', 'dsymutil']
         self._strip_cmd = ['xcrun', 'strip']
 
@@ -163,6 +175,40 @@ class LinkerDriver(object):
                 return (name, lambda: action(sub_arg[len(name):]))
 
         raise ValueError('Unknown linker driver argument: %s' % (arg, ))
+
+    def set_install_name_tool_path(self, install_name_tool_path):
+        """Linker driver action for -Wcrl,installnametoolpath,<path>.
+
+        Sets the invocation command for install_name_tool, which allows the
+        caller to specify an alternate path. This action is always
+        processed before the run_install_name_tool action.
+
+        Args:
+            install_name_tool_path: string, The path to the install_name_tool
+                binary to run
+
+        Returns:
+            No output - this step is run purely for its side-effect.
+        """
+        self._install_name_tool_cmd = [install_name_tool_path]
+        return []
+
+    def run_install_name_tool(self, args_string):
+        """Linker driver action for -Wcrl,installnametool,<args>. Invokes
+        install_name_tool on the linker's output.
+
+        Args:
+            args_string: string, Comma-separated arguments for
+                `install_name_tool`.
+
+        Returns:
+            No output - this step is run purely for its side-effect.
+        """
+        command = list(self._install_name_tool_cmd)
+        command.extend(args_string.split(','))
+        command.append(self._get_linker_output())
+        subprocess.check_call(command)
+        return []
 
     def run_dsymutil(self, dsym_path_prefix):
         """Linker driver action for -Wcrl,dsym,<dsym-path-prefix>. Invokes

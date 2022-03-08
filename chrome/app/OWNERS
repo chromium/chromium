@@ -55,8 +55,9 @@ per-file *.plist=file://chrome/browser/ui/cocoa/OWNERS
 
 per-file chrome_crash_reporter_client*=rsesek@chromium.org
 
-per-file chrome_exe_main_mac.cc=kerrnel@chromium.org
-per-file chrome_exe_main_mac.cc=mark@chromium.org
+per-file chrome_exe_main_mac.c=kerrnel@chromium.org
+per-file chrome_exe_main_mac.c=mark@chromium.org
+per-file chrome_exe_main_mac.c=rsesek@chromium.org
 
 per-file main_dll_loader_win.cc=brucedawson@chromium.org
 per-file main_dll_loader_win.cc=wfh@chromium.org
