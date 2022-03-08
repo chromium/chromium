@@ -8,37 +8,18 @@
 'use strict';
 
 promise_test(t => {
-  return window.attributionReporting.registerAttributionSource({
-    attributionSourceEventId: '1',
-    attributionDestination: 'https://a.example',
-    attributionReportTo: 'https://b.example',
-  });
+  return window.attributionReporting.registerAttributionSource('https://a.example');
 }, 'valid params');
 
 promise_test(t => {
  return promise_rejects_js(t, TypeError,
-    window.attributionReporting.registerAttributionSource({
-      attributionSourceEventId: '!',
-      attributionDestination: 'https://a.example',
-    }));
-}, 'invalid attributionSourceEventId');
+    window.attributionReporting.registerAttributionSource('xyz://a.example'));
+}, 'invalid protocol');
 
 promise_test(t => {
  return promise_rejects_js(t, TypeError,
-    window.attributionReporting.registerAttributionSource({
-      attributionSourceEventId: '1',
-      attributionDestination: 'http://a.example',
-    }));
-}, 'insecure attributionDestination');
-
-promise_test(t => {
- return promise_rejects_js(t, TypeError,
-    window.attributionReporting.registerAttributionSource({
-      attributionSourceEventId: '1',
-      attributionDestination: 'https://a.example',
-      attributionReportTo: 'http://b.example',
-    }));
-}, 'insecure attributionReportTo');
+    window.attributionReporting.registerAttributionSource('http://a.example'));
+}, 'untrustworthy origin');
 
 promise_test(t => {
   const iframe = document.createElement('iframe');
@@ -48,10 +29,7 @@ promise_test(t => {
   iframe.remove();
 
   return promise_rejects_dom(t, 'NotAllowedError', frameDOMException,
-    frameWindow.attributionReporting.registerAttributionSource({
-      attributionSourceEventId: '1',
-      attributionDestination: 'https://a.example',
-    }));
+    frameWindow.attributionReporting.registerAttributionSource('https://a.example'));
 }, 'window has no frame');
 
 </script>

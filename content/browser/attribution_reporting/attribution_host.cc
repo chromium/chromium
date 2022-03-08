@@ -320,30 +320,6 @@ void AttributionHost::NotifyImpressionInitiatedByPage(
   conversion_page_metrics_->OnImpression(reporting_origin);
 }
 
-void AttributionHost::RegisterImpression(const blink::Impression& impression) {
-  // If there is no conversion manager available, ignore any impression
-  // registrations.
-  AttributionManager* attribution_manager =
-      attribution_manager_provider_->GetManager(web_contents());
-  if (!attribution_manager)
-    return;
-
-  content::RenderFrameHost* render_frame_host =
-      receivers_.GetCurrentTargetFrame()->GetMainFrame();
-
-  // AttributionHost calls are delayed in blink if pre-rendering.
-  DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
-            render_frame_host->GetLifecycleState());
-
-  const url::Origin& impression_origin =
-      render_frame_host->GetLastCommittedOrigin();
-  if (VerifyAndStoreImpression(CommonSourceInfo::SourceType::kEvent,
-                               impression_origin, impression,
-                               *attribution_manager)) {
-    NotifyImpressionInitiatedByPage(impression_origin, impression);
-  }
-}
-
 void AttributionHost::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
   // If there is no attribution manager available, ignore any registrations.

@@ -23,6 +23,14 @@ class LocalFrame;
 class CORE_EXPORT AttributionSrcLoader
     : public GarbageCollected<AttributionSrcLoader> {
  public:
+  enum class RegisterResult {
+    kSuccess,
+    kInvalidProtocol,
+    kNotAllowed,
+    kInsecureContext,
+    kUntrustworthyOrigin,
+  };
+
   explicit AttributionSrcLoader(LocalFrame* frame);
   AttributionSrcLoader(const AttributionSrcLoader&) = delete;
   AttributionSrcLoader& operator=(const AttributionSrcLoader&) = delete;
@@ -33,7 +41,8 @@ class CORE_EXPORT AttributionSrcLoader
   // Registers an attribution_src. This method handles fetching the attribution
   // src and notifying the browser process to begin tracking it. It is a no-op
   // if the frame is not attached.
-  void Register(const KURL& attribution_src, HTMLImageElement* element);
+  RegisterResult Register(const KURL& attribution_src,
+                          HTMLImageElement* element);
 
   void Trace(Visitor* visitor) const;
 

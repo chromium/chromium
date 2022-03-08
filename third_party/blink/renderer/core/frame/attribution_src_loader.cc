@@ -123,20 +123,21 @@ void AttributionSrcLoader::Trace(Visitor* visitor) const {
   visitor->Trace(resource_clients_);
 }
 
-void AttributionSrcLoader::Register(const KURL& src_url,
-                                    HTMLImageElement* element) {
+AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
+    const KURL& src_url,
+    HTMLImageElement* element) {
   // Detached frames cannot/should not register new attributionsrcs.
   if (!local_frame_->IsAttached())
-    return;
+    return RegisterResult::kSuccess;
 
   if (!src_url.ProtocolIsInHTTPFamily())
-    return;
+    return RegisterResult::kInvalidProtocol;
 
   ExecutionContext* execution_context =
       local_frame_->GetDocument()->GetExecutionContext();
   if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(
           execution_context)) {
-    return;
+    return RegisterResult::kNotAllowed;
   }
 
   const bool feature_policy_enabled = execution_context->IsFeatureEnabled(
@@ -145,7 +146,7 @@ void AttributionSrcLoader::Register(const KURL& src_url,
   if (!feature_policy_enabled) {
     LogAuditIssue(AttributionReportingIssueType::kPermissionPolicyDisabled, "",
                   element);
-    return;
+    return RegisterResult::kNotAllowed;
   }
 
   // The API is only allowed in secure contexts.
@@ -154,7 +155,7 @@ void AttributionSrcLoader::Register(const KURL& src_url,
         AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
         local_frame_->GetSecurityContext()->GetSecurityOrigin()->ToString(),
         element);
-    return;
+    return RegisterResult::kInsecureContext;
   }
 
   auto reporting_origin = SecurityOrigin::CreateFromString(src_url);
@@ -163,8 +164,10 @@ void AttributionSrcLoader::Register(const KURL& src_url,
     LogAuditIssue(
         AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin,
         src_url.GetString(), element);
-    return;
+    return RegisterResult::kUntrustworthyOrigin;
   }
+
+  // TODO(crbug.com/1302680): Defer handling if the document is prerendering.
 
   ResourceRequest request(src_url);
   request.SetHttpMethod(http_names::kGET);
@@ -181,6 +184,7 @@ void AttributionSrcLoader::Register(const KURL& src_url,
   auto* client = MakeGarbageCollected<ResourceClient>(this);
   resource_clients_.insert(client);
   RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), client);
+  return RegisterResult::kSuccess;
 }
 
 String AttributionSrcLoader::ResourceClient::DebugName() const {

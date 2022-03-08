@@ -4,49 +4,43 @@
 
 #include "third_party/blink/renderer/core/frame/attribution_reporting.h"
 
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/navigation/impression.h"
-#include "third_party/blink/public/platform/impression_conversions.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_attribution_source_params.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/html/conversion_measurement_parsing.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 namespace {
 
-void HandleRegisterImpressionError(
+ScriptPromise HandleRegisterResult(
+    ScriptState* script_state,
     ExceptionState& exception_state,
-    mojom::blink::RegisterImpressionError error) {
-  switch (error) {
-    case mojom::blink::RegisterImpressionError::kNotAllowed:
+    AttributionSrcLoader::RegisterResult result) {
+  switch (result) {
+    case AttributionSrcLoader::RegisterResult::kSuccess:
+      return ScriptPromise::CastUndefined(script_state);
+    case AttributionSrcLoader::RegisterResult::kNotAllowed:
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "Not allowed.");
       break;
-    case mojom::blink::RegisterImpressionError::kInsecureContext:
+    case AttributionSrcLoader::RegisterResult::kInsecureContext:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotAllowedError,
           "Cannot execute in an insecure context.");
       break;
-    case mojom::blink::RegisterImpressionError::kInsecureAttributionDestination:
-      exception_state.ThrowTypeError(
-          "attributionDestination must be a trustworthy origin.");
+    case AttributionSrcLoader::RegisterResult::kInvalidProtocol:
+      exception_state.ThrowTypeError("URL must have the HTTPS protocol.");
       break;
-    case mojom::blink::RegisterImpressionError::kInsecureAttributionReportTo:
-      exception_state.ThrowTypeError(
-          "attributionReportTo must be a trustworthy origin.");
-      break;
-    case mojom::blink::RegisterImpressionError::
-        kInvalidAttributionSourceEventId:
-      exception_state.ThrowTypeError(
-          "attributionSourceEventId must be parsable as an unsigned 64-bit "
-          "base-10 integer.");
+    case AttributionSrcLoader::RegisterResult::kUntrustworthyOrigin:
+      exception_state.ThrowTypeError("URL must have a trustworthy origin.");
       break;
   }
+
+  return ScriptPromise();
 }
 
 }  // namespace
@@ -68,57 +62,31 @@ AttributionReporting& AttributionReporting::attributionReporting(
 }
 
 AttributionReporting::AttributionReporting(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), conversion_host_(&window) {}
+    : Supplement<LocalDOMWindow>(window) {}
 
 void AttributionReporting::Trace(Visitor* visitor) const {
-  visitor->Trace(conversion_host_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 ScriptPromise AttributionReporting::registerAttributionSource(
     ScriptState* script_state,
-    const AttributionSourceParams* params,
+    const String& url,
     ExceptionState& exception_state) {
-  // The PermissionsPolicy check, etc., occurs in the call to
-  // `GetImpressionForParams()`.
-  WebImpressionOrError web_impression_or_err =
-      GetImpressionForParams(GetSupplementable(), params);
-
-  if (auto* err = absl::get_if<mojom::blink::RegisterImpressionError>(
-          &web_impression_or_err)) {
-    HandleRegisterImpressionError(exception_state, *err);
-    return ScriptPromise();
+  LocalFrame* frame = GetSupplementable()->GetFrame();
+  if (!frame) {
+    return HandleRegisterResult(
+        script_state, exception_state,
+        AttributionSrcLoader::RegisterResult::kNotAllowed);
   }
-
-  const WebImpression* web_impression =
-      absl::get_if<WebImpression>(&web_impression_or_err);
-  DCHECK(web_impression);
-  blink::Impression impression =
-      ConvertWebImpressionToImpression(*web_impression);
 
   Document* document = GetSupplementable()->document();
 
-  if (document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(
-        WTF::Bind(&AttributionReporting::RegisterImpression,
-                  WrapWeakPersistent(this), impression));
-  } else {
-    RegisterImpression(impression);
-  }
+  AttributionSrcLoader::RegisterResult result =
+      frame->GetAttributionSrcLoader()->Register(document->CompleteURL(url),
+                                                 /*element=*/nullptr);
 
-  return ScriptPromise::CastUndefined(script_state);
-}
-
-void AttributionReporting::RegisterImpression(blink::Impression impression) {
-  if (!conversion_host_.is_bound()) {
-    GetSupplementable()
-        ->GetFrame()
-        ->GetRemoteNavigationAssociatedInterfaces()
-        ->GetInterface(conversion_host_.BindNewEndpointAndPassReceiver(
-            GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-  }
-  conversion_host_->RegisterImpression(impression);
+  return HandleRegisterResult(script_state, exception_state, result);
 }
 
 }  // namespace blink
