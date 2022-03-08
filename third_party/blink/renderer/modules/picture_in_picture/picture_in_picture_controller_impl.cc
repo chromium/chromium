@@ -16,6 +16,8 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_window_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -115,7 +117,9 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
     ScriptPromiseResolver* resolver) {
   if (!video_element->GetWebMediaPlayer()) {
     if (resolver) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      // TODO(crbug.com/1293949): Add an error message.
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver->GetScriptState()->GetIsolate(),
           DOMExceptionCode::kInvalidStateError, ""));
     }
 
@@ -172,8 +176,12 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
   // browser. We should rarely see this because we should have already rejected
   // with |kDisabledBySystem|.
   if (!session_remote) {
-    if (resolver) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+    if (resolver &&
+        IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                      resolver->GetScriptState())) {
+      ScriptState::Scope script_state_scope(resolver->GetScriptState());
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver->GetScriptState()->GetIsolate(),
           DOMExceptionCode::kNotSupportedError,
           "Picture-in-Picture is not available."));
     }
@@ -186,8 +194,13 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
       std::move(session_remote),
       element->GetDocument().GetTaskRunner(TaskType::kMediaElementEvent));
   if (IsElementAllowed(*element, /*report_failure=*/true) != Status::kEnabled) {
-    if (resolver) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+    if (resolver &&
+        IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                      resolver->GetScriptState())) {
+      ScriptState::Scope script_state_scope(resolver->GetScriptState());
+      // TODO(crbug.com/1293949): Add an error message.
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver->GetScriptState()->GetIsolate(),
           DOMExceptionCode::kInvalidStateError, ""));
     }
 
