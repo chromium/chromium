@@ -5,6 +5,7 @@
 #include "content/browser/display_cutout/display_cutout_host_impl.h"
 
 #include "content/browser/display_cutout/display_cutout_constants.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -38,7 +39,7 @@ void DisplayCutoutHostImpl::ViewportFitChangedForFrame(
 
   // If we are the current |RenderFrameHost| frame then notify
   // WebContentsObservers about the new value.
-  if (current_rfh_ == rfh)
+  if (current_rfh_.get() == rfh)
     web_contents_impl_->NotifyViewportFitChanged(value);
 }
 
@@ -61,7 +62,9 @@ void DisplayCutoutHostImpl::DidFinishNavigation(
 
   // If we finish a main frame navigation and the |WebDisplayMode| is
   // fullscreen then we should make the main frame the current
-  // |RenderFrameHost|.
+  // |RenderFrameHost|.  Note that this is probably not correct; we do not check
+  // that the navigation completed successfully, nor do we check if the main
+  // frame is still IsRenderFrameLive().
   blink::mojom::DisplayMode mode = web_contents_impl_->GetDisplayMode();
   if (mode == blink::mojom::DisplayMode::kFullscreen)
     SetCurrentRenderFrameHost(web_contents_impl_->GetMainFrame());
@@ -71,7 +74,7 @@ void DisplayCutoutHostImpl::RenderFrameDeleted(RenderFrameHost* rfh) {
   values_.erase(rfh);
 
   // If we were the current |RenderFrameHost| then we should clear that.
-  if (current_rfh_ == rfh)
+  if (current_rfh_.get() == rfh)
     SetCurrentRenderFrameHost(nullptr);
 }
 
@@ -83,27 +86,28 @@ void DisplayCutoutHostImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
   insets_ = insets;
 
   if (current_rfh_)
-    SendSafeAreaToFrame(current_rfh_, insets);
+    SendSafeAreaToFrame(current_rfh_.get(), insets);
 }
 
 void DisplayCutoutHostImpl::SetCurrentRenderFrameHost(RenderFrameHost* rfh) {
-  if (current_rfh_ == rfh)
+  if (current_rfh_.get() == rfh)
     return;
 
   // If we had a previous frame then we should clear the insets on that frame.
   if (current_rfh_)
-    SendSafeAreaToFrame(current_rfh_, gfx::Insets());
-
-  // Update the |current_rfh_| with the new frame.
-  current_rfh_ = rfh;
+    SendSafeAreaToFrame(current_rfh_.get(), gfx::Insets());
 
   // If the new RenderFrameHost is nullptr we should stop here and notify
   // observers that the new viewport fit is kAuto (the default).
   if (!rfh) {
+    current_rfh_ = nullptr;
     web_contents_impl_->NotifyViewportFitChanged(
         blink::mojom::ViewportFit::kAuto);
     return;
   }
+
+  // Update the |current_rfh_| with the new frame.
+  current_rfh_ = static_cast<RenderFrameHostImpl*>(rfh)->GetWeakPtr();
 
   // Send the current safe area to the new frame.
   SendSafeAreaToFrame(rfh, insets_);
