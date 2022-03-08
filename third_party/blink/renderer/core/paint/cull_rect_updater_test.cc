@@ -207,4 +207,23 @@ TEST_F(CullRectUpdaterTest, SVGForeignObject) {
   EXPECT_FALSE(svg->DescendantNeedsCullRectUpdate());
 }
 
+TEST_F(CullRectUpdaterTest, LayerUnderSVGHiddenContainer) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="div" style="display: contents">
+      <svg id="svg1"></svg>
+    </div>
+    <svg id="svg2">
+      <defs id="defs"/>
+    </svg>
+  )HTML");
+
+  EXPECT_FALSE(GetCullRect("svg1").Rect().IsEmpty());
+
+  GetDocument().getElementById("defs")->appendChild(
+      GetDocument().getElementById("div"));
+  // This should not crash.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetCullRect("svg1").Rect().IsEmpty());
+}
+
 }  // namespace blink

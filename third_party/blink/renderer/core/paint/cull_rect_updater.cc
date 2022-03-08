@@ -85,6 +85,9 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
 void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
                                         const PaintLayer& parent_painting_layer,
                                         bool force_update_self) {
+  if (layer.IsUnderSVGHiddenContainer())
+    return;
+
   bool should_proactively_update = ShouldProactivelyUpdate(layer);
   bool force_update_children =
       should_proactively_update || layer.ForcesChildrenCullRectUpdate() ||
