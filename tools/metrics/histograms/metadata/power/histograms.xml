@@ -669,7 +669,7 @@ chromium-metrics-reviews@google.com.
   <owner>khokhlov@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
-    Periodically samples the battery capacity drained while Chrome is the
+    Periodically samples the battery capacity drained while Chrome is a
     foreground app and the device is on battery power {DarkeningType}. Sampled
     every 30 seconds while foregrounded. Also sampled when Chrome is
     backgrounded or the device connects to a charger. {Exclusive}
@@ -686,18 +686,23 @@ chromium-metrics-reviews@google.com.
 
     Only supported on Android. For WebView, the metric considers the time during
     in which at least one WebView is visible on the screen as
-    &quot;foreground&quot; time.
+    &quot;foreground&quot; time. For Chrome, it considers any time the Chrome
+    app is visible, including when in multi-window mode.
   </summary>
   <token key="Exclusive">
     <variant name="" summary=""/>
     <variant name=".Exclusive"
         summary="However, only battery drain that can be attributed
-                 exclusively to Chrome is reported: The first drain after
-                 becoming the foreground app is not reported. As a result,
-                 this metric typically doesn't include drain related to app
-                 startup. Similarly, no values are reported for the time
-                 after the last capacity drop in a session, since these would
-                 likely under-account the actual battery drain in that time."/>
+                 exclusively to the time Chrome/WebView was visible is
+                 reported: The first drain after becoming foregrounded is not
+                 reported. As a result, this metric typically doesn't include
+                 drain related to app startup. Similarly, no values are
+                 reported for the time after the last capacity drop in a
+                 session, since these would likely under-account the actual
+                 battery drain in that time. Note that other apps can still
+                 contribute to the power consumed/tracked, e.g. due to using
+                 resources while they are backgrounded or in a multi-window
+                 context."/>
   </token>
   <token key="DarkeningType">
     <variant name="" summary=""/>
@@ -722,7 +727,7 @@ chromium-metrics-reviews@google.com.
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
-    Periodically samples the battery capacity drained while Chrome is the
+    Periodically samples the battery capacity drained while Chrome is a
     foreground app and the device is on battery power. Sampled every 30 seconds
     while foregrounded. Also sampled when Chrome is backgrounded or the device
     connects to a charger. {Exclusive}
@@ -736,16 +741,20 @@ chromium-metrics-reviews@google.com.
 
     Only supported on Android. For WebView, the metric considers the time during
     in which at least one WebView is visible on the screen as
-    &quot;foreground&quot; time.
+    &quot;foreground&quot; time. For Chrome, it considers any time the Chrome
+    app is visible, including when in multi-window mode.
   </summary>
   <token key="Exclusive">
     <variant name="" summary=""/>
     <variant name=".Exclusive"
         summary="However, only battery drain that can be attributed
-                 exclusively to Chrome is reported: The first drain after
-                 becoming the foreground app is not reported. As a result,
-                 this metric typically doesn't include drain related to app
-                 startup."/>
+                 exclusively to the time Chrome/WebView was visible is
+                 reported: The first drain after becoming foregrounded is not
+                 reported. As a result, this metric typically doesn't include
+                 drain related to app startup. Note that other apps can still
+                 contribute to the power consumed/tracked, e.g. due to using
+                 resources while they are backgrounded or in a multi-window
+                 context."/>
   </token>
 </histogram>
 
@@ -756,7 +765,7 @@ chromium-metrics-reviews@google.com.
   <owner>woa-performance@google.com</owner>
   <summary>
     Records a sample for every 0.1 milliampere-hours of battery capacity that
-    are drained while Chrome is the foreground app and the device is on battery
+    are drained while Chrome is a foreground app and the device is on battery
     power. The battery counter is inspected every 30 seconds while foregrounded.
     It is also inspected when Chrome is backgrounded or the device connects to a
     charger. The histogram thus shows the total sum of battery capacity consumed
@@ -764,7 +773,8 @@ chromium-metrics-reviews@google.com.
 
     Only supported on Android. For WebView, the metric considers the time during
     in which at least one WebView is visible on the screen as
-    &quot;foreground&quot; time.
+    &quot;foreground&quot; time. For Chrome, it considers any time the Chrome
+    app is visible, including when in multi-window mode.
 
     For a histogram of daily per-user values, see the computed histogram
     Power.DailyForegroundBatteryDrain.
@@ -773,10 +783,13 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary=""/>
     <variant name=".Exclusive"
         summary="However, only battery drain that can be attributed
-                 exclusively to Chrome is reported: The first drain after
-                 becoming the foreground app is not reported. As a result,
-                 this metric typically doesn't include drain related to app
-                 startup."/>
+                 exclusively to the time Chrome/WebView was visible is
+                 reported: The first drain after becoming foregrounded is not
+                 reported. As a result, this metric typically doesn't include
+                 drain related to app startup. Note that other apps can still
+                 contribute to the power consumed/tracked, e.g. due to using
+                 resources while they are backgrounded or in a multi-window
+                 context."/>
   </token>
 </histogram>
 
@@ -788,8 +801,8 @@ chromium-metrics-reviews@google.com.
   <owner>woa-performance@google.com</owner>
   <summary>
     Periodically samples the radio (cellular/wifi) signal strength level while
-    Chrome is the foreground app and the device is on battery power. Sampled
-    every 30 seconds and when Chrome is backgrounded or the device connects to a
+    Chrome is a foreground app and the device is on battery power. Sampled every
+    30 seconds and when Chrome is backgrounded or the device connects to a
     charger.
 
     Only supported on Android.
@@ -807,7 +820,7 @@ chromium-metrics-reviews@google.com.
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
-    Counts the number of radio wakeups while Chrome is the foreground app, the
+    Counts the number of radio wakeups while Chrome is a foreground app, the
     device is on battery power and connection type is cellular. Values are
     distributed across buckets according to the radio signal quality.
 
@@ -827,8 +840,8 @@ chromium-metrics-reviews@google.com.
   <owner>woa-performance@google.com</owner>
   <summary>
     Periodically samples the number of kibibytes received over network while
-    Chrome is the foreground app and the device is on battery power. Sampled
-    every 30 seconds and when Chrome is backgrounded or the device connects to a
+    Chrome is a foreground app and the device is on battery power. Sampled every
+    30 seconds and when Chrome is backgrounded or the device connects to a
     charger. Values are distributed across buckets according to the radio signal
     quality.
 
@@ -854,7 +867,7 @@ chromium-metrics-reviews@google.com.
   <owner>khokhlov@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
-    Recorded every time the device thermal state changes while Chrome is the
+    Recorded every time the device thermal state changes while Chrome is a
     foreground app.
 
     Only supported on Android.
