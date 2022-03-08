@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> वरून शेअर केले</translation>
 <translation id="271033894570825754">नवीन</translation>
-<translation id="2743387203779672305">क्लिपबोर्डवर कॉपी करा</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 वर्षापूर्वी}other{# वर्षांपूर्वी}}</translation>
 <translation id="2878511608894704031">सर्व हटवा</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{१दि मध्ये}other{#दि मध्ये}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">स्तंभ <ph name="COLUMN_NAME" /> हा चढत्या क्रमाने लावला आहे.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{एक न वाचलेली सूचना}other{# न वाचलेल्या सूचना}}</translation>
-<translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 महिन्यापूर्वी}other{# महिन्यांपूर्वी}}</translation>
 <translation id="4289300219472526559">बोलणे सुरू करा</translation>
 <translation id="4289540628985791613">विहंगावलोकन</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1ता}other{#ता}}</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
-<translation id="883911313571074303">इमेजवर भाष्य करा</translation>
 <translation id="8841375032071747811">मागे जा बटण</translation>
 <translation id="8867568208303837180">पाठवित आहे...</translation>
 <translation id="8876215549894133151">स्वरूप:</translation>

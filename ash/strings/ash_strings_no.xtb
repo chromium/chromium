@@ -317,6 +317,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="301282384882049174">Delt av administratoren din</translation>
 <translation id="3017687597151988916">Vinduet er valgt som kilde</translation>
 <translation id="3033545621352269033">På</translation>
+<translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Åpne filer</translation>
 <translation id="3038571455154067151">For å logge på, skriv inn koden din for foreldretilgang til Family Link</translation>
 <translation id="3039939407102840004">Pekepennen har <ph name="PERCENTAGE" /> prosent batteri.</translation>
@@ -342,6 +343,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3153444934357957346">Du kan bare ha opptil <ph name="MULTI_PROFILE_USER_LIMIT" /> kontoer i multipålogging.</translation>
 <translation id="3154351730702813399">Enhetsadministratoren kan overvåke surfeaktiviteten din.</translation>
 <translation id="316086887565479535">Apper som ikke støttes, i malen</translation>
+<translation id="3161500364292033097">Lukk skrivebordet og vinduene</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> utfører en rollback på <ph name="DEVICE_TYPE" />. Enheten blir tilbakestilt, og alle data blir slettet.</translation>
 <translation id="3181441307743005334">Det kan ta en stund å starte på nytt</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Koblet til en enhet}other{Koblet til # enheter}}</translation>
@@ -1051,6 +1053,7 @@ Nylig installert</translation>
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7654687942625752712">Trykk og hold på begge volumknappene i fem sekunder for å slå av taletilbakemelding.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7659861092419699379">Skrivebordet og vinduene er lukket</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> vises på enheter som er tilknyttet med <ph name="EMAIL" /></translation>
 <translation id="7662283695561029522">Trykk for å konfigurere</translation>
 <translation id="7670953955701272011">Åpne denne datoen i Google Kalender</translation>

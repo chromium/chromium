@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">ଶୀର୍ଷ</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />ରୁ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="271033894570825754">ନୂଆ</translation>
-<translation id="2743387203779672305">କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି କରନ୍ତୁ</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ବର୍ଷ ପୂର୍ବେ}other{# ବର୍ଷ ପୂର୍ବେ}}</translation>
 <translation id="2878511608894704031">ସବୁ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 ଦିନରେ}other{# ଦିନରେ}}</translation>
@@ -97,8 +96,8 @@
 <translation id="3924145049010392604">ମେଟା</translation>
 <translation id="3990502903496589789">ଠିକ୍ ଧାର</translation>
 <translation id="3994749195054421561">ସ୍ତମ୍ଭ <ph name="COLUMN_NAME" /> ସାନରୁ ବଡ଼ କ୍ରମରେ ସର୍ଟ୍ କରାଯାଇଛି।</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1ଟି ପଢ଼ାଯାଇନଥିବା ବିଜ୍ଞପ୍ତି}other{#ଟି ପଢ଼ାଯାଇନଥିବା ବିଜ୍ଞପ୍ତି}}</translation>
-<translation id="4250229828105606438">ସ୍କ୍ରିନ୍‍ସଟ୍</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ମାସ ପୂର୍ବେ}other{# ମାସ ପୂର୍ବେ}}</translation>
 <translation id="4289300219472526559">କହିବା ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4289540628985791613">ଅବଲୋକନ</translation>
@@ -205,7 +204,6 @@
 <translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1ଘ}other{#ଘ}}</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
-<translation id="883911313571074303">ଆନୋଟେଟ୍ ଛବି</translation>
 <translation id="8841375032071747811">ପଛକୁ ଫେରନ୍ତୁ ବଟନ୍</translation>
 <translation id="8867568208303837180">ପଠାଉଛି...</translation>
 <translation id="8876215549894133151">ଫର୍ମାଟ୍:</translation>

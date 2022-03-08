@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">맨 위</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />에서 공유함</translation>
 <translation id="271033894570825754">New</translation>
-<translation id="2743387203779672305">클립보드로 복사</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1년 전}other{#년 전}}</translation>
 <translation id="2878511608894704031">모두 삭제</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1일 후}other{#일 후}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> 열은 오름차순으로 정렬되어 있습니다.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{읽지 않은 알림 1개}other{읽지 않은 알림 #개}}</translation>
-<translation id="4250229828105606438">스크린샷</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1개월 전}other{#개월 전}}</translation>
 <translation id="4289300219472526559">말하기 시작</translation>
 <translation id="4289540628985791613">개요</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">완료</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1시간}other{#시간}}</translation>
 <translation id="8798099450830957504">기본값</translation>
-<translation id="883911313571074303">이미지에 주석 달기</translation>
 <translation id="8841375032071747811">뒤로 버튼</translation>
 <translation id="8867568208303837180">보내는 중...</translation>
 <translation id="8876215549894133151">형식:</translation>

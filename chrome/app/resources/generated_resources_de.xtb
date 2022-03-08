@@ -211,6 +211,7 @@
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
 <translation id="1195558154361252544">Benachrichtigungen werden automatisch für alle Websites blockiert, außer für diejenigen, die Sie zulassen</translation>
 <translation id="1197088940767939838">Orange</translation>
+<translation id="1197199342062592414">Los geht's</translation>
 <translation id="1197935538609051549">Deaktivieren</translation>
 <translation id="119944043368869598">Alle entfernen</translation>
 <translation id="1199814941632954229">Es werden Zertifikate für diese Zertifikatprofile bereitgestellt</translation>
@@ -264,7 +265,6 @@
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252987234827889034">Profilfehler aufgetreten</translation>
 <translation id="1254593899333212300">Direkte Internetverbindung</translation>
-<translation id="1258144502260926473">Ihr Computer enthält einen Sicherheitschip, über den viele wichtige Sicherheitsfunktionen in CloudReady 2.0 implementiert werden. Weitere Informationen dazu finden Sie in der Chromebook-Hilfe unter https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="1258491128795710625">Neue Funktionen</translation>
 <translation id="1259152067760398571">Der Sicherheitscheck wurde gestern durchgeführt</translation>
 <translation id="1260451001046713751">Pop-ups und Weiterleitungen von <ph name="HOST" /> immer zulassen</translation>
@@ -491,7 +491,6 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1481537595330271162">Fehler bei der Größenanpassung des Laufwerks</translation>
 <translation id="1482626744466814421">Lesezeichen für diesen Tab erstellen…</translation>
 <translation id="1483493594462132177">Senden</translation>
-<translation id="1484599694148543901">Möchten Sie ChromeVox, den integrierten Screenreader für CloudReady 2.0, aktivieren?</translation>
 <translation id="1484979925941077974">Die Website verwendet Bluetooth</translation>
 <translation id="1485015260175968628">Aktualisierte Berechtigungen:</translation>
 <translation id="1485141095922496924">Version <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -623,7 +622,6 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1614511179807650956">Sie haben eventuell Ihr mobiles Datenkontingent aufgebraucht. Besuchen Sie das <ph name="NAME" />-Aktivierungsportal, um weiteres Datenkontingent zu kaufen.</translation>
 <translation id="161460670679785907">Ihr Smartphone wurde nicht erkannt</translation>
 <translation id="1615337439947999338">Im Google-Konto speichern (<ph name="EMAIL" />)</translation>
-<translation id="1615402009686901181">Die Administratorrichtlinie blockiert die Bildschirmaufnahme, wenn vertrauliche Inhalte sichtbar sind</translation>
 <translation id="1615433306336820465">Auf Ihrem Sicherheitsschlüssel gespeicherte Anmeldedaten verwalten</translation>
 <translation id="1616206807336925449">Diese Erweiterung erfordert keine speziellen Berechtigungen.</translation>
 <translation id="1616298854599875024">Die Erweiterung "<ph name="IMPORT_NAME" />" konnte nicht importiert werden, da es sich nicht um ein freigegebenes Modul handelt</translation>
@@ -1017,7 +1015,6 @@ Berechtigungen, die Sie Apps bereits gewährt haben, gelten möglicherweise für
 <translation id="1987317783729300807">Konten</translation>
 <translation id="1988259784461813694">Voraussetzung</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
-<translation id="1989113344093894667">Inhalt kann nicht aufgenommen werden</translation>
 <translation id="1989744123191450103">Sicherung fehlgeschlagen</translation>
 <translation id="1989903373608997757">Immer verwenden</translation>
 <translation id="1990046457226896323">Sprachdateien heruntergeladen</translation>
@@ -2066,7 +2063,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3012804260437125868">Nur bei sicheren Verbindungen zur gleichen Website</translation>
 <translation id="3012917896646559015">Wenden Sie sich bitte umgehend an Ihren Hardware-Hersteller, um Ihren Computer an einen Reparaturservice zu senden.</translation>
 <translation id="301525898020410885">Die Sprache wird von Ihrer Organisation festgelegt</translation>
-<translation id="3015425363367310551">Möchten Sie ChromeVox, den integrierten Screenreader für CloudReady 2.0, aktivieren? Falls ja, halten Sie beide Lautstärketasten fünf Sekunden gedrückt.</translation>
 <translation id="3015639418649705390">Jetzt neu starten</translation>
 <translation id="3016381065346027039">Keine Protokolleinträge</translation>
 <translation id="3016641847947582299">Komponente aktualisiert</translation>
@@ -2190,7 +2186,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3142562627629111859">Neue Gruppe</translation>
 <translation id="3143515551205905069">Synchronisierung abbrechen</translation>
 <translation id="3143754809889689516">Von vorne abspielen</translation>
-<translation id="3144023778624018265">CloudReady 2.0-Einstellungen synchronisieren</translation>
 <translation id="3144647712221361880">Link öffnen als</translation>
 <translation id="3149510190863420837">Chrome-Apps</translation>
 <translation id="3150693969729403281">Sicherheitscheck jetzt durchführen</translation>
@@ -2295,7 +2290,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3275778913554317645">In neuem Fenster öffnen</translation>
 <translation id="3277691515294482687">Meine Apps und Dateien vor dem Upgrade von Linux im Ordner "Meine Dateien" sichern.</translation>
 <translation id="3278001907972365362">Ihre Google-Konten erfordern Aufmerksamkeit</translation>
-<translation id="3278800075417428224">Sprachen in den Einstellungen von CloudReady 2.0 verwalten</translation>
 <translation id="3278928434075969895">Dieses Profil verwendet die Chrome OS-Proxy-Einstellungen.</translation>
 <translation id="3279092821516760512">Ausgewählte Kontakte können Daten mit Ihnen teilen, wenn Sie in der Nähe sind. Die Übertragung beginnt erst, nachdem Sie die Einladung angenommen haben.</translation>
 <translation id="3279230909244266691">Der Vorgang kann einige Minuten dauern. Virtuelle Maschine wird gestartet.</translation>
@@ -2468,7 +2462,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-Gerät</translation>
 <translation id="3446274660183028131">Bitte Parallels Desktop starten, um Windows zu installieren.</translation>
-<translation id="3446286111407214190">Inhalt der Google CloudReady 2.0-Nutzungsbedingungen</translation>
 <translation id="344630545793878684">Ihre Daten auf verschiedenen Websites lesen</translation>
 <translation id="3446650212859500694">Diese Datei enthält vertrauliche Inhalte</translation>
 <translation id="3447644283769633681">Alle Drittanbieter-Cookies blockieren</translation>
@@ -2584,7 +2577,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3557101512409028104">Mit Family Link den Web-Zugriff und die Gerätenutzungsdauer begrenzen</translation>
 <translation id="3559262020195162408">Fehler beim Installieren der Richtlinie auf dem Gerät.</translation>
 <translation id="3559533181353831840">Noch <ph name="TIME_LEFT" /></translation>
-<translation id="3559697822483154494">Wenn diese Option aktiviert ist, vibriert das Gerät, wenn Sie beispielsweise zwischen Desktops wechseln oder den geteilten Bildschirmmodus aktivieren.</translation>
 <translation id="3560034655160545939">&amp;Rechtschreibprüfung</translation>
 <translation id="3562423906127931518">Der Vorgang kann einige Minuten dauern. Linux-Container wird eingerichtet.</translation>
 <translation id="3562655211539199254">Zuletzt geöffnete Chrome-Tabs von Ihrem Smartphone sehen</translation>
@@ -2698,7 +2690,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3672681487849735243">Ein werkseitiger Fehler wurde festgestellt.</translation>
 <translation id="3673097791729989571">Anmeldung gehostet von <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673622964532248901">Streamen an dieses Gerät nicht zulässig</translation>
-<translation id="3675511132463531771">CloudReady 2.0-Update erforderlich</translation>
 <translation id="367645871420407123">Leer lassen, wenn Sie für das Root-Passwort den Standardtestwert festlegen möchten</translation>
 <translation id="3677106374019847299">Benutzerdefinierten Anbieter eingeben</translation>
 <translation id="3677911431265050325">Mobile Version anfordern</translation>
@@ -2786,7 +2777,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> öffnen?</translation>
 <translation id="3741056951918180319">Sie können die Erweiterung jederzeit anklicken, um sie auf einer beliebigen Website zu verwenden</translation>
-<translation id="3742055079367172538">Screenshot erstellt</translation>
 <translation id="3742235229730461951">Koreanische Tastaturbelegung</translation>
 <translation id="3742666961763734085">Keine Organisationseinheit mit diesem Namen vorhanden. Versuchen Sie es noch einmal.</translation>
 <translation id="3743842571276656710">Geben Sie die PIN ein, um die Kopplung mit <ph name="DEVICE_NAME" /> durchzuführen</translation>
@@ -2945,7 +2935,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3886446263141354045">Deine Anfrage zum Zugriff auf diese Website wurde an <ph name="NAME" /> gesendet</translation>
 <translation id="3887022758415973389">Geräteliste anzeigen</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-Verbindung</translation>
-<translation id="3888491127874785636">CouldReady 2.0-Schreibprozess für System-Images</translation>
 <translation id="3888550877729210209">Notizerstellung mit <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Diese Informationen helfen uns, Ihr Problem mit Assistant besser zu verstehen. Sie werden bis zu 90 Tage gespeichert und der Zugriff ist auf die zuständigen Entwickler- und Feedbackteams beschränkt.</translation>
 <translation id="3888900458694486810">Seitensuche schließen</translation>
@@ -3037,7 +3026,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3962119236270174787">Standardschutz vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind</translation>
 <translation id="3963721102035795474">Lesemodus</translation>
 <translation id="3964480518399667971">Mobilfunknetz ausschalten</translation>
-<translation id="39650333289039736">Ihre Apps, Einstellungen und anderen Anpassungen werden auf allen CloudReady 2.0-Geräten synchronisiert, auf denen Sie mit Ihrem Google-Konto angemeldet sind.</translation>
 <translation id="3965811923470826124">Mit</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> beenden</translation>
 <translation id="3966072572894326936">Anderen Ordner wählen...</translation>
@@ -3403,7 +3391,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4369121877634339065">Zum Suchen über Bildbereich ziehen</translation>
 <translation id="4369215744064167350">Websiteanfrage genehmigt</translation>
 <translation id="4370975561335139969">Die E-Mail-Adresse und das Passwort, die Sie eingegeben haben, stimmen nicht überein.</translation>
-<translation id="4371179719793593133">Ihre Apps und Einstellungen werden auf allen CloudReady 2.0-Geräten synchronisiert, auf denen Sie mit Ihrem Google-Konto angemeldet sind. Die Optionen zur Browsersynchronisierung finden Sie in den <ph name="LINK_BEGIN" />Chrome-Einstellungen<ph name="LINK_END" />.</translation>
 <translation id="4373966964907728675">Desktop wird übertragen</translation>
 <translation id="4374831787438678295">Linux-Installationsprogramm</translation>
 <translation id="4375035964737468845">Heruntergeladene Dateien öffnen</translation>
@@ -3509,7 +3496,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4477015793815781985">Verwenden Sie Strg, Alt oder ⌘</translation>
 <translation id="4478664379124702289">Lin&amp;k speichern unter...</translation>
 <translation id="4479424953165245642">Kioskanwendungen verwalten</translation>
-<translation id="4479481745547029647">Zusätzliche Nutzungsbedingungen für Google Chrome und CloudReady 2.0</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">Die virtuelle Maschine wird konfiguriert. Dies kann einige Minuten dauern.</translation>
 <translation id="4480590691557335796">Chrome kann auf Ihrem Computer schädliche Software suchen und entfernen</translation>
@@ -4496,7 +4482,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen sowie mein Mikrofon zu benutzen</translation>
 <translation id="5505264765875738116">Websites können nicht fragen, ob Sie Benachrichtigungen erhalten möchten</translation>
 <translation id="5505307013568720083">Patrone leer</translation>
-<translation id="5505794066310932198">Commander ein-/ausschalten</translation>
 <translation id="5507756662695126555">Zugelassen</translation>
 <translation id="5509693895992845810">Speichern &amp;unter...</translation>
 <translation id="5509914365760201064">Aussteller: <ph name="CERTIFICATE_AUTHORITY" /></translation>
@@ -4602,7 +4587,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5616726534702877126">Speicherplatz reservieren</translation>
 <translation id="561698261642843490">Firefox schließen</translation>
 <translation id="56197088284879152">Die Verbindung mit folgendem Remote-Gerät ist überlastet: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="5619862035903135339">Die Administratorrichtlinie blockiert die Bildschirmaufnahme</translation>
 <translation id="5620568081365989559">DevTools erfordert Vollzugriff auf <ph name="FOLDER_PATH" />. Achten Sie darauf, dass dadurch keine vertraulichen Informationen offengelegt werden.</translation>
 <translation id="5620612546311710611">Nutzungsstatistiken</translation>
 <translation id="5620655347161642930">Passwörter exportieren…</translation>
@@ -4640,7 +4624,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5648166631817621825">Letzte 7 Tage</translation>
 <translation id="5651308944918885595">Nearby Share-Sichtbarkeit</translation>
 <translation id="5653154844073528838">Sie haben <ph name="PRINTER_COUNT" /> gespeicherte Drucker.</translation>
-<translation id="5654266266024827740">Möchten Sie ChromeVox, den integrierten Screenreader für CloudReady 2.0, aktivieren? Falls ja, drücken Sie die Leertaste.</translation>
 <translation id="5655296450510165335">Geräteregistrierung</translation>
 <translation id="5656845498778518563">Feedback an Google senden</translation>
 <translation id="5657156137487675418">Alle Cookies zulassen</translation>
@@ -4725,7 +4708,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5747552184818312860">Ablaufdatum</translation>
 <translation id="5747785204778348146">Entwickler – instabil</translation>
 <translation id="5747809636523347288">Einfügen und <ph name="URL" /> aufrufen</translation>
-<translation id="5747845802829012825">Aktualisieren Sie CloudReady 2.0 und versuchen Sie es noch einmal, um die Einrichtung von Linux abzuschließen.</translation>
 <translation id="5755022574660047665">Erinnerungen von Google Fotos</translation>
 <translation id="5756163054456765343">H&amp;ilfe</translation>
 <translation id="5757375109985023827">Tab für die Vorschau auswählen</translation>
@@ -4852,7 +4834,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> automatisch blockiert</translation>
 <translation id="5884474295213649357">Dieser Tab ist mit einem USB-Gerät verbunden.</translation>
 <translation id="5886009770935151472">Finger 1</translation>
-<translation id="5886325049116255797">Ihre gespeicherten Einstellungen und Aktivitäten stehen auf jedem CloudReady 2.0-Gerät zur Verfügung, auf dem Sie sich in Ihrem Google-Konto anmelden. In den Einstellungen können Sie festlegen, was synchronisiert werden soll.</translation>
 <translation id="5888843733007437002">Vorlagen werden angezeigt. Zum Navigieren die Tabulatortaste drücken.</translation>
 <translation id="5889282057229379085">Maximal zulässige Anzahl an Zwischenzertifizierungsstellen: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Bevorzugte WLANs</translation>
@@ -4909,7 +4890,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5939719276406088041">Verknüpfung konnte nicht erstellt werden</translation>
 <translation id="594048410531370124">Unbekannte Taste. Drücken Sie zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="5941153596444580863">Person hinzufügen...</translation>
-<translation id="5941176400377813459">Seriennummern von CloudReady 2.0-Geräten und Komponenten lesen.</translation>
 <translation id="5941343993301164315">Melden Sie sich in <ph name="TOKEN_NAME" /> an.</translation>
 <translation id="5941711191222866238">Minimieren</translation>
 <translation id="5942779427914696408">Gerätesichtbarkeit</translation>
@@ -4922,24 +4902,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5950819593680344519">Chrome hat auf Ihrem Computer keine schädliche Software gefunden • Zuletzt geprüft: gestern</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> möchte lokale Schriftarten verwenden</translation>
 <translation id="5951624318208955736">Monitor</translation>
-<translation id="5953627503079109298"><ph name="BEGIN_H3" />Funktionen zur Fehlerbehebung<ph name="END_H3" />
-      <ph name="BR" />
-      Sie können die Funktionen zur Fehlerbehebung auf Ihrem CloudReady 2.0-Gerät aktivieren, um benutzerdefinierten Code auf dem Gerät zu installieren und zu testen. Dadurch können Sie<ph name="BR" />
-      <ph name="BEGIN_LIST" />
-        <ph name="LIST_ITEM" />die rootfs-Überprüfung entfernen, sodass Sie Dateien des Betriebssystems ändern können,
-        <ph name="LIST_ITEM" />den SSH-Zugriff auf das Gerät anhand der Standard-Testschlüssel ermöglichen, sodass Sie Tools wie <ph name="BEGIN_CODE" />cros flash<ph name="END_CODE" /> für den Gerätezugriff verwenden können,
-        <ph name="LIST_ITEM" />das Starten über USB aktivieren, sodass Sie ein Betriebssystem-Image über einen USB-Speicher installieren können, und
-        <ph name="LIST_ITEM" />für das Dev- und System-Root-Passwort einen benutzerdefinierten Wert festlegen, sodass Sie sich manuell per SSH mit dem Gerät verbinden können.
-      <ph name="END_LIST" />
-      <ph name="BR" />
-      Nach der Aktivierung bleiben die meisten Funktionen zur Fehlerbehebung auch dann aktiviert, wenn Sie einen Powerwash durchführen oder die Daten auf einem verwalteten Unternehmensgerät löschen. Führen Sie zur vollständigen Deaktivierung aller Funktionen zur Fehlerbehebung den Chrome OS-Wiederherstellungsprozess aus: https://support.google.com/chromebook/answer/1080595.
-      <ph name="BR" />
-      <ph name="BR" />
-      Weitere Informationen zu den Funktionen zur Fehlerbehebung finden Sie unter folgendem Link:<ph name="BR" />
-      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
-      <ph name="BR" />
-      <ph name="BR" />
-      <ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Das System wird während des Vorgangs neu gestartet.</translation>
 <translation id="5955282598396714173">Ihr Passwort ist abgelaufen. Melden Sie sich ab und dann wieder an, um es zu ändern.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Eine Website möchte diese Anwendung öffnen.</translation>
@@ -5071,7 +5033,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="608029822688206592">Kein Netzwerk gefunden. Legen Sie Ihre SIM-Karte ein und versuchen Sie es dann noch einmal.</translation>
 <translation id="6080689532560039067">Systemzeit überprüfen</translation>
 <translation id="6082877069782862752">Tastenbelegung</translation>
-<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Teil einer unbenannten Gruppe</translation>
 <translation id="6085886413119427067">Legt fest, wie Websites über eine sichere Verbindung aufgerufen werden</translation>
 <translation id="6086004606538989567">Das bestätigte Konto ist nicht berechtigt, auf dieses Gerät zuzugreifen.</translation>
@@ -5703,6 +5664,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="672609503628871915">Neuigkeiten</translation>
 <translation id="67269783048918309">Sie haben die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- sowie Geräte- und App-Nutzungsdaten an Google. Ihr Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" für Ihr Kind aktiviert ist, werden diese Daten in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Verbunden, Akkustand bei <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6731320427842222405">Dies kann einige Minuten dauern.</translation>
 <translation id="6733620523445262364">„<ph name="BOOKMARK_TITLE" />“ erstellt.</translation>
 <translation id="6735304988756581115">Cookies und andere Websitedaten anzeigen...</translation>
 <translation id="6736243959894955139">Adresse</translation>
@@ -5790,9 +5752,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6813907279658683733">Gesamter Bildschirm</translation>
 <translation id="6817174620439930047">Nachfragen, wenn eine Website versucht, mit systemexklusiven Meldungen auf MIDI-Geräte zuzugreifen (empfohlen)</translation>
 <translation id="6818198425579322765">Sprache der Seite, die übersetzt wird</translation>
-<translation id="6818640747323584611">Helfen, die Funktionen und die Leistung von CloudReady 2.0 zu verbessern</translation>
 <translation id="6818802132960437751">Integrierter Virenschutz</translation>
-<translation id="6819741204334296334">App mit Manifest-Attribut „kiosk_only“ muss im CloudReady 2.0-Kioskmodus installiert werden</translation>
 <translation id="682123305478866682">Desktop streamen</translation>
 <translation id="6823174134746916417">Touchpad-Klick</translation>
 <translation id="6824564591481349393">E-Mail-Adr&amp;esse kopieren</translation>
@@ -6252,7 +6212,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="730515362922783851">Daten mit einem beliebigen Gerät im lokalen Netzwerk oder Internet austauschen</translation>
 <translation id="7306521477691455105">Bitte die Einstellungenöffnen, um <ph name="USB_DEVICE_NAME" /> mit <ph name="USB_VM_NAME" /> zu verbinden</translation>
 <translation id="7307129035224081534">Pausiert</translation>
-<translation id="7307719647623535470">Sicheres DNS in den Einstellungen von CloudReady 2.0 verwalten</translation>
 <translation id="7308643132139167865">Websitesprachen</translation>
 <translation id="7310598146671372464">Fehler beim Anmelden. Der Server unterstützt keine angegebenen Kerberos-Verschlüsselungstypen. Bitte wenden Sie sich an Ihren Administrator.</translation>
 <translation id="7312210124139670355">Ihr Administrator setzt Ihre eSIM zurück. Das kann einige Minuten dauern.</translation>
@@ -6648,7 +6607,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7691163173018300413">„Hey Google“</translation>
 <translation id="7691698019618282776">Crostini-Upgrade</translation>
 <translation id="769375405463525957">Wenn Sie sich von Ihrem Gerät entfernen, wird der Bildschirm automatisch gesperrt. Solange Sie sich vor Ihrem Gerät befinden, bleibt er aktiv.</translation>
-<translation id="7694052127939518600">Mit der App „Dateien“ erhalten Sie schnellen Zugriff auf Dateien, die Sie in Google Drive, auf externen Speichermedien oder auf Ihrem CloudReady 2.0-Gerät gespeichert haben.</translation>
 <translation id="7694246789328885917">Textmarkertool</translation>
 <translation id="7696063401938172191">Auf Ihrem <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Details sind während des Bildschirmteilens verborgen</translation>
@@ -6899,7 +6857,6 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7935451262452051102"><ph name="PERCENT" /> % abgeschlossen</translation>
 <translation id="7938594894617528435">Derzeit offline</translation>
 <translation id="7939062555109487992">Erweiterte Optionen</translation>
-<translation id="7939321852721702336">Sie aktivieren CloudReady 2.0-Funktionen zur Fehlerbehebung. Dadurch wird der SSHD-Daemon eingerichtet und das Starten über USB-Speicher aktiviert.</translation>
 <translation id="7939412583708276221">Trotzdem beibehalten</translation>
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7943368935008348579">PDFs herunterladen</translation>
@@ -7594,7 +7551,6 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8665110742939124773">Sie haben einen falschen Zugriffscode eingegeben. Versuchen Sie es noch einmal.</translation>
 <translation id="8665180165765946056">Sicherung abgeschlossen</translation>
 <translation id="866611985033792019">Diesem Zertifikat zur Identifizierung von E-Mail-Nutzern vertrauen</translation>
-<translation id="8666224701549693691">CloudReady 2.0-Diagnosetests ausführen.</translation>
 <translation id="8666584013686199826">Nachfragen, wenn eine Website auf USB-Geräte zugreifen möchte</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> wird nun im Vollbildmodus angezeigt und hat Ihren Cursor deaktiviert.</translation>
 <translation id="8668052347555487755">Farbmodus</translation>
@@ -7647,7 +7603,6 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8719472795285728850">Auf Erweiterungsaktivitäten wird gewartet…</translation>
 <translation id="8719653885894320876">Fehler beim Download von <ph name="PLUGIN_NAME" /></translation>
 <translation id="8720200012906404956">Suche nach einem mobilen Netzwerk läuft. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="8720781020694544444">Ihr Computer wurde mit einer ungültigen Hardware-ID konfiguriert. Daher kann CloudReady 2.0 keine aktuellen Sicherheitsupdates installieren und Ihr Computer ist <ph name="BEGIN_BOLD" />möglicherweise anfällig für schädliche Angriffe<ph name="END_BOLD" />.</translation>
 <translation id="8720816553731218127">Zeitüberschreitung bei der Initialisierung der Attribute für die Installationszeit.</translation>
 <translation id="8722912030556880711">Sie haben die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- sowie Geräte- und App-Nutzungsdaten an Google. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten eventuell in Ihrem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="8724405322205516354">Wenn Sie dieses Symbol sehen, können Sie Ihren Fingerabdruck zur Identifizierung oder zur Autorisierung eines Kaufs verwenden.</translation>
@@ -7775,7 +7730,6 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8838601485495657486">Opak</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Smartphones verwalten</translation>
-<translation id="883911313571074303">Bild mit Anmerkung versehen</translation>
 <translation id="8840427996758894516">Ihr Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="8841843049738266382">Nutzer auf der Zulassungsliste ansehen und ändern</translation>
 <translation id="8842594465773264717">Diesen Fingerabdruck löschen</translation>
@@ -7833,7 +7787,6 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8890516388109605451">Quellen</translation>
 <translation id="8890529496706615641">Das Profil konnte nicht umbenannt werden. Bitte versuchen Sie es noch einmal oder wenden Sie sich an den technischen Support.</translation>
 <translation id="8892168913673237979">Fertig!</translation>
-<translation id="8893116021193670489">Ihr Computer enthält ein Trusted Platform Module (TPM), mit dem viele wichtige Sicherheitsfunktionen in CloudReady 2.0 implementiert werden. Weitere Informationen dazu finden Sie in der Chromebook-Hilfe unter https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="8893801527741465188">Deinstallation abgeschlossen</translation>
 <translation id="8893928184421379330">Das Gerät <ph name="DEVICE_LABEL" /> wurde nicht erkannt.</translation>
 <translation id="8894761918470382415">Schutz vor Datenzugriff von Peripheriegeräten</translation>
@@ -7995,9 +7948,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="9057354806206861646">Aktualisierungszeitplan</translation>
 <translation id="9062468308252555888">14-fach</translation>
 <translation id="9063208415146866933">Fehler von Zeile <ph name="ERROR_LINE_START" /> bis <ph name="ERROR_LINE_END" /></translation>
-<translation id="9063800855227801443">Vertrauliche Inhalte können nicht aufgenommen werden</translation>
 <translation id="9064275926664971810">„Automatisches Ausfüllen“ aktivieren, um Webformulare mit nur einem Klick auszufüllen</translation>
-<translation id="9064599787951583960">Die CloudReady 2.0-Geräteinformationen und -Gerätedaten auslesen.</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="9066394310994446814">Wir zeigen Ihnen diesen Eintrag auf Grundlage Ihrer bisherigen Nutzung von Google-Diensten. Sie können unter <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" /> Ihre Daten ansehen und löschen oder Ihre Einstellungen ändern.
 <ph name="BREAK" />
@@ -8172,7 +8123,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, finden Sie
 <translation id="936801553271523408">Fehlerberichte des Systems</translation>
 <translation id="93766956588638423">Erweiterung reparieren</translation>
 <translation id="938568644810664664">Sie können fragen „Hey Google, welcher Song ist das?“ oder „Hey Google, was ist auf meinem Bildschirm?“</translation>
-<translation id="939252827960237676">Screenshot konnte nicht gespeichert werden.</translation>
 <translation id="939401694733344652">Diese Konten werden momentan nicht mit Android-Apps verwendet. Wenn Sie ein Konto für die Verwendung mit dieser Android-App auswählen, kann es auch mit anderen Android-Apps verwendet werden. Sie können den Zugriff auf Android-Apps unter <ph name="LINK_BEGIN" />„Einstellungen“ &gt; „Konten“<ph name="LINK_END" /> anpassen.</translation>
 <translation id="939598580284253335">Passphrase eingeben</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>

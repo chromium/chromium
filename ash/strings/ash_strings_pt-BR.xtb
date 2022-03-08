@@ -317,6 +317,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="301282384882049174">Compartilhado pelo administrador</translation>
 <translation id="3017687597151988916">Área de seleção definida como janela</translation>
 <translation id="3033545621352269033">Ativada</translation>
+<translation id="3033912566804961911">Combinar com <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir arquivos</translation>
 <translation id="3038571455154067151">Para fazer login, insira seu código de acesso do familiar responsável do Family Link</translation>
 <translation id="3039939407102840004">Bateria da stylus em <ph name="PERCENTAGE" />%.</translation>
@@ -342,6 +343,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3153444934357957346">Só é possível ter até <ph name="MULTI_PROFILE_USER_LIMIT" /> contas em login múltiplo.</translation>
 <translation id="3154351730702813399">O administrador do dispositivo pode monitorar sua atividade de navegação.</translation>
 <translation id="316086887565479535">Apps sem suporte no modelo</translation>
+<translation id="3161500364292033097">Fechar espaço de trabalho e janelas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está revertendo seu <ph name="DEVICE_TYPE" />. O dispositivo será redefinido e todos os dados serão excluídos.</translation>
 <translation id="3181441307743005334">A reinicialização pode demorar um pouco</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectado a um dispositivo}one{Conectado a # dispositivo}other{Conectado a # dispositivos}}</translation>
@@ -1051,6 +1053,7 @@ Nova instalação</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7654687942625752712">Pressione as duas teclas de volumes e as mantenha pressionadas por cinco segundos para desativar o feedback falado.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7659861092419699379">O espaço de trabalho e as janelas foram fechadas</translation>
 <translation id="7660160718439869192">Seu dispositivo <ph name="NAME" /> será mostrado nos dispositivos vinculados a <ph name="EMAIL" /></translation>
 <translation id="7662283695561029522">Toque para configurar</translation>
 <translation id="7670953955701272011">Abrir esta data no Google Agenda</translation>

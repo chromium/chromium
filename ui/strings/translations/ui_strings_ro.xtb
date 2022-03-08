@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Sus</translation>
 <translation id="2701330563083355633">Trimis de <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Nou</translation>
-<translation id="2743387203779672305">Copiați în clipboard</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Acum 1 an}few{Acum # ani}other{Acum # de ani}}</translation>
 <translation id="2878511608894704031">Șterge tot</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{în o zi}few{în # zile}other{în # zile}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">Coloana <ph name="COLUMN_NAME" /> este sortată în ordine crescătoare.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{O notificare necitită}few{# notificări necitite}other{# de notificări necitite}}</translation>
-<translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Acum 1 lună}few{Acum # luni}other{Acum # de luni}}</translation>
 <translation id="4289300219472526559">Începeți să vorbiți</translation>
 <translation id="4289540628985791613">Prezentare generală</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}few{# h}other{# h}}</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
-<translation id="883911313571074303">Adnotează imaginea</translation>
 <translation id="8841375032071747811">Butonul Înapoi</translation>
 <translation id="8867568208303837180">Se trimite...</translation>
 <translation id="8876215549894133151">Format:</translation>

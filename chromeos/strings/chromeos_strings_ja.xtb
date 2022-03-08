@@ -334,6 +334,7 @@
 <translation id="5051044138948155788">これは存在する唯一のページです。削除すると、スキャンのスタート画面に戻ります。</translation>
 <translation id="5088172560898466307">サーバーのホスト名</translation>
 <translation id="5089810972385038852">都道府県 / 州</translation>
+<translation id="5090362543162270857">IPsec（IKEv2）</translation>
 <translation id="5142961317498132443">認証</translation>
 <translation id="5154917547274118687">メモリ</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> にログインしてください</translation>
@@ -435,6 +436,7 @@
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> のファームウェアをアップデート</translation>
 <translation id="6325525973963619867">失敗しました</translation>
 <translation id="6340526405444716530">カスタマイズ</translation>
+<translation id="6348738456043757611">ユーザー名とパスワード</translation>
 <translation id="636850387210749493">企業の登録</translation>
 <translation id="6379086450106841622">タッチスクリーン</translation>
 <translation id="6388847657025262518">スキャナの給紙トレイが詰まっています。トレイを確認してから、もう一度お試しください。</translation>

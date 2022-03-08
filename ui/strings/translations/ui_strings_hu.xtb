@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Felülre</translation>
 <translation id="2701330563083355633">Megosztva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Új</translation>
-<translation id="2743387203779672305">Másolás a vágólapra</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 éve}other{# éve}}</translation>
 <translation id="2878511608894704031">Az összes törlése</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 nap múlva}other{# nap múlva}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> oszlop növekvő sorrendbe rendezve.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 olvasatlan értesítés}other{# olvasatlan értesítés}}</translation>
-<translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 hónapja}other{# hónapja}}</translation>
 <translation id="4289300219472526559">Beszéd megkezdése</translation>
 <translation id="4289540628985791613">Áttekintés</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 ó}other{# ó}}</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
-<translation id="883911313571074303">Megjegyzés fűzése a képhez</translation>
 <translation id="8841375032071747811">Vissza gomb</translation>
 <translation id="8867568208303837180">Küldés...</translation>
 <translation id="8876215549894133151">Formátum:</translation>

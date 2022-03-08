@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">ઉપર</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />માંથી શેર કર્યું</translation>
 <translation id="271033894570825754">નવું</translation>
-<translation id="2743387203779672305">ક્લિપબોર્ડ પર કૉપિ કરો</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 વર્ષ પહેલાં}one{# વર્ષ પહેલાં}other{# વર્ષ પહેલાં}}</translation>
 <translation id="2878511608894704031">બધું ડિલીટ કરો</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1દિ. માં}one{#દિ. માં}other{#દિ. માં}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> કૉલમને ચઢતા ક્રમમાં સૉર્ટ કરી છે.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{વાંચ્યા વગરનું 1 નોટિફિકેશન}one{# વાંચ્યા વગરના નોટિફિકેશન}other{# વાંચ્યા વગરના નોટિફિકેશન}}</translation>
-<translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 મહિના પહેલાં}one{# મહિના પહેલાં}other{# મહિના પહેલાં}}</translation>
 <translation id="4289300219472526559">બોલવાનું પ્રારંભ કરો</translation>
 <translation id="4289540628985791613">ઓવરવ્યૂ</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 ક}one{# ક}other{# ક}}</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
-<translation id="883911313571074303">છબીમાં ટીકા કરો</translation>
 <translation id="8841375032071747811">પાછળ બટન</translation>
 <translation id="8867568208303837180">મોકલી રહ્યું છે...</translation>
 <translation id="8876215549894133151">ફોર્મેટ:</translation>

@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">一番上</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> から共有しました</translation>
 <translation id="271033894570825754">新しいファイル</translation>
-<translation id="2743387203779672305">クリップボードにコピー</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 年前}other{# 年前}}</translation>
 <translation id="2878511608894704031">すべて削除</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1日}other{#日}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">「<ph name="COLUMN_NAME" />」列の昇順で並べ替えました。</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{未読のお知らせ 1 件}other{未読のお知らせ # 件}}</translation>
-<translation id="4250229828105606438">スクリーンショット</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 か月前}other{# か月前}}</translation>
 <translation id="4289300219472526559">読み上げを開始</translation>
 <translation id="4289540628985791613">概要</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">完了</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1時間}other{#時間}}</translation>
 <translation id="8798099450830957504">既定</translation>
-<translation id="883911313571074303">画像に注釈を付ける</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
 <translation id="8867568208303837180">送信しています...</translation>
 <translation id="8876215549894133151">形式:</translation>

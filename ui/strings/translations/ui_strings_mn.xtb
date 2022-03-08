@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Дээд</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />-с хуваалцсан</translation>
 <translation id="271033894570825754">Шинэ</translation>
-<translation id="2743387203779672305">Завсрын түр санах самбар луу хуулах</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 жилийн өмнө}other{# жилийн өмнө}}</translation>
 <translation id="2878511608894704031">Бүгдийг нь устгах</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 хоногийн дараа}other{# хоногийн дараа}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> баганыг өсөх дарааллаар эрэмбэлсэн.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Уншаагүй 1 мэдэгдэл}other{Уншаагүй # мэдэгдэл}}</translation>
-<translation id="4250229828105606438">Дэлгэцийн агшин</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 сарын өмнө}other{# сарын өмнө}}</translation>
 <translation id="4289300219472526559">Ярьж эхлэх</translation>
 <translation id="4289540628985791613">Тойм</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 цаг}other{# цаг}}</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
-<translation id="883911313571074303">Зураг тэмдэглэх</translation>
 <translation id="8841375032071747811">Буцах товчлуур</translation>
 <translation id="8867568208303837180">Илгээж байна...</translation>
 <translation id="8876215549894133151">Формат:</translation>

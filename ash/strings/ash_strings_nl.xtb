@@ -314,6 +314,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="301282384882049174">Gedeeld door je beheerder</translation>
 <translation id="3017687597151988916">Selectiegebied ingesteld op venster</translation>
 <translation id="3033545621352269033">Aan</translation>
+<translation id="3033912566804961911">Combineren met <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Bestanden openen</translation>
 <translation id="3038571455154067151">Voer je Family Link-toegangscode voor ouders in om in te loggen</translation>
 <translation id="3039939407102840004">Batterij van stylus op <ph name="PERCENTAGE" /> procent.</translation>
@@ -339,6 +340,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3153444934357957346">Je kunt maximaal <ph name="MULTI_PROFILE_USER_LIMIT" /> accounts hebben in Toegang tot meerdere accounts.</translation>
 <translation id="3154351730702813399">De apparaatbeheerder kan je browseactiviteit controleren.</translation>
 <translation id="316086887565479535">Niet-ondersteunde apps in template</translation>
+<translation id="3161500364292033097">Bureau en vensters sluiten</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> zet je <ph name="DEVICE_TYPE" /> terug naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>
 <translation id="3181441307743005334">Opnieuw opstarten kan even duren</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Verbonden met een apparaat}other{Verbonden met # apparaten}}</translation>
@@ -1048,6 +1050,7 @@ Nieuwe installatie</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7654687942625752712">Houd beide volumetoetsen 5 seconden ingedrukt om gesproken feedback uit te zetten.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
+<translation id="7659861092419699379">Bureau en vensters zijn gesloten</translation>
 <translation id="7660160718439869192">Je <ph name="NAME" /> is zichtbaar op apparaten die aan <ph name="EMAIL" /> zijn gekoppeld</translation>
 <translation id="7662283695561029522">Tik om te configureren</translation>
 <translation id="7670953955701272011">Deze datum openen in Google Agenda</translation>

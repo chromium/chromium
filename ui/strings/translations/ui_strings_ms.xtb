@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2701330563083355633">Dikongsi daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Baharu</translation>
-<translation id="2743387203779672305">Salin ke papan keratan</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 tahun yang lalu}other{# tahun yang lalu}}</translation>
 <translation id="2878511608894704031">Padamkan Semua</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{dalam 1h}other{dalam #h}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">Lajur <ph name="COLUMN_NAME" /> diisih mengikut urutan menaik.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Pemberitahuan Belum Dibaca}other{# Pemberitahuan Belum Dibaca}}</translation>
-<translation id="4250229828105606438">Tangkapan skrin</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 bulan yang lalu}other{# bulan yang lalu}}</translation>
 <translation id="4289300219472526559">Mula Bercakap</translation>
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1j}other{#j}}</translation>
 <translation id="8798099450830957504">Lalai</translation>
-<translation id="883911313571074303">Anotasikan imej</translation>
 <translation id="8841375032071747811">Butang kembali</translation>
 <translation id="8867568208303837180">Menghantar...</translation>
 <translation id="8876215549894133151">Format:</translation>

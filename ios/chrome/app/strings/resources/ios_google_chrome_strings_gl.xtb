@@ -83,6 +83,15 @@
 <translation id="6709398533399187136">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies de inmediato.</translation>
 <translation id="6822673484890854830">Chrome non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="6964931465519938134">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
+<translation id="7046845777663074840">Cando esta opción está activada:
+<ph name="BEGIN_INDENT" />  • Axuda a mellorar Chrome para as persoas que o usan igual ca ti.<ph name="END_INDENT" />
+
+Cuestións que se deben ter en conta:
+<ph name="BEGIN_INDENT" />  • Envíaselle a Google información sobre o uso que fas de Chrome, pero estes datos non están vinculados contigo.
+
+  • Se se produce un erro en Chrome, entre os datos sobre o fallo podería incluírse algunha información persoal.
+
+  • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas.<ph name="END_INDENT" /></translation>
 <translation id="7059914902409643750">Personaliza Chrome</translation>
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
 <translation id="7161390184744336561">A versión de Google Chrome está desactualizada</translation>

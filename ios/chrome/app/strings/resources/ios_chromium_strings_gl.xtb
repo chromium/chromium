@@ -56,6 +56,15 @@
 <translation id="4828317641996116749">Chromium non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="4985291216379576555">Non tes conexión. Chromium non puido buscar actualizacións</translation>
 <translation id="4999538639245140991">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chromium deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
+<translation id="5039881550736388123">Cando esta opción está activada:
+<ph name="BEGIN_INDENT" />  • Axuda a mellorar Chromium para as persoas que o usan igual ca ti.<ph name="END_INDENT" />
+
+Cuestións que se deben ter en conta:
+<ph name="BEGIN_INDENT" />  • Envíaselle a Google información sobre o uso que fas de Chromium, pero estes datos non están vinculados contigo.
+
+  • Se se produce un erro en Chromium, entre os datos sobre o fallo podería incluírse algunha información persoal.
+
+  • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas.<ph name="END_INDENT" /></translation>
 <translation id="5171868502429358653">Inicia sesión en Chromium</translation>
 <translation id="5224391634244552924">Non hai contrasinais gardados. Chromium pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="5308226104666789935">Chromium non puido buscar actualizacións</translation>

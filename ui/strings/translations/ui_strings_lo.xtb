@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">ດ້ານເທິງ</translation>
 <translation id="2701330563083355633">ແບ່ງປັນຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">ໃຫມ່</translation>
-<translation id="2743387203779672305">ກັອບປີ້ໄປໃສ່ຄລິບບອດ</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ປີກ່ອນນີ້}other{# ປີກ່ອນນີ້}}</translation>
 <translation id="2878511608894704031">ລຶບທັງໝົດ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ໃນ 1 ມື້}other{ໃນ # ມື້}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">ຈັດຮຽງຖັນ <ph name="COLUMN_NAME" /> ຕາມລຳດັບນ້ອຍຫາໃຫຍ່ແລ້ວ.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ 1 ລາຍການ}other{ການແຈ້ງເຕືອນທີ່ຍັງບໍ່ໄດ້ອ່ານ # ລາຍການ}}</translation>
-<translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ເດືອນກ່ອນນີ້}other{# ເດືອນກ່ອນນີ້}}</translation>
 <translation id="4289300219472526559">ເລີ່ມ​ຕົ້ນ​ເວົ້າ</translation>
 <translation id="4289540628985791613">ພາບ​ລວມ</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 ຊົ່ວໂມງ}other{# ຊົ່ວໂມງ}}</translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
-<translation id="883911313571074303">ຂຽນໝາຍເຫດປະກອບຮູບພາບ</translation>
 <translation id="8841375032071747811">ປຸ່ມກັບຄືນ</translation>
 <translation id="8867568208303837180">ກຳລັງສົ່ງ...</translation>
 <translation id="8876215549894133151">ຮູບແບບ:</translation>

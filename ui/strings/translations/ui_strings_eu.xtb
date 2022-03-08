@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Goiko elementua</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> gailutik partekatu da</translation>
 <translation id="271033894570825754">Berria</translation>
-<translation id="2743387203779672305">Kopiatu arbelean</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Duela 1 urte}other{Duela # urte}}</translation>
 <translation id="2878511608894704031">Ezabatu dena</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 egun barru}other{# egun barru}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">"<ph name="COLUMN_NAME" />" zutabea gorantz ordenatu da.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Irakurri gabeko 1 jakinarazpen}other{Irakurri gabeko # jakinarazpen}}</translation>
-<translation id="4250229828105606438">Pantaila-argazkia</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Duela 1 hilabete}other{Duela # hilabete}}</translation>
 <translation id="4289300219472526559">Hasi hitz egiten</translation>
 <translation id="4289540628985791613">Ikuspegi orokorra</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}other{# h}}</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
-<translation id="883911313571074303">Egin oharpenak irudian</translation>
 <translation id="8841375032071747811">Atzera botoia</translation>
 <translation id="8867568208303837180">Bidaltzen…</translation>
 <translation id="8876215549894133151">Formatua:</translation>

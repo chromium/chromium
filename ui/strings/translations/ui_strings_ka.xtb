@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">ზედა</translation>
 <translation id="2701330563083355633">გაზიარებულია <ph name="DEVICE_NAME" />-დან</translation>
 <translation id="271033894570825754">ახალი</translation>
-<translation id="2743387203779672305">კოპირება გაცვლის ბუფერში</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 წლის წინ}other{# წლის წინ}}</translation>
 <translation id="2878511608894704031">ყველაფრის წაშლა</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 დღეში}other{# დღეში}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">სვეტი <ph name="COLUMN_NAME" /> დალაგებულია ზრდადი მიმდევრობით.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 წაუკითხავი შეტყობინება}other{# წაუკითხავი შეტყობინება}}</translation>
-<translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 თვის წინ}other{# თვის წინ}}</translation>
 <translation id="4289300219472526559">დაიწყეთ ლაპარაკი</translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 სთ}other{# სთ}}</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
-<translation id="883911313571074303">სურათის ანოტაცია</translation>
 <translation id="8841375032071747811">ღილაკი „უკან“</translation>
 <translation id="8867568208303837180">მიმდინარეობს გაგზავნა…</translation>
 <translation id="8876215549894133151">ფორმატი:</translation>

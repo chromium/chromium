@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Haut</translation>
 <translation id="2701330563083355633">Partagé à partir de l'appareil suivant : <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Nouveau</translation>
-<translation id="2743387203779672305">Copier dans le presse-papiers</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Il y a un an}one{Il y a # an}other{Il y a # ans}}</translation>
 <translation id="2878511608894704031">Tout supprimer</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{dans 1 j}one{dans # j}other{dans # j}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">Le contenu de colonne <ph name="COLUMN_NAME" /> est trié en ordre croissant.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notification non lue}one{# notification non lue}other{# notifications non lues}}</translation>
-<translation id="4250229828105606438">Saisie d'écran</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Il y a un mois}one{Il y a # mois}other{Il y a # mois}}</translation>
 <translation id="4289300219472526559">Commencer la lecture</translation>
 <translation id="4289540628985791613">Aperçu</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}one{# h}other{# h}}</translation>
 <translation id="8798099450830957504">Par défaut</translation>
-<translation id="883911313571074303">Annoter l'image</translation>
 <translation id="8841375032071747811">Bouton Précédent</translation>
 <translation id="8867568208303837180">Envoi en cours…</translation>
 <translation id="8876215549894133151">Format :</translation>

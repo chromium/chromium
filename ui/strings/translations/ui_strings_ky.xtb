@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Өйдө</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> аркылуу бөлүшүлдү</translation>
 <translation id="271033894570825754">Жаңы</translation>
-<translation id="2743387203779672305">Алмашуу буферине көчүрүү</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 жыл мурун}other{# жыл мурун}}</translation>
 <translation id="2878511608894704031">Баарын жок кылуу</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 к. кийин}other{# к. кийин}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> тилкеси өсүү тартибинде иреттелди.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 жаңы билдирме}other{# жаңы билдирме}}</translation>
-<translation id="4250229828105606438">Скриншот</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ай мурун}other{# ай мурун}}</translation>
 <translation id="4289300219472526559">Сүйлөп баштаңыз</translation>
 <translation id="4289540628985791613">Сереп салуу</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 с.}other{# с.}}</translation>
 <translation id="8798099450830957504">Демейки</translation>
-<translation id="883911313571074303">Сүрөттүн түшүндүрмөсүн жазыңыз</translation>
 <translation id="8841375032071747811">Артка баскычы</translation>
 <translation id="8867568208303837180">Жөнөтүлүүдө…</translation>
 <translation id="8876215549894133151">Формат:</translation>

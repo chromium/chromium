@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">بالا</translation>
 <translation id="2701330563083355633">هم‌رسانی‌شده از <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">جدید</translation>
-<translation id="2743387203779672305">کپی در بریده‌دان</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{۱ سال قبل}one{# سال قبل}other{# سال قبل}}</translation>
 <translation id="2878511608894704031">حذف همه</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{تا ۱ روز دیگر}one{تا # روز دیگر}other{تا # روز دیگر}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">ستون <ph name="COLUMN_NAME" /> به‌ترتیب صعودی مرتب شد.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{۱ اعلان خوانده‌نشده}one{# اعلان خوانده‌نشده}other{# اعلان خوانده‌نشده}}</translation>
-<translation id="4250229828105606438">نماگرفت</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{۱ ماه قبل}one{# ماه قبل}other{# ماه قبل}}</translation>
 <translation id="4289300219472526559">شروع صحبت</translation>
 <translation id="4289540628985791613">نمای کلی</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{۱ ساعت}one{# ساعت}other{# ساعت}}</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
-<translation id="883911313571074303">حاشیه‌نویسی تصویر</translation>
 <translation id="8841375032071747811">دکمه برگشت</translation>
 <translation id="8867568208303837180">در حال ارسال...</translation>
 <translation id="8876215549894133151">قالب:</translation>

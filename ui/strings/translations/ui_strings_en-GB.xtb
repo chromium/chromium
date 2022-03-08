@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Top</translation>
 <translation id="2701330563083355633">Shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">New</translation>
-<translation id="2743387203779672305">Copy to clipboard</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 year ago}other{# years ago}}</translation>
 <translation id="2878511608894704031">Delete all</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{in 1 d}other{in # d}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">Column <ph name="COLUMN_NAME" /> sorted in ascending order.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 unread notification}other{# unread notifications}}</translation>
-<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 month ago}other{# months ago}}</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">Overview</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Done</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1h}other{#h}}</translation>
 <translation id="8798099450830957504">Default</translation>
-<translation id="883911313571074303">Annotate image</translation>
 <translation id="8841375032071747811">Back button</translation>
 <translation id="8867568208303837180">Sending...</translation>
 <translation id="8876215549894133151">Format:</translation>

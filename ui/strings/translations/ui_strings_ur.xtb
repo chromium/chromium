@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">سرفہرست</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> سے اشتراک کردہ</translation>
 <translation id="271033894570825754">نیا</translation>
-<translation id="2743387203779672305">کلپ بورڈ پر کاپی کریں</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 سال پہلے}other{# سال پہلے}}</translation>
 <translation id="2878511608894704031">سبھی کو حذف کریں</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 دن میں}other{# دنوں میں}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> کالم صعودی ترتیب میں ترتیب دیا گیا۔</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 بغیر پڑھی ہوئی اطلاع}other{# بغیر پڑھی ہوئی اطلاعات}}</translation>
-<translation id="4250229828105606438">اسکرین شاٹ</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 مہینہ پہلے}other{# مہینے پہلے}}</translation>
 <translation id="4289300219472526559">بولنا شروع کریں</translation>
 <translation id="4289540628985791613">عمومی جائزہ</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1h}other{#h}}</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
-<translation id="883911313571074303">تصویر کی تشریح کریں</translation>
 <translation id="8841375032071747811">'پیچھے' بٹن</translation>
 <translation id="8867568208303837180">بھیجا جا رہا ہے...</translation>
 <translation id="8876215549894133151">فارمیٹ:</translation>

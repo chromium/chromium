@@ -137,6 +137,7 @@
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - समूहको अंश <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">दायाँपट्टिको बडमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="1133418583142946603">हालको ट्याब थप्नुहोस्</translation>
+<translation id="1135971365523689618"><ph name="APP_TYPE" /> यहाँबाट इन्स्टल गरिएको हो: <ph name="INSTALL_SOURCE" /></translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" /> मध्ये <ph name="EMOJI_INDEX" />।</translation>
 <translation id="1136712381129578788">अत्यन्तै धेरै पटक गलत PIN प्रविष्टि गरिएका कारण सुरक्षा साँचो लक गरिएको छ। यसलाई अनलक गर्न उक्त PIN हटाई फेरि हाल्नुहोस्।</translation>
 <translation id="1137589305610962734">अस्थायी डेटा</translation>
@@ -209,6 +210,7 @@
 <translation id="1195447618553298278">अज्ञात त्रुटि:</translation>
 <translation id="1195558154361252544">तपाईंले अनुमति दिएका साइटबाहेक अन्य सबै साइटका सूचनाहरूलाई स्वतः रोक लगाइएको छ</translation>
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
+<translation id="1197199342062592414">सुरु गरुम</translation>
 <translation id="1197935538609051549">डिएक्टिभेट गर्नुहोस्</translation>
 <translation id="119944043368869598">सबै सफा गर्नुहोस्</translation>
 <translation id="1199814941632954229">प्रमाणपत्रका यी प्रोफाइलका हकमा प्रमाणपत्र प्रयोग गरिँदै छन्</translation>
@@ -262,7 +264,6 @@
 <translation id="125220115284141797">डिफल्ट</translation>
 <translation id="1252987234827889034">प्रोफाइल सम्बन्धी त्रुटि भयो</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इन्टरनेट जडान</translation>
-<translation id="1258144502260926473">तपाईंको कम्प्युटरमा सुरक्षित मोड्युल छ। CloudReady २.० मा सुरक्षासम्बन्धी धेरै महत्त्वपूर्ण सुविधाहरू लागू गर्नका लागि उक्त मोड्युल प्रयोग गरिन्छ। तपाईं यसका सम्बन्धमा थप जान्न चाहनुहुन्छ भने Chromebook को मद्दत केन्द्रमा जानुहोस्: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="1258491128795710625">नयाँ के छ</translation>
 <translation id="1259152067760398571">हिजो सुरक्षा जाँच गरिएको थियो</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> लाई पपअप देखाउन र रिडिरेक्ट गर्ने अनुमति दिनुहोस्</translation>
@@ -271,6 +272,7 @@
 <translation id="1263231323834454256">पाठ्य सूची</translation>
 <translation id="1263733306853729545">उम्मेदवारहरूको सूचीलाई पृष्ठमा ल्याउन <ph name="MINUS" /> र <ph name="EQUAL" /> कुञ्जीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="126387934568812801">यो स्क्रिनसट तथा खुला रहेका ट्याबका शीर्षकहरू समावेश गर्नुहोस्</translation>
+<translation id="1264083566674525434">साइटसम्बन्धी अनुमतिहरू बदल्नुहोस्</translation>
 <translation id="1264337193001759725">नेटवर्कका UI लगहरू हेर्न यहाँ जानुहोस्: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">अनुवाद भाषा:</translation>
 <translation id="126768002343224824">१६ गुणा</translation>
@@ -406,6 +408,7 @@
 <translation id="1410616244180625362">तपाईंको क्यामेरा पहुँचका लागि <ph name="HOST" /> लाई अनुमति दिन जारी राख्नुहोस्</translation>
 <translation id="1410797069449661718">स्क्रोल गरेर पहिलो ट्याबमा लगियोस्</translation>
 <translation id="1410806973194718079">नीतिहरू जाँच गर्न सकिएन</translation>
+<translation id="1411724932979011919">तपाईंले हालेको कोड LPA फर्म्याटमा हुनु पर्छ:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1412681350727866021">थप एक्स्टेन्सनहरू</translation>
 <translation id="1414315029670184034">साइटहरूलाई मेरो क्यामेरा प्रयोग गर्ने अनुमति नदिइयोस्</translation>
 <translation id="1414648216875402825">तपाईं <ph name="PRODUCT_NAME" /> को अस्थिर संस्करणमा अपडेट गर्दै हुनुहुन्छ जुनमा सुविधाहरू हुन्छ जो प्रगतिमा छ। क्रयासहरू र नसोचिएका बगहरू आउनेछ। कृपया सतर्कता सहित जारी राख्नुहोस्।</translation>
@@ -490,7 +493,6 @@
 <translation id="1481537595330271162">डिस्कको आकार बदल्ने क्रममा त्रुटि भयो</translation>
 <translation id="1482626744466814421">यस ट्याबमा पुस्तक चिन्ह लगाउनुहोस्...</translation>
 <translation id="1483493594462132177">पठाउनुहोस्</translation>
-<translation id="1484599694148543901">तपाईं CloudReady २.० मा पहिले नै इन्स्टल गरिएको ChromeVox नामक स्क्रिन रिडर एक्टिभेट गर्न चाहनुहुन्छ?</translation>
 <translation id="1484979925941077974">साइटले ब्लुटुथ प्रयोग गर्दै छ</translation>
 <translation id="1485015260175968628">यसले अब गर्न सक्छ:</translation>
 <translation id="1485141095922496924">संस्करण <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -623,7 +625,6 @@
 <translation id="1614511179807650956">तपाईंले आफ्नो मोबाइल डेटाको सीमा बराबरको डेटा प्रयोग गरिसक्नुभएको हुन सक्छ। थप डेटा किन्नका लागि <ph name="NAME" /> नामक सक्रियता पोर्टलमा जानुहोस्।</translation>
 <translation id="161460670679785907">तपाईंको फोन पत्ता लगाउन सकिएन</translation>
 <translation id="1615337439947999338">आफ्नो Google खातामा सेभ गर्नुहोस् (<ph name="EMAIL" />)</translation>
-<translation id="1615402009686901181">तपाईंको स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="1615433306336820465">तपाईंको सुरक्षा साँचोमा भण्डारण गरिएको साइन इन डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1616206807336925449">यस विस्तारलाई  कुनै विशेष अनुमति आवश्यक पर्दैन।</translation>
 <translation id="1616298854599875024">विस्तार "<ph name="IMPORT_NAME" />" कुनै साझेदारी गरिएको मोड्युल नभएका कारण यसलाई आयात गर्न सकिएन</translation>
@@ -887,6 +888,9 @@
 <translation id="1849186935225320012">यस पृष्ठसँग MIDI  डिभाइसहरूको पूर्ण नियन्त्रण छ।</translation>
 <translation id="1850145825777333687">डिभाइसको युजरनेम र पासकी</translation>
 <translation id="1850508293116537636">&amp;घडीको दिशामा घुमाउनुहोस्</translation>
+<translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> ले यो डिभाइसको स्वामित्व लिन सकोस् भन्नाका लागि तपाईंले TPM मा भएको सबै डेटा मेटाएपछि मात्र तपाईं यो डिभाइस दर्ता गर्न सक्नुहुन्छ।<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />तपाईं डिभाइसमा भएको TPM नै अफ गर्न पनि सक्नुहुन्छ। तपाईंले TPM अफ गरे पनि तपाईंको डेटा सफ्टवेयरमार्फत इन्क्रिप्सन गरी सुरक्षित रूपमा भण्डारण गरिने छ। तर हार्डवेयरमा आधारित प्रमाणपत्रलगायतका सुरक्षासम्बन्धी केही निश्चित सुविधाहरू भने अफ गरिने छन्।<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />तपाईं यो डिभाइस रिबुट गरी सिस्टमको BIOS/UEFI सेटिङमा गएर TPM सम्बन्धी सेटिङ परिवर्तन गर्न सक्नुहुन्छ। तपाईंले पूरा गर्नु पर्ने चरणहरू डिभाइसको मोडेलका आधारमा फरक हुन्छन्। तपाईं थप जानकारी प्राप्त गर्न चाहनुहुन्छ भने यो डिभाइस रिबुट गर्नुअघि कुनै अर्को डिभाइसमा <ph name="DEVICE_OS" /> सम्बन्धी निम्न डकुमेन्ट खोलेर पढ्नुहोस्: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">हानिकारक सफ्टवेयर फेला पार्नुहोस्</translation>
 <translation id="1852799913675865625">यो फाइल पढ्न प्रयास गर्दा त्यहाँ एउटा त्रुटि भयोः <ph name="ERROR_TEXT" /> ।</translation>
 <translation id="1854049213067042715">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस्। तपाईं ब्राउजर खुल्दा एपहरू सधैँ रिस्टोर हुने बनाउन सक्नुहुन्छ वा सेटिङमा गएर एपहरू रिस्टोर गर्ने सुविधा अफ गर्न सक्नुहुन्छ।</translation>
@@ -1017,7 +1021,6 @@
 <translation id="1987317783729300807">खाताहरू</translation>
 <translation id="1988259784461813694">VM चलाउन पूरा गर्नु पर्ने मापदण्डहरू</translation>
 <translation id="1989112275319619282">ब्राउज गर्नुहोस्</translation>
-<translation id="1989113344093894667">सामग्री क्याप्चर गर्न मिल्दैन</translation>
 <translation id="1989744123191450103">ब्याकअप गर्ने कार्य पूरा गर्न सकिएन</translation>
 <translation id="1989903373608997757">सधैँ प्रयोग गरियोस्</translation>
 <translation id="1990046457226896323">बोलीसम्बन्धी फाइलहरू डाउनलोड गरिए</translation>
@@ -1122,6 +1125,7 @@
 <translation id="2090165459409185032">तपाईँको खाता जानकारी पुनःप्राप्ति गर्न google.com/accounts/recovery मा जानुहोस्</translation>
 <translation id="2090507354966565596">तपाईंले लग इन गरेपछि स्वतः कनेक्ट हुन्छ</translation>
 <translation id="2090876986345970080">प्रणाली सुरक्षा सेटिङ</translation>
+<translation id="2095774564753225041">निम्न प्रकारको फाइल प्रयोग गर्न सकिन्छ</translation>
 <translation id="2096715839409389970">तेस्रो पक्षीय कुकीहरू खाली गर्नुहोस्</translation>
 <translation id="2098805196501063469">बाँकी पासवर्डहरू जाँच्नुहोस्</translation>
 <translation id="2099172618127234427">तपाईं Chrome OS डिबगिङ विशेषताहरू सक्षम गर्दै हुनुहुन्छ जुन USB ड्राइभहरूबाट sshd daemon सेटअप गर्दछ।</translation>
@@ -1587,6 +1591,8 @@
 <translation id="2527167509808613699">कुनै पनि प्रकारको जडान</translation>
 <translation id="2529887123641260401">तपाईं जुनसुकै बेला आफूले तय गरेका सेटिङ बदल्न वा स्विच एक्सेससम्बन्धी सेटिङमा गई सेटअप गाइड फेरि खोल्न सक्नुहुन्छ।</translation>
 <translation id="2530166226437958497">समस्या निवारण</translation>
+<translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />केही चिज गडबड भएका कारण <ph name="DEVICE_OS" /> इन्स्टल गर्न सकिएन।<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />तपाईं यस सम्बन्धमा थप मद्दत प्राप्त गर्न चाहनुहुन्छ भने g.co/flex/InstallErrors मा जानुहोस्।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532589005999780174">उच्च कन्ट्रास्ट मोड:</translation>
 <translation id="2533649878691950253">तपाईं सामान्यतया आफ्नो सटीक लोकेसन प्रयोग गर्ने अनुमति दिनुहुन्न। त्यसैले यो साइटलाई तपाईंको सटीक लोकेसन थाहा पाउनबाट रोक लगाइएको छ</translation>
 <translation id="253434972992662860">&amp;पज गर्नुहोस्</translation>
@@ -1636,6 +1642,7 @@
 <translation id="2587922766792651800">समय सकियो</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> का यन्त्रहरू</translation>
 <translation id="25899519884572181">पाठक मोडबाट बाहिर निस्कनुहोस्</translation>
+<translation id="2593499352046705383">सुरु गर्नुअघि आफ्नो डेटा ब्याकअप गर्न नभुल्नुहोस्। तपाईंले <ph name="DEVICE_OS" /> इन्स्टल गर्नुभयो भने तपाईंको हार्ड ड्राइभमा भएका सबै डेटा ओभरराइट हुने छन्। g.co/flex/InstallGuide मा गई थप जान्नुहोस्।</translation>
 <translation id="2594999711683503743">Google मा खोज्नुहोस् वा URL टाइप गर्नुहोस्</translation>
 <translation id="2602501489742255173">सुरु गर्न माथितिर स्वाइप गर्नुहोस्</translation>
 <translation id="2603115962224169880">कम्प्युटरमा ठाउँ खाली गर्नुहोस्</translation>
@@ -1654,6 +1661,7 @@
 <translation id="2610780100389066815">Microsoft विश्वास सूची साइनिङ</translation>
 <translation id="2611776654555141051">आयात बनाउने टुल</translation>
 <translation id="2612676031748830579">कार्ड नम्बर</translation>
+<translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> मा कुनै पनि एक्स्टेन्सन प्रयोग गर्ने अनुमति नदिइयोस्</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> ले <ph name="FILENAME" /> परिवर्तन गर्न सक्ने छ</translation>
 <translation id="2616366145935564096">पढ्नुहोस् र आफ्नो डेटा <ph name="WEBSITE_1" /> मा परिवर्तन गर्नुहोस्</translation>
 <translation id="2618797463720777311">नजिकैका डिभाइससँग सेयर गर्ने सुविधा सेटअप गर्नुहोस्</translation>
@@ -2067,7 +2075,6 @@
 <translation id="3012804260437125868">सुरक्षित उही-साइटका जडानहरू मात्र</translation>
 <translation id="3012917896646559015">तपाइँको कम्प्युटरलाई एक मर्मत कार्यालयमा पठाउनको लागि कृपया तपाइँको हार्डवेयर निर्मातालाई तुरुन्तै सम्पर्क गर्नुहोस्।</translation>
 <translation id="301525898020410885">तपाईंको सङ्गठनले भाषा तय गर्छ</translation>
-<translation id="3015425363367310551">तपाईं CloudReady २.० मा पहिले नै इन्स्टल गरिएको ChromeVox नामक स्क्रिन रिडर एक्टिभेट गर्न चाहनुहुन्छ? तपाईं ChromeVox एक्टिभेट गर्न चाहनुहुन्छ भने पाँच सेकेन्डसम्म दुवै भोल्युम बटन थिचिराख्नुहोस्।</translation>
 <translation id="3015639418649705390">अहिले नै पुनः सुरु गर्नुहोस्</translation>
 <translation id="3016381065346027039">कुनै पनि लग प्रविष्टि गरिएको छैन</translation>
 <translation id="3016641847947582299">अवयव अपडेड गरियो</translation>
@@ -2191,7 +2198,6 @@
 <translation id="3142562627629111859">नयाँ समूह</translation>
 <translation id="3143515551205905069">सिंक रद्द गर्नुहोस्</translation>
 <translation id="3143754809889689516">सुरुबाट प्ले गर्नुहोस्</translation>
-<translation id="3144023778624018265">CloudReady २.० का सेटिङ सिंक गर्ने</translation>
 <translation id="3144647712221361880">यस रूपमा लिंक खोल्नुहोस्</translation>
 <translation id="3149510190863420837">Chrome एपहरू</translation>
 <translation id="3150693969729403281">अहिले नै सुरक्षा जाँच गर्नुहोस्</translation>
@@ -2296,7 +2302,6 @@
 <translation id="3275778913554317645">विन्डोको रूपमा खोल्नुहोस्</translation>
 <translation id="3277691515294482687">Linux अपग्रेड गर्नुअघि मेरा एप तथा फाइलहरू मेरा फाइलहरू नामक फोल्डरमा ब्याकअप गरियोस्।</translation>
 <translation id="3278001907972365362">तपाईंका Google खाता(हरू) मा ध्यान दिनु पर्ने हुन्छ</translation>
-<translation id="3278800075417428224">CloudReady २.० का सेटिङमा गई भाषाहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3278928434075969895">यो प्रोफाइलले Chrome OS को प्रोक्सीसम्बन्धी सेटिङ प्रयोग गर्छ।</translation>
 <translation id="3279092821516760512">तपाईंको वरपर हुँदा तपाईंसँग सामग्री सेयर गर्न सक्ने सम्पर्क सूचीमा भएका व्यक्तिहरू चयन गर्नुहोस्। तपाईंले सामग्री सार्ने निम्तो स्वीकार नगरेसम्म सामग्री सार्ने काम सुरु हुँदैन।</translation>
 <translation id="3279230909244266691">यो प्रक्रिया पूरा हुन केही बेर लाग्न सक्छ। भर्चुअल मेसिन सुरु गर्दै।</translation>
@@ -2469,7 +2474,6 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="3445925074670675829">USB-C यन्त्र</translation>
 <translation id="3446274660183028131">कृपया Windows इन्स्टल गर्न Parallels Desktop खोल्नुहोस्।</translation>
-<translation id="3446286111407214190">Google CloudReady २.० का सर्तसम्बन्धी सामग्री</translation>
 <translation id="344630545793878684">विभिन्न वेबसाइटहरूमा तपाईँको डेटा पढ्नुहोस्</translation>
 <translation id="3446650212859500694">यो फाइलमा संवेदनशील सामग्री छ</translation>
 <translation id="3447644283769633681">तेस्रो पक्षीय सबै कुकीहरू ब्लक गर्नुहोस्</translation>
@@ -2585,7 +2589,6 @@
 <translation id="3557101512409028104">Family Link मार्फत वेबसाइटका प्रतिबन्धहरू र स्क्रिन हेरेर बिताउने समयको सीमा सेट गर्नुहोस्</translation>
 <translation id="3559262020195162408">यन्त्रमा नीति स्थापना गर्न सकिएन।</translation>
 <translation id="3559533181353831840">लगभग <ph name="TIME_LEFT" /> बाँकी छ</translation>
-<translation id="3559697822483154494">स्क्रिन स्प्लिट गर्ने र डेस्क परिवर्तन गर्ने जस्ता कारबाही गर्दा ती कारबाही गरिएको जनाउने भाइब्रेसन प्राप्त गर्नुहोस्।</translation>
 <translation id="3560034655160545939">&amp;हिज्जे जाँच</translation>
 <translation id="3562423906127931518">यो प्रक्रिया पूरा हुन केही बेर लाग्न सक्छ। Linux कन्टेनर सेटअप गर्दै।</translation>
 <translation id="3562655211539199254">आफ्नो फोनको Chrome मा हालसालै खोलिएका ट्याबहरू हेर्नुहोस्</translation>
@@ -2699,7 +2702,6 @@
 <translation id="3672681487849735243">फ्याक्ट्री त्रुटि पत्ता लागेको छ</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> ले साइन इन गर्ने कार्य होस्ट गर्छ</translation>
 <translation id="3673622964532248901">तपाईंलाई यो डिभाइसमा कास्ट गर्ने अनुमति दिइएको छैन।</translation>
-<translation id="3675511132463531771">CloudReady २.० अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="367645871420407123">यदि तपाईं डिफल्ट परीक्षण छवि मानमा मूल पासवर्ड सेट गर्न चाहनुहुन्छ भने खाली छोड्नुहोस्</translation>
 <translation id="3677106374019847299">आफूले रोजेको प्रदायकको नाम प्रविष्टि गर्नुहोस्</translation>
 <translation id="3677911431265050325">मोबाइल साइट अनुरोध गर्नुहोस्</translation>
@@ -2787,7 +2789,6 @@
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> खोल्ने हो?</translation>
 <translation id="3741056951918180319">तपाईं जुनसुकै बेला यो एक्स्टेन्सनमा क्लिक गरेर यसलाई जुनसुकै साइटमा प्रयोग गर्न सक्नुहुन्छ</translation>
-<translation id="3742055079367172538">स्क्रिनसट लिइयो</translation>
 <translation id="3742235229730461951">कोरियाली किबोर्डको लेआउट</translation>
 <translation id="3742666961763734085">त्यो नाम भएको सङ्गठनात्मक एकाइ फेला पार्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3743842571276656710"><ph name="DEVICE_NAME" /> सँग कनेक्ट गर्न PIN हाल्नुहोस्</translation>
@@ -2946,7 +2947,6 @@
 <translation id="3886446263141354045">यो साइटमाथि पहुँच राख्ने तपाईंको अनुरोध <ph name="NAME" /> लाई पठाइएको छ</translation>
 <translation id="3887022758415973389">डिभाइसको सूची देखाइयोस्</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> कनेक्सन</translation>
-<translation id="3888491127874785636">CouldReady २.० सिस्टम इमेज राइटर</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> मार्फत टिपोट लिँदै</translation>
 <translation id="3888586133700543064">यो जानकारीले हामीलाई तपाईंका सहायकसम्बन्धी समस्याहरू अझ राम्ररी बुझ्न मद्दत गर्छ। यो जानकारी ९० दिनसम्म भण्डारण गरिन्छ र अनुमति प्राप्त इन्जिनियरिङ तथा प्रतिक्रिया टोलीका सदस्यले मात्र यो जानकारी हेर्न तथा प्रयोग गर्न पाउँछन्।</translation>
 <translation id="3888900458694486810">छेउमा खुलेको Google Search पेज बन्द गर्नुहोस्</translation>
@@ -3037,7 +3037,6 @@
 <translation id="3962119236270174787">खतरनाक मानिने वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट स्तरीय सुरक्षा</translation>
 <translation id="3963721102035795474">पाठक मोड:</translation>
 <translation id="3964480518399667971">सेलुलर नेटवर्क अफ गर्नुहोस्</translation>
-<translation id="39650333289039736">तपाईंका एप, सेटिङ र अन्य कस्टमाइजेसनहरू तपाईंले आफ्नो Google खातामार्फत साइन इन गरेका CloudReady २.० चल्ने सबै डिभाइसहरूमा सिंक हुने छन्।</translation>
 <translation id="3965811923470826124">यससँग</translation>
 <translation id="3965965397408324205">बाहिरिन निस्कनुहोस् <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">अर्को फोल्डर रोज्नुहोस्...</translation>
@@ -3175,6 +3174,7 @@
 <translation id="4100733287846229632">यन्त्रमा खाली ठाउँ अत्यन्त कम छ</translation>
 <translation id="4100853287411968461">यन्त्रमा हेरेर बिताउने समयको नयाँ सीमा</translation>
 <translation id="4101352914005291489">लुकाइएको SSID</translation>
+<translation id="4102469565336584882">अवैध कोड। तपाईंले हालेको कोड LPA फर्म्याटमा हुनु पर्छ:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">पावरवासको लागि रिस्टार्ट गर्नुहोस्</translation>
 <translation id="4104163789986725820">नि&amp;र्यात...</translation>
 <translation id="4107048419833779140">भण्डारण यन्त्रहरू पहिचान गर्नुहोस् तथा निकाल्नुहोस्‌</translation>
@@ -3227,6 +3227,7 @@
 <translation id="4159681666905192102">यो बच्चाहरूको लागि खाता <ph name="CUSTODIAN_EMAIL" /> र <ph name="SECOND_CUSTODIAN_EMAIL" /> द्वारा व्यवस्थित गरिएको हो।</translation>
 <translation id="4163560723127662357">अज्ञात कुँजीपाटी</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> वैध सङ्गठनको इमेल ठेगाना होइन। आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्। तपाईं एड्मिन हुनुहुन्छ भने तपाईं निम्न लिंकमा गएर आफ्नो सङ्गठन सेटअप गर्न सक्नुहुन्छ: g.co/ChromeEnterpriseAccount</translation>
+<translation id="4167393659000039775">कुनै पनि डेटा गुमेका खण्डमा Google जिम्मेवार हुने छैन र <ph name="DEVICE_OS" /> ले प्रमाणित नगरिएका मोडेलहरूमा काम नगर्न सक्छ। g.co/flex/InstallGuide मा गई थप जान्नुहोस्।</translation>
 <translation id="4167686856635546851">साइटहरूले भिडियो गेम वा वेब फारम जस्ता अन्तर्क्रियात्मक सुविधाहरू देखाउन सामान्यतया JavaScript प्रयोग गर्छन्</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> का केही सेटिङहरू तपाइँसँग साझा भइरहेको छ। यस सेटिङहरूले बहुविध साइन-इन प्रयोग गर्दै मात्रै तपाइँको खातालाई असर गर्छ।</translation>
 <translation id="4168651806173792090">अन्तिमका अङ्क <ph name="LAST_FOUR_DIGITS" /> भएको <ph name="NETWORK_NAME" /></translation>
@@ -3252,8 +3253,10 @@
 <translation id="4200983522494130825">नयाँ &amp;ट्याब</translation>
 <translation id="4201546031411513170">तपाईं जुनसुकै बेला सेटिङहरूमा गई सिंक गर्ने कुरा छनौट गर्न सक्नुहुन्छ।</translation>
 <translation id="420283545744377356">स्क्रिन सेभर अफ गर्नुहोस्</translation>
+<translation id="4204851595694839599">तपाईंलाई गेमप्ले कस्तो लाग्यो?</translation>
 <translation id="4206144641569145248">अन्य ग्रहबासी</translation>
 <translation id="4206323443866416204">प्रतिक्रियाको रिपोर्ट</translation>
+<translation id="4207522141889799150"><ph name="SITE" /> लाई दिइएका साइटसम्बन्धी अनुमतिहरू बदल्नुहोस्</translation>
 <translation id="4207932031282227921">अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न F6 थिच्नुहोस्</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> मा खोज्नुहोस्</translation>
 <translation id="4209092469652827314">विशाल</translation>
@@ -3387,6 +3390,9 @@
 <translation id="4349828822184870497">उपयोगी लाग्यो</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> लाई कहिल्यै पनि आफ्नो स्थानसम्बन्धी जानकारी प्रयोग नदिनुहोस्</translation>
 <translation id="4350782034419308508">Hey Google</translation>
+<translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> ले तपाईंलाई उत्कृष्ट सुविधाहरू प्रदान गर्न तपाईंका डिभाइसहरूमा भएको हार्डवेयरसम्बन्धी डेटा सङ्कलन गर्छ र तपाईंको डिभाइसमा कुन अपडेट पठाउने भन्ने कुरा निर्धारण गर्ने प्रयोजनका लागि सो डेटा Google मा पठाउँछ। साथै, तपाईं ग्राहक सेवा प्रदान गर्ने र <ph name="DEVICE_OS" /> को सेवा तथा सुविधाहरूमा सुधार गर्नेलगायतका अतिरिक्त प्रयोजनहरूका लागि Google लाई सो डेटा प्रयोग गर्ने अनुमति दिन सक्नुहुन्छ।<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />तपाईं अपडेट फिल्टर गर्ने प्रयोजनका लागि Google मा पठाइएको डेटा हेर्न चाहनुहुन्छ भने तपाईं यो डिभाइसमा लग इन गरी chrome://system मा रहेको CHROMEOSFLEX_HARDWARE_INFO खण्डमा जान सक्नुहुन्छ। साथै, तपाईं उक्त खण्डमा गएर आफूले Google मा स्वेच्छाले पठाएका डेटा पनि हेर्न सक्नुहुन्छ।<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />तपाईं <ph name="DEVICE_OS" /> ले Google मा पठाउन सक्ने डेटा र सो डेटा प्रयोग गरिने तरिकाका बारेमा थप जान्न चाहनुहुन्छ भने g.co/flex/HWDataCollection मा जानुहोस्।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4354073718307267720">कुनै साइटले आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन खोज्दा मलाई सोधियोस्</translation>
 <translation id="4354344420232759511">तपाईंले भ्रमण गर्ने साइटहरू यहाँ देखिने छन्</translation>
 <translation id="435527878592612277">आफ्नो तस्बिर चयन गर्नुहोस्</translation>
@@ -3403,7 +3409,6 @@
 <translation id="4369121877634339065">खोज्नका लागि फोटोमा ड्र्याग गर्नुहोस्</translation>
 <translation id="4369215744064167350">तपाईंले वेबसाइट हेर्न पाऊँ भनी गर्नुभएको अनुरोध अनुमोदन गरिएको छ</translation>
 <translation id="4370975561335139969">तपाईँले प्रविष्टि गर्नुभएको इमेल र पासवर्ड मेल खाँदैनन्</translation>
-<translation id="4371179719793593133">तपाईंले आफ्नो Google खातामार्फत साइन इन गरेका CloudReady २.० चल्ने डिभाइसहरूमा तपाईंका एप तथा सेटिङ सिंक हुने छन्। तपाईं ब्राउजरका सिंकसम्बन्धी विकल्पहरू हेर्न चाहनुहुन्छ भने <ph name="LINK_BEGIN" />Chrome का सेटिङ<ph name="LINK_END" />मा जानुहोस्।</translation>
 <translation id="4373966964907728675">डेस्कटप Cast गर्दै</translation>
 <translation id="4374831787438678295">Linux को स्थापनाकर्ता</translation>
 <translation id="4375035964737468845">डाउनलोड गरिएका फाइलहरू खोल्नुहोस्</translation>
@@ -3509,7 +3514,6 @@
 <translation id="4477015793815781985">Ctrl, Alt वा ⌘ समावेश गर्नुहोस्</translation>
 <translation id="4478664379124702289">यसको रूपमा लिङ्&amp;कलाई बचत गर्नुहोस्...</translation>
 <translation id="4479424953165245642">kiosk अनुप्रयोगहरूको व्यवस्थापन गर्नुहोस्</translation>
-<translation id="4479481745547029647">Google Chrome र CloudReady २.० का अतिरिक्त सर्तहरू</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4479877282574735775">भर्चुअल मेसिन कन्फिगर गर्दै। यस कार्यमा केही मिनेट लाग्न सक्छ।</translation>
 <translation id="4480590691557335796">Chrome ले तपाईंको कम्प्युटरमा हानिकारक सफ्टवेयर भेट्टाउन र त्यसलाई हटाउन सक्छ</translation>
@@ -4265,6 +4269,7 @@
 <translation id="5266113311903163739">प्रमाणपत्र प्राधिकरण आयात त्रुटि</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="5269977353971873915">प्रिन्टिङ असफल भयो</translation>
+<translation id="5273806377963980154">साइटको URL बदल्नुहोस्</translation>
 <translation id="5275352920323889391">कुकुर</translation>
 <translation id="527605719918376753">ट्याब म्युट गर्दै</translation>
 <translation id="527605982717517565"><ph name="HOST" /> मा सँधै जाभास्क्रिप्टको लागि अनुम</translation>
@@ -4498,7 +4503,6 @@
 <translation id="5503982651688210506"><ph name="HOST" /> लाई तपाईंको डिभाइसको क्यामेरा प्रयोग गर्ने तथा क्यामेरा यताउता घुमाउने र माइक्रोफोन प्रयोग गर्ने अनुमति दिइराख्नुहोस्</translation>
 <translation id="5505264765875738116">साइटहरूले सूचनाहरू पठाउनका निम्ति अनुमति माग्न सक्दैनन्।</translation>
 <translation id="5505307013568720083">मसी सकियो</translation>
-<translation id="5505794066310932198">टगल कमान्डर</translation>
 <translation id="5507756662695126555">खण्डन-नगरिएको</translation>
 <translation id="5509693895992845810">यसको &amp;रूपमा बचत गर्नुहोस्...</translation>
 <translation id="5509914365760201064">जारीकर्ता: <ph name="CERTIFICATE_AUTHORITY" /></translation>
@@ -4583,6 +4587,7 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">एपहरू लोड गर्दै...</translation>
 <translation id="5592595402373377407">अझै पर्याप्त डाटा उपलब्ध छैन।</translation>
+<translation id="5593564924968945303">Chrome ब्राउजर</translation>
 <translation id="5595485650161345191">ठेगाना सम्पादन गर्नुहोस्</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="5600348067066185292">इन्स्टल गर्न केही चरणहरू पूरा गर्नु पर्ने हुन्छ। तपाईंको कम्प्युटरमा परिवर्तनहरू गर्नुअघि तपाईंलाई पुष्टि गर्ने थप एउटा मौका दिइने छ।</translation>
@@ -4604,7 +4609,6 @@
 <translation id="5616726534702877126">आकार रिजर्भ गर्नुहोस्</translation>
 <translation id="561698261642843490">Firefox बन्द गर्नुहोस्</translation>
 <translation id="56197088284879152">जडान रिमोट यन्त्र: "<ph name="DEVICE_NAME" />" मा संकुचित छ</translation>
-<translation id="5619862035903135339">एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="5620568081365989559">DevTools <ph name="FOLDER_PATH" />} को पूर्ण पहुँचको लागि अनुरोध गर्छ। तपाईंले कुनैपनि संवेदनशील जानकारी खुलासा गर्नुहुने छैन भनि सुनिश्चित गर्नुहोस्।।</translation>
 <translation id="5620612546311710611">प्रयोग तथ्यांकहरू</translation>
 <translation id="5620655347161642930">पासवर्डहरू निर्यात गर्नुहोस्...</translation>
@@ -4642,7 +4646,6 @@
 <translation id="5648166631817621825">पछिल्ला ७ दिन</translation>
 <translation id="5651308944918885595">नजिकैका डिभाइससँग सेयर गर्ने सुविधामा भएको 'भेटिने क्षमता' नामक विकल्प</translation>
 <translation id="5653154844073528838">तपाईंसँग सुरक्षित गरिएका <ph name="PRINTER_COUNT" /> प्रिन्टरहरू छन्।</translation>
-<translation id="5654266266024827740">तपाईं CloudReady २.० मा पहिले नै इन्स्टल गरिएको ChromeVox नामक स्क्रिन रिडर एक्टिभेट गर्न चाहनुहुन्छ? तपाईं ChromeVox एक्टिभेट गर्न चाहनुहुन्छ भने स्पेस बार की थिच्नुहोस्।</translation>
 <translation id="5655296450510165335">डिभाइस दर्ता गर्ने प्रक्रिया</translation>
 <translation id="5656845498778518563">Google लाई प्रतिक्रिया पठाउनुहोस्</translation>
 <translation id="5657156137487675418">सबै कुकीहरूलाई अनुमति दिनुहोस्</translation>
@@ -4727,7 +4730,6 @@
 <translation id="5747552184818312860">म्याद सकिन्छ</translation>
 <translation id="5747785204778348146">विकासकर्ता - अस्थिर</translation>
 <translation id="5747809636523347288">टाँस्नुहोस् र <ph name="URL" /> मा जानुहोस्</translation>
-<translation id="5747845802829012825">तपाईं Linux सेटअप गर्ने कार्य पूरा गर्न चाहनुहुन्छ भने CloudReady २.० अपडेट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5755022574660047665">Google Photos मा भएका स्मरणीय क्षणहरू</translation>
 <translation id="5756163054456765343">मद्द&amp;त केन्द्र</translation>
 <translation id="5757375109985023827">प्रिभ्यू हेर्न कुनै ट्याब चयन गर्नुहोस्</translation>
@@ -4854,7 +4856,6 @@
 <translation id="5883356647197510494"><ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> सम्बन्धी अनुमति स्वतः ब्लक गरिएका छन्</translation>
 <translation id="5884474295213649357">यो ट्याब एउटा USB यन्त्रमा जडान गरिएको अवस्थामा छ।</translation>
 <translation id="5886009770935151472">औँला १</translation>
-<translation id="5886325049116255797">तपाईंले आफ्नो Google खातामार्फत साइन इन गर्नुभयो भने तपाईं आफूले सेभ गरेका प्राथमिकता तथा क्रियाकलाप CloudReady २.० चल्ने जुनसुकै डिभाइसमा प्राप्त गर्न सक्नु हुने छ। तपाईं सेटिङमा गई आफूले सिंक गर्न चाहेका कुराहरू छनौट गर्न सक्नुहुन्छ।</translation>
 <translation id="5888843733007437002">टेम्प्लेटहरू हेरिँदै छ। तपाईं नेभिगेट गर्न चाहनुहुन्छ भने ट्याब की थिच्नुहोस्।</translation>
 <translation id="5889282057229379085">मध्यवर्ती CA हरूको अधिकतम सङ्ख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">रोजाइका Wi-Fi नेटवर्कहरू</translation>
@@ -4910,7 +4911,6 @@
 <translation id="5939719276406088041">सर्टकट सिर्जना गर्न सकिँदैन</translation>
 <translation id="594048410531370124">यो की पहिचान हुन सकेन। <ph name="RESPONSE" /> कुनै की थिच्नुहोस्।</translation>
 <translation id="5941153596444580863">व्यक्ति थप्नुहोस्...</translation>
-<translation id="5941176400377813459">CloudReady २.० चल्ने डिभाइस र त्यसका कम्पोनेन्टका क्रम सङ्ख्या रिड गर्ने।</translation>
 <translation id="5941343993301164315">कृपया <ph name="TOKEN_NAME" /> मा साइन इन गर्नुहोस्।</translation>
 <translation id="5941711191222866238">सानो बनाउनुहोस</translation>
 <translation id="5942779427914696408">यन्त्रको भिजिबिलिटी</translation>
@@ -4923,24 +4923,6 @@
 <translation id="5950819593680344519">Chrome ले तपाईंको कम्प्युटरमा कुनै हानिकारक सफ्टवेयर भेट्टाएन • हिजो जाँच गरिएको</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> स्थानीय फन्ट प्रयोग गर्न चाहन्छ</translation>
 <translation id="5951624318208955736">मनिटर</translation>
-<translation id="5953627503079109298"><ph name="BEGIN_H3" />डिबग गर्ने सुविधाहरू<ph name="END_H3" />
-      <ph name="BR" />
-      तपाईं आफ्नो CloudReady २.० चल्ने डिभाइसमा कस्टम कोड इन्स्टल गरी परीक्षण गर्ने प्रयोजनका लागि उक्त डिभाइसमा डिबग गर्ने सुविधाहरू अन गर्न सक्नुहुन्छ।  तपाईंले यसो गर्नुभयो भने तपाईं निम्न कार्य गर्न सक्नुहुन्छ:<ph name="BR" />
-      <ph name="BEGIN_LIST" />
-        <ph name="LIST_ITEM" />OS फाइलहरू परिमार्जन गर्न सकियोस् भन्नाका लागि rootfs सम्बन्धी प्रमाणीकरण हटाउने
-        <ph name="LIST_ITEM" /><ph name="BEGIN_CODE" />'cros flash'<ph name="END_CODE" /> जस्ता टुलहरू प्रयोग गरी डिभाइस चलाउन सकियोस् भन्नाका लागि मानक परीक्षण की प्रयोग गरी डिभाइसमा SSH प्रयोग गर्ने सुविधा अन गर्ने
-        <ph name="LIST_ITEM" />USB ड्राइभमार्फत OS इमेज इन्स्टल गर्न सकियोस् भन्नाका लागि USB बाट बुट गर्ने सुविधा अन गर्ने
-        <ph name="LIST_ITEM" />डिभाइसमा म्यानुअल तरिकाले SSH प्रयोग गर्न सकियोस् भन्नाका लागि dev तथा सिस्टम रुट दुवैको लग इन पासवर्ड कस्टम मान तय गर्ने
-      <ph name="END_LIST" />
-      <ph name="BR" />
-      धेरै डिबग गर्ने सुविधाहरू अन गरिसकेपछि ती सुविधाहरू इन्टरप्राइजले व्यवस्थापन गरेको डिभाइसमा भएको डेटा पावरवास गरेपछि वा मेटाएपछि पनि अन नै रहने छन्।  तपाईं सबै डिबग गर्ने सुविधा पूर्ण रूपमा अफ गर्न चाहनुहुन्छ भने Chrome OS रिकभर गर्ने प्रक्रिया पूरा गर्नुहोस् (https://support.google.com/chromebook/answer/1080595)।
-      <ph name="BR" />
-      <ph name="BR" />
-      डिबग गर्ने सुविधाहरूका बारेमा थप जानकारीका लागि यहाँ जानुहोस्:<ph name="BR" />
-      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
-      <ph name="BR" />
-      <ph name="BR" />
-      <ph name="BEGIN_BOLD" />ध्यान राख्नुहोस्:<ph name="END_BOLD" />  यो प्रक्रियाका क्रममा सिस्टम रिबुट गरिने छ।</translation>
 <translation id="5955282598396714173">तपाईंको पासवर्डको म्याद समाप्त भएको छ। यसलाई परिवर्तन गर्न कृपया साइन आउट गर्नुहोस्, त्यसपछि फेरि साइन इन गर्नुहोस्।</translation>
 <translation id="5955304353782037793">एप</translation>
 <translation id="5955721306465922729">कुनै वेबसाइटले यो एप खोल्न चाहन्छ।</translation>
@@ -5072,7 +5054,6 @@
 <translation id="608029822688206592">कुनै पनि नेटवर्क भेट्टिएन। कृपया डिभाइसमा आफ्नो SIM हाल्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6080689532560039067">तपाईंको प्रणाली समय जाँच्नुहोस्</translation>
 <translation id="6082877069782862752">की म्याप गर्ने सुविधा</translation>
-<translation id="608496399798299674">CloudReady २.०</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - नामविहीन समूहको अंश</translation>
 <translation id="6085886413119427067">यसले सुरक्षित इन्टरनेटमार्फत वेबसाइटहरूमा जोडिने तरिका निर्धारण गर्छ</translation>
 <translation id="6086004606538989567">तपाईंले पुष्टि गर्नुभएको खाता प्रयोग गरी यो डिभाइस चलाउन मिल्दैन।</translation>
@@ -5286,6 +5267,7 @@
 <translation id="6300177430812514606">डेटा पठाउने वा प्राप्त गर्ने कार्य पूरा गर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="630065524203833229">बा&amp;हिर निस्कनुहोस्</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> स्वतः कन्फिगर गर्न सकिएन। कृपया प्रिन्टरका उन्नत विवरणहरू तोक्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
+<translation id="6301300352769835063"><ph name="DEVICE_OS" /> को गुणस्तर सुधार्ने प्रयोजनका लागि Google लाई तपाईंको हार्डवेयरसम्बन्धी डेटा प्रयोग गर्न दिनुहोस्। तपाईंले आफ्नो हार्डवेयरसम्बन्धी डेटा प्रयोग गर्ने अनुमति दिनुभएन भने पनि तपाईंको डिभाइसमा कुन अपडेट पठाउने भन्ने कुरा निर्धारण गर्ने प्रयोजनका लागि यो डेटा Google मा पठाइन्छ तर यो डेटा भण्डारण वा अन्य तरिकाले प्रयोग भने गरिँदैन। g.co/flex/HWDataCollection मा गई थप जान्नुहोस्।</translation>
 <translation id="630292539633944562">व्यक्तिगत जानकारीसम्बन्धी सिफारिसहरू</translation>
 <translation id="6305607932814307878">विश्वव्यापी नीति:</translation>
 <translation id="6307990684951724544">प्रणाली व्यस्त</translation>
@@ -5379,6 +5361,7 @@
 <translation id="6398715114293939307">Google Play स्टोरलाई हटाउनुहोस्</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
 <translation id="6399774419735315745">जासुस</translation>
+<translation id="6404187344102273690">Chromebook गेमिङ</translation>
 <translation id="6404511346730675251">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="6406303162637086258">ब्राउजर पुन: सुरुवात सिमुलेट गर्नुहोस्</translation>
 <translation id="6406506848690869874">समक्रमण</translation>
@@ -5704,6 +5687,7 @@
 <translation id="672609503628871915">नयाँ के छ हेर्नुहोस्</translation>
 <translation id="67269783048918309">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। यो यन्त्रले हाल निदान, डिभाइस र एपको उपयोगसम्बन्धी डेटा स्वतः Google मा पठाइरहेको छ। यस्तो डेटा तपाईंका बालकको पहिचान गर्ने प्रयोजनका लागि प्रयोग गरिने छैन र यसले प्रणाली तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही एकीकृत डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। मालिकले यो <ph name="BEGIN_LINK1" />सेटिङ<ph name="END_LINK1" /> लागू गर्नुभएको हो। तपाईंका बालकको खातामा वेब तथा एपसम्बन्धी अतिरिक्त क्रियाकलापको सेटिङ सक्रिय गरिएको छ भने यो डेटा उनको Google खातामा सुरक्षित गरिन सक्छ। <ph name="BEGIN_LINK2" />थप जान्नुहोस्<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">जोडियो, ब्याट्री <ph name="BATTERY_PERCENTAGE" />% छ</translation>
+<translation id="6731320427842222405">यसको लागि केही मिनेट लाग्न सक्छ।</translation>
 <translation id="6733620523445262364">'<ph name="BOOKMARK_TITLE" />' बनाइयो।</translation>
 <translation id="6735304988756581115">कूकीहरू र अन्य साइट डाटा देखाउनुहोस्...</translation>
 <translation id="6736243959894955139">ठेगाना</translation>
@@ -5791,15 +5775,14 @@
 <translation id="6813907279658683733">पूर्ण स्क्रिन</translation>
 <translation id="6817174620439930047">कुनै साइटले MIDI यन्त्रहरूमाथि पहुँच गर्नका लागि प्रणालीका विशिष्ट सन्देशहरू प्रयोग गर्न खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="6818198425579322765">अनुवाद गरिनु पर्ने पृष्ठको भाषा</translation>
-<translation id="6818640747323584611">CloudReady २.० को पर्फर्मेन्स र यसका सुविधाहरूको गुणस्तर सुधार्न सघाउनुहोस्</translation>
 <translation id="6818802132960437751">अन्तर्निर्मित भाइरस प्रोटेक्सन</translation>
-<translation id="6819741204334296334">'kiosk_only' म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा CloudReady २.० को किओस्क मोडमा इन्स्टल गर्नु पर्छ</translation>
 <translation id="682123305478866682">डेस्कटप cast गर्नुहोस्</translation>
 <translation id="6823174134746916417">टचप्याडको क्लिक गर्न ट्याप गर्नुहोस् नामक सुविधा</translation>
 <translation id="6824564591481349393">&amp;इमेल ठेगाना कपी गर्नुहोस्</translation>
 <translation id="6824584962142919697">तत्त्वहरूको निरीक्षण गर्नुहोस्</translation>
 <translation id="6825184156888454064">नामअनुसार क्रमबद्ध गरियोस्</translation>
 <translation id="6826872289184051766">USB मार्फत पुष्टि गर्नुहोस्</translation>
+<translation id="6827121912381363404">सबै एक्स्टेन्सनलाई <ph name="PERMITTED_SITE" /> रिड गर्ने र बदल्ने अनुमति दिइयोस्</translation>
 <translation id="6828153365543658583">निम्न प्रयोगकर्ता साइन इन प्रतिबन्धित गर्नुहोस्ः</translation>
 <translation id="6828182567531805778">आफ्नो डेटा सिंक गर्न आफ्नो पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5851,6 +5834,7 @@
 <translation id="6868934826811377550">विवरणहरू हेर्नुहोस्</translation>
 <translation id="6871644448911473373">OCSP रेस्पोन्डर: <ph name="LOCATION" /></translation>
 <translation id="6872781471649843364">तपाईंले प्रविष्ट गर्नुभएको पासवर्ड सर्भरद्वारा अस्वीकार गरियो।</translation>
+<translation id="6874503923667733123">Chrome OS सिस्टम एप</translation>
 <translation id="6876155724392614295">साइकल</translation>
 <translation id="6876469544038980967">उपयोगी लागेन</translation>
 <translation id="6878422606530379992">सेन्सरलाई अनुमति दिइएको छ</translation>
@@ -6253,7 +6237,6 @@
 <translation id="730515362922783851">स्थानीय नेटवर्क वा इन्टरनेटमा कुनै पनि यन्त्रमार्फत डेटा सेयर गर्नुहोस्</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" /> <ph name="USB_VM_NAME" /> मा कनेक्ट गर्न सेटिङ खोल्नुहोस्</translation>
 <translation id="7307129035224081534">पज गरियो</translation>
-<translation id="7307719647623535470">CloudReady २.० का सेटिङमा गई Secure DNS व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7308643132139167865">वेबसाइटका भाषाहरू</translation>
 <translation id="7310598146671372464">लग इन गर्न सकिएन। सर्भरले Kerberos नामक तोकिएको इन्क्रिप्सनका प्रकारहरूलाई समर्थन गर्दैन। आफ्नो प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="7312210124139670355">तपाईंका एड्मिन तपाईंको eSIM रिसेट गर्दै हुनुहुन्छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
@@ -6530,6 +6513,7 @@
 <translation id="7582844466922312471">मोबाइल डाटा</translation>
 <translation id="7583948862126372804">गणना</translation>
 <translation id="7586498138629385861">Chrome एपहरू खुल्ला हुँदा Chrome चालू भइरहन्छ।</translation>
+<translation id="758895749110326677">Chromebook मा गेमिङको गुणस्तर सुधार गर्न मद्दत गर्नुहोस्</translation>
 <translation id="7589461650300748890">ओहो। ध्यान दिनुहोस्।</translation>
 <translation id="7593653750169415785">तपाईंले पटक पटक सूचनाहरू प्राप्त गर्न इन्कार गर्नुभएको हुँदा स्वतः रोक लगाइयो</translation>
 <translation id="7594725637786616550">तपाईंको <ph name="DEVICE_TYPE" /> नयाँ जस्तै हुने गरी रिसेट गर्न पावरवास गर्नुहोस्।</translation>
@@ -6649,7 +6633,6 @@
 <translation id="7691163173018300413">"Ok Google"</translation>
 <translation id="7691698019618282776">Crostini अपग्रेड गर्नुहोस्</translation>
 <translation id="769375405463525957">तपाईं आफ्नो डिभाइसबाट टाढा जानुभयो भने तपाईंको डिभाइसको स्क्रिन स्वतः लक हुन्छ। तपाईं आफ्नो डिभाइसको अगाडि हुँदा तपाईंको डिभाइसको स्क्रिन अन रहने छ।</translation>
-<translation id="7694052127939518600">तपाईं "फाइलहरू" एपका सहायताले आफूले Google Drive, बाह्य भण्डारण वा CloudReady २.० चल्ने डिभाइसमा सेभ गरेका फाइलहरू द्रुत रूपमा हेर्न तथा प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="7694246789328885917">हाइलाइट गर्ने टुल</translation>
 <translation id="7696063401938172191">तपाईंको <ph name="PHONE_NAME" /> मा:</translation>
 <translation id="7697166915480294040">तपाईंले आफ्नो स्क्रिन सेयर गरिरहेका बेला सूचनाका विवरणहरू लुकाइन्छन्</translation>
@@ -6901,7 +6884,6 @@
 <translation id="7935451262452051102"><ph name="PERCENT" />% पूरा भयो</translation>
 <translation id="7938594894617528435">हाल अफलाइन</translation>
 <translation id="7939062555109487992">उन्नत विकल्पहरू</translation>
-<translation id="7939321852721702336">तपाईं CloudReady २.० का डिबग गर्ने सुविधाहरू अन गर्दै हुनुहुन्छ। ती सुविधा अन भएपछि sshd daemon सेटअप गरिनुका साथै USB ड्राइभबाट बुट गर्ने सुविधा अन गरिने छ।</translation>
 <translation id="7939412583708276221">जसो भएता पनि राख्नुहोस्</translation>
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7943368935008348579">PDF फाइलहरू डाउनलोड गरियोस्</translation>
@@ -7342,6 +7324,15 @@
 <translation id="8379991678458444070">यो ट्याबमा पुस्तक चिन्ह लगाएर छिट्टै यहाँ फर्कनुहोस्</translation>
 <translation id="8382715499079447151">सुरक्षित रूपमा हेर्ने सुविधा</translation>
 <translation id="8382913212082956454">&amp;इमेल ठेगानाको प्रतिलिपी बनाउनुहोस्</translation>
+<translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />समस्या निवारण गर्ने निम्न चरणहरू पूरा गरी हेर्नुहोस्:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />तपाईंको डिभाइसमा HDD, SSD वा eMMC जस्ता सक्रिय इन्टर्नल मेमोरी छ भन्ने कुरा सुनिश्चित गर्नुहोस्
+    <ph name="LIST_ITEM" />तपाईंको डिभाइसमा १६ जि.बि. भन्दा बढी इन्टर्नल मेमोरी छ भन्ने कुरा सुनिश्चित गर्नुहोस्
+    <ph name="LIST_ITEM" />इन्टर्नल मेमोरी हातले सजिलै चलाउन मिल्छ भने सो इन्टर्नल मेमोरी राम्रोसँग जोडिएको छ कि छैन भन्ने कुरा जाँच्नुहोस्
+    <ph name="LIST_ITEM" />प्रमाणित मोडेल प्रयोग गर्नुहोस् र इन्स्टल गर्ने तरिकासम्बन्धी निर्देशनहरू हेर्नुहोस्
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />तपाईंलाई थप मद्दत चाहिन्छ भने g.co/flex/InstallErrors मा जानुहोस्।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8386091599636877289">नीति फेला परेन।</translation>
 <translation id="8387361103813440603">तपाईंको स्थान हेर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="8388770971141403598">सहायक प्रोफाइल प्रयोग गर्न मिल्दैन</translation>
@@ -7595,7 +7586,6 @@
 <translation id="8665110742939124773">तपाईंले गलत एक्सेस कोड हाल्नुभएको छ। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8665180165765946056">ब्याकअप सम्पन्न भयो</translation>
 <translation id="866611985033792019">इमेल प्रयोगकर्ताहरूको पहिचान गर्न यो प्रमाणपत्रमाथि विश्वास गर्नुहोस्</translation>
-<translation id="8666224701549693691">डाइग्नोस्टिकसम्बन्धी परीक्षणहरू गर्न CloudReady २.० चलाउनुहोस्।</translation>
 <translation id="8666584013686199826">कुनै साइटले USB यन्त्रहरूमाथि पहुँच राख्न खोज्दा सोध्नुहोस्</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> अहिले फुल स्क्रिन छ र तपाईंको माउस कर्सरलाई अक्षम गराएको छ।</translation>
 <translation id="8668052347555487755">रङ मोड</translation>
@@ -7648,7 +7638,6 @@
 <translation id="8719472795285728850">विस्तारसम्बन्धी क्रियाकलापका लागि स्ट्रिम सुन्दै...</translation>
 <translation id="8719653885894320876"><ph name="PLUGIN_NAME" /> डाउनलोड असफल भयो</translation>
 <translation id="8720200012906404956">मोबाइल नेटवर्कको खोजी गर्दै। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="8720781020694544444">दुर्भाग्यवश, तपाईंको कम्प्युटर गलत हार्डवेयर ID प्रयोग गरी कन्फिगर गरिएको छ। यसले गर्दा CloudReady २.० मा सुरक्षासम्बन्धी नयाँ समाधानहरू अपडेट गर्न पाइँदैन र तपाईंको कम्प्युटरमाथि <ph name="BEGIN_BOLD" />हानिकारक आक्रमणहरूको जोखिम हुन सक्छ<ph name="END_BOLD" />।</translation>
 <translation id="8720816553731218127">स्थापना समयका विशेषताहरू सुरुवात हुने समयावधि सकिएको छ।</translation>
 <translation id="8722912030556880711">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। यो यन्त्रले हाल निदान, डिभाइस र एपको उपयोगसम्बन्धी डेटा स्वतः Google मा पठाइरहेको छ। यसले प्रणाली तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही एकीकृत डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। तपाईंको खातामा वेब तथा एपसम्बन्धी अतिरिक्त क्रियाकलापको सेटिङ सक्रिय गरिएको छ भने यो डेटा तपाईंको Google खातामा सुरक्षित गरिन सक्छ। <ph name="BEGIN_LINK2" />थप जान्नुहोस्<ph name="END_LINK2" /></translation>
 <translation id="8724405322205516354">यो आइकन देख्दा आफ्नो पहिचान दिन वा खरिदहरूको अनुमोदन गर्न आफ्नो फिंगरप्रिन्ट प्रयोग गर्नुहोस्‌</translation>
@@ -7776,7 +7765,6 @@
 <translation id="8838601485495657486">अपारदर्शी</translation>
 <translation id="8838770651474809439">ह्यामबर्गर</translation>
 <translation id="8838778928843281408">फोनहरू व्यवस्थापन गर्नुहोस्</translation>
-<translation id="883911313571074303">छविलाई एनोटेट गर्नुहोस्</translation>
 <translation id="8840427996758894516">तपाईंको फोन नजिकै छ र ब्लुटुथ तथा Wi-Fi अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="8841843049738266382">श्वेतसूचीमा राखिएका प्रयोगकर्ताका नाम रिड गर्ने र बदल्ने</translation>
 <translation id="8842594465773264717">यो फिंगरप्रिन्ट मेट्नुहोस्</translation>
@@ -7834,7 +7822,6 @@
 <translation id="8890516388109605451">स्रोतहरू</translation>
 <translation id="8890529496706615641">प्रोफाइलको नाम बदल्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा प्राविधिक सहायता प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="8892168913673237979">सबै सेट गर्नुहोस्!</translation>
-<translation id="8893116021193670489">तपाईंको कम्प्युटरमा विश्वसनीय प्लेटफर्म मोड्युल (TPM) सुरक्षा डिभाइस छ। CloudReady २.० मा सुरक्षासम्बन्धी धेरै महत्त्वपूर्ण सुविधाहरू लागू गर्नका लागि उक्त डिभाइस प्रयोग गरिन्छ। तपाईं यसका सम्बन्धमा थप जान्न चाहनुहुन्छ भने Chromebook को मद्दत केन्द्रमा जानुहोस्: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="8893801527741465188">स्थापना रद्द गर्ने कार्य सम्पन्न भयो</translation>
 <translation id="8893928184421379330">माफ गर्नुहोस्, यन्त्र <ph name="DEVICE_LABEL" /> पहिचान गर्न सकिएन।</translation>
 <translation id="8894761918470382415">सहायक यन्त्रलाई डेटा प्रयोग गर्न रोक लगाउने सुविधा</translation>
@@ -7996,9 +7983,7 @@
 <translation id="9057354806206861646">अद्यावधिक तालिका</translation>
 <translation id="9062468308252555888">१४ गुणा</translation>
 <translation id="9063208415146866933">हरफ <ph name="ERROR_LINE_START" /> देखि हरफ <ph name="ERROR_LINE_END" /> सम्म त्रुटि छ</translation>
-<translation id="9063800855227801443">गोप्य सामग्रीको स्क्रिन क्याप्चर गर्न मिल्दैन</translation>
 <translation id="9064275926664971810">एकै क्लिकमा वेबका फारामहरू भर्न स्वत: भरणलाई सक्रिय गर्नुहोस्</translation>
-<translation id="9064599787951583960">CloudReady २.० चल्ने डिभाइससम्बन्धी जानकारी र उक्त डिभाइसमा भएको डेटा रिड गर्ने।</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9066394310994446814">तपाईंले यसअघि Google का सेवाहरूमार्फत गर्नुभएका क्रियाकलापका आधारमा तपाईं यो वस्तु देखिरहनुभएको छ। तपाईं <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" /> मा गई आफ्नो जानकारी हेर्न, मेटाउन तथा आफ्ना सेटिङ परिवर्तन गर्न सक्नुहुन्छ।
         <ph name="BREAK" />
@@ -8173,7 +8158,6 @@
 <translation id="936801553271523408">प्रणाली विकर्ण लगत</translation>
 <translation id="93766956588638423">विस्तार मर्मत गर्नुहोस्</translation>
 <translation id="938568644810664664">“Ok Google, यो कुन गीत हो?” वा “Ok Google, मेरो स्क्रिनमा के छ?” भनी हेर्नुहोस्।</translation>
-<translation id="939252827960237676">स्क्रिनसट बचत गर्न अ</translation>
 <translation id="939401694733344652">यी खाताहरू अहिले Android एपहरूमा प्रयोग गरिएका छैनन्। तपाईंले यो Android एपमा प्रयोग गर्नका लागि कुनै खाता चयन गर्नुभयो भने उक्त खाता अन्य Android एपहरूमा पनि प्रयोग गरिन सक्छ। तपाईं <ph name="LINK_BEGIN" />सेटिङ &gt; खाताहरू<ph name="LINK_END" /> मा गई Android एपहरूलाई दिइएको अनुमति बदल्न सक्नुहुन्छ।</translation>
 <translation id="939598580284253335">पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="939736085109172342">नयाँ फोल्डर</translation>

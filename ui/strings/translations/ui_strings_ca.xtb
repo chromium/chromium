@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Superior</translation>
 <translation id="2701330563083355633">S'ha compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Nou</translation>
-<translation id="2743387203779672305">Copia al porta-retalls</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Fa 1 any}other{Fa # anys}}</translation>
 <translation id="2878511608894704031">Suprimeix-ho tot</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{d'aquí a 1 d}other{d'aquí a # d}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">La columna <ph name="COLUMN_NAME" /> es mostra en ordre ascendent.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notificació no llegida}other{# notificacions no llegides}}</translation>
-<translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Fa 1 mes}other{Fa # mesos}}</translation>
 <translation id="4289300219472526559">Comença a parlar</translation>
 <translation id="4289540628985791613">Visió general</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}other{# h}}</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
-<translation id="883911313571074303">Afegeix una anotació a la imatge</translation>
 <translation id="8841375032071747811">Botó Enrere</translation>
 <translation id="8867568208303837180">S'està enviant...</translation>
 <translation id="8876215549894133151">Format:</translation>

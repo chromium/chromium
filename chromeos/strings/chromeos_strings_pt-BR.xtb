@@ -334,6 +334,7 @@
 <translation id="5051044138948155788">Essa é a única página. Se você removê-la, a tela inicial de digitalização será aberta.</translation>
 <translation id="5088172560898466307">Nome do host do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">Autenticação</translation>
 <translation id="5154917547274118687">Memória</translation>
 <translation id="5160857336552977725">Faça login no seu <ph name="DEVICE_TYPE" /></translation>
@@ -435,6 +436,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6319207335391420837">Atualizar firmware no dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6325525973963619867">Falha</translation>
 <translation id="6340526405444716530">Personalização</translation>
+<translation id="6348738456043757611">Nome de usuário e senha</translation>
 <translation id="636850387210749493">Registro da empresa</translation>
 <translation id="6379086450106841622">Tela touchscreen</translation>
 <translation id="6388847657025262518">O alimentador de documentos do scanner está obstruído. Verifique-o e tente novamente.</translation>

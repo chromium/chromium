@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Горе</translation>
 <translation id="2701330563083355633">Споделено од <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Ново</translation>
-<translation id="2743387203779672305">Копирај на клип-табла</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Пред 1 година}one{Пред # година}other{Пред # години}}</translation>
 <translation id="2878511608894704031">Избриши ги сите</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{за 1 д.}one{за # д.}other{за # д.}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">Колоната <ph name="COLUMN_NAME" /> е подредена по растечки редослед.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочитано известување}one{# непрочитанo известувањe}other{# непрочитани известувања}}</translation>
-<translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Пред 1 месец}one{Пред # месец}other{Пред # месеци}}</translation>
 <translation id="4289300219472526559">Започни со говорење</translation>
 <translation id="4289540628985791613">Преглед</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 ч.}one{# ч.}other{# ч.}}</translation>
 <translation id="8798099450830957504">Стандардно</translation>
-<translation id="883911313571074303">Стави прибелешка на слика</translation>
 <translation id="8841375032071747811">Копче за назад</translation>
 <translation id="8867568208303837180">Се испраќа…</translation>
 <translation id="8876215549894133151">Формат:</translation>

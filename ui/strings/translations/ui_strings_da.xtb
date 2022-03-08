@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Top</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Nyt</translation>
-<translation id="2743387203779672305">Kopiér til udklipsholderen</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{For 1 år siden}one{For # år siden}other{For # år siden}}</translation>
 <translation id="2878511608894704031">Slet alt</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{om 1 dag}one{om # dag}other{om # dage}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">Kolonnen <ph name="COLUMN_NAME" /> sorteres i stigende rækkefølge.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ulæst notifikation}one{# ulæst notifikation}other{# ulæste notifikationer}}</translation>
-<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{For 1 måned siden}one{For # måned siden}other{For # måneder siden}}</translation>
 <translation id="4289300219472526559">Start indtaling</translation>
 <translation id="4289540628985791613">Oversigt</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 t}one{# t}other{# t}}</translation>
 <translation id="8798099450830957504">Standard</translation>
-<translation id="883911313571074303">Annoter billede</translation>
 <translation id="8841375032071747811">Knappen Tilbage</translation>
 <translation id="8867568208303837180">Sender...</translation>
 <translation id="8876215549894133151">Format:</translation>

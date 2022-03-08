@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">ላይ</translation>
 <translation id="2701330563083355633">በ <ph name="DEVICE_NAME" /> የተጋራ</translation>
 <translation id="271033894570825754">አዲስ</translation>
-<translation id="2743387203779672305">ወደ ቅንጥብ ሰሌዳ ገልብጥ</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{ከ1 ዓመት በፊት}one{ከ# ዓመቶች በፊት}other{ከ# ዓመቶች በፊት}}</translation>
 <translation id="2878511608894704031">ሁሉንም ሰርዝ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{በ 1ቀ ውስጥ}one{በ #ቀ ውስጥ}other{በ #ቀ ውስጥ}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">አምድ <ph name="COLUMN_NAME" /> በሽቅብታ ቅደም-ተከተል ተደርድሯል።</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ያልተነበበ ማሳወቂያ}one{# ያልተነበቡ ማሳወቂያዎች}other{# ያልተነበቡ ማሳወቂያዎች}}</translation>
-<translation id="4250229828105606438">ቅጽበታዊ ገጽ እይታ</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{ከ1 ወር በፊት}one{ከ# ወሮች በፊት}other{ከ# ወሮች በፊት}}</translation>
 <translation id="4289300219472526559">መናገር ይጀምሩ</translation>
 <translation id="4289540628985791613">ማጠቃለያ</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1ሰ}one{#ሰ}other{#ሰ}}</translation>
 <translation id="8798099450830957504">እንደወረደ</translation>
-<translation id="883911313571074303">ምስልን አብራራ</translation>
 <translation id="8841375032071747811">የተመለስ አዝራር</translation>
 <translation id="8867568208303837180">በመላክ ላይ...</translation>
 <translation id="8876215549894133151">ቅርጸት፦</translation>

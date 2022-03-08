@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">Oben</translation>
 <translation id="2701330563083355633">Geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Neu</translation>
-<translation id="2743387203779672305">In Zwischenablage kopieren</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{vor 1 Jahr}other{vor # Jahren}}</translation>
 <translation id="2878511608894704031">Alle löschen</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{in 1 T.}other{in # T.}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">Spalte <ph name="COLUMN_NAME" /> in aufsteigender Reihenfolge.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ungelesene Benachrichtigung}other{# ungelesene Benachrichtigungen}}</translation>
-<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{vor 1 Monat}other{vor # Monaten}}</translation>
 <translation id="4289300219472526559">Sprachausgabe starten</translation>
 <translation id="4289540628985791613">Übersicht</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}other{# h}}</translation>
 <translation id="8798099450830957504">Standard</translation>
-<translation id="883911313571074303">Bild mit Anmerkung versehen</translation>
 <translation id="8841375032071747811">Schaltfläche "Zurück"</translation>
 <translation id="8867568208303837180">Wird gesendet...</translation>
 <translation id="8876215549894133151">Format:</translation>

@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">ด้านบน</translation>
 <translation id="2701330563083355633">แชร์จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">ใหม่</translation>
-<translation id="2743387203779672305">คัดลอกไว้ที่คลิปบอร์ด</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ปีที่ผ่านมา}other{# ปีที่ผ่านมา}}</translation>
 <translation id="2878511608894704031">ลบทั้งหมด</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ใน 1 วัน}other{ใน # วัน}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">คอลัมน์ <ph name="COLUMN_NAME" /> จัดเรียงจากน้อยไปมาก</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{การแจ้งเตือนที่ยังไม่อ่าน 1 รายการ}other{การแจ้งเตือนที่ยังไม่อ่าน # รายการ}}</translation>
-<translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 เดือนที่ผ่านมา}other{# เดือนที่ผ่านมา}}</translation>
 <translation id="4289300219472526559">เริ่มพูด</translation>
 <translation id="4289540628985791613">ภาพรวม</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 ชม.}other{# ชม.}}</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
-<translation id="883911313571074303">ใส่หมายเหตุในรูปภาพ</translation>
 <translation id="8841375032071747811">ปุ่มกลับ</translation>
 <translation id="8867568208303837180">กำลังส่ง...</translation>
 <translation id="8876215549894133151">รูปแบบ:</translation>

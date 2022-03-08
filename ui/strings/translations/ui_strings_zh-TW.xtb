@@ -62,7 +62,6 @@
 <translation id="2666092431469916601">置頂</translation>
 <translation id="2701330563083355633">透過 <ph name="DEVICE_NAME" /> 分享</translation>
 <translation id="271033894570825754">新</translation>
-<translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 年前}other{# 年前}}</translation>
 <translation id="2878511608894704031">全部刪除</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 天內}other{# 天內}}</translation>
@@ -99,7 +98,6 @@
 <translation id="3994749195054421561">已依照遞增順序排序「<ph name="COLUMN_NAME" />」欄。</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 則未讀取的通知}other{# 則未讀取的通知}}</translation>
-<translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 個月前}other{# 個月前}}</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">總覽</translation>
@@ -206,7 +204,6 @@
 <translation id="8730621377337864115">完成</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 小時}other{# 小時}}</translation>
 <translation id="8798099450830957504">預設</translation>
-<translation id="883911313571074303">為圖片加註</translation>
 <translation id="8841375032071747811">返回按鈕</translation>
 <translation id="8867568208303837180">傳送中… </translation>
 <translation id="8876215549894133151">格式：</translation>
