@@ -1285,7 +1285,7 @@ chromium-metrics-reviews@google.com.
     <variant name="MainThreadAnimation"
         summary="reported for all main thread driven animations."/>
     <variant name="PinchZoom"
-        summary="reported for all main thread driven animations."/>
+        summary="reported for all pinch to zoom interctions."/>
     <variant name="RAF" summary="reported for all raf driven animations."/>
     <variant name="ScrollbarScroll"
         summary="reported for all scrollbar scrolling."/>
