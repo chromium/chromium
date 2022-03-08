@@ -392,7 +392,8 @@ class ChromiumDepGraph {
             // Default to using largest version for version conflict resolution. See http://crbug.com/1040958.
             // https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
             boolean useLowerVersion = (id in lowerVersionOverride)
-            boolean versionIsLower = dependency.module.id.version < dependencies.get(id).version
+            boolean versionIsLower = isVersionLower(dependency.module.id.version,
+                                                    dependencies.get(id).version)
             if (useLowerVersion != versionIsLower) {
                 return
             }
@@ -691,6 +692,35 @@ class ChromiumDepGraph {
         } catch (any) {
             throw new RuntimeException("Resolved POM but could not resolve $url")
         }
+    }
+
+    // Checks if currentVersion is lower than versionInQuestion.
+    private boolean isVersionLower(String currentVersion, String versionInQuestion) {
+        List verA = currentVersion.tokenize('.')
+        List verB = versionInQuestion.tokenize('.')
+        int commonIndices = Math.min(verA.size(), verB.size())
+        for (int i = 0; i < commonIndices; ++i) {
+            // toInteger could fail as some versions are 2.11.alpha-06.
+            // so revert to a string comparison.
+            try {
+                int numA = verA[i].toInteger()
+                int numB = verB[i].toInteger()
+                if (numA == numB) {
+                  continue
+                }
+                return numA < numB
+
+            } catch (any) {
+                logger.debug('Using String comparison for a version check.')
+                // This could lead to issues where a version such as 2.11.alpha11
+                // is registered as less than 2.11.alpha9.
+                return verA[i] < verB[i]
+            }
+        }
+
+        // If we got this far then all the common indices are identical,
+        // so whichever version is longer is larger.
+        return verA.size() < verB.size()
     }
 
     @AutoClone
