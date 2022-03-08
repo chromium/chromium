@@ -335,6 +335,7 @@ void CertBuilder::SetSubjectCommonName(const std::string common_name) {
   ASSERT_TRUE(CBBAddBytes(&value, common_name));
 
   subject_tlv_ = FinishCBB(cbb.get());
+  Invalidate();
 }
 
 void CertBuilder::SetSubjectAltName(const std::string& dns_name) {
@@ -484,6 +485,7 @@ void CertBuilder::SetValidity(base::Time not_before, base::Time not_after) {
   ASSERT_TRUE(x509_util::CBBAddTime(&validity, not_before));
   ASSERT_TRUE(x509_util::CBBAddTime(&validity, not_after));
   validity_tlv_ = FinishCBB(cbb.get());
+  Invalidate();
 }
 
 void CertBuilder::SetSubjectKeyIdentifier(
