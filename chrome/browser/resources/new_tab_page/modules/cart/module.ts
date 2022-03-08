@@ -137,7 +137,7 @@ export class ChromeCartModuleElement extends I18nMixin
 
     this.eventTracker_.add(
         this, 'discount-consent-accepted',
-        () => this.onDiscountConsentAccepted_);
+        () => this.onDiscountConsentAccepted_());
     this.eventTracker_.add(
         this, 'discount-consent-rejected',
         () => this.onDiscountConsentRejected_());
