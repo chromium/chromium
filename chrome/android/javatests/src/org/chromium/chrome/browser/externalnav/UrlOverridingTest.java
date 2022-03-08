@@ -807,6 +807,7 @@ public class UrlOverridingTest {
     @Test
     @LargeTest
     @Features.EnableFeatures({ChromeFeatureList.PRERENDER2})
+    @DisabledTest(message = "https://crbug.com/1304292")
     public void testClearRedirectHandlerOnPageActivation() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
