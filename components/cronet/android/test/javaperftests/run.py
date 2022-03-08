@@ -41,7 +41,7 @@ Benchmark timings are output by telemetry to stdout and written to
 """
 
 import json
-import optparse
+import argparse
 import os
 import shutil
 import sys
@@ -70,6 +70,8 @@ from telemetry import benchmark
 from telemetry import story as story_module
 from telemetry.web_perf import timeline_based_measurement
 # pylint: enable=wrong-import-position
+
+# pylint: disable=super-with-arguments
 
 
 def GetDevice():
@@ -105,7 +107,7 @@ class CronetPerfTestAndroidStory(android.AndroidStory):
         # |is_app_ready_predicate| to not wait.
         is_app_ready_predicate=lambda app: True)
 
-  def Run(self, shared_user_story_state):
+  def Run(self, shared_state):
     while not self._device.FileExists(
         perf_test_utils.GetConfig(self._device)['DONE_FILE']):
       time.sleep(1.0)
@@ -164,13 +166,13 @@ class CronetPerfTestBenchmark(benchmark.Benchmark):
 
 
 def main():
-  parser = optparse.OptionParser()
-  parser.add_option('--output-format', default='html',
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--output-format', default='html',
                    help='The output format of the results file.')
-  parser.add_option('--output-dir', default=None,
+  parser.add_argument('--output-dir', default=None,
                    help='The directory for the output file. Default value is '
                         'the base directory of this script.')
-  options, _ = parser.parse_args()
+  args, _ = parser.parse_known_args()
   constants.SetBuildType(perf_test_utils.BUILD_TYPE)
   # Install APK
   device = GetDevice()
@@ -206,9 +208,9 @@ def main():
   sys.argv.insert(1, 'run')
   sys.argv.insert(2, 'run.CronetPerfTestBenchmark')
   sys.argv.insert(3, '--browser=android-system-chrome')
-  sys.argv.insert(4, '--output-format=' + options.output_format)
-  if options.output_dir:
-    sys.argv.insert(5, '--output-dir=' + options.output_dir)
+  sys.argv.insert(4, '--output-format=' + args.output_format)
+  if args.output_dir:
+    sys.argv.insert(5, '--output-dir=' + args.output_dir)
   benchmark_runner.main(runner_config)
   # Shutdown.
   quic_server.ShutdownQuicServer()

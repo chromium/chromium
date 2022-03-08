@@ -21,6 +21,8 @@ REPOSITORY_ROOT = os.path.abspath(os.path.join(
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'components'))
 from cronet.tools import api_static_checks  # pylint: disable=wrong-import-position
 
+# pylint: disable=useless-object-inheritance
+
 
 ERROR_PREFIX_CHECK_API_CALLS = (
 """ERROR: Found the following calls from implementation classes through
@@ -150,7 +152,7 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
     stamp_length = len('Stamp: 78418460c193047980ae9eabb79293f2\n')
     api = api[:-stamp_length]
     api_hash = hashlib.md5()
-    api_hash.update(api)
+    api_hash.update(api.encode('utf-8'))
     self.assertEqual(api_stamp, 'Stamp: %s' % api_hash.hexdigest())
 
     return [return_code == 0, output, api, interface_api_version]

@@ -11,13 +11,13 @@ import struct
 import subprocess
 import sys
 
+# pylint: disable=wrong-import-position
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..'))
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'perf'))
-from core import path_util  # pylint: disable=wrong-import-position
+from core import path_util
 sys.path.append(path_util.GetTelemetryDir())
 
-# pylint: disable=wrong-import-position
 from telemetry.core import platform
 from telemetry.internal.platform import android_device
 from telemetry.internal.util import binary_manager
@@ -27,6 +27,8 @@ from devil.android import device_utils
 
 import py_utils
 # pylint: enable=wrong-import-position
+
+# pylint: disable=useless-object-inheritance
 
 
 class AndroidRndisForwarder(object):
@@ -171,6 +173,7 @@ class AndroidRndisConfigurator(object):
     """Checks that the device has RNDIS support in the kernel."""
     return self._device.FileExists('%s/f_rndis/device' % self._RNDIS_DEVICE)
 
+  # pylint: disable=inconsistent-return-statements
   def _FindDeviceRndisInterface(self):
     """Returns the name of the RNDIS network interface if present."""
     config = self._device.RunShellCommand(
@@ -184,6 +187,7 @@ class AndroidRndisConfigurator(object):
         return candidates[0]
       assert len(candidates) == 1, 'Found more than one rndis device!'
       return candidates[0]
+  # pylint: enable=inconsistent-return-statements
 
   def _FindDeviceRndisMacAddress(self, interface):
     """Returns the MAC address of the RNDIS network interface if present."""
@@ -199,6 +203,7 @@ class AndroidRndisConfigurator(object):
       return subprocess.check_output(['ifconfig']).splitlines()
     raise NotImplementedError('Platform %s not supported!' % host_platform)
 
+  # pylint: disable=inconsistent-return-statements
   def _FindHostRndisInterface(self, device_mac_address):
     """Returns the name of the host-side network interface."""
     interface_list = self._EnumerateHostInterfaces()
@@ -224,6 +229,7 @@ class AndroidRndisConfigurator(object):
       # but just going by the host interface name seems safe enough.
       elif interface_name == 'usb0':
         return interface_name
+  # pylint: enable=inconsistent-return-statements
 
   def _WriteProtectedFile(self, file_path, contents):
     subprocess.check_call(
@@ -403,12 +409,14 @@ doit &
     def _IsNetworkUnique(network, addresses):
       return all((addr & mask != network & mask) for addr, mask in addresses)
 
+    # pylint: disable=inconsistent-return-statements
     def _NextUnusedAddress(network, netmask, used_addresses):
       # Excludes '0' and broadcast.
       for suffix in range(1, 0xFFFFFFFF & ~netmask):
         candidate = network | suffix
         if candidate not in used_addresses:
           return candidate
+    # pylint: enable=inconsistent-return-statements
 
     def HasHostAddress():
       _, host_address = self._GetHostAddresses(host_iface)

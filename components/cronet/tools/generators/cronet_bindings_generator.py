@@ -45,6 +45,8 @@ from mojom.generate.generator import AddComputedData
 from mojom.parse.parser import Parse
 # pylint: enable=wrong-import-position
 
+# pylint: disable=useless-object-inheritance
+
 
 _BUILTIN_GENERATORS = {
   "c": "cronet_c_generator.py",

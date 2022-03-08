@@ -200,8 +200,8 @@ def check_api_version(opts):
     print('ERROR: Interface API version cannot be higher than the current '
           'implementation API version.')
     return False
-  if (implementation_api_version != interface_api_version + 1
-      and implementation_api_version != interface_api_version):
+  if implementation_api_version not in \
+      (interface_api_version + 1, interface_api_version):
     print('ERROR: Implementation API version can be preemptively bumped up '
           'at most once. Land the interface part of the API which is already '
           'being released before adding a new one.')

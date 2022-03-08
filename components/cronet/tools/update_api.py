@@ -122,7 +122,7 @@ def check_api_update(old_api, new_api):
             return False
           seen_stamp = True
           break
-        new_hash.update(new_line)
+        new_hash.update(new_line.encode('utf8'))
         if new_line == old_line:
           break
         if not new_line:
@@ -133,7 +133,7 @@ def check_api_update(old_api, new_api):
             print('           ' + old_line)
             print('       Cronet API methods and classes cannot be modified.')
           return False
-      old_hash.update(old_line)
+      old_hash.update(old_line.encode('utf8'))
   if not seen_stamp:
     print('ERROR: api.txt not stamped by update_api.py.')
     return False
