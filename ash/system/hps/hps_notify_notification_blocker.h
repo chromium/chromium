@@ -37,6 +37,7 @@ namespace ash {
 class ASH_EXPORT HpsNotifyNotificationBlocker
     : public SessionObserver,
       public message_center::NotificationBlocker,
+      public message_center::NotificationObserver,
       public HpsNotifyController::Observer,
       public message_center::MessageCenterObserver {
  public:
@@ -56,8 +57,6 @@ class ASH_EXPORT HpsNotifyNotificationBlocker
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // message_center::NotificationBlocker:
-  bool ShouldShowNotification(
-      const message_center::Notification& notification) const override;
   bool ShouldShowNotificationAsPopup(
       const message_center::Notification& notification) const override;
 
@@ -72,6 +71,11 @@ class ASH_EXPORT HpsNotifyNotificationBlocker
   void OnNotificationUpdated(const std::string& notification_id) override;
   void OnBlockingStateChanged(
       message_center::NotificationBlocker* blocker) override;
+
+  // message_center::NotificationObserver:
+  void Close(bool by_user) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
  private:
   // Starts or stops blocking and showing the info notification based on the

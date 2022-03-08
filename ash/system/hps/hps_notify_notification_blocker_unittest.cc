@@ -11,12 +11,16 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/message_center_controller.h"
+#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/network/sms_observer.h"
 #include "ash/system/unified/hps_notify_controller.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -169,6 +173,28 @@ class HpsNotifyNotificationBlockerTest : public AshTestBase {
     message_center_ = message_center::MessageCenter::Get();
   }
 
+  UnifiedMessageCenterBubble* GetMessageCenterBubble() {
+    return GetPrimaryUnifiedSystemTray()->message_center_bubble();
+  }
+
+  bool HasHpsNotification() {
+    message_center::Notification* notification =
+        message_center::MessageCenter::Get()->FindVisibleNotificationById(
+            HpsNotifyNotificationBlocker::kInfoNotificationId);
+    return notification != nullptr;
+  }
+
+  void SimulateClick(int button_index) {
+    message_center::Notification* notification =
+        message_center::MessageCenter::Get()->FindVisibleNotificationById(
+            HpsNotifyNotificationBlocker::kInfoNotificationId);
+    notification->delegate()->Click(button_index, absl::nullopt);
+  }
+
+  int GetNumOsSmartPrivacySettingsOpened() {
+    return GetSystemTrayClient()->show_os_smart_privacy_settings_count();
+  }
+
  protected:
   HpsNotifyController* controller_ = nullptr;
   message_center::MessageCenter* message_center_ = nullptr;
@@ -199,7 +225,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, Snooping) {
   AddNotification("notification-3", u"notifier-3");
   EXPECT_EQ(VisiblePopupCount(), 1u);  // Only our info popup.
   EXPECT_TRUE(InfoPopupVisible());
-  EXPECT_EQ(VisibleNotificationCount(), 3u);
+  EXPECT_EQ(VisibleNotificationCount(), 4u);
 
   // Simulate snooper absence. We wait for a moment to bypass the controller's
   // hysteresis logic.
@@ -279,7 +305,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, SystemNotification) {
   EXPECT_EQ(PositionInInfoPopupMessage(u"notifier-1"), std::u16string::npos);
   // Title used for system popups is currently Web.
   EXPECT_NE(PositionInInfoPopupMessage(u"Web"), std::u16string::npos);
-  EXPECT_EQ(VisibleNotificationCount(), 3u);
+  EXPECT_EQ(VisibleNotificationCount(), 4u);
 }
 
 TEST_F(HpsNotifyNotificationBlockerTest, InfoPopup) {
@@ -294,7 +320,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, InfoPopup) {
   EXPECT_EQ(VisiblePopupCount(), 1u);  // Only our info popup.
   EXPECT_NE(PositionInInfoPopupMessage(u"notifier-1"), std::u16string::npos);
   EXPECT_NE(PositionInInfoPopupMessage(u"notifier-2"), std::u16string::npos);
-  EXPECT_EQ(VisibleNotificationCount(), 2u);
+  EXPECT_EQ(VisibleNotificationCount(), 3u);
 
   // Check that the user can remove the info popup and it will return.
   RemoveNotification(HpsNotifyNotificationBlocker::kInfoNotificationId);
@@ -325,7 +351,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, InfoPopupOtherBlocker) {
   // Do not report that we're blocking a notification when it won't show up
   // after snooping ends.
   EXPECT_EQ(PositionInInfoPopupMessage(u"notifier-2"), std::u16string::npos);
-  EXPECT_EQ(VisibleNotificationCount(), 2u);
+  EXPECT_EQ(VisibleNotificationCount(), 3u);
 
   // Now update our other blocker not to block either notification.
   other_blocker.SetTargetId("notification-3");
@@ -334,7 +360,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, InfoPopupOtherBlocker) {
   EXPECT_EQ(VisiblePopupCount(), 1u);
   EXPECT_NE(PositionInInfoPopupMessage(u"notifier-1"), std::u16string::npos);
   EXPECT_NE(PositionInInfoPopupMessage(u"notifier-2"), std::u16string::npos);
-  EXPECT_EQ(VisibleNotificationCount(), 2u);
+  EXPECT_EQ(VisibleNotificationCount(), 3u);
 }
 
 // Test that the info popup message is changed as relevant notifications are
@@ -382,6 +408,40 @@ TEST_F(HpsNotifyNotificationBlockerTest, InfoPopupChangingNotifications) {
     EXPECT_NE(pos_1, std::u16string::npos);
     EXPECT_EQ(pos_2, std::u16string::npos);
   }
+}
+
+// Test that message center is visible when click "Show" button.
+TEST_F(HpsNotifyNotificationBlockerTest, ShowButtonClicked) {
+  SetBlockerPref(true);
+
+  // Simulate snooper presence.
+  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+
+  AddNotification("notification-1", u"notifier-1");
+  AddNotification("notification-2", u"notifier-2");
+
+  EXPECT_TRUE(HasHpsNotification());
+
+  // Click on show button.
+  SimulateClick(/*button_index=*/0);
+  EXPECT_TRUE(GetMessageCenterBubble()->IsMessageCenterVisible());
+}
+
+// Test that message center is visible when click Settings button.
+TEST_F(HpsNotifyNotificationBlockerTest, SettingsButtonClicked) {
+  SetBlockerPref(true);
+
+  // Simulate snooper presence.
+  controller_->OnHpsNotifyChanged(/*snooper=*/hps::HpsResult::POSITIVE);
+
+  AddNotification("notification-1", u"notifier-1");
+  AddNotification("notification-2", u"notifier-2");
+
+  EXPECT_TRUE(HasHpsNotification());
+
+  // Click on show button.
+  SimulateClick(/*button_index=*/1);
+  EXPECT_EQ(1, GetNumOsSmartPrivacySettingsOpened());
 }
 
 }  // namespace

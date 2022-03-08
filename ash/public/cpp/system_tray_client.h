@@ -56,6 +56,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows OS settings related to privacy and security.
   virtual void ShowPrivacyAndSecuritySettings() = 0;
 
+  // Show OS smart privacy settings.
+  virtual void ShowSmartPrivacySettings() = 0;
+
   // Shows the page that lets you disable performance tracing.
   virtual void ShowChromeSlow() = 0;
 

@@ -408,6 +408,11 @@ void SystemTrayClientImpl::ShowPrivacyAndSecuritySettings() {
       chromeos::settings::mojom::kPrivacyAndSecuritySectionPath);
 }
 
+void SystemTrayClientImpl::ShowSmartPrivacySettings() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kSmartPrivacySubpagePath);
+}
+
 void SystemTrayClientImpl::ShowChromeSlow() {
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetPrimaryUserProfile());
