@@ -1469,59 +1469,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ContentSettings.Exceptions.subresource-filter"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ContentSettingsType" separator=".">
-  <suffix name="app-banner" label="App banner exceptions"/>
-  <suffix name="auto-dark-web-content"
-      label="Auto-dark web contents exceptions"/>
-  <suffix name="auto-select-certificate" label="Auto-select cert exceptions"/>
-  <suffix name="automatic-downloads" label="Automatic downloads exceptions"/>
-  <suffix name="autoplay" label="Autoplay exception"/>
-  <suffix name="background-sync" label="Background sync exceptions"/>
-  <suffix name="bluetooth-chooser-data" label="Bluetooth chooser data"/>
-  <suffix name="bluetooth-guard" label="Bluetooth guard exceptions"/>
-  <suffix name="client-hints" label="Client hints"/>
-  <suffix name="cookies" label="Cookies exceptions"/>
-  <suffix name="display-capture" label="Display Capture Exceptions"/>
-  <suffix name="durable-storage" label="Durable Storage Exceptions"/>
-  <suffix name="fullscreen" label="Fullscreen exceptions"/>
-  <suffix name="geolocation" label="Geolocation exceptions"/>
-  <suffix name="hid-chooser-data" label="HID chooser data"/>
-  <suffix name="images" label="Images exceptions"/>
-  <suffix name="important-site-info" label="Important site info"/>
-  <suffix name="installed-web-app-metadata" label="Installed web app metadata"/>
-  <suffix name="javascript" label="JavaScript exceptions"/>
-  <suffix name="keygen" label="Keygen exceptions"/>
-  <suffix name="media-engagement" label="Media engagement exceptions"/>
-  <suffix name="media-stream-camera" label="Camera exceptions"/>
-  <suffix name="media-stream-mic" label="Microphone exceptions"/>
-  <suffix name="midi-sysex" label="Midi exceptions"/>
-  <suffix name="mixed-script" label="Mixed script exceptions"/>
-  <suffix name="mouselock" label="Mouse lock exceptions"/>
-  <suffix name="notifications" label="Notification exceptions"/>
-  <suffix name="password-protection" label="Password protection"/>
-  <suffix name="permission-autoblocking-data"
-      label="Permission autoblocking data"/>
-  <suffix name="permission-autorevocation-data"
-      label="Permission autorevocation data"/>
-  <suffix name="plugins" label="Plugins exceptions"/>
-  <suffix name="popups" label="Popups exceptions"/>
-  <suffix name="ppapi-broker" label="Ppapi broker exceptions"/>
-  <suffix name="protected-media-identifier" label="Protected media exceptions"/>
-  <suffix name="protocol-handler" label="Protocol handler exceptions"/>
-  <suffix name="push-messaging" label="Push messaging exceptions"/>
-  <suffix name="request-desktop-site" label="Request desktop site exceptions"/>
-  <suffix name="safe-browsing-url-check-data"
-      label="Safe browsing url check data"/>
-  <suffix name="serial-chooser-data" label="Serial chooser data"/>
-  <suffix name="site-engagement" label="Site engagement exceptions"/>
-  <suffix name="sound" label="Sound exceptions"/>
-  <suffix name="ssl-cert-decisions" label="SSL cert decisions exceptions"/>
-  <suffix name="subresource-filter" label="Subresource filter exceptions"/>
-  <suffix name="subresource-filter-data" label="Subresource filter data"/>
-  <suffix name="usb-chooser-data" label="USB chooser data exceptions"/>
-  <affected-histogram name="ContentSettings.Exceptions"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ContentSuggestionCategory" separator=".">
   <suffix name="Articles" label="Articles for you"/>
   <suffix name="Bookmarks" label="Bookmarks"/>
