@@ -90,7 +90,6 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/dialog_test.h"
-#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
@@ -517,9 +516,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
 void WebAppIntegrationTestDriver::AcceptAppIdUpdateDialog() {
   BeforeStateChangeAction(__FUNCTION__);
 
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "WebAppIdentityUpdateConfirmationView");
-  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  views::Widget* widget = app_id_update_dialog_waiter_->WaitIfNeededAndGet();
   ASSERT_TRUE(widget != nullptr);
   views::test::AcceptDialog(widget);
 
@@ -983,6 +980,12 @@ void WebAppIntegrationTestDriver::ManifestUpdateTitle(
   BeforeStateChangeAction(__FUNCTION__);
   ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
   ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, site_mode));
+
+  app_id_update_dialog_waiter_ =
+      std::make_unique<views::NamedWidgetShownWaiter>(
+          views::test::AnyWidgetTestPasskey{},
+          "WebAppIdentityUpdateConfirmationView");
+
   auto scope_url_path =
       g_site_mode_to_relative_scope_url.find(site_mode)->second;
   std::string str_template =
@@ -2121,10 +2124,14 @@ PageActionIconView* WebAppIntegrationTestDriver::intent_picker_view() {
 }
 
 WebAppIntegrationBrowserTest::WebAppIntegrationBrowserTest() : helper_(this) {
+  std::vector<base::Feature> enabled_features;
+  std::vector<base::Feature> disabled_features;
+  enabled_features.push_back(features::kPwaUpdateDialogForName);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  scoped_feature_list_.InitWithFeatures(
-      {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+  disabled_features.push_back(features::kWebAppsCrosapi);
+  disabled_features.push_back(chromeos::features::kLacrosPrimary);
 #endif
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 WebAppIntegrationBrowserTest::~WebAppIntegrationBrowserTest() = default;

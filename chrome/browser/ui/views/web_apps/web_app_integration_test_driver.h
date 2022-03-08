@@ -24,6 +24,7 @@
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -322,6 +323,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   AppId active_app_id_;
   raw_ptr<Browser> app_browser_ = nullptr;
 
+  std::unique_ptr<views::NamedWidgetShownWaiter> app_id_update_dialog_waiter_;
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       observation_{this};

@@ -25,9 +25,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, ManifestUpdateScope) {
   helper_.CheckLaunchIconShown();
 }
 
-// TODO(crbug.com/1296808): This test is flaky.
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
-                       DISABLED_ManifestUpdateTitle) {
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, ManifestUpdateTitle) {
   helper_.InstallMenuOption("SiteA");
   helper_.CheckAppTitleSiteA("Site A");
   helper_.ManifestUpdateTitle("SiteA");
