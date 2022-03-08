@@ -390,9 +390,9 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
   if (!entries)
     return Status(kUnknownError, "DevTools didn't return entries");
 
-  if (static_cast<int>(entries->GetListDeprecated().size()) <=
-          *current_index + delta ||
-      !entries->GetListDeprecated()[*current_index + delta].is_dict()) {
+  if ((*current_index + delta) < 0
+      || (static_cast<int>(entries->GetList().size()) <= *current_index + delta)
+      || !entries->GetList()[*current_index + delta].is_dict()) {
     // The WebDriver spec says that if there are no pages left in the browser's
     // history (i.e. |current_index + delta| is out of range), then we must not
     // navigate anywhere.
