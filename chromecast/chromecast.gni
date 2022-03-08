@@ -168,7 +168,7 @@ cast_locales = locales_without_pseudolocales
 # If Cast will also the android files update this and the Cast grd files.
 if (is_android) {
   # Subtract out additional Android locales
-  cast_locales -= android_bundle_only_locales
+  cast_locales -= extended_locales
 }
 
 declare_args() {

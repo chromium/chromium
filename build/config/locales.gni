@@ -13,6 +13,7 @@ import("//build/config/chromeos/ui_mode.gni")
 # |locales_without_pseudolocales|.
 
 # The following additional platform specific lists are created:
+# - |extended_locales| list of locales not shipped on desktop builds
 # - |android_bundle_locales_as_resources| locales formatted for XML output names
 # - |locales_as_mac_outputs| formated for mac output bundles
 # - |ios_packed_locales| subset for iOS
@@ -134,8 +135,8 @@ all_chrome_locales =
       "zu",
     ] + pseudolocales
 
-# New locales added to Chrome Android bundle builds.
-android_bundle_only_locales = [
+# Chrome locales not on Windows, Mac, or Linux
+extended_locales = [
   "af",
   "as",
   "az",
@@ -219,10 +220,10 @@ if (is_android) {
 } else if (is_chromeos_ash || is_chromeos_lacros) {
   # In ChromeOS we support a few more locales than standard Chrome.
   platform_pak_locales =
-      all_chrome_locales - android_bundle_only_locales + chromeos_only_locales
+      all_chrome_locales - extended_locales + chromeos_only_locales
 } else {
   # Change if other platforms support more locales.
-  platform_pak_locales = all_chrome_locales - android_bundle_only_locales
+  platform_pak_locales = all_chrome_locales - extended_locales
 }
 
 locales_without_pseudolocales = platform_pak_locales - pseudolocales

@@ -169,8 +169,7 @@ template("chrome_bundle") {
     proguard_enabled = !is_java_debug
     enable_language_splits = true
     extra_modules = _extra_modules
-    system_image_locale_allowlist =
-        platform_pak_locales - android_bundle_only_locales
+    system_image_locale_allowlist = platform_pak_locales - extended_locales
     is_multi_abi = _is_multi_abi
     validate_services = _enable_chrome_module
 
