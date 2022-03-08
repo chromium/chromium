@@ -9,7 +9,7 @@
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.m.js';
-// #import {MultiDeviceBrowserProxyImpl, PermissionsSetupStatus, PhoneHubPermissionsSetupMode, SetupFlowStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {MultiDeviceBrowserProxyImpl, PermissionsSetupStatus, SetupFlowStatus} from 'chrome://os-settings/chromeos/os_settings.js';
 // clang-format on
 
 /**
@@ -22,6 +22,9 @@ suite('Multidevice', () => {
 
   /** @type {?MultidevicePermissionsOptInDialog} */
   let permissionsSetupDialog = null;
+
+  /** @type {?HTMLElement} */
+  let dialogBody = null;
 
   /** @type {?HTMLElement} */
   let buttonContainer = null;
@@ -43,22 +46,6 @@ suite('Multidevice', () => {
     Polymer.dom.flush();
   }
 
-
-  /** @return {boolean} */
-  function isSetupInstructionsShownSeparately() {
-    return permissionsSetupDialog.shouldShowSetupInstructionsSeparately_;
-  }
-
-  /** @return {boolean} */
-  function isNotificationItemShowen() {
-    return permissionsSetupDialog.shouldShowNotificationItem_;
-  }
-
-  /** @return {boolean} */
-  function isAppsItemShowen() {
-    return permissionsSetupDialog.shouldShowAppsItem_;
-  }
-
   /**
    * @param {SetupFlowStatus} status
    */
@@ -75,15 +62,19 @@ suite('Multidevice', () => {
         document.createElement('settings-multidevice-permissions-setup-dialog');
     document.body.appendChild(permissionsSetupDialog);
     Polymer.dom.flush();
+    dialogBody = assert(permissionsSetupDialog.$$('#dialogBody'));
     buttonContainer = assert(permissionsSetupDialog.$$('#buttonContainer'));
   });
 
   test('Test notification setup success flow', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
-    assertTrue(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertFalse(isSetupInstructionsShownSeparately());
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: false,
+    });
+    Polymer.dom.flush();
+
+    assertTrue(!!dialogBody.querySelector('#start-setup-description'));
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -95,9 +86,7 @@ suite('Multidevice', () => {
         isExpectedFlowState(SetupFlowStatus.WAIT_FOR_PHONE_NOTIFICATION));
 
     simulateStatusChanged(PermissionsSetupStatus.CONNECTION_REQUESTED);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertTrue(isSetupInstructionsShownSeparately());
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
@@ -105,9 +94,7 @@ suite('Multidevice', () => {
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
     simulateStatusChanged(PermissionsSetupStatus.CONNECTING);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertTrue(isSetupInstructionsShownSeparately());
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
@@ -116,24 +103,22 @@ suite('Multidevice', () => {
 
     simulateStatusChanged(
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertTrue(isSetupInstructionsShownSeparately());
-    assertFalse(!!buttonContainer.querySelector('#learnMore'));
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
+    assertTrue(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
-    assertFalse(!!buttonContainer.querySelector('#doneButton'));
+    assertTrue(!!buttonContainer.querySelector('#doneButton'));
+    assertTrue(buttonContainer.querySelector('#doneButton').disabled);
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
     assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 0);
     simulateStatusChanged(PermissionsSetupStatus.COMPLETED_SUCCESSFULLY);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertFalse(isSetupInstructionsShownSeparately());
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertFalse(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
     assertTrue(!!buttonContainer.querySelector('#doneButton'));
+    assertFalse(buttonContainer.querySelector('#doneButton').disabled);
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
     // The feature becomes enabled when the status becomes
@@ -146,8 +131,13 @@ suite('Multidevice', () => {
   });
 
   test('Test notification setup cancel during connecting flow', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: false,
+    });
+    Polymer.dom.flush();
+
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
     assertFalse(!!buttonContainer.querySelector('#doneButton'));
@@ -170,9 +160,14 @@ suite('Multidevice', () => {
     assertFalse(permissionsSetupDialog.$$('#dialog').open);
   });
 
-  test('Test notificaiton setup failure during connecting flow', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
+  test('Test notification setup failure during connecting flow', async () => {
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: false,
+    });
+    Polymer.dom.flush();
+
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
     assertFalse(!!buttonContainer.querySelector('#doneButton'));
@@ -213,8 +208,13 @@ suite('Multidevice', () => {
   });
 
   test('Test notification access prohibited', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: false,
+    });
+    Polymer.dom.flush();
+
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
     assertFalse(!!buttonContainer.querySelector('#doneButton'));
@@ -240,11 +240,14 @@ suite('Multidevice', () => {
   });
 
   test('Test apps setup success flow', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.APPS_SETUP_MODE;
-    assertFalse(isNotificationItemShowen());
-    assertTrue(isAppsItemShowen());
-    assertFalse(isSetupInstructionsShownSeparately());
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: false,
+      showAppStreaming: true,
+    });
+    Polymer.dom.flush();
+
+    assertTrue(!!dialogBody.querySelector('#start-setup-description'));
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -255,9 +258,7 @@ suite('Multidevice', () => {
     assertTrue(isExpectedFlowState(SetupFlowStatus.WAIT_FOR_PHONE_APPS));
 
     simulateAppsStatusChanged(PermissionsSetupStatus.CONNECTION_REQUESTED);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertTrue(isSetupInstructionsShownSeparately());
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
@@ -265,9 +266,7 @@ suite('Multidevice', () => {
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
     simulateAppsStatusChanged(PermissionsSetupStatus.CONNECTING);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertTrue(isSetupInstructionsShownSeparately());
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
@@ -276,24 +275,22 @@ suite('Multidevice', () => {
 
     simulateAppsStatusChanged(
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertTrue(isSetupInstructionsShownSeparately());
-    assertFalse(!!buttonContainer.querySelector('#learnMore'));
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
+    assertTrue(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
-    assertFalse(!!buttonContainer.querySelector('#doneButton'));
+    assertTrue(!!buttonContainer.querySelector('#doneButton'));
+    assertTrue(buttonContainer.querySelector('#doneButton').disabled);
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
     assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 0);
     simulateAppsStatusChanged(PermissionsSetupStatus.COMPLETED_SUCCESSFULLY);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertFalse(isSetupInstructionsShownSeparately());
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertFalse(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
     assertTrue(!!buttonContainer.querySelector('#doneButton'));
+    assertFalse(buttonContainer.querySelector('#doneButton').disabled);
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
     // The feature becomes enabled when the status becomes
@@ -306,8 +303,13 @@ suite('Multidevice', () => {
   });
 
   test('Test apps setup cancel during connecting flow', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.APPS_SETUP_MODE;
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: false,
+      showAppStreaming: true,
+    });
+    Polymer.dom.flush();
+
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
     assertFalse(!!buttonContainer.querySelector('#doneButton'));
@@ -330,8 +332,13 @@ suite('Multidevice', () => {
   });
 
   test('Test apps setup failure during connecting flow', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.APPS_SETUP_MODE;
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: false,
+      showAppStreaming: true,
+    });
+    Polymer.dom.flush();
+
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
     assertFalse(!!buttonContainer.querySelector('#doneButton'));
@@ -371,11 +378,14 @@ suite('Multidevice', () => {
   });
 
   test('Test notification and apps setup success flow', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE;
-    assertTrue(isNotificationItemShowen());
-    assertTrue(isAppsItemShowen());
-    assertFalse(isSetupInstructionsShownSeparately());
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: true,
+    });
+    Polymer.dom.flush();
+
+    assertTrue(!!dialogBody.querySelector('#start-setup-description'));
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -388,20 +398,17 @@ suite('Multidevice', () => {
 
     simulateStatusChanged(
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertTrue(isSetupInstructionsShownSeparately());
-    assertFalse(!!buttonContainer.querySelector('#learnMore'));
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
+    assertTrue(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
-    assertFalse(!!buttonContainer.querySelector('#doneButton'));
+    assertTrue(!!buttonContainer.querySelector('#doneButton'));
+    assertTrue(buttonContainer.querySelector('#doneButton').disabled);
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
-    assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 0);
 
+    assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 0);
     simulateStatusChanged(PermissionsSetupStatus.COMPLETED_SUCCESSFULLY);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertTrue(isSetupInstructionsShownSeparately());
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
@@ -415,13 +422,12 @@ suite('Multidevice', () => {
     assertTrue(isExpectedFlowState(SetupFlowStatus.WAIT_FOR_PHONE_APPS));
 
     simulateAppsStatusChanged(PermissionsSetupStatus.COMPLETED_SUCCESSFULLY);
-    assertFalse(isNotificationItemShowen());
-    assertFalse(isAppsItemShowen());
-    assertFalse(isSetupInstructionsShownSeparately());
+    assertFalse(!!dialogBody.querySelector('#start-setup-description'));
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertFalse(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
     assertTrue(!!buttonContainer.querySelector('#doneButton'));
+    assertFalse(buttonContainer.querySelector('#doneButton').disabled);
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
     // The phone hub apps feature becomes enabled when the status
@@ -434,8 +440,13 @@ suite('Multidevice', () => {
   });
 
   test('Test phone enabled but ChromeOS disabled screen lock', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE;
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: true,
+    });
+    Polymer.dom.flush();
+
     loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
     loadTimeData.overrideValues({isChromeosScreenLockEnabled: false});
@@ -443,7 +454,6 @@ suite('Multidevice', () => {
 
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 0);
     assertTrue(isExpectedFlowState(SetupFlowStatus.SET_LOCKSCREEN));
-    assertFalse(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -452,8 +462,13 @@ suite('Multidevice', () => {
   });
 
   test('Test phone and ChromeOS enabled screen lock', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE;
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: true,
+    });
+    Polymer.dom.flush();
+
     loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
     loadTimeData.overrideValues({isChromeosScreenLockEnabled: true});
@@ -462,8 +477,13 @@ suite('Multidevice', () => {
   });
 
   test('Test phone disabled but ChromeOS enabled screen lock', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE;
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: true,
+    });
+    Polymer.dom.flush();
+
     loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: false});
     loadTimeData.overrideValues({isChromeosScreenLockEnabled: true});
@@ -472,8 +492,13 @@ suite('Multidevice', () => {
   });
 
   test('Test phone and ChromeOS disabled screen lock', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE;
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: true,
+    });
+    Polymer.dom.flush();
+
     loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: false});
     loadTimeData.overrideValues({isChromeosScreenLockEnabled: false});
@@ -482,8 +507,13 @@ suite('Multidevice', () => {
   });
 
   test('Test screen lock UI when Eche is disabled', async () => {
-    permissionsSetupDialog.phonePermissionSetupMode =
-        PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
+    permissionsSetupDialog.setProperties({
+      showCameraRoll: false,
+      showNotifications: true,
+      showAppStreaming: false,
+    });
+    Polymer.dom.flush();
+
     loadTimeData.overrideValues({isEcheAppEnabled: false});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
     loadTimeData.overrideValues({isChromeosScreenLockEnabled: false});
@@ -496,8 +526,13 @@ suite('Multidevice', () => {
 
   test(
       'Test screen lock UI when handling NOTIFICATION_SETUP_MODE', async () => {
-        permissionsSetupDialog.phonePermissionSetupMode =
-            PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
+        permissionsSetupDialog.setProperties({
+          showCameraRoll: false,
+          showNotifications: true,
+          showAppStreaming: false,
+        });
+        Polymer.dom.flush();
+
         loadTimeData.overrideValues({isEcheAppEnabled: true});
         loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
         loadTimeData.overrideValues({isChromeosScreenLockEnabled: false});

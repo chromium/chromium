@@ -238,7 +238,12 @@
         restamp>
       <settings-multidevice-permissions-setup-dialog
           is-password-dialog-showing="{{isPasswordDialogShowing_}}"
-          phone-permission-setup-mode="{{phonePermissionSetupMode_}}"_
+          show-camera-roll="[[isPhoneHubCameraRollSetupRequired(
+                                            pageContentData)]]"
+          show-notifications="[[isPhoneHubNotificationsSetupRequired(
+                                              pageContentData)]]"
+          show-app-streaming="[[isPhoneHubAppsSetupRequired(
+                                              pageContentData)]]"
           on-close="onHidePhonePermissionsSetupDialog_">
       </settings-multidevice-permissions-setup-dialog>
     </template>

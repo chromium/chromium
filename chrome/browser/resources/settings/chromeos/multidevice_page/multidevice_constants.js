@@ -69,24 +69,24 @@ cr.define('settings', function() {
   };
 
   /**
-   * Possible states of Phone Hub's notification access. Access can be
+   * Possible states of Phone Hub's feature access. Access can be
    * prohibited if the user is using a work profile on their phone on Android
    * version <N, or if the policy managing the phone disables access.
    * @enum {number}
    */
-  /* #export */ const PhoneHubNotificationAccessStatus = {
+  /* #export */ const PhoneHubFeatureAccessStatus = {
     PROHIBITED: 0,
     AVAILABLE_BUT_NOT_GRANTED: 1,
     ACCESS_GRANTED: 2,
   };
 
   /**
-   * Possible reasons for Phone Hub's notification access being prohibited.
-   * Users should ensure notification access is actually prohibited before
+   * Possible reasons for Phone Hub's feature access being prohibited.
+   * Users should ensure feature access is actually prohibited before
    * comparing against these reasons.
    * @enum {number}
    */
-  /* #export */ const PhoneHubNotificationAccessProhibitedReason = {
+  /* #export */ const PhoneHubFeatureAccessProhibitedReason = {
     UNKNOWN: 0,
     WORK_PROFILE: 1,
     DISABLED_BY_PHONE_POLICY: 2,
@@ -136,9 +136,10 @@ cr.define('settings', function() {
    *   phoneHubAppsState: !settings.MultiDeviceFeatureState,
    *   wifiSyncState: !settings.MultiDeviceFeatureState,
    *   isAndroidSmsPairingComplete: boolean,
-   *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus,
+   *   cameraRollAccessStatus: !settings.PhoneHubFeatureAccessStatus,
+   *   notificationAccessStatus: !settings.PhoneHubFeatureAccessStatus,
    *   notificationAccessProhibitedReason:
-   *       !settings.PhoneHubNotificationAccessProhibitedReason,
+   *       !settings.PhoneHubFeatureAccessProhibitedReason,
    *   isNearbyShareDisallowedByPolicy: boolean,
    *   isPhoneHubAppsAccessGranted: boolean,
    *   isPhoneHubPermissionsDialogSupported: boolean,
@@ -153,8 +154,8 @@ cr.define('settings', function() {
     MultiDeviceFeature,
     MultiDeviceFeatureState,
     MultiDevicePageContentData,
-    PhoneHubNotificationAccessStatus,
-    PhoneHubNotificationAccessProhibitedReason,
+    PhoneHubFeatureAccessStatus,
+    PhoneHubFeatureAccessProhibitedReason,
     PhoneHubPermissionsSetupMode,
     SmartLockSignInEnabledState
   };

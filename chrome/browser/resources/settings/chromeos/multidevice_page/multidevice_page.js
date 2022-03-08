@@ -68,14 +68,6 @@ Polymer({
     },
 
     /**
-     * @private {?settings.PhoneHubPermissionsSetupMode}
-     */
-    phonePermissionSetupMode_: {
-      type: Number,
-      value: null,
-    },
-
-    /**
      * Whether or not Nearby Share is supported which controls if the Nearby
      * Share settings and subpage are accessible.
      * @private {boolean}
@@ -378,13 +370,10 @@ Polymer({
     if (feature === settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS &&
         enabled) {
       switch (this.pageContentData.notificationAccessStatus) {
-        case settings.PhoneHubNotificationAccessStatus.PROHIBITED:
+        case settings.PhoneHubFeatureAccessStatus.PROHIBITED:
           assertNotReached('Cannot enable notification access; prohibited');
           return;
-        case settings.PhoneHubNotificationAccessStatus
-            .AVAILABLE_BUT_NOT_GRANTED:
-          this.phonePermissionSetupMode_ =
-              settings.PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
+        case settings.PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED:
           this.showPhonePermissionSetupDialog_ = true;
           return;
         default:
@@ -437,14 +426,9 @@ Polymer({
     settings.Router.getInstance().navigateTo(settings.routes.MULTIDEVICE);
   },
 
-  /**
-   * @param {!CustomEvent<!{mode: !settings.PhoneHubPermissionsSetupMode}>}
-   *     event
-   * @private
-   */
-  onPermissionSetupRequested_(event) {
+  /** @private */
+  onPermissionSetupRequested_() {
     this.showPhonePermissionSetupDialog_ = true;
-    this.phonePermissionSetupMode_ = event.detail.mode;
   },
 
   /**
@@ -487,17 +471,11 @@ Polymer({
   onInitialPageContentDataFetched_(newData) {
     this.onPageContentDataChanged_(newData);
 
-    if (this.pageContentData.notificationAccessStatus !==
-        settings.PhoneHubNotificationAccessStatus.AVAILABLE_BUT_NOT_GRANTED) {
-      return;
-    }
-
     // Show the notification access dialog if the url contains the correct
     // param.
+    // Show combined access dialog with URL having param and features.
     const urlParams = settings.Router.getInstance().getQueryParameters();
     if (urlParams.get('showPhonePermissionSetupDialog') !== null) {
-      this.phonePermissionSetupMode_ =
-          this.getPermissionSetupMode_(urlParams.get('mode'));
       this.showPhonePermissionSetupDialog_ = true;
     }
   },
@@ -650,7 +628,6 @@ Polymer({
       return;
     }
     this.showPhonePermissionSetupDialog_ = false;
-    this.phonePermissionSetupMode_ = null;
   },
 
   /** @private */
@@ -688,27 +665,5 @@ Polymer({
       is_hardware_supported) {
     return loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled') &&
         is_hardware_supported;
-  },
-
-  /**
-   * @param {null|string} mode
-   * @return {settings.PhoneHubPermissionsSetupMode}
-   * @private
-   */
-  getPermissionSetupMode_(mode) {
-    if (mode === null) {
-      return settings.PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE;
-    }
-    switch (mode) {
-      case settings.PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE.toString():
-        return settings.PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
-      case settings.PhoneHubPermissionsSetupMode.APPS_SETUP_MODE.toString():
-        return settings.PhoneHubPermissionsSetupMode.APPS_SETUP_MODE;
-      case settings.PhoneHubPermissionsSetupMode.CAMERA_ROLL_SETUP_MODE.toString():
-        return settings.PhoneHubPermissionsSetupMode.CAMERA_ROLL_SETUP_MODE;
-      case settings.PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE.toString():
-      default:
-        return settings.PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE;
-    }
   },
 });

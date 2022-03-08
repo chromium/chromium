@@ -140,9 +140,9 @@
               page-content-data="[[pageContentData]]" is-sub-feature
               deep-link-focus-id$="[[Setting.kPhoneHubCameraRollOnOff]]">
             <template is="dom-if"
-                if="[[isPhoneHubCameraRollSetupRequired_(pageContentData)]]"
+                if="[[isPhoneHubCameraRollSetupRequired(pageContentData)]]"
                 restamp>
-              <cr-button on-click="handlePhoneHubCameraRollSetupClick_"
+              <cr-button on-click="handlePhoneHubSetupClick_"
                   slot="feature-controller"
                   disabled="[[isPhoneHubDisabled_(pageContentData)]]">
                 $i18n{multideviceSetupButton}
@@ -161,9 +161,9 @@
               page-content-data="[[pageContentData]]" is-sub-feature
               deep-link-focus-id$="[[Setting.kPhoneHubNotificationsOnOff]]">
             <template is="dom-if"
-                if="[[isPhoneHubNotificationsSetupRequired_(pageContentData)]]"
+                if="[[isPhoneHubNotificationsSetupRequired(pageContentData)]]"
                 restamp>
-              <cr-button on-click="handlePhoneHubNotificationsSetupClick_"
+              <cr-button on-click="handlePhoneHubSetupClick_"
                   slot="feature-controller"
                   disabled="[[isPhoneHubDisabled_(pageContentData)]]">
                 $i18n{multideviceSetupButton}
@@ -179,9 +179,9 @@
               page-content-data="[[pageContentData]]" is-sub-feature
               deep-link-focus-id$="[[Setting.kPhoneHubAppsOnOff]]">
             <template is="dom-if"
-                if="[[isPhoneHubAppsSetupRequired_(pageContentData)]]"
+                if="[[isPhoneHubAppsSetupRequired(pageContentData)]]"
                 restamp>
-              <cr-button on-click="handlePhoneHubAppsSetupClick_"
+              <cr-button on-click="handlePhoneHubSetupClick_"
                   slot="feature-controller"
                   disabled="[[isPhoneHubDisabled_(pageContentData)]]">
                 $i18n{multideviceSetupButton}
@@ -194,11 +194,11 @@
             restamp>
           <settings-multidevice-combined-setup-item
               id="phoneHubCombinedSetupItem"
-              camera-roll="[[isPhoneHubCameraRollSetupRequired_(
+              camera-roll="[[isPhoneHubCameraRollSetupRequired(
                                 pageContentData)]]"
-              notifications="[[isPhoneHubNotificationsSetupRequired_(
+              notifications="[[isPhoneHubNotificationsSetupRequired(
                                 pageContentData)]]"
-              app-streaming="[[isPhoneHubAppsSetupRequired_(pageContentData)]]"
+              app-streaming="[[isPhoneHubAppsSetupRequired(pageContentData)]]"
               page-content-data="[[pageContentData]]">
           </settings-multidevice-combined-setup-item>
         </template>

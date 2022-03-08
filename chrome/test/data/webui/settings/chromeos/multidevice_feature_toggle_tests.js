@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {MultiDeviceFeature, MultiDeviceFeatureState, PhoneHubNotificationAccessStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {MultiDeviceFeature, MultiDeviceFeatureState, PhoneHubFeatureAccessStatus} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
@@ -40,7 +40,7 @@ suite('Multidevice', () => {
   }
 
   /**
-   * @param {!settings.PhoneHubNotificationAccessStatus} accessStatus
+   * @param {!settings.PhoneHubFeatureAccessStatus} accessStatus
    */
   function setNotificationAccessStatus(accessStatus) {
     featureToggle.pageContentData = Object.assign(
@@ -199,7 +199,7 @@ suite('Multidevice', () => {
     assertFalse(crToggle.disabled);
 
     setNotificationAccessStatus(
-        settings.PhoneHubNotificationAccessStatus.PROHIBITED);
+        settings.PhoneHubFeatureAccessStatus.PROHIBITED);
     assertFalse(featureToggle.checked_);
     assertFalse(crToggle.checked);
     assertTrue(crToggle.disabled);
@@ -214,7 +214,7 @@ suite('Multidevice', () => {
 
         setPhoneHubState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
         setNotificationAccessStatus(
-            settings.PhoneHubNotificationAccessStatus.ACCESS_GRANTED);
+            settings.PhoneHubFeatureAccessStatus.ACCESS_GRANTED);
         assertFalse(crToggle.disabled);
 
         setPhoneHubState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);

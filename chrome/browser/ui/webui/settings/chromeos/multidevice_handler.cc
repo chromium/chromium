@@ -669,10 +669,13 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
   page_content_dictionary->SetBoolKey(kIsNearbyShareDisallowedByPolicy,
                                       is_nearby_share_disallowed_by_policy);
 
-  page_content_dictionary->SetBoolKey(
-      kIsPhoneHubPermissionsDialogSupported,
+  bool is_phone_hub_permissions_dialog_supported =
       base::FeatureList::IsEnabled(
-          chromeos::features::kEchePhoneHubPermissionsOnboarding));
+          chromeos::features::kEchePhoneHubPermissionsOnboarding) ||
+      base::FeatureList::IsEnabled(chromeos::features::kPhoneHubCameraRoll);
+  page_content_dictionary->SetBoolean(
+      kIsPhoneHubPermissionsDialogSupported,
+      is_phone_hub_permissions_dialog_supported);
 
   return page_content_dictionary;
 }

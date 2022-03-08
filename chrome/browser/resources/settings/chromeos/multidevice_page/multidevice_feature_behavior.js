@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, PhoneHubNotificationAccessStatus, PhoneHubNotificationAccessProhibitedReason} from './multidevice_constants.m.js';
+// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, PhoneHubFeatureAccessStatus, PhoneHubFeatureAccessProhibitedReason} from './multidevice_constants.m.js';
 // #import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 // clang-format on
 
@@ -100,7 +100,37 @@ const MultiDeviceFeatureBehaviorImpl = {
   isPhoneHubNotificationAccessProhibited() {
     return this.pageContentData &&
         this.pageContentData.notificationAccessStatus ===
-        settings.PhoneHubNotificationAccessStatus.PROHIBITED;
+        settings.PhoneHubFeatureAccessStatus.PROHIBITED;
+  },
+
+  /**
+   * Whether Camera Roll requires user action to finish set up.
+   * @return {boolean}
+   */
+  isPhoneHubCameraRollSetupRequired() {
+    return this.isFeatureSupported(
+               settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL) &&
+        this.pageContentData.cameraRollAccessStatus ===
+        settings.PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
+  },
+
+  /**
+   * Whether Apps requires user action to finish set up.
+   * @return {boolean}
+   */
+  isPhoneHubAppsSetupRequired() {
+    return this.isFeatureSupported(settings.MultiDeviceFeature.ECHE) &&
+        this.pageContentData.isPhoneHubPermissionsDialogSupported &&
+        !this.pageContentData.isPhoneHubAppsAccessGranted;
+  },
+
+  /**
+   * Whether Notifications requires user action to finish set up.
+   * @return {boolean}
+   */
+  isPhoneHubNotificationsSetupRequired() {
+    return this.pageContentData.notificationAccessStatus ===
+        settings.PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
   },
 
   /**

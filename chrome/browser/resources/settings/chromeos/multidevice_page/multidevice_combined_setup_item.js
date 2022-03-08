@@ -90,10 +90,8 @@ Polymer({
   },
 
   /** @private */
-  handlePhoneHubCombinedSetupClick_() {
-    this.fire(
-        'permission-setup-requested',
-        {mode: PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE});
+  handlePhoneHubSetupClick_() {
+    this.fire('permission-setup-requested');
   },
 
   /**

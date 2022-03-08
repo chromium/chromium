@@ -3168,7 +3168,7 @@ Press an assigned switch or key to remove assignment.
     Choose either one each time you sign in
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The second paragraph of text shown in the dialog containing the Phone Hub notification opt-in flow. Alerts the user that to enable notifications, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
-    Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
+    Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the feature is successfully turned on and notifications on their phone will now be mirrored to their Chromebook.">
     Notifications turned on
@@ -3227,32 +3227,26 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ACK_SUBTITLE" desc="The subtitle of the dialog containing the phone permissions opt-in flow shown when a user clicks the Phone Hub 'Notifications' or 'Apps' setup button.">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> can then:
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ITEM_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Notifications' setup button. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
-    Get phone notifications
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Recent photos' setup button. Explains to the user that they need to grant Google Play Services permission to access files on the phone.">
+    View your phone's recent photos and media
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Notifications' setup button. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
-    Receive and respond to messages
-  </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_ITEM_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Apps' setup button. Explains to the user that they need to grant phone permission to steam apps.">
-    Stream messaging apps
+    View, dismiss, and reply to your phone's notifications
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Apps' setup button. Explains to the user that they need to grant phone permission to stream apps.">
-    View conversations, react to messages, and add people to group chats
+    Stream messaging apps
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when the user needs to follow the setup flow instructions on their phone.">
-    Finish setup on your phone
+    Finish setting up on your phone
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_OPERATION_INSTRUCTIONS" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that to enable notifications and apps permissionss on the phone.">
-    Go to your phone to review a few more permissions.
-  </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_INSTRUCTIONS" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that to enable notifications and apps, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
-    Make sure your phone is nearby, unlocked, and that Bluetooth and Wi-Fi are turned on.
+    Go to your phone to review a few more permissions. Make sure your phone's Bluetooth and Wi-Fi are turned on.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when the feature is successfully turned on.">
     Your phone and <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> are connected
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that dismiss notifications on the Chromebook will also dismiss them on the phone.">
-    Keep in mind, dismissing notifications on your Chromebook will also dismiss them on your phone.
+    Keep in mind, dismissing notifications on your Chromebook will also dismiss them on your phone
   </message>
 
   <!-- Lock Screen Page (OS settings) -->
