@@ -83,7 +83,7 @@
 <translation id="1503394326855300303">При одновременной работе в нескольких аккаунтах необходимо сначала зайти в аккаунт владельца.</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
 <translation id="1516740043221086139">Режим "Не беспокоить" включен</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Показать настройки уведомлений. Уведомления отключены для одного приложения.}one{Показать настройки уведомлений. Уведомления отключены для # приложения.}few{Показать настройки уведомлений. Уведомления отключены для # приложений.}many{Показать настройки уведомлений. Уведомления отключены для # приложений.}other{Показать настройки уведомлений. Уведомления отключены для # приложения.}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Показать настройки уведомлений. Уведомления отключены для одного приложения.}one{Показать настройки уведомлений. Уведомления отключены для # приложения.}few{Показать настройки уведомлений. Уведомления отключены для # приложений.}other{Показать настройки уведомлений. Уведомления отключены для # приложения.}}</translation>
 <translation id="1525508553941733066">ЗАКРЫТЬ</translation>
 <translation id="1536604384701784949">Чтобы использовать адрес электронной почты <ph name="USER_EMAIL_ADDRESS" />, вам сначала нужно выйти из всех аккаунтов. Для этого нажмите "Отмена" и вернитесь на шаг назад. Затем нажмите на часы и на открывшейся панели состояния выберите "Выйти". Войдите в аккаунт <ph name="USER_EMAIL_ADDRESS_2" /> ещё раз.</translation>
 <translation id="15373452373711364">Большой курсор мыши</translation>
@@ -289,7 +289,7 @@
 <translation id="3153444934357957346">Для множественного входа можно использовать не более <ph name="MULTI_PROFILE_USER_LIMIT" /> аккаунтов.</translation>
 <translation id="3154351730702813399">Администратору устройства доступна информация о том, какие страницы вы просматриваете в браузере.</translation>
 <translation id="3181441307743005334">Перезапуск может занять несколько минут</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Подключено одно устройство}one{Подключено # устройство}few{Подключено # устройства}many{Подключено # устройств}other{Подключено # устройства}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Подключено одно устройство}one{Подключено # устройство}few{Подключено # устройства}other{Подключено # устройства}}</translation>
 <translation id="320207200541803018">Установи таймер</translation>
 <translation id="3203405173652969239">Функция Switch Access включена</translation>
 <translation id="3207953481422525583">Пользовательские настройки</translation>
@@ -412,7 +412,7 @@
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Вы открыли доступ к своему экрану</translation>
 <translation id="4057003836560082631">Вкладка <ph name="INDEX" /> из <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Откл. 1 прил.}one{Откл. # прил.}few{Откл. # прил.}many{Откл. # прил.}other{Откл. # прил.}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Откл. 1 прил.}one{Откл. # прил.}few{Откл. # прил.}other{Откл. # прил.}}</translation>
 <translation id="4066027111132117168">Включен, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">сигнал средней мощности</translation>
 <translation id="4095366824370681039">Ручка</translation>
@@ -469,7 +469,7 @@
 <translation id="4424159417645388645">Рабочий стол 5</translation>
 <translation id="4430019312045809116">Объем</translation>
 <translation id="4445159312344259901">Войти, чтобы разблокировать</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важное уведомление}one{# важное уведомление}few{# важных уведомления}many{# важных уведомлений}other{# важного уведомления}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важное уведомление}one{# важное уведомление}few{# важных уведомления}other{# важного уведомления}}</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="4451374464530248585">Функция сочетания клавиш Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши Page Down, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вниз.</translation>
 <translation id="445864333228800152">Добрый вечер!</translation>
@@ -577,7 +577,7 @@
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5176318573511391780">Запись видео с части экрана</translation>
 <translation id="5199367439331364630">Чтобы войти в аккаунт на устройстве Chromebook, введите пароль.</translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ещё 1 уведомление}one{ещё # уведомление}few{ещё # уведомления}many{ещё # уведомлений}other{ещё # уведомления}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ещё 1 уведомление}one{ещё # уведомление}few{ещё # уведомления}other{ещё # уведомления}}</translation>
 <translation id="5207949376430453814">Выделять курсор при вводе текста</translation>
 <translation id="5208059991603368177">Включено</translation>
 <translation id="5222676887888702881">Выйти</translation>
@@ -787,7 +787,7 @@
 <translation id="6850010208275816200">Текущее приложение используется в полноэкранном режиме. Если оно запрашивает пароль, сначала выйдите из этого режима.</translation>
 <translation id="6852052252232534364">Активировать</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Осталась 1 цифра}one{Осталась # цифра}few{Осталось # цифры}many{Осталось # цифр}other{Осталось # цифры}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Осталась 1 цифра}one{Осталась # цифра}few{Осталось # цифры}other{Осталось # цифры}}</translation>
 <translation id="6867938213751067702">Скачивание файла <ph name="FILENAME" /> приостановлено</translation>
 <translation id="6878400149835617132">Быстрые клавиши отключены</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> может работать неэффективно. Используйте сертифицированный адаптер питания USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт или выше.</translation>
@@ -901,7 +901,7 @@
 <translation id="7662283695561029522">Нажмите, чтобы настроить.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Добавить мобильную сеть</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 уведомление}one{# уведомление}few{# уведомления}many{# уведомлений}other{# уведомления}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 уведомление}one{# уведомление}few{# уведомления}other{# уведомления}}</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7745560842763881396">Показать приложения на панели запуска</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>

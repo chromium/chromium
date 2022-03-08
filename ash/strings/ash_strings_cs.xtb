@@ -83,7 +83,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1503394326855300303">Účet tohoto vlastníka musí být v relaci multiprofilu přihlášen jako první.</translation>
 <translation id="1510238584712386396">Spouštěč</translation>
 <translation id="1516740043221086139">Režim Nerušit je zapnutý.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobrazit nastavení oznámení. U jedné aplikace jsou oznámení vypnutá}few{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}many{Zobrazit nastavení oznámení. U # aplikace jsou oznámení vypnutá}other{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobrazit nastavení oznámení. U jedné aplikace jsou oznámení vypnutá}few{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}other{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}}</translation>
 <translation id="1525508553941733066">ZAVŘÍT</translation>
 <translation id="1536604384701784949">Pokud chcete použít účet <ph name="USER_EMAIL_ADDRESS" />, bude nutné se nejprve odhlásit od všech dalších účtů. Pokud se chcete odhlásit, vraťte se zpět pomocí tlačítka Zrušit. Poté výběrem času otevřete stavovou oblast a vyberte Odhlásit se. Poté se přihlaste k účtu <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Velký kurzor myši</translation>
@@ -289,7 +289,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3153444934357957346">Počet účtů, které lze v rámci vícenásobného přihlášení používat, je omezen na <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Správce zařízení může sledovat vaši aktivitu při procházení.</translation>
 <translation id="3181441307743005334">Restartování může chvíli trvat</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Připojeno k zařízení}few{Připojeno k # zařízením}many{Připojeno k # zařízení}other{Připojeno k # zařízením}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Připojeno k zařízení}few{Připojeno k # zařízením}other{Připojeno k # zařízením}}</translation>
 <translation id="320207200541803018">Nastavit časovač</translation>
 <translation id="3203405173652969239">Je zapnutý přístup pomocí přepínačů</translation>
 <translation id="3207953481422525583">Uživatelská nastavení</translation>
@@ -412,7 +412,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Sdílíte svou obrazovku</translation>
 <translation id="4057003836560082631">Karta prohlížeče <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Vyp., 1 apl.}few{Vyp., # apl.}many{Vyp., # apl.}other{Vyp., # apl.}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Vyp., 1 apl.}few{Vyp., # apl.}other{Vyp., # apl.}}</translation>
 <translation id="4066027111132117168">Zapnuto, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Střední signál</translation>
 <translation id="4095366824370681039">Pero</translation>
@@ -469,7 +469,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4424159417645388645">Plocha 5</translation>
 <translation id="4430019312045809116">Hlasitost</translation>
 <translation id="4445159312344259901">Odemknete přihlášením</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 důležité oznámení}few{# důležitá oznámení}many{# důležitého oznámení}other{# důležitých oznámení}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 důležité oznámení}few{# důležitá oznámení}other{# důležitých oznámení}}</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
 <translation id="4451374464530248585">Klávesová zkratka Alt + šipka dolů se změnila. Pokud chcete použít klávesu Page Down, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku dolů.</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
@@ -577,7 +577,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5176318573511391780">Zaznamenat část obrazovky</translation>
 <translation id="5199367439331364630">Pokud se chcete přihlásit do Chromebooku, zadejte heslo</translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 další oznámení}few{# další oznámení}many{# dalšího oznámení}other{# dalších oznámení}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 další oznámení}few{# další oznámení}other{# dalších oznámení}}</translation>
 <translation id="5207949376430453814">Zvýraznit textový kurzor</translation>
 <translation id="5208059991603368177">Zap</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
@@ -787,7 +787,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6850010208275816200">Aktuální aplikace je v režimu celé obrazovky. Pokud vás aplikace požádá o heslo, nejdřív režim celé obrazovky ukončete.</translation>
 <translation id="6852052252232534364">Aktivujte kliknutím</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zbývá jedna číslice}few{Zbývají # číslice}many{Zbývá # číslice}other{Zbývá # číslic}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zbývá jedna číslice}few{Zbývají # číslice}other{Zbývá # číslic}}</translation>
 <translation id="6867938213751067702">Bylo pozastaveno stahování souboru <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Zkratka je vypnutá</translation>
 <translation id="6886172995547742638">Výkon zařízení <ph name="DEVICE_TYPE" /> se může snížit. Použijte certifikovaný napájecí adaptér s výkonem <ph name="PREFERRED_MINIMUM_POWER" /> W nebo vyšším.</translation>
@@ -901,7 +901,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7662283695561029522">Klepnutím zahájíte konfiguraci</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Přidat novou mobilní síť</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 oznámení}few{# oznámení}many{# oznámení}other{# oznámení}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 oznámení}few{# oznámení}other{# oznámení}}</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
 <translation id="7745560842763881396">Zobrazit aplikace v poličce</translation>
 <translation id="7749443890790263709">Byl dosažen maximální počet ploch.</translation>

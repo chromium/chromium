@@ -84,7 +84,7 @@
 <translation id="1503394326855300303">يجب أن يكون حساب المالك هذا أول حساب يتم تسجيل الدخول إليه في جلسة تسجيل دخول متعدد.</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1516740043221086139">وضع "عدم الإزعاج" مُفعَّل.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيق واحد}zero{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}two{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيقين (#)}few{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقات}many{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقًا}other{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيق واحد}zero{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}two{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيقين (#)}few{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقات}other{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}}</translation>
 <translation id="1525508553941733066">إغلاق</translation>
 <translation id="1536604384701784949">لاستخدام <ph name="USER_EMAIL_ADDRESS" />، عليك تسجيل الخروج من جميع الحسابات أولاً. لتسجيل الخروج، انقر على "إلغاء" للرجوع. بعد ذلك، اختَر الوقت لفتح منطقة الحالة ثم اختَر تسجيل الخروج. ثم سجِّل الدخول إلى <ph name="USER_EMAIL_ADDRESS_2" /> مرة أخرى.</translation>
 <translation id="15373452373711364">مؤشر الماوس الكبير</translation>
@@ -290,7 +290,7 @@
 <translation id="3153444934357957346">يمكنك الحصول فقط على ما يصل إلى <ph name="MULTI_PROFILE_USER_LIMIT" /> حساب في الدخول المتعدد.</translation>
 <translation id="3154351730702813399">قد يراقب مشرف الجهاز نشاط التصفح.</translation>
 <translation id="3181441307743005334">قد تستغرق إعادة التشغيل بعض الوقت</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{تم الاتصال بجهاز واحد}zero{تم الاتصال بـ # جهاز}two{تم الاتصال بجهازين (#)}few{تم الاتصال بـ # أجهزة}many{تم الاتصال بـ # جهازًا}other{تم الاتصال بـ # جهاز}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{تم الاتصال بجهاز واحد}zero{تم الاتصال بـ # جهاز}two{تم الاتصال بجهازين (#)}few{تم الاتصال بـ # أجهزة}other{تم الاتصال بـ # جهاز}}</translation>
 <translation id="320207200541803018">ضبط موقِّت</translation>
 <translation id="3203405173652969239">تم تفعيل ميزة "الوصول عبر مفتاح التحويل".</translation>
 <translation id="3207953481422525583">إعدادات المستخدم</translation>
@@ -413,7 +413,7 @@
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">أنت تشارك الشاشة</translation>
 <translation id="4057003836560082631">علامة تبويب متصفِّح <ph name="INDEX" /> من <ph name="TOTAL_COUNT" /> <ph name="SITE_TITLE" />، <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{الإشعارات متوقفة لتطبيق واحد}zero{الإشعارات متوقفة لـ # تطبيق}two{الإشعارات متوقفة لتطبيقَين (#)}few{الإشعارات متوقفة لـ # تطبيقات}many{الإشعارات متوقفة لـ # تطبيقًا}other{الإشعارات متوقفة لـ # تطبيق}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{الإشعارات متوقفة لتطبيق واحد}zero{الإشعارات متوقفة لـ # تطبيق}two{الإشعارات متوقفة لتطبيقَين (#)}few{الإشعارات متوقفة لـ # تطبيقات}other{الإشعارات متوقفة لـ # تطبيق}}</translation>
 <translation id="4066027111132117168">مُفعَّلة لمدة <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">إشارة متوسطة</translation>
 <translation id="4095366824370681039">قلم حبر</translation>
@@ -470,7 +470,7 @@
 <translation id="4424159417645388645">سطح المكتب 5</translation>
 <translation id="4430019312045809116">مستوى الصوت</translation>
 <translation id="4445159312344259901">سجِّل الدخول لفتح قفل الشبكة.</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد مُهمّ}zero{# إشعار مُهمّ}two{إشعاران مُهمّان}few{# إشعارات مُهمّة}many{# إشعارًا مُهمًّا}other{# إشعار مُهمّ}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد مُهمّ}zero{# إشعار مُهمّ}two{إشعاران مُهمّان}few{# إشعارات مُهمّة}other{# إشعار مُهمّ}}</translation>
 <translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
 <translation id="4451374464530248585">‏تم تغيير اختصارات لوحة المفاتيح "Alt + السهم المتّجه للأسفل". لاستخدام مفتاح Page Down، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه للأسفل".</translation>
 <translation id="445864333228800152">مساء الخير،</translation>
@@ -578,7 +578,7 @@
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5176318573511391780">تسجيل جزء من الشاشة</translation>
 <translation id="5199367439331364630">‏لتسجيل الدخول إلى جهاز Chromebook، أدخِل كلمة المرور.</translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد آخر}zero{# إشعار آخر}two{إشعاران آخران}few{# إشعارات أخرى}many{# إشعارًا آخر}other{# إشعار آخر}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد آخر}zero{# إشعار آخر}two{إشعاران آخران}few{# إشعارات أخرى}other{# إشعار آخر}}</translation>
 <translation id="5207949376430453814">تمييز علامة إقحام النص</translation>
 <translation id="5208059991603368177">مُفعَّل</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
@@ -788,7 +788,7 @@
 <translation id="6850010208275816200">يتم عرض التطبيق الحالي في وضع ملء الشاشة. إذا طلب التطبيق إدخال كلمة المرور، يُرجى أولاً الخروج من وضع ملء الشاشة.</translation>
 <translation id="6852052252232534364">انقر للتفعيل.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانية</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{يتبقى رقم واحد}zero{يتبقى # رقم}two{يتبقى رقمان}few{يتبقى # أرقام}many{يتبقى # رقمًا}other{يتبقى # رقم}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{يتبقى رقم واحد}zero{يتبقى # رقم}two{يتبقى رقمان}few{يتبقى # أرقام}other{يتبقى # رقم}}</translation>
 <translation id="6867938213751067702">تم إيقاف تنزيل <ph name="FILENAME" /> مؤقتًا.</translation>
 <translation id="6878400149835617132">تم إيقاف الاختصار</translation>
 <translation id="6886172995547742638">‏قد يواجه جهاز <ph name="DEVICE_TYPE" /> انخفاضًا في الأداء. يمكنك استخدام محوِّل طاقة متوافق بقدرة <ph name="PREFERRED_MINIMUM_POWER" /> واط أو محوِّل طاقة USB-C بقدرة أعلى.</translation>
@@ -902,7 +902,7 @@
 <translation id="7662283695561029522">النقر للإعداد</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">إضافة شبكة جوّال جديدة</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد}zero{# إشعار}two{إشعاران (#)}few{# إشعارات}many{# إشعارًا}other{# إشعار}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد}zero{# إشعار}two{إشعاران (#)}few{# إشعارات}other{# إشعار}}</translation>
 <translation id="7724603315864178912">قص</translation>
 <translation id="7745560842763881396">عرض التطبيقات في الرفّ</translation>
 <translation id="7749443890790263709">تم تجاوز أقصى عدد مسموح به من محطات الإرساء.</translation>

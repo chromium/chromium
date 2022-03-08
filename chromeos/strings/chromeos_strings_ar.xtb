@@ -121,7 +121,7 @@
 <translation id="3091839911843451378">تعذَّرت الطباعة - توقّفت الطابعة</translation>
 <translation id="3102119246920354026">ذاكرة التخزين المؤقت</translation>
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{هل تريد إزالة الصفحة؟}=1{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}two{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}few{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}many{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}other{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{هل تريد إزالة الصفحة؟}=1{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}two{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}few{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}other{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}}</translation>
 <translation id="315116470104423982">بيانات الجوال</translation>
 <translation id="3156846309055100599">جارٍ مسح الصفحة <ph name="PAGE_NUMBER" /> ضوئيًا...</translation>
 <translation id="315738237743207937">تم رصد مدخل مشروط الوصول إليه.</translation>
@@ -131,7 +131,7 @@
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
-<translation id="3283504360622356314">{0,plural, =1{تعديل الملف}zero{تعديل الملفات}two{تعديل الملفَين}few{تعديل الملفات}many{تعديل الملفات}other{تعديل الملفات}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{تعديل الملف}zero{تعديل الملفات}two{تعديل الملفَين}few{تعديل الملفات}other{تعديل الملفات}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> غيغاهرتز</translation>
 <translation id="3310640316857623290">وقت استجابة "نظام أسماء النطاقات" أعلى بكثير من الحدّ الأقصى المسموح به.</translation>
 <translation id="3328783797891415197">الاختبار قيد التشغيل.</translation>
@@ -228,7 +228,7 @@
 <translation id="4835901797422965222">ما مِن شبكات نشِطة.</translation>
 <translation id="484790837831576105">‏(نظام التشغيل Android) اختبار التحويل باستخدام نظام أسماء النطاقات (DNS)</translation>
 <translation id="4848429997038228357">قيد التشغيل</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> تتبقّى محاولة واحدة ({0}).}zero{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}two{<ph name="ERROR_MESSAGE" /> تتبقّى محاولتان ({0}).}few{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولات.}many{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}other{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> تتبقّى محاولة واحدة ({0}).}zero{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}two{<ph name="ERROR_MESSAGE" /> تتبقّى محاولتان ({0}).}few{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولات.}other{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}}</translation>
 <translation id="4871137769558798671">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTPS (المنفذ 443).</translation>
 <translation id="4880328057631981605">اسم نقطة الوصول</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
@@ -281,7 +281,7 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">التصفّح كضيف</translation>
 <translation id="54609108002486618">تتم إدارته</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{تتبقّى محاولة واحدة ({0}).}zero{تتبقّى {0} محاولة.}two{تتبقّى محاولتان ({0}).}few{تتبقّى {0} محاولات.}many{تتبقّى {0} محاولة.}other{تتبقّى {0} محاولة.}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{تتبقّى محاولة واحدة ({0}).}zero{تتبقّى {0} محاولة.}two{تتبقّى محاولتان ({0}).}few{تتبقّى {0} محاولات.}other{تتبقّى {0} محاولة.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">تعذّر إكمال عمليّة المسح الضوئي</translation>
 <translation id="5502931783115429516">‏Android لا يعمل.</translation>
@@ -305,7 +305,7 @@
 <translation id="5866840822086176774">قوية جدًا</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="5916084858004523819">محظورة</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{تم بنجاح مسح الملف ضوئيًا وحفظه في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{تم بنجاح مسح الملفين ضوئيًا وحفظهما في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{تم بنجاح مسح الملف ضوئيًا وحفظه في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{تم بنجاح مسح الملفين ضوئيًا وحفظهما في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">لم يتم العثور على الملف.</translation>
 <translation id="594552776027197022">إنشاء مفتاحَي تشفير عشوائيين</translation>
 <translation id="5972388717451707488">Update Engine</translation>
@@ -343,7 +343,7 @@
 <translation id="641081527798843608">مطابقة الموضوع</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">جيدة</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{هل تريد إعادة مسح الصفحة ضوئيًا؟}=1{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}two{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}few{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}many{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}other{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{هل تريد إعادة مسح الصفحة ضوئيًا؟}=1{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}two{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}few{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}other{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}}</translation>
 <translation id="6472207088655375767">‏كلمة المرور لمرة واحدة (OTP)</translation>
 <translation id="6480327114083866287">تتم الإدارة من خلال <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">توقّفت الطابعة - الورق مكدّس</translation>
@@ -383,7 +383,7 @@
 <translation id="7059230779847288458">جارٍ الشحن. تتبقَّى <ph name="TIME_VALUE" /> حتى اكتمال الشحن.</translation>
 <translation id="708426984172631313">متوقّف</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7134436342991564651">{0,plural, =1{خادم أسماء واحد}zero{خوادم الأسماء}two{خادما أسماء}few{خوادم الأسماء}many{خوادم الأسماء}other{خوادم الأسماء}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{خادم أسماء واحد}zero{خوادم الأسماء}two{خادما أسماء}few{خوادم الأسماء}other{خوادم الأسماء}}</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="714876143603641390">‏الاتصال بشبكة LAN</translation>
@@ -404,7 +404,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7415801143053185905">‏وقت استجابة بروتوكول HTTP طويل جدًا.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7487067081878637334">التقنية</translation>
 <translation id="7490813197707563893">‏عنوان MAC</translation>
@@ -519,7 +519,7 @@
 <translation id="8968751544471797276">معدّل الشحن</translation>
 <translation id="8970109610781093811">إعادة التشغيل مرة أخرى</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{مسح ضوئي}=1{مسح صفحة واحدة ({NUMBER_OF_PAGES}) ضوئيًا}two{مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا}few{مسح {NUMBER_OF_PAGES} صفحات ضوئيًا}many{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}other{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{مسح ضوئي}=1{مسح صفحة واحدة ({NUMBER_OF_PAGES}) ضوئيًا}two{مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا}few{مسح {NUMBER_OF_PAGES} صفحات ضوئيًا}other{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}}</translation>
 <translation id="9003704114456258138">التردد</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">‏يستغرق التحويل باستخدام نظام أسماء النطاقات (DNS) وقت استجابة طويلاً.</translation>

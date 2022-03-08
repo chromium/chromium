@@ -53,14 +53,14 @@
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2379925928934107488">Калі Chrome выкарыстоўвае цёмную тэму, прымяняць яе да сайтаў (калі гэта магчыма)</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
-<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Спампоўванне завершана <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
 <translation id="2490684707762498678">Пад кіраваннем праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="2498359688066513246">Даведка і водгукі</translation>
 <translation id="2501278716633472235">Назад</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 файл cookie заблакіраваны}one{# файл cookie заблакіраваны}few{# файлы cookie заблакіраваны}many{# файлаў cookie заблакіраваны}other{# файла cookie заблакіраваны}}</translation>
+<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 файл cookie заблакіраваны}one{# файл cookie заблакіраваны}few{# файлы cookie заблакіраваны}other{# файла cookie заблакіраваны}}</translation>
 <translation id="2570922361219980984">Доступ да месцазнаходжання для гэтай прылады таксама выключаны. Уключыце яго ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Разгорнута. Націсніце, каб згарнуць.</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
@@ -161,7 +161,7 @@
 <translation id="5335288049665977812">Дазволіць сайтам запускаць JavaScript (рэкамендавана)</translation>
 <translation id="534295439873310000">Прылады NFC</translation>
 <translation id="5354152178998424783">Будуць выдалены файлы cookie і даныя (<ph name="DATASIZE" />), захаваныя сайтамі.</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(і яшчэ 1)}one{(і яшчэ #)}few{(і яшчэ #)}many{(і яшчэ #)}other{(і яшчэ #)}}</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(і яшчэ 1)}one{(і яшчэ #)}few{(і яшчэ #)}other{(і яшчэ #)}}</translation>
 <translation id="5403592356182871684">Імёны</translation>
 <translation id="5438097262470833822">Будуць скінуты дазволы для вэб-сайта <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Прайшло часу: <ph name="ELAPSED_TIME" /> з <ph name="TOTAL_TIME" />.</translation>
@@ -213,7 +213,7 @@
 <translation id="6447842834002726250">Файлы cookie</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
-<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
 <translation id="6561560012278703671">Забараніць сайтам адцягваць вашу ўвагу запытамі дазволу на паказ апавяшчэнняў. Паказваць замест іх індыкатар блакіроўкі ў адрасным радку</translation>
 <translation id="6593061639179217415">Версія для ПК</translation>
@@ -237,7 +237,7 @@
 <translation id="7000754031042624318">Выключана ў наладах Android</translation>
 <translation id="7016516562562142042">Дазволена для бягучай пошукавай сістэмы</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
-<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Выбраны 1 элемент}one{Выбраны # элемент}few{Выбрана # элементы}many{Выбрана # элементаў}other{Выбрана # элемента}}</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Выбраны 1 элемент}one{Выбраны # элемент}few{Выбрана # элементы}other{Выбрана # элемента}}</translation>
 <translation id="7087918508125750058">Выбрана: <ph name="ITEM_COUNT" />.  Параметры знаходзяцца ўверсе экрана</translation>
 <translation id="7141896414559753902">Заблакіраваць сайтам паказ выплыўных вокнаў і перанакіраванні (рэкамендуецца)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
@@ -298,7 +298,7 @@
 <translation id="8441146129660941386">Перайсці назад</translation>
 <translation id="8444433999583714703">Каб даць праграме "<ph name="APP_NAME" />" доступ да даных пра ваша месцазнаходжанне, уключыце апошнія ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Адклікаць дазвол на доступ да прылады</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Выкарыстоўваецца 1 файл cookie}one{Выкарыстоўваецца # файл cookie}few{Выкарыстоўваюцца # файлы cookie}many{Выкарыстоўваюцца # файлаў cookie}other{Выкарыстоўваюцца # файла cookie}}</translation>
+<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Выкарыстоўваецца 1 файл cookie}one{Выкарыстоўваецца # файл cookie}few{Выкарыстоўваюцца # файлы cookie}other{Выкарыстоўваюцца # файла cookie}}</translation>
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
 <translation id="851751545965956758">Блакіраваць сайтам падключэнне да прылад</translation>
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
@@ -325,7 +325,7 @@
 <translation id="8986362086234534611">Забыць</translation>
 <translation id="9019902583201351841">Пад кіраваннем вашых бацькоў</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Уключыце для праграмы "<ph name="APP_NAME" />" дазволы ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Гэта старонка небяспечная</translation>
 <translation id="930525582205581608">Забыць гэты сайт?</translation>

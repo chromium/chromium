@@ -83,7 +83,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1503394326855300303">Tento účet vlastníka musí byť prvým prihláseným účtom v relácii viacerých prihlásení.</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1516740043221086139">Režim Nerušiť je zapnutý.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobraziť nastavenia upozornení. Upozornenia sú pre aplikáciu vypnuté}few{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácie}many{Show notification settings. Notifications are off for # apps}other{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácií}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobraziť nastavenia upozornení. Upozornenia sú pre aplikáciu vypnuté}few{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácie}other{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácií}}</translation>
 <translation id="1525508553941733066">ZATVORIŤ</translation>
 <translation id="1536604384701784949">Ak chcete používať účet <ph name="USER_EMAIL_ADDRESS" />, musíte sa odhlásiť zo všetkých ostatných účtov. Ak sa chcete odhlásiť, výberom položky Zrušiť prejdite späť. Potom zvoľte čas, kedy sa má otvoriť stavová oblasť, a vyberte Odhlásiť sa. Potom sa znova prihláste do účtu <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Veľký kurzor myši</translation>
@@ -289,7 +289,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3153444934357957346">V rámci viacnásobného prihlásenia môžete mať maximálne nasledujúci počet účtov: <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Správca zariadenia môže sledovať vašu aktivitu prehliadania.</translation>
 <translation id="3181441307743005334">Reštart môže chvíľu trvať</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Pripojené k zariadeniu}few{Pripojené k # zariadeniam}many{Connected to # devices}other{Pripojené k # zariadeniam}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Pripojené k zariadeniu}few{Pripojené k # zariadeniam}other{Pripojené k # zariadeniam}}</translation>
 <translation id="320207200541803018">Nastaviť časovač</translation>
 <translation id="3203405173652969239">Ovládanie prepínačmi je aktivované</translation>
 <translation id="3207953481422525583">Nastavenia používateľa</translation>
@@ -412,7 +412,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Zdieľate svoju obrazovku</translation>
 <translation id="4057003836560082631">Karta prehliadača: <ph name="INDEX" />. z <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Vyp. pre apl.}few{Vyp. pre # apl.}many{Off for # apps}other{Vyp. pre # apl.}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Vyp. pre apl.}few{Vyp. pre # apl.}other{Vyp. pre # apl.}}</translation>
 <translation id="4066027111132117168">Zapnuté, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Stredne silný signál</translation>
 <translation id="4095366824370681039">Atramentové pero</translation>
@@ -469,7 +469,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4424159417645388645">5. plocha</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>
 <translation id="4445159312344259901">Odomknite prihlásením</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 dôležité upozornenie}few{# dôležité upozornenia}many{# important notifications}other{# dôležitých upozornení}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 dôležité upozornenie}few{# dôležité upozornenia}other{# dôležitých upozornení}}</translation>
 <translation id="4450893287417543264">Nabudúce nezobrazovať</translation>
 <translation id="4451374464530248585">Klávesová skratka Alt + šípka nadol bola zmenená. Ak chcete použiť kláves Page Down, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka nadol.</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
@@ -577,7 +577,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
 <translation id="5176318573511391780">Nahrať časť obrazovky</translation>
 <translation id="5199367439331364630">Ak sa chcete do Chromebooku prihlásiť, zadajte heslo</translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ďalšie upozornenie}few{# ďalšie upozornenia}many{# other notifications}other{# ďalších upozornení}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ďalšie upozornenie}few{# ďalšie upozornenia}other{# ďalších upozornení}}</translation>
 <translation id="5207949376430453814">Zvýrazniť textový kurzor</translation>
 <translation id="5208059991603368177">Zapnutý</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
@@ -787,7 +787,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6850010208275816200">Aktuálna aplikácia je spustená v režime celej obrazovky. Ak vás požiada o heslo, najprv ukončite režim celej obrazovky.</translation>
 <translation id="6852052252232534364">Aktivovať kliknutím</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zostáva jedna číslica}few{Zostávajú # číslice}many{# digits remaining}other{Zostáva # číslic}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zostáva jedna číslica}few{Zostávajú # číslice}other{Zostáva # číslic}}</translation>
 <translation id="6867938213751067702">Sťahovanie súboru <ph name="FILENAME" /> bolo pozastavené</translation>
 <translation id="6878400149835617132">Skratka je vypnutá</translation>
 <translation id="6886172995547742638">Vaše zariadenie <ph name="DEVICE_TYPE" /> môže mať nižší výkon. Používajte nabíjačku s portom USB-C, ktorá má certifikovaný výkon minimálne <ph name="PREFERRED_MINIMUM_POWER" /> W</translation>
@@ -901,7 +901,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7662283695561029522">Klepnutím spustíte konfiguráciu</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Pridať novú mobilnú sieť</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 upozornenie}few{# upozornenia}many{# notifications}other{# upozornení}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 upozornenie}few{# upozornenia}other{# upozornení}}</translation>
 <translation id="7724603315864178912">Vystrihnúť</translation>
 <translation id="7745560842763881396">Zobraziť aplikácie na poličke</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>

@@ -83,7 +83,7 @@
 <translation id="1503394326855300303">Цей обліковий запис власника має бути першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
 <translation id="1516740043221086139">Режим "Не турбувати" ввімкнено.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Показати налаштування сповіщень. Сповіщення вимкнено для додатка}one{Показати налаштування сповіщень. Сповіщення вимкнено для # додатка}few{Показати налаштування сповіщень. Сповіщення вимкнено для # додатків}many{Показати налаштування сповіщень. Сповіщення вимкнено для # додатків}other{Показати налаштування сповіщень. Сповіщення вимкнено для # додатка}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Показати налаштування сповіщень. Сповіщення вимкнено для додатка}one{Показати налаштування сповіщень. Сповіщення вимкнено для # додатка}few{Показати налаштування сповіщень. Сповіщення вимкнено для # додатків}other{Показати налаштування сповіщень. Сповіщення вимкнено для # додатка}}</translation>
 <translation id="1525508553941733066">ЗАКРИТИ</translation>
 <translation id="1536604384701784949">Щоб використовувати електронну адресу <ph name="USER_EMAIL_ADDRESS" />, спершу потрібно вийти з усіх облікових записів. Для цього спершу поверніться, натиснувши кнопку "Скасувати". Потім натисніть час, щоб відкрити панель стану, і натисніть "Вийти". Тоді ввійдіть в обліковий запис <ph name="USER_EMAIL_ADDRESS_2" /> ще раз.</translation>
 <translation id="15373452373711364">Великий курсор миші</translation>
@@ -289,7 +289,7 @@
 <translation id="3153444934357957346">Максимальна кількість паралельних входів в обліковий запис: <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Адміністратор пристрою може відстежувати дані веб-перегляду.</translation>
 <translation id="3181441307743005334">Перезапуск може зайняти якийсь час</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Під’єднано до пристрою}one{Під’єднано до # пристрою}few{Під’єднано до # пристроїв}many{Під’єднано до # пристроїв}other{Під’єднано до # пристрою}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Під’єднано до пристрою}one{Під’єднано до # пристрою}few{Під’єднано до # пристроїв}other{Під’єднано до # пристрою}}</translation>
 <translation id="320207200541803018">Налаштувати таймер</translation>
 <translation id="3203405173652969239">Кнопковий доступ увімкнено</translation>
 <translation id="3207953481422525583">Налаштування користувача</translation>
@@ -412,7 +412,7 @@
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ви ділитеся екраном</translation>
 <translation id="4057003836560082631">Вкладка веб-переглядача: <ph name="INDEX" /> з <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Вимк. для додатка}one{Вимк. для # додатка}few{Вимк. для # додатків}many{Вимк. для # додатків}other{Вимк. для # додатка}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Вимк. для додатка}one{Вимк. для # додатка}few{Вимк. для # додатків}other{Вимк. для # додатка}}</translation>
 <translation id="4066027111132117168">Увімкнено, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">середній сигнал</translation>
 <translation id="4095366824370681039">Чорнильне перо</translation>
@@ -469,7 +469,7 @@
 <translation id="4424159417645388645">Робочий стіл 5</translation>
 <translation id="4430019312045809116">Гучність</translation>
 <translation id="4445159312344259901">Увійдіть, щоб розблокувати</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важливе сповіщення}one{# важливе сповіщення}few{# важливі сповіщення}many{# важливих сповіщень}other{# важливого сповіщення}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важливе сповіщення}one{# важливе сповіщення}few{# важливі сповіщення}other{# важливого сповіщення}}</translation>
 <translation id="4450893287417543264">Більше не показувати</translation>
 <translation id="4451374464530248585">Комбінацію клавіш Alt + стрілка вниз змінено. Щоб скористатися клавішею Page Down, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вниз.</translation>
 <translation id="445864333228800152">Доброго вечора!</translation>
@@ -577,7 +577,7 @@
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5176318573511391780">Записувати частину екрана</translation>
 <translation id="5199367439331364630">Щоб увійти в обліковий запис на Chromebook, введіть пароль</translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 інше сповіщення}one{# інше сповіщення}few{# інші сповіщення}many{# інших сповіщень}other{# іншого сповіщення}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 інше сповіщення}one{# інше сповіщення}few{# інші сповіщення}other{# іншого сповіщення}}</translation>
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
 <translation id="5208059991603368177">Увімкнено</translation>
 <translation id="5222676887888702881">Вийти</translation>
@@ -787,7 +787,7 @@
 <translation id="6850010208275816200">Поточний додаток розгорнуто на весь екран. Якщо з'явиться запит пароля, спершу вийдіть із цього режиму.</translation>
 <translation id="6852052252232534364">Активувати</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Залишилась одна цифра}one{Залишилася # цифра}few{Залишилося # цифри}many{Залишилося # цифр}other{Залишилося # цифри}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Залишилась одна цифра}one{Залишилася # цифра}few{Залишилося # цифри}other{Залишилося # цифри}}</translation>
 <translation id="6867938213751067702">Завантаження файлу <ph name="FILENAME" /> призупинено</translation>
 <translation id="6878400149835617132">Комбінацію клавіш вимкнено</translation>
 <translation id="6886172995547742638">Продуктивність пристрою <ph name="DEVICE_TYPE" /> може знизитися. Використовуйте сертифікований адаптер живлення USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт або більше.</translation>
@@ -901,7 +901,7 @@
 <translation id="7662283695561029522">Торкніться, щоб налаштувати</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Додати мобільну мережу</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 cповіщення}one{# сповіщення}few{# сповіщення}many{# сповіщень}other{# сповіщення}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 cповіщення}one{# сповіщення}few{# сповіщення}other{# сповіщення}}</translation>
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7745560842763881396">Показати додатки на полиці</translation>
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>

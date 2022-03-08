@@ -3,9 +3,9 @@
 <translationbundle lang="be">
 <translation id="1028699632127661925">Ідзе адпраўка на прыладу "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="111910763555783249">Налады апавяшчэнняў</translation>
-<translation id="1127811143501539442">{DAYS,plural, =1{1 дзень таму}one{# дзень таму}few{# дні таму}many{# дзён таму}other{# дня таму}}</translation>
-<translation id="1156623771253174079">{SECONDS,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}many{# хвілін таму}other{# хвіліны таму}}</translation>
-<translation id="1169783199079129864">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}many{# хв}other{# хв}}</translation>
+<translation id="1127811143501539442">{DAYS,plural, =1{1 дзень таму}one{# дзень таму}few{# дні таму}other{# дня таму}}</translation>
+<translation id="1156623771253174079">{SECONDS,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}other{# хвіліны таму}}</translation>
+<translation id="1169783199079129864">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}other{# хв}}</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1218444235442067213">Праграма Крамы Play (<ph name="APP_NAME" />)</translation>
@@ -24,17 +24,17 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> і <ph name="SECOND_ITEM_TITLE" /> памяняліся месцамі</translation>
 <translation id="1498028757988366001">Вы шукалі гэта раней. Калі выдаліць запыт "<ph name="QUERY" />" з гісторыі, ён будзе незваротна выдалены з вашага ўліковага запісу на ўсіх прыладах.</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
-<translation id="1591184457164800433">{MINUTES,plural, =1{1 хвіліна і }one{# хвіліна і }few{# хвіліны і }many{# хвілін і }other{# хвіліны і }}</translation>
+<translation id="1591184457164800433">{MINUTES,plural, =1{1 хвіліна і }one{# хвіліна і }few{# хвіліны і }other{# хвіліны і }}</translation>
 <translation id="1643823602425662293">Апавяшчэнне</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1710340000377843106">зараз</translation>
-<translation id="1752946267035950200">{MINUTES,plural, =1{1 хвіліна}one{# хвіліна}few{# хвіліны}many{# хвілін}other{# хвіліны}}</translation>
+<translation id="1752946267035950200">{MINUTES,plural, =1{1 хвіліна}one{# хвіліна}few{# хвіліны}other{# хвіліны}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> Б</translation>
 <translation id="1770726142253415363">Перамешчана на радок <ph name="ROW_NUMBER" />, у слупок <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1801827354178857021">Кропка</translation>
-<translation id="1803208670097017349">{MONTHS,plural, =1{1 месяц}one{# месяц}few{# месяцы}many{# месяцаў}other{# месяца}}</translation>
+<translation id="1803208670097017349">{MONTHS,plural, =1{1 месяц}one{# месяц}few{# месяцы}other{# месяца}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> МБ/с</translation>
-<translation id="1830179671306812954">{HOURS,plural, =1{1 гадзіна і }one{# гадзіна і }few{# гадзіны і }many{# гадзін і }other{# гадзіны і }}</translation>
+<translation id="1830179671306812954">{HOURS,plural, =1{1 гадзіна і }one{# гадзіна і }few{# гадзіны і }other{# гадзіны і }}</translation>
 <translation id="1830308660060964064">Элемент "<ph name="ITEM_TITLE" />" адмацаваны</translation>
 <translation id="1842960171412779397">выбраць</translation>
 <translation id="1859234291848436338">Напрамак пісьма</translation>
@@ -46,7 +46,7 @@
 <translation id="19085484004813472">Гэта новая функцыя</translation>
 <translation id="2006524834898217237">Праверце, ці падключана прылада да інтэрнэту.</translation>
 <translation id="208586643495776849">Паўтарыце спробу</translation>
-<translation id="2141853158323869627">{DAYS,plural, =1{1 сут}one{# сут}few{# сут}many{# сут}other{# сут}}</translation>
+<translation id="2141853158323869627">{DAYS,plural, =1{1 сут}one{# сут}few{# сут}other{# сут}}</translation>
 <translation id="2148716181193084225">Сёння</translation>
 <translation id="2161656808144014275">Тэкст</translation>
 <translation id="2168039046890040389">Page Up</translation>
@@ -69,7 +69,7 @@
 <translation id="252373100621549798">Невядомы дысплэй</translation>
 <translation id="2545651323591713692">Адкласці</translation>
 <translation id="2570734079541893434">Кіраваць наладамі</translation>
-<translation id="2573731672208488250">{HOURS,plural, =1{праз 1 гадз}one{праз # гадз}few{праз # гадз}many{праз # гадз}other{праз # гадз}}</translation>
+<translation id="2573731672208488250">{HOURS,plural, =1{праз 1 гадз}one{праз # гадз}few{праз # гадз}other{праз # гадз}}</translation>
 <translation id="2583543531130364912">Адкалібруйце сэнсарны экран</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
 <translation id="2666092431469916601">Зверху</translation>
@@ -78,9 +78,9 @@
 <translation id="2743387203779672305">Скапіраваць у буфер абмену</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2803313416453193357">Адкрыць папку</translation>
-<translation id="2824719307700604149">{YEARS,plural, =1{1 год таму}one{# год таму}few{# гады таму}many{# гадоў таму}other{# года таму}}</translation>
+<translation id="2824719307700604149">{YEARS,plural, =1{1 год таму}one{# год таму}few{# гады таму}other{# года таму}}</translation>
 <translation id="2878511608894704031">Выдаліць усё</translation>
-<translation id="2907671656515444832">{DAYS,plural, =1{праз 1 сут}one{праз # сут}few{праз # сут}many{праз # сут}other{праз # сут}}</translation>
+<translation id="2907671656515444832">{DAYS,plural, =1{праз 1 сут}one{праз # сут}few{праз # сут}other{праз # сут}}</translation>
 <translation id="2922712708897119705">Слупок "<ph name="COLUMN_NAME" />" адсартаваны па ўбыванні.</translation>
 <translation id="2931838996092594335">націснуць кнопку мышы</translation>
 <translation id="2981684127883932071">Паказваюцца прапановы</translation>
@@ -92,7 +92,7 @@
 <translation id="3157931365184549694">Аднавіць</translation>
 <translation id="3183922693828471536">Прагартаць сюды</translation>
 <translation id="3234408098842461169">Стрэлка ўніз</translation>
-<translation id="3291688615589870984">{DAYS,plural, =1{1 дзень}one{# дзень}few{# дні}many{# дзён}other{# дня}}</translation>
+<translation id="3291688615589870984">{DAYS,plural, =1{1 дзень}one{# дзень}few{# дні}other{# дня}}</translation>
 <translation id="3295886253693811851">Зрабіць выклік праз</translation>
 <translation id="3306688585798492231">Убудаваны дысплэй</translation>
 <translation id="335581015389089642">Маўленне</translation>
@@ -100,7 +100,7 @@
 <translation id="3406306243914553062">Змесціва HTML.</translation>
 <translation id="348799646910989694">Паліца аўтаматычна схавана</translation>
 <translation id="3554637740840164787">Элемент "<ph name="ITEM_TITLE" />" замацаваны</translation>
-<translation id="3600566671520689681">{DAYS,plural, =1{Застаўся 1 дзень}one{Застаўся # дзень}few{Засталося # дні}many{Засталося # дзён}other{Засталося # дня}}</translation>
+<translation id="3600566671520689681">{DAYS,plural, =1{Застаўся 1 дзень}one{Застаўся # дзень}few{Засталося # дні}other{Засталося # дня}}</translation>
 <translation id="3600969208114796418">Файл <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
 <translation id="3618849550573277856">Пошук "<ph name="LOOKUP_STRING" />"</translation>
@@ -118,10 +118,10 @@
 <translation id="3909791450649380159">Вы&amp;разаць</translation>
 <translation id="3990502903496589789">Правы край</translation>
 <translation id="3994749195054421561">Слупок "<ph name="COLUMN_NAME" />" адсартаваны па ўзрастанні.</translation>
-<translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрачытанае апавяшчэнне}one{# непрачытанае апавяшчэнне}few{# непрачытаныя апавяшчэнні}many{# непрачытаных апавяшчэнняў}other{# непрачытанага апавяшчэння}}</translation>
+<translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрачытанае апавяшчэнне}one{# непрачытанае апавяшчэнне}few{# непрачытаныя апавяшчэнні}other{# непрачытанага апавяшчэння}}</translation>
 <translation id="4202807286478387388">перайсці</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
-<translation id="4266252015790371705">{MONTHS,plural, =1{1 месяц таму}one{# месяц таму}few{# месяцы таму}many{# месяцаў таму}other{# месяца таму}}</translation>
+<translation id="4266252015790371705">{MONTHS,plural, =1{1 месяц таму}one{# месяц таму}few{# месяцы таму}other{# месяца таму}}</translation>
 <translation id="4289300219472526559">Пачаць галасавы ўвод</translation>
 <translation id="430191667033048642">Праграма <ph name="MOVED_APP_NAME" /> перамешчана ў папку <ph name="FOLDER_NAME" />.</translation>
 <translation id="4306392492252714209">Выдаліць з буфера абмену.</translation>
@@ -134,9 +134,9 @@
 <translation id="4690510401873698237">Паліца ўнізе</translation>
 <translation id="4724120544754982507">Цэнтр апавяшчэнняў. Непрачытаных апавяшчэнняў: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
 <translation id="4730374152663651037">ЧАСТА ВЫКАРЫСТОЎВАЮЦЦА</translation>
-<translation id="4788285488841504513">{MONTHS,plural, =1{Застаўся 1 месяц}one{Застаўся # месяц}few{Засталося # месяцы}many{Засталося # месяцаў}other{Засталося # месяца}}</translation>
+<translation id="4788285488841504513">{MONTHS,plural, =1{Застаўся 1 месяц}one{Застаўся # месяц}few{Засталося # месяцы}other{Засталося # месяца}}</translation>
 <translation id="4888938634149558681">Зрабіць выклік</translation>
-<translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}one{# секунда}few{# секунды}many{# секунд}other{# секунды}}</translation>
+<translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}one{# секунда}few{# секунды}other{# секунды}}</translation>
 <translation id="4971687151119236543">Папярэдні трэк</translation>
 <translation id="5046499563572181734">Дакраніцеся тут</translation>
 <translation id="5076340679995252485">&amp;Уставіць</translation>
@@ -157,16 +157,16 @@
 <translation id="5613020302032141669">Стрэлка ўлева</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> патрабуе вашай увагі.</translation>
 <translation id="5675363643668471212">Элемент з паліцы</translation>
-<translation id="5754277640426581776">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}many{# хв}other{# хв}}</translation>
-<translation id="5763338081255973061">{DAYS,plural, =0{Апошнія дзеянні адбываліся сёння}=1{Апошнія дзеянні: дзень таму}one{Апошнія дзеянні: # дзень таму}few{Апошнія дзеянні: # дні таму}many{Апошнія дзеянні: # дзён таму}other{Апошнія дзеянні: # дня таму}}</translation>
-<translation id="5768079895599174203">{DAYS,plural, =1{1 дзень і }one{# дзень і }few{# дні і }many{# дзён і }other{# дня і }}</translation>
+<translation id="5754277640426581776">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}other{# хв}}</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Апошнія дзеянні адбываліся сёння}=1{Апошнія дзеянні: дзень таму}one{Апошнія дзеянні: # дзень таму}few{Апошнія дзеянні: # дні таму}other{Апошнія дзеянні: # дня таму}}</translation>
+<translation id="5768079895599174203">{DAYS,plural, =1{1 дзень і }one{# дзень і }few{# дні і }other{# дня і }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Відарыс.</translation>
-<translation id="5866104238061687188">{YEARS,plural, =1{праз 1 г.}one{праз # г.}few{праз # г.}many{праз # г.}other{праз # г.}}</translation>
+<translation id="5866104238061687188">{YEARS,plural, =1{праз 1 г.}one{праз # г.}few{праз # г.}other{праз # г.}}</translation>
 <translation id="588258955323874662">Поўнаэкранны рэжым</translation>
-<translation id="5906667377645263094">{SECONDS,plural, =1{Засталася 1 секунда}one{Засталася # секунда}few{Засталося # секунды}many{Засталося # секунд}other{Засталося # секунды}}</translation>
+<translation id="5906667377645263094">{SECONDS,plural, =1{Засталася 1 секунда}one{Засталася # секунда}few{Засталося # секунды}other{Засталося # секунды}}</translation>
 <translation id="5941711191222866238">Згарнуць</translation>
-<translation id="5943826764092288734">{HOURS,plural, =1{1 гадзіна}one{# гадзіна}few{# гадзіны}many{# гадзін}other{# гадзіны}}</translation>
+<translation id="5943826764092288734">{HOURS,plural, =1{1 гадзіна}one{# гадзіна}few{# гадзіны}other{# гадзіны}}</translation>
 <translation id="6012623610530968780">Старонка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6022924867608035986">Ачысціць поле пошуку</translation>
 <translation id="6040143037577758943">Закрыць</translation>
@@ -185,10 +185,10 @@
 <translation id="6364916375976753737">Прагартаць улева</translation>
 <translation id="6394627529324717982">Коска</translation>
 <translation id="6397363302884558537">Спыніць галасавы ўвод</translation>
-<translation id="6404817160109697034">{SECONDS,plural, =1{1 секунду таму}one{# секунду таму}few{# секунды таму}many{# секунд таму}other{# секунды таму}}</translation>
+<translation id="6404817160109697034">{SECONDS,plural, =1{1 секунду таму}one{# секунду таму}few{# секунды таму}other{# секунды таму}}</translation>
 <translation id="6417265370957905582">Памочнік Google</translation>
 <translation id="6430678249303439055">Блакіраваць усе апавяшчэнні гэтай праграмы</translation>
-<translation id="6483402905448010557">{SECONDS,plural, =1{1 секунду таму}one{# секунду таму}few{# секунды таму}many{# секунд таму}other{# секунды таму}}</translation>
+<translation id="6483402905448010557">{SECONDS,plural, =1{1 секунду таму}one{# секунду таму}few{# секунды таму}other{# секунды таму}}</translation>
 <translation id="6503257047630241175">Змесціва ў фармаце RTF</translation>
 <translation id="6539092367496845964">Нешта пайшло не так. Паўтарыце спробу пазней.</translation>
 <translation id="654149438358937226">Блакіраваць усе апавяшчэнні</translation>
@@ -202,11 +202,11 @@
 <translation id="6808150112686056157">Спыніць мультымедыя</translation>
 <translation id="6845383723252244143">Выбраць папку</translation>
 <translation id="6845533974506654842">націснуць</translation>
-<translation id="6863590663815976734">{HOURS,plural, =1{Засталася 1 гадзіна}one{Засталася # гадзіна}few{Засталося # гадзіны}many{Засталося # гадзін}other{Засталося # гадзіны}}</translation>
+<translation id="6863590663815976734">{HOURS,plural, =1{Засталася 1 гадзіна}one{Засталася # гадзіна}few{Засталося # гадзіны}other{Засталося # гадзіны}}</translation>
 <translation id="688711909580084195">Вэб-старонка без назвы</translation>
 <translation id="6902419395050653510">Змесціва HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> ПБ/с</translation>
-<translation id="6917971086528278418">{YEARS,plural, =1{Застаўся 1 год}one{Застаўся # год}few{Засталося # гады}many{Засталося # гадоў}other{Засталося # года}}</translation>
+<translation id="6917971086528278418">{YEARS,plural, =1{Застаўся 1 год}one{Застаўся # год}few{Засталося # гады}other{Засталося # года}}</translation>
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6974053822202609517">Справа налева</translation>
@@ -214,11 +214,11 @@
 <translation id="7130207228079676353">НАЙБОЛЬШ ІМАВЕРНЫЯ</translation>
 <translation id="7170202025028120564">Налады паказу праграмы пачнуць дзейнічаць пасля яе перазапуску.</translation>
 <translation id="7222373446505536781">F11</translation>
-<translation id="7238427729722629793">{MINUTES,plural, =1{Засталася 1 хв}one{Засталася # хв}few{Засталося # хв}many{Засталося # хв}other{Засталося # хв}}</translation>
+<translation id="7238427729722629793">{MINUTES,plural, =1{Засталася 1 хв}one{Засталася # хв}few{Засталося # хв}other{Засталося # хв}}</translation>
 <translation id="7319740667687257810">Панэль запуску, частковы рэжым</translation>
-<translation id="7365057348334984696">{MINUTES,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}many{# хвілін таму}other{# хвіліны таму}}</translation>
+<translation id="7365057348334984696">{MINUTES,plural, =1{1 хвіліну таму}one{# хвіліну таму}few{# хвіліны таму}other{# хвіліны таму}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
-<translation id="7410957453383678442">{MINUTES,plural, =1{Засталася 1 хвіліна}one{Засталася # хвіліна}few{Засталося # хвіліны}many{Засталося # хвілін}other{Засталося # хвіліны}}</translation>
+<translation id="7410957453383678442">{MINUTES,plural, =1{Засталася 1 хвіліна}one{Засталася # хвіліна}few{Засталося # хвіліны}other{Засталося # хвіліны}}</translation>
 <translation id="7430878839542012341">Выдаліць гэты пошукавы запыт з вашай гісторыі?</translation>
 <translation id="7437971918971306061">Слупок "<ph name="COLUMN_NAME" />" не адсартаваны.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
@@ -232,12 +232,12 @@
 <translation id="7907591526440419938">Адкрыць файл</translation>
 <translation id="7952747673138230804">Chrome OS паказвае прапановы для азнаямлення з новым змесцівам. Статыстыка для паляпшэння якасці прапаноў будзе адпраўляцца, толькі калі вы згадзіліся на абагульванне даных пра выкарыстанне. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">Command</translation>
-<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Больш чым 1 непрачытанае апавяшчэнне}one{Больш чым # непрачытанае апавяшчэнне}few{Больш чым # непрачытаныя апавяшчэнні}many{Больш чым # непрачытаных апавяшчэнняў}other{Больш чым # непрачытанага апавяшчэння}}</translation>
-<translation id="8086866675552927481">{MINUTES,plural, =1{праз 1 хв}one{праз # хв}few{праз # хв}many{праз # хв}other{праз # хв}}</translation>
+<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Больш чым 1 непрачытанае апавяшчэнне}one{Больш чым # непрачытанае апавяшчэнне}few{Больш чым # непрачытаныя апавяшчэнні}other{Больш чым # непрачытанага апавяшчэння}}</translation>
+<translation id="8086866675552927481">{MINUTES,plural, =1{праз 1 хв}one{праз # хв}few{праз # хв}other{праз # хв}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Нумар з <ph name="ORIGIN" /></translation>
-<translation id="8106081041558092062">{HOURS,plural, =1{1 гадзіну таму}one{# гадзіну таму}few{# гадзіны таму}many{# гадзін таму}other{# гадзіны таму}}</translation>
-<translation id="8131263257437993507">{SECONDS,plural, =1{Засталася 1 с}one{Засталася # с}few{Засталося # с}many{Засталося # с}other{Засталося # с}}</translation>
+<translation id="8106081041558092062">{HOURS,plural, =1{1 гадзіну таму}one{# гадзіну таму}few{# гадзіны таму}other{# гадзіны таму}}</translation>
+<translation id="8131263257437993507">{SECONDS,plural, =1{Засталася 1 с}one{Засталася # с}few{Засталося # с}other{Засталося # с}}</translation>
 <translation id="8134065097954893699">Гэта старонка перазагружаецца</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, аўтазапаўненне</translation>
 <translation id="815598010540052116">Прагартаць уніз</translation>
@@ -249,18 +249,18 @@
 <translation id="8259556432390118667">Шаснаццатковае значэнне колеру</translation>
 <translation id="8328145009876646418">Левы край</translation>
 <translation id="8331626408530291785">Прагартаць уверх</translation>
-<translation id="8352146631962686268">{YEARS,plural, =1{1 год}one{# год}few{# гады}many{# гадоў}other{# года}}</translation>
+<translation id="8352146631962686268">{YEARS,plural, =1{1 год}one{# год}few{# гады}other{# года}}</translation>
 <translation id="838869780401515933">паставіць птушку</translation>
 <translation id="8393700583063109961">Адправіць паведамленне</translation>
 <translation id="8394908167088220973">Прайграць або прыпыніць медыяфайл</translation>
-<translation id="8458811141851741261">{YEARS,plural, =1{1г}one{#г}few{#г}many{#г}other{#г}}</translation>
+<translation id="8458811141851741261">{YEARS,plural, =1{1г}one{#г}few{#г}other{#г}}</translation>
 <translation id="8602707065186045623">Файл <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8649597172973390955">Паліца заўсёды паказваецца</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/с</translation>
 <translation id="8685326675965865247">Пошук на прыладзе, у праграмах, наладах і інтэрнэце. Для пераходу паміж праграмамі выкарыстоўвайце клавішы са стрэлкамі.</translation>
 <translation id="8725488761726303204">+ яшчэ <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Гатова</translation>
-<translation id="8772073294905169192">{HOURS,plural, =1{1гадз}one{#гадз}few{#гадз}many{#гадз}other{#гадз}}</translation>
+<translation id="8772073294905169192">{HOURS,plural, =1{1гадз}one{#гадз}few{#гадз}other{#гадз}}</translation>
 <translation id="8798099450830957504">Стандартна</translation>
 <translation id="8806053966018712535">Папка "<ph name="FOLDER_NAME" />"</translation>
 <translation id="883911313571074303">Дадаць анатацыю да відарыса</translation>
@@ -271,7 +271,7 @@
 <translation id="8926951137623668982">Паліца заўсёды схавана</translation>
 <translation id="8996630695507351249">Праверце, ці прылада "<ph name="TARGET_DEVICE_NAME" />" падключана да інтэрнэту.</translation>
 <translation id="9002566407876343676">адкрыць</translation>
-<translation id="9044832324875206639">{SECONDS,plural, =1{1 с}one{# с}few{# с}many{# с}other{# с}}</translation>
+<translation id="9044832324875206639">{SECONDS,plural, =1{1 с}one{# с}few{# с}other{# с}}</translation>
 <translation id="9059834730836941392">Згарнуць апавяшчэнне</translation>
 <translation id="9150735707954472829">Укладка</translation>
 <translation id="9161053988251441839">ПРАПАНАВАНЫЯ ПРАГРАМЫ</translation>

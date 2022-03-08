@@ -121,7 +121,7 @@
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">Процессор</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Удалить страницу?}=1{Удалить страницу {PAGE_NUMBER}?}one{Удалить страницу {PAGE_NUMBER}?}few{Удалить страницу {PAGE_NUMBER}?}many{Удалить страницу {PAGE_NUMBER}?}other{Удалить страницу {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Удалить страницу?}=1{Удалить страницу {PAGE_NUMBER}?}one{Удалить страницу {PAGE_NUMBER}?}few{Удалить страницу {PAGE_NUMBER}?}other{Удалить страницу {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Мобильное подключение</translation>
 <translation id="3156846309055100599">Сканирование страницы <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Обнаружена страница входа</translation>
@@ -131,7 +131,7 @@
 <translation id="3226405216343213872">Поиск сканеров…</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
-<translation id="3283504360622356314">{0,plural, =1{Редактировать файл}one{Редактировать файлы}few{Редактировать файлы}many{Редактировать файлы}other{Редактировать файлы}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{Редактировать файл}one{Редактировать файлы}few{Редактировать файлы}other{Редактировать файлы}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
 <translation id="3328783797891415197">Идет проверка</translation>
@@ -228,7 +228,7 @@
 <translation id="4835901797422965222">Нет активных сетей.</translation>
 <translation id="484790837831576105">DNS-преобразование (Android)</translation>
 <translation id="4848429997038228357">ВЫПОЛНЯЕТСЯ</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}one{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}few{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}many{<ph name="ERROR_MESSAGE" /> Осталось {0} попыток.}other{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}one{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}few{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}other{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}}</translation>
 <translation id="4871137769558798671">Не удается подключиться к сайтам по протоколу HTTPS (порт 443) через брандмауэр.</translation>
 <translation id="4880328057631981605">Название точки доступа</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
@@ -281,7 +281,7 @@
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Войти в гостевой режим</translation>
 <translation id="54609108002486618">Автоматическое управление</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Осталась {0} попытка.}one{Осталась {0} попытка.}few{Осталось {0} попытки.}many{Осталось {0} попыток.}other{Осталось {0} попытки.}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Осталась {0} попытка.}one{Осталась {0} попытка.}few{Осталось {0} попытки.}other{Осталось {0} попытки.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Не удалось завершить сканирование</translation>
 <translation id="5502931783115429516">ОС Android не запущена</translation>
@@ -305,7 +305,7 @@
 <translation id="5866840822086176774">Очень сильный</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="5916084858004523819">Запрещено</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{Файл отсканирован и сохранен в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Файл отсканирован и сохранен в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файл не найден.</translation>
 <translation id="594552776027197022">Создать случайную пару ключей</translation>
 <translation id="5972388717451707488">Update Engine</translation>
@@ -343,7 +343,7 @@
 <translation id="641081527798843608">Совпадение тем</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Хороший</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Повторно сканировать страницу?}=1{Повторно сканировать страницу {PAGE_NUMBER}?}one{Повторно сканировать страницу {PAGE_NUMBER}?}few{Повторно сканировать страницу {PAGE_NUMBER}?}many{Повторно сканировать страницу {PAGE_NUMBER}?}other{Повторно сканировать страницу {PAGE_NUMBER}?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Повторно сканировать страницу?}=1{Повторно сканировать страницу {PAGE_NUMBER}?}one{Повторно сканировать страницу {PAGE_NUMBER}?}few{Повторно сканировать страницу {PAGE_NUMBER}?}other{Повторно сканировать страницу {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Одноразовый код</translation>
 <translation id="6480327114083866287">Под управлением <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
@@ -383,7 +383,7 @@
 <translation id="7059230779847288458">Заряжается, осталось <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ОСТАНОВЛЕН</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}many{Серверы доменных имен}other{Серверы доменных имен}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}other{Серверы доменных имен}}</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="714876143603641390">Подключение к локальной сети</translation>
@@ -404,7 +404,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7415801143053185905">очень большое время ожидания HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
 <translation id="7469648432129124067">Обнаружен сетевой портал.</translation>
 <translation id="7487067081878637334">Технологии</translation>
 <translation id="7490813197707563893">MAC-адрес</translation>
@@ -519,7 +519,7 @@
 <translation id="8968751544471797276">Скорость зарядки</translation>
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканировать}=1{Сканировать {NUMBER_OF_PAGES} страницу}one{Сканировать {NUMBER_OF_PAGES} страницу}few{Сканировать {NUMBER_OF_PAGES} страницы}many{Сканировать {NUMBER_OF_PAGES} страниц}other{Сканировать {NUMBER_OF_PAGES} страницы}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканировать}=1{Сканировать {NUMBER_OF_PAGES} страницу}one{Сканировать {NUMBER_OF_PAGES} страницу}few{Сканировать {NUMBER_OF_PAGES} страницы}other{Сканировать {NUMBER_OF_PAGES} страницы}}</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-преобразование происходит с высокой задержкой.</translation>

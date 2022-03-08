@@ -83,7 +83,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1503394326855300303">Kelių paskyrų sesijoje pirmiausia turi būti prisijungta naudojant šią savininko paskyrą.</translation>
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
 <translation id="1516740043221086139">Netrukdymo režimas įjungtas.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Rodyti pranešimų nustatymus. Programos pranešimai išjungti}one{Rodyti pranešimų nustatymus. # programos pranešimai išjungti}few{Rodyti pranešimų nustatymus. # programų pranešimai išjungti}many{Rodyti pranešimų nustatymus. # programos pranešimai išjungti}other{Rodyti pranešimų nustatymus. # programų pranešimai išjungti}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Rodyti pranešimų nustatymus. Programos pranešimai išjungti}one{Rodyti pranešimų nustatymus. # programos pranešimai išjungti}few{Rodyti pranešimų nustatymus. # programų pranešimai išjungti}other{Rodyti pranešimų nustatymus. # programų pranešimai išjungti}}</translation>
 <translation id="1525508553941733066">ATSISAKYTI</translation>
 <translation id="1536604384701784949">Kad galėtumėte naudoti <ph name="USER_EMAIL_ADDRESS" />, pirmiausia turite atsijungti nuo visų paskyrų. Norėdami atsijungti, pasirinkite „Atšaukti“, kad grįžtumėte. Tada pasirinkite laiką, kad atidarytumėte būsenos sritį, ir pasirinkite „Atsijungti“. Tada vėl prisijunkite prie <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Didelis pelės žymeklis</translation>
@@ -289,7 +289,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3153444934357957346">Naudodami kelių paskyrų funkciją, galite turėti iki <ph name="MULTI_PROFILE_USER_LIMIT" /> paskyr.</translation>
 <translation id="3154351730702813399">Įrenginio administratorius gali stebėti jūsų naršymo veiklą.</translation>
 <translation id="3181441307743005334">Paleidimas iš naujo gali šiek tiek užtrukti</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Prisijungta prie įrenginio}one{Prisijungta prie # įrenginio}few{Prisijungta prie # įrenginių}many{Prisijungta prie # įrenginio}other{Prisijungta prie # įrenginių}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Prisijungta prie įrenginio}one{Prisijungta prie # įrenginio}few{Prisijungta prie # įrenginių}other{Prisijungta prie # įrenginių}}</translation>
 <translation id="320207200541803018">Nustatyk laikmatį</translation>
 <translation id="3203405173652969239">Prieiga jungikliu įgalinta</translation>
 <translation id="3207953481422525583">Naudotojo nustatymai</translation>
@@ -412,7 +412,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Bendrinate ekraną</translation>
 <translation id="4057003836560082631"><ph name="INDEX" /> naršyklės skirtukas iš <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Prog. pr. išj.}one{# prog. pr. išj.}few{# prog. pr. išj.}many{# prog. pr. išj.}other{# prog. pr. išj.}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Prog. pr. išj.}one{# prog. pr. išj.}few{# prog. pr. išj.}other{# prog. pr. išj.}}</translation>
 <translation id="4066027111132117168">Įjungta, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Vidutinio stiprumo signalas</translation>
 <translation id="4095366824370681039">Rašiklis</translation>
@@ -469,7 +469,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4424159417645388645">5 darbalaukis</translation>
 <translation id="4430019312045809116">Apimtis</translation>
 <translation id="4445159312344259901">Atrakinti prisijungus</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 svarbus pranešimas}one{# svarbus pranešimas}few{# svarbūs pranešimai}many{# svarbaus pranešimo}other{# svarbių pranešimų}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 svarbus pranešimas}one{# svarbus pranešimas}few{# svarbūs pranešimai}other{# svarbių pranešimų}}</translation>
 <translation id="4450893287417543264">Daugiau neberodyti</translation>
 <translation id="4451374464530248585">Pakeistas spartusis klavišas „Alt“ + rodyklė žemyn. Jei norite naudoti klavišą „Page Down“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + rodyklę žemyn.</translation>
 <translation id="445864333228800152">Labas vakaras,</translation>
@@ -577,7 +577,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5176318573511391780">Įrašyti dalinį ekrano vaizdą</translation>
 <translation id="5199367439331364630">Jei norite prisijungti prie „Chromebook“, įveskite slaptažodį</translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Dar 1 pranešimas}one{Dar # pranešimas}few{Dar # pranešimai}many{Dar # pranešimo}other{Dar # pranešimų}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Dar 1 pranešimas}one{Dar # pranešimas}few{Dar # pranešimai}other{Dar # pranešimų}}</translation>
 <translation id="5207949376430453814">Paryškinti teksto žymeklį</translation>
 <translation id="5208059991603368177">Įjungti</translation>
 <translation id="5222676887888702881">Atsijungti</translation>
@@ -787,7 +787,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6850010208275816200">Jūsų dabartinė programa veikia viso ekrano režimu. Programai paprašius jūsų slaptažodžio, pirmiausia išjunkite viso ekrano režimą.</translation>
 <translation id="6852052252232534364">Sp. ir suakt.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Liko vienas skaitmuo}one{Liko # skaitmuo}few{Liko # skaitmenys}many{Liko # skaitmens}other{Liko # skaitmenų}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Liko vienas skaitmuo}one{Liko # skaitmuo}few{Liko # skaitmenys}other{Liko # skaitmenų}}</translation>
 <translation id="6867938213751067702">Failo <ph name="FILENAME" /> atsisiuntimas pristabdytas</translation>
 <translation id="6878400149835617132">Spartusis klavišas išjungtas</translation>
 <translation id="6886172995547742638">Gali sumažėti „<ph name="DEVICE_TYPE" />“ įrenginio našumas. Naudokite sertifikuotą <ph name="PREFERRED_MINIMUM_POWER" /> W ar didesnės galios USB-C maitinimo adapterį.</translation>
@@ -901,7 +901,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7662283695561029522">Palieskite, kad konfigūruotumėte</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Pridėti naują mobiliojo ryšio tinklą</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pranešimas}one{# pranešimas}few{# pranešimai}many{# pranešimo}other{# pranešimų}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pranešimas}one{# pranešimas}few{# pranešimai}other{# pranešimų}}</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
 <translation id="7745560842763881396">Rodyti programas lentynoje</translation>
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>

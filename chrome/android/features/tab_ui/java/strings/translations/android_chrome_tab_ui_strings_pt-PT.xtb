@@ -7,13 +7,13 @@
 <translation id="1302104331113804646">Definições de monitorização de preços</translation>
 <translation id="1378979118429748177">Receba notificações quando os preços descerem.</translation>
 <translation id="1657719826150349398">Mover o separador para baixo</translation>
-<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}one{<ph name="TABS_COUNT_MANY" /> separador(es)}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="2118649612461486615">Informações da loja</translation>
 <translation id="2162620598375156287">Agora a <ph name="CURRENT_PRICE" /> em <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
-<translation id="228946090561406413">{TABS_COUNT,plural, =1{Remova <ph name="TABS_COUNT_ONE" /> separador selecionado do grupo.}one{Remova <ph name="TABS_COUNT_MANY" /> separador(es) selecionado(s) do grupo.}other{Remova <ph name="TABS_COUNT_MANY" /> separadores selecionados do grupo.}}</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{Remova <ph name="TABS_COUNT_ONE" /> separador selecionado do grupo.}other{Remova <ph name="TABS_COUNT_MANY" /> separadores selecionados do grupo.}}</translation>
 <translation id="2479148705183875116">Aceder às Definições</translation>
-<translation id="2539705006853443997">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}one{Reduza o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separador(es).}other{Reduza o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Pretende fechá-los?</translation>
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2613747923081026172">Criar grupo</translation>
@@ -30,7 +30,7 @@
 <translation id="3291470810748040983">Receberá um alerta quando existir um preço inferior num separador aberto.</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Pretende agrupá-los?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
-<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}one{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separador(es).}other{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="3882834874697329510">Para receber um alerta quando existir um preço inferior num separador aberto, ative as notificações nas Definições.</translation>
 <translation id="3940195383040445971">Monitorize os preços nos separadores.</translation>
 <translation id="3996880007329611795">Receber notificações</translation>
@@ -38,7 +38,7 @@
 <translation id="4212246570487010370">Continue a navegar</translation>
 <translation id="4450893287417543264">Não mostrar de novo</translation>
 <translation id="4648718555153979859">Os separadores estão agrupados aqui.</translation>
-<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> crítica)}one{(<ph name="REVIEWS_COUNT_MANY" /> crítica)}other{(<ph name="REVIEWS_COUNT_MANY" /> críticas)}}</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> crítica)}other{(<ph name="REVIEWS_COUNT_MANY" /> críticas)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="492284538114688557">Descida do preço detetada</translation>
 <translation id="5007392906805964215">Rever</translation>
@@ -71,15 +71,15 @@
 <translation id="753732157349120914">Comutador de separadores</translation>
 <translation id="7559245342362162951">Mostrar os separadores do grupo numa grelha em ecrã inteiro</translation>
 <translation id="7792771145871471484">Reveja as sugestões.</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}one{Agrupar <ph name="TABS_COUNT_MANY" /> separador(es) selecionado(s)}other{Agrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
-<translation id="7854360405711302755">{REVIEWS,plural, =1{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> crítica}one{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> crítica}other{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> críticas}}</translation>
+<translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Agrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> crítica}other{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> críticas}}</translation>
 <translation id="7885132941432959125">Mover separador para a direita</translation>
 <translation id="7966321538264951561">Ignore as sugestões.</translation>
 <translation id="8029301326595421733">Informações acerca desta loja abertas à altura total</translation>
 <translation id="814503310257431685">Ver todos</translation>
 <translation id="8205266828577616993">Mover separador para cima</translation>
 <translation id="8304833501377495048">Não mostrar a Faixa de separadores novamente?</translation>
-<translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> separador selecionado}one{Fechar <ph name="TABS_COUNT_MANY" /> separador(es) selecionado(s)}other{Fechar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
+<translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="8557923272772633250">Expandir o grupo de separadores com <ph name="NUMBER_OF_TABS" /> separadores</translation>
 <translation id="860282621117673749">Alertas de descida do preço</translation>
 <translation id="8714939927607906138">Preço mais baixo</translation>

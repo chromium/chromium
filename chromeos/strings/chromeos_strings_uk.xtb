@@ -121,7 +121,7 @@
 <translation id="3091839911843451378">Не надруковано – друк зупинено</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">ЦП</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Видалити сторінку?}=1{Видалити сторінку {PAGE_NUMBER}?}one{Видалити сторінку {PAGE_NUMBER}?}few{Видалити сторінку {PAGE_NUMBER}?}many{Видалити сторінку {PAGE_NUMBER}?}other{Видалити сторінку {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Видалити сторінку?}=1{Видалити сторінку {PAGE_NUMBER}?}one{Видалити сторінку {PAGE_NUMBER}?}few{Видалити сторінку {PAGE_NUMBER}?}other{Видалити сторінку {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
 <translation id="3156846309055100599">Сканування сторінки <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Виявлено адаптивний портал</translation>
@@ -131,7 +131,7 @@
 <translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
-<translation id="3283504360622356314">{0,plural, =1{Редагувати файл}one{Редагувати файли}few{Редагувати файли}many{Редагувати файли}other{Редагувати файли}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{Редагувати файл}one{Редагувати файли}few{Редагувати файли}other{Редагувати файли}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
 <translation id="3328783797891415197">Триває перевірка</translation>
@@ -228,7 +228,7 @@
 <translation id="4835901797422965222">Немає активних мереж</translation>
 <translation id="484790837831576105">Перетворення DNS (Android)</translation>
 <translation id="4848429997038228357">ТРИВАЄ</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Залишилися {0} спроби}many{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроби}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Залишилися {0} спроби}other{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроби}}</translation>
 <translation id="4871137769558798671">Не вдалося підключитися до веб-сайтів HTTPS (порт 443) через брандмауер</translation>
 <translation id="4880328057631981605">Ім’я точки доступу</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
@@ -281,7 +281,7 @@
 <translation id="5431825016875453137">OpenVPN або L2TP</translation>
 <translation id="5457599981699367932">Переглядати в режимі гостя</translation>
 <translation id="54609108002486618">Керований</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Залишилася {0} спроба}one{Залишилася {0} спроба}few{Залишилися {0} спроби}many{Залишилося {0} спроб}other{Залишилося {0} спроби}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Залишилася {0} спроба}one{Залишилася {0} спроба}few{Залишилися {0} спроби}other{Залишилося {0} спроби}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Не вдалося зісканувати</translation>
 <translation id="5502931783115429516">Android не працює</translation>
@@ -305,7 +305,7 @@
 <translation id="5866840822086176774">Дуже потужний</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5916084858004523819">Заборонено</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{Файл зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Файл зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файл не знайдено</translation>
 <translation id="594552776027197022">Створити випадкову пару ключів</translation>
 <translation id="5972388717451707488">Update Engine</translation>
@@ -343,7 +343,7 @@
 <translation id="641081527798843608">Збіг суб’єкта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Оптимальний</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Сканувати сторінку ще раз?}=1{Сканувати сторінку {PAGE_NUMBER} ще раз?}one{Сканувати сторінку {PAGE_NUMBER} ще раз?}few{Сканувати сторінку {PAGE_NUMBER} ще раз?}many{Сканувати сторінку {PAGE_NUMBER} ще раз?}other{Сканувати сторінку {PAGE_NUMBER} ще раз?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Сканувати сторінку ще раз?}=1{Сканувати сторінку {PAGE_NUMBER} ще раз?}one{Сканувати сторінку {PAGE_NUMBER} ще раз?}few{Сканувати сторінку {PAGE_NUMBER} ще раз?}other{Сканувати сторінку {PAGE_NUMBER} ще раз?}}</translation>
 <translation id="6472207088655375767">Одноразовий пароль</translation>
 <translation id="6480327114083866287">Керує <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Зупинено – зам'яло папір</translation>
@@ -383,7 +383,7 @@
 <translation id="7059230779847288458">Заряджається (<ph name="TIME_VALUE" /> до повного зарядження)</translation>
 <translation id="708426984172631313">ЗУПИНЕНО</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}other{Сервери імен}}</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
@@ -404,7 +404,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7415801143053185905">Дуже велика затримка HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканування завершено. Відскановано 1 сторінку}one{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінку}few{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}many{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінок}other{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканування завершено. Відскановано 1 сторінку}one{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінку}few{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}other{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}}</translation>
 <translation id="7469648432129124067">Виявлено портал</translation>
 <translation id="7487067081878637334">Технології</translation>
 <translation id="7490813197707563893">MAC-адреса</translation>
@@ -519,7 +519,7 @@
 <translation id="8968751544471797276">Швидкість заряджання</translation>
 <translation id="8970109610781093811">Запустити знову</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканувати}=1{Сканувати сторінку ({NUMBER_OF_PAGES})}one{Сканувати сторінки ({NUMBER_OF_PAGES})}few{Сканувати сторінки ({NUMBER_OF_PAGES})}many{Сканувати сторінки ({NUMBER_OF_PAGES})}other{Сканувати сторінки ({NUMBER_OF_PAGES})}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканувати}=1{Сканувати сторінку ({NUMBER_OF_PAGES})}one{Сканувати сторінки ({NUMBER_OF_PAGES})}few{Сканувати сторінки ({NUMBER_OF_PAGES})}other{Сканувати сторінки ({NUMBER_OF_PAGES})}}</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Велика затримка перетворення DNS</translation>

@@ -26,6 +26,6 @@
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Gaukite pagalbos<ph name="END_LINK1" /> arba <ph name="BEGIN_LINK2" />ieškokite iš naujo<ph name="END_LINK2" /></translation>
 <translation id="7884346424584885269">„Chrome“ reikia leidimo nuskaityti įrenginius netoliese. <ph name="BEGIN_LINK" />Atnaujinkite leidimus<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Nežinomas arba nepalaikomas įrenginys (<ph name="DEVICE_ID" />)</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Signalo stiprumo lygis: # juosta}one{Signalo stiprumo lygis: # juosta}few{Signalo stiprumo lygis: # juostos}many{Signalo stiprumo lygis: # juostos}other{Signalo stiprumo lygis: # juostų}}</translation>
+<translation id="8687353297350450808">{N_BARS,plural, =1{Signalo stiprumo lygis: # juosta}one{Signalo stiprumo lygis: # juosta}few{Signalo stiprumo lygis: # juostos}other{Signalo stiprumo lygis: # juostų}}</translation>
 <translation id="9133703968756164531">„<ph name="ITEM_NAME" />“ (<ph name="ITEM_ID" />)</translation>
 </translationbundle>
