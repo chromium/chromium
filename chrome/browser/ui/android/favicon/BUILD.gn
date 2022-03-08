@@ -48,7 +48,6 @@ android_resources("java_resources") {
     "java/res/drawable-xxhdpi/default_favicon.png",
     "java/res/drawable-xxxhdpi/chromelogo16.png",
     "java/res/drawable-xxxhdpi/default_favicon.png",
-    "java/res/values/dimens.xml",
   ]
 
   deps = [
