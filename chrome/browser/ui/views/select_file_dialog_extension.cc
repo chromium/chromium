@@ -217,18 +217,6 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate,
     return FrameKind::kNonClient;
   }
 
-  void AdjustWidgetInitParams(views::Widget::InitParams* params) override {
-    params->shadow_type = views::Widget::InitParams::ShadowType::kDefault;
-    auto* color_provider = ash::ColorProvider::Get();
-    ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
-    params->init_properties_container.SetProperty(
-        chromeos::kFrameActiveColorKey,
-        color_provider->GetActiveDialogTitleBarColor());
-    params->init_properties_container.SetProperty(
-        chromeos::kFrameInactiveColorKey,
-        color_provider->GetInactiveDialogTitleBarColor());
-  }
-
   void GetMinimumDialogSize(gfx::Size* size) const override {
     size->set_width(kFileManagerMinimumWidth);
     size->set_height(kFileManagerMinimumHeight);
@@ -250,16 +238,6 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate,
     if (parent_) {
       parent_->OnSystemDialogWillClose();
     }
-  }
-
-  void OnColorModeChanged(bool dark_mode_enabled) override {
-    auto* color_provider = ash::ColorProvider::Get();
-    dialog_window()->SetProperty(
-        chromeos::kFrameActiveColorKey,
-        color_provider->GetActiveDialogTitleBarColor());
-    dialog_window()->SetProperty(
-        chromeos::kFrameInactiveColorKey,
-        color_provider->GetInactiveDialogTitleBarColor());
   }
 
  private:

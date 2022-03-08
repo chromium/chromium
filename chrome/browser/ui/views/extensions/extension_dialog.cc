@@ -197,6 +197,11 @@ ExtensionDialog::ExtensionDialog(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   aura::Window* native_view = window->GetNativeWindow();
+  const bool should_track_default_frame_colors =
+      !(init_params.title_color || init_params.title_inactive_color);
+  native_view->SetProperty(chromeos::kTrackDefaultFrameColors,
+                           should_track_default_frame_colors);
+
   if (init_params.title_color) {
     // Frame active color changes the title color when dialog is active.
     native_view->SetProperty(chromeos::kFrameActiveColorKey,

@@ -61,11 +61,20 @@ extern const ui::ClassProperty<bool>* const kUseOverviewToExitFullscreen;
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kUseOverviewToExitPointerLock;
 
+// True if clients expect the window to track the system's default frame colors.
+// This is used to determine whether a frame's color should be kept in sync with
+// default colors during system theme transitions, or if frame colors should be
+// left unmodified (e.g. system app custom frame colors).
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kTrackDefaultFrameColors;
+
 // A property key to store the active color on the window frame.
+// `kTrackDefaultFrameColors` must be set to false for this to take effect.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<SkColor>* const kFrameActiveColorKey;
 
 // A property key to store the inactive color on the window frame.
+// `kTrackDefaultFrameColors` must be set to false for this to take effect.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<SkColor>* const kFrameInactiveColorKey;
 

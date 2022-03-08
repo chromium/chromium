@@ -931,6 +931,10 @@ void ShellSurfaceBase::OnSetFrameColors(SkColor active_color,
   active_frame_color_ = SkColorSetA(active_color, SK_AlphaOPAQUE);
   inactive_frame_color_ = SkColorSetA(inactive_color, SK_AlphaOPAQUE);
   if (widget_) {
+    // Set kTrackDefaultFrameColors to false to prevent clobbering the active
+    // and inactive frame colors during theme changes.
+    widget_->GetNativeWindow()->SetProperty(chromeos::kTrackDefaultFrameColors,
+                                            false);
     widget_->GetNativeWindow()->SetProperty(chromeos::kFrameActiveColorKey,
                                             active_frame_color_);
     widget_->GetNativeWindow()->SetProperty(chromeos::kFrameInactiveColorKey,

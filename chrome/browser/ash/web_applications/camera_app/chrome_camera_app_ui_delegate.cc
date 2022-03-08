@@ -102,6 +102,8 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::AdjustWidgetInitParams(
   auto grey_900 = cros_styles::ResolveColor(
       cros_styles::ColorName::kGoogleGrey900, /*is_dark_mode=*/false,
       /*use_debug_colors=*/false);
+  params->init_properties_container.SetProperty(
+      chromeos::kTrackDefaultFrameColors, false);
   params->init_properties_container.SetProperty(chromeos::kFrameActiveColorKey,
                                                 grey_900);
   params->init_properties_container.SetProperty(

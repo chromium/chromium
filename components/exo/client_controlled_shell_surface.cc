@@ -762,6 +762,7 @@ void ClientControlledShellSurface::OnSetFrameColors(SkColor active_color,
   ShellSurfaceBase::OnSetFrameColors(active_color, inactive_color);
   if (wide_frame_) {
     aura::Window* window = wide_frame_->GetWidget()->GetNativeWindow();
+    window->SetProperty(chromeos::kTrackDefaultFrameColors, false);
     window->SetProperty(chromeos::kFrameActiveColorKey, active_color);
     window->SetProperty(chromeos::kFrameInactiveColorKey, inactive_color);
   }

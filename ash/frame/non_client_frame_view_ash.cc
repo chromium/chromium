@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/frame/header_view.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -48,6 +50,7 @@ using ::chromeos::ImmersiveFullscreenController;
 using ::chromeos::kFrameActiveColorKey;
 using ::chromeos::kFrameInactiveColorKey;
 using ::chromeos::kImmersiveImpliedByFullscreen;
+using ::chromeos::kTrackDefaultFrameColors;
 using ::chromeos::WindowStateType;
 
 DEFINE_UI_CLASS_PROPERTY_KEY(NonClientFrameViewAsh*,
@@ -252,6 +255,8 @@ NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
 
   header_view_->set_context_menu_controller(
       frame_context_menu_controller_.get());
+
+  UpdateDefaultFrameColors();
 }
 
 NonClientFrameViewAsh::~NonClientFrameViewAsh() = default;
@@ -269,6 +274,7 @@ void NonClientFrameViewAsh::InitImmersiveFullscreenControllerForView(
 void NonClientFrameViewAsh::SetFrameColors(SkColor active_frame_color,
                                            SkColor inactive_frame_color) {
   aura::Window* frame_window = frame_->GetNativeWindow();
+  frame_window->SetProperty(kTrackDefaultFrameColors, false);
   frame_window->SetProperty(kFrameActiveColorKey, active_frame_color);
   frame_window->SetProperty(kFrameInactiveColorKey, inactive_frame_color);
 }
@@ -368,6 +374,11 @@ gfx::Size NonClientFrameViewAsh::GetMaximumSize() const {
     height = NonClientTopBorderHeight() + max_client_size.height();
 
   return gfx::Size(width, height);
+}
+
+void NonClientFrameViewAsh::OnThemeChanged() {
+  NonClientFrameView::OnThemeChanged();
+  UpdateDefaultFrameColors();
 }
 
 bool NonClientFrameViewAsh::ShouldShowContextMenu(
@@ -480,6 +491,22 @@ NonClientFrameViewAsh::GetFrameCaptionButtonContainerViewForTest() {
 void NonClientFrameViewAsh::PaintAsActiveChanged() {
   header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
   frame_->non_client_view()->Layout();
+}
+
+void NonClientFrameViewAsh::UpdateDefaultFrameColors() {
+  auto* color_provider = ash::ColorProvider::Get();
+  aura::Window* frame_window = frame_->GetNativeWindow();
+  if (!frame_window->GetProperty(kTrackDefaultFrameColors))
+    return;
+
+  // Use scoped light mode to ensure we use light mode colors when the
+  // DarkLightMode feature is disabled. Do this because color mode is DARK by
+  // default when it is disabled currently (see crbug.com/1291354).
+  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
+  frame_window->SetProperty(kFrameActiveColorKey,
+                            color_provider->GetActiveDialogTitleBarColor());
+  frame_window->SetProperty(kFrameInactiveColorKey,
+                            color_provider->GetInactiveDialogTitleBarColor());
 }
 
 BEGIN_METADATA(NonClientFrameViewAsh, views::NonClientFrameView)

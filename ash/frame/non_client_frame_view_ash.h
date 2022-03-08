@@ -87,12 +87,11 @@ class ASH_EXPORT NonClientFrameViewAsh
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
   views::View::Views GetChildrenInZOrder() override;
-
-  // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
+  void OnThemeChanged() override;
 
   // FrameContextMenuController::Delegate:
   bool ShouldShowContextMenu(views::View* source,
@@ -148,6 +147,9 @@ class ASH_EXPORT NonClientFrameViewAsh
 
   // Called when |frame_|'s "paint as active" state has changed.
   void PaintAsActiveChanged();
+
+  // Updates the windows default frame colors if necessary.
+  void UpdateDefaultFrameColors();
 
   // Not owned.
   views::Widget* const frame_;
