@@ -558,7 +558,7 @@ void HttpAuthController::PopulateAuthChallenge() {
 
   auth_info_ = AuthChallengeInfo();
   auth_info_->is_proxy = (target_ == HttpAuth::AUTH_PROXY);
-  auth_info_->challenger = url::Origin::Create(auth_scheme_host_port_.GetURL());
+  auth_info_->challenger = auth_scheme_host_port_;
   auth_info_->scheme = HttpAuth::SchemeToString(handler_->auth_scheme());
   auth_info_->realm = handler_->realm();
   auth_info_->path = auth_path_;

@@ -6341,7 +6341,7 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntry) {
   url::SchemeHostPort scheme_host_port(GURL("http://example.test/"));
   net::AuthChallengeInfo challenge;
   challenge.is_proxy = false;
-  challenge.challenger = url::Origin::Create(scheme_host_port.GetURL());
+  challenge.challenger = scheme_host_port;
   challenge.scheme = "basic";
   challenge.realm = "testrealm";
   const char16_t kUsername[] = u"test_user";
@@ -6371,7 +6371,7 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntry) {
   // Add an AUTH_PROXY cache entry.
   url::SchemeHostPort proxy_scheme_host_port(GURL("http://proxy.test/"));
   challenge.is_proxy = true;
-  challenge.challenger = url::Origin::Create(proxy_scheme_host_port.GetURL());
+  challenge.challenger = proxy_scheme_host_port;
   const char16_t kProxyUsername[] = u"test_proxy_user";
   const char16_t kProxyPassword[] = u"test_proxy_pass";
   ASSERT_FALSE(cache->Lookup(proxy_scheme_host_port, net::HttpAuth::AUTH_PROXY,
@@ -6412,14 +6412,13 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntryWithNetworkIsolationKey) {
   ASSERT_TRUE(cache->key_server_entries_by_network_isolation_key());
 
   // Add an AUTH_SERVER cache entry.
-  GURL url("http://example.test/");
-  url::Origin origin = url::Origin::Create(url);
+  url::Origin origin = url::Origin::Create(GURL("http://example.test/"));
   url::SchemeHostPort scheme_host_port =
       origin.GetTupleOrPrecursorTupleIfOpaque();
   net::NetworkIsolationKey network_isolation_key(origin, origin);
   net::AuthChallengeInfo challenge;
   challenge.is_proxy = false;
-  challenge.challenger = url::Origin::Create(scheme_host_port.GetURL());
+  challenge.challenger = scheme_host_port;
   challenge.scheme = "basic";
   challenge.realm = "testrealm";
   const char16_t kUsername[] = u"test_user";
@@ -6448,14 +6447,14 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntryWithNetworkIsolationKey) {
 }
 
 TEST_F(NetworkContextTest, CopyHttpAuthCacheProxyEntries) {
-  const GURL kURL("http://foo.com");
+  const url::SchemeHostPort kSchemeHostPort(GURL("http://foo.com"));
 
   std::unique_ptr<NetworkContext> network_context1 =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
   net::AuthChallengeInfo challenge;
   challenge.is_proxy = true;
-  challenge.challenger = url::Origin::Create(kURL);
+  challenge.challenger = kSchemeHostPort;
   challenge.scheme = "basic";
   challenge.realm = "testrealm";
   const char16_t kProxyUsername[] = u"proxy_user";
@@ -6507,13 +6506,11 @@ TEST_F(NetworkContextTest, CopyHttpAuthCacheProxyEntries) {
                                   ->GetSession()
                                   ->http_auth_cache();
   // The server credentials should not have been copied.
-  EXPECT_FALSE(cache->Lookup(
-      challenge.challenger.GetTupleOrPrecursorTupleIfOpaque(),
-      net::HttpAuth::AUTH_SERVER, challenge.realm,
-      net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey()));
+  EXPECT_FALSE(cache->Lookup(kSchemeHostPort, net::HttpAuth::AUTH_SERVER,
+                             challenge.realm, net::HttpAuth::AUTH_SCHEME_BASIC,
+                             net::NetworkIsolationKey()));
   net::HttpAuthCache::Entry* entry = cache->Lookup(
-      challenge.challenger.GetTupleOrPrecursorTupleIfOpaque(),
-      net::HttpAuth::AUTH_PROXY, challenge.realm,
+      kSchemeHostPort, net::HttpAuth::AUTH_PROXY, challenge.realm,
       net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey());
   ASSERT_TRUE(entry);
   EXPECT_EQ(kProxyUsername, entry->credentials().username());
@@ -6521,7 +6518,7 @@ TEST_F(NetworkContextTest, CopyHttpAuthCacheProxyEntries) {
 }
 
 TEST_F(NetworkContextTest, SplitAuthCacheByNetworkIsolationKey) {
-  const GURL kURL("http://foo.com");
+  const url::SchemeHostPort kSchemeHostPort(GURL("http://foo.com"));
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -6535,7 +6532,7 @@ TEST_F(NetworkContextTest, SplitAuthCacheByNetworkIsolationKey) {
   // Add proxy credentials, which should never be deleted.
   net::AuthChallengeInfo challenge;
   challenge.is_proxy = true;
-  challenge.challenger = url::Origin::Create(kURL);
+  challenge.challenger = kSchemeHostPort;
   challenge.scheme = "basic";
   challenge.realm = "testrealm";
   const char16_t kProxyUsername[] = u"proxy_user";
@@ -6574,14 +6571,12 @@ TEST_F(NetworkContextTest, SplitAuthCacheByNetworkIsolationKey) {
 
     // The server credentials should have been deleted.
     EXPECT_FALSE(cache->Lookup(
-        challenge.challenger.GetTupleOrPrecursorTupleIfOpaque(),
-        net::HttpAuth::AUTH_SERVER, challenge.realm,
+        kSchemeHostPort, net::HttpAuth::AUTH_SERVER, challenge.realm,
         net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey()));
 
     // The proxy credentials should still be in the cache.
     net::HttpAuthCache::Entry* entry = cache->Lookup(
-        challenge.challenger.GetTupleOrPrecursorTupleIfOpaque(),
-        net::HttpAuth::AUTH_PROXY, challenge.realm,
+        kSchemeHostPort, net::HttpAuth::AUTH_PROXY, challenge.realm,
         net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey());
     ASSERT_TRUE(entry);
     EXPECT_EQ(kProxyUsername, entry->credentials().username());

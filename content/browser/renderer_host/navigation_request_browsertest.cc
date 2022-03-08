@@ -56,6 +56,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -3117,7 +3118,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, AuthChallengeInfo) {
   EXPECT_TRUE(observer.has_committed());
   ASSERT_TRUE(observer.auth_challenge_info().has_value());
   EXPECT_FALSE(observer.auth_challenge_info()->is_proxy);
-  EXPECT_EQ(url::Origin::Create(url),
+  EXPECT_EQ(url::SchemeHostPort(url),
             observer.auth_challenge_info()->challenger);
   EXPECT_EQ("basic", observer.auth_challenge_info()->scheme);
   EXPECT_EQ("testrealm", observer.auth_challenge_info()->realm);

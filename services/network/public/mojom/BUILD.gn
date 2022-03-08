@@ -621,7 +621,7 @@ mojom("mojom_network_param") {
 
   public_deps = [
     "//mojo/public/mojom/base",
-    "//url/mojom:url_mojom_origin",
+    "//url/mojom:url_mojom_scheme_host_port",
   ]
 
   if (!is_ios) {

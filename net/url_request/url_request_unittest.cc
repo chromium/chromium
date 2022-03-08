@@ -13011,7 +13011,7 @@ TEST_F(URLRequestTestHTTP, AuthChallengeInfo) {
   delegate.RunUntilComplete();
   ASSERT_TRUE(r->auth_challenge_info().has_value());
   EXPECT_FALSE(r->auth_challenge_info()->is_proxy);
-  EXPECT_EQ(url::Origin::Create(url), r->auth_challenge_info()->challenger);
+  EXPECT_EQ(url::SchemeHostPort(url), r->auth_challenge_info()->challenger);
   EXPECT_EQ("basic", r->auth_challenge_info()->scheme);
   EXPECT_EQ("testrealm", r->auth_challenge_info()->realm);
   EXPECT_EQ("Basic realm=\"testrealm\"", r->auth_challenge_info()->challenge);

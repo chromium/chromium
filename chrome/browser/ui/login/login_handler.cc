@@ -409,7 +409,7 @@ PasswordForm LoginHandler::MakeInputForPasswordManager(
   }
   dialog_form.url = auth_info.challenger.GetURL();
   DCHECK(auth_info.is_proxy ||
-         auth_info.challenger.IsSameOriginWith(request_url));
+         auth_info.challenger == url::SchemeHostPort(request_url));
   dialog_form.signon_realm = GetSignonRealm(dialog_form.url, auth_info);
   return dialog_form;
 }
@@ -424,8 +424,8 @@ void LoginHandler::GetDialogStrings(const GURL& request_url,
   if (auth_info.is_proxy) {
     *authority = l10n_util::GetStringFUTF16(
         IDS_LOGIN_DIALOG_PROXY_AUTHORITY,
-        url_formatter::FormatOriginForSecurityDisplay(
-            auth_info.challenger, url_formatter::SchemeDisplay::SHOW));
+        url_formatter::FormatUrlForSecurityDisplay(
+            auth_info.challenger.GetURL(), url_formatter::SchemeDisplay::SHOW));
     authority_url = auth_info.challenger.GetURL();
   } else {
     *authority = url_formatter::FormatUrlForSecurityDisplay(request_url);

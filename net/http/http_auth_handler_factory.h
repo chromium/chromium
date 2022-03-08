@@ -19,6 +19,7 @@
 #include "net/http/http_auth_scheme.h"
 #include "net/http/url_security_manager.h"
 #include "net/net_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class SchemeHostPort;

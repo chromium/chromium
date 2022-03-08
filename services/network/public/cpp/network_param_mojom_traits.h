@@ -11,7 +11,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_version.h"
 #include "services/network/public/mojom/network_param.mojom-shared.h"
-#include "url/mojom/origin_mojom_traits.h"
+#include "url/mojom/scheme_host_port_mojom_traits.h"
 
 namespace mojo {
 
@@ -23,7 +23,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool is_proxy(const net::AuthChallengeInfo& auth_challenge_info) {
     return auth_challenge_info.is_proxy;
   }
-  static const url::Origin& challenger(
+  static const url::SchemeHostPort& challenger(
       const net::AuthChallengeInfo& auth_challenge_info) {
     return auth_challenge_info.challenger;
   }

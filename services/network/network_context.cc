@@ -2044,9 +2044,7 @@ void NetworkContext::AddAuthCacheEntry(
           ->GetSession()
           ->http_auth_cache();
   http_auth_cache->Add(
-      // TODO(https://crbug.com/): Convert AuthCredentials::challenger field to
-      // a SchemeHostPort.
-      challenge.challenger.GetTupleOrPrecursorTupleIfOpaque(),
+      challenge.challenger,
       challenge.is_proxy ? net::HttpAuth::AUTH_PROXY
                          : net::HttpAuth::AUTH_SERVER,
       challenge.realm, net::HttpAuth::StringToScheme(challenge.scheme),

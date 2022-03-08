@@ -13,6 +13,7 @@
 #include "net/base/auth.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace {
 
@@ -134,7 +135,7 @@ TEST(LoginHandlerTest, DialogStringsAndRealm) {
     auth_info.is_proxy = test_case.auth_info.target_type == PROXY;
     auth_info.scheme = test_case.auth_info.scheme;
     auth_info.realm = test_case.auth_info.realm;
-    auth_info.challenger = url::Origin::Create(
+    auth_info.challenger = url::SchemeHostPort(
         test_case.auth_info.challenger ? GURL(test_case.auth_info.challenger)
                                        : request_url);
 

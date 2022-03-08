@@ -4,7 +4,7 @@
 
 module network.mojom;
 
-import "url/mojom/origin.mojom";
+import "url/mojom/scheme_host_port.mojom";
 
 // Information related to an authentication challenge in an HTTP response.
 // Typemapped to net::AuthChallengeInfo.
@@ -12,7 +12,7 @@ struct AuthChallengeInfo {
   // True if the challenge was for proxy authentication.
   bool is_proxy;
   // The service issuing the challenge.
-  url.mojom.Origin challenger;
+  url.mojom.SchemeHostPort challenger;
   // The authentication scheme used, such as "basic" or "digest".
   string scheme;
   // The realm of the authentication challenge. May be empty.

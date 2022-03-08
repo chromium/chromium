@@ -1967,7 +1967,7 @@ TEST_F(URLLoaderTest, AuthChallengeInfo) {
   EXPECT_EQ(net::OK, Load(url));
   ASSERT_TRUE(client()->response_head()->auth_challenge_info.has_value());
   EXPECT_FALSE(client()->response_head()->auth_challenge_info->is_proxy);
-  EXPECT_EQ(url::Origin::Create(url),
+  EXPECT_EQ(url::SchemeHostPort(url),
             client()->response_head()->auth_challenge_info->challenger);
   EXPECT_EQ("basic", client()->response_head()->auth_challenge_info->scheme);
   EXPECT_EQ("testrealm", client()->response_head()->auth_challenge_info->realm);

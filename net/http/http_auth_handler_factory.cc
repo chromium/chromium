@@ -22,6 +22,7 @@
 #include "net/log/net_log_values.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(USE_KERBEROS)

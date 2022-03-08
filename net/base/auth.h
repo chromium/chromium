@@ -8,7 +8,7 @@
 #include <string>
 
 #include "net/base/net_export.h"
-#include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -29,7 +29,7 @@ class NET_EXPORT AuthChallengeInfo {
   bool is_proxy;
 
   // The service issuing the challenge.
-  url::Origin challenger;
+  url::SchemeHostPort challenger;
 
   // The authentication scheme used, such as "basic" or "digest". The encoding
   // is ASCII.
