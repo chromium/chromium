@@ -110,6 +110,11 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   if (!filter_data.has_value())
     return;
 
+  // "source_type" is automatically generated in source filter data during
+  // attribution source matching, so it is an error to specify it here.
+  if (filter_data->filter_values().contains("source_type"))
+    return;
+
   absl::optional<AttributionAggregatableSources> aggregatable_sources =
       AttributionAggregatableSources::Create(
           ConvertToProto(*data->aggregatable_sources));

@@ -241,6 +241,12 @@ bool ParseSourceRegistrationHeader(
     return false;
   }
 
+  // "source_type" is automatically generated in source filter data during
+  // attribution source matching, so it is an error to specify it here.
+  // TODO(apaseltiner): Report a DevTools issue for this.
+  if (source_data.filter_data->filter_values.Contains("source_type"))
+    return false;
+
   return true;
 }
 

@@ -462,4 +462,124 @@ TEST(AttributionResponseParsingTest,
   }
 }
 
+TEST(AttributionResponseParsingTest, ParseFilters) {
+  // TODO(apaseltiner): Add comprehensive test cases.
+  const struct {
+    String description;
+    AtomicString json;
+    mojom::blink::AttributionFilterDataPtr expected;
+  } kTestCases[] = {
+      {
+          "empty",
+          R"json({})json",
+          AttributionFilterDataBuilder().Build(),
+      },
+      {
+          "source_type",
+          R"json({"source_type": []})json",
+          AttributionFilterDataBuilder().AddFilter("source_type", {}).Build(),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    mojom::blink::AttributionFilterData filter_data;
+
+    bool valid = ParseFilters(test_case.json, filter_data);
+    EXPECT_EQ(valid, !test_case.expected.is_null()) << test_case.description;
+
+    if (test_case.expected) {
+      EXPECT_EQ(*test_case.expected, filter_data) << test_case.description;
+    }
+  }
+}
+
+TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
+  const auto reporting_origin =
+      SecurityOrigin::CreateFromString("https://r.test");
+
+  // TODO(apaseltiner): Add comprehensive test cases.
+  const struct {
+    String description;
+    AtomicString json;
+    mojom::blink::AttributionSourceDataPtr expected;
+  } kTestCases[] = {
+      {
+          "required_fields_only",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/1,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregatable_sources=*/AggregatableSourcesBuilder().Build()),
+      },
+      {
+          "valid_filter_data",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test",
+            "filter_data": {"SOURCE_TYPE": []}
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/1,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/
+              AttributionFilterDataBuilder()
+                  .AddFilter("SOURCE_TYPE", {})
+                  .Build(),
+              /*aggregatable_sources=*/AggregatableSourcesBuilder().Build()),
+      },
+      {
+          "invalid_source_type_key_in_filter_data",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test",
+            "filter_data": {"source_type": []}
+          })json",
+          nullptr,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    mojom::blink::AttributionSourceData source_data;
+    // This field is not populated by `ParseSourceRegistrationHeader()`, so just
+    // set it to an arbitrary origin so we can ensure it isn't changed.
+    source_data.reporting_origin = reporting_origin;
+
+    bool valid = ParseSourceRegistrationHeader(test_case.json, source_data);
+    EXPECT_EQ(valid, !test_case.expected.is_null()) << test_case.description;
+
+    if (test_case.expected) {
+      EXPECT_EQ(test_case.expected->destination->ToUrlOrigin(),
+                source_data.destination->ToUrlOrigin())
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->reporting_origin->ToUrlOrigin(),
+                source_data.reporting_origin->ToUrlOrigin())
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->source_event_id,
+                source_data.source_event_id)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->filter_data, source_data.filter_data)
+          << test_case.description;
+
+      // TODO(apaseltiner): Check remaining fields here.
+    }
+  }
+}
+
 }  // namespace blink::attribution_response_parsing
