@@ -24,4 +24,7 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   }
 };
 
-TEST_F('PersonalizationAppComponentBrowserTest', 'All', () => mocha.run());
+// TODO(crbug/1304286) re-enable these tests.
+TEST_F(
+    'PersonalizationAppComponentBrowserTest', 'DISABLED_All',
+    () => mocha.run());
