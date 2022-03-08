@@ -14,6 +14,7 @@
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/ui/ambient_animation_resizer.h"
+#include "ash/ambient/ui/ambient_animation_shield_controller.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/glanceable_info_view.h"
@@ -27,11 +28,13 @@
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_wrapper.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/lottie/animation.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
@@ -59,6 +62,10 @@ constexpr base::TimeDelta kThroughputTrackerRestartPeriod = base::Seconds(30);
 constexpr int kWeatherTimeBorderPaddingDip = 28;
 
 constexpr int kTimeFontSizeDip = 32;
+
+// Google Grey 500 with 10% opacity.
+constexpr SkColor kDarkModeShieldColor =
+    SkColorSetA(gfx::kGoogleGrey900, SK_AlphaOPAQUE / 10);
 
 // TODO(esum): Record throughput metrics to track animation performance in the
 // field. We can use ash::metrics_util::CalculateSmoothness().
@@ -118,10 +125,15 @@ AmbientAnimationView::~AmbientAnimationView() = default;
 
 void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
   SetUseDefaultFillLayout(true);
-  animated_image_view_ =
-      AddChildView(std::make_unique<views::AnimatedImageView>());
+
+  views::View* animation_container_view =
+      AddChildView(std::make_unique<views::View>());
+  animation_container_view->SetUseDefaultFillLayout(true);
   // Purely for performance reasons. Gains 3-4 fps.
-  animated_image_view_->SetPaintToLayer();
+  animation_container_view->SetPaintToLayer();
+
+  animated_image_view_ = animation_container_view->AddChildView(
+      std::make_unique<views::AnimatedImageView>());
   base::span<const uint8_t> lottie_data_bytes =
       base::as_bytes(base::make_span(static_resources_->GetLottieData()));
   // Create a serializable SkottieWrapper since the SkottieWrapper may have to
@@ -133,6 +145,17 @@ void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
   animation->SetAnimationObserver(this);
   animated_image_view_->SetAnimatedImage(std::move(animation));
   animated_image_view_observer_.Observe(animated_image_view_);
+
+  // SetPaintToLayer() causes a view to be painted above its non-layer-backed
+  // siblings, irrespective of the order they were added in. Using an
+  // intermediate layer-backed |animation_container_view| ensures the shield is
+  // painted on top of the animation, while still getting performance benefits.
+  auto shield_view = std::make_unique<views::View>();
+  shield_view->SetID(kAmbientShieldView);
+  shield_view->SetBackground(
+      views::CreateSolidBackground(kDarkModeShieldColor));
+  shield_view_controller_ = std::make_unique<AmbientAnimationShieldController>(
+      std::move(shield_view), /*parent_view=*/animation_container_view);
 
   // The set of weather/time views embedded within GlanceableInfoView should
   // appear in the top-left of the the AmbientAnimationView's boundaries with
