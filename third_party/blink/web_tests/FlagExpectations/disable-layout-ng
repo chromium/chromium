@@ -260,7 +260,7 @@ crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-001b.ht
 crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-002a.html [ Failure ]
 crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-002b.html [ Failure ]
 crbug.com/470421 external/wpt/css/css-flexbox/fixed-table-layout-with-percentage-width-in-flex-item.html [ Failure ]
-crbug.com/591099 external/wpt/css/css-flexbox/dynamic-isize-change-002.html [ Crash ]
+crbug.com/591099 external/wpt/css/css-flexbox/dynamic-isize-change-002.html [ Pass Failure Crash ]
 crbug.com/1003506 external/wpt/css/css-flexbox/percentage-heights-007.html [ Failure ]
 crbug.com/1255340 external/wpt/css/css-flexbox/percentage-heights-016.html [ Failure ]
 crbug.com/1255340 external/wpt/css/css-flexbox/percentage-heights-017.html [ Failure ]
