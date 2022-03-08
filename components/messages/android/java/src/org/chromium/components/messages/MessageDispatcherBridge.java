@@ -43,6 +43,7 @@ public class MessageDispatcherBridge {
     private static void dismissMessage(
             MessageWrapper message, WindowAndroid windowAndroid, @DismissReason int dismissReason) {
         MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
+        if (messageDispatcher == null) return;
         messageDispatcher.dismissMessage(message.getMessageProperties(), dismissReason);
     }
 }
