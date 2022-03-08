@@ -191,6 +191,17 @@ class DeskContainerObserver : public aura::WindowObserver {
     owner_->RemoveWindowFromDesk(removed_window);
   }
 
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    // We need this for desks templates, where new app windows can be created
+    // while in overview. The window may not be visible when `OnWindowAdded` is
+    // called so updating the previews then wouldn't show the new window
+    // preview.
+    if (!window->GetProperty(kHideInDeskMiniViewKey) &&
+        !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+      owner_->NotifyContentChanged();
+    }
+  }
+
   void OnWindowDestroyed(aura::Window* window) override {
     // We should never get here. We should be notified in
     // `OnRootWindowClosing()` before the child containers of the root window
