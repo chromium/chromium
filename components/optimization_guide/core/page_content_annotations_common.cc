@@ -40,7 +40,7 @@ WeightedIdentifier::~WeightedIdentifier() = default;
 bool WeightedIdentifier::operator==(const WeightedIdentifier& other) const {
   constexpr double kWeightTolerance = 1e-6;
   return this->value_ == other.value_ &&
-         abs(this->weight_ - other.weight_) <= kWeightTolerance;
+         std::abs(this->weight_ - other.weight_) <= kWeightTolerance;
 }
 
 std::string WeightedIdentifier::ToString() const {
