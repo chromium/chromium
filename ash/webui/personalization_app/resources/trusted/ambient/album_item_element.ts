@@ -14,7 +14,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 import {isSelectionEvent} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isRecentHighlightsAlbum} from '../utils.js';
+import {getPhotoCount, isRecentHighlightsAlbum} from '../utils.js';
 
 export type AlbumSelectedChangedEvent = CustomEvent<{album: AmbientModeAlbum}>;
 
@@ -88,16 +88,7 @@ export class AlbumItem extends WithPersonalizationStore {
       if (isRecentHighlightsAlbum(this.album)) {
         return this.i18n('ambientModeAlbumsSubpageRecentHighlightsDesc');
       }
-
-      if (this.album.numberOfPhotos <= 1) {
-        return this.i18n(
-            'ambientModeAlbumsSubpagePhotosNumSingularDesc',
-            this.album.numberOfPhotos);
-      }
-
-      return this.i18n(
-          'ambientModeAlbumsSubpagePhotosNumPluralDesc',
-          this.album.numberOfPhotos);
+      return getPhotoCount(this.album);
     }
 
     if (this.topicSource === TopicSource.kArtGallery) {

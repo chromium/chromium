@@ -18,6 +18,7 @@ import {isSelectionEvent} from '../../common/utils.js';
 import {TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {getTopicSourceName} from '../utils.js';
 
 import {setTopicSource} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
@@ -79,13 +80,7 @@ export class TopicSourceItem extends WithPersonalizationStore {
   }
 
   private getItemName_(): string {
-    if (this.topicSource === TopicSource.kGooglePhotos) {
-      return this.i18n('ambientModeTopicSourceGooglePhotos');
-    } else if (this.topicSource === TopicSource.kArtGallery) {
-      return this.i18n('ambientModeTopicSourceArtGallery');
-    } else {
-      return '';
-    }
+    return getTopicSourceName(this.topicSource);
   }
 
   private getItemDescription_(): string {

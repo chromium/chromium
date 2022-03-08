@@ -445,4 +445,30 @@ export function AmbientSubpageTest() {
     await waitAfterNextRender(artAlbumDialog);
     assertTrue(artAlbumDialog.$.dialog.open);
   });
+
+  test('has correct album preview information', async () => {
+    ambientSubpageElement = initElement(AmbientSubpage, {
+      path: Paths.AmbientAlbums,
+      queryParams: {topicSource: TopicSource.kArtGallery}
+    });
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
+    const action = await personalizationStore.waitForAction(
+                       AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
+    assertEquals(4, action.albums.length);
+    const ambientPreview =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
+    assertTrue(!!ambientPreview);
+
+    const previewImage =
+        ambientPreview.shadowRoot!.querySelector<HTMLImageElement>(
+            '.preview-image');
+    assertTrue(!!previewImage);
+    assertTrue(previewImage.src.includes('test_url2'));
+
+    const previewAlbumTitle =
+        ambientPreview.shadowRoot!.getElementById('albumTitle');
+    assertTrue(!!previewAlbumTitle);
+    assertEquals('2', previewAlbumTitle.innerText.replace(/\s/g, ''));
+  });
 }

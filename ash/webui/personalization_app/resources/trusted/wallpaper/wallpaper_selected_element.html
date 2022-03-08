@@ -10,17 +10,19 @@
   }
 
   #container:not(.loading) {
-    grid-template-areas: "image . text"
-      "image . ."
-      "image . buttons"
-      ".     . .";
+    grid-template-areas:
+      'image . text'
+      'image . .'
+      'image . buttons'
+      '.     . .';
   }
 
   #container.loading {
-    grid-template-areas: "image . text"
-      "image . text"
-      "image . text"
-      ".     . .";
+    grid-template-areas:
+      'image . text'
+      'image . text'
+      'image . text'
+      '.     . .';
   }
 
   #imageContainer,
@@ -31,95 +33,11 @@
 
   #textContainer,
   #textPlaceholder {
-    align-items: flex-start;
-    display: flex;
-    flex-flow: column nowrap;
     grid-area: text;
-    margin: 0;
-  }
-
-  #textContainer {
-    justify-content: flex-end;
-  }
-
-  #textPlaceholder {
-    justify-content: center;
   }
 
   #buttonContainer {
     grid-area: buttons;
-  }
-
-  .placeholder {
-    border-radius: 12px;
-  }
-
-  #imageContainer {
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 12px;
-    box-sizing: border-box;
-    overflow: hidden;
-    position: relative;
-  }
-
-  img {
-    height: 100%;
-    object-fit: cover;
-    width: 100%;
-  }
-
-  #textContainer > *,
-  #textPlaceholder > * {
-    margin: 0;
-    overflow: hidden;
-    max-width: 100%;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  #textContainer > * + * {
-    margin-top: 4px;
-  }
-
-  #textPlaceholder > * + * {
-    margin-top: 8px;
-  }
-
-  #textContainer > span:first-child {
-    color: var(--cros-text-color-secondary);
-    font: var(--cros-body-2-font);
-  }
-
-  #textPlaceholder > .placeholder:first-child {
-    /* Each row is 83 ms after the prior element. */
-    --animation-delay: calc(1s + 83ms);
-    width: 20%;
-    height: 20px;
-  }
-
-  #textContainer > span:nth-child(2) {
-    color: var(--cros-text-color-primary);
-    font: var(--cros-display-6-font);
-  }
-
-  #textPlaceholder > .placeholder:nth-child(2) {
-    --animation-delay: calc(1s + 83ms * 2);
-    width: 75%;
-    height: 24px;
-  }
-
-  #textContainer > span:nth-child(n+3) {
-    color: var(--cros-text-color-secondary);
-    font-family: var(--personalization-app-font-google-sans);
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 20px;
-  }
-
-  #textPlaceholder > .placeholder:nth-child(n+3) {
-    --animation-delay: calc(1s + 83ms * 3);
-    width: 33%;
-    height: 20px;
   }
 
   #wallpaperOptions .text,
@@ -135,17 +53,17 @@
 <header id="container" class$="[[getContainerClass_(isLoading_, showImage_)]]">
   <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
     <div id="imagePlaceholder" class="placeholder"></div>
-    <div id="textPlaceholder">
+    <div id="textPlaceholder" class="preview-text-placeholder">
       <div class="placeholder"></div>
       <div class="placeholder"></div>
       <div class="placeholder"></div>
     </div>
   </template>
   <template is="dom-if" if="[[showImage_]]">
-    <div id="imageContainer">
-      <img src$="[[getImageSrc_(image_)]]" aria-hidden="true">
+    <div id="imageContainer" class="preview-image-container">
+      <img class="preview-image" src$="[[getImageSrc_(image_)]]" aria-hidden="true">
     </div>
-    <h2 id="textContainer" aria-live="polite" aria-label$="[[getAriaLabel_(image_)]]">
+    <h2 id="textContainer" class="preview-text-container" aria-live="polite" aria-label$="[[getAriaLabel_(image_)]]">
       <span id="currentlySet" aria-hidden="true">$i18n{currentlySet}</span>
       <span id="imageTitle" title$="[[imageTitle_]]" aria-hidden="true">
         [[imageTitle_]]

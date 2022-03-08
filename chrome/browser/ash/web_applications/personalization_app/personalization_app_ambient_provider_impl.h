@@ -59,8 +59,6 @@ class PersonalizationAppAmbientProviderImpl
   void OnTemperatureUnitChanged();
   void OnTopicSourceChanged();
   void OnAlbumsChanged();
-  void OnAlbumPreviewChanged(const std::string& album_id,
-                             std::string&& png_data_url);
   void OnRecentHighlightsPreviewsChanged();
 
  private:

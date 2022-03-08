@@ -9,6 +9,7 @@
 
 import './albums_subpage_element.js';
 import './ambient_weather_element.js';
+import './ambient_preview_element.js';
 import './toggle_row_element.js';
 import './topic_source_list_element.js';
 

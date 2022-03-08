@@ -15,7 +15,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       description: '0',
       numberOfPhotos: 0,
       topicSource: TopicSource.kArtGallery,
-      url: {url: 'http://test_url'}
+      url: {url: 'http://test_url0'}
     },
     {
       id: '1',
@@ -24,7 +24,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       description: '1',
       numberOfPhotos: 0,
       topicSource: TopicSource.kArtGallery,
-      url: {url: 'http://test_url'}
+      url: {url: 'http://test_url1'}
     },
     {
       id: '2',
@@ -33,7 +33,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       description: '2',
       numberOfPhotos: 0,
       topicSource: TopicSource.kArtGallery,
-      url: {url: 'http://test_url'}
+      url: {url: 'http://test_url2'}
     },
     {
       id: '3',
@@ -42,7 +42,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       description: '3',
       numberOfPhotos: 1,
       topicSource: TopicSource.kGooglePhotos,
-      url: {url: 'http://test_url'}
+      url: {url: 'http://test_url3'}
     }
   ]
 

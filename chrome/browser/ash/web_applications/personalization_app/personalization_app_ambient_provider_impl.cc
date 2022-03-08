@@ -267,12 +267,6 @@ void PersonalizationAppAmbientProviderImpl::OnAlbumsChanged() {
   ambient_observer_remote_->OnAlbumsChanged(std::move(albums));
 }
 
-void PersonalizationAppAmbientProviderImpl::OnAlbumPreviewChanged(
-    const std::string& album_id,
-    std::string&& png_data_url) {
-  NOTIMPLEMENTED();
-}
-
 void PersonalizationAppAmbientProviderImpl::
     OnRecentHighlightsPreviewsChanged() {
   NOTIMPLEMENTED();
@@ -511,10 +505,6 @@ void PersonalizationAppAmbientProviderImpl::OnAlbumPreviewImageDownloaded(
   EncodeImage(image, &encoded_image_bytes);
   if (encoded_image_bytes.empty())
     return;
-
-  OnAlbumPreviewChanged(album_id,
-                        webui::GetPngDataUrl(&encoded_image_bytes.front(),
-                                             encoded_image_bytes.size()));
 }
 
 void PersonalizationAppAmbientProviderImpl::

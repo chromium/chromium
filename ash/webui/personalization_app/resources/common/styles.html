@@ -237,5 +237,93 @@
       border: 1px solid var(--cros-button-stroke-color-secondary);
       border-radius: 16px;
     }
+
+    .preview-text-container,
+    .preview-text-placeholder {
+      align-items: flex-start;
+      display: flex;
+      flex-flow: column nowrap;
+      margin: 0;
+    }
+
+    .preview-text-container {
+      justify-content: flex-end;
+    }
+
+    .preview-text-placeholder {
+      justify-content: center;
+    }
+
+    .placeholder {
+      border-radius: 12px;
+    }
+
+    .preview-image-container {
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      box-sizing: border-box;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-image {
+      height: 100%;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    .preview-text-container > *,
+    .preview-text-placeholder > * {
+      margin: 0;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .preview-text-container > * + * {
+      margin-top: 4px;
+    }
+
+    .preview-text-placeholder > * + * {
+      margin-top: 8px;
+    }
+
+    .preview-text-container > span:first-child {
+      color: var(--cros-text-color-secondary);
+      font: var(--cros-body-2-font);
+    }
+
+    .preview-text-placeholder > .placeholder:first-child {
+      /* Each row is 83 ms after the prior element. */
+      --animation-delay: calc(1s + 83ms);
+      width: 20%;
+      height: 20px;
+    }
+
+    .preview-text-container > span:nth-child(2) {
+      color: var(--cros-text-color-primary);
+      font: var(--cros-display-6-font);
+    }
+
+    .preview-text-placeholder > .placeholder:nth-child(2) {
+      --animation-delay: calc(1s + 83ms * 2);
+      width: 75%;
+      height: 24px;
+    }
+
+    .preview-text-container > span:nth-child(n+3) {
+      color: var(--cros-text-color-secondary);
+      font-family: var(--personalization-app-font-google-sans);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    .preview-text-placeholder > .placeholder:nth-child(n+3) {
+      --animation-delay: calc(1s + 83ms * 3);
+      width: 33%;
+      height: 20px;
+    }
   </style>
 </template>
