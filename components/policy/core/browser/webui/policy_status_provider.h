@@ -57,7 +57,7 @@ class POLICY_EXPORT PolicyStatusProvider {
   void NotifyStatusChange();
   static std::u16string GetPolicyStatusFromStore(const CloudPolicyStore*,
                                                  const CloudPolicyClient*);
-  static std::u16string GetTimeSinceLastRefreshString(base::Time);
+  static std::u16string GetTimeSinceLastActionString(base::Time);
 
  private:
   base::RepeatingClosure callback_;

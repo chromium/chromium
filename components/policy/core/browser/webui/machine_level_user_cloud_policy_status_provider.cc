@@ -63,9 +63,9 @@ void MachineLevelUserCloudPolicyStatusProvider::GetStatus(
     if (policy) {
       dict->SetStringKey(
           "timeSinceLastRefresh",
-          GetTimeSinceLastRefreshString(refresh_scheduler
-                                            ? refresh_scheduler->last_refresh()
-                                            : base::Time()));
+          GetTimeSinceLastActionString(refresh_scheduler
+                                           ? refresh_scheduler->last_refresh()
+                                           : base::Time()));
       dict->SetStringKey("domain", gaia::ExtractDomainName(policy->username()));
     }
   }
@@ -77,7 +77,7 @@ void MachineLevelUserCloudPolicyStatusProvider::GetStatus(
                            context_->lastCloudReportSent));
     dict->SetStringKey(
         "timeSinceLastCloudReportSent",
-        GetTimeSinceLastRefreshString(context_->lastCloudReportSent));
+        GetTimeSinceLastActionString(context_->lastCloudReportSent));
   }
 }
 

@@ -55,6 +55,8 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
       {"labelPrecedence", IDS_POLICY_LABEL_PRECEDENCE},
       {"labelRefreshInterval", IDS_POLICY_LABEL_REFRESH_INTERVAL},
       {"labelStatus", IDS_POLICY_LABEL_STATUS},
+      {"labelTimeSinceLastFetchAttempt",
+       IDS_POLICY_LABEL_TIME_SINCE_LAST_FETCH_ATTEMPT},
       {"labelTimeSinceLastRefresh", IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH},
       {"labelUsername", IDS_POLICY_LABEL_USERNAME},
       {"labelManagedBy", IDS_POLICY_LABEL_MANAGED_BY},
