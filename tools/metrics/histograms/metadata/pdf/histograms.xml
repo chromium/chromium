@@ -58,8 +58,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2022-04-17">
-  <owner>hnakashima@chromium.org</owner>
+<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2022-08-15">
+  <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Measures if PDFs opened in the PDF viewer have attachments. This is logged
