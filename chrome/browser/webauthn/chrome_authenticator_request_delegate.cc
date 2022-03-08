@@ -130,6 +130,14 @@ class CableLinkingEventHandler : public ProfileObserver {
       return;
     }
 
+    // Drop linking in Incognito sessions. While an argument could be made that
+    // it's OK to persist them, this seems like the safe option.
+    if (profile_->IsOffTheRecord()) {
+      FIDO_LOG(DEBUG) << "Linking event was discarded because the profile is "
+                         "Off The Record.";
+      return;
+    }
+
     PrefService* const prefs = profile_->GetPrefs();
 
     // `existing_names` is built without calling `cablev2::MergeDevices` because

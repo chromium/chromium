@@ -83,7 +83,9 @@ std::vector<std::unique_ptr<device::cablev2::Pairing>> MergeDevices(
 
 // AddPairing records `pairing` in `pref_service`, displacing any existing
 // pairing with the same public key. The name in `pairing` will be updated to
-// avoid colliding with any name in `existing_names`.
+// avoid colliding with any name in `existing_names`. (Incognito profiles are
+// expected to be filtered out before calling this function, but it's harmless
+// to write devices into a transient `PrefService`.)
 void AddPairing(PrefService* pref_service,
                 std::unique_ptr<device::cablev2::Pairing> pairing,
                 base::span<const base::StringPiece> existing_names);

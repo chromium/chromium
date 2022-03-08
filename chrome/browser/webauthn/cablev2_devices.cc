@@ -361,10 +361,6 @@ void AddPairing(PrefService* pref_service,
   }
 
   const std::string name = FindUniqueName(pairing->name, existing_names);
-
-  // For Incognito/Guest profiles, pairings will only last for the duration of
-  // that session. While an argument could be made that it's safe to persist
-  // such pairing for longer, this seems like the safe option initially.
   ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
 
   // Find any existing entries with the same public key and replace them. The
