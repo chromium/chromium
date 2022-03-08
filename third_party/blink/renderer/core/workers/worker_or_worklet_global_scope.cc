@@ -257,6 +257,14 @@ bool WorkerOrWorkletGlobalScope::HasPendingActivity() const {
 
 void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
   DCHECK(IsContextThread());
+
+  // `reporting_proxy_` should outlive `this` but there seems a situation where
+  // the assumption is broken. Don't count features while the context is
+  // destroyed.
+  // TODO(https://crbug.com/1298450): Fix the lifetime of WorkerReportingProxy.
+  if (IsContextDestroyed())
+    return;
+
   DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, feature);
   DCHECK_GT(WebFeature::kNumberOfFeatures, feature);
   if (used_features_[static_cast<size_t>(feature)])

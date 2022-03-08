@@ -59,6 +59,8 @@ void LayoutWorkletGlobalScope::Dispose() {
       ScriptController()->GetScriptState());
 
   WorkletGlobalScope::Dispose();
+
+  NotifyContextDestroyed();
 }
 
 // https://drafts.css-houdini.org/css-layout-api/#dom-layoutworkletglobalscope-registerlayout
