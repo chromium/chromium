@@ -158,7 +158,8 @@ crbug.com/1276598 [ mac amd debug passthrough ] GpuCrash_InfoForHardwareGpu [ Re
 crbug.com/1276598 [ mac amd debug passthrough ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
 crbug.com/1297151 [ mac intel debug no-passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
 
-
+# Flaky on Fuchsia
+crbug.com/1302749 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
