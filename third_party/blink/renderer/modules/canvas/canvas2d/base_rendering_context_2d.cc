@@ -94,7 +94,11 @@ BaseRenderingContext2D::BaseRenderingContext2D()
           this,
           &BaseRenderingContext2D::TryRestoreContextEvent),
       clip_antialiasing_(kNotAntiAliased),
-      origin_tainted_by_content_(false) {
+      origin_tainted_by_content_(false),
+      path2d_use_paint_cache_(
+          base::FeatureList::IsEnabled(features::kPath2DPaintCache)
+              ? UsePaintCache::kEnabled
+              : UsePaintCache::kDisabled) {
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>());
 }
 
@@ -1047,7 +1051,7 @@ void BaseRenderingContext2D::fill(Path2D* dom_path,
   }
   DrawPathInternal(dom_path->GetPath(),
                    CanvasRenderingContext2DState::kFillPaintType, winding_rule,
-                   UsePaintCache::kEnabled);
+                   path2d_use_paint_cache_);
 }
 
 void BaseRenderingContext2D::stroke() {
@@ -1065,7 +1069,7 @@ void BaseRenderingContext2D::stroke(Path2D* dom_path) {
   }
   DrawPathInternal(dom_path->GetPath(),
                    CanvasRenderingContext2DState::kStrokePaintType,
-                   SkPathFillType::kWinding, UsePaintCache::kEnabled);
+                   SkPathFillType::kWinding, path2d_use_paint_cache_);
 }
 
 void BaseRenderingContext2D::fillRect(double x,

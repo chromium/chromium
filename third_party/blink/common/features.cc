@@ -144,6 +144,11 @@ const base::Feature kEditingNG{"EditingNG", base::FEATURE_ENABLED_BY_DEFAULT};
 // Enable LayoutNG.
 const base::Feature kLayoutNG{"LayoutNG", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the use of the PaintCache for Path2D objects that are rasterized
+// out of process.  Has no effect when kCanvasOopRasterization is disabled.
+const base::Feature kPath2DPaintCache{"Path2DPaintCache",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable by default. This feature is for a kill switch.
 const base::Feature kLayoutNGBlockInInline{"LayoutNGBlockInInline",
                                            base::FEATURE_ENABLED_BY_DEFAULT};

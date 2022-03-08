@@ -5213,6 +5213,25 @@
             ]
         }
     ],
+    "Path2DPaintCache": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "windows",
+                "mac",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Path2DPaintCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "PerProcessReclaim": [
         {
             "platforms": [

@@ -593,6 +593,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       CanvasImageSource*);
 
   bool origin_tainted_by_content_;
+  UsePaintCache path2d_use_paint_cache_;
 };
 
 ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
