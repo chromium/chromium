@@ -67,10 +67,9 @@ suite('NewTabPageDiscountConsentDialogTest', () => {
   });
 
   test('verify dialogTitle property', () => {
-    discountConsentDialog.dialogTitle = 'Title';
     const title =
         discountConsentDialog.shadowRoot!.querySelector('div[slot=title]');
     assertTrue(title != null);
-    assertEquals('Title', title.textContent);
+    assertEquals('Your carts', title.textContent);
   });
 });

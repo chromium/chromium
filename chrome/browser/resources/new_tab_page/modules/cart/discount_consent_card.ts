@@ -85,7 +85,8 @@ export class DiscountConsentCard extends I18nMixin
             'modulesCartDiscountInlineCardShowCloseButton')
       },
       stepOneContent_:
-          {type: String, computed: 'computeStepOneContent_(merchants)'}
+          {type: String, computed: 'computeStepOneContent_(merchants)'},
+      showDiscountConsentDialog_: {type: Boolean, value: false}
     };
   }
 
@@ -101,6 +102,7 @@ export class DiscountConsentCard extends I18nMixin
   // background color.
   private colorConsentContainer_: boolean;
   private stepOneContent_: string;
+  private showDiscountConsentDialog_: boolean;
 
 
   private getTotalStep_(): number {
@@ -131,10 +133,10 @@ export class DiscountConsentCard extends I18nMixin
       actionButton: {
         text: loadTimeData.getString('modulesCartConsentStepOneButton'),
         onClickHandler: () => {
-          if (this.currentStep < this.getTotalStep_()) {
+          if (this.currentStep + 1 < this.getTotalStep_()) {
             this.currentStep++;
           } else {
-            // TODO(crbug.com/1298116): Show DiscountConsentDialog.
+            this.showDiscountConsentDialog_ = true;
           }
           // TODO(crbug.com/1298116): Record user click on this button.
         },
@@ -212,6 +214,10 @@ export class DiscountConsentCard extends I18nMixin
       this.dispatchEvent(
           new CustomEvent('discount-consent-rejected', {composed: true}));
     }
+  }
+
+  private onDiscountConsentDialogClose_() {
+    this.showDiscountConsentDialog_ = false;
   }
 }
 
