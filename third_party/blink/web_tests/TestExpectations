@@ -1687,6 +1687,12 @@ virtual/layout_ng_flex_frag/external/wpt/css/css-break/flexbox/single-line-row-f
 ### Tests failing with LayoutNGFlexFragmentation enabled:
 crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/doubly-nested-with-zero-width-flexbox-and-forced-break-crash.html [ Skip ]
 
+### Tests passing with LayoutNGTableFragmentation enabled:
+virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-after-table-cell.html [ Pass ]
+virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-after-table-cell-child.html [ Pass ]
+virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-before-table-cell.html [ Pass ]
+virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-before-table-cell-child.html [ Pass ]
+
 ### Tests failing with LayoutNGTableFragmentation enabled:
 crbug.com/1295905 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-inside-cell-000.html [ Failure ]
 crbug.com/1295905 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-inside-cell-001.html [ Failure ]
@@ -4359,6 +4365,10 @@ crbug.com/660611 external/wpt/css/css-break/flexbox/single-line-row-flex-fragmen
 crbug.com/660611 external/wpt/css/css-break/flexbox/single-line-row-flex-fragmentation-020.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/single-line-row-flex-fragmentation-024.html [ Failure ]
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-039.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/break-after-table-cell.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/break-after-table-cell-child.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/break-before-table-cell.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/break-before-table-cell-child.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-007.html [ Failure ]
 crbug.com/1224888 external/wpt/css/css-break/transform-009.html [ Failure ]
 crbug.com/1156312 external/wpt/css/css-break/widows-orphans-017.html [ Failure ]

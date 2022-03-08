@@ -943,6 +943,9 @@ crbug.com/591099 virtual/gpu-rasterization/images/favicon-as-image.html [ Failur
 ### virtual/layout_ng_flex_frag/
 virtual/layout_ng_flex_frag/* [ Skip ]
 
+### virtual/layout_ng_table_frag/
+virtual/layout_ng_table_frag/* [ Skip ]
+
 ### virtual/layout_ng_printing/
 virtual/layout_ng_printing/* [ Skip ]
 
