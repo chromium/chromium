@@ -3019,19 +3019,30 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
 //
 // The boolean parameter controls whether or not
 // features::kAutofillAcrossIframes is enabled.
+//
+// TODO(https://crbug.com/1304126): Refill tests are flaky on Linux TSan due to
+// a data race in Blink's layouting.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_AutofillInteractiveTestDynamicForm \
+  DISABLED_AutofillInteractiveTestDynamicForm
+class DISABLED_AutofillInteractiveTestDynamicForm
+#else
+#define MAYBE_AutofillInteractiveTestDynamicForm \
+  AutofillInteractiveTestDynamicForm
 class AutofillInteractiveTestDynamicForm
+#endif
     : public AutofillInteractiveTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  AutofillInteractiveTestDynamicForm() {
+  MAYBE_AutofillInteractiveTestDynamicForm() {
     scoped_feature_list_.InitWithFeatureState(features::kAutofillAcrossIframes,
                                               GetParam());
   }
-  AutofillInteractiveTestDynamicForm(
-      const AutofillInteractiveTestDynamicForm&) = delete;
-  AutofillInteractiveTestDynamicForm& operator=(
-      const AutofillInteractiveTestDynamicForm&) = delete;
-  ~AutofillInteractiveTestDynamicForm() override = default;
+  MAYBE_AutofillInteractiveTestDynamicForm(
+      const MAYBE_AutofillInteractiveTestDynamicForm&) = delete;
+  MAYBE_AutofillInteractiveTestDynamicForm& operator=(
+      const MAYBE_AutofillInteractiveTestDynamicForm&) = delete;
+  ~MAYBE_AutofillInteractiveTestDynamicForm() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AutofillInteractiveTestBase::SetUpCommandLine(command_line);
@@ -3063,7 +3074,7 @@ class AutofillInteractiveTestDynamicForm
 
 // Test that we can Autofill dynamically generated forms.
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill) {
   CreateTestProfile();
   GURL url =
@@ -3086,13 +3097,8 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 }
 
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#define MAYBE_TwoDynamicChangingFormsFill DISABLED_TwoDynamicChangingFormsFill
-#else
-#define MAYBE_TwoDynamicChangingFormsFill TwoDynamicChangingFormsFill
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
-                       MAYBE_TwoDynamicChangingFormsFill) {
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
+                       TwoDynamicChangingFormsFill) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL("a.com",
                                             "/autofill/two_dynamic_forms.html");
@@ -3128,7 +3134,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 }
 
 // Test that forms that dynamically change a second time do not get filled.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SecondChange) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3151,7 +3157,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 }
 
 // Test that forms that dynamically change after a second do not get filled.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_AfterDelay) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3175,7 +3181,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that only field of a type group that was filled initially get refilled.
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_AddsNewFieldTypeGroups) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3205,7 +3211,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change select fields to text
 // fields by changing the visibilities.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_SelectToText) {
   CreateTestProfile();
 
@@ -3231,7 +3237,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 // Test that we can autofill forms that dynamically change the visibility of a
 // field after it's autofilled.
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_VisibilitySwitch) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3257,7 +3263,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_FirstElementDisappears) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3281,7 +3287,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the form has no name.
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_FirstElementDisappearsNoNameForm) {
   CreateTestProfile();
 
@@ -3307,7 +3313,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 // has been clicked on, even though there are multiple forms with identical
 // names.
 IN_PROC_BROWSER_TEST_P(
-    AutofillInteractiveTestDynamicForm,
+    MAYBE_AutofillInteractiveTestDynamicForm,
     DynamicFormFill_FirstElementDisappearsMultipleBadNameForms) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3334,7 +3340,7 @@ IN_PROC_BROWSER_TEST_P(
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with identical
 // names.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_FirstElementDisappearsBadnameUnowned) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3361,7 +3367,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 // has been clicked on, even though there are multiple forms with no name.
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_P(
-    AutofillInteractiveTestDynamicForm,
+    MAYBE_AutofillInteractiveTestDynamicForm,
     DynamicFormFill_FirstElementDisappearsMultipleNoNameForms) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3387,7 +3393,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the elements are unowned.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_FirstElementDisappearsUnowned) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3409,7 +3415,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 }
 
 // Test that credit card fields are re-filled.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_AlsoForCreditCard) {
   CreateTestCreditCart();
   GURL url = https_server()->GetURL("a.com",
@@ -3431,7 +3437,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3455,7 +3461,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed only once.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_DoubleSelectUpdated) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3483,7 +3489,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically generated forms with no name if the
 // NameForAutofill of the first field matches.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_FormWithoutName) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3509,7 +3515,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 // added and removed for forms with no names if the NameForAutofill of the first
 // field matches.
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated_FormWithoutName) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3535,7 +3541,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 // Test that we can Autofill dynamically generated synthetic forms if the
 // NameForAutofill of the first field matches.
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SyntheticForm) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3561,7 +3567,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 // Test that we can Autofill dynamically synthetic forms when the select options
 // change if the NameForAutofill of the first field matches
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3603,7 +3609,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOM) {
 }
 
 INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
-                         AutofillInteractiveTestDynamicForm,
+                         MAYBE_AutofillInteractiveTestDynamicForm,
                          testing::Bool());
 
 // ChromeVox is only available on ChromeOS.
