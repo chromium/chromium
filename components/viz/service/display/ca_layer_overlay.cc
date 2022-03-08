@@ -5,6 +5,7 @@
 #include "components/viz/service/display/ca_layer_overlay.h"
 
 #include <algorithm>
+#include <limits>
 
 #include "base/metrics/histogram_macros.h"
 #include "components/viz/common/features.h"
@@ -45,6 +46,16 @@ const int kMaxNumVideos = 5;
 
 void RecordCALayerHistogram(gfx::CALayerResult result) {
   UMA_HISTOGRAM_ENUMERATION("Compositing.Renderer.CALayerResult", result);
+}
+
+bool ApproximatelyEqual(const gfx::RectF& rect_a,
+                        const gfx::RectF& rect_b,
+                        float tolerance_x,
+                        float tolerance_y) {
+  return std::abs(rect_a.x() - rect_b.x()) <= tolerance_x &&
+         std::abs(rect_a.y() - rect_b.y()) <= tolerance_y &&
+         std::abs(rect_a.right() - rect_b.right()) <= tolerance_x &&
+         std::abs(rect_a.bottom() - rect_b.bottom()) <= tolerance_y;
 }
 
 bool FilterOperationSupported(const cc::FilterOperation& operation) {
@@ -175,20 +186,35 @@ gfx::CALayerResult FromYUVVideoQuad(DisplayResourceProvider* resource_provider,
       !resource_provider->IsOverlayCandidate(quad->v_plane_resource_id())) {
     return gfx::kCALayerFailedYUVNotCandidate;
   }
+
   if (quad->y_plane_resource_id() == quad->u_plane_resource_id() ||
       quad->y_plane_resource_id() == quad->v_plane_resource_id() ||
       quad->u_plane_resource_id() != quad->v_plane_resource_id()) {
     return gfx::kCALayerFailedYUVInvalidPlanes;
   }
 
-  gfx::RectF ya_contents_rect =
-      gfx::ScaleRect(quad->ya_tex_coord_rect, 1.f / quad->ya_tex_size.width(),
-                     1.f / quad->ya_tex_size.height());
-  gfx::RectF uv_contents_rect =
-      gfx::ScaleRect(quad->uv_tex_coord_rect, 1.f / quad->uv_tex_size.width(),
-                     1.f / quad->uv_tex_size.height());
-  if (ya_contents_rect != uv_contents_rect)
+  // Use division to calculate |ya_contents_rect| instead of using
+  // gfx::ScaleRect (which would multiply by the reciprocal), to avoid
+  // introducing excessive floating-point errors.
+  gfx::RectF ya_contents_rect = {
+      (quad->ya_tex_coord_rect.x() / quad->ya_tex_size.width()),
+      (quad->ya_tex_coord_rect.y() / quad->ya_tex_size.height()),
+      (quad->ya_tex_coord_rect.width() / quad->ya_tex_size.width()),
+      (quad->ya_tex_coord_rect.height() / quad->ya_tex_size.height())};
+  gfx::RectF uv_contents_rect = {
+      (quad->uv_tex_coord_rect.x() / quad->uv_tex_size.width()),
+      (quad->uv_tex_coord_rect.y() / quad->uv_tex_size.height()),
+      (quad->uv_tex_coord_rect.width() / quad->uv_tex_size.width()),
+      (quad->uv_tex_coord_rect.height() / quad->uv_tex_size.height())};
+  // For odd-sized videos, |ya_tex_coord_rect| and |uv_tex_coord_rect| might not
+  // be identical.
+  float tolerance_x = 1.5f / quad->uv_tex_size.width();
+  float tolerance_y = 1.5f / quad->uv_tex_size.height();
+  if (!ApproximatelyEqual(ya_contents_rect, uv_contents_rect, tolerance_x,
+                          tolerance_y)) {
     return gfx::kCALayerFailedYUVTexcoordMismatch;
+  }
+
   ca_layer_overlay->contents_resource_id = y_resource_id;
   ca_layer_overlay->contents_rect = ya_contents_rect;
   ca_layer_overlay->protected_video_type = quad->protected_video_type;
