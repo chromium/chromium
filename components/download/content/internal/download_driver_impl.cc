@@ -128,6 +128,8 @@ DownloadDriverImpl::DownloadDriverImpl(
 DownloadDriverImpl::~DownloadDriverImpl() {
   if (download_manager_coordinator_)
     download_manager_coordinator_->GetNotifier()->RemoveObserver(this);
+
+  CHECK(!IsInObserverList());
 }
 
 void DownloadDriverImpl::Initialize(DownloadDriver::Client* client) {

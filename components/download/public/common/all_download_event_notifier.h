@@ -24,14 +24,14 @@ class COMPONENTS_DOWNLOAD_EXPORT AllDownloadEventNotifier
   // All of the methods take the SimpleDownloadManagerCoordinator so that
   // subclasses can observe multiple managers at once and easily distinguish
   // which manager a given item belongs to.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
 
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() = default;
+    ~Observer() override = default;
 
     virtual void OnDownloadsInitialized(
         SimpleDownloadManagerCoordinator* coordinator,
@@ -77,7 +77,7 @@ class COMPONENTS_DOWNLOAD_EXPORT AllDownloadEventNotifier
   bool download_initialized_;
 
   // Observers that want to be notified of download events.
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace download

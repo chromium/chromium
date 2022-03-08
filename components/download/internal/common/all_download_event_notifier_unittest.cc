@@ -61,8 +61,8 @@ class AllDownloadEventNotifierTest : public testing::Test {
 
  private:
   NiceMock<MockDownloadItem> item_;
-  SimpleDownloadManagerCoordinator coordinator_;
   NiceMock<MockNotifierObserver> observer_;
+  SimpleDownloadManagerCoordinator coordinator_;
 };
 
 }  // namespace

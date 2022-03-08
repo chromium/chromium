@@ -27,6 +27,8 @@ AllDownloadEventNotifier::~AllDownloadEventNotifier() {
     (*it)->RemoveObserver(this);
   }
   observing_.clear();
+
+  CHECK(!IsInObserverList());
 }
 
 void AllDownloadEventNotifier::AddObserver(Observer* observer) {

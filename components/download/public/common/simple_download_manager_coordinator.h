@@ -32,14 +32,14 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
     : public KeyedService,
       public SimpleDownloadManager::Observer {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
 
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() = default;
+    ~Observer() override = default;
 
     virtual void OnManagerGoingDown(
         SimpleDownloadManagerCoordinator* coordinator) {}
@@ -116,7 +116,7 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
   DownloadWhenFullManagerStartsCallBack download_when_full_manager_starts_cb_;
 
   // Observers that want to be notified of changes to the set of downloads.
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   // Time when this object was created.
   base::TimeTicks creation_time_ticks_;
