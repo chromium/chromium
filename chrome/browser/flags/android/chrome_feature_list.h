@@ -96,7 +96,6 @@ extern const base::Feature kEnableDuplicateDownloadDialog;
 extern const base::Feature kEnableMixedContentDownloadDialog;
 extern const base::Feature kExperimentsForAgsa;
 extern const base::Feature kExploreSites;
-extern const base::Feature kFixedUmaSessionResumeOrder;
 extern const base::Feature kFocusOmniboxInIncognitoTabIntents;
 extern const base::Feature kGoogleLensSdkIntent;
 extern const base::Feature kGridTabSwitcherForTablets;

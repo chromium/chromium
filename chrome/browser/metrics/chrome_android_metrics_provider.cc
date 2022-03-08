@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/chrome_android_metrics_provider.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/locale/locale_manager.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
@@ -29,12 +30,6 @@ absl::optional<chrome::android::ActivityType> GetActivityTypeFromLocalState(
     return static_cast<chrome::android::ActivityType>(value);
   }
   return absl::nullopt;
-}
-
-void EmitActivityTypeHistograms(chrome::android::ActivityType type) {
-  UMA_STABILITY_HISTOGRAM_ENUMERATION(
-      "CustomTabs.Visible", chrome::android::GetCustomTabsVisibleValue(type));
-  UMA_STABILITY_HISTOGRAM_ENUMERATION("Android.ChromeActivity.Type", type);
 }
 
 // Corresponds to APP_NOTIFICATIONS_STATUS_BOUNDARY in
@@ -80,7 +75,21 @@ void ChromeAndroidMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
   auto type = chrome::android::GetActivityType();
-  EmitActivityTypeHistograms(type);
+
+  // TODO(b/182286787): With old session resume order, no deferral of initial
+  // EmitActivityTypeHistograms. Clean up once fully launched.
+  if (type == chrome::android::ActivityType::kUnknown &&
+      !base::FeatureList::IsEnabled(
+          chrome::android::kFixedUmaSessionResumeOrder)) {
+    type = chrome::android::ActivityType::kTabbed;
+  }
+
+  // During startup the activity type might not yet be known. If it's kUnknown
+  // defer emiting activity type histograms until it become known, or until
+  // the record is closed.
+  if (type != chrome::android::ActivityType::kUnknown)
+    chrome::android::EmitActivityTypeHistograms(type);
+
   // Save the value off for reporting stability metrics.
   local_state_->SetInteger(kLastActivityTypePref, static_cast<int>(type));
 }
@@ -89,7 +98,7 @@ void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   auto activity_type = GetActivityTypeFromLocalState(local_state_);
   if (activity_type.has_value())
-    EmitActivityTypeHistograms(activity_type.value());
+    chrome::android::EmitActivityTypeHistograms(activity_type.value());
 }
 
 void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
@@ -106,4 +115,15 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
   UmaSessionStats::GetInstance()->ProvideCurrentSessionData();
   EmitAppNotificationStatusHistogram();
   LocaleManager::RecordUserTypeMetrics();
+
+  // TODO(b/182286787): With fixed session resume order, if no tab has yet
+  // become visible, then the activity type remains unknown and no activity
+  // type has been emitted for the current record. Explicitly emit kUnknown
+  // here so that all records are tagged. Clean up feature flag once launched.
+  const auto activity_type = chrome::android::GetActivityType();
+  if (activity_type == chrome::android::ActivityType::kUnknown &&
+      base::FeatureList::IsEnabled(
+          chrome::android::kFixedUmaSessionResumeOrder)) {
+    chrome::android::EmitActivityTypeHistograms(activity_type);
+  }
 }
