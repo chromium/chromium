@@ -82,13 +82,27 @@ class AudioContextManagerTest : public content::ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AudioContextManagerTest, AudioContextPlaybackRecorded) {
+// Flaky on Linux: https://crbug.com/1047163
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AudioContextPlaybackRecorded DISABLED_AudioContextPlaybackRecorded
+#else
+#define MAYBE_AudioContextPlaybackRecorded AudioContextPlaybackRecorded
+#endif
+IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
+                       MAYBE_AudioContextPlaybackRecorded) {
   EXPECT_TRUE(NavigateToURL(
       shell(), content::GetTestUrl("media/webaudio/", "playback-test.html")));
   PlayPause();
 }
 
-IN_PROC_BROWSER_TEST_F(AudioContextManagerTest, AudioContextPlaybackTimeUkm) {
+// Flaky on Linux: https://crbug.com/941219
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AudioContextPlaybackTimeUkm DISABLED_AudioContextPlaybackTimeUkm
+#else
+#define MAYBE_AudioContextPlaybackTimeUkm AudioContextPlaybackTimeUkm
+#endif
+IN_PROC_BROWSER_TEST_F(AudioContextManagerTest,
+                       MAYBE_AudioContextPlaybackTimeUkm) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   using Entry = ukm::builders::Media_WebAudio_AudioContext_AudibleTime;
 
