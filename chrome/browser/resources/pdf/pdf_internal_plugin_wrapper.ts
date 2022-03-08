@@ -4,7 +4,7 @@
 
 import {Point} from './constants.js';
 import {GestureDetector, PinchEventDetail} from './gesture_detector.js';
-import {ViewportScroller} from './viewport_scroller.js';
+import {ViewportInterface, ViewportScroller} from './viewport_scroller.js';
 
 interface InProcessPdfPluginElement extends HTMLEmbedElement {
   postMessage(message: any): void;
@@ -26,7 +26,7 @@ if (parentOrigin === 'chrome-untrusted://print') {
  * {@link Viewport}-compatible wrapper around the window's scroll position
  * operations.
  */
-class SimulatedViewport {
+class SimulatedViewport implements ViewportInterface {
   get position(): Point {
     return {x: window.scrollX, y: window.scrollY};
   }

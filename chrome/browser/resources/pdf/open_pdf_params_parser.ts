@@ -2,52 +2,50 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FittingType, NamedDestinationMessageData, Point} from './constants.js';
 import {Size} from './viewport.js';
 
-/**
- * @typedef {{
- *   url: (string|undefined),
- *   zoom: (number|undefined),
- *   view: (!FittingType|undefined),
- *   viewPosition: (number|undefined),
- *   position: (!Point|undefined),
- *   page: (number|undefined),
- * }}
- */
-export let OpenPdfParams;
+export type OpenPdfParams = {
+  url?: string,
+  zoom?: number,
+  view?: FittingType,
+  viewPosition?: number,
+  position?: Point,
+  page?: number,
+};
+
+type GetNamedDestinationCallback = (name: string) =>
+    Promise<NamedDestinationMessageData>;
 
 // Parses the open pdf parameters passed in the url to set initial viewport
 // settings for opening the pdf.
 export class OpenPdfParamsParser {
-  /**
-   * @param {function(string):!Promise<!NamedDestinationMessageData>}
-   *     getNamedDestinationCallback Function called to fetch information for a
-   *     named destination.
-   */
-  constructor(getNamedDestinationCallback) {
-    /** @private {!function(string):!Promise<!NamedDestinationMessageData>} */
-    this.getNamedDestinationCallback_ = getNamedDestinationCallback;
+  private getNamedDestinationCallback_: GetNamedDestinationCallback;
+  private viewportDimensions_?: Size;
 
-    /** @private {!Size} */
-    this.viewportDimensions_;
+  /**
+   * @param getNamedDestinationCallback Function called to fetch information for
+   *     a named destination.
+   */
+  constructor(getNamedDestinationCallback: GetNamedDestinationCallback) {
+    this.getNamedDestinationCallback_ = getNamedDestinationCallback;
   }
 
   /**
    * Calculate the zoom level needed for making viewport focus on a rectangular
    * area in the PDF document.
-   * @param {!Size} size The dimensions of the rectangular area to be focused
-   *     on.
-   * @return {number} The zoom level needed for focusing on the rectangular
-   *     area. A zoom level of 0 indicates that the zoom level cannot be
-   *     calculated with the given information.
-   * @private
+   * @param size The dimensions of the rectangular area to be focused on.
+   * @return The zoom level needed for focusing on the rectangular area. A zoom
+   *     level of 0 indicates that the zoom level cannot be calculated with the
+   *     given information.
    */
-  calculateRectZoomLevel_(size) {
+  private calculateRectZoomLevel_(size: Size): number {
     if (size.height === 0 || size.width === 0) {
       return 0;
     }
+
+    assert(this.viewportDimensions_);
     return Math.min(
         this.viewportDimensions_.height / size.height,
         this.viewportDimensions_.width / size.width);
@@ -56,11 +54,9 @@ export class OpenPdfParamsParser {
   /**
    * Parse zoom parameter of open PDF parameters. The PDF should be opened at
    * the specified zoom level.
-   * @param {string} paramValue zoom value.
-   * @return {!OpenPdfParams} Map with zoom parameters (zoom and position).
-   * @private
+   * @return Map with zoom parameters (zoom and position).
    */
-  parseZoomParam_(paramValue) {
+  private parseZoomParam_(paramValue: string): OpenPdfParams {
     const paramValueSplit = paramValue.split(',');
     if (paramValueSplit.length !== 1 && paramValueSplit.length !== 3) {
       return {};
@@ -88,17 +84,15 @@ export class OpenPdfParamsParser {
   /**
    * Parse view parameter of open PDF parameters. The PDF should be opened at
    * the specified fitting type mode and position.
-   * @param {string} paramValue view value.
-   * @return {!OpenPdfParams} Map with view parameters (view and viewPosition).
-   * @private
+   * @return Map with view parameters (view and viewPosition).
    */
-  parseViewParam_(paramValue) {
+  private parseViewParam_(paramValue: string): OpenPdfParams {
     const viewModeComponents = paramValue.toLowerCase().split(',');
     if (viewModeComponents.length < 1) {
       return {};
     }
 
-    const params = {};
+    const params: OpenPdfParams = {};
     const viewMode = viewModeComponents[0];
     let acceptsPositionParam;
     if (viewMode === 'fit') {
@@ -126,14 +120,12 @@ export class OpenPdfParamsParser {
 
   /**
    * Parse view parameters which come from nameddest.
-   * @param {string} paramValue view value.
-   * @return {!OpenPdfParams} Map with view parameters.
-   * @private
+   * @return Map with view parameters.
    */
-  parseNameddestViewParam_(paramValue) {
+  private parseNameddestViewParam_(paramValue: string): OpenPdfParams {
     const viewModeComponents = paramValue.toLowerCase().split(',');
     const viewMode = viewModeComponents[0];
-    const params = {};
+    const params: OpenPdfParams = {};
 
     if (viewMode === 'xyz' && viewModeComponents.length === 4) {
       const x = parseFloat(viewModeComponents[1]);
@@ -180,13 +172,8 @@ export class OpenPdfParamsParser {
     return this.parseViewParam_(paramValue);
   }
 
-  /**
-   * Parse the parameters encoded in the fragment of a URL.
-   * @param {string} url to parse
-   * @return {!URLSearchParams}
-   * @private
-   */
-  parseUrlParams_(url) {
+  /** Parse the parameters encoded in the fragment of a URL. */
+  private parseUrlParams_(url: string): URLSearchParams {
     const hash = new URL(url).hash;
     const params = new URLSearchParams(hash.substring(1));
 
@@ -204,19 +191,16 @@ export class OpenPdfParamsParser {
     return params;
   }
 
-  /**
-   * Store current viewport's dimensions.
-   * @param {!Size} dimensions
-   */
-  setViewportDimensions(dimensions) {
+  /** Store current viewport's dimensions. */
+  setViewportDimensions(dimensions: Size) {
     this.viewportDimensions_ = dimensions;
   }
 
   /**
-   * @param {string} url that needs to be parsed.
-   * @return {boolean} Whether the toolbar UI element should be shown.
+   * @param url that needs to be parsed.
+   * @return Whether the toolbar UI element should be shown.
    */
-  shouldShowToolbar(url) {
+  shouldShowToolbar(url: string): boolean {
     return this.parseUrlParams_(url).get('toolbar') !== '0';
   }
 
@@ -225,38 +209,32 @@ export class OpenPdfParamsParser {
    * and specify actions to be performed when opening pdf files.
    * See http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/
    * pdfs/pdf_open_parameters.pdf for details.
-   * @param {string} url that needs to be parsed.
-   * @return {!Promise<!OpenPdfParams>}
+   * @param url that needs to be parsed.
    */
-  async getViewportFromUrlParams(url) {
-    const params = {};
-    params['url'] = url;
+  async getViewportFromUrlParams(url: string): Promise<OpenPdfParams> {
+    const params: OpenPdfParams = {url};
 
     const urlParams = this.parseUrlParams_(url);
 
     if (urlParams.has('page')) {
       // |pageNumber| is 1-based, but goToPage() take a zero-based page index.
-      const pageNumber = parseInt(urlParams.get('page'), 10);
+      const pageNumber = parseInt(urlParams.get('page')!, 10);
       if (!Number.isNaN(pageNumber) && pageNumber > 0) {
         params['page'] = pageNumber - 1;
       }
     }
 
     if (urlParams.has('view')) {
-      Object.assign(
-          params,
-          this.parseViewParam_(/** @type {string} */ (urlParams.get('view'))));
+      Object.assign(params, this.parseViewParam_(urlParams.get('view')!));
     }
 
     if (urlParams.has('zoom')) {
-      Object.assign(
-          params,
-          this.parseZoomParam_(/** @type {string} */ (urlParams.get('zoom'))));
+      Object.assign(params, this.parseZoomParam_(urlParams.get('zoom')!));
     }
 
     if (params.page === undefined && urlParams.has('nameddest')) {
-      const data = await this.getNamedDestinationCallback_(
-          /** @type {string} */ (urlParams.get('nameddest')));
+      const data =
+          await this.getNamedDestinationCallback_(urlParams.get('nameddest')!);
 
       if (data.pageNumber !== -1) {
         params.page = data.pageNumber;
@@ -264,9 +242,7 @@ export class OpenPdfParamsParser {
 
       if (data.namedDestinationView) {
         Object.assign(
-            params,
-            this.parseNameddestViewParam_(
-                /** @type {string} */ (data.namedDestinationView)));
+            params, this.parseNameddestViewParam_(data.namedDestinationView));
       }
 
       return params;

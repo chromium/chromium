@@ -3,50 +3,43 @@
 // found in the LICENSE file.
 
 import {BrowserApi} from './browser_api.js';
-import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
+import {OpenPdfParams, OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {Viewport} from './viewport.js';
 
 // NavigatorDelegate for calling browser-specific functions to do the actual
 // navigating.
-/** @interface */
-export class NavigatorDelegate {
+export interface NavigatorDelegate {
   /**
    * Called when navigation should happen in the current tab.
-   * @param {string} url The url to be opened in the current tab.
    */
-  navigateInCurrentTab(url) {}
+  navigateInCurrentTab(url: string): void;
 
   /**
    * Called when navigation should happen in the new tab.
-   * @param {string} url The url to be opened in the new tab.
-   * @param {boolean} active Indicates if the new tab should be the active tab.
+   * @param active Indicates if the new tab should be the active tab.
    */
-  navigateInNewTab(url, active) {}
+  navigateInNewTab(url: string, active: boolean): void;
 
   /**
    * Called when navigation should happen in the new window.
-   * @param {string} url The url to be opened in the new window.
    */
-  navigateInNewWindow(url) {}
+  navigateInNewWindow(url: string): void;
 }
 
 // NavigatorDelegate for calling browser-specific functions to do the actual
 // navigating.
-/** @implements {NavigatorDelegate} */
-export class NavigatorDelegateImpl {
-  /** @param {!BrowserApi} browserApi */
-  constructor(browserApi) {
-    /** @private {!BrowserApi} */
+export class NavigatorDelegateImpl implements NavigatorDelegate {
+  private browserApi_: BrowserApi;
+
+  constructor(browserApi: BrowserApi) {
     this.browserApi_ = browserApi;
   }
 
-  /** @override */
-  navigateInCurrentTab(url) {
+  navigateInCurrentTab(url: string) {
     this.browserApi_.navigateInCurrentTab(url);
   }
 
-  /** @override */
-  navigateInNewTab(url, active) {
+  navigateInNewTab(url: string, active: boolean) {
     // Prefer the tabs API because it guarantees we can just open a new tab.
     // window.open doesn't have this guarantee.
     if (chrome.tabs) {
@@ -56,8 +49,7 @@ export class NavigatorDelegateImpl {
     }
   }
 
-  /** @override */
-  navigateInNewWindow(url) {
+  navigateInNewWindow(url: string) {
     // Prefer the windows API because it guarantees we can just open a new
     // window. window.open with '_blank' argument doesn't have this guarantee.
     if (chrome.windows) {
@@ -70,42 +62,41 @@ export class NavigatorDelegateImpl {
 
 // Navigator for navigating to links inside or outside the PDF.
 export class PdfNavigator {
+  private originalUrl_: URL|null = null;
+  private viewport_: Viewport;
+  private paramsParser_: OpenPdfParamsParser;
+  private navigatorDelegate_: NavigatorDelegate;
+
   /**
-   * @param {string} originalUrl The original page URL.
-   * @param {!Viewport} viewport The viewport info of the page.
-   * @param {!OpenPdfParamsParser} paramsParser The object for URL parsing.
-   * @param {!NavigatorDelegate} navigatorDelegate The object with callback
-   *    functions that get called when navigation happens in the current tab,
-   *    a new tab, and a new window.
+   * @param originalUrl The original page URL.
+   * @param viewport The viewport info of the page.
+   * @param paramsParser The object for URL parsing.
+   * @param navigatorDelegate The object with callback functions that get called
+   *    when navigation happens in the current tab, a new tab, and a new window.
    */
-  constructor(originalUrl, viewport, paramsParser, navigatorDelegate) {
-    /** @private {?URL} */
-    this.originalUrl_ = null;
+  constructor(
+      originalUrl: string, viewport: Viewport,
+      paramsParser: OpenPdfParamsParser, navigatorDelegate: NavigatorDelegate) {
     try {
       this.originalUrl_ = new URL(originalUrl);
     } catch (err) {
       console.warn('Invalid original URL');
     }
 
-    /** @private {!Viewport} */
     this.viewport_ = viewport;
-
-    /** @private {!OpenPdfParamsParser} */
     this.paramsParser_ = paramsParser;
-
-    /** @private {!NavigatorDelegate} */
     this.navigatorDelegate_ = navigatorDelegate;
   }
 
   /**
    * Function to navigate to the given URL. This might involve navigating
    * within the PDF page or opening a new url (in the same tab or a new tab).
-   * @param {string} urlString The URL to navigate to.
-   * @param {!WindowOpenDisposition} disposition The window open
-   *     disposition when navigating to the new URL.
-   * @return {!Promise<void>} When navigation has completed (used for testing).
+   * @param disposition The window open disposition when navigating to the new
+   *     URL.
+   * @return When navigation has completed (used for testing).
    */
-  navigate(urlString, disposition) {
+  navigate(urlString: string, disposition: WindowOpenDisposition):
+      Promise<void> {
     if (urlString.length === 0) {
       return Promise.resolve();
     }
@@ -167,14 +158,13 @@ export class PdfNavigator {
 
   /**
    * Called when the viewport position is received.
-   * @param {Object} viewportPosition Dictionary containing the viewport
+   * @param viewportPosition Dictionary containing the viewport
    *    position.
-   * @private
    */
-  onViewportReceived_(viewportPosition) {
+  private onViewportReceived_(viewportPosition: OpenPdfParams) {
     let newUrl = null;
     try {
-      newUrl = new URL(viewportPosition.url);
+      newUrl = new URL(viewportPosition.url!);
     } catch (err) {
     }
 
@@ -184,17 +174,14 @@ export class PdfNavigator {
         this.originalUrl_.pathname === newUrl.pathname) {
       this.viewport_.goToPage(pageNumber);
     } else {
-      this.navigatorDelegate_.navigateInCurrentTab(viewportPosition.url);
+      this.navigatorDelegate_.navigateInCurrentTab(viewportPosition.url!);
     }
   }
 
   /**
    * Checks if the URL starts with a scheme and is not just a scheme.
-   * @param {!URL} url The input URL
-   * @return {boolean} Whether the url is valid.
-   * @private
    */
-  isValidUrl_(url) {
+  private isValidUrl_(url: URL): boolean {
     // Make sure |url| starts with a valid scheme.
     const validSchemes = ['http:', 'https:', 'ftp:', 'file:', 'mailto:'];
     if (!validSchemes.includes(url.protocol)) {
@@ -212,12 +199,10 @@ export class PdfNavigator {
 
   /**
    * Attempt to figure out what a URL is when there is no scheme.
-   * @param {string} url The input URL
-   * @return {string} The URL with a scheme or the original URL if it is not
+   * @return The URL with a scheme or the original URL if it is not
    *     possible to determine the scheme.
-   * @private
    */
-  guessUrlWithoutScheme_(url) {
+  private guessUrlWithoutScheme_(url: string): string {
     // If the original URL is mailto:, that does not make sense to start with,
     // and neither does adding |url| to it.
     // If the original URL is not a valid URL, this cannot make a valid URL.
@@ -263,17 +248,15 @@ export class PdfNavigator {
  * Represents options when navigating to a new url. C++ counterpart of
  * the enum is in ui/base/window_open_disposition.h. This enum represents
  * the only values that are passed from Plugin.
- * @enum {number}
  */
-export const WindowOpenDisposition = {
-  CURRENT_TAB: 1,
-  NEW_FOREGROUND_TAB: 3,
-  NEW_BACKGROUND_TAB: 4,
-  NEW_WINDOW: 6,
-  SAVE_TO_DISK: 7
-};
+export enum WindowOpenDisposition {
+  CURRENT_TAB = 1,
+  NEW_FOREGROUND_TAB = 3,
+  NEW_BACKGROUND_TAB = 4,
+  NEW_WINDOW = 6,
+  SAVE_TO_DISK = 7,
+}
 
 // Export on |window| such that scripts injected from pdf_extension_test.cc can
 // access it.
-window.PdfNavigator = PdfNavigator;
-window.WindowOpenDisposition = WindowOpenDisposition;
+Object.assign(window, {PdfNavigator, WindowOpenDisposition});

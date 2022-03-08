@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {TestBrowserProxy} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_browser_proxy.js';
-import {NavigatorDelegate, OpenPdfParamsParser, PdfNavigator, PDFScriptingAPI, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {OpenPdfParamsParser, PdfNavigator, PDFScriptingAPI, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
 
