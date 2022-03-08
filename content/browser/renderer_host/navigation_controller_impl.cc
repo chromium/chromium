@@ -40,6 +40,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -2443,8 +2444,8 @@ void NavigationControllerImpl::DeleteNavigationEntries(
     PruneAllButLastCommitted();
   } else {
     // Do the deletion in reverse to preserve indices.
-    for (auto it = delete_indices.rbegin(); it != delete_indices.rend(); ++it) {
-      RemoveEntryAtIndex(*it);
+    for (const auto& index : base::Reversed(delete_indices)) {
+      RemoveEntryAtIndex(index);
     }
     BroadcastHistoryOffsetAndLength();
   }

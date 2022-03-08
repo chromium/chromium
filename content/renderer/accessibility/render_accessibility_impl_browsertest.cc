@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -756,8 +757,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
 
   // Prepare the expected information from the tree.
   const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
-  for (auto iter = updates.rbegin(); iter != updates.rend(); ++iter) {
-    const ui::AXTreeUpdate& update = *iter;
+  for (const auto& update : base::Reversed(updates)) {
     for (const ui::AXNodeData& node : update.nodes) {
       std::string name;
       if (node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name) &&

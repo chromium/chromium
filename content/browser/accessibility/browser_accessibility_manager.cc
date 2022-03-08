@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
@@ -1794,13 +1795,13 @@ void BrowserAccessibilityManager::BuildAXTreeHitTestCacheInternal(
   // assume the object that occurs later in the tree is on top of one that comes
   // before it.
   auto range = node->PlatformChildren();
-  for (auto child = range.rbegin(); child != range.rend(); ++child) {
+  for (const auto& child : base::Reversed(range)) {
     // Skip table columns because cells are only contained in rows,
     // not columns.
-    if (child->GetRole() == ax::mojom::Role::kColumn)
+    if (child.GetRole() == ax::mojom::Role::kColumn)
       continue;
 
-    BuildAXTreeHitTestCacheInternal(&(*child), storage);
+    BuildAXTreeHitTestCacheInternal(&child, storage);
   }
 
   storage->push_back(node);

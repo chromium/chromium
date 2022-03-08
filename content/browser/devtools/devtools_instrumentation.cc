@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/devtools_instrumentation.h"
 
+#include "base/containers/adapters.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
@@ -710,8 +711,8 @@ bool MaybeCreateProxyForInterception(
     return false;
   bool had_interceptors = false;
   const auto& handlers = HandlerType::ForAgentHost(agent_host);
-  for (auto it = handlers.rbegin(); it != handlers.rend(); ++it) {
-    had_interceptors = (*it)->MaybeCreateProxyForInterception(
+  for (const auto& handler : base::Reversed(handlers)) {
+    had_interceptors = handler->MaybeCreateProxyForInterception(
                            process_id, storage_partition, frame_token,
                            is_navigation, is_download, agent_override) ||
                        had_interceptors;

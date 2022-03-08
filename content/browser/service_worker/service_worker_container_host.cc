@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/strings/stringprintf.h"
@@ -511,13 +512,12 @@ void ServiceWorkerContainerHost::RemoveMatchingRegistration(
 ServiceWorkerRegistration* ServiceWorkerContainerHost::MatchRegistration()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = matching_registrations_.rbegin();
-  for (; it != matching_registrations_.rend(); ++it) {
-    if (it->second->is_uninstalled())
+  for (const auto& registration : base::Reversed(matching_registrations_)) {
+    if (registration.second->is_uninstalled())
       continue;
-    if (it->second->is_uninstalling())
+    if (registration.second->is_uninstalling())
       return nullptr;
-    return it->second.get();
+    return registration.second.get();
   }
   return nullptr;
 }
