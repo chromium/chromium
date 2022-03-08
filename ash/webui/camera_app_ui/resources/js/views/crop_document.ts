@@ -540,8 +540,8 @@ export class CropDocument extends Review<boolean> {
       }
       this.initialCorners = [];
     } else {
-      const oldImageW = this.cornerSpaceSize?.width || newImageW;
-      const oldImageH = this.cornerSpaceSize?.height || newImageH;
+      const oldImageW = this.cornerSpaceSize.width;
+      const oldImageH = this.cornerSpaceSize.height;
       for (const corner of this.corners) {
         corner.pt = new Point(
             corner.pt.x / oldImageW * newImageW,
