@@ -614,6 +614,31 @@ TEST(AutofillStructuredAddress,
   VerifyTestValues(&address, address_with_wiped_structure);
 }
 
+// Test that the correct country for merging structured addresses is computed.
+TEST(AutofillStructuredAddress, TestGetCommonCountryForMerge) {
+  CountryCode country1(nullptr);
+  CountryCode country2(nullptr);
+
+  // No countries set.
+  EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"");
+  EXPECT_EQ(country2.GetCommonCountryForMerge(country1), u"");
+
+  // If exactly one country is set, use it as their common one.
+  country1.SetValue(u"AT", VerificationStatus::kObserved);
+  EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"AT");
+  EXPECT_EQ(country2.GetCommonCountryForMerge(country1), u"AT");
+
+  // If both are set to the same value, use it as their common one.
+  country2.SetValue(u"AT", VerificationStatus::kObserved);
+  EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"AT");
+  EXPECT_EQ(country2.GetCommonCountryForMerge(country1), u"AT");
+
+  // If both have a different value, there is no common one.
+  country2.SetValue(u"DE", VerificationStatus::kObserved);
+  EXPECT_EQ(country1.GetCommonCountryForMerge(country2), u"");
+  EXPECT_EQ(country2.GetCommonCountryForMerge(country1), u"");
+}
+
 }  // namespace
 }  // namespace structured_address
 }  // namespace autofill

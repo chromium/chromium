@@ -1032,8 +1032,8 @@ TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   // After normalization, the two names should have a single-token-superset
   // relation.
   SortedTokenComparisonResult token_comparison_result =
-      CompareSortedTokens(name.ValueForComparisonForTesting(),
-                          subset_name.ValueForComparisonForTesting());
+      CompareSortedTokens(name.ValueForComparisonForTesting(subset_name),
+                          subset_name.ValueForComparisonForTesting(name));
   EXPECT_TRUE(token_comparison_result.IsSingleTokenSuperset());
 
   // Without normalization, the two names should be considered distinct.

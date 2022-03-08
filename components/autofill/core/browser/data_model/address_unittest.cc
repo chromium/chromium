@@ -547,6 +547,35 @@ TEST_P(AddressTest, TestMergeStructuredAddresses) {
   EXPECT_FALSE(address1.IsStructuredAddressMergeable(address3));
 }
 
+// Tests that if only one of the structured addresses in a merge operation has
+// country information, it is used as their common country during comparison and
+// for rewriting rules.
+TEST_P(AddressTest, TestMergeStructuredAddressesMissingCountry) {
+  // This test is only applicable for structured addresses.
+  if (!StructuredAddresses())
+    return;
+
+  Address address1;
+  Address address2;
+
+  address1.SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
+  address1.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, u"1 Trafalgar Square",
+      structured_address::VerificationStatus::kUserVerified);
+
+  address2.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, u"1 Trafalgar Square",
+      structured_address::VerificationStatus::kObserved);
+
+  // |address1| and |address2|'s street address are not trivially the same,
+  // because their verification status differs. But they should still be
+  // mergeable, regardless if one of them has a country or not. This is not
+  // trivially given, because country-specific rewriting rules are applied
+  // during the merge process.
+  EXPECT_TRUE(address1.IsStructuredAddressMergeable(address2));
+  EXPECT_TRUE(address2.IsStructuredAddressMergeable(address1));
+}
+
 // Tests the retrieval of the structured address.
 TEST_P(AddressTest, TestGettingTheStructuredAddress) {
   // This test is only applicable for structured addresses.

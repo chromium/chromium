@@ -23,16 +23,15 @@ namespace autofill {
 namespace structured_address {
 
 std::u16string AddressComponentWithRewriter::RewriteValue(
-    const std::u16string& value) const {
-  // Retrieve the country name from the structured tree the node resides in.
-  std::u16string country = GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY);
-  // If no country is available (this should not be the case for a valid
-  // importable profile), use the US as a fallback country for the rewriter.
-  return RewriterCache::Rewrite(!country.empty() ? country : u"US", value);
+    const std::u16string& value,
+    const std::u16string& country_code) const {
+  return RewriterCache::Rewrite(country_code.empty() ? u"US" : country_code,
+                                value);
 }
 
-std::u16string AddressComponentWithRewriter::ValueForComparison() const {
-  return RewriteValue(NormalizedValue());
+std::u16string AddressComponentWithRewriter::ValueForComparison(
+    const AddressComponent& other) const {
+  return RewriteValue(NormalizedValue(), GetCommonCountryForMerge(other));
 }
 
 StreetName::StreetName(AddressComponent* parent)

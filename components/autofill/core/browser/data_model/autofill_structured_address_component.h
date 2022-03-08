@@ -368,6 +368,12 @@ class AddressComponent {
                                         bool* validity_status,
                                         bool wipe_if_not = false);
 
+  // While merging two structured addresses, if only one of them has their
+  // country set, the other should assume the non-empty one while merging. This
+  // is required to do consistent address rewriting.
+  // Returns the common country to be used.
+  std::u16string GetCommonCountryForMerge(const AddressComponent& other) const;
+
   // Deletes the stored structure and returns true if |IsStructureValid()|
   // returns false.
   virtual bool WipeInvalidStructure();
@@ -416,8 +422,9 @@ class AddressComponent {
   void SetMergeModeForTesting(int merge_mode) { merge_mode_ = merge_mode; }
 
   // Returns the value used for comparison for testing purposes.
-  std::u16string ValueForComparisonForTesting() const {
-    return ValueForComparison();
+  std::u16string ValueForComparisonForTesting(
+      const AddressComponent& other) const {
+    return ValueForComparison(other);
   }
 #endif
 
@@ -504,7 +511,10 @@ class AddressComponent {
   // In the default implementation this is just the normalized value but this
   // function can be overridden in subclasses to apply further operations on
   // the normalized value.
-  virtual std::u16string ValueForComparison() const;
+  // |other| represents the component we are comparing with and is required
+  // for consistent rewriting rules.
+  virtual std::u16string ValueForComparison(
+      const AddressComponent& other) const;
 
   // Returns true if the merging of two token identical values should give
   // precedence to the newer value. By default, the newer component gets
