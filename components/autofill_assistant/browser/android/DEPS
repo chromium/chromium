@@ -1,0 +1,15 @@
+include_rules = [
+  "+components/keyed_service/content",
+]
+
+specific_include_rules = {
+   'dependencies.h': [
+      '+components/variations/service/variations_service.h',
+   ],
+   'dependencies.cc': [
+      '+components/variations/service/variations_service.h',
+   ],
+   'client_android.cc': [
+      '+components/variations/service/variations_service.h',
+   ],
+}

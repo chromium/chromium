@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_DEPENDENCIES_CHROME_H_
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_DEPENDENCIES_CHROME_H_
 
-#include "chrome/browser/android/autofill_assistant/dependencies.h"
-
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string_piece.h"
+#include "components/autofill_assistant/browser/android/dependencies.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/metrics/metrics_service_accessor.h"
