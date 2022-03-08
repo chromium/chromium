@@ -383,8 +383,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   bool CanRedo() override;
   void Undo() override;
   void Redo() override;
-  void HandleAccessibilityAction(
-      const PP_PdfAccessibilityActionData& action_data) override;
 
   // PPB_Instance_API implementation.
   PP_Bool BindGraphics(PP_Instance instance, PP_Resource device) override;
@@ -466,7 +464,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
       viz::ReleaseCallback* release_callback) override;
 
   // RenderFrameObserver
-  void AccessibilityModeChanged(const ui::AXMode& mode) override;
   void OnDestruct() override;
 
   PepperAudioController& audio_controller() {
@@ -634,8 +631,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // Whether a given viz::TransferableResource is in use by |texture_layer_|.
   bool IsTextureInUse(const viz::TransferableResource& resource) const;
-
-  void HandleAccessibilityChange();
 
   RenderFrameImpl* render_frame_;
   scoped_refptr<PluginModule> module_;

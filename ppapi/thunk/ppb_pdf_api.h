@@ -34,15 +34,6 @@ class PPB_PDF_API {
   virtual void SetLinkUnderCursor(const char* url) = 0;
   virtual void GetV8ExternalSnapshotData(const char** snapshot_data_out,
                                          int* snapshot_size_out) = 0;
-  virtual void SetAccessibilityViewportInfo(
-      const PP_PrivateAccessibilityViewportInfo* viewport_info) = 0;
-  virtual void SetAccessibilityDocInfo(
-      const PP_PrivateAccessibilityDocInfo* doc_info) = 0;
-  virtual void SetAccessibilityPageInfo(
-      const PP_PrivateAccessibilityPageInfo* page_info,
-      const PP_PrivateAccessibilityTextRunInfo text_runs[],
-      const PP_PrivateAccessibilityCharInfo chars[],
-      const PP_PrivateAccessibilityPageObjects* page_objects) = 0;
   virtual void SetCrashData(const char* pdf_url, const char* top_level_url) = 0;
   virtual void SelectionChanged(const PP_FloatPoint& left,
                                 int32_t left_height,

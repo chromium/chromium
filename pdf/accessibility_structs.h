@@ -32,9 +32,6 @@ struct AccessibilityPageInfo {
   uint32_t char_count = 0;
 };
 
-// TODO(crbug.com/1144444): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in PP_TextRenderingMode.
 // See PDF Reference 1.7, page 402, table 5.3.
 enum class AccessibilityTextRenderMode {
   kUnknown = -1,
@@ -74,9 +71,6 @@ struct AccessibilityTextStyleInfo {
   bool is_bold = false;
 };
 
-// TODO(crbug.com/1144444): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in PP_PrivateDirection.
 enum class AccessibilityTextDirection {
   kNone = 0,
   kLeftToRight = 1,
@@ -214,10 +208,6 @@ struct AccessibilityChoiceFieldOptionInfo {
   gfx::RectF bounds;
 };
 
-// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in
-// PP_PrivateChoiceFieldType.
 enum class ChoiceFieldType {
   kListBox = 0,
   kComboBox = 1,
@@ -263,9 +253,6 @@ struct AccessibilityChoiceFieldInfo {
   gfx::RectF bounds;
 };
 
-// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in PP_PrivateButtonType.
 enum class ButtonType {
   kPushButton = 1,
   kCheckBox = 2,
@@ -349,10 +336,6 @@ struct AccessibilityPageObjects {
   AccessibilityFormFieldInfo form_fields;
 };
 
-// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in
-// PP_PrivateFocusObjectType.
 enum class FocusObjectType {
   kNone = 0,
   kDocument = 1,
@@ -380,10 +363,6 @@ struct AccessibilityViewportInfo {
   AccessibilityFocusInfo focus_info;
 };
 
-// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in
-// PP_PdfAccessibilityAction.
 enum class AccessibilityAction {
   // No action specified.
   kNone = 0,
@@ -399,10 +378,6 @@ enum class AccessibilityAction {
   kMaxValue = kSetSelection,
 };
 
-// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
-// from Pepper.
-// Explicitly set all enum values to match enum values in
-// PP_PdfAccessibilityAnnotationType.
 enum class AccessibilityAnnotationType {
   // No annotation type defined.
   kNone = 0,

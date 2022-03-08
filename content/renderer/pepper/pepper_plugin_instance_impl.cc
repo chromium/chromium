@@ -802,9 +802,6 @@ bool PepperPluginInstanceImpl::Initialize(
   if (success && !module_->renderer_ppapi_host()->IsExternalPluginHost())
     message_channel_->Start();
 
-  if (success)
-    HandleAccessibilityChange();
-
   initialized_ = success;
   return success;
 }
@@ -1437,14 +1434,6 @@ void PepperPluginInstanceImpl::Redo() {
   plugin_pdf_interface_->Redo(pp_instance());
 }
 
-void PepperPluginInstanceImpl::HandleAccessibilityAction(
-    const PP_PdfAccessibilityActionData& action_data) {
-  if (!LoadPdfInterface())
-    return;
-
-  plugin_pdf_interface_->HandleAccessibilityAction(pp_instance(), action_data);
-}
-
 void PepperPluginInstanceImpl::RequestSurroundingText(
     size_t desired_number_of_characters) {
   // Keep a reference on the stack. See NOTE above.
@@ -1991,11 +1980,6 @@ bool PepperPluginInstanceImpl::PrepareTransferableResource(
     return false;
   return bound_graphics_2d_platform_->PrepareTransferableResource(
       bitmap_registrar, transferable_resource, release_callback);
-}
-
-void PepperPluginInstanceImpl::AccessibilityModeChanged(
-    const ui::AXMode& mode) {
-  HandleAccessibilityChange();
 }
 
 void PepperPluginInstanceImpl::OnDestruct() {
@@ -2938,13 +2922,6 @@ bool PepperPluginInstanceImpl::IsTextureInUse(
                      return ref_count.first == resource.mailbox_holder.mailbox;
                    });
   return it != texture_ref_counts_.end();
-}
-
-void PepperPluginInstanceImpl::HandleAccessibilityChange() {
-  if (render_frame_ && render_frame_->GetRenderAccessibility() &&
-      LoadPdfInterface()) {
-    plugin_pdf_interface_->EnableAccessibility(pp_instance());
-  }
 }
 
 void PepperPluginInstanceImpl::OnImeSetComposition(

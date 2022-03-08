@@ -22,7 +22,6 @@
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/proxy/plugin_globals.h"
 #include "ppapi/proxy/ppapi_messages.h"
-#include "ppapi/shared_impl/pdf_accessibility_shared.h"
 #include "ppapi/shared_impl/var.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
 
@@ -196,37 +195,6 @@ void PDFResource::GetV8ExternalSnapshotData(const char** snapshot_data_out,
                                             int* snapshot_size_out) {
   gin::V8Initializer::GetV8ExternalSnapshotData(snapshot_data_out,
                                                 snapshot_size_out);
-}
-
-void PDFResource::SetAccessibilityDocInfo(
-    const PP_PrivateAccessibilityDocInfo* doc_info) {
-  Post(RENDERER, PpapiHostMsg_PDF_SetAccessibilityDocInfo(*doc_info));
-}
-
-void PDFResource::SetAccessibilityViewportInfo(
-    const PP_PrivateAccessibilityViewportInfo* viewport_info) {
-  Post(RENDERER, PpapiHostMsg_PDF_SetAccessibilityViewportInfo(*viewport_info));
-}
-
-void PDFResource::SetAccessibilityPageInfo(
-    const PP_PrivateAccessibilityPageInfo* page_info,
-    const PP_PrivateAccessibilityTextRunInfo text_runs[],
-    const PP_PrivateAccessibilityCharInfo chars[],
-    const PP_PrivateAccessibilityPageObjects* page_objects) {
-  std::vector<PP_PrivateAccessibilityCharInfo> char_vector(
-      chars, chars + page_info->char_count);
-  // Pepper APIs require us to pass strings as char*, but IPC expects
-  // std::string. Convert information for text runs style, links and images to
-  // meet these requirements.
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_run_vector;
-  text_run_vector.reserve(page_info->text_run_count);
-  for (size_t i = 0; i < page_info->text_run_count; i++)
-    text_run_vector.emplace_back(text_runs[i]);
-  ppapi::PdfAccessibilityPageObjects ppapi_page_objects(*page_objects);
-
-  Post(RENDERER,
-       PpapiHostMsg_PDF_SetAccessibilityPageInfo(
-           *page_info, text_run_vector, char_vector, ppapi_page_objects));
 }
 
 void PDFResource::SetCrashData(const char* pdf_url, const char* top_level_url) {

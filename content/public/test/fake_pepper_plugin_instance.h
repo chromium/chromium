@@ -53,8 +53,6 @@ class FakePepperPluginInstance : public PepperPluginInstance {
   bool CanRedo() override;
   void Undo() override;
   void Redo() override;
-  void HandleAccessibilityAction(
-      const PP_PdfAccessibilityActionData& action_data) override;
 
  private:
   GURL gurl_;

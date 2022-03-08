@@ -34,7 +34,6 @@ class PPP_Pdf_Proxy : public InterfaceProxy {
   void OnPluginMsgPrintPresetOptions(PP_Instance instance,
                                      PP_PdfPrintPresetOptions_Dev* options,
                                      PP_Bool* result);
-  void OnPluginMsgEnableAccessibility(PP_Instance instance);
   void OnPluginMsgSetCaretPosition(PP_Instance instance,
                                    const PP_FloatPoint& position);
   void OnPluginMsgMoveRangeSelectionExtent(PP_Instance instance,
@@ -51,9 +50,6 @@ class PPP_Pdf_Proxy : public InterfaceProxy {
   void OnPluginMsgCanRedo(PP_Instance instance, PP_Bool* result);
   void OnPluginMsgUndo(PP_Instance instance);
   void OnPluginMsgRedo(PP_Instance instance);
-  void OnPluginMsgHandleAccessibilityAction(
-      PP_Instance instance,
-      const PP_PdfAccessibilityActionData& action_data);
   void OnPluginMsgPrintBegin(PP_Instance instance,
                              const PP_PrintSettings_Dev& print_settings,
                              const PP_PdfPrintSettings_Dev& pdf_print_settings,

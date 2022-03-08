@@ -150,36 +150,6 @@ void GetV8ExternalSnapshotData(PP_Instance instance,
                                                snapshot_size_out);
 }
 
-void SetAccessibilityViewportInfo(
-    PP_Instance instance,
-    const PP_PrivateAccessibilityViewportInfo* viewport_info) {
-  EnterInstanceAPI<PPB_PDF_API> enter(instance);
-  if (enter.failed())
-    return;
-  enter.functions()->SetAccessibilityViewportInfo(viewport_info);
-}
-
-void SetAccessibilityDocInfo(PP_Instance instance,
-                             const PP_PrivateAccessibilityDocInfo* doc_info) {
-  EnterInstanceAPI<PPB_PDF_API> enter(instance);
-  if (enter.failed())
-    return;
-  enter.functions()->SetAccessibilityDocInfo(doc_info);
-}
-
-void SetAccessibilityPageInfo(
-    PP_Instance instance,
-    const PP_PrivateAccessibilityPageInfo* page_info,
-    const PP_PrivateAccessibilityTextRunInfo text_runs[],
-    const PP_PrivateAccessibilityCharInfo chars[],
-    const PP_PrivateAccessibilityPageObjects* page_objects) {
-  EnterInstanceAPI<PPB_PDF_API> enter(instance);
-  if (enter.failed())
-    return;
-  enter.functions()->SetAccessibilityPageInfo(page_info, text_runs, chars,
-                                              page_objects);
-}
-
 void SetCrashData(PP_Instance instance,
                   const char* pdf_url,
                   const char* top_level_url) {
@@ -222,9 +192,6 @@ const PPB_PDF g_ppb_pdf_thunk = {
     &SetSelectedText,
     &SetLinkUnderCursor,
     &GetV8ExternalSnapshotData,
-    &SetAccessibilityViewportInfo,
-    &SetAccessibilityDocInfo,
-    &SetAccessibilityPageInfo,
     &SetCrashData,
     &SelectionChanged,
     &SetPluginCanSave,

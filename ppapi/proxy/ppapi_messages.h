@@ -75,7 +75,6 @@
 #include "ppapi/shared_impl/file_ref_create_info.h"
 #include "ppapi/shared_impl/media_stream_audio_track_shared.h"
 #include "ppapi/shared_impl/media_stream_video_track_shared.h"
-#include "ppapi/shared_impl/pdf_accessibility_shared.h"
 #include "ppapi/shared_impl/ppapi_nacl_plugin_args.h"
 #include "ppapi/shared_impl/ppapi_preferences.h"
 #include "ppapi/shared_impl/ppb_device_ref_shared.h"
@@ -131,21 +130,6 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_VideoDecoder_Profile,
 IPC_ENUM_TRAITS_MAX_VALUE(PP_VideoFrame_Format, PP_VIDEOFRAME_FORMAT_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_HardwareAcceleration, PP_HARDWAREACCELERATION_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_VideoProfile, PP_VIDEOPROFILE_MAX)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateDirection, PP_PRIVATEDIRECTION_LAST)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_TextRenderingMode,
-                              PP_TEXTRENDERINGMODE_FIRST,
-                              PP_TEXTRENDERINGMODE_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PdfAccessibilityAction,
-                          PP_PDF_ACCESSIBILITYACTION_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PdfAccessibilityScrollAlignment,
-                          PP_PDF_ACCESSIBILITYSCROLLALIGNMENT_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PdfAccessibilityAnnotationType,
-                          PP_PDF_ACCESSIBILITY_ANNOTATIONTYPE_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateChoiceFieldType, PP_PRIVATECHOICEFIELD_LAST)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_PrivateButtonType,
-                              PP_PRIVATEBUTTON_FIRST,
-                              PP_PRIVATEBUTTON_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateFocusObjectType, PP_PRIVATEFOCUSOBJECT_LAST)
 
 IPC_STRUCT_TRAITS_BEGIN(PP_Point)
   IPC_STRUCT_TRAITS_MEMBER(x)
@@ -221,24 +205,6 @@ IPC_STRUCT_TRAITS_BEGIN(PP_PrintSettings_Dev)
   IPC_STRUCT_TRAITS_MEMBER(format)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(PP_PdfAccessibilityActionData)
-  IPC_STRUCT_TRAITS_MEMBER(action)
-  IPC_STRUCT_TRAITS_MEMBER(annotation_type)
-  IPC_STRUCT_TRAITS_MEMBER(target_point)
-  IPC_STRUCT_TRAITS_MEMBER(target_rect)
-  IPC_STRUCT_TRAITS_MEMBER(annotation_index)
-  IPC_STRUCT_TRAITS_MEMBER(page_index)
-  IPC_STRUCT_TRAITS_MEMBER(horizontal_scroll_alignment)
-  IPC_STRUCT_TRAITS_MEMBER(vertical_scroll_alignment)
-  IPC_STRUCT_TRAITS_MEMBER(selection_start_index)
-  IPC_STRUCT_TRAITS_MEMBER(selection_end_index)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PdfPageCharacterIndex)
-  IPC_STRUCT_TRAITS_MEMBER(page_index)
-  IPC_STRUCT_TRAITS_MEMBER(char_index)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(PP_PdfPrintPresetOptions_Dev)
   IPC_STRUCT_TRAITS_MEMBER(is_scaling_disabled)
   IPC_STRUCT_TRAITS_MEMBER(copies)
@@ -250,138 +216,6 @@ IPC_STRUCT_TRAITS_END()
 IPC_STRUCT_TRAITS_BEGIN(PP_PdfPrintSettings_Dev)
   IPC_STRUCT_TRAITS_MEMBER(pages_per_sheet)
   IPC_STRUCT_TRAITS_MEMBER(scale_factor)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityFocusInfo)
-  IPC_STRUCT_TRAITS_MEMBER(focused_object_type)
-  IPC_STRUCT_TRAITS_MEMBER(focused_object_page_index)
-  IPC_STRUCT_TRAITS_MEMBER(focused_annotation_index_in_page)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityViewportInfo)
-  IPC_STRUCT_TRAITS_MEMBER(zoom)
-  IPC_STRUCT_TRAITS_MEMBER(scale)
-  IPC_STRUCT_TRAITS_MEMBER(scroll)
-  IPC_STRUCT_TRAITS_MEMBER(offset)
-  IPC_STRUCT_TRAITS_MEMBER(selection_start_page_index)
-  IPC_STRUCT_TRAITS_MEMBER(selection_start_char_index)
-  IPC_STRUCT_TRAITS_MEMBER(selection_end_page_index)
-  IPC_STRUCT_TRAITS_MEMBER(selection_end_char_index)
-  IPC_STRUCT_TRAITS_MEMBER(focus_info)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityDocInfo)
-  IPC_STRUCT_TRAITS_MEMBER(page_count)
-  IPC_STRUCT_TRAITS_MEMBER(text_accessible)
-  IPC_STRUCT_TRAITS_MEMBER(text_copyable)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityCharInfo)
-  IPC_STRUCT_TRAITS_MEMBER(unicode_character)
-  IPC_STRUCT_TRAITS_MEMBER(char_width)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityTextStyleInfo)
-  IPC_STRUCT_TRAITS_MEMBER(font_name)
-  IPC_STRUCT_TRAITS_MEMBER(font_weight)
-  IPC_STRUCT_TRAITS_MEMBER(render_mode)
-  IPC_STRUCT_TRAITS_MEMBER(font_size)
-  IPC_STRUCT_TRAITS_MEMBER(fill_color)
-  IPC_STRUCT_TRAITS_MEMBER(stroke_color)
-  IPC_STRUCT_TRAITS_MEMBER(is_italic)
-  IPC_STRUCT_TRAITS_MEMBER(is_bold)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityTextRunInfo)
-  IPC_STRUCT_TRAITS_MEMBER(len)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-  IPC_STRUCT_TRAITS_MEMBER(direction)
-  IPC_STRUCT_TRAITS_MEMBER(style)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityPageInfo)
-  IPC_STRUCT_TRAITS_MEMBER(page_index)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_count)
-  IPC_STRUCT_TRAITS_MEMBER(char_count)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityLinkInfo)
-  IPC_STRUCT_TRAITS_MEMBER(url)
-  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_count)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityImageInfo)
-  IPC_STRUCT_TRAITS_MEMBER(alt_text)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityHighlightInfo)
-  IPC_STRUCT_TRAITS_MEMBER(note_text)
-  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_count)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-  IPC_STRUCT_TRAITS_MEMBER(color)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityTextFieldInfo)
-  IPC_STRUCT_TRAITS_MEMBER(name)
-  IPC_STRUCT_TRAITS_MEMBER(value)
-  IPC_STRUCT_TRAITS_MEMBER(is_read_only)
-  IPC_STRUCT_TRAITS_MEMBER(is_required)
-  IPC_STRUCT_TRAITS_MEMBER(is_password)
-  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityChoiceFieldOptionInfo)
-  IPC_STRUCT_TRAITS_MEMBER(name)
-  IPC_STRUCT_TRAITS_MEMBER(is_selected)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityChoiceFieldInfo)
-  IPC_STRUCT_TRAITS_MEMBER(name)
-  IPC_STRUCT_TRAITS_MEMBER(options)
-  IPC_STRUCT_TRAITS_MEMBER(type)
-  IPC_STRUCT_TRAITS_MEMBER(is_read_only)
-  IPC_STRUCT_TRAITS_MEMBER(is_multi_select)
-  IPC_STRUCT_TRAITS_MEMBER(has_editable_text_box)
-  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityButtonInfo)
-  IPC_STRUCT_TRAITS_MEMBER(name)
-  IPC_STRUCT_TRAITS_MEMBER(value)
-  IPC_STRUCT_TRAITS_MEMBER(type)
-  IPC_STRUCT_TRAITS_MEMBER(is_read_only)
-  IPC_STRUCT_TRAITS_MEMBER(is_checked)
-  IPC_STRUCT_TRAITS_MEMBER(control_count)
-  IPC_STRUCT_TRAITS_MEMBER(control_index)
-  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityFormFieldInfo)
-  IPC_STRUCT_TRAITS_MEMBER(text_fields)
-  IPC_STRUCT_TRAITS_MEMBER(choice_fields)
-  IPC_STRUCT_TRAITS_MEMBER(buttons)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityPageObjects)
-  IPC_STRUCT_TRAITS_MEMBER(links)
-  IPC_STRUCT_TRAITS_MEMBER(images)
-  IPC_STRUCT_TRAITS_MEMBER(highlights)
-  IPC_STRUCT_TRAITS_MEMBER(form_fields)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(PP_URLComponent_Dev)
@@ -773,8 +607,6 @@ IPC_SYNC_MESSAGE_ROUTED1_2(
     PP_Instance /* instance */,
     PP_PdfPrintPresetOptions_Dev /* print preset options */,
     PP_Bool /* result */)
-IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_EnableAccessibility,
-                    PP_Instance /* instance */)
 IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_SetCaretPosition,
                     PP_Instance /* instance */,
                     PP_FloatPoint /* position */)
@@ -803,9 +635,6 @@ IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_CanRedo,
                            PP_Bool /* result */)
 IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_Undo, PP_Instance /* instance */)
 IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_Redo, PP_Instance /* instance */)
-IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_HandleAccessibilityAction,
-                    PP_Instance /* instance */,
-                    PP_PdfAccessibilityActionData /* action_data */)
 IPC_SYNC_MESSAGE_ROUTED3_1(PpapiMsg_PPPPdf_PrintBegin,
                            PP_Instance /* instance */,
                            PP_PrintSettings_Dev /* print_settings */,
@@ -2084,24 +1913,6 @@ IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetSelectedText,
 // Called by the plugin to set the link under the cursor.
 IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetLinkUnderCursor,
                      std::string /* url */)
-
-// Called by the plugin to describe the viewport for accessibility support.
-IPC_MESSAGE_CONTROL1(
-    PpapiHostMsg_PDF_SetAccessibilityViewportInfo,
-    PP_PrivateAccessibilityViewportInfo /* viewport_info */)
-
-// Send information about the whole document for accessibility support.
-IPC_MESSAGE_CONTROL1(
-    PpapiHostMsg_PDF_SetAccessibilityDocInfo,
-    PP_PrivateAccessibilityDocInfo /* doc_info */)
-
-// Send information about one page for accessibility support.
-IPC_MESSAGE_CONTROL4(
-    PpapiHostMsg_PDF_SetAccessibilityPageInfo,
-    PP_PrivateAccessibilityPageInfo /* page_info */,
-    std::vector<ppapi::PdfAccessibilityTextRunInfo> /* text_runs */,
-    std::vector<PP_PrivateAccessibilityCharInfo> /* chars */,
-    ppapi::PdfAccessibilityPageObjects /* page_objects */)
 
 // Send information about the selection coordinates.
 IPC_MESSAGE_CONTROL4(PpapiHostMsg_PDF_SelectionChanged,

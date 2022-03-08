@@ -106,7 +106,4 @@ void FakePepperPluginInstance::Undo() {}
 
 void FakePepperPluginInstance::Redo() {}
 
-void FakePepperPluginInstance::HandleAccessibilityAction(
-    const PP_PdfAccessibilityActionData& action_data) {}
-
 }  // namespace content
