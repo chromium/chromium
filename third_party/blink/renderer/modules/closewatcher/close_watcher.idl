@@ -9,7 +9,7 @@
 ] interface CloseWatcher : EventTarget {
   [CallWith=ScriptState, RaisesException] constructor();
 
-  void signalClosed();
+  void close();
   void destroy();
 
   attribute EventHandler oncancel;

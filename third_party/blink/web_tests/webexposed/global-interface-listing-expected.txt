@@ -1297,9 +1297,9 @@ interface CloseWatcher : EventTarget
     attribute @@toStringTag
     getter oncancel
     getter onclose
+    method close
     method constructor
     method destroy
-    method signalClosed
     setter oncancel
     setter onclose
 interface Comment : CharacterData

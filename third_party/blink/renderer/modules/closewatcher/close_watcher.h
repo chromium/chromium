@@ -30,7 +30,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
 
   bool IsClosed() const { return state_ == State::kClosed; }
 
-  void signalClosed();
+  void close();
   void destroy();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
@@ -43,8 +43,6 @@ class CloseWatcher final : public EventTargetWithInlineData,
   }
 
  private:
-  void Close();
-
   // If multiple CloseWatchers are active in a given window, they form a
   // stack, and a close signal will pop the top watcher. If the stack is empty,
   // the first CloseWatcher is "free", but creating a new
@@ -99,7 +97,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
     void Invoke(ExecutionContext*, Event*) final;
 
     // mojom::blink::CloseListener override:
-    void Signal() final { watchers_.back()->signalClosed(); }
+    void Signal() final { watchers_.back()->close(); }
 
     HeapLinkedHashSet<Member<CloseWatcher>> watchers_;
 

@@ -22,11 +22,11 @@ test(() => {
     onclose_called = true;
   }
 
-  watcher.signalClosed();
+  watcher.close();
 
   assert_false(oncancel_called);
   assert_true(onclose_called);
-}, "signalClose() with no user activation only fires close");
+}, "close() with no user activation only fires close");
 
 test(() => {
   let watcher = new CloseWatcher();
@@ -36,11 +36,11 @@ test(() => {
   watcher.onclose = () => onclose_called = true;
 
   watcher.destroy();
-  watcher.signalClosed();
+  watcher.close();
 
   assert_false(oncancel_called);
   assert_false(onclose_called);
-}, "destroy() then signalClose() fires no events");
+}, "destroy() then close() fires no events");
 
 test(() => {
   let watcher = new CloseWatcher();
@@ -49,11 +49,11 @@ test(() => {
   watcher.oncancel = () => oncancel_call_count_++;
   watcher.onclose = () => onclose_call_count_++;
 
-  watcher.signalClosed();
+  watcher.close();
   watcher.destroy();
   assert_equals(oncancel_call_count_, 0);
   assert_equals(onclose_call_count_, 1);
-}, "signalClose() then destroy() fires only one close event");
+}, "close() then destroy() fires only one close event");
 
 promise_test(async t => {
   let watcher = new CloseWatcher();
@@ -171,10 +171,10 @@ promise_test(async t => {
 
   assert_throws_dom("NotAllowedError", () => new CloseWatcher());
 
-  watcher4.signalClosed();
-  watcher3.signalClosed();
-  watcher2.signalClosed();
-  watcher1.signalClosed();
+  watcher4.close();
+  watcher3.close();
+  watcher2.close();
+  watcher1.close();
 
   assert_array_equals(
     events,
@@ -206,14 +206,14 @@ promise_test(async t => {
   // Send an arbitrary click to trigger user activation.
   await test_driver.click(document.getElementById('d'));
 
-  watcher2.signalClosed();
+  watcher2.close();
   assert_array_equals(events, ["watcher2 oncancel"]);
 
   // This time we go straight to close, without a second cancel.
-  watcher2.signalClosed();
+  watcher2.close();
   assert_array_equals(events, ["watcher2 oncancel", "watcher2 onclose"]);
 
-  watcher1.signalClosed();
+  watcher1.close();
   assert_array_equals(events, ["watcher2 oncancel", "watcher2 onclose", "watcher1 onclose"]);
 
   function createBlessed(t, name) {
@@ -238,10 +238,10 @@ test(t => {
 
 test(t => {
   let watcher = new CloseWatcher();
-  watcher.signalClosed();
+  watcher.close();
   let watcher2 = new CloseWatcher();
   t.add_cleanup(() => watcher2.destroy());
-}, "signalClose()ing a free CloseWatcher allows a new one to be created without a user activation.");
+}, "close()ing a free CloseWatcher allows a new one to be created without a user activation.");
 
 promise_test(async t => {
   let watcher = new CloseWatcher();
@@ -255,29 +255,29 @@ promise_test(async t => {
   watcher.oncancel = () => { watcher.destroy(); }
   watcher.onclose = t.unreached_func("onclose");
   await test_driver.bless("give user activation so that cancel will fire", () => {
-    watcher.signalClosed();
+    watcher.close();
   });
 }, "destroy inside oncancel");
 
 test(t => {
   let watcher = new CloseWatcher();
   watcher.onclose = () => { watcher.destroy(); }
-  watcher.signalClosed();
+  watcher.close();
 }, "destroy inside onclose is benign");
 
 promise_test(async t => {
   let watcher = new CloseWatcher();
-  watcher.oncancel = () => { watcher.signalClosed(); }
+  watcher.oncancel = () => { watcher.close(); }
   await test_driver.bless("give user activation so that cancel will fire", () => {
-    watcher.signalClosed();
+    watcher.close();
   });
-}, "signalClose inside oncancel should not trigger an infinite loop");
+}, "close inside oncancel should not trigger an infinite loop");
 
 test(t => {
   let watcher = new CloseWatcher();
-  watcher.onclose = () => { watcher.signalClosed(); }
-  watcher.signalClosed();
-}, "signalClose inside onclose should not trigger an infinite loop");
+  watcher.onclose = () => { watcher.close(); }
+  watcher.close();
+}, "close inside onclose should not trigger an infinite loop");
 
 promise_test(async () => {
   let watcher = new CloseWatcher();
@@ -287,10 +287,10 @@ promise_test(async () => {
   watcher.addEventListener("close", () => onclose_called = true);
 
   await test_driver.bless("give user activation so that cancel will fire", () => {
-    watcher.signalClosed();
+    watcher.close();
   });
 
   assert_true(oncancel_called);
   assert_true(onclose_called);
-}, "signalClose with events added via addEventListener");
+}, "close with events added via addEventListener");
 </script>

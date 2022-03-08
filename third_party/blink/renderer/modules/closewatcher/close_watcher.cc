@@ -104,7 +104,7 @@ CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
 CloseWatcher::CloseWatcher(LocalDOMWindow* window)
     : ExecutionContextClient(window) {}
 
-void CloseWatcher::signalClosed() {
+void CloseWatcher::close() {
   if (IsClosed() || dispatching_cancel_ || !DomWindow())
     return;
 
@@ -120,30 +120,28 @@ void CloseWatcher::signalClosed() {
     if (cancel_event.defaultPrevented())
       return;
   }
-  Close();
-}
 
-// static
-void CloseWatcher::InstallUserActivationObserver(LocalDOMWindow& window) {
-  Supplement<LocalDOMWindow>::ProvideTo(
-      window, MakeGarbageCollected<WatcherStack>(window));
-}
-
-void CloseWatcher::Close() {
+  // These might have changed because of the event firing.
   if (IsClosed())
     return;
   if (DomWindow())
     WatcherStack::From(*DomWindow()).Remove(this);
+
   state_ = State::kClosed;
   DispatchEvent(*Event::Create(event_type_names::kClose));
 }
-
 void CloseWatcher::destroy() {
   if (IsClosed())
     return;
   if (DomWindow())
     WatcherStack::From(*DomWindow()).Remove(this);
   state_ = State::kClosed;
+}
+
+// static
+void CloseWatcher::InstallUserActivationObserver(LocalDOMWindow& window) {
+  Supplement<LocalDOMWindow>::ProvideTo(
+      window, MakeGarbageCollected<WatcherStack>(window));
 }
 
 const AtomicString& CloseWatcher::InterfaceName() const {
