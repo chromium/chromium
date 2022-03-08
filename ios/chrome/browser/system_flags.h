@@ -31,7 +31,6 @@ bool AlwaysDisplayFirstRun();
 // |BrandCode| startup ping. Returns empty string if there is no alternative
 // host specified.
 NSString* GetOriginServerHost();
-NSString* GetOriginServerHostNSString();
 
 // Returns the promo force enabled, as determined by the experimental flags.
 // If |WHATS_NEW_DEFAULT| is returned, no promo is force enabled.

@@ -49,10 +49,6 @@ NSString* GetOriginServerHost() {
   return [[NSUserDefaults standardUserDefaults] stringForKey:kOriginServerHost];
 }
 
-NSString* GetOriginServerHostNSString() {
-  return GetOriginServerHost();
-}
-
 WhatsNewPromoStatus GetWhatsNewPromoStatus() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   NSInteger status = [defaults integerForKey:kWhatsNewPromoStatus];
