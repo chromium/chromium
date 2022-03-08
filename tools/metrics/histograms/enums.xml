@@ -72292,6 +72292,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="More than two ports exist"/>
 </enum>
 
+<enum name="PowerDimEvent">
+  <summary>
+    The type of dimming/undimming events in powerd, as reported by the kernel.
+  </summary>
+  <int value="0" label="StandardDim"/>
+  <int value="1" label="QuickDim"/>
+  <int value="2" label="QuickDimTransitionedToStandardDim"/>
+  <int value="3" label="QuickDimRevertedByHps"/>
+  <int value="4" label="QuickDimRevertedByUser"/>
+</enum>
+
 <enum name="PowerMLDimImminentAction">
   <int value="0" label="ModelIgnored">
     Dim occurred naturally following a screen dim imminent.

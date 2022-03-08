@@ -597,6 +597,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.DimEventOn{PowerSource}" enum="PowerDimEvent"
+    expires_after="2023-03-01">
+  <owner>mqg@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <summary>
+    The dimming events inside power_manager.metrics.DimEvent, recorded when a
+    quick-dim/standard-dim starts or ends. The device is on {PowerSource} when
+    the metrics is recorded.
+  </summary>
+  <token key="PowerSource">
+    <variant name="AC" summary="charging"/>
+    <variant name="Battery" summary="battery"/>
+  </token>
+</histogram>
+
 <histogram name="Power.ExternalBrightnessReadResult"
     enum="ExternalDisplayReceiveResult" expires_after="2022-05-01">
   <owner>puthik@chromium.org</owner>
@@ -1423,6 +1438,21 @@ chromium-metrics-reviews@google.com.
     when on battery. Values for this metric are clamped to 10k count, so the
     last bucket should be considered to be including all metrics above 10k.
   </summary>
+</histogram>
+
+<histogram name="Power.{DimEvent}.DurationSeconds" units="seconds"
+    expires_after="2023-03-01">
+  <owner>mqg@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <summary>The duration of a {DimEvent}, recorded on undimming.</summary>
+  <token key="DimEvent">
+    <variant name="QuickDimRevertedByHps"
+        summary="quick dimming undimmed by hps"/>
+    <variant name="QuickDimRevertedByUser"
+        summary="quick dimming undimmed by user"/>
+    <variant name="StandardDimRevertedByUser"
+        summary="standard dimming undimmed by user"/>
+  </token>
 </histogram>
 
 <histogram name="PowerML.DimImminent.Action" enum="PowerMLDimImminentAction"
