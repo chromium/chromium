@@ -157,155 +157,6 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
   tasks->swap(filtered);
 }
 
-// Ends the recursion that determines whether or not the Web Drive Office action
-// is available.
-void EndAdjustTasksForWebDriveOffice(
-    Profile* profile,
-    const std::vector<extensions::EntryInfo>& entries,
-    const std::set<std::string>& disabled_actions,
-    FindTasksCallback callback,
-    std::unique_ptr<std::vector<FullTaskDescriptor>> result_list) {
-  if (!disabled_actions.empty())
-    RemoveFileManagerInternalActions(disabled_actions, result_list.get());
-
-  ChooseAndSetDefaultTask(*profile->GetPrefs(), entries, result_list.get());
-  std::move(callback).Run(std::move(result_list));
-}
-
-// Forward declaration.
-void ProcessNextEntryForWebDriveOffice(
-    Profile* profile,
-    const std::vector<extensions::EntryInfo>& entries,
-    size_t entry_index,
-    std::set<std::string> disabled_actions,
-    FindTasksCallback callback,
-    std::unique_ptr<std::vector<FullTaskDescriptor>> result_list);
-
-// Checks whether the Web Drive Office task should be disabled based on the
-// entry's alternate URL.
-void OnGetDriveFsMetadataForWebDriveOffice(
-    Profile* profile,
-    const std::vector<extensions::EntryInfo> entries,
-    size_t entry_index,
-    std::set<std::string> disabled_actions,
-    FindTasksCallback callback,
-    std::unique_ptr<std::vector<FullTaskDescriptor>> result_list,
-    drive::FileError error,
-    drivefs::mojom::FileMetadataPtr metadata) {
-  if (error != drive::FILE_ERROR_OK) {
-    disabled_actions.emplace(kActionIdWebDriveOffice);
-    EndAdjustTasksForWebDriveOffice(profile, entries, disabled_actions,
-                                    std::move(callback),
-                                    std::move(result_list));
-    return;
-  }
-
-  GURL hosted_url(metadata->alternate_url);
-  // URLs for editing Office files in Web Drive all have a "docs.google.com"
-  // host.
-  if (!hosted_url.is_valid() || hosted_url.host() != "docs.google.com") {
-    disabled_actions.emplace(kActionIdWebDriveOffice);
-    EndAdjustTasksForWebDriveOffice(profile, entries, disabled_actions,
-                                    std::move(callback),
-                                    std::move(result_list));
-    return;
-  }
-
-  // Check alternate URL for next entry.
-  ProcessNextEntryForWebDriveOffice(
-      profile, entries, ++entry_index, std::move(disabled_actions),
-      std::move(callback), std::move(result_list));
-}
-
-// Checks whether an entry is potentially available to be opened and edited in
-// Web Drive, and query its DriveFS metadata.
-void ProcessNextEntryForWebDriveOffice(
-    Profile* profile,
-    const std::vector<extensions::EntryInfo>& entries,
-    size_t entry_index,
-    std::set<std::string> disabled_actions,
-    FindTasksCallback callback,
-    std::unique_ptr<std::vector<FullTaskDescriptor>> result_list) {
-  // Web Drive Office is available for all the selected entries.
-  if (entry_index == entries.size()) {
-    EndAdjustTasksForWebDriveOffice(profile, entries, disabled_actions,
-                                    std::move(callback),
-                                    std::move(result_list));
-    return;
-  }
-  // Check whether the entry is on Drive.
-  if (!::file_manager::util::IsDriveLocalPath(profile,
-                                              entries[entry_index].path)) {
-    disabled_actions.emplace(kActionIdWebDriveOffice);
-    EndAdjustTasksForWebDriveOffice(profile, entries, disabled_actions,
-                                    std::move(callback),
-                                    std::move(result_list));
-    return;
-  }
-
-  // Check whether the DriveIntegrationService is available.
-  drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  base::FilePath relative_drive_path;
-  if (!(integration_service && integration_service->IsMounted() &&
-        integration_service->GetDriveFsInterface() &&
-        integration_service->GetRelativeDrivePath(entries[entry_index].path,
-                                                  &relative_drive_path))) {
-    disabled_actions.emplace(kActionIdWebDriveOffice);
-    EndAdjustTasksForWebDriveOffice(profile, entries, disabled_actions,
-                                    std::move(callback),
-                                    std::move(result_list));
-    return;
-  }
-
-  // Get Office file's metadata.
-  integration_service->GetDriveFsInterface()->GetMetadata(
-      relative_drive_path,
-      base::BindOnce(&OnGetDriveFsMetadataForWebDriveOffice, profile,
-                     std::move(entries), entry_index,
-                     std::move(disabled_actions), std::move(callback),
-                     std::move(result_list)));
-}
-
-// Starts processing entries to determine whether the Web Drive Office action
-// should be disabled or not.
-void AdjustTasksForWebDriveOffice(
-    Profile* profile,
-    const std::vector<extensions::EntryInfo>& entries,
-    std::set<std::string>& disabled_actions,
-    FindTasksCallback callback,
-    std::unique_ptr<std::vector<FullTaskDescriptor>> result_list) {
-  // No checks to perform if the Web Drive Office task has not been selected.
-  const auto web_drive_office_task = std::find_if(
-      result_list->begin(), result_list->end(), [&](const auto& task) {
-        return isFilesAppId(task.task_descriptor.app_id) &&
-               parseFilesAppActionId(task.task_descriptor.action_id) ==
-                   kActionIdWebDriveOffice;
-      });
-  if (web_drive_office_task == result_list->end()) {
-    EndAdjustTasksForWebDriveOffice(profile, entries, disabled_actions,
-                                    std::move(callback),
-                                    std::move(result_list));
-    return;
-  }
-
-  // Remove Web Drive Office action if Web Drive Office is disabled or if Drive
-  // is Offline.
-  if (!base::FeatureList::IsEnabled(ash::features::kFilesWebDriveOffice) ||
-      drive::util::GetDriveConnectionStatus(profile) !=
-          drive::util::DRIVE_CONNECTED) {
-    disabled_actions.emplace(kActionIdWebDriveOffice);
-    EndAdjustTasksForWebDriveOffice(profile, entries, disabled_actions,
-                                    std::move(callback),
-                                    std::move(result_list));
-    return;
-  }
-
-  ProcessNextEntryForWebDriveOffice(profile, entries, 0, disabled_actions,
-                                    std::move(callback),
-                                    std::move(result_list));
-}
-
 // Adjusts |tasks| to reflect the product decision that chrome://media-app
 // should behave more like a user-installed app than a fallback handler.
 // Specifically, only apps set as the default in user prefs should be preferred
@@ -345,6 +196,143 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   }
   std::swap(*tasks, new_tasks);
 }
+
+// Helper class that validates whether the WebDriveOffice task can properly
+// handle a given set of files.
+class WebDriveOfficeValidationHelper {
+ public:
+  WebDriveOfficeValidationHelper(
+      Profile* profile,
+      const std::vector<extensions::EntryInfo>& entries,
+      std::unique_ptr<std::vector<FullTaskDescriptor>> result_list,
+      std::set<std::string> disabled_actions)
+      : profile(profile),
+        entries(entries),
+        result_list(std::move(result_list)),
+        disabled_actions_(std::move(disabled_actions)) {}
+
+  WebDriveOfficeValidationHelper(const WebDriveOfficeValidationHelper& other) =
+      delete;
+  WebDriveOfficeValidationHelper& operator=(
+      const WebDriveOfficeValidationHelper& other) = delete;
+
+  ~WebDriveOfficeValidationHelper() = default;
+
+  void Run(base::OnceClosure callback) {
+    DCHECK(callback);
+    DCHECK(!callback_);
+
+    callback_ = std::move(callback);
+    AdjustTasks();
+  }
+
+  Profile* profile;
+  const std::vector<extensions::EntryInfo> entries;
+  std::unique_ptr<std::vector<FullTaskDescriptor>> result_list;
+
+ private:
+  // Starts processing entries to determine whether the Web Drive Office action
+  // should be disabled or not.
+  void AdjustTasks() {
+    // No checks to perform if the Web Drive Office task has not been selected.
+    const auto web_drive_office_task = std::find_if(
+        result_list->begin(), result_list->end(), [&](const auto& task) {
+          return isFilesAppId(task.task_descriptor.app_id) &&
+                 parseFilesAppActionId(task.task_descriptor.action_id) ==
+                     kActionIdWebDriveOffice;
+        });
+    if (web_drive_office_task == result_list->end()) {
+      EndAdjustTasks();
+      return;
+    }
+
+    // Remove Web Drive Office action if Web Drive Office is disabled or if
+    // Drive is Offline.
+    if (!base::FeatureList::IsEnabled(ash::features::kFilesWebDriveOffice) ||
+        drive::util::GetDriveConnectionStatus(profile) !=
+            drive::util::DRIVE_CONNECTED) {
+      disabled_actions_.emplace(kActionIdWebDriveOffice);
+      EndAdjustTasks();
+      return;
+    }
+
+    ProcessNextEntryForWebDriveOffice(0);
+  }
+
+  // Checks whether an entry is potentially available to be opened and edited in
+  // Web Drive, and query its DriveFS metadata.
+  void ProcessNextEntryForWebDriveOffice(size_t entry_index) {
+    // Web Drive Office is available for all the selected entries.
+    if (entry_index == entries.size()) {
+      EndAdjustTasks();
+      return;
+    }
+    // Check whether the entry is on Drive.
+    if (!::file_manager::util::IsDriveLocalPath(profile,
+                                                entries[entry_index].path)) {
+      disabled_actions_.emplace(kActionIdWebDriveOffice);
+      EndAdjustTasks();
+      return;
+    }
+
+    // Check whether the DriveIntegrationService is available.
+    drive::DriveIntegrationService* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+    base::FilePath relative_drive_path;
+    if (!(integration_service && integration_service->IsMounted() &&
+          integration_service->GetDriveFsInterface() &&
+          integration_service->GetRelativeDrivePath(entries[entry_index].path,
+                                                    &relative_drive_path))) {
+      disabled_actions_.emplace(kActionIdWebDriveOffice);
+      EndAdjustTasks();
+      return;
+    }
+
+    // Get Office file's metadata.
+    integration_service->GetDriveFsInterface()->GetMetadata(
+        relative_drive_path,
+        base::BindOnce(&WebDriveOfficeValidationHelper::
+                           OnGetDriveFsMetadataForWebDriveOffice,
+                       weak_factory_.GetWeakPtr(), entry_index));
+  }
+
+  // Checks whether the Web Drive Office task should be disabled based on the
+  // entry's alternate URL.
+  void OnGetDriveFsMetadataForWebDriveOffice(
+      size_t entry_index,
+      drive::FileError error,
+      drivefs::mojom::FileMetadataPtr metadata) {
+    if (error != drive::FILE_ERROR_OK) {
+      disabled_actions_.emplace(kActionIdWebDriveOffice);
+      EndAdjustTasks();
+      return;
+    }
+
+    GURL hosted_url(metadata->alternate_url);
+    // URLs for editing Office files in Web Drive all have a "docs.google.com"
+    // host.
+    if (!hosted_url.is_valid() || hosted_url.host() != "docs.google.com") {
+      disabled_actions_.emplace(kActionIdWebDriveOffice);
+      EndAdjustTasks();
+      return;
+    }
+
+    // Check alternate URL for next entry.
+    ProcessNextEntryForWebDriveOffice(++entry_index);
+  }
+
+  // Ends the recursion that determines whether or not the Web Drive Office
+  // action is available.
+  void EndAdjustTasks() {
+    if (!disabled_actions_.empty())
+      RemoveFileManagerInternalActions(disabled_actions_, result_list.get());
+    std::move(callback_).Run();
+  }
+
+  std::set<std::string> disabled_actions_;
+  base::OnceClosure callback_;
+  base::WeakPtrFactory<WebDriveOfficeValidationHelper> weak_factory_{this};
+};
 
 // Returns true if the given task is a handler by built-in apps like the Files
 // app itself or QuickOffice etc. They are used as the initial default app.
@@ -432,6 +420,18 @@ void ExecuteTaskAfterMimeTypesCollected(
   ExecuteArcTask(profile, task, file_urls, *mime_types, std::move(done));
 }
 
+void EndPostProcessFoundTasks(std::unique_ptr<WebDriveOfficeValidationHelper>
+                                  web_drive_office_validation_helper,
+                              FindTasksCallback callback) {
+  Profile* profile = web_drive_office_validation_helper.get()->profile;
+  const std::vector<extensions::EntryInfo>& entries =
+      web_drive_office_validation_helper.get()->entries;
+  std::unique_ptr<std::vector<FullTaskDescriptor>> result_list =
+      std::move(web_drive_office_validation_helper.get()->result_list);
+  ChooseAndSetDefaultTask(*profile->GetPrefs(), entries, result_list.get());
+  std::move(callback).Run(std::move(result_list));
+}
+
 void PostProcessFoundTasks(
     Profile* profile,
     const std::vector<extensions::EntryInfo>& entries,
@@ -496,8 +496,15 @@ void PostProcessFoundTasks(
   disabled_actions.emplace("view-pdf");
 #endif  // !BUILDFLAG(ENABLE_PDF)
 
-  AdjustTasksForWebDriveOffice(profile, entries, disabled_actions,
-                               std::move(callback), std::move(result_list));
+  std::unique_ptr<WebDriveOfficeValidationHelper>
+      web_drive_office_validation_helper =
+          std::make_unique<WebDriveOfficeValidationHelper>(
+              profile, entries, std::move(result_list),
+              std::move(disabled_actions));
+
+  web_drive_office_validation_helper.get()->Run(base::BindOnce(
+      &EndPostProcessFoundTasks, std::move(web_drive_office_validation_helper),
+      std::move(callback)));
 }
 
 // Returns true if |extension_id| and |action_id| indicate that the file
