@@ -1061,9 +1061,7 @@ public class ExternalNavigationHandlerTest {
         }
     }
 
-    @Test
-    @MediumTest
-    public void testFallbackUrl_ChromeCanHandle_Incognito() {
+    private void doTestFallbackUrl_ChromeCanHandle_Incognito(final boolean clearRedirectHandler) {
         mDelegate.add(new IntentActivity("https", "package"));
         Intent dummyIntent = new Intent(mApplicationContextToRestore, BlankUiTestActivity.class);
         dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -1078,11 +1076,18 @@ public class ExternalNavigationHandlerTest {
             mUrlHandler.mResolveInfoContainsSelf = true;
             mUrlHandler.mCanShowIncognitoDialog = true;
             ThreadUtils.runOnUiThreadBlocking(() -> {
-                checkUrl(intent).withIsIncognito(true).withHasUserGesture(true).expecting(
-                        OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
-                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, START_INCOGNITO);
+                RedirectHandler redirectHandler = RedirectHandler.create();
+                redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false);
+                checkUrl(intent)
+                        .withIsIncognito(true)
+                        .withHasUserGesture(true)
+                        .withRedirectHandler(redirectHandler)
+                        .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                                OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH,
+                                START_INCOGNITO);
                 Assert.assertNull(mUrlHandler.mStartActivityIntent);
                 Assert.assertNull(mUrlHandler.mNewUrlAfterClobbering);
+                if (clearRedirectHandler) redirectHandler.clear();
                 mUrlHandler.mShownIncognitoAlertDialog.cancel();
             });
             // Cancel callback is posted, so continue after posting to the task queue.
@@ -1091,10 +1096,17 @@ public class ExternalNavigationHandlerTest {
                 mUrlHandler.mNewUrlAfterClobbering = null;
                 mUrlHandler.mResolveInfoContainsSelf = false;
 
-                checkUrl(intent).withIsIncognito(true).withHasUserGesture(true).expecting(
-                        OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
-                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, START_INCOGNITO);
+                RedirectHandler redirectHandler = RedirectHandler.create();
+                redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false);
+                checkUrl(intent)
+                        .withIsIncognito(true)
+                        .withHasUserGesture(true)
+                        .withRedirectHandler(redirectHandler)
+                        .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                                OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH,
+                                START_INCOGNITO);
                 Assert.assertNull(mUrlHandler.mStartActivityIntent);
+                if (clearRedirectHandler) redirectHandler.clear();
                 mUrlHandler.mShownIncognitoAlertDialog.cancel();
             });
             // Click callback is posted, so continue after posting to the task queue.
@@ -1107,6 +1119,19 @@ public class ExternalNavigationHandlerTest {
             }
             activity.finish();
         }
+    }
+
+    @Test
+    @MediumTest
+    public void testFallbackUrl_ChromeCanHandle_Incognito() {
+        doTestFallbackUrl_ChromeCanHandle_Incognito(false);
+    }
+
+    // https://crbug.com/1302566
+    @Test
+    @MediumTest
+    public void testFallbackUrl_ChromeCanHandle_Incognito_ClearRedirectHandler() {
+        doTestFallbackUrl_ChromeCanHandle_Incognito(true);
     }
 
     @Test
