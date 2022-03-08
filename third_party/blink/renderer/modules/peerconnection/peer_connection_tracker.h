@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
+#include "base/values.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
@@ -311,8 +312,8 @@ class MODULES_EXPORT PeerConnectionTracker
                                 const String& callback_type,
                                 const String& value);
 
-  void AddStandardStats(int lid, base::Value value);
-  void AddLegacyStats(int lid, base::Value value);
+  void AddStandardStats(int lid, base::Value::List value);
+  void AddLegacyStats(int lid, base::Value::List value);
 
   // This map stores the local ID assigned to each RTCPeerConnectionHandler.
   typedef WTF::HashMap<RTCPeerConnectionHandler*, int> PeerConnectionLocalIdMap;
