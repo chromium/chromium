@@ -119,9 +119,10 @@ bool IsBreakableAtStartOfResumedContainer(
     const NGConstraintSpace& space,
     const NGLayoutResult& child_layout_result,
     const NGBoxFragmentBuilder& builder) {
+  if (child_layout_result.Status() != NGLayoutResult::kSuccess)
+    return false;
   if (space.MinBreakAppeal() != kBreakAppealLastResort &&
       IsResumingLayout(builder.PreviousBreakToken())) {
-    DCHECK_EQ(child_layout_result.Status(), NGLayoutResult::kSuccess);
     if (const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(
             child_layout_result.PhysicalFragment()))
       return box_fragment->IsFirstForNode();
