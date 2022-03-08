@@ -548,10 +548,6 @@ class QuotaManagerImplTest : public testing::Test {
     return corruption_future.Get();
   }
 
-  void SetQuotaDatabase(std::unique_ptr<QuotaDatabase> database) {
-    quota_manager_impl_->SetQuotaDatabaseForTesting(std::move(database));
-  }
-
   bool is_db_bootstrapping() {
     return quota_manager_impl_->is_bootstrapping_database_for_testing();
   }

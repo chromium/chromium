@@ -425,8 +425,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
     eviction_disabled_ = disable;
   }
 
-  void SetQuotaDatabaseForTesting(std::unique_ptr<QuotaDatabase> database);
-
   // Testing support for handling corruption in the underlying database.
   //
   // Runs `corrupter` on the same sequence used to do database I/O,
