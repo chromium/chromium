@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -113,7 +114,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                                       error_stream),
       Optional(ElementsAre(
           Pair(SourceBuilder(kOffsetTime + base::Seconds(1643235574))
-                   .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
+                   .SetSourceType(AttributionSourceType::kNavigation)
                    .SetReportingOrigin(
                        url::Origin::Create(GURL("https://a.r.test")))
                    .SetImpressionOrigin(
@@ -127,7 +128,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                    .Build(),
                _),
           Pair(SourceBuilder(kOffsetTime + base::Seconds(1643235573))
-                   .SetSourceType(CommonSourceInfo::SourceType::kEvent)
+                   .SetSourceType(AttributionSourceType::kEvent)
                    .SetReportingOrigin(
                        url::Origin::Create(GURL("https://b.r.test")))
                    .SetImpressionOrigin(
@@ -142,7 +143,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                _),
           Pair(
               SourceBuilder(kOffsetTime + base::Seconds(1643235575))
-                  .SetSourceType(CommonSourceInfo::SourceType::kEvent)
+                  .SetSourceType(AttributionSourceType::kEvent)
                   .SetReportingOrigin(
                       url::Origin::Create(GURL("https://c.r.test")))
                   .SetImpressionOrigin(

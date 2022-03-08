@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -161,10 +162,10 @@ base::Value AttributionReport::ReportBody() const {
 
       const char* source_type = nullptr;
       switch (common_source_info.source_type()) {
-        case CommonSourceInfo::SourceType::kNavigation:
+        case AttributionSourceType::kNavigation:
           source_type = "navigation";
           break;
-        case CommonSourceInfo::SourceType::kEvent:
+        case AttributionSourceType::kEvent:
           source_type = "event";
           break;
       }

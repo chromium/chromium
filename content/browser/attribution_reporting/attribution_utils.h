@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -18,6 +18,7 @@ class Value;
 namespace content {
 
 class AttributionFilterData;
+class CommonSourceInfo;
 
 // Calculates the report time for a conversion associated with a given
 // source.
@@ -25,7 +26,7 @@ base::Time ComputeReportTime(const CommonSourceInfo& source,
                              base::Time trigger_time);
 
 // Returns the number of report windows for the given source type.
-int NumReportWindows(CommonSourceInfo::SourceType source_type);
+int NumReportWindows(AttributionSourceType source_type);
 
 // Calculates the report time for a given source and window index.
 base::Time ReportTimeAtWindow(const CommonSourceInfo& source, int window_index);

@@ -8,7 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
@@ -57,7 +57,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
     // Source type of this context. Note that data hosts which result in
     // triggers still have a source type of` kEvent` as they share the same web
     // API surface.
-    CommonSourceInfo::SourceType source_type;
+    AttributionSourceType source_type;
   };
 
   // blink::mojom::AttributionDataHost:

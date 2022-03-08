@@ -8,17 +8,18 @@
 #include <stdint.h>
 #include <vector>
 
-#include "content/browser/attribution_reporting/common_source_info.h"
+#include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class GUID;
-class Time;
 }  // namespace base
 
 namespace content {
 
 class AttributionReport;
+class CommonSourceInfo;
 
 // Storage delegate that can supplied to extend basic attribution storage
 // functionality like annotating reports.
@@ -70,7 +71,7 @@ class AttributionStorageDelegate {
   // Sources will be checked against this limit after they schedule a new
   // report.
   virtual int GetMaxAttributionsPerSource(
-      CommonSourceInfo::SourceType source_type) const = 0;
+      AttributionSourceType source_type) const = 0;
 
   // These limits are designed solely to avoid excessive disk / memory usage.
   // In particular, they do not correspond with any privacy parameters.
@@ -125,8 +126,7 @@ class AttributionStorageDelegate {
   // source with the given source type, as implemented by
   // `GetRandomizedResponse()`. Must be in the range [0, 1] and remain constant
   // for the lifetime of the delegate.
-  virtual double GetRandomizedResponseRate(
-      CommonSourceInfo::SourceType) const = 0;
+  virtual double GetRandomizedResponseRate(AttributionSourceType) const = 0;
 
   // Returns a randomized response for the given source, consisting of zero or
   // more fake reports. Returns `absl::nullopt` to indicate that the response
@@ -141,7 +141,7 @@ class AttributionStorageDelegate {
   // Sanitizes `trigger_data` according to the data limits for `source_type`.
   virtual uint64_t SanitizeTriggerData(
       uint64_t trigger_data,
-      CommonSourceInfo::SourceType source_type) const = 0;
+      AttributionSourceType source_type) const = 0;
 };
 
 }  // namespace content

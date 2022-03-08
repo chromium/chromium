@@ -31,6 +31,7 @@
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -170,16 +171,16 @@ absl::optional<StoredSource::AttributionLogic> DeserializeAttributionLogic(
   }
 }
 
-int SerializeSourceType(CommonSourceInfo::SourceType val) {
+int SerializeSourceType(AttributionSourceType val) {
   return static_cast<int>(val);
 }
 
-absl::optional<CommonSourceInfo::SourceType> DeserializeSourceType(int val) {
+absl::optional<AttributionSourceType> DeserializeSourceType(int val) {
   switch (val) {
-    case static_cast<int>(CommonSourceInfo::SourceType::kNavigation):
-      return CommonSourceInfo::SourceType::kNavigation;
-    case static_cast<int>(CommonSourceInfo::SourceType::kEvent):
-      return CommonSourceInfo::SourceType::kEvent;
+    case static_cast<int>(AttributionSourceType::kNavigation):
+      return AttributionSourceType::kNavigation;
+    case static_cast<int>(AttributionSourceType::kEvent):
+      return AttributionSourceType::kEvent;
     default:
       return absl::nullopt;
   }
@@ -238,7 +239,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
       DeserializeOrigin(statement.ColumnString(col++));
   base::Time impression_time = statement.ColumnTime(col++);
   base::Time expiry_time = statement.ColumnTime(col++);
-  absl::optional<CommonSourceInfo::SourceType> source_type =
+  absl::optional<AttributionSourceType> source_type =
       DeserializeSourceType(statement.ColumnInt(col++));
   absl::optional<StoredSource::AttributionLogic> attribution_logic =
       DeserializeAttributionLogic(statement.ColumnInt(col++));
@@ -852,8 +853,7 @@ AttributionStorageSql::MaybeCreateEventLevelReport(
     const AttributionTrigger& trigger,
     absl::optional<AttributionReport>& report,
     absl::optional<uint64_t>& dedup_key) {
-  const CommonSourceInfo::SourceType source_type =
-      source.common_info().source_type();
+  const AttributionSourceType source_type = source.common_info().source_type();
 
   uint64_t trigger_data = 0;
   int64_t priority = 0;

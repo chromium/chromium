@@ -9,34 +9,34 @@
 
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 
 template <>
-class EnumTraits<content::mojom::SourceType,
-                 content::CommonSourceInfo::SourceType> {
+class EnumTraits<content::mojom::AttributionSourceType,
+                 content::AttributionSourceType> {
  public:
-  static content::mojom::SourceType ToMojom(
-      content::CommonSourceInfo::SourceType input) {
+  static content::mojom::AttributionSourceType ToMojom(
+      content::AttributionSourceType input) {
     switch (input) {
-      case content::CommonSourceInfo::SourceType::kNavigation:
-        return content::mojom::SourceType::kNavigation;
-      case content::CommonSourceInfo::SourceType::kEvent:
-        return content::mojom::SourceType::kEvent;
+      case content::AttributionSourceType::kNavigation:
+        return content::mojom::AttributionSourceType::kNavigation;
+      case content::AttributionSourceType::kEvent:
+        return content::mojom::AttributionSourceType::kEvent;
     }
   }
 
-  static bool FromMojom(content::mojom::SourceType input,
-                        content::CommonSourceInfo::SourceType* out) {
+  static bool FromMojom(content::mojom::AttributionSourceType input,
+                        content::AttributionSourceType* out) {
     switch (input) {
-      case content::mojom::SourceType::kNavigation:
-        *out = content::CommonSourceInfo::SourceType::kNavigation;
+      case content::mojom::AttributionSourceType::kNavigation:
+        *out = content::AttributionSourceType::kNavigation;
         break;
-      case content::mojom::SourceType::kEvent:
-        *out = content::CommonSourceInfo::SourceType::kEvent;
+      case content::mojom::AttributionSourceType::kEvent:
+        *out = content::AttributionSourceType::kEvent;
         break;
     }
 

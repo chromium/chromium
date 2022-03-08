@@ -19,16 +19,17 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/combinatorics.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 
 namespace content {
 
 namespace {
 
-uint64_t TriggerDataCardinality(CommonSourceInfo::SourceType source_type) {
+uint64_t TriggerDataCardinality(AttributionSourceType source_type) {
   switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
+    case AttributionSourceType::kNavigation:
       return 8;
-    case CommonSourceInfo::SourceType::kEvent:
+    case AttributionSourceType::kEvent:
       return 2;
   }
 }
@@ -78,12 +79,12 @@ AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
 AttributionStorageDelegateImpl::~AttributionStorageDelegateImpl() = default;
 
 int AttributionStorageDelegateImpl::GetMaxAttributionsPerSource(
-    CommonSourceInfo::SourceType source_type) const {
+    AttributionSourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
+    case AttributionSourceType::kNavigation:
       return 3;
-    case CommonSourceInfo::SourceType::kEvent:
+    case AttributionSourceType::kEvent:
       return 1;
   }
 }
@@ -180,13 +181,13 @@ void AttributionStorageDelegateImpl::ShuffleReports(
 }
 
 double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
-    CommonSourceInfo::SourceType source_type) const {
+    AttributionSourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
+    case AttributionSourceType::kNavigation:
       return randomized_response_rates_.navigation;
-    case CommonSourceInfo::SourceType::kEvent:
+    case AttributionSourceType::kEvent:
       return randomized_response_rates_.event;
   }
 }
@@ -278,7 +279,7 @@ int64_t AttributionStorageDelegateImpl::GetAggregatableBudgetPerSource() const {
 
 uint64_t AttributionStorageDelegateImpl::SanitizeTriggerData(
     uint64_t trigger_data,
-    CommonSourceInfo::SourceType source_type) const {
+    AttributionSourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const uint64_t cardinality = TriggerDataCardinality(source_type);

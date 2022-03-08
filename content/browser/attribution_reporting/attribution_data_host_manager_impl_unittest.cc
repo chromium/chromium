@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
@@ -69,7 +70,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
   auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
   EXPECT_CALL(mock_manager_,
               HandleSource(AllOf(
-                  SourceTypeIs(CommonSourceInfo::SourceType::kEvent),
+                  SourceTypeIs(AttributionSourceType::kEvent),
                   SourceEventIdIs(10), ConversionOriginIs(destination_origin),
                   ImpressionOriginIs(page_origin), SourcePriorityIs(20),
                   SourceDebugKeyIs(789),

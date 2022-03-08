@@ -31,6 +31,7 @@
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -55,9 +56,9 @@ class AttributionTrigger;
 
 enum class RateLimitResult : int;
 
-const CommonSourceInfo::SourceType kSourceTypes[] = {
-    CommonSourceInfo::SourceType::kNavigation,
-    CommonSourceInfo::SourceType::kEvent,
+const AttributionSourceType kSourceTypes[] = {
+    AttributionSourceType::kNavigation,
+    AttributionSourceType::kEvent,
 };
 
 class MockAttributionReportingContentBrowserClient
@@ -157,7 +158,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
                                      base::Time trigger_time) const override;
   int GetMaxAttributionsPerSource(
-      CommonSourceInfo::SourceType source_type) const override;
+      AttributionSourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
   int GetMaxAttributionsPerOrigin() const override;
   RateLimitConfig GetRateLimits() const override;
@@ -168,13 +169,13 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) override;
-  double GetRandomizedResponseRate(CommonSourceInfo::SourceType) const override;
+  double GetRandomizedResponseRate(AttributionSourceType) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) override;
   int64_t GetAggregatableBudgetPerSource() const override;
   uint64_t SanitizeTriggerData(
       uint64_t trigger_data,
-      CommonSourceInfo::SourceType source_type) const override;
+      AttributionSourceType source_type) const override;
 
   void set_max_attributions_per_source(int max);
 
@@ -341,7 +342,7 @@ class SourceBuilder {
 
   SourceBuilder& SetReportingOrigin(url::Origin origin);
 
-  SourceBuilder& SetSourceType(CommonSourceInfo::SourceType source_type);
+  SourceBuilder& SetSourceType(AttributionSourceType source_type);
 
   SourceBuilder& SetPriority(int64_t priority);
 
@@ -372,8 +373,7 @@ class SourceBuilder {
   url::Origin impression_origin_;
   url::Origin conversion_origin_;
   url::Origin reporting_origin_;
-  CommonSourceInfo::SourceType source_type_ =
-      CommonSourceInfo::SourceType::kNavigation;
+  AttributionSourceType source_type_ = AttributionSourceType::kNavigation;
   int64_t priority_ = 0;
   StoredSource::AttributionLogic attribution_logic_ =
       StoredSource::AttributionLogic::kTruthfully;
@@ -579,8 +579,7 @@ std::ostream& operator<<(std::ostream& out, DeactivatedSource::Reason reason);
 
 std::ostream& operator<<(std::ostream& out, RateLimitResult result);
 
-std::ostream& operator<<(std::ostream& out,
-                         CommonSourceInfo::SourceType source_type);
+std::ostream& operator<<(std::ostream& out, AttributionSourceType source_type);
 
 std::ostream& operator<<(
     std::ostream& out,

@@ -16,9 +16,9 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetDebugKey(19)
                .BuildStored(),
            SourceBuilder(now + base::Hours(1))
-               .SetSourceType(CommonSourceInfo::SourceType::kEvent)
+               .SetSourceType(AttributionSourceType::kEvent)
                .SetPriority(std::numeric_limits<int64_t>::max())
                .SetDedupKeys({13, 17})
                .BuildStored()}));
@@ -390,14 +390,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                  /*http_response_code=*/0));
   ON_CALL(manager_, GetPendingReportsForInternalUse)
       .WillByDefault(InvokeCallback<std::vector<AttributionReport>>(
-          {ReportBuilder(
-               AttributionInfoBuilder(
-                   SourceBuilder(now)
-                       .SetSourceType(CommonSourceInfo::SourceType::kEvent)
-                       .SetAttributionLogic(
-                           StoredSource::AttributionLogic::kFalsely)
-                       .BuildStored())
-                   .Build())
+          {ReportBuilder(AttributionInfoBuilder(
+                             SourceBuilder(now)
+                                 .SetSourceType(AttributionSourceType::kEvent)
+                                 .SetAttributionLogic(
+                                     StoredSource::AttributionLogic::kFalsely)
+                                 .BuildStored())
+                             .Build())
                .SetReportTime(now)
                .SetPriority(13)
                .Build()}));

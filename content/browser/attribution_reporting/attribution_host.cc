@@ -17,6 +17,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_page_metrics.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -221,12 +222,12 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  VerifyAndStoreImpression(CommonSourceInfo::SourceType::kNavigation,
+  VerifyAndStoreImpression(AttributionSourceType::kNavigation,
                            impression_origin, impression, *attribution_manager);
 }
 
 bool AttributionHost::VerifyAndStoreImpression(
-    CommonSourceInfo::SourceType source_type,
+    AttributionSourceType source_type,
     const url::Origin& impression_origin,
     const blink::Impression& impression,
     AttributionManager& attribution_manager) {
@@ -387,7 +388,7 @@ void AttributionHost::ReportAttributionForCurrentNavigation(
 
   // No navigation in progress and we've already committed the destination for
   // the conversion, so just store the impression.
-  VerifyAndStoreImpression(CommonSourceInfo::SourceType::kNavigation,
+  VerifyAndStoreImpression(AttributionSourceType::kNavigation,
                            impression_origin, impression, *attribution_manager);
 }
 

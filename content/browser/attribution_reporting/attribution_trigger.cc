@@ -14,7 +14,7 @@ AttributionTrigger::EventTriggerData::EventTriggerData(
     uint64_t data,
     int64_t priority,
     absl::optional<uint64_t> dedup_key,
-    CommonSourceInfo::SourceType source_type)
+    AttributionSourceType source_type)
     : data(data),
       priority(priority),
       dedup_key(dedup_key),
@@ -49,11 +49,11 @@ AttributionTrigger::AttributionTrigger(
               {EventTriggerData(trigger_data,
                                 priority,
                                 dedup_key,
-                                CommonSourceInfo::SourceType::kNavigation),
+                                AttributionSourceType::kNavigation),
                EventTriggerData(event_source_trigger_data,
                                 priority,
                                 dedup_key,
-                                CommonSourceInfo::SourceType::kEvent)})) {}
+                                AttributionSourceType::kEvent)})) {}
 
 AttributionTrigger::AttributionTrigger(const AttributionTrigger& other) =
     default;

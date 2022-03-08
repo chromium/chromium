@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "url/origin.h"
 
 namespace content {

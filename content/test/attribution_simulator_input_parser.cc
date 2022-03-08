@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -171,8 +172,7 @@ class AttributionSimulatorInputParser {
     base::Time source_time = ParseTime(source, "source_time");
     url::Origin source_origin = ParseOrigin(source, "source_origin");
     url::Origin reporting_origin = ParseOrigin(source, "reporting_origin");
-    absl::optional<CommonSourceInfo::SourceType> source_type =
-        ParseSourceType(source);
+    absl::optional<AttributionSourceType> source_type = ParseSourceType(source);
 
     base::Value* cfg = ParseRegistrationConfig(source);
     if (!cfg)
@@ -306,7 +306,7 @@ class AttributionSimulatorInputParser {
     return ParseInt64(value->GetIfString(), key);
   }
 
-  absl::optional<CommonSourceInfo::SourceType> ParseSourceType(
+  absl::optional<AttributionSourceType> ParseSourceType(
       const base::Value& dict) {
     static constexpr char kKey[] = "source_type";
     static constexpr char kNavigation[] = "navigation";
@@ -314,13 +314,13 @@ class AttributionSimulatorInputParser {
 
     auto context = PushContext(kKey);
 
-    absl::optional<CommonSourceInfo::SourceType> source_type;
+    absl::optional<AttributionSourceType> source_type;
 
     if (const std::string* v = dict.FindStringKey(kKey)) {
       if (*v == kNavigation) {
-        source_type = CommonSourceInfo::SourceType::kNavigation;
+        source_type = AttributionSourceType::kNavigation;
       } else if (*v == kEvent) {
-        source_type = CommonSourceInfo::SourceType::kEvent;
+        source_type = AttributionSourceType::kEvent;
       }
     }
 

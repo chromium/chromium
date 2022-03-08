@@ -31,6 +31,7 @@
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -224,9 +225,7 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest, EventSourceImpressionsForConversion_Converts) {
   storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceType(CommonSourceInfo::SourceType::kEvent)
-          .Build());
+      SourceBuilder().SetSourceType(AttributionSourceType::kEvent).Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetEventSourceTriggerData(456).Build()));
@@ -831,17 +830,14 @@ TEST_F(AttributionStorageTest,
       .max_attributions = 1,
   });
 
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceType(AttributionSourceType::kNavigation)
+                             .Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceType(CommonSourceInfo::SourceType::kEvent)
-          .Build());
+      SourceBuilder().SetSourceType(AttributionSourceType::kEvent).Build());
   // This would fail if the source types had separate limits.
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kExcessiveAttributions,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -1012,12 +1008,12 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(
       SourceBuilder()
           .SetConversionOrigin(url::Origin::Create(GURL("https://a.example/")))
-          .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
+          .SetSourceType(AttributionSourceType::kNavigation)
           .Build());
   storage()->StoreSource(
       SourceBuilder()
           .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
-          .SetSourceType(CommonSourceInfo::SourceType::kEvent)
+          .SetSourceType(AttributionSourceType::kEvent)
           .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
@@ -1126,7 +1122,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
 
   SourceBuilder builder;
   builder.SetSourceEventId(4)
-      .SetSourceType(CommonSourceInfo::SourceType::kEvent)
+      .SetSourceType(AttributionSourceType::kEvent)
       .SetPriority(100);
   delegate()->set_randomized_response(
       std::vector<AttributionStorageDelegate::FakeReport>{
@@ -1995,30 +1991,28 @@ TEST_F(AttributionStorageTest,
   const auto origin1 = url::Origin::Create(GURL("https://r1.test"));
   const auto origin2 = url::Origin::Create(GURL("https://r2.test"));
 
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetReportingOrigin(origin1)
-          .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetReportingOrigin(origin1)
+                             .SetSourceType(AttributionSourceType::kNavigation)
+                             .Build());
   MaybeCreateAndStoreEventLevelReport(
       TriggerBuilder().SetReportingOrigin(origin1).Build());
 
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetReportingOrigin(origin2)
-          .SetSourceType(CommonSourceInfo::SourceType::kEvent)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetReportingOrigin(origin2)
+                             .SetSourceType(AttributionSourceType::kEvent)
+                             .Build());
   MaybeCreateAndStoreEventLevelReport(
       TriggerBuilder().SetReportingOrigin(origin2).Build());
 
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              UnorderedElementsAre(
-                  AllOf(ReportSourceIs(SourceTypeIs(
-                            CommonSourceInfo::SourceType::kNavigation)),
-                        EventLevelDataIs(RandomizedTriggerRateIs(.2))),
-                  AllOf(ReportSourceIs(
-                            SourceTypeIs(CommonSourceInfo::SourceType::kEvent)),
-                        EventLevelDataIs(RandomizedTriggerRateIs(.4)))));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      UnorderedElementsAre(
+          AllOf(
+              ReportSourceIs(SourceTypeIs(AttributionSourceType::kNavigation)),
+              EventLevelDataIs(RandomizedTriggerRateIs(.2))),
+          AllOf(ReportSourceIs(SourceTypeIs(AttributionSourceType::kEvent)),
+                EventLevelDataIs(RandomizedTriggerRateIs(.4)))));
 }
 
 TEST_F(AttributionStorageTest,
@@ -2127,32 +2121,30 @@ TEST_F(AttributionStorageTest, TriggerDataSanitized) {
   const auto origin1 = url::Origin::Create(GURL("https://r1.test"));
   const auto origin2 = url::Origin::Create(GURL("https://r2.test"));
 
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetReportingOrigin(origin1)
-          .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetReportingOrigin(origin1)
+                             .SetSourceType(AttributionSourceType::kNavigation)
+                             .Build());
   MaybeCreateAndStoreEventLevelReport(
       TriggerBuilder().SetReportingOrigin(origin1).SetTriggerData(6).Build());
 
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetReportingOrigin(origin2)
-          .SetSourceType(CommonSourceInfo::SourceType::kEvent)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetReportingOrigin(origin2)
+                             .SetSourceType(AttributionSourceType::kEvent)
+                             .Build());
   MaybeCreateAndStoreEventLevelReport(TriggerBuilder()
                                           .SetReportingOrigin(origin2)
                                           .SetEventSourceTriggerData(4)
                                           .Build());
 
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              UnorderedElementsAre(
-                  AllOf(ReportSourceIs(SourceTypeIs(
-                            CommonSourceInfo::SourceType::kNavigation)),
-                        EventLevelDataIs(TriggerDataIs(2))),
-                  AllOf(ReportSourceIs(
-                            SourceTypeIs(CommonSourceInfo::SourceType::kEvent)),
-                        EventLevelDataIs(TriggerDataIs(1)))));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      UnorderedElementsAre(
+          AllOf(
+              ReportSourceIs(SourceTypeIs(AttributionSourceType::kNavigation)),
+              EventLevelDataIs(TriggerDataIs(2))),
+          AllOf(ReportSourceIs(SourceTypeIs(AttributionSourceType::kEvent)),
+                EventLevelDataIs(TriggerDataIs(1)))));
 }
 
 TEST_F(AttributionStorageTest, SourceFilterData_RoundTrips) {
@@ -2173,32 +2165,31 @@ TEST_F(AttributionStorageTest, SourceFilterData_RoundTrips) {
 TEST_F(AttributionStorageTest, NoMatchingTriggers) {
   const auto origin = url::Origin::Create(GURL("https://r.test"));
 
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
-          .SetConversionOrigin(origin)
-          .SetReportingOrigin(origin)
-          .Build());
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceType(AttributionSourceType::kNavigation)
+                             .SetConversionOrigin(origin)
+                             .SetReportingOrigin(origin)
+                             .Build());
 
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers,
-            MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
-                net::SchemefulSite(origin), origin,
-                /*debug_key=*/absl::nullopt,
-                {AttributionTrigger::EventTriggerData(
-                    /*data=*/0,
-                    /*priority=*/0,
-                    /*dedup_key=*/absl::nullopt,
-                    CommonSourceInfo::SourceType::kEvent)})));
+  EXPECT_EQ(
+      AttributionTrigger::EventLevelResult::kNoMatchingEventTriggers,
+      MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
+          net::SchemefulSite(origin), origin,
+          /*debug_key=*/absl::nullopt,
+          {AttributionTrigger::EventTriggerData(
+              /*data=*/0,
+              /*priority=*/0,
+              /*dedup_key=*/absl::nullopt, AttributionSourceType::kEvent)})));
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
-                net::SchemefulSite(origin), origin,
-                /*debug_key=*/absl::nullopt,
-                {AttributionTrigger::EventTriggerData(
-                    /*data=*/0,
-                    /*priority=*/0,
-                    /*dedup_key=*/absl::nullopt,
-                    CommonSourceInfo::SourceType::kNavigation)})));
+            MaybeCreateAndStoreEventLevelReport(
+                AttributionTrigger(net::SchemefulSite(origin), origin,
+                                   /*debug_key=*/absl::nullopt,
+                                   {AttributionTrigger::EventTriggerData(
+                                       /*data=*/0,
+                                       /*priority=*/0,
+                                       /*dedup_key=*/absl::nullopt,
+                                       AttributionSourceType::kNavigation)})));
 }
 
 }  // namespace content

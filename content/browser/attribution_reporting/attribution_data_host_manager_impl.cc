@@ -66,10 +66,9 @@ AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
 void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     url::Origin context_origin) {
-  receivers_.Add(
-      this, std::move(data_host),
-      FrozenContext{.context_origin = std::move(context_origin),
-                    .source_type = CommonSourceInfo::SourceType::kEvent});
+  receivers_.Add(this, std::move(data_host),
+                 FrozenContext{.context_origin = std::move(context_origin),
+                               .source_type = AttributionSourceType::kEvent});
 }
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(

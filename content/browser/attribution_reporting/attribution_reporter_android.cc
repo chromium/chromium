@@ -14,7 +14,7 @@
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/renderer_host/navigation_controller_android.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/url_utils.h"
@@ -52,8 +52,8 @@ void ReportAppImpression(AttributionManager& attribution_manager,
       OriginFromAndroidPackageName(source_package_name);
 
   attribution_host_utils::VerifyAndStoreImpression(
-      CommonSourceInfo::SourceType::kEvent, impression_origin, *impression,
-      context, attribution_manager, impression_time);
+      AttributionSourceType::kEvent, impression_origin, *impression, context,
+      attribution_manager, impression_time);
 }
 
 }  // namespace attribution_reporter_android

@@ -49,7 +49,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
                                      base::Time trigger_time) const override;
   int GetMaxAttributionsPerSource(
-      CommonSourceInfo::SourceType source_type) const override;
+      AttributionSourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
   int GetMaxAttributionsPerOrigin() const override;
   int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
@@ -60,13 +60,13 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) override;
-  double GetRandomizedResponseRate(CommonSourceInfo::SourceType) const override;
+  double GetRandomizedResponseRate(AttributionSourceType) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) override;
   int64_t GetAggregatableBudgetPerSource() const override;
   uint64_t SanitizeTriggerData(
       uint64_t trigger_data,
-      CommonSourceInfo::SourceType source_type) const override;
+      AttributionSourceType source_type) const override;
 
   // Generates fake reports using a random "stars and bars" sequence index of a
   // possible output of the API.

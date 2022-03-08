@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,19 +57,18 @@ TEST(CommonSourceInfoTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
 
 TEST(CommonSourceInfoTest, NonWholeDayImpressionExpirySpecified_Rounded) {
   const struct {
-    CommonSourceInfo::SourceType source_type;
+    AttributionSourceType source_type;
     base::TimeDelta declared_expiry;
     base::TimeDelta want_expiry;
   } kTestCases[] = {
-      {CommonSourceInfo::SourceType::kNavigation, base::Hours(36),
-       base::Hours(36)},
-      {CommonSourceInfo::SourceType::kEvent, base::Hours(36), base::Days(2)},
+      {AttributionSourceType::kNavigation, base::Hours(36), base::Hours(36)},
+      {AttributionSourceType::kEvent, base::Hours(36), base::Days(2)},
 
-      {CommonSourceInfo::SourceType::kNavigation,
+      {AttributionSourceType::kNavigation,
        base::Days(1) + base::Milliseconds(1),
        base::Days(1) + base::Milliseconds(1)},
-      {CommonSourceInfo::SourceType::kEvent,
-       base::Days(1) + base::Milliseconds(1), base::Days(1)},
+      {AttributionSourceType::kEvent, base::Days(1) + base::Milliseconds(1),
+       base::Days(1)},
   };
 
   const base::Time impression_time = base::Time::Now();

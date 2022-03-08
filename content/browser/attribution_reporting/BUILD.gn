@@ -22,14 +22,14 @@ mojom("mojo_bindings") {
           cpp = "::content::AttributionReport::EventLevelData::Id"
         },
         {
-          mojom = "content.mojom.SourceType"
-          cpp = "::content::CommonSourceInfo::SourceType"
+          mojom = "content.mojom.AttributionSourceType"
+          cpp = "::content::AttributionSourceType"
         },
       ]
       traits_headers = [
         "attribution_internals_mojom_traits.h",
         "attribution_report.h",
-        "common_source_info.h",
+        "attribution_source_type.h",
       ]
       traits_sources = [ "attribution_internals_mojom_traits.cc" ]
       traits_deps = [ ":attribution_reporting_proto" ]

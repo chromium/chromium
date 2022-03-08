@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -61,12 +61,12 @@ class CONTENT_EXPORT AttributionTrigger {
 
     // The source type that this trigger data will match.
     // TODO(apaseltiner): Replace this with the generalized filtering mechanism.
-    CommonSourceInfo::SourceType source_type;
+    AttributionSourceType source_type;
 
     EventTriggerData(uint64_t data,
                      int64_t priority,
                      absl::optional<uint64_t> dedup_key,
-                     CommonSourceInfo::SourceType source_type);
+                     AttributionSourceType source_type);
   };
 
   // Should only be created with values that the browser process has already

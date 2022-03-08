@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -23,21 +24,10 @@ namespace content {
 // Contains common attributes of `StorableSource` and `StoredSource`.
 class CONTENT_EXPORT CommonSourceInfo {
  public:
-  // Denotes the type of source for this impression. This allows different types
-  // of impressions to be processed differently by storage and attribution
-  // logic.
-  enum class SourceType {
-    // An impression which was associated with a top-level navigation.
-    kNavigation = 0,
-    // An impression which was not associated with a navigation.
-    kEvent = 1,
-    kMaxValue = kEvent,
-  };
-
   static base::Time GetExpiryTime(
       absl::optional<base::TimeDelta> declared_expiry,
       base::Time impression_time,
-      SourceType source_type);
+      AttributionSourceType source_type);
 
   CommonSourceInfo(uint64_t source_event_id,
                    url::Origin impression_origin,
@@ -45,7 +35,7 @@ class CONTENT_EXPORT CommonSourceInfo {
                    url::Origin reporting_origin,
                    base::Time impression_time,
                    base::Time expiry_time,
-                   SourceType source_type,
+                   AttributionSourceType source_type,
                    int64_t priority,
                    AttributionFilterData filter_data,
                    absl::optional<uint64_t> debug_key,
@@ -71,7 +61,7 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   base::Time expiry_time() const { return expiry_time_; }
 
-  SourceType source_type() const { return source_type_; }
+  AttributionSourceType source_type() const { return source_type_; }
 
   int64_t priority() const { return priority_; }
 
@@ -104,7 +94,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   url::Origin reporting_origin_;
   base::Time impression_time_;
   base::Time expiry_time_;
-  SourceType source_type_;
+  AttributionSourceType source_type_;
   int64_t priority_;
   AttributionFilterData filter_data_;
   absl::optional<uint64_t> debug_key_;

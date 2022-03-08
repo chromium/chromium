@@ -6,8 +6,8 @@
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/url_utils.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_utils.h"
@@ -55,7 +55,7 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
       mock_manager_,
       HandleSource(
           AllOf(ImpressionOriginIs(OriginFromAndroidPackageName(kPackageName)),
-                SourceTypeIs(CommonSourceInfo::SourceType::kEvent),
+                SourceTypeIs(AttributionSourceType::kEvent),
                 ImpressionTimeIs(time))));
 
   attribution_reporter_android::ReportAppImpression(
@@ -68,7 +68,7 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
       mock_manager_,
       HandleSource(
           AllOf(ImpressionOriginIs(OriginFromAndroidPackageName(kPackageName)),
-                SourceTypeIs(CommonSourceInfo::SourceType::kEvent))));
+                SourceTypeIs(AttributionSourceType::kEvent))));
 
   attribution_reporter_android::ReportAppImpression(
       mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0,

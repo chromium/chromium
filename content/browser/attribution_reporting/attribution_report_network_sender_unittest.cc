@@ -13,8 +13,8 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/browser_context.h"
@@ -136,17 +136,17 @@ TEST_F(AttributionReportNetworkSenderTest, Isolation) {
 
 TEST_F(AttributionReportNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
   const struct {
-    CommonSourceInfo::SourceType source_type;
+    AttributionSourceType source_type;
     const char* expected_report;
   } kTestCases[] = {
-      {CommonSourceInfo::SourceType::kNavigation,
+      {AttributionSourceType::kNavigation,
        R"({"attribution_destination":"https://conversion.test",)"
        R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
        R"("trigger_data":"5"})"},
-      {CommonSourceInfo::SourceType::kEvent,
+      {AttributionSourceType::kEvent,
        R"({"attribution_destination":"https://conversion.test",)"
        R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"

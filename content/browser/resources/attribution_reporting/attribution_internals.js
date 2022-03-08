@@ -7,7 +7,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, AttributionInternalsObserverInterface, AttributionInternalsObserverReceiver, SourceType, WebUIAttributionReport, WebUIAttributionReport_Status, WebUIAttributionSource, WebUIAttributionSource_Attributability} from './attribution_internals.mojom-webui.js';
+import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, AttributionInternalsObserverInterface, AttributionInternalsObserverReceiver, AttributionSourceType, WebUIAttributionReport, WebUIAttributionReport_Status, WebUIAttributionSource, WebUIAttributionSource_Attributability} from './attribution_internals.mojom-webui.js';
 
 /**
  * @template T
@@ -659,15 +659,15 @@ function OriginToText(origin) {
 }
 
 /**
- * Converts a mojo SourceType into a user-readable string.
- * @param {SourceType} sourceType Source type to convert
+ * Converts a mojo AttributionSourceType into a user-readable string.
+ * @param {AttributionSourceType} sourceType Source type to convert
  * @return {string}
  */
 function SourceTypeToText(sourceType) {
   switch (sourceType) {
-    case SourceType.kNavigation:
+    case AttributionSourceType.kNavigation:
       return 'Navigation';
-    case SourceType.kEvent:
+    case AttributionSourceType.kEvent:
       return 'Event';
     default:
       return sourceType.toString();

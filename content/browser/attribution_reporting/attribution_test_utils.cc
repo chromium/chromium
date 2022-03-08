@@ -122,7 +122,7 @@ base::Time ConfigurableStorageDelegate::GetEventLevelReportTime(
 }
 
 int ConfigurableStorageDelegate::GetMaxAttributionsPerSource(
-    CommonSourceInfo::SourceType source_type) const {
+    AttributionSourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return max_attributions_per_source_;
 }
@@ -180,12 +180,12 @@ void ConfigurableStorageDelegate::ShuffleReports(
 }
 
 double ConfigurableStorageDelegate::GetRandomizedResponseRate(
-    CommonSourceInfo::SourceType source_type) const {
+    AttributionSourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
+    case AttributionSourceType::kNavigation:
       return randomized_response_rates_.navigation;
-    case CommonSourceInfo::SourceType::kEvent:
+    case AttributionSourceType::kEvent:
       return randomized_response_rates_.event;
   }
 }
@@ -204,15 +204,15 @@ int64_t ConfigurableStorageDelegate::GetAggregatableBudgetPerSource() const {
 
 uint64_t ConfigurableStorageDelegate::SanitizeTriggerData(
     uint64_t trigger_data,
-    CommonSourceInfo::SourceType source_type) const {
+    AttributionSourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
+    case AttributionSourceType::kNavigation:
       if (!navigation_trigger_data_cardinality_)
         return trigger_data;
 
       return trigger_data % *navigation_trigger_data_cardinality_;
-    case CommonSourceInfo::SourceType::kEvent:
+    case AttributionSourceType::kEvent:
       if (!event_trigger_data_cardinality_)
         return trigger_data;
 
@@ -415,8 +415,7 @@ SourceBuilder& SourceBuilder::SetReportingOrigin(url::Origin origin) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetSourceType(
-    CommonSourceInfo::SourceType source_type) {
+SourceBuilder& SourceBuilder::SetSourceType(AttributionSourceType source_type) {
   source_type_ = source_type;
   return *this;
 }
@@ -867,13 +866,12 @@ std::ostream& operator<<(std::ostream& out, RateLimitResult result) {
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         CommonSourceInfo::SourceType source_type) {
+std::ostream& operator<<(std::ostream& out, AttributionSourceType source_type) {
   switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
+    case AttributionSourceType::kNavigation:
       out << "kNavigation";
       break;
-    case CommonSourceInfo::SourceType::kEvent:
+    case AttributionSourceType::kEvent:
       out << "kEvent";
       break;
   }

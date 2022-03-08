@@ -5,19 +5,30 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_
 
-#include "content/browser/attribution_reporting/common_source_info.h"
+#include <stdint.h>
+
+#include <string>
+
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/navigation/impression.h"
+
+namespace base {
+class Time;
+}  // namespace base
+
+namespace blink {
+struct Impression;
+}  // namespace blink
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace content {
 
-class BrowserContext;
 class AttributionManager;
+class BrowserContext;
 
 namespace attribution_host_utils {
 
@@ -36,7 +47,7 @@ bool IsOriginTrustworthyForAttributions(const url::Origin& origin);
 // Performs required checks on an incoming impression's data (trustworthy
 // origins, etc), and if verified, generates a StorableImpression and persists
 // it.
-VerifyResult VerifyAndStoreImpression(CommonSourceInfo::SourceType source_type,
+VerifyResult VerifyAndStoreImpression(AttributionSourceType source_type,
                                       const url::Origin& impression_origin,
                                       const blink::Impression& impression,
                                       BrowserContext* browser_context,

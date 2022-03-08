@@ -19,6 +19,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -31,7 +32,7 @@ bool IsOriginTrustworthyForAttributions(const url::Origin& origin) {
          network::IsOriginPotentiallyTrustworthy(origin);
 }
 
-VerifyResult VerifyAndStoreImpression(CommonSourceInfo::SourceType source_type,
+VerifyResult VerifyAndStoreImpression(AttributionSourceType source_type,
                                       const url::Origin& impression_origin,
                                       const blink::Impression& impression,
                                       BrowserContext* browser_context,

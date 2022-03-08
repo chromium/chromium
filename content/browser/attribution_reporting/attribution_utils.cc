@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 
 namespace content {
 
@@ -20,16 +21,16 @@ namespace {
 constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
 
 base::span<const base::TimeDelta> EarlyDeadlines(
-    CommonSourceInfo::SourceType source_type) {
+    AttributionSourceType source_type) {
   static constexpr base::TimeDelta kEarlyDeadlinesNavigation[] = {
       base::Days(2) - kWindowDeadlineOffset,
       base::Days(7) - kWindowDeadlineOffset,
   };
 
   switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
+    case AttributionSourceType::kNavigation:
       return kEarlyDeadlinesNavigation;
-    case CommonSourceInfo::SourceType::kEvent:
+    case AttributionSourceType::kEvent:
       return base::span<const base::TimeDelta>();
   }
 }
@@ -92,7 +93,7 @@ base::Time ComputeReportTime(const CommonSourceInfo& source,
   return ReportTimeFromDeadline(source.impression_time(), deadline_to_use);
 }
 
-int NumReportWindows(CommonSourceInfo::SourceType source_type) {
+int NumReportWindows(AttributionSourceType source_type) {
   // Add 1 for the expiry deadline.
   return 1 + EarlyDeadlines(source_type).size();
 }

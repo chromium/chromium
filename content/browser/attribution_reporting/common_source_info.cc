@@ -15,7 +15,7 @@ namespace content {
 base::Time CommonSourceInfo::GetExpiryTime(
     absl::optional<base::TimeDelta> declared_expiry,
     base::Time impression_time,
-    CommonSourceInfo::SourceType source_type) {
+    AttributionSourceType source_type) {
   constexpr base::TimeDelta kMinImpressionExpiry = base::Days(1);
   constexpr base::TimeDelta kDefaultImpressionExpiry = base::Days(30);
 
@@ -23,7 +23,7 @@ base::Time CommonSourceInfo::GetExpiryTime(
   base::TimeDelta expiry = declared_expiry.value_or(kDefaultImpressionExpiry);
 
   // Expiry time for event sources must be a whole number of days.
-  if (source_type == CommonSourceInfo::SourceType::kEvent)
+  if (source_type == AttributionSourceType::kEvent)
     expiry = expiry.RoundToMultiple(base::Days(1));
 
   // If the impression specified its own expiry, clamp it to the minimum and
@@ -39,7 +39,7 @@ CommonSourceInfo::CommonSourceInfo(
     url::Origin reporting_origin,
     base::Time impression_time,
     base::Time expiry_time,
-    SourceType source_type,
+    AttributionSourceType source_type,
     int64_t priority,
     AttributionFilterData filter_data,
     absl::optional<uint64_t> debug_key,
