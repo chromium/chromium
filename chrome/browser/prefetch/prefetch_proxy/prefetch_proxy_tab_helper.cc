@@ -63,6 +63,7 @@
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -73,6 +74,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -1423,7 +1425,15 @@ PrefetchProxyTabHelper::CheckEligibilityOfURLSansUserData(
         PrefetchProxyPrefetchStatus::kPrefetchNotEligibleHostIsNonUnique);
   }
 
-  if (!url.SchemeIs(url::kHttpsScheme)) {
+  // Only HTTP(S) URLs which are believed to be secure are eligible.
+  // For proxied prefetches, we only want HTTPS URLs.
+  // For non-proxied prefetches, other URLs (notably localhost HTTP) is also
+  // acceptable. This is common during development.
+  const bool is_secure_http = prefetch_type.IsProxyRequired()
+                                  ? url.SchemeIs(url::kHttpsScheme)
+                                  : (url.SchemeIsHTTPOrHTTPS() &&
+                                     network::IsUrlPotentiallyTrustworthy(url));
+  if (!is_secure_http) {
     return std::make_pair(
         false,
         PrefetchProxyPrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);

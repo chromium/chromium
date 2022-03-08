@@ -806,6 +806,10 @@ class PrefetchProxyBrowserTest
     return http_server_->GetURL("insecure.com", path);
   }
 
+  GURL GetLocalhostURL(const std::string& path) {
+    return http_server_->GetURL("localhost", path);
+  }
+
   GURL GetOriginServerURL(const std::string& path) const {
     return origin_server_->GetURL("a.test", path);
   }
@@ -4762,4 +4766,66 @@ IN_PROC_BROWSER_TEST_F(
   VerifyPrefetchRequestsSecPurposeHeader(
       {eligible_link.path()},
       /*are_requests_anonymous_client_ip=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(SpeculationNonPrivatePrefetchesPrefetchProxyTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(
+                           SuccessfulNonPrivateSameOriginPrefetchLocalhost)) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  GURL localhost_url = GetLocalhostURL("/search/q=blah");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), localhost_url));
+  content::OverrideLastCommittedOrigin(GetWebContents()->GetMainFrame(),
+                                       url::Origin::Create(localhost_url));
+  WaitForUpdatedCustomProxyConfig();
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+
+  GURL eligible_link =
+      GetLocalhostURL("/prefetch/prefetch_proxy/prefetch_page.html");
+
+  TestTabHelperObserver tab_helper_observer(tab_helper);
+  tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link});
+
+  base::RunLoop prefetch_run_loop;
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(
+      prefetch_run_loop.QuitClosure());
+
+  // Specify that this speculation does not require use of the prefetch proxy..
+  InsertSpeculation(false, false, {eligible_link});
+
+  prefetch_run_loop.Run();
+
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_attempted_count_, 1U);
+  EXPECT_EQ(tab_helper->srp_metrics().prefetch_successful_count_, 1U);
+
+  // The prefetch requests shouldn't use the proxy and should  go directly to
+  // the origin server.
+  EXPECT_EQ(proxy_server_requests().size(), 0U);
+
+  // The prefetch should be made using the default network context, so the
+  // cookie should be present once the prefetch is complete.
+  EXPECT_EQ("type=ChocolateChip",
+            content::GetCookies(
+                browser()->profile(), eligible_link,
+                net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
+  ASSERT_TRUE(tab_helper->after_srp_metrics());
+  EXPECT_EQ(
+      tab_helper->after_srp_metrics()->prefetch_status_,
+      absl::make_optional(PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe));
+
+  // The prefetch should be made using the default network context so there
+  // should be no copying of cookies.
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.CookiesToCopy", 0, 1);
 }
