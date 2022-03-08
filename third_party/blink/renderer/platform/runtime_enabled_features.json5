@@ -174,10 +174,6 @@
       status: "test",
     },
     {
-      // Deprecated, see UserActivationPostMessageTransfer.
-      name: "AllowActivationDelegationAttr",
-    },
-    {
       name: "AllowContentInitiatedDataUrlNavigations",
     },
     {
