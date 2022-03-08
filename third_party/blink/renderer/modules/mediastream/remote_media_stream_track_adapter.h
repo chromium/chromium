@@ -81,13 +81,20 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
     DCHECK(main_thread_->BelongsToCurrentThread());
   }
 
-  void InitializeTrack(MediaStreamSource::StreamType type) {
+  void InitializeTrack(
+      MediaStreamSource::StreamType type,
+      std::unique_ptr<MediaStreamTrackPlatform> platform_track) {
     DCHECK(main_thread_->BelongsToCurrentThread());
     DCHECK(!component_);
 
     auto* source = MakeGarbageCollected<MediaStreamSource>(id_, type, id_,
                                                            true /*remote*/);
-    component_ = MakeGarbageCollected<MediaStreamComponent>(id_, source);
+    if (platform_track) {
+      component_ = MakeGarbageCollected<MediaStreamComponent>(
+          id_, source, std::move(platform_track));
+    } else {
+      component_ = MakeGarbageCollected<MediaStreamComponent>(id_, source);
+    }
     // If we have a reference to a window frame where the track was created,
     // store it on the component. This allows other code to use the correct
     // per-frame object for the track, such as the audio device for playout.

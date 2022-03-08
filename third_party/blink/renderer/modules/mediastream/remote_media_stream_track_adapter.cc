@@ -52,16 +52,16 @@ void RemoteVideoTrackAdapter::InitializeWebVideoTrack(
   auto video_source_ptr = std::make_unique<MediaStreamRemoteVideoSource>(
       main_thread_, std::move(observer));
   MediaStreamRemoteVideoSource* video_source = video_source_ptr.get();
-  InitializeTrack(MediaStreamSource::kTypeVideo);
+  InitializeTrack(
+      MediaStreamSource::kTypeVideo,
+      std::make_unique<MediaStreamVideoTrack>(
+          video_source, MediaStreamVideoSource::ConstraintsOnceCallback(),
+          enabled));
   track()->Source()->SetPlatformSource(std::move(video_source_ptr));
 
   MediaStreamSource::Capabilities capabilities;
   capabilities.device_id = id();
   track()->Source()->SetCapabilities(capabilities);
-
-  track()->SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
-      video_source, MediaStreamVideoSource::ConstraintsOnceCallback(),
-      enabled));
 }
 
 RemoteAudioTrackAdapter::RemoteAudioTrackAdapter(
@@ -99,7 +99,9 @@ void RemoteAudioTrackAdapter::Unregister() {
 
 void RemoteAudioTrackAdapter::InitializeWebAudioTrack(
     const scoped_refptr<base::SingleThreadTaskRunner>& main_thread) {
-  InitializeTrack(MediaStreamSource::kTypeAudio);
+  // TODO(crbug.com/1302689): Create and pass a MediaStreamAudioTrack here,
+  // rather than relying on the source to create and set it in ConnectToTrack().
+  InitializeTrack(MediaStreamSource::kTypeAudio, /*platform_track=*/nullptr);
 
   auto source = std::make_unique<PeerConnectionRemoteAudioSource>(
       observed_track().get(), main_thread);

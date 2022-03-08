@@ -53,11 +53,27 @@ int MediaStreamComponent::GenerateUniqueId() {
 
 MediaStreamComponent::MediaStreamComponent(MediaStreamSource* source)
     : MediaStreamComponent(WTF::CreateCanonicalUUIDString(), source) {}
+
 MediaStreamComponent::MediaStreamComponent(const String& id,
                                            MediaStreamSource* source)
     : source_(source), id_(id), unique_id_(GenerateUniqueId()) {
   DCHECK(id_.length());
   DCHECK(source_);
+}
+
+MediaStreamComponent::MediaStreamComponent(
+    const String& id,
+    MediaStreamSource* source,
+    std::unique_ptr<MediaStreamTrackPlatform> platform_track)
+    : MediaStreamComponent(id, source) {
+  platform_track_ = std::move(platform_track);
+}
+
+MediaStreamComponent::MediaStreamComponent(
+    MediaStreamSource* source,
+    std::unique_ptr<MediaStreamTrackPlatform> platform_track)
+    : MediaStreamComponent(source) {
+  platform_track_ = std::move(platform_track);
 }
 
 MediaStreamComponent* MediaStreamComponent::Clone() const {

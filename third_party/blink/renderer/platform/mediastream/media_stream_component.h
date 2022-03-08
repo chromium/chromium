@@ -66,6 +66,11 @@ class PLATFORM_EXPORT MediaStreamComponent final
  public:
   MediaStreamComponent(MediaStreamSource*);
   MediaStreamComponent(const String& id, MediaStreamSource*);
+  MediaStreamComponent(const String& id,
+                       MediaStreamSource*,
+                       std::unique_ptr<MediaStreamTrackPlatform>);
+  MediaStreamComponent(MediaStreamSource*,
+                       std::unique_ptr<MediaStreamTrackPlatform>);
 
   MediaStreamComponent* Clone() const;
 
@@ -101,7 +106,11 @@ class PLATFORM_EXPORT MediaStreamComponent final
   MediaStreamTrackPlatform* GetPlatformTrack() const {
     return platform_track_.get();
   }
-  void SetPlatformTrack(
+
+  // Deprecated - use the constructor which takes a MediaStreamTrackPlatform
+  // instead.
+  // TODO(crbug.com/1302689): Remove once all callers have been migrated.
+  [[deprecated]] void SetPlatformTrack(
       std::unique_ptr<MediaStreamTrackPlatform> platform_track) {
     platform_track_ = std::move(platform_track);
   }
