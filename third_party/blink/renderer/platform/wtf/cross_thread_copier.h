@@ -34,7 +34,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-
+#include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/deprecated_interface_types_forward.h"
@@ -181,6 +181,13 @@ template <>
 struct CrossThreadCopier<base::Time>
     : public CrossThreadCopierPassThrough<base::Time> {
   STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<base::File> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = base::File;
+  static Type Copy(Type pointer) { return pointer; }
 };
 
 template <>
