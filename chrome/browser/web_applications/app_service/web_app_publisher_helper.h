@@ -136,9 +136,15 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   apps::Permissions CreatePermissions(const WebApp* web_app);
 
   // Creates an |apps::AppPtr| describing |web_app|.
+  // Note: migration in progress. Changes should be made to both |CreateWebApp|
+  // and |ConvertWebApp| until complete.
+  // TODO(crbug.com/1253250): Delete |ConvertWebApp| once migration is complete.
   apps::AppPtr CreateWebApp(const WebApp* web_app);
 
   // Creates an |apps::mojom::App| describing |web_app|.
+  // Note: migration in progress. Changes should be made to both |CreateWebApp|
+  // and |ConvertWebApp| until complete.
+  // TODO(crbug.com/1253250): Delete |ConvertWebApp| once migration is complete.
   apps::mojom::AppPtr ConvertWebApp(const WebApp* web_app);
 
   // Constructs an App with only the information required to identify an
