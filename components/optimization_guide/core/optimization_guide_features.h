@@ -33,6 +33,7 @@ extern const base::Feature kOptimizationGuideModelDownloading;
 extern const base::Feature kPageContentAnnotations;
 extern const base::Feature kPageEntitiesPageContentAnnotations;
 extern const base::Feature kPageVisibilityPageContentAnnotations;
+extern const base::Feature kPageEntitiesModelBypassFilters;
 extern const base::Feature kPageTextExtraction;
 extern const base::Feature kPushNotifications;
 extern const base::Feature kOptimizationGuideMetadataValidation;
@@ -227,6 +228,10 @@ bool ShouldExtractRelatedSearches();
 // Returns whether the page entities model should be executed on page content
 // for a user using |locale| as their browser language.
 bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale);
+
+// Whether the path to the filters should be provided to the page entities
+// model.
+bool ShouldProvideFilterPathForPageEntitiesModel();
 
 // Returns whether the page visibility model should be executed on page content
 // for a user using |locale| as their browser language.

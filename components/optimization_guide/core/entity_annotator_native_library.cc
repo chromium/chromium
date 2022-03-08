@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/page_entities_model_metadata.pb.h"
 
@@ -299,22 +300,28 @@ bool EntityAnnotatorNativeLibrary::PopulateEntityAnnotatorOptionsFromModelInfo(
   base::flat_set<std::string> slices(entities_model_metadata->slice().begin(),
                                      entities_model_metadata->slice().end());
   for (const auto& slice_id : slices) {
-    absl::optional<std::string> name_filter_path =
-        GetFilePathFromMap(GetSliceBaseName(slice_id, kNameFilterBaseName),
-                           base_to_full_file_path);
-    if (!name_filter_path) {
-      return false;
+    absl::optional<std::string> name_filter_path;
+    if (features::ShouldProvideFilterPathForPageEntitiesModel()) {
+      name_filter_path =
+          GetFilePathFromMap(GetSliceBaseName(slice_id, kNameFilterBaseName),
+                             base_to_full_file_path);
+      if (!name_filter_path) {
+        return false;
+      }
     }
     absl::optional<std::string> name_table_path = GetFilePathFromMap(
         GetSliceBaseName(slice_id, kNameTableBaseName), base_to_full_file_path);
     if (!name_table_path) {
       return false;
     }
-    absl::optional<std::string> prefix_filter_path =
-        GetFilePathFromMap(GetSliceBaseName(slice_id, kPrefixFilterBaseName),
-                           base_to_full_file_path);
-    if (!prefix_filter_path) {
-      return false;
+    absl::optional<std::string> prefix_filter_path;
+    if (features::ShouldProvideFilterPathForPageEntitiesModel()) {
+      prefix_filter_path =
+          GetFilePathFromMap(GetSliceBaseName(slice_id, kPrefixFilterBaseName),
+                             base_to_full_file_path);
+      if (!prefix_filter_path) {
+        return false;
+      }
     }
     absl::optional<std::string> metadata_table_path =
         GetFilePathFromMap(GetSliceBaseName(slice_id, kMetadataTableBaseName),
@@ -323,8 +330,8 @@ bool EntityAnnotatorNativeLibrary::PopulateEntityAnnotatorOptionsFromModelInfo(
       return false;
     }
     options_add_model_slice_func_(
-        options, slice_id.c_str(), name_filter_path->c_str(),
-        name_table_path->c_str(), prefix_filter_path->c_str(),
+        options, slice_id.c_str(), name_filter_path.value_or("").c_str(),
+        name_table_path->c_str(), prefix_filter_path.value_or("").c_str(),
         metadata_table_path->c_str());
   }
 
