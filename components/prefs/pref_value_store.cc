@@ -174,6 +174,11 @@ bool PrefValueStore::PrefValueFromRecommendedStore(
   return ControllingPrefStoreForPref(name) == RECOMMENDED_STORE;
 }
 
+bool PrefValueStore::PrefValueFromStandaloneBrowserStore(
+    const std::string& name) const {
+  return ControllingPrefStoreForPref(name) == STANDALONE_BROWSER_STORE;
+}
+
 bool PrefValueStore::PrefValueFromDefaultStore(const std::string& name) const {
   return ControllingPrefStoreForPref(name) == DEFAULT_STORE;
 }
@@ -188,6 +193,13 @@ bool PrefValueStore::PrefValueExtensionModifiable(
     const std::string& name) const {
   PrefStoreType effective_store = ControllingPrefStoreForPref(name);
   return effective_store >= EXTENSION_STORE ||
+         effective_store == INVALID_STORE;
+}
+
+bool PrefValueStore::PrefValueStandaloneBrowserModifiable(
+    const std::string& name) const {
+  PrefStoreType effective_store = ControllingPrefStoreForPref(name);
+  return effective_store >= STANDALONE_BROWSER_STORE ||
          effective_store == INVALID_STORE;
 }
 

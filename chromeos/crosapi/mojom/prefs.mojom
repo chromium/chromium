@@ -13,13 +13,84 @@ enum PrefPath {
   // M89: metrics::prefs::kMetricsReportingEnabled (local state).
   kMetricsReportingEnabled = 1,
   // M89: ash::prefs::kAccessibilitySpokenFeedbackEnabled (profile).
+  // Note this writes to a different prefstore than the extension version below.
   kAccessibilitySpokenFeedbackEnabled = 2,
   // M90: ash::prefs::kDeviceSystemWideTracingEnabled (local state).
   [MinVersion=1] kDeviceSystemWideTracingEnabled = 3,
-  // M96: prefs::kDnsOverHttpsMode (local state)
+  // M98: prefs::kDnsOverHttpsMode (local state)
   [MinVersion=2] kDnsOverHttpsMode = 4,
-  // M96: prefs::kDnsOverHttpsTemplates (local state)
+  // M98: prefs::kDnsOverHttpsTemplates (local state)
   [MinVersion=2] kDnsOverHttpsTemplates = 5,
+  // M98: prefs::kDockedMagnifierEnabled (extension).
+  [MinVersion=3]
+  kDockedMagnifierEnabled = 6,
+  // M98: prefs::kAccessibilityAutoclickEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityAutoclickEnabled = 7,
+  // M98: prefs::kAccessibilityCaretHighlightEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityCaretHighlightEnabled = 8,
+  // M98: prefs::kAccessibilityCursorColorEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityCursorColorEnabled = 9,
+  // M98: prefs::kAccessibilityCursorHighlightEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityCursorHighlightEnabled = 10,
+  // M98: prefs::kAccessibilityDictationEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityDictationEnabled = 11,
+  // M98: prefs::kAccessibilityFocusHighlightEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityFocusHighlightEnabled = 12,
+  // M98: prefs::kAccessibilityHighContrastEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityHighContrastEnabled = 13,
+  // M98: prefs::kAccessibilityLargeCursorEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityLargeCursorEnabled = 14,
+  // M98: prefs::kAccessibilityScreenMagnifierEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityScreenMagnifierEnabled = 15,
+  // M98: prefs::kAccessibilitySelectToSpeakEnabled (extension).
+  [MinVersion=3]
+  kAccessibilitySelectToSpeakEnabled = 16,
+  // M98: prefs::kAccessibilitySpokenFeedbackEnabled (extension).
+  // Note this writes to a different prefstore than the profile version above.
+  [MinVersion=3]
+  kExtensionAccessibilitySpokenFeedbackEnabled = 17,
+  // M98: prefs::kAccessibilityStickyKeysEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityStickyKeysEnabled = 18,
+  // M98: prefs::kAccessibilitySwitchAccessEnabled (extension).
+  [MinVersion=3]
+  kAccessibilitySwitchAccessEnabled = 19,
+  // M98: prefs::kAccessibilityVirtualKeyboardEnabled (extension).
+  [MinVersion=3]
+  kAccessibilityVirtualKeyboardEnabled = 20,
+};
+
+// Information about who or what is controlling a particular pref. This is used
+// to generate the LevelOfControl on the ChromeSetting. See:
+// https://developer.chrome.com/docs/extensions/reference/types/#type-LevelOfControl
+// Note that with respect to LevelOfControl, we do not consider extensions in
+// ash as extensions. They are treated as a prefstore of higher precedence.
+// However, no extensions in ash are expected to set these prefs.
+[Stable, Extensible, Default=kDefaultUnknown]
+enum PrefControlState {
+  kDefaultUnknown = 0,
+  // Controlled by an extension in lacros. Ash does not have enough information
+  // to know which extension in Lacros is controlling this pref.
+  kLacrosExtensionControlled = 1,
+  // This pref is not controlled by an extension in lacros but could be
+  // controlled by an extension in lacros, because no prefstore of higher
+  // precedence controls it (for example, the policy prefstore).
+  kLacrosExtensionControllable = 2,
+  // This pref is not controlled by an extension in lacros and cannot be
+  // controlled by an extension in lacros, because a prefstore of higher
+  // precedence controls it (for example, because it is controlled by policy).
+  kNotExtensionControllable = 3,
+  // The provided PrefPath does not map to an extension-controlled pref.
+  kNotExtensionControlledPrefPath = 4,
 };
 
 // Interface for pref observers. Implemented by lacros-chrome. Used by
@@ -31,17 +102,28 @@ interface PrefObserver {
 };
 
 // Interface for prefs. Implemented by ash-chrome.
-// Next version: 1
-// Next method id: 3
+// Next version: 3
+// Next method id: 5
 [Stable, Uuid="815df607-0596-46f7-9ed9-14683b4826a3"]
 interface Prefs {
   // Gets the specified ash pref. Returns empty if ash-chrome does not have path
   // registered, or if the pref is not found.
   GetPref@0(PrefPath path) => (mojo_base.mojom.Value? value);
 
+  // Gets the specified ash pref. Additionally returns the control state of the
+  // pref.
+  [MinVersion=2]
+  GetExtensionPrefWithControl@3(PrefPath path) => (
+    mojo_base.mojom.Value? value, PrefControlState control);
+
   // Sets the specified ash pref. Does nothing if ash-chrome does not have path
   // registered.
   SetPref@1(PrefPath path, mojo_base.mojom.Value value) => ();
+
+  // Clears the value of the specified ash pref set by lacros.
+  // The pref must be extension-controlled.
+  [MinVersion=2]
+  ClearExtensionControlledPref@4(PrefPath path) => ();
 
   // Adds an observer for ash pref. The observer is fired immediately with the
   // current value. Multiple observers may be registered for any given pref.

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/gtest_prod_util.h"
@@ -18,6 +19,9 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_pref_store.h"
+#include "extensions/browser/extension_pref_value_map_factory.h"
+#include "extensions/browser/extension_prefs.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -50,6 +54,12 @@ class PrefsAsh : public mojom::Prefs,
                SetPrefCallback callback) override;
   void AddObserver(mojom::PrefPath path,
                    mojo::PendingRemote<mojom::PrefObserver> observer) override;
+  void GetExtensionPrefWithControl(
+      mojom::PrefPath path,
+      GetExtensionPrefWithControlCallback callback) override;
+  void ClearExtensionControlledPref(
+      mojom::PrefPath path,
+      ClearExtensionControlledPrefCallback callback) override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
@@ -74,6 +84,7 @@ class PrefsAsh : public mojom::Prefs,
   struct State {
     PrefService* pref_service;
     PrefChangeRegistrar* registrar;
+    bool is_extension_controlled_pref;
     std::string path;
   };
   absl::optional<State> GetState(mojom::PrefPath path);
@@ -92,6 +103,7 @@ class PrefsAsh : public mojom::Prefs,
 
   PrefChangeRegistrar local_state_registrar_;
   std::unique_ptr<PrefChangeRegistrar> profile_prefs_registrar_;
+  PrefChangeRegistrar extension_prefs_registrar_;
 
   // This class supports any number of connections.
   mojo::ReceiverSet<mojom::Prefs> receivers_;
@@ -103,6 +115,8 @@ class PrefsAsh : public mojom::Prefs,
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   content::NotificationRegistrar notification_registrar_;
+  // Map of extension pref paths to preference names.
+  std::map<mojom::PrefPath, std::string> extension_prefpath_to_name_;
 };
 
 }  // namespace crosapi

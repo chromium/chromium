@@ -150,6 +150,17 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     // the Preference.
     bool IsExtensionModifiable() const;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Returns true if the Preference value is currently being controlled by a
+    // standalone browser (lacros) and not by any higher-priority source.
+    bool IsStandaloneBrowserControlled() const;
+
+    // Returns true if a standalone browser (lacros) can change the Preference
+    // value, which is the case if no higher-priority source than the standalone
+    // browser store controls the Preference.
+    bool IsStandaloneBrowserModifiable() const;
+#endif
+
     // Return the registration flags for this pref as a bitmask of
     // PrefRegistry::PrefRegistrationFlags.
     uint32_t registration_flags() const { return registration_flags_; }
@@ -380,6 +391,14 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // observation.
   void AddPrefObserverAllPrefs(PrefObserver* obs);
   void RemovePrefObserverAllPrefs(PrefObserver* obs);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Write extension-controlled prefs from Lacros in ash.
+  void SetStandaloneBrowserPref(const std::string& path,
+                                const base::Value& value);
+  // Clear extension-controlled prefs from Lacros in ash.
+  void RemoveStandaloneBrowserPref(const std::string& path);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

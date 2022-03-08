@@ -54,7 +54,7 @@ component("prefs") {
 
   defines = [ "COMPONENTS_PREFS_IMPLEMENTATION" ]
 
-  deps = []
+  deps = [ "//build:chromeos_buildflags" ]
 
   public_deps = [ "//base" ]
 
