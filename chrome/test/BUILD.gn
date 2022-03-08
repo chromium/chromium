@@ -2552,6 +2552,11 @@ if (!is_android) {
           [ "../browser/ssl/captive_portal_blocking_page_browsertest.cc" ]
     }
 
+    if (is_chromeos_ash) {
+      sources +=
+          [ "../browser/lifetime/application_lifetime_chromeos_browsertest.cc" ]
+    }
+
     if (!is_chromeos) {
       sources += [
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
