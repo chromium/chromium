@@ -5,14 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_SRC_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_SRC_LOADER_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
-#include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -22,68 +21,31 @@ class KURL;
 class LocalFrame;
 
 class CORE_EXPORT AttributionSrcLoader
-    : public GarbageCollected<AttributionSrcLoader>,
-      private RawResourceClient {
+    : public GarbageCollected<AttributionSrcLoader> {
  public:
   explicit AttributionSrcLoader(LocalFrame* frame);
   AttributionSrcLoader(const AttributionSrcLoader&) = delete;
   AttributionSrcLoader& operator=(const AttributionSrcLoader&) = delete;
   AttributionSrcLoader(AttributionSrcLoader&& other) = delete;
   AttributionSrcLoader& operator=(AttributionSrcLoader&& other) = delete;
-  ~AttributionSrcLoader() override;
+  ~AttributionSrcLoader();
 
   // Registers an attribution_src. This method handles fetching the attribution
   // src and notifying the browser process to begin tracking it. It is a no-op
   // if the frame is not attached.
   void Register(const KURL& attribution_src, HTMLImageElement* element);
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(local_frame_);
-    visitor->Trace(resource_context_map_);
-    RawResourceClient::Trace(visitor);
-  }
-
-  String DebugName() const override { return "AttributionSrcLoader"; }
+  void Trace(Visitor* visitor) const;
 
  private:
-  // Represents what events are able to be registered from an attributionsrc.
-  enum class AttributionSrcType { kUndetermined, kSource, kTrigger };
-
-  // State associated with each ongoing attribution src request.
-  struct AttributionSrcContext {
-    // Type of events this request can register. In some cases, this will not be
-    // assigned until the first event is received. A single attributionsrc
-    // request can only register one type of event across redirects.
-    AttributionSrcType type;
-
-    // Remote used for registering responses with the browser-process.
-    mojo::Remote<mojom::blink::AttributionDataHost> data_host;
-  };
-
-  // RawResourceClient:
-  void ResponseReceived(Resource* resource,
-                        const ResourceResponse& response) override;
-  bool RedirectReceived(Resource* resource,
-                        const ResourceRequest& request,
-                        const ResourceResponse& response) override;
-  void NotifyFinished(Resource* resource) override;
-
-  void HandleResponseHeaders(Resource* resource,
-                             const ResourceResponse& response);
-  void HandleSourceRegistration(Resource* resource,
-                                const ResourceResponse& response,
-                                AttributionSrcContext& context);
-  void HandleTriggerRegistration(Resource* resource,
-                                 const ResourceResponse& response,
-                                 AttributionSrcContext& context);
+  class ResourceClient;
 
   void LogAuditIssue(AttributionReportingIssueType issue_type,
                      const String& string,
                      HTMLElement* element = nullptr);
 
   const Member<LocalFrame> local_frame_;
-  HeapHashMap<WeakMember<Resource>, AttributionSrcContext>
-      resource_context_map_;
+  HeapHashSet<Member<ResourceClient>> resource_clients_;
 };
 
 }  // namespace blink

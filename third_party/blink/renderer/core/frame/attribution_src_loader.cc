@@ -6,7 +6,10 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
@@ -38,6 +41,9 @@ namespace blink {
 
 namespace {
 
+// Represents what events are able to be registered from an attributionsrc.
+enum class AttributionSrcType { kUndetermined, kSource, kTrigger };
+
 bool IsResponseParseError(
     attribution_response_parsing::ResponseParseStatus status) {
   switch (status) {
@@ -52,12 +58,70 @@ bool IsResponseParseError(
 
 }  // namespace
 
+class AttributionSrcLoader::ResourceClient
+    : public GarbageCollected<AttributionSrcLoader::ResourceClient>,
+      public RawResourceClient {
+ public:
+  explicit ResourceClient(AttributionSrcLoader* loader) : loader_(loader) {
+    DCHECK(loader_);
+    DCHECK(loader_->local_frame_);
+    DCHECK(loader_->local_frame_->IsAttached());
+
+    mojo::AssociatedRemote<mojom::blink::ConversionHost> conversion_host;
+    loader_->local_frame_->GetRemoteNavigationAssociatedInterfaces()
+        ->GetInterface(&conversion_host);
+    conversion_host->RegisterDataHost(data_host_.BindNewPipeAndPassReceiver());
+  }
+
+  ~ResourceClient() override = default;
+
+  ResourceClient(const ResourceClient&) = delete;
+  ResourceClient(ResourceClient&&) = delete;
+
+  ResourceClient& operator=(const ResourceClient&) = delete;
+  ResourceClient& operator=(ResourceClient&&) = delete;
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(loader_);
+    RawResourceClient::Trace(visitor);
+  }
+
+ private:
+  void HandleResponseHeaders(const ResourceResponse& response);
+  void HandleSourceRegistration(const ResourceResponse& response);
+  void HandleTriggerRegistration(const ResourceResponse& response);
+
+  // RawResourceClient:
+  String DebugName() const override;
+  void ResponseReceived(Resource* resource,
+                        const ResourceResponse& response) override;
+  bool RedirectReceived(Resource* resource,
+                        const ResourceRequest& request,
+                        const ResourceResponse& response) override;
+  void NotifyFinished(Resource* resource) override;
+
+  const Member<AttributionSrcLoader> loader_;
+
+  // Type of events this request can register. In some cases, this will not be
+  // assigned until the first event is received. A single attributionsrc
+  // request can only register one type of event across redirects.
+  AttributionSrcType type_ = AttributionSrcType::kUndetermined;
+
+  // Remote used for registering responses with the browser-process.
+  mojo::Remote<mojom::blink::AttributionDataHost> data_host_;
+};
+
 AttributionSrcLoader::AttributionSrcLoader(LocalFrame* frame)
     : local_frame_(frame) {
   DCHECK(local_frame_);
 }
 
 AttributionSrcLoader::~AttributionSrcLoader() = default;
+
+void AttributionSrcLoader::Trace(Visitor* visitor) const {
+  visitor->Trace(local_frame_);
+  visitor->Trace(resource_clients_);
+}
 
 void AttributionSrcLoader::Register(const KURL& src_url,
                                     HTMLImageElement* element) {
@@ -114,64 +178,53 @@ void AttributionSrcLoader::Register(const KURL& src_url,
   params.MutableOptions().initiator_info.name =
       fetch_initiator_type_names::kAttributionsrc;
 
-  Resource* resource =
-      RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), this);
-  if (!resource)
-    return;
-
-  mojo::Remote<mojom::blink::AttributionDataHost> data_host;
-
-  mojo::AssociatedRemote<mojom::blink::ConversionHost> conversion_host;
-  local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-      &conversion_host);
-  conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver());
-  resource_context_map_.insert(
-      resource, AttributionSrcContext{.type = AttributionSrcType::kUndetermined,
-                                      .data_host = std::move(data_host)});
+  auto* client = MakeGarbageCollected<ResourceClient>(this);
+  resource_clients_.insert(client);
+  RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), client);
 }
 
-void AttributionSrcLoader::ResponseReceived(Resource* resource,
-                                            const ResourceResponse& response) {
-  HandleResponseHeaders(resource, response);
+String AttributionSrcLoader::ResourceClient::DebugName() const {
+  return "AttributionSrcLoader::ResourceClient";
 }
 
-bool AttributionSrcLoader::RedirectReceived(Resource* resource,
-                                            const ResourceRequest& request,
-                                            const ResourceResponse& response) {
-  HandleResponseHeaders(resource, response);
+void AttributionSrcLoader::ResourceClient::ResponseReceived(
+    Resource* resource,
+    const ResourceResponse& response) {
+  HandleResponseHeaders(response);
+}
+
+bool AttributionSrcLoader::ResourceClient::RedirectReceived(
+    Resource* resource,
+    const ResourceRequest& request,
+    const ResourceResponse& response) {
+  HandleResponseHeaders(response);
   return true;
 }
 
-void AttributionSrcLoader::NotifyFinished(Resource* resource) {
-  DCHECK(resource_context_map_.Contains(resource));
-  resource_context_map_.erase(resource);
+void AttributionSrcLoader::ResourceClient::NotifyFinished(Resource* resource) {
+  ClearResource();
+
+  DCHECK(loader_->resource_clients_.Contains(this));
+  loader_->resource_clients_.erase(this);
 }
 
-void AttributionSrcLoader::HandleResponseHeaders(
-    Resource* resource,
+void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     const ResourceResponse& response) {
-  auto it = resource_context_map_.find(resource);
-  if (it == resource_context_map_.end())
-    return;
-
-  AttributionSrcContext& context = it->value;
-
   const auto& headers = response.HttpHeaderFields();
 
-  bool can_process_source = context.type == AttributionSrcType::kUndetermined ||
-                            context.type == AttributionSrcType::kSource;
+  bool can_process_source = type_ == AttributionSrcType::kUndetermined ||
+                            type_ == AttributionSrcType::kSource;
   if (can_process_source &&
       headers.Contains(http_names::kAttributionReportingRegisterSource)) {
-    context.type = AttributionSrcType::kSource;
-    HandleSourceRegistration(resource, response, context);
+    type_ = AttributionSrcType::kSource;
+    HandleSourceRegistration(response);
     return;
   }
 
   // TODO(johnidel): Consider surfacing an error when source and trigger headers
   // are present together.
-  bool can_process_trigger =
-      context.type == AttributionSrcType::kUndetermined ||
-      context.type == AttributionSrcType::kTrigger;
+  bool can_process_trigger = type_ == AttributionSrcType::kUndetermined ||
+                             type_ == AttributionSrcType::kTrigger;
   if (can_process_trigger &&
       (headers.Contains(
            http_names::kAttributionReportingRegisterEventTrigger) ||
@@ -179,19 +232,16 @@ void AttributionSrcLoader::HandleResponseHeaders(
             http_names::kAttributionReportingRegisterAggregatableTriggerData) &&
         headers.Contains(
             http_names::kAttributionReportingRegisterAggregatableValues)))) {
-    context.type = AttributionSrcType::kTrigger;
-    HandleTriggerRegistration(resource, response, context);
+    type_ = AttributionSrcType::kTrigger;
+    HandleTriggerRegistration(response);
   }
 
   // TODO(johnidel): Add parsing for trigger and filter headers.
 }
 
-void AttributionSrcLoader::HandleSourceRegistration(
-    Resource* resource,
-    const ResourceResponse& response,
-    AttributionSrcContext& context) {
-  auto it = resource_context_map_.find(resource);
-  DCHECK_NE(it, resource_context_map_.end());
+void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
+    const ResourceResponse& response) {
+  DCHECK_EQ(type_, AttributionSrcType::kSource);
 
   mojom::blink::AttributionSourceDataPtr source_data =
       mojom::blink::AttributionSourceData::New();
@@ -221,13 +271,13 @@ void AttributionSrcLoader::HandleSourceRegistration(
 
   source_data->aggregatable_sources = std::move(aggregatable_sources.value);
 
-  context.data_host->SourceDataAvailable(std::move(source_data));
+  data_host_->SourceDataAvailable(std::move(source_data));
 }
 
-void AttributionSrcLoader::HandleTriggerRegistration(
-    Resource* resource,
-    const ResourceResponse& response,
-    AttributionSrcContext& context) {
+void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
+    const ResourceResponse& response) {
+  DCHECK_EQ(type_, AttributionSrcType::kTrigger);
+
   mojom::blink::AttributionTriggerDataPtr trigger_data =
       mojom::blink::AttributionTriggerData::New();
 
@@ -281,7 +331,7 @@ void AttributionSrcLoader::HandleTriggerRegistration(
       attribution_response_parsing::ParseDebugKey(response.HttpHeaderField(
           http_names::kAttributionReportingTriggerDebugKey));
 
-  context.data_host->TriggerDataAvailable(std::move(trigger_data));
+  data_host_->TriggerDataAvailable(std::move(trigger_data));
 }
 
 void AttributionSrcLoader::LogAuditIssue(
