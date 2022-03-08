@@ -183,6 +183,10 @@ TEST_F(ServiceRequestSenderImplTest, ForceAuthenticatedRequest) {
         return std::move(loader);
       });
   EXPECT_CALL(*loader,
+              SetRetryOptions(
+                  2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+                         network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED));
+  EXPECT_CALL(*loader,
               AttachStringForUpload(std::string("request"),
                                     std::string("application/x-protobuffer")));
   EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
@@ -293,6 +297,7 @@ TEST_F(ServiceRequestSenderImplTest,
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
   EXPECT_CALL(*loader_factory, OnCreateLoader).Times(0);
+  EXPECT_CALL(*loader, SetRetryOptions).Times(0);
   EXPECT_CALL(*loader, AttachStringForUpload).Times(0);
   EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
       .Times(0);

@@ -63,18 +63,21 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
   void InternalSendRequest(const GURL& url,
                            const std::string& request_body,
                            ServiceRequestSender::AuthMode auth_mode,
+                           int max_retries,
                            ResponseCallback callback);
 
   void SendRequestAuth(const GURL& url,
                        const std::string& request_body,
                        const std::string& access_token,
                        ServiceRequestSender::AuthMode auth_mode,
+                       int max_retries,
                        ResponseCallback callback);
 
   void RetryIfUnauthorized(const GURL& url,
                            const std::string& access_token,
                            const std::string& request_body,
                            ServiceRequestSender::AuthMode auth_mode,
+                           int max_retries,
                            ResponseCallback callback,
                            int http_status,
                            const std::string& response);
@@ -82,6 +85,7 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
   void OnFetchAccessToken(GURL url,
                           std::string request_body,
                           ServiceRequestSender::AuthMode auth_mode,
+                          int max_retries,
                           ResponseCallback callback,
                           bool access_token_fetched,
                           const std::string& access_token);
