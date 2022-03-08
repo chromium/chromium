@@ -90,7 +90,7 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
+IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareMultipleFiles) {
   const std::string script = "share_multiple_files()";
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
@@ -110,26 +110,30 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
 
         file_paths = std::move(in_file_paths);
 
-        EXPECT_EQ(content_types.size(), 2U);
+        EXPECT_EQ(content_types.size(), 3U);
         EXPECT_EQ(content_types[0], "audio/mpeg");
         EXPECT_EQ(content_types[1], "video/mp4");
+        EXPECT_EQ(content_types[2], "image/gif");
 
         std::move(delivered_callback)
             .Run(sharesheet::SharesheetResult::kSuccess);
       }));
 
   EXPECT_EQ("share succeeded", content::EvalJs(contents, script));
-  EXPECT_EQ(file_paths.size(), 2U);
+  EXPECT_EQ(file_paths.size(), 3U);
 
   const base::FilePath share_cache =
       file_manager::util::GetShareCacheFilePath(browser()->profile());
   EXPECT_EQ(file_paths[0],
             share_cache.AppendASCII(".WebShare/share1/sam.ple.mp3"));
   EXPECT_EQ(file_paths[1],
-            share_cache.AppendASCII(".WebShare/share2/_sample.mp4"));
+            share_cache.AppendASCII(".WebShare/share2/sample.mp4"));
+  EXPECT_EQ(file_paths[2],
+            share_cache.AppendASCII(".WebShare/share3/sam_ple.gif"));
 
   CheckSize(file_paths[0], /*expected_size=*/345);
   CheckSize(file_paths[1], /*expected_size=*/67890);
+  CheckSize(file_paths[2], /*expected_size=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {

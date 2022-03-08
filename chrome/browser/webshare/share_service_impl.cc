@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/files/safe_base_name.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -67,52 +68,53 @@ void ShareServiceImpl::Create(
 }
 
 // static
-bool ShareServiceImpl::IsDangerousFilename(base::StringPiece name) {
-  constexpr std::array<const char*, 40> kPermitted = {
-      ".bmp",    // image/bmp / image/x-ms-bmp
-      ".css",    // text/css
-      ".csv",    // text/csv / text/comma-separated-values
-      ".ehtml",  // text/html
-      ".flac",   // audio/flac
-      ".gif",    // image/gif
-      ".htm",    // text/html
-      ".html",   // text/html
-      ".ico",    // image/x-icon
-      ".jfif",   // image/jpeg
-      ".jpeg",   // image/jpeg
-      ".jpg",    // image/jpeg
-      ".m4a",    // audio/x-m4a
-      ".m4v",    // video/mp4
-      ".mp3",    // audio/mpeg audio/mp3
-      ".mp4",    // video/mp4
-      ".mpeg",   // video/mpeg
-      ".mpg",    // video/mpeg
-      ".oga",    // audio/ogg
-      ".ogg",    // audio/ogg
-      ".ogm",    // video/ogg
-      ".ogv",    // video/ogg
-      ".opus",   // audio/ogg
-      ".pdf",    // application/pdf
-      ".pjp",    // image/jpeg
-      ".pjpeg",  // image/jpeg
-      ".png",    // image/png
-      ".shtm",   // text/html
-      ".shtml",  // text/html
-      ".svg",    // image/svg+xml
-      ".svgz",   // image/svg+xml
-      ".text",   // text/plain
-      ".tif",    // image/tiff
-      ".tiff",   // image/tiff
-      ".txt",    // text/plain
-      ".wav",    // audio/wav
-      ".weba",   // audio/webm
-      ".webm",   // video/webm
-      ".webp",   // image/webp
-      ".xbm",    // image/x-xbitmap
+bool ShareServiceImpl::IsDangerousFilename(const base::FilePath& path) {
+  constexpr const base::FilePath::CharType* kPermitted[] = {
+      FILE_PATH_LITERAL(".bmp"),    // image/bmp / image/x-ms-bmp
+      FILE_PATH_LITERAL(".css"),    // text/css
+      FILE_PATH_LITERAL(".csv"),    // text/csv / text/comma-separated-values
+      FILE_PATH_LITERAL(".ehtml"),  // text/html
+      FILE_PATH_LITERAL(".flac"),   // audio/flac
+      FILE_PATH_LITERAL(".gif"),    // image/gif
+      FILE_PATH_LITERAL(".htm"),    // text/html
+      FILE_PATH_LITERAL(".html"),   // text/html
+      FILE_PATH_LITERAL(".ico"),    // image/x-icon
+      FILE_PATH_LITERAL(".jfif"),   // image/jpeg
+      FILE_PATH_LITERAL(".jpeg"),   // image/jpeg
+      FILE_PATH_LITERAL(".jpg"),    // image/jpeg
+      FILE_PATH_LITERAL(".m4a"),    // audio/x-m4a
+      FILE_PATH_LITERAL(".m4v"),    // video/mp4
+      FILE_PATH_LITERAL(".mp3"),    // audio/mpeg audio/mp3
+      FILE_PATH_LITERAL(".mp4"),    // video/mp4
+      FILE_PATH_LITERAL(".mpeg"),   // video/mpeg
+      FILE_PATH_LITERAL(".mpg"),    // video/mpeg
+      FILE_PATH_LITERAL(".oga"),    // audio/ogg
+      FILE_PATH_LITERAL(".ogg"),    // audio/ogg
+      FILE_PATH_LITERAL(".ogm"),    // video/ogg
+      FILE_PATH_LITERAL(".ogv"),    // video/ogg
+      FILE_PATH_LITERAL(".opus"),   // audio/ogg
+      FILE_PATH_LITERAL(".pdf"),    // application/pdf
+      FILE_PATH_LITERAL(".pjp"),    // image/jpeg
+      FILE_PATH_LITERAL(".pjpeg"),  // image/jpeg
+      FILE_PATH_LITERAL(".png"),    // image/png
+      FILE_PATH_LITERAL(".shtm"),   // text/html
+      FILE_PATH_LITERAL(".shtml"),  // text/html
+      FILE_PATH_LITERAL(".svg"),    // image/svg+xml
+      FILE_PATH_LITERAL(".svgz"),   // image/svg+xml
+      FILE_PATH_LITERAL(".text"),   // text/plain
+      FILE_PATH_LITERAL(".tif"),    // image/tiff
+      FILE_PATH_LITERAL(".tiff"),   // image/tiff
+      FILE_PATH_LITERAL(".txt"),    // text/plain
+      FILE_PATH_LITERAL(".wav"),    // audio/wav
+      FILE_PATH_LITERAL(".weba"),   // audio/webm
+      FILE_PATH_LITERAL(".webm"),   // video/webm
+      FILE_PATH_LITERAL(".webp"),   // image/webp
+      FILE_PATH_LITERAL(".xbm"),    // image/x-xbitmap
   };
 
-  for (const char* permitted : kPermitted) {
-    if (base::EndsWith(name, permitted, base::CompareCase::INSENSITIVE_ASCII))
+  for (const base::FilePath::CharType* permitted : kPermitted) {
+    if (base::EndsWith(path.value(), permitted,
+                       base::CompareCase::INSENSITIVE_ASCII))
       return false;
   }
   return true;
@@ -185,17 +187,17 @@ void ShareServiceImpl::Share(const std::string& title,
       return;
     }
 
-    if (IsDangerousFilename(file->name) ||
+    const base::FilePath& path = file->name.path();
+    if (IsDangerousFilename(path) ||
         IsDangerousMimeType(file->blob->content_type)) {
-      VLOG(1) << "File type is not supported: " << file->name
-              << " has mime type " << file->blob->content_type;
+      VLOG(1) << "File type is not supported: " << path << " has mime type "
+              << file->blob->content_type;
       std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
       return;
     }
 
     // Check if at least one file is marked by the download protection service
     // to send a ping to check this file type.
-    const base::FilePath path = base::FilePath::FromUTF8Unsafe(file->name);
     if (!should_check_url &&
         safe_browsing::FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
             path)) {

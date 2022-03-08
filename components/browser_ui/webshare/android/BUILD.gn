@@ -16,6 +16,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//mojo/public/java:system_java",
     "//mojo/public/java/system:system_impl_java",
+    "//mojo/public/mojom/base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_java",

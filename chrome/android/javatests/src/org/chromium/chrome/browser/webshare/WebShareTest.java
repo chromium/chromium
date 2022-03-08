@@ -58,6 +58,8 @@ public class WebShareTest {
     private static final String TEST_FILE_OGG = "/content/test/data/android/webshare-ogg.html";
     private static final String TEST_FILE_MANY = "/content/test/data/android/webshare-many.html";
     private static final String TEST_FILE_LARGE = "/content/test/data/android/webshare-large.html";
+    private static final String TEST_FILE_SEPARATOR =
+            "/content/test/data/android/webshare-separator.html";
     private static final String TEST_LONG_TEXT = "/content/test/data/android/webshare-long.html";
 
     private EmbeddedTestServer mTestServer;
@@ -202,6 +204,22 @@ public class WebShareTest {
     @Feature({"WebShare"})
     public void testWebShareLongText() throws Exception {
         sActivityTestRule.loadUrl(mTestServer.getURL(TEST_LONG_TEXT));
+        // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
+        TouchCommon.singleClickView(mTab.getView());
+        Assert.assertEquals("Fail: NotAllowedError: "
+                        + "Failed to execute 'share' on 'Navigator': Permission denied",
+                mUpdateWaiter.waitForUpdate());
+    }
+
+    /**
+     * Verify WebShare fails if share of file name '/' is called from a user gesture.
+     * @throws Exception
+     */
+    @Test
+    @MediumTest
+    @Feature({"WebShare"})
+    public void testWebShareSeparator() throws Exception {
+        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_SEPARATOR));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals("Fail: NotAllowedError: "

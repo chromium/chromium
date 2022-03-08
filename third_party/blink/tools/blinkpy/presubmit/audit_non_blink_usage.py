@@ -1351,6 +1351,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/modules/webshare/',
+        ],
+        'allowed': [
+            'base::SafeBaseName',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/platform/',
         ],
         # Suppress almost all checks on platform since code in this directory is

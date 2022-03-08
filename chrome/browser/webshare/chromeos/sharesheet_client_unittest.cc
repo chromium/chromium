@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -144,10 +145,10 @@ TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
   const GURL share_url("https://example.com/");
   std::vector<blink::mojom::SharedFilePtr> files;
   files.push_back(
-      blink::mojom::SharedFile::New(first_file.BaseName().AsUTF8Unsafe(),
+      blink::mojom::SharedFile::New(*base::SafeBaseName::Create(first_file),
                                     blink::mojom::SerializedBlob::New()));
   files.push_back(
-      blink::mojom::SharedFile::New(second_file.BaseName().AsUTF8Unsafe(),
+      blink::mojom::SharedFile::New(*base::SafeBaseName::Create(second_file),
                                     blink::mojom::SerializedBlob::New()));
 
   base::RunLoop run_loop;
