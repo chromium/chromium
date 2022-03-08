@@ -10,6 +10,7 @@ assert(is_chromeos_ash,
 source_set("quick_pair") {
   deps = [
     "//ash/quick_pair/common",
+    "//ash/quick_pair/companion_app",
     "//ash/quick_pair/fast_pair_handshake",
     "//ash/quick_pair/feature_status_tracker",
     "//ash/quick_pair/keyed_service",
@@ -25,6 +26,7 @@ source_set("unit_tests") {
 
   deps = [
     "//ash/quick_pair/common:unit_tests",
+    "//ash/quick_pair/companion_app:unit_tests",
     "//ash/quick_pair/fast_pair_handshake:unit_tests",
     "//ash/quick_pair/feature_status_tracker:unit_tests",
     "//ash/quick_pair/keyed_service:unit_tests",
