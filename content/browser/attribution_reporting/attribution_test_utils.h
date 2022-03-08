@@ -20,7 +20,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/aggregatable_attribution.h"
+#include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
@@ -468,7 +468,15 @@ class ReportBuilder {
   ReportBuilder& SetReportId(
       absl::optional<AttributionReport::EventLevelData::Id> id);
 
+  ReportBuilder& SetReportId(
+      absl::optional<AttributionReport::AggregatableAttributionData::Id> id);
+
+  ReportBuilder& SetAggregatableHistogramContributions(
+      std::vector<AggregatableHistogramContribution> contributions);
+
   AttributionReport Build() const;
+
+  AttributionReport BuildAggregatableAttribution() const;
 
  private:
   AttributionInfo attribution_info_;
@@ -478,6 +486,9 @@ class ReportBuilder {
   base::GUID external_report_id_;
   double randomized_trigger_rate_ = 0;
   absl::optional<AttributionReport::EventLevelData::Id> report_id_;
+  absl::optional<AttributionReport::AggregatableAttributionData::Id>
+      aggregatable_attribution_report_id_;
+  std::vector<AggregatableHistogramContribution> contributions_;
 };
 
 // Helper class to construct a `proto::AttributionAggregatableKey` for testing.
@@ -554,16 +565,11 @@ bool operator==(const StoredSource& a, const StoredSource& b);
 bool operator==(const AggregatableHistogramContribution& a,
                 const AggregatableHistogramContribution& b);
 
-bool operator==(const AggregatableAttribution::ContributionAndExternalId& a,
-                const AggregatableAttribution::ContributionAndExternalId& b);
-
-bool operator==(const AggregatableAttribution& a, AggregatableAttribution& b);
-
 bool operator==(const AttributionReport::EventLevelData& a,
                 const AttributionReport::EventLevelData& b);
 
-bool operator==(const AttributionReport::AggregatableContributionData& a,
-                const AttributionReport::AggregatableContributionData& b);
+bool operator==(const AttributionReport::AggregatableAttributionData& a,
+                const AttributionReport::AggregatableAttributionData& b);
 
 bool operator==(const AttributionReport& a, const AttributionReport& b);
 
@@ -606,21 +612,12 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source);
 std::ostream& operator<<(std::ostream& out,
                          const AggregatableHistogramContribution& contribution);
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const AggregatableAttribution::ContributionAndExternalId&
-        contribution_and_id);
-
-std::ostream& operator<<(
-    std::ostream& out,
-    const AggregatableAttribution& aggregatable_attribution);
-
 std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::EventLevelData& data);
 
 std::ostream& operator<<(
     std::ostream& out,
-    const AttributionReport::AggregatableContributionData& data);
+    const AttributionReport::AggregatableAttributionData& data);
 
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
 

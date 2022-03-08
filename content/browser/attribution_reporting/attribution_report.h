@@ -7,11 +7,14 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/guid.h"
+#include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/attribution_reporting/aggregatable_attribution.h"
+#include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -64,21 +67,23 @@ class CONTENT_EXPORT AttributionReport {
   };
 
   // Struct that contains the data specific to the aggregatable report.
-  struct CONTENT_EXPORT AggregatableContributionData {
-    using Id = base::StrongAlias<AggregatableContributionData, int64_t>;
+  struct CONTENT_EXPORT AggregatableAttributionData {
+    using Id = base::StrongAlias<AggregatableAttributionData, int64_t>;
 
-    AggregatableContributionData(AggregatableHistogramContribution contribution,
-                                 absl::optional<Id> id);
-    AggregatableContributionData(const AggregatableContributionData& other);
-    AggregatableContributionData& operator=(
-        const AggregatableContributionData& other);
-    AggregatableContributionData(AggregatableContributionData&& other);
-    AggregatableContributionData& operator=(
-        AggregatableContributionData&& other);
-    ~AggregatableContributionData();
+    AggregatableAttributionData(
+        std::vector<AggregatableHistogramContribution> contributions,
+        absl::optional<Id> id);
+    AggregatableAttributionData(const AggregatableAttributionData&);
+    AggregatableAttributionData& operator=(const AggregatableAttributionData&);
+    AggregatableAttributionData(AggregatableAttributionData&&);
+    AggregatableAttributionData& operator=(AggregatableAttributionData&&);
+    ~AggregatableAttributionData();
 
-    // The historgram contribution.
-    AggregatableHistogramContribution contribution;
+    // Returns the sum of the contributions (values) across all buckets.
+    base::CheckedNumeric<int64_t> BudgetRequired() const;
+
+    // The historgram contributions.
+    std::vector<AggregatableHistogramContribution> contributions;
 
     // Id assigned by storage to uniquely identify an aggregatable contribution.
     // If null, an ID has not been assigned yet.
@@ -92,14 +97,13 @@ class CONTENT_EXPORT AttributionReport {
     // `attribution_test_utils.h` should also be updated.
   };
 
-  using Id =
-      absl::variant<EventLevelData::Id, AggregatableContributionData::Id>;
+  using Id = absl::variant<EventLevelData::Id, AggregatableAttributionData::Id>;
 
   AttributionReport(
       AttributionInfo attribution_info,
       base::Time report_time,
       base::GUID external_report_id,
-      absl::variant<EventLevelData, AggregatableContributionData> data);
+      absl::variant<EventLevelData, AggregatableAttributionData> data);
   AttributionReport(const AttributionReport& other);
   AttributionReport& operator=(const AttributionReport& other);
   AttributionReport(AttributionReport&& other);
@@ -115,7 +119,7 @@ class CONTENT_EXPORT AttributionReport {
 
   // This will be included in aggregatable report to allow aggregation service
   // to do privacy budgeting. Note that this will DCHECK that the underlying
-  // data is `AggregatableContributionData`.
+  // data is `AggregatableAttributionData`.
   std::string PrivacyBudgetKey() const;
 
   const AttributionInfo& attribution_info() const { return attribution_info_; }
@@ -126,12 +130,12 @@ class CONTENT_EXPORT AttributionReport {
 
   int failed_send_attempts() const { return failed_send_attempts_; }
 
-  const absl::variant<EventLevelData, AggregatableContributionData>& data()
+  const absl::variant<EventLevelData, AggregatableAttributionData>& data()
       const {
     return data_;
   }
 
-  absl::variant<EventLevelData, AggregatableContributionData>& data() {
+  absl::variant<EventLevelData, AggregatableAttributionData>& data() {
     return data_;
   }
 
@@ -156,7 +160,7 @@ class CONTENT_EXPORT AttributionReport {
   int failed_send_attempts_ = 0;
 
   // Only one type of data may be stored at once.
-  absl::variant<EventLevelData, AggregatableContributionData> data_;
+  absl::variant<EventLevelData, AggregatableAttributionData> data_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

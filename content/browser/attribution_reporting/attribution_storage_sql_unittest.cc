@@ -15,7 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/aggregatable_attribution.h"
+#include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -91,11 +91,11 @@ class AttributionStorageSqlTest : public testing::Test {
     EXPECT_EQ(expected, rows);
   }
 
-  void ExpectAggregatableReportMetadataRows(size_t expected) {
+  void ExpectAggregatableContributionsRows(size_t expected) {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
     size_t rows;
-    sql::test::CountTableRows(&raw_db, "aggregatable_report_metadata", &rows);
+    sql::test::CountTableRows(&raw_db, "aggregatable_contributions", &rows);
     EXPECT_EQ(expected, rows);
   }
 
@@ -162,7 +162,7 @@ TEST_F(AttributionStorageSqlTest,
     // [rate_limit_attribution_idx], [rate_limit_reporting_origin_idx],
     // [rate_limit_time_idx], [rate_limit_impression_id_idx],
     // [aggregate_source_id_idx], [aggregate_trigger_time_idx],
-    // [contribution_aggregation_id_idx], [contribution_report_time_idx] and
+    // [aggregate_report_time_idx], [contribution_aggregation_id_idx] and
     // the meta table index.
     EXPECT_EQ(15u, sql::test::CountSQLIndices(&raw_db));
   }
@@ -382,35 +382,26 @@ TEST_F(AttributionStorageSqlTest,
   AttributionInfoBuilder attribution_info_builder(stored_source);
 
   task_environment_.FastForwardBy(base::Days(1));
-  auto aggregatable_attribution_1 = AggregatableAttribution::CreateForTesting(
-      attribution_info_builder.SetTime(base::Time::Now()).Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
-      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution_1));
+      ReportBuilder(attribution_info_builder.SetTime(base::Time::Now()).Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution()));
 
   task_environment_.FastForwardBy(base::Days(1));
-  auto aggregatable_attribution_2 = AggregatableAttribution::CreateForTesting(
-      attribution_info_builder.SetTime(base::Time::Now()).Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
-       AggregatableHistogramContribution(/*key=*/5, /*value=*/6)},
-      DefaultExternalReportIDs(2));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution_2));
+      ReportBuilder(attribution_info_builder.SetTime(base::Time::Now()).Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
+               AggregatableHistogramContribution(/*key=*/5, /*value=*/6)})
+          .BuildAggregatableAttribution()));
 
   task_environment_.FastForwardBy(base::Days(1));
-  auto aggregatable_attribution_3 = AggregatableAttribution::CreateForTesting(
-      attribution_info_builder.SetTime(base::Time::Now()).Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/7, /*value=*/8)},
-      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution_3));
+      ReportBuilder(attribution_info_builder.SetTime(base::Time::Now()).Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/7, /*value=*/8)})
+          .BuildAggregatableAttribution()));
 
   // Use a time range that targets all aggregatable attributions.
   storage()->ClearData(
@@ -441,25 +432,19 @@ TEST_F(AttributionStorageSqlTest,
   AttributionInfoBuilder attribution_info_builder(stored_source);
 
   task_environment_.FastForwardBy(base::Days(1));
-  auto aggregatable_attribution_1 = AggregatableAttribution::CreateForTesting(
-      attribution_info_builder.SetTime(base::Time::Now()).Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
-      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution_1));
+      ReportBuilder(attribution_info_builder.SetTime(base::Time::Now()).Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution()));
 
   task_environment_.FastForwardBy(base::Days(1));
-  auto aggregatable_attribution_2 = AggregatableAttribution::CreateForTesting(
-      attribution_info_builder.SetTime(base::Time::Now()).Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
-       AggregatableHistogramContribution(/*key=*/5, /*value=*/6)},
-      DefaultExternalReportIDs(2));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution_2));
+      ReportBuilder(attribution_info_builder.SetTime(base::Time::Now()).Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
+               AggregatableHistogramContribution(/*key=*/5, /*value=*/6)})
+          .BuildAggregatableAttribution()));
 
   // Use a time range that only intersects the last aggregatable attribution.
   storage()->ClearData(
@@ -486,25 +471,19 @@ TEST_F(AttributionStorageSqlTest,
       source_builder.SetSourceId(StoredSource::Id(1)).BuildStored());
 
   task_environment_.FastForwardBy(base::Days(1));
-  auto aggregatable_attribution_1 = AggregatableAttribution::CreateForTesting(
-      attribution_info_builder.SetTime(base::Time::Now()).Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
-      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution_1));
+      ReportBuilder(attribution_info_builder.SetTime(base::Time::Now()).Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution()));
 
   task_environment_.FastForwardBy(base::Days(1));
-  auto aggregatable_attribution_2 = AggregatableAttribution::CreateForTesting(
-      attribution_info_builder.SetTime(base::Time::Now()).Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
-       AggregatableHistogramContribution(/*key=*/5, /*value=*/6)},
-      DefaultExternalReportIDs(2));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution_2));
+      ReportBuilder(attribution_info_builder.SetTime(base::Time::Now()).Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
+               AggregatableHistogramContribution(/*key=*/5, /*value=*/6)})
+          .BuildAggregatableAttribution()));
 
   // Use a time range that only intersects the last aggregatable attribution.
   storage()->ClearData(base::Time::Now(), base::Time::Now(),
@@ -534,25 +513,19 @@ TEST_F(AttributionStorageSqlTest, DeleteEverythingWithAggregatableAttribution) {
           .SetSourceId(StoredSource::Id(1))
           .BuildStored());
 
-  auto aggregatable_attribution_1 = AggregatableAttribution::CreateForTesting(
-      attribution_info_builder.SetTime(base::Time::Now()).Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
-       AggregatableHistogramContribution(/*key=*/3, /*value=*/4)},
-      DefaultExternalReportIDs(2));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution_1));
+      ReportBuilder(attribution_info_builder.SetTime(base::Time::Now()).Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
+               AggregatableHistogramContribution(/*key=*/3, /*value=*/4)})
+          .BuildAggregatableAttribution()));
 
   task_environment_.FastForwardBy(base::Days(1));
-  auto aggregatable_attribution_2 = AggregatableAttribution::CreateForTesting(
-      attribution_info_builder.SetTime(base::Time::Now()).Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/5, /*value=*/6)},
-      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution_2));
+      ReportBuilder(attribution_info_builder.SetTime(base::Time::Now()).Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/5, /*value=*/6)})
+          .BuildAggregatableAttribution()));
 
   storage()->ClearData(base::Time::Min(), base::Time::Max(),
                        base::NullCallback());
@@ -900,46 +873,28 @@ TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   ExpectImpressionRows(1u);
 }
 
-TEST_F(AttributionStorageSqlTest, DeleteAggregatableContributionReport) {
+TEST_F(AttributionStorageSqlTest, DeleteAggregatableAttributionReport) {
   OpenDatabase();
 
   storage()->StoreSource(SourceBuilder().Build());
 
-  auto attribution_info =
-      AttributionInfoBuilder(
-          SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
-          .Build();
-
-  auto aggregatable_attribution = AggregatableAttribution::CreateForTesting(
-      attribution_info,
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
-       AggregatableHistogramContribution(/*key=*/3, /*value=*/4)},
-      DefaultExternalReportIDs(2));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution));
+      ReportBuilder(
+          AttributionInfoBuilder(
+              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
+              .Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
+               AggregatableHistogramContribution(/*key=*/3, /*value=*/4)})
+          .BuildAggregatableAttribution()));
 
   EXPECT_TRUE(storage()->DeleteReport(
-      AttributionReport::AggregatableContributionData::Id(1)));
-
-  EXPECT_THAT(
-      storage()->GetAttributionReports(base::Time::Max()),
-      ElementsAre(AttributionReport(
-          attribution_info, aggregatable_attribution.report_time(),
-          aggregatable_attribution.contributions_and_ids()[1]
-              .external_report_id,
-          AttributionReport::AggregatableContributionData(
-              aggregatable_attribution.contributions_and_ids()[1].contribution,
-              AttributionReport::AggregatableContributionData::Id(2)))));
-
-  EXPECT_TRUE(storage()->DeleteReport(
-      AttributionReport::AggregatableContributionData::Id(2)));
+      AttributionReport::AggregatableAttributionData::Id(1)));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
 
-  ExpectAggregatableReportMetadataRows(0u);
+  ExpectAggregatableContributionsRows(0u);
 }
 
 TEST_F(AttributionStorageSqlTest,
@@ -950,16 +905,14 @@ TEST_F(AttributionStorageSqlTest,
   storage()->StoreSource(
       source_builder.SetExpiry(base::Milliseconds(3)).Build());
 
-  auto aggregatable_attribution = AggregatableAttribution::CreateForTesting(
-      AttributionInfoBuilder(
-          source_builder.SetSourceId(StoredSource::Id(1)).BuildStored())
-          .Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
-      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution));
+      ReportBuilder(
+          AttributionInfoBuilder(
+              source_builder.SetSourceId(StoredSource::Id(1)).BuildStored())
+              .Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution()));
 
   task_environment_.FastForwardBy(base::Milliseconds(3));
   // Store another source to trigger the expiry logic.
@@ -978,21 +931,19 @@ TEST_F(AttributionStorageSqlTest,
   storage()->StoreSource(
       source_builder.SetExpiry(base::Milliseconds(3)).Build());
 
-  auto aggregatable_attribution = AggregatableAttribution::CreateForTesting(
-      AttributionInfoBuilder(
-          source_builder.SetSourceId(StoredSource::Id(1)).BuildStored())
-          .Build(),
-      /*report_time=*/base::Time::Now() + base::Hours(2),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
-      DefaultExternalReportIDs(1));
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
-      aggregatable_attribution));
+      ReportBuilder(
+          AttributionInfoBuilder(
+              source_builder.SetSourceId(StoredSource::Id(1)).BuildStored())
+              .Build())
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution()));
 
   task_environment_.FastForwardBy(base::Milliseconds(3));
 
   EXPECT_TRUE(storage()->DeleteReport(
-      AttributionReport::AggregatableContributionData::Id(1)));
+      AttributionReport::AggregatableAttributionData::Id(1)));
 
   // Store another source to trigger the expiry logic.
   storage()->StoreSource(

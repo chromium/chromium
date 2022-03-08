@@ -20,7 +20,6 @@ class Origin;
 
 namespace content {
 
-class AggregatableAttribution;
 class AttributionTrigger;
 class CreateReportResult;
 class StoredSource;
@@ -144,7 +143,7 @@ class AttributionStorage {
 
   // Aggregate Attribution:
   [[nodiscard]] virtual bool AddAggregatableAttributionForTesting(
-      const AggregatableAttribution& aggregatable_attribution) = 0;
+      const AttributionReport& report) = 0;
 };
 
 }  // namespace content

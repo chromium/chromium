@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -36,6 +35,7 @@ class StatementID;
 
 namespace content {
 
+class AggregatableHistogramContribution;
 class AttributionStorageDelegate;
 
 enum class RateLimitResult : int;
@@ -120,7 +120,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter) override;
   bool AddAggregatableAttributionForTesting(
-      const AggregatableAttribution& aggregatable_attribution) override;
+      const AttributionReport& report) override;
 
   void ClearAllDataAllTime() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -292,42 +292,41 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   //
   // All sources to be deleted are updated in `source_ids_to_delete`.
   // Returns false on failure.
-  [[nodiscard]] bool ClearAggregatableAttributionForOriginsInRange(
+  [[nodiscard]] bool ClearAggregatableAttributionsForOriginsInRange(
       base::Time delete_begin,
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter,
       std::vector<StoredSource::Id>& source_ids_to_delete)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] bool ClearAggregatableAttribution(
-      AggregatableAttribution::Id aggregation_id)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  [[nodiscard]] bool ClearAggregatableContributions(
-      AggregatableAttribution::Id aggregation_id)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  [[nodiscard]] bool ClearAggregatableAttributionForSourceIds(
+  [[nodiscard]] bool ClearAggregatableAttributionsForSourceIds(
       const std::vector<StoredSource::Id>& source_ids)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  std::vector<AttributionReport> GetAggregatableContributionReportsInternal(
+  std::vector<AttributionReport> GetAggregatableAttributionReportsInternal(
       base::Time max_report_time,
       int limit) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  std::vector<AggregatableHistogramContribution> GetAggregatableContributions(
+      AttributionReport::AggregatableAttributionData::Id aggregation_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deletes the report with `report_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
   // failure.
-  // Note that the `aggregatable_report_metadata` row will be deleted with the
-  // last contribution for the corresponding `aggregation_id`.
-  [[nodiscard]] bool DeleteAggregatableContributionReport(
-      AttributionReport::AggregatableContributionData::Id report_id)
+  [[nodiscard]] bool DeleteAggregatableAttributionReport(
+      AttributionReport::AggregatableAttributionData::Id report_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool DeleteAggregatableContributions(
+      AttributionReport::AggregatableAttributionData::Id aggregation_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Checks if the given aggregatable attribution is allowed according to the
   // L1 budget policy specified by the delegate.
   RateLimitResult AggregatableAttributionAllowedForBudgetLimit(
-      const AggregatableAttribution& aggregatable_attribution,
+      const AttributionReport::AggregatableAttributionData&
+          aggregatable_attribution,
       int64_t aggregatable_budget_consumed)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -338,10 +337,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       int64_t additional_budget_consumed)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<base::Time> GetNextAggregatableContributionReportTime(
+  absl::optional<base::Time> GetNextAggregatableAttributionReportTime(
       base::Time time) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<base::Time> AdjustOfflineAggregatableContributionReportTimes(
+  absl::optional<base::Time> AdjustOfflineAggregatableAttributionReportTimes(
       base::TimeDelta min_delay,
       base::TimeDelta max_delay,
       base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);

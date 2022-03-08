@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
 #include <cmath>
+#include <iterator>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -14,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -611,7 +613,7 @@ void AttributionManagerImpl::PrepareToSendReport(AttributionReport report,
       return &AttributionManagerImpl::SendReport;
     }
     DispatchFunc operator()(
-        const AttributionReport::AggregatableContributionData&) {
+        const AttributionReport::AggregatableAttributionData&) {
       return &AttributionManagerImpl::AssembleAggregatableReport;
     }
   };
@@ -718,7 +720,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
   }
 
   const auto* aggregate_data =
-      absl::get_if<AttributionReport::AggregatableContributionData>(
+      absl::get_if<AttributionReport::AggregatableAttributionData>(
           &report.data());
   DCHECK(aggregate_data);
 
@@ -730,14 +732,21 @@ void AttributionManagerImpl::AssembleAggregatableReport(
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled;
 
+  std::vector<AggregationServicePayloadContents::HistogramContribution>
+      contributions;
+  base::ranges::transform(
+      aggregate_data->contributions, std::back_inserter(contributions),
+      [](const auto& contribution) {
+        return AggregationServicePayloadContents::HistogramContribution{
+            .bucket = contribution.key(),
+            .value = static_cast<int>(contribution.value())};
+      });
+
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(
           AggregationServicePayloadContents(
               AggregationServicePayloadContents::Operation::kHistogram,
-              {AggregationServicePayloadContents::HistogramContribution{
-                  .bucket = aggregate_data->contribution.key(),
-                  .value =
-                      static_cast<int>(aggregate_data->contribution.value())}},
+              std::move(contributions),
               AggregationServicePayloadContents::ProcessingType::kSingleServer),
           AggregatableReportSharedInfo(
               report.report_time(), report.PrivacyBudgetKey(),
@@ -772,7 +781,7 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
   }
 
   auto* aggregate_data =
-      absl::get_if<AttributionReport::AggregatableContributionData>(
+      absl::get_if<AttributionReport::AggregatableAttributionData>(
           &report.data());
   DCHECK(aggregate_data);
   aggregate_data->assembled_report = std::move(*assembled_report);
@@ -797,12 +806,12 @@ void AttributionManagerImpl::NotifySourceDeactivated(
 }
 
 void AttributionManagerImpl::AddAggregatableAttributionForTesting(
-    AggregatableAttribution aggregatable_attribution) {
-  base::Time report_time = aggregatable_attribution.report_time();
+    AttributionReport report) {
+  base::Time report_time = report.report_time();
 
   attribution_storage_
       .AsyncCall(&AttributionStorage::AddAggregatableAttributionForTesting)
-      .WithArgs(std::move(aggregatable_attribution))
+      .WithArgs(std::move(report))
       .Then(base::BindOnce(
           [](base::WeakPtr<AttributionManagerImpl> manager,
              base::Time report_time, bool success) {

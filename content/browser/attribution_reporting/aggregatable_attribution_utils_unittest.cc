@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "content/browser/attribution_reporting/aggregatable_attribution.h"
+#include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"

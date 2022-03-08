@@ -111,8 +111,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void MaybeEnqueueEventForTesting(SourceOrTrigger event);
 
-  void AddAggregatableAttributionForTesting(
-      AggregatableAttribution aggregatable_attribution);
+  void AddAggregatableAttributionForTesting(AttributionReport report);
 
  private:
   friend class AttributionManagerImplTest;

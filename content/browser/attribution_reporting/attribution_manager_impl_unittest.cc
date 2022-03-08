@@ -26,7 +26,7 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
-#include "content/browser/attribution_reporting/aggregatable_attribution.h"
+#include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -1580,14 +1580,15 @@ TEST_F(AttributionManagerImplTest,
        AggregateReportAssemblySucceeded_ReportSent) {
   attribution_manager_->HandleSource(SourceBuilder().Build());
 
-  auto aggregatable_attribution = AggregatableAttribution::CreateForTesting(
-      AttributionInfo(
-          SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored(),
-          /*time=*/base::Time::Now(), /*debug_key=*/absl::nullopt),
-      /*report_time=*/base::Time::Now() + base::Hours(1),
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
-      DefaultExternalReportIDs(1));
+  const auto aggregatable_attribution =
+      ReportBuilder(
+          AttributionInfoBuilder(
+              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
+              .Build())
+          .SetReportTime(base::Time::Now() + base::Hours(1))
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution();
   attribution_manager_->AddAggregatableAttributionForTesting(
       aggregatable_attribution);
 
@@ -1609,7 +1610,7 @@ TEST_F(AttributionManagerImplTest,
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
       /*privacy_budget_key=*/"example_pbk",
-      aggregatable_attribution.contributions_and_ids()[0].external_report_id,
+      aggregatable_attribution.external_report_id(),
       /*reporting_origin=*/
       url::Origin::Create(GURL("https://example.reporting")),
       AggregatableReportSharedInfo::DebugMode::kDisabled);
@@ -1625,14 +1626,14 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleSource(SourceBuilder().Build());
 
   attribution_manager_->AddAggregatableAttributionForTesting(
-      AggregatableAttribution::CreateForTesting(
-          AttributionInfo(
-              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored(),
-              /*time=*/base::Time::Now(), /*debug_key=*/absl::nullopt),
-          /*report_time=*/base::Time::Now() + base::Hours(1),
-          /*contributions=*/
-          {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
-          DefaultExternalReportIDs(1)));
+      ReportBuilder(
+          AttributionInfoBuilder(
+              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
+              .Build())
+          .SetReportTime(base::Time::Now() + base::Hours(1))
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution());
 
   // Make sure the report is not sent earlier than its report time.
   task_environment_.FastForwardBy(base::Hours(1) - base::Microseconds(1));
@@ -1652,14 +1653,14 @@ TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
   attribution_manager_->HandleSource(SourceBuilder().Build());
 
   attribution_manager_->AddAggregatableAttributionForTesting(
-      AggregatableAttribution::CreateForTesting(
-          AttributionInfo(
-              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored(),
-              /*time=*/base::Time::Now(), /*debug_key=*/absl::nullopt),
-          /*report_time=*/base::Time::Now() + base::Hours(1),
-          /*contributions=*/
-          {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
-          DefaultExternalReportIDs(1)));
+      ReportBuilder(
+          AttributionInfoBuilder(
+              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
+              .Build())
+          .SetReportTime(base::Time::Now() + base::Hours(1))
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution());
 
   task_environment_.FastForwardBy(base::Hours(1));
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
@@ -1670,14 +1671,15 @@ TEST_F(AttributionManagerImplTest, EventAndAggregateReportsStored_BothSent) {
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
-  auto aggregatable_attribution = AggregatableAttribution::CreateForTesting(
-      AttributionInfo(
-          SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored(),
-          /*time=*/base::Time::Now(), /*debug_key=*/absl::nullopt),
-      /*report_time=*/base::Time::Now() + kFirstReportingWindow,
-      /*contributions=*/
-      {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)},
-      DefaultExternalReportIDs(1));
+  const auto aggregatable_attribution =
+      ReportBuilder(
+          AttributionInfoBuilder(
+              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
+              .Build())
+          .SetReportTime(base::Time::Now() + kFirstReportingWindow)
+          .SetAggregatableHistogramContributions(
+              {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+          .BuildAggregatableAttribution();
   attribution_manager_->AddAggregatableAttributionForTesting(
       aggregatable_attribution);
 
@@ -1704,7 +1706,7 @@ TEST_F(AttributionManagerImplTest, EventAndAggregateReportsStored_BothSent) {
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
       /*privacy_budget_key=*/"example_pbk",
-      aggregatable_attribution.contributions_and_ids()[0].external_report_id,
+      aggregatable_attribution.external_report_id(),
       /*reporting_origin=*/
       url::Origin::Create(GURL("https://example.reporting")),
       AggregatableReportSharedInfo::DebugMode::kDisabled);
