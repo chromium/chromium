@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 
 #include "base/logging.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user_manager.h"
 
@@ -14,6 +16,11 @@ namespace policy {
 namespace {
 
 constexpr base::TimeDelta kMinimumSuspendDuration = base::Minutes(1);
+
+ash::KioskLaunchController* GetKioskLaunchController() {
+  auto* host = ash::LoginDisplayHost::default_host();
+  return host ? host->GetKioskLaunchController() : nullptr;
+}
 
 }  // namespace
 
@@ -38,6 +45,10 @@ ManagedSessionService::~ManagedSessionService() {
   if (ash::ExistingUserController::current_controller()) {
     ash::ExistingUserController::current_controller()
         ->RemoveLoginStatusConsumer(this);
+  }
+
+  if (GetKioskLaunchController()) {
+    GetKioskLaunchController()->RemoveKioskProfileLoadFailedObserver(this);
   }
 
   if (ash::SessionTerminationManager::Get()) {
@@ -145,11 +156,25 @@ void ManagedSessionService::OnAuthAttemptStarted() {
     ash::ExistingUserController::current_controller()->AddLoginStatusConsumer(
         this);
   }
+
+  if (GetKioskLaunchController()) {
+    // Remove observer first in case the auth attempt is because of a retry, and
+    // the observation was added, if it was not added removing the observer will
+    // be a no-op.
+    GetKioskLaunchController()->RemoveKioskProfileLoadFailedObserver(this);
+    GetKioskLaunchController()->AddKioskProfileLoadFailedObserver(this);
+  }
 }
 
 void ManagedSessionService::OnAuthFailure(const ash::AuthFailure& error) {
   for (auto& observer : observers_) {
     observer.OnLoginFailure(error);
+  }
+}
+
+void ManagedSessionService::OnKioskProfileLoadFailed() {
+  for (auto& observer : observers_) {
+    observer.OnKioskLoginFailure();
   }
 }
 

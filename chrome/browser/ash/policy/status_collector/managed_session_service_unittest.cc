@@ -96,6 +96,10 @@ class ManagedSessionServiceTest
     return observed_session_termination_count_;
   }
 
+  int ObservedKioskLoginFailureCount() {
+    return observed_kiosk_login_failure_count_;
+  }
+
   void OnLoginFailure(const ash::AuthFailure& error) override {
     auth_failure_ = error;
   }
@@ -112,6 +116,7 @@ class ManagedSessionServiceTest
   void OnResumeActive(base::Time time) override {
     suspend_time_ = std::make_unique<base::Time>(time);
   }
+  void OnKioskLoginFailure() override { ++observed_kiosk_login_failure_count_; }
 
   ash::AuthFailure auth_failure_ = ash::AuthFailure::AuthFailureNone();
   Profile* logged_in_ = nullptr;
@@ -138,6 +143,8 @@ class ManagedSessionServiceTest
   int observed_login_count_ = 0;
 
   int observed_session_termination_count_ = 0;
+
+  int observed_kiosk_login_failure_count_ = 0;
 };
 
 TEST_F(ManagedSessionServiceTest, OnSessionStateChanged) {
@@ -378,5 +385,14 @@ TEST_F(ManagedSessionServiceTest, LoggedInProfileNotCreated) {
 
   ASSERT_EQ(ObservedLoginCount(), 1);
   EXPECT_TRUE(profile->IsSameOrParent(logged_in_));
+}
+
+TEST_F(ManagedSessionServiceTest, KioskLoginFailure) {
+  managed_session_service()->AddObserver(this);
+
+  ASSERT_EQ(ObservedKioskLoginFailureCount(), 0);
+  managed_session_service()->OnKioskProfileLoadFailed();
+
+  ASSERT_EQ(ObservedKioskLoginFailureCount(), 1);
 }
 }  // namespace policy
