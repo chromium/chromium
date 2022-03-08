@@ -6,18 +6,23 @@
 
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -230,6 +235,81 @@ TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDiskForMove) {
   EXPECT_EQ(BrowserDataMigrator::ResultKind::kFailed, result->kind);
   // |required_size| should carry the data.
   EXPECT_EQ(100u, result->required_size);
+}
+
+class BrowserDataMigratorRestartTest : public ::testing::Test {
+ public:
+  BrowserDataMigratorRestartTest() = default;
+  ~BrowserDataMigratorRestartTest() override = default;
+
+  void SetUp() override {
+    user_manager_.CreateLocalState();
+    auto* local_state_simple =
+        static_cast<TestingPrefServiceSimple*>(local_state());
+    BrowserDataMigratorImpl::RegisterLocalStatePrefs(
+        local_state_simple->registry());
+    crosapi::browser_util::RegisterLocalStatePrefs(
+        local_state_simple->registry());
+    user_manager_.Initialize();
+  }
+
+  void TearDown() override { user_manager_.Destroy(); }
+
+ protected:
+  ash::FakeChromeUserManager* user_manager() { return &user_manager_; }
+  PrefService* local_state() { return user_manager_.GetLocalState(); }
+
+ private:
+  ash::FakeChromeUserManager user_manager_;
+  FakeSessionManagerClient session_manager_;
+};
+
+TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithMigrationStep) {
+  bool restart_called = false;
+  ScopedRestartAttemptForTesting scoped_restart_attempt(
+      base::BindLambdaForTesting(
+          [&restart_called]() { restart_called = true; }));
+
+  BrowserDataMigratorImpl::SetMigrationStep(
+      local_state(), BrowserDataMigratorImpl::MigrationStep::kRestartCalled);
+  EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrate(
+      AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+      crosapi::browser_util::PolicyInitState::kAfterInit));
+
+  BrowserDataMigratorImpl::SetMigrationStep(
+      local_state(), BrowserDataMigratorImpl::MigrationStep::kStarted);
+  EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrate(
+      AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+      crosapi::browser_util::PolicyInitState::kAfterInit));
+
+  BrowserDataMigratorImpl::SetMigrationStep(
+      local_state(), BrowserDataMigratorImpl::MigrationStep::kEnded);
+  EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrate(
+      AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+      crosapi::browser_util::PolicyInitState::kAfterInit));
+}
+
+TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithCommandLine) {
+  bool restart_called = false;
+  ScopedRestartAttemptForTesting scoped_restart_attempt(
+      base::BindLambdaForTesting(
+          [&restart_called]() { restart_called = true; }));
+  {
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kForceBrowserDataMigrationForTesting, "force-skip");
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrate(
+        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+  {
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kForceBrowserDataMigrationForTesting, "force-migration");
+    EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrate(
+        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
 }
 
 }  // namespace ash

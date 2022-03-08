@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/copy_migrator.h"
 #include "chrome/browser/ash/crosapi/move_migrator.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -56,7 +55,7 @@ bool BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
   if (!MoveMigrator::ResumeRequired(local_state, user_id_hash))
     return false;
 
-  return RestartToMigrate(account_id, user_id_hash);
+  return RestartToMigrate(account_id, user_id_hash, local_state);
 }
 
 // static
@@ -77,10 +76,14 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
   // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove this
   // log message.
   LOG(WARNING) << "MaybeRestartToMigrate() is called.";
+
+  auto* user_manager = user_manager::UserManager::Get();
+  auto* local_state = user_manager->GetLocalState();
+
   // If `MigrationStep` is not `kCheckStep`, `MaybeRestartToMigrate()` has
   // already moved on to later steps. Namely either in the middle of migration
   // or migration has already run.
-  MigrationStep step = GetMigrationStep(g_browser_process->local_state());
+  MigrationStep step = GetMigrationStep(local_state);
   if (step != MigrationStep::kCheckStep) {
     switch (step) {
       case MigrationStep::kRestartCalled:
@@ -117,7 +120,7 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
     return false;
   if (force_migration_switch == kBrowserDataMigrationForceMigration) {
     LOG(WARNING) << "`kBrowserDataMigrationForceMigration` switch is present.";
-    return RestartToMigrate(account_id, user_id_hash);
+    return RestartToMigrate(account_id, user_id_hash, local_state);
   }
 
   const user_manager::User* user =
@@ -139,14 +142,11 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
     // profile migration, clear the retry count and
     // `kProfileMigrationCompletedForUserPref`. This will allow users to retry
     // profile migration after disabling and re-enabling lacros.
-    ClearMigrationAttemptCountForUser(g_browser_process->local_state(),
-                                      user_id_hash);
-    crosapi::browser_util::ClearProfileMigrationCompletedForUser(
-        g_browser_process->local_state(), user_id_hash);
-    MoveMigrator::ClearResumeStepForUser(g_browser_process->local_state(),
-                                         user_id_hash);
-    MoveMigrator::ClearResumeAttemptCountForUser(
-        g_browser_process->local_state(), user_id_hash);
+    ClearMigrationAttemptCountForUser(local_state, user_id_hash);
+    crosapi::browser_util::ClearProfileMigrationCompletedForUser(local_state,
+                                                                 user_id_hash);
+    MoveMigrator::ClearResumeStepForUser(local_state, user_id_hash);
+    MoveMigrator::ClearResumeAttemptCountForUser(local_state, user_id_hash);
     return false;
   }
 
@@ -165,20 +165,18 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
   // If the user is a new user, then there shouldn't be anything to migrate.
   // Also mark the user as migration completed.
   if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
-    crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
-                                         user_id_hash,
+    crosapi::browser_util::RecordDataVer(local_state, user_id_hash,
                                          version_info::GetVersion());
 
-    crosapi::browser_util::SetProfileMigrationCompletedForUser(
-        g_browser_process->local_state(), user_id_hash);
+    crosapi::browser_util::SetProfileMigrationCompletedForUser(local_state,
+                                                               user_id_hash);
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
     // this log message.
     LOG(WARNING) << "Setting migration as completed since it is a new user.";
     return false;
   }
 
-  int attempts = GetMigrationAttemptCountForUser(
-      g_browser_process->local_state(), user_id_hash);
+  int attempts = GetMigrationAttemptCountForUser(local_state, user_id_hash);
   // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
   // log level to VLOG(1).
   LOG(WARNING) << "Attempt #" << attempts;
@@ -197,34 +195,32 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
         << "Restarting to run profile migration since data wipe is required.";
     // If data wipe is required, no need for a further check to determine if
     // lacros data dir exists or not.
-    return RestartToMigrate(account_id, user_id_hash);
+    return RestartToMigrate(account_id, user_id_hash, local_state);
   }
 
-  if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
-          g_browser_process->local_state(), user_id_hash)) {
+  if (crosapi::browser_util::IsProfileMigrationCompletedForUser(local_state,
+                                                                user_id_hash)) {
     // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
     // remove this log message.
     LOG(WARNING) << "Profile migration has been completed already.";
     return false;
   }
 
-  return RestartToMigrate(account_id, user_id_hash);
+  return RestartToMigrate(account_id, user_id_hash, local_state);
 }
 
 // static
-bool BrowserDataMigratorImpl::RestartToMigrate(
-    const AccountId& account_id,
-    const std::string& user_id_hash) {
-  SetMigrationStep(g_browser_process->local_state(),
-                   MigrationStep::kRestartCalled);
+bool BrowserDataMigratorImpl::RestartToMigrate(const AccountId& account_id,
+                                               const std::string& user_id_hash,
+                                               PrefService* local_state) {
+  SetMigrationStep(local_state, MigrationStep::kRestartCalled);
 
-  UpdateMigrationAttemptCountForUser(g_browser_process->local_state(),
-                                     user_id_hash);
+  UpdateMigrationAttemptCountForUser(local_state, user_id_hash);
 
-  crosapi::browser_util::ClearProfileMigrationCompletedForUser(
-      g_browser_process->local_state(), user_id_hash);
+  crosapi::browser_util::ClearProfileMigrationCompletedForUser(local_state,
+                                                               user_id_hash);
 
-  g_browser_process->local_state()->CommitPendingWrite();
+  local_state->CommitPendingWrite();
 
   // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
   // this log message.

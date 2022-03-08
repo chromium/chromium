@@ -197,6 +197,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
                            MigrateOutOfDiskForCopy);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
                            MigrateOutOfDiskForMove);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorRestartTest,
+                           MaybeRestartToMigrateWithMigrationStep);
 
   // Sets the value of `kMigrationStep` in Local State.
   static void SetMigrationStep(PrefService* local_state, MigrationStep step);
@@ -225,7 +227,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // Called from `MaybeRestartToMigrate()` to proceed with restarting to start
   // the migration. It returns true if D-Bus call was successful.
   static bool RestartToMigrate(const AccountId& account_id,
-                               const std::string& user_id_hash);
+                               const std::string& user_id_hash,
+                               PrefService* local_state);
 
   // Called on UI thread once migration is finished.
   void MigrateInternalFinishedUIThread(MigrationResult result);
