@@ -17,8 +17,8 @@ namespace media::hls {
 // have some type based on its context, but has yet been fully parsed,
 // validated, or undergone variable substitution.
 
-// An item which has been determined to of a known or unknown tag type, but not
-// a comment.
+// An item which has been determined to be of a known or unknown tag type, but
+// not a comment.
 struct MEDIA_EXPORT TagItem {
   TagName name;
 
