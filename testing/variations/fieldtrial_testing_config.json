@@ -7326,7 +7326,7 @@
             ]
         }
     ],
-    "WebProtectSaveAs": [
+    "WebProtectBypassJustification": [
         {
             "platforms": [
                 "chromeos",
@@ -7339,7 +7339,27 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AllowSavePackageScanning"
+                        "kBypassJustificationEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebProtectNewEvents": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LoginEventReporting",
+                        "PasswordBreachEventReporting"
                     ]
                 }
             ]
