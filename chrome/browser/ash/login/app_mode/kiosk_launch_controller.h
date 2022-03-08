@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
@@ -60,6 +62,12 @@ class KioskLaunchController
       public KioskAppLauncher::Delegate,
       public extensions::ForceInstalledTracker::Observer {
  public:
+  class KioskProfileLoadFailedObserver : public base::CheckedObserver {
+   public:
+    ~KioskProfileLoadFailedObserver() override = default;
+    virtual void OnKioskProfileLoadFailed() = 0;
+  };
+
   using ReturnBoolCallback = base::RepeatingCallback<bool()>;
 
   explicit KioskLaunchController(OobeUI* oobe_ui);
@@ -94,6 +102,12 @@ class KioskLaunchController
   }
 
   void Start(const KioskAppId& kiosk_app_id, bool auto_launch);
+
+  void AddKioskProfileLoadFailedObserver(
+      KioskProfileLoadFailedObserver* observer);
+
+  void RemoveKioskProfileLoadFailedObserver(
+      KioskProfileLoadFailedObserver* observer);
 
  private:
   friend class KioskLaunchControllerTest;
@@ -229,6 +243,9 @@ class KioskLaunchController
   base::ScopedObservation<crosapi::ForceInstalledTrackerAsh,
                           extensions::ForceInstalledTracker::Observer>
       force_installed_observation_for_lacros_{this};
+
+  base::ObserverList<KioskProfileLoadFailedObserver>
+      profile_load_failed_observers_;
 
   base::WeakPtrFactory<KioskLaunchController> weak_ptr_factory_{this};
 };

@@ -225,6 +225,16 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   kiosk_profile_loader_->Start();
 }
 
+void KioskLaunchController::AddKioskProfileLoadFailedObserver(
+    KioskProfileLoadFailedObserver* observer) {
+  profile_load_failed_observers_.AddObserver(observer);
+}
+
+void KioskLaunchController::RemoveKioskProfileLoadFailedObserver(
+    KioskProfileLoadFailedObserver* observer) {
+  profile_load_failed_observers_.RemoveObserver(observer);
+}
+
 void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   SYSLOG(INFO) << "Profile loaded... Starting app launch.";
   profile_ = profile;
@@ -592,6 +602,9 @@ void KioskLaunchController::OnAppDataUpdated() {
 
 void KioskLaunchController::OnProfileLoadFailed(
     KioskAppLaunchError::Error error) {
+  for (auto& observer : profile_load_failed_observers_) {
+    observer.OnKioskProfileLoadFailed();
+  }
   OnLaunchFailed(error);
 }
 

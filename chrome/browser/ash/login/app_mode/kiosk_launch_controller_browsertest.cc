@@ -29,6 +29,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -44,6 +45,21 @@ const char kInvalidExtensionName[] = "invalid_name";
 // URL of Chrome Web.
 const char kExtensionUpdateUrl[] =
     "https://clients2.google.com/service/update2/crx";
+
+class MockKioskProfileLoadFailedObserver
+    : public KioskLaunchController::KioskProfileLoadFailedObserver {
+ public:
+  MockKioskProfileLoadFailedObserver() = default;
+
+  MockKioskProfileLoadFailedObserver(
+      const MockKioskProfileLoadFailedObserver&) = delete;
+  MockKioskProfileLoadFailedObserver& operator=(
+      const MockKioskProfileLoadFailedObserver&) = delete;
+
+  ~MockKioskProfileLoadFailedObserver() override = default;
+
+  MOCK_METHOD(void, OnKioskProfileLoadFailed, (), (override));
+};
 
 class KioskLaunchControllerTest
     : public InProcessBrowserTest,
@@ -309,6 +325,25 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
   ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
   ExpectViewState(AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
+}
+
+IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
+                       KioskProfileLoadFailedObserved) {
+  MockKioskProfileLoadFailedObserver profile_load_failed_observer;
+  controller()->AddKioskProfileLoadFailedObserver(
+      &profile_load_failed_observer);
+
+  controller()->Start(kiosk_app_id(), false);
+  ExpectState(AppState::kCreatingProfile, NetworkUIState::kNotShowing);
+
+  EXPECT_CALL(*launcher(), Initialize()).Times(0);
+  EXPECT_CALL(profile_load_failed_observer, OnKioskProfileLoadFailed())
+      .Times(1);
+  profile_controls()->OnProfileLoadFailed(
+      KioskAppLaunchError::Error::kUnableToMount);
+
+  controller()->RemoveKioskProfileLoadFailedObserver(
+      &profile_load_failed_observer);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
