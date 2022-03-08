@@ -325,12 +325,8 @@ if (enable_openscreen) {
   test("openscreen_unittests") {
     deps = [
       "//base/test:run_all_unittests",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/test:test_support",
       "//components/openscreen_platform:openscreen_platform_network_service",
       "//testing/gmock",
-      "//third_party/blink/public/mojom:mojom_platform_headers",
       "//third_party/openscreen/src:openscreen_unittests_all",
     ]
   }

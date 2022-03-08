@@ -22,17 +22,23 @@ source_set("cast_certificate_reader") {
   ]
 }
 
+source_set("cast_certificate_roots") {
+  sources = [
+    "cast_root_ca_cert_der-inc.h",
+    "eureka_root_ca_der-inc.h",
+  ]
+}
+
 static_library("cast_certificate") {
   sources = [
     "cast_cert_validator.cc",
     "cast_cert_validator.h",
     "cast_crl.cc",
     "cast_crl.h",
-    "cast_root_ca_cert_der-inc.h",
-    "eureka_root_ca_der-inc.h",
   ]
   configs += [ ":certificate_config" ]
   deps = [
+    ":cast_certificate_roots",
     "//base",
     "//net",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
@@ -48,6 +54,21 @@ static_library("cast_certificate") {
       "switches.h",
     ]
   }
+}
+
+source_set("openscreen_certificate_verifier") {
+  sources = [
+    "net_parsed_certificate.cc",
+    "net_parsed_certificate.h",
+    "net_trust_store.cc",
+    "net_trust_store.h",
+  ]
+  public_deps = [
+    ":cast_certificate_roots",
+    "//base",
+    "//net",
+    "//third_party/openscreen/src/cast/common:public",
+  ]
 }
 
 static_library("test_support") {
