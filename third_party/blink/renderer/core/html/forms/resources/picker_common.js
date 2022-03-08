@@ -48,46 +48,47 @@ function createElement(tagName, opt_class, opt_text) {
   return element;
 }
 
-/**
- * @constructor
- * @param {!number|Rectangle|Object} xOrRect
- * @param {!number} y
- * @param {!number} width
- * @param {!number} height
- */
-function Rectangle(xOrRect, y, width, height) {
-  if (typeof xOrRect === 'object') {
-    y = xOrRect.y;
-    width = xOrRect.width;
-    height = xOrRect.height;
-    xOrRect = xOrRect.x;
-  }
-  this.x = xOrRect;
-  this.y = y;
-  this.width = width;
-  this.height = height;
-}
+// ----------------------------------------------------------------
 
-{
-  Rectangle.prototype = {
-    get maxX() {
-      return this.x + this.width;
-    },
-    get maxY() {
-      return this.y + this.height;
-    },
-    toString: function() {
-      return 'Rectangle(' + this.x + ',' + this.y + ',' + this.width + ',' +
-          this.height + ')';
+class Rectangle {
+  /**
+   * @param {!number|Rectangle|Object} xOrRect
+   * @param {!number} y
+   * @param {!number} width
+   * @param {!number} height
+   */
+  constructor(xOrRect, y, width, height) {
+    if (typeof xOrRect === 'object') {
+      y = xOrRect.y;
+      width = xOrRect.width;
+      height = xOrRect.height;
+      xOrRect = xOrRect.x;
     }
-  };
+    this.x = xOrRect;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
+  get maxX() {
+    return this.x + this.width;
+  }
+
+  get maxY() {
+    return this.y + this.height;
+  }
+
+  toString() {
+    return 'Rectangle(' + this.x + ',' + this.y + ',' + this.width + ',' +
+        this.height + ')';
+  }
 
   /**
    * @param {!Rectangle} rect1
    * @param {!Rectangle} rect2
    * @return {?Rectangle}
    */
-  Rectangle.intersection = function(rect1, rect2) {
+  static intersection(rect1, rect2) {
     var x = Math.max(rect1.x, rect2.x);
     var maxX = Math.min(rect1.maxX, rect2.maxX);
     var y = Math.max(rect1.y, rect2.y);
@@ -97,8 +98,10 @@ function Rectangle(xOrRect, y, width, height) {
     if (width < 0 || height < 0)
       return null;
     return new Rectangle(x, y, width, height);
-  };
+  }
 }
+
+// ----------------------------------------------------------------
 
 /**
  * @param {!number} width in CSS pixel
@@ -308,24 +311,23 @@ function EventEmitter() {
   };
 }
 
-/**
- * @constructor
- * @extends EventEmitter
- * @param {!Element} element
- * @param {!Object} config
- */
-function Picker(element, config) {
-  this._element = element;
-  this._config = config;
-}
+// ----------------------------------------------------------------
 
-{
-  Picker.prototype = Object.create(EventEmitter.prototype);
+class Picker extends EventEmitter {
+  /**
+   * @param {!Element} element
+   * @param {!Object} config
+   */
+  constructor(element, config) {
+    super();
+    this._element = element;
+    this._config = config;
+  }
 
   /**
    * @enum {number}
    */
-  Picker.Actions = {
+  static Actions = {
     SetValue: 0,
     Cancel: -1,
   };
@@ -333,17 +335,20 @@ function Picker(element, config) {
   /**
    * @param {!string} value
    */
-  Picker.prototype.submitValue = function(value) {
+  submitValue(value) {
     window.pagePopupController.setValue(value);
     window.pagePopupController.closePopup();
-  };
+  }
 
-  Picker.prototype.handleCancel = function() {
+  handleCancel() {
     window.pagePopupController.closePopup();
-  };
+  }
 
-  Picker.prototype.cleanup = function() {};
+  cleanup() {
+  }
 }
+
+// ----------------------------------------------------------------
 
 window.addEventListener('keyup', function(event) {
   // JAWS dispatches extra Alt events and unless we handle them they move the
