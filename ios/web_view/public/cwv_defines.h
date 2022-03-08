@@ -49,4 +49,7 @@
 // Supports -[CWVAutofillDataManager addPasswordWithUsername:password:site:].
 #define IOS_WEB_VIEW_SUPPORTS_ADDING_PASSWORDS 1
 
+// Supports -[CWVNavigationDelegate handleLookalikeURLWithHandler:].
+#define IOS_WEB_VIEW_SUPPORTS_CWV_LOOKALIKE_URL_HANDLER 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
