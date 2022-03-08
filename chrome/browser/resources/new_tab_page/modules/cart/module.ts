@@ -419,8 +419,8 @@ export class ChromeCartModuleElement extends I18nMixin
 
   private onDiscountConsentDismissed_() {
     this.showDiscountConsent = false;
-    // TODO(crbug.com/1298116): Record user dismiss action and set up reshow in
-    // 4 weeks.
+    ChromeCartProxy.getHandler().onDiscountConsentDismissed();
+    // TODO(crbug.com/1298116): Record user dismiss action.
   }
 
   private onConfirmDiscountConsentClick_() {

@@ -14,6 +14,7 @@
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -669,4 +670,60 @@ TEST_F(CartHandlerNtpModuleDiscountFastPathTest,
       base::BindOnce(&GetEvaluationMerchantCartWithUtmSource,
                      run_loop.QuitClosure(), false, ""));
   run_loop.Run();
+}
+
+class CartHandlerNtpModuleDiscountConsentV2Test : public CartHandlerTest {
+ public:
+  CartHandlerNtpModuleDiscountConsentV2Test() {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features;
+    base::FieldTrialParams consent_v2_params, cart_params;
+    cart_params["NtpChromeCartModuleAbandonedCartDiscountParam"] = "true";
+    cart_params["partner-merchant-pattern"] = "(foo.com)";
+    enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
+                                  cart_params);
+    consent_v2_params["discount-consent-ntp-reshow-time"] = "1m";
+    consent_v2_params["discount-consent-ntp-max-dismiss-count"] = "2";
+    enabled_features.emplace_back(commerce::kDiscountConsentV2,
+                                  consent_v2_params);
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                /*disabled_features*/ {});
+  }
+
+  void SetUp() override {
+    CartHandlerTest::SetUp();
+    // Simulate that the welcome surface has been shown.
+    profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                     CartService::kWelcomSurfaceShowLimit);
+  }
+};
+
+TEST_F(CartHandlerNtpModuleDiscountConsentV2Test,
+       TestOnDiscountConsentDismissed) {
+  CartDB* cart_db = service_->GetDB();
+  {
+    base::RunLoop run_loop;
+    // Add a partner cart.
+    cart_db->AddCart(
+        kFakeMerchant, kFakeProto,
+        base::BindOnce(&CartHandlerTest::OperationEvaluation,
+                       base::Unretained(this), run_loop.QuitClosure(), true));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    service_->ShouldShowDiscountConsent(
+        base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                       base::Unretained(this), run_loop.QuitClosure(), true));
+    run_loop.Run();
+  }
+
+  handler_->OnDiscountConsentDismissed();
+  {
+    base::RunLoop run_loop;
+    service_->ShouldShowDiscountConsent(
+        base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                       base::Unretained(this), run_loop.QuitClosure(), false));
+    run_loop.Run();
+  }
 }

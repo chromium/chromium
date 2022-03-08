@@ -183,6 +183,18 @@ const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =
 const base::FeatureParam<int> kNtpChromeCartModuleDiscountConsentNtpVariation{
     &commerce::kDiscountConsentV2,
     kNtpChromeCartModuleDiscountConsentNtpVariationParam, 0};
+const char kNtpChromeCartModuleDiscountConsentReshowTimeParam[] =
+    "discount-consent-ntp-reshow-time";
+const base::FeatureParam<base::TimeDelta>
+    kNtpChromeCartModuleDiscountConsentReshowTime{
+        &commerce::kDiscountConsentV2,
+        kNtpChromeCartModuleDiscountConsentReshowTimeParam, base::Days(28)};
+const char kNtpChromeCartModuleDiscountConsentMaxDismissalCountParam[] =
+    "discount-consent-ntp-max-dismiss-count";
+const base::FeatureParam<int>
+    kNtpChromeCartModuleDiscountConsentMaxDismissalCount{
+        &commerce::kDiscountConsentV2,
+        kNtpChromeCartModuleDiscountConsentMaxDismissalCountParam, 1};
 
 // String change variation params.
 const char kNtpChromeCartModuleDiscountConsentStringChangeContentParam[] =

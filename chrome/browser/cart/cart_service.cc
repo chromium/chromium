@@ -163,6 +163,9 @@ void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kCartUsedDiscounts);
   registry->RegisterTimePref(prefs::kCartDiscountLastFetchedTime, base::Time());
   registry->RegisterBooleanPref(prefs::kCartDiscountConsentShown, false);
+  registry->RegisterTimePref(prefs::kDiscountConsentLastDimissedTime,
+                             base::Time());
+  registry->RegisterIntegerPref(prefs::kDiscountConsentPastDismissedCount, 0);
 }
 
 GURL CartService::AppendUTM(const GURL& base_url, bool is_discount_enabled) {
@@ -282,6 +285,18 @@ void CartService::AcknowledgeDiscountConsent(bool should_enable) {
   }
 }
 
+void CartService::DismissedDiscountConsent() {
+  if (cart_features::IsFakeDataEnabled()) {
+    return;
+  }
+  profile_->GetPrefs()->SetTime(prefs::kDiscountConsentLastDimissedTime,
+                                base::Time::Now());
+  int past_dimissed_count = profile_->GetPrefs()->GetInteger(
+      prefs::kDiscountConsentPastDismissedCount);
+  profile_->GetPrefs()->SetInteger(prefs::kDiscountConsentPastDismissedCount,
+                                   past_dimissed_count + 1);
+}
+
 void CartService::ShouldShowDiscountConsent(
     base::OnceCallback<void(bool)> callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -334,6 +349,23 @@ void CartService::ShouldShowDiscountConsentCallback(
     CartDiscountMetricCollector::RecordDiscountConsentStatus(
         CartDiscountMetricCollector::DiscountConsentStatus::IGNORED);
   }
+
+  if (base::FeatureList::IsEnabled(commerce::kDiscountConsentV2)) {
+    base::Time last_dismissed_time =
+        profile_->GetPrefs()->GetTime(prefs::kDiscountConsentLastDimissedTime);
+    base::TimeDelta reshow_time_delta =
+        ntp_features::kNtpChromeCartModuleDiscountConsentReshowTime.Get() -
+        (base::Time::Now() - last_dismissed_time);
+    int last_dismissed_count = profile_->GetPrefs()->GetInteger(
+        prefs::kDiscountConsentPastDismissedCount);
+    should_show &=
+        (last_dismissed_time == base::Time() ||
+         reshow_time_delta.is_negative()) &&
+        last_dismissed_count <
+            ntp_features::kNtpChromeCartModuleDiscountConsentMaxDismissalCount
+                .Get();
+  }
+
   std::move(callback).Run(should_show);
 }
 

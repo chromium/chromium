@@ -1254,6 +1254,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
             // Assert.
             assertEquals(false, isVisible(consentCard));
+            assertEquals(1, handler.getCallCount('onDiscountConsentDismissed'));
           });
 
       test(
@@ -1278,6 +1279,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
                 moduleElement.$.confirmDiscountConsentMessage.innerText);
             assertEquals(
                 1, metrics.count('NewTabPage.Carts.RejectDiscountConsent'));
+            assertEquals(0, handler.getCallCount('onDiscountConsentDismissed'));
           });
 
       test(
