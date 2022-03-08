@@ -97,6 +97,8 @@
     ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_HOVERED) \
   E(kColorOmniboxResultsBackgroundSelected, \
     ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_SELECTED) \
+  E(kColorOmniboxResultsButtonBorder, \
+    ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_BORDER) \
   E(kColorOmniboxResultsIcon, ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON) \
   E(kColorOmniboxResultsIconSelected, \
     ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON_SELECTED) \

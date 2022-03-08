@@ -85,13 +85,13 @@ void ApplyTextStyleForType(SuggestionAnswer::TextStyle text_style,
           : OmniboxPart::RESULTS_TEXT_DEFAULT);
   switch (text_style) {
     case SuggestionAnswer::TextStyle::SECONDARY:
-      style = {gfx::kGoogleGrey600};
+      style = {result_view->GetColor(OmniboxPart::RESULTS_TEXT_SECONDARY)};
       break;
     case SuggestionAnswer::TextStyle::POSITIVE:
-      style = {gfx::kGoogleGreen600};
+      style = {result_view->GetColor(OmniboxPart::RESULTS_TEXT_POSITIVE)};
       break;
     case SuggestionAnswer::TextStyle::NEGATIVE:
-      style = {gfx::kGoogleRed600};
+      style = {result_view->GetColor(OmniboxPart::RESULTS_TEXT_NEGATIVE)};
       break;
     case SuggestionAnswer::TextStyle::SUPERIOR:
       style = {.color = part_color, .baseline = gfx::SUPERIOR};

@@ -608,11 +608,15 @@ absl::optional<SkColor> ThemeHelper::GetOmniboxColor(
       theme_supplier && theme_supplier->get_theme_type() ==
                             CustomThemeSupplier::ThemeType::INCREASED_CONTRAST;
   const bool invert =
-      high_contrast && (id == TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED ||
-                        id == TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED ||
-                        id == TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED ||
-                        id == TP::COLOR_OMNIBOX_RESULTS_ICON_SELECTED ||
-                        id == TP::COLOR_OMNIBOX_RESULTS_URL_SELECTED);
+      high_contrast &&
+      (id == TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED ||
+       id == TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED ||
+       id == TP::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE_SELECTED ||
+       id == TP::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE_SELECTED ||
+       id == TP::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY_SELECTED ||
+       id == TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED ||
+       id == TP::COLOR_OMNIBOX_RESULTS_ICON_SELECTED ||
+       id == TP::COLOR_OMNIBOX_RESULTS_URL_SELECTED);
   const auto blend_for_min_contrast =
       [&](SkColor fg, SkColor bg, absl::optional<SkColor> hc_fg = absl::nullopt,
           absl::optional<float> contrast_ratio = absl::nullopt) {
@@ -647,6 +651,23 @@ absl::optional<SkColor> ThemeHelper::GetOmniboxColor(
   const auto results_bg_hovered_color = [&]() {
     return color_utils::BlendTowardMaxContrast(results_bg_color(), 0x1A);
   };
+  const auto negative_text_color = [&](SkColor bg) {
+    return blend_for_min_contrast(
+        dark ? gfx::kGoogleRed300 : gfx::kGoogleRed600, bg);
+  };
+  const auto positive_text_color = [&](SkColor bg) {
+    return blend_for_min_contrast(
+        dark ? gfx::kGoogleGreen300 : gfx::kGoogleGreen700, bg);
+  };
+  const auto secondary_text_color = [&](SkColor bg) {
+    return blend_for_min_contrast(
+        // In the color pipeline world, this color is kColorDisabledForeground.
+        blend_for_min_contrast(
+            gfx::kGoogleGrey600,
+            dark ? SkColorSetRGB(0x29, 0x2A, 0x2D) : SK_ColorWHITE,
+            dark ? gfx::kGoogleGrey200 : gfx::kGoogleGrey900),
+        bg);
+  };
   const auto url_color = [&](SkColor bg) {
     return blend_for_min_contrast(
         gfx::kGoogleBlue500, bg,
@@ -676,6 +697,18 @@ absl::optional<SkColor> ThemeHelper::GetOmniboxColor(
       return blend_with_clamped_contrast(results_bg_hovered_color());
     case TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED:
       return blend_with_clamped_contrast(results_bg_selected_color());
+    case TP::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE:
+      return negative_text_color(results_bg_hovered_color());
+    case TP::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE_SELECTED:
+      return negative_text_color(results_bg_selected_color());
+    case TP::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE:
+      return positive_text_color(results_bg_hovered_color());
+    case TP::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE_SELECTED:
+      return positive_text_color(results_bg_selected_color());
+    case TP::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY:
+      return secondary_text_color(results_bg_hovered_color());
+    case TP::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY_SELECTED:
+      return secondary_text_color(results_bg_selected_color());
     case TP::COLOR_OMNIBOX_RESULTS_ICON:
       return blend_for_min_contrast(color_utils::DeriveDefaultIconColor(fg),
                                     results_bg_color());
