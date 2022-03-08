@@ -11,17 +11,21 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/version_info/channel.h"
 
 namespace {
 
@@ -369,8 +373,25 @@ void TrustSafetySentimentService::SavedCard() {
 }
 
 void TrustSafetySentimentService::InteractedWithPrivacySandbox3(
-    FeatureArea feature_area,
-    const std::map<std::string, bool>& product_specific_data) {
+    FeatureArea feature_area) {
+  std::map<std::string, bool> product_specific_data;
+  product_specific_data["Stable channel"] =
+      (chrome::GetChannel() == version_info::Channel::STABLE) ? true : false;
+  bool blockCookies =
+      HostContentSettingsMapFactory::GetForProfile(profile_)
+          ->GetDefaultContentSetting(ContentSettingsType::COOKIES,
+                                     /*provider_id=*/nullptr) ==
+      ContentSetting::CONTENT_SETTING_BLOCK;
+  blockCookies =
+      blockCookies ||
+      (static_cast<content_settings::CookieControlsMode>(
+           profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
+       content_settings::CookieControlsMode::kBlockThirdParty);
+  product_specific_data["3P cookies blocked"] = blockCookies ? true : false;
+  product_specific_data["Privacy Sandbox enabled"] =
+      profile_->GetPrefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)
+          ? true
+          : false;
   TriggerOccurred(feature_area, product_specific_data);
 }
 

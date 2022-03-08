@@ -37,6 +37,10 @@ class MockTrustSafetySentimentService : public TrustSafetySentimentService {
               (content::WebContents * web_contents),
               (override));
   MOCK_METHOD(void, SavedCard, (), (override));
+  MOCK_METHOD(void,
+              InteractedWithPrivacySandbox3,
+              (FeatureArea feature_area),
+              (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockTrustSafetySentimentService(

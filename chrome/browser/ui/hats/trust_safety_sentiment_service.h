@@ -93,12 +93,9 @@ class TrustSafetySentimentService : public KeyedService,
     kMaxValue = kPrivacySandbox3NoticeSettings,
   };
 
-  // Called when the user interacts with Privacy Sandbox 3, feature_area
-  // specifies what type of interaction occurred and |product_specific_data|
-  // indicates some user state at that time.
-  virtual void InteractedWithPrivacySandbox3(
-      FeatureArea feature_area,
-      const std::map<std::string, bool>& product_specific_data);
+  // Called when the user interacts with Privacy Sandbox 3, |feature_area|
+  // specifies what type of interaction occurred.
+  virtual void InteractedWithPrivacySandbox3(FeatureArea feature_area);
 
  private:
   friend class TrustSafetySentimentServiceTest;

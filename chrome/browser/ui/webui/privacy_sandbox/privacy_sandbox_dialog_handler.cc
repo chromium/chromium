@@ -7,6 +7,8 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 
 PrivacySandboxDialogHandler::PrivacySandboxDialogHandler(
     base::OnceClosure close_callback,
@@ -67,18 +69,48 @@ void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
     std::move(open_settings_callback_).Run();
   }
 
+  bool covered_action = true;
+  auto* sentiment_service = TrustSafetySentimentServiceFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()));
   switch (action) {
-    case PrivacySandboxService::DialogAction::kNoticeAcknowledge:
-    case PrivacySandboxService::DialogAction::kNoticeOpenSettings:
-    case PrivacySandboxService::DialogAction::kConsentAccepted:
+    case PrivacySandboxService::DialogAction::kNoticeAcknowledge: {
+      sentiment_service->InteractedWithPrivacySandbox3(
+          TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk);
+      break;
+    }
+    case PrivacySandboxService::DialogAction::kNoticeDismiss: {
+      sentiment_service->InteractedWithPrivacySandbox3(
+          TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeDismiss);
+      break;
+    }
+    case PrivacySandboxService::DialogAction::kNoticeOpenSettings: {
+      sentiment_service->InteractedWithPrivacySandbox3(
+          TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeSettings);
+      break;
+    }
+    case PrivacySandboxService::DialogAction::kConsentAccepted: {
+      sentiment_service->InteractedWithPrivacySandbox3(
+          TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3ConsentAccept);
+      break;
+    }
     case PrivacySandboxService::DialogAction::kConsentDeclined: {
-      did_user_make_decision_ = true;
-      DCHECK(close_callback_);
-      std::move(close_callback_).Run();
+      sentiment_service->InteractedWithPrivacySandbox3(
+          TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3ConsentDecline);
       break;
     }
     default:
+      covered_action = false;
       break;
+  }
+
+  if (covered_action) {
+    did_user_make_decision_ = true;
+    DCHECK(close_callback_);
+    std::move(close_callback_).Run();
   }
 
   NotifyServiceAboutDialogAction(action);
