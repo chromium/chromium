@@ -96,7 +96,6 @@
       'android-cronet-marshmallow-arm64-perf-rel': 'android_cronet_release_bot_minimal_symbols_arm64',
       'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
-      'android-incremental-dbg': 'android_incremental_debug_bot_reclient',
 
       # This bot must use the gpu_tests mixin to match 'Android FYI Release (Nexus 5X)'
       # on the chromium.gpu waterfall, which it mirrors via trybots.pyl.
@@ -1476,10 +1475,6 @@
 
     'android_debug_trybot_x64_webview_trichrome_webview_shell': [
       'android', 'debug_bot', 'x64', 'webview_trichrome', 'webview_shell',
-    ],
-
-    'android_incremental_debug_bot_reclient': [
-      'android', 'incremental', 'debug_bot_reclient',
     ],
 
     'android_official_optimize_reclient': [
@@ -3756,10 +3751,6 @@
 
     'include_unwind_tables': {
       'gn_args': 'exclude_unwind_tables=false',
-    },
-
-    'incremental': {
-      'gn_args': 'incremental_install=true',
     },
 
     'internal_gles_conform_tests': {

@@ -437,19 +437,6 @@
       "use_thin_lto": false
     }
   },
-  "android-incremental-dbg": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "incremental_install": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
   "android-marshmallow-arm64-rel": {
     "gn_args": {
       "dcheck_always_on": false,

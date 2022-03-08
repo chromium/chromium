@@ -443,16 +443,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "android-incremental-dbg",
-    console_view_entry = consoles.console_view_entry(
-        category = "tester|incremental",
-    ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.builder(
     name = "android-marshmallow-arm64-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(

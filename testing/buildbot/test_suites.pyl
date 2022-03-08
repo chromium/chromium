@@ -115,27 +115,6 @@
       },
     },
 
-    'android_incremental_tests': {
-      'base_unittests': {
-        'args': [
-          '--gtest_filter=PathUtilsTest.TestGetDataDirectory',
-        ],
-      },
-      'chrome_public_test_apk': {
-        'args': [
-          '--gtest_filter=TabTest.testTabContext',
-        ],
-        'mixins': [
-          'skia_gold_test',
-        ],
-      },
-      'content_browsertests': {
-        'args': [
-          '--gtest_filter=AndroidGranularityMovementBrowserTest.NavigateByCharacters.',
-        ],
-      },
-    },
-
     'android_isolated_scripts': {
       'content_shell_crash_test': {
         'args': [

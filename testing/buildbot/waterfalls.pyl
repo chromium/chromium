@@ -907,24 +907,6 @@
           'isolated_scripts': 'cronet_rel_isolated_scripts',
         },
       },
-      'android-incremental-dbg': {
-        'test_suites': {
-          'gtest_tests': 'android_incremental_tests',
-        },
-        'mixins': [
-          'has_native_resultdb_integration'
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'MMB29Q',
-              'device_type': 'bullhead',
-              'os': 'Android',
-            },
-          ],
-        },
-        'os_type': 'android',
-      },
       'android-marshmallow-arm64-rel': {
         'mixins': [
           'has_native_resultdb_integration',
