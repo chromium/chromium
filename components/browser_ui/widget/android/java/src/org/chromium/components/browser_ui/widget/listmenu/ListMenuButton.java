@@ -87,14 +87,32 @@ public class ListMenuButton
 
     /**
      * Sets the delegate this menu will rely on for populating the popup menu and handling selection
-     * responses.  The menu will not show or work without it.
+     * responses. The OnClickListener will be overridden by default to show menu. The menu will not
+     * show or work without the delegate.
      *
      * @param delegate The {@link ListMenuButtonDelegate} to use for menu creation and selection
      *         handling.
      */
     public void setDelegate(ListMenuButtonDelegate delegate) {
+        setDelegate(delegate, true);
+    }
+
+    /**
+     * Sets the delegate this menu will rely on for populating the popup menu and handling selection
+     * responses. The menu will not
+     * show or work without the delegate.
+     *
+     * @param delegate The {@link ListMenuButtonDelegate} to use for menu creation and selection
+     *         handling.
+     * @param overrideOnClickListener Whether to override the click listener which can trigger
+     *        the popup menu.
+     */
+    public void setDelegate(ListMenuButtonDelegate delegate, boolean overrideOnClickListener) {
         dismiss();
         mDelegate = delegate;
+        if (overrideOnClickListener) {
+            setOnClickListener((view) -> showMenu());
+        }
     }
 
     /**
@@ -197,7 +215,6 @@ public class ListMenuButton
     protected void onFinishInflate() {
         super.onFinishInflate();
         if (TextUtils.isEmpty(getContentDescription())) setContentDescriptionContext("");
-        setOnClickListener((view) -> showMenu());
     }
 
     @Override

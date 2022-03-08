@@ -116,7 +116,7 @@ public class TabSwitcherActionMenuCoordinator {
             }
         };
 
-        anchorView.setDelegate(delegate);
+        anchorView.setDelegate(delegate, false);
         anchorView.showMenu();
     }
 

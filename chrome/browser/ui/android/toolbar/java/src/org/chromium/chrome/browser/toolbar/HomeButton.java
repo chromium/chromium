@@ -117,7 +117,7 @@ public class HomeButton extends ListMenuButton implements MenuItem.OnMenuItemCli
                 return rectProvider;
             }
         };
-        setDelegate(delegate);
+        setDelegate(delegate, false);
     }
 
     public ModelList buildMenuItems() {
