@@ -282,5 +282,7 @@ public final class ProductionSupportedFlagList {
                             + " on initial main document access."),
             Flag.baseFeature(ComponentsWebRtcFeatures.THREAD_WRAPPER_USES_METRONOME,
                     "Makes ThreadWrapper coalesce delayed tasks on metronome ticks."),
+            Flag.baseFeature(WebRtcOverridesFeatures.WEB_RTC_TIMER_USES_METRONOME,
+                    "Makes WebRtcTimer coalesce delayed tasks on metronome ticks."),
     };
 }

@@ -51399,6 +51399,7 @@ from previous Chrome versions.
 <enum name="LoginCustomFlags">
   <int value="-2146979021" label="OmniboxMaxURLMatches:enabled"/>
   <int value="-2146832142" label="SyncPseudoUSSSearchEngines:enabled"/>
+  <int value="-2146729457" label="WebRtcTimerUsesMetronome:disabled"/>
   <int value="-2146613579" label="V8Future:disabled"/>
   <int value="-2146512732" label="FullUserAgent:disabled"/>
   <int value="-2146263880" label="LensRegionSearch:disabled"/>
@@ -53338,6 +53339,7 @@ from previous Chrome versions.
   <int value="-860936336" label="ContextualTriggersSelectionMenu:enabled"/>
   <int value="-860578793" label="TabGridLayoutAndroid:disabled"/>
   <int value="-860534647" label="SiteDetails:enabled"/>
+  <int value="-859583725" label="WebRtcTimerUsesMetronome:enabled"/>
   <int value="-858280894" label="DelayCompetingLowPriorityRequests:disabled"/>
   <int value="-856915246" label="enable-new-audio-rendering-mixing-strategy"/>
   <int value="-856407187" label="OnDeviceGrammarCheck:disabled"/>
