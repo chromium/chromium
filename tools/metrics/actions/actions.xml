@@ -19171,6 +19171,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridSearchCloseTabFromAnotherWindow">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>mrefaat@chromium.org</owner>
+  <description>
+    User in the iOS tab grid closed a tab from another window by closing it from
+    search results.
+  </description>
+</action>
+
 <action name="MobileTabGridSearchTabs">
   <owner>mrefaat@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>

@@ -246,7 +246,8 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       web::WebState* webState = self.webStateList->GetWebStateAt(i);
       _scopedWebStateObservation->AddObservation(webState);
     }
-    [self populateConsumerItems];
+    if (self.webStateList->count() > 0)
+      [self populateConsumerItems];
   }
 }
 
@@ -452,9 +453,29 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 }
 
 - (void)closeItemWithID:(NSString*)itemID {
-  int index = GetIndexOfTabWithId(self.webStateList, itemID);
-  if (index != WebStateList::kInvalidIndex)
-    self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+  WebStateList* itemWebStateList = self.webStateList;
+  int index = GetIndexOfTabWithId(itemWebStateList, itemID);
+  if (index == WebStateList::kInvalidIndex) {
+    if (!IsTabsSearchEnabled())
+      return;
+    // If this is a search result, it may contain items from other windows -
+    // check other windows first before giving up.
+    BrowserList* browserList =
+        BrowserListFactory::GetForBrowserState(self.browserState);
+    Browser* browser = GetBrowserForTabWithId(
+        browserList, itemID, self.browserState->IsOffTheRecord());
+    if (!browser)
+      return;
+    itemWebStateList = browser->GetWebStateList();
+    index = GetIndexOfTabWithId(itemWebStateList, itemID);
+    // This item is not from the current browser therefore no UI updates will be
+    // sent to the current grid. So notify the current grid consumer about the
+    // change.
+    [self.consumer removeItemWithID:itemID selectedItemID:nil];
+    base::RecordAction(base::UserMetricsAction(
+        "MobileTabGridSearchCloseTabFromAnotherWindow"));
+  }
+  itemWebStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
 }
 
 - (void)closeItemsWithIDs:(NSArray<NSString*>*)itemIDs {
@@ -824,10 +845,8 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 
 // Calls |-populateItems:selectedItemID:| on the consumer.
 - (void)populateConsumerItems {
-  if (self.webStateList->count() > 0) {
-    [self.consumer populateItems:CreateItems(self.webStateList)
-                  selectedItemID:GetActiveTabId(self.webStateList)];
-  }
+  [self.consumer populateItems:CreateItems(self.webStateList)
+                selectedItemID:GetActiveTabId(self.webStateList)];
 }
 
 // Removes |self.syncedClosedTabsCount| most recent entries from the
