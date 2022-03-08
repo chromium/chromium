@@ -4027,15 +4027,8 @@ class ChromeDriverTestLegacy(ChromeDriverBaseTestWithWebServer):
     self.assertEqual('events: touchstart touchend', events.GetText())
 
 class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
-  def testCanSwitchToFencedFrame_ShadowDom(self):
-    self.runTest('shadow_dom')
-
-  def testCanSwitchToFencedFrame_MPArch(self):
-    self.runTest('mparch')
-
-  def runTest(self, fenced_frame_implementation):
-    self._driver = self.CreateDriver(chrome_switches=['--site-per-process',
-        '--enable-features=FencedFrames:implementation_type/%s' % fenced_frame_implementation])
+  def setUp(self):
+    super().setUp()
     self._http_server.SetDataForPath('/main.html', bytes("""
       <!DOCTYPE html>
         <html>
@@ -4044,6 +4037,15 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
           </body>
         </html>
       """, 'utf-8'))
+
+    self._http_server.SetDataForPath('/nesting.html', bytes("""
+      <!DOCTYPE html>
+        <html>
+          <body>
+            <iframe src="/main.html"></iframe>
+          </body>
+        </html>
+    """, 'utf-8'))
 
     def respondWithFencedFrameContents(request):
       return {'Supports-Loading-Mode': 'fenced-frame'}, bytes("""
@@ -4055,6 +4057,19 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
         </html>""", 'utf-8')
     self._http_server.SetCallbackForPath('/fencedframe.html', respondWithFencedFrameContents)
 
+
+  def tearDown(self):
+    super().tearDown()
+    self._http_server.SetDataForPath('/main.html', None)
+    self._http_server.SetDataForPath('/nesting.html', None)
+    self._http_server.SetCallbackForPath('/fencedframe.html', None)
+
+  def _initDriver(self, fenced_frame_implementation):
+    self._driver = self.CreateDriver(chrome_switches=['--site-per-process',
+        '--enable-features=FencedFrames:implementation_type/%s' % fenced_frame_implementation])
+
+  def _testCanSwitchToFencedFrame(self, fenced_frame_implementation):
+    self._initDriver(fenced_frame_implementation)
     self._driver.Load(self.GetHttpUrlForFile('/main.html'))
     self._driver.SetTimeouts({'implicit': 2000})
     fencedframe = self._driver.FindElement('tag name', 'fencedframe')
@@ -4062,10 +4077,39 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
     button = self._driver.FindElement('tag name', 'button')
     self.assertIsNotNone(button)
 
-  def tearDown(self):
-    super(ChromeDriverFencedFrame, self).tearDown()
-    self._http_server.SetDataForPath('/main.html', None)
-    self._http_server.SetCallbackForPath('/fencedframe.html', None)
+  def _testAppendEmptyFencedFrame(self, fenced_frame_implementation):
+    self._initDriver(fenced_frame_implementation)
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.ExecuteScript('document.body.appendChild(document.createElement("fencedframe"));')
+    fencedframe = self._driver.FindElement('tag name', 'fencedframe')
+    self.assertIsNotNone(fencedframe)
+    self._driver.SwitchToFrame(fencedframe)
+
+  def _testFencedFrameInsideIframe(self, fenced_frame_implementation):
+    self._initDriver(fenced_frame_implementation)
+    self._driver.Load(self.GetHttpUrlForFile('/nesting.html'))
+    self._driver.SwitchToFrameByIndex(0)
+    fencedframe = self._driver.FindElement('tag name', 'fencedframe')
+    self.assertIsNotNone(fencedframe)
+    self._driver.SwitchToFrame(fencedframe)
+
+  def testCanSwitchToFencedFrame_ShadowDom(self):
+    self._testCanSwitchToFencedFrame('shadow_dom')
+
+  def testCanSwitchToFencedFrame_MPArch(self):
+    self._testCanSwitchToFencedFrame('mparch')
+
+  def testAppendEmptyFencedFrame_ShadowDom(self):
+    self._testAppendEmptyFencedFrame('shadow_dom')
+
+  def testAppendEmptyFencedFrame_MPArch(self):
+    self._testAppendEmptyFencedFrame('mparch')
+
+  def testFencedFrameInsideIframe_ShadowDom(self):
+    self._testFencedFrameInsideIframe('shadow_dom')
+
+  def testFencedFrameInsideIframe_MPArch(self):
+    self._testFencedFrameInsideIframe('mparch')
 
 class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
   """Tests for ChromeDriver with the new Site Isolation Chrome feature.
