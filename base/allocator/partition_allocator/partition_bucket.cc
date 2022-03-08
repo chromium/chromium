@@ -415,30 +415,77 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
   return &page->slot_span_metadata;
 }
 
-}  // namespace
+uint8_t ComputeSystemPagesPerSlotSpanPreferSmall(size_t slot_size) {
+  if (slot_size > MaxRegularSlotSpanSize()) {
+    // This is technically not needed, as for now all the larger slot sizes are
+    // multiples of the system page size.
+    return base::bits::AlignUp(slot_size, SystemPageSize()) / SystemPageSize();
+  }
 
-// TODO(ajwong): This seems to interact badly with
-// get_pages_per_slot_span() which rounds the value from this up to a
-// multiple of NumSystemPagesPerPartitionPage() (aka 4) anyways.
-// http://crbug.com/776537
-//
-// TODO(ajwong): The waste calculation seems wrong. The PTE usage should cover
-// both used and unsed pages.
-// http://crbug.com/776537
-// static
-template <bool thread_safe>
-uint8_t PartitionBucket<thread_safe>::ComputeSystemPagesPerSlotSpan(
-    size_t slot_size) {
+  // Smaller slot spans waste less address space, as well as potentially lower
+  // fragmentation:
+  // - Address space: This comes from fuller SuperPages (since the tail end of a
+  //   SuperPage is more likely to be used when the slot span is smaller. Also,
+  //   if a slot span is partially used, a smaller slot span will use less
+  //   address space.
+  // - In-slot fragmentation: Slot span management code will prioritize
+  //   almost-full slot spans, as well as trying to keep empty slot spans
+  //   empty. The more granular this logic can work, the better.
+  //
+  // Since metadata space overhead is constant per-PartitionPage, keeping
+  // smaller slot spans makes sense.
+  //
+  // Underlying memory allocation is done per-PartitionPage, but memory commit
+  // is done per system page. This means that we prefer to fill the entirety of
+  // a PartitionPage with a slot span, but we can tolerate some system pages
+  // being empty at the end, as these will not cost committed or dirty memory.
+  //
+  // The choice below is, for multi-slot slot spans:
+  // - If a full PartitionPage slot span is possible with less than 2% of a
+  //   *single* system page wasted, use it. The smallest possible size wins.
+  // - Otherwise, select the size with the smallest virtual address space
+  //   loss. Allow a SlotSpan to leave some slack in its PartitionPage, up to
+  //   1/4 of the total.
+  for (size_t partition_page_count = 1;
+       partition_page_count <= kMaxPartitionPagesPerRegularSlotSpan;
+       partition_page_count++) {
+    size_t candidate_size = partition_page_count * PartitionPageSize();
+    size_t waste = candidate_size % slot_size;
+    if (waste <= .02 * SystemPageSize())
+      return partition_page_count * NumSystemPagesPerPartitionPage();
+  }
+
+  size_t best_count = 0;
+  size_t best_waste = std::numeric_limits<size_t>::max();
+  for (size_t partition_page_count = 1;
+       partition_page_count <= kMaxPartitionPagesPerRegularSlotSpan;
+       partition_page_count++) {
+    // Prefer no slack.
+    for (size_t slack = 0; slack < partition_page_count; slack++) {
+      size_t system_page_count =
+          partition_page_count * NumSystemPagesPerPartitionPage() - slack;
+      size_t candidate_size = system_page_count * SystemPageSize();
+      size_t waste = candidate_size % slot_size;
+      if (waste < best_waste) {
+        best_waste = waste;
+        best_count = system_page_count;
+      }
+    }
+  }
+  return best_count;
+}
+
+uint8_t ComputeSystemPagesPerSlotSpanInternal(size_t slot_size) {
   // This works out reasonably for the current bucket sizes of the generic
   // allocator, and the current values of partition page size and constants.
   // Specifically, we have enough room to always pack the slots perfectly into
   // some number of system pages. The only waste is the waste associated with
   // unfaulted pages (i.e. wasted address space).
   // TODO: we end up using a lot of system pages for very small sizes. For
-  // example, we'll use 12 system pages for slot size 24. The slot size is
-  // so small that the waste would be tiny with just 4, or 1, system pages.
-  // Later, we can investigate whether there are anti-fragmentation benefits
-  // to using fewer system pages.
+  // example, we'll use 12 system pages for slot size 24. The slot size is so
+  // small that the waste would be tiny with just 4, or 1, system pages.  Later,
+  // we can investigate whether there are anti-fragmentation benefits to using
+  // fewer system pages.
   double best_waste_ratio = 1.0f;
   uint16_t best_pages = 0;
   if (slot_size > MaxRegularSlotSpanSize()) {
@@ -480,6 +527,16 @@ uint8_t PartitionBucket<thread_safe>::ComputeSystemPagesPerSlotSpan(
   return static_cast<uint8_t>(best_pages);
 }
 
+}  // namespace
+
+uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
+                                      bool prefer_smaller_slot_spans) {
+  if (prefer_smaller_slot_spans)
+    return ComputeSystemPagesPerSlotSpanPreferSmall(slot_size);
+  else
+    return ComputeSystemPagesPerSlotSpanInternal(slot_size);
+}
+
 template <bool thread_safe>
 void PartitionBucket<thread_safe>::Init(uint32_t new_slot_size) {
   slot_size = new_slot_size;
@@ -489,7 +546,15 @@ void PartitionBucket<thread_safe>::Init(uint32_t new_slot_size) {
   empty_slot_spans_head = nullptr;
   decommitted_slot_spans_head = nullptr;
   num_full_slot_spans = 0;
-  num_system_pages_per_slot_span = ComputeSystemPagesPerSlotSpan(slot_size);
+  bool prefer_smaller_slot_spans =
+#if defined(PA_PREFER_SMALLER_SLOT_SPANS)
+      true
+#else
+      false
+#endif
+      ;
+  num_system_pages_per_slot_span =
+      ComputeSystemPagesPerSlotSpan(slot_size, prefer_smaller_slot_spans);
 }
 
 template <bool thread_safe>

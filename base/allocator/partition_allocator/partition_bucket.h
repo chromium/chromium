@@ -19,6 +19,10 @@ namespace partition_alloc::internal {
 
 constexpr inline int kPartitionNumSystemPagesPerSlotSpanBits = 8;
 
+// Visible for testing.
+BASE_EXPORT uint8_t
+ComputeSystemPagesPerSlotSpan(size_t slot_size, bool prefer_smaller_slot_spans);
+
 template <bool thread_safe>
 struct PartitionBucket {
   // Accessed most in hot path => goes first. Only nullptr for invalid buckets,
@@ -141,14 +145,6 @@ struct PartitionBucket {
 
  private:
   static NOINLINE void OnFull();
-
-  // Returns the number of system pages in a slot span.
-  //
-  // The calculation attempts to find the best number of system pages to
-  // allocate for the given slot_size to minimize wasted space. It uses a
-  // heuristic that looks at number of bytes wasted after the last slot and
-  // attempts to account for the PTE usage of each system page.
-  static uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size);
 
   // Allocates a new slot span with size |num_partition_pages| from the
   // current extent. Metadata within this slot span will be initialized.

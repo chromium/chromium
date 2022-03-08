@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 #include <limits>
 #include <memory>
 #include <random>
@@ -34,6 +35,7 @@
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -1194,7 +1196,16 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
 }
 
 TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
-  const size_t real_size = 80;
+  // Find the smallest bucket with multiple PartitionPages.
+  size_t real_size;
+  for (PartitionBucket<ThreadSafe>& bucket : allocator.root()->buckets) {
+    if (bucket.num_system_pages_per_slot_span >
+        NumSystemPagesPerPartitionPage()) {
+      real_size = bucket.slot_size;
+      break;
+    }
+  }
+
   const size_t requested_size = real_size - kExtraAllocSize;
   // Double check we don't end up with 0 or negative size.
   EXPECT_GT(requested_size, 0u);
@@ -1493,11 +1504,10 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
   total_slots =
       (slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize()) /
       bucket->slot_size;
-  const size_t expected_slots = kNumBucketsPerOrderBits == 3 ? 16u : 24u;
-  EXPECT_EQ(expected_slots, total_slots);
+
   EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(1u, slot_span->num_allocated_slots);
-  EXPECT_EQ(expected_slots - 1, slot_span->num_unprovisioned_slots);
+  EXPECT_EQ(total_slots - 1, slot_span->num_unprovisioned_slots);
 
   ptr2 = allocator.root()->Alloc(non_dividing_size, type_name);
   EXPECT_TRUE(ptr2);
@@ -1506,13 +1516,13 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
   // 2 slots got provisioned: the first one fills the rest of the first (already
   // provision page) and exceeds it by just a tad, thus leading to provisioning
   // a new page, and the second one fully fits within that new page.
-  EXPECT_EQ(expected_slots - 3, slot_span->num_unprovisioned_slots);
+  EXPECT_EQ(total_slots - 3, slot_span->num_unprovisioned_slots);
 
   ptr3 = allocator.root()->Alloc(non_dividing_size, type_name);
   EXPECT_TRUE(ptr3);
   EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_EQ(3u, slot_span->num_allocated_slots);
-  EXPECT_EQ(expected_slots - 3, slot_span->num_unprovisioned_slots);
+  EXPECT_EQ(total_slots - 3, slot_span->num_unprovisioned_slots);
 
   allocator.root()->Free(ptr);
   allocator.root()->Free(ptr2);
@@ -1673,8 +1683,9 @@ TEST_P(PartitionAllocTest, PartialPages) {
     bucket_index = SizeToIndex(size + kExtraAllocSize);
     bucket = &allocator.root()->buckets[bucket_index];
     if (bucket->num_system_pages_per_slot_span %
-        NumSystemPagesPerPartitionPage())
+        NumSystemPagesPerPartitionPage()) {
       break;
+    }
     size += sizeof(void*);
   }
   EXPECT_LT(size, 1000u);
@@ -4424,6 +4435,24 @@ TEST_P(PartitionAllocTest, OpenCL) {
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_MAC)
+
+TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
+  for (PartitionRoot<ThreadSafe>::Bucket& bucket : allocator.root()->buckets) {
+    size_t slot_size = bucket.slot_size;
+    if (slot_size == kInvalidBucketSize)
+      continue;
+
+    size_t small_system_page_count =
+        partition_alloc::internal::ComputeSystemPagesPerSlotSpan(
+            bucket.slot_size, true);
+    size_t small_waste =
+        (small_system_page_count * SystemPageSize()) % slot_size;
+
+    EXPECT_LT(small_waste, .05 * SystemPageSize());
+    if (slot_size <= MaxRegularSlotSpanSize())
+      EXPECT_LE(small_system_page_count, MaxSystemPagesPerRegularSlotSpan());
+  }
+}
 
 }  // namespace internal
 }  // namespace base

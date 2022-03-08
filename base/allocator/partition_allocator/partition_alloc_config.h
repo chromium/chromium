@@ -205,4 +205,15 @@ constexpr bool kUseLazyCommit = false;
 #define PA_REF_COUNT_CHECK_COOKIE
 #endif
 
+// Prefer smaller slot spans.
+//
+// Smaller slot spans may improve dirty memory fragmentation, but may also
+// increase address space usage.
+//
+// This is intended to roll out more broadly, but only enabled on Linux for now
+// to get performance bot and real-world data pre-A/B experiment.
+#if BUILDFLAG(IS_LINUX)
+#define PA_PREFER_SMALLER_SLOT_SPANS
+#endif  // BUILDFLAG(IS_LINUX)
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_

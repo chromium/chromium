@@ -765,10 +765,10 @@ TEST_F(PartitionAllocPCScanTest, DanglingPointerToInaccessibleArea) {
       root(), root().AdjustSizeForExtrasSubtract(
                   kObjectSizeForSlotSpanConsistingOfMultiplePartitionPages));
 
-  // Assert that number of allocatable bytes for this bucket is smaller than all
-  // allocated partition pages.
+  // Assert that number of allocatable bytes for this bucket is smaller or equal
+  // to all allocated partition pages.
   auto* bucket = full_slot_span.slot_span->bucket;
-  ASSERT_LT(bucket->get_bytes_per_span(),
+  ASSERT_LE(bucket->get_bytes_per_span(),
             bucket->get_pages_per_slot_span() * PartitionPageSize());
 
   // Let the first object point past the end of the last one + some random
