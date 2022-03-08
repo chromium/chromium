@@ -15,20 +15,30 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../common/styles.js';
 
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../common/utils.js';
 
-import {GooglePhotosAlbum, WallpaperCollection} from './personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from './personalization_app.mojom-webui.js';
 import {isPersonalizationHubEnabled, Paths, PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
-import {isNonEmptyString} from './utils.js';
+import {inBetween, isNonEmptyString} from './utils.js';
 
 /** Event interface for dom-repeat. */
 interface RepeaterEvent extends CustomEvent {
   model: {
     index: number,
   };
+}
+
+export function stringToTopicSource(x: string): TopicSource|null {
+  const num = parseInt(x, 10);
+  if (!isNaN(num) &&
+      inBetween(num, TopicSource.MIN_VALUE, TopicSource.MAX_VALUE)) {
+    return num;
+  }
+  return null;
 }
 
 export class PersonalizationBreadcrumb extends WithPersonalizationStore {
@@ -52,6 +62,9 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
       /** The current Google Photos album id to display. */
       googlePhotosAlbumId: String,
 
+      /** The topic source of the selected album(s) for screensaver. */
+      topicSource: String,
+
       /**
        * The current path of the page.
        */
@@ -62,7 +75,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
       breadcrumbs_: {
         type: Array,
         computed:
-            'computeBreadcrumbs_(path, collections_, collectionId, googlePhotosAlbums_, googlePhotosAlbumId)',
+            'computeBreadcrumbs_(path, collections_, collectionId, googlePhotosAlbums_, googlePhotosAlbumId, topicSource)',
       },
 
       collections_: {
@@ -81,6 +94,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
 
   collectionId: string;
   googlePhotosAlbumId: string;
+  topicSource: string;
   path: string;
   private breadcrumbs_: string[];
   private collections_: WallpaperCollection[]|null;
@@ -95,20 +109,17 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
     this.updateFromStore();
   }
 
-  private computeBreadcrumbs_(
-      path: string, collections: WallpaperCollection[]|null,
-      collectionId: string, googlePhotosAlbums: GooglePhotosAlbum[]|null,
-      googlePhotosAlbumId: string|null): string[] {
+  private computeBreadcrumbs_(): string[] {
     const breadcrumbs = [];
-    switch (path) {
+    switch (this.path) {
       case Paths.Collections:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         break;
       case Paths.CollectionImages:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
-        if (isNonEmptyArray(collections)) {
-          const collection =
-              collections.find(collection => collection.id === collectionId);
+        if (isNonEmptyArray(this.collections_)) {
+          const collection = this.collections_.find(
+              collection => collection.id === this.collectionId);
           if (collection) {
             breadcrumbs.push(collection.name);
           }
@@ -117,11 +128,11 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
       case Paths.GooglePhotosCollection:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         breadcrumbs.push(this.i18n('googlePhotosLabel'));
-        if (isNonEmptyString(googlePhotosAlbumId) &&
-            isNonEmptyArray(googlePhotosAlbums)) {
-          const googlePhotosAlbum = googlePhotosAlbums.find(
+        if (isNonEmptyString(this.googlePhotosAlbumId) &&
+            isNonEmptyArray(this.googlePhotosAlbums_)) {
+          const googlePhotosAlbum = this.googlePhotosAlbums_.find(
               googlePhotosAlbum =>
-                  googlePhotosAlbum.id === googlePhotosAlbumId);
+                  googlePhotosAlbum.id === this.googlePhotosAlbumId);
           if (googlePhotosAlbum) {
             breadcrumbs.push(googlePhotosAlbum.title);
           }
@@ -137,13 +148,24 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
       case Paths.Ambient:
         breadcrumbs.push(this.i18n('screensaverLabel'));
         break;
+      case Paths.AmbientAlbums:
+        breadcrumbs.push(this.i18n('screensaverLabel'));
+        const topicSourceVal = stringToTopicSource(this.topicSource);
+        if (topicSourceVal === TopicSource.kGooglePhotos) {
+          breadcrumbs.push(this.i18n('ambientModeTopicSourceGooglePhotos'));
+        } else if (topicSourceVal === TopicSource.kArtGallery) {
+          breadcrumbs.push(this.i18n('ambientModeTopicSourceArtGallery'));
+        } else {
+          assertNotReached(`Invalid TopicSource value: ${topicSourceVal}`);
+        }
+        break;
     }
     return breadcrumbs;
   }
 
-  private computeShowBackButton_(path: string): boolean {
+  private computeShowBackButton_(): boolean {
     // Do not show the back button if hub is enabled.
-    return !isPersonalizationHubEnabled() && path !== Paths.Collections;
+    return !isPersonalizationHubEnabled() && this.path !== Paths.Collections;
   }
 
   private showHomeButton_(): boolean {

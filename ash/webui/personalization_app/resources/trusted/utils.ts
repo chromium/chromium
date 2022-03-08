@@ -46,6 +46,14 @@ export function isNonEmptyString(maybeString: unknown): maybeString is string {
 }
 
 /**
+ * Checks if a number is within a range.
+ */
+export function inBetween(
+    num: number, minVal: number, maxVal: number): boolean {
+  return minVal <= num && num <= maxVal;
+}
+
+/**
  * Wallpaper images sometimes have a resolution suffix appended to the end of
  * the image. This is typically to fetch a high resolution image to show as the
  * user's wallpaper. We do not want the full resolution here, so remove the

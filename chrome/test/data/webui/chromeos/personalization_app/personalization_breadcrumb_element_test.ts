@@ -4,7 +4,7 @@
 
 /** @fileoverview Test suite for wallpaper-breadcrumb component.  */
 
-import {GooglePhotosAlbum} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {PersonalizationBreadcrumb} from 'chrome://personalization/trusted/personalization_breadcrumb_element.js';
 import {Paths, PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -335,6 +335,90 @@ export function PersonalizationBreadcrumbTest() {
     assertBreadcrumbs(
         breadcrumbContainer!, [breadcrumbElement.i18n('screensaverLabel')]);
   });
+
+  test(
+      'show label when ambient album page - Google Photos is loaded',
+      async () => {
+        loadTimeData.overrideValues(
+            {'ambientModeTopicSourceGooglePhotos': 'Google Photos'});
+
+        breadcrumbElement = initElement(PersonalizationBreadcrumb, {
+          'path': Paths.AmbientAlbums,
+          'topicSource': TopicSource.kGooglePhotos
+        });
+
+        const breadcrumbContainer =
+            breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+        assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
+        assertBreadcrumbs(breadcrumbContainer, [
+          breadcrumbElement.i18n('screensaverLabel'),
+          breadcrumbElement.i18n('ambientModeTopicSourceGooglePhotos')
+        ]);
+
+        const original = PersonalizationRouter.instance;
+        const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
+          PersonalizationRouter.instance = () => {
+            return {
+              goToRoute(path: Paths, queryParams: Object = {}) {
+                resolve([path, queryParams]);
+                PersonalizationRouter.instance = original;
+              }
+            } as PersonalizationRouter;
+          };
+        });
+
+        // current breadcrumbs: Home > Screensaver > Google Photos
+        // navigate to ambient subpage when Screensaver breadcrumb is clicked
+        // on.
+        const screensaverBreadcrumb =
+            breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+        screensaverBreadcrumb!.click();
+        const [path, queryParams] = await goToRoutePromise;
+        assertEquals(Paths.Ambient, path);
+        assertDeepEquals({}, queryParams);
+      });
+
+  test(
+      'show label when ambient album page - Art gallery is loaded',
+      async () => {
+        loadTimeData.overrideValues(
+            {'ambientModeTopicSourceArtGallery': 'Art Gallery'});
+
+        breadcrumbElement = initElement(PersonalizationBreadcrumb, {
+          'path': Paths.AmbientAlbums,
+          'topicSource': TopicSource.kArtGallery
+        });
+
+        const breadcrumbContainer =
+            breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
+        assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
+        assertBreadcrumbs(breadcrumbContainer, [
+          breadcrumbElement.i18n('screensaverLabel'),
+          breadcrumbElement.i18n('ambientModeTopicSourceArtGallery')
+        ]);
+
+        const original = PersonalizationRouter.instance;
+        const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
+          PersonalizationRouter.instance = () => {
+            return {
+              goToRoute(path: Paths, queryParams: Object = {}) {
+                resolve([path, queryParams]);
+                PersonalizationRouter.instance = original;
+              }
+            } as PersonalizationRouter;
+          };
+        });
+
+        // current breadcrumbs: Home > Screensaver > Art Gallery
+        // navigate to ambient subpage when Screensaver breadcrumb is clicked
+        // on.
+        const screensaverBreadcrumb =
+            breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+        screensaverBreadcrumb!.click();
+        const [path, queryParams] = await goToRoutePromise;
+        assertEquals(Paths.Ambient, path);
+        assertDeepEquals({}, queryParams);
+      });
 
   test('back button aria label is set', async () => {
     // Back button is hidden when personalization hub is enabled.
