@@ -4527,6 +4527,22 @@
             ]
         }
     ],
+    "OmniboxPedalsBatch1Android": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxPedalsAndroidBatch1",
+                        "OmniboxPedalsBatch3NonEnglish"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxPedalsBatch3NonEnglish": [
         {
             "platforms": [
