@@ -136,6 +136,10 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  base::TestMockTimeTaskRunner* mock_time_task_runner() {
+    return mock_time_task_runner_.get();
+  }
+
   void CreateHandler(const CastModeSet& cast_modes,
                      std::unique_ptr<StartPresentationContext>
                          start_presentation_context = nullptr) {
@@ -144,6 +148,8 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     access_code_cast_sink_service_ =
         std::make_unique<MockAccessCodeCastSinkService>(
             profile_, router_, mock_cast_media_sink_service_impl_.get());
+    access_code_cast_sink_service_->SetTaskRunnerForTest(
+        mock_time_task_runner_);
 
     handler_ = std::make_unique<AccessCodeCastHandler>(
         mojo::PendingReceiver<access_code_cast::mojom::PageHandler>(),
@@ -189,10 +195,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     CreateHandler(cast_modes);
     set_screen_capture_allowed_for_testing(true);
 
-    for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
-      sinks_observer->OnSinksUpdated({cast_sink_1().sink()},
-                                     std::vector<url::Origin>());
-    }
+    UpdateSinks({cast_sink_1().sink()}, std::vector<url::Origin>());
     handler()->set_sink_id_for_testing(cast_sink_1().sink().id());
 
     EXPECT_CALL(*router(),
@@ -209,10 +212,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     CreateHandler({MediaCastMode::PRESENTATION, MediaCastMode::TAB_MIRROR},
                   std::move(start_presentation_context));
 
-    for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
-      sinks_observer->OnSinksUpdated({cast_sink_1().sink()},
-                                     {request.frame_origin});
-    }
+    UpdateSinks({cast_sink_1().sink()}, {request.frame_origin});
     handler()->set_sink_id_for_testing(cast_sink_1().sink().id());
 
     auto source =
@@ -233,6 +233,13 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
           base::DoNothing()) {
     return std::make_unique<StartPresentationContext>(
         presentation_request, std::move(success_cb), std::move(error_cb));
+  }
+
+  void UpdateSinks(const std::vector<MediaSink>& sinks,
+                   const std::vector<url::Origin>& origins) {
+    for (MediaSinksObserver* sinks_observer : media_sinks_observers_) {
+      sinks_observer->OnSinksUpdated(sinks, origins);
+    }
   }
 
   const MediaSinkInternal& cast_sink_1() { return cast_sink_1_; }
@@ -357,13 +364,16 @@ TEST_F(AccessCodeCastHandlerTest, ValidDiscoveryDeviceAndCode) {
 }
 
 TEST_F(AccessCodeCastHandlerTest, OnChannelOpened) {
-  // OnChannelOpened should only trigger the callback if the channel opening
-  // failed.
+  // If the sink is not already present in MR, OnChannelOpened should only
+  // trigger the callback if the channel opening failed.
+  handler()->set_sink_id_for_testing(cast_sink_1().sink().id());
+
   MockAddSinkCallback mock_callback_true;
   handler()->SetSinkCallbackForTesting(mock_callback_true.Get());
 
   EXPECT_CALL(mock_callback_true, Run(AddSinkResultCode::CHANNEL_OPEN_ERROR))
       .Times(0);
+  EXPECT_CALL(mock_callback_true, Run(AddSinkResultCode::OK)).Times(0);
   handler()->OnChannelOpenedResult(true);
 
   MockAddSinkCallback mock_callback_false;
@@ -371,6 +381,21 @@ TEST_F(AccessCodeCastHandlerTest, OnChannelOpened) {
 
   EXPECT_CALL(mock_callback_false, Run(AddSinkResultCode::CHANNEL_OPEN_ERROR));
   handler()->OnChannelOpenedResult(false);
+}
+
+TEST_F(AccessCodeCastHandlerTest, OnChannelOpenedExistingSink) {
+  // OnChannelOpened should trigger success if the sink is already present in
+  // MR.
+  handler()->set_sink_id_for_testing(cast_sink_1().sink().id());
+  UpdateSinks({cast_sink_1().sink()}, std::vector<url::Origin>());
+
+  MockAddSinkCallback mock_callback_true;
+  handler()->SetSinkCallbackForTesting(mock_callback_true.Get());
+
+  EXPECT_CALL(mock_callback_true, Run(AddSinkResultCode::CHANNEL_OPEN_ERROR))
+      .Times(0);
+  EXPECT_CALL(mock_callback_true, Run(AddSinkResultCode::OK));
+  handler()->OnChannelOpenedResult(true);
 }
 
 TEST_F(AccessCodeCastHandlerTest, InvalidDiscoveryDevice) {
@@ -406,6 +431,7 @@ TEST_F(AccessCodeCastHandlerTest, DiscoveredDeviceAdded) {
   EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK));
   handler()->SetSinkCallbackForTesting(mock_callback.Get());
 
+  UpdateSinks({cast_sink_1().sink()}, std::vector<url::Origin>());
   MediaSinkWithCastModes sink_with_cast_modes(cast_sink_1().sink());
   sink_with_cast_modes.cast_modes = {MediaCastMode::DESKTOP_MIRROR};
 
@@ -519,44 +545,6 @@ TEST_F(AccessCodeCastHandlerTest, StartPresentationContext) {
 
   StartPresentation(presentation_request, std::move(start_presentation_context),
                     mock_callback);
-}
-
-// Starting a casting session on a sink that has an existing route will cause
-// the current route to be terminate before the new route is created.
-TEST_F(AccessCodeCastHandlerTest, TerminateExistingRoute) {
-  MediaSource existing_source = MediaSource::ForTab(
-      sessions::SessionTabHelper::IdForTab(web_contents()).id());
-  MediaRoute::Id route_id = MediaRoute::GetMediaRouteId(
-      "presentation", cast_sink_1().id(), existing_source);
-  MediaRoute existing_route(route_id, existing_source, cast_sink_1().id(),
-                            "TerminateExistingRoute", false);
-  EXPECT_CALL(*router(), GetCurrentRoutes())
-      .WillOnce(Return(std::vector<MediaRoute>{existing_route}));
-  EXPECT_CALL(*router(), TerminateRoute(route_id));
-
-  set_expected_cast_result(RouteRequestResult::ResultCode::OK);
-  MockCastToSinkCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run(RouteRequestResultCode::OK));
-  StartDesktopMirroring(MediaSource::ForUnchosenDesktop(), mock_callback);
-}
-
-// Starting a casting session when there are routes that exist for other sinks.
-// Demonstrate that those routes aren't terminated.
-TEST_F(AccessCodeCastHandlerTest, IgnoreOtherRoutes) {
-  MediaSource existing_source = MediaSource::ForTab(
-      sessions::SessionTabHelper::IdForTab(web_contents()).id());
-  MediaRoute::Id route_id = MediaRoute::GetMediaRouteId(
-      "presentation", cast_sink_2().id(), existing_source);
-  MediaRoute existing_route(route_id, existing_source, cast_sink_2().id(),
-                            "TerminateExistingRoute", false);
-  EXPECT_CALL(*router(), GetCurrentRoutes())
-      .WillOnce(Return(std::vector<MediaRoute>{existing_route}));
-  EXPECT_CALL(*router(), TerminateRoute(_)).Times(0);
-
-  set_expected_cast_result(RouteRequestResult::ResultCode::OK);
-  MockCastToSinkCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run(RouteRequestResultCode::OK));
-  StartDesktopMirroring(MediaSource::ForUnchosenDesktop(), mock_callback);
 }
 
 }  // namespace media_router

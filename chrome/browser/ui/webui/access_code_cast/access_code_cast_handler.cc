@@ -193,6 +193,26 @@ void AccessCodeCastHandler::InitMirroringSources() {
   }
 }
 
+// Discovery is not complete until the sink is in QRM. This is because any
+// attempt to create route parameters before the sink is in QRM will fail.
+void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
+  DCHECK(add_sink_callback_) << "Dialog already notified!";
+  DCHECK(sink_id_) << "Must have a sink id to complete!";
+
+  // Verify that the sink is in QRM.
+  if (std::find_if(cast_mode_set_.begin(), cast_mode_set_.end(),
+                   [this](MediaCastMode cast_mode) {
+                     return query_result_manager_->GetSourceForCastModeAndSink(
+                         cast_mode, *sink_id_);
+                   }) == cast_mode_set_.end()) {
+    // sink hasn't been added to QRM yet.
+    return;
+  }
+
+  // Sink has been completely added so caller can be alerted.
+  std::move(add_sink_callback_).Run(AddSinkResultCode::OK);
+}
+
 void AccessCodeCastHandler::OnAccessCodeValidated(
     absl::optional<DiscoveryDevice> discovery_device,
     AddSinkResultCode result_code) {
@@ -239,9 +259,14 @@ void AccessCodeCastHandler::OnAccessCodeValidated(
 void AccessCodeCastHandler::OnChannelOpenedResult(bool channel_opened) {
   // Wait for OnResultsUpdated before triggering the |add_sink_callback_| since
   // we are not entirely sure the sink is ready to be casted to yet.
-  if (!channel_opened && add_sink_callback_) {
-    LOG(ERROR) << "CAST2CLASS: The cast channel failed to open.";
-    std::move(add_sink_callback_).Run(AddSinkResultCode::CHANNEL_OPEN_ERROR);
+  if (add_sink_callback_) {
+    if (channel_opened) {
+      DCHECK(sink_id_) << "Must have sink_id_ when adding a sink!";
+      CheckForDiscoveryCompletion();
+    } else {
+      LOG(ERROR) << "CAST2CLASS: The cast channel failed to open.";
+      std::move(add_sink_callback_).Run(AddSinkResultCode::CHANNEL_OPEN_ERROR);
+    }
   }
 }
 
@@ -254,18 +279,8 @@ void AccessCodeCastHandler::SetSinkCallbackForTesting(
 // newly discovered sinks, as well as what types of casting those sinks support.
 void AccessCodeCastHandler::OnResultsUpdated(
     const std::vector<MediaSinkWithCastModes>& sinks) {
-  // Look for a sink matching the discovered sink id. If found, then the
-  // discovered sink has been successfully added and the dialog can be alerted
-  // to the success of the operation.
   if (add_sink_callback_ && sink_id_) {
-    auto sink = std::find_if(sinks.begin(), sinks.end(),
-                             [this](const MediaSinkWithCastModes& sink) {
-                               supported_cast_modes_ = sink.cast_modes;
-                               return sink.sink.id() == sink_id_;
-                             });
-    if (sink != sinks.end()) {
-      std::move(add_sink_callback_).Run(AddSinkResultCode::OK);
-    }
+    CheckForDiscoveryCompletion();
   }
 }
 
@@ -310,19 +325,6 @@ void AccessCodeCastHandler::CastToSink(CastToSinkCallback callback) {
     }
   }
 
-  // If there is already a route for this sink_id, then terminate the existing
-  // route before starting a new one.
-  auto routes = media_router_->GetCurrentRoutes();
-  auto route_it = std::find_if(routes.begin(), routes.end(),
-                               [this](const MediaRoute& route) {
-                                 return route.media_sink_id() == *sink_id_;
-                               });
-  const MediaRoute* current_route =
-      route_it == routes.end() ? nullptr : &*route_it;
-  if (current_route) {
-    media_router_->TerminateRoute(current_route->media_route_id());
-  }
-
   media_router_->CreateRoute(
       params->source_id, sink_id_.value(), params->origin, web_contents_,
       base::BindOnce(&AccessCodeCastHandler::OnRouteResponse,
@@ -343,7 +345,6 @@ absl::optional<RouteParameters> AccessCodeCastHandler::GetRouteParameters(
       query_result_manager_->GetSourceForCastModeAndSink(cast_mode,
                                                          sink_id_.value());
   if (!source) {
-    LOG(WARNING) << "CAST2CLASS: Source has not been set for cast mode.";
     return absl::nullopt;
   }
   params.source_id = source->id();

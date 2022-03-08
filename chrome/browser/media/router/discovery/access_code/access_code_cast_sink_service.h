@@ -55,6 +55,8 @@ class AccessCodeCastSinkService : public KeyedService {
    private:
     FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                              AccessCodeCastDeviceRemovedAfterRouteEnds);
+    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                             AddExistingSinkToMediaRouterWithRoute);
     // media_router::MediaRoutesObserver:
     void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override;
 
@@ -75,6 +77,8 @@ class AccessCodeCastSinkService : public KeyedService {
                            AddExistingSinkToMediaRouter);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            AddNewSinkToMediaRouter);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           AddExistingSinkToMediaRouterWithRoute);
 
   // Constructor used for testing.
   AccessCodeCastSinkService(
@@ -95,8 +99,15 @@ class AccessCodeCastSinkService : public KeyedService {
   // KeyedService.
   void Shutdown() override;
 
+  void SetTaskRunnerForTest(
+      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
+    task_runner_ = task_runner;
+  }
+
   // Owns us via the KeyedService mechanism.
   const raw_ptr<Profile> profile_;
+
+  const raw_ptr<media_router::MediaRouter> media_router_;
 
   // Helper class for observing the removal of MediaRoutes.
   std::unique_ptr<AccessCodeMediaRoutesObserver> media_routes_observer_;
@@ -109,6 +120,13 @@ class AccessCodeCastSinkService : public KeyedService {
       cast_media_sink_service_impl_;
 
   net::BackoffEntry::Policy backoff_policy_;
+
+  // Map of callbacks that we are currently waiting to alert callers about the
+  // completion of discovery. This cannot be done until all routes on any given
+  // sink are terminated.
+  std::map<MediaSink::Id, ChannelOpenedCallback> pending_callbacks_;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<AccessCodeCastSinkService> weak_ptr_factory_{this};
 };

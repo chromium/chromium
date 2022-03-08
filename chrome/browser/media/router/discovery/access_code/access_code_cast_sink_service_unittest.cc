@@ -41,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Return;
 
 namespace media_router {
 
@@ -88,6 +89,8 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
     access_code_cast_sink_service_ =
         base::WrapUnique(new AccessCodeCastSinkService(
             profile_, router_.get(), cast_media_sink_service_impl_.get()));
+    access_code_cast_sink_service_->SetTaskRunnerForTest(
+        mock_time_task_runner_);
   }
 
   void TearDown() override {
@@ -182,13 +185,14 @@ TEST_F(AccessCodeCastSinkServiceTest,
   EXPECT_EQ(1u, mock_time_task_runner()->GetPendingTaskCount());
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 
-  // Expect access code cast sink is NOT removed from the media router since it
-  // was just added to the routes.
   access_code_cast_sink_service_->HandleMediaRouteDiscoveredByAccessCode(
       &access_code_sink2);
+  // Expect that there is a pending attempt to examine the sink to see if it
+  // should be expired.
+  EXPECT_EQ(1u, mock_time_task_runner()->GetPendingTaskCount());
+
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               DisconnectAndRemoveSink(access_code_sink2));
-
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 }
 
@@ -204,6 +208,41 @@ TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouter) {
   EXPECT_CALL(mock_callback, Run(true));
   access_code_cast_sink_service_->OpenChannelIfNecessary(
       cast_sink1, mock_callback.Get(), true);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouterWithRoute) {
+  // When an existing sink has an existing route, ensure that that route is
+  // terminated before the caller is alerted to the successful discovery.
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  cast_sink1.cast_data().discovered_by_access_code = true;
+
+  MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1);
+
+  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated(
+      {media_route_cast});
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  EXPECT_CALL(*router_, GetCurrentRoutes())
+      .WillOnce(Return(std::vector<MediaRoute>{media_route_cast}));
+  EXPECT_CALL(*router_, TerminateRoute(media_route_cast.media_route_id()));
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _))
+      .Times(0);
+
+  MockBoolCallback mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
+
+  access_code_cast_sink_service_->OpenChannelIfNecessary(
+      cast_sink1, mock_callback.Get(), true);
+
+  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated({});
+  // Since a route has been removed, there should be a pending task to examine
+  // whether the route's sink is an access code sink.
+  EXPECT_EQ(1u, mock_time_task_runner()->GetPendingTaskCount());
+
+  access_code_cast_sink_service_->HandleMediaRouteDiscoveredByAccessCode(
+      &cast_sink1);
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 }
 
