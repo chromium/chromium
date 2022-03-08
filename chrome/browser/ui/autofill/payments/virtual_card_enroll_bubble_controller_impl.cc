@@ -145,7 +145,8 @@ void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
     Show();
   } else if (visibility == content::Visibility::HIDDEN) {
     HideBubble();
-    bubble_state_ = BubbleState::kShowingIcon;
+    if (bubble_state_ != BubbleState::kShowingIcon)
+      bubble_state_ = BubbleState::kHidden;
   }
 #endif
 }
