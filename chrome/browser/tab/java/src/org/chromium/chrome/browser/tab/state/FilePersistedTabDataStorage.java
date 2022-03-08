@@ -588,4 +588,20 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             return null;
         }
     }
+
+    /**
+     * @param tabId {@link Tab} identifier
+     * @param isIncognito if the {@link Tab} is incognito
+     * @return true if a file exists for this {@link Tab}
+     */
+    @VisibleForTesting
+    public static boolean exists(int tabId, boolean isIncognito) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            String dataId =
+                    PersistedTabDataConfiguration.get(CriticalPersistedTabData.class, isIncognito)
+                            .getId();
+            File file = FilePersistedTabDataStorage.getFile(tabId, dataId);
+            return file != null && file.exists();
+        }
+    }
 }
