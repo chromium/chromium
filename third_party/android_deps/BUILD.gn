@@ -225,7 +225,7 @@ java_prebuilt("com_google_errorprone_error_prone_annotation_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.9.0.jar"
+  jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.11.0.jar"
   output_name = "com_google_errorprone_error_prone_annotations"
   supports_android = true
 
