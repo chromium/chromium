@@ -51,29 +51,29 @@ class ScanLoop {
   ScanLoop& operator=(const ScanLoop&) = delete;
 
   // Scan input range. Assumes the range is properly aligned. Please note that
-  // the function doesn't remask the input range and assumes MTE is disabled
-  // when function is called.
-  void Run(uintptr_t* begin, uintptr_t* end);
+  // the function doesn't MTE-tag the input range as it assumes that MTE is
+  // disabled when function is called. See DisableMTEScope for details.
+  void Run(uintptr_t begin, uintptr_t end);
 
  private:
   const Derived& derived() const { return static_cast<const Derived&>(*this); }
   Derived& derived() { return static_cast<Derived&>(*this); }
 
 #if defined(ARCH_CPU_X86_64)
-  __attribute__((target("avx2"))) void RunAVX2(uintptr_t*, uintptr_t*);
-  __attribute__((target("sse4.1"))) void RunSSE4(uintptr_t*, uintptr_t*);
+  __attribute__((target("avx2"))) void RunAVX2(uintptr_t, uintptr_t);
+  __attribute__((target("sse4.1"))) void RunSSE4(uintptr_t, uintptr_t);
 #endif
 #if defined(PA_STARSCAN_NEON_SUPPORTED)
-  void RunNEON(uintptr_t*, uintptr_t*);
+  void RunNEON(uintptr_t, uintptr_t);
 #endif
 
-  void RunUnvectorized(uintptr_t*, uintptr_t*);
+  void RunUnvectorized(uintptr_t, uintptr_t);
 
   SimdSupport simd_type_;
 };
 
 template <typename Derived>
-void ScanLoop<Derived>::Run(uintptr_t* begin, uintptr_t* end) {
+void ScanLoop<Derived>::Run(uintptr_t begin, uintptr_t end) {
 // We allow vectorization only for 64bit since they require support of the
 // 64bit cage, and only for x86 because a special instruction set is required.
 #if defined(ARCH_CPU_X86_64)
@@ -89,14 +89,19 @@ void ScanLoop<Derived>::Run(uintptr_t* begin, uintptr_t* end) {
 }
 
 template <typename Derived>
-void ScanLoop<Derived>::RunUnvectorized(uintptr_t* begin, uintptr_t* end) {
-  PA_SCAN_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % sizeof(uintptr_t)));
+void ScanLoop<Derived>::RunUnvectorized(uintptr_t begin, uintptr_t end) {
+  PA_SCAN_DCHECK(!(begin % sizeof(uintptr_t)));
 #if defined(PA_HAS_64_BITS_POINTERS)
   const uintptr_t mask = Derived::CageMask();
   const uintptr_t base = Derived::CageBase();
 #endif
-  for (; begin < end; ++begin) {
-    const uintptr_t maybe_ptr = *begin;
+  for (; begin < end; begin += sizeof(uintptr_t)) {
+    // Read the region word-by-word. Everything that we read is a potential
+    // pointer to or inside an object on heap. Such an object should be
+    // quarantined, if attempted to free.
+    //
+    // Keep it MTE-untagged. See DisableMTEScope for details.
+    const uintptr_t maybe_ptr = *reinterpret_cast<uintptr_t*>(begin);
 #if defined(PA_HAS_64_BITS_POINTERS)
     if (LIKELY((maybe_ptr & mask) != base))
       continue;
@@ -110,12 +115,12 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t* begin, uintptr_t* end) {
 
 #if defined(ARCH_CPU_X86_64)
 template <typename Derived>
-__attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(
-    uintptr_t* begin,
-    uintptr_t* end) {
+__attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(uintptr_t begin,
+                                                                uintptr_t end) {
   static constexpr size_t kAlignmentRequirement = 32;
   static constexpr size_t kWordsInVector = 4;
-  PA_SCAN_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
+  static constexpr size_t kBytesInVector = kWordsInVector * sizeof(uintptr_t);
+  PA_SCAN_DCHECK(!(begin % kAlignmentRequirement));
   // Stick to integer instructions. This brings slightly better throughput. For
   // example, according to the Intel docs, on Broadwell and Haswell the CPI of
   // vmovdqa (_mm256_load_si256) is twice smaller (0.25) than that of vmovapd
@@ -123,10 +128,11 @@ __attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(
   const __m256i vbase = _mm256_set1_epi64x(derived().CageBase());
   const __m256i cage_mask = _mm256_set1_epi64x(derived().CageMask());
 
-  uintptr_t* payload = begin;
-  for (; payload < (end - kWordsInVector); payload += kWordsInVector) {
+  static_assert(sizeof(__m256i) == kBytesInVector);
+  for (; begin < (end - kBytesInVector); begin += kBytesInVector) {
+    // Keep it MTE-untagged. See DisableMTEScope for details.
     const __m256i maybe_ptrs =
-        _mm256_load_si256(reinterpret_cast<__m256i*>(payload));
+        _mm256_load_si256(reinterpret_cast<__m256i*>(begin));
     const __m256i vand = _mm256_and_si256(maybe_ptrs, cage_mask);
     const __m256i vcmp = _mm256_cmpeq_epi64(vand, vbase);
     const int mask = _mm256_movemask_pd(_mm256_castsi256_pd(vcmp));
@@ -143,23 +149,26 @@ __attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(
     if (mask & 0b1000)
       derived().CheckPointer(_mm256_extract_epi64(maybe_ptrs, 3));
   }
-  RunUnvectorized(payload, end);
+  // Run unvectorized on the remainder of the region.
+  RunUnvectorized(begin, end);
 }
 
 template <typename Derived>
 __attribute__((target("sse4.1"))) void ScanLoop<Derived>::RunSSE4(
-    uintptr_t* begin,
-    uintptr_t* end) {
+    uintptr_t begin,
+    uintptr_t end) {
   static constexpr size_t kAlignmentRequirement = 16;
   static constexpr size_t kWordsInVector = 2;
-  PA_SCAN_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
+  static constexpr size_t kBytesInVector = kWordsInVector * sizeof(uintptr_t);
+  PA_SCAN_DCHECK(!(begin % kAlignmentRequirement));
   const __m128i vbase = _mm_set1_epi64x(derived().CageBase());
   const __m128i cage_mask = _mm_set1_epi64x(derived().CageMask());
 
-  uintptr_t* payload = begin;
-  for (; payload < (end - kWordsInVector); payload += kWordsInVector) {
+  static_assert(sizeof(__m128i) == kBytesInVector);
+  for (; begin < (end - kBytesInVector); begin += kBytesInVector) {
+    // Keep it MTE-untagged. See DisableMTEScope for details.
     const __m128i maybe_ptrs =
-        _mm_loadu_si128(reinterpret_cast<__m128i*>(payload));
+        _mm_loadu_si128(reinterpret_cast<__m128i*>(begin));
     const __m128i vand = _mm_and_si128(maybe_ptrs, cage_mask);
     const __m128i vcmp = _mm_cmpeq_epi64(vand, vbase);
     const int mask = _mm_movemask_pd(_mm_castsi128_pd(vcmp));
@@ -178,23 +187,24 @@ __attribute__((target("sse4.1"))) void ScanLoop<Derived>::RunSSE4(
       derived().CheckPointer(_mm_cvtsi128_si64(shuffled));
     }
   }
-  RunUnvectorized(payload, end);
+  // Run unvectorized on the remainder of the region.
+  RunUnvectorized(begin, end);
 }
 #endif  // defined(ARCH_CPU_X86_64)
 
 #if defined(PA_STARSCAN_NEON_SUPPORTED)
 template <typename Derived>
-void ScanLoop<Derived>::RunNEON(uintptr_t* begin, uintptr_t* end) {
+void ScanLoop<Derived>::RunNEON(uintptr_t begin, uintptr_t end) {
   static constexpr size_t kAlignmentRequirement = 16;
   static constexpr size_t kWordsInVector = 2;
-  PA_SCAN_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
+  static constexpr size_t kBytesInVector = kWordsInVector * sizeof(uintptr_t);
+  PA_SCAN_DCHECK(!(begin % kAlignmentRequirement));
   const uint64x2_t vbase = vdupq_n_u64(derived().CageBase());
   const uint64x2_t cage_mask = vdupq_n_u64(derived().CageMask());
 
-  uintptr_t* payload = begin;
-  for (; payload < (end - kWordsInVector); payload += kWordsInVector) {
-    const uint64x2_t maybe_ptrs =
-        vld1q_u64(reinterpret_cast<uint64_t*>(payload));
+  for (; begin < (end - kBytesInVector); begin += kBytesInVector) {
+    // Keep it MTE-untagged. See DisableMTEScope for details.
+    const uint64x2_t maybe_ptrs = vld1q_u64(reinterpret_cast<uint64_t*>(begin));
     const uint64x2_t vand = vandq_u64(maybe_ptrs, cage_mask);
     const uint64x2_t vcmp = vceqq_u64(vand, vbase);
     const uint32_t max = vmaxvq_u32(vreinterpretq_u32_u64(vcmp));
@@ -207,7 +217,8 @@ void ScanLoop<Derived>::RunNEON(uintptr_t* begin, uintptr_t* end) {
     if (vgetq_lane_u64(vcmp, 1))
       derived().CheckPointer(vgetq_lane_u64(maybe_ptrs, 1));
   }
-  RunUnvectorized(payload, end);
+  // Run unvectorized on the remainder of the region.
+  RunUnvectorized(begin, end);
 }
 #endif  // defined(PA_STARSCAN_NEON_SUPPORTED)
 

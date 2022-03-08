@@ -51,7 +51,8 @@ void TestOnRangeWithAlignment(TestScanLoop& sl,
   alignas(Alignment) uintptr_t range[] = {args...};
   std::sort(std::begin(range), std::end(range));
   do {
-    sl.Run(std::begin(range), std::end(range));
+    sl.Run(reinterpret_cast<uintptr_t>(std::begin(range)),
+           reinterpret_cast<uintptr_t>(std::end(range)));
     EXPECT_EQ(expected_visited, sl.visited());
     sl.Reset();
   } while (std::next_permutation(std::begin(range), std::end(range)));

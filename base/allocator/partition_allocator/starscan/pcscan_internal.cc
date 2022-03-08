@@ -579,12 +579,12 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   // Scan individual areas.
   void ScanNormalArea(PCScanInternal& pcscan,
                       PCScanScanLoop& scan_loop,
-                      uintptr_t* begin,
-                      uintptr_t* end);
+                      uintptr_t begin,
+                      uintptr_t end);
   void ScanLargeArea(PCScanInternal& pcscan,
                      PCScanScanLoop& scan_loop,
-                     uintptr_t* begin,
-                     uintptr_t* end,
+                     uintptr_t begin,
+                     uintptr_t end,
                      size_t slot_size);
 
   // Scans all registered partitions and marks reachable quarantined slots.
@@ -798,14 +798,14 @@ class PCScanTask::StackVisitor final : public internal::StackVisitor {
 
   void VisitStack(uintptr_t* stack_ptr, uintptr_t* stack_top) override {
     static constexpr size_t kMinimalAlignment = 32;
-    stack_ptr = reinterpret_cast<uintptr_t*>(
-        reinterpret_cast<uintptr_t>(stack_ptr) & ~(kMinimalAlignment - 1));
-    stack_top = reinterpret_cast<uintptr_t*>(
+    uintptr_t begin =
+        reinterpret_cast<uintptr_t>(stack_ptr) & ~(kMinimalAlignment - 1);
+    uintptr_t end =
         (reinterpret_cast<uintptr_t>(stack_top) + kMinimalAlignment - 1) &
-        ~(kMinimalAlignment - 1));
-    PA_CHECK(stack_ptr < stack_top);
+        ~(kMinimalAlignment - 1);
+    PA_CHECK(begin < end);
     PCScanScanLoop loop(task_);
-    loop.Run(stack_ptr, stack_top);
+    loop.Run(begin, end);
     quarantine_size_ += loop.quarantine_size();
   }
 
@@ -844,37 +844,34 @@ void PCScanTask::ScanStack() {
 
 void PCScanTask::ScanNormalArea(PCScanInternal& pcscan,
                                 PCScanScanLoop& scan_loop,
-                                uintptr_t* begin,
-                                uintptr_t* end) {
+                                uintptr_t begin,
+                                uintptr_t end) {
   // Protect slot span before scanning it.
-  pcscan.ProtectPages(reinterpret_cast<uintptr_t>(begin),
-                      (end - begin) * sizeof(uintptr_t));
+  pcscan.ProtectPages(begin, end - begin);
   scan_loop.Run(begin, end);
 }
 
 void PCScanTask::ScanLargeArea(PCScanInternal& pcscan,
                                PCScanScanLoop& scan_loop,
-                               uintptr_t* begin,
-                               uintptr_t* end,
+                               uintptr_t begin,
+                               uintptr_t end,
                                size_t slot_size) {
   // For scanning large areas, it's worthwhile checking whether the range that
   // is scanned contains allocated slots. It also helps to skip discarded
   // freed slots.
   // Protect slot span before scanning it.
-  pcscan.ProtectPages(reinterpret_cast<uintptr_t>(begin),
-                      (end - begin) * sizeof(uintptr_t));
+  pcscan.ProtectPages(begin, end - begin);
 
-  auto* bitmap = StateBitmapFromAddr(reinterpret_cast<uintptr_t>(begin));
-  const size_t slot_size_in_words = slot_size / sizeof(uintptr_t);
+  auto* bitmap = StateBitmapFromAddr(begin);
 
-  for (uintptr_t* current_slot = begin; current_slot < end;
-       current_slot += slot_size_in_words) {
+  for (uintptr_t current_slot = begin; current_slot < end;
+       current_slot += slot_size) {
     // It is okay to skip slots as the object they hold has been zapped at this
     // point, which means that the pointers no longer retain other slots.
-    if (!bitmap->IsAllocated(reinterpret_cast<uintptr_t>(current_slot))) {
+    if (!bitmap->IsAllocated(current_slot)) {
       continue;
     }
-    uintptr_t* current_slot_end = current_slot + slot_size_in_words;
+    uintptr_t current_slot_end = current_slot + slot_size;
     // |slot_size| may be larger than |raw_size| for single-slot slot spans.
     scan_loop.Run(current_slot, std::min(current_slot_end, end));
   }
@@ -899,10 +896,14 @@ void PCScanTask::ScanPartitions() {
         SuperPageSnapshot super_page_snapshot(super_page);
 
         for (const auto& scan_area : super_page_snapshot.scan_areas()) {
-          auto* const begin = reinterpret_cast<uintptr_t*>(
+          const uintptr_t begin =
               super_page |
-              (scan_area.offset_within_page_in_words * sizeof(uintptr_t)));
-          auto* const end = begin + scan_area.size_in_words;
+              (scan_area.offset_within_page_in_words * sizeof(uintptr_t));
+          PA_SCAN_DCHECK(begin ==
+                         super_page + (scan_area.offset_within_page_in_words *
+                                       sizeof(uintptr_t)));
+          const uintptr_t end =
+              begin + scan_area.size_in_words * sizeof(uintptr_t);
 
           if (UNLIKELY(scan_area.slot_size_in_words >=
                        kLargeScanAreaThresholdInWords)) {
