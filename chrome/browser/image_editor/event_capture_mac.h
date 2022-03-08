@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_IMAGE_EDITOR_EVENT_CAPTURE_MAC_H_
 #define CHROME_BROWSER_IMAGE_EDITOR_EVENT_CAPTURE_MAC_H_
 
+#include "base/callback.h"
 #include "components/remote_cocoa/app_shim/mouse_capture.h"
 #include "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #include "ui/base/cocoa/weak_ptr_nsobject.h"
@@ -20,6 +21,7 @@ namespace image_editor {
 class EventCaptureMac : public remote_cocoa::CocoaMouseCaptureDelegate {
  public:
   EventCaptureMac(ui::EventHandler* event_handler,
+                  base::OnceClosure capture_lost_callback,
                   gfx::NativeView web_contents_view,
                   gfx::NativeWindow target_window);
   ~EventCaptureMac() override;
@@ -36,6 +38,7 @@ class EventCaptureMac : public remote_cocoa::CocoaMouseCaptureDelegate {
   NSWindow* GetWindow() const override;
 
  private:
+  base::OnceClosure capture_lost_callback_;
   NSView* web_contents_view_;
   NSWindow* window_;
   ui::EventHandler* event_handler_;

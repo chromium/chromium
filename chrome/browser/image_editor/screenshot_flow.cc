@@ -80,7 +80,9 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
   bounds.Offset(-offset_bounds.x(), -offset_bounds.y());
 
   event_capture_mac_ = std::make_unique<EventCaptureMac>(
-      this, web_contents_view, web_contents_->GetTopLevelNativeWindow());
+      this,
+      base::BindOnce(&ScreenshotFlow::CancelCapture, base::Unretained(this)),
+      web_contents_view, web_contents_->GetTopLevelNativeWindow());
 #else
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
   ui::Layer* content_layer = native_window->layer();
