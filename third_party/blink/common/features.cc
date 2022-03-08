@@ -1040,6 +1040,16 @@ BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled() {
 // Kill switch for the Topics API.
 const base::Feature kBrowsingTopics{"BrowsingTopics",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
+// The number of top topics to derive and to keep for each epoch (week).
+const base::FeatureParam<int> kBrowsingTopicsNumberOfTopTopicsPerEpoch{
+    &kBrowsingTopics, "number_of_top_topics_per_epoch", 5};
+// The probability (in percent number) to return the random topic to a site. The
+// "random topic" is per-site, and is selected from the full taxonomy uniformly
+// at random, and each site has a
+// `kBrowsingTopicsUseRandomTopicProbabilityPercent`% chance to see their random
+// topic instead of one of the top topics.
+const base::FeatureParam<int> kBrowsingTopicsUseRandomTopicProbabilityPercent{
+    &kBrowsingTopics, "use_random_topic_probability_percent", 5};
 // The max number of entries allowed to be retrieved from the
 // `BrowsingTopicsSiteDataStorage` database for each query for the API usage
 // contexts. The query will occur once per epoch (week) at topics calculation

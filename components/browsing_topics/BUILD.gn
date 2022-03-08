@@ -1,0 +1,38 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browsing_topics") {
+  sources = [
+    "epoch_topics.cc",
+    "epoch_topics.h",
+    "topic_and_domains.cc",
+    "topic_and_domains.h",
+    "util.cc",
+    "util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/browsing_topics/common:common",
+    "//crypto",
+    "//third_party/blink/public/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "epoch_topics_unittest.cc",
+    "topic_and_domains_unittest.cc",
+    "util_unittest.cc",
+  ]
+
+  deps = [
+    ":browsing_topics",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+}
