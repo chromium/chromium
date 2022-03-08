@@ -306,8 +306,7 @@ CalendarMonthView::CalendarMonthView(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   calendar_utils::SetUpWeekColumns(layout);
-
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+  calendar_view_controller_->MaybeUpdateTimeDifference(first_day_of_month);
 
   // Using the time difference to get the local `base::Time`, which is used to
   // generate the exploded.

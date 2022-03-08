@@ -157,6 +157,9 @@ void CalendarEventListView::OnSelectedDateUpdated() {
 void CalendarEventListView::UpdateListItems() {
   content_view_->RemoveAllChildViews();
 
+  calendar_view_controller_->MaybeUpdateTimeDifference(
+      calendar_view_controller_->selected_date().value());
+
   std::list<google_apis::calendar::CalendarEvent> events =
       calendar_view_controller_->SelectedDateEvents();
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/settings/timezone_settings.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_unittest_utils.h"
@@ -36,6 +37,12 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
       "id_4", "summary_4", "2 Sep 2021 8:30 GMT", "21 Nov 2021 9:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
       "id_5", "summary_5", "2 Sep 2021 10:30 GMT", "21 Nov 2021 11:30 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_6", "summary_6", "10 Aug 2021 4:30 GMT", "10 Aug 2021 8:30 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_7", "summary_7", "10 Aug 2021 7:30 GMT", "10 Aug 2021 9:30 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_8", "summary_8", "10 Aug 2021 10:30 GMT", "10 Aug 2021 11:30 GMT"));
 
   return event_list;
 }
@@ -258,6 +265,59 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
   EXPECT_EQ(u"August 18, 2021, 4 events",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
+}
+
+TEST_F(CalendarMonthViewTest, TimeZone) {
+  // Create a monthview based on Aug,1st 2021. Today is set to 18th.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
+
+  // Set "Now" to a date that is in this month.
+  base::Time today;
+  ASSERT_TRUE(base::Time::FromString("18 Aug 2021 10:00 GMT", &today));
+  SetFakeNow(today);
+  base::subtle::ScopedTimeClockOverrides in_month_time_override(
+      &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  // Sets the timezone to "America/Los_Angeles";
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
+
+  CreateMonthView(date);
+  TriggerPaint();
+  UploadEvents();
+  month_view()->SchedulePaintChildren();
+  TriggerPaint();
+
+  // August is before the daylight saving, time difference between UTC and PST
+  // should be 7 hours.
+  EXPECT_EQ(-420, controller()->time_difference_minutes());
+
+  EXPECT_EQ(u"18",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetText());
+  EXPECT_EQ(u"August 18, 2021, 4 events",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetTooltipText());
+
+  EXPECT_EQ(u"10",
+            static_cast<CalendarDateCellView*>(month_view()->children()[9])
+                ->GetText());
+  EXPECT_EQ(u"August 10, 2021, 2 events",
+            static_cast<CalendarDateCellView*>(month_view()->children()[9])
+                ->GetTooltipText());
+
+  // Based on the timezone the event that happens on 10th GMT time is showing on
+  // the 9th.
+  EXPECT_EQ(u"9",
+            static_cast<CalendarDateCellView*>(month_view()->children()[8])
+                ->GetText());
+  EXPECT_EQ(u"August 9, 2021, 1 event",
+            static_cast<CalendarDateCellView*>(month_view()->children()[8])
+                ->GetTooltipText());
+
+  // Set the timezone back to GMT.
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
 }
 
 TEST_F(CalendarMonthViewTest, InactiveUserSession) {
