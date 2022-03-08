@@ -836,15 +836,16 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
 
   gfx::Rect content_rect(rect);
 
-  if (selected() && !actions_view()->HasSelectedAction()) {
     switch (view_type_) {
       case SearchResultViewType::kDefault:
       case SearchResultViewType::kClassic:
-        canvas->FillRect(
-            content_rect,
-            AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
-        PaintFocusBar(canvas, GetContentsBounds().origin(),
-                      /*height=*/GetContentsBounds().height());
+        if (selected() && !actions_view()->HasSelectedAction()) {
+          canvas->FillRect(
+              content_rect,
+              AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
+          PaintFocusBar(canvas, GetContentsBounds().origin(),
+                        /*height=*/GetContentsBounds().height());
+        }
         break;
       case SearchResultViewType::kAnswerCard: {
         cc::PaintFlags flags;
@@ -853,11 +854,12 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
             AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
         canvas->DrawRoundRect(content_rect,
                               kAnswerCardCardBackgroundCornerRadius, flags);
-        PaintFocusBar(canvas, gfx::Point(0, kAnswerCardFocusBarOffset),
-                      kAnswerCardFocusBarHeight);
+        if (selected()) {
+          PaintFocusBar(canvas, gfx::Point(0, kAnswerCardFocusBarOffset),
+                        kAnswerCardFocusBarHeight);
+        }
       } break;
     }
-  }
 }
 
 void SearchResultView::OnMouseEntered(const ui::MouseEvent& event) {
