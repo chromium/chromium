@@ -369,7 +369,10 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
                  LayoutBoxModelObject* old_cont);
 
   // Create an anonymous block for block children of this inline.
-  LayoutBlockFlow* CreateAnonymousContainerForBlockChildren(bool split_flow);
+  LayoutBlockFlow* CreateAnonymousContainerForBlockChildren(
+      bool split_flow) const;
+  LayoutBox* CreateAnonymousBoxToSplit(
+      const LayoutBox* box_to_split) const final;
 
   void UpdateLayout() final {
     NOT_DESTROYED();

@@ -2143,8 +2143,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       LayoutUnit intrinsic_content_height,
       LayoutUnit border_and_padding) const;
 
-  LayoutObject* SplitAnonymousBoxesAroundChild(LayoutObject* before_child);
-
   virtual bool HitTestChildren(HitTestResult&,
                                const HitTestLocation&,
                                const PhysicalOffset& accumulated_offset,

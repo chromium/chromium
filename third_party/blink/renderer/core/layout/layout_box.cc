@@ -8017,7 +8017,7 @@ bool LayoutBox::HasRelativeLogicalHeight() const {
          StyleRef().LogicalMaxHeight().IsPercentOrCalc();
 }
 
-static void MarkBoxForRelayoutAfterSplit(LayoutBox* box) {
+static void MarkBoxForRelayoutAfterSplit(LayoutBoxModelObject* box) {
   // FIXME: The table code should handle that automatically. If not,
   // we should fix it and remove the table part checks.
   if (box->IsTable()) {
@@ -8044,7 +8044,8 @@ static void CollapseLoneAnonymousBlockChild(LayoutBox* parent,
   parent_block_flow->CollapseAnonymousBlockChild(child_block_flow);
 }
 
-LayoutObject* LayoutBox::SplitAnonymousBoxesAroundChild(
+// TODO(kojii): Move to `layout_box_model_object.cc`.
+LayoutObject* LayoutBoxModelObject::SplitAnonymousBoxesAroundChild(
     LayoutObject* before_child) {
   NOT_DESTROYED();
   LayoutBox* box_at_top_of_new_branch = nullptr;
@@ -8055,10 +8056,9 @@ LayoutObject* LayoutBox::SplitAnonymousBoxesAroundChild(
         box_to_split->IsAnonymous()) {
       // We have to split the parent box into two boxes and move children
       // from |beforeChild| to end into the new post box.
-      LayoutBox* post_box =
-          box_to_split->CreateAnonymousBoxWithSameTypeAs(this);
+      LayoutBox* post_box = CreateAnonymousBoxToSplit(box_to_split);
       post_box->SetChildrenInline(box_to_split->ChildrenInline());
-      auto* parent_box = To<LayoutBox>(box_to_split->Parent());
+      auto* parent_box = To<LayoutBoxModelObject>(box_to_split->Parent());
       // We need to invalidate the |parentBox| before inserting the new node
       // so that the table paint invalidation logic knows the structure is
       // dirty. See for example LayoutTableCell:localVisualRect().
@@ -8096,6 +8096,12 @@ LayoutObject* LayoutBox::SplitAnonymousBoxesAroundChild(
 
   DCHECK_EQ(before_child->Parent(), this);
   return before_child;
+}
+
+LayoutBox* LayoutBoxModelObject::CreateAnonymousBoxToSplit(
+    const LayoutBox* box_to_split) const {
+  NOT_DESTROYED();
+  return box_to_split->CreateAnonymousBoxWithSameTypeAs(this);
 }
 
 LayoutUnit LayoutBox::OffsetFromLogicalTopOfFirstPage() const {
