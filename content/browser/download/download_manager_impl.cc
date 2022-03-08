@@ -833,8 +833,9 @@ void DownloadManagerImpl::OnFileExistenceChecked(uint32_t download_id,
   pending_disk_access_query_.erase(download_id);
 
   if (!result) {  // File does not exist.
-    if (base::Contains(downloads_, download_id))
-      downloads_[download_id]->OnDownloadedFileRemoved();
+    auto it = downloads_.find(download_id);
+    if (it != downloads_.end())
+      it->second->OnDownloadedFileRemoved();
   }
 }
 
@@ -1258,8 +1259,8 @@ int DownloadManagerImpl::NonMaliciousInProgressCount() {
 }
 
 download::DownloadItem* DownloadManagerImpl::GetDownload(uint32_t download_id) {
-  return base::Contains(downloads_, download_id) ? downloads_[download_id].get()
-                                                 : nullptr;
+  auto it = downloads_.find(download_id);
+  return it != downloads_.end() ? it->second.get() : nullptr;
 }
 
 download::DownloadItem* DownloadManagerImpl::GetDownloadByGuid(
@@ -1270,8 +1271,8 @@ download::DownloadItem* DownloadManagerImpl::GetDownloadByGuid(
         return it.get();
     }
   }
-  return base::Contains(downloads_by_guid_, guid) ? downloads_by_guid_[guid]
-                                                  : nullptr;
+  auto it = downloads_by_guid_.find(guid);
+  return it != downloads_by_guid_.end() ? it->second : nullptr;
 }
 
 void DownloadManagerImpl::GetAllDownloads(
