@@ -163,7 +163,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
     return StyleRef().BorderCollapse() == EBorderCollapse::kCollapse;
   }
 
-  bool HasCollapsedBorders() const final;
+  bool HasCollapsedBorders() const;
 
   int16_t HBorderSpacing() const final {
     NOT_DESTROYED();

@@ -383,7 +383,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   void InvalidateCollapsedBorders();
   void InvalidateCollapsedBordersForAllCellsIfNeeded();
 
-  bool HasCollapsedBorders() const final {
+  bool HasCollapsedBorders() const {
     NOT_DESTROYED();
     DCHECK(collapsed_borders_valid_);
     return has_collapsed_borders_;
