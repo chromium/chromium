@@ -11972,6 +11972,14 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="Never shown"/>
 </enum>
 
+<enum name="CartDiscountConsentVariation">
+  <summary>Discount consent variation.</summary>
+  <int value="0" label="Default"/>
+  <int value="1" label="StringChange"/>
+  <int value="2" label="Inline"/>
+  <int value="3" label="Dialog"/>
+</enum>
+
 <enum name="CartDiscountDataType">
   <summary>Discount related data associated with the cart module.</summary>
   <int value="0" label="cart_discount_info"/>

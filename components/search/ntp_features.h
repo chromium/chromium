@@ -113,10 +113,13 @@ extern const char kRealboxMatchSearchboxThemeParam[];
 // The following are Feature params for Discount user consent v2.
 // This indicates the Discount Consent v2 variation on the NTP Cart module.
 enum class DiscountConsentNtpVariation {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   kDefault = 0,
   kStringChange = 1,
   kInline = 2,
   kDialog = 3,
+  kMaxValue = kDialog
 };
 
 // Param indicates the ConsentV2 variation. See DiscountConsentNtpVariation

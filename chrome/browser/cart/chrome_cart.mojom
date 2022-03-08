@@ -52,6 +52,9 @@ interface CartHandler {
   OnDiscountConsentAcknowledged(bool accept);
   // Stores in profile prefs that user has dismissed the consent.
   OnDiscountConsentDismissed();
+  // Stores in profile prefs that user has shown interest in the
+  // consent.
+  OnDiscountConsentContinued();
   // Returns whether the rule-based discount feature is enabled.
   GetDiscountEnabled() => (bool enabled);
   // Sets whether the rule-based discount feature is enabled.
