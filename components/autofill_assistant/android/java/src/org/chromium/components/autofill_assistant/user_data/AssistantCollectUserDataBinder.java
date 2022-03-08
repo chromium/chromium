@@ -639,7 +639,8 @@ class AssistantCollectUserDataBinder
         if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
             byte[] initializeAddressCollectionParams =
                     model.get(AssistantCollectUserDataModel.INITIALIZE_ADDRESS_COLLECTION_PARAMS);
-            if (initializeAddressCollectionParams != null) {
+            if (initializeAddressCollectionParams != null
+                    && initializeAddressCollectionParams.length > 0) {
                 editor = view.mEditorFactory.createGmsAddressEditor(view.mActivity,
                         view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
                         initializeAddressCollectionParams);
@@ -658,7 +659,7 @@ class AssistantCollectUserDataBinder
         if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
             byte[] addInstrumentActionToken =
                     model.get(AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN);
-            if (addInstrumentActionToken != null) {
+            if (addInstrumentActionToken != null && addInstrumentActionToken.length > 0) {
                 editor = view.mEditorFactory.createGmsPaymentInstrumentEditor(view.mActivity,
                         view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
                         addInstrumentActionToken);
