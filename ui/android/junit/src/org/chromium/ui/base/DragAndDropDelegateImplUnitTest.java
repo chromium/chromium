@@ -65,7 +65,7 @@ public class DragAndDropDelegateImplUnitTest {
 
     @After
     public void tearDown() {
-        DropDataContentProvider.clearCache();
+        DropDataContentProvider.onDragEnd(false);
         ShadowRecordHistogram.reset();
     }
 
@@ -187,7 +187,9 @@ public class DragAndDropDelegateImplUnitTest {
         mDragAndDropDelegateImpl.startDragAndDrop(containerView, shadowImage, imageDropData);
 
         mDragAndDropDelegateImpl.onDrag(containerView, mockDragEvent(DragEvent.ACTION_DROP));
-        mDragAndDropDelegateImpl.onDrag(containerView, mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        final DragEvent dragEndEvent = mockDragEvent(DragEvent.ACTION_DRAG_ENDED);
+        doReturn(true).when(dragEndEvent).getResult();
+        mDragAndDropDelegateImpl.onDrag(containerView, dragEndEvent);
 
         // Drop on the same view does not lead to recording of drag duration.
         assertDragTypeNotRecorded("Drag dropped on the same view.");

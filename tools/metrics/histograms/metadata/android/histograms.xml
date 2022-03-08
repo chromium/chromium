@@ -1027,6 +1027,78 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DragDrop.Image.OpenFileTime.AllExpired" units="ms"
+    expires_after="2022-07-01">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the duration between the URI being cleared and
+    ContentProvider#openFile attempts with that expired URI. This is used to
+    evaluate how long we should keep the image data. Because drop target app
+    could request data multiple times with the same URI, this metric could
+    record multiple times per URI, which gives us the holistic view about the
+    timing when the image data associated with the URI is needed. Another metric
+    Android.DragDrop.Image.OpenFileTime.FirstExpired only records at most once
+    per URI, to avoid counting in retries from drop target app when Chrome
+    rejects the expired URI. This metric is recoreded when Chrome receives an
+    expired URI to retrieve data. If the URI is not the latest expired one, the
+    metric will not be recoreded because we could not calcuate the elapsed time
+    for older URIs. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Android.DragDrop.Image.OpenFileTime.FirstExpired" units="ms"
+    expires_after="2022-07-01">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the duration between the URI being cleared and the first
+    ContentProvider#openFile attempt with that expired URI. This is used to
+    evaluate how long we should keep the image data. Because drop target app may
+    retry after Chrome rejects the expired URI; and the retries are not helpful
+    to evaluate how long the data is needed; this metric records at most once
+    per URI. Another metric Android.DragDrop.Image.OpenFileTime.AllExpired
+    records multiple times per URI, to gives us the holistic view about the
+    timing when the image data associated with the URI is needed. This metric is
+    recoreded when Chrome receives an expired URI to retrieve data. If the URI
+    is not the latest expired one, the metric will not be recoreded because we
+    could not calcuate the elapsed time for older URIs. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Android.DragDrop.Image.OpenFileTime.LastAttempt" units="ms"
+    expires_after="2022-07-01">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the duration between receiving Android Drag End event and the last
+    ContentProvider#openFile attempted by the drop target app. The duration is
+    calculated when the image data expired at the designated time limit. Android
+    only.
+  </summary>
+</histogram>
+
+<histogram name="Android.DragDrop.Image.Size" units="KB"
+    expires_after="2022-07-01">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the image size being dragged from Chrome. Recorded when start
+    dragging an image from Chrome's web content, regardless of whether drop is
+    handled successfully. Used to evaluate the memory consumption. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Android.DragDrop.Image.UriCreatedInterval" units="ms"
+    expires_after="2022-07-01">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the interval between two back-to-back image drags. This is used to
+    evaluate the duration to preserve the image data. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Android.DynamicColors.IsAvailable" enum="Boolean"
     expires_after="2023-02-02">
   <owner>skym@chromium.org</owner>

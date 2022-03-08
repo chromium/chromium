@@ -14,18 +14,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
+import android.os.SystemClock;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 /** ContentProvider for image data of Drag and Drop. */
+// TODO(crbug.com/1302386): Make DropDataContentProvider thread safety.
 public class DropDataContentProvider extends ContentProvider {
     /**
      * Implement {@link ContentProvider.PipeDataWriter} to be used by {@link
@@ -48,6 +51,8 @@ public class DropDataContentProvider extends ContentProvider {
     }
 
     public static final int DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS = 60_000;
+    // TODO: move ConversionUtils.java to //ui/android/ to use ConversionUtils.BYTES_PER_KILOBYTE
+    public static final int BYTES_PER_KILOBYTE = 1024;
 
     private static final String[] COLUMNS = {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
     private static final String URI_AUTHORITY_SUFFIX = ".DropDataProvider";
@@ -58,6 +63,12 @@ public class DropDataContentProvider extends ContentProvider {
     private static Uri sContentProviderUri;
     private static String sTimestamp;
     private static Handler sHandler;
+    private static long sDragEndTime;
+    private static long sOpenFileLastAccessTime;
+    private static Uri sLastUri;
+    private static long sLastUriClearedTimestamp;
+    private static long sLastUriCreatedTimestamp;
+    private static boolean sLastUriRecorded;
     private DropPipeDataWriter mDropPipeDataWriter;
 
     /**
@@ -70,15 +81,23 @@ public class DropDataContentProvider extends ContentProvider {
     /**
      * Cache the passed-in image data of Drag and Drop.
      */
-    public static Uri cache(byte[] imageBytes, String encodingFormat) {
-        // Cancel pending task if any to avoid new image data being cleared.
-        if (sHandler != null) {
-            sHandler.removeCallbacksAndMessages(null);
-            sHandler = null;
+    static Uri cache(byte[] imageBytes, String encodingFormat) {
+        // Clear out any old data.
+        clearCacheData();
+
+        // Set new data.
+        long elapsedRealtime = SystemClock.elapsedRealtime();
+        if (sLastUriCreatedTimestamp > 0) {
+            long duration = elapsedRealtime - sLastUriCreatedTimestamp;
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Android.DragDrop.Image.UriCreatedInterval", duration);
         }
+        sLastUriCreatedTimestamp = elapsedRealtime;
         sImageBytes = imageBytes;
         sEncodingFormat = encodingFormat;
         sTimestamp = String.valueOf(System.currentTimeMillis());
+        sDragEndTime = 0;
+        sOpenFileLastAccessTime = 0;
         // TODO(crbug.com/1296795): Replace path with filename with extension
         Uri newUri = new Uri.Builder()
                              .scheme(ContentResolver.SCHEME_CONTENT)
@@ -87,16 +106,55 @@ public class DropDataContentProvider extends ContentProvider {
                              .path(sTimestamp)
                              .build();
         sContentProviderUri = newUri;
-        // TODO: add metric on image data size
+        int sizeInKB = imageBytes.length / BYTES_PER_KILOBYTE;
+        RecordHistogram.recordCustomCountHistogram(
+                "Android.DragDrop.Image.Size", sizeInKB, 1, 100_000, 50);
         return newUri;
+    }
+
+    /**
+     * Clear the image data of Drag and Drop when event ACTION_DRAG_ENDED is received.
+     *
+     * @param imageInUse Indicate if the image is needed by the drop target app. This is true when
+     *         the image is dropped outside of Chrome AND the drop target app returns true for event
+     *         ACTION_DROP.
+     */
+    static void onDragEnd(boolean imageInUse) {
+        if (!imageInUse) {
+            // Clear the image data immediately when:
+            // 1. Image is dropped within Clank and we know it is not used;
+            // 2. Image is dropped outside of Clank and the drop target app rejects the data.
+            clearCache();
+        } else {
+            // Otherwise, clear it with a delay to allow asynchronous data transfer.
+            clearCacheWithDelay();
+            sDragEndTime = SystemClock.elapsedRealtime();
+        }
+    }
+
+    /**
+     * Clear the image data of Drag and Drop and record histogram.
+     */
+    static void clearCache() {
+        clearCacheData();
+        if (sDragEndTime > 0 && sDragEndTime <= sOpenFileLastAccessTime) {
+            long duration = sOpenFileLastAccessTime - sDragEndTime;
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Android.DragDrop.Image.OpenFileTime.LastAttempt", duration);
+        }
     }
 
     /**
      * Clear the image data of Drag and Drop.
      */
-    public static void clearCache() {
+    private static void clearCacheData() {
         sImageBytes = null;
         sEncodingFormat = null;
+        if (sContentProviderUri != null) {
+            sLastUri = sContentProviderUri;
+            sLastUriClearedTimestamp = SystemClock.elapsedRealtime();
+            sLastUriRecorded = false;
+        }
         sContentProviderUri = null;
         sTimestamp = null;
         if (sHandler != null) {
@@ -108,7 +166,7 @@ public class DropDataContentProvider extends ContentProvider {
     /**
      * Clear the image data of Drag and Drop with delay.
      */
-    public static void clearCacheWithDelay() {
+    private static void clearCacheWithDelay() {
         if (sHandler == null) {
             sHandler = new Handler(Looper.getMainLooper());
         }
@@ -121,6 +179,7 @@ public class DropDataContentProvider extends ContentProvider {
      */
     @Override
     public boolean onCreate() {
+        // TODO(crbug.com/1302383): Lazily create DropPipeDataWriter in #openFile.
         mDropPipeDataWriter = new DropPipeDataWriter();
         return true;
     }
@@ -158,9 +217,23 @@ public class DropDataContentProvider extends ContentProvider {
 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-        if (uri == null || !uri.equals(sContentProviderUri)) {
+        if (uri == null) {
             return null;
         }
+        if (!uri.equals(sContentProviderUri)) {
+            if (uri.equals(sLastUri)) {
+                long duration = SystemClock.elapsedRealtime() - sLastUriClearedTimestamp;
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.DragDrop.Image.OpenFileTime.AllExpired", duration);
+                if (!sLastUriRecorded) {
+                    RecordHistogram.recordMediumTimesHistogram(
+                            "Android.DragDrop.Image.OpenFileTime.FirstExpired", duration);
+                    sLastUriRecorded = true;
+                }
+            }
+            return null;
+        }
+        sOpenFileLastAccessTime = SystemClock.elapsedRealtime();
         return openPipeHelper(
                 sContentProviderUri, getType(sContentProviderUri), null, null, mDropPipeDataWriter);
     }
@@ -222,12 +295,17 @@ public class DropDataContentProvider extends ContentProvider {
     }
 
     @VisibleForTesting
-    public static byte[] getImageBytesForTesting() {
+    static byte[] getImageBytesForTesting() {
         return sImageBytes;
     }
 
     @VisibleForTesting
-    public static Handler getHandlerForTesting() {
+    static Handler getHandlerForTesting() {
         return sHandler;
+    }
+
+    @VisibleForTesting
+    static void clearLastUriCreatedTimestampForTesting() {
+        sLastUriCreatedTimestamp = 0;
     }
 }
