@@ -131,9 +131,7 @@ void ExtensionInstallEventLogUploader::EnqueueReport(
       },
       weak_factory_.GetWeakPtr(), base::ThreadTaskRunnerHandle::Get());
 
-  // TODO(https://crbug.com/1297264): Enqueue() should take a base::Value::Dict.
-  report_queue_->Enqueue(base::Value(std::move(value_report)),
-                         ::reporting::Priority::SLOW_BATCH,
+  report_queue_->Enqueue(value_report, ::reporting::Priority::SLOW_BATCH,
                          std::move(on_enqueue_done_cb));
 }
 

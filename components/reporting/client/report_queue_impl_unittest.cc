@@ -112,8 +112,8 @@ TEST_F(ReportQueueImplTest, SuccessfulStringRecord) {
 TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
   constexpr char kTestKey[] = "TEST_KEY";
   constexpr char kTestValue[] = "TEST_VALUE";
-  base::Value test_dict(base::Value::Type::DICTIONARY);
-  test_dict.SetStringKey(kTestKey, kTestValue);
+  base::Value::Dict test_dict;
+  test_dict.Set(kTestKey, kTestValue);
   test::TestEvent<Status> a;
   report_queue_->Enqueue(test_dict, priority_, a.cb());
   EXPECT_OK(a.result());
@@ -123,7 +123,7 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
   absl::optional<base::Value> value_result =
       base::JSONReader::Read(test_storage_module()->record().data());
   ASSERT_TRUE(value_result);
-  EXPECT_EQ(value_result.value(), test_dict);
+  EXPECT_EQ(value_result.value().GetDict(), test_dict);
 }
 
 // Enqueues a |TestMessage| and ensures that it arrives unaltered in the
@@ -190,8 +190,8 @@ TEST_F(ReportQueueImplTest, EnqueueValueFailsOnPolicy) {
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   constexpr char kTestKey[] = "TEST_KEY";
   constexpr char kTestValue[] = "TEST_VALUE";
-  base::Value test_dict(base::Value::Type::DICTIONARY);
-  test_dict.SetStringKey(kTestKey, kTestValue);
+  base::Value::Dict test_dict;
+  test_dict.Set(kTestKey, kTestValue);
   test::TestEvent<Status> a;
   report_queue_->Enqueue(test_dict, priority_, a.cb());
   const auto result = a.result();

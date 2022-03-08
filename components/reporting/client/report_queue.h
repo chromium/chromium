@@ -128,7 +128,7 @@ class ReportQueue {
                EnqueueCallback callback) const;
 
   // |record| will be converted to a JSON string with base::JsonWriter::Write.
-  void Enqueue(const base::Value& record,
+  void Enqueue(const base::Value::Dict& record,
                Priority priority,
                EnqueueCallback callback) const;
 
