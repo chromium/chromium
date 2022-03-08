@@ -196,7 +196,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
   }
 
   async createFile(name: string): Promise<FileAccessEntry> {
-    const file = await createFileJobs.push(async () => {
+    return createFileJobs.push(async () => {
       let uniqueName = name;
       for (let i = 0; await this.isExist(uniqueName);) {
         uniqueName = name.replace(/^(.*?)(?=\.)/, `$& (${++i})`);
@@ -205,11 +205,6 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
           await this.handle.getFileHandle(uniqueName, {create: true});
       return new FileAccessEntry(handle, this);
     });
-    // The createFileJobs is never cancelled, so the return file should never
-    // be null.
-    // TODO(b/215662731): Remove this after we have better AsyncJobQueue type.
-    assert(file !== null);
-    return file;
   }
 
   async getDirectory({name, createIfNotExist}:

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertExists, assertInstanceof} from '../assert.js';
-import {AsyncJobQueue} from '../async_job_queue.js';
+import {ClearableAsyncJobQueue} from '../async_job_queue.js';
 import * as dom from '../dom.js';
 import * as focusRing from '../focus_ring.js';
 import * as metrics from '../metrics.js';
@@ -124,17 +124,17 @@ export class PTZPanel extends View {
   /**
    * Queues asynchronous pan change jobs in sequence.
    */
-  private panQueues = new AsyncJobQueue();
+  private panQueues = new ClearableAsyncJobQueue();
 
   /**
    * Queues asynchronous tilt change jobs in sequence.
    */
-  private tiltQueues = new AsyncJobQueue();
+  private tiltQueues = new ClearableAsyncJobQueue();
 
   /**
    * Queues asynchronous zoom change jobs in sequence.
    */
-  private zoomQueues = new AsyncJobQueue();
+  private zoomQueues = new ClearableAsyncJobQueue();
 
   /**
    * Whether the camera associated with current track is a digital zoom
@@ -224,7 +224,7 @@ export class PTZPanel extends View {
    */
   private bind(
       attr: 'pan'|'tilt'|'zoom', incBtn: HTMLButtonElement,
-      decBtn: HTMLButtonElement): AsyncJobQueue {
+      decBtn: HTMLButtonElement): ClearableAsyncJobQueue {
     const track = this.track;
     assert(track !== null);
     const {min, max, step} = track.getCapabilities()[attr];
@@ -234,7 +234,7 @@ export class PTZPanel extends View {
     }
     this.checkDisabled();
 
-    const queue = new AsyncJobQueue();
+    const queue = new ClearableAsyncJobQueue();
 
     /**
      * Returns a function triggering |attr| change of preview moving toward

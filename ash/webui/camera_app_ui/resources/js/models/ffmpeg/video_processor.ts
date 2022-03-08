@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '../../assert.js';
-import {AsyncJobQueue} from '../../async_job_queue.js';
+import {ClearableAsyncJobQueue} from '../../async_job_queue.js';
 import * as Comlink from '../../lib/comlink.js';
 import runFFmpeg from '../../lib/ffmpeg.js';
 import {WaitableEvent} from '../../waitable_event.js';
@@ -284,7 +284,7 @@ class FFMpegVideoProcessor {
 
   private readonly outputDevice: OutputDevice;
 
-  private readonly jobQueue = new AsyncJobQueue();
+  private readonly jobQueue = new ClearableAsyncJobQueue();
 
   /**
    * @param output The output writer.
