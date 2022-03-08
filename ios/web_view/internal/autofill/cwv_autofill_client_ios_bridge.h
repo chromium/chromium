@@ -54,6 +54,13 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
 - (void)propagateAutofillPredictionsForForms:
     (const std::vector<autofill::FormStructure*>&)forms;
 
+// Bridge for AutofillClient's method |ConfirmSaveAddressProfile|.
+- (void)
+    confirmSaveAddressProfile:(const autofill::AutofillProfile&)profile
+              originalProfile:(const autofill::AutofillProfile*)originalProfile
+                     callback:(autofill::AutofillClient ::
+                                   AddressProfileSavePromptCallback)callback;
+
 @end
 
 #endif  // IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_AUTOFILL_CLIENT_IOS_BRIDGE_H_

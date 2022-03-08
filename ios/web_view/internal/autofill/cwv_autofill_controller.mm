@@ -57,6 +57,8 @@
 
 using autofill::FormRendererId;
 using autofill::FieldRendererId;
+using UserDecision =
+    autofill::AutofillClient::SaveAddressProfileOfferUserDecision;
 
 @implementation CWVAutofillController {
   // Bridge to observe the |webState|.
@@ -409,6 +411,48 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
     (const std::vector<autofill::FormStructure*>&)forms {
   _passwordManager->ProcessAutofillPredictions(_passwordManagerDriver.get(),
                                                forms);
+}
+
+- (void)
+    confirmSaveAddressProfile:(const autofill::AutofillProfile&)profile
+              originalProfile:(const autofill::AutofillProfile*)originalProfile
+                     callback:(autofill::AutofillClient::
+                                   AddressProfileSavePromptCallback)callback {
+  if ([_delegate
+          respondsToSelector:@selector
+          (autofillController:
+              confirmSaveForNewAutofillProfile:oldProfile:decisionHandler:)]) {
+    CWVAutofillProfile* newProfile =
+        [[CWVAutofillProfile alloc] initWithProfile:profile];
+    CWVAutofillProfile* oldProfile = nil;
+    if (originalProfile) {
+      oldProfile =
+          [[CWVAutofillProfile alloc] initWithProfile:*originalProfile];
+    }
+    __block auto scopedCallback = std::move(callback);
+    [_delegate autofillController:self
+        confirmSaveForNewAutofillProfile:newProfile
+                              oldProfile:oldProfile
+                         decisionHandler:^(
+                             CWVAutofillProfileUserDecision decision) {
+                           UserDecision userDecision;
+                           switch (decision) {
+                             case CWVAutofillProfileUserDecisionAccepted:
+                               userDecision = UserDecision::kAccepted;
+                               break;
+                             case CWVAutofillProfileUserDecisionDeclined:
+                               userDecision = UserDecision::kDeclined;
+                               break;
+                             case CWVAutofillProfileUserDecisionIgnored:
+                               userDecision = UserDecision::kIgnored;
+                               break;
+                           }
+                           std::move(scopedCallback)
+                               .Run(userDecision, *newProfile.internalProfile);
+                         }];
+  } else {
+    std::move(callback).Run(UserDecision::kUserNotAsked, profile);
+  }
 }
 
 #pragma mark - AutofillDriverIOSBridge

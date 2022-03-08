@@ -224,7 +224,12 @@ void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
     SaveAddressProfilePromptOptions options,
-    AddressProfileSavePromptCallback callback) {}
+    AddressProfileSavePromptCallback callback) {
+  // TODO(crbug.com/1167062): Respect SaveAddressProfilePromptOptions.
+  [bridge_ confirmSaveAddressProfile:profile
+                     originalProfile:original_profile
+                            callback:std::move(callback)];
+}
 
 bool WebViewAutofillClientIOS::HasCreditCardScanFeature() {
   return false;

@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/autofill/core/browser/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -35,6 +36,7 @@
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_test.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
@@ -437,6 +439,65 @@ TEST_F(CWVAutofillControllerTest, SuggestPasswordCallback) {
                                    decision_handler_called = YES;
                                    EXPECT_TRUE(accept);
                                  }];
+  EXPECT_TRUE(decision_handler_called);
+
+  [delegate verify];
+}
+
+// Tests that CWVAutofillController automatically saves new profiles if the
+// delegate method is not implemented.
+TEST_F(CWVAutofillControllerTest, AutoSaveNewAutofillProfile) {
+  auto new_profile = autofill::test::GetFullProfile();
+  __block BOOL decision_handler_called = NO;
+  auto callback = base::BindOnce(
+      ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision decision,
+        autofill::AutofillProfile profile) {
+        EXPECT_EQ(autofill::AutofillClient::
+                      SaveAddressProfileOfferUserDecision::kUserNotAsked,
+                  decision);
+        EXPECT_EQ(new_profile, profile);
+        decision_handler_called = YES;
+      });
+  [autofill_controller_ confirmSaveAddressProfile:new_profile
+                                  originalProfile:nil
+                                         callback:std::move(callback)];
+  EXPECT_TRUE(decision_handler_called);
+}
+
+// Tests that CWVAutofillController's delegate can save a new profile.
+TEST_F(CWVAutofillControllerTest, SaveNewAutofillProfile) {
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
+
+  auto new_profile = autofill::test::GetFullProfile();
+  OCMExpect([delegate autofillController:autofill_controller_
+        confirmSaveForNewAutofillProfile:[OCMArg
+                                             checkWithBlock:^(
+                                                 CWVAutofillProfile* profile) {
+                                               return new_profile ==
+                                                      *profile.internalProfile;
+                                             }]
+                              oldProfile:nil
+                         decisionHandler:[OCMArg checkWithBlock:^(void (
+                                             ^decisionHandler)(
+                                             CWVAutofillProfileUserDecision)) {
+                           decisionHandler(
+                               CWVAutofillProfileUserDecisionAccepted);
+                           return YES;
+                         }]]);
+  __block BOOL decision_handler_called = NO;
+  auto callback = base::BindOnce(
+      ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision decision,
+        autofill::AutofillProfile profile) {
+        EXPECT_EQ(autofill::AutofillClient::
+                      SaveAddressProfileOfferUserDecision::kAccepted,
+                  decision);
+        EXPECT_EQ(new_profile, profile);
+        decision_handler_called = YES;
+      });
+  [autofill_controller_ confirmSaveAddressProfile:new_profile
+                                  originalProfile:nil
+                                         callback:std::move(callback)];
   EXPECT_TRUE(decision_handler_called);
 
   [delegate verify];

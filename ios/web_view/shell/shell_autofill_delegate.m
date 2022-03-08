@@ -317,6 +317,41 @@
   decisionHandler(YES);
 }
 
+- (void)autofillController:(CWVAutofillController*)autofillController
+    confirmSaveForNewAutofillProfile:(CWVAutofillProfile*)newProfile
+                          oldProfile:(nullable CWVAutofillProfile*)oldProfile
+                     decisionHandler:
+                         (void (^)(CWVAutofillProfileUserDecision decision))
+                             decisionHandler {
+  NSString* message =
+      [NSString stringWithFormat:@"new: %@\nold: %@",
+                                 newProfile.debugDescription, oldProfile];
+  UIAlertController* alertController = [UIAlertController
+      alertControllerWithTitle:@"Confirm save for new profile?"
+                       message:message
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* accept = [UIAlertAction
+      actionWithTitle:@"Accept"
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                decisionHandler(CWVAutofillProfileUserDecisionAccepted);
+              }];
+  [alertController addAction:accept];
+
+  UIAlertAction* decline = [UIAlertAction
+      actionWithTitle:@"Decline"
+                style:UIAlertActionStyleCancel
+              handler:^(UIAlertAction* action) {
+                decisionHandler(CWVAutofillProfileUserDecisionDeclined);
+              }];
+  [alertController addAction:decline];
+
+  [[self anyKeyWindow].rootViewController presentViewController:alertController
+                                                       animated:YES
+                                                     completion:nil];
+}
+
 #pragma mark - Private Methods
 
 - (UIAlertAction*)actionForSuggestion:(CWVAutofillSuggestion*)suggestion {
