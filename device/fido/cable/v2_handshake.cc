@@ -1060,6 +1060,15 @@ bool VerifyPairingSignature(
     base::span<const uint8_t, std::tuple_size<HandshakeHash>::value>
         handshake_hash,
     base::span<const uint8_t> signature) {
+  bssl::UniquePtr<EC_GROUP> p256(
+      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
+  bssl::UniquePtr<EC_POINT> unused(EC_POINT_new(p256.get()));
+  if (EC_POINT_oct2point(p256.get(), unused.get(), peer_public_key_x962.data(),
+                         peer_public_key_x962.size(),
+                         /*ctx=*/nullptr) != 1) {
+    return false;
+  }
+
   bssl::UniquePtr<EC_KEY> identity_key = ECKeyFromSeed(identity_seed);
   std::array<uint8_t, SHA256_DIGEST_LENGTH> expected_signature =
       PairingSignature(identity_key.get(), peer_public_key_x962,

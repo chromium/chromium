@@ -8,6 +8,7 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "crypto/random.h"
+#include "device/fido/cable/cable_discovery_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -252,6 +253,89 @@ TEST(CableV2Encoding, HandshakeSignatures) {
   EXPECT_FALSE(VerifyPairingSignature(kSeed1, authenticator_public_key,
                                       handshake_hash, signature));
   signature[0] ^= 1;
+}
+
+TEST(CableV2Encoding, ParseInvalidLinkingInformation) {
+  const std::array<uint8_t, kQRSeedSize> local_identity_seed = {1, 2, 3, 4};
+  const tunnelserver::KnownDomainID domain(0);
+  const std::array<uint8_t, 32> handshake_hash = {5, 6, 7, 8};
+  std::array<uint8_t, kP256X962Length> public_key = {9, 10, 11, 12};
+
+  EXPECT_FALSE(Pairing::Parse(cbor::Value(1), domain, local_identity_seed,
+                              handshake_hash));
+  EXPECT_FALSE(Pairing::Parse(cbor::Value("foo"), domain, local_identity_seed,
+                              handshake_hash));
+
+  {
+    cbor::Value::MapValue map;
+    map.emplace(1, handshake_hash);
+    EXPECT_FALSE(Pairing::Parse(cbor::Value(std::move(map)), domain,
+                                local_identity_seed, handshake_hash));
+  }
+
+  {
+    cbor::Value::MapValue map;
+    map.emplace(1, handshake_hash);
+    map.emplace(2, handshake_hash);
+    map.emplace(3, handshake_hash);
+    map.emplace(4, handshake_hash);
+    map.emplace(5, handshake_hash);
+    map.emplace(6, handshake_hash);
+    EXPECT_FALSE(Pairing::Parse(cbor::Value(std::move(map)), domain,
+                                local_identity_seed, handshake_hash));
+  }
+
+  {
+    cbor::Value::MapValue map;
+    map.emplace(1, handshake_hash);
+    map.emplace(2, handshake_hash);
+    map.emplace(3, handshake_hash);
+    map.emplace(4, public_key);
+    map.emplace(5, "test");
+    map.emplace(6, handshake_hash);
+    // This is structurally valid, but the public key is invalid.
+    EXPECT_FALSE(Pairing::Parse(cbor::Value(std::move(map)), domain,
+                                local_identity_seed, handshake_hash));
+  }
+
+  bssl::UniquePtr<EC_KEY> key(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
+  CHECK(EC_KEY_generate_key(key.get()));
+  CHECK_EQ(sizeof(public_key),
+           EC_POINT_point2oct(EC_KEY_get0_group(key.get()),
+                              EC_KEY_get0_public_key(key.get()),
+                              POINT_CONVERSION_UNCOMPRESSED, public_key.data(),
+                              sizeof(public_key), /*ctx=*/nullptr));
+
+  {
+    cbor::Value::MapValue map;
+    map.emplace(1, handshake_hash);
+    map.emplace(2, handshake_hash);
+    map.emplace(3, handshake_hash);
+    map.emplace(4, public_key);
+    map.emplace(5, "test");
+    map.emplace(6, handshake_hash);
+    // This is completely valid except that the signature is wrong.
+    EXPECT_FALSE(Pairing::Parse(cbor::Value(std::move(map)), domain,
+                                local_identity_seed, handshake_hash));
+  }
+
+  {
+    bssl::UniquePtr<EC_KEY> identity_key(EC_KEY_derive_from_secret(
+        EC_KEY_get0_group(key.get()), local_identity_seed.data(),
+        local_identity_seed.size()));
+
+    cbor::Value::MapValue map;
+    map.emplace(1, handshake_hash);
+    map.emplace(2, handshake_hash);
+    map.emplace(3, handshake_hash);
+    map.emplace(4, public_key);
+    map.emplace(5, "test");
+    map.emplace(6, CalculatePairingSignature(identity_key.get(), public_key,
+                                             handshake_hash));
+    // This is fully valid.
+    EXPECT_TRUE(Pairing::Parse(cbor::Value(std::move(map)), domain,
+                               local_identity_seed, handshake_hash));
+  }
 }
 
 class CableV2HandshakeTest : public ::testing::Test {

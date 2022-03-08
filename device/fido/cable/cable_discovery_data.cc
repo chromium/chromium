@@ -120,6 +120,7 @@ absl::optional<std::unique_ptr<Pairing>> Pairing::Parse(
           }) ||
       its[3]->second.GetBytestring().size() !=
           std::tuple_size<decltype(pairing->peer_public_key_x962)>::value) {
+    return absl::nullopt;
   }
 
   pairing->tunnel_server_domain = tunnelserver::DecodeDomain(domain);
