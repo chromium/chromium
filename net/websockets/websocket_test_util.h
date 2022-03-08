@@ -69,7 +69,7 @@ std::string WebSocketStandardRequestWithCookies(
     const std::string& path,
     const std::string& host,
     const url::Origin& origin,
-    const std::string& cookies,
+    const WebSocketExtraHeaders& cookies,
     const WebSocketExtraHeaders& send_additional_request_headers,
     const WebSocketExtraHeaders& extra_headers);
 

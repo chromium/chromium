@@ -65,7 +65,7 @@ std::string WebSocketStandardRequest(
     const url::Origin& origin,
     const WebSocketExtraHeaders& send_additional_request_headers,
     const WebSocketExtraHeaders& extra_headers) {
-  return WebSocketStandardRequestWithCookies(path, host, origin, std::string(),
+  return WebSocketStandardRequestWithCookies(path, host, origin, /*cookies=*/{},
                                              send_additional_request_headers,
                                              extra_headers);
 }
@@ -74,7 +74,7 @@ std::string WebSocketStandardRequestWithCookies(
     const std::string& path,
     const std::string& host,
     const url::Origin& origin,
-    const std::string& cookies,
+    const WebSocketExtraHeaders& cookies,
     const WebSocketExtraHeaders& send_additional_request_headers,
     const WebSocketExtraHeaders& extra_headers) {
   // Unrelated changes in net/http may change the order and default-values of
@@ -97,7 +97,8 @@ std::string WebSocketStandardRequestWithCookies(
     headers.SetHeader("User-Agent", "");
   headers.SetHeader("Accept-Encoding", "gzip, deflate");
   headers.SetHeader("Accept-Language", "en-us,fr");
-  headers.AddHeadersFromString(cookies);
+  for (const auto& [key, value] : cookies)
+    headers.SetHeader(key, value);
   headers.SetHeader("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==");
   headers.SetHeader("Sec-WebSocket-Extensions",
                     "permessage-deflate; client_max_window_bits");
