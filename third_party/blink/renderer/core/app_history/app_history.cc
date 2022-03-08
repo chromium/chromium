@@ -294,28 +294,32 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
     // keys_to_indices_.
     DCHECK(keys_to_indices_.Contains(item.GetAppHistoryKey()));
     current_index_ = keys_to_indices_.at(item.GetAppHistoryKey());
-  } else {
-    if (type == WebFrameLoadType::kStandard) {
-      // For a new back/forward entry, truncate any forward entries and prepare
-      // to append.
-      current_index_++;
-      for (wtf_size_t i = current_index_; i < entries_.size(); i++) {
-        keys_to_indices_.erase(entries_[i]->key());
-        disposed_entries.push_back(entries_[i]);
-      }
-      entries_.resize(current_index_ + 1);
-    } else if (type == WebFrameLoadType::kReplaceCurrentItem) {
-      DCHECK_NE(current_index_, -1);
-      disposed_entries.push_back(entries_[current_index_]);
+  } else if (type == WebFrameLoadType::kStandard) {
+    // For a new back/forward entry, truncate any forward entries and prepare
+    // to append.
+    current_index_++;
+    for (wtf_size_t i = current_index_; i < entries_.size(); i++) {
+      keys_to_indices_.erase(entries_[i]->key());
+      disposed_entries.push_back(entries_[i]);
     }
+    entries_.resize(current_index_ + 1);
+  } else if (type == WebFrameLoadType::kReplaceCurrentItem) {
+    DCHECK_NE(current_index_, -1);
+    disposed_entries.push_back(entries_[current_index_]);
+  }
 
+  if (type == WebFrameLoadType::kStandard ||
+      type == WebFrameLoadType::kReplaceCurrentItem) {
     // current_index_ is now correctly set (for type of
-    // WebFrameLoadType::kReplaceCurrentItem/kReload/kReloadBypassingCache, it
-    // didn't change). Create the new current entry.
+    // WebFrameLoadType::kReplaceCurrentItem, it didn't change). Create the new
+    // current entry.
     entries_[current_index_] =
         MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), &item);
     keys_to_indices_.insert(entries_[current_index_]->key(), current_index_);
   }
+
+  // Note how reload types don't update the current entry or dispose any
+  // entries.
 
   // It's important to do this before firing dispose events, since dispose
   // events could start another navigation or otherwise mess with
@@ -758,6 +762,10 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   if (!promise_list.IsEmpty()) {
     transition_ = MakeGarbageCollected<AppHistoryTransition>(
         script_state, navigation_type, current());
+    // In the spec, the URL and history update steps are not called for reloads.
+    // In our implementation, we call the corresponding function anyway, but
+    // |type| being a reload type makes it do none of the spec-relevant
+    // steps. Instead it does stuff like the loading spinner and use counters.
     GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
         url, destination_item,
         mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile,
