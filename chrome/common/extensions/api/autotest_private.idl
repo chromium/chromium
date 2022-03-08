@@ -889,6 +889,11 @@ namespace autotestPrivate {
     [supportsPromises] static void bootstrapMachineLearningService(
         VoidCallback callback);
 
+    // Triggers an on-demand update of smart dim component and checks whether
+    // it's successfully loaded by smart dim ml_agent.
+    // |callback|: Called when the operation has completed.
+    [supportsPromises] static void loadSmartDimComponent(VoidCallback callback);
+
     // Enables/disables the Google Assistant.
     // |callback|: Called when the operation has completed.
     [supportsPromises] static void setAssistantEnabled(boolean enabled,

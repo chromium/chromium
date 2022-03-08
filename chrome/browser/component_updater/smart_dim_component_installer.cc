@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/power/ml/smart_dim/metrics.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -93,6 +94,11 @@ SmartDimComponentInstallerPolicy::SmartDimComponentInstallerPolicy(
     : expected_version_(expected_version) {}
 
 SmartDimComponentInstallerPolicy::~SmartDimComponentInstallerPolicy() = default;
+
+const std::string SmartDimComponentInstallerPolicy::GetExtensionId() {
+  return crx_file::id_util::GenerateIdFromHash(
+      kSmartDimPublicKeySHA256, sizeof(kSmartDimPublicKeySHA256));
+}
 
 bool SmartDimComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {

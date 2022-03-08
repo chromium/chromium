@@ -33,6 +33,10 @@ namespace crostini {
 enum class CrostiniResult;
 }
 
+namespace update_client {
+enum class Error;
+}
+
 namespace extensions {
 
 class AssistantInteractionHelper;
@@ -666,6 +670,24 @@ class AutotestPrivateBootstrapMachineLearningServiceFunction
   void OnMojoDisconnect();
 
   mojo::Remote<chromeos::machine_learning::mojom::Model> model_;
+};
+
+class AutotestPrivateLoadSmartDimComponentFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateLoadSmartDimComponentFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.loadSmartDimComponent",
+                             AUTOTESTPRIVATE_LOADSMARTDIMCOMPONENT)
+
+ private:
+  ~AutotestPrivateLoadSmartDimComponentFunction() override;
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void OnComponentUpdatedCallback(update_client::Error error);
+  void TryRespond();
+
+  base::RetainingOneShotTimer timer_;
+  int timer_triggered_count_ = 0;
 };
 
 // Enable/disable the Google Assistant feature. This toggles the Assistant user

@@ -34,6 +34,8 @@ class SmartDimComponentInstallerPolicy : public ComponentInstallerPolicy {
 
   ~SmartDimComponentInstallerPolicy() override;
 
+  static const std::string GetExtensionId();
+
  private:
   // ComponentInstallerPolicy overrides:
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;

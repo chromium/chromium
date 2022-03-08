@@ -454,6 +454,7 @@ source_set("chromeos") {
     "//components/ukm",
     "//components/ukm/content",
     "//components/unified_consent",
+    "//components/update_client:update_client",
     "//components/user_manager",
     "//components/user_prefs:user_prefs",
     "//components/vector_icons",

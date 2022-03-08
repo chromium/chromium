@@ -31826,6 +31826,7 @@ Called by update_extension_histograms.py.-->
   <int value="1633" label="FILEMANAGERPRIVATE_MOUNTGUEST"/>
   <int value="1634" label="AUTOTESTPRIVATE_ISLACROSPRIMARYBROWSER"/>
   <int value="1635" label="INPUTMETHODPRIVATE_SWITCHTOLASTUSEDINPUTMETHOD"/>
+  <int value="1636" label="AUTOTESTPRIVATE_LOADSMARTDIMCOMPONENT"/>
 </enum>
 
 <enum name="ExtensionIconState">
