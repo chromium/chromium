@@ -78,5 +78,7 @@ declare namespace chrome {
     export function update(
         tabId: number|undefined, updateProperties: UpdateProperties,
         callback?: (p1?: Tab) => void): void;
+
+    export function reload(tabId: number): void;
   }
 }

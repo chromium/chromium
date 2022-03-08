@@ -18,7 +18,7 @@ export let MessageData;
 /**
  * @typedef {{
  *   type: string,
- *   dataToSave: Array,
+ *   dataToSave: ArrayBuffer,
  *   messageId: string,
  * }}
  */

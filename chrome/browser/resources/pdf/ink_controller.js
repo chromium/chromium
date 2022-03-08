@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 import {ContentController} from './controller.js';
@@ -137,7 +138,14 @@ export class InkController {
   }
 
   /** @override */
-  saveAttachment(index) {}
+  saveAttachment(index) {
+    assertNotReached();
+    // TODO(crbug.com/1260303): Dummy return to please the TS Compiler. Remove
+    // when this file is migrated to TS.
+    return new Promise(
+        resolve =>
+            resolve({type: '', dataToSave: new ArrayBuffer(0), messageId: ''}));
+  }
 
   /** @override */
   undo() {

@@ -13,7 +13,7 @@ import {isRTL} from 'chrome://resources/js/util.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserApi} from './browser_api.js';
-import {FittingType} from './constants.js';
+import {ExtendedKeyEvent, FittingType, KeyEventData} from './constants.js';
 import {MessageData, PluginController, PrintPreviewParams} from './controller.js';
 import {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
 import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
@@ -23,18 +23,11 @@ import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, 
 import {ToolbarManager} from './toolbar_manager.js';
 
 
-type KeyEventData = MessageData&{keyEvent: Object};
-
-type ExtendedKeyEvent = KeyboardEvent&{
-  fromScriptingAPI?: boolean,
-  fromPlugin?: boolean,
-};
-
 export interface PDFViewerPPElement {
   $: {
-    content: HTMLDivElement,
+    content: HTMLElement,
     pageIndicator: ViewerPageIndicatorElement,
-    sizer: HTMLDivElement,
+    sizer: HTMLElement,
     zoomToolbar: ViewerZoomToolbarElement,
   };
 }

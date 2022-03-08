@@ -5,26 +5,32 @@
 /** @fileoverview Definitions for chrome.mimeHandlerPrivate API. */
 // TODO(crbug.com/1203307): Auto-generate this file.
 
-declare namespace chrome {
-  export namespace mimeHandlerPrivate {
-    export interface StreamInfo {
-      mimeType: string;
-      originalUrl: string;
-      streamUrl: string;
-      tabId: number;
-      responseHeaders: Object;
-      embedded: boolean;
-    }
+import {ChromeEvent} from './chrome_event.js';
 
-    export interface PdfPluginAttributes {
-      backgroundColor: number;
-      allowJavascript: boolean;
-    }
+declare global {
+  export namespace chrome {
+    export namespace mimeHandlerPrivate {
+      export interface StreamInfo {
+        mimeType: string;
+        originalUrl: string;
+        streamUrl: string;
+        tabId: number;
+        responseHeaders: Object;
+        embedded: boolean;
+      }
 
-    export function getStreamInfo(callback: (info: StreamInfo) => void): void;
-    export function setPdfPluginAttributes(attributesForLoading:
-                                               PdfPluginAttributes): void;
-    export function setShowBeforeUnloadDialog(
-        showDialog: boolean, callback?: () => void): void;
+      export interface PdfPluginAttributes {
+        backgroundColor: number;
+        allowJavascript: boolean;
+      }
+
+      export function getStreamInfo(callback: (info: StreamInfo) => void): void;
+      export function setPdfPluginAttributes(attributesForLoading:
+                                                 PdfPluginAttributes): void;
+      export function setShowBeforeUnloadDialog(
+          showDialog: boolean, callback?: () => void): void;
+
+      export const onSave: ChromeEvent<(url: string) => void>;
+    }
   }
 }

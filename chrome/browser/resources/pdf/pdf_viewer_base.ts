@@ -38,7 +38,7 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
     return 'pdf-viewer-base';
   }
 
-  static get properties() {
+  static get properties(): any {
     return {
       showErrorDialog: {
         type: Boolean,

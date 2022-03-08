@@ -190,10 +190,14 @@ ts_library("build_ts") {
       [ "pdf_internal_plugin_wrapper.js" ] +
       print_preview_non_webcomponents_files + print_preview_webcomponents_files
   definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/file_system.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/mime_handler_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/resources_private.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
     "source_capabilities.d.ts",
   ]
   deps = [

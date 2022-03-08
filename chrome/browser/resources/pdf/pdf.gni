@@ -36,7 +36,7 @@ pdf_webcomponents_files = [
   "elements/viewer-thumbnail-bar.ts",
   "elements/viewer-thumbnail.ts",
   "elements/viewer-toolbar.ts",
-  "pdf_viewer.js",
+  "pdf_viewer.ts",
 ]
 
 if (enable_ink) {
