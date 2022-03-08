@@ -23,6 +23,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_log.h"
@@ -231,6 +232,11 @@ ContentMainParams& ContentMainParams::operator=(ContentMainParams&&) = default;
 int NO_STACK_PROTECTOR
 RunContentProcess(ContentMainParams params,
                   ContentMainRunner* content_main_runner) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros is launched with inherited priority. Revert to normal priority
+  // before spawning more processes.
+  base::PlatformThread::SetCurrentThreadPriority(base::ThreadPriority::NORMAL);
+#endif
   int exit_code = -1;
   base::debug::GlobalActivityTracker* tracker = nullptr;
 #if BUILDFLAG(IS_MAC)

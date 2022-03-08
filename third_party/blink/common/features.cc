@@ -622,7 +622,7 @@ const base::Feature kBlinkHeapIncrementalMarkingStress{
 // compositor & IO threads.
 const base::Feature kBlinkCompositorUseDisplayThreadPriority {
   "BlinkCompositorUseDisplayThreadPriority",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
