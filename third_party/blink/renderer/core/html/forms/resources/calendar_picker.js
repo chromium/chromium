@@ -1163,140 +1163,131 @@ function AnimationManager() {
   AnimationManager.shared = new AnimationManager();
 }
 
-/**
- * @constructor
- * @extends EventEmitter
- */
-function Animator() {
-  EventEmitter.call(this);
+// ----------------------------------------------------------------
 
-  /**
-   * @type {!number}
-   * @const
-   */
-  this.id = Animator._lastId++;
-  /**
-   * @type {!number}
-   */
-  this.duration = 100;
-  /**
-   * @type {?function}
-   */
-  this.step = null;
-  /**
-   * @type {!boolean}
-   * @protected
-   */
-  this._isRunning = false;
-  /**
-   * @type {!number}
-   */
-  this.currentValue = 0;
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._lastStepTime = 0;
-}
+class Animator extends EventEmitter {
+  constructor() {
+    super();
+    /**
+     * @type {!number}
+     * @const
+     */
+    this.id = Animator._lastId++;
+    /**
+     * @type {!number}
+     */
+    this.duration = 100;
+    /**
+     * @type {?function}
+     */
+    this.step = null;
+    /**
+     * @type {!boolean}
+     * @protected
+     */
+    this._isRunning = false;
+    /**
+     * @type {!number}
+     */
+    this.currentValue = 0;
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._lastStepTime = 0;
+  }
 
-{
-  Animator.prototype = Object.create(EventEmitter.prototype);
+  static _lastId = 0;
 
-  Animator._lastId = 0;
-
-  Animator.EventTypeDidAnimationStop = 'didAnimationStop';
+  static EventTypeDidAnimationStop = 'didAnimationStop';
 
   /**
    * @return {!boolean}
    */
-  Animator.prototype.isRunning = function() {
+  isRunning() {
     return this._isRunning;
-  };
+  }
 
-  Animator.prototype.start = function() {
+  start() {
     this._lastStepTime = performance.now();
     this._isRunning = true;
     AnimationManager.shared.add(this);
-  };
+  }
 
-  Animator.prototype.stop = function() {
+  stop() {
     if (!this._isRunning)
       return;
     this._isRunning = false;
     AnimationManager.shared.remove(this);
     this.dispatchEvent(Animator.EventTypeDidAnimationStop, this);
-  };
+  }
 
   /**
    * @param {!number} now
    */
-  Animator.prototype.onAnimationFrame = function(now) {
+  onAnimationFrame(now) {
     this._lastStepTime = now;
     this.step(this);
-  };
+  }
 }
 
-/**
- * @constructor
- * @extends Animator
- */
-function TransitionAnimator() {
-  Animator.call(this);
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._from = 0;
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._to = 0;
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._delta = 0;
-  /**
-   * @type {!number}
-   */
-  this.progress = 0.0;
-  /**
-   * @type {!function}
-   */
-  this.timingFunction = AnimationTimingFunction.Linear;
-}
+// ----------------------------------------------------------------
 
-{
-  TransitionAnimator.prototype = Object.create(Animator.prototype);
+class TransitionAnimator extends Animator {
+  constructor() {
+    super();
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._from = 0;
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._to = 0;
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._delta = 0;
+    /**
+     * @type {!number}
+     */
+    this.progress = 0.0;
+    /**
+     * @type {!function}
+     */
+    this.timingFunction = AnimationTimingFunction.Linear;
+  }
 
   /**
    * @param {!number} value
    */
-  TransitionAnimator.prototype.setFrom = function(value) {
+  setFrom(value) {
     this._from = value;
     this._delta = this._to - this._from;
-  };
+  }
 
-  TransitionAnimator.prototype.start = function() {
+  start() {
     console.assert(isFinite(this.duration));
     this.progress = 0.0;
     this.currentValue = this._from;
-    Animator.prototype.start.call(this);
-  };
+    super.start();
+  }
 
   /**
    * @param {!number} value
    */
-  TransitionAnimator.prototype.setTo = function(value) {
+  setTo(value) {
     this._to = value;
     this._delta = this._to - this._from;
-  };
+  }
 
   /**
    * @param {!number} now
    */
-  TransitionAnimator.prototype.onAnimationFrame = function(now) {
+  onAnimationFrame(now) {
     this.progress += (now - this._lastStepTime) / this.duration;
     this.progress = Math.min(1.0, this.progress);
     this._lastStepTime = now;
@@ -1307,96 +1298,97 @@ function TransitionAnimator() {
       this.stop();
       return;
     }
-  };
+  }
 }
 
-/**
- * @constructor
- * @extends Animator
- * @param {!number} initialVelocity
- * @param {!number} initialValue
- */
-function FlingGestureAnimator(initialVelocity, initialValue) {
-  Animator.call(this);
-  /**
-   * @type {!number}
-   */
-  this.initialVelocity = initialVelocity;
-  /**
-   * @type {!number}
-   */
-  this.initialValue = initialValue;
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._elapsedTime = 0;
-  var startVelocity = Math.abs(this.initialVelocity);
-  if (startVelocity > this._velocityAtTime(0))
-    startVelocity = this._velocityAtTime(0);
-  if (startVelocity < 0)
-    startVelocity = 0;
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._timeOffset = this._timeAtVelocity(startVelocity);
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._positionOffset = this._valueAtTime(this._timeOffset);
-  /**
-   * @type {!number}
-   */
-  this.duration = this._timeAtVelocity(0);
-}
+// ----------------------------------------------------------------
 
-{
-  FlingGestureAnimator.prototype = Object.create(Animator.prototype);
+class FlingGestureAnimator extends Animator {
+  /**
+   * @param {!number} initialVelocity
+   * @param {!number} initialValue
+   */
+  constructor(initialVelocity, initialValue) {
+    super();
+    /**
+     * @type {!number}
+     */
+    this.initialVelocity = initialVelocity;
+    /**
+     * @type {!number}
+     */
+    this.initialValue = initialValue;
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._elapsedTime = 0;
+    var startVelocity = Math.abs(this.initialVelocity);
+    if (startVelocity > this._velocityAtTime(0))
+      startVelocity = this._velocityAtTime(0);
+    if (startVelocity < 0)
+      startVelocity = 0;
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._timeOffset = this._timeAtVelocity(startVelocity);
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._positionOffset = this._valueAtTime(this._timeOffset);
+    /**
+     * @type {!number}
+     */
+    this.duration = this._timeAtVelocity(0);
+  }
 
   // Velocity is subject to exponential decay. These parameters are coefficients
   // that determine the curve.
-  FlingGestureAnimator._P0 = -5707.62;
-  FlingGestureAnimator._P1 = 0.172;
-  FlingGestureAnimator._P2 = 0.0037;
+  static _P0 = -5707.62;
+  static _P1 = 0.172;
+  static _P2 = 0.0037;
 
   /**
    * @param {!number} t
    */
-  FlingGestureAnimator.prototype._valueAtTime = function(t) {
-    return FlingGestureAnimator._P0 * Math.exp(-FlingGestureAnimator._P2 * t) -
-        FlingGestureAnimator._P1 * t - FlingGestureAnimator._P0;
-  };
+  _valueAtTime(t) {
+    return (
+        FlingGestureAnimator._P0 * Math.exp(-FlingGestureAnimator._P2 * t) -
+        FlingGestureAnimator._P1 * t - FlingGestureAnimator._P0);
+  }
 
   /**
    * @param {!number} t
    */
-  FlingGestureAnimator.prototype._velocityAtTime = function(t) {
-    return -FlingGestureAnimator._P0 * FlingGestureAnimator._P2 *
-        Math.exp(-FlingGestureAnimator._P2 * t) -
-        FlingGestureAnimator._P1;
-  };
+  _velocityAtTime(t) {
+    return (
+        -FlingGestureAnimator._P0 * FlingGestureAnimator._P2 *
+            Math.exp(-FlingGestureAnimator._P2 * t) -
+        FlingGestureAnimator._P1);
+  }
 
   /**
    * @param {!number} v
    */
-  FlingGestureAnimator.prototype._timeAtVelocity = function(v) {
-    return -Math.log(
-               (v + FlingGestureAnimator._P1) /
-               (-FlingGestureAnimator._P0 * FlingGestureAnimator._P2)) /
-        FlingGestureAnimator._P2;
-  };
+  _timeAtVelocity(v) {
+    return (
+        -Math.log(
+            (v + FlingGestureAnimator._P1) /
+            (-FlingGestureAnimator._P0 * FlingGestureAnimator._P2)) /
+        FlingGestureAnimator._P2);
+  }
 
-  FlingGestureAnimator.prototype.start = function() {
+  start() {
     this._lastStepTime = performance.now();
-    Animator.prototype.start.call(this);
-  };
+    super.start();
+  }
 
   /**
    * @param {!number} now
    */
-  FlingGestureAnimator.prototype.onAnimationFrame = function(now) {
+  onAnimationFrame(now) {
     this._elapsedTime += now - this._lastStepTime;
     this._lastStepTime = now;
     if (this._elapsedTime + this._timeOffset >= this.duration) {
@@ -1409,8 +1401,10 @@ function FlingGestureAnimator(initialVelocity, initialValue) {
       position = -position;
     this.currentValue = position + this.initialValue;
     this.step(this);
-  };
+  }
 }
+
+// ----------------------------------------------------------------
 
 /**
  * @constructor
