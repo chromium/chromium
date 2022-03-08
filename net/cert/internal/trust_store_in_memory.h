@@ -80,6 +80,10 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
   // distrusted certificates require a full DER match.
   void AddCertificate(scoped_refptr<ParsedCertificate> cert,
                       const CertificateTrust& trust);
+
+  // Returns the `Entry` matching `cert`, or `nullptr` if not in the trust
+  // store.
+  const Entry* GetEntry(const ParsedCertificate* cert) const;
 };
 
 }  // namespace net

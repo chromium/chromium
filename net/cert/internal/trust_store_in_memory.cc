@@ -53,23 +53,12 @@ void TrustStoreInMemory::SyncGetIssuersOf(const ParsedCertificate* cert,
 CertificateTrust TrustStoreInMemory::GetTrust(
     const ParsedCertificate* cert,
     base::SupportsUserData* debug_data) const {
-  auto range = entries_.equal_range(cert->normalized_subject().AsStringPiece());
-  for (auto it = range.first; it != range.second; ++it) {
-    if (cert == it->second.cert.get() ||
-        cert->der_cert() == it->second.cert->der_cert()) {
-      // NOTE: ambiguity when there are duplicate entries.
-      return it->second.trust;
-    }
-  }
-  return CertificateTrust::ForUnspecified();
+  const Entry* entry = GetEntry(cert);
+  return entry ? entry->trust : CertificateTrust::ForUnspecified();
 }
 
 bool TrustStoreInMemory::Contains(const ParsedCertificate* cert) const {
-  for (const auto& it : entries_) {
-    if (cert->der_cert() == it.second.cert->der_cert())
-      return true;
-  }
-  return false;
+  return GetEntry(cert) != nullptr;
 }
 
 TrustStoreInMemory::Entry::Entry() = default;
@@ -85,6 +74,19 @@ void TrustStoreInMemory::AddCertificate(scoped_refptr<ParsedCertificate> cert,
   // TODO(mattm): should this check for duplicate certificates?
   entries_.insert(
       std::make_pair(entry.cert->normalized_subject().AsStringPiece(), entry));
+}
+
+const TrustStoreInMemory::Entry* TrustStoreInMemory::GetEntry(
+    const ParsedCertificate* cert) const {
+  auto range = entries_.equal_range(cert->normalized_subject().AsStringPiece());
+  for (auto it = range.first; it != range.second; ++it) {
+    if (cert == it->second.cert.get() ||
+        cert->der_cert() == it->second.cert->der_cert()) {
+      // NOTE: ambiguity when there are duplicate entries.
+      return &it->second;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace net
