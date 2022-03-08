@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -717,6 +718,29 @@ QuotaError QuotaDatabase::SetIsBootstrapped(bool bootstrap_flag) {
              : QuotaError::kDatabaseError;
 }
 
+QuotaError QuotaDatabase::CorruptForTesting(
+    base::OnceCallback<void(const base::FilePath&)> corrupter) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (db_) {
+    // Commit the long-running transaction.
+    db_->CommitTransaction();
+    db_->Close();
+  }
+
+  std::move(corrupter).Run(db_file_path_);
+
+  if (!db_)
+    return QuotaError::kDatabaseError;
+  if (!OpenDatabase())
+    return QuotaError::kDatabaseError;
+
+  // Begin a long-running transaction. This matches EnsureOpen().
+  if (!db_->BeginTransaction())
+    return QuotaError::kDatabaseError;
+  return QuotaError::kNone;
+}
+
 void QuotaDatabase::Commit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_)
@@ -764,6 +788,10 @@ QuotaError QuotaDatabase::EnsureOpened(EnsureOpenedMode mode) {
   meta_table_ = std::make_unique<sql::MetaTable>();
 
   db_->set_histogram_tag("Quota");
+
+  // Don't crash on database errors in DCHECK builds.
+  db_->set_error_callback(base::BindRepeating(
+      [](int sqlite_error, sql::Statement* statement) { return; }));
 
   if (!OpenDatabase() || !EnsureDatabaseVersion()) {
     LOG(ERROR) << "Could not open the quota database, resetting.";

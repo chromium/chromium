@@ -427,6 +427,21 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void SetQuotaDatabaseForTesting(std::unique_ptr<QuotaDatabase> database);
 
+  // Testing support for handling corruption in the underlying database.
+  //
+  // Runs `corrupter` on the same sequence used to do database I/O,
+  // guaranteeing that no other database operation is performed at the same
+  // time. `corrupter` receives the path to the underlying SQLite database as an
+  // argument. The underlying SQLite database is closed while `corrupter` runs,
+  // and reopened afterwards.
+  //
+  // `callback` is called with QuotaError::kNone if the database was
+  // successfully reopened after `corrupter` was run, or with
+  // QuotaError::kDatabaseError otherwise.
+  void CorruptDatabaseForTesting(
+      base::OnceCallback<void(const base::FilePath&)> corrupter,
+      base::OnceCallback<void(QuotaError)> callback);
+
   void SetBootstrapDisabledForTesting(bool disable) {
     bootstrap_disabled_for_testing_ = disable;
   }

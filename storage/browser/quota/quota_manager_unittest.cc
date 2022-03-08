@@ -36,6 +36,7 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "sql/test/test_helpers.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
 #include "storage/browser/quota/quota_features.h"
@@ -44,7 +45,6 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
 #include "storage/browser/test/mock_quota_client.h"
-#include "storage/browser/test/mock_quota_database.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -538,6 +538,14 @@ class QuotaManagerImplTest : public testing::Test {
 
   void SetQuotaChangeCallback(base::RepeatingClosure cb) {
     quota_manager_impl_->SetQuotaChangeCallbackForTesting(std::move(cb));
+  }
+
+  QuotaError CorruptDatabaseForTesting(
+      base::OnceCallback<void(const base::FilePath&)> corrupter) {
+    base::test::TestFuture<QuotaError> corruption_future;
+    quota_manager_impl_->CorruptDatabaseForTesting(
+        std::move(corrupter), corruption_future.GetCallback());
+    return corruption_future.Get();
   }
 
   void SetQuotaDatabase(std::unique_ptr<QuotaDatabase> database) {
@@ -2479,22 +2487,23 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketDataWithDBError) {
   MockQuotaClient* fs_client =
       CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
 
-  auto quota_db = std::make_unique<MockQuotaDatabase>(
-      data_dir_.GetPath().AppendASCII("QuotaManager"));
-  MockQuotaDatabase* mock_database = quota_db.get();
-  SetQuotaDatabase(std::move(quota_db));
-
   RegisterClientBucketData(fs_client, kData);
 
   // Check usage data before deletion.
   GetHostUsageWithBreakdown("foo.com", kTemp);
   ASSERT_EQ(123, usage());
 
-  EXPECT_CALL(*mock_database, DeleteBucketInfo)
-      .Times(1)
-      .WillOnce(testing::Return(QuotaError::kDatabaseError));
+  // Bucket lookup uses the `buckets_by_storage_key` index. So, we can corrupt
+  // any other index, and SQLite will only detect the corruption when trying to
+  // delete a bucket.
+  QuotaError corruption_error = CorruptDatabaseForTesting(
+      base::BindOnce([](const base::FilePath& db_path) {
+        ASSERT_TRUE(sql::test::CorruptIndexRootPage(
+            db_path, "buckets_by_last_accessed"));
+      }));
+  ASSERT_EQ(QuotaError::kNone, corruption_error);
 
-  // Trying to delete bucket for "http://foo.com/" should return error.
+  // Deleting the bucket will result in an error.
   EXPECT_EQ(FindAndDeleteBucketData(ToStorageKey("http://foo.com"),
                                     kDefaultBucketName),
             QuotaStatusCode::kErrorInvalidModification);

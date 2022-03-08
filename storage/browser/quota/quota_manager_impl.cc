@@ -16,6 +16,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -2270,6 +2271,20 @@ void QuotaManagerImpl::SetQuotaDatabaseForTesting(
   syncable_usage_tracker_ = std::make_unique<UsageTracker>(
       this, client_types_[StorageType::kSyncable], StorageType::kSyncable,
       special_storage_policy_.get());
+}
+
+void QuotaManagerImpl::CorruptDatabaseForTesting(
+    base::OnceCallback<void(const base::FilePath&)> corrupter,
+    base::OnceCallback<void(QuotaError)> callback) {
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(
+          [](base::OnceCallback<void(const base::FilePath&)> corrupter,
+             QuotaDatabase* database) {
+            return database->CorruptForTesting(  // IN-TEST
+                std::move(corrupter));
+          },
+          std::move(corrupter)),
+      std::move(callback));
 }
 
 void QuotaManagerImpl::ReportHistogram() {
