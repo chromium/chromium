@@ -343,13 +343,10 @@ class RTCPeerConnectionHandlerTest : public SimTest {
         mock_client_.get(), mock_dependency_factory_.Get());
   }
 
-  // Creates a WebKit local MediaStream.
+  // Creates a local MediaStream.
   MediaStreamDescriptor* CreateLocalMediaStream(const String& stream_label) {
     String video_track_label("video-label");
     String audio_track_label("audio-label");
-    auto* audio_source = MakeGarbageCollected<MediaStreamSource>(
-        audio_track_label, MediaStreamSource::kTypeAudio,
-        String::FromUTF8("audio_track"), false /* remote */);
     auto processed_audio_source = std::make_unique<ProcessedLocalAudioSource>(
         *LocalFrameRoot().GetFrame(),
         MediaStreamDevice(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
@@ -362,7 +359,10 @@ class RTCPeerConnectionHandlerTest : public SimTest {
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     auto* processed_audio_source_ptr = processed_audio_source.get();
     processed_audio_source->SetAllowInvalidRenderFrameIdForTesting(true);
-    audio_source->SetPlatformSource(std::move(processed_audio_source));
+    auto* audio_source = MakeGarbageCollected<MediaStreamSource>(
+        audio_track_label, MediaStreamSource::kTypeAudio,
+        String::FromUTF8("audio_track"), false /* remote */,
+        std::move(processed_audio_source));
 
     auto* video_source = MakeGarbageCollected<MediaStreamSource>(
         video_track_label, MediaStreamSource::kTypeVideo,

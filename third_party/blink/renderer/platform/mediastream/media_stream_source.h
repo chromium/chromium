@@ -56,6 +56,8 @@ namespace blink {
 
 class WebAudioDestinationConsumer;
 
+// GarbageCollected wrapper of a WebPlatformMediaStreamSource, which acts as a
+// source backing one or more MediaStreamTracks.
 class PLATFORM_EXPORT MediaStreamSource final
     : public GarbageCollected<MediaStreamSource> {
   USING_PRE_FINALIZER(MediaStreamSource, Dispose);
@@ -78,11 +80,20 @@ class PLATFORM_EXPORT MediaStreamSource final
 
   enum class EchoCancellationMode { kDisabled, kBrowser, kAec3, kSystem };
 
+  MediaStreamSource(
+      const String& id,
+      StreamType type,
+      const String& name,
+      bool remote,
+      std::unique_ptr<WebPlatformMediaStreamSource> platform_source,
+      ReadyState state = kReadyStateLive,
+      bool requires_consumer = false);
+
   MediaStreamSource(const String& id,
-                    StreamType,
+                    StreamType type,
                     const String& name,
                     bool remote,
-                    ReadyState = kReadyStateLive,
+                    ReadyState state = kReadyStateLive,
                     bool requires_consumer = false);
 
   const String& Id() const { return id_; }
@@ -101,7 +112,11 @@ class PLATFORM_EXPORT MediaStreamSource final
   WebPlatformMediaStreamSource* GetPlatformSource() const {
     return platform_source_.get();
   }
-  void SetPlatformSource(
+
+  // TODO(crbug.com/1302689): Remove once all callers have been migrated.
+  [[deprecated(
+      "Use the constructor that takes a WebPlatformMediaStreamSource")]] void
+  SetPlatformSource(
       std::unique_ptr<WebPlatformMediaStreamSource> platform_source);
 
   void SetAudioProcessingProperties(EchoCancellationMode echo_cancellation_mode,

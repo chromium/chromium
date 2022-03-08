@@ -157,6 +157,24 @@ MediaStreamSource::MediaStreamSource(const String& id,
           .Utf8());
 }
 
+MediaStreamSource::MediaStreamSource(
+    const String& id,
+    StreamType type,
+    const String& name,
+    bool remote,
+    std::unique_ptr<WebPlatformMediaStreamSource> platform_source,
+    ReadyState ready_state,
+    bool requires_consumer)
+    : MediaStreamSource(id,
+                        type,
+                        name,
+                        remote,
+                        ready_state,
+                        requires_consumer) {
+  platform_source_ = std::move(platform_source);
+  platform_source_->SetOwner(this);
+}
+
 void MediaStreamSource::SetGroupId(const String& group_id) {
   SendLogMessage(
       String::Format("SetGroupId({group_id=%s})", group_id.Utf8().c_str())

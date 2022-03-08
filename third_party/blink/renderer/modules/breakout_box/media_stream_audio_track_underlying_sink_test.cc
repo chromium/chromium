@@ -34,14 +34,14 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
  public:
   MediaStreamAudioTrackUnderlyingSinkTest() {
     // Use the IO thread for testing purposes, instead of an audio task runner.
-    pushable_audio_source_ = new PushableMediaStreamAudioSource(
-        Thread::MainThread()->GetTaskRunner(),
-        Platform::Current()->GetIOTaskRunner());
+    auto pushable_audio_source =
+        std::make_unique<PushableMediaStreamAudioSource>(
+            Thread::MainThread()->GetTaskRunner(),
+            Platform::Current()->GetIOTaskRunner());
+    pushable_audio_source_ = pushable_audio_source.get();
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
-        /*remote=*/false);
-    media_stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_audio_source_));
+        /*remote=*/false, std::move(pushable_audio_source));
   }
 
   ~MediaStreamAudioTrackUnderlyingSinkTest() override {

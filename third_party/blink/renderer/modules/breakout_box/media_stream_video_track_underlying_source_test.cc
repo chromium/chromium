@@ -35,16 +35,14 @@ namespace blink {
 class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
  public:
   MediaStreamVideoTrackUnderlyingSourceTest()
-      : media_stream_source_(MakeGarbageCollected<MediaStreamSource>(
+      : pushable_video_source_(new PushableMediaStreamVideoSource(
+            scheduler::GetSingleThreadTaskRunnerForTesting())),
+        media_stream_source_(MakeGarbageCollected<MediaStreamSource>(
             "dummy_source_id",
             MediaStreamSource::kTypeVideo,
             "dummy_source_name",
-            false /* remote */)),
-        pushable_video_source_(new PushableMediaStreamVideoSource(
-            scheduler::GetSingleThreadTaskRunnerForTesting())) {
-    media_stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_video_source_));
-  }
+            false /* remote */,
+            base::WrapUnique(pushable_video_source_))) {}
 
   ~MediaStreamVideoTrackUnderlyingSourceTest() override {
     platform_->RunUntilIdle();
@@ -100,8 +98,8 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
   }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
-  const Persistent<MediaStreamSource> media_stream_source_;
   PushableMediaStreamVideoSource* const pushable_video_source_;
+  const Persistent<MediaStreamSource> media_stream_source_;
 };
 
 TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,

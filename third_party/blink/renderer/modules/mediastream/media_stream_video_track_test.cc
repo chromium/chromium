@@ -99,15 +99,15 @@ class MediaStreamVideoTrackTest
  protected:
   virtual void InitializeSource() {
     source_ = nullptr;
-    mock_source_ = new MockMediaStreamVideoSource(
+    auto mock_source = std::make_unique<MockMediaStreamVideoSource>(
         media::VideoCaptureFormat(
             gfx::Size(kMockSourceWidth, kMockSourceHeight), 30.0,
             media::PIXEL_FORMAT_I420),
         false);
+    mock_source_ = mock_source.get();
     source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-        false /* remote */);
-    source_->SetPlatformSource(base::WrapUnique(mock_source_));
+        false /* remote */, std::move(mock_source));
   }
 
   // Create a track that's associated with |mock_source_|.
@@ -141,15 +141,15 @@ class MediaStreamVideoTrackTest
 
   void UpdateVideoSourceToRespondToRequestRefreshFrame() {
     source_ = nullptr;
-    mock_source_ = new MockMediaStreamVideoSource(
+    auto mock_source = std::make_unique<MockMediaStreamVideoSource>(
         media::VideoCaptureFormat(
             gfx::Size(kMockSourceWidth, kMockSourceHeight), 30.0,
             media::PIXEL_FORMAT_I420),
         true);
+    mock_source_ = mock_source.get();
     source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-        false /* remote */);
-    source_->SetPlatformSource(base::WrapUnique(mock_source_));
+        false /* remote */, std::move(mock_source));
   }
 
   void DepleteIOCallbacks() {
