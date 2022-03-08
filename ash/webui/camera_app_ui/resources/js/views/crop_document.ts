@@ -564,7 +564,7 @@ export class CropDocument extends Review<boolean> {
     this.updateCornerEl();
   }
 
-  async setReviewPhoto(blob: Blob): Promise<void> {
+  override async setReviewPhoto(blob: Blob): Promise<void> {
     const image = new Image();
     await this.loadImage(image, blob);
     this.imageOriginalSize = new Size(image.width, image.height);
@@ -580,7 +580,7 @@ export class CropDocument extends Review<boolean> {
     this.updateCornerElAriaLabel();
   }
 
-  layout(): void {
+  override layout(): void {
     super.layout();
 
     const rect = this.imageFrame.getBoundingClientRect();

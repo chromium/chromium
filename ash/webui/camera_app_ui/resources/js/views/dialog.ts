@@ -45,7 +45,8 @@ export class Dialog extends View {
     }
   }
 
-  entering({message, cancellable = false}: DialogEnterOptions = {}): void {
+  override entering({message, cancellable = false}: DialogEnterOptions = {}):
+      void {
     if (message !== undefined) {
       this.messageHolder.textContent = assertString(message);
     }

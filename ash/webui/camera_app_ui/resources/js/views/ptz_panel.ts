@@ -349,7 +349,7 @@ export class PTZPanel extends View {
     }
   }
 
-  entering(options: EnterOptions): void {
+  override entering(options: EnterOptions): void {
     const {stream, vidPid, resetPTZ} =
         assertInstanceof(options, PTZPanelOptions);
     const {bottom, right} =
@@ -400,7 +400,7 @@ export class PTZPanel extends View {
     };
   }
 
-  leaving(): boolean {
+  override leaving(): boolean {
     this.removeMirrorObserver();
     return true;
   }

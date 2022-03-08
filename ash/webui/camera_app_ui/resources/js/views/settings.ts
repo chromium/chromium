@@ -82,11 +82,11 @@ export class BaseSettings extends View {
     this.focusElement = this.defaultFocus;
   }
 
-  focus(): void {
+  override focus(): void {
     this.focusElement.focus();
   }
 
-  leaving(condition: LeaveCondition): boolean {
+  override leaving(condition: LeaveCondition): boolean {
     this.focusElement = this.defaultFocus;
     return super.leaving(condition);
   }
@@ -187,7 +187,7 @@ export class PrimarySettings extends BaseSettings {
     }
   }
 
-  getSubViews(): View[] {
+  override getSubViews(): View[] {
     return this.subViews;
   }
 }
@@ -372,7 +372,7 @@ export class ResolutionSettings extends BaseSettings {
   }
 
 
-  getSubViews(): View[] {
+  override getSubViews(): View[] {
     return [
       this.photoResolutionSettings,
       this.videoResolutionSettings,

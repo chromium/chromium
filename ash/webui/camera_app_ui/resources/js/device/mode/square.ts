@@ -86,7 +86,7 @@ export class Square extends Photo {
  * Factory for creating square mode capture object.
  */
 export class SquareFactory extends PhotoFactory {
-  produce(): ModeBase {
+  override produce(): ModeBase {
     assert(this.previewVideo !== null);
     assert(this.facing !== null);
     return new Square(

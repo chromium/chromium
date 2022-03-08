@@ -226,7 +226,7 @@ export class Video extends ModeBase {
         {maxTime: MAX_GIF_DURATION_MS, onMaxTimeout: () => this.stop()});
   }
 
-  async clear(): Promise<void> {
+  override async clear(): Promise<void> {
     await this.stopCapture();
     if (this.captureStream !== null) {
       await StreamManager.getInstance().closeCaptureStream(this.captureStream);
@@ -491,7 +491,7 @@ export class Video extends ModeBase {
     }
   }
 
-  stop(): void {
+  override stop(): void {
     if (this.recordingType === RecordType.GIF) {
       state.set(state.State.RECORDING, false);
     } else {

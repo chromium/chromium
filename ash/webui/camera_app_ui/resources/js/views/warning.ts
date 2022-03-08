@@ -50,7 +50,7 @@ export class Warning extends View {
         loadTimeData.getI18nMessage(message);
   }
 
-  entering(nameOption?: EnterOptions): void {
+  override entering(nameOption?: EnterOptions): void {
     const name = assertI18nString(nameOption);
 
     // Remove the error-name from the stack to avoid duplication. Then make the
@@ -63,7 +63,7 @@ export class Warning extends View {
     this.updateMessage();
   }
 
-  leaving(condition: LeaveCondition): boolean {
+  override leaving(condition: LeaveCondition): boolean {
     assert(condition.kind === 'CLOSED');
 
     // Recovered error-name for leaving the view.

@@ -109,7 +109,7 @@ export class CameraIntent extends Camera {
     });
   }
 
-  async onPhotoCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
+  override async onPhotoCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
       Promise<void> {
     await super.onPhotoCaptureDone(pendingPhotoResult);
     const {blob, resolution} = await pendingPhotoResult;
@@ -117,7 +117,7 @@ export class CameraIntent extends Camera {
     await this.reviewIntentResult({resolution});
   }
 
-  async onVideoCaptureDone(videoResult: VideoResult): Promise<void> {
+  override async onVideoCaptureDone(videoResult: VideoResult): Promise<void> {
     await super.onVideoCaptureDone(videoResult);
     assert(this.videoResultFile !== null);
     await this.review.setReviewVideo(this.videoResultFile);

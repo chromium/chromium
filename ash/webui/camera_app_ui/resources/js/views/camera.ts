@@ -415,11 +415,11 @@ export class Camera extends View implements CameraViewUI {
     this.scanOptions.onChange = checkRefocus;
   }
 
-  getSubViews(): View[] {
+  override getSubViews(): View[] {
     return this.subViews;
   }
 
-  focus(): void {
+  override focus(): void {
     (async () => {
       await this.cameraReady.wait();
 
@@ -898,11 +898,11 @@ export class Camera extends View implements CameraViewUI {
     }
   }
 
-  layout(): void {
+  override layout(): void {
     this.layoutHandler.update();
   }
 
-  handlingKey(key: string): boolean {
+  override handlingKey(key: string): boolean {
     if (key === 'Ctrl-R') {
       toast.showDebugMessage(
           this.cameraManager.getPreviewResolution().toString());

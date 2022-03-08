@@ -46,7 +46,7 @@ export class Portrait extends Photo {
     super(video, facing, captureResolution, portraitHandler);
   }
 
-  async start(): Promise<[Promise<void>]> {
+  override async start(): Promise<[Promise<void>]> {
     const timestamp = Date.now();
     let photoSettings: PhotoSettings;
     if (this.captureResolution) {
@@ -100,7 +100,7 @@ export class PortraitFactory extends PhotoFactory {
     super(constraints, captureResolution, portraitHandler);
   }
 
-  produce(): ModeBase {
+  override produce(): ModeBase {
     assert(this.previewVideo !== null);
     assert(this.facing !== null);
     return new Portrait(

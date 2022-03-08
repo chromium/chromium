@@ -149,7 +149,7 @@ export class MultiStreamVideoCaptureCandidate extends VideoCaptureCandidate {
     super(deviceId, resolution, previewResolutions, constFps);
   }
 
-  getStreamConstraintsCandidates(): StreamConstraints[] {
+  override getStreamConstraintsCandidates(): StreamConstraints[] {
     const frameRate =
         this.constFps === null ? {min: 20, ideal: 30} : {exact: this.constFps};
     return this.previewResolutions.map(({width, height}) => ({
