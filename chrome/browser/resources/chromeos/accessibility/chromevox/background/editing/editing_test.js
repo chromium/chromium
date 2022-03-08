@@ -2112,8 +2112,10 @@ TEST_F('ChromeVoxEditingTest', 'TableNavigation', function() {
   });
 });
 
+// TODO(crbug.com/1304140): Disabled due to flakyness
 TEST_F(
-    'ChromeVoxEditingTest', 'InputTextBrailleContractions', function() {
+    'ChromeVoxEditingTest', 'DISABLED_InputTextBrailleContractions',
+    function() {
       const site = `
     <input type=text value="about that"></input>
   `;
