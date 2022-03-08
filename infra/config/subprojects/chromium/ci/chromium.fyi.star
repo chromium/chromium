@@ -755,7 +755,7 @@ ci.builder(
     ),
     os = os.WINDOWS_DEFAULT,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = 80,
     reclient_instance = rbe_instance.DEFAULT,
 )
 
@@ -768,7 +768,7 @@ ci.builder(
     ),
     os = os.WINDOWS_DEFAULT,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = 80,
     reclient_instance = rbe_instance.DEFAULT,
 )
 
