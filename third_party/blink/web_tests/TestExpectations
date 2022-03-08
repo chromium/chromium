@@ -7633,6 +7633,9 @@ crbug.com/1123606 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/maxframe
 crbug.com/1123606 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/create-in-sandbox-and-adopt-outside-sandbox.https.html [ Timeout ]
 crbug.com/1123606 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/create-in-sandbox-and-adopt-outside-sandbox.https.html [ Timeout ]
 
+# Disable flaky test for further investigation
+crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
+
 # Sheriff 2022-03-01
 crbug.com/1302043 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Pass Timeout ]
 
