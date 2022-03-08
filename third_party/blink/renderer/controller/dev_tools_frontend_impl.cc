@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/controller/dev_tools_frontend_impl.h"
 
+#include <utility>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dev_tools_host.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -127,9 +129,9 @@ void DevToolsFrontendImpl::SetupDevToolsExtensionAPI(
   api_script_ = extension_api;
 }
 
-void DevToolsFrontendImpl::SendMessageToEmbedder(base::Value message) {
+void DevToolsFrontendImpl::SendMessageToEmbedder(base::Value::Dict message) {
   if (host_.is_bound())
-    host_->DispatchEmbedderMessage(std::move(message));
+    host_->DispatchEmbedderMessage(base::Value(std::move(message)));
 }
 
 void DevToolsFrontendImpl::DestroyOnHostGone() {

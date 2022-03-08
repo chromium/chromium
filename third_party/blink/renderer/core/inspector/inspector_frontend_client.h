@@ -41,7 +41,7 @@ class InspectorFrontendClient : public GarbageCollectedMixin {
  public:
   virtual ~InspectorFrontendClient() = default;
 
-  virtual void SendMessageToEmbedder(base::Value) = 0;
+  virtual void SendMessageToEmbedder(base::Value::Dict) = 0;
 };
 
 }  // namespace blink
