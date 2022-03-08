@@ -127,12 +127,23 @@ inline LayoutUnit FragmentainerCapacity(const NGConstraintSpace& space) {
 // Return the block space that was available in the current fragmentainer at the
 // start of the current block formatting context. Note that if the start of the
 // current block formatting context is in a previous fragmentainer, the size of
-// the current fragmentainer is returned instead.
-// In the case of initial column balancing, the size is unknown, in which case
-// kIndefiniteSize is returned.
+// the current fragmentainer is returned instead. If available space is
+// negative, zero is returned. In the case of initial column balancing, the size
+// is unknown, in which case kIndefiniteSize is returned.
 inline LayoutUnit FragmentainerSpaceAtBfcStart(const NGConstraintSpace& space) {
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
+  LayoutUnit available_space =
+      FragmentainerCapacity(space) - space.FragmentainerOffsetAtBfc();
+  return available_space.ClampNegativeToZero();
+}
+
+// Same as FragmentainerSpaceAtBfcStart(), but not to be called in the initial
+// column balancing pass (when fragmentainer block-size is unknown), and without
+// any clamping of negative values.
+inline LayoutUnit UnclampedFragmentainerSpaceAtBfcStart(
+    const NGConstraintSpace& space) {
+  DCHECK(space.HasKnownFragmentainerBlockSize());
   return FragmentainerCapacity(space) - space.FragmentainerOffsetAtBfc();
 }
 

@@ -596,13 +596,19 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
   LayoutUnit available_outer_space = kIndefiniteSize;
   if (is_constrained_by_outer_fragmentation_context_) {
     available_outer_space =
-        FragmentainerSpaceAtBfcStart(ConstraintSpace()) - row_offset;
+        UnclampedFragmentainerSpaceAtBfcStart(ConstraintSpace()) - row_offset;
 
     if (available_outer_space <= LayoutUnit()) {
       if (available_outer_space < LayoutUnit()) {
         // We're past the end of the outer fragmentainer (typically due to a
-        // margin). Nothing will fit here, not even zero-size content.
-        return nullptr;
+        // margin). Nothing will fit here, not even zero-size content. If we
+        // haven't produced any fragments yet, we'll retry in the next outer
+        // fragmentainer. Otherwise, we need to continue (once we have started
+        // laying out, we cannot skip any fragmentainers) with no available
+        // size.
+        if (!IsResumingLayout(BreakToken()))
+          return nullptr;
+        available_outer_space = LayoutUnit();
       }
 
       // We are out of space, but we're exactly at the end of the outer
@@ -659,13 +665,12 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
   // be better to push some of the content to the next outer fragmentainer and
   // retry there.
   bool may_have_more_space_in_next_outer_fragmentainer = false;
-  if (may_resume_in_next_outer_fragmentainer) {
-    if (intrinsic_block_size_) {
+  if (may_resume_in_next_outer_fragmentainer &&
+      !IsResumingLayout(BreakToken())) {
+    if (intrinsic_block_size_)
       may_have_more_space_in_next_outer_fragmentainer = true;
-    } else if (!ConstraintSpace().IsAtFragmentainerStart()) {
-      DCHECK(!IsResumingLayout(BreakToken()));
+    else if (!ConstraintSpace().IsAtFragmentainerStart())
       may_have_more_space_in_next_outer_fragmentainer = true;
-    }
   }
 
   const NGLayoutResult* result = nullptr;
@@ -1231,9 +1236,8 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   if (is_constrained_by_outer_fragmentation_context_) {
     // Don't become too tall to fit in the outer fragmentation context.
     LayoutUnit available_outer_space =
-        FragmentainerSpaceAtBfcStart(ConstraintSpace()) - row_offset;
-    DCHECK_GE(available_outer_space, LayoutUnit());
-    size = std::min(size, available_outer_space);
+        UnclampedFragmentainerSpaceAtBfcStart(ConstraintSpace()) - row_offset;
+    size = std::min(size, available_outer_space.ClampNegativeToZero());
   }
 
   // The {,min-,max-}block-size properties are specified on the multicol
