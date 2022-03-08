@@ -18,6 +18,20 @@ source_set("chrome_browser_state_client") {
   ]
 }
 
+source_set("accessor") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ios_chrome_metrics_service_accessor.h",
+    "ios_chrome_metrics_service_accessor.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/variations",
+    "//ios/chrome/browser:application_context",
+  ]
+}
 source_set("metrics") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -27,8 +41,6 @@ source_set("metrics") {
     "incognito_web_state_observer.mm",
     "ios_chrome_default_browser_metrics_provider.h",
     "ios_chrome_default_browser_metrics_provider.mm",
-    "ios_chrome_metrics_service_accessor.h",
-    "ios_chrome_metrics_service_accessor.mm",
     "ios_chrome_metrics_service_client.h",
     "ios_chrome_metrics_service_client.mm",
     "ios_chrome_metrics_services_manager_client.h",
@@ -50,6 +62,7 @@ source_set("metrics") {
   ]
   public_deps = [ "//components/ukm/ios:ukm_url_recorder" ]
   deps = [
+    ":accessor",
     ":chrome_browser_state_client",
     "//base",
     "//components/breadcrumbs/core",
@@ -116,6 +129,7 @@ source_set("unit_tests") {
     "pageload_foreground_duration_tab_helper_unittest.mm",
   ]
   deps = [
+    ":accessor",
     ":chrome_browser_state_client",
     ":metrics",
     "//base",
@@ -293,6 +307,7 @@ source_set("eg_app_support+eg2") {
     "metrics_app_interface.mm",
   ]
   deps = [
+    ":accessor",
     ":metrics",
     ":metrics_internal",
     "//base",

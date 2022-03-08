@@ -77,6 +77,7 @@ source_set("webui") {
     "//ios/chrome/browser/flags",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/ntp_tiles",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/policy",

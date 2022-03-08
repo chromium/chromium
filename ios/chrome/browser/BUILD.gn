@@ -25,11 +25,18 @@ source_set("chrome_paths") {
   ]
 }
 
-source_set("browser") {
+source_set("application_context") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "application_context.h",
     "application_context.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("browser") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
     "arch_util.cc",
     "arch_util.h",
     "browser_about_rewriter.cc",
@@ -117,6 +124,7 @@ source_set("browser") {
     "//url",
   ]
   public_deps = [
+    ":application_context",
     ":chrome_paths",
     ":chrome_url_constants",
     ":pref_names",
@@ -230,6 +238,7 @@ source_set("browser_impl") {
     "//ios/chrome/browser/gcm",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/metrics:expired_histograms_array",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/open_from_clipboard",
