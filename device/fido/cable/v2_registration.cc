@@ -237,6 +237,25 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
       return absl::nullopt;
     }
 
+    // For testing, we allow a special value `999` to indicate that the newer
+    // protocol revision should be used. We are not able to make this the
+    // default until support on desktop has been out for a while.
+    cbor_it = map.find(cbor::Value(999));
+    if (cbor_it != map.end()) {
+      if (!cbor_it->second.is_integer()) {
+        return absl::nullopt;
+      }
+      int64_t protocol_revision = cbor_it->second.GetInteger();
+      constexpr int64_t upper_bound =
+          std::numeric_limits<decltype(event->protocol_revision)>::max();
+      if (protocol_revision < 0) {
+        return absl::nullopt;
+      } else if (protocol_revision > upper_bound) {
+        protocol_revision = upper_bound;
+      }
+      event->protocol_revision = protocol_revision;
+    }
+
     return event;
   }
 
@@ -262,11 +281,13 @@ Registration::Event::~Event() = default;
 std::unique_ptr<Registration::Event> Registration::Event::FromSerialized(
     base::span<const uint8_t> in) {
   auto e = std::make_unique<Event>();
-  uint8_t source, request_type;
+  uint8_t source, request_type, protocol_revision;
   CBS cbs;
   CBS_init(&cbs, in.data(), in.size());
 
-  if (!CBS_get_u8(&cbs, &source) || !CBS_get_u8(&cbs, &request_type) ||
+  if (!CBS_get_u8(&cbs, &source) ||             //
+      !CBS_get_u8(&cbs, &request_type) ||       //
+      !CBS_get_u8(&cbs, &protocol_revision) ||  //
       !CBS_copy_bytes(&cbs, e->tunnel_id.data(), e->tunnel_id.size()) ||
       !CBS_copy_bytes(&cbs, e->routing_id.data(), e->routing_id.size()) ||
       !CBS_copy_bytes(&cbs, e->pairing_id.data(), e->pairing_id.size()) ||
@@ -283,6 +304,7 @@ std::unique_ptr<Registration::Event> Registration::Event::FromSerialized(
   }
   e->source = static_cast<Type>(source);
   e->request_type = static_cast<FidoRequestType>(request_type);
+  e->protocol_revision = protocol_revision;
 
   switch (e->source) {
     case Type::LINKING:
@@ -315,6 +337,7 @@ absl::optional<std::vector<uint8_t>> Registration::Event::Serialize() {
   if (!CBB_init(cbb.get(), /*initial_capacity=*/512) ||
       !CBB_add_u8(cbb.get(), static_cast<uint8_t>(this->source)) ||
       !CBB_add_u8(cbb.get(), static_cast<uint8_t>(this->request_type)) ||
+      !CBB_add_u8(cbb.get(), static_cast<uint8_t>(this->protocol_revision)) ||
       !CBB_add_bytes(cbb.get(), this->tunnel_id.data(),
                      this->tunnel_id.size()) ||
       !CBB_add_bytes(cbb.get(), this->routing_id.data(),

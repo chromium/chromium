@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
@@ -371,7 +372,15 @@ void FidoTunnelDevice::OnTunnelData(
         OnError();
         return;
       }
-      absl::optional<cbor::Value> payload = DecodePaddedCBORMap(decrypted);
+
+      int protocol_revision = 1;
+      absl::optional<cbor::Value> payload = cbor::Reader::Read(decrypted);
+      if (!payload) {
+        // This message was padded in revision zero, which will cause a parse
+        // error from `cbor::Reader::Read`.
+        protocol_revision = 0;
+        payload = DecodePaddedCBORMap(decrypted);
+      }
       if (!payload || !payload->is_map()) {
         FIDO_LOG(ERROR) << GetId()
                         << ": decode failed for caBLE post-handshake message";
@@ -430,12 +439,13 @@ void FidoTunnelDevice::OnTunnelData(
             << "Linking information was not received from caBLE device";
       }
 
-      FIDO_LOG(DEBUG) << GetId() << ": established";
+      FIDO_LOG(DEBUG) << GetId() << ": established v2." << protocol_revision;
       RecordEvent(CableV2TunnelEvent::kTunnelEstablished);
       state_ = State::kReady;
 
       established_connection_ = base::MakeRefCounted<EstablishedConnection>(
-          std::move(websocket_client_), GetId(), std::move(crypter_));
+          std::move(websocket_client_), GetId(), protocol_revision,
+          std::move(crypter_), *handshake_hash_, absl::get_if<QRInfo>(&info_));
 
       if (pending_callback_) {
         DeviceTransactReady(std::move(pending_message_),
@@ -503,14 +513,24 @@ int FidoTunnelDevice::GetNumEstablishedConnectionInstancesForTesting() {
 FidoTunnelDevice::EstablishedConnection::EstablishedConnection(
     std::unique_ptr<WebSocketAdapter> websocket_client,
     std::string id_for_logging,
-    std::unique_ptr<Crypter> crypter)
+    int protocol_revision,
+    std::unique_ptr<Crypter> crypter,
+    const HandshakeHash& handshake_hash,
+    QRInfo* maybe_qr_info)
     : self_reference_(this),
       websocket_client_(std::move(websocket_client)),
       id_for_logging_(std::move(id_for_logging)),
-      crypter_(std::move(crypter)) {
+      protocol_revision_(protocol_revision),
+      crypter_(std::move(crypter)),
+      handshake_hash_(handshake_hash) {
   g_num_established_connection_instances++;
   websocket_client_->Reparent(base::BindRepeating(
       &EstablishedConnection::OnTunnelData, base::Unretained(this)));
+  if (maybe_qr_info) {
+    pairing_callback_ = maybe_qr_info->pairing_callback;
+    local_identity_seed_ = maybe_qr_info->local_identity_seed;
+    tunnel_server_domain_ = maybe_qr_info->tunnel_server_domain;
+  }
 }
 
 FidoTunnelDevice::EstablishedConnection::~EstablishedConnection() {
@@ -522,6 +542,12 @@ void FidoTunnelDevice::EstablishedConnection::Transact(
     std::vector<uint8_t> message,
     DeviceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(state_ == State::kRunning || state_ == State::kRemoteShutdown);
+
+  if (protocol_revision_ >= 1) {
+    message.insert(message.begin(), static_cast<uint8_t>(MessageType::kCTAP));
+  }
+
   if (state_ == State::kRemoteShutdown || !crypter_->Encrypt(&message)) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
@@ -535,25 +561,36 @@ void FidoTunnelDevice::EstablishedConnection::Transact(
 
 void FidoTunnelDevice::EstablishedConnection::Close() {
   switch (state_) {
-    case State::kRunning:
-      // This call makes splitting `EstablishedConnection` from
-      // `FidoTunnelDevice` pointless. I.e. as soon as the local side is
-      // finished we throw away the connection anyway. This will change in the
-      // future.
-      OnRemoteClose();
-      DCHECK_EQ(state_, State::kRemoteShutdown);
+    case State::kRunning: {
+      if (protocol_revision_ < 1) {
+        OnRemoteClose();
+        DCHECK_EQ(state_, State::kRemoteShutdown);
+        Close();
+        return;
+      }
+
+      callback_.Reset();
+      state_ = State::kLocallyShutdown;
+      std::vector<uint8_t> shutdown_msg = {
+          static_cast<uint8_t>(MessageType::kShutdown)};
+      if (crypter_->Encrypt(&shutdown_msg)) {
+        websocket_client_->Write(shutdown_msg);
+      }
+      timer_.Start(FROM_HERE, base::Minutes(3), this,
+                   &EstablishedConnection::OnTimeout);
       break;
+    }
 
     case State::kRemoteShutdown:
-      break;
+      state_ = State::kClosed;
+      self_reference_.reset();
+      // `this` may be invalid now.
+      return;
 
     case State::kLocallyShutdown:
     case State::kClosed:
       NOTREACHED();
   }
-
-  state_ = State::kClosed;
-  self_reference_.reset();
 }
 
 void FidoTunnelDevice::EstablishedConnection::OnTunnelData(
@@ -577,15 +614,98 @@ void FidoTunnelDevice::EstablishedConnection::OnTunnelData(
     return;
   }
 
+  if (protocol_revision_ >= 1) {
+    if (plaintext.empty()) {
+      FIDO_LOG(ERROR) << id_for_logging_ << ": invalid empty message";
+      OnRemoteClose();
+      // `this` may be invalid now.
+      return;
+    }
+
+    const uint8_t message_type_byte = plaintext[0];
+    plaintext.erase(plaintext.begin());
+
+    if (message_type_byte > static_cast<uint8_t>(MessageType::kMaxValue)) {
+      FIDO_LOG(ERROR) << id_for_logging_ << ": invalid message type "
+                      << static_cast<int>(message_type_byte);
+      OnRemoteClose();
+      // `this` may be invalid now.
+      return;
+    }
+
+    const MessageType message_type =
+        static_cast<MessageType>(message_type_byte);
+    switch (message_type) {
+      case MessageType::kShutdown:
+        // Authenticators don't send shutdown alerts, only clients.
+        FIDO_LOG(ERROR) << id_for_logging_ << ": invalid shutdown frame";
+        OnRemoteClose();
+        // `this` may be invalid now.
+        return;
+
+      case MessageType::kCTAP:
+        break;
+
+      case MessageType::kUpdate: {
+        if (!ProcessUpdate(plaintext)) {
+          FIDO_LOG(ERROR) << id_for_logging_ << ": invalid update frame";
+          OnRemoteClose();
+          // `this` may be invalid now.
+          return;
+        }
+        return;
+      }
+    }
+  }
+
   if (!callback_) {
+    if (state_ == State::kLocallyShutdown) {
+      // If locally shutdown then `callback_` will have been erased this so
+      // might have been a valid reply.
+      return;
+    }
+
     FIDO_LOG(ERROR) << id_for_logging_
-                    << ": unsolicited message from caBLE device";
+                    << ": unsolicited CTAP message from caBLE device";
     OnRemoteClose();
     // `this` may be invalid now.
     return;
   }
 
   std::move(callback_).Run(std::move(plaintext));
+}
+
+bool FidoTunnelDevice::EstablishedConnection::ProcessUpdate(
+    base::span<const uint8_t> plaintext) {
+  absl::optional<cbor::Value> payload = cbor::Reader::Read(plaintext);
+  if (!payload || !payload->is_map()) {
+    return false;
+  }
+  const cbor::Value::MapValue& map = payload->GetMap();
+  const cbor::Value::MapValue::const_iterator linking_it =
+      map.find(cbor::Value(1));
+  if (linking_it != map.end()) {
+    if (!linking_it->second.is_map()) {
+      return false;
+    }
+    if (!pairing_callback_) {
+      FIDO_LOG(DEBUG) << id_for_logging_
+                      << ": unexpected linking information was discarded";
+      return true;
+    }
+
+    absl::optional<std::unique_ptr<Pairing>> maybe_pairing =
+        Pairing::Parse(linking_it->second, *tunnel_server_domain_,
+                       *local_identity_seed_, handshake_hash_);
+    if (!maybe_pairing) {
+      return false;
+    }
+
+    FIDO_LOG(DEBUG) << id_for_logging_ << ": received linking information";
+    pairing_callback_->Run(std::move(*maybe_pairing));
+  }
+
+  return true;
 }
 
 void FidoTunnelDevice::EstablishedConnection::OnRemoteClose() {
@@ -610,6 +730,12 @@ void FidoTunnelDevice::EstablishedConnection::OnRemoteClose() {
       NOTREACHED();
       break;
   }
+}
+
+void FidoTunnelDevice::EstablishedConnection::OnTimeout() {
+  DCHECK(state_ == State::kLocallyShutdown);
+  FIDO_LOG(DEBUG) << id_for_logging_ << ": closing connection due to timeout";
+  OnRemoteClose();
 }
 
 }  // namespace cablev2

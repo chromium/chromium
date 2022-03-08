@@ -66,6 +66,15 @@ constexpr auto kTunnelServer = tunnelserver::KnownDomainID(0);
 // all information about the contents of this message.
 constexpr size_t kPostHandshakeMsgPaddingGranularity = 512;
 
+// MessageType enumerates the types of caBLEv2 messages on the wire.
+enum class MessageType : uint8_t {
+  kShutdown = 0,
+  kCTAP = 1,
+  kUpdate = 2,
+
+  kMaxValue = 2,
+};
+
 }  // namespace cablev2
 }  // namespace device
 

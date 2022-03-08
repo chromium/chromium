@@ -318,6 +318,7 @@ static_library("cablev2_test_util") {
     "//components/cbor",
     "//content/public/common",  # for authenticator.mojom
     "//crypto",
+    "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//services/network/public/mojom",
   ]

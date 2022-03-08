@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/websocket_adapter.h"
 #include "device/fido/fido_constants.h"
@@ -163,7 +164,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
    public:
     EstablishedConnection(std::unique_ptr<WebSocketAdapter> websocket_client,
                           std::string id_for_logging,
-                          std::unique_ptr<Crypter> crypter);
+                          int protocol_revision,
+                          std::unique_ptr<Crypter> crypter,
+                          const HandshakeHash& handshake_hash,
+                          QRInfo* maybe_qr_info);
     EstablishedConnection(const EstablishedConnection&) = delete;
     EstablishedConnection& operator=(const EstablishedConnection&) = delete;
 
@@ -183,12 +187,24 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
 
     void OnTunnelData(absl::optional<base::span<const uint8_t>> data);
     void OnRemoteClose();
+    void OnTimeout();
+    bool ProcessUpdate(base::span<const uint8_t> plaintext);
 
     scoped_refptr<EstablishedConnection> self_reference_;
     State state_ = State::kRunning;
     std::unique_ptr<WebSocketAdapter> websocket_client_;
     const std::string id_for_logging_;
+    const int protocol_revision_;
     const std::unique_ptr<Crypter> crypter_;
+    const HandshakeHash handshake_hash_;
+
+    // These three fields are either all present or all nullopt.
+    absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+        pairing_callback_;
+    absl::optional<std::array<uint8_t, kQRSeedSize>> local_identity_seed_;
+    absl::optional<tunnelserver::KnownDomainID> tunnel_server_domain_;
+
+    base::OneShotTimer timer_;
     DeviceCallback callback_;
     SEQUENCE_CHECKER(sequence_checker_);
   };

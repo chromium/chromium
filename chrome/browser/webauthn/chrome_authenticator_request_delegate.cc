@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -102,6 +103,55 @@ const char kWebAuthnLastOperationWasNativeAPI[] =
 const char kWebAuthnTouchIdMetadataSecretPrefName[] =
     "webauthn.touchid.metadata_secret";
 #endif
+
+// CableLinkingEventHandler handles linking information sent by caBLEv2
+// authenticators. This linking information can come after the WebAuthn
+// operation has resolved and thus after the
+// `ChromeAuthenticatorRequestDelegate` has been destroyed. Thus this object is
+// owned by the callback itself, and can save linking information until the
+// point where the `Profile` itself is destroyed.
+class CableLinkingEventHandler : public ProfileObserver {
+ public:
+  explicit CableLinkingEventHandler(Profile* profile) : profile_(profile) {
+    profile_->AddObserver(this);
+  }
+
+  ~CableLinkingEventHandler() override {
+    if (profile_) {
+      profile_->RemoveObserver(this);
+      profile_ = nullptr;
+    }
+  }
+
+  void OnNewCablePairing(std::unique_ptr<device::cablev2::Pairing> pairing) {
+    if (!profile_) {
+      FIDO_LOG(DEBUG) << "Linking event was discarded because it was received "
+                         "after the profile was destroyed.";
+      return;
+    }
+
+    PrefService* const prefs = profile_->GetPrefs();
+
+    // `existing_names` is built without calling `cablev2::MergeDevices` because
+    // that function will discard linked entries with duplicate public keys,
+    // which can hide some names that we would still like to avoid colliding
+    // with.
+    std::unique_ptr<cablev2::KnownDevices> known_devices =
+        cablev2::KnownDevices::FromProfile(profile_);
+    cablev2::AddPairing(prefs, std::move(pairing), known_devices->Names());
+  }
+
+  // ProfileObserver:
+
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    DCHECK_EQ(profile, profile_);
+    profile_->RemoveObserver(this);
+    profile_ = nullptr;
+  }
+
+ private:
+  Profile* profile_;
+};
 
 }  // namespace
 
@@ -562,9 +612,11 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     crypto::RandBytes(*qr_generator_key);
     qr_string = device::cablev2::qr::Encode(*qr_generator_key);
 
-    discovery_factory->set_cable_pairing_callback(base::BindRepeating(
-        &ChromeAuthenticatorRequestDelegate::OnNewCablePairing,
-        weak_ptr_factory_.GetWeakPtr()));
+    auto linking_handler = std::make_unique<CableLinkingEventHandler>(
+        Profile::FromBrowserContext(GetBrowserContext()));
+    discovery_factory->set_cable_pairing_callback(
+        base::BindRepeating(&CableLinkingEventHandler::OnNewCablePairing,
+                            std::move(linking_handler)));
     discovery_factory->set_cable_invalidated_pairing_callback(
         base::BindRepeating(
             &ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing,
@@ -840,21 +892,6 @@ bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
   return origin.IsSameOriginWith(test_site);
 
 #endif
-}
-
-void ChromeAuthenticatorRequestDelegate::OnNewCablePairing(
-    std::unique_ptr<device::cablev2::Pairing> pairing) {
-  PrefService* const prefs =
-      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-
-  // `existing_names` is built without calling `cablev2::MergeDevices` because
-  // that function will discard linked entries with duplicate public keys, which
-  // can hide some names that we would still like to avoid colliding with.
-  std::unique_ptr<cablev2::KnownDevices> known_devices =
-      cablev2::KnownDevices::FromProfile(
-          Profile::FromBrowserContext(GetBrowserContext()));
-
-  cablev2::AddPairing(prefs, std::move(pairing), known_devices->Names());
 }
 
 void ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing(

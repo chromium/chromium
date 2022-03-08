@@ -60,6 +60,15 @@ std::unique_ptr<Platform> NewMockPlatform(
     device::VirtualCtap2Device* ctap2_device,
     Observer* observer);
 
+// NewLateLinkingDevice returns a caBLEv2 device that fails all CTAP requests
+// but sends linking information after the transaction.
+std::unique_ptr<Transaction> NewLateLinkingDevice(
+    CtapDeviceResponseCode ctap_error,
+    std::unique_ptr<Platform> platform,
+    network::mojom::NetworkContext* network_context,
+    base::span<const uint8_t> qr_secret,
+    base::span<const uint8_t, kP256X962Length> peer_identity);
+
 }  // namespace authenticator
 
 }  // namespace cablev2

@@ -227,13 +227,15 @@ using GeneratePairingDataCallback =
 class TunnelTransport : public Transport {
  public:
   TunnelTransport(
+      unsigned protocol_revision,
       Platform* platform,
       network::mojom::NetworkContext* network_context,
       base::span<const uint8_t> secret,
       base::span<const uint8_t, device::kP256X962Length> peer_identity,
       bool use_new_crypter_construction,
       GeneratePairingDataCallback generate_pairing_data)
-      : platform_(platform),
+      : protocol_revision_(protocol_revision),
+        platform_(platform),
         tunnel_id_(device::cablev2::Derive<EXTENT(tunnel_id_)>(
             secret,
             base::span<uint8_t>(),
@@ -259,6 +261,7 @@ class TunnelTransport : public Transport {
   }
 
   TunnelTransport(
+      unsigned protocol_revision,
       Platform* platform,
       network::mojom::NetworkContext* network_context,
       base::span<const uint8_t> secret,
@@ -266,7 +269,8 @@ class TunnelTransport : public Transport {
       std::array<uint8_t, device::cablev2::kRoutingIdSize> routing_id,
       base::span<const uint8_t, 16> tunnel_id,
       bssl::UniquePtr<EC_KEY> local_identity)
-      : platform_(platform),
+      : protocol_revision_(protocol_revision),
+        platform_(platform),
         tunnel_id_(fido_parsing_utils::Materialize(tunnel_id)),
         eid_key_(device::cablev2::Derive<EXTENT(eid_key_)>(
             secret,
@@ -275,7 +279,7 @@ class TunnelTransport : public Transport {
         network_context_(network_context),
         secret_(fido_parsing_utils::Materialize(secret)),
         local_identity_(std::move(local_identity)),
-        use_new_crypter_construction_(false) {
+        use_new_crypter_construction_(protocol_revision_ >= 1) {
     DCHECK_EQ(state_, State::kNone);
 
     state_ = State::kConnectingPaired;
@@ -310,6 +314,10 @@ class TunnelTransport : public Transport {
   void Write(std::vector<uint8_t> data) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_EQ(state_, kReady);
+
+    if (protocol_revision_ >= 1) {
+      data.insert(data.begin(), static_cast<uint8_t>(MessageType::kCTAP));
+    }
 
     if (!crypter_->Encrypt(&data)) {
       FIDO_LOG(ERROR) << "Failed to encrypt response";
@@ -423,7 +431,9 @@ class TunnelTransport : public Transport {
         cbor::Value::MapValue post_handshake_msg;
         post_handshake_msg.emplace(1, BuildGetInfoResponse());
 
-        if (state_ == State::kConnected) {
+        if (state_ == State::kConnected && protocol_revision_ < 1) {
+          // For revision zero, linking information (if any) is included in the
+          // post-handshake message.
           absl::optional<cbor::Value> pairing_data(
               std::move(generate_pairing_data_)
                   .Run(*peer_identity_, result->second));
@@ -432,24 +442,90 @@ class TunnelTransport : public Transport {
           }
         }
 
-        absl::optional<std::vector<uint8_t>> post_handshake_msg_bytes(
-            EncodePaddedCBORMap(std::move(post_handshake_msg)));
+        absl::optional<std::vector<uint8_t>> post_handshake_msg_bytes;
+        if (protocol_revision_ >= 1) {
+          post_handshake_msg_bytes =
+              cbor::Writer::Write(cbor::Value(std::move(post_handshake_msg)));
+        } else {
+          post_handshake_msg_bytes =
+              EncodePaddedCBORMap(std::move(post_handshake_msg));
+          // All post-handshake messages should fit into the same padding
+          // bucket. It doesn't have to be the smallest one, but that's
+          // currently true which yields this easy check:
+          DCHECK_EQ(post_handshake_msg_bytes->size(),
+                    kPostHandshakeMsgPaddingGranularity);
+        }
         if (!post_handshake_msg_bytes) {
           FIDO_LOG(ERROR) << "failed to encode post-handshake message";
           return;
         }
-
-        // All post-handshake messages should fit into the same padding bucket.
-        // It doesn't have to be the smallest one, but that's currently true
-        // which yields this easy check:
-        DCHECK_EQ(post_handshake_msg_bytes->size(),
-                  kPostHandshakeMsgPaddingGranularity);
 
         if (!crypter_->Encrypt(&post_handshake_msg_bytes.value())) {
           FIDO_LOG(ERROR) << "failed to encrypt post-handshake message";
           return;
         }
         websocket_client_->Write(*post_handshake_msg_bytes);
+
+        if (state_ == State::kConnected && protocol_revision_ >= 1) {
+          // For revision one and greater, linking information can be sent at
+          // any time. We always send it immediately after the post-handshake
+          // message.
+          absl::optional<cbor::Value> pairing_data(
+              std::move(generate_pairing_data_)
+                  .Run(*peer_identity_, result->second));
+
+          // padding_target is the expected size of the plaintext of the update
+          // message.
+          constexpr size_t kPaddingTarget = 512;
+
+          // padding_length is the length of a bytestring of zeros, included
+          // just to hit `kPaddingTarget`. `Encrypt` pads to 32 bytes so we can
+          // be a little sloppy here and use simpler code. Thus we aim at 16
+          // bytes shy of the target so that it'll be padded up by `Encrypt`.
+          static_assert(kPaddingTarget % 32 == 0);
+          size_t padding_length =
+              kPaddingTarget - 16 -
+              /* length of CBOR map key */ 1 -
+              /* length of bytestring overhead, assuming a two-byte length */ 3;
+
+          if (pairing_data) {
+            cbor::Value::MapValue update_msg_for_measurement;
+            update_msg_for_measurement.emplace(1, pairing_data->Clone());
+            absl::optional<std::vector<uint8_t>> cbor_bytes =
+                cbor::Writer::Write(
+                    cbor::Value(std::move(update_msg_for_measurement)));
+
+            if (cbor_bytes && cbor_bytes->size() < padding_length) {
+              padding_length -= cbor_bytes->size();
+            } else {
+              DCHECK(false) << cbor_bytes.has_value();
+            }
+          }
+
+          cbor::Value::MapValue update_msg;
+          update_msg.emplace(0, std::vector<uint8_t>(padding_length));
+          if (pairing_data) {
+            update_msg.emplace(1, std::move(*pairing_data));
+          }
+
+          absl::optional<std::vector<uint8_t>> update_msg_bytes =
+              cbor::Writer::Write(cbor::Value(std::move(update_msg)));
+          if (!update_msg_bytes) {
+            FIDO_LOG(ERROR) << "failed to encode update message";
+            return;
+          }
+          update_msg_bytes->insert(update_msg_bytes->begin(),
+                                   static_cast<uint8_t>(MessageType::kUpdate));
+
+          if (!crypter_->Encrypt(&update_msg_bytes.value())) {
+            FIDO_LOG(ERROR) << "failed to encrypt update message";
+            return;
+          }
+
+          DCHECK_EQ(update_msg_bytes->size(),
+                    kPaddingTarget + /* AES-GCM overhead */ 16);
+          websocket_client_->Write(*update_msg_bytes);
+        }
 
         state_ = State::kReady;
         break;
@@ -461,6 +537,46 @@ class TunnelTransport : public Transport {
           FIDO_LOG(ERROR) << "failed to decrypt caBLE message";
           update_callback_.Run(Platform::Error::DECRYPT_FAILURE);
           return;
+        }
+
+        if (protocol_revision_ >= 1) {
+          if (plaintext.empty()) {
+            FIDO_LOG(ERROR) << "invalid empty message";
+            update_callback_.Run(Platform::Error::DECRYPT_FAILURE);
+            return;
+          }
+
+          const uint8_t message_type_byte = plaintext[0];
+          plaintext.erase(plaintext.begin());
+          if (message_type_byte >
+              static_cast<uint8_t>(MessageType::kMaxValue)) {
+            FIDO_LOG(ERROR) << "unknown message type "
+                            << static_cast<int>(message_type_byte);
+            update_callback_.Run(Disconnected::kDisconnected);
+            return;
+          }
+
+          const MessageType message_type =
+              static_cast<MessageType>(message_type_byte);
+          switch (message_type) {
+            case MessageType::kShutdown: {
+              update_callback_.Run(Disconnected::kDisconnected);
+              return;
+            }
+
+            case MessageType::kCTAP:
+              break;
+
+            case MessageType::kUpdate:
+              // The payload is ignored for now. Maybe there will be desktop
+              // updates defined in the future. But we still check that the
+              // payload is well-formed.
+              if (!cbor::Reader::Read(plaintext)) {
+                FIDO_LOG(ERROR) << "invalid CBOR payload in update message";
+                update_callback_.Run(Disconnected::kDisconnected);
+              }
+              return;
+          }
         }
 
         if (first_message_) {
@@ -476,6 +592,7 @@ class TunnelTransport : public Transport {
     }
   }
 
+  const unsigned protocol_revision_;
   const raw_ptr<Platform> platform_;
   State state_ = State::kNone;
   const std::array<uint8_t, kTunnelIdSize> tunnel_id_;
@@ -984,6 +1101,7 @@ std::unique_ptr<Transaction> TransactWithPlaintextTransport(
 }
 
 std::unique_ptr<Transaction> TransactFromQRCode(
+    unsigned protocol_revision,
     std::unique_ptr<Platform> platform,
     network::mojom::NetworkContext* network_context,
     base::span<const uint8_t, kRootSecretSize> root_secret,
@@ -998,12 +1116,14 @@ std::unique_ptr<Transaction> TransactFromQRCode(
   Platform* const platform_ptr = platform.get();
   return std::make_unique<CTAP2Processor>(
       std::make_unique<TunnelTransport>(
-          platform_ptr, network_context, qr_secret, peer_identity,
-          use_new_crypter_construction, std::move(generate_pairing_data)),
+          protocol_revision, platform_ptr, network_context, qr_secret,
+          peer_identity, use_new_crypter_construction,
+          std::move(generate_pairing_data)),
       std::move(platform));
 }
 
 std::unique_ptr<Transaction> TransactFromFCM(
+    unsigned protocol_revision,
     std::unique_ptr<Platform> platform,
     network::mojom::NetworkContext* network_context,
     base::span<const uint8_t, kRootSecretSize> root_secret,
@@ -1017,9 +1137,9 @@ std::unique_ptr<Transaction> TransactFromFCM(
 
   Platform* const platform_ptr = platform.get();
   return std::make_unique<CTAP2Processor>(
-      std::make_unique<TunnelTransport>(platform_ptr, network_context,
-                                        paired_secret, client_nonce, routing_id,
-                                        tunnel_id, IdentityKey(root_secret)),
+      std::make_unique<TunnelTransport>(
+          protocol_revision, platform_ptr, network_context, paired_secret,
+          client_nonce, routing_id, tunnel_id, IdentityKey(root_secret)),
       std::move(platform));
 }
 
