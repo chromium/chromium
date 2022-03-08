@@ -1795,7 +1795,7 @@ std::string Database::GetDiagnosticInfo(int extended_error,
                                         Statement* statement) {
   // Prevent reentrant calls to the error callback.
   ErrorCallback original_callback = std::move(error_callback_);
-  reset_error_callback();
+  error_callback_.Reset();
 
   // Trim extended error codes.
   const int error = (extended_error & 0xFF);

@@ -9,14 +9,17 @@
 #include <cstdint>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/thread_annotations.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "sql/database_memory_dump_provider.h"
@@ -43,47 +46,6 @@ int SqliteSchemaCount(Database* db) {
   const char* kSchemaCount = "SELECT COUNT(*) FROM sqlite_schema";
   Statement s(db->GetUniqueStatement(kSchemaCount));
   return s.Step() ? s.ColumnInt(0) : -1;
-}
-
-// Track the number of valid references which share the same pointer.
-// This is used to allow testing an implicitly use-after-free case by
-// explicitly having the ref count live longer than the object.
-class RefCounter {
- public:
-  explicit RefCounter(size_t* counter) : counter_(counter) { (*counter_)++; }
-  RefCounter(const RefCounter& other) : counter_(other.counter_) {
-    (*counter_)++;
-  }
-  RefCounter& operator=(const RefCounter&) = delete;
-  ~RefCounter() { (*counter_)--; }
-
- private:
-  raw_ptr<size_t> counter_;
-};
-
-// Empty callback for implementation of ErrorCallbackSetHelper().
-void IgnoreErrorCallback(int error, Statement* stmt) {}
-
-void ErrorCallbackSetHelper(Database* db,
-                            size_t* counter,
-                            const RefCounter& r,
-                            int error,
-                            Statement* stmt) {
-  // The ref count should not go to zero when changing the callback.
-  EXPECT_GT(*counter, 0u);
-  db->set_error_callback(base::BindRepeating(&IgnoreErrorCallback));
-  EXPECT_GT(*counter, 0u);
-}
-
-void ErrorCallbackResetHelper(Database* db,
-                              size_t* counter,
-                              const RefCounter& r,
-                              int error,
-                              Statement* stmt) {
-  // The ref count should not go to zero when clearing the callback.
-  EXPECT_GT(*counter, 0u);
-  db->reset_error_callback();
-  EXPECT_GT(*counter, 0u);
 }
 
 // Handle errors by blowing away the database.
@@ -449,59 +411,120 @@ TEST_P(SQLDatabaseTest, SchemaIntrospectionUsesErrorExpecter) {
   }
 }
 
-TEST_P(SQLDatabaseTest, ErrorCallback) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER UNIQUE)";
+TEST_P(SQLDatabaseTest, SetErrorCallback) {
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
-  ASSERT_TRUE(db_->Execute("INSERT INTO foo (id) VALUES (12)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(12)"));
 
+  bool error_callback_called = false;
   int error = SQLITE_OK;
-  {
-    ScopedErrorCallback sec(db_.get(),
-                            base::BindRepeating(&CaptureErrorCallback, &error));
-    EXPECT_FALSE(db_->Execute("INSERT INTO foo (id) VALUES (12)"));
+  db_->set_error_callback(base::BindLambdaForTesting(
+      [&](int sqlite_error, sql::Statement* statement) {
+        error_callback_called = true;
+        error = sqlite_error;
+      }));
+  EXPECT_FALSE(db_->Execute("INSERT INTO rows(id) VALUES(12)"))
+      << "Inserting a duplicate primary key should have failed";
+  EXPECT_TRUE(error_callback_called)
+      << "Execute() should report errors to the database error callback";
+  EXPECT_EQ(SQLITE_CONSTRAINT_PRIMARYKEY, error)
+      << "Execute() should report errors to the database error callback";
+}
 
-    // Later versions of SQLite throw SQLITE_CONSTRAINT_UNIQUE.  The specific
-    // sub-error isn't really important.
-    EXPECT_EQ(SQLITE_CONSTRAINT, (error & 0xff));
-  }
+TEST_P(SQLDatabaseTest, SetErrorCallbackDchecksOnExistingCallback) {
+  db_->set_error_callback(base::DoNothing());
+  EXPECT_DCHECK_DEATH(db_->set_error_callback(base::DoNothing()))
+      << "set_error_callback() should DCHECK if error callback already exists";
+}
 
-  // Callback is no longer in force due to reset.
+TEST_P(SQLDatabaseTest, ResetErrorCallback) {
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)";
+  ASSERT_TRUE(db_->Execute(kCreateSql));
+  ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(12)"));
+
+  bool error_callback_called = false;
+  int error = SQLITE_OK;
+  db_->set_error_callback(
+      base::BindLambdaForTesting([&](int sqlite_error, Statement* statement) {
+        error_callback_called = true;
+        error = sqlite_error;
+      }));
+  db_->reset_error_callback();
+
   {
-    error = SQLITE_OK;
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CONSTRAINT);
-    ASSERT_FALSE(db_->Execute("INSERT INTO foo (id) VALUES (12)"));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
-    EXPECT_EQ(SQLITE_OK, error);
+    EXPECT_FALSE(db_->Execute("INSERT INTO rows(id) VALUES(12)"))
+        << "Inserting a duplicate primary key should have failed";
+    EXPECT_TRUE(expecter.SawExpectedErrors())
+        << "Inserting a duplicate primary key should have failed";
+  }
+  EXPECT_FALSE(error_callback_called)
+      << "Execute() should not report errors after reset_error_callback()";
+  EXPECT_EQ(SQLITE_OK, error)
+      << "Execute() should not report errors after reset_error_callback()";
+}
+
+// Sets a flag to true/false to track being alive.
+class LifeTracker {
+ public:
+  explicit LifeTracker(bool* flag_ptr) : flag_ptr_(flag_ptr) {
+    DCHECK(flag_ptr != nullptr);
+    DCHECK(!*flag_ptr)
+        << "LifeTracker's flag should be set to false prior to construction";
+    *flag_ptr_ = true;
   }
 
-  // base::BindRepeating() can curry arguments to be passed by const reference
-  // to the callback function.  If the callback function calls
-  // re/set_error_callback(), the storage for those arguments can be
-  // deleted while the callback function is still executing.
-  //
-  // RefCounter() counts how many objects are live using an external
-  // count.  The same counter is passed to the callback, so that it
-  // can check directly even if the RefCounter object is no longer
-  // live.
-  {
-    size_t count = 0;
-    ScopedErrorCallback sec(
-        db_.get(), base::BindRepeating(&ErrorCallbackSetHelper, db_.get(),
-                                       &count, RefCounter(&count)));
-
-    EXPECT_FALSE(db_->Execute("INSERT INTO foo (id) VALUES (12)"));
+  LifeTracker(LifeTracker&& rhs) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(rhs.sequence_checker_);
+    flag_ptr_ = rhs.flag_ptr_;
+    rhs.flag_ptr_ = nullptr;
   }
 
-  // Same test, but reset_error_callback() case.
-  {
-    size_t count = 0;
-    ScopedErrorCallback sec(
-        db_.get(), base::BindRepeating(&ErrorCallbackResetHelper, db_.get(),
-                                       &count, RefCounter(&count)));
+  // base::RepeatingCallback only requires move-construction support.
+  LifeTracker& operator=(const LifeTracker& rhs) = delete;
 
-    EXPECT_FALSE(db_->Execute("INSERT INTO foo (id) VALUES (12)"));
+  ~LifeTracker() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (flag_ptr_)
+      *flag_ptr_ = false;
   }
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+  raw_ptr<bool> flag_ptr_ GUARDED_BY(sequence_checker_);
+};
+
+// base::BindRepeating() can curry arguments to be passed by const reference to
+// the callback function. If the error callback function calls
+// reset_error_callback() and the Database doesn't hang onto the callback while
+// running it, the storage for those arguments may be deleted while the callback
+// function is executing. This test ensures that the database is hanging onto
+// the callback while running it.
+TEST_P(SQLDatabaseTest, ErrorCallbackStorageProtectedWhileRun) {
+  bool is_alive = false;
+  db_->set_error_callback(base::BindRepeating(
+      [](Database* db, bool* life_tracker_is_alive,
+         const LifeTracker& life_tracker, int sqlite_error,
+         Statement* statement) {
+        EXPECT_TRUE(*life_tracker_is_alive)
+            << "The error callback storage should be alive when it is Run()";
+        db->reset_error_callback();
+        EXPECT_TRUE(*life_tracker_is_alive)
+            << "The error storage should remain alive during Run() after "
+            << "reset_error_callback()";
+      },
+      base::Unretained(db_.get()), base::Unretained(&is_alive),
+      LifeTracker(&is_alive)));
+
+  EXPECT_TRUE(is_alive)
+      << "The error callback storage should be alive after creation";
+  EXPECT_FALSE(db_->Execute("INSERT INTO rows(id) VALUES(12)"));
+  EXPECT_FALSE(is_alive)
+      << "The error callback storage should be released after Run() completes";
 }
 
 TEST_P(SQLDatabaseTest, Execute_CompilationError) {
