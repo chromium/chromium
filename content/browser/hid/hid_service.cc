@@ -228,6 +228,19 @@ void HidService::OnDeviceAdded(
 
 void HidService::OnDeviceRemoved(
     const device::mojom::HidDeviceInfo& device_info) {
+  size_t watchers_removed =
+      base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+        if (watcher_entry.first != device_info.guid)
+          return false;
+
+        watchers_.Remove(watcher_entry.second);
+        return true;
+      });
+
+  // If needed, decrement the active frame count.
+  if (watchers_removed > 0)
+    OnWatcherRemoved(/*cleanup_watcher_ids=*/false);
+
   auto* delegate = GetContentClient()->browser()->GetHidDelegate();
   if (!delegate->HasDevicePermission(render_frame_host(), device_info)) {
     return;
