@@ -216,14 +216,6 @@ bool IsSimpleFrameRateThrottlingEnabled() {
 }
 
 bool IsUsingSkiaRenderer() {
-#if BUILDFLAG(IS_ANDROID)
-  // We don't support KitKat. Check for it before looking at the feature flag
-  // so that KitKat doesn't show up in Control or Enabled experiment group.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <=
-      base::android::SDK_VERSION_KITKAT)
-    return false;
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(https://crbug.com/1145180): SkiaRenderer isn't supported on Chrome
   // OS boards that still use the legacy video decoder.
