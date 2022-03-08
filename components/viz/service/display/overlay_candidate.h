@@ -216,7 +216,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
       ResourceId resource_id,
       bool y_flipped,
       OverlayCandidate* candidate,
-      bool is_delegated_context);
+      bool is_delegated_context,
+      const gfx::RectF& primary_rect);
+
   static CandidateStatus FromTextureQuad(
       DisplayResourceProvider* resource_provider,
       SurfaceDamageRectList* surface_damage_rect_list,
@@ -251,7 +253,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
       SurfaceDamageRectList* surface_damage_rect_list,
       const StreamVideoDrawQuad* quad,
       OverlayCandidate* candidate,
-      bool is_delegated_context);
+      bool is_delegated_context,
+      const gfx::RectF& primary_rect);
+
   static CandidateStatus FromVideoHoleQuad(
       DisplayResourceProvider* resource_provider,
       SurfaceDamageRectList* surface_damage_rect_list,
@@ -262,7 +266,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   static void AssignDamage(const DrawQuad* quad,
                            SurfaceDamageRectList* surface_damage_rect_list,
                            OverlayCandidate* candidate);
-  static void ApplyClip(OverlayCandidate* candidate);
+
+  static void ApplyClip(OverlayCandidate* candidate,
+                        const gfx::RectF& clip_rect);
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;

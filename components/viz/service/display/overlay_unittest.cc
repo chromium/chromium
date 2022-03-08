@@ -5262,6 +5262,14 @@ class TestDelegatedOverlayProcessor : public OverlayProcessorDelegated {
       : OverlayProcessorDelegated(nullptr, {}, nullptr) {}
   ~TestDelegatedOverlayProcessor() override = default;
 
+  OverlayProcessorInterface::OutputSurfaceOverlayPlane*
+  GetDefaultPrimaryPlane() {
+    primary_plane_ = ProcessOutputSurfaceAsOverlay(
+        kDisplaySize, kDisplaySize, kDefaultBufferFormat, gfx::ColorSpace(),
+        false /* has_alpha */, 1.0f /* opacity */, gpu::Mailbox());
+    return &primary_plane_;
+  }
+
   bool IsOverlaySupported() const override { return true; }
   bool NeedsSurfaceDamageRectList() const override { return false; }
   void CheckOverlaySupportImpl(const PrimaryPlane* primary_plane,
@@ -5272,6 +5280,8 @@ class TestDelegatedOverlayProcessor : public OverlayProcessorDelegated {
   }
   size_t GetStrategyCount() const { return strategies_.size(); }
   void AddExpectedRect(const gfx::RectF& rect) {}
+
+  OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane_;
 };
 
 using DelegatedTest = OverlayTest<TestDelegatedOverlayProcessor>;
@@ -5300,7 +5310,8 @@ TEST_F(DelegatedTest, ForwardMultipleBasic) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      std::move(surface_damage_rect_list),
+      overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(kNumTestQuads, candidate_list.size());
   for (size_t i = 0; i < kNumTestQuads; i++) {
@@ -5333,7 +5344,8 @@ TEST_F(DelegatedTest, TestClipHandCrafted) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      std::move(surface_damage_rect_list),
+      overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
       &damage_rect_, &content_bounds_);
 
   const auto uv_rect = gfx::RectF(0, 0.5f, 0.5f, 0.5f);
@@ -5366,7 +5378,8 @@ TEST_F(DelegatedTest, TestClipComputed) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      std::move(surface_damage_rect_list),
+      overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
       &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(1U, candidate_list.size());
@@ -5377,6 +5390,44 @@ TEST_F(DelegatedTest, TestClipComputed) {
       gfx::RectF(kSmallCandidateRect), gfx::RectF(expected_rect));
   EXPECT_RECTF_NEAR(gfx::RectF(expected_rect), candidate_list[0].display_rect,
                     0.01f);
+  EXPECT_RECTF_NEAR(uv_rect, candidate_list[0].uv_rect, 0.01f);
+}
+
+TEST_F(DelegatedTest, TestClipWithPrimary) {
+  auto pass = CreateRenderPass();
+  // This is a quad with a rect that is twice is large as the primary plane and
+  // will be clipped in this test.
+  const auto kOversizedCandidateRect =
+      gfx::Rect(kDisplaySize.height() * 2, kDisplaySize.width() * 2);
+  auto* tex_rect = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kOversizedCandidateRect);
+  tex_rect->uv_bottom_right = gfx::PointF(1, 1);
+  tex_rect->uv_top_left = gfx::PointF(0, 0);
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  // AggregatedRenderPass* main_pass = pass.get();
+  SurfaceDamageRectList surface_damage_rect_list;
+  // Simplify by adding full root damage.
+  surface_damage_rect_list.push_back(pass->output_rect);
+  pass_list.push_back(std::move(pass));
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list),
+      overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  const auto uv_rect = gfx::RectF(0, 0.0f, 0.5f, 0.5f);
+  EXPECT_EQ(1U, candidate_list.size());
+  // We clip all rects to the primary display to ensure delegated and composited
+  // paths have identical results.
+  EXPECT_RECTF_NEAR(gfx::RectF(gfx::Rect(kDisplaySize)),
+                    candidate_list[0].display_rect, 0.01f);
   EXPECT_RECTF_NEAR(uv_rect, candidate_list[0].uv_rect, 0.01f);
 }
 
@@ -5407,7 +5458,8 @@ TEST_F(DelegatedTest, QuadTypes) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      std::move(surface_damage_rect_list),
+      overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
       &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(main_pass->quad_list.size(), candidate_list.size());

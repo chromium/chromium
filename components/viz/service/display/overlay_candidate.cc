@@ -184,7 +184,7 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromDrawQuad(
     case DrawQuad::Material::kStreamVideoContent:
       return FromStreamVideoQuad(resource_provider, surface_damage_rect_list,
                                  StreamVideoDrawQuad::MaterialCast(quad),
-                                 candidate, is_delegated_context);
+                                 candidate, is_delegated_context, primary_rect);
     case DrawQuad::Material::kSolidColor:
       if (!is_delegated_context)
         return CandidateStatus::kFailQuadNotSupported;
@@ -328,7 +328,8 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromDrawQuadResource(
     ResourceId resource_id,
     bool y_flipped,
     OverlayCandidate* candidate,
-    bool is_delegated_context) {
+    bool is_delegated_context,
+    const gfx::RectF& primary_rect) {
   if (resource_id != kInvalidResourceId &&
       !resource_provider->IsOverlayCandidate(resource_id))
     return CandidateStatus::kFailNotOverlay;
@@ -379,8 +380,15 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromDrawQuadResource(
 
   // Delegated compositing does not yet support |clip_rect| so it is applied
   // here to the |display_rect| and |uv_rect| directly.
-  if (is_delegated_context)
-    ApplyClip(candidate);
+  if (is_delegated_context) {
+    if (candidate->clip_rect.has_value())
+      ApplyClip(candidate, gfx::RectF(*candidate->clip_rect));
+
+    // TODO(https://crbug.com/1300552) : Tile quads can overlay other quads and
+    // the window by one pixel. Exo does not yet clip these quads so we need to
+    // clip here with the |primary_rect|.
+    ApplyClip(candidate, primary_rect);
+  }
 
   candidate->tracking_id = base::Hash(&track_data, sizeof(track_data));
   return CandidateStatus::kSuccess;
@@ -393,9 +401,9 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromAggregateQuad(
     const AggregatedRenderPassDrawQuad* quad,
     const gfx::RectF& primary_rect,
     OverlayCandidate* candidate) {
-  auto rtn =
-      FromDrawQuadResource(resource_provider, surface_damage_rect_list, quad,
-                           kInvalidResourceId, false, candidate, true);
+  auto rtn = FromDrawQuadResource(resource_provider, surface_damage_rect_list,
+                                  quad, kInvalidResourceId, false, candidate,
+                                  true, primary_rect);
   if (rtn == CandidateStatus::kSuccess) {
     candidate->rpdq = quad;
     candidate->resource_size_in_pixels =
@@ -412,9 +420,9 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromSolidColorQuad(
     const SolidColorDrawQuad* quad,
     const gfx::RectF& primary_rect,
     OverlayCandidate* candidate) {
-  auto rtn =
-      FromDrawQuadResource(resource_provider, surface_damage_rect_list, quad,
-                           kInvalidResourceId, false, candidate, true);
+  auto rtn = FromDrawQuadResource(resource_provider, surface_damage_rect_list,
+                                  quad, kInvalidResourceId, false, candidate,
+                                  true, primary_rect);
 
   if (rtn == CandidateStatus::kSuccess) {
     // TODO(https://crbug.com/1204102) : The 4x4 size is only valid for the non
@@ -468,9 +476,9 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromTileQuad(
       quad->tex_coord_rect, 1.f / candidate->resource_size_in_pixels.width(),
       1.f / candidate->resource_size_in_pixels.height());
 
-  auto rtn =
-      FromDrawQuadResource(resource_provider, surface_damage_rect_list, quad,
-                           quad->resource_id(), false, candidate, true);
+  auto rtn = FromDrawQuadResource(resource_provider, surface_damage_rect_list,
+                                  quad, quad->resource_id(), false, candidate,
+                                  true, primary_rect);
   return rtn;
 }
 
@@ -499,9 +507,9 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromTextureQuad(
 
   candidate->uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
 
-  auto rtn = FromDrawQuadResource(resource_provider, surface_damage_rect_list,
-                                  quad, quad->resource_id(), quad->y_flipped,
-                                  candidate, is_delegated_context);
+  auto rtn = FromDrawQuadResource(
+      resource_provider, surface_damage_rect_list, quad, quad->resource_id(),
+      quad->y_flipped, candidate, is_delegated_context, primary_rect);
   if (rtn == CandidateStatus::kSuccess) {
     // 'quad->resource_size_in_pixels()'
     candidate->resource_size_in_pixels =
@@ -522,10 +530,11 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromStreamVideoQuad(
     SurfaceDamageRectList* surface_damage_rect_list,
     const StreamVideoDrawQuad* quad,
     OverlayCandidate* candidate,
-    bool is_delegated_context) {
+    bool is_delegated_context,
+    const gfx::RectF& primary_rect) {
   auto rtn = FromDrawQuadResource(resource_provider, surface_damage_rect_list,
                                   quad, quad->resource_id(), false, candidate,
-                                  is_delegated_context);
+                                  is_delegated_context, primary_rect);
 
   if (rtn == CandidateStatus::kSuccess) {
     candidate->resource_size_in_pixels = quad->resource_size_in_pixels();
@@ -634,15 +643,14 @@ void OverlayCandidate::AssignDamage(
   candidate->damage_rect = transformed_damage;
 }
 
-void OverlayCandidate::ApplyClip(OverlayCandidate* candidate) {
-  if (candidate->clip_rect.has_value()) {
-    auto intersect_clip_display = gfx::RectF(*candidate->clip_rect);
-    intersect_clip_display.Intersect(candidate->display_rect);
-    gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
-        candidate->uv_rect, candidate->display_rect, intersect_clip_display);
-    candidate->display_rect = intersect_clip_display;
-    candidate->uv_rect = uv_rect;
-  }
+void OverlayCandidate::ApplyClip(OverlayCandidate* candidate,
+                                 const gfx::RectF& clip_rect) {
+  gfx::RectF intersect_clip_display = clip_rect;
+  intersect_clip_display.Intersect(candidate->display_rect);
+  gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
+      candidate->uv_rect, candidate->display_rect, intersect_clip_display);
+  candidate->display_rect = intersect_clip_display;
+  candidate->uv_rect = uv_rect;
 }
 
 }  // namespace viz
