@@ -611,6 +611,10 @@ bool SiteInfo::RequiresDedicatedProcess(
   if (is_error_page())
     return true;
 
+  // Isolate PDF content.
+  if (is_pdf_)
+    return true;
+
   // Isolate WebUI pages from one another and from other kinds of schemes.
   for (const auto& webui_scheme : URLDataManagerBackend::GetWebUISchemes()) {
     if (site_url_.SchemeIs(webui_scheme))

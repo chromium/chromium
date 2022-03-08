@@ -32,6 +32,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/with_feature_override.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
@@ -55,6 +56,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_content_client.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -87,6 +89,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -2453,9 +2456,30 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MultipleDomains) {
   EXPECT_EQ(2, CountPDFProcesses());
 }
 
-using PDFExtensionIsolatedContentTest = PDFExtensionTest;
+namespace {
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionIsolatedContentTest, PdfAndHtml) {
+class PDFExtensionIsolatedContentTest : public base::test::WithFeatureOverride,
+                                        public PDFExtensionTest {
+ protected:
+  PDFExtensionIsolatedContentTest()
+      : base::test::WithFeatureOverride(features::kSitePerProcess) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionIsolatedContentTest);
+
+}  // namespace
+
+// Makes sure `PDFExtensionIsolatedContentTest` runs with and without Site
+// Isolation enabled (see crbug.com/1298269).
+//
+// This is a separate test because fatal assertions in `SetUpInMainThread()`
+// don't terminate early, so there's no point asserting before every test.
+IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, ExpectSiteIsolation) {
+  EXPECT_EQ(IsParamFeatureEnabled(),
+            content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
   // Load a page with an embedded PDF and an HTML iframe, both of the same
@@ -2481,7 +2505,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionIsolatedContentTest, PdfAndHtml) {
   EXPECT_FALSE(content::HasOriginKeyedProcess(plugin_frames[0]));
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionIsolatedContentTest, DataNavigation) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, DataNavigation) {
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/data_url_rectangles.html"));
 
@@ -2495,7 +2519,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionIsolatedContentTest, DataNavigation) {
             guest_contents->GetMainFrame()->GetProcess());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionIsolatedContentTest, HistoryNavigation) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, HistoryNavigation) {
   // Navigating to a PDF should spawn a PDF renderer process.
   EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   EXPECT_EQ(CountPDFProcesses(), 1);
@@ -2513,7 +2537,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionIsolatedContentTest, HistoryNavigation) {
   EXPECT_EQ(CountPDFProcesses(), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionIsolatedContentTest, Jitless) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, Jitless) {
   WebContents* guest_contents =
       LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(guest_contents);
