@@ -81,14 +81,14 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
     return static_cast<QuickAnswersControllerImpl*>(
                QuickAnswersController::Get())
         ->quick_answers_ui_controller()
-        ->quick_answers_view_for_testing();
+        ->quick_answers_view();
   }
 
   const views::View* GetConsentView() const {
     return static_cast<QuickAnswersControllerImpl*>(
                QuickAnswersController::Get())
         ->quick_answers_ui_controller()
-        ->consent_view_for_testing();
+        ->user_consent_view();
   }
 
   void AcceptConsent() {
@@ -120,16 +120,16 @@ TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenFeatureNotEligible) {
   ShowView();
 
   // The feature is not eligible, nothing should be shown.
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
-  EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
+  EXPECT_FALSE(ui_controller()->IsShowingUserConsentView());
+  EXPECT_FALSE(ui_controller()->IsShowingQuickAnswersView());
 }
 
 TEST_F(QuickAnswersControllerTest, ShouldNotShowWithoutSetPending) {
   ShowView(/*set_visibility=*/false);
 
   // The visibility has not been set to pending, nothing should be shown.
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
-  EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
+  EXPECT_FALSE(ui_controller()->IsShowingUserConsentView());
+  EXPECT_FALSE(ui_controller()->IsShowingQuickAnswersView());
   EXPECT_EQ(controller()->GetVisibilityForTesting(),
             QuickAnswersVisibility::kClosed);
 }
@@ -138,28 +138,28 @@ TEST_F(QuickAnswersControllerTest,
        ShouldShowPendingQueryAfterUserAcceptsConsent) {
   ShowView();
   // Without user consent, only the user consent view should show.
-  EXPECT_TRUE(ui_controller()->is_showing_user_consent_view());
-  EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
+  EXPECT_TRUE(ui_controller()->IsShowingUserConsentView());
+  EXPECT_FALSE(ui_controller()->IsShowingQuickAnswersView());
 
   controller()->OnUserConsentResult(true);
 
   // With user consent granted, the consent view should dismiss and the cached
   // quick answer query should show.
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
-  EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
+  EXPECT_FALSE(ui_controller()->IsShowingUserConsentView());
+  EXPECT_TRUE(ui_controller()->IsShowingQuickAnswersView());
 }
 
 TEST_F(QuickAnswersControllerTest, ShouldDismissIfUserRejectConsent) {
   ShowView();
   // Without user consent, only the user consent view should show.
-  EXPECT_TRUE(ui_controller()->is_showing_user_consent_view());
-  EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
+  EXPECT_TRUE(ui_controller()->IsShowingUserConsentView());
+  EXPECT_FALSE(ui_controller()->IsShowingQuickAnswersView());
 
   controller()->OnUserConsentResult(false);
 
   // With user consent rejected, the views should dismiss.
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
-  EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
+  EXPECT_FALSE(ui_controller()->IsShowingUserConsentView());
+  EXPECT_FALSE(ui_controller()->IsShowingQuickAnswersView());
 }
 
 TEST_F(QuickAnswersControllerTest, UserConsentAlreadyAccepted) {
@@ -168,8 +168,8 @@ TEST_F(QuickAnswersControllerTest, UserConsentAlreadyAccepted) {
 
   // With user consent already accepted, only the quick answers view should
   // show.
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
-  EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
+  EXPECT_FALSE(ui_controller()->IsShowingUserConsentView());
+  EXPECT_TRUE(ui_controller()->IsShowingQuickAnswersView());
 }
 
 TEST_F(QuickAnswersControllerTest, UserConsentAlreadyRejected) {
@@ -177,26 +177,26 @@ TEST_F(QuickAnswersControllerTest, UserConsentAlreadyRejected) {
   ShowView();
 
   // With user consent already rejected, nothing should show.
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
-  EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
+  EXPECT_FALSE(ui_controller()->IsShowingUserConsentView());
+  EXPECT_FALSE(ui_controller()->IsShowingQuickAnswersView());
 }
 
 TEST_F(QuickAnswersControllerTest, DismissUserConsentView) {
   ShowConsentView();
-  EXPECT_TRUE(ui_controller()->is_showing_user_consent_view());
+  EXPECT_TRUE(ui_controller()->IsShowingUserConsentView());
 
   DismissQuickAnswers();
 
-  EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
+  EXPECT_FALSE(ui_controller()->IsShowingUserConsentView());
 }
 
 TEST_F(QuickAnswersControllerTest, DismissQuickAnswersView) {
   AcceptConsent();
   ShowView();
-  EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
+  EXPECT_TRUE(ui_controller()->IsShowingQuickAnswersView());
 
   DismissQuickAnswers();
-  EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
+  EXPECT_FALSE(ui_controller()->IsShowingQuickAnswersView());
 }
 
 TEST_F(QuickAnswersControllerTest,
