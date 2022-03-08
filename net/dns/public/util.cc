@@ -4,6 +4,8 @@
 
 #include "net/dns/public/util.h"
 
+#include <stdint.h>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -72,7 +74,8 @@ IPEndPoint GetMdnsReceiveEndPoint(AddressFamily address_family) {
 #endif  // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)) || BUILDFLAG(IS_APPLE)
 }
 
-std::string GetNameForHttpsQuery(const url::SchemeHostPort& scheme_host_port) {
+std::string GetNameForHttpsQuery(const url::SchemeHostPort& scheme_host_port,
+                                 uint16_t* out_port) {
   DCHECK(!scheme_host_port.host().empty() &&
          scheme_host_port.host().front() != '.');
 
@@ -97,6 +100,9 @@ std::string GetNameForHttpsQuery(const url::SchemeHostPort& scheme_host_port) {
   // Scheme should always end up normalized to "https" to create HTTPS
   // transactions.
   DCHECK_EQ(normalized_scheme, url::kHttpsScheme);
+
+  if (out_port != nullptr)
+    *out_port = port;
 
   // Per the rules in draft-ietf-dnsop-svcb-https-08, Section 9.1 and 2.3,
   // encode scheme and port in the transaction hostname, unless the port is

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/public/dns_query_type.h"
@@ -50,10 +51,16 @@ class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
   // the DNS query, and it must have already been validated (expected to be done
   // by DnsTransaction) that the response matches the query.
   //
+  // `original_domain_name` is the query name (in dotted form) before any
+  // aliasing or prepending port/scheme. It is expected to be the name under
+  // which any basic query types, e.g. A or AAAA, are queried.
+  //
   // May have the side effect of recording metrics about DnsResponses as they
   // are parsed, so while not an absolute requirement, any given DnsResponse
   // should only be used and extracted from at most once.
   ExtractionError ExtractDnsResults(DnsQueryType query_type,
+                                    base::StringPiece original_domain_name,
+                                    uint16_t request_port,
                                     HostCache::Entry* out_results) const;
 
   // Creates the results of a NODATA response (successfully parsed but without

@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_response.h"
@@ -217,8 +218,16 @@ DnsResourceRecord BuildTestHttpsAliasRecord(
     base::StringPiece alias_name,
     base::TimeDelta ttl = base::Days(1));
 
+std::pair<uint16_t, std::string> BuildTestHttpsServiceAlpnParam(
+    const std::vector<std::string>& alpns);
+
+std::pair<uint16_t, std::string> BuildTestHttpsServiceEchConfigParam(
+    base::span<const uint8_t> ech_config_list);
+
 std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
     std::vector<uint16_t> param_key_list);
+
+std::pair<uint16_t, std::string> BuildTestHttpsServicePortParam(uint16_t port);
 
 // `params` is a mapping from service param keys to a string containing the
 // encoded bytes of a service param value (without the value length prefix which

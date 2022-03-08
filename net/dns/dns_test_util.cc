@@ -159,6 +159,29 @@ DnsResourceRecord BuildTestHttpsAliasRecord(std::string name,
                             std::move(rdata), ttl);
 }
 
+std::pair<uint16_t, std::string> BuildTestHttpsServiceAlpnParam(
+    const std::vector<std::string>& alpns) {
+  std::string param_value;
+
+  for (const std::string& alpn : alpns) {
+    CHECK(!alpn.empty());
+    param_value.append(
+        1, static_cast<char>(base::checked_cast<uint8_t>(alpn.size())));
+    param_value.append(alpn);
+  }
+
+  return std::make_pair(dns_protocol::kHttpsServiceParamKeyAlpn,
+                        std::move(param_value));
+}
+
+std::pair<uint16_t, std::string> BuildTestHttpsServiceEchConfigParam(
+    base::span<const uint8_t> ech_config_list) {
+  return std::make_pair(
+      dns_protocol::kHttpsServiceParamKeyEchConfig,
+      std::string(reinterpret_cast<const char*>(ech_config_list.data()),
+                  ech_config_list.size()));
+}
+
 std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
     std::vector<uint16_t> param_key_list) {
   base::ranges::sort(param_key_list);
@@ -172,6 +195,14 @@ std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
 
   return std::make_pair(dns_protocol::kHttpsServiceParamKeyMandatory,
                         std::move(value));
+}
+
+std::pair<uint16_t, std::string> BuildTestHttpsServicePortParam(uint16_t port) {
+  char buffer[2];
+  base::WriteBigEndian(buffer, port);
+
+  return std::make_pair(dns_protocol::kHttpsServiceParamKeyPort,
+                        std::string(buffer, 2));
 }
 
 DnsResourceRecord BuildTestHttpsServiceRecord(

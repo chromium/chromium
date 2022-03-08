@@ -284,16 +284,13 @@ HostCache::Entry::GetEndpoints() const {
   if (ip_endpoints_.value().empty())
     return endpoints;
 
-  if (endpoint_metadatas_.has_value()) {
-    HttpsRecordPriority last_priority = 0;
-    for (const auto& metadata : endpoint_metadatas_.value()) {
-      // Ensure metadatas are iterated in priority order.
-      DCHECK_GE(metadata.first, last_priority);
-      last_priority = metadata.first;
-
+  absl::optional<std::vector<ConnectionEndpointMetadata>> metadatas =
+      GetMetadatas();
+  if (metadatas.has_value()) {
+    for (ConnectionEndpointMetadata& metadata : metadatas.value()) {
       endpoints.emplace_back();
       endpoints.back().ip_endpoints = ip_endpoints_.value();
-      endpoints.back().metadata = metadata.second;
+      endpoints.back().metadata = std::move(metadata);
     }
   }
 
@@ -302,6 +299,24 @@ HostCache::Entry::GetEndpoints() const {
   endpoints.back().ip_endpoints = ip_endpoints_.value();
 
   return endpoints;
+}
+
+absl::optional<std::vector<ConnectionEndpointMetadata>>
+HostCache::Entry::GetMetadatas() const {
+  if (!endpoint_metadatas_.has_value())
+    return absl::nullopt;
+
+  std::vector<ConnectionEndpointMetadata> metadatas;
+  HttpsRecordPriority last_priority = 0;
+  for (const auto& metadata : endpoint_metadatas_.value()) {
+    // Ensure metadatas are iterated in priority order.
+    DCHECK_GE(metadata.first, last_priority);
+    last_priority = metadata.first;
+
+    metadatas.push_back(metadata.second);
+  }
+
+  return metadatas;
 }
 
 absl::optional<base::TimeDelta> HostCache::Entry::GetOptionalTtl() const {

@@ -188,6 +188,9 @@ class NET_EXPORT HostCache {
         absl::optional<std::vector<IPEndPoint>> ip_endpoints) {
       ip_endpoints_ = std::move(ip_endpoints);
     }
+    absl::optional<std::vector<ConnectionEndpointMetadata>> GetMetadatas()
+        const;
+    void ClearMetadatas() { endpoint_metadatas_.reset(); }
     const std::set<std::string>* aliases() const {
       return base::OptionalOrNullptr(aliases_);
     }

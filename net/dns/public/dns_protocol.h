@@ -211,6 +211,9 @@ static constexpr uint16_t kHttpsServiceParamKeyIpv4Hint = 4;
 static constexpr uint16_t kHttpsServiceParamKeyEchConfig = 5;
 static constexpr uint16_t kHttpsServiceParamKeyIpv6Hint = 6;
 
+// draft-ietf-dnsop-svcb-https-08#section-9
+inline constexpr char kHttpsServiceDefaultAlpn[] = "http/1.1";
+
 }  // namespace dns_protocol
 
 }  // namespace net

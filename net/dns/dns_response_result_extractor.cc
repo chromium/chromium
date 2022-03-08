@@ -17,15 +17,19 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/ostream_operators.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -456,8 +460,8 @@ ExtractionError ExtractIntegrityResults(const DnsResponse& response,
   return extraction_error;
 }
 
-ExtractionError ExtractHttpsResults(const DnsResponse& response,
-                                    HostCache::Entry* out_results) {
+ExtractionError ExtractExperimentalHttpsResults(const DnsResponse& response,
+                                                HostCache::Entry* out_results) {
   DCHECK(out_results);
 
   absl::optional<base::TimeDelta> response_ttl;
@@ -482,10 +486,140 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
                                    rdata->AsServiceForm()->IsCompatible());
   }
 
-  // TODO(crbug.com/1225776): Output a non-experimental result representation.
   *out_results = HostCache::Entry(records.empty() ? ERR_NAME_NOT_RESOLVED : OK,
                                   std::move(record_compatibility),
                                   HostCache::Entry::SOURCE_DNS, response_ttl);
+  DCHECK_EQ(extraction_error, ExtractionError::kOk);
+  return extraction_error;
+}
+
+const RecordParsed* UnwrapRecordPtr(
+    const std::unique_ptr<const RecordParsed>& ptr) {
+  return ptr.get();
+}
+
+bool RecordIsAlias(const RecordParsed* record) {
+  DCHECK(record->rdata<HttpsRecordRdata>());
+  return record->rdata<HttpsRecordRdata>()->IsAlias();
+}
+
+ExtractionError ExtractHttpsResults(const DnsResponse& response,
+                                    base::StringPiece original_domain_name,
+                                    uint16_t request_port,
+                                    HostCache::Entry* out_results) {
+  DCHECK(!original_domain_name.empty());
+  DCHECK(out_results);
+
+  absl::optional<base::TimeDelta> response_ttl;
+  std::vector<std::unique_ptr<const RecordParsed>> records;
+  ExtractionError extraction_error =
+      ExtractResponseRecords(response, dns_protocol::kTypeHttps, &records,
+                             &response_ttl, nullptr /* out_aliases */);
+
+  if (extraction_error != ExtractionError::kOk) {
+    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
+                                    HostCache::Entry::SOURCE_DNS);
+    return extraction_error;
+  }
+
+  std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> results;
+  std::vector<bool> record_compatibility;
+  bool default_alpn_found = false;
+#if DCHECK_IS_ON()
+  std::string canonical_name;
+#endif  // DCHECK_IS_ON()
+  for (const auto& record : records) {
+#if DCHECK_IS_ON()
+    if (canonical_name.empty()) {
+      canonical_name = record->name();
+    } else {
+      DCHECK(record->name() == canonical_name);
+    }
+#endif  // DCHECK_IS_ON()
+
+    const HttpsRecordRdata* rdata = record->rdata<HttpsRecordRdata>();
+    DCHECK(rdata);
+
+    // Chrome does not yet support alias records.
+    if (rdata->IsAlias()) {
+      // Alias records are always considered compatible because they do not
+      // support "mandatory" params.
+      record_compatibility.push_back(true);
+      continue;
+    }
+
+    const ServiceFormHttpsRecordRdata* service = rdata->AsServiceForm();
+    record_compatibility.push_back(service->IsCompatible());
+
+    // Ignore services incompatible with Chrome's HTTPS record parser.
+    // draft-ietf-dnsop-svcb-https-08#section-8
+    if (!service->IsCompatible())
+      continue;
+
+    // Only support services at the original domain name, as that is the name at
+    // which Chrome queried A/AAAA. Chrome does not yet support followup queries
+    // or diverging addresses.
+    base::StringPiece target_name = service->service_name().empty()
+                                        ? record->name()
+                                        : service->service_name();
+    if (target_name != original_domain_name) {
+      continue;
+    }
+
+    // Ignore services at a different port from the request port. Chrome does
+    // not yet support endpoints diverging by port.  Note that before supporting
+    // port redirects, Chrome must ensure redirects to the "bad port list" are
+    // disallowed. Unclear if such logic would belong here or in socket
+    // connection logic.
+    if (service->port().has_value() && service->port().value() != request_port)
+      continue;
+
+    ConnectionEndpointMetadata metadata;
+
+    metadata.supported_protocol_alpns = service->alpn_ids();
+    if (service->default_alpn() &&
+        !base::Contains(metadata.supported_protocol_alpns,
+                        dns_protocol::kHttpsServiceDefaultAlpn)) {
+      metadata.supported_protocol_alpns.push_back(
+          dns_protocol::kHttpsServiceDefaultAlpn);
+    }
+
+    // Services with no supported ALPNs (those with "no-default-alpn" and no or
+    // empty "alpn") are not self-consistent and are rejected.
+    // draft-ietf-dnsop-svcb-https-08#section-7.1.1 and
+    // draft-ietf-dnsop-svcb-https-08#section-2.4.3.
+    if (metadata.supported_protocol_alpns.empty())
+      continue;
+
+    metadata.ech_config_list = ConnectionEndpointMetadata::EchConfigList(
+        service->ech_config().cbegin(), service->ech_config().cend());
+
+    results.emplace(service->priority(), std::move(metadata));
+
+    if (service->default_alpn())
+      default_alpn_found = true;
+  }
+
+  // Ignore all records if any are an alias record. Chrome does not yet support
+  // alias records, but aliases take precedence over any other records.
+  if (base::ranges::any_of(records, &RecordIsAlias, &UnwrapRecordPtr)) {
+    records.clear();
+    results.clear();
+  }
+
+  // Ignore all records if they all mark "no-default-alpn". Domains should
+  // always provide at least one endpoint allowing default ALPN to ensure a
+  // reasonable expectation of connection success.
+  // draft-ietf-dnsop-svcb-https-08#section-7.1.2
+  if (!default_alpn_found) {
+    records.clear();
+    results.clear();
+  }
+
+  *out_results = HostCache::Entry(results.empty() ? ERR_NAME_NOT_RESOLVED : OK,
+                                  std::move(results),
+                                  HostCache::Entry::SOURCE_DNS, response_ttl);
+  out_results->set_https_record_compatibility(std::move(record_compatibility));
   DCHECK_EQ(extraction_error, ExtractionError::kOk);
   return extraction_error;
 }
@@ -503,7 +637,10 @@ DnsResponseResultExtractor::~DnsResponseResultExtractor() = default;
 DnsResponseResultExtractor::ExtractionError
 DnsResponseResultExtractor::ExtractDnsResults(
     DnsQueryType query_type,
+    base::StringPiece original_domain_name,
+    uint16_t request_port,
     HostCache::Entry* out_results) const {
+  DCHECK(!original_domain_name.empty());
   DCHECK(out_results);
 
   switch (query_type) {
@@ -524,8 +661,10 @@ DnsResponseResultExtractor::ExtractDnsResults(
     case DnsQueryType::INTEGRITY:
       return ExtractIntegrityResults(*response_, out_results);
     case DnsQueryType::HTTPS:
+      return ExtractHttpsResults(*response_, original_domain_name, request_port,
+                                 out_results);
     case DnsQueryType::HTTPS_EXPERIMENTAL:
-      return ExtractHttpsResults(*response_, out_results);
+      return ExtractExperimentalHttpsResults(*response_, out_results);
   }
 }
 

@@ -147,7 +147,7 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
 
 class TestHttpDelegate : public HttpStreamRequest::Delegate {
  public:
-  TestHttpDelegate(base::RunLoop* loop) : loop_(loop) {}
+  explicit TestHttpDelegate(base::RunLoop* loop) : loop_(loop) {}
   ~TestHttpDelegate() override {}
   void OnStreamReady(const SSLConfig& used_ssl_config,
                      const ProxyInfo& used_proxy_info,
@@ -312,6 +312,38 @@ TEST_F(HttpWithDnsOverHttpsTest, HttpsUpgrade) {
   // The request should have been redirected to https.
   EXPECT_EQ(d.received_redirect_count(), 1);
   EXPECT_EQ(req->url(), https_url);
+
+  EXPECT_TRUE(d.response_completed());
+  EXPECT_EQ(d.request_status(), 0);
+  EXPECT_EQ(d.data_received(), kTestBody);
+}
+
+// An end-to-end test for requesting a domain with a basic HTTPS record. Expect
+// this to exercise connection logic for extra HostResolver results with
+// metadata.
+TEST_F(HttpWithDnsOverHttpsTest, HttpsMetadata) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  GURL main_url = test_server_.GetURL(kHostname, "/test");
+  EXPECT_TRUE(main_url.SchemeIs(url::kHttpsScheme));
+
+  doh_server_.AddRecord(BuildTestHttpsServiceRecord(
+      dns_util::GetNameForHttpsQuery(url::SchemeHostPort(main_url)),
+      /*priority=*/1, /*service_name=*/".", /*params=*/{}));
+
+  // Fetch the http URL.
+  TestDelegate d;
+
+  std::unique_ptr<URLRequest> req(context()->CreateRequest(
+      main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  base::RunLoop().Run();
+  ASSERT_THAT(d.request_status(), IsOk());
+
+  // There should be three DoH lookups for kHostname (A, AAAA, and HTTPS).
+  EXPECT_EQ(doh_server_.QueriesServed(), 3);
 
   EXPECT_TRUE(d.response_completed());
   EXPECT_EQ(d.request_status(), 0);

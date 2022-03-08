@@ -1041,7 +1041,10 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
         DnsResponseResultExtractor extractor(response);
         HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
         DnsResponseResultExtractor::ExtractionError extraction_error =
-            extractor.ExtractDnsResults(DnsQueryType::A, &results);
+            extractor.ExtractDnsResults(
+                DnsQueryType::A,
+                /*original_domain_name=*/kDoHProbeHostname,
+                /*request_port=*/0, &results);
 
         if (extraction_error ==
                 DnsResponseResultExtractor::ExtractionError::kOk &&

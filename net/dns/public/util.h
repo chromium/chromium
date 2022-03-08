@@ -5,6 +5,8 @@
 #ifndef NET_DNS_PUBLIC_UTIL_H_
 #define NET_DNS_PUBLIC_UTIL_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "net/base/address_family.h"
@@ -31,7 +33,12 @@ NET_EXPORT IPEndPoint GetMdnsReceiveEndPoint(AddressFamily address_family);
 
 // Determine the new hostname for an HTTPS record query by performing "Port
 // Prefix Naming" as defined by draft-ietf-dnsop-svcb-https-08, Section 9.1.
-NET_EXPORT std::string GetNameForHttpsQuery(const url::SchemeHostPort& host);
+//
+// If non-null, `out_port` is set to the port used for the query, which might
+// not be the same as `host.port()`, e.g. if port 80 is converted to 443 for
+// scheme upgrade.
+NET_EXPORT std::string GetNameForHttpsQuery(const url::SchemeHostPort& host,
+                                            uint16_t* out_port = nullptr);
 
 }  // namespace net::dns_util
 

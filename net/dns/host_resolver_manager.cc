@@ -1454,10 +1454,12 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     std::string transaction_hostname(GetHostname(host_));
 
     // For HTTPS, prepend "_<port>._https." for any non-default port.
+    uint16_t request_port = 0;
     if (dns_query_type == DnsQueryType::HTTPS &&
         absl::holds_alternative<url::SchemeHostPort>(host_)) {
       const auto& scheme_host_port = absl::get<url::SchemeHostPort>(host_);
-      transaction_hostname = dns_util::GetNameForHttpsQuery(scheme_host_port);
+      transaction_hostname =
+          dns_util::GetNameForHttpsQuery(scheme_host_port, &request_port);
     }
 
     std::unique_ptr<DnsTransaction> trans =
@@ -1466,7 +1468,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
             DnsQueryTypeToQtype(dns_query_type),
             base::BindOnce(&DnsTask::OnTransactionComplete,
                            base::Unretained(this), tick_clock_->NowTicks(),
-                           dns_query_type),
+                           dns_query_type, request_port),
             net_log_, secure_, secure_dns_mode_, &*resolve_context_,
             fallback_available_ /* fast_timeout */);
     trans->SetRequestPriority(delegate_->priority());
@@ -1527,6 +1529,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
   void OnTransactionComplete(const base::TimeTicks& start_time,
                              DnsQueryType dns_query_type,
+                             uint16_t request_port,
                              DnsTransaction* transaction,
                              int net_error,
                              const DnsResponse* response,
@@ -1589,7 +1592,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
     DnsResponseResultExtractor extractor(response);
     DnsResponseResultExtractor::ExtractionError extraction_error =
-        extractor.ExtractDnsResults(dns_query_type, &results);
+        extractor.ExtractDnsResults(dns_query_type,
+                                    /*original_domain_name=*/GetHostname(host_),
+                                    request_port, &results);
     DCHECK_NE(extraction_error,
               DnsResponseResultExtractor::ExtractionError::kUnexpected);
 
@@ -1644,6 +1649,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                 dns_query_type);
       return;
     }
+
+    HideMetadataResultsIfNotDesired(results);
 
     // Merge results with saved results from previous transactions.
     if (saved_results_) {
@@ -1940,6 +1947,22 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.HttpUpgrade", upgrade_result);
     return upgrade_result == UpgradeResult::kUpgradeTriggered;
+  }
+
+  // Only keep metadata results (from HTTPS records) for appropriate schemes.
+  // This is needed to ensure metadata isn't included in results if the current
+  // Feature setup allows querying HTTPS for http:// or ws:// but doesn't enable
+  // scheme upgrade to error out on finding an HTTPS record.
+  //
+  // TODO(crbug.com/1206455): Remove once all requests that query HTTPS will
+  // either allow metadata results or error out.
+  void HideMetadataResultsIfNotDesired(HostCache::Entry& results) {
+    if (GetScheme(host_) == url::kHttpsScheme ||
+        GetScheme(host_) == url::kWssScheme) {
+      return;
+    }
+
+    results.ClearMetadatas();
   }
 
   raw_ptr<DnsClient> client_;
