@@ -387,15 +387,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-blink-heap-concurrent-marking-tsan-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux|blink",
-        short_name = "CM",
-    ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.builder(
     name = "linux-blink-heap-verification",
     console_view_entry = consoles.console_view_entry(
         category = "linux|blink",

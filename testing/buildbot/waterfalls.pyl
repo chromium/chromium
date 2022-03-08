@@ -3258,17 +3258,6 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
-      'linux-blink-heap-concurrent-marking-tsan-rel': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_gtests',
-        },
-        'gtest_args': [
-          '--enable-features=BlinkHeapConcurrentMarking',
-        ],
-      },
       'linux-blink-heap-verification': {
         'mixins': [
           'linux-bionic',

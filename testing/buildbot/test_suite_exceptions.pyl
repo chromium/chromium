@@ -446,12 +446,6 @@
           '--debug',
         ],
       },
-      'linux-blink-heap-concurrent-marking-tsan-rel': {
-        'args': [
-          '--release',
-          '--flag-specific=enable-blink-heap-concurrent-marking',
-        ],
-      },
       'linux-blink-web-tests-force-accessibility-rel': {
         'args': [
           '--flag-specific=force-renderer-accessibility',
@@ -1172,11 +1166,6 @@
           '--gtest_filter=-FieldFormatterTest.DifferentLocales',
         ],
       },
-      'linux-blink-heap-concurrent-marking-tsan-rel': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
       # https://crbug.com/1111979,
       'linux-lacros-code-coverage': {
         'args': [
@@ -1357,11 +1346,6 @@
           # Flaking with only 20 shards with 40-60 minute runs.
           # https://crbug.com/1230118
           'shards': 30,
-        },
-      },
-      'linux-blink-heap-concurrent-marking-tsan-rel': {
-        'swarming': {
-          'shards': 4,
         },
       },
       'linux-chromeos-code-coverage': {
@@ -2379,11 +2363,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.net_unittests.filter',
         ],
-      },
-      'linux-blink-heap-concurrent-marking-tsan-rel': {
-        'swarming': {
-          'shards': 4,
-        }
       },
       'linux-chromeos-dbg': {
         'swarming': {
@@ -3509,11 +3488,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter',
         ],
-      },
-      'linux-blink-heap-concurrent-marking-tsan-rel': {
-        'swarming': {
-          'shards': 2,
-        },
       },
     },
   },
