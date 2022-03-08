@@ -33,9 +33,14 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source, int window_index);
 std::string SerializeAttributionJson(const base::Value& body,
                                      bool pretty_print = false);
 
+// Checks whether filters keys within `source` and `trigger` match.
+// `negated` indicates that no filter data keys should have a match
+// between source and trigger. Negating the result of this function
+// should not be used to apply "not_filters" within this API.
 CONTENT_EXPORT bool AttributionFilterDataMatch(
     const AttributionFilterData& source,
-    const AttributionFilterData& trigger);
+    const AttributionFilterData& trigger,
+    bool negated = false);
 
 }  // namespace content
 

@@ -125,22 +125,41 @@ std::string SerializeAttributionJson(const base::Value& body,
 }
 
 bool AttributionFilterDataMatch(const AttributionFilterData& source,
-                                const AttributionFilterData& trigger) {
+                                const AttributionFilterData& trigger,
+                                bool negated) {
   // A filter is considered matched if the filter key is only present either on
   // the source or trigger, or the intersection of the filter values is
   // non-empty.
   // Returns true if all the filters matched.
+  //
+  // If the filters are negated, the behavior should be that every single filter
+  // key does not match between the two (negating the function result is not
+  // sufficient by the API definition).
   //
   // TODO(apaseltiner, linnan): Figure out how to incorporate the implicitly
   // generated source_type filter data.
   return base::ranges::all_of(
       trigger.filter_values(), [&](const auto& trigger_filter) {
         auto source_filter = source.filter_values().find(trigger_filter.first);
-        return source_filter == source.filter_values().end() ||
-               base::ranges::any_of(
-                   trigger_filter.second, [&](const std::string& value) {
-                     return base::Contains(source_filter->second, value);
-                   });
+        if (source_filter == source.filter_values().end())
+          return true;
+
+        // Desired behavior is to treat any empty set of values as a single
+        // unique value itself. This means:
+        //  - x:[] match x:[] is false when negated, and true otherwise.
+        //  - x:[1,2,3] match x:[] is true when negated, and false otherwise.
+        if (trigger_filter.second.empty()) {
+          return negated != source_filter->second.empty();
+        }
+
+        auto predicate = [&](const std::string& value) {
+          return negated != base::Contains(source_filter->second, value);
+        };
+
+        // Negating filters must ensure no value matches any source-side value,
+        // whereas only one value must match normally.
+        return negated ? base::ranges::all_of(trigger_filter.second, predicate)
+                       : base::ranges::any_of(trigger_filter.second, predicate);
       });
 }
 

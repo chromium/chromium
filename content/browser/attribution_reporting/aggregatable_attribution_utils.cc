@@ -48,7 +48,8 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     }
 
     if (!data.not_filters().filter_values().empty() &&
-        AttributionFilterDataMatch(source_filter_data, data.not_filters())) {
+        !AttributionFilterDataMatch(source_filter_data, data.not_filters(),
+                                    /*negated*/ true)) {
       continue;
     }
 
