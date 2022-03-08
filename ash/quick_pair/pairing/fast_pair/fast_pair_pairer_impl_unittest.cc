@@ -436,7 +436,8 @@ class FastPairPairerImplTest : public AshTestBase {
   base::WeakPtrFactory<FastPairPairerImplTest> weak_ptr_factory_{this};
 };
 
-TEST_F(FastPairPairerImplTest, NoPairingIfHandshakeLost) {
+// TODO(1304014): Fix and re-enable the test.
+TEST_F(FastPairPairerImplTest, DISABLED_NoPairingIfHandshakeLost) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
   FailedHandshakeSetUp(Protocol::kFastPairInitial);
