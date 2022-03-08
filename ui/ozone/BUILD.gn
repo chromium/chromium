@@ -184,7 +184,6 @@ source_set("platform") {
     "platform_selection.cc",
     "platform_selection.h",
     "public/client_native_pixmap_factory_ozone.cc",
-    "public/ozone_gpu_test_helper.cc",
     "public/ozone_platform.cc",
     constructor_list_cc_file,
     platform_list_cc_file,
@@ -194,7 +193,6 @@ source_set("platform") {
   public = [
     "platform_object.h",
     "public/client_native_pixmap_factory_ozone.h",
-    "public/ozone_gpu_test_helper.h",
     "public/ozone_platform.h",
   ]
 
@@ -344,6 +342,20 @@ action("generate_ozone_platform_list") {
       ] + ozone_platforms
 
   visibility += [ "//media:*" ]
+}
+
+source_set("ozone_gpu_test_support") {
+  visibility = []
+  visibility = [ "//components/viz/demo:viz_demo" ]
+
+  sources = [ "public/ozone_gpu_test_helper.cc" ]
+
+  public = [ "public/ozone_gpu_test_helper.h" ]
+
+  public_deps = [
+    ":platform",
+    "//base",
+  ]
 }
 
 action("generate_constructor_list") {
