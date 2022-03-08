@@ -49,7 +49,7 @@
 
       function onSelected() {
         var section = ElementsTestRunner.firstMatchedStyleSection();
-        section._highlight();
+        section.highlight();
         TestRunner.callFunctionInPageAsync('requestAnimationFramePromise').then(onHighlighted);
       }
 
@@ -67,7 +67,7 @@
 
       function onHighlightCountReset() {
         var section = ElementsTestRunner.firstMatchedStyleSection();
-        section._highlight();
+        section.highlight();
         TestRunner.callFunctionInPageAsync('requestAnimationFramePromise').then(onHighlighted);
       }
 
@@ -85,7 +85,7 @@
 
       function onHighlightCountReset() {
         var section = ElementsTestRunner.firstMatchedStyleSection();
-        section._highlight();
+        section.highlight();
         TestRunner.callFunctionInPageAsync('requestAnimationFramePromise').then(onHighlighted);
       }
 
