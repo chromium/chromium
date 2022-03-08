@@ -549,15 +549,15 @@ void FederatedAuthRequestImpl::OnRevokeResponse(
 void FederatedAuthRequestImpl::CompleteRevokeRequest(
     RevokeStatus status,
     bool should_call_callback) {
+  if (!revoke_callback_)
+    return;
+
   bool should_run_callback = should_call_callback ||
                              network_manager_->IsMockIdpNetworkRequestManager();
   network_manager_.reset();
   provider_ = GURL();
   account_id_ = std::string();
   client_id_ = std::string();
-
-  if (!revoke_callback_)
-    return;
 
   if (should_run_callback)
     std::move(revoke_callback_).Run(status);
@@ -929,6 +929,9 @@ void FederatedAuthRequestImpl::CompleteRequest(
     bool should_call_callback) {
   DCHECK(result == FederatedAuthRequestResult::kSuccess || id_token.empty());
 
+  if (!auth_request_callback_)
+    return;
+
   if (result != FederatedAuthRequestResult::kSuccess) {
     // It would be possible to add this inspector issue on the renderer, which
     // will receive the callback. However, it is preferable to do so on the
@@ -944,9 +947,6 @@ void FederatedAuthRequestImpl::CompleteRequest(
   bool should_run_callback = should_call_callback ||
                              network_manager_->IsMockIdpNetworkRequestManager();
   CleanUp();
-
-  if (!auth_request_callback_)
-    return;
 
   if (should_run_callback) {
     RequestIdTokenStatus status =
