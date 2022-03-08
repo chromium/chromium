@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
@@ -28,7 +29,6 @@
 #endif
 
 namespace base {
-class ListValue;
 template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
@@ -529,7 +529,7 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
     return log_messages_;
   }
 
-  const std::vector<base::Value>& reporting_events() {
+  const std::vector<base::Value::Dict>& reporting_events() {
     return reporting_events_;
   }
 
@@ -633,9 +633,7 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
 
   // List of reporting events logged since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  // TODO(https://crbug.com/1297256): This can only store base::Value::Dicts, so
-  // update this type to reflect that.
-  std::vector<base::Value> reporting_events_;
+  std::vector<base::Value::Dict> reporting_events_;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Map of deep scan requests sent since the oldest currently open

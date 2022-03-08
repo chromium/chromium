@@ -307,7 +307,7 @@ void WebUIInfoSingleton::AddToReportingEvents(const base::Value::Dict& event) {
 }
 
 void WebUIInfoSingleton::ClearReportingEvents() {
-  std::vector<base::Value>().swap(reporting_events_);
+  std::vector<base::Value::Dict>().swap(reporting_events_);
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -2475,7 +2475,7 @@ void SafeBrowsingUIHandler::GetReferringAppInfo(const base::Value::List& args) {
 }
 
 void SafeBrowsingUIHandler::GetReportingEvents(const base::Value::List& args) {
-  base::ListValue reporting_events;
+  base::Value::List reporting_events;
   for (const auto& reporting_event :
        WebUIInfoSingleton::GetInstance()->reporting_events()) {
     reporting_events.Append(reporting_event.Clone());
@@ -2484,7 +2484,8 @@ void SafeBrowsingUIHandler::GetReportingEvents(const base::Value::List& args) {
   AllowJavascript();
   DCHECK(!args.empty());
   std::string callback_id = args[0].GetString();
-  ResolveJavascriptCallback(base::Value(callback_id), reporting_events);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(reporting_events)));
 }
 
 void SafeBrowsingUIHandler::GetLogMessages(const base::Value::List& args) {
