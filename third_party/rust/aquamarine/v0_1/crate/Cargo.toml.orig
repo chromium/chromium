@@ -1,0 +1,24 @@
+[package]
+name = "aquamarine"
+version = "0.1.11"
+authors = ["Mike Lubinets <git@mkl.dev>"]
+description = "A mermaid.js integration for rustdoc"
+keywords = ["proc_macro", "docs", "rustdoc", "mermaid", "diagram"]
+categories = ["visualization", "development-tools::build-utils"]
+repository = "https://github.com/mersinvald/aquamarine"
+edition = "2018"
+license = "MIT"
+include = [ "src/**/*", "Cargo.toml", "doc/js/mermaid.min.js" ]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1"
+proc-macro2 = "1"
+proc-macro-error = "1"
+itertools = "0.9"
+syn = "1"
+
+[dev-dependencies]
+pretty_assertions = "0.6"

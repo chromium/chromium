@@ -1,0 +1,6 @@
+Name: autocxx-bindgen
+URL: https://crates.io/crates/autocxx-bindgen
+Description: Automatically generates Rust FFI bindings to C and C++ libraries. Version adjusted for cxx.
+Version: 0.59.13
+Security Critical: no
+License: BSD 3-Clause

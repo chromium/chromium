@@ -4,7 +4,7 @@
 
 import("//build/rust/cargo_crate.gni")
 
-cargo_crate("buildrs_support") {
+cargo_crate("lib") {
   crate_name = "version_check"
   epoch = "0.9"
   crate_type = "rlib"
@@ -13,6 +13,8 @@ cargo_crate("buildrs_support") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them.
   skip_unit_tests = true
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"

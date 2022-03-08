@@ -1,0 +1,80 @@
+[package]
+name = "once_cell"
+version = "1.9.0"
+authors = ["Aleksey Kladov <aleksey.kladov@gmail.com>"]
+license = "MIT OR Apache-2.0"
+edition = "2018"
+
+description = "Single assignment cells and lazy values."
+readme = "README.md"
+documentation = "https://docs.rs/once_cell"
+
+repository = "https://github.com/matklad/once_cell"
+keywords = ["lazy", "static"]
+categories = ["rust-patterns", "memory-management"]
+
+exclude = ["*.png", "*.svg", "/Cargo.lock.msrv", "/.travis.yml", "/run-miri-tests.sh", "rustfmt.toml"]
+
+[workspace]
+members = ["xtask"]
+
+[dependencies]
+# Uses parking_lot to implement once_cell::sync::OnceCell.
+# This makes not speed difference, but makes each OnceCell<T>
+# for up to 16 bytes smaller, depending on the size of the T.
+parking_lot = { version = "0.11", optional = true, default_features = false }
+
+# To be used in order to enable the race feature on targets
+# that do not have atomics
+# *Warning:* This can be unsound. Please read the README of
+# [atomic-polyfill](https://github.com/embassy-rs/atomic-polyfill)
+# and make sure you understand all the implications
+atomic-polyfill = { version = "0.1", optional = true }
+
+[dev-dependencies]
+lazy_static = "1.0.0"
+crossbeam-utils = "0.7.2"
+regex =  "1.2.0"
+
+[features]
+default = ["std"]
+# Enables `once_cell::sync` module.
+std = ["alloc"]
+# Enables `once_cell::race::OnceBox` type.
+alloc = ["race"]
+# Enables `once_cell::race` module.
+race = []
+# Enables semver-exempt APIs of this crate.
+# At the moment, this feature is unused.
+unstable = []
+
+[[example]]
+name = "bench"
+required-features = ["std"]
+
+[[example]]
+name = "bench_acquire"
+required-features = ["std"]
+
+[[example]]
+name = "bench_vs_lazy_static"
+required-features = ["std"]
+
+[[example]]
+name = "lazy_static"
+required-features = ["std"]
+
+[[example]]
+name = "reentrant_init_deadlocks"
+required-features = ["std"]
+
+[[example]]
+name = "regex"
+required-features = ["std"]
+
+[[example]]
+name = "test_synchronization"
+required-features = ["std"]
+
+[package.metadata.docs.rs]
+all-features = true

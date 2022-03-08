@@ -23,6 +23,7 @@ if (is_win) {
       "consoleapi",
       "errhandlingapi",
       "fileapi",
+      "handleapi",
       "libloaderapi",
       "minwinbase",
       "minwindef",

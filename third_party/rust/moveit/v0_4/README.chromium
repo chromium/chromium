@@ -1,0 +1,6 @@
+Name: moveit
+URL: https://crates.io/crates/moveit
+Description: A library for safe, in-place construction of Rust (and C++!) objects.
+Version: 0.4.0
+Security Critical: no
+License: Apache 2.0
