@@ -530,7 +530,8 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
       prefs::kAccessibilitySpokenFeedbackEnabled);
 
   if (ProfileHelper::IsRegularProfile(profile_)) {
-    user_manager::known_user::SetBooleanPref(
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    known_user.SetBooleanPref(
         multi_user_util::GetAccountIdFromProfile(profile_),
         kUserSpokenFeedbackEnabled, enabled);
   }
@@ -1253,8 +1254,8 @@ void AccessibilityManager::OnActiveOutputNodeChanged() {
     return;
   }
 
-  const auto& account_ids = user_manager::known_user::GetKnownAccountIds();
   user_manager::KnownUser known_user(g_browser_process->local_state());
+  const auto account_ids = known_user.GetKnownAccountIds();
   for (const auto& account_id : account_ids) {
     if (known_user.FindBoolPath(account_id, kUserSpokenFeedbackEnabled)
             .value_or(false)) {
@@ -1902,9 +1903,9 @@ void AccessibilityManager::SetStartupSoundEnabled(bool value) const {
   if (!profile_)
     return;
 
-  user_manager::known_user::SetBooleanPref(
-      multi_user_util::GetAccountIdFromProfile(profile_),
-      kUserStartupSoundEnabled, value);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetBooleanPref(multi_user_util::GetAccountIdFromProfile(profile_),
+                            kUserStartupSoundEnabled, value);
 }
 
 const std::string AccessibilityManager::GetBluetoothBrailleDisplayAddress()
@@ -1928,9 +1929,9 @@ void AccessibilityManager::UpdateBluetoothBrailleDisplayAddress(
   if (!profile_)
     return;
 
-  user_manager::known_user::SetStringPref(
-      multi_user_util::GetAccountIdFromProfile(profile_),
-      kUserBluetoothBrailleDisplayAddress, address);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetStringPref(multi_user_util::GetAccountIdFromProfile(profile_),
+                           kUserBluetoothBrailleDisplayAddress, address);
   RestartBrltty(address);
 }
 

@@ -699,6 +699,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   system::TouchpadSettings touchpad_settings;
   system::MouseSettings mouse_settings;
   system::PointingStickSettings pointing_stick_settings;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
 
   if (user_is_primary_ && (reason == REASON_INITIALIZATION ||
                            pref_name == ::prefs::kPerformanceTracingEnabled)) {
@@ -927,8 +928,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
           ->GetImeKeyboard()
           ->SetAutoRepeatEnabled(enabled);
 
-      user_manager::known_user::SetBooleanPref(
-          user_->GetAccountId(), prefs::kXkbAutoRepeatEnabled, enabled);
+      known_user.SetBooleanPref(user_->GetAccountId(),
+                                prefs::kXkbAutoRepeatEnabled, enabled);
     }
   }
   if (reason != REASON_PREF_CHANGED ||
@@ -1039,8 +1040,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (pref_name == ::prefs::kUse24HourClock ||
       reason != REASON_ACTIVE_USER_CHANGED) {
     const bool value = prefs_->GetBoolean(::prefs::kUse24HourClock);
-    user_manager::known_user::SetBooleanPref(user_->GetAccountId(),
-                                             ::prefs::kUse24HourClock, value);
+    known_user.SetBooleanPref(user_->GetAccountId(), ::prefs::kUse24HourClock,
+                              value);
   }
 
   if (pref_name == ::prefs::kParentAccessCodeConfig ||
@@ -1050,21 +1051,19 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     if (value &&
         prefs_->IsManagedPreference(::prefs::kParentAccessCodeConfig) &&
         user_->IsChild()) {
-      user_manager::KnownUser known_user(g_browser_process->local_state());
       known_user.SetPath(user_->GetAccountId(),
                          ::prefs::kKnownUserParentAccessCodeConfig,
                          value->Clone());
       parent_access::ParentAccessService::Get().LoadConfigForUser(user_);
     } else {
-      user_manager::known_user::RemovePref(
-          user_->GetAccountId(), ::prefs::kKnownUserParentAccessCodeConfig);
+      known_user.RemovePref(user_->GetAccountId(),
+                            ::prefs::kKnownUserParentAccessCodeConfig);
     }
   }
 
   for (auto* remap_pref : kLanguageRemapPrefs) {
     if (pref_name == remap_pref || reason != REASON_ACTIVE_USER_CHANGED) {
       const int value = prefs_->GetInteger(remap_pref);
-      user_manager::KnownUser known_user(g_browser_process->local_state());
       known_user.SetIntegerPref(user_->GetAccountId(), remap_pref, value);
     }
   }
@@ -1073,9 +1072,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       reason != REASON_ACTIVE_USER_CHANGED) {
     const bool value =
         prefs_->GetBoolean(prefs::kLoginDisplayPasswordButtonEnabled);
-    user_manager::known_user::SetBooleanPref(
-        user_->GetAccountId(), prefs::kLoginDisplayPasswordButtonEnabled,
-        value);
+    known_user.SetBooleanPref(user_->GetAccountId(),
+                              prefs::kLoginDisplayPasswordButtonEnabled, value);
   }
 
   if (pref_name == prefs::kLocalStateDevicePeripheralDataAccessEnabled &&

@@ -510,8 +510,9 @@ class RotationTokenTest : public LoginManagerTest {
 IN_PROC_BROWSER_TEST_F(RotationTokenTest, PRE_Rotated) {
   TokenHandleUtil::StoreTokenHandle(account_id_, kTokenHandle);
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // Emulate state before rotation.
-  user_manager::known_user::RemovePref(account_id_, "TokenHandleRotated");
+  known_user.RemovePref(account_id_, "TokenHandleRotated");
 
   // Focus should not trigger online login.
   LoginScreenTestApi::FocusUser(account_id_);

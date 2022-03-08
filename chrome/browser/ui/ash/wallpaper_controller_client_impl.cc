@@ -144,8 +144,7 @@ void GetFilesIdSaltReady(
 
   const std::string wallpaper_files_id =
       HashWallpaperFilesIdStr(account_id.GetUserEmail());
-  user_manager::known_user::SetStringPref(account_id, kWallpaperFilesId,
-                                          wallpaper_files_id);
+  known_user.SetStringPref(account_id, kWallpaperFilesId, wallpaper_files_id);
   std::move(files_id_callback).Run(wallpaper_files_id);
 }
 

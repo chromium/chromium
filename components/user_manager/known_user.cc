@@ -795,50 +795,6 @@ void KnownUser::RegisterPrefs(PrefRegistrySimple* registry) {
 // --- Legacy interface ---
 namespace known_user {
 
-void SetStringPref(const AccountId& account_id,
-                   const std::string& path,
-                   const std::string& in_value) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).SetStringPref(account_id, path, in_value);
-}
-
-void SetBooleanPref(const AccountId& account_id,
-                    const std::string& path,
-                    const bool in_value) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).SetBooleanPref(account_id, path, in_value);
-}
-
-bool GetIntegerPref(const AccountId& account_id,
-                    const std::string& path,
-                    int* out_value) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return false;
-  absl::optional<int> val =
-      KnownUser(local_state).FindIntPath(account_id, path);
-  if (out_value && val.has_value())
-    *out_value = val.value();
-  return val.has_value();
-}
-
-void SetIntegerPref(const AccountId& account_id,
-                    const std::string& path,
-                    const int in_value) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).SetIntegerPref(account_id, path, in_value);
-}
-
 bool GetPref(const AccountId& account_id,
              const std::string& path,
              const base::Value** out_value) {
@@ -847,14 +803,6 @@ bool GetPref(const AccountId& account_id,
   if (!local_state)
     return false;
   return KnownUser(local_state).GetPref(account_id, path, out_value);
-}
-
-void RemovePref(const AccountId& account_id, const std::string& path) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).RemovePref(account_id, path);
 }
 
 AccountId GetAccountId(const std::string& user_email,
