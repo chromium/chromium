@@ -11,8 +11,8 @@ import {DeviceInfoUpdater} from './device_info_updater.js';
 import {CaptureHandler} from './mode/index.js';
 
 export interface ModeConstraints {
-  exact?: Mode;
-  default?: Mode;
+  kind: 'default'|'exact';
+  mode: Mode;
 }
 
 export type CameraViewUI = CaptureHandler;

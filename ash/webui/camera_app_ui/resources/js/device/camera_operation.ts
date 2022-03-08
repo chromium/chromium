@@ -81,8 +81,7 @@ class Reconfigurer {
       private readonly modeConstraints: ModeConstraints,
       facing: Facing|null,
   ) {
-    this.initialMode = util.assertEnumVariant(
-        Mode, this.modeConstraints.exact ?? this.modeConstraints.default);
+    this.initialMode = modeConstraints.mode;
     this.initialFacing = facing;
   }
 
@@ -128,10 +127,9 @@ class Reconfigurer {
   }
 
   private async getModeCandidates(deviceId: string): Promise<Mode[]> {
-    if (this.modeConstraints.exact !== undefined) {
-      assert(
-          await this.modes.isSupported(this.modeConstraints.exact, deviceId));
-      return [this.modeConstraints.exact];
+    if (this.modeConstraints.kind === 'exact') {
+      assert(await this.modes.isSupported(this.modeConstraints.mode, deviceId));
+      return [this.modeConstraints.mode];
     }
     return this.modes.getModeCandidates(
         deviceId, this.config?.mode ?? this.initialMode);

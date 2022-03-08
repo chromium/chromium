@@ -7,6 +7,7 @@ import {
 } from './app_window.js';
 import {assert, assertInstanceof} from './assert.js';
 import {CameraManager} from './device/index.js';
+import {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as focusRing from './focus_ring.js';
@@ -62,7 +63,7 @@ export class App {
 
   private readonly cameraView: Camera;
 
-  constructor({perfLogger, intent, facing, mode: defaultMode}: {
+  constructor({perfLogger, intent, facing, mode}: {
     perfLogger: PerfLogger,
     intent: Intent|null,
     facing: Facing|null,
@@ -75,9 +76,10 @@ export class App {
     state.set(
         state.State.SHOULD_HANDLE_INTENT_RESULT, shouldHandleIntentResult);
 
-    const modeConstraints = shouldHandleIntentResult ?
-        {exact: defaultMode ?? undefined} :
-        {default: defaultMode ?? Mode.PHOTO};
+    const modeConstraints: ModeConstraints = {
+      kind: shouldHandleIntentResult && mode !== null ? 'exact' : 'default',
+      mode: mode ?? Mode.PHOTO,
+    };
     this.cameraManager =
         new CameraManager(this.perfLogger, facing, modeConstraints);
 
