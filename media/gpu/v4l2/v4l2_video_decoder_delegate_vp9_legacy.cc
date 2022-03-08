@@ -187,13 +187,13 @@ class V4L2VP9Picture : public VP9Picture {
 V4L2VideoDecoderDelegateVP9Legacy::V4L2VideoDecoderDelegateVP9Legacy(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
-    : surface_handler_(surface_handler),
-      device_(device),
-      device_needs_compressed_header_parsed_(
-          device->IsCtrlExposed(V4L2_CID_MPEG_VIDEO_VP9_ENTROPY)) {
+    : surface_handler_(surface_handler), device_(device) {
   DCHECK(surface_handler_);
 
-  DVLOG_IF(1, device_needs_compressed_header_parsed_)
+  device_needs_frame_context_ =
+      device_->IsCtrlExposed(V4L2_CID_MPEG_VIDEO_VP9_ENTROPY);
+
+  DVLOG_IF(1, device_needs_frame_context_)
       << "Device requires frame context parsing";
 }
 
@@ -332,7 +332,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9Legacy::SubmitDecode(
   // Defined outside of the if() clause below as it must remain valid until
   // the call to SubmitExtControls().
   struct v4l2_ctrl_vp9_entropy v4l2_entropy;
-  if (device_needs_compressed_header_parsed_) {
+  if (device_needs_frame_context_) {
     memset(&v4l2_entropy, 0, sizeof(v4l2_entropy));
     FillV4L2Vp9EntropyContext(frame_hdr->initial_frame_context,
                               &v4l2_entropy.initial_entropy_ctx);
@@ -410,8 +410,8 @@ bool V4L2VideoDecoderDelegateVP9Legacy::GetFrameContext(
   return true;
 }
 
-bool V4L2VideoDecoderDelegateVP9Legacy::NeedsCompressedHeaderParsed() const {
-  return device_needs_compressed_header_parsed_;
+bool V4L2VideoDecoderDelegateVP9Legacy::IsFrameContextRequired() const {
+  return device_needs_frame_context_;
 }
 
 scoped_refptr<V4L2DecodeSurface>

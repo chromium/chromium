@@ -104,7 +104,7 @@ VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
       // TODO(hiroh): Set profile to UNKNOWN.
       profile_(profile),
       accelerator_(std::move(accelerator)),
-      parser_(accelerator_->NeedsCompressedHeaderParsed(),
+      parser_(accelerator_->IsFrameContextRequired(),
               accelerator_->SupportsContextProbabilityReadback()) {}
 
 VP9Decoder::~VP9Decoder() = default;
