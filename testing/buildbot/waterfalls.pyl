@@ -5457,6 +5457,9 @@
         },
       },
       'Mojo ChromiumOS': {
+        'mixins': [
+          'linux-bionic',
+        ],
         'test_suites': {
           'gtest_tests': 'mojo_chromiumos_fyi_gtests',
         },
