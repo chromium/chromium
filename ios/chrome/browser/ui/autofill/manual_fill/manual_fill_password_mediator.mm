@@ -14,7 +14,6 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#import "components/password_manager/ios/password_generation_provider.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -256,7 +255,7 @@ BOOL AreCredentialsAtIndexesConnected(
                  action:^{
                    base::RecordAction(base::UserMetricsAction(
                        "ManualFallback_Password_OpenSuggestPassword"));
-                   [weakSelf suggestPassword];
+                   [weakSelf.navigator openPasswordSuggestion];
                  }];
       suggestPasswordItem.accessibilityIdentifier =
           manual_fill::SuggestPasswordAccessibilityIdentifier;
@@ -290,17 +289,6 @@ BOOL AreCredentialsAtIndexesConnected(
     [actions addObject:managePasswordsItem];
 
     [self.consumer presentActions:actions];
-  }
-}
-
-- (void)suggestPassword {
-  if ([self canUserInjectInPasswordField:YES requiresHTTPS:NO]) {
-    DCHECK(_webState);
-    id<PasswordGenerationProvider> generationProvider =
-        PasswordTabHelper::FromWebState(_webState)
-            ->GetPasswordGenerationProvider();
-    if (generationProvider)
-      [generationProvider triggerPasswordGeneration];
   }
 }
 

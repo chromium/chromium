@@ -14,6 +14,9 @@
 // Opens passwords settings.
 - (void)openPasswordSettings;
 
+// Opens password suggestion.
+- (void)openPasswordSuggestion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_PASSWORD_LIST_NAVIGATOR_H_

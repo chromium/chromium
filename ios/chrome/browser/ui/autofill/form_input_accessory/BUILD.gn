@@ -22,6 +22,7 @@ source_set("form_input_accessory") {
     "//components/autofill/ios/form_util",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
+    "//components/password_manager/ios",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings:ios_strings_grit",

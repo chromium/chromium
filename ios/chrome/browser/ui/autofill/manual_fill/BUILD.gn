@@ -44,7 +44,6 @@ source_set("manual_fill") {
     "//components/keyed_service/core:core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common:features",
-    "//components/password_manager/ios",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser/autofill",
