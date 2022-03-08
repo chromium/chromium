@@ -45,8 +45,8 @@ class CONTENT_EXPORT BucketManager {
   void OnHostReceiverDisconnect(BucketManagerHost* host,
                                 base::PassKey<BucketManagerHost>);
 
-  storage::QuotaManagerProxy* quota_manager_proxy() const {
-    return quota_manager_proxy_.get();
+  const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy() const {
+    return quota_manager_proxy_;
   }
 
  private:
