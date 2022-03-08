@@ -2436,7 +2436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Ash.Overview.AnimationSmoothness.Close" units="%"
-    expires_after="2022-04-10">
+    expires_after="2023-04-10">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
