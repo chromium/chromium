@@ -13,6 +13,7 @@ _proto_files = [
   "cast_assistant_logs.proto",
   "cast_logs.proto",
   "chrome_os_app_list_launch_event.proto",
+  "chrome_searchbox_stats.proto",
   "chrome_user_metrics_extension.proto",
   "execution_context.proto",
   "extension_install.proto",
