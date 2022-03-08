@@ -38,9 +38,14 @@ PredictionModelHandlerFactory::~PredictionModelHandlerFactory() = default;
 
 KeyedService* PredictionModelHandlerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  OptimizationGuideKeyedService* optimization_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+
+  if (!optimization_guide)
+    return nullptr;
   return new permissions::PredictionModelHandler(
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context)),
+      optimization_guide,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 }

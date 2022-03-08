@@ -150,7 +150,8 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
       prediction_source == PredictionSource::USE_ONDEVICE) {
     permissions::PredictionModelHandler* prediction_model_handler =
         PredictionModelHandlerFactory::GetForBrowserContext(profile_);
-    if (prediction_model_handler->ModelAvailable()) {
+    if (prediction_model_handler &&
+        prediction_model_handler->ModelAvailable()) {
       VLOG(1) << "[CPSS] Using locally available model";
       permissions::PermissionUmaUtil::RecordPermissionPredictionSource(
           permissions::PermissionPredictionSource::ON_DEVICE);
