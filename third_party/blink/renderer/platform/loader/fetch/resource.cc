@@ -30,6 +30,8 @@
 #include <cassert>
 #include <memory>
 
+#include "base/debug/crash_logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
@@ -253,10 +255,14 @@ void Resource::AppendData(const char* data, size_t length) {
   DCHECK(!is_revalidating_);
   DCHECK(!ErrorOccurred());
   if (options_.data_buffering_policy == kBufferData) {
-    if (data_)
+    if (data_) {
       data_->Append(data, length);
-    else
+    } else {
+      // TODO(crbug.com/1302204): Remove this once the crash is fixed.
+      SCOPED_CRASH_KEY_STRING32("Resource", "append_data_length",
+                                base::NumberToString(length));
       data_ = SharedBuffer::Create(data, length);
+    }
     SetEncodedSize(data_->size());
   }
   NotifyDataReceived(data, length);
