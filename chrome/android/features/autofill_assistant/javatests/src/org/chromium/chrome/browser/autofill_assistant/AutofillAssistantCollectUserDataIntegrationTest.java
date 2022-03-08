@@ -1094,21 +1094,24 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                         .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(
-                ActionProto.newBuilder()
-                        .setCollectUserData(
-                                CollectUserDataProto.newBuilder()
-                                        .setDataSource(DataSource.newBuilder())
-                                        .setContactDetails(
-                                                ContactDetailsProto.newBuilder()
-                                                        .setContactDetailsName("contact")
-                                                        .setRequestPayerName(false)
-                                                        .setRequestPayerEmail(false)
-                                                        .setRequestPayerPhone(false)
-                                                        .setSeparatePhoneNumberSection(true)
-                                                        .setPhoneNumberSectionTitle("Phone number"))
-                                        .setRequestTermsAndConditions(false))
-                        .build());
+        list.add(ActionProto.newBuilder()
+                         .setCollectUserData(
+                                 CollectUserDataProto.newBuilder()
+                                         .setDataSource(DataSource.newBuilder())
+                                         .setContactDetails(
+                                                 ContactDetailsProto.newBuilder()
+                                                         .setContactDetailsName("contact")
+                                                         .setRequestPayerName(false)
+                                                         .setRequestPayerEmail(false)
+                                                         .setRequestPayerPhone(false)
+                                                         .setSeparatePhoneNumberSection(true)
+                                                         .setPhoneNumberSectionTitle("Phone number")
+                                                         .addPhoneNumberRequiredDataPiece(
+                                                                 buildRequiredDataPiece(
+                                                                         "Requires phone number",
+                                                                         14)))
+                                         .setRequestTermsAndConditions(false))
+                         .build());
         list.add(ActionProto.newBuilder()
                          .setUseAddress(UseAddressProto.newBuilder()
                                                 .setName("contact")
@@ -1143,6 +1146,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                 allOf(withId(R.id.contact_full), withText(containsString("+41 23 456 78 90"))),
                 isDisplayed());
         onView(withTagValue(is(AssistantTagsForTesting.CHOICE_LIST_EDIT_ICON)))
+                .check(doesNotExist());
+        onView(allOf(withId(R.id.incomplete_error), withText("Requires phone number")))
                 .check(doesNotExist());
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());

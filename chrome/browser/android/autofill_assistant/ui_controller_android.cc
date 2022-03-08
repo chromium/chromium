@@ -1399,7 +1399,7 @@ void UiControllerAndroid::OnUserDataChanged(
                 env, *selected_phone_number,
                 base::android::GetDefaultLocaleString());
   const auto& selected_phone_number_errors =
-      user_data::GetPhoneNumberValidationErrors(selected_contact_profile,
+      user_data::GetPhoneNumberValidationErrors(selected_phone_number,
                                                 *collect_user_data_options);
 
   const autofill::AutofillProfile* selected_shipping_address =
