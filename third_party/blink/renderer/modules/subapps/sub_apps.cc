@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -31,21 +33,37 @@ namespace {
 // We get called back from the SubAppsService mojo service (inside the browser
 // process), pass on the result to the calling context.
 void OnAddSubApp(ScriptPromiseResolver* resolver, SubAppsServiceResult result) {
+  DCHECK(resolver);
+  ScriptState* resolver_script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+  ScriptState::Scope script_state_scope(resolver_script_state);
   if (result == SubAppsServiceResult::kSuccess) {
     resolver->Resolve();
   } else {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError, "Unable to add given sub-app."));
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver_script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        "Unable to add given sub-app."));
   }
 }
 
 void OnListSubApp(ScriptPromiseResolver* resolver,
                   SubAppsServiceListResultPtr result) {
+  DCHECK(resolver);
+  ScriptState* resolver_script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+  ScriptState::Scope script_state_scope(resolver_script_state);
   if (result->code == SubAppsServiceResult::kSuccess) {
     resolver->Resolve(result->sub_app_ids);
   } else {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError, "Unable to list sub-apps."));
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver_script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        "Unable to list sub-apps."));
   }
 }
 
