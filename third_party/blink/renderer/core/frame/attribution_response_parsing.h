@@ -48,6 +48,11 @@ struct ResponseParseResult {
 CORE_EXPORT ResponseParseResult<mojom::blink::AttributionAggregatableSources>
 ParseAttributionAggregatableSources(const AtomicString& json_string);
 
+// Parses a debug key, which is a 64-bit unsigned integer encoded as a base-10
+// string. Returns `nullptr` on failure.
+CORE_EXPORT mojom::blink::AttributionDebugKeyPtr ParseDebugKey(
+    const String& string);
+
 CORE_EXPORT bool ParseSourceRegistrationHeader(
     const AtomicString& json_string,
     mojom::blink::AttributionSourceData& source_data);

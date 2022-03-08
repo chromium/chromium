@@ -277,6 +277,10 @@ void AttributionSrcLoader::HandleTriggerRegistration(
     return;
   }
 
+  trigger_data->debug_key =
+      attribution_response_parsing::ParseDebugKey(response.HttpHeaderField(
+          http_names::kAttributionReportingTriggerDebugKey));
+
   context.data_host->TriggerDataAvailable(std::move(trigger_data));
 }
 

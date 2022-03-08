@@ -399,6 +399,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.front()->reporting_origin,
             url::Origin::Create(register_url));
   EXPECT_THAT(trigger_data.front()->filters->filter_values, IsEmpty());
+  EXPECT_FALSE(trigger_data.front()->debug_key);
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
   EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 10u);
   EXPECT_THAT(
@@ -444,6 +445,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(
       trigger_data.front()->filters->filter_values,
       ElementsAre(Pair("w", IsEmpty()), Pair("x", ElementsAre("y", "z"))));
+  EXPECT_EQ(trigger_data.front()->debug_key,
+            blink::mojom::AttributionDebugKey::New(789));
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 2u);
 
   // Verify first trigger.

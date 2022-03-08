@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 
+#include <limits>
 #include <string>
 #include <utility>
 
@@ -580,6 +581,18 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
       // TODO(apaseltiner): Check remaining fields here.
     }
   }
+}
+
+TEST(AttributionResponseParsingTest, ParseDebugKey) {
+  EXPECT_FALSE(ParseDebugKey(String()));  // null string
+  EXPECT_FALSE(ParseDebugKey(""));
+  EXPECT_FALSE(ParseDebugKey("-1"));
+  EXPECT_FALSE(ParseDebugKey("0x5"));
+
+  EXPECT_EQ(ParseDebugKey("123"), mojom::blink::AttributionDebugKey::New(123));
+  EXPECT_EQ(ParseDebugKey("18446744073709551615"),
+            mojom::blink::AttributionDebugKey::New(
+                std::numeric_limits<uint64_t>::max()));
 }
 
 }  // namespace blink::attribution_response_parsing

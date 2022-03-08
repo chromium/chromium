@@ -134,6 +134,10 @@ struct AttributionTriggerData {
 
   // Lists an amount of an abstract "value" to contribute to each key.
   AttributionAggregatableValues aggregatable_values;
+
+  // A key that is propagated through the Attribution Reporting API for
+  // debugging purposes.
+  AttributionDebugKey? debug_key;
 };
 
 // Browser-process interface responsible for processing attribution

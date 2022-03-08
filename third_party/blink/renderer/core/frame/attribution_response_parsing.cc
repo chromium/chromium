@@ -176,6 +176,12 @@ ParseAttributionAggregatableSources(const AtomicString& json_string) {
       ResponseParseStatus::kSuccess, std::move(sources));
 }
 
+mojom::blink::AttributionDebugKeyPtr ParseDebugKey(const String& string) {
+  bool is_valid = false;
+  uint64_t value = string.ToUInt64Strict(&is_valid);
+  return is_valid ? mojom::blink::AttributionDebugKey::New(value) : nullptr;
+}
+
 bool ParseSourceRegistrationHeader(
     const AtomicString& json_string,
     mojom::blink::AttributionSourceData& source_data) {
@@ -227,13 +233,8 @@ bool ParseSourceRegistrationHeader(
   }
 
   String debug_key_string;
-  if (object->GetString("debug_key", &debug_key_string)) {
-    bool debug_key_is_valid = false;
-    uint64_t debug_key = debug_key_string.ToUInt64Strict(&debug_key_is_valid);
-    if (debug_key_is_valid) {
-      source_data.debug_key = mojom::blink::AttributionDebugKey::New(debug_key);
-    }
-  }
+  if (object->GetString("debug_key", &debug_key_string))
+    source_data.debug_key = ParseDebugKey(debug_key_string);
 
   source_data.filter_data = mojom::blink::AttributionFilterData::New();
   if (!ParseAttributionFilterData(object->Get("filter_data"),
