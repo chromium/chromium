@@ -98,7 +98,8 @@ bool CanNetworkConnect(
     chromeos::network_config::mojom::ConnectionStateType connection_state,
     chromeos::network_config::mojom::NetworkType type,
     chromeos::network_config::mojom::ActivationStateType activation_state,
-    bool connectable) {
+    bool connectable,
+    std::string sim_eid) {
   // Network can be connected to if the network is not connected and:
   // * The network is connectable or
   // * The active user is primary and the network is configurable or
@@ -106,6 +107,14 @@ bool CanNetworkConnect(
   if (connection_state != ConnectionStateType::kNotConnected) {
     return false;
   }
+
+  // Network cannot be connected to if it is an unactivated eSIM network.
+  if (type == NetworkType::kCellular &&
+      activation_state == ActivationStateType::kNotActivated &&
+      !sim_eid.empty()) {
+    return false;
+  }
+
   if (connectable) {
     return true;
   }
@@ -315,7 +324,10 @@ void NetworkStateListDetailedView::HandleViewClickedImpl(
             network->type == NetworkType::kCellular
                 ? network->type_state->get_cellular()->activation_state
                 : ActivationStateType::kUnknown,
-            network->connectable)) {
+            network->connectable,
+            network->type == NetworkType::kCellular
+                ? network->type_state->get_cellular()->eid
+                : "")) {
       Shell::Get()->metrics()->RecordUserMetricsAction(
           list_type_ == LIST_TYPE_VPN
               ? UMA_STATUS_AREA_CONNECT_TO_VPN

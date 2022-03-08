@@ -2096,6 +2096,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE" desc="The label used in quick settings to indicate an unactivated cellular network that can be clicked to launch activation through setup flow. [CHAR_LIMIT=29]">
         Click to activate
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_UNAVAILABLE_SIM_NETWORK" desc="Label used in quick settings to indicate a SIM network that is not available to be setup. [CHAR_LIMIT=29]">
+        Not activated. Contact your carrier.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_UNAVAILABLE_SIM_NETWORK" desc="Accessibility label used in quick settings to indicate for a SIM network that is not available to be setup. [CHAR_LIMIT=29]">
+       <ph name="NETWORK_NAME">$1<ex>Verizon</ex></ph> is not activated.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_UNLOCK" desc="The label used in quick settings to indicate a cellular network is locked and clicking on it will open unlock dialog in chrome OS settings. [CHAR_LIMIT=29]">
         Click to unlock
       </message>
@@ -4689,7 +4695,7 @@ New install
         Delete this search from your history?
       </message>
       <message name="IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS" desc="Detailed explanation message for removing removing an omnibox search result from launcher search results UI. This is a text in the dialog shown to the user when they try to remove a suggested omnibox search result from list of results shown in the launcher search - the omnibox search result may appear if the search query in launcher search matches a previous user search. The dialog asks the user to confirm the result removal.">
-        You searched for this query before. Deleting this search from your history will permanently remove it from your Google Account across all of your devices. 
+        You searched for this query before. Deleting this search from your history will permanently remove it from your Google Account across all of your devices.
       </message>
       <message name="IDS_REMOVE_SUGGESTION_BUTTON_LABEL" desc="Remove suggestion button label">
         Delete

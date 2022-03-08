@@ -126,7 +126,8 @@ bool ShouldOpenCellularSetupPsimFlowOnClick(const std::string& network_id) {
   const chromeos::NetworkState* network_state = GetNetworkState(network_id);
   return network_state && network_state->type() == shill::kTypeCellular &&
          network_state->activation_state() ==
-             shill::kActivationStateNotActivated;
+             shill::kActivationStateNotActivated &&
+         network_state->eid().empty();
 }
 
 apps::AppServiceProxyAsh* GetActiveUserAppServiceProxyAsh() {

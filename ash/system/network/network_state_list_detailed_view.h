@@ -28,7 +28,8 @@ bool CanNetworkConnect(
     chromeos::network_config::mojom::ConnectionStateType connection_state,
     chromeos::network_config::mojom::NetworkType type,
     chromeos::network_config::mojom::ActivationStateType activation_state,
-    bool is_connectable);
+    bool is_connectable,
+    std::string sim_eid);
 
 // Exported for tests.
 class ASH_EXPORT NetworkStateListDetailedView
