@@ -38,7 +38,7 @@ std::string GetString(const base::Value* value) {
 // Masked properties match src/platform2/modem-utilities/connectivity.
 // Note: We rely on intelligent anonymous replacements for IP and MAC addresses
 // and BSSID in components/feedback/anonymizer_tool.cc.
-constexpr std::array<const char*, 20> kMaskedList = {
+constexpr std::array<const char*, 19> kMaskedList = {
     // Masked for devices only in ScrubAndExpandProperties:
     // shill::kAddress,
     shill::kCellularPPPUsernameProperty,
@@ -57,7 +57,6 @@ constexpr std::array<const char*, 20> kMaskedList = {
     shill::kMinProperty,
     // Replaced with logging id for services only in ScrubAndExpandProperties:
     // shill::kName,
-    shill::kPPPoEUsernameProperty,
     shill::kSSIDProperty,
     shill::kUsageURLProperty,
     shill::kWifiHexSsid,

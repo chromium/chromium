@@ -397,7 +397,6 @@ bool IsLoggableShillProperty(const std::string& key) {
     s_skip_properties->insert(shill::kOpenVPNPasswordProperty);
     s_skip_properties->insert(shill::kOpenVPNPinProperty);
     s_skip_properties->insert(shill::kOpenVPNTLSAuthContentsProperty);
-    s_skip_properties->insert(shill::kPPPoEPasswordProperty);
     s_skip_properties->insert(shill::kPassphraseProperty);
   }
   return s_skip_properties->count(key) == 0;
