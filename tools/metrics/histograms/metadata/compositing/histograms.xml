@@ -1240,39 +1240,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Graphics.Smoothness.PercentDroppedFrames2.AllAnimations"
-    units="%" expires_after="2022-09-10">
+<histogram name="Graphics.Smoothness.PercentDroppedFrames2.{Thread}{Sequence}"
+    units="%" expires_after="2023-03-07">
   <owner>sadrul@chromium.org</owner>
   <owner>behdadb@chromium.org</owner>
   <summary>
-    Tracks the percent of dropped frames for a particular sequence of frames for
-    all animations. This metric is reported for all animations (e.g.
-    comositor-driven animations, main-thread driven animations, and raf-driven
-    animations).
-
-    PercentDroppedFrames is measured by tracking the number of frames which were
-    not displayed on screen out of the total number of frames expected to be
-    produced and displayed. In other words, the lower this number is, the
-    smoother experience.
-
-    Note that this metric is reported only when there are sufficient number of
-    frames (&gt;= 100). If there are sequences with fewer frames, then these are
-    aggregated until there are enough frames to produce the metric.
-
-    This is a new implementation of the older
-    Graphics.Smoothness.PercentDroppedFrames.AllAnimations metric.
-  </summary>
-</histogram>
-
-<histogram name="Graphics.Smoothness.PercentDroppedFrames2.AllInteractions"
-    units="%" expires_after="2022-09-10">
-  <owner>sadrul@chromium.org</owner>
-  <owner>behdadb@chromium.org</owner>
-  <summary>
-    Tracks the percent of dropped frames for a particular sequence of frames
-    where a user-input (e.g. scroll, pinch) is active. This metric is reported
-    for all sources of user-input (i.e. both touchscreen and
-    touchpad/mouse-wheel).
+    Tracks the percent of dropped frames for a particular sequence of frames.
+    This metric aggregates data {Sequence}
 
     PercentDroppedFrames is measured by tracking the number of frames which were
     not displayed on screen out of the total number of frames expected to be
@@ -1286,28 +1260,38 @@ chromium-metrics-reviews@google.com.
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
   </summary>
-</histogram>
-
-<histogram name="Graphics.Smoothness.PercentDroppedFrames2.AllSequences"
-    units="%" expires_after="2022-09-10">
-  <owner>sadrul@chromium.org</owner>
-  <owner>behdadb@chromium.org</owner>
-  <summary>
-    Tracks the percent of dropped frames for a particular sequence of frames.
-    This metric is reported for all animations and all interactions.
-
-    PercentDroppedFrames is measured by tracking the number of frames which were
-    not displayed on screen out of the total number of frames expected to be
-    produced and displayed. In other words, the lower this number is, the
-    smoother experience.
-
-    Note that this metric is reported only when there are sufficient number of
-    frames (&gt;= 100). If there are sequences with fewer frames, then these are
-    aggregated until there are enough frames to produce the metric.
-
-    This is a new implementation of the older
-    Graphics.Smoothness.PercentDroppedFrames.AllSequences metric.
-  </summary>
+  <token key="Thread">
+    <variant name=""/>
+    <variant name="CompositorThread."/>
+    <variant name="MainThread."/>
+  </token>
+  <token key="Sequence">
+    <variant name="AllAnimations"
+        summary="reported from all types of animations (e.g. comositor-driven
+                 animations, main-thread driven animations, and raf-driven
+                 animations, etc.)."/>
+    <variant name="AllInteractions"
+        summary="reported for all supported combinations of interaction types
+                 (e.g. scrolling, pinching, etc.) and input device types
+                 (e.g. touchscreen, touchpad, mousewheel, etc.)."/>
+    <variant name="AllSequences"
+        summary="from all animations and all interactions."/>
+    <variant name="CanvasAnimation"
+        summary="reported for all canvas animations."/>
+    <variant name="CompositorAnimation"
+        summary="reported for all compositor thread driven animations."/>
+    <variant name="JSAnimation"
+        summary="reported for all JS driven animations."/>
+    <variant name="MainThreadAnimation"
+        summary="reported for all main thread driven animations."/>
+    <variant name="PinchZoom"
+        summary="reported for all main thread driven animations."/>
+    <variant name="RAF" summary="reported for all raf driven animations."/>
+    <variant name="ScrollbarScroll"
+        summary="reported for all scrollbar scrolling."/>
+    <variant name="TouchScroll" summary="reported for all touch scrolling."/>
+    <variant name="WheelScroll" summary="reported for all wheel scrolling."/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Graphics.Smoothness.PercentMissedDeadlineFrames"

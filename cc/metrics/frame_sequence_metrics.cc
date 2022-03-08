@@ -83,6 +83,13 @@ std::string GetThroughputHistogramName(FrameSequenceTrackerType type,
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
+std::string GetThroughputV2HistogramName(FrameSequenceTrackerType type,
+                                         const char* thread_name) {
+  return base::StrCat(
+      {"Graphics.Smoothness.PercentDroppedFrames2.", thread_name, ".",
+       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
+}
+
 std::string GetMissedDeadlineHistogramName(FrameSequenceTrackerType type,
                                            const char* thread_name) {
   return base::StrCat(
@@ -277,6 +284,20 @@ void FrameSequenceMetrics::ReportMetrics() {
       UMA_HISTOGRAM_PERCENTAGE(
           "Graphics.Smoothness.PercentDroppedFrames2.AllSequences", percent);
     }
+
+    const char* thread_name =
+        thread_type == SmoothEffectDrivingThread::kCompositor
+            ? "CompositorThread"
+            : "MainThread";
+
+    STATIC_HISTOGRAM_POINTER_GROUP(
+        GetThroughputV2HistogramName(type(), thread_name),
+        GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
+        Add(percent),
+        base::LinearHistogram::FactoryGet(
+            GetThroughputV2HistogramName(type(), thread_name), 1, 100, 101,
+            base::HistogramBase::kUmaTargetedHistogramFlag));
+
     v2_ = {};
   }
 
