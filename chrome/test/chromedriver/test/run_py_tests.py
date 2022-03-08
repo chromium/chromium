@@ -500,7 +500,8 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
     driver.Load(self._http_server.GetUrl() + '/chromedriver/empty.html')
     start = monotonic()
     driver.Load(self._http_server.GetUrl() + '/slow')
-    self.assertTrue(monotonic() - start < 2)
+    self.assertLess(monotonic() - start, 2,
+        'Loading `/slow` page should be fast enough')
     handler.sent_hello.set()
     self.WaitForCondition(lambda: 'hello' in driver.GetPageSource())
     self.assertTrue('hello' in driver.GetPageSource())
