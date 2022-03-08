@@ -56,6 +56,14 @@ export class DevicesPage extends Page {
     this.deviceTable.setInspecting(deviceInfo, isInspecting);
   }
 
+  /**
+   * If Bluetooth is currently powered off do not show start discovery button.
+   * @param {boolean} powered
+   */
+  updatedScanButtonVisibility(powered) {
+    this.scanBtn_.hidden = !powered;
+  }
+
   setScanStatus(status) {
     switch (status) {
       case ScanStatus.OFF:

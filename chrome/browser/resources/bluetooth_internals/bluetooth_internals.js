@@ -173,6 +173,10 @@ function setupAdapterSystem(response) {
         event.detail.value;
     adapterPage.redraw();
 
+    if (event.detail.property === AdapterProperty.POWERED) {
+      devicesPage.updatedScanButtonVisibility(event.detail.value);
+    }
+
     if (event.detail.property === AdapterProperty.DISCOVERING &&
         !event.detail.value && !userRequestedScanStop && discoverySession) {
       updateStoppedDiscoverySession();
