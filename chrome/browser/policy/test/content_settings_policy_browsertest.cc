@@ -169,7 +169,13 @@ class WebBluetoothPolicyTest : public PolicyTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebBluetoothPolicyTest, Block) {
+// crbug.com/1061063
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_Block DISABLED_Block
+#else
+#define MAYBE_Block Block
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(WebBluetoothPolicyTest, MAYBE_Block) {
   // Fake the BluetoothAdapter to say it's present.
   scoped_refptr<device::MockBluetoothAdapter> adapter =
       new testing::NiceMock<device::MockBluetoothAdapter>;
