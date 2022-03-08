@@ -60,6 +60,11 @@ constexpr char kStatusOK[] = "OK";
 // not nullopt.
 absl::optional<base::TimeDelta> g_retry_delay_for_testing = absl::nullopt;
 
+void RecordLookupQueryResult(SCTAuditingReporter::LookupQueryResult result) {
+  base::UmaHistogramEnumeration("Security.SCTAuditing.OptOut.LookupQueryResult",
+                                result);
+}
+
 // Records whether sending the report to the reporting server succeeded for each
 // report sent.
 void RecordSCTAuditingReportSucceededMetrics(bool success) {
@@ -364,18 +369,26 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   bool success = url_loader_->NetError() == net::OK &&
                  response_code == net::HTTP_OK && response_body;
   if (!success) {
+    RecordLookupQueryResult(LookupQueryResult::kHTTPError);
     MaybeRetryRequest();
     return;
   }
 
   absl::optional<base::Value> result = base::JSONReader::Read(*response_body);
   if (!result) {
+    RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
     return;
   }
 
   const std::string* status = result->FindStringKey(kLookupStatusKey);
-  if (!status || *status != kStatusOK) {
+  if (!status) {
+    RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
+    MaybeRetryRequest();
+    return;
+  }
+  if (*status != kStatusOK) {
+    RecordLookupQueryResult(LookupQueryResult::kStatusNotOk);
     MaybeRetryRequest();
     return;
   }
@@ -383,6 +396,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   const std::string* server_timestamp_string =
       result->FindStringKey(kLookupTimestampKey);
   if (!server_timestamp_string) {
+    RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
     return;
   }
@@ -390,12 +404,14 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   base::Time server_timestamp;
   if (!base::Time::FromUTCString(server_timestamp_string->c_str(),
                                  &server_timestamp)) {
+    RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
     return;
   }
 
   if (sct_hashdance_metadata_->certificate_expiry < server_timestamp) {
     // The certificate has expired. Do not report.
+    RecordLookupQueryResult(LookupQueryResult::kCertificateExpired);
     std::move(done_callback_).Run(reporter_key_);
     return;
   }
@@ -403,6 +419,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   // Find the corresponding log entry.
   const base::Value* logs = result->FindListKey(kLookupLogStatusKey);
   if (!logs) {
+    RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
     return;
   }
@@ -412,6 +429,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
     const std::string* encoded_log_id = log.FindStringKey(kLookupLogIdKey);
     std::string log_id;
     if (!encoded_log_id || !base::Base64Decode(*encoded_log_id, &log_id)) {
+      RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
       MaybeRetryRequest();
       return;
     }
@@ -423,6 +441,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   if (!found_log) {
     // We could not find the SCT's log. Maybe it's a new log that the server
     // doesn't know about yet, schedule a retry.
+    RecordLookupQueryResult(LookupQueryResult::kLogNotFound);
     MaybeRetryRequest();
     return;
   }
@@ -430,6 +449,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   const std::string* ingested_until_string =
       found_log->FindStringKey(kLookupIngestedUntilKey);
   if (!ingested_until_string) {
+    RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
     return;
   }
@@ -437,18 +457,21 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   base::Time ingested_until;
   if (!base::Time::FromString(ingested_until_string->c_str(),
                               &ingested_until)) {
+    RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
     return;
   }
 
   if (sct_hashdance_metadata_->issued > ingested_until) {
     // The log has not yet ingested this SCT. Schedule a retry.
+    RecordLookupQueryResult(LookupQueryResult::kLogNotYetIngested);
     MaybeRetryRequest();
     return;
   }
 
   const base::Value* suffix_value = result->FindListKey(kLookupHashSuffixKey);
   if (!suffix_value) {
+    RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
     return;
   }
@@ -466,6 +489,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   if (std::find(suffixes.begin(), suffixes.end(), hash_suffix_value) !=
       suffixes.end()) {
     // Found the SCT in the suffix list, all done.
+    RecordLookupQueryResult(LookupQueryResult::kSCTSuffixFound);
     std::move(done_callback_).Run(reporter_key_);
     return;
   }
@@ -473,6 +497,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   // The server does not know about this SCT, and it should. Notify the
   // embedder and start sending the full report.
   owner_network_context_->OnNewSCTAuditingReportSent();
+  RecordLookupQueryResult(LookupQueryResult::kSCTSuffixNotFound);
   SendReport();
 }
 

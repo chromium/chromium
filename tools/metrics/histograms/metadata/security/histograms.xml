@@ -576,6 +576,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.SCTAuditing.OptOut.LookupQueryResult"
+    enum="SCTLookupQueryResult" expires_after="M104">
+  <owner>cthomp@chromium.org</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the result of a hashdance lookup query. Recorded once per query
+    regardless of whether the query succeeded, failed, or is a retry.
+  </summary>
+</histogram>
+
 <histogram name="Security.SCTAuditing.OptOut.PopularSCTSkipped" enum="Boolean"
     expires_after="M104">
   <owner>cthomp@chromium.org</owner>
