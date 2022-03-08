@@ -31,6 +31,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace blink {
 
 namespace test {
