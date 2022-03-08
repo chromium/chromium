@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body class="@NO_CHILDREN_DUMP">
+<div id="outer">
+  <div id="inner"></div>
+</div>
+<script>
+    // This test verifies we do not time out due to children-changed being
+    // fired on each anonymous-block child when a single child is added to,
+    // or removed from, that anonymous block.
+    var count = 5000;
+    const inner = document.getElementById("inner");
+    for (let i = 0; i < count; ++i) {
+      const p = document.createElement("p");
+      p.id = "p" + i;
+      p.innerHTML = "paragraph " + i;
+      inner.appendChild(p);
+
+      const a = document.createElement("a");
+      a.id = "a" + i;
+      a.innerHTML = "link " + i;
+      a.href = "#";
+      inner.appendChild(a);
+    }
+</script>
+</body>
+</html>

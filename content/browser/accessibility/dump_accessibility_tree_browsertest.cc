@@ -2430,6 +2430,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityList) {
   RunHtmlTest(FILE_PATH_LITERAL("list.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityListText) {
+  RunHtmlTest(FILE_PATH_LITERAL("list-text.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityListTextAddition) {
+  RunHtmlTest(FILE_PATH_LITERAL("list-text-addition.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityListTextRemoval) {
   RunHtmlTest(FILE_PATH_LITERAL("list-text-removal.html"));
@@ -3214,6 +3223,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ActivedescendantCrash) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        DISABLED_AddClickIgnoredChanged) {
   RunRegressionTest(FILE_PATH_LITERAL("add-click-ignored-changed.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AnonymousBlockManyChildrenChanged) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("anonymous-block-many-children-changed.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AriaHiddenTabindexChange) {

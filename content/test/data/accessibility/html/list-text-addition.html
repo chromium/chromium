@@ -1,0 +1,32 @@
+<!--
+@WAIT-FOR:done
+-->
+<html>
+<head>
+<script>
+function convertWhitespaceToDollar(node) {
+  let child = node.firstChild;
+  while (child) {
+    if (child.nodeType == Node.ELEMENT_NODE)
+      convertWhitespaceToDollar(child);
+    else if (child.nodeType == Node.TEXT_NODE && child.data.indexOf('\n') >= 0)
+      child.data = '$';
+    child = child.nextSibling;
+  }
+}
+setTimeout(() => {
+  convertWhitespaceToDollar(document.body);
+  document.title = 'done';
+}, 500);
+</script>
+</head>
+<body>
+<ul aria-label="inline list">
+<li style="display:inline;">item</li>
+</ul>
+<ul aria-label="block list" style="list-style-type: none;">
+<li>item</li>
+</ul>
+</body>
+</body>
+</html>
