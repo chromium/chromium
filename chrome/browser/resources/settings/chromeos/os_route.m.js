@@ -142,20 +142,25 @@ function createOSSettingsRoutes() {
   if (!loadTimeData.getBoolean('isGuest')) {
     r.PERSONALIZATION = createSection(
         r.BASIC, mojom.PERSONALIZATION_SECTION_PATH, Section.kPersonalization);
-    r.CHANGE_PICTURE = createSubpage(
-        r.PERSONALIZATION, mojom.CHANGE_PICTURE_SUBPAGE_PATH,
-        Subpage.kChangePicture);
-    r.AMBIENT_MODE = createSubpage(
-        r.PERSONALIZATION, mojom.AMBIENT_MODE_SUBPAGE_PATH,
-        Subpage.kAmbientMode);
-    // Note: AMBIENT_MODE_PHOTOS is a special case because it includes several
-    // subpages, one per topic source. Default to
-    // kAmbientModeGooglePhotosAlbum subpage.
-    r.AMBIENT_MODE_PHOTOS = createSubpage(
-        r.AMBIENT_MODE, 'ambientMode/photos',
-        Subpage.kAmbientModeGooglePhotosAlbum);
-    r.DARK_MODE = createSubpage(
-        r.PERSONALIZATION, mojom.DARK_MODE_SUBPAGE_PATH, Subpage.kDarkMode);
+    // Top level PERSONALIZATION section only contains a link to personalization
+    // hub if hub is enabled. The subpages should only be accessible if hub is
+    // off.
+    if (!loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
+      r.CHANGE_PICTURE = createSubpage(
+          r.PERSONALIZATION, mojom.CHANGE_PICTURE_SUBPAGE_PATH,
+          Subpage.kChangePicture);
+      r.AMBIENT_MODE = createSubpage(
+          r.PERSONALIZATION, mojom.AMBIENT_MODE_SUBPAGE_PATH,
+          Subpage.kAmbientMode);
+      // Note: AMBIENT_MODE_PHOTOS is a special case because it includes several
+      // subpages, one per topic source. Default to
+      // kAmbientModeGooglePhotosAlbum subpage.
+      r.AMBIENT_MODE_PHOTOS = createSubpage(
+          r.AMBIENT_MODE, 'ambientMode/photos',
+          Subpage.kAmbientModeGooglePhotosAlbum);
+      r.DARK_MODE = createSubpage(
+          r.PERSONALIZATION, mojom.DARK_MODE_SUBPAGE_PATH, Subpage.kDarkMode);
+    }
   }
 
   // Search and Assistant section.

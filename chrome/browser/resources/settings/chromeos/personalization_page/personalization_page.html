@@ -1,19 +1,16 @@
 <style include="settings-shared"></style>
 <settings-animated-pages id="pages" section="personalization"
     focus-config="[[focusConfig_]]">
-
-  <template is="dom-if" if="[[isPersonalizationHubEnabled_]]">
-    <div route-path="default">
+  <div route-path="default">
+    <template is="dom-if" if="[[isPersonalizationHubEnabled_]]">
       <cr-link-row class="hr" id="personalizationHubButton"
           label="$i18n{personalizationHubTitle}"
           sub-label="$i18n{personalizationHubSubtitle}" external
           on-click="openPersonalizationHub_">
       </cr-link-row>
-    </div>
-  </template>
+    </template>
 
-  <template is="dom-if" if="[[!isPersonalizationHubEnabled_]]">
-    <div route-path="default">
+    <template is="dom-if" if="[[!isPersonalizationHubEnabled_]]">
       <cr-link-row id="changePictureRow"
           label="$i18n{changePictureTitle}"
           on-click="navigateToChangePicture_"
@@ -55,36 +52,36 @@
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
-    </div>
+    </template>
+  </div>
 
-    <template is="dom-if" route-path="/changePicture">
-      <settings-subpage page-title="$i18n{changePictureTitle}">
-        <settings-change-picture></settings-change-picture>
+  <template is="dom-if" route-path="/changePicture">
+    <settings-subpage page-title="$i18n{changePictureTitle}">
+      <settings-change-picture></settings-change-picture>
+    </settings-subpage>
+  </template>
+
+  <template is="dom-if" if="[[isAmbientModeEnabled_]]">
+    <template is="dom-if" route-path="/ambientMode">
+      <settings-subpage page-title="$i18n{ambientModeTitle}">
+        <settings-ambient-mode-page prefs="{{prefs}}">
+        </settings-ambient-mode-page>
       </settings-subpage>
     </template>
 
-    <template is="dom-if" if="[[isAmbientModeEnabled_]]">
-      <template is="dom-if" route-path="/ambientMode">
-        <settings-subpage page-title="$i18n{ambientModeTitle}">
-          <settings-ambient-mode-page prefs="{{prefs}}">
-          </settings-ambient-mode-page>
-        </settings-subpage>
-      </template>
-
-      <template is="dom-if" route-path="/ambientMode/photos">
-        <settings-subpage>
-          <settings-ambient-mode-photos-page>
-          </settings-ambient-mode-photos-page>
-        </settings-subpage>
-      </template>
-
-    </template>
-
-    <template is="dom-if" route-path="/darkMode">
-      <settings-subpage page-title="$i18n{darkModeTitle}">
-        <settings-dark-mode-subpage prefs="{{prefs}}">
-        </settings-dark-mode-subpage>
+    <template is="dom-if" route-path="/ambientMode/photos">
+      <settings-subpage>
+        <settings-ambient-mode-photos-page>
+        </settings-ambient-mode-photos-page>
       </settings-subpage>
     </template>
+
+  </template>
+
+  <template is="dom-if" route-path="/darkMode">
+    <settings-subpage page-title="$i18n{darkModeTitle}">
+      <settings-dark-mode-subpage prefs="{{prefs}}">
+      </settings-dark-mode-subpage>
+    </settings-subpage>
   </template>
 </settings-animated-pages>
