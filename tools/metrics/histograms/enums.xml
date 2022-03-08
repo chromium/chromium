@@ -52429,6 +52429,7 @@ from previous Chrome versions.
   <int value="-1469228683" label="QuickUnlockPinSignin:disabled"/>
   <int value="-1469116522" label="Floss:disabled"/>
   <int value="-1468126425" label="ResourceLoadScheduler:disabled"/>
+  <int value="-1467856474" label="MaxUnthrottledTimeoutNestingLevel:disabled"/>
   <int value="-1467839547" label="ContextMenuShopWithGoogleLens:disabled"/>
   <int value="-1467642274" label="KeyboardShortcutViewer:disabled"/>
   <int value="-1467332609" label="tab-management-experiment-type-anise"/>
@@ -53785,6 +53786,7 @@ from previous Chrome versions.
   <int value="-541611402" label="OfflinePagesPrefetching:enabled"/>
   <int value="-540972085" label="ManagedConfiguration:enabled"/>
   <int value="-540150399" label="TapVisualizerApp:enabled"/>
+  <int value="-538448229" label="MaxUnthrottledTimeoutNestingLevel:enabled"/>
   <int value="-538141684" label="SafetyTip:enabled"/>
   <int value="-536289234" label="ssl-interstitial-v2-colorful"/>
   <int value="-536230323" label="SingleClickAutofill:disabled"/>

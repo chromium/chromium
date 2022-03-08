@@ -931,6 +931,9 @@ extern const char kLensCameraAssistedSearchDescription[];
 extern const char kLogJsConsoleMessagesName[];
 extern const char kLogJsConsoleMessagesDescription[];
 
+extern const char kUnthrottledNestedTimeoutName[];
+extern const char kUnthrottledNestedTimeoutDescription[];
+
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 

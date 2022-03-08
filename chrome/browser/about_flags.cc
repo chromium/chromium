@@ -2891,6 +2891,13 @@ const FeatureEntry::FeatureVariation kTabStripImprovementsTabWidthVariations[] =
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam kUnthrottledNestedTimeout_NestingLevel = {
+    "nesting", "100"};
+
+const FeatureEntry::FeatureVariation kUnthrottledNestedTimeout_Variations[] = {
+    {"100", &kUnthrottledNestedTimeout_NestingLevel, 1, nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -8258,6 +8265,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"download-bubble", flag_descriptions::kDownloadBubbleName,
      flag_descriptions::kDownloadBubbleDescription, kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(safe_browsing::kDownloadBubble)},
+
+    {"unthrottled-nested-timeout",
+     flag_descriptions::kUnthrottledNestedTimeoutName,
+     flag_descriptions::kUnthrottledNestedTimeoutDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         blink::features::kMaxUnthrottledTimeoutNestingLevel,
+         kUnthrottledNestedTimeout_Variations,
+         "NestingLevel")},
 
     {"reduce-user-agent-minor-version",
      flag_descriptions::kReduceUserAgentMinorVersionName,

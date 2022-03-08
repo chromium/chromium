@@ -5874,6 +5874,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "unthrottled-nested-timeout",
+    "owners": [
+      "etiennep@google.com", "shaseley@google.com"
+    ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "upcoming-sharing-features",
     "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 110
