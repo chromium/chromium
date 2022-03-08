@@ -276,9 +276,7 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
                               base::TimeTicks capture_time,
                               EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(audio_bus->channels(), input_params_.channels());
   DCHECK(done_cb);
-  DCHECK(timestamp_tracker_);
 
   current_done_cb_ = BindToCurrentLoop(std::move(done_cb));
   if (!opus_encoder_) {
@@ -286,6 +284,9 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
         .Run(EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
     return;
   }
+
+  DCHECK(timestamp_tracker_);
+  DCHECK_EQ(audio_bus->channels(), input_params_.channels());
 
   if (timestamp_tracker_->base_timestamp() == kNoTimestamp)
     timestamp_tracker_->SetBaseTimestamp(capture_time - base::TimeTicks());

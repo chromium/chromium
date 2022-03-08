@@ -477,6 +477,8 @@ source_set("unit_tests") {
       "win/device_enumeration_win_unittest.cc",
       "win/volume_range_util_unittest.cc",
     ]
+
+    deps += [ "//media/gpu:gpu" ]
   }
 
   if (is_fuchsia) {

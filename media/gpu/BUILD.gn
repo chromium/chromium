@@ -41,6 +41,7 @@ component("gpu") {
     "//components/viz/service/main",
     "//content/gpu:*",
     "//content/renderer:*",
+    "//media/audio:unit_tests",
     "//media/gpu/ipc/*",
     "//media/gpu/test/*",
     "//media/gpu/vaapi/*",
@@ -213,6 +214,8 @@ component("gpu") {
       "windows/init_guid.cc",
       "windows/media_foundation_video_encode_accelerator_win.cc",
       "windows/media_foundation_video_encode_accelerator_win.h",
+      "windows/mf_audio_encoder.cc",
+      "windows/mf_audio_encoder.h",
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
     ]
