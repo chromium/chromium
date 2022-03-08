@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
+#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/internal/signature_algorithm.h"
@@ -115,7 +116,9 @@ class CertBuilder {
   // with |urls| in distributionPoints.fullName.
   void SetCrlDistributionPointUrls(const std::vector<GURL>& urls);
 
-  void SetSubjectCommonName(const std::string common_name);
+  // Sets the subject to a Name with a single commonName attribute with
+  // the value |common_name| tagged as a UTF8String.
+  void SetSubjectCommonName(base::StringPiece common_name);
 
   // Sets the SAN for the certificate to a single dNSName.
   void SetSubjectAltName(const std::string& dns_name);

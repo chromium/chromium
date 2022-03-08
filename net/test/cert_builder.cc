@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/asn1_util.h"
@@ -318,7 +317,7 @@ void CertBuilder::SetCrlDistributionPointUrls(const std::vector<GURL>& urls) {
   SetExtension(der::Input(kCrlDistributionPointsOid), FinishCBB(cbb.get()));
 }
 
-void CertBuilder::SetSubjectCommonName(const std::string common_name) {
+void CertBuilder::SetSubjectCommonName(base::StringPiece common_name) {
   // See RFC 4519.
   static const uint8_t kCommonName[] = {0x55, 0x04, 0x03};
 
