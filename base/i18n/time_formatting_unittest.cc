@@ -215,9 +215,9 @@ TEST(TimeFormattingTest, TimeMonthYearInUTC) {
 
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(
-                               time, /*time_zone=*/icu::TimeZone::getGMT()));
-  EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(time, /*time_zone=*/nullptr));
+  EXPECT_EQ(u"April 2011",
+            TimeFormatMonthAndYearForTimeZone(time, icu::TimeZone::getGMT()));
+  EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(time));
 
   const Time::Exploded kDiffMonthsForDiffTzTime = {
       2011, 4, 5, 1,  // Fri, Apr 1, 2011 UTC = Thurs, March 31, 2011 US PDT.
@@ -225,9 +225,9 @@ TEST(TimeFormattingTest, TimeMonthYearInUTC) {
   };
 
   EXPECT_TRUE(Time::FromUTCExploded(kDiffMonthsForDiffTzTime, &time));
-  EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(
-                               time, /*time_zone=*/icu::TimeZone::getGMT()));
-  EXPECT_EQ(u"March 2011", TimeFormatMonthAndYear(time, /*time_zone=*/nullptr));
+  EXPECT_EQ(u"April 2011",
+            TimeFormatMonthAndYearForTimeZone(time, icu::TimeZone::getGMT()));
+  EXPECT_EQ(u"March 2011", TimeFormatMonthAndYear(time));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
