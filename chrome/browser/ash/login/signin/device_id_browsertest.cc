@@ -233,8 +233,14 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_NewUsers) {
   RemoveUser(AccountId::FromUserEmail(kSecondUserEmail));
 }
 
+// crbug.com/1304049
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NewUsers DISABLED_NewUsers
+#else
+#define MAYBE_NewUsers NewUsers
+#endif  // BUILDFLAG(IS_LINUX)
 // Add the second user back. Verify that device ID has been changed.
-IN_PROC_BROWSER_TEST_F(DeviceIDTest, NewUsers) {
+IN_PROC_BROWSER_TEST_F(DeviceIDTest, MAYBE_NewUsers) {
   EXPECT_TRUE(GetDeviceId(AccountId::FromUserEmail(kSecondUserEmail)).empty());
   ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   SignInOnline(kSecondUserEmail, kSecondUserPassword, kSecondUserRefreshToken2,
