@@ -5,14 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FOLLOWED_WEB_CHANNEL_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FOLLOWED_WEB_CHANNEL_ITEM_H_
 
-#import "ios/chrome/browser/ui/ntp/feed_management/web_channel.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
+
+@class WebChannel;
 
 // A table view item representing a web channel.
-@interface FollowedWebChannelItem : TableViewDetailIconItem
+@interface FollowedWebChannelItem : TableViewImageItem
 
 // Web channel associated with this table view item.
-@property(nonatomic, strong) WebChannel* channel;
+@property(nonatomic, strong) WebChannel* webChannel;
 
 @end
 

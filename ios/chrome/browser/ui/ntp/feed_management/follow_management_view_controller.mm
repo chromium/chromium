@@ -40,14 +40,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)loadModel {
   [super loadModel];
-  NSArray<WebChannel*>* channels = self.dataSource.followedWebChannels;
+  NSArray<WebChannel*>* webChannels = self.dataSource.followedWebChannels;
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:DefaultSectionIdentifier];
-  for (WebChannel* channel in channels) {
+  for (WebChannel* webChannel in webChannels) {
     FollowedWebChannelItem* item = [[FollowedWebChannelItem alloc]
         initWithType:FollowedWebChannelItemType];
-    item.channel = channel;
+    item.webChannel = webChannel;
     [model addItem:item toSectionWithIdentifier:DefaultSectionIdentifier];
   }
 }
@@ -91,8 +91,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   FollowedWebChannelItem* item =
       base::mac::ObjCCastStrict<FollowedWebChannelItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
-  WebChannel* channel = item.channel;
-  [self.delegate unfollowWebChannel:channel
+  WebChannel* webChannel = item.webChannel;
+  [self.delegate unfollowWebChannel:webChannel
                          completion:^(BOOL success) {
                            if (success) {
                              // TODO(crbug.com/1296745): Show success snackbar
