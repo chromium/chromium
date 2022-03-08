@@ -13,6 +13,14 @@
 
 namespace memory {
 
+// A command-line switch that can also be set from chrome://flags that chooses
+// an ablation group.
+extern const char kUXStudy1Switch[];
+extern const char kUXStudy1A[];
+extern const char kUXStudy1B[];
+extern const char kUXStudy1C[];
+extern const char kUXStudy1D[];
+
 // This class is the implementation of a memory ablation study. It artificially
 // increases memory usage for different experiment arms.
 class MemoryAblationStudy {

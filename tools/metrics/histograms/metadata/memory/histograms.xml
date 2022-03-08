@@ -2778,6 +2778,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.UX.Study.1" enum="UXStudy1Arm" expires_after="M110">
+  <owner>erikchen@chromium.org</owner>
+  <owner>meredithguo@google.com</owner>
+  <summary>
+    The arm that the user has opted into for UX Study 1. Logged once on startup.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Worker" units="KB" expires_after="M85">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>

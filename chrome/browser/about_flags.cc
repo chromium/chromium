@@ -236,6 +236,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/memory/memory_ablation_study.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/assistant/buildflags.h"
@@ -694,6 +695,14 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
      switches::kTopChromeTouchUiEnabled}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::Choice kUXStudy1Choices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {memory::kUXStudy1A, memory::kUXStudy1Switch, memory::kUXStudy1A},
+    {memory::kUXStudy1B, memory::kUXStudy1Switch, memory::kUXStudy1B},
+    {memory::kUXStudy1C, memory::kUXStudy1Switch, memory::kUXStudy1C},
+    {memory::kUXStudy1D, memory::kUXStudy1Switch, memory::kUXStudy1D},
+};
+
 const char kLacrosAvailabilityIgnoreInternalName[] =
     "lacros-availability-ignore";
 const char kLacrosOnlyInternalName[] = "lacros-only";
@@ -3347,6 +3356,9 @@ const FeatureEntry kFeatureEntries[] = {
     {kLacrosStabilityInternalName, flag_descriptions::kLacrosStabilityName,
      flag_descriptions::kLacrosStabilityDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kLacrosStabilityChoices)},
+    {"uxstudy1", flag_descriptions::kUXStudy1Name,
+     flag_descriptions::kUXStudy1Description, kOsCrOS,
+     MULTI_VALUE_TYPE(kUXStudy1Choices)},
     {"lacros-profile-migration-for-any-user",
      flag_descriptions::kLacrosProfileMigrationForAnyUserName,
      flag_descriptions::kLacrosProfileMigrationForAnyUserDescription, kOsCrOS,

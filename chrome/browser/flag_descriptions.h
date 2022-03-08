@@ -3115,6 +3115,9 @@ extern const char kUseFakeDeviceForMediaStreamDescription[];
 extern const char kUseMultipleOverlaysName[];
 extern const char kUseMultipleOverlaysDescription[];
 
+extern const char kUXStudy1Name[];
+extern const char kUXStudy1Description[];
+
 extern const char kVaapiJpegImageDecodeAccelerationName[];
 extern const char kVaapiJpegImageDecodeAccelerationDescription[];
 

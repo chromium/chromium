@@ -41,6 +41,8 @@ void ChromeBrowserMainExtraPartsMemory::PostBrowserStart() {
     }
 #endif
   }
+
+  memory_ablation_study_ = std::make_unique<memory::MemoryAblationStudy>();
 }
 
 void ChromeBrowserMainExtraPartsMemory::PostMainMessageLoopRun() {
@@ -52,6 +54,4 @@ void ChromeBrowserMainExtraPartsMemory::PostMainMessageLoopRun() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cros_evaluator_.reset();
 #endif
-
-  memory_ablation_study_ = std::make_unique<memory::MemoryAblationStudy>();
 }
