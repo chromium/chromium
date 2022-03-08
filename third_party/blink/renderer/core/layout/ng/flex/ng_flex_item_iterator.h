@@ -42,6 +42,10 @@ class CORE_EXPORT NGFlexItemIterator {
   struct Entry;
   Entry NextItem(bool broke_before_row);
 
+  // Move the iterator to the next line, unless we are already at the start of a
+  // line.
+  void NextLine();
+
  private:
   NGFlexItem* FindNextItem(const NGBlockBreakToken* item_break_token = nullptr);
 
@@ -61,6 +65,8 @@ class CORE_EXPORT NGFlexItemIterator {
   // An index into the flex_lines_'s line_items_ vector. Used for keeping track
   // of the next flex item to inspect.
   wtf_size_t flex_item_idx_ = 0;
+  // Stores the next item index to process for each line, if applicable.
+  Vector<wtf_size_t> next_item_idx_for_line_;
 };
 
 struct NGFlexItemIterator::Entry {
