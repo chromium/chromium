@@ -32,10 +32,10 @@ struct ASH_PUBLIC_EXPORT AnnotatorTool {
   bool operator==(const AnnotatorTool& rhs) const;
 
   // The color of of the annotator.
-  SkColor color;
+  SkColor color = SK_ColorBLACK;
 
   // The size of the annotator stroke tip.
-  int size = 4;
+  int size = 16;
 
   // The type of the annotator tool.
   AnnotatorToolType type = AnnotatorToolType::kMarker;

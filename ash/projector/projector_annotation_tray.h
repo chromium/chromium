@@ -50,9 +50,6 @@ class ProjectorAnnotationTray : public TrayBackgroundView {
 
   void OnPenColorPressed(SkColor color);
 
-  // Returns the message ID of the accessible name for the color.
-  int GetAccessibleNameForColor(SkColor color);
-
   // Image view of the tray icon.
   views::ImageView* const image_view_;
 

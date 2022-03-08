@@ -231,13 +231,6 @@ TEST_F(ProjectorControllerTest, OnMarkerPressed) {
   controller_->OnMarkerPressed();
 }
 
-TEST_F(ProjectorControllerTest, SetAnnotatorTool) {
-  AnnotatorTool tool;
-  // Verify that |SetAnnotatorTool| in |ProjectorUiController| is called.
-  EXPECT_CALL(*mock_ui_controller_, SetAnnotatorTool(tool));
-  controller_->SetAnnotatorTool(tool);
-}
-
 TEST_F(ProjectorControllerTest, RecordingStarted) {
   EXPECT_CALL(mock_client_, StartSpeechRecognition());
   EXPECT_CALL(*mock_metadata_controller_, OnRecordingStarted());

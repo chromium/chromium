@@ -23,7 +23,6 @@ namespace ash {
 class ProjectorClient;
 class ProjectorUiController;
 class ProjectorMetadataController;
-struct AnnotatorTool;
 
 // A controller to handle projector functionalities.
 class ASH_EXPORT ProjectorControllerImpl
@@ -82,8 +81,6 @@ class ASH_EXPORT ProjectorControllerImpl
 
   // Invoked when marker button is pressed.
   void OnMarkerPressed();
-  // Sets the annotator tool.
-  void SetAnnotatorTool(const AnnotatorTool& tool);
   // Reset and disable the the annotator tools.
   void ResetTools();
   // Returns true if annotator is active.

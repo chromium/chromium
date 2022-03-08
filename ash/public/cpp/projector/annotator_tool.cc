@@ -18,32 +18,23 @@ const char kToolColor[] = "color";
 const char kToolSize[] = "size";
 const char kToolType[] = "tool";
 
-// Returns the hex value in RGBA format.
-// For example, SK_ColorGREEN -> "00FF00FF".
+// For example, SK_ColorGREEN -> "FF00FF00".
 std::string ConvertColorToHexString(SkColor color) {
   uint8_t alpha = SkColorGetA(color);
   uint8_t red = SkColorGetR(color);
   uint8_t green = SkColorGetG(color);
   uint8_t blue = SkColorGetB(color);
-  uint8_t bytes[] = {red, green, blue, alpha};
+  uint8_t bytes[] = {alpha, red, green, blue};
   return base::HexEncode(bytes);
 }
 
-// Converts the RGBA hex string to ARGB, then to an SkColor.
-// For example, "000000FF" -> "SK_ColorBLACK".
+// For example, "FF000000" -> SK_ColorBLACK.
 // Returns red if conversion fails.
-SkColor ConvertHexStringToColor(const std::string& rgba_hex) {
-  const size_t kHexColorLength = 8;
-  const size_t kRgbaLength = 6;
-  if (rgba_hex.length() < kHexColorLength) {
-    return SK_ColorRED;
-  }
-  uint32_t argb_color;
-  // Shift the alpha value to the front of the hex string.
-  const bool success = base::HexStringToUInt(
-      rgba_hex.substr(kRgbaLength) + rgba_hex.substr(0, kRgbaLength),
-      &argb_color);
-  return success ? argb_color : SK_ColorRED;
+SkColor ConvertHexStringToColor(const std::string& hex) {
+  uint32_t color;
+  const bool success = base::HexStringToUInt(hex, &color);
+  DCHECK(success);
+  return success ? color : SK_ColorRED;
 }
 
 std::string ConvertToolTypeToString(AnnotatorToolType type) {

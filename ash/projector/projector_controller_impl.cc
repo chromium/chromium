@@ -9,7 +9,6 @@
 #include "ash/projector/projector_metadata_controller.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/projector_ui_controller.h"
-#include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/projector_session.h"
@@ -316,11 +315,6 @@ void ProjectorControllerImpl::OnRecordingStartAborted() {
 void ProjectorControllerImpl::OnMarkerPressed() {
   DCHECK(ui_controller_);
   ui_controller_->OnMarkerPressed();
-}
-
-void ProjectorControllerImpl::SetAnnotatorTool(const AnnotatorTool& tool) {
-  DCHECK(ui_controller_);
-  ui_controller_->SetAnnotatorTool(tool);
 }
 
 void ProjectorControllerImpl::ResetTools() {
