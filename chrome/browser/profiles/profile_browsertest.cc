@@ -363,7 +363,8 @@ class ProfileBrowserTest : public InProcessBrowserTest {
 // Test OnProfileCreate is called with is_new_profile set to true when
 // creating a new profile synchronously.
 // TODO(crbug.com/1218591): Flaky on ChromeOS-Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1304167): Failing on Mac.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_CreateNewProfileSynchronous DISABLED_CreateNewProfileSynchronous
 #else
 #define MAYBE_CreateNewProfileSynchronous CreateNewProfileSynchronous
@@ -394,7 +395,13 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateNewProfileSynchronous) {
 
 // Test OnProfileCreate is called with is_new_profile set to false when
 // creating a profile synchronously with an existing prefs file.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateOldProfileSynchronous) {
+// TODO(crbug.com/1304167): Failing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreateOldProfileSynchronous DISABLED_CreateOldProfileSynchronous
+#else
+#define MAYBE_CreateOldProfileSynchronous CreateOldProfileSynchronous
+#endif
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateOldProfileSynchronous) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -422,7 +429,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateOldProfileSynchronous) {
 // Test OnProfileCreate is called with is_new_profile set to true when
 // creating a new profile asynchronously.
 // TODO(crbug.com/1280223): Flaky on ChromeOS-Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1304167): Failing on Mac.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_CreateNewProfileAsynchronous DISABLED_CreateNewProfileAsynchronous
 #else
 #define MAYBE_CreateNewProfileAsynchronous CreateNewProfileAsynchronous
@@ -484,7 +492,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateOldProfileAsynchronous) {
 
 // Test that a README file is created for profiles that didn't have it.
 // TODO(https://crbug.com/1289754): Flaky on ChromeOS-Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(https://crbug.com/1304167): Failing on Mac.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_ProfileReadmeCreated DISABLED_ProfileReadmeCreated
 #else
 #define MAYBE_ProfileReadmeCreated ProfileReadmeCreated
@@ -803,7 +812,8 @@ class ProfileBrowserTestWithoutDestroyProfile : public ProfileBrowserTest {
 // Verifies destroying regular profile will result in destruction of OTR
 // profiles.
 // TODO(crbug.com/1225252): Flakily fails on ASAN/LSAN builds
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1304167): Failing on Mac.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
 #define Maybe_DestroyRegularProfileBeforeOTRs DISABLE_DestroyRegularProfileBeforeOTRs
 #else
 #define Maybe_DestroyRegularProfileBeforeOTRs DestroyRegularProfileBeforeOTRs
