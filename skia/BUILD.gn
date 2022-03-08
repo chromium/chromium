@@ -245,8 +245,6 @@ component("skia") {
     "ext/rgba_to_yuva.h",
     "ext/skia_histogram.cc",
     "ext/skia_histogram.h",
-    "ext/skia_matrix_44.cc",
-    "ext/skia_matrix_44.h",
     "ext/skia_memory_dump_provider.cc",
     "ext/skia_memory_dump_provider.h",
     "ext/skia_trace_memory_dump_impl.cc",

@@ -1,19 +1,17 @@
-/*
- * Copyright 2011 Google Inc.
- *
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-#ifndef SKIA_EXT_SKIA_MATRIX_44_H_
-#define SKIA_EXT_SKIA_MATRIX_44_H_
-
-#include "third_party/skia/include/core/SkMatrix.h"
+#ifndef UI_GFX_GEOMETRY_MATRIX44_H_
+#define UI_GFX_GEOMETRY_MATRIX44_H_
 
 #include <atomic>
 #include <cstring>
 
-namespace skia {
+#include "third_party/skia/include/core/SkMatrix.h"
+#include "ui/gfx/geometry/geometry_skia_export.h"
+
+namespace gfx {
 
 struct Vector4 {
   SkScalar fData[4];
@@ -49,7 +47,9 @@ struct Vector4 {
   }
 };
 
-class SK_API Matrix44 {
+// This is the underlying data structure of Transform. Don't use this type
+// directly. The public methods can be called through Transform::matrix().
+class GEOMETRY_SKIA_EXPORT Matrix44 {
  public:
   enum Uninitialized_Constructor { kUninitialized_Constructor };
   enum Identity_Constructor { kIdentity_Constructor };
@@ -385,6 +385,6 @@ class SK_API Matrix44 {
   inline const SkScalar* values() const { return &fMat[0][0]; }
 };
 
-}  // namespace skia
+}  // namespace gfx
 
-#endif  // SKIA_EXT_SKIA_MATRIX_44_H_
+#endif  // UI_GFX_GEOMETRY_MATRIX44_H_

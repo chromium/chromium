@@ -8,9 +8,9 @@
 #include <iosfwd>
 #include <string>
 
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
+#include "ui/gfx/geometry/matrix44.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
@@ -30,21 +30,20 @@ class GEOMETRY_SKIA_EXPORT Transform {
  public:
   enum SkipInitialization { kSkipInitialization };
 
-  constexpr Transform() : matrix_(skia::Matrix44::kIdentity_Constructor) {}
+  constexpr Transform() : matrix_(Matrix44::kIdentity_Constructor) {}
 
   // Skips initializing this matrix to avoid overhead, when we know it will be
   // initialized before use.
   explicit Transform(SkipInitialization)
-      : matrix_(skia::Matrix44::kUninitialized_Constructor) {}
+      : matrix_(Matrix44::kUninitialized_Constructor) {}
   Transform(const Transform& rhs) = default;
   Transform& operator=(const Transform& rhs) = default;
   // Initialize with the concatenation of lhs * rhs.
   Transform(const Transform& lhs, const Transform& rhs)
       : matrix_(lhs.matrix_, rhs.matrix_) {}
   explicit Transform(const SkM44& matrix);
-  explicit Transform(const skia::Matrix44& matrix) : matrix_(matrix) {}
-  explicit Transform(const SkMatrix& matrix)
-      : matrix_(skia::Matrix44(matrix)) {}
+  explicit Transform(const Matrix44& matrix) : matrix_(matrix) {}
+  explicit Transform(const SkMatrix& matrix) : matrix_(Matrix44(matrix)) {}
   // Constructs a transform from explicit 16 matrix elements. Elements
   // should be given in row-major order.
   Transform(SkScalar col1row1,
@@ -299,12 +298,10 @@ class GEOMETRY_SKIA_EXPORT Transform {
   }
 
   // Returns the underlying matrix.
-  const skia::Matrix44& matrix() const { return matrix_; }
-  skia::Matrix44& matrix() { return matrix_; }
+  const Matrix44& matrix() const { return matrix_; }
+  Matrix44& matrix() { return matrix_; }
 
-  // TODO(crbug.com/1167153) skia::Matrix44 is deprecated, this is to help in
-  // moving the code base towards SkM44, although eventually this class should
-  // just hold an SkM44
+  // TODO(crbug.com/1167153) This is to help in moving Matrix44 towards SkM44.
   SkM44 GetMatrixAsSkM44() const;
 
   bool ApproximatelyEqual(const gfx::Transform& transform) const;
@@ -312,17 +309,15 @@ class GEOMETRY_SKIA_EXPORT Transform {
   std::string ToString() const;
 
  private:
-  void TransformPointInternal(const skia::Matrix44& xform, Point* point) const;
+  void TransformPointInternal(const Matrix44& xform, Point* point) const;
 
-  void TransformPointInternal(const skia::Matrix44& xform, PointF* point) const;
+  void TransformPointInternal(const Matrix44& xform, PointF* point) const;
 
-  void TransformPointInternal(const skia::Matrix44& xform,
-                              Point3F* point) const;
+  void TransformPointInternal(const Matrix44& xform, Point3F* point) const;
 
-  void TransformVectorInternal(const skia::Matrix44& xform,
-                               Vector3dF* vector) const;
+  void TransformVectorInternal(const Matrix44& xform, Vector3dF* vector) const;
 
-  skia::Matrix44 matrix_;
+  Matrix44 matrix_;
 
   // copy/assign are allowed.
 };

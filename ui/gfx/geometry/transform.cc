@@ -53,7 +53,7 @@ Transform::Transform(SkScalar col1row1,
                      SkScalar col2row4,
                      SkScalar col3row4,
                      SkScalar col4row4)
-    : matrix_(skia::Matrix44::kUninitialized_Constructor) {
+    : matrix_(Matrix44::kUninitialized_Constructor) {
   matrix_.set4x4(col1row1, col1row2, col1row3, col1row4, col2row1, col2row2,
                  col2row3, col2row4, col3row1, col3row2, col3row3, col3row4,
                  col4row1, col4row2, col4row3, col4row4);
@@ -65,7 +65,7 @@ Transform::Transform(SkScalar col1row1,
                      SkScalar col2row2,
                      SkScalar x_translation,
                      SkScalar y_translation)
-    : matrix_(skia::Matrix44::kUninitialized_Constructor) {
+    : matrix_(Matrix44::kUninitialized_Constructor) {
   matrix_.set4x4(col1row1, col1row2, 0, 0, col2row1, col2row2, 0, 0, 0, 0, 1, 0,
                  x_translation, y_translation, 0, 1);
 }
@@ -79,7 +79,7 @@ Transform::Transform(const SkM44& matrix) {
 }
 
 Transform::Transform(const Quaternion& q)
-    : matrix_(skia::Matrix44::kUninitialized_Constructor) {
+    : matrix_(Matrix44::kUninitialized_Constructor) {
   double x = q.x();
   double y = q.y();
   double z = q.z();
@@ -104,7 +104,7 @@ void Transform::RotateAboutXAxis(double degrees) {
   if (matrix_.isIdentity()) {
     matrix_.set3x3(1, 0, 0, 0, cosTheta, sinTheta, 0, -sinTheta, cosTheta);
   } else {
-    skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
+    Matrix44 rot(Matrix44::kUninitialized_Constructor);
     rot.set3x3(1, 0, 0, 0, cosTheta, sinTheta, 0, -sinTheta, cosTheta);
     matrix_.preConcat(rot);
   }
@@ -119,7 +119,7 @@ void Transform::RotateAboutYAxis(double degrees) {
     // y-axis is different than rotation about x-axis or z-axis.
     matrix_.set3x3(cosTheta, 0, -sinTheta, 0, 1, 0, sinTheta, 0, cosTheta);
   } else {
-    skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
+    Matrix44 rot(Matrix44::kUninitialized_Constructor);
     rot.set3x3(cosTheta, 0, -sinTheta, 0, 1, 0, sinTheta, 0, cosTheta);
     matrix_.preConcat(rot);
   }
@@ -132,7 +132,7 @@ void Transform::RotateAboutZAxis(double degrees) {
   if (matrix_.isIdentity()) {
     matrix_.set3x3(cosTheta, sinTheta, 0, -sinTheta, cosTheta, 0, 0, 0, 1);
   } else {
-    skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
+    Matrix44 rot(Matrix44::kUninitialized_Constructor);
     rot.set3x3(cosTheta, sinTheta, 0, -sinTheta, cosTheta, 0, 0, 0, 1);
     matrix_.preConcat(rot);
   }
@@ -143,7 +143,7 @@ void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
     matrix_.setRotateDegreesAbout(axis.x(), axis.y(), axis.z(),
                                   SkDoubleToScalar(degrees));
   } else {
-    skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
+    Matrix44 rot(Matrix44::kUninitialized_Constructor);
     rot.setRotateDegreesAbout(axis.x(), axis.y(), axis.z(),
                               SkDoubleToScalar(degrees));
     matrix_.preConcat(rot);
@@ -191,7 +191,7 @@ void Transform::Skew(double angle_x, double angle_y) {
     matrix_.setRC(0, 1, TanDegrees(angle_x));
     matrix_.setRC(1, 0, TanDegrees(angle_y));
   } else {
-    skia::Matrix44 skew(skia::Matrix44::kIdentity_Constructor);
+    Matrix44 skew(Matrix44::kIdentity_Constructor);
     skew.setRC(0, 1, TanDegrees(angle_x));
     skew.setRC(1, 0, TanDegrees(angle_y));
     matrix_.preConcat(skew);
@@ -204,7 +204,7 @@ void Transform::ApplyPerspectiveDepth(SkScalar depth) {
   if (matrix_.isIdentity()) {
     matrix_.setRC(3, 2, -SK_Scalar1 / depth);
   } else {
-    skia::Matrix44 m(skia::Matrix44::kIdentity_Constructor);
+    Matrix44 m(Matrix44::kIdentity_Constructor);
     m.setRC(3, 2, -SK_Scalar1 / depth);
     matrix_.preConcat(m);
   }
@@ -452,7 +452,7 @@ bool Transform::TransformPointReverse(Point* point) const {
   DCHECK(point);
 
   // TODO(sad): Try to avoid trying to invert the matrix.
-  skia::Matrix44 inverse(skia::Matrix44::kUninitialized_Constructor);
+  Matrix44 inverse(Matrix44::kUninitialized_Constructor);
   if (!matrix_.invert(&inverse))
     return false;
 
@@ -464,7 +464,7 @@ bool Transform::TransformPointReverse(Point3F* point) const {
   DCHECK(point);
 
   // TODO(sad): Try to avoid trying to invert the matrix.
-  skia::Matrix44 inverse(skia::Matrix44::kUninitialized_Constructor);
+  Matrix44 inverse(Matrix44::kUninitialized_Constructor);
   if (!matrix_.invert(&inverse))
     return false;
 
@@ -485,7 +485,7 @@ bool Transform::TransformRectReverse(RectF* rect) const {
   if (matrix_.isIdentity())
     return true;
 
-  skia::Matrix44 inverse(skia::Matrix44::kUninitialized_Constructor);
+  Matrix44 inverse(Matrix44::kUninitialized_Constructor);
   if (!matrix_.invert(&inverse))
     return false;
 
@@ -499,7 +499,7 @@ bool Transform::TransformRRectF(RRectF* rrect) const {
   // We want this to fail only in cases where our
   // Transform::Preserves2dAxisAlignment returns false.  However,
   // SkMatrix::preservesAxisAlignment is stricter (it lacks the kEpsilon
-  // test).  So after converting our skia::Matrix44 to SkMatrix, round
+  // test).  So after converting our Matrix44 to SkMatrix, round
   // relevant values less than kEpsilon to zero.
   SkMatrix rounded_matrix(matrix_);
   if (std::abs(rounded_matrix.get(SkMatrix::kMScaleX)) < kEpsilon)
@@ -563,7 +563,7 @@ void Transform::RoundTranslationComponents() {
   matrix_.setRC(1, 3, std::round(matrix_.rc(1, 3)));
 }
 
-void Transform::TransformPointInternal(const skia::Matrix44& xform,
+void Transform::TransformPointInternal(const Matrix44& xform,
                                        Point3F* point) const {
   if (xform.isIdentity())
     return;
@@ -580,7 +580,7 @@ void Transform::TransformPointInternal(const skia::Matrix44& xform,
   }
 }
 
-void Transform::TransformVectorInternal(const skia::Matrix44& xform,
+void Transform::TransformVectorInternal(const Matrix44& xform,
                                         Vector3dF* vector) const {
   if (xform.isIdentity())
     return;
@@ -594,7 +594,7 @@ void Transform::TransformVectorInternal(const skia::Matrix44& xform,
   vector->set_z(p[2]);
 }
 
-void Transform::TransformPointInternal(const skia::Matrix44& xform,
+void Transform::TransformPointInternal(const Matrix44& xform,
                                        PointF* point) const {
   if (xform.isIdentity())
     return;
@@ -606,7 +606,7 @@ void Transform::TransformPointInternal(const skia::Matrix44& xform,
   point->SetPoint(p[0], p[1]);
 }
 
-void Transform::TransformPointInternal(const skia::Matrix44& xform,
+void Transform::TransformPointInternal(const Matrix44& xform,
                                        Point* point) const {
   PointF point_float(*point);
   TransformPointInternal(xform, &point_float);

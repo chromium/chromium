@@ -12,21 +12,21 @@
 namespace mojo {
 
 template <>
-struct ArrayTraits<skia::Matrix44> {
+struct ArrayTraits<gfx::Matrix44> {
   using Element = float;
 
-  static bool IsNull(const skia::Matrix44& input) { return input.isIdentity(); }
+  static bool IsNull(const gfx::Matrix44& input) { return input.isIdentity(); }
 
-  static size_t GetSize(const skia::Matrix44& input) { return 16; }
+  static size_t GetSize(const gfx::Matrix44& input) { return 16; }
 
-  static float GetAt(const skia::Matrix44& input, size_t index) {
+  static float GetAt(const gfx::Matrix44& input, size_t index) {
     return input.rc(static_cast<int>(index % 4), static_cast<int>(index / 4));
   }
 };
 
 template <>
 struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
-  static const skia::Matrix44& matrix(const gfx::Transform& transform) {
+  static const gfx::Matrix44& matrix(const gfx::Transform& transform) {
     return transform.matrix();
   }
 

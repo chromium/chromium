@@ -1,15 +1,13 @@
-/*
- * Copyright 2011 Google Inc.
- *
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-#include "skia/ext/skia_matrix_44.h"
+#include "ui/gfx/geometry/matrix44.h"
+
 #include <type_traits>
 #include <utility>
 
-namespace skia {
+namespace gfx {
 
 // Copying Matrix44 byte-wise is performance-critical to Blink. This class is
 // contained in several Transform classes, which are copied multiple times
@@ -1108,4 +1106,4 @@ Matrix44::operator SkMatrix() const {
   return dst;
 }
 
-}  // namespace skia
+}  // namespace gfx
