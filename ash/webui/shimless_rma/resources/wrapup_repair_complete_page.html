@@ -1,6 +1,15 @@
 <style include="cr-shared-style shimless-rma-shared shimless-fonts">
   cr-dialog::part(dialog) {
-    width: 700px;
+    width: 512px;
+  }
+
+  cr-dialog [slot=body] {
+    height: 480px;
+  }
+
+  cr-dialog [slot=footer] {
+    padding-bottom: 24px;
+    padding-top: 24px;
   }
 
   #buttonContainer {
@@ -66,7 +75,7 @@
   }
 
   .log {
-    white-space: pre;
+    white-space: normal;
   }
 </style>
 
@@ -152,7 +161,7 @@
   <div slot="body">
     <div class="log">[[log_]]</div>
   </div>
-  <div slot="footer">
+  <div class="dialog-footer" slot="button-container">
     <cr-button id="closeLogDialogButton" on-click="onCancelClick_">
       [[i18n('rmaLogsCancelButtonText')]]
     </cr-button>

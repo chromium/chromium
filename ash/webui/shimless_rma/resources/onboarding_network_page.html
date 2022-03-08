@@ -3,10 +3,6 @@
     display: inline-flex;
   }
 
-  cr-dialog::part(dialog) {
-    width: 460px;
-  }
-
   iron-icon {
     /* TODO(joonbug): Update with chrome color */
     color: blue;
@@ -23,16 +19,6 @@
   #networkList {
     --cros-icon-color-primary: grey;
     flex: 1;
-  }
-
-  .dialog-footer {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    padding-bottom: 16px;
-    padding-inline-start: 16px;
-    padding-top: 24px;
   }
 </style>
 
@@ -61,17 +47,17 @@
       on-properties-set="onPropertiesSet_" type="{{networkType_}}"
       connect-on-enter="[[networkShowConnect_]]" guid="[[guid_]]">
     </network-config>
-    <div class="dialog-footer" slot="button-container">
-      <template is="dom-if" if="[[error_]]" restamp>
-        <div class="flex error">[[getError_(error_)]]</div>
-      </template>
-      <cr-button id="cancelButton" on-click="closeConfig_">
-          [[i18n('connectNetworkDialogCancelButtonText')]]
-      </cr-button>
-      <cr-button id="connectButton" class="action-button" 
-          on-click="connectNetwork_" disabled="[[!enableConnect_]]">
-        [[i18n('connectNetworkDialogConnectButtonText')]]
-      </cr-button>
-    </div>
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <template is="dom-if" if="[[error_]]" restamp>
+      <div class="flex error">[[getError_(error_)]]</div>
+    </template>
+    <cr-button id="cancelButton" on-click="closeConfig_">
+        [[i18n('connectNetworkDialogCancelButtonText')]]
+    </cr-button>
+    <cr-button id="connectButton" class="action-button"
+        on-click="connectNetwork_" disabled="[[!enableConnect_]]">
+      [[i18n('connectNetworkDialogConnectButtonText')]]
+    </cr-button>
   </div>
 </cr-dialog>

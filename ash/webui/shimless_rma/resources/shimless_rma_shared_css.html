@@ -7,6 +7,8 @@
 <template>
   <style include="cr-shared-style md-select shimless-fonts">
     :host {
+      --cr-dialog-width: 320px;
+      --cr-dialog-button-container-padding-horizontal: 24px;
       --footer-height: 80px;
       --radio-button-top-padding: 20px;
       --title-bottom-margin: 16px;
@@ -71,6 +73,7 @@
       font-size: var(--shimless-dialog-title-font-size);
       font-weight: var(--shimless-medium-font-weight);
       line-height: var(--shimless-dialog-title-line-height);
+      padding: 24px;
     }
 
     cr-dialog [slot=body] {
@@ -79,10 +82,23 @@
       font-size: var(--shimless-dialog-body-font-size);
       font-weight: var(--shimless-regular-font-weight);
       line-height: var(--shimless-dialog-body-line-height);
+      padding-inline-end: 24px;
+      padding-inline-start: 24px;
+    }
+
+    cr-dialog .dialog-footer {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      padding-bottom: 20px;
+      padding-inline-start: 0;
+      padding-top: 32px;
     }
 
     cr-dialog cr-button {
       border-radius: 4px;
+      margin-inline-start: 8px;
     }
 
     cr-radio-button {
