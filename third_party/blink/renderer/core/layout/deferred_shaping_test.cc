@@ -151,4 +151,20 @@ TEST_F(DeferredShapingTest, DynamicPropertyChange) {
   EXPECT_TRUE(IsLocked("target"));
 }
 
+TEST_F(DeferredShapingTest, ListMarkerCrash) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<ul>
+<li id="target">IFC</li>
+</ul>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  // Re-layout the target while deferred.
+  GetElementById("target")->setTextContent("foobar");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crash.
+}
+
 }  // namespace blink
