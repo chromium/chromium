@@ -27,6 +27,7 @@ class SequencedTaskRunner;
 
 namespace media {
 class GpuVideoAcceleratorFactories;
+class MediaLog;
 class H264AnnexBToAvcBitstreamConverter;
 
 // This class is a somewhat complex adapter from VideoEncodeAccelerator
@@ -40,6 +41,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
  public:
   VideoEncodeAcceleratorAdapter(
       GpuVideoAcceleratorFactories* gpu_factories,
+      std::unique_ptr<MediaLog> media_log,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
   ~VideoEncodeAcceleratorAdapter() override;
 
@@ -123,6 +125,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
 
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;
   raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
+  std::unique_ptr<MediaLog> media_log_;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   // If |h264_converter_| is null, we output in annexb format. Otherwise, we

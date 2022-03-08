@@ -405,7 +405,8 @@ VideoEncoderShim::GetSupportedProfiles() {
 
 bool VideoEncoderShim::Initialize(
     const media::VideoEncodeAccelerator::Config& config,
-    media::VideoEncodeAccelerator::Client* client) {
+    media::VideoEncodeAccelerator::Client* client,
+    std::unique_ptr<media::MediaLog> media_log) {
   DCHECK(RenderThreadImpl::current());
   DCHECK_EQ(client, host_);
 

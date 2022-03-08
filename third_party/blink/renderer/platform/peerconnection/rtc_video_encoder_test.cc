@@ -182,7 +182,8 @@ class RTCVideoEncoderTest
 
   // media::VideoEncodeAccelerator implementation.
   bool Initialize(const media::VideoEncodeAccelerator::Config& config,
-                  media::VideoEncodeAccelerator::Client* client) {
+                  media::VideoEncodeAccelerator::Client* client,
+                  std::unique_ptr<media::MediaLog> media_log) {
     DVLOG(3) << __func__;
     config_ = config;
     client_ = client;

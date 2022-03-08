@@ -19,6 +19,8 @@
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/limits.h"
+#include "media/base/media_log.h"
+#include "media/base/media_util.h"
 #include "media/base/unaligned_shared_memory.h"
 #include "media/video/picture.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
@@ -138,8 +140,10 @@ AndroidVideoEncodeAccelerator::GetSupportedProfiles() {
   return profiles;
 }
 
-bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
-                                               Client* client) {
+bool AndroidVideoEncodeAccelerator::Initialize(
+    const Config& config,
+    Client* client,
+    std::unique_ptr<MediaLog> media_log) {
   DVLOG(3) << __func__ << " " << config.AsHumanReadableString();
   DCHECK(!media_codec_);
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -147,9 +151,14 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
 
   client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
 
+  // NullMediaLog silently and safely does nothing.
+  if (!media_log)
+    media_log = std::make_unique<media::NullMediaLog>();
+
   if (config.input_format != PIXEL_FORMAT_I420) {
-    DLOG(ERROR) << "Unexpected combo: " << config.input_format << ", "
-                << GetProfileName(config.output_profile);
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Unexpected combo: " << config.input_format << ", "
+        << GetProfileName(config.output_profile);
     return false;
   }
 
@@ -179,8 +188,9 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
   // https://crbug.com/1084702 for details.
   if (config.input_visible_size.width() % 16 != 0 ||
       config.input_visible_size.height() % 16 != 0) {
-    DLOG(ERROR) << "MediaCodec is only tested with resolutions "
-                   "that are 16x16 aligned.";
+    MEDIA_LOG(ERROR, media_log.get())
+        << "MediaCodec is only tested with resolutions "
+           "that are 16x16 aligned.";
     return false;
   }
 
@@ -190,13 +200,13 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
   // Only consider using MediaCodec if it's likely backed by hardware.
   if (MediaCodecUtil::IsKnownUnaccelerated(codec,
                                            MediaCodecDirection::ENCODER)) {
-    DLOG(ERROR) << "No HW support";
+    MEDIA_LOG(ERROR, media_log.get()) << "No HW support";
     return false;
   }
 
   PixelFormat pixel_format = COLOR_FORMAT_YUV420_SEMIPLANAR;
   if (!GetSupportedColorFormatForMime(mime_type, &pixel_format)) {
-    DLOG(ERROR) << "No color format support.";
+    MEDIA_LOG(ERROR, media_log.get()) << "No color format support.";
     return false;
   }
   media_codec_ = MediaCodecBridgeImpl::CreateVideoEncoder(
@@ -204,21 +214,22 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
       INITIAL_FRAMERATE, i_frame_interval, pixel_format);
 
   if (!media_codec_) {
-    DLOG(ERROR) << "Failed to create/start the codec: "
-                << config.input_visible_size.ToString();
+    MEDIA_LOG(ERROR, media_log.get()) << "Failed to create/start the codec: "
+                                      << config.input_visible_size.ToString();
     return false;
   }
 
   auto status = media_codec_->GetInputFormatStride(&input_buffer_stride_);
   if (status != MEDIA_CODEC_OK || input_buffer_stride_ <= 0) {
-    DLOG(ERROR) << "Can't read stride from input format";
+    MEDIA_LOG(ERROR, media_log.get()) << "Can't read stride from input format";
     return false;
   }
 
   status =
       media_codec_->GetInputFormatYPlaneHeight(&input_buffer_yplane_height_);
   if (status != MEDIA_CODEC_OK || input_buffer_yplane_height_ <= 0) {
-    DLOG(ERROR) << "Can't read y-plane height from input format";
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Can't read y-plane height from input format";
     return false;
   }
 

@@ -45,8 +45,10 @@ FakeVideoEncodeAccelerator::GetSupportedProfiles() {
   return profiles;
 }
 
-bool FakeVideoEncodeAccelerator::Initialize(const Config& config,
-                                            Client* client) {
+bool FakeVideoEncodeAccelerator::Initialize(
+    const Config& config,
+    Client* client,
+    std::unique_ptr<MediaLog> media_log) {
   if (!will_initialization_succeed_) {
     return false;
   }

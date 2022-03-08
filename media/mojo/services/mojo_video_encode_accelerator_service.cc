@@ -11,6 +11,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/mojo/mojom/video_encoder_info.mojom.h"
+#include "media/mojo/services/mojo_media_log.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -48,6 +49,7 @@ MojoVideoEncodeAcceleratorService::~MojoVideoEncodeAcceleratorService() {
 void MojoVideoEncodeAcceleratorService::Initialize(
     const media::VideoEncodeAccelerator::Config& config,
     mojo::PendingAssociatedRemote<mojom::VideoEncodeAcceleratorClient> client,
+    mojo::PendingRemote<mojom::MediaLog> media_log,
     InitializeCallback success_callback) {
   DVLOG(1) << __func__ << " " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -56,9 +58,16 @@ void MojoVideoEncodeAcceleratorService::Initialize(
       << "Only I420 or NV12 format supported, got "
       << VideoPixelFormatToString(config.input_format);
 
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      base::ThreadTaskRunnerHandle::Get();
+
+  media_log_ =
+      std::make_unique<MojoMediaLog>(std::move(media_log), task_runner);
+
   if (gpu_workarounds_.disable_accelerated_vp8_encode &&
       config.output_profile == VP8PROFILE_ANY) {
-    LOG(ERROR) << __func__ << " VP8 encoding disabled by GPU policy";
+    MEDIA_LOG(ERROR, media_log_.get())
+        << __func__ << " VP8 encoding disabled by GPU policy";
     std::move(success_callback).Run(false);
     return;
   }
@@ -66,7 +75,8 @@ void MojoVideoEncodeAcceleratorService::Initialize(
   if (gpu_workarounds_.disable_accelerated_vp9_encode &&
       config.output_profile >= VP9PROFILE_PROFILE0 &&
       config.output_profile <= VP9PROFILE_PROFILE3) {
-    LOG(ERROR) << __func__ << " VP9 encoding disabled by GPU policy";
+    MEDIA_LOG(ERROR, media_log_.get())
+        << __func__ << " VP9 encoding disabled by GPU policy";
     std::move(success_callback).Run(false);
     return;
   }
@@ -74,19 +84,21 @@ void MojoVideoEncodeAcceleratorService::Initialize(
   if (gpu_workarounds_.disable_accelerated_h264_encode &&
       config.output_profile >= H264PROFILE_MIN &&
       config.output_profile <= H264PROFILE_MAX) {
-    LOG(ERROR) << __func__ << " H.264 encoding disabled by GPU policy";
+    MEDIA_LOG(ERROR, media_log_.get())
+        << __func__ << " H.264 encoding disabled by GPU policy";
     std::move(success_callback).Run(false);
     return;
   }
 
   if (encoder_) {
-    DLOG(ERROR) << __func__ << " VEA is already initialized";
+    MEDIA_LOG(ERROR, media_log_.get())
+        << __func__ << " VEA is already initialized";
     std::move(success_callback).Run(false);
     return;
   }
 
   if (!client) {
-    DLOG(ERROR) << __func__ << "null |client|";
+    MEDIA_LOG(ERROR, media_log_.get()) << __func__ << "null |client|";
     std::move(success_callback).Run(false);
     return;
   }
@@ -95,16 +107,19 @@ void MojoVideoEncodeAcceleratorService::Initialize(
   if (config.input_visible_size.width() > limits::kMaxDimension ||
       config.input_visible_size.height() > limits::kMaxDimension ||
       config.input_visible_size.GetArea() > limits::kMaxCanvas) {
-    DLOG(ERROR) << __func__ << "too large input_visible_size "
-                << config.input_visible_size.ToString();
+    MEDIA_LOG(ERROR, media_log_.get())
+        << __func__ << "too large input_visible_size "
+        << config.input_visible_size.ToString();
     std::move(success_callback).Run(false);
     return;
   }
 
   encoder_ = std::move(create_vea_callback_)
-                 .Run(config, this, gpu_preferences_, gpu_workarounds_);
+                 .Run(config, this, gpu_preferences_, gpu_workarounds_,
+                      media_log_->Clone());
   if (!encoder_) {
-    DLOG(ERROR) << __func__ << " Error creating or initializing VEA";
+    MEDIA_LOG(ERROR, media_log_.get())
+        << __func__ << " Error creating or initializing VEA";
     std::move(success_callback).Run(false);
     return;
   }

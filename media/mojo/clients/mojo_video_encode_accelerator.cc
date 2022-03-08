@@ -11,14 +11,18 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "media/base/media_log.h"
+#include "media/base/media_util.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
+#include "media/mojo/clients/mojo_media_log_service.h"
 #include "media/mojo/common/mojo_shared_buffer_video_frame.h"
 #include "media/mojo/mojom/video_encoder_info.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace media {
@@ -115,8 +119,10 @@ MojoVideoEncodeAccelerator::GetSupportedProfiles() {
   return {};
 }
 
-bool MojoVideoEncodeAccelerator::Initialize(const Config& config,
-                                            Client* client) {
+bool MojoVideoEncodeAccelerator::Initialize(
+    const Config& config,
+    Client* client,
+    std::unique_ptr<MediaLog> media_log) {
   DVLOG(2) << __func__ << " " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!client)
@@ -133,8 +139,22 @@ bool MojoVideoEncodeAccelerator::Initialize(const Config& config,
       base::BindOnce(&MojoVideoEncodeAccelerator::MojoDisconnectionHandler,
                      base::Unretained(this)));
 
+  // NullMediaLog silently and safely does nothing.
+  if (!media_log)
+    media_log = std::make_unique<media::NullMediaLog>();
+
+  // Use `mojo::MakeSelfOwnedReceiver` for MediaLog so logs may go through even
+  // after `MojoVideoEncodeAccelerator` is destructed.
+  mojo::PendingReceiver<mojom::MediaLog> media_log_pending_receiver;
+  auto media_log_pending_remote =
+      media_log_pending_receiver.InitWithNewPipeAndPassRemote();
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<MojoMediaLogService>(media_log->Clone()),
+      std::move(media_log_pending_receiver));
+
   bool result = false;
-  vea_->Initialize(config, std::move(vea_client_remote), &result);
+  vea_->Initialize(config, std::move(vea_client_remote),
+                   std::move(media_log_pending_remote), &result);
   return result;
 }
 

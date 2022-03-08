@@ -43,8 +43,10 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
   // media::VideoEncodeAccelerator implementation.
   media::VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles()
       override;
-  bool Initialize(const media::VideoEncodeAccelerator::Config& config,
-                  media::VideoEncodeAccelerator::Client* client) override;
+  bool Initialize(
+      const media::VideoEncodeAccelerator::Config& config,
+      media::VideoEncodeAccelerator::Client* client,
+      std::unique_ptr<media::MediaLog> media_log = nullptr) override;
   void Encode(scoped_refptr<media::VideoFrame> frame,
               bool force_keyframe) override;
   void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) override;

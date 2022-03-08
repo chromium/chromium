@@ -29,7 +29,7 @@ class MEDIA_EXPORT VideoEncoderFallback : public VideoEncoder {
                        CreateFallbackCB create_fallback_cb);
   ~VideoEncoderFallback() override;
 
-  // VideoDecoder implementation.
+  // VideoEncoder implementation.
   void Initialize(VideoCodecProfile profile,
                   const Options& options,
                   OutputCB output_cb,

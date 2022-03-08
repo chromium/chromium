@@ -30,6 +30,8 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
+#include "media/base/media_log.h"
+#include "media/base/media_util.h"
 #include "media/base/scopedfd_helper.h"
 #include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_frame_layout.h"
@@ -194,18 +196,25 @@ V4L2VideoEncodeAccelerator::~V4L2VideoEncodeAccelerator() {
   VLOGF(2);
 }
 
-bool V4L2VideoEncodeAccelerator::Initialize(const Config& config,
-                                            Client* client) {
+bool V4L2VideoEncodeAccelerator::Initialize(
+    const Config& config,
+    Client* client,
+    std::unique_ptr<MediaLog> media_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   DCHECK_EQ(encoder_state_, kUninitialized);
 
   TRACE_EVENT0("media,gpu", "V4L2VEA::Initialize");
   VLOGF(2) << ": " << config.AsHumanReadableString();
 
+  // NullMediaLog silently and safely does nothing.
+  if (!media_log)
+    media_log = std::make_unique<media::NullMediaLog>();
+
   // V4L2VEA doesn't support temporal layers but we let it pass here to support
   // simulcast.
   if (config.HasSpatialLayer()) {
-    VLOGF(1) << "Spatial layer encoding is not yet supported";
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Spatial layer encoding is not yet supported";
     return false;
   }
 
@@ -217,15 +226,16 @@ bool V4L2VideoEncodeAccelerator::Initialize(const Config& config,
   output_format_fourcc_ =
       V4L2Device::VideoCodecProfileToV4L2PixFmt(config.output_profile, false);
   if (!output_format_fourcc_) {
-    VLOGF(1) << "invalid output_profile="
-             << GetProfileName(config.output_profile);
+    MEDIA_LOG(ERROR, media_log.get())
+        << "invalid output_profile=" << GetProfileName(config.output_profile);
     return false;
   }
 
   if (!device_->Open(V4L2Device::Type::kEncoder, output_format_fourcc_)) {
-    VLOGF(1) << "Failed to open device for profile="
-             << GetProfileName(config.output_profile)
-             << ", fourcc=" << FourccToString(output_format_fourcc_);
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Failed to open device for profile="
+        << GetProfileName(config.output_profile)
+        << ", fourcc=" << FourccToString(output_format_fourcc_);
     return false;
   }
 
@@ -237,10 +247,10 @@ bool V4L2VideoEncodeAccelerator::Initialize(const Config& config,
       config.input_visible_size.height() < min_resolution.height() ||
       config.input_visible_size.width() > max_resolution.width() ||
       config.input_visible_size.height() > max_resolution.height()) {
-    VLOGF(1) << "Unsupported resolution: "
-             << config.input_visible_size.ToString()
-             << ", min=" << min_resolution.ToString()
-             << ", max=" << max_resolution.ToString();
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Unsupported resolution: " << config.input_visible_size.ToString()
+        << ", min=" << min_resolution.ToString()
+        << ", max=" << max_resolution.ToString();
     return false;
   }
 
@@ -257,7 +267,8 @@ bool V4L2VideoEncodeAccelerator::Initialize(const Config& config,
   const __u32 kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QUERYCAP, &caps);
   if ((caps.capabilities & kCapsRequired) != kCapsRequired) {
-    VLOGF(1) << "caps check failed: 0x" << std::hex << caps.capabilities;
+    MEDIA_LOG(ERROR, media_log.get())
+        << "caps check failed: 0x" << std::hex << caps.capabilities;
     return false;
   }
 

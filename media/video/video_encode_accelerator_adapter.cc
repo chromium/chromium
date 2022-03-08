@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/media_log.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -116,10 +117,12 @@ VideoEncodeAcceleratorAdapter::PendingOp::~PendingOp() = default;
 
 VideoEncodeAcceleratorAdapter::VideoEncodeAcceleratorAdapter(
     GpuVideoAcceleratorFactories* gpu_factories,
+    std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner)
     : output_pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       input_pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       gpu_factories_(gpu_factories),
+      media_log_(media_log->Clone()),
       accelerator_task_runner_(gpu_factories_->GetTaskRunner()),
       callback_task_runner_(std::move(callback_task_runner)) {
   DETACH_FROM_SEQUENCE(accelerator_sequence_checker_);
@@ -249,8 +252,7 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
     }
   }
 #endif
-
-  if (!accelerator_->Initialize(vea_config, this)) {
+  if (!accelerator_->Initialize(vea_config, this, media_log_->Clone())) {
     InitCompleted(
         EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
                       "Failed to initialize video encode accelerator."));

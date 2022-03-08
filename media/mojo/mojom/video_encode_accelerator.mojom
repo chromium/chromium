@@ -4,6 +4,7 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -143,7 +144,8 @@ interface VideoEncodeAccelerator {
   // Responded by VideoEncodeAcceleratorClient.RequireBitstreamBuffers().
   [Sync]
   Initialize(VideoEncodeAcceleratorConfig config,
-             pending_associated_remote<VideoEncodeAcceleratorClient> client)
+             pending_associated_remote<VideoEncodeAcceleratorClient> client,
+             pending_remote<MediaLog> media_log)
       => (bool result);
 
   // Encodes a |frame|, being completely done with it after its callback.

@@ -18,6 +18,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_export.h"
+#include "media/base/media_log.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
@@ -29,6 +30,7 @@
 namespace media {
 
 class BitstreamBuffer;
+class MediaLog;
 class VideoFrame;
 
 //  Metadata for a H264 bitstream buffer.
@@ -364,8 +366,11 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   //  |config| contains the initialization parameters.
   //  |client| is the client of this video encoder.  The provided pointer must
   //  be valid until Destroy() is called.
+  //  |media_log| is used to report error messages.
   // TODO(sheu): handle resolution changes.  http://crbug.com/249944
-  virtual bool Initialize(const Config& config, Client* client) = 0;
+  virtual bool Initialize(const Config& config,
+                          Client* client,
+                          std::unique_ptr<MediaLog> media_log = nullptr) = 0;
 
   // Encodes the given frame.
   // The storage type of |frame| must be the |storage_type| if it is specified

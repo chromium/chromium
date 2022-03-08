@@ -15,6 +15,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bitrate.h"
 #include "media/base/mac/video_frame_mac.h"
+#include "media/base/media_log.h"
+#include "media/base/media_util.h"
 
 // This is a min version of macOS where we want to support SVC encoding via
 // EnableLowLatencyRateControl flag. The flag is actually supported since 11.3,
@@ -156,24 +158,30 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
 }
 
 bool VTVideoEncodeAccelerator::Initialize(const Config& config,
-                                          Client* client) {
+                                          Client* client,
+                                          std::unique_ptr<MediaLog> media_log) {
   DVLOG(3) << __func__ << ": " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client);
+
+  // NullMediaLog silently and safely does nothing.
+  if (!media_log)
+    media_log = std::make_unique<media::NullMediaLog>();
 
   // Clients are expected to call Flush() before reinitializing the encoder.
   DCHECK_EQ(pending_encodes_, 0);
 
   if (config.input_format != PIXEL_FORMAT_I420 &&
       config.input_format != PIXEL_FORMAT_NV12) {
-    DLOG(ERROR) << "Input format not supported= "
-                << VideoPixelFormatToString(config.input_format);
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Input format not supported= "
+        << VideoPixelFormatToString(config.input_format);
     return false;
   }
   if (std::find(std::begin(kSupportedProfiles), std::end(kSupportedProfiles),
                 config.output_profile) == std::end(kSupportedProfiles)) {
-    DLOG(ERROR) << "Output profile not supported= "
-                << GetProfileName(config.output_profile);
+    MEDIA_LOG(ERROR, media_log.get()) << "Output profile not supported= "
+                                      << GetProfileName(config.output_profile);
     return false;
   }
   h264_profile_ = config.output_profile;
@@ -193,12 +201,13 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
     num_temporal_layers_ = config.spatial_layers.front().num_of_temporal_layers;
 
   if (num_temporal_layers_ > 2) {
-    DLOG(ERROR) << "Unsupported number of SVC temporal layers.";
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Unsupported number of SVC temporal layers.";
     return false;
   }
 
   if (!ResetCompressionSession()) {
-    DLOG(ERROR) << "Failed creating compression session.";
+    MEDIA_LOG(ERROR, media_log.get()) << "Failed creating compression session.";
     return false;
   }
 

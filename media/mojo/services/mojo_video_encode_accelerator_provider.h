@@ -30,7 +30,8 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
           const ::media::VideoEncodeAccelerator::Config& config,
           VideoEncodeAccelerator::Client* client,
           const gpu::GpuPreferences& gpu_preferences,
-          const gpu::GpuDriverBugWorkarounds& gpu_workarounds)>;
+          const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+          std::unique_ptr<MediaLog> media_log)>;
 
   static void Create(
       mojo::PendingReceiver<mojom::VideoEncodeAcceleratorProvider> receiver,

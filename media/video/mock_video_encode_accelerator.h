@@ -23,9 +23,10 @@ class MockVideoEncodeAccelerator : public VideoEncodeAccelerator {
 
   MOCK_METHOD0(GetSupportedProfiles,
                VideoEncodeAccelerator::SupportedProfiles());
-  MOCK_METHOD2(Initialize,
+  MOCK_METHOD3(Initialize,
                bool(const VideoEncodeAccelerator::Config& config,
-                    VideoEncodeAccelerator::Client* client));
+                    VideoEncodeAccelerator::Client* client,
+                    std::unique_ptr<MediaLog> media_log));
   MOCK_METHOD2(Encode,
                void(scoped_refptr<VideoFrame> frame, bool force_keyframe));
   MOCK_METHOD1(UseOutputBitstreamBuffer, void(BitstreamBuffer buffer));

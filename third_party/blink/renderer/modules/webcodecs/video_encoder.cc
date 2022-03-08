@@ -479,8 +479,8 @@ VideoEncoder::CreateAcceleratedVideoEncoder(
 
   return std::make_unique<
       media::AsyncDestroyVideoEncoder<media::VideoEncodeAcceleratorAdapter>>(
-      std::make_unique<media::VideoEncodeAcceleratorAdapter>(gpu_factories,
-                                                             callback_runner_));
+      std::make_unique<media::VideoEncodeAcceleratorAdapter>(
+          gpu_factories, logger_->log()->Clone(), callback_runner_));
 }
 
 std::unique_ptr<media::VideoEncoder> CreateAv1VideoEncoder() {

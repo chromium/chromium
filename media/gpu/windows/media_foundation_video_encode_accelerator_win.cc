@@ -29,7 +29,9 @@
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
@@ -323,15 +325,22 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
   return profiles;
 }
 
-bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
-                                                       Client* client) {
+bool MediaFoundationVideoEncodeAccelerator::Initialize(
+    const Config& config,
+    Client* client,
+    std::unique_ptr<MediaLog> media_log) {
   DVLOG(3) << __func__ << ": " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // NullMediaLog silently and safely does nothing.
+  if (!media_log)
+    media_log = std::make_unique<media::NullMediaLog>();
+
   if (PIXEL_FORMAT_I420 != config.input_format &&
       PIXEL_FORMAT_NV12 != config.input_format) {
-    DLOG(ERROR) << "Input format not supported= "
-                << VideoPixelFormatToString(config.input_format);
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Input format not supported= "
+        << VideoPixelFormatToString(config.input_format);
     return false;
   }
 
@@ -339,7 +348,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
       config.output_profile <= H264PROFILE_MAX) {
     if (GetH264VProfile(config.output_profile, config.is_constrained_h264) ==
         eAVEncH264VProfile_unknown) {
-      DLOG(ERROR) << "Output profile not supported= " << config.output_profile;
+      MEDIA_LOG(ERROR, media_log.get())
+          << "Output profile not supported= " << config.output_profile;
       return false;
     }
     codec_ = VideoCodec::kH264;
@@ -348,20 +358,23 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
   }
 
   if (codec_ == VideoCodec::kUnknown) {
-    DLOG(ERROR) << "Output profile not supported= " << config.output_profile;
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Output profile not supported= " << config.output_profile;
     return false;
   }
 
   IMFActivate** pp_activate = nullptr;
   uint32_t encoder_count = EnumerateHardwareEncoders(codec_, &pp_activate);
   if (!encoder_count) {
-    DLOG(ERROR) << "Failed finding a hardware encoder MFT.";
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Failed finding a hardware encoder MFT.";
     return false;
   }
 
   if (!ActivateAsyncEncoder(pp_activate, encoder_count,
                             config.is_constrained_h264)) {
-    DLOG(ERROR) << "Failed activating an async hardware encoder MFT.";
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Failed activating an async hardware encoder MFT.";
 
     if (pp_activate) {
       // Release the enumerated instances if any.
@@ -410,13 +423,14 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
     num_temporal_layers_ = config.spatial_layers.front().num_of_temporal_layers;
 
   if (!SetEncoderModes()) {
-    DLOG(ERROR) << "Failed setting encoder parameters.";
+    MEDIA_LOG(ERROR, media_log.get()) << "Failed setting encoder parameters.";
     return false;
   }
 
   if (!InitializeInputOutputParameters(config.output_profile,
                                        config.is_constrained_h264)) {
-    DLOG(ERROR) << "Failed initializing input-output samples.";
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Failed initializing input-output samples.";
     return false;
   }
 
@@ -427,7 +441,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
       base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCapture)) {
     dxgi_device_manager_ = DXGIDeviceManager::Create();
     if (!dxgi_device_manager_) {
-      DLOG(ERROR) << "Failed to create DXGIDeviceManager";
+      MEDIA_LOG(ERROR, media_log.get()) << "Failed to create DXGIDeviceManager";
       return false;
     }
   }

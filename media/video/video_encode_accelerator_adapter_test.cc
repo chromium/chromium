@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/bitrate.h"
+#include "media/base/media_util.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/video/fake_video_encode_accelerator.h"
@@ -57,9 +58,10 @@ class VideoEncodeAcceleratorAdapterTest
     EXPECT_CALL(*gpu_factories_.get(), GetTaskRunner())
         .WillRepeatedly(Return(vea_runner_));
 
+    auto media_log = std::make_unique<NullMediaLog>();
     callback_runner_ = base::SequencedTaskRunnerHandle::Get();
     vae_adapter_ = std::make_unique<VideoEncodeAcceleratorAdapter>(
-        gpu_factories_.get(), callback_runner_);
+        gpu_factories_.get(), media_log->Clone(), callback_runner_);
   }
 
   void TearDown() override {

@@ -48,6 +48,7 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
   void Initialize(
       const media::VideoEncodeAccelerator::Config& config,
       mojo::PendingAssociatedRemote<mojom::VideoEncodeAcceleratorClient> client,
+      mojo::PendingRemote<mojom::MediaLog> media_log,
       InitializeCallback success_callback) override {
     if (initialization_success_) {
       ASSERT_TRUE(client);

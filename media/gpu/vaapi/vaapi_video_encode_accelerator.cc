@@ -33,7 +33,9 @@
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/format_utils.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -177,14 +179,22 @@ VaapiVideoEncodeAccelerator::~VaapiVideoEncodeAccelerator() {
       this);
 }
 
-bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
-                                             Client* client) {
+bool VaapiVideoEncodeAccelerator::Initialize(
+    const Config& config,
+    Client* client,
+
+    std::unique_ptr<MediaLog> media_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   DCHECK_EQ(state_, kUninitialized);
   VLOGF(2) << "Initializing VAVEA, " << config.AsHumanReadableString();
 
+  // NullMediaLog silently and safely does nothing.
+  if (!media_log)
+    media_log = std::make_unique<media::NullMediaLog>();
+
   if (AttemptedInitialization()) {
-    VLOGF(1) << "Initialize() cannot be called more than once.";
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Initialize() cannot be called more than once.";
     return false;
   }
 
@@ -195,18 +205,20 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
 #if BUILDFLAG(IS_CHROMEOS)
     if (!base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
         !IsConfiguredForTesting()) {
-      VLOGF(1) << "Spatial layer encoding is not yet enabled by default";
+      MEDIA_LOG(ERROR, media_log.get())
+          << "Spatial layer encoding is not yet enabled by default";
       return false;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     if (config.inter_layer_pred != Config::InterLayerPredMode::kOnKeyPic) {
-      VLOGF(1) << "Only K-SVC encoding is supported.";
+      MEDIA_LOG(ERROR, media_log.get()) << "Only K-SVC encoding is supported.";
       return false;
     }
 
     if (config.output_profile != VideoCodecProfile::VP9PROFILE_PROFILE0) {
-      VLOGF(1) << "Spatial layers are only supported for VP9 encoding";
+      MEDIA_LOG(ERROR, media_log.get())
+          << "Spatial layers are only supported for VP9 encoding";
       return false;
     }
 
@@ -216,8 +228,9 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
         if (config.spatial_layers[i].width == config.spatial_layers[j].width &&
             config.spatial_layers[i].height ==
                 config.spatial_layers[j].height) {
-          VLOGF(1) << "Doesn't support k-SVC encoding where spatial layers "
-                      "have the same resolution";
+          MEDIA_LOG(ERROR, media_log.get())
+              << "Doesn't support k-SVC encoding where spatial layers "
+                 "have the same resolution";
           return false;
         }
       }
@@ -228,8 +241,9 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
       if (VaapiWrapper::GetDefaultVaEntryPoint(
               VaapiWrapper::kEncodeConstantQuantizationParameter, va_profile) !=
           VAEntrypointEncSliceLP) {
-        VLOGF(1) << "Currently spatial layer encoding is only supported by "
-                    "VAEntrypointEncSliceLP";
+        MEDIA_LOG(ERROR, media_log.get())
+            << "Currently spatial layer encoding is only supported by "
+               "VAEntrypointEncSliceLP";
         return false;
       }
     }
@@ -238,8 +252,8 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
   const VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
   if (codec != VideoCodec::kH264 && codec != VideoCodec::kVP8 &&
       codec != VideoCodec::kVP9) {
-    VLOGF(1) << "Unsupported profile: "
-             << GetProfileName(config.output_profile);
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Unsupported profile: " << GetProfileName(config.output_profile);
     return false;
   }
 
@@ -248,20 +262,23 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
     case PIXEL_FORMAT_NV12:
       break;
     default:
-      VLOGF(1) << "Unsupported input format: " << config.input_format;
+      MEDIA_LOG(ERROR, media_log.get())
+          << "Unsupported input format: " << config.input_format;
       return false;
   }
 
   if (config.storage_type.value_or(Config::StorageType::kShmem) ==
       Config::StorageType::kGpuMemoryBuffer) {
 #if !defined(USE_OZONE)
-    VLOGF(1) << "Native mode is only available on OZONE platform.";
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Native mode is only available on OZONE platform.";
     return false;
 #else
     if (config.input_format != PIXEL_FORMAT_NV12) {
       // TODO(crbug.com/894381): Support other formats.
-      VLOGF(1) << "Unsupported format for native input mode: "
-               << VideoPixelFormatToString(config.input_format);
+      MEDIA_LOG(ERROR, media_log.get())
+          << "Unsupported format for native input mode: "
+          << VideoPixelFormatToString(config.input_format);
       return false;
     }
     native_input_mode_ = true;
@@ -269,7 +286,8 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
   }
 
   if (config.HasSpatialLayer() && !native_input_mode_) {
-    VLOGF(1) << "Spatial scalability is only supported for native input now";
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Spatial scalability is only supported for native input now";
     return false;
   }
 
@@ -280,15 +298,16 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
                                  return profile.profile == output_profile;
                                });
   if (profile == profiles.end()) {
-    VLOGF(1) << "Unsupported output profile "
-             << GetProfileName(config.output_profile);
+    MEDIA_LOG(ERROR, media_log.get()) << "Unsupported output profile "
+                                      << GetProfileName(config.output_profile);
     return false;
   }
 
   if (config.input_visible_size.width() > profile->max_resolution.width() ||
       config.input_visible_size.height() > profile->max_resolution.height()) {
-    VLOGF(1) << "Input size too big: " << config.input_visible_size.ToString()
-             << ", max supported size: " << profile->max_resolution.ToString();
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Input size too big: " << config.input_visible_size.ToString()
+        << ", max supported size: " << profile->max_resolution.ToString();
     return false;
   }
 

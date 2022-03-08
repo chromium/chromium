@@ -11,7 +11,9 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/macros.h"
@@ -147,13 +149,18 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
     const gpu::GpuPreferences& gpu_preferences,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    std::unique_ptr<MediaLog> media_log) {
+  // NullMediaLog silently and safely does nothing.
+  if (!media_log)
+    media_log = std::make_unique<media::NullMediaLog>();
+
   for (const auto& create_vea :
        GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds)) {
     std::unique_ptr<VideoEncodeAccelerator> vea = create_vea.Run();
     if (!vea)
       continue;
-    if (!vea->Initialize(config, client)) {
+    if (!vea->Initialize(config, client, media_log->Clone())) {
       DLOG(ERROR) << "VEA initialize failed (" << config.AsHumanReadableString()
                   << ")";
       continue;
