@@ -980,13 +980,13 @@ TEST_F(AppListBubbleViewTest, DownArrowMovesFocusToContinueTasks) {
   SearchBoxView* search_box_view = GetSearchBoxView();
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
 
-  // Pressing down arrow moves focus through the continue tasks. It does not
-  // trigger ScrollView scrolling.
+  // Pressing down arrow twice moves focus through the two rows of continue
+  // tasks. It does not trigger ScrollView scrolling.
   auto* focus_manager = GetAppsPage()->GetFocusManager();
-  for (int i = 0; i < 4; i++) {
+  auto* continue_section = GetContinueSectionView();
+  for (int i = 0; i < 2; i++) {
     PressAndReleaseKey(ui::VKEY_DOWN);
-    EXPECT_TRUE(
-        GetContinueSectionView()->Contains(focus_manager->GetFocusedView()));
+    EXPECT_TRUE(continue_section->Contains(focus_manager->GetFocusedView()));
   }
 
   // Pressing down arrow again moves focus into the apps grid.

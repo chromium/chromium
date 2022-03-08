@@ -60,6 +60,7 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
 
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   void Update();
   size_t num_results() const { return num_results_; }
@@ -147,6 +148,16 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   // Removes all child views that have been kept around just for container
   // update animation.
   void ClearAnimatingViews();
+
+  // Moves focus up by one row, or up-and-out of the section.
+  void MoveFocusUp();
+
+  // Moves focus down by one row, or down-and-out of the section.
+  void MoveFocusDown();
+
+  // Returns the index in `suggestion_tasks_views_` of the currently focused
+  // task view, or -1 if no task view is focused.
+  int GetIndexOfFocusedTaskView() const;
 
   AppListViewDelegate* const view_delegate_;
 

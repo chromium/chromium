@@ -20,11 +20,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/table_layout.h"
@@ -143,7 +145,7 @@ ContinueTaskContainerView::ContinueTaskContainerView(
       l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL));
 }
 
-ContinueTaskContainerView::~ContinueTaskContainerView() {}
+ContinueTaskContainerView::~ContinueTaskContainerView() = default;
 
 void ContinueTaskContainerView::ListItemsAdded(size_t start, size_t count) {
   ScheduleUpdate();
@@ -169,6 +171,22 @@ void ContinueTaskContainerView::VisibilityChanged(views::View* starting_from,
   } else {
     animations_timer_.Start(FROM_HERE, base::Seconds(2), base::DoNothing());
   }
+}
+
+bool ContinueTaskContainerView::OnKeyPressed(const ui::KeyEvent &event) {
+  // No special focus handling in tablet mode.
+  if (tablet_mode_) {
+    return false;
+  }
+  if (event.key_code() == ui::VKEY_UP) {
+    MoveFocusUp();
+    return true;
+  }
+  if (event.key_code() == ui::VKEY_DOWN) {
+    MoveFocusDown();
+    return true;
+  }
+  return false;
 }
 
 void ContinueTaskContainerView::Update() {
@@ -510,6 +528,52 @@ void ContinueTaskContainerView::InitializeTableLayout() {
   table_layout_->AddRows(1, views::TableLayout::kFixedSize);
   table_layout_->AddPaddingRow(views::TableLayout::kFixedSize, kRowSpacing);
   table_layout_->AddRows(1, views::TableLayout::kFixedSize);
+}
+
+void ContinueTaskContainerView::MoveFocusUp() {
+  DVLOG(1) << __FUNCTION__;
+  // This function should only run when a child has focus.
+  DCHECK(Contains(GetFocusManager()->GetFocusedView()));
+  DCHECK(!suggestion_tasks_views_.empty());
+  int focused_index = GetIndexOfFocusedTaskView();
+  DCHECK_GE(focused_index, 0);
+  // Try to move up by one row.
+  int target_index = focused_index - columns_;
+  // If that would move before the first item, focus the first item and reverse
+  // focus out of the section.
+  if (target_index < 0) {
+    suggestion_tasks_views_[0]->RequestFocus();
+    GetFocusManager()->AdvanceFocus(/*reverse=*/true);
+    return;
+  }
+  suggestion_tasks_views_[target_index]->RequestFocus();
+}
+
+void ContinueTaskContainerView::MoveFocusDown() {
+  DVLOG(1) << __FUNCTION__;
+  // This function should only run when a child has focus.
+  DCHECK(Contains(GetFocusManager()->GetFocusedView()));
+  DCHECK(!suggestion_tasks_views_.empty());
+  int focused_index = GetIndexOfFocusedTaskView();
+  DCHECK_GE(focused_index, 0);
+  // Try to move down by one row.
+  int target_index = focused_index + columns_;
+  // If that would move past the last item, focus the last item and advance
+  // focus out of the section.
+  if (target_index >= static_cast<int>(suggestion_tasks_views_.size())) {
+    suggestion_tasks_views_.back()->RequestFocus();
+    GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+    return;
+  }
+  suggestion_tasks_views_[target_index]->RequestFocus();
+}
+
+int ContinueTaskContainerView::GetIndexOfFocusedTaskView() const {
+  for (size_t i = 0; i < suggestion_tasks_views_.size(); ++i) {
+    if (suggestion_tasks_views_[i]->HasFocus())
+      return i;
+  }
+  return -1;
 }
 
 BEGIN_METADATA(ContinueTaskContainerView, views::View)

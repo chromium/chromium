@@ -492,6 +492,86 @@ TEST_F(ContinueSectionViewClamshellModeTest, PressEnterOpensSearchResult) {
   EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
+TEST_F(ContinueSectionViewClamshellModeTest, DownArrowMovesFocusVertically) {
+  AddSearchResult("id0", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* task0 = GetResultViewAt(0);
+  ContinueTaskView* task1 = GetResultViewAt(1);
+  ContinueTaskView* task2 = GetResultViewAt(2);
+  ContinueTaskView* task3 = GetResultViewAt(3);
+  ASSERT_FALSE(task0->HasFocus());
+  ASSERT_FALSE(task1->HasFocus());
+  ASSERT_FALSE(task2->HasFocus());
+  ASSERT_FALSE(task3->HasFocus());
+
+  // Down arrow from search box moves to first continue task.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_TRUE(task0->HasFocus());
+  EXPECT_FALSE(task1->HasFocus());
+  EXPECT_FALSE(task2->HasFocus());
+  EXPECT_FALSE(task3->HasFocus());
+
+  // Down arrow from first continue task moves down by one row, focusing
+  // `task2` instead of the next task in tab order (`task1`).
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_FALSE(task0->HasFocus());
+  EXPECT_FALSE(task1->HasFocus());
+  EXPECT_TRUE(task2->HasFocus());
+  EXPECT_FALSE(task3->HasFocus());
+
+  // Down again moves focus out of continue section.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_FALSE(task0->HasFocus());
+  EXPECT_FALSE(task1->HasFocus());
+  EXPECT_FALSE(task2->HasFocus());
+  EXPECT_FALSE(task3->HasFocus());
+}
+
+TEST_F(ContinueSectionViewClamshellModeTest, UpArrowMovesFocusVertically) {
+  AddSearchResult("id0", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* task0 = GetResultViewAt(0);
+  ContinueTaskView* task1 = GetResultViewAt(1);
+  ContinueTaskView* task2 = GetResultViewAt(2);
+  ContinueTaskView* task3 = GetResultViewAt(3);
+  ASSERT_FALSE(task0->HasFocus());
+  ASSERT_FALSE(task1->HasFocus());
+  ASSERT_FALSE(task2->HasFocus());
+  ASSERT_FALSE(task3->HasFocus());
+
+  // Focus the last task (in the second row, second column).
+  task3->RequestFocus();
+  EXPECT_FALSE(task0->HasFocus());
+  EXPECT_FALSE(task1->HasFocus());
+  EXPECT_FALSE(task2->HasFocus());
+  EXPECT_TRUE(task3->HasFocus());
+
+  // Up arrow moves up by one row, focusing `task1` instead of the previous
+  // task in tab order (`task2`).
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_FALSE(task0->HasFocus());
+  EXPECT_TRUE(task1->HasFocus());
+  EXPECT_FALSE(task2->HasFocus());
+  EXPECT_FALSE(task3->HasFocus());
+
+  // Up again moves focus out of continue section.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_FALSE(task0->HasFocus());
+  EXPECT_FALSE(task1->HasFocus());
+  EXPECT_FALSE(task2->HasFocus());
+  EXPECT_FALSE(task3->HasFocus());
+}
+
 // Regression test for https://crbug.com/1273170.
 TEST_F(ContinueSectionViewClamshellModeTest, SearchAndCancelDoesNotChangeSize) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
