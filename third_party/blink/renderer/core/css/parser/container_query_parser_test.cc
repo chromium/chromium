@@ -15,17 +15,6 @@ namespace blink {
 
 class ContainerQueryParserTest : public PageTestBase {
  public:
-  String ParseSelector(String string) {
-    const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    auto tokens = CSSTokenizer(string).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    absl::optional<ContainerSelector> selector =
-        ContainerQueryParser(*context).ConsumeSelector(range);
-    if (!selector || !range.AtEnd())
-      return g_null_atom;
-    return selector->ToString();
-  }
-
   String ParseQuery(String string) {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
     std::unique_ptr<MediaQueryExpNode> node =
@@ -62,37 +51,6 @@ class ContainerQueryParserTest : public PageTestBase {
     return node->Serialize();
   }
 };
-
-TEST_F(ContainerQueryParserTest, ConsumeSelector) {
-  struct {
-    const char* input;
-    const char* output;
-  } valid_tests[] = {
-      // clang-format off
-      {"foo", nullptr},
-      {"foo ", "foo"},
-      {"name(foo)", "foo"},
-      {"type(inline-size)", nullptr},
-      {"type(size)", nullptr},
-      {"name(foo) type(inline-size)", nullptr},
-      // clang-format on
-  };
-
-  for (const auto& test : valid_tests) {
-    String actual = ParseSelector(test.input);
-    String expected(test.output ? test.output : test.input);
-    EXPECT_EQ(expected, actual);
-  }
-
-  // Invalid:
-  EXPECT_EQ(g_null_atom, ParseSelector(" foo"));
-  EXPECT_EQ(g_null_atom, ParseSelector("name()"));
-  EXPECT_EQ(g_null_atom, ParseSelector("name(50px)"));
-  EXPECT_EQ(g_null_atom, ParseSelector("type()"));
-  EXPECT_EQ(g_null_atom, ParseSelector("type(unknown)"));
-  EXPECT_EQ(g_null_atom, ParseSelector("type(block-size)"));
-  EXPECT_EQ(g_null_atom, ParseSelector("name(foo) name(bar)"));
-}
 
 TEST_F(ContainerQueryParserTest, ParseQuery) {
   const char* tests[] = {

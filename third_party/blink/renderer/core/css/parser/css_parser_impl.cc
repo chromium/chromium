@@ -1103,16 +1103,21 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
 
   ContainerQueryParser query_parser(*context_);
 
-  absl::optional<ContainerSelector> selector =
-      query_parser.ConsumeSelector(prelude);
-  if (!selector)
-    return nullptr;
+  // <container-name>
+  AtomicString name;
+  if (prelude.Peek().GetType() == kIdentToken) {
+    auto* ident = DynamicTo<CSSCustomIdentValue>(
+        css_parsing_utils::ConsumeSingleContainerName(prelude, *context_));
+    if (!ident)
+      return nullptr;
+    name = ident->Value();
+  }
 
   std::unique_ptr<MediaQueryExpNode> query = query_parser.ParseQuery(prelude);
   if (!query)
     return nullptr;
-  ContainerQuery* container_query =
-      MakeGarbageCollected<ContainerQuery>(*selector, std::move(query));
+  ContainerQuery* container_query = MakeGarbageCollected<ContainerQuery>(
+      ContainerSelector(std::move(name), *query), std::move(query));
 
   HeapVector<Member<StyleRuleBase>> rules;
   ConsumeRuleList(stream, kRegularRuleList,

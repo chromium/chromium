@@ -22,8 +22,6 @@ class CORE_EXPORT ContainerQueryParser {
  public:
   explicit ContainerQueryParser(const CSSParserContext&);
 
-  absl::optional<ContainerSelector> ConsumeSelector(CSSParserTokenRange&);
-
   // https://drafts.csswg.org/css-contain-3/#typedef-container-query
   std::unique_ptr<MediaQueryExpNode> ParseQuery(String);
   std::unique_ptr<MediaQueryExpNode> ParseQuery(CSSParserTokenRange);

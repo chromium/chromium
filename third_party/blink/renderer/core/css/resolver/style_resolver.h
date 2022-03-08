@@ -43,6 +43,7 @@
 namespace blink {
 
 class CompositorKeyframeValue;
+class ContainerSelector;
 class CSSPropertyValueSet;
 class CSSValue;
 class Document;
@@ -146,7 +147,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       Element*,
       PseudoId);
 
-  Element* FindContainerForElement(Element*, const AtomicString&);
+  Element* FindContainerForElement(Element*, const ContainerSelector&);
 
   void ComputeFont(Element&, ComputedStyle*, const CSSPropertyValueSet&);
 

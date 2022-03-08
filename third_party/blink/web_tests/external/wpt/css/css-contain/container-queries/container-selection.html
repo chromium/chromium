@@ -1,5 +1,5 @@
 <!doctype html>
-<title>@container: selection using name(), type()</title>
+<title>@container: selection using name and implicit selection</title>
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-rule">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -141,27 +141,14 @@
   // For the following tests, the inner container has a size of 16x16px,
   // and the outer container has a size of 32x32px.
 
-  // "Nearest" selection:
+  // Implicit selection:
   test_applied('(width: 16px)',  '.size > .inline > span');
   test_applied('(height: 16px)', '.inline > .size > span');
   test_applied('(width: 16px)',  '.inline > .size > span');
-  test_rejected('(height)', '.size > .inline > span');
+  test_applied('(height: 32px)', '.size > .inline > span');
+  test_rejected('(height: 16px)', '.size > .inline > span');
 
-  // type():
-  test_applied('type(inline-size) (width: 16px)', '.inline > .size > span');
-  test_applied('type(inline-size) (width: 16px)', '.size > .inline > span');
-
-  test_applied('type(size) (height: 16px)', '.inline > .size > span');
-  test_applied('type(size) (height: 32px)', '.size > .inline > span');
-  test_rejected('type(size) (height)', '.inline > .inline > span');
-
-  // name():
-  test_applied('name(a) (width: 32px)', '.a-size > .b-size > span');
-  test_applied('name(b) (width: 16px)', '.a-size > .b-size > span');
-  test_rejected('name(c) (width)','.a-size > .b-size > span');
-  test_applied('name(a) (width: 16px)', '.a-size > .a-size > span');
-
-  // Name as plain ident:
+  // Name selection:
   test_applied('a (width: 32px)', '.a-size > .b-size > span');
   test_applied('b (width: 16px)', '.a-size > .b-size > span');
   test_rejected('c (width)', '.a-size > .b-size > span');
@@ -181,15 +168,16 @@
   //  middle -> 16x16px
   //  inner -> 8x8px
 
-  // Mixing name() and type():
-  test_applied('name(a) type(inline-size) (width: 8px)', '.a-size > .b-size > .a-inline > span');
-  test_applied('name(b) type(inline-size) (width: 16px)', '.a-size > .b-size > .a-inline > span');
-  test_applied('name(a) type(size) (width: 32px)', '.a-size > .b-size > .a-inline > span');
-  test_applied('name(b) type(size) (width: 16px)', '.a-size > .b-size > .a-inline > span');
-  test_rejected('name(a) type(size) (width)', '.a-inline > .b-size');
+  // Combinations of name and implicit selection:
+  test_applied('a (width: 8px)', '.a-size > .b-size > .a-inline > span');
+  test_applied('b (width: 16px)', '.a-size > .b-size > .a-inline > span');
+  test_applied('a (height: 32px)', '.a-size > .b-size > .a-inline > span');
+  test_rejected('a (height)', '.a-inline > .b-size');
 
-  // type() first, then name():
-  test_applied('type(inline-size) name(a) (width: 8px)', '.a-size > .b-size > .a-inline > span');
-  test_applied('type(size) name(a) (height: 32px)', '.a-size > .b-size > .a-inline > span');
+  // Same tests as above, but logical versions:
+  test_applied('a (inline-size: 8px)', '.a-size > .b-size > .a-inline > span');
+  test_applied('b (inline-size: 16px)', '.a-size > .b-size > .a-inline > span');
+  test_applied('a (block-size: 32px)', '.a-size > .b-size > .a-inline > span');
+  test_rejected('a (block-size)', '.a-inline > .b-size');
 
 </script>

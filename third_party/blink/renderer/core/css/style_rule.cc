@@ -625,10 +625,12 @@ void StyleRuleContainer::SetConditionText(
   auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
   ContainerQueryParser parser(*context);
 
-  if (auto exp_node = parser.ParseQuery(value)) {
+  if (std::unique_ptr<MediaQueryExpNode> exp_node = parser.ParseQuery(value)) {
     condition_text_ = exp_node->Serialize();
+
+    ContainerSelector selector(container_query_->Selector().Name(), *exp_node);
     container_query_ = MakeGarbageCollected<ContainerQuery>(
-        container_query_->Selector(), std::move(exp_node));
+        std::move(selector), std::move(exp_node));
   }
 }
 

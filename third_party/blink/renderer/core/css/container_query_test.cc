@@ -17,9 +17,11 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 
@@ -68,6 +70,14 @@ class ContainerQueryTest : public PageTestBase,
     if (!query)
       return absl::nullopt;
     return GetInnerQuery(*query).CollectFeatureFlags();
+  }
+
+  ContainerSelector ContainerSelectorFrom(String query_string) {
+    ContainerQuery* query =
+        ParseContainerQuery(query_string, UnknownHandling::kAllow);
+    if (!query)
+      return ContainerSelector();
+    return ContainerSelector(g_null_atom, GetInnerQuery(*query));
   }
 
   String SerializeCondition(StyleRuleContainer* container) {
@@ -196,6 +206,54 @@ TEST_F(ContainerQueryTest, FeatureFlags) {
             FeatureFlagsFrom("((width: 100px))"));
   EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
             FeatureFlagsFrom("not (width: 100px)"));
+}
+
+TEST_F(ContainerQueryTest, ImplicitContainerSelector) {
+  ContainerSelector width = ContainerSelectorFrom("(width: 100px)");
+  EXPECT_EQ(kContainerTypeInlineSize, width.Type(WritingMode::kHorizontalTb));
+  EXPECT_EQ(kContainerTypeBlockSize, width.Type(WritingMode::kVerticalRl));
+
+  ContainerSelector height = ContainerSelectorFrom("(height: 100px)");
+  EXPECT_EQ(kContainerTypeBlockSize, height.Type(WritingMode::kHorizontalTb));
+  EXPECT_EQ(kContainerTypeInlineSize, height.Type(WritingMode::kVerticalRl));
+
+  ContainerSelector inline_size = ContainerSelectorFrom("(inline-size: 100px)");
+  EXPECT_EQ(kContainerTypeInlineSize,
+            inline_size.Type(WritingMode::kHorizontalTb));
+  EXPECT_EQ(kContainerTypeInlineSize,
+            inline_size.Type(WritingMode::kVerticalRl));
+
+  ContainerSelector block_size = ContainerSelectorFrom("(block-size: 100px)");
+  EXPECT_EQ(kContainerTypeBlockSize,
+            block_size.Type(WritingMode::kHorizontalTb));
+  EXPECT_EQ(kContainerTypeBlockSize, block_size.Type(WritingMode::kVerticalRl));
+
+  ContainerSelector width_height =
+      ContainerSelectorFrom("((width: 100px) or (height: 100px))");
+  EXPECT_EQ((kContainerTypeInlineSize | kContainerTypeBlockSize),
+            width_height.Type(WritingMode::kHorizontalTb));
+  EXPECT_EQ((kContainerTypeInlineSize | kContainerTypeBlockSize),
+            width_height.Type(WritingMode::kVerticalRl));
+
+  ContainerSelector inline_block_size =
+      ContainerSelectorFrom("((inline-size: 100px) or (block-size: 100px))");
+  EXPECT_EQ((kContainerTypeInlineSize | kContainerTypeBlockSize),
+            inline_block_size.Type(WritingMode::kHorizontalTb));
+  EXPECT_EQ((kContainerTypeInlineSize | kContainerTypeBlockSize),
+            inline_block_size.Type(WritingMode::kVerticalRl));
+
+  ContainerSelector aspect_ratio = ContainerSelectorFrom("(aspect-ratio: 1/2)");
+  EXPECT_EQ((kContainerTypeInlineSize | kContainerTypeBlockSize),
+            aspect_ratio.Type(WritingMode::kHorizontalTb));
+  EXPECT_EQ((kContainerTypeInlineSize | kContainerTypeBlockSize),
+            aspect_ratio.Type(WritingMode::kVerticalRl));
+
+  ContainerSelector orientation =
+      ContainerSelectorFrom("(orientation: portrait)");
+  EXPECT_EQ((kContainerTypeInlineSize | kContainerTypeBlockSize),
+            orientation.Type(WritingMode::kHorizontalTb));
+  EXPECT_EQ((kContainerTypeInlineSize | kContainerTypeBlockSize),
+            orientation.Type(WritingMode::kVerticalRl));
 }
 
 TEST_F(ContainerQueryTest, RuleParsing) {

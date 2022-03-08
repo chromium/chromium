@@ -116,31 +116,15 @@
   test_query_invalid('not screen or (width: 100px)');
   test_query_invalid('(width: 100px), (height: 100px)');
 
+  test_container_selector_valid('foo');
   test_container_selector_valid(' foo');
   test_container_selector_valid(' foo ');
-  test_container_selector_valid('name(foo)');
-  test_container_selector_valid('name( foo )');
-  test_container_selector_valid('type(size)');
-  test_container_selector_valid('type( size )');
-  test_container_selector_valid('type(inline-size)');
 
   test_container_selector_invalid('foo foo');
   test_container_selector_invalid('1px');
   test_container_selector_invalid('50gil');
-  test_container_selector_invalid('name(1px)');
-  test_container_selector_invalid('type(1px)');
-  test_container_selector_invalid('type(red)');
-  test_container_selector_invalid('type(size) type(size)');
-  test_container_selector_invalid('type(inline-size) type(block-size)');
-  test_container_selector_invalid('name(foo) name(bar)');
-  test_container_selector_invalid('type(inline-size) name(foo) type(block-size)');
-  test_container_selector_invalid('name(foo) type(size) name(bar)');
-  test_container_selector_invalid('name(type(size))');
-  test_container_selector_invalid('type(name(bar))');
-  test_container_selector_invalid('type(block-size)');
-  test_container_selector_invalid('name(bar) type(block-size)');
-  test_container_selector_invalid('type(block-size) name(bar)');
+  test_container_selector_invalid('name(foo)');
+  test_container_selector_invalid('type(inline-size)');
   test_container_selector_invalid('"foo"');
   test_container_selector_invalid('"inherit"');
-  test_container_selector_invalid('name("foo")');
 </script>

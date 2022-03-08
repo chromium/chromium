@@ -5,39 +5,35 @@
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-String ContainerSelector::ToString() const {
-  StringBuilder builder;
+ContainerSelector::ContainerSelector(AtomicString name,
+                                     const MediaQueryExpNode& query)
+    : name_(std::move(name)), feature_flags_(query.CollectFeatureFlags()) {}
 
-  if (!name_.IsNull()) {
-    if (type_)
-      builder.Append("name(");
-    builder.Append(name_);
-    if (type_)
-      builder.Append(") ");
+unsigned ContainerSelector::Type(WritingMode writing_mode) const {
+  unsigned type = kContainerTypeNone;
+
+  if (feature_flags_ & MediaQueryExpNode::kFeatureInlineSize)
+    type |= kContainerTypeInlineSize;
+  if (feature_flags_ & MediaQueryExpNode::kFeatureBlockSize)
+    type |= kContainerTypeBlockSize;
+  if (feature_flags_ & MediaQueryExpNode::kFeatureWidth) {
+    type |= (IsHorizontalWritingMode(writing_mode) ? kContainerTypeInlineSize
+                                                   : kContainerTypeBlockSize);
+  }
+  if (feature_flags_ & MediaQueryExpNode::kFeatureHeight) {
+    type |= (IsHorizontalWritingMode(writing_mode) ? kContainerTypeBlockSize
+                                                   : kContainerTypeInlineSize);
   }
 
-  if (type_) {
-    DCHECK_NE(type_ & kContainerTypeSize, kContainerTypeBlockSize);
-
-    builder.Append("type(");
-    if ((type_ & kContainerTypeSize) == kContainerTypeSize) {
-      builder.Append("size");
-    } else if (type_ & kContainerTypeInlineSize) {
-      builder.Append("inline-size");
-    }
-    builder.Append(")");
-  }
-
-  return builder.ReleaseString();
+  return type;
 }
 
-ContainerQuery::ContainerQuery(const ContainerSelector& selector,
+ContainerQuery::ContainerQuery(ContainerSelector selector,
                                std::unique_ptr<MediaQueryExpNode> query)
-    : selector_(selector), query_(std::move(query)) {}
+    : selector_(std::move(selector)), query_(std::move(query)) {}
 
 ContainerQuery::ContainerQuery(const ContainerQuery& other)
     : selector_(other.selector_), query_(other.query_->Copy()) {}

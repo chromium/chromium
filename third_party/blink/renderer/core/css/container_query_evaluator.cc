@@ -38,7 +38,7 @@ bool NameMatches(const ComputedStyle& style,
 
 bool TypeMatches(const ComputedStyle& style,
                  const ContainerSelector& container_selector) {
-  unsigned type = container_selector.Type();
+  unsigned type = container_selector.Type(style.GetWritingMode());
   return !type || ((style.ContainerType() & type) == type);
 }
 
@@ -57,9 +57,6 @@ Element* ContainerQueryEvaluator::FindContainer(
   Element* container = context.container;
   if (!container)
     return nullptr;
-
-  if (container_selector.IsNearest())
-    return container;
 
   // TODO(crbug.com/1213888): Cache results.
   for (Element* element = container; element;

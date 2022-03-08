@@ -1593,7 +1593,8 @@ Response InspectorDOMAgent::getContainerForNode(
   element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
   Element* container = style_resolver.FindContainerForElement(
-      element, AtomicString(container_name.fromMaybe(g_null_atom)));
+      element,
+      ContainerSelector(AtomicString(container_name.fromMaybe(g_null_atom))));
   if (container)
     *container_node_id = PushNodePathToFrontend(container);
   return Response::Success();
@@ -1649,7 +1650,7 @@ bool InspectorDOMAgent::ContainerQueriedByElement(Element* container,
       auto* container_rule = DynamicTo<CSSContainerRule>(parent_rule);
       if (container_rule) {
         if (container == style_resolver.FindContainerForElement(
-                             element, container_rule->Name()))
+                             element, container_rule->Selector()))
           return true;
       }
 

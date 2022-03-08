@@ -8,40 +8,39 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 
 // Not to be confused with regular selectors. This refers to container
-// selection by e.g. name() or type().
+// selection by e.g. a given name, or by implicit container selection
+// according to the queried features.
 //
 // https://drafts.csswg.org/css-contain-3/#container-rule
 class CORE_EXPORT ContainerSelector {
  public:
+  using FeatureFlags = MediaQueryExpNode::FeatureFlags;
+
   ContainerSelector() = default;
   ContainerSelector(const ContainerSelector&) = default;
-  explicit ContainerSelector(const AtomicString& name) : name_(name) {}
-  explicit ContainerSelector(unsigned type) : type_(type) {}
-  explicit ContainerSelector(const AtomicString& name, unsigned type)
-      : name_(name), type_(type) {}
-
-  bool IsNearest() const { return name_.IsNull() && type_ == 0; }
+  explicit ContainerSelector(AtomicString name) : name_(std::move(name)) {}
+  ContainerSelector(AtomicString name, const MediaQueryExpNode&);
 
   const AtomicString& Name() const { return name_; }
-  unsigned Type() const { return type_; }
 
-  String ToString() const;
+  // Given the specified writing mode, return the EContainerTypes required
+  // for this selector to match.
+  unsigned Type(WritingMode) const;
 
  private:
   AtomicString name_;
-  // EContainerType
-  unsigned type_ = 0;
+  FeatureFlags feature_flags_ = 0;
 };
 
 class CORE_EXPORT ContainerQuery final
     : public GarbageCollected<ContainerQuery> {
  public:
-  ContainerQuery(const ContainerSelector&,
-                 std::unique_ptr<MediaQueryExpNode> query);
+  ContainerQuery(ContainerSelector, std::unique_ptr<MediaQueryExpNode> query);
   ContainerQuery(const ContainerQuery&);
 
   const ContainerSelector& Selector() const { return selector_; }

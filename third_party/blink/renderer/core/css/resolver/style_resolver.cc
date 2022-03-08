@@ -1366,10 +1366,9 @@ StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
 
 Element* StyleResolver::FindContainerForElement(
     Element* element,
-    const AtomicString& container_name) {
+    const ContainerSelector& container_selector) {
   auto context = StyleRecalcContext::FromAncestors(*element);
-  return ContainerQueryEvaluator::FindContainer(
-      context, ContainerSelector(container_name));
+  return ContainerQueryEvaluator::FindContainer(context, container_selector);
 }
 
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
