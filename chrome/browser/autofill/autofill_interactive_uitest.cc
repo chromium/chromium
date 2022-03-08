@@ -3063,8 +3063,13 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 }
 
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#define MAYBE_TwoDynamicChangingFormsFill DISABLED_TwoDynamicChangingFormsFill
+#else
+#define MAYBE_TwoDynamicChangingFormsFill TwoDynamicChangingFormsFill
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
-                       TwoDynamicChangingFormsFill) {
+                       MAYBE_TwoDynamicChangingFormsFill) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL("a.com",
                                             "/autofill/two_dynamic_forms.html");
