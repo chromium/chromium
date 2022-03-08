@@ -643,8 +643,9 @@ void FixAccountConsistencyRequestHeader(
 
   // If new url is eligible to have the header, add it, otherwise remove it.
 
-// Mirror header:
-#if BUILDFLAG(ENABLE_MIRROR)
+  // Mirror header:
+  // The Mirror header may be added on desktop platforms, for integration with
+  // Google Drive.
   int profile_mode_mask = PROFILE_MODE_DEFAULT;
   if (incognito_availibility ==
           static_cast<int>(IncognitoModePrefs::Availability::kDisabled) ||
@@ -664,7 +665,6 @@ void FixAccountConsistencyRequestHeader(
       request, redirect_url, gaia_id, is_child_account, account_consistency,
       cookie_settings, profile_mode_mask, kChromeMirrorHeaderSource,
       /*force_account_consistency=*/false);
-#endif  // BUILDFLAG(ENABLE_MIRROR)
 
 // Dice header:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
