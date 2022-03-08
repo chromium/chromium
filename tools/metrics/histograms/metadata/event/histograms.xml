@@ -236,6 +236,25 @@ chromium-metrics-reviews@google.com.
   <owner>nuskos@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
+    IMPORTANT: This was deprecated and stopped being emitted due to overflow
+    from the counters being emitted in Microseconds instead of milliseconds like
+    it was supposed to. Please see
+    Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration2.
+
+    Each time a ScrollUpdate event which was displayed on the screen is
+    processed, an amount of samples equal to the event processing duration in
+    milliseconds is emitted into the corresponding bucket.
+
+    Thus the ratio of the two represents the average amount of time scrolling is
+    janky.
+  </summary>
+</histogram>
+
+<histogram name="Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration2"
+    enum="JankyBoolean" expires_after="2023-02-14">
+  <owner>nuskos@google.com</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
     Each time a ScrollUpdate event which was displayed on the screen is
     processed, an amount of samples equal to the event processing duration in
     milliseconds is emitted into the corresponding bucket.
